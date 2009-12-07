@@ -271,16 +271,16 @@ MapManager::Update(time_t diff)
     for( i = 0; i < i_maps.size(); ++i )
     {
         update_queue[i]->Update(i_timer.GetCurrent());
-        sWorld.RecordTimeDiff("UpdateMap %u", update_queue[i]->GetId());
-    //  sLog.outError("This is thread %d out of %d threads,updating map %u",omp_get_thread_num(),omp_get_num_threads(),iter->second->GetId());
+        //sWorld.RecordTimeDiff("UpdateMap %u", update_queue[i]->GetId());
     }
     checkAndCorrectGridStatesArray();                   // debugging code, should be deleted some day
 
     ObjectAccessor::Instance().Update(i_timer.GetCurrent());
-    sWorld.RecordTimeDiff("UpdateObjectAccessor");
+    //sWorld.RecordTimeDiff("UpdateObjectAccessor");
+
     for (TransportSet::iterator iter = m_Transports.begin(); iter != m_Transports.end(); ++iter)
         (*iter)->Update(i_timer.GetCurrent());
-    sWorld.RecordTimeDiff("UpdateTransports");
+    //sWorld.RecordTimeDiff("UpdateTransports");
 
     i_timer.SetCurrent(0);
 }

@@ -1542,15 +1542,17 @@ void World::Update(time_t diff)
             ++m_updateTimeCount;
         }
     }
-
+    RecordTimeDiff(NULL);
     ///- Update the different timers
     for(int i = 0; i < WUPDATE_COUNT; i++)
         if(m_timers[i].GetCurrent()>=0)
             m_timers[i].Update(diff);
     else m_timers[i].SetCurrent(0);
 
+    RecordTimeDiff("UpdateTimers");
     ///- Update the game time and check for shutdown time
     _UpdateGameTime();
+    RecordTimeDiff("UpdateGameTime");
 
     /// Handle daily quests reset time
     if(m_gameTime > m_NextDailyQuestReset)
@@ -1558,22 +1560,25 @@ void World::Update(time_t diff)
         ResetDailyQuests();
         m_NextDailyQuestReset += DAY;
     }
-
+    
     /// <ul><li> Handle auctions when the timer has passed
     if (m_timers[WUPDATE_AUCTIONS].Passed())
     {
-        auctionbot.Update();
+        //auctionbot.Update();
         m_timers[WUPDATE_AUCTIONS].Reset();
 
         ///- Update mails (return old mails with item, or delete them)
         //(tested... works on win)
+        RecordTimeDiff(NULL);
         if (++mail_timer > mail_timer_expires)
         {
             mail_timer = 0;
             objmgr.ReturnOrDeleteOldMails(true);
         }
+        RecordTimeDiff("ReturnOldMails");
         ///-Handle expired auctions
         auctionmgr.Update();
+        RecordTimeDiff("UpdateAuctions");
     }
 
     RecordTimeDiff(NULL);
@@ -1583,7 +1588,6 @@ void World::Update(time_t diff)
         m_timers[WUPDATE_SESSIONS].Reset();
 
         UpdateSessions(diff);
-
         // Update groups
         for (ObjectMgr::GroupSet::iterator itr = objmgr.GetGroupSetBegin(); itr != objmgr.GetGroupSetEnd(); ++itr)
             (*itr)->Update(diff);
@@ -1622,14 +1626,15 @@ void World::Update(time_t diff)
         WorldDatabase.PExecute("UPDATE uptime SET uptime = %d, maxplayers = %d WHERE starttime = " I64FMTD, tmpDiff, maxClientsNum, uint64(m_startTime));
     }
 
+    RecordTimeDiff(NULL);
     /// <li> Handle all other objects
     if (m_timers[WUPDATE_OBJECTS].Passed())
     {
         m_timers[WUPDATE_OBJECTS].Reset();
         ///- Update objects when the timer has passed (maps, transport, creatures,...)
         MapManager::Instance().Update(diff);                // As interval = 0
+        RecordTimeDiff("MapManager::update");
 
-        RecordTimeDiff(NULL);
         ///- Process necessary scripts
         if (!m_scriptSchedule.empty())
             ScriptsProcess();
@@ -1658,6 +1663,7 @@ void World::Update(time_t diff)
     }
 
     ///- Process Game events when necessary
+    RecordTimeDiff(NULL);
     if (m_timers[WUPDATE_EVENTS].Passed())
     {
         m_timers[WUPDATE_EVENTS].Reset();                   // to give time for Update() to be processed
@@ -1665,13 +1671,13 @@ void World::Update(time_t diff)
         m_timers[WUPDATE_EVENTS].SetInterval(nextGameEvent);
         m_timers[WUPDATE_EVENTS].Reset();
     }
+    RecordTimeDiff("UpdateGameEvents");
 
     /// </ul>
-    ///- Move all creatures with "delayed move" and remove and delete all objects with "delayed remove"
-    //MapManager::Instance().DoDelayedMovesAndRemoves();
-
+    
     // update the instance reset times
     sInstanceSaveManager.Update();
+    RecordTimeDiff("UpdateSaveMGR");
 
     // And last, but not least handle the issued cli commands
     ProcessCliCommands();
