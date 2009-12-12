@@ -1460,7 +1460,6 @@ class TRINITY_DLL_SPEC Unit : public WorldObject
         UnitAI *i_AI, *i_disabledAI;
 
         void _UpdateSpells(uint32 time);
-        void _DeleteAuras();
 
         void _UpdateAutoRepeatSpell();
         bool m_AutoRepeatFirstCast;
@@ -1475,8 +1474,6 @@ class TRINITY_DLL_SPEC Unit : public WorldObject
         DeathState m_deathState;
 
         AuraMap m_Auras;
-        AuraMap::iterator m_AurasUpdateIterator;
-        uint32 m_removedAurasCount;
 
         typedef std::list<uint64> DynObjectGUIDs;
         DynObjectGUIDs m_dynObjGUIDs;
@@ -1484,7 +1481,7 @@ class TRINITY_DLL_SPEC Unit : public WorldObject
         std::list<GameObject*> m_gameObj;
         bool m_isSorted;
         uint32 m_transform;
-        AuraList m_removedAuras;
+        uint32 m_removedAuras;
 
         AuraList m_modAuras[TOTAL_AURAS];
         AuraList m_scAuras;                        // casted singlecast auras
