@@ -504,7 +504,7 @@ struct TRINITY_DLL_DECL boss_alarAI : public ScriptedAI
                     m_creature->AI()->AttackStart(target);
                 else
                 {
-                    m_creature->CastSpell(m_creature, SPELL_FLAME_BUFFET, false);
+                    m_creature->CastSpell(m_creature, SPELL_FLAME_BUFFET, true); // true no casting time
                     m_creature->setAttackTimer(BASE_ATTACK, 2000);
                 }
             }

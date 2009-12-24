@@ -25,43 +25,43 @@ EndScriptData */
 #include "def_the_eye.h"
 #include "WorldPacket.h"
 
- //kael'thas Speech
-#define SAY_INTRO                           -1550016
-#define SAY_INTRO_CAPERNIAN                 -1550017
-#define SAY_INTRO_TELONICUS                 -1550018
-#define SAY_INTRO_THALADRED                 -1550019
-#define SAY_INTRO_SANGUINAR                 -1550020
-#define SAY_PHASE2_WEAPON                   -1550021
-#define SAY_PHASE3_ADVANCE                  -1550022
-#define SAY_PHASE4_INTRO2                   -1550023
-#define SAY_PHASE5_NUTS                     -1550024
-#define SAY_SLAY1                           -1550025
-#define SAY_SLAY2                           -1550026
-#define SAY_SLAY3                           -1550027
-#define SAY_MINDCONTROL1                    -1550028
-#define SAY_MINDCONTROL2                    -1550029
-#define SAY_GRAVITYLAPSE1                   -1550030
-#define SAY_GRAVITYLAPSE2                   -1550031
-#define SAY_SUMMON_PHOENIX1                 -1550032
-#define SAY_SUMMON_PHOENIX2                 -1550033
-#define SAY_DEATH                           -1550034
+//kael'thas Speech
+#define SAY_INTRO                         -1550016
+#define SAY_INTRO_CAPERNIAN               -1550017
+#define SAY_INTRO_TELONICUS               -1550018
+#define SAY_INTRO_THALADRED               -1550019
+#define SAY_INTRO_SANGUINAR               -1550020
+#define SAY_PHASE2_WEAPON                 -1550021
+#define SAY_PHASE3_ADVANCE                -1550022
+#define SAY_PHASE4_INTRO2                 -1550023
+#define SAY_PHASE5_NUTS                   -1550024
+#define SAY_SLAY1                         -1550025
+#define SAY_SLAY2                         -1550026
+#define SAY_SLAY3                         -1550027
+#define SAY_MINDCONTROL1                  -1550028
+#define SAY_MINDCONTROL2                  -1550029
+#define SAY_GRAVITYLAPSE1                 -1550030
+#define SAY_GRAVITYLAPSE2                 -1550031
+#define SAY_SUMMON_PHOENIX1               -1550032
+#define SAY_SUMMON_PHOENIX2               -1550033
+#define SAY_DEATH                         -1550034
 
 //Thaladred the Darkener speech
-#define SAY_THALADRED_AGGRO                 -1550035
-#define SAY_THALADRED_DEATH                 -1550036
-#define EMOTE_THALADRED_GAZE                -1550037
+#define SAY_THALADRED_AGGRO               -1550035
+#define SAY_THALADRED_DEATH               -1550036
+#define EMOTE_THALADRED_GAZE              -1550037
 
 //Lord Sanguinar speech
-#define SAY_SANGUINAR_AGGRO                 -1550038
-#define SAY_SANGUINAR_DEATH                 -1550039
+#define SAY_SANGUINAR_AGGRO               -1550038
+#define SAY_SANGUINAR_DEATH               -1550039
 
 //Grand Astromancer Capernian speech
-#define SAY_CAPERNIAN_AGGRO                 -1550040
-#define SAY_CAPERNIAN_DEATH                 -1550041
+#define SAY_CAPERNIAN_AGGRO               -1550040
+#define SAY_CAPERNIAN_DEATH               -1550041
 
 //Master Engineer Telonicus speech
-#define SAY_TELONICUS_AGGRO                 -1550042
-#define SAY_TELONICUS_DEATH                 -1550043
+#define SAY_TELONICUS_AGGRO               -1550042
+#define SAY_TELONICUS_DEATH               -1550043
 
 //Phase 2 spells (Not used)
 #define SPELL_SUMMON_WEAPONS              36976
@@ -116,17 +116,17 @@ EndScriptData */
 #define SPELL_NETHER_VAPOR                35859
 
 //Phoenix spell
-#define SPELL_BURN                          36720
-#define SPELL_EMBER_BLAST                   34341
-#define SPELL_REBIRTH                       41587
+#define SPELL_BURN                        36720
+#define SPELL_EMBER_BLAST                 34341
+#define SPELL_REBIRTH                     41587
 
 //Creature IDs
 #define PHOENIX                           21362
 #define PHOENIX_EGG                       21364
 
 //Phoenix egg and phoenix model
-#define PHOENIX_MODEL           19682
-#define PHOENIX_EGG_MODEL       20245
+#define PHOENIX_MODEL                     19682
+#define PHOENIX_EGG_MODEL                 20245
 
 //weapon id + position
 float KaelthasWeapons[7][5] =
@@ -177,15 +177,10 @@ float KaelthasWeapons[7][5] =
 #define SPELL_STAFF_WBOLT       36990 // frostbolt
 
 // Advisors hp
-#define MAX_HP_THALADRED_THE_DARKENER        559999
-#define MAX_HP_LORD_SANGUINAR                579999
-#define MAX_HP_GRAND_ASTROMANCER_CAPERNIAN   399999
-#define MAX_HP_MASTER_ENGINEER_TELONICUS     549999
-
-#define MIN_HP_THALADRED_THE_DARKENER        279999
-#define MIN_HP_LORD_SANGUINAR                289999
-#define MIN_HP_GRAND_ASTROMANCER_CAPERNIAN   199999
-#define MIN_HP_MASTER_ENGINEER_TELONICUS     274999
+#define HP_THALADRED    279999
+#define HP_SANGUINAR    289999
+#define HP_CAPERNIAN    199999
+#define HP_TELONICUS    274999
 
 //Base AI for Advisors
 struct TRINITY_DLL_DECL advisorbase_ai : public ScriptedAI
@@ -196,20 +191,14 @@ struct TRINITY_DLL_DECL advisorbase_ai : public ScriptedAI
     }
 
     ScriptedInstance* pInstance;
-    bool FakeDeath;
-    uint32 DelayRes_Timer;
-    uint64 DelayRes_Target;
-    bool RestoreHP;
+    bool SetHP;
 
     void Reset()
     {
+        m_creature->setActive(true);
         m_creature->SetNoCallAssistance(true);
-        FakeDeath = false;
-        DelayRes_Timer = 0;
-        DelayRes_Target = 0;
 
         m_creature->SetUInt32Value(UNIT_FIELD_BYTES_1, 0);
-        m_creature->setActive(true);
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
         m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
 
@@ -219,15 +208,16 @@ struct TRINITY_DLL_DECL advisorbase_ai : public ScriptedAI
         //reset encounter
         if(pInstance && (pInstance->GetData(DATA_KAELTHASEVENT) == 1 || pInstance->GetData(DATA_KAELTHASEVENT) == 3))
         {
-            if (Creature *Kaelthas = (Creature*)Unit::GetUnit((*m_creature), pInstance->GetData64(DATA_KAELTHAS)))
+            if(Creature *Kaelthas = (Creature*)Unit::GetUnit((*m_creature), pInstance->GetData64(DATA_KAELTHAS)))
                 Kaelthas->AI()->EnterEvadeMode();
         }
-        RestoreHP = true;
+
+        UpdateMaxHealth(false);
     }
 
     void MoveInLineOfSight(Unit *who)
     {
-        if (!who || FakeDeath || m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
+        if(!who || m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
             return;
 
         ScriptedAI::MoveInLineOfSight(who);
@@ -235,133 +225,67 @@ struct TRINITY_DLL_DECL advisorbase_ai : public ScriptedAI
 
     void AttackStart(Unit* who)
     {
-        if (!who || FakeDeath || m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
+        if (!who || m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
             return;
 
         ScriptedAI::AttackStart(who);
     }
 
-    void Revive(Unit* Target)
+    void Revive()
     {
         m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
         m_creature->SetHealth(m_creature->GetMaxHealth());
-        m_creature->SetUInt32Value(UNIT_FIELD_BYTES_1, 0);
+        m_creature->SetUInt32Value(UNIT_FIELD_BYTES_1, PLAYER_STATE_NONE);
         DoCast(m_creature, SPELL_RES_VISUAL, false);
-        DelayRes_Timer = 2000;
+
+        if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 200, true))
+        {
+            m_creature->GetMotionMaster()->MoveChase(target);
+            m_creature->AI()->AttackStart(target);
+        }
+        else
+            m_creature->GetMotionMaster()->Initialize();
     }
 
-    void SetMaxHealth()
+    void UpdateMaxHealth(bool twice)
     {
-        if (m_creature->GetGUID() == pInstance->GetData64(DATA_LORDSANGUINAR))
-        {
-            m_creature->SetMaxHealth(MAX_HP_LORD_SANGUINAR);
-            return;
-        }
-        if (m_creature->GetGUID() == pInstance->GetData64(DATA_GRANDASTROMANCERCAPERNIAN))
-        {
-            m_creature->SetMaxHealth(MAX_HP_GRAND_ASTROMANCER_CAPERNIAN);
-            return;
-        }
-        if (m_creature->GetGUID() == pInstance->GetData64(DATA_MASTERENGINEERTELONICUS))
-        {
-            m_creature->SetMaxHealth(MAX_HP_MASTER_ENGINEER_TELONICUS);
-            return;
-        }
-        if (m_creature->GetGUID() == pInstance->GetData64(DATA_THALADREDTHEDARKENER))
-        {
-            m_creature->SetMaxHealth(MAX_HP_THALADRED_THE_DARKENER);
-            return;
-        }
-    }
+        if(m_creature->GetGUID() == pInstance->GetData64(DATA_LORDSANGUINAR))
+            m_creature->SetMaxHealth(twice ? HP_SANGUINAR*2 : HP_SANGUINAR);
 
-    void SetMinHealth()
-    {
-        if (m_creature->GetGUID() == pInstance->GetData64(DATA_LORDSANGUINAR))
-        {
-            m_creature->SetMaxHealth(MIN_HP_LORD_SANGUINAR);
-            return;
-        }
-        if (m_creature->GetGUID() == pInstance->GetData64(DATA_GRANDASTROMANCERCAPERNIAN))
-        {
-            m_creature->SetMaxHealth(MIN_HP_GRAND_ASTROMANCER_CAPERNIAN);
-            return;
-        }
-        if (m_creature->GetGUID() == pInstance->GetData64(DATA_MASTERENGINEERTELONICUS))
-        {
-            m_creature->SetMaxHealth(MIN_HP_MASTER_ENGINEER_TELONICUS);
-            return;
-        }
+        if(m_creature->GetGUID() == pInstance->GetData64(DATA_GRANDASTROMANCERCAPERNIAN))
+            m_creature->SetMaxHealth(twice ? HP_CAPERNIAN*2 : HP_CAPERNIAN);
+
+        if(m_creature->GetGUID() == pInstance->GetData64(DATA_MASTERENGINEERTELONICUS))
+            m_creature->SetMaxHealth(twice ? HP_TELONICUS*2 : HP_TELONICUS);
+
         if (m_creature->GetGUID() == pInstance->GetData64(DATA_THALADREDTHEDARKENER))
-        {
-            m_creature->SetMaxHealth(MIN_HP_THALADRED_THE_DARKENER);
-            return;
-        }
+            m_creature->SetMaxHealth(twice ? HP_THALADRED*2 : HP_THALADRED);
     }
 
     void DamageTaken(Unit* pKiller, uint32 &damage)
     {
-        if (damage < m_creature->GetHealth())
-            return;
-
-        //Prevent glitch if in fake death
-        if(FakeDeath)
+        if(damage >= m_creature->GetHealth())
         {
-            damage = 0;
-            return;
-        }
-        //Don't really die in phase 1 & 3, only die after that
-        if(pInstance && pInstance->GetData(DATA_KAELTHASEVENT) != 0)
-        {
-            //prevent death
-            damage = 0;
-            FakeDeath = true;
-
-            m_creature->InterruptNonMeleeSpells(false);
-            m_creature->SetHealth(0);
-            m_creature->ClearComboPointHolders();
-            m_creature->RemoveAllAurasOnDeath();
-            m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-            m_creature->ClearAllReactives();
-            m_creature->SetUInt64Value(UNIT_FIELD_TARGET,0);
-            m_creature->GetMotionMaster()->Clear();
-            m_creature->GetMotionMaster()->MoveIdle();
-            m_creature->SetUInt32Value(UNIT_FIELD_BYTES_1,PLAYER_STATE_DEAD);
-            SetMaxHealth();
-
-            if (pInstance->GetData(DATA_KAELTHASEVENT) == 3)
-                JustDied(pKiller);
-        }
-    }
-
-    void UpdateAI(const uint32 diff)
-    {
-        if(RestoreHP)
-        {
-            m_creature->SetHealth(100000);
-            SetMinHealth();
-            m_creature->SetHealth(m_creature->GetMaxHealth());
-            RestoreHP = false;
-        }
-
-        if(FakeDeath && DelayRes_Timer)
-        {
-            if(DelayRes_Timer <= diff)
+            //Don't really die in phase 1 & 3, only die after that
+            if(pInstance && pInstance->GetData(DATA_KAELTHASEVENT) != 0)
             {
-                FakeDeath = false;
-                DoZoneInCombat();
-                DelayRes_Timer = 0;
+                damage = 0;
 
-                if(Unit* target = SelectUnit(SELECT_TARGET_TOPAGGRO,0))
-                {
-                    m_creature->AddThreat(target, 0.0f);
-                    AttackStart(target);
+                m_creature->InterruptNonMeleeSpells(true);
+                m_creature->RemoveAllAuras();
+                m_creature->SetHealth(0);
+                m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                m_creature->GetMotionMaster()->MovementExpired(false);
+                m_creature->GetMotionMaster()->MoveIdle();
+                m_creature->SetUInt32Value(UNIT_FIELD_BYTES_1,PLAYER_STATE_DEAD);
+            
+                UpdateMaxHealth(true);
 
-                    m_creature->GetMotionMaster()->Clear();
-                    m_creature->GetMotionMaster()->MoveChase(target);
-                }
+                if(pInstance->GetData(DATA_KAELTHASEVENT) == 3)
+                    JustDied(pKiller);
             }
-            else
-                DelayRes_Timer -= diff;
         }
     }
 };
@@ -836,18 +760,16 @@ struct TRINITY_DLL_DECL boss_kaelthasAI : public ScriptedAI
             {
                 if (PhaseSubphase == 0)
                 {
-                    //Respawn advisors
-                    Unit* Target = SelectUnit(SELECT_TARGET_RANDOM, 0);
-
                     Creature* Advisor;
                     for (uint32 i = 0; i < 4; ++i)
                     {
                         Advisor = (Creature*)(Unit::GetUnit((*m_creature), AdvisorGuid[i]));
                         if (!Advisor)
                             error_log("TSCR: Kael'Thas Advisor %u does not exist. Possibly despawned? Incorrectly Killed?", i);
-                        else if(Target)
-                            ((advisorbase_ai*)Advisor->AI())->Revive(Target);
+                        else
+                            ((advisorbase_ai*)Advisor->AI())->Revive();
                     }
+
                     m_creature->StopMoving();
                     PhaseSubphase = 1;
                     Phase_Timer = TIME_PHASE_3_4;
@@ -1216,10 +1138,7 @@ struct TRINITY_DLL_DECL boss_thaladred_the_darkenerAI : public advisorbase_ai
 
     void Aggro(Unit *who)
     {
-        if (m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
-            return;
-
-        if (!who || FakeDeath)
+        if(who || m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
             return;
 
         DoScriptText(SAY_THALADRED_AGGRO, m_creature);
@@ -1228,10 +1147,8 @@ struct TRINITY_DLL_DECL boss_thaladred_the_darkenerAI : public advisorbase_ai
 
     void UpdateAI(const uint32 diff)
     {
-        advisorbase_ai::UpdateAI(diff);
-
         //Faking death, don't do anything
-        if (FakeDeath)
+        if(m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
             return;
 
         //Return since we have no target
@@ -1254,12 +1171,16 @@ struct TRINITY_DLL_DECL boss_thaladred_the_darkenerAI : public advisorbase_ai
         }
 
         if(Unit *t = m_creature->getVictim())
+        {
             if(t->IsImmunedToDamage(SPELL_SCHOOL_MASK_NORMAL,false))
+            {
                 if(Unit* target = SelectUnit(SELECT_TARGET_TOPAGGRO, 1))
                 {
                     m_creature->AddThreat(target, 5000001.0f);
                     AttackStart(target);
                 }
+            }
+        }
 
         if(Check_Timer < diff)
         {
@@ -1267,12 +1188,14 @@ struct TRINITY_DLL_DECL boss_thaladred_the_darkenerAI : public advisorbase_ai
                m_creature->AddThreat(m_creature->getVictim(), 5000001.0f);
         
             Check_Timer = 1000;
-        }else Check_Timer -= diff;
+        }
+        else
+            Check_Timer -= diff;
 
         //Gaze_Timer
         if(Gaze_Timer < diff)
         {
-            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true))
+            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true))
             {
                 DoResetThreat();
                 if(target)
@@ -1283,27 +1206,35 @@ struct TRINITY_DLL_DECL boss_thaladred_the_darkenerAI : public advisorbase_ai
                 }
                 Gaze_Timer = 8500;
             }
-        }else Gaze_Timer -= diff;
+        }
+        else
+            Gaze_Timer -= diff;
 
         //Silence_Timer
         if(Silence_Timer < diff)
         {
             DoCast(m_creature->getVictim(), SPELL_SILENCE);
             Silence_Timer = 20000;
-        }else Silence_Timer -= diff;
+        }
+        else
+            Silence_Timer -= diff;
 
         if(Rend_Timer < diff)
         {
             DoCast(m_creature->getVictim(), SPELL_REND);
             Rend_Timer = 10000;
-        }else Rend_Timer -= diff;
+        }
+        else
+            Rend_Timer -= diff;
 
         //PsychicBlow_Timer
         if(PsychicBlow_Timer < diff)
         {
             DoCast(m_creature->getVictim(), SPELL_PSYCHIC_BLOW);
             PsychicBlow_Timer = 20000+rand()%5000;
-        }else PsychicBlow_Timer -= diff;
+        }
+        else
+            PsychicBlow_Timer -= diff;
 
         DoMeleeAttackIfReady();
     }
@@ -1335,10 +1266,7 @@ struct TRINITY_DLL_DECL boss_lord_sanguinarAI : public advisorbase_ai
 
     void Aggro(Unit *who)
     {
-        if (m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
-            return;
-
-        if (!who || FakeDeath)
+        if (who || m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
             return;
 
         DoScriptText(SAY_SANGUINAR_AGGRO, m_creature);
@@ -1346,10 +1274,8 @@ struct TRINITY_DLL_DECL boss_lord_sanguinarAI : public advisorbase_ai
     
     void UpdateAI(const uint32 diff)
     {
-        advisorbase_ai::UpdateAI(diff);
-
         //Faking death, don't do anything
-        if (FakeDeath)
+        if (m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
             return;
 
         //Return since we have no target
@@ -1413,7 +1339,7 @@ struct TRINITY_DLL_DECL boss_grand_astromancer_capernianAI : public advisorbase_
 
     void AttackStart(Unit* who)
     {
-        if (!who || FakeDeath || m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
+        if (!who || m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
             return;
 
         if (m_creature->Attack(who, true))
@@ -1432,19 +1358,14 @@ struct TRINITY_DLL_DECL boss_grand_astromancer_capernianAI : public advisorbase_
 
     void Aggro(Unit *who)
     {
-        if (m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
-            return;
-
-        if (!who || FakeDeath)
+        if (who || m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
             return;
     }
 
     void UpdateAI(const uint32 diff)
     {
-        advisorbase_ai::UpdateAI(diff);
-
         //Faking Death, don't do anything
-        if (FakeDeath)
+        if ( m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE) )
             return;
 
         //Return since we have no target
@@ -1556,6 +1477,9 @@ struct TRINITY_DLL_DECL boss_master_engineer_telonicusAI : public advisorbase_ai
 
     void AttackStart(Unit *who)
     {
+        if (!who || m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
+            return;
+        
         if(who->getClass() == CLASS_HUNTER)
         {
             ScriptedAI::AttackStart(who,true);
@@ -1567,10 +1491,7 @@ struct TRINITY_DLL_DECL boss_master_engineer_telonicusAI : public advisorbase_ai
 
     void Aggro(Unit *who)
     {
-        if (m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
-            return;
-
-        if (!who || FakeDeath)
+        if (who || m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
             return;
 
         DoScriptText(SAY_TELONICUS_AGGRO, m_creature);
@@ -1578,10 +1499,8 @@ struct TRINITY_DLL_DECL boss_master_engineer_telonicusAI : public advisorbase_ai
 
     void UpdateAI(const uint32 diff)
     {
-        advisorbase_ai::UpdateAI(diff);
-
         //Faking Death, do nothing
-        if (FakeDeath)
+        if(m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
             return;
 
         //Return since we have no target
@@ -1722,12 +1641,13 @@ struct TRINITY_DLL_DECL mob_phoenix_tkAI : public ScriptedAI
             
             Creature * phoenixEgg = Egg ? m_creature->SummonCreature(PHOENIX_EGG,x,y,z,0,TEMPSUMMON_TIMED_DESPAWN,600000) : NULL;
             
-            if (phoenixEgg)
+            if(phoenixEgg)
             {
                 phoenixEgg->setFaction(m_creature->getFaction());
-                phoenixEgg = 0;
+                phoenixEgg = NULL;
             }
-            m_creature->Kill(m_creature,false);
+
+            m_creature->Kill(m_creature, false);
             m_creature->RemoveCorpse();
         }
     }
@@ -1773,9 +1693,10 @@ struct TRINITY_DLL_DECL mob_phoenix_egg_tkAI : public ScriptedAI
     bool summoned;
     ScriptedInstance* pInstance;
 
-    void Reset(){
-            Rebirth_Timer = 15000;
-            summoned = false;
+    void Reset()
+    {
+        Rebirth_Timer = 15000;
+        summoned = false;
     }
 
     //ignore any
@@ -1799,6 +1720,7 @@ struct TRINITY_DLL_DECL mob_phoenix_egg_tkAI : public ScriptedAI
     void JustSummoned(Creature* summoned)
     {
         summoned->CastSpell(summoned,SPELL_REBIRTH,false);
+
         if(summoned->GetEntry() == PHOENIX)
         {
             summoned->setFaction(m_creature->getFaction());
@@ -1807,13 +1729,11 @@ struct TRINITY_DLL_DECL mob_phoenix_egg_tkAI : public ScriptedAI
             if(target)
                 summoned->AI()->AttackStart(target);
         }
+
         if(pInstance)//check for boss reset
         {
-            Creature* Kael = Unit::GetCreature((*m_creature), pInstance->GetData64(DATA_KAELTHAS));
-            if (Kael)
-            {
+            if(Creature* Kael = Unit::GetCreature((*m_creature), pInstance->GetData64(DATA_KAELTHAS)))
                 ((boss_kaelthasAI*)Kael->AI())->summons.Summon(summoned);
-            }
         }
     }
 
@@ -1826,8 +1746,10 @@ struct TRINITY_DLL_DECL mob_phoenix_egg_tkAI : public ScriptedAI
                 Creature* Phoenix = m_creature->SummonCreature(PHOENIX,m_creature->GetPositionX(),m_creature->GetPositionY(),m_creature->GetPositionZ(),m_creature->GetOrientation(),TEMPSUMMON_CORPSE_DESPAWN,5000);
                 summoned = true;
             }
-            m_creature->DealDamage(m_creature, m_creature->GetMaxHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
-        }else Rebirth_Timer -= diff;
+            m_creature->Kill(m_creature, false);
+        }
+        else
+            Rebirth_Timer -= diff;
     }
 };
 
