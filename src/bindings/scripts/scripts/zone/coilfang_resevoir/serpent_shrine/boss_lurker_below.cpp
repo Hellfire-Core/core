@@ -81,8 +81,10 @@ struct TRINITY_DLL_DECL boss_the_lurker_belowAI : public Scripted_NoMovementAI
         pInstance = (ScriptedInstance*)c->GetInstanceData();
         SpellEntry *tempSpell = (SpellEntry*)GetSpellStore()->LookupEntry(SPELL_SPOUT_ANIM);
         if(tempSpell)
+        {
             for(int i = 0; i < 3; i++)
                 tempSpell->Effect[i] = 0;
+        }
     }
 
     ScriptedInstance* pInstance;
@@ -113,14 +115,14 @@ struct TRINITY_DLL_DECL boss_the_lurker_belowAI : public Scripted_NoMovementAI
         SpoutAnimTimer = 1000;
         RotTimer = 0;
         WaterboltTimer = 15000;
-        SpoutTimer = 45000;
-        WhirlTimer = 18000;
-        PhaseTimer = 120000;
+        SpoutTimer  = 45000;
+        WhirlTimer  = 18000;
+        PhaseTimer  = 120000;
         GeyserTimer = rand()%5000 + 15000;
-        CheckTimer = 15000;
-        WaitTimer = 60000;
-        WaitTimer2 = 60000;
-        r_orient = 0;
+        CheckTimer  = 15000;
+        WaitTimer   = 60000;
+        WaitTimer2  = 60000;
+        r_orient    = 0;
 
         Rotate = R_NONE;
 
@@ -131,7 +133,7 @@ struct TRINITY_DLL_DECL boss_the_lurker_belowAI : public Scripted_NoMovementAI
 
         Summons.DespawnAll();
 
-        if (pInstance)
+        if(pInstance)
         {
             pInstance->SetData(DATA_THELURKERBELOWEVENT, NOT_STARTED);
             pInstance->SetData(DATA_STRANGE_POOL, NOT_STARTED);
@@ -191,8 +193,8 @@ struct TRINITY_DLL_DECL boss_the_lurker_belowAI : public Scripted_NoMovementAI
                 Player *p = i->getSource();
 
                 if(p &&
-                   me->isInFront(p, SPOUT_DIST, (float)M_PI/7.0f) &&
-                   !p->IsInWater() && p->GetPositionZ() > -21.4 &&
+                   me->isInFront(p, SPOUT_DIST, (float)M_PI*2/16.0f) &&
+                   !p->IsInWater() && p->GetPositionZ() > -19.9645 &&
                    !p->HasAura(36945,0) && !p->HasAura(SPELL_SCALDINGWATER,0))
                 {
                     DoCast(p, SPELL_SPOUT, true);   
@@ -230,9 +232,12 @@ struct TRINITY_DLL_DECL boss_the_lurker_belowAI : public Scripted_NoMovementAI
         if(RotTimer <= diff)
         {
             Rotate = R_NONE;
-            me->SetReactState(REACT_AGGRESSIVE); 
+            me->SetReactState(REACT_AGGRESSIVE);
 
-            RotTimer   = 20000;
+            if(UpdateVictim())
+                m_creature->SetUInt64Value(UNIT_FIELD_TARGET, m_creature->getVictim()->GetGUID());
+
+            RotTimer = 20000;
             return;
         }
         else
@@ -329,7 +334,7 @@ struct TRINITY_DLL_DECL boss_the_lurker_belowAI : public Scripted_NoMovementAI
                 SpoutTimer -= diff;
 
             //Whirl directly after a Spout and at random times
-            if (WhirlTimer < diff)
+            if(WhirlTimer < diff)
             {
                 WhirlTimer = 18000;
                 DoCast(m_creature,SPELL_WHIRL);                

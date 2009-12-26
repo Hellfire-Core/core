@@ -677,8 +677,18 @@ uint32 Unit::DealDamage(Unit *pVictim, uint32 damage, CleanDamage const* cleanDa
 
     if( pVictim->GetTypeId()== TYPEID_PLAYER && this->GetTypeId() == TYPEID_PLAYER )
     {
-        if(pVictim->HasAura(32830,0) && ((Player*)this)->HasItemCount(30312, 1, false))
-            pVictim->RemoveAurasDueToSpell(32830);
+        if(pVictim->HasAura(32830,0))
+        {
+            Item* mainHand = ((Player*)this)->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND);
+            if(mainHand && mainHand->GetProto()->ItemId == 30312)
+                pVictim->RemoveAurasDueToSpell(32830);
+            else
+            {
+                Item* offHand = ((Player*)this)->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND);
+                if(offHand && offHand->GetProto()->ItemId == 30312)
+                    pVictim->RemoveAurasDueToSpell(32830);
+            }
+        }
     }
 
     //Script Event damage taken

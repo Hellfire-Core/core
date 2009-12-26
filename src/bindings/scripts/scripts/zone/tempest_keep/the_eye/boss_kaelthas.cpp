@@ -1118,14 +1118,14 @@ struct TRINITY_DLL_DECL boss_thaladred_the_darkenerAI : public advisorbase_ai
     void Reset()
     {
         Gaze_Timer = 100;
-        Rend_Timer = 10000;
+        Rend_Timer = 1000;
         Silence_Timer = 20000;
         PsychicBlow_Timer = 10000;
         Check_Timer = 1000;
         Check_Timer2 = 3000;
 
-        m_creature->SetSpeed(MOVE_WALK, 1.0f);
-        m_creature->SetSpeed(MOVE_RUN, 1.0f);
+        m_creature->SetSpeed(MOVE_WALK, 0.6f);
+        m_creature->SetSpeed(MOVE_RUN, 0.6f);
         m_creature->SetUnitMovementFlags(MOVEMENTFLAG_WALK_MODE);
 
         advisorbase_ai::Reset();
@@ -1161,13 +1161,15 @@ struct TRINITY_DLL_DECL boss_thaladred_the_darkenerAI : public advisorbase_ai
             if(Check_Timer2 < diff)
             {
                 WorldLocation wLoc = ((boss_kaelthasAI*)kael->AI())->wLoc;
-                if(m_creature->GetDistance(wLoc.x,wLoc.y,wLoc.z) > 135.0f)
+                if(m_creature->GetDistance(wLoc.x,wLoc.y,wLoc.z) > 200.0f)
                     EnterEvadeMode();
                 else
                     DoZoneInCombat();
             
                  Check_Timer2 = 3000;
-             }else Check_Timer2 -= diff;
+            }
+            else
+                Check_Timer2 -= diff;
         }
 
         if(Unit *t = m_creature->getVictim())
@@ -1197,9 +1199,9 @@ struct TRINITY_DLL_DECL boss_thaladred_the_darkenerAI : public advisorbase_ai
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true))
             {
-                DoResetThreat();
                 if(target)
                 {
+                    DoResetThreat();
                     m_creature->AddThreat(target, 5000001.0f);
                     DoScriptText(EMOTE_THALADRED_GAZE, m_creature, target);
                     AttackStart(target);
