@@ -1018,20 +1018,21 @@ struct TRINITY_DLL_DECL boss_kaelthasAI : public ScriptedAI
                             if(Phase == 4)
                             {
                               if(m_creature->getThreatManager().getThreatList().size() >= 2)
+                              {
+                                switch(rand()%2)
+                                {
+                                  case 0: DoScriptText(SAY_MINDCONTROL1, m_creature); break;
+                                  case 1: DoScriptText(SAY_MINDCONTROL2, m_creature); break;
+                                }
                               for (uint32 i = 0; i < 3; i++)
                               {
-
                                   Unit* target =SelectUnit(SELECT_TARGET_RANDOM, 1, 70, true);
                                   if(!target)
                                       target = m_creature->getVictim();
 
                                   if(target)
-                                      DoCast(target, SPELL_MIND_CONTROL);
-                                      switch(rand()%2)
-                                      {
-                                       case 0: DoScriptText(SAY_MINDCONTROL1, m_creature); break;
-                                       case 1: DoScriptText(SAY_MINDCONTROL2, m_creature); break;
-                                      }
+                                      DoCast(target, SPELL_MIND_CONTROL);                                      
+                              }
                               }
                               MindControl_Timer = 10000;
                               MC_Done = false;				// for second MC to have a good timer
@@ -1046,6 +1047,12 @@ struct TRINITY_DLL_DECL boss_kaelthasAI : public ScriptedAI
                             if(MindControl_Timer < diff && Phase == 4 && !MC_Done)
                             {
                                 if(m_creature->getThreatManager().getThreatList().size() >= 2)
+                                {
+                                  switch(rand()%2)
+                                  {
+                                    case 0: DoScriptText(SAY_MINDCONTROL1, m_creature); break;
+                                    case 1: DoScriptText(SAY_MINDCONTROL2, m_creature); break;
+                                  }
                                 for (uint32 i = 0; i < 3; i++)
                                 {
 
@@ -1054,12 +1061,8 @@ struct TRINITY_DLL_DECL boss_kaelthasAI : public ScriptedAI
                                         target = m_creature->getVictim();
 
                                     if(target)
-                                        DoCast(target, SPELL_MIND_CONTROL);
-                                        switch(rand()%2)
-                                          {
-                                           case 0: DoScriptText(SAY_MINDCONTROL1, m_creature); break;
-                                           case 1: DoScriptText(SAY_MINDCONTROL2, m_creature); break;
-                                          }
+                                        DoCast(target, SPELL_MIND_CONTROL);                                   
+                                }
                                 }
                                 MC_Done = true;
                             }else
@@ -1964,6 +1967,7 @@ struct TRINITY_DLL_DECL mob_phoenix_egg_tkAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
+      //prevent eggs from hatching when in Gravity Lapse
       if(pInstance->GetData(DATA_KAELTHASEVENT) == 4)
       {
         if (Rebirth_Timer < diff)
@@ -1977,6 +1981,13 @@ struct TRINITY_DLL_DECL mob_phoenix_egg_tkAI : public ScriptedAI
         }
         else
             Rebirth_Timer -= diff;
+      }
+
+      //remove phoenix eggs if encounter resets or done
+      if(pInstance->GetData(DATA_KAELTHASEVENT) == NOT_STARTED || pInstance->GetData(DATA_KAELTHASEVENT) == DONE)
+      {
+          m_creature->Kill(m_creature, false);
+          m_creature->RemoveCorpse();
       }
     }
 };
