@@ -223,7 +223,7 @@ struct Loot
     uint32 gold;
     uint8 unlootedCount;
 
-    Loot(uint32 _gold = 0) : gold(_gold), unlootedCount(0) {}
+    Loot(uint32 _gold = 0) : gold(_gold), unlootedCount(0), save(false) {}
     ~Loot() { clear(); }
 
     // if loot becomes invalid this reference is used to inform the listener
@@ -268,6 +268,8 @@ struct Loot
 
     // Inserts the item into the loot (called by LootTemplate processors)
     void AddItem(LootStoreItem const & item);
+
+    bool save;
 
     LootItem* LootItemInSlot(uint32 lootslot, Player* player, QuestItem** qitem = NULL, QuestItem** ffaitem = NULL, QuestItem** conditem = NULL);
     private:

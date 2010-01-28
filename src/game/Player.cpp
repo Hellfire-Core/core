@@ -7656,6 +7656,13 @@ void Player::SendLoot(uint64 guid, LootType loot_type)
                     loot->FillLoot(lootid, LootTemplates_Creature, recipient);
 
                 loot->generateMoneyLoot(creature->GetCreatureInfo()->mingold,creature->GetCreatureInfo()->maxgold);
+                if (creature->isWorldBoss())
+                {
+                    loot->save = true;
+                    // save 
+                    creature->saveLootToDB();
+                }
+
 
                 if(Group* group = recipient->GetGroup())
                 {

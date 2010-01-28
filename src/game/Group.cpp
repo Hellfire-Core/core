@@ -796,6 +796,8 @@ void Group::CountTheRoll(Rolls::iterator rollI, uint32 NumberOfPlayers)
                     roll->getLoot()->NotifyItemRemoved(roll->itemSlot);
                     --roll->getLoot()->unlootedCount;
                     player->StoreNewItem( dest, roll->itemid, true, item->randomPropertyId);
+                    if (roll->getLoot()->save)
+                        player->SaveToDB();
                 }
                 else
                 {
@@ -841,6 +843,8 @@ void Group::CountTheRoll(Rolls::iterator rollI, uint32 NumberOfPlayers)
                     roll->getLoot()->NotifyItemRemoved(roll->itemSlot);
                     --roll->getLoot()->unlootedCount;
                     player->StoreNewItem( dest, roll->itemid, true, item->randomPropertyId);
+                    if (roll->save)
+                        player->SaveToDB();
                 }
                 else
                 {

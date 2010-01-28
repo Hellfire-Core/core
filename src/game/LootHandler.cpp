@@ -496,6 +496,9 @@ void WorldSession::HandleLootMasterGiveOpcode( WorldPacket & recv_data )
     Item * newitem = target->StoreNewItem( dest, item.itemid, true, item.randomPropertyId );
     target->SendNewItem(newitem, uint32(item.count), false, false, true );
 
+    if (pLoot->save)
+        target->SaveToDB();
+
     // mark as looted
     item.count=0;
     item.is_looted=true;
