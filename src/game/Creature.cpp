@@ -1422,6 +1422,9 @@ bool Creature::LoadFromDB(uint32 guid, Map *map)
     if(m_respawnTime)                          // respawn on Update
     {
         m_deathState = DEAD;
+        if (isWorldBoss())
+            loot.loadLootFromDB(this);
+
         if(canFly())
         {
             float tz = GetMap()->GetHeight(data->posX,data->posY,data->posZ,false);

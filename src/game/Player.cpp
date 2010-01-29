@@ -7650,19 +7650,16 @@ void Player::SendLoot(uint64 guid, LootType loot_type)
             if(!creature->lootForBody)
             {
                 creature->lootForBody = true;
-                loot->clear();
+                if (!loot->load)
+                    loot->clear();
 
                 if (uint32 lootid = creature->GetCreatureInfo()->lootid)
-                    loot->FillLoot(lootid, LootTemplates_Creature, recipient);
-
-                loot->generateMoneyLoot(creature->GetCreatureInfo()->mingold,creature->GetCreatureInfo()->maxgold);
-                if (creature->isWorldBoss())
                 {
-                    loot->save = true;
-                    // save 
-                    creature->saveLootToDB();
+                    loot->setCreatureGUID(creature);
+                    loot->FillLoot(lootid, LootTemplates_Creature, recipient);
                 }
 
+                loot->generateMoneyLoot(creature->GetCreatureInfo()->mingold,creature->GetCreatureInfo()->maxgold);
 
                 if(Group* group = recipient->GetGroup())
                 {
@@ -14614,7 +14611,7 @@ bool Player::LoadFromDB( uint32 guid, SqlQueryHolder *holder )
 
 bool Player::isAllowedToLoot(Creature* creature)
 {
-    if(creature->isDead() && !creature->IsDamageEnoughForLootingAndReward())
+    if(creature->isDead() && !creature->IsDamageEnoughForLootingAndReward() && !creature->loot.load)
        return false;
 
     if(Player* recipient = creature->GetLootRecipient())

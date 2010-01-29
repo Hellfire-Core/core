@@ -123,6 +123,7 @@ void InstanceSaveManager::DeleteInstanceFromDB(uint32 instanceid)
 {
     CharacterDatabase.BeginTransaction();
     CharacterDatabase.PExecute("DELETE FROM instance WHERE id = '%u'", instanceid);
+    CharacterDatabase.PExecute("DELETE FROM group_saved_loot WHERE instanceId='%u'", instanceid);
     CharacterDatabase.PExecute("DELETE FROM character_instance WHERE instance = '%u'", instanceid);
     CharacterDatabase.PExecute("DELETE FROM group_instance WHERE instance = '%u'", instanceid);
     CharacterDatabase.CommitTransaction();
