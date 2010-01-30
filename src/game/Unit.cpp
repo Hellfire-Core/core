@@ -2415,6 +2415,12 @@ void Unit::AttackerStateUpdate (Unit *pVictim, WeaponAttackType attType, bool ex
     if (!pVictim->isAlive())
         return;
 
+    if (pVictim->GetTypeId() == TYPEID_PLAYER)
+    {
+        if (dynamic_cast<Player *>(pVictim)->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_SANCTUARY))
+            AttackStop();
+    }
+
     CombatStart(pVictim);
     RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_ATTACK);
 
