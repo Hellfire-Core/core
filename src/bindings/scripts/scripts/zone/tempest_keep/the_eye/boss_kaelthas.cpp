@@ -1110,7 +1110,7 @@ struct TRINITY_DLL_DECL boss_kaelthasAI : public ScriptedAI
                             }
                             DoCast(m_creature, SPELL_SHOCK_BARRIER, true);
                             DoCast(m_creature, SPELL_ARCANE_DISRUPTION, true);
-                            Fireball_Timer = 2500;
+                            Fireball_Timer = 6000;
                             Arcane_Timer1 = 20000;
                             Arcane1 = false;
                             Arcane_Timer2 = 40000;
@@ -1172,6 +1172,11 @@ struct TRINITY_DLL_DECL boss_kaelthasAI : public ScriptedAI
                                 DoTeleportTo(GRAVITY_X, GRAVITY_Y, GRAVITY_Z);
                                 // 1) Kael'thas casts teleportation visual spell on self
                                 m_creature->CastSpell(m_creature, SPELL_GRAVITY_KAEL_VISUAL, false);
+                                switch(rand()%2)
+                                {
+                                case 0: DoScriptText(SAY_GRAVITYLAPSE1, m_creature); break;
+                                case 1: DoScriptText(SAY_GRAVITYLAPSE2, m_creature); break;
+                                }
                                 GravityLapse_Timer = 2000;
                                 ++GravityLapse_Phase;
                                 InGravityLapse = true;
@@ -1203,11 +1208,6 @@ struct TRINITY_DLL_DECL boss_kaelthasAI : public ScriptedAI
                                 if(pInstance)
                                     pInstance->SetData(DATA_KAELTHASEVENT, 5);	// set KaelthasEventPhase = 5 for Gravity Lapse phase
 
-                                switch(rand()%2)
-                                {
-                                case 0: DoScriptText(SAY_GRAVITYLAPSE1, m_creature); break;
-                                case 1: DoScriptText(SAY_GRAVITYLAPSE2, m_creature); break;
-                                }
                                 //Cast nether vapor summoning
                                 GravityLapse_Timer = 3000;
                                 DoCast(m_creature, SPELL_SUMMON_NETHER_VAPOR);
@@ -1970,6 +1970,8 @@ struct TRINITY_DLL_DECL mob_phoenix_egg_tkAI : public ScriptedAI
       //prevent eggs from hatching when in Gravity Lapse
       if(pInstance->GetData(DATA_KAELTHASEVENT) == 4)
       {
+        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+
         if (Rebirth_Timer < diff)
         {
             if(!summoned)
@@ -1981,7 +1983,9 @@ struct TRINITY_DLL_DECL mob_phoenix_egg_tkAI : public ScriptedAI
         }
         else
             Rebirth_Timer -= diff;
-      }
+      } 
+      else if(pInstance->GetData(DATA_KAELTHASEVENT) == 5)
+              m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
 
       //remove phoenix eggs if encounter resets or done
       if(pInstance->GetData(DATA_KAELTHASEVENT) == NOT_STARTED || pInstance->GetData(DATA_KAELTHASEVENT) == DONE)
@@ -2280,7 +2284,9 @@ struct TRINITY_DLL_DECL weapon_advisorAI : public ScriptedAI
                     Aura * aur = m_creature->getVictim()->GetAura(SPELL_WARP_REND,0);
                       if(!aur || aur->GetStackAmount() < 10)
                           m_creature->CastSpell(m_creature->getVictim(),SPELL_WARP_REND,true);
-                    Rend_Timer = 2000;
+                      if(aur && aur->GetStackAmount() == 10)
+                          aur->SetStackAmount(9);
+                    Rend_Timer = 2500;
                 }else Rend_Timer -= diff;
                 
                 DoMeleeAttackIfReady();
