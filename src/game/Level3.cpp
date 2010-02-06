@@ -7459,16 +7459,16 @@ bool ChatHandler::HandleBindSightCommand(const char* args)
     if (!pUnit)
         return false;
 
-    m_session->GetPlayer()->CastSpell(pUnit, 6277, true);
+    m_session->GetPlayer()->SetFarsightTarget(pUnit);
+
+    //pUnit->AddPlayerToVision(m_session->GetPlayer());
     return true;
 }
 
 bool ChatHandler::HandleUnbindSightCommand(const char* args)
 {
-    if (m_session->GetPlayer()->isPossessing())
-        return false;
-
-    m_session->GetPlayer()->StopCastingBindSight();
+    m_session->GetPlayer()->ClearFarsight();
+    //pUnit->RemovePlayerFromVision(m_session->GetPlayer());
     return true;
 }
 
