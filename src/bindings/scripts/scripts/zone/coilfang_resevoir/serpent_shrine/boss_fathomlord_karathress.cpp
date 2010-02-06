@@ -316,6 +316,7 @@ struct TRINITY_DLL_DECL boss_fathomlord_karathressAI : public ScriptedAI
         if (Enrage_Timer < diff)
         {
             DoCast(m_creature, SPELL_ENRAGE);
+            Enrage_Timer = 600000;
         }else Enrage_Timer -= diff;
 
         //Blessing of Tides Trigger
