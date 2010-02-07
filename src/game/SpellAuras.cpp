@@ -5669,7 +5669,15 @@ void Aura::PeriodicTick()
             if(!cleanDamage.damage)
                 cleanDamage.damage = pdamage;
 
-            pCaster->CalcAbsorbResist(m_target, GetSpellSchoolMask(GetSpellProto()), DOT, pdamage, &absorb, &resist);
+            if(IsPartialyResistable(GetSpellProto()))
+            {
+                pCaster->CalcAbsorbResist(m_target, GetSpellSchoolMask(GetSpellProto()), DOT, pdamage, &absorb, &resist);
+            }
+            else
+            {
+                resist = 0;
+                pCaster->CalcAbsorb(m_target, GetSpellSchoolMask(GetSpellProto()), pdamage, &absorb, &resist);
+            }
 
             sLog.outDetail("PeriodicTick: %u (TypeId: %u) attacked %u (TypeId: %u) for %u dmg inflicted by %u abs is %u",
                 GUID_LOPART(GetCasterGUID()), GuidHigh2TypeId(GUID_HIPART(GetCasterGUID())), m_target->GetGUIDLow(), m_target->GetTypeId(), pdamage, GetId(),absorb);
@@ -5797,7 +5805,15 @@ void Aura::PeriodicTick()
 
             pdamage *= GetStackAmount();
 
-            pCaster->CalcAbsorbResist(m_target, GetSpellSchoolMask(GetSpellProto()), DOT, pdamage, &absorb, &resist);
+            if(IsPartialyResistable(GetSpellProto()))
+            {
+                pCaster->CalcAbsorbResist(m_target, GetSpellSchoolMask(GetSpellProto()), DOT, pdamage, &absorb, &resist);
+            } 
+            else
+            {
+                resist = 0;
+                pCaster->CalcAbsorb(m_target, GetSpellSchoolMask(GetSpellProto()), pdamage, &absorb, &resist);
+            }
 
             if(m_target->GetHealth() < pdamage)
                 pdamage = uint32(m_target->GetHealth());

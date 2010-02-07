@@ -1317,17 +1317,14 @@ void Unit::CalculateSpellDamageTaken(SpellNonMeleeDamage *damageInfo, int32 dama
     // Calculate absorb resist
     if(damage > 0)
     {
-        switch (spellInfo->Id)
-        {   //spell ID's which should ignore resistance
-         case 33051:    //Krosh Firehand - Greater Fireball
-         case 36805:    //Kael'thas - Fireball
-         case 36819:    //Kael'thas - Pyroblast
+        if(IsPartialyResistable(spellInfo))
+        {
+            CalcAbsorbResist(pVictim, damageSchoolMask, SPELL_DIRECT_DAMAGE, damage, &damageInfo->absorb, &damageInfo->resist);
+        }
+        else
+        {
             damageInfo->resist = 0;
             CalcAbsorb(pVictim, damageSchoolMask, damage, &damageInfo->absorb, &damageInfo->resist);
-            break;
-        default:
-            CalcAbsorbResist(pVictim, damageSchoolMask, SPELL_DIRECT_DAMAGE, damage, &damageInfo->absorb, &damageInfo->resist);
-            break;
         }
         damage-= damageInfo->absorb + damageInfo->resist;
     }
@@ -3086,9 +3083,8 @@ SpellMissInfo Unit::MagicSpellHitResult(Unit *pVictim, SpellEntry const *spell)
     if (rand > HitChance)
         return SPELL_MISS_RESIST;
 
-    // binary resist spells TODO: find out how to check if spell is subject to binary resist
-    // this is quick fix only for Mark of Kaz'rogal
-    if(spell->Id == 31447)
+    // binary resist spells
+    if(IsBinaryResistable(spell))
         if(CalcBinaryResist(pVictim, schoolMask))
             return SPELL_MISS_RESIST;
 

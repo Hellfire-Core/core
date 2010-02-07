@@ -865,6 +865,36 @@ uint8 GetErrorAtShapeshiftedCast (SpellEntry const *spellInfo, uint32 form)
     return 0;
 }
 
+bool IsBinaryResistable(SpellEntry const* spellInfo)
+{
+    switch(spellInfo->Id)
+    {
+        case 31344:     // Howl of Azgalor
+        case 31447:     // Mark of Kaz'Rogal
+        case 34190:     // Void - Arcane Orb
+        case 37730:     // Morogrim - Tidal Wave
+        case 38441:     // Fathom - Cataclysm bolt
+        case 38509:     // Vashj - Shock Blast
+            return true;
+    }
+    return false;
+}
+
+bool IsPartialyResistable(SpellEntry const* spellInfo)
+{
+    switch(spellInfo->Id)
+    {
+        case 30115:     // Terestian - Sacrifice
+        case 33051:     // Krosh Firehand - Greater Fireball
+        case 36805:     // Kael'thas - Fireball
+        case 36819:     // Kael'thas - Pyroblast
+        case 38145:     // Vashj - Forked Lightning
+        case 38441:     // Fathom - Cataclysm bolt
+            return false;
+    }
+    return true;
+}
+
 void SpellMgr::LoadSpellTargetPositions()
 {
     mSpellTargetPositions.clear();                                // need for reload case
