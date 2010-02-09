@@ -892,7 +892,11 @@ bool IsPartialyResistable(SpellEntry const* spellInfo)
         case 38441:     // Fathom - Cataclysm bolt
             return false;
     }
-    return true;
+
+    if(spellInfo->SchoolMask & SPELL_SCHOOL_MASK_HOLY)
+        return false;
+    else
+        return true;
 }
 
 void SpellMgr::LoadSpellTargetPositions()
