@@ -4228,13 +4228,42 @@ void Aura::HandlePeriodicManaLeech(bool apply, bool Real)
 
 void Aura::HandleAuraModResistanceExclusive(bool apply, bool Real)
 {
+    // only positive auras can be exclusive?
+    if(!m_positive)
+        HandleAuraModResistance(apply, Real);
+
     for(int8 x = SPELL_SCHOOL_NORMAL; x < MAX_SPELL_SCHOOL;x++)
     {
         if(m_modifier.m_miscvalue & int32(1<<x))
         {
-            m_target->HandleStatModifier(UnitMods(UNIT_MOD_RESISTANCE_START + x), BASE_VALUE, float(GetModifierValue()), apply);
-            if(m_target->GetTypeId() == TYPEID_PLAYER)
-                m_target->ApplyResistanceBuffModsMod(SpellSchools(x),m_positive,GetModifierValue(), apply);
+            if(apply) 
+            {
+                float diff = float(GetModifierValue()) - m_target->GetModifierValue(UnitMods(UNIT_MOD_RESISTANCE_START + x), BASE_VALUE);
+                if(diff > 0)
+                {
+                    m_target->HandleStatModifier(UnitMods(UNIT_MOD_RESISTANCE_START + x), BASE_VALUE, diff, apply);
+                    if(m_target->GetTypeId() == TYPEID_PLAYER)
+                        m_target->ApplyResistanceBuffModsMod(SpellSchools(x),m_positive,diff, apply);
+                }
+            }
+            else
+            {
+                if( float(GetModifierValue()) >= m_target->GetModifierValue(UnitMods(UNIT_MOD_RESISTANCE_START + x), BASE_VALUE))
+                {
+                    float maxModifier = 0;
+                    Unit::AuraList auraResistanceExclusive = m_target->GetAurasByType(SPELL_AURA_MOD_RESISTANCE_EXCLUSIVE);
+                    for( Unit::AuraList::iterator it = auraResistanceExclusive.begin(); it != auraResistanceExclusive.end(); it++)
+                    {
+                        if(*it != this && ((*it)->GetMiscValue() & int32(1<<x)) && (*it)->GetModifierValue() > maxModifier)
+                            maxModifier = (*it)->GetModifierValue();
+                    }
+
+                    float diff = m_target->GetModifierValue(UnitMods(UNIT_MOD_RESISTANCE_START + x), BASE_VALUE) - maxModifier;
+                    m_target->HandleStatModifier(UnitMods(UNIT_MOD_RESISTANCE_START + x), BASE_VALUE, diff, apply);
+                    if(m_target->GetTypeId() == TYPEID_PLAYER)
+                        m_target->ApplyResistanceBuffModsMod(SpellSchools(x),m_positive,diff, apply);
+                }
+            }
         }
     }
 }
