@@ -57,8 +57,7 @@ static Yell RandomTaunt[]=
 
 #define SPELL_BLASTNOVA             30616
 #define SPELL_CLEAVE                30619
-#define SPELL_QUAKE_TRIGGER         30657 // must be cast with 30561 as the proc spell
-#define SPELL_QUAKE_KNOCKBACK       30571
+#define SPELL_QUAKE_TRIGGER         30576 // proper trigger for Quake
 #define SPELL_BLAZE_TARGET          30541 // core bug, does not support target 7
 #define SPELL_BLAZE_TRAP            30542
 #define SPELL_DEBRIS_KNOCKDOWN      36449
@@ -193,12 +192,6 @@ struct TRINITY_DLL_DECL boss_magtheridonAI : public ScriptedAI
         {
             TempSpell->EffectImplicitTargetA[0] = TARGET_UNIT_TARGET_ENEMY;
             TempSpell->EffectImplicitTargetB[0] = 0;
-        }
-
-        TempSpell = (SpellEntry*)GetSpellStore()->LookupEntry(SPELL_QUAKE_TRIGGER);
-        if(TempSpell && TempSpell->EffectTriggerSpell[0] != SPELL_QUAKE_KNOCKBACK)
-        {
-            TempSpell->EffectTriggerSpell[0] = SPELL_QUAKE_KNOCKBACK;
         }
     }
 
@@ -372,8 +365,7 @@ struct TRINITY_DLL_DECL boss_magtheridonAI : public ScriptedAI
             // to avoid earthquake interruption
             if(!m_creature->hasUnitState(UNIT_STAT_STUNNED))
             {
-                DoScriptText(EMOTE_BLASTNOVA, m_creature);
-                DoCast(m_creature, SPELL_BLASTNOVA);
+                AddSpellToCastWithScriptText(m_creature, SPELL_BLASTNOVA, EMOTE_BLASTNOVA, m_creature);
                 BlastNova_Timer = 60000;
             }
         }
@@ -382,12 +374,8 @@ struct TRINITY_DLL_DECL boss_magtheridonAI : public ScriptedAI
 
         if(Quake_Timer < diff)
         {
-            // to avoid blastnova interruption
-            if(!m_creature->IsNonMeleeSpellCasted(false))
-            {
-                m_creature->CastSpell(m_creature, SPELL_QUAKE_TRIGGER, true);
-                Quake_Timer = 50000;
-            }
+            AddSpellToCast(m_creature, SPELL_QUAKE_TRIGGER);
+            Quake_Timer = 50000;
         }
         else
             Quake_Timer -= diff;
@@ -442,6 +430,7 @@ struct TRINITY_DLL_DECL boss_magtheridonAI : public ScriptedAI
         }
 
         DoMeleeAttackIfReady();
+        CastNextSpellIfAnyAndReady();
     }
 };
 
@@ -475,6 +464,8 @@ struct TRINITY_DLL_DECL mob_hellfire_channelerAI : public ScriptedAI
 
         if(Creature *Magtheridon = Unit::GetCreature(*m_creature, pInstance->GetData64(DATA_MAGTHERIDON)))
             m_creature->CastSpell(Magtheridon, SPELL_SHADOW_GRASP_C, false);
+
+        m_creature->setActive(true);
 
         Summons.DespawnAll();
     }
