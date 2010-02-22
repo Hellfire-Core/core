@@ -35,6 +35,7 @@
 #include "Group.h"
 #include "SpellAuras.h"
 #include "MapManager.h"
+#include "InstanceData.h"
 #include "ObjectAccessor.h"
 #include "CreatureAI.h"
 #include "Formulas.h"
@@ -12214,8 +12215,8 @@ void Unit::Kill(Unit *pVictim, bool durabilityLoss)
         {
             if(pMap && (pMap->IsRaid() || pMap->IsDungeon())) 
             {
-                if((InstanceMap*)pMap->GetInstanceData())
-                    (InstanceMap*)pMap->GetInstanceData()->OnPlayerDeath((Player*)pVictim);
+                if(((InstanceMap*)pMap)->GetInstanceData())
+                    ((InstanceMap*)pMap)->GetInstanceData()->OnPlayerDeath((Player*)pVictim);
             }
         }
     }
