@@ -3164,8 +3164,9 @@ void Player::removeSpell(uint32 spell_id, bool disabled)
     {
         if(itr->second->state == PLAYERSPELL_NEW)
         {
-            delete itr->second;
+            PlayerSpell *temp = itr->second;
             m_spells.erase(itr);
+            delete temp;
         }
         else
             itr->second->state = PLAYERSPELL_REMOVED;
@@ -3494,8 +3495,9 @@ bool Player::_removeSpell(uint16 spell_id)
     PlayerSpellMap::iterator itr = m_spells.find(spell_id);
     if (itr != m_spells.end())
     {
-        delete itr->second;
+        PlayerSpell *temp = itr->second;
         m_spells.erase(itr);
+        delete temp;
         return true;
     }
     return false;

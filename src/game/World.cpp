@@ -123,8 +123,9 @@ World::~World()
     while (!m_sessions.empty())
     {
         // not remove from queue, prevent loading new sessions
-        delete m_sessions.begin()->second;
+        WorldSession *temp = m_sessions.begin()->second;
         m_sessions.erase(m_sessions.begin());
+        delete temp;
     }
 
     ///- Empty the WeatherMap
@@ -400,8 +401,9 @@ void World::RemoveWeather(uint32 id)
 
     if(itr != m_weathers.end())
     {
-        delete itr->second;
+        Weather *temp = itr->second;
         m_weathers.erase(itr);
+        delete temp;
     }
 }
 
@@ -1621,8 +1623,9 @@ void World::Update(time_t diff)
                                                             //As interval > WorldTick
             if(!itr->second->Update(m_timers[WUPDATE_WEATHERS].GetInterval()))
             {
-                delete itr->second;
+                Weather *temp = itr->second;
                 m_weathers.erase(itr);
+                delete temp;
             }
         }
     }
@@ -2201,8 +2204,9 @@ void World::UpdateSessions( time_t diff )
             if(!RemoveQueuedPlayer(itr->second) && itr->second && getConfig(CONFIG_INTERVAL_DISCONNECT_TOLERANCE))
                 m_disconnects[itr->second->GetAccountId()] = time(NULL);
 
-            delete itr->second;
+            WorldSession *temp = itr->second;
             m_sessions.erase(itr);
+            delete temp;
         }
     }
 }
