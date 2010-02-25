@@ -199,8 +199,7 @@ void World::AddSession(WorldSession* s)
     addSessQueue.add(s);
 }
 
-void
-World::AddSession_ (WorldSession* s)
+void World::AddSession_ (WorldSession* s)
 {
     ASSERT (s);
 
@@ -282,7 +281,8 @@ World::AddSession_ (WorldSession* s)
 
 bool World::HasRecentlyDisconnected(WorldSession* session)
 {
-    if(!session) return false;
+    if(!session)
+        return false;
 
     if(uint32 tolerance = getConfig(CONFIG_INTERVAL_DISCONNECT_TOLERANCE))
     {
@@ -291,9 +291,9 @@ bool World::HasRecentlyDisconnected(WorldSession* session)
             next = i;
             next++;
 
-            if(difftime(i->second, time(NULL)) < tolerance)
+            if(i->first == session->GetAccountId())
             {
-                if(i->first == session->GetAccountId())
+                if(difftime(i->second, time(NULL)) < tolerance)
                     return true;
             }
             else
