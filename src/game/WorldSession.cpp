@@ -70,10 +70,10 @@ WorldSession::~WorldSession()
 
             sWorld.addDisconnectTime(tPair);
         }
+
+        if(objmgr.IsUnqueuedAccount(GetAccountId()))
+            sWorld.unqueuedSessions()--;
     }
-    
-    if(objmgr.IsUnqueuedAccount(GetAccountId()))
-        sWorld.unqueuedSessions()--;
 
     ///- unload player if not unloaded
     if (_player)
