@@ -317,7 +317,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
     GetPlayer()->SendMessageToSet(&data, false);
 
     if (GetPlayer()->m_AC_timer == 0)
-        if ((MovementFlags & (MOVEMENTFLAG_JUMPING | MOVEMENTFLAG_FALLING | MOVEMENTFLAG_SWIMMING | MOVEMENTFLAG_ONTRANSPORT)) == 0)
+        if (GetPlayer->m_taxi.empty() && (MovementFlags & (MOVEMENTFLAG_JUMPING | MOVEMENTFLAG_FALLING | MOVEMENTFLAG_SWIMMING | MOVEMENTFLAG_ONTRANSPORT)) == 0)
         {
             if (GetPlayer()->GetMap() && !GetPlayer()->GetMap()->IsBattleGroundOrArena())
             {
