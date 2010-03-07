@@ -1760,6 +1760,7 @@ class TRINITY_DLL_SPEC Player : public Unit
 
 
         uint32 m_AC_timer;
+        uint32 m_lastmovetime;
 
         /*********************************************************/
         /***                  PVP SYSTEM                       ***/

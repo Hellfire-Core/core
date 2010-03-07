@@ -328,20 +328,24 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
                 else
                     speed = GetPlayer()->GetSpeed(MOVE_RUN);
 
+                float server_distance = 2.0f + ((speed - 7.0f) * 3.5f + 0.2f/* zapas */);
+
                 // czasem UNIT_STAT_CHARGING schodzi póŸniej/wczeœniej ni¿ m_AC_timer
-                if (!GetPlayer()->hasUnitState(UNIT_STAT_CHARGING))
-                    if (distance > (2.0f + ((speed - 7.0f) * 3.5f + 0.2f/* zapas */)))
+                if (server_distance >= 7.0 && !GetPlayer()->hasUnitState(UNIT_STAT_CHARGING))
+                    if (distance > server_distance)
                     {
                         // ~ nie dok³adnie taki jak powinien byæ, ale daje bardzo przybli¿ony wynik
                         float clientspeed = (distance - 2.0f)/3.5f + 7.5f;
                         float x, y, z;
                         GetPlayer()->GetPosition(x, y, z);
-                        sLog.outCheat("Player %s moved for distance %f with server speed %f (client speed %f). Player's coord before X:%f Y:%f Z:%f. Player's coord now X:%f Y:%f Z:%f.",
-                                            GetPlayer()->GetName(), distance, speed, clientspeed, x, y, z, movementInfo.x, movementInfo.y, movementInfo.z);
-                        KickPlayer();
+                        uint32 delta = movementInfo.time - GetPlayer()->m_lastmovetime;
+                        sLog.outCheat("Player %s moved for distance %f with server speed %f (client speed %f). Player's coord before X:%f Y:%f Z:%f. Player's coord now X:%f Y:%f Z:%f. HomeBindPosition X:%f Y:%f Z:%f. Time %u / PacketTime %u / DTime %u / getMSTime %u. MOVEMENTFLAGS: %u LATENCY: %u",
+                                            GetPlayer()->GetName(), distance, speed, clientspeed, x, y, z, movementInfo.x, movementInfo.y, movementInfo.z, GetPlayer()->m_homebindX, GetPlayer()->m_homebindY, GetPlayer()->m_homebindZ, GetPlayer()->m_lastmovetime, movementInfo.time, delta, getMSTime(), MovementFlags, GetLatency());
+                        //KickPlayer();
                     }
             }
         }
+    GetPlayer()->m_lastmovetime = getMSTime();
 
     GetPlayer()->SetPosition(movementInfo.x, movementInfo.y, movementInfo.z, movementInfo.o);
     GetPlayer()->m_movementInfo = movementInfo;
