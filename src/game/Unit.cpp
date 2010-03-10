@@ -11186,7 +11186,6 @@ void Unit::Kill(Unit *pVictim, bool durabilityLoss)
 
                 // FORM_SPIRITOFREDEMPTION and related auras
                 pVictim->CastSpell(pVictim,27827,true,NULL,*itr);
-                pVictim->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);    //to prevent spirit from being aggroed and killed
                 SpiritOfRedemption = true;
                 break;
             }
@@ -11197,8 +11196,6 @@ void Unit::Kill(Unit *pVictim, bool durabilityLoss)
     {
         DEBUG_LOG("SET JUST_DIED");
         pVictim->setDeathState(JUST_DIED);
-        pVictim->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE); // with spirit death, remove flag from player
-        pVictim->SetPvP(true);
     }
 
     // 10% durability loss on death
