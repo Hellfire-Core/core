@@ -5269,6 +5269,7 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
                 CastCustomSpell(pVictim,spellId,&damagePoint,NULL,NULL,true,NULL, triggeredByAura);
                 return true;                                // no hidden cooldown
             }
+
             // Seal of Blood do damage trigger
             if(dummySpell->SpellFamilyFlags & 0x0000040000000000LL)
             {
@@ -11196,7 +11197,8 @@ void Unit::Kill(Unit *pVictim, bool durabilityLoss)
     {
         DEBUG_LOG("SET JUST_DIED");
         pVictim->setDeathState(JUST_DIED);
-        pVictim->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);    // with spirit death, remove flag from player
+        pVictim->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE); // with spirit death, remove flag from player
+        pVictim->SetPvP(true);
     }
 
     // 10% durability loss on death
