@@ -8152,6 +8152,7 @@ void Unit::MeleeDamageBonus(Unit *pVictim, uint32 *pdamage,WeaponAttackType attT
             TakenTotalMod *= ((*i)->GetModifierValue()+100.0f)/100.0f;
 
     // .. taken pct: dummy auras
+    bool hasmangle = false;         // apply mangle effect only once
     AuraList const& mDummyAuras = pVictim->GetAurasByType(SPELL_AURA_DUMMY);
     for(AuraList::const_iterator i = mDummyAuras.begin(); i != mDummyAuras.end(); ++i)
     {
@@ -8173,6 +8174,9 @@ void Unit::MeleeDamageBonus(Unit *pVictim, uint32 *pdamage,WeaponAttackType attT
             case 2312:
                 if(spellProto==NULL)
                     break;
+                if(hasmangle)
+                    break;
+                hasmangle = true;
                 // Should increase Shred (initial Damage of Lacerate and Rake handled in Spell::EffectSchoolDMG)
                 if(spellProto->SpellFamilyName==SPELLFAMILY_DRUID && (spellProto->SpellFamilyFlags==0x00008000LL))
                     TakenTotalMod *= (100.0f+(*i)->GetModifier()->m_amount)/100.0f;
