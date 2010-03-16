@@ -3969,6 +3969,14 @@ void Aura::HandleAuraProcTriggerSpell(bool apply, bool Real)
             default: break;
         }
     }
+
+    // Void Star Talisman's pet resistance bonus
+    if(GetId() == 37386)
+    {
+        if(Pet* pet = m_target->GetPet())
+            for (int i = SPELL_SCHOOL_FIRE; i < MAX_SPELL_SCHOOL; i++)
+                pet->UpdateResistances(i);
+    }
 }
 
 void Aura::HandleAuraModStalked(bool apply, bool Real)
