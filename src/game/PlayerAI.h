@@ -124,29 +124,16 @@ struct MageAI: public PlayerAI
 
     void Reset()
     {
-        BlizzardSpell = NULL;
-        ConeSpell = NULL;
-        AOESpell = NULL;
-        NormalSpell = NULL;
-
-        if(me->HasSpell(BLIZZARD_R1))
-            BlizzardSpell = selectHighestRank(BLIZZARD_R1);
-
-        Blizzard_Timer = 10000;
-
-        if(me->HasSpell(CONEOFCOLD_R1))
+        BlizzardSpell = selectHighestRank(BLIZZARD_R1);
+        
+        if(!(ConeSpell = selectHighestRank(DRAGONBREATH_R1)))
             ConeSpell = selectHighestRank(CONEOFCOLD_R1);
 
-        if(me->HasSpell(DRAGONBREATH_R1))
-            ConeSpell = selectHighestRank(DRAGONBREATH_R1);
-
-        ConeSpell_Timer = 5000;
-        if(me->HasSpell(ARCANEEXPLO_R1))
+        if(!(AOESpell = selectHighestRank(BLASTWAVE_R1)))
             AOESpell = selectHighestRank(ARCANEEXPLO_R1);
 
-        if(me->HasSpell(BLASTWAVE_R1))
-            AOESpell = selectHighestRank(BLASTWAVE_R1);
-
+        ConeSpell_Timer = 5000;
+        Blizzard_Timer = 10000;
         AOESpell_Timer = 2000;
 
         if(me->SpellBaseDamageBonus(SPELL_SCHOOL_MASK_FIRE) > me->SpellBaseDamageBonus(SPELL_SCHOOL_MASK_FROST))

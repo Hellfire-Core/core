@@ -42,7 +42,7 @@ bool PlayerAI::UpdateVictim(float range)
 SpellEntry const *PlayerAI::selectHighestRank(uint32 spell_id)
 {
     SpellEntry const *spell_info = sSpellStore.LookupEntry(spell_id);
-    if (!spell_info)
+    if (!spell_info || !me->HasSpell(spell_id))
         return NULL;
 
     PlayerSpellMap const &sp_list = me->GetSpellMap();

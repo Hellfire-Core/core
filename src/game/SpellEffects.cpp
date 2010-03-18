@@ -807,18 +807,10 @@ void Spell::EffectDummy(uint32 i)
                 // Demon Broiled Surprise
                 case 43723:
                 {
-                    if (!unitTarget || unitTarget->isAlive() || unitTarget->GetTypeId() != TYPEID_UNIT ||
-                        ((Creature*)unitTarget)->isPet()) return;
+                    if(!unitTarget || unitTarget->isAlive() || unitTarget->GetTypeId() != TYPEID_UNIT || unitTarget->GetEntry() != 19973)
+                        return;
 
-                    Player *player = (Player*)m_caster;
-
-                    if (!player) return;
-
-                    player->CastSpell(unitTarget, 43753, true);
-
-                    if (player->GetQuestStatus(11379) == QUEST_STATUS_INCOMPLETE && unitTarget->GetEntry() == 19973)
-                        player->CastedCreatureOrGO(19973, unitTarget->GetGUID(), 43723);
-
+                    m_caster->CastSpell(m_caster, 43753, false);
                     return;
                 }
                 case 8063:                                  // Deviate Fish
