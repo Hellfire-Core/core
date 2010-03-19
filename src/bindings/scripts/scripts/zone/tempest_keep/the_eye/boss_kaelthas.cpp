@@ -1303,6 +1303,9 @@ struct TRINITY_DLL_DECL boss_thaladred_the_darkenerAI : public advisorbase_ai
         Check_Timer = 1000;
         Check_Timer2 = 3000;
 
+        m_creature->AddUnitMovementFlag(MOVEMENTFLAG_WALK_MODE);
+        m_creature->SetSpeed(MOVE_WALK, 1.5f, false);
+
         advisorbase_ai::Reset();
     }
 
@@ -1310,6 +1313,16 @@ struct TRINITY_DLL_DECL boss_thaladred_the_darkenerAI : public advisorbase_ai
     {
         DoScriptText(SAY_THALADRED_DEATH, m_creature);
     }
+    
+    /*void AttackStart(Unit *who)
+    {
+        if(!who || m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
+            return;
+
+        ScriptedAI::AttackStart(who);
+        m_creature->AddUnitMovementFlag(MOVEMENTFLAG_WALK_MODE);
+        m_creature->SetSpeed(MOVE_WALK, 1.5f, false);
+    }*/
 
     void Aggro(Unit *who)
     {
@@ -1318,9 +1331,7 @@ struct TRINITY_DLL_DECL boss_thaladred_the_darkenerAI : public advisorbase_ai
 
         DoScriptText(SAY_THALADRED_AGGRO, m_creature);
         m_creature->AddThreat(who, 5000000.0f);
-        m_creature->AddUnitMovementFlag(MOVEMENTFLAG_WALK_MODE);
-        m_creature->SetUnitMovementFlags(MOVEMENTFLAG_WALK_MODE);
-        m_creature->SetSpeed(MOVE_WALK, 1.5f, true);
+        AttackStart(who);
     }
 
     void UpdateAI(const uint32 diff)
@@ -1357,8 +1368,7 @@ struct TRINITY_DLL_DECL boss_thaladred_the_darkenerAI : public advisorbase_ai
                 if(Unit* target = SelectUnit(SELECT_TARGET_TOPAGGRO, 1))
                 {
                     m_creature->AddThreat(target, 5000001.0f);
-                    m_creature->Attack(target, true);
-                    //AttackStart(target);
+                    AttackStart(target);
                 }
             }
         }
@@ -1382,10 +1392,8 @@ struct TRINITY_DLL_DECL boss_thaladred_the_darkenerAI : public advisorbase_ai
                 {
                     DoResetThreat();
                     m_creature->AddThreat(target, 5000001.0f);
+                    AttackStart(target);
                     DoScriptText(EMOTE_THALADRED_GAZE, m_creature, target);
-                    //AttackStart(target);
-                    m_creature->Attack(target, true);
-                    m_creature->SetSpeed(MOVE_WALK, 1.5f, true);
                 }
                 Gaze_Timer = 8500;
             }

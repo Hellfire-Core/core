@@ -325,7 +325,8 @@ struct TRINITY_DLL_DECL instance_dark_portal : public ScriptedInstance
                     InitWorldState();
                 }
             }
-            Encounter[0] = data;
+            if(data != SPECIAL)
+                Encounter[0] = data;
             break;
         case TYPE_RIFT:
             if (data == SPECIAL)

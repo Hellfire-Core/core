@@ -177,9 +177,8 @@ struct TRINITY_DLL_DECL npc_medivh_bmAI : public ScriptedAI
 
     void JustDied(Unit* Killer)
     {
-        //if (Killer->GetEntry() == m_creature->GetEntry())
-            //return;
-        pInstance->SetData(TYPE_MEDIVH, FAIL);
+        if(pInstance)
+            pInstance->SetData(TYPE_MEDIVH, FAIL);
 
         DoScriptText(SAY_DEATH, m_creature);
     }
@@ -343,16 +342,6 @@ struct TRINITY_DLL_DECL npc_time_riftAI : public ScriptedAI
 
         Unit *Summon = m_creature->SummonCreature(creature_entry,x,y,z,m_creature->GetOrientation(),
             TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT,30000);
-
-        if (Summon)
-        {
-            Summon->setActive(true);
-            if (Unit *temp = Unit::GetUnit(*m_creature,pInstance->GetData64(DATA_MEDIVH)))
-            {
-                Summon->Attack(temp, false);
-                ((Creature*)Summon)->SetNoCallAssistance(true);
-            }
-        }
     }
 
     void DoSelectSummon()
@@ -389,7 +378,7 @@ struct TRINITY_DLL_DECL npc_time_riftAI : public ScriptedAI
 
             if(mPortalCount > 0 && mPortalCount < 13)
                 TimeRiftWave_Timer = 12000+rand()%5000;
-            if(mPortalCount > 12 && mPortalCount < 18)
+            else if(mPortalCount > 12 && mPortalCount < 18)
                 TimeRiftWave_Timer = 7000+rand()%5000;
             else
                 TimeRiftWave_Timer = 0;
@@ -410,6 +399,89 @@ struct TRINITY_DLL_DECL npc_time_riftAI : public ScriptedAI
 CreatureAI* GetAI_npc_time_rift(Creature *_Creature)
 {
     return new npc_time_riftAI (_Creature);
+}
+
+struct TRINITY_DLL_DECL rift_summonAI : public ScriptedAI
+{
+    rift_summonAI(Creature *c) : ScriptedAI(c)
+    {
+        pInstance = ((ScriptedInstance*)c->GetInstanceData());
+    }
+
+    ScriptedInstance *pInstance;
+
+    void Reset()
+    {
+        Unit* medivh = Unit::GetUnit(*m_creature ,pInstance->GetData64(DATA_MEDIVH));
+
+        if (!pInstance)
+            return;
+        m_creature->setActive(true);
+        m_creature->SetNoCallAssistance(true);
+
+        if(medivh && m_creature->GetEntry() != C_RKEEP && m_creature->GetEntry() != C_RLORD)
+            AttackStart(medivh);
+
+        switch(m_creature->GetEntry())
+        {
+            case C_RKEEP:
+            break;
+            case C_RLORD:
+            break;
+            case C_ASSAS:
+            break;
+            case C_WHELP:
+            break;
+            case C_CHRON:
+            break;
+            case C_EXECU:
+            break;
+            case C_VANQU:
+            break;
+        }
+
+    }
+    void Aggro(Unit *who) {}
+
+    void JustDied(Unit* who)
+    {
+    }
+
+    void UpdateAI(const uint32 diff)
+    {
+        if (!pInstance)
+            return;
+
+        switch(m_creature->GetEntry())
+        {
+            case C_RKEEP:
+            break;
+            case C_RLORD:
+            break;
+            case C_ASSAS:
+            break;
+            case C_WHELP:
+            break;
+            case C_CHRON:
+            break;
+            case C_EXECU:
+            break;
+            case C_VANQU:
+            break;
+        }
+
+        if(pInstance->GetData(TYPE_MEDIVH) == FAIL)
+        {
+            m_creature->Kill(m_creature, false);
+            m_creature->RemoveCorpse();
+        }
+
+    }
+};
+
+CreatureAI* GetAI_rift_summon(Creature *_Creature)
+{
+    return new rift_summonAI (_Creature);
 }
 
 #define SAY_SAAT_WELCOME        -1269019
@@ -462,6 +534,11 @@ void AddSC_dark_portal()
     newscript = new Script;
     newscript->Name = "npc_time_rift";
     newscript->GetAI = &GetAI_npc_time_rift;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "rift_summon";
+    newscript->GetAI = &GetAI_rift_summon;
     newscript->RegisterSelf();
 
     newscript = new Script;

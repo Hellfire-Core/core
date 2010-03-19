@@ -90,10 +90,11 @@ struct TRINITY_DLL_DECL boss_temporusAI : public ScriptedAI
 
     void JustDied(Unit *victim)
     {
-        DoScriptText(SAY_DEATH, m_creature);
-
-        if (pInstance)
+        if(pInstance)
         {
+            if(pInstance->GetData(TYPE_MEDIVH) != FAIL)
+                DoScriptText(SAY_DEATH, m_creature);
+
             pInstance->SetData(TYPE_RIFT,SPECIAL);
             pInstance->SetData(TYPE_TEMPORUS,DONE);
         }
