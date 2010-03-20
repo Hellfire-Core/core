@@ -709,7 +709,7 @@ struct TRINITY_DLL_DECL boss_kaelthasAI : public ScriptedAI
 
         if(pInstance && Phase)
         {
-            if(CheckTimer < diff)
+            if(Check_Timer < diff)
             {
                 if(pInstance->GetData(DATA_KAELTHASEVENT) != DONE && pInstance->GetData(DATA_KAELTHASEVENT) != NOT_STARTED)
                 {
@@ -721,11 +721,11 @@ struct TRINITY_DLL_DECL boss_kaelthasAI : public ScriptedAI
                     else
                         DoZoneInCombat();
 
-                    CheckTimer = 2000;
+                    Check_Timer = 2000;
                 }
             }
             else
-                CheckTimer -= diff;
+                Check_Timer -= diff;
 
             if(Phase == 1 || Phase == 2 || Phase == 3)		//threat reseting up to phase 4
                 DoResetThreat();
