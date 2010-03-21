@@ -79,11 +79,11 @@ struct WarlockAI: public PlayerAI
 {
     WarlockAI(Player *pPlayer): PlayerAI(pPlayer) {}
 
-    void Reset() 
+    void Reset()
     {
         if(!(AOESpell = selectHighestRank(SHADOWFURY_R1)))
-            AOESpell = selectHighestRank(RAINOFFIRE_R1);        
-        
+            AOESpell = selectHighestRank(RAINOFFIRE_R1);
+
         bool fire = me->SpellBaseDamageBonus(SPELL_SCHOOL_MASK_FIRE) > me->SpellBaseDamageBonus(SPELL_SCHOOL_MASK_SHADOW);
 
         DOTSpell = NULL;
@@ -107,7 +107,7 @@ struct WarlockAI: public PlayerAI
         Fear_Timer = 3000;
         DOT_Timer = 1500;
         NormalSpell_Timer = 3500;
-    
+
     }
 
     void UpdateAI(const uint32 diff);
@@ -143,13 +143,62 @@ struct RogueAI: public PlayerAI
     void UpdateAI(const uint32 diff);
 };
 
+#define BL                  2825
+#define HERO                32182
+#define LIGHTNING_SHIELD_R1 324
+#define WATER_SHIELD_R1     24398
+#define EARTH_SHIELD_R1     974
+#define CHAIN_HEAL_R1       1064
+#define CHAIN_LIGHTNING_R1  421
+
 struct ShamanAI: public PlayerAI
 {
     ShamanAI(Player *pPlayer): PlayerAI(pPlayer) {}
 
-    void Reset() {}
+    void Reset()
+    {
+           if(Totem = selectHighestRank(30706))
+                ShieldSpell = selectHighestRank(WATER_SHIELD_R1);
+            else if (!(Totem = selectHighestRank(30706)) && !(ShieldSpell = selectHighestRank(EARTH_SHIELD_R1)))
+                ShieldSpell = selectHighestRank(LIGHTNING_SHIELD_R1);
+			else 
+			{
+				heal=true;
+				ShieldSpell = selectHighestRank(EARTH_SHIELD_R1);
+			}
 
-    void UpdateAI(const uint32 diff);
+        HealSpell = selectHighestRank(CHAIN_HEAL_R1);
+        LightningSpell = selectHighestRank(CHAIN_LIGHTNING_R1);
+
+        BLSpell = NULL;
+        if(!(BLSpell=selectHighestRank(BL)))
+            BLSpell=selectHighestRank(HERO);
+
+        Shield_Timer = 10000;
+        Heal_Timer = 15000;
+        BL_Timer = 500;
+        Lightning_Timer = 17000;
+    }
+
+	bool heal;
+
+	uint32 Totem_Timer;
+    SpellEntry const *Totem;
+
+    uint32 Shield_Timer;
+    SpellEntry const *ShieldSpell;
+
+    uint32 Heal_Timer;
+    SpellEntry const *HealSpell;
+
+    uint32 BL_Timer;
+    SpellEntry const *BLSpell;
+
+    uint32 Lightning_Timer;
+    SpellEntry const *LightningSpell;
+	
+
+	void UpdateAI(const uint32 diff);
 };
 
 struct PriestAI: public PlayerAI
@@ -184,7 +233,7 @@ struct MageAI: public PlayerAI
             MassiveAOESpell = selectHighestRank(FLAMESTRIKE_R1);
         else
             MassiveAOESpell = selectHighestRank(BLIZZARD_R1);
-        
+
         if(!(ConeSpell = selectHighestRank(DRAGONBREATH_R1)))
             ConeSpell = selectHighestRank(CONEOFCOLD_R1);
 

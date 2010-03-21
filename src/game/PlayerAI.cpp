@@ -151,6 +151,57 @@ void ShamanAI::UpdateAI(const uint32 diff)
 {
     if(!UpdateVictim())
         return;
+
+        if(BL_Timer < diff && BL_Timer>0)
+            {
+                if(CanCast(me, BLSpell, false))
+                {
+                    me->CastSpell(me->GetCharmer(), BLSpell, false);
+					BL_Timer = BLSpell->RecoveryTime + diff;
+                }
+            }
+        else
+            BL_Timer -= diff;
+
+    if(Shield_Timer < diff)
+    {
+        if((CanCast(me, ShieldSpell, false)) && (heal!=true))
+        {
+            me->CastSpell(me, ShieldSpell, false);
+            Shield_Timer = 30000;
+        }
+        else if (CanCast(me->GetCharmer(), ShieldSpell, false))
+        {
+            me->CastSpell(me->GetCharmer(), ShieldSpell, false);
+            Shield_Timer = 30000;
+        }
+    }
+    else
+        Shield_Timer -= diff;
+
+    if(Heal_Timer < diff)
+    {
+        if(CanCast(me->GetCharmer(), HealSpell, false))
+        {
+            me->CastSpell(me->GetCharmer(), HealSpell, false);
+            Heal_Timer = HealSpell->RecoveryTime + diff;
+			Heal_Timer = 10000;
+        }
+    }
+    else
+        Heal_Timer -= diff;
+
+    if(Lightning_Timer < diff)
+    {
+        if(CanCast(me->getVictim(), LightningSpell, false))
+        {
+            me->CastSpell(me->getVictim(), LightningSpell, false);
+            Lightning_Timer = LightningSpell->RecoveryTime + diff;
+			Lightning_Timer = 8000;
+        }
+    }
+    else
+        Lightning_Timer -= diff;
 }
 
 void PriestAI::UpdateAI(const uint32 diff)
@@ -168,6 +219,7 @@ void MageAI::UpdateAI(const uint32 diff)
     {
         if(CanCast(me, SpecialSpell, false))
         {
+			sLog.outString(" AOE");
             me->CastSpell(me, SpecialSpell, false);
             Special = true;
         }
