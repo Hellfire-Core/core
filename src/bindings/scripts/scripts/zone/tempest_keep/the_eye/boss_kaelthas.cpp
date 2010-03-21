@@ -920,7 +920,7 @@ struct TRINITY_DLL_DECL boss_kaelthasAI : public ScriptedAI
                     Creature* Weapon;
                     for (uint32 i = 0; i < 7; ++i)
                     {
-                        Unit* Target = SelectUnit(SELECT_TARGET_RANDOM, 0);
+                        Unit* Target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_WEAPON_SPAWN), true);
                         Weapon = m_creature->SummonCreature(((uint32)KaelthasWeapons[i][0]),KaelthasWeapons[i][1],KaelthasWeapons[i][2],KaelthasWeapons[i][3],0,TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 60000);
 
                         if (!Weapon)
@@ -1036,7 +1036,7 @@ struct TRINITY_DLL_DECL boss_kaelthasAI : public ScriptedAI
                         DoCast(m_creature, SPELL_ARCANE_DISRUPTION, true);
                         Arcane1 = true;
 
-                        if (Unit* pUnit = SelectUnit(SELECT_TARGET_RANDOM, 0, 70, true))
+                        if (Unit* pUnit = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_FLAME_STRIKE), true))
                         DoCast(pUnit, SPELL_FLAME_STRIKE);
 
                         // MC after 20 sec from Pyros chain (4 Phase)
@@ -1052,7 +1052,7 @@ struct TRINITY_DLL_DECL boss_kaelthasAI : public ScriptedAI
                             
                             for (uint32 i = 0; i < 3; i++)
                             {
-                                Unit* target =SelectUnit(SELECT_TARGET_RANDOM, 1, 70, true);
+                                Unit* target =SelectUnit(SELECT_TARGET_RANDOM, 1, GetSpellMaxRange(SPELL_MIND_CONTROL), true, m_creature->getVictim());
                                 if(!target)
                                     target = m_creature->getVictim();
 
@@ -1082,7 +1082,7 @@ struct TRINITY_DLL_DECL boss_kaelthasAI : public ScriptedAI
                              for (uint32 i = 0; i < 3; i++)
                              {
 
-                                 Unit* target =SelectUnit(SELECT_TARGET_RANDOM, 1, 70, true);
+                                 Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 1, GetSpellMaxRange(SPELL_MIND_CONTROL), true, m_creature->getVictim());
                                  if(!target)
                                      target = m_creature->getVictim();
                                  if(target)
@@ -1100,7 +1100,7 @@ struct TRINITY_DLL_DECL boss_kaelthasAI : public ScriptedAI
                             DoCast(m_creature, SPELL_ARCANE_DISRUPTION, true);
                             Arcane2 = true;
 
-                            if (Unit* pUnit = SelectUnit(SELECT_TARGET_RANDOM, 0, 70, true))
+                            if (Unit* pUnit = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_FLAME_STRIKE), true))
                                 DoCast(pUnit, SPELL_FLAME_STRIKE);
                         }
                     }
@@ -1279,7 +1279,7 @@ struct TRINITY_DLL_DECL boss_kaelthasAI : public ScriptedAI
                         //NetherBeam_Timer
                         if(NetherBeam_Timer < diff)
                         {
-                            if (Unit* pUnit = SelectUnit(SELECT_TARGET_RANDOM, 0))
+                            if (Unit* pUnit = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_NETHER_BEAM), true))
                                 DoCast(pUnit, SPELL_NETHER_BEAM);
 
                             NetherBeam_Timer = 4000;
@@ -1627,7 +1627,7 @@ struct TRINITY_DLL_DECL boss_grand_astromancer_capernianAI : public advisorbase_
         if(Conflagration_Timer < diff)
         {
             Unit *target = NULL;
-            target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30, true);
+            target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_CONFLAGRATION), true);
 
             if(target)
                 //AddSpellToCast(target, SPELL_CONFLAGRATION);
@@ -1765,7 +1765,7 @@ struct TRINITY_DLL_DECL boss_master_engineer_telonicusAI : public advisorbase_ai
         //RemoteToy_Timer
         if(RemoteToy_Timer < diff)
         {
-            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true))
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_REMOTE_TOY), true))
                 DoCast(target, SPELL_REMOTE_TOY);
 
             RemoteToy_Timer = 10000+rand()%5000;
@@ -2258,7 +2258,7 @@ struct TRINITY_DLL_DECL weapon_advisorAI : public ScriptedAI
                 
                 if(SBash_Timer < diff)
                 {
-                    if(Unit* random = SelectUnit(SELECT_TARGET_RANDOM,0,7,true))
+                    if(Unit* random = SelectUnit(SELECT_TARGET_RANDOM,0,GetSpellMaxRange(SPELL_BULWARK_SBASH),true))
                         m_creature->CastSpell(random,SPELL_BULWARK_SBASH,false);
 
                     SBash_Timer = 12000;

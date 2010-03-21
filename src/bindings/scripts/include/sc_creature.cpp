@@ -504,7 +504,7 @@ struct TargetDistanceOrder : public std::binary_function<const Unit, const Unit,
     }
 };
 
-Unit* ScriptedAI::SelectUnit(SelectAggroTarget targetType, uint32 position, float dist, bool playerOnly)
+Unit* ScriptedAI::SelectUnit(SelectAggroTarget targetType, uint32 position, float dist, bool playerOnly, Unit *exclude)
 {
     if(targetType == SELECT_TARGET_NEAREST || targetType == SELECT_TARGET_FARTHEST)
     {
@@ -517,7 +517,8 @@ Unit* ScriptedAI::SelectUnit(SelectAggroTarget targetType, uint32 position, floa
             Unit *target = Unit::GetUnit(*m_creature, (*itr)->getUnitGuid());
             if(!target
                 || playerOnly && target->GetTypeId() != TYPEID_PLAYER
-                || dist && !m_creature->IsWithinCombatRange(target, dist))
+                || dist && !m_creature->IsWithinCombatRange(target, dist)
+                || exclude && exclude->GetGUID() == target->GetGUID())
             {
                 continue;
             }
@@ -525,7 +526,9 @@ Unit* ScriptedAI::SelectUnit(SelectAggroTarget targetType, uint32 position, floa
         }
         if(position >= targetList.size())
             return NULL;
+
         targetList.sort(TargetDistanceOrder(m_creature));
+
         if(targetType == SELECT_TARGET_NEAREST)
         {
             std::list<Unit*>::iterator i = targetList.begin();
@@ -564,7 +567,8 @@ Unit* ScriptedAI::SelectUnit(SelectAggroTarget targetType, uint32 position, floa
             if(!target
                 || !target->isAlive()
                 || playerOnly && target->GetTypeId() != TYPEID_PLAYER
-                || dist && !m_creature->IsWithinCombatRange(target, dist))
+                || dist && !m_creature->IsWithinCombatRange(target, dist)
+                || exclude && exclude->GetGUID() == target->GetGUID())
             {
                 m_threatlist.erase(i);
             }

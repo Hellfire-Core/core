@@ -208,7 +208,7 @@ struct TRINITY_DLL_DECL boss_supremusAI : public ScriptedAI
 
         if(SummonFlameTimer < diff)
         {
-            Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 1, 100.0f, true);
+            Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 1, 100.0f, true, m_creature->getVictim());
             if(!target)
                 target = m_creature->getVictim();
 
@@ -236,7 +236,7 @@ struct TRINITY_DLL_DECL boss_supremusAI : public ScriptedAI
         {
             if(SwitchTargetTimer < diff)
             {
-                if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 1, 100, true))
+                if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 1, 100, true, m_creature->getVictim()))
                 {
                     DoResetThreat();
                     m_creature->AddThreat(target, 5000000.0f);

@@ -118,7 +118,7 @@ struct TRINITY_DLL_DECL boss_epoch_hunterAI : public ScriptedAI
 
         if(ImpendingDeath_Timer < diff)
         {
-            if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0 , 50, true))
+            if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0 , GetSpellMaxRange(SPELL_IMPENDING_DEATH), true))
                 DoCast(target,SPELL_IMPENDING_DEATH);
             ImpendingDeath_Timer = 30000+rand()%5000;
         }

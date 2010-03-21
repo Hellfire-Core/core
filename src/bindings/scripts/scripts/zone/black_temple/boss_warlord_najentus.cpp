@@ -219,7 +219,7 @@ struct TRINITY_DLL_DECL boss_najentusAI : public ScriptedAI
 
         if(ImpalingSpineTimer < diff)
         {
-            Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 1, 150, true);
+            Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 1, 150, true, m_creature->getVictim());
 
             if(!target)
                 target = m_creature->getVictim();

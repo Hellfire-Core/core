@@ -349,8 +349,8 @@ struct TRINITY_DLL_DECL boss_shade_of_akamaAI : public ScriptedAI
                 {
                     Spawn->RemoveUnitMovementFlag(MOVEMENTFLAG_WALK_MODE);
                     Spawn->GetMotionMaster()->MovePoint(0, AGGRO_X, AGGRO_Y, AGGRO_Z);
-                    Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 1);
-                    Spawn->AI()->AttackStart(target);
+                    if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 1, 200, true, m_creature->getVictim()))
+                        Spawn->AI()->AttackStart(target);
                 }
             }
         }

@@ -335,7 +335,7 @@ struct TRINITY_DLL_DECL boss_alarAI : public ScriptedAI
                         WaitTimer = 4000;
                         return;
                     case WE_DIVE:
-                        if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0,120,true))
+                        if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0,GetSpellMaxRange(SPELL_DIVE_BOMB),true))
                         {
                             m_creature->RemoveAurasDueToSpell(SPELL_DIVE_BOMB_VISUAL);
                             m_creature->CastSpell(target, SPELL_DIVE_BOMB, true);
@@ -437,7 +437,7 @@ struct TRINITY_DLL_DECL boss_alarAI : public ScriptedAI
             if(Charge_Timer < diff)
             {
                 Unit *temp = m_creature->getVictim();
-                if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 1, 100, true))
+                if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 1, GetSpellMaxRange(SPELL_CHARGE), true, m_creature->getVictim()))
                     DoCast(target, SPELL_CHARGE);
 
                 DoStartMovement(temp);

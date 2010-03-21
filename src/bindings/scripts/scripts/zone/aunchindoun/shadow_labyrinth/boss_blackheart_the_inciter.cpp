@@ -138,11 +138,8 @@ struct TRINITY_DLL_DECL boss_blackheart_the_inciterAI : public ScriptedAI
 
             for (Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
             {
-                Player *target = (Player*)SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true);
                 Player *plr = i->getSource();
-
-                while(PlayerList.getSize() > 1 && target && target->GetGUID() == plr->GetGUID())
-                    Player *target = (Player*)SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true);
+                Player *target = (Player*)SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true, plr);
 
                 if(plr && plr->IsAIEnabled && target)
                     plr->AI()->AttackStart(target);                
