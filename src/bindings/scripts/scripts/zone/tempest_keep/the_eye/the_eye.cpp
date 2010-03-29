@@ -393,9 +393,15 @@ struct TRINITY_DLL_DECL mob_crimson_hand_blood_knightAI : public ScriptedAI
             Map::PlayerList const &PlayerList = pMap->GetPlayers();                
             if (!PlayerList.isEmpty())
             {
-                Player *p = PlayerList.begin()->getSource();
-                if(p->GetHealth() <= p->GetMaxHealth()*0.5)
-                    DoCast(p, SPELL_HAMMEROFWRATH);
+                for (Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
+                {
+                    Player *p = i->getSource();
+                    if(p->GetHealth() <= p->GetMaxHealth()*0.5)
+                    {
+                        DoCast(p, SPELL_HAMMEROFWRATH);
+                        i= PlayerList.end();
+                    }
+                }
             }
             HammerofWrath_Timer = 3000+rand()%2000;
         }
@@ -416,6 +422,177 @@ struct TRINITY_DLL_DECL mob_crimson_hand_blood_knightAI : public ScriptedAI
 CreatureAI* GetAI_mob_crimson_hand_blood_knight(Creature *_Creature)
 {
     return new mob_crimson_hand_blood_knightAI (_Creature);
+}
+
+//Tempest-Smith
+
+#define SPELL_FEAGMENTATIONBOMB           37120
+#define SPELL_GOLEMREPAIR                 34946
+#define SPELL_POWERUP                     37112
+#define SPELL_SHELLSHOCK                  37118
+
+struct TRINITY_DLL_DECL mob_tempest_smithAI : public ScriptedAI
+{
+    mob_tempest_smithAI(Creature *c) : ScriptedAI(c) {}
+
+    uint32 Fragmentation_Bomb_Timer;
+    uint32 Golem_Repair_Timer;
+    uint32 Power_Up_Timer;
+    uint32 Shell_Shock_Timer;
+	
+    void Reset()
+    {
+        Fragmentation_Bomb_Timer= 7000;
+        Golem_Repair_Timer = 10000+rand()%4000;
+        Power_Up_Timer = 20000;
+        Shell_Shock_Timer = 11000;
+    }
+
+    void Aggro(Unit *who)
+    {
+    }
+
+    void UpdateAI(const uint32 diff)
+    {
+        if (!UpdateVictim())
+            return;
+
+        if (Fragmentation_Bomb_Timer < diff )
+        {
+            Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30, true,0);;
+            if(target)
+            { 
+                DoCast(target,SPELL_FEAGMENTATIONBOMB);  
+            }
+            Fragmentation_Bomb_Timer = 5000+rand()%3000;
+        }
+        else Fragmentation_Bomb_Timer -= diff;
+
+        if (Golem_Repair_Timer < diff)
+        {
+            if(Unit* target = FindCreature(20040, 100, m_creature))
+            {
+                DoCast(target,SPELL_RECHARGE);
+                Golem_Repair_Timer = 30000+rand()%10000;
+            }else if(Unit* target = FindCreature(20041, 100, m_creature)){
+                DoCast(target,SPELL_RECHARGE);
+                Golem_Repair_Timer = 30000+rand()%10000;
+            }
+        }else Golem_Repair_Timer -= diff;
+
+        if (Power_Up_Timer < diff)
+        {
+            if(Unit* target = FindCreature(20040, 100, m_creature))
+            {
+                DoCast(target,SPELL_POWERUP);
+                Power_Up_Timer = 20000+rand()%5000;
+            }else if(Unit* target = FindCreature(20041, 100, m_creature)){
+                DoCast(target,SPELL_POWERUP);
+                Power_Up_Timer = 20000+rand()%5000;
+            }
+			
+        }
+        else Power_Up_Timer -= diff;
+
+        if (Shell_Shock_Timer < diff)
+        {
+            Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30, true,0);
+            if(target)
+            { 
+                DoCast(target,SPELL_SHELLSHOCK);  
+            }           
+            Shell_Shock_Timer = 8000+rand()%8000;
+        }
+        else Shell_Shock_Timer -= diff;
+
+        DoMeleeAttackIfReady();
+    }
+};
+
+CreatureAI* GetAI_mob_tempest_smith(Creature *_Creature)
+{
+    return new mob_tempest_smithAI (_Creature);
+}
+
+//Novice Astromancer
+
+#define SPELL_FIRENOVA                    38728
+#define SPELL_FIRESHIELD                  37282
+#define SPELL_FIREBALL                    37111
+#define SPELL_RAINOFFIRE                  37279
+
+struct TRINITY_DLL_DECL mob_novice_astromancerAI : public ScriptedAI
+{
+    mob_novice_astromancerAI(Creature *c) : ScriptedAI(c) {}
+
+    uint32 Fire_Nova_Timer;
+    uint32 Fire_Shield_Timer;
+    uint32 Fireball_Timer;
+    uint32 Rain_of_Fire_Timer;
+	
+    void Reset()
+    {
+        Fire_Nova_Timer= 7000+rand()%2000;
+        Fire_Shield_Timer = 1000;
+        Fireball_Timer = 2000;
+        Rain_of_Fire_Timer = 5000+rand()%2000;
+    }
+
+    void Aggro(Unit *who)
+    {
+    }
+
+    void UpdateAI(const uint32 diff)
+    {
+        if (!UpdateVictim())
+            return;
+
+        if (Fire_Nova_Timer < diff )
+        {
+            Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30, true,0);
+            if(target)
+            { 
+                DoCast(target,SPELL_FIRENOVA);  
+            }
+            Fire_Nova_Timer = 5000+rand()%3000;
+        }
+        else Fire_Nova_Timer -= diff;
+
+        if (Fire_Shield_Timer < diff)
+        {
+            DoCast(m_creature,SPELL_FIRESHIELD);  
+            Fire_Shield_Timer = 60000;
+        }else Fire_Shield_Timer -= diff;
+
+        if (Fireball_Timer < diff)
+        {
+            Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 50, true,0);
+            if(target)
+            { 
+                DoCast(target,SPELL_FIREBALL);
+            }
+            Fireball_Timer = 2000+rand()%2000;
+        }
+        else Fireball_Timer -= diff;
+
+        if (Rain_of_Fire_Timer < diff)
+        {
+            Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30, true,0);
+            if(target)
+            { 
+                DoCast(target,SPELL_RAINOFFIRE);  
+            }           
+            Rain_of_Fire_Timer = 8000+rand()%3000;
+        }
+        else Rain_of_Fire_Timer -= diff;
+
+        DoMeleeAttackIfReady();
+    }
+};
+
+CreatureAI* GetAI_mob_novice_astromancer(Creature *_Creature)
+{
+    return new mob_novice_astromancerAI (_Creature);
 }
 
 void AddSC_the_eye()
@@ -449,6 +626,16 @@ void AddSC_the_eye()
     newscript = new Script;
     newscript->Name="mob_crimson_hand_blood_knight";
     newscript->GetAI = &GetAI_mob_crimson_hand_blood_knight;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name="mob_tempest_smith";
+    newscript->GetAI = &GetAI_mob_tempest_smith;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name="mob_novice_astromancer";
+    newscript->GetAI = &GetAI_mob_novice_astromancer;
     newscript->RegisterSelf();
 }
 
