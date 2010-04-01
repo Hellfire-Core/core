@@ -76,6 +76,7 @@ struct TRINITY_DLL_DECL npc_medivh_bmAI : public ScriptedAI
     uint32 SpellCorrupt_Timer;
     uint32 DamageMelee_Timer;
     uint32 Check_Timer;
+    uint32 Delay_Timer;
 
     bool Life75;
     bool Life50;
@@ -83,17 +84,20 @@ struct TRINITY_DLL_DECL npc_medivh_bmAI : public ScriptedAI
 
     bool HeroicMode;
     bool Intro;
+    bool Delay;
 
     void Reset()
     {
         SpellCorrupt_Timer = 0;
         DamageMelee_Timer = 0;
+        Delay_Timer = 0;
 
         Life75 = true;
         Life50 = true;
         Life25 = true;
 
         Intro = false;
+        Delay = false;
 
         if (!pInstance)
             return;
@@ -116,6 +120,7 @@ struct TRINITY_DLL_DECL npc_medivh_bmAI : public ScriptedAI
             m_creature->CastSpell(m_creature,SPELL_CHANNEL,false);
             DoScriptText(SAY_ENTER, m_creature);
             Intro = true;
+            Delay_Timer = 15000;
         }
 
         if (pInstance->GetData(TYPE_MEDIVH) != DONE && who->GetTypeId() == TYPEID_PLAYER  && !((Player*)who)->isGameMaster() && m_creature->IsWithinDistInMap(who, 10.0f))
@@ -123,7 +128,11 @@ struct TRINITY_DLL_DECL npc_medivh_bmAI : public ScriptedAI
             if (pInstance->GetData(TYPE_MEDIVH) == IN_PROGRESS)
                 return;
 
-            DoScriptText(SAY_INTRO, m_creature);
+            if(!Delay_Timer)
+                DoScriptText(SAY_INTRO, m_creature);
+            else
+                Delay = true;
+
             pInstance->SetData(TYPE_MEDIVH,IN_PROGRESS);
             Check_Timer = 5000;
         }
@@ -187,6 +196,15 @@ struct TRINITY_DLL_DECL npc_medivh_bmAI : public ScriptedAI
     {
         if (!pInstance)
             return;
+
+        if(Delay_Timer && Delay_Timer < diff)
+        {
+            if(Delay)
+                DoScriptText(SAY_INTRO, m_creature);
+            Delay_Timer = 0;
+        }
+        else if (Delay_Timer)
+            Delay_Timer -= diff;
 
         if (SpellCorrupt_Timer)
         {
