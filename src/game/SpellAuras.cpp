@@ -824,10 +824,9 @@ void Aura::UpdateAuraDuration()
 
     if( m_target->GetTypeId() == TYPEID_PLAYER)
     {
-        WorldPacket data;
-        data.Initialize(SMSG_UPDATE_AURA_DURATION, 5);
+        WorldPacket data(SMSG_UPDATE_AURA_DURATION, 5);
         data << (uint8)m_auraSlot << (uint32)m_duration;
-        ((Player *)m_target)->SendDirectMessage(&data);
+        ((Player*)m_target)->SendDirectMessage(&data);
 
         data.Initialize(SMSG_SET_EXTRA_AURA_INFO, (8+1+4+4+4));
         data.append(m_target->GetPackGUID());
@@ -835,7 +834,7 @@ void Aura::UpdateAuraDuration()
         data << uint32(GetId());
         data << uint32(GetAuraMaxDuration());
         data << uint32(GetAuraDuration());
-        ((Player *)m_target)->SendDirectMessage(&data);
+        ((Player*)m_target)->SendDirectMessage(&data);
     }
 
     // not send in case player loading (will not work anyway until player not added to map), sent in visibility change code
@@ -849,7 +848,7 @@ void Aura::UpdateAuraDuration()
         SendAuraDurationForCaster((Player*)caster);
 
         Group* CasterGroup = ((Player*)caster)->GetGroup();
-        if (CasterGroup && (GetSpellProto()->AttributesCu & SPELL_ATTR_CU_AURA_CC))
+        if (CasterGroup && (spellmgr.GetSpellCustomAttr(GetId()) & SPELL_ATTR_CU_AURA_CC))
         {
             for (GroupReference *itr = CasterGroup->GetFirstMember(); itr != NULL; itr = itr->next())
             {
@@ -2134,6 +2133,14 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
     // AT REMOVE
     else
     {
+        // Control Piece - Chess Event
+        if(GetId() == 30019)
+        {
+            Unit *charm = caster->GetCharm();
+            if(charm)
+                charm->RemoveAurasDueToSpell(30019,0);  // Also remove aura from charmed creature, not only from us :]
+        }
+
         if( m_target->GetTypeId() == TYPEID_PLAYER && GetSpellProto()->Effect[0]==72 )
         {
             // spells with SpellEffect=72 and aura=4: 6196, 6197, 21171, 21425
@@ -3180,7 +3187,7 @@ void Aura::HandleModCharm(bool apply, bool Real)
         if(int32(m_target->getLevel()) > m_modifier.m_amount)
             return;
 
-        m_target->SetCharmedOrPossessedBy(caster, false);
+        m_target->SetCharmedOrPossessedBy(caster, (GetId() == 30019) ? true : false);
     }
     else
         m_target->RemoveCharmedOrPossessedBy(caster);
@@ -3943,14 +3950,6 @@ void Aura::HandleAuraModDispelImmunity(bool apply, bool Real)
         return;
 
     m_target->ApplySpellDispelImmunity(m_spellProto, DispelType(m_modifier.m_miscvalue), apply);
-    if(m_spellProto->Id == 20594) // HACK for stoneform
-    {
-        m_target->ApplySpellDispelImmunity(m_spellProto, DISPEL_DISEASE, apply);       // add disease immunity
-        int32 miscvalue = m_modifier.m_miscvalue;
-        m_modifier.m_miscvalue = MECHANIC_BLEED;
-        HandleModMechanicImmunity(apply, Real);                             // add bleed immunity
-        m_modifier.m_miscvalue = miscvalue;
-    }
 }
 
 void Aura::HandleAuraProcTriggerSpell(bool apply, bool Real)
@@ -3969,14 +3968,6 @@ void Aura::HandleAuraProcTriggerSpell(bool apply, bool Real)
                 break;
             default: break;
         }
-    }
-
-    // Void Star Talisman's pet resistance bonus
-    if(GetId() == 37386)
-    {
-        if(Pet* pet = m_target->GetPet())
-            for (int i = SPELL_SCHOOL_FIRE; i < MAX_SPELL_SCHOOL; i++)
-                pet->UpdateResistances(i);
     }
 }
 
@@ -5778,7 +5769,6 @@ void Aura::PeriodicTick()
                 resist = 0;
                 pCaster->CalcAbsorb(m_target, GetSpellSchoolMask(GetSpellProto()), pdamage, &absorb, &resist);
             }
-            pdamage = (pdamage <= absorb+resist) ? 0 : (pdamage-absorb-resist);
 
             sLog.outDetail("PeriodicTick: %u (TypeId: %u) attacked %u (TypeId: %u) for %u dmg inflicted by %u abs is %u",
                 GUID_LOPART(GetCasterGUID()), GuidHigh2TypeId(GUID_HIPART(GetCasterGUID())), m_target->GetGUIDLow(), m_target->GetTypeId(), pdamage, GetId(),absorb);
@@ -5802,6 +5792,7 @@ void Aura::PeriodicTick()
             uint32 procAttacker = PROC_FLAG_ON_DO_PERIODIC;
             uint32 procVictim   = PROC_FLAG_ON_TAKE_PERIODIC;
             uint32 procEx = PROC_EX_INTERNAL_DOT | PROC_EX_NORMAL_HIT;
+            pdamage = (pdamage <= absorb+resist) ? 0 : (pdamage-absorb-resist);
             if (pdamage)
                 procVictim|=PROC_FLAG_TAKEN_ANY_DAMAGE;
             pCaster->ProcDamageAndSpell(target, procAttacker, procVictim, procEx, pdamage, BASE_ATTACK, spellProto);
