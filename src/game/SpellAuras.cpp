@@ -2240,6 +2240,19 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
                 m_target->ModifyAuraState(AURA_STATE_WARRIOR_VICTORY_RUSH, apply);
                 return;
             }
+            //Mark of Malice
+            if(GetId()==33493)
+            {
+                if(apply)       // set 5 stacks
+                {
+                    m_target->AddAura(33493, 0);
+                    if(Aura* MarkOfMalice = m_target->GetAura(33493, 0))
+                        MarkOfMalice->SetStackAmount(5);
+                }
+                else
+                    m_target->CastSpell(m_target, 33494, true);
+                return;
+            }
             //Summon Fire Elemental
             if (GetId() == 40133 && caster)
             {
