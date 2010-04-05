@@ -376,8 +376,12 @@ struct TRINITY_DLL_DECL mob_crimson_hand_blood_knightAI : public ScriptedAI
             if(target)
             {
                 DoCast(target,SPELL_FLASHOFLIGHT);
+                if(target->GetHealth() <= target->GetMaxHealth()*0.5)
+                {
+                    FlashofLight_Timer = 0;
+                }else FlashofLight_Timer = rand()%7000;
             }
-            FlashofLight_Timer = 5000+rand()%3000;
+            FlashofLight_Timer += 2000;
         }else FlashofLight_Timer -= diff;
 
         if (HammerofJustice_Timer < diff)
@@ -396,10 +400,10 @@ struct TRINITY_DLL_DECL mob_crimson_hand_blood_knightAI : public ScriptedAI
                 for (Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
                 {
                     Player *p = i->getSource();
-                    if(p->GetHealth() <= p->GetMaxHealth()*0.5)
+                    if(p->GetHealth() <= p->GetMaxHealth()*0.2 && p->isAlive())
                     {
                         DoCast(p, SPELL_HAMMEROFWRATH);
-                        i= PlayerList.end();
+                        break;
                     }
                 }
             }
@@ -409,9 +413,12 @@ struct TRINITY_DLL_DECL mob_crimson_hand_blood_knightAI : public ScriptedAI
 
         if (Renew_Timer < diff)
         {
-            if(m_creature->GetHealth() <= m_creature->GetMaxHealth()*0.75)
-                DoCast(m_creature,SPELL_RENEW);
-            Renew_Timer = 3000+rand()%2000;
+            Unit* target = DoSelectLowestHpFriendly(50, 1000);
+            if(target)
+            {
+                DoCast(target,SPELL_RENEW);
+            }
+            Renew_Timer = 10000+rand()%2000;
         }
         else Renew_Timer -= diff;
 
@@ -422,6 +429,198 @@ struct TRINITY_DLL_DECL mob_crimson_hand_blood_knightAI : public ScriptedAI
 CreatureAI* GetAI_mob_crimson_hand_blood_knight(Creature *_Creature)
 {
     return new mob_crimson_hand_blood_knightAI (_Creature);
+}
+
+//Bloodwarder Squire
+
+#define SPELL_CLEANSE          39078
+#define SPELL_FLASHOFLIGHT     37254
+#define SPELL_HAMMEROFJUSTICE  39077
+#define SPELL_HAMMEROFWRATH    37255
+
+struct TRINITY_DLL_DECL mob_Bloodwarder_SquireAI : public ScriptedAI
+{
+    mob_Bloodwarder_SquireAI(Creature *c) : ScriptedAI(c) {}
+
+    uint32 Cleanse_Timer;
+    uint32 FlashofLight_Timer;
+    uint32 HammerofJustice_Timer;
+    uint32 HammerofWrath_Timer;
+    
+    void Reset()
+    {
+        Cleanse_Timer = 20000;
+        FlashofLight_Timer = 10000+rand()%4000;
+        HammerofJustice_Timer = 3000;
+        HammerofWrath_Timer = 5000;
+    }
+
+    void Aggro(Unit *who)
+    {
+    }
+
+    void UpdateAI(const uint32 diff)
+    {
+        if (!UpdateVictim())
+            return;
+
+        if (Cleanse_Timer < diff )
+        {
+            std::list<Creature*> pList = DoFindFriendlyCC(30);
+            if (!pList.empty())
+            {
+                Unit* target = *(pList.begin());
+                DoCast(target,SPELL_CLEANSE);  
+            }
+            Cleanse_Timer = 3000+rand()%1000;
+        }
+        else Cleanse_Timer -= diff;
+
+        if (FlashofLight_Timer < diff)
+        {
+            Unit* target = DoSelectLowestHpFriendly(50, 1000);
+            if(target)
+            {
+                DoCast(target,SPELL_FLASHOFLIGHT);
+                if(target->GetHealth() <= target->GetMaxHealth()*0.5)
+                {
+                    FlashofLight_Timer = 0;
+                }else FlashofLight_Timer = rand()%7000; 
+            }
+            FlashofLight_Timer+=2000;
+			
+        }else FlashofLight_Timer -= diff;
+
+        if (HammerofJustice_Timer < diff)
+        {
+            DoCast(m_creature->getVictim(),SPELL_HAMMEROFJUSTICE);
+            HammerofJustice_Timer = 18000;
+        }
+        else HammerofJustice_Timer -= diff;
+
+        if (HammerofWrath_Timer < diff)
+        {
+            Map* pMap = m_creature->GetMap();
+            Map::PlayerList const &PlayerList = pMap->GetPlayers();                
+            if (!PlayerList.isEmpty())
+            {
+                for (Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
+                {
+                    Player *p = i->getSource();
+                    if(p->GetHealth() <= p->GetMaxHealth()*0.2 && p->isAlive())
+                    {
+                        DoCast(p, SPELL_HAMMEROFWRATH); 
+                        break;
+                    }
+                }
+            }
+            HammerofWrath_Timer = 3000+rand()%2000;
+        }
+        else HammerofWrath_Timer -= diff;
+
+        DoMeleeAttackIfReady();
+    }
+};
+
+CreatureAI* GetAI_mob_Bloodwarder_Squire(Creature *_Creature)
+{
+    return new mob_Bloodwarder_SquireAI (_Creature);
+}
+
+//Bloodwarder Vindicator
+
+#define SPELL_CLEANSE          39078
+#define SPELL_FLASHOFLIGHT     37249
+#define SPELL_HAMMEROFJUSTICE  13005
+#define SPELL_HAMMEROFWRATH    37251
+
+struct TRINITY_DLL_DECL mob_Bloodwarder_VindicatorAI : public ScriptedAI
+{
+    mob_Bloodwarder_VindicatorAI(Creature *c) : ScriptedAI(c) {}
+
+    uint32 Cleanse_Timer;
+    uint32 FlashofLight_Timer;
+    uint32 HammerofJustice_Timer;
+    uint32 HammerofWrath_Timer;
+    
+    void Reset()
+    {
+        Cleanse_Timer = 20000;
+        FlashofLight_Timer = 10000+rand()%4000;
+        HammerofJustice_Timer = 3000;
+        HammerofWrath_Timer = 5000;
+    }
+
+    void Aggro(Unit *who)
+    {
+    }
+
+    void UpdateAI(const uint32 diff)
+    {
+        if (!UpdateVictim())
+            return;
+
+        if (Cleanse_Timer < diff )
+        {
+            std::list<Creature*> pList = DoFindFriendlyCC(30);
+            if (!pList.empty())
+            {
+                Unit* target = *(pList.begin());
+                DoCast(target,SPELL_CLEANSE);  
+            }
+            Cleanse_Timer = 3000+rand()%1000;
+        }
+        else Cleanse_Timer -= diff;
+
+        if (FlashofLight_Timer < diff)
+        {
+            Unit* target = DoSelectLowestHpFriendly(50, 1000);
+            if(target)
+            {
+                DoCast(target,SPELL_FLASHOFLIGHT);
+            
+                if(target->GetHealth() <= target->GetMaxHealth()*0.5)
+                {
+                    FlashofLight_Timer = 0;
+                }else FlashofLight_Timer = rand()%7000;
+                FlashofLight_Timer+=2000;
+            }
+        }else FlashofLight_Timer -= diff;
+
+        if (HammerofJustice_Timer < diff)
+        {
+            DoCast(m_creature->getVictim(),SPELL_HAMMEROFJUSTICE);
+            HammerofJustice_Timer = 18000;
+        }
+        else HammerofJustice_Timer -= diff;
+
+        if (HammerofWrath_Timer < diff)
+        {
+            Map* pMap = m_creature->GetMap();
+            Map::PlayerList const &PlayerList = pMap->GetPlayers();                
+            if (!PlayerList.isEmpty())
+            {
+                for (Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
+                {
+                    Player *p = i->getSource();
+                    if(p->GetHealth() <= p->GetMaxHealth()*0.2 && p->isAlive())
+                    {
+                        DoCast(p, SPELL_HAMMEROFWRATH);
+                        break;
+                    }
+                }
+            }
+            HammerofWrath_Timer = 3000+rand()%2000;
+        }
+        else HammerofWrath_Timer -= diff;
+
+        DoMeleeAttackIfReady();
+    }
+};
+
+CreatureAI* GetAI_mob_Bloodwarder_Vindicator(Creature *_Creature)
+{
+    return new mob_Bloodwarder_VindicatorAI (_Creature);
 }
 
 //Tempest-Smith
@@ -470,11 +669,11 @@ struct TRINITY_DLL_DECL mob_tempest_smithAI : public ScriptedAI
 
         if (Golem_Repair_Timer < diff)
         {
-            if(Unit* target = FindCreature(20040, 100, m_creature))
+            if(Unit* target = FindCreature(20040, 25, m_creature))
             {
                 DoCast(target,SPELL_RECHARGE);
                 Golem_Repair_Timer = 30000+rand()%10000;
-            }else if(Unit* target = FindCreature(20041, 100, m_creature)){
+            }else if(Unit* target = FindCreature(20041, 25, m_creature)){
                 DoCast(target,SPELL_RECHARGE);
                 Golem_Repair_Timer = 30000+rand()%10000;
             }
@@ -482,11 +681,11 @@ struct TRINITY_DLL_DECL mob_tempest_smithAI : public ScriptedAI
 
         if (Power_Up_Timer < diff)
         {
-            if(Unit* target = FindCreature(20040, 100, m_creature))
+            if(Unit* target = FindCreature(20040, 25, m_creature))
             {
                 DoCast(target,SPELL_POWERUP);
                 Power_Up_Timer = 20000+rand()%5000;
-            }else if(Unit* target = FindCreature(20041, 100, m_creature)){
+            }else if(Unit* target = FindCreature(20041, 25, m_creature)){
                 DoCast(target,SPELL_POWERUP);
                 Power_Up_Timer = 20000+rand()%5000;
             }
@@ -636,6 +835,16 @@ void AddSC_the_eye()
     newscript = new Script;
     newscript->Name="mob_novice_astromancer";
     newscript->GetAI = &GetAI_mob_novice_astromancer;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name="mob_Bloodwarder_Squire";
+    newscript->GetAI = &GetAI_mob_Bloodwarder_Squire;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name="mob_Bloodwarder_Vindicator";
+    newscript->GetAI = &GetAI_mob_Bloodwarder_Vindicator;
     newscript->RegisterSelf();
 }
 
