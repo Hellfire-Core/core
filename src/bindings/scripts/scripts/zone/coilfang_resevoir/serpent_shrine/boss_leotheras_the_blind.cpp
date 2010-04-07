@@ -786,10 +786,8 @@ struct TRINITY_DLL_DECL mob_greyheart_spellbinderAI : public ScriptedAI
 
         if(Mindblast_Timer < diff)
         {
-            Unit* target = NULL;
-            target = SelectUnit(SELECT_TARGET_RANDOM,0);
-
-            if ( target )DoCast(target, SPELL_MINDBLAST);
+            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0, GetSpellMaxRange(SPELL_MINDBLAST), true))
+                DoCast(target, SPELL_MINDBLAST);
 
             Mindblast_Timer = 10000 + rand()%5000;
         }else Mindblast_Timer -= diff;

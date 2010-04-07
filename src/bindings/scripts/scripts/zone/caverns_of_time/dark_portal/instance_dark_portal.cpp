@@ -33,13 +33,14 @@ EndScriptData */
 
 #define RIFT_BOSS               1
 
-#define C_DEJA                  HeroicMode ? 20738:17879
+#define C_DEJA                  17879
 #define INF_C_DEJA              21697
-#define C_TEMPO                 HeroicMode ? 20745:17880
+#define C_TEMPO                 17880
 #define INF_TIMEREAVER          21698
-#define C_AEONUS                HeroicMode ? 20737:17881
+#define C_AEONUS                17881
 
-bool HeroicMode;
+#define C_RKEEP                 21104
+#define C_RLORD                 17839
 
 inline uint32 RandRiftBoss() { return rand()%2 ? C_RKEEP : C_RLORD; }
 
@@ -56,25 +57,17 @@ struct Wave
     uint32 PortalBoss;                                      //protector of current portal
 };
 
-static Wave RiftWaves[]=
-{
-    {RIFT_BOSS},
-    {C_DEJA},
-    {RIFT_BOSS},
-    {C_TEMPO},
-    {RIFT_BOSS},
-    {C_AEONUS}
-};
-
 struct TRINITY_DLL_DECL instance_dark_portal : public ScriptedInstance
 {
     instance_dark_portal(Map *map) : ScriptedInstance(map) 
     {
-        HeroicMode = map->IsHeroic();
+        Heroic = map->IsHeroic();
         Initialize();
     };
 
     uint32 Encounter[ENCOUNTERS];
+
+    bool Heroic;
 
     uint32 mRiftPortalCount;
     uint32 mShieldPercent;
@@ -343,14 +336,14 @@ struct TRINITY_DLL_DECL instance_dark_portal : public ScriptedInstance
                 Encounter[1] = data;
             break;
         case TYPE_C_DEJA:
-            if (data == DONE && HeroicMode)
+            if (data == DONE && Heroic)
                 Encounter[2] = data;
 
             NextPortal_Timer = 20000;
             Check_Timer = 0;
             break;
         case TYPE_TEMPORUS:
-            if (data == DONE && HeroicMode)
+            if (data == DONE && Heroic)
                 Encounter[3] = data;
 
             NextPortal_Timer = 20000;
@@ -402,9 +395,19 @@ struct TRINITY_DLL_DECL instance_dark_portal : public ScriptedInstance
 
     Unit* SummonedPortalBoss(Unit* source)
     {
+        Wave RiftWaves[]=
+        {
+            {RIFT_BOSS},
+            {C_DEJA},
+            {RIFT_BOSS},
+            {C_TEMPO},
+            {RIFT_BOSS},
+            {C_AEONUS}
+        };
+
         uint32 entry;
 
-        if(HeroicMode)
+        if(Heroic)
         {
             if(GetRiftWaveId()== 1 && Encounter[2] == DONE)
                 entry = INF_C_DEJA;

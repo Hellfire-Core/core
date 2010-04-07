@@ -140,7 +140,7 @@ struct TRINITY_DLL_DECL boss_chrono_lord_dejaAI : public ScriptedAI
         {
             if(Attraction_Timer < diff)
             {
-                if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true))
+                if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_ATTRACTION), true))
                     if(!arcane)
                     {
                         DoCast(target, SPELL_ATTRACTION, true);

@@ -132,14 +132,11 @@ struct TRINITY_DLL_DECL boss_murmurAI : public Scripted_NoMovementAI
         // Magnetic Pull
         if (MagneticPull_Timer < diff)
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0))
+            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0, 100, true))
             {
-                if (target->GetTypeId() == TYPEID_PLAYER && target->isAlive())
-                {
-                    DoCast(target, SPELL_MAGNETIC_PULL);
-                    MagneticPull_Timer = 20000+rand()%15000;
-                    return;
-                }
+                DoCast(target, SPELL_MAGNETIC_PULL);
+                MagneticPull_Timer = 20000+rand()%15000;
+                return;
             }
             MagneticPull_Timer = 500;
         }
@@ -165,8 +162,8 @@ struct TRINITY_DLL_DECL boss_murmurAI : public Scripted_NoMovementAI
             if(SonicShock_Timer < diff)
             {
                 if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0,20,false))
-                    if(target->isAlive())
-                        DoCast(target, SPELL_SONIC_SHOCK);
+                    DoCast(target, SPELL_SONIC_SHOCK);
+
                 SonicShock_Timer = 10000+rand()%10000;
             }
             else

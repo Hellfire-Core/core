@@ -298,11 +298,8 @@ void Unit::Update( uint32 p_time )
     lMap->m_spellUpdateLock.release();
 
     // update combat timer only for players and pets
-    if (isInCombat() && (GetTypeId() == TYPEID_PLAYER || ((Creature*)this)->isPet() || ((Creature*)this)->isCharmed()))
+    if (isInCombat() && isCharmedOwnedByPlayerOrPlayer())
     {
-        // Check UNIT_STAT_MELEE_ATTACKING or UNIT_STAT_CHASE (without UNIT_STAT_FOLLOW in this case) so pets can reach far away
-        // targets without stopping half way there and running off.
-        // These flags are reset after target dies or another command is given.
         if( m_HostilRefManager.isEmpty() )
         {
             // m_CombatTimer set at aura start and it will be freeze until aura removing
@@ -488,7 +485,7 @@ void Unit::RemoveMovementImpairingAuras()
 {
     for(AuraMap::iterator iter = m_Auras.begin(); iter != m_Auras.end();)
     {
-        if(spellmgr.GetSpellCustomAttr(iter->second->GetId()) & SPELL_ATTR_CU_MOVEMENT_IMPAIR)
+        if(iter->second->GetSpellProto()->AttributesCu & SPELL_ATTR_CU_MOVEMENT_IMPAIR)
             RemoveAura(iter);
         else
             ++iter;
@@ -1310,7 +1307,7 @@ void Unit::CalculateSpellDamageTaken(SpellNonMeleeDamage *damageInfo, int32 dama
     // damage before absorb/resist calculation
     damageInfo->cleanDamage = damage;
 
-    if( damageSchoolMask & SPELL_SCHOOL_MASK_NORMAL  && (spellmgr.GetSpellCustomAttr(spellInfo->Id) & SPELL_ATTR_CU_IGNORE_ARMOR) == 0)
+    if( damageSchoolMask & SPELL_SCHOOL_MASK_NORMAL  && (spellInfo->AttributesCu & SPELL_ATTR_CU_IGNORE_ARMOR) == 0)
         damage = CalcArmorReducedDamage(pVictim, damage);
 
     // Calculate absorb resist
@@ -2007,7 +2004,7 @@ void Unit::CalcAbsorb(Unit *pVictim,SpellSchoolMask schoolMask, const uint32 dam
 }
 
 bool Unit::CalcBinaryResist(Unit *pVictim, SpellSchoolMask schoolMask) {
-    
+
     if(!pVictim || !pVictim->isAlive())
         return false;
 
@@ -2015,15 +2012,17 @@ bool Unit::CalcBinaryResist(Unit *pVictim, SpellSchoolMask schoolMask) {
     if (schoolMask & ~SPELL_SCHOOL_MASK_NORMAL)
     {
         // Get base victim resistance for school
-        uint32 effectiveResistance = pVictim->GetResistance(GetFirstSchoolInMask(schoolMask));
+        int32 effectiveResistance = pVictim->GetResistance(GetFirstSchoolInMask(schoolMask));
         // Ignore resistance by self SPELL_AURA_MOD_TARGET_RESISTANCE aura
         effectiveResistance += GetTotalAuraModifierByMiscMask(SPELL_AURA_MOD_TARGET_RESISTANCE, schoolMask);
 
         effectiveResistance = effectiveResistance * 15 / getLevel();
+
         if (effectiveResistance < 0)
             effectiveResistance = 0;
         if (effectiveResistance > 75)
             effectiveResistance = 75;
+
         uint32 ran = GetMap()->urand(0, 100);
         return ran < effectiveResistance;
     }
@@ -3496,7 +3495,8 @@ bool Unit::AddAura(Aura *Aur)
     Aur->ApplyModifier(true,true);
 
     uint32 id = Aur->GetId();
-    if(spellmgr.GetSpellCustomAttr(id) & SPELL_ATTR_CU_LINK_AURA)
+    SpellEntry const *spellInfo = Aur->GetSpellProto();
+    if(spellInfo->AttributesCu & SPELL_ATTR_CU_LINK_AURA)
     {
         if(const std::vector<int32> *spell_triggered = spellmgr.GetSpellLinked(id + SPELL_LINK_AURA))
             for(std::vector<int32>::const_iterator itr = spell_triggered->begin(); itr != spell_triggered->end(); ++itr)
@@ -3736,7 +3736,7 @@ void Unit::RemoveAurasDueToSpellByDispel(uint32 spellId, uint64 casterGUID, Unit
         {
             // Custom dispel case
             // Unstable Affliction
-            if (aur->GetSpellProto()->SpellFamilyName == SPELLFAMILY_WARLOCK && (aur->GetSpellProto()->SpellFamilyFlags & 0x010000000000LL))
+            if (aur->GetSpellProto()->SpellFamilyName == SPELLFAMILY_WARLOCK && (aur->GetSpellProto()->SpellFamilyFlags & 0x010000000000LL) && aur->GetSpellProto()->SpellIconID == 2039)
             {
                 int32 damage = aur->GetModifier()->m_amount*9;
                 uint64 caster_guid = aur->GetCasterGUID();
@@ -4030,7 +4030,8 @@ void Unit::RemoveAura(AuraMap::iterator &i, AuraRemoveMode mode)
 
         // Remove Linked Auras
         uint32 id = Aur->GetId();
-        if(spellmgr.GetSpellCustomAttr(id) & SPELL_ATTR_CU_LINK_REMOVE)
+        SpellEntry const *spellInfo = Aur->GetSpellProto();
+        if(spellInfo->AttributesCu & SPELL_ATTR_CU_LINK_REMOVE)
         {
             if(const std::vector<int32> *spell_triggered = spellmgr.GetSpellLinked(-(int32)id))
                 for(std::vector<int32>::const_iterator itr = spell_triggered->begin(); itr != spell_triggered->end(); ++itr)
@@ -4039,7 +4040,7 @@ void Unit::RemoveAura(AuraMap::iterator &i, AuraRemoveMode mode)
                     else if(Unit* caster = Aur->GetCaster())
                         CastSpell(this, *itr, true, 0, 0, caster->GetGUID());
         }
-        if(spellmgr.GetSpellCustomAttr(id) & SPELL_ATTR_CU_LINK_AURA)
+        if(spellInfo->AttributesCu & SPELL_ATTR_CU_LINK_AURA)
         {
             if(const std::vector<int32> *spell_triggered = spellmgr.GetSpellLinked(id + SPELL_LINK_AURA))
                 for(std::vector<int32>::const_iterator itr = spell_triggered->begin(); itr != spell_triggered->end(); ++itr)
@@ -5620,24 +5621,8 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
         {
             if (dummySpell->Id == 17619)
             {
-                if (procSpell->SpellFamilyName == SPELLFAMILY_POTION)
-                {
-                    for (uint8 i=0;i<3;i++)
-                    {
-                        if (procSpell->Effect[i]==SPELL_EFFECT_HEAL)
-                        {
-                            triggered_spell_id = 21399;
-                        }
-                        else if (procSpell->Effect[i]==SPELL_EFFECT_ENERGIZE)
-                        {
-                            triggered_spell_id = 21400;
-                        }
-                        else continue;
-                        basepoints0 = CalculateSpellDamage(procSpell,i,procSpell->EffectBasePoints[i],this) * 0.4f;
-                        CastCustomSpell(this,triggered_spell_id,&basepoints0,NULL,NULL,true,castItem,triggeredByAura);
-                    }
-                    return true;
-                }
+                basepoints0 = damage * 4 / 10;
+                triggered_spell_id = 21399;
             }
         }
         default:
@@ -6065,6 +6050,14 @@ bool Unit::HandleProcTriggerSpell(Unit *pVictim, uint32 damage, Aura* triggeredB
                      sLog.outError("Unit::HandleProcTriggerSpell: Spell %u miss posibly Judgement of Light/Wisdom", auraSpellInfo->Id);
                  return false;
              }
+
+             if(auraSpellInfo->SpellIconID == 299)                      // Improved Judgement of Light: bonus heal from t4 set
+                 if(Unit *caster = triggeredByAura->GetCaster())
+                    if(Aura *aur = caster->GetAura(37182, 0))
+                    {
+                        int bp = aur->GetModifierValue();
+                        pVictim->CastCustomSpell(pVictim, trigger_spell_id, &bp, NULL, NULL, true, castItem, triggeredByAura);
+                    }
              pVictim->CastSpell(pVictim, trigger_spell_id, true, castItem, triggeredByAura);
              return true;                        // no hidden cooldown
          }
@@ -7144,7 +7137,7 @@ uint32 Unit::SpellDamageBonus(Unit *pVictim, SpellEntry const *spellProto, uint3
     }
 
     // Damage Done
-    uint32 CastingTime = !IsChanneledSpell(spellProto) ? GetSpellCastTime(spellProto) : GetSpellDuration(spellProto);
+    uint32 CastingTime = !IsChanneledSpell(spellProto) ? GetSpellBaseCastTime(spellProto) : GetSpellDuration(spellProto);
 
     // Taken/Done fixed damage bonus auras
     int32 DoneAdvertisedBenefit  = SpellBaseDamageBonus(GetSpellSchoolMask(spellProto))+BonusDamage;
@@ -7389,9 +7382,9 @@ uint32 Unit::SpellDamageBonus(Unit *pVictim, SpellEntry const *spellProto, uint3
                 CastingTime = damagetype == DOT ? 5000 : 500; // self damage seems to be so
             }
             // Unstable Affliction - 180%
-            else if (spellProto->Id == 31117 && spellProto->SpellIconID == 232)
+            else if (spellProto->Id == 31117)
             {
-                CastingTime = 6300;
+                CastingTime = 6300*118/10;      // HACK: magic 11.8 factor needed to do proper 180% dmg
             }
             // Corruption 93%
             else if ((spellProto->SpellFamilyFlags & 0x2LL) && spellProto->SpellIconID == 313)
@@ -11179,10 +11172,15 @@ void Unit::Kill(Unit *pVictim, bool durabilityLoss)
     // call kill spell proc event (before real die and combat stop to triggering auras removed at death/combat stop)
     if(bRewardIsAllowed && player && player!=pVictim)
     {
-        if(player->RewardPlayerAndGroupAtKill(pVictim))
-            player->ProcDamageAndSpell(pVictim, PROC_FLAG_KILL_AND_GET_XP, PROC_FLAG_KILLED, PROC_EX_NONE, 0);
+        if(GetTypeId() == TYPEID_PLAYER && (IsInPartyWith(player) || IsInRaidWith(player)))
+        {
+            if(((Player*)this)->RewardPlayerAndGroupAtKill(pVictim))            
+                ProcDamageAndSpell(pVictim, PROC_FLAG_KILL_AND_GET_XP, PROC_FLAG_KILLED, PROC_EX_NONE, 0);
+            else
+                ProcDamageAndSpell(pVictim, PROC_FLAG_NONE, PROC_FLAG_KILLED,PROC_EX_NONE, 0);
+        }
         else
-            player->ProcDamageAndSpell(pVictim, PROC_FLAG_NONE, PROC_FLAG_KILLED,PROC_EX_NONE, 0);
+            player->RewardPlayerAndGroupAtKill(pVictim);             
     }
 
     // if talent known but not triggered (check priest class for speedup check)
@@ -11549,6 +11547,7 @@ void Unit::SetCharmedOrPossessedBy(Unit* charmer, bool possess)
     {
         if(((Player*)this)->isAFK())
             ((Player*)this)->ToggleAFK();
+
         ((Player*)this)->SetViewport(GetGUID(), false);
 
         if(charmer->GetTypeId() == TYPEID_UNIT)

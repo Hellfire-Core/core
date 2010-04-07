@@ -912,22 +912,33 @@ struct mob_bansheeAI : public hyjal_trashAI
         }
         if (!UpdateVictim())
             return;
+
         if(CourseTimer<diff)
         {
-            Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 50, true);
-            DoCast(target,SPELL_BANSHEE_CURSE);
+            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 50, true))
+                DoCast(target,SPELL_BANSHEE_CURSE);
+
             CourseTimer = 20000+rand()%5000;
-        }else CourseTimer -= diff;
+        }
+        else
+            CourseTimer -= diff;
+
         if(WailTimer<diff)
         {
             DoCast(m_creature->getVictim(),SPELL_BANSHEE_WAIL);
             WailTimer = 5000+rand()%5000;
-        }else WailTimer -= diff;
+        }
+        else
+            WailTimer -= diff;
+
         if(ShellTimer<diff)
         {
             DoCast(m_creature,SPELL_ANTI_MAGIC_SHELL);
             ShellTimer = 30000+rand()%10000;
-        }else ShellTimer -= diff;
+        }
+        else
+            ShellTimer -= diff;
+
         DoMeleeAttackIfReady();
     }
 };

@@ -333,7 +333,7 @@ struct TRINITY_DLL_DECL boss_the_lurker_belowAI : public Scripted_NoMovementAI
 
             if(GeyserTimer < diff)
             {
-                Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 1, 100, true);
+                Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 1, GetSpellMaxRange(SPELL_GEYSER), true, m_creature->getVictim());
                 if(!target && m_creature->getVictim())
                     target = m_creature->getVictim();
                 if(target)
@@ -347,7 +347,7 @@ struct TRINITY_DLL_DECL boss_the_lurker_belowAI : public Scripted_NoMovementAI
             {
                 if(WaterboltTimer < diff)
                 {
-                    Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0, 100, true);
+                    Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0, GetSpellMaxRange(SPELL_WATERBOLT), true);
                     if(!target && m_creature->getVictim())
                         target = m_creature->getVictim();
                     if(target)
@@ -476,7 +476,7 @@ struct TRINITY_DLL_DECL mob_coilfang_ambusherAI : public Scripted_NoMovementAI
         if(ShootBowTimer < diff)
         {
             Unit* target = NULL;
-            target = SelectUnit(SELECT_TARGET_RANDOM, 0);
+            target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_SHOOT), true);
             int bp0 = 1100;
             if(target)
                 m_creature->CastCustomSpell(target,SPELL_SHOOT,&bp0,NULL,NULL,true);

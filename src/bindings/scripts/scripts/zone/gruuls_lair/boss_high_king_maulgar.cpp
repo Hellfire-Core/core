@@ -286,7 +286,7 @@ struct TRINITY_DLL_DECL boss_high_king_maulgarAI : public ScriptedAI
             if(Charging_Timer < diff)
             {
                 Unit* target = NULL;
-                target = SelectUnit(SELECT_TARGET_RANDOM, 0);
+                target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_BERSERKER_C), true);
                 if (target)
                 {
                     AttackStart(target);
@@ -404,7 +404,7 @@ struct TRINITY_DLL_DECL boss_olm_the_summonerAI : public ScriptedAI
         if(DeathCoil_Timer < diff)
         {
             Unit* target = NULL;
-            target = SelectUnit(SELECT_TARGET_RANDOM, 0);
+            target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_DEATH_COIL), true);
             if(target)
                 DoCast(target, SPELL_DEATH_COIL);
             DeathCoil_Timer = 20000;
@@ -493,7 +493,7 @@ struct TRINITY_DLL_DECL boss_kiggler_the_crazedAI : public ScriptedAI
         //GreaterPolymorph_Timer
         if(GreaterPolymorph_Timer < diff)
         {
-            Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0);
+            Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_GREATER_POLYMORPH), true);
             if(target)
                 DoCast(target, SPELL_GREATER_POLYMORPH);
 

@@ -477,7 +477,7 @@ struct TRINITY_DLL_DECL boss_aranAI : public ScriptedAI
                     DoCast(m_creature, SPELL_AOE_CS);
                     break;
                 case 1:
-                    if (Unit* pUnit = SelectUnit(SELECT_TARGET_RANDOM, 0))
+                    if(Unit* pUnit = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_CHAINSOFICE), true))
                         //AddSpellToCast(pUnit, SPELL_CHAINSOFICE);
                         DoCast(pUnit, SPELL_CHAINSOFICE);
                     break;
