@@ -76,7 +76,6 @@ struct TRINITY_DLL_DECL boss_blackheart_the_inciterAI : public ScriptedAI
     uint32 InciteChaosWait_Timer;
     uint32 Charge_Timer;
     uint32 Knockback_Timer;
-    std::list<Creature*> TrashList;
 
     void Reset()
     {
@@ -117,7 +116,7 @@ struct TRINITY_DLL_DECL boss_blackheart_the_inciterAI : public ScriptedAI
         for(uint8 i = 0; i < 7; ++i)
         {
             TrashEntryList.clear();
-            TrashEntryList = DoFindAllCreaturesWithEntry(trashEntry[i], 1000.0f);
+            TrashEntryList = DoFindAllCreaturesWithEntry(trashEntry[i], 100.0f);
 
             for(std::list<Creature*>::iterator iter = TrashEntryList.begin(); iter != TrashEntryList.end(); ++iter)
                 TrashList.push_back(*iter);
@@ -161,8 +160,10 @@ struct TRINITY_DLL_DECL boss_blackheart_the_inciterAI : public ScriptedAI
             return;
         }
 
-        if (!UpdateVictim() )
+        if (!UpdateVictim())
             return;
+        else
+            TrashAggro();
 
         if(InciteChaos_Timer < diff)
         {
@@ -180,7 +181,7 @@ struct TRINITY_DLL_DECL boss_blackheart_the_inciterAI : public ScriptedAI
                 Player *target = (Player*)SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true, plr);
 
                 if(plr && plr->IsAIEnabled && target)
-                    plr->AI()->AttackStart(target);                
+                    plr->AI()->AttackStart(target);
             }
 
             //DoResetThreat();
