@@ -657,6 +657,7 @@ void Unit::SendDamageLog(DamageLog *damageInfo)
             break;
         default:
             sLog.outError("Unsupported opcode in SendDamageLog!");
+        case 1: // dealdamage ktory nie powinien wysylac loga
             break;
     }
 }
@@ -967,7 +968,7 @@ uint32 Unit::DealDamage(DamageLog *damageInfo, DamageEffectType damagetype, cons
 
 uint32 Unit::DealDamage(Unit *pVictim, uint32 damage, DamageEffectType damagetype, SpellSchoolMask damageSchoolMask, SpellEntry const *spellProto, bool durabilityLoss)
 {
-    DamageLog damageInfo(0, this, pVictim, damageSchoolMask);
+    DamageLog damageInfo(1, this, pVictim, damageSchoolMask);
     damageInfo.damage = damage;
     return DealDamage(&damageInfo, damagetype, spellProto, durabilityLoss);
 }
