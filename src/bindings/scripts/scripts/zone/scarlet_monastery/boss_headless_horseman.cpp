@@ -264,7 +264,8 @@ struct TRINITY_DLL_DECL mob_headAI : public ScriptedAI
     void JustDied(Unit *killer)
     {
         Creature* horseman = Creature::GetCreature((*m_creature), pInstance->GetData64(DATA_HORSEMAN_EVENT));
-        horseman->DealDamage(horseman, horseman->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+        if (horseman)
+            horseman->DealDamage(horseman, horseman->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
     }
 
     void SpellHit(Unit *caster, const SpellEntry* spell)
