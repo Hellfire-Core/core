@@ -1822,7 +1822,7 @@ void Unit::CalcAbsorb(Unit *pVictim,SpellSchoolMask schoolMask, const uint32 dam
             SpellDamageLog damageInfo((*i)->GetSpellProto()->Id, this, caster, (*i)->GetSpellProto()->SchoolMask);
             damageInfo.damage = currentAbsorb;
 
-            SendSpellNonMeleeDamageLog(caster, (*i)->GetSpellProto()->Id, currentAbsorb, schoolMask, 0, 0, false, 0, false);
+            //SendSpellNonMeleeDamageLog(caster, (*i)->GetSpellProto()->Id, currentAbsorb, schoolMask, 0, 0, false, 0, false);
 
             DealDamage(&damageInfo, DOT, (*i)->GetSpellProto(), false);
         }
