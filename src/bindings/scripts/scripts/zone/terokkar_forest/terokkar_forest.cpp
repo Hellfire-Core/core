@@ -594,29 +594,37 @@ bool GossipSelect_go_ancient_skull_pile(Player *player, GameObject* _GO, uint32 
 #define SPELL_SKYGUARD_FLARE_TARGET 40656
 #define SPELL_SKYGUARD_FLARE        40655
 
+#define SKYGUARD_WP_CIRCLE_MAX      6
+#define SKYGUARD_WP_MIDDLE          7
+#define SKYGUARD_WP_DESPAWN         8
+#define SKYGUARD_WP_AFTER_SPAWN     9
+
 float skyguardAltitude = 324;
 float groundAltitiude = 286;
 
 float skyguardSpawn[3][2] = {
-    { -3660, 3535 },
-    { -3685, 3523 },
-    { -3694, 3554 }
+    { -3637, 3572 },
+    { -3645, 3574 },
+    { -3641, 3564 }
 };
 
 float skyguardWPStart[3][2] = {
-    { -3761, 3515 },
-    { -3786, 3527 },
-    { -3795, 3534 }
+    { -3803, 3504 },
+    { -3811, 3506 },
+    { -3807, 3496 }
 };
 
 float skyguardWPMiddle[3] = {
-    -3785, 3507, 305
+    -3785, 3507, 315
 };
 
-float skyguardWPs[3][2] = {
-    { -3777, 3474 },
-    { -3823, 3499 },
-    { -3807, 3532 }
+float skyguardWPs[6][2] = {
+    { -3830, 3513 },
+    { -3795, 3549 },
+    { -3761, 3538 },
+    { -3759, 3498 },
+    { -3783, 3467 },
+    { -3811, 3494 }
 };
 
 struct TRINITY_DLL_DECL mob_terokkAI : public ScriptedAI
@@ -632,6 +640,7 @@ struct TRINITY_DLL_DECL mob_terokkAI : public ScriptedAI
     uint64 SkyguardGUIDs[3];
     uint32 CheckTimer;
     uint8 phase;            // 0: 100% to 70% hp, 1: under 30% hp and shield up, 2: under 30% hp and shield down
+    uint8 skyguardTurn;
 
     void Reset()
     {
@@ -642,6 +651,7 @@ struct TRINITY_DLL_DECL mob_terokkAI : public ScriptedAI
         ChosenOneActive_Timer = 0;
         ChosenOneTarget = 0;
         phase = 0;
+        skyguardTurn = 0;
         for(int i = 0; i < 3; i++)
             SkyguardGUIDs[i] = 0;
     }
@@ -661,7 +671,7 @@ struct TRINITY_DLL_DECL mob_terokkAI : public ScriptedAI
         {
             if(SkyguardGUIDs[i])
                 if(Creature* skyguard = Creature::GetCreature(*m_creature, SkyguardGUIDs[i]))            
-                    skyguard->GetMotionMaster()->MovePoint(4, skyguardSpawn[i][0], skyguardSpawn[i][1], skyguardAltitude);
+                    skyguard->GetMotionMaster()->MovePoint(SKYGUARD_WP_DESPAWN, skyguardSpawn[i][0], skyguardSpawn[i][1], skyguardAltitude);
             SkyguardGUIDs[i] = 0;
         }
     }
@@ -739,12 +749,12 @@ struct TRINITY_DLL_DECL mob_terokkAI : public ScriptedAI
                 {
                     SkyguardGUIDs[i] = skyguard->GetGUID();
                     skyguard->setActive(true);
-                    skyguard->GetMotionMaster()->MovePoint(0, skyguardWPStart[i][0], skyguardWPStart[i][1], skyguardAltitude );
+                    skyguard->GetMotionMaster()->MovePoint(SKYGUARD_WP_AFTER_SPAWN, skyguardWPStart[i][0], skyguardWPStart[i][1], skyguardAltitude );
                     skyguard->Mount(21158);
                 }
             
             CheckTimer = 2000;
-            SkyguardFlare_Timer = 25000;
+            SkyguardFlare_Timer = 15000;
         }
 
         if(phase > 0)
@@ -754,7 +764,7 @@ struct TRINITY_DLL_DECL mob_terokkAI : public ScriptedAI
                 std::list<Creature*> skyguardTargets = DoFindAllCreaturesWithEntry(23277, 5);
                 if(phase == 1)
                 {
-                    if(!skyguardTargets.empty())
+                    if(!skyguardTargets.empty() && !(*skyguardTargets.begin())->HasAura(SPELL_SKYGUARD_FLARE, 0))
                     {
                         m_creature->RemoveAurasDueToSpell(SPELL_DIVINE_SHIELD);
                         DoCast(m_creature, SPELL_ENRAGE, true);
@@ -777,9 +787,10 @@ struct TRINITY_DLL_DECL mob_terokkAI : public ScriptedAI
 
             if(SkyguardFlare_Timer < diff)
             {
-                if(Creature *skyguard = Creature::GetCreature(*m_creature, SkyguardGUIDs[rand() % 3]))
-                    skyguard->GetMotionMaster()->MovePoint(3, skyguardWPMiddle[0], skyguardWPMiddle[1], skyguardWPMiddle[2]);
-                SkyguardFlare_Timer = 30000;
+                if(Creature *skyguard = Creature::GetCreature(*m_creature, SkyguardGUIDs[skyguardTurn++]))
+                    skyguard->GetMotionMaster()->MovePoint(SKYGUARD_WP_MIDDLE, skyguardWPMiddle[0], skyguardWPMiddle[1], skyguardWPMiddle[2]);
+                skyguardTurn %= 3;
+                SkyguardFlare_Timer = 20000;
             }
             else
                 SkyguardFlare_Timer -= diff;
@@ -806,6 +817,7 @@ struct TRINITY_DLL_DECL npc_skyguard_aceAI : public ScriptedAI
 
     uint64 TargetGUID;
     uint32 TargetLifetime;
+    uint32 AncientFlame_Timer;
     uint32 Move_Timer;
     int NextWP;
 
@@ -814,45 +826,39 @@ struct TRINITY_DLL_DECL npc_skyguard_aceAI : public ScriptedAI
         TargetGUID = 0;
         TargetLifetime = 0;
         Move_Timer = -1;
+        AncientFlame_Timer = -1;
     }
 
-     void Aggro(Unit *who) {}
+    void Aggro(Unit *who) {}
 
     void MovementInform(uint32 type, uint32 id)
     {
         if(type != POINT_MOTION_TYPE)
             return;
         
-        switch(id)
+        if(id < SKYGUARD_WP_CIRCLE_MAX)
         {
-            case 0:
-            case 1:
-            case 2:
-                NextWP = (id + 1)%3;
-                Move_Timer = 1;
-                break;
-            case 3:
-                DoCast(me, SPELL_SKYGUARD_FLARE, false);
-                NextWP = rand() % 3;
-                Move_Timer = 9000;
-                break;
-            case 4:
-                me->CombatStop();
-                me->CleanupsBeforeDelete();
-                me->AddObjectToRemoveList();
-                break;
+            NextWP = (id + 1) % SKYGUARD_WP_CIRCLE_MAX;
+            Move_Timer = 1;
         }
-    }
-
-    void SpellHitTarget(Unit *target, const SpellEntry* spell)
-    {
-        if(spell->Id == SPELL_ANCIENT_FLAMES)
+        else if(id == SKYGUARD_WP_AFTER_SPAWN)
         {
-            if(Unit* unit = me->GetMap()->GetCreature(TargetGUID))
-            {
-                unit->CastSpell(unit, SPELL_ANCIENT_FLAMES, true);
-            }
+            NextWP = rand() % SKYGUARD_WP_CIRCLE_MAX;
+            Move_Timer = 1;
         }
+        else if(id == SKYGUARD_WP_DESPAWN)
+        {
+            me->CombatStop();
+            me->CleanupsBeforeDelete();
+            me->AddObjectToRemoveList();
+        }
+        else if(id == SKYGUARD_WP_MIDDLE)
+        {
+            DoCast(me, SPELL_SKYGUARD_FLARE, false);
+            NextWP = rand() % SKYGUARD_WP_CIRCLE_MAX;
+            Move_Timer = 9000;
+        }
+ 
     }
 
     void JustSummoned(Creature *creature)
@@ -863,8 +869,10 @@ struct TRINITY_DLL_DECL npc_skyguard_aceAI : public ScriptedAI
             creature->GetPosition(x, y, z);
             z = groundAltitiude;
             creature->Relocate(x, y, z);
+            creature->CastSpell(creature, SPELL_SKYGUARD_FLARE_TARGET, true);
             TargetGUID = creature->GetGUID();
-            TargetLifetime = 21000;
+            TargetLifetime = 20500;
+            AncientFlame_Timer = 5500;  
             DoCast(creature, SPELL_ANCIENT_FLAMES, false);
         }
     }
@@ -896,6 +904,22 @@ struct TRINITY_DLL_DECL npc_skyguard_aceAI : public ScriptedAI
             }
             else
                 Move_Timer -= diff;
+        }
+
+        if(AncientFlame_Timer >= 0)
+        {
+            if(AncientFlame_Timer <= diff)
+            {
+                if(Unit* target = me->GetMap()->GetCreature(TargetGUID))
+                {
+                    target->CastStop();
+                    target->RemoveAurasDueToSpell(SPELL_SKYGUARD_FLARE_TARGET);
+                    // HACK: cast ancient flames so players can be damaged by it, we keep cast ancient flames by skyguard ace only for animation
+                    target->CastSpell(target, SPELL_ANCIENT_FLAMES, true);          
+                }
+                AncientFlame_Timer = -1;
+            } else
+                AncientFlame_Timer -= diff;
         }
     }
 };
