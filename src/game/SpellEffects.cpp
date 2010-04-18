@@ -891,33 +891,6 @@ void Spell::EffectDummy(uint32 i)
                     m_caster->CastCustomSpell(m_caster, 12976, &healthModSpellBasePoints0, NULL, NULL, true, NULL);
                     return;
                 }
-                case 13006:                                 // gnomish shrink ray
-                {
-                    if(!unitTarget)
-                        return;
-
-                    if(urand(0, 99) > 10)
-                        m_caster->CastSpell(unitTarget, 13003, true);
-                    else                                    // 10% (?guessed) chance for malfunction
-                    {
-                        switch(urand(0, 3))
-                        {
-                            case 0:
-                                m_caster->CastSpell(unitTarget, 13004, true);
-                                break;
-                            case 1:
-                                m_caster->CastSpell(m_caster, 13003, true);
-                                break;
-                            case 2:
-                                m_caster->CastSpell(m_caster, 13004, true);
-                                break;
-                            case 3:
-                                m_caster->CastSpell(m_caster, 13010, true);
-                                break;
-                        }
-                    }
-                    return;
-                }
                 case 13120:                                 // net-o-matic
                 {
                     if(!unitTarget)
@@ -1429,6 +1402,51 @@ void Spell::EffectDummy(uint32 i)
                 case 39992:                                 //Needle Spine Targeting
                 {
                     m_caster->CastSpell(unitTarget,39835,true);
+                    break;
+                }
+                case 32225:                                 //Chess Event: Take Action (melee)
+                {
+                    switch (m_caster->GetEntry())
+                    {
+                        case 17211:     //alliance pawn (Human Footman)
+                            m_caster->CastSpell(unitTarget, 32227, true);
+                            break;
+                        case 17469:     //horde pawn (Orc Grunt)
+                            m_caster->CastSpell(unitTarget, 32228, true);
+                            break;
+                        case 21160:     //alliance rook (Conjured Water Elemental)
+                            m_caster->CastSpell(unitTarget, 37142, true);
+                            break;
+                        case 21726:     //horde rook (Summoned Daemon)
+                            m_caster->CastSpell(unitTarget, 37220, true);
+                            break;
+                        case 21664:     //alliance knight (Human Charger)
+                            m_caster->CastSpell(unitTarget, 37143, true);       //proper spell ??
+                            break;
+                        case 21748:     //horde knight (Orc Wolf)
+                            m_caster->CastSpell(unitTarget, 37339, true);
+                            break;
+                        case 21682:     //Alliance bishop (Human Cleric)
+                            m_caster->CastSpell(unitTarget, 37147, true);
+                            break;
+                        case 21747:     //Horde bishop (Orc Necrolyte)
+                            m_caster->CastSpell(unitTarget, 37337, true);
+                            break;
+                        case 21683:     //Alliance Queen (Human Conjurer)
+                            m_caster->CastSpell(unitTarget, 37149, true);
+                            break;
+                        case 21750:     //Horde Queen (Orc Warlock)
+                            m_caster->CastSpell(unitTarget, 37345, true);
+                            break;
+                        case 21684:     //Alliance King (King Llane)
+                            m_caster->CastSpell(unitTarget, 37150, true);
+                            break;
+                        case 21752:     //Horde King (Warchief Blackhand)
+                            m_caster->CastSpell(unitTarget, 37348, true);
+                            break;
+                        default:
+                            break;
+                    }
                     break;
                 }
             }
@@ -6717,7 +6735,7 @@ void Spell::EffectStealBeneficialBuff(uint32 i)
             if (roll_chance_i(miss_chance))
                 fail_list.push_back(aur->GetId());
             else
-                success_list.push_back( std::pair<uint32,uint64>(aur->GetId(),aur->GetCasterGUID())); 
+                success_list.push_back( std::pair<uint32,uint64>(aur->GetId(),aur->GetCasterGUID()));
 
             // Remove buff from list for prevent doubles
             for (std::vector<Aura *>::iterator j = steal_list.begin(); j != steal_list.end(); )
