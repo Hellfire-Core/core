@@ -3665,7 +3665,7 @@ void Aura::HandleModTaunt(bool apply, bool Real)
     if(!Real)
         return;
 
-    if(!m_target->isAlive() || !m_target->CanHaveThreatList())
+    if(!m_target->isAlive())
         return;
 
     Unit* caster = GetCaster();
