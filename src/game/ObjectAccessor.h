@@ -95,7 +95,6 @@ class ObjectAccessor : public Trinity::Singleton<ObjectAccessor, Trinity::ClassL
 
     public:
         typedef UNORDERED_MAP<uint64, Corpse*> Player2CorpsesMapType;
-        typedef UNORDERED_MAP<Player*, UpdateData>::value_type UpdateDataValueType;
 
         template<class T> static T* GetObjectInWorld(uint64 guid, T* /*fake*/)
         {
@@ -218,29 +217,12 @@ class ObjectAccessor : public Trinity::Singleton<ObjectAccessor, Trinity::ClassL
         void AddCorpsesToGrid(GridPair const& gridpair,GridType& grid,Map* map);
         Corpse* ConvertCorpseForPlayer(uint64 player_guid, bool insignia = false);
 
-        static void _buildUpdateObject(Object* obj, UpdateDataMapType &);
-
         typedef ACE_Thread_Mutex LockType;
         typedef Trinity::GeneralLock<LockType> Guard;
     private:
-        struct WorldObjectChangeAccumulator
-        {
-            UpdateDataMapType &i_updateDatas;
-            WorldObject &i_object;
-            std::set<uint64> plr_list;
-            WorldObjectChangeAccumulator(WorldObject &obj, UpdateDataMapType &d) : i_updateDatas(d), i_object(obj) {}
-            void Visit(PlayerMapType &);
-            void Visit(CreatureMapType &);
-            void Visit(DynamicObjectMapType &);
-            void BuildPacket(Player* plr);
-            template<class SKIP> void Visit(GridRefManager<SKIP> &) {}
-        };
 
-        friend struct WorldObjectChangeAccumulator;
         Player2CorpsesMapType   i_player2corpse;
 
-        static void _buildChangeObjectForPlayer(WorldObject *, UpdateDataMapType &);
-        static void _buildPacket(Player *, Object *, UpdateDataMapType &);
         void _update(void);
         std::set<Object *> i_objects;
         LockType i_playerGuard;

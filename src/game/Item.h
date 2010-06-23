@@ -290,6 +290,8 @@ class TRINITY_DLL_SPEC Item : public Object
         }
         bool hasInvolvedQuest(uint32 /*quest_id*/) const { return false; }
 
+        void BuildUpdate(UpdateDataMapType& data_map);
+
     private:
         uint8 m_slot;
         Bag *m_container;

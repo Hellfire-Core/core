@@ -306,6 +306,9 @@ class TRINITY_DLL_SPEC Object
         virtual bool hasQuest(uint32 /* quest_id */) const { return false; }
         virtual bool hasInvolvedQuest(uint32 /* quest_id */) const { return false; }
 
+        virtual void BuildUpdate(UpdateDataMapType& ) {}
+        void BuildFieldsUpdate(Player *, UpdateDataMapType &) const;
+
         // FG: some hacky helpers
         void ForceValuesUpdateAtIndex(uint32);
 
@@ -319,8 +322,8 @@ class TRINITY_DLL_SPEC Object
         virtual void _SetUpdateBits(UpdateMask *updateMask, Player *target) const;
 
         virtual void _SetCreateBits(UpdateMask *updateMask, Player *target) const;
-        void _BuildMovementUpdate(ByteBuffer * data, uint8 flags, uint32 flags2 ) const;
-        void _BuildValuesUpdate(uint8 updatetype, ByteBuffer *data, UpdateMask *updateMask, Player *target ) const;
+        void BuildMovementUpdate(ByteBuffer * data, uint8 flags, uint32 flags2 ) const;
+        void BuildValuesUpdate(uint8 updatetype, ByteBuffer *data, UpdateMask *updateMask, Player *target ) const;
 
         uint16 m_objectType;
 
@@ -351,8 +354,12 @@ class TRINITY_DLL_SPEC Object
         Object& operator=(Object const&);                   // prevent generation assigment operator
 };
 
+struct WorldObjectChangeAccumulator;
+
 class TRINITY_DLL_SPEC WorldObject : public Object
 {
+    friend struct WorldObjectChangeAccumulator;
+
     public:
         virtual ~WorldObject ( ) {}
 
@@ -474,6 +481,7 @@ class TRINITY_DLL_SPEC WorldObject : public Object
 
         void AddObjectToRemoveList();
         void UpdateObjectVisibility();
+        void BuildUpdate(UpdateDataMapType& );
 
         // main visibility check function in normal case (ignore grey zone distance check)
         bool isVisibleFor(Player const* u) const { return isVisibleForInState(u,false); }
@@ -487,9 +495,13 @@ class TRINITY_DLL_SPEC WorldObject : public Object
         Map      * GetMap() const   { return m_map ? m_map : const_cast<WorldObject*>(this)->_getMap(); }
         Map      * FindMap() const  { return m_map ? m_map : const_cast<WorldObject*>(this)->_findMap(); }
         Map const* GetBaseMap() const;
+
+        void BuildUpdateData(UpdateDataMapType &);
+
         Creature* SummonCreature(uint32 id, float x, float y, float z, float ang,TempSummonType spwtype,uint32 despwtime);
         GameObject* SummonGameObject(uint32 entry, float x, float y, float z, float ang, float rotation0, float rotation1, float rotation2, float rotation3, uint32 respawnTime);
         Creature* SummonTrigger(float x, float y, float z, float ang, uint32 dur, CreatureAI* (*GetAI)(Creature*) = NULL);
+        
         bool isActiveObject() const { return m_isActive; }
         void setActive(bool isActiveObject);
         void SetWorldObject(bool apply);

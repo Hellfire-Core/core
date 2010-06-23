@@ -270,6 +270,14 @@ bool Item::Create( uint32 guidlow, uint32 itemid, Player const* owner)
     return true;
 }
 
+void Item::BuildUpdate(UpdateDataMapType& data_map)
+{
+    if (Player* pl = GetOwner())
+        BuildFieldsUpdate(pl, data_map);
+
+    ClearUpdateMask(false);
+}
+
 void Item::UpdateDuration(Player* owner, uint32 diff)
 {
     if (!GetUInt32Value(ITEM_FIELD_DURATION))
