@@ -2083,7 +2083,7 @@ void DoScriptText(int32 textEntry, WorldObject* pSource, Unit* target, bool with
             pSource->MonsterYell(textEntry, (*i).second.Language, target ? target->GetGUID() : 0);
             break;
         case CHAT_TYPE_TEXT_EMOTE:
-            pSource->MonsterTextEmote(textEntry, target ? target->GetGUID() : 0);
+            pSource->MonsterTextEmote(textEntry, target ? target->GetGUID() : 0,false, withoutPrename);
             break;
         case CHAT_TYPE_BOSS_EMOTE:
             pSource->MonsterTextEmote(textEntry, target ? target->GetGUID() : 0, true, withoutPrename);

@@ -685,6 +685,163 @@ bool GossipSelect_npc_khadgar(Player *player, Creature *creature, uint32 sender,
     return true;
 }
 
+/*######
+ # Event after rewarding quest Kael'thas and the Verdant Sphere
+ ######*/
+
+#define QUEST_VERDANT_SPHERE                11007
+
+#define CREATURE_ADAL                       18481
+#define CREATURE_KAEL                       23054
+
+#define SPELL_ADALS_SONG_OF_BATTLE          39953
+#define SPELL_KAELTHAS_DEFEATED             39966
+#define SPELL_OTHERWORLDLY_PORTAL           39952
+#define SPELL_MARK_OF_KAELTHAS              37364
+
+#define ADAL_WHISPER1                       -1645011
+#define ADAL_WHISPER2                       -1645012
+#define ADAL_WHISPER3_1                     "Kael'thas Sunstrider has been defeated by "
+#define ADAL_WHISPER3_2                     " and "
+#define ADAL_WHISPER3_3                     " allies"
+#define ADAL_WHISPER4                       "The time to strike at the remaining blood elves of Tempest Keep is now. Take arms and let A'dal's song of battle empower you!"
+#define KAEL_YELL1                          "Your monkeys failed to finish the job, naaru! Beaten but alive... The same mistake was not made when we took command of your vessel."
+#define KAEL_YELL2                          "All for what? Trinkets? You are too late. The preparations have already begun. Soon the master will make his return."
+#define KAEL_YELL3                          "And there is nothing you or that fool, Illidan, can do to stop me! You have both served me in your own right - unwillingly."
+#define KAEL_YELL4                          "Lay down your arms and succumb to the might of Kil'jaeden!"
+
+
+
+struct TRINITY_DLL_DECL npc_kaelthas_imageAI : public ScriptedAI
+{
+    npc_kaelthas_imageAI(Creature* c) : ScriptedAI(c) {}
+
+    uint8 Step;
+    uint32 NextStep_Timer;
+    std::list<uint64> PlayersInCity;
+    bool Init;
+    std::string Defeater_Name;
+    std::string Defeater_Gender;
+
+    void Reset()
+    {
+        Step = 0;
+        NextStep_Timer = 2000;
+        PlayersInCity.clear();
+        Init = false;
+    }
+
+    void Aggro(Unit* who){}
+
+    void UpdateAI(const uint32 diff)
+    {
+        if(!Init)
+        {     
+            std::list<Unit*> PlayerList;
+            uint32 shattrathRadius = 1000;
+            Trinity::AnyUnitInObjectRangeCheck  check(me, shattrathRadius);
+            Trinity::UnitListSearcher<Trinity::AnyUnitInObjectRangeCheck > searcher(PlayerList, check);
+            me->VisitNearbyWorldObject(shattrathRadius, searcher);
+
+            for(std::list<Unit*>::iterator i = PlayerList.begin(); i != PlayerList.end(); i++)
+            {
+                if((*i)->GetTypeId() != TYPEID_PLAYER || (*i)->GetZoneId() != 3703)
+                    continue;
+                PlayersInCity.push_back((*i)->GetGUID());
+            }
+
+            me->AddUnitMovementFlag(MOVEMENTFLAG_ONTRANSPORT + MOVEMENTFLAG_LEVITATING);
+            me->StopMoving();
+            DoCast(me, SPELL_KAELTHAS_DEFEATED, true);
+            //DoCast(me, SPELL_MARK_OF_KAELTHAS, true);
+            //DoCast(me, SPELL_OTHERWORLDLY_PORTAL, true);
+            Init = true;
+        }
+
+        if(NextStep_Timer < diff)
+        {
+            NextStep_Timer = 13000;
+            Creature* adal = NULL;
+            
+            if(Step < 4) 
+            {
+                if(Unit *u = FindCreature(CREATURE_ADAL, 100, me))
+                    if(u->GetTypeId() == TYPEID_UNIT)
+                        adal = (Creature*)u;
+
+                if(!adal)
+                    return;
+            }
+
+            std::string s;            
+            switch(Step)
+            {
+                
+                case 0:
+                    for(std::list<uint64>::iterator i = PlayersInCity.begin(); i != PlayersInCity.end(); i++)
+                        if(Unit *u = me->GetUnit(*me, (*i)))
+                            DoScriptText( ADAL_WHISPER1, adal, u, true);
+                    NextStep_Timer = 7000;
+                    break;
+                case 1:
+                    for(std::list<uint64>::iterator i = PlayersInCity.begin(); i != PlayersInCity.end(); i++)
+                        if(Unit *u = me->GetUnit(*me, (*i)))
+                            DoScriptText(ADAL_WHISPER2, adal, u, true);
+                    NextStep_Timer = 7000;
+                    break;
+                case 2:
+                    s = std::string() + ADAL_WHISPER3_1 + Defeater_Name + ADAL_WHISPER3_2 + Defeater_Gender + ADAL_WHISPER3_3;
+                    for(std::list<uint64>::iterator i = PlayersInCity.begin(); i != PlayersInCity.end(); i++)
+                        adal->Yell(s.c_str(), 0, (*i));
+                    break;
+                case 3:
+                    for(std::list<uint64>::iterator i = PlayersInCity.begin(); i != PlayersInCity.end(); i++)
+                    {
+                        if(Unit *u = me->GetUnit(*me, (*i)))
+                        {
+                            u->CastSpell(u, 39953, true);
+                            adal->Yell(ADAL_WHISPER4, 0, (*i));
+                        }
+                    }
+                    break;
+                case 4:
+                    me->Yell(KAEL_YELL1, 0, 0);
+                    break;
+                case 5:
+                    me->Yell(KAEL_YELL2, 0, 0);
+                    break;
+                case 6:
+                    me->Yell(KAEL_YELL3, 0, 0);
+                    break;
+                case 7:
+                    me->Yell(KAEL_YELL4, 0, 0);
+                    break;
+            }
+            Step++;
+        }
+        else
+            NextStep_Timer -= diff;
+
+    }
+};
+
+CreatureAI* GetAI_npc_kaelthas_imageAI(Creature *_Creature)
+{
+    return new npc_kaelthas_imageAI (_Creature);
+}
+
+bool ChooseReward_npc_Adal(Player *player, Creature *_Creature, const Quest *_Quest, uint32 slot)
+{
+    if(_Quest->GetQuestId() == QUEST_VERDANT_SPHERE)
+    {
+        Creature* kael = _Creature->SummonCreature(CREATURE_KAEL, -1851.75, 5454.77, -2.36, 4.34, TEMPSUMMON_TIMED_DESPAWN, 100000);
+        ((npc_kaelthas_imageAI*)kael->AI())->Defeater_Name = player->GetName();
+        ((npc_kaelthas_imageAI*)kael->AI())->Defeater_Gender = player->getGender() == GENDER_MALE ? "his" : "her";
+    }
+    return false;
+}
+
+
 void AddSC_shattrath_city()
 {
     Script *newscript;
@@ -735,6 +892,16 @@ void AddSC_shattrath_city()
     newscript->Name="npc_khadgar";
     newscript->pGossipHello =  &GossipHello_npc_khadgar;
     newscript->pGossipSelect = &GossipSelect_npc_khadgar;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name="npc_kaelthas_image";
+    newscript->GetAI = &GetAI_npc_kaelthas_imageAI;
+    newscript->RegisterSelf();
+ 
+    newscript = new Script;
+    newscript->Name="npc_adal";
+    newscript->pChooseReward = &ChooseReward_npc_Adal;
     newscript->RegisterSelf();
 }
 
