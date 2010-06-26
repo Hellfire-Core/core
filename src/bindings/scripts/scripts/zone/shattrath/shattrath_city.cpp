@@ -677,6 +677,7 @@ bool GossipSelect_npc_khadgar(Player *player, Creature *creature, uint32 sender,
 
 #define QUEST_VERDANT_SPHERE                11007
 
+#define GO_FIRE                             185170
 #define CREATURE_ADAL                       18481
 #define CREATURE_KAEL                       23054
 
@@ -708,6 +709,7 @@ struct TRINITY_DLL_DECL npc_kaelthas_imageAI : public ScriptedAI
     bool Init;
     std::string Defeater_Name;
     std::string Defeater_Gender;
+    GameObject *FireGO;
 
     void Reset()
     {
@@ -715,9 +717,11 @@ struct TRINITY_DLL_DECL npc_kaelthas_imageAI : public ScriptedAI
         NextStep_Timer = 2000;
         PlayersInCity.clear();
         Init = false;
+        FireGO = 0;
     }
 
     void Aggro(Unit* who){}
+
 
     void UpdateAI(const uint32 diff)
     {
@@ -737,10 +741,11 @@ struct TRINITY_DLL_DECL npc_kaelthas_imageAI : public ScriptedAI
             }
 
             me->AddUnitMovementFlag(MOVEMENTFLAG_ONTRANSPORT + MOVEMENTFLAG_LEVITATING);
+            me->SetVisibility(VISIBILITY_OFF);
             me->StopMoving();
+            //DoCast(me, SPELL_OTHERWORLDLY_PORTAL, true);
             DoCast(me, SPELL_KAELTHAS_DEFEATED, true);
             //DoCast(me, SPELL_MARK_OF_KAELTHAS, true);
-            //DoCast(me, SPELL_OTHERWORLDLY_PORTAL, true);
             Init = true;
         }
 
@@ -789,6 +794,7 @@ struct TRINITY_DLL_DECL npc_kaelthas_imageAI : public ScriptedAI
                             adal->Yell(ADAL_WHISPER4, 0, (*i));
                         }
                     }
+                    me->SetVisibility(VISIBILITY_ON);
                     break;
                 case 4:
                     me->Yell(KAEL_YELL1, 0, 0);
@@ -801,7 +807,13 @@ struct TRINITY_DLL_DECL npc_kaelthas_imageAI : public ScriptedAI
                     break;
                 case 7:
                     me->Yell(KAEL_YELL4, 0, 0);
+                    NextStep_Timer = 6000;
                     break;
+                case 8:
+                    if(FireGO)
+                        FireGO->Delete();
+                    break;
+
             }
             Step++;
         }
@@ -820,9 +832,15 @@ bool ChooseReward_npc_Adal(Player *player, Creature *_Creature, const Quest *_Qu
 {
     if(_Quest->GetQuestId() == QUEST_VERDANT_SPHERE)
     {
-        Creature* kael = _Creature->SummonCreature(CREATURE_KAEL, -1851.75, 5454.77, -2.36, 4.34, TEMPSUMMON_TIMED_DESPAWN, 100000);
+        GameObject *fire = _Creature->SummonGameObject(185170, -1831.9, 5429.7, -1.5, 0, 0, 0, 0, 0, 0);
+       // if(fire)
+       //     _Creature->CastSpell(fire, SPELL_MARK_OF_KAELTHAS, true);
+
+        Creature* kael = _Creature->SummonCreature( CREATURE_KAEL, -1839.6, 5429.8, -1.5, 3.1214, TEMPSUMMON_TIMED_DESPAWN, 100000);
+        
         ((npc_kaelthas_imageAI*)kael->AI())->Defeater_Name = player->GetName();
         ((npc_kaelthas_imageAI*)kael->AI())->Defeater_Gender = player->getGender() == GENDER_MALE ? "his" : "her";
+        ((npc_kaelthas_imageAI*)kael->AI())->FireGO = fire;
     }
     return false;
 }
