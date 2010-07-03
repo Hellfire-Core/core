@@ -557,7 +557,7 @@ void Aura::Update(uint32 diff)
             }
         }
     }
-    
+
     // Scalding Water
     if(GetId() == 37284)
     {
@@ -2181,6 +2181,14 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
     // AT REMOVE
     else
     {
+        // Control Piece - Chess Event
+        if(GetId() == 30019)
+        {
+            Unit *charm = caster->GetCharm();
+            if(charm)
+                charm->RemoveAurasDueToSpell(30019,0);  // Also remove aura from charmed creature, not only from us :]
+        }
+
         if( m_target->GetTypeId() == TYPEID_PLAYER && GetSpellProto()->Effect[0]==72 )
         {
             // spells with SpellEffect=72 and aura=4: 6196, 6197, 21171, 21425
@@ -3267,7 +3275,7 @@ void Aura::HandleModCharm(bool apply, bool Real)
         if(int32(m_target->getLevel()) > m_modifier.m_amount)
             return;
 
-        m_target->SetCharmedOrPossessedBy(caster, false);
+        m_target->SetCharmedOrPossessedBy(caster, (GetId() == 30019) ? true : false);
     }
     else
         m_target->RemoveCharmedOrPossessedBy(caster);

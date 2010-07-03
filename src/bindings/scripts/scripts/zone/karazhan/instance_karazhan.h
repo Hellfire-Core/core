@@ -3,7 +3,7 @@
 
 #include "def_karazhan.h"
 
-#define ENCOUNTERS      12
+#define ENCOUNTERS      13
 
 /*
 0  - Attumen + Midnight (optional)
@@ -18,6 +18,7 @@
 9  - Chess Event
 10 - Prince Malchezzar
 11 - Nightbane
+12 - Chess Event Team
 */
 
 struct TRINITY_DLL_DECL instance_karazhan : public ScriptedInstance
@@ -44,9 +45,10 @@ struct TRINITY_DLL_DECL instance_karazhan : public ScriptedInstance
     uint64 MastersTerraceDoor[2];
     uint64 ImageGUID;
     uint64 AranGUID;
-    uint64 BlizzardGUID;
     uint64 MedivhGUID;
     uint32 CheckTimer;
+
+    std::list<uint64> forChessList;
 
     bool needRespawn;
 

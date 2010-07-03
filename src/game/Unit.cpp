@@ -9937,7 +9937,14 @@ void Unit::UpdateCharmAI()
     {
         if(isCharmed())
         {
-            i_disabledAI = i_AI;
+            if(((Creature*)this)->GetScriptName() == "npc_chesspiece") // UGLY AND BAD HACK, Find a way to remove it ;] 
+            {                                                          // Find better way to disalow PossessedAI to override ScriptedAI
+                i_disabledAI = NULL;                                   // or make possibility to script PossessedAI
+                return;
+            }
+            else
+                i_disabledAI = i_AI;
+
             if(isPossessed())
                 i_AI = new PossessedAI((Creature*)this);
             else

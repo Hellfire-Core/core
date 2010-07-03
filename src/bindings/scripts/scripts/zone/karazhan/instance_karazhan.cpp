@@ -42,7 +42,6 @@ void instance_karazhan::Initialize()
     TerestianGUID       = 0;
     MoroesGUID          = 0;
     AranGUID            = 0;
-    BlizzardGUID        = 0;
 
     NightbaneGUID       = 0;
 
@@ -85,6 +84,7 @@ uint32 instance_karazhan::GetData(uint32 identifier)
         case DATA_CHESS_EVENT:            return Encounters[9];
         case DATA_MALCHEZZAR_EVENT:       return Encounters[10];
         case DATA_NIGHTBANE_EVENT:        return Encounters[11];
+        case CHESS_EVENT_TEAM:            return Encounters[12];
         case DATA_OPERA_PERFORMANCE:      return OperaEvent;
         case DATA_OPERA_OZ_DEATHCOUNT:    return OzDeathCount;
         case DATA_IMAGE_OF_MEDIVH:        return ImageGUID;
@@ -95,6 +95,7 @@ uint32 instance_karazhan::GetData(uint32 identifier)
 
 void instance_karazhan::OnCreatureCreate(Creature *creature, uint32 entry)
 {
+    uint64 temp;
     switch (creature->GetEntry())
     {
         case 17229:   KilrekGUID = creature->GetGUID();      break;
@@ -102,10 +103,22 @@ void instance_karazhan::OnCreatureCreate(Creature *creature, uint32 entry)
         case 15687:   MoroesGUID = creature->GetGUID();      break;
         case 16524:   AranGUID = creature->GetGUID();        break;
         case 16816:   MedivhGUID = creature->GetGUID();      break;
-        case 17161:
-            BlizzardGUID = creature->GetGUID();
-            creature->SetReactState(REACT_PASSIVE);
-            break;
+		case 22519:
+		case 17469:
+		case 17211:
+		case 21748:
+		case 21664:
+		case 21750:
+		case 21683:
+		case 21747:
+		case 21682:
+		case 21726:
+		case 21160:
+		case 21752:
+		case 21684:
+			temp = creature->GetGUID();
+			forChessList.push_back(temp);
+			break;
     }
 }
 
@@ -128,7 +141,7 @@ uint64 instance_karazhan::GetData64(uint32 data)
         case DATA_MASTERS_TERRACE_DOOR_1:      return NetherspaceDoor;
         case DATA_MASTERS_TERRACE_DOOR_2:      return MastersTerraceDoor[1];
         case DATA_ARAN:                        return AranGUID;
-        case DATA_BLIZZARD:                    return BlizzardGUID;
+        case DATA_CHESS_ECHO_OF_MEDIVH:        return MedivhGUID;
     }
 
     return 0;
@@ -177,6 +190,10 @@ void instance_karazhan::SetData(uint32 type, uint32 data)
     case DATA_CHESS_EVENT:
         if(Encounters[9] != DONE)
             Encounters[9] = data;
+        break;
+    case CHESS_EVENT_TEAM:
+        if(Encounters[12] != DONE)
+            Encounters[12] = data;
         break;
     case DATA_MALCHEZZAR_EVENT:
         if(Encounters[10] != DONE)
@@ -324,7 +341,6 @@ void instance_karazhan::Update(uint32 diff)
             CheckTimer -= diff;
     }
 }
-
 
 InstanceData* GetInstanceData_instance_karazhan(Map* map)
 {
