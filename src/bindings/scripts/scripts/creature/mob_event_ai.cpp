@@ -1141,6 +1141,13 @@ struct TRINITY_DLL_DECL Mob_EventAI : public ScriptedAI
             case 17418:
                 ((Player*)killer)->KilledMonster(21276, m_creature->GetGUID());
                 break;
+                //Disrupting the Twilight Portal
+            case 22341:
+            case 22342:
+            case 22343:
+            case 22393:
+            case 22363:
+                ((Player*)killer)->KilledMonster(23393, m_creature->GetGUID());
             }
         }
         //Handle Evade events
