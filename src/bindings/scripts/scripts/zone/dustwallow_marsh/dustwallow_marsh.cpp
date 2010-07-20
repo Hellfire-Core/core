@@ -267,20 +267,25 @@ struct TRINITY_DLL_DECL mob_mottled_drywallow_crocolisksAI : public ScriptedAI
     void Reset() {}
     void JustDied (Unit* killer)
     {
-        if (killer)
-        {
-            Player* pl;
-            if (killer->GetTypeId() != TYPEID_PLAYER)
-                pl = (Player*)m_creature->GetUnit(*m_creature, killer->GetOwnerGUID());
-            else
-                pl = (Player*)killer;
+        Player *pPlayer = NULL;
 
-            if(pl->GetTypeId() == TYPEID_PLAYER && pl->GetQuestStatus(QUEST_THE_GRIMTOTEM_WEAPON) == QUEST_STATUS_INCOMPLETE)
-            {
-                Unit* totem = FindCreature(NPC_CAPTURED_TOTEM, 20.0, m_creature);   //blizzlike(?) check by dummy aura is NOT working, mysteriously...
-                if(totem)
-                    pl->KilledMonster(NPC_CAPTURED_TOTEM, pl->GetGUID());
-            }
+        if(!IS_PLAYER_GUID(killer->GetGUID()))
+        {
+            if(!IS_PLAYER_GUID(killer->GetCharmerOrOwnerGUID()))
+                return;
+            else
+                pPlayer = killer->GetPlayer(killer->GetCharmerOrOwnerGUID());
+        }
+        else
+            pPlayer = (Player*)killer;
+
+        if(!pPlayer)
+            return;
+
+        if(pPlayer->GetQuestStatus(QUEST_THE_GRIMTOTEM_WEAPON) == QUEST_STATUS_INCOMPLETE)
+        {
+            if(Unit* totem = FindCreature(NPC_CAPTURED_TOTEM, 20.0, m_creature))   //blizzlike(?) check by dummy aura is NOT working, mysteriously...
+                pPlayer->KilledMonster(NPC_CAPTURED_TOTEM, pPlayer->GetGUID());
         }
     }
     void Aggro(Unit* who) {}
