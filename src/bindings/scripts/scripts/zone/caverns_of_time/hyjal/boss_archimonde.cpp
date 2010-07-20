@@ -378,7 +378,7 @@ struct TRINITY_DLL_DECL boss_archimondeAI : public hyjal_trashAI
 
     void UpdateAI(const uint32 diff)
     {
-        
+
         if(!InCombat)
         {
             if(pInstance)
@@ -428,6 +428,11 @@ struct TRINITY_DLL_DECL boss_archimondeAI : public hyjal_trashAI
 
         if(CheckTimer < diff)
         {
+            if (m_creature->GetDistance(wLoc) > 125)
+            {
+                EnterEvadeMode();
+                return;
+            }
             DoZoneInCombat();
 
             if(m_creature->GetUInt64Value(UNIT_FIELD_TARGET) != m_creature->getVictim()->GetGUID())
@@ -584,7 +589,7 @@ struct TRINITY_DLL_DECL boss_archimondeAI : public hyjal_trashAI
             if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true))
                 //AddSpellToCast(target, SPELL_GRIP_OF_THE_LEGION);
                 DoCast(target, SPELL_GRIP_OF_THE_LEGION);
-            
+
             if(AirBurstTimer < 3000)
                 AirBurstTimer = 3000;
 
