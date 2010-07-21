@@ -364,7 +364,7 @@ struct TRINITY_DLL_DECL mob_dragonmaw_peonAI : public ScriptedAI
             PoisonTimer = 0;
             m_creature->DealDamage(m_creature, m_creature->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
         }else PoisonTimer -= diff;
-        
+
          DoMeleeAttackIfReady();
     }
 };
@@ -475,15 +475,15 @@ bool GossipSelect_npc_grand_commander_ruusk(Player *player, Creature *_Creature,
             player->SEND_GOSSIP_MENU(10406, _Creature->GetGUID());
             break;
         case GOSSIP_ACTION_INFO_DEF+3:
-            player->ADD_GOSSIP_ITEM(0, GOSSIP_SGCR3, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+4);                                                            
+            player->ADD_GOSSIP_ITEM(0, GOSSIP_SGCR3, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+4);
             player->SEND_GOSSIP_MENU(10407, _Creature->GetGUID());
             break;
         case GOSSIP_ACTION_INFO_DEF+4:
-            player->ADD_GOSSIP_ITEM(0, GOSSIP_SGCR4, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+5);                                                    
+            player->ADD_GOSSIP_ITEM(0, GOSSIP_SGCR4, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+5);
             player->SEND_GOSSIP_MENU(10408, _Creature->GetGUID());
             break;
         case GOSSIP_ACTION_INFO_DEF+5:
-            player->ADD_GOSSIP_ITEM(0, GOSSIP_SGCR5, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+6);                                                    
+            player->ADD_GOSSIP_ITEM(0, GOSSIP_SGCR5, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+6);
             player->SEND_GOSSIP_MENU(10409, _Creature->GetGUID());
             break;
         case GOSSIP_ACTION_INFO_DEF+6:
@@ -732,6 +732,7 @@ struct TRINITY_DLL_DECL npc_overlord_morghorAI : public ScriptedAI
 
     uint32 ConversationTimer;
     uint32 Step;
+    uint32 resetTimer;
 
     bool Event;
 
@@ -742,6 +743,8 @@ struct TRINITY_DLL_DECL npc_overlord_morghorAI : public ScriptedAI
 
         ConversationTimer = 0;
         Step = 0;
+
+        resetTimer = 180000;
 
         Event = false;
     }
@@ -869,7 +872,7 @@ struct TRINITY_DLL_DECL npc_overlord_morghorAI : public ScriptedAI
                 Yarzill->CastSpell(plr, 41540, true);
             return 1000;}break;
         case 32: m_creature->GetMotionMaster()->MovePoint(0, -5085.77, 577.231, 86.6719); return 5000; break;
-        case 33: Reset(); return 100; break;
+        case 33: EnterEvadeMode(); return 100; break;
 
         default : return 0;
         }
@@ -1881,12 +1884,12 @@ static float SuccubPos2[4] = {-3730.46,1041.40,55.95,4.60};
 #define OLUMS_SPIRIT                22870
 #define SPELL_OLUMS_SACRIFICE       39552
 #define STATE_DROWNED                 383
- 
+
 // BT prelude after quest 10944 postions data
 static float OlumPos[4] = {-3729.17,1035.63,55.95,5.82};
 static float OlumNewPos[4] = {-3721.87,1031.86,55.95,5.90};
 static float AkamaPos[4] = {-3714.50,1028.95,55.95,2.57};
-static float AkamaNewPos[4] = {-3718.33,1030.27,55.95,2.77}; 
+static float AkamaNewPos[4] = {-3718.33,1030.27,55.95,2.77};
 
 
 
@@ -1895,7 +1898,7 @@ static float AkamaNewPos[4] = {-3718.33,1030.27,55.95,2.77};
 struct TRINITY_DLL_DECL npc_AkamaAI : public ScriptedAI
 {
     npc_AkamaAI(Creature* c) : ScriptedAI(c) {}
- 
+
     uint64 VagathGUID;
     uint64 Succub1GUID;
     uint64 Succub2GUID;
@@ -1903,20 +1906,20 @@ struct TRINITY_DLL_DECL npc_AkamaAI : public ScriptedAI
     uint64 OlumGUID;
     uint64 IllidanGUID;
     uint64 OlumSpiritGUID;
- 
+
     uint32 TalkTimer;
     uint32 Step;
- 
+
     std::list<Unit*> targets;
- 
+
     bool EventStarted;
     bool PreludeEventStarted;
- 
+
     void Reset()
     {
         VagathGUID = 0;
         Step = 0;
- 
+
         TalkTimer = 0;
         EventStarted = false;
         targets.clear();
@@ -1932,9 +1935,9 @@ struct TRINITY_DLL_DECL npc_AkamaAI : public ScriptedAI
         PreludeEventStarted = false;
 
     }
- 
+
     void Aggro(Unit* who){}
- 
+
     void BuildNearbyUnitsList()
     {
         float range = 20.0f;
@@ -1947,23 +1950,23 @@ struct TRINITY_DLL_DECL npc_AkamaAI : public ScriptedAI
     {
         Step = 1;
         EventStarted = true;
- 
+
         Creature* Vagath = m_creature->SummonCreature(VAGATH,VagathPos[0],VagathPos[1],VagathPos[2],VagathPos[3],TEMPSUMMON_CORPSE_TIMED_DESPAWN,0);
         Creature* Succub1 = m_creature->SummonCreature(ILLIDARI_SUCCUBUS,SuccubPos1[0],SuccubPos1[1],SuccubPos1[2],SuccubPos1[3],TEMPSUMMON_CORPSE_TIMED_DESPAWN,0);
         Creature* Succub2 = m_creature->SummonCreature(ILLIDARI_SUCCUBUS,SuccubPos2[0],SuccubPos2[1],SuccubPos2[2],SuccubPos2[3],TEMPSUMMON_CORPSE_TIMED_DESPAWN,0);
-       
+
         if(!Vagath || !Succub1 || !Succub2)
             return;
- 
+
         VagathGUID = Vagath->GetGUID();
         Succub1GUID = Succub1->GetGUID();
         Succub2GUID = Succub2->GetGUID();
- 
+
         Vagath->setFaction(35);
         TalkTimer = 3000;
- 
+
         BuildNearbyUnitsList();
-    } 
+    }
 
     uint32 NextStep(uint32 Step)
     {
@@ -1971,17 +1974,17 @@ struct TRINITY_DLL_DECL npc_AkamaAI : public ScriptedAI
         Unit* Succub1 = Unit::GetUnit((*m_creature),Succub1GUID);
         Unit* Succub2 = Unit::GetUnit((*m_creature),Succub2GUID);
         Unit* maiev = FindCreature(MAIEV_SHADOWSONG, 50, m_creature);
-       
+
         switch(Step)
         {
             case 0:
             return 0;
-           
+
             case 1:
                 if(vaga)
                 ((Creature*)vaga)->Say(SAY_DIALOG_VAGATH_1,LANG_UNIVERSAL,NULL);
                 return 3000;
-           
+
             case 2:
                 for(std::list<Unit*>::iterator iter = targets.begin(); iter != targets.end(); ++iter)
                 {
@@ -1989,7 +1992,7 @@ struct TRINITY_DLL_DECL npc_AkamaAI : public ScriptedAI
                     DoWhisper(SAY_WHISPER_AKAMA_2, (*iter));
                 }
                 return 1000;
-           
+
             case 3:
                 for(std::list<Unit*>::iterator iter = targets.begin(); iter != targets.end(); ++iter)
                 {
@@ -1997,7 +2000,7 @@ struct TRINITY_DLL_DECL npc_AkamaAI : public ScriptedAI
                     DoCast((*iter), SPELL_FAKE_KILL_VISUAL);
                 }
                 return 1000;
-           
+
             case 4:
                 for(std::list<Unit*>::iterator iter = targets.begin(); iter != targets.end(); ++iter)
                 {
@@ -2010,16 +2013,16 @@ struct TRINITY_DLL_DECL npc_AkamaAI : public ScriptedAI
                     }
                 }
                 return 3000;
-           
+
             case 5:
                 m_creature->Say(SAY_DIALOG_AKAMA_3,LANG_UNIVERSAL,NULL);
                 return 12000;
-           
+
             case 6:
                 if(vaga)
                 ((Creature*)vaga)->Say(SAY_DIALOG_VAGATH_4,LANG_UNIVERSAL,NULL);
                 return 15000;
-           
+
             case 7:
                 if(vaga)
                 ((Creature*)vaga)->setDeathState(CORPSE);
@@ -2028,7 +2031,7 @@ struct TRINITY_DLL_DECL npc_AkamaAI : public ScriptedAI
                 if(Succub2)
                 ((Creature*)Succub2)->setDeathState(CORPSE);
                 return 3000;
-           
+
             case 8:
                 for(std::list<Unit*>::iterator iter = targets.begin(); iter != targets.end(); ++iter)
                 {
@@ -2036,7 +2039,7 @@ struct TRINITY_DLL_DECL npc_AkamaAI : public ScriptedAI
                     DoCast((*iter), SPELL_RESURECTION_VISUAL);
                 }
                 return 2000;
-           
+
             case 9:
                 for(std::list<Unit*>::iterator iter = targets.begin(); iter != targets.end(); ++iter)
                 {
@@ -2049,25 +2052,25 @@ struct TRINITY_DLL_DECL npc_AkamaAI : public ScriptedAI
                 }
                 m_creature->Say(SAY_DIALOG_AKAMA_5, LANG_UNIVERSAL, NULL);
                 return 12000;
-           
+
             case 10:
                 if(maiev)
                 ((Creature*)maiev)->Say(SAY_DIALOG_MAIEV_6,LANG_UNIVERSAL,NULL);
                 return 12000;
-           
+
             case 11:
                 m_creature->Say(SAY_DIALOG_AKAMA_7,LANG_UNIVERSAL,NULL);
                 return 12000;
-           
+
             case 12:
                 if(maiev)
                 ((Creature*)maiev)->Say(SAY_DIALOG_MAIEV_8,LANG_UNIVERSAL,NULL);
                 return 1000;
-           
+
             case 13:
                 Reset();
                 return 100;
-           
+
             default:
             return 0;
         }
@@ -2089,20 +2092,20 @@ struct TRINITY_DLL_DECL npc_AkamaAI : public ScriptedAI
         DoScriptText(SAY_DIALOG_OLUM_1,Olum);
         Olum->SendMonsterMove(OlumNewPos[0],OlumNewPos[1],OlumNewPos[2],5000);
         Olum->Relocate(OlumNewPos[0],OlumNewPos[1],OlumNewPos[2],OlumNewPos[3]);
-        
+
         TalkTimer = 13000;
     }
 
     uint32 PreludeNextStep(uint32 Step)
-    {       
+    {
         Unit* olum = Unit::GetUnit((*m_creature),OlumGUID);
         Unit* Illidan = Unit::GetUnit((*m_creature), IllidanGUID);
-       
+
         switch(Step)
         {
             case 0:
             return 0;
-           
+
             case 1: DoScriptText(SAY_DIALOG_PRE_AKAMA_1,m_creature); return 4000;
             case 2: if(olum) DoScriptText(SAY_DIALOG_OLUM_2,(Creature*)olum); return 8000;
             case 3: DoScriptText(SAY_DIALOG_PRE_AKAMA_2,m_creature); return 7000;
@@ -2170,7 +2173,7 @@ struct TRINITY_DLL_DECL npc_AkamaAI : public ScriptedAI
         }
         return 0;
     }
- 
+
     void UpdateAI(const uint32 diff)
     {
         if(EventStarted && VagathGUID)
@@ -2202,7 +2205,7 @@ struct TRINITY_DLL_DECL npc_AkamaAI : public ScriptedAI
         }
     }
 };
- 
+
 CreatureAI* GetAI_npc_Akama(Creature *_Creature)
 {
     return new npc_AkamaAI(_Creature);
@@ -2243,7 +2246,7 @@ EndContentData */
 
 struct TRINITY_DLL_DECL npc_shadowlord_triggerAI : public Scripted_NoMovementAI
 {
-    npc_shadowlord_triggerAI(Creature* c) : Scripted_NoMovementAI(c) 
+    npc_shadowlord_triggerAI(Creature* c) : Scripted_NoMovementAI(c)
     {
         x = m_creature->GetPositionX();
         y = m_creature->GetPositionY();
@@ -2258,7 +2261,7 @@ struct TRINITY_DLL_DECL npc_shadowlord_triggerAI : public Scripted_NoMovementAI
     uint32 Ccounter;        //is in combat counter
     float x, y, z;
 
-    static const int32 
+    static const int32
         SpawnX = -3249,
         SpawnY = 347,
         SpawnZ = 127;
@@ -2423,7 +2426,7 @@ struct TRINITY_DLL_DECL mob_shadowlord_deathwailAI : public ScriptedAI
         }
     }
 
-    void Aggro(Unit *who) 
+    void Aggro(Unit *who)
     {
         if(!flying)
             return;
@@ -2558,7 +2561,7 @@ struct TRINITY_DLL_DECL mob_shadowmoon_soulstealerAI : public Scripted_NoMovemen
                 AttackStart(*i);
             }
         }
-        
+
     }
 
     void Aggro(Unit* who)

@@ -985,7 +985,7 @@ void World::LoadConfigSettings(bool reload)
 
     m_configs[CONFIG_BATTLEGROUND_PREMATURE_FINISH_TIMER] = sConfig.GetIntDefault("BattleGround.PrematureFinishTimer", 0);
     m_configs[CONFIG_INSTANT_LOGOUT] = sConfig.GetIntDefault("InstantLogout", SEC_MODERATOR);
-    
+
     m_configs[CONFIG_GROUPLEADER_RECONNECT_PERIOD] = sConfig.GetIntDefault("GroupLeaderReconnectPeriod", 180);
 
     m_VisibleUnitGreyDistance = sConfig.GetFloatDefault("Visibility.Distance.Grey.Unit", 1);
@@ -1111,7 +1111,7 @@ void World::LoadConfigSettings(bool reload)
     m_configs[CONFIG_MAX_WHO] = sConfig.GetIntDefault("MaxWhoListReturns", 49);
     m_configs[CONFIG_PET_LOS] = sConfig.GetBoolDefault("vmap.petLOS", false);
     m_configs[CONFIG_VMAP_TOTEM] = sConfig.GetBoolDefault("vmap.totem", false);
-    
+
     m_configs[CONFIG_PREMATURE_BG_REWARD] = sConfig.GetBoolDefault("Battleground.PrematureReward", true);
     m_configs[CONFIG_BG_START_MUSIC] = sConfig.GetBoolDefault("MusicInBattleground", false);
     m_configs[CONFIG_START_ALL_SPELLS] = sConfig.GetBoolDefault("PlayerStart.AllSpells", false);
@@ -1610,9 +1610,9 @@ void World::Update(time_t diff)
 
             m_updateTimeSum = m_updateTime;
             m_updateTimeCount = 1;
-            
+
             if(GetUptime() > 43000 && !m_ShutdownTimer)
-            { 
+            {
                 SendWorldText(LANG_SYSTEMMESSAGE, "Autorestart in 10 mins");
                 ShutdownServ(600, SHUTDOWN_MASK_RESTART, RESTART_EXIT_CODE);
             }
@@ -1645,7 +1645,7 @@ void World::Update(time_t diff)
         ResetDailyQuests();
         m_NextDailyQuestReset += DAY;
     }
-    
+
     /// <ul><li> Handle auctions when the timer has passed
     if (m_timers[WUPDATE_AUCTIONS].Passed())
     {
@@ -1746,7 +1746,7 @@ void World::Update(time_t diff)
     RecordTimeDiff("UpdateGameEvents");
 
     /// </ul>
-    
+
     // update the instance reset times
     sInstanceSaveManager.Update();
     RecordTimeDiff("UpdateSaveMGR");
@@ -1968,7 +1968,7 @@ void World::SendGlobalText(const char* text, WorldSession *self)
     WorldPacket data;
 
     // need copy to prevent corruption by strtok call in LineFromMessage original string
-    char* buf = strdup(text);
+    char* buf = mangos_strdup(text);
     char* pos = buf;
 
     while(char* line = ChatHandler::LineFromMessage(pos))
@@ -1977,7 +1977,7 @@ void World::SendGlobalText(const char* text, WorldSession *self)
         SendGlobalMessage(&data, self);
     }
 
-    free(buf);
+    delete [] buf;
 }
 
 /// Send a packet to all players (or players selected team) in the zone (except self if mentioned)
