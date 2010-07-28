@@ -240,6 +240,10 @@ void CreatureGroup::LeaderMoveTo(float x, float y, float z)
         float angle = itr->second->follow_angle;
         float dist = itr->second->follow_dist;
 
+        // if follow distance is 0 then don't follow leader
+        if (!dist)
+            continue;
+
         float dx = x + cos(angle + pathangle) * dist;
         float dy = y + sin(angle + pathangle) * dist;
         float dz = z;

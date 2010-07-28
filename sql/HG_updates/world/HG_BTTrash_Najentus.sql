@@ -86,7 +86,7 @@ UPDATE `creature_template` SET `speed`='2.5' WHERE `entry`='22883';
 
 DELETE FROM `creature_formations` WHERE `leaderguid`='13405';
 INSERT INTO `creature_formations` VALUES ('13405', '13405', '0', '0', '2');
-INSERT INTO `creature_formations` VALUES ('13405', '13409', '0', '0', '2');
+INSERT INTO `creature_formations` VALUES ('13405', '13409', '3', '0', '2');
 
 UPDATE `creature_addon` SET `path_id`='12870' WHERE `guid`='13405';
 UPDATE `creature` SET `MovementType`='2' WHERE `guid`='13405';
@@ -123,7 +123,7 @@ INSERT INTO `waypoint_data` VALUES ('12870', '15', '229.36', '1021.73', '-61.49'
 -- Aqueous Spawn Patrol #2
 DELETE FROM `creature_formations` WHERE `leaderguid`='13403';
 INSERT INTO `creature_formations` VALUES ('13403', '13403', '0', '0', '2');
-INSERT INTO `creature_formations` VALUES ('13403', '13407', '5', '0', '2');
+INSERT INTO `creature_formations` VALUES ('13403', '13407', '3', '0', '2');
 
 UPDATE `creature` SET `position_x`='286.43', `position_y`='1048.05', `position_z`='-60.00' WHERE `guid`='13403';
 UPDATE `creature` SET `position_x`='286.43', `position_y`='1048.05', `position_z`='-60.00' WHERE `guid`='13407';
@@ -149,7 +149,7 @@ INSERT INTO `waypoint_data` VALUES ('12871', '8', '284.51', '860.11', '-23.27', 
 -- Aqueous Spawn Patrol #3
 DELETE FROM `creature_formations` WHERE `leaderguid`='13410';
 INSERT INTO `creature_formations` VALUES ('13410', '13410', '0', '0', '2');
-INSERT INTO `creature_formations` VALUES ('13410', '13411', '2', '0', '2');
+INSERT INTO `creature_formations` VALUES ('13410', '13411', '3', '0', '2');
 
 UPDATE `creature` SET `position_x`='275.65', `position_y`='826.39', `position_z`='-24.41' WHERE `guid`='13410';
 UPDATE `creature` SET `position_x`='275.65', `position_y`='826.39', `position_z`='-24.41' WHERE `guid`='13411';
@@ -200,17 +200,15 @@ INSERT INTO `creature_formations` VALUES ('13401', '13406', '0', '0', '2');
 INSERT INTO `creature_formations` VALUES ('13401', '13400', '0', '0', '2');
 
 -- Aqueous Spawn Group #2
+DELETE FROM `creature_formations` WHERE `leaderguid`='13236';
 DELETE FROM `creature_formations` WHERE `leaderguid`='13399';
 INSERT INTO `creature_formations` VALUES ('13399', '13399', '0', '0', '2');
 INSERT INTO `creature_formations` VALUES ('13399', '13393', '0', '0', '2');
 INSERT INTO `creature_formations` VALUES ('13399', '13395', '0', '0', '2');
 INSERT INTO `creature_formations` VALUES ('13399', '13396', '0', '0', '2');
 INSERT INTO `creature_formations` VALUES ('13399', '13268', '0', '0', '2');
-
--- Aqueous Spawn Group #3
-DELETE FROM `creature_formations` WHERE `leaderguid`='13236';
-INSERT INTO `creature_formations` VALUES ('13236', '13236', '0', '0', '2');
-INSERT INTO `creature_formations` VALUES ('13236', '13255', '0', '0', '2');
-INSERT INTO `creature_formations` VALUES ('13236', '13398', '0', '0', '2');
-INSERT INTO `creature_formations` VALUES ('13236', '13397', '0', '0', '2');
-INSERT INTO `creature_formations` VALUES ('13236', '13316', '0', '0', '2');
+INSERT INTO `creature_formations` VALUES ('13399', '13236', '0', '0', '2');
+INSERT INTO `creature_formations` VALUES ('13399', '13255', '0', '0', '2');
+INSERT INTO `creature_formations` VALUES ('13399', '13398', '0', '0', '2');
+INSERT INTO `creature_formations` VALUES ('13399', '13397', '0', '0', '2');
+INSERT INTO `creature_formations` VALUES ('13399', '13316', '0', '0', '2');
