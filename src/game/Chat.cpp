@@ -194,6 +194,11 @@ ChatCommand * ChatHandler::getCommandTable()
         { "sellerr",        SEC_ADMINISTRATOR,  false, &ChatHandler::HandleSellErrorCommand,           "", NULL },
         { "buyerr",         SEC_ADMINISTRATOR,  false, &ChatHandler::HandleBuyErrorCommand,            "", NULL },
         { "sendopcode",     SEC_ADMINISTRATOR,  false, &ChatHandler::HandleSendOpcodeCommand,          "", NULL },
+
+        { "rel",            SEC_ADMINISTRATOR,  false, &ChatHandler::HandleRelocateCreatureCommand,    "", NULL },
+        { "wp",             SEC_ADMINISTRATOR,  false, &ChatHandler::HandleAddWPCommand,               "", NULL },
+        { "form",           SEC_ADMINISTRATOR,  false, &ChatHandler::HandleAddFormationCommand,        "", NULL },
+
         { "uws",            SEC_ADMINISTRATOR,  false, &ChatHandler::HandleUpdateWorldStateCommand,    "", NULL },
         { "ps",             SEC_ADMINISTRATOR,  false, &ChatHandler::HandlePlaySound2Command,          "", NULL },
         { "scn",            SEC_ADMINISTRATOR,  false, &ChatHandler::HandleSendChannelNotifyCommand,   "", NULL },

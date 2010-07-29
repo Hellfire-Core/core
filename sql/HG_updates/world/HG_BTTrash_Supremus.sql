@@ -312,3 +312,5 @@ INSERT INTO `waypoint_data` VALUES ('53827', '2', '644.17', '921.75', '110.92','
 INSERT INTO `waypoint_data` VALUES ('53827', '3', '653.95', '857.93', '110.91', '0', '0', '0', '100', '0');
 INSERT INTO `waypoint_data` VALUES ('53827', '4', '724.63', '857.33', '110.89', '0', '0', '0', '100', '0');
 INSERT INTO `waypoint_data` VALUES ('53827', '5', '786.70', '919.08', '110.87','0', '0', '0', '100', '0');
+
+UPDATE `creature` SET `spawndist`='40' WHERE `guid`='53828';

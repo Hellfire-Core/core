@@ -312,6 +312,10 @@ class ChatHandler
         bool HandleDebugInArcCommand(const char* args);
         bool HandleDebugSpellFailCommand(const char* args);
 
+        bool HandleAddWPCommand(const char* args);
+        bool HandleAddFormationCommand(const char* args);
+        bool HandleRelocateCreatureCommand(const char *args);
+
         bool HandleGUIDCommand(const char* args);
         bool HandleNameCommand(const char* args);
         bool HandleSubNameCommand(const char* args);

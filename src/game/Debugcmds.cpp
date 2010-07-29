@@ -17,6 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+#include <iomanip>
 
 #include "Common.h"
 #include "Database/DatabaseEnv.h"
@@ -36,15 +37,17 @@
 #include <fstream>
 #include "ObjectMgr.h"
 
-bool ChatHandler::HandleDebugWPCommand(const char* args)
+bool ChatHandler::HandleAddWPCommand(const char* args)
 {
     std::fstream file;
     file.open("waypoints.txt", std::ios_base::app);
     if (file.fail())
         return false;
 
-    file << "'" << m_session->GetPlayer()->GetPositionX() << "', '" << m_session->GetPlayer()->GetPositionY() << "', '" << m_session->GetPlayer()->GetPositionZ() << "'" << std::endl;
-
+    file << "INSERT INTO `waypoint_data` VALUES ('0', '1', '"
+         << m_session->GetPlayer()->GetPositionX() << "', '"
+         << m_session->GetPlayer()->GetPositionY() << "', '"
+         << m_session->GetPlayer()->GetPositionZ() << "', '0', '0', '0', '100', '0');" << std::endl;
     if (*args)
     {
         int dist = atoi((char*)args);
@@ -56,6 +59,47 @@ bool ChatHandler::HandleDebugWPCommand(const char* args)
     file.close();
     return true;
 }
+
+bool ChatHandler::HandleAddFormationCommand(const char* args)
+{
+    if (!args)
+        return false;
+
+    std::fstream file;
+    file.open("formations.txt", std::ios_base::app);
+    if (file.fail())
+        return false;
+
+    uint32 leader = atoi((char*)args);
+    uint32 member = 0;
+    if (Unit *sel = getSelectedUnit())
+        member = ((Creature *)sel)->GetDBTableGUIDLow();
+
+    file << "INSERT INTO `creature_formations` VALUES ('" << leader << "', '" << member << "', '0', '0', '2');" << std::endl;
+    file.close();
+    return true;
+}
+
+bool ChatHandler::HandleRelocateCreatureCommand(const char* args)
+{
+    if (!args)
+        return false;
+
+    std::fstream file;
+    file.open("position.txt", std::ios_base::app);
+    if (file.fail())
+        return false;
+
+    uint32 guid = atoi((char*)args);
+
+    file << "UPDATE `creature` SET `position_x`='" << m_session->GetPlayer()->GetPositionX()
+         << "', `position_y`='" << m_session->GetPlayer()->GetPositionY()
+         << "', `position_z`='" << m_session->GetPlayer()->GetPositionZ()
+         << "' WHERE `guid`='" << guid << "';" << std::endl;
+    file.close();
+    return true;
+}
+
 
 bool ChatHandler::HandleDebugInArcCommand(const char* /*args*/)
 {
