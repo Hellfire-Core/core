@@ -98,24 +98,6 @@ bool ItemUse_item_only_for_flight(Player *player, Item* _Item, SpellCastTargets 
 }
 
 /*#####
-# item_attuned_crystal_cores
-#####*/
-
-bool ItemUse_item_attuned_crystal_cores(Player *player, Item* _Item, SpellCastTargets const& targets)
-{
-    if( targets.getUnitTarget() && targets.getUnitTarget()->GetTypeId()==TYPEID_UNIT &&
-        targets.getUnitTarget()->GetEntry() == 24972 && targets.getUnitTarget()->isDead() &&
-        (player->GetQuestStatus(11524) == QUEST_STATUS_INCOMPLETE || player->GetQuestStatus(11525) == QUEST_STATUS_INCOMPLETE) )
-    {
-        ((Creature*)targets.getUnitTarget())->RemoveCorpse();
-        return false;
-    }
-
-    player->SendEquipError(EQUIP_ERR_CANT_DO_RIGHT_NOW,_Item,NULL);
-    return true;
-}
-
-/*#####
 # item_blackwhelp_net
 #####*/
 
@@ -195,19 +177,6 @@ bool ItemUse_item_draenei_fishing_net(Player *player, Item* _Item, SpellCastTarg
     return false;
 }
 
-/*#####
-# item_disciplinary_rod
-#####*/
-
-bool ItemUse_item_disciplinary_rod(Player *player, Item* _Item, SpellCastTargets const& targets)
-{
-    if( targets.getUnitTarget() && targets.getUnitTarget()->GetTypeId()==TYPEID_UNIT &&
-        (targets.getUnitTarget()->GetEntry() == 15941 || targets.getUnitTarget()->GetEntry() == 15945) )
-        return false;
-
-    player->SendEquipError(EQUIP_ERR_CANT_DO_RIGHT_NOW,_Item,NULL);
-    return true;
-}
 
 /*#####
 # item_nether_wraith_beacon
@@ -402,40 +371,92 @@ enum aliveMask
     T_DEAD  = 0x2
 };
 
+#define MAX_TARGETS 4
+
 bool ItemUse_item_specific_target(Player *player, Item* _Item, SpellCastTargets const& targets)
 {
     Unit* uTarget = targets.getUnitTarget();
+    if(!uTarget)
+        uTarget = Unit::GetUnit(*player, player->GetSelection());
+
     uint32 iEntry = _Item->GetEntry();
-    uint32 cEntry = 0;
+    uint32 cEntry[MAX_TARGETS] = { 0, 0, 0, 0 };
+    bool removeCorpse = false;
 
     uint8 targetState = T_ALIVE & T_DEAD;
 
     switch(iEntry)
     {
-        case 8149: cEntry = 7318; targetState = T_DEAD; break; // Voodoo Charm
-        case 22783: cEntry = 16329; break; // Sunwell Blade
-        case 22784: cEntry = 16329; break; // Sunwell Orb 
-        case 22962: cEntry = 16518; break; // Inoculating Crystal
-        case 30259: cEntry = 20132; break; // Voren'thal's Presence
-        case 30656: cEntry = 21729; break; // Protovoltaic Magneto Collector
-        case 31463: cEntry = 19440; break; // Zezzak's Shard
-        case 32321: cEntry = 22979; break; // Sparrowhawk Net           
-        case 32825: cEntry = 22357; break; // Soul Cannon
-        case 34255: cEntry = 24922; break; // Razorthorn Flayer Gland
+        case 8149:  cEntry[0] = 7318; targetState = T_DEAD; break; // Voodoo Charm
+        case 22783: cEntry[0] = 16329; break; // Sunwell Blade
+        case 22784: cEntry[0] = 16329; break; // Sunwell Orb 
+        case 22962: cEntry[0] = 16518; break; // Inoculating Crystal
+        case 30259: cEntry[0] = 20132; break; // Voren'thal's Presence
+        case 30656: cEntry[0] = 21729; break; // Protovoltaic Magneto Collector
+        case 31463: cEntry[0] = 19440; break; // Zezzak's Shard
+        case 32321: cEntry[0] = 22979; break; // Sparrowhawk Net           
+        case 32825: cEntry[0] = 22357; break; // Soul Cannon
+        case 34255: cEntry[0] = 24922; break; // Razorthorn Flayer Gland
+        case 25552: cEntry[0] = 17148; cEntry[1] = 17147; cEntry[2] = 17146; targetState = T_DEAD; removeCorpse = true; break; // Warmaul Ogre Banner
+        case 22473: cEntry[0] = 15941; cEntry[1] = 15945; break; // Disciplinary Rod
+        case 34368: cEntry[0] = 24972; targetState = T_DEAD; removeCorpse = true; break; // Attuned Crystal Cores
+        case 29513: cEntry[0] = 19354; break; // Staff of the Dreghood Elders
+        case 32680: cEntry[0] = 23311; targetState = T_ALIVE; break; // Booterang
+        case 30251: cEntry[0] = 20058; break; // Rina's Diminution Powder
     }
 
     if(uTarget && uTarget->GetTypeId() == TYPEID_UNIT)
     {
-        if(uTarget->GetEntry() == cEntry)
+        bool properTarget = false;
+        for(uint8 i = 0; i < MAX_TARGETS; i++)
         {
-            if(targetState & (T_ALIVE & T_DEAD))
-                return false;
+            if(uTarget->GetEntry() == cEntry[i])
+            {
+                properTarget = true;
+                break;
+            }
+        }
 
-            if(targetState & T_ALIVE && uTarget->isAlive())
-                return false;
+        if(properTarget)
+        { 
+            switch(targetState)
+            {
+                case(T_ALIVE & T_DEAD):
+                    return false;
+                case T_ALIVE:
+                {
+                    if(uTarget->isAlive())
+                        return false;
+                    else
+                    {
+                        WorldPacket data(SMSG_CAST_FAILED, (4+2));              // prepare packet error message
+                        data << uint32(_Item->GetEntry());                      // itemId
+                        data << uint8(SPELL_FAILED_TARGETS_DEAD);               // reason
+                        player->GetSession()->SendPacket(&data);                // send message: Invalid target
+                        player->SendEquipError(EQUIP_ERR_NONE,_Item,NULL);
+                        return true;
+                    }
+                }
+                case T_DEAD:
+                {
+                    if(!uTarget->isAlive())
+                    {
+                        if(removeCorpse)
+                            ((Creature*)uTarget)->RemoveCorpse();
 
-            if(targetState & T_DEAD && !uTarget->isAlive())
-                return false;
+                        return false;
+                    }
+                    else
+                    {
+                        WorldPacket data(SMSG_CAST_FAILED, (4+2));              // prepare packet error message
+                        data << uint32(_Item->GetEntry());                      // itemId
+                        data << uint8(SPELL_FAILED_TARGET_NOT_DEAD);            // reason
+                        player->GetSession()->SendPacket(&data);                // send message: Invalid target
+                        player->SendEquipError(EQUIP_ERR_NONE,_Item,NULL);
+                        return true;
+                    }
+                }
+            }
         }
     }
 
@@ -463,18 +484,8 @@ void AddSC_item_scripts()
     newscript->RegisterSelf();
 
     newscript = new Script;
-    newscript->Name="item_attuned_crystal_cores";
-    newscript->pItemUse = &ItemUse_item_attuned_crystal_cores;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
     newscript->Name="item_blackwhelp_net";
     newscript->pItemUse = &ItemUse_item_blackwhelp_net;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name="item_disciplinary_rod";
-    newscript->pItemUse = &ItemUse_item_disciplinary_rod;
     newscript->RegisterSelf();
 
     newscript = new Script;
