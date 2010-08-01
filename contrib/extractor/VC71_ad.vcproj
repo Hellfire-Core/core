@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="7.10"
 	Name="ad"
 	ProjectGUID="{D7552D4F-408F-4F8E-859B-366659150CF4}"
-	RootNamespace="ad"
-	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -58,9 +56,7 @@
 				AssemblerListingLocation="$(IntDir)\"
 				ObjectFile="$(IntDir)\"
 				ProgramDataBaseFileName="$(IntDir)\"
-				XMLDocumentationFileName="$(IntDir)\"
 				BrowseInformation="1"
-				BrowseInformationFile="$(IntDir)"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				DebugInformationFormat="4"
@@ -87,8 +83,6 @@
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="./ad debug.pdb"
 				SubSystem="1"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -108,6 +102,9 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -156,7 +153,6 @@
 				AssemblerListingLocation="$(IntDir)\"
 				ObjectFile="$(IntDir)\"
 				ProgramDataBaseFileName="$(IntDir)\"
-				XMLDocumentationFileName="$(IntDir)\"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 			/>
@@ -181,8 +177,6 @@
 				IgnoreDefaultLibraryNames="LIBC.lib"
 				ProgramDatabaseFile="./ad.pdb"
 				SubSystem="1"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -202,6 +196,9 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
