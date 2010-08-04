@@ -2583,6 +2583,13 @@ void SpellMgr::LoadSpellCustomAttr()
             spellInfo->MaxAffectedTargets = 4;
             break;
         case 42005: // Bloodboil
+            spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_TARGET_ENEMY;
+            spellInfo->EffectImplicitTargetB[0] = 0;
+            spellInfo->rangeIndex = 6;
+            break;
+        case 41625: // Fel Rage 3
+            spellInfo->Stances = 0;
+            break;
         case 38296: //Spitfire Totem
         case 37676: //Insidious Whisper
         case 46008: //Negative Energy

@@ -4039,10 +4039,13 @@ void Aura::HandleModMechanicImmunity(bool apply, bool Real)
     switch(m_modifier.m_miscvalue)
     {
         case MECHANIC_INVULNERABILITY:
-            m_target->ModifyAuraState(AURA_STATE_FORBEARANCE,apply);
+            m_target->ModifyAuraState(AURA_STATE_FORBEARANCE, apply);
             break;
         case MECHANIC_SHIELD:
-            m_target->ModifyAuraState(AURA_STATE_WEAKENED_SOUL,apply);
+            m_target->ModifyAuraState(AURA_STATE_WEAKENED_SOUL, apply);
+            break;
+        case MECHANIC_FREEZE:
+            m_target->ModifyAuraState(AURA_STATE_HYPOTHERMIA, apply);
             break;
     }
 
