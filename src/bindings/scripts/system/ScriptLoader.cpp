@@ -373,6 +373,13 @@ extern void AddSC_razorfen_kraul();
 
 //Redridge Mountains
 //Ruins of Ahn'Qiraj
+extern void AddSC_boss_ayamiss();
+//extern void AddSC_boss_buru();
+extern void AddSC_boss_kurinnaxx();
+extern void AddSC_boss_moam();
+//extern void AddSC_boss_ossirian();
+//extern void AddSC_boss_rajaxx();
+//extern void AddSC_instance_ruins_of_anhqiraj(); //Placeholder
 //Scarlet Monastery
 extern void AddSC_boss_arcanist_doan();
 extern void AddSC_boss_azshir_the_sleepless();
@@ -939,6 +946,14 @@ void AddScripts()
 
     //Redridge Mountains
     //Ruins of Ahn'Qiraj
+    AddSC_boss_ayamiss();
+   // AddSC_boss_buru();
+    AddSC_boss_kurinnaxx();
+    AddSC_boss_moam();
+   // AddSC_boss_ossirian();
+   // AddSC_boss_rajaxx();
+   // AddSC_instance_ruins_of_anhqiraj();
+
     //Scarlet Monastery
     AddSC_boss_arcanist_doan();
     AddSC_boss_azshir_the_sleepless();
