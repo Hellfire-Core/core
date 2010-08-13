@@ -40,7 +40,7 @@ const int LogType_count = int(LogError) +1;
 
 Log::Log() :
     raLogfile(NULL), logfile(NULL), gmLogfile(NULL), charLogfile(NULL), specialLogFile(NULL),
-    dberLogfile(NULL), arenaLogFile(NULL), cheatLogFile(NULL), m_colored(false), m_includeTime(false), m_gmlog_per_account(false)
+    dberLogfile(NULL), arenaLogFile(NULL), bossLogFile(NULL), cheatLogFile(NULL), m_colored(false), m_includeTime(false), m_gmlog_per_account(false)
 {
     Initialize();
 }
@@ -235,6 +235,8 @@ void Log::Initialize()
 
     arenaLogFile = openLogFile("ArenaLogFile",NULL,"a");
 
+    bossLogFile = openLogFile("BossLogFile", NULL, "a");
+
     cheatLogFile = openLogFile("CheatLogFile", NULL, "a");
 
     // Main log file settings
@@ -428,6 +430,24 @@ void Log::outError( const char * err, ... )
         fflush(logfile);
     }
     fflush(stderr);
+}
+
+void Log::outBoss(const char *str, ...)
+{
+    if (!str)
+        return;
+
+    if(bossLogFile)
+    {
+        va_list ap;
+        outTimestamp(bossLogFile);
+        va_start(ap, str);
+        vfprintf(bossLogFile, str, ap);
+        fprintf(bossLogFile, "\n" );
+        va_end(ap);
+        fflush(bossLogFile);
+    }
+    fflush(stdout);
 }
 
 void Log::outArena( const char * str, ... )

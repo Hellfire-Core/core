@@ -561,7 +561,15 @@ void Loot::FillLoot(uint32 loot_id, LootStore const& store, Player* loot_owner)
         }
     }
     if (save)
+    {
         saveLootToDB(loot_owner);
+        std::stringstream ss;
+        ss << "Player's group: " << loot_owner->GetName() << ":(" << loot_owner->GetGUIDLow() << ") "
+           << "LootedItems: ";
+        for (std::vector<LootItem>::iterator iter = items.begin(); iter != items.end(); ++iter)
+            ss << "[" << (*iter).itemid << "] ";
+        sLog.outBoss(ss.str().c_str());
+    }
 }
 
 QuestItemList* Loot::FillFFALoot(Player* player)

@@ -11524,6 +11524,27 @@ void Unit::Kill(Unit *pVictim, bool durabilityLoss)
                 {
                     if(cVictim->GetCreatureInfo()->flags_extra & CREATURE_FLAG_EXTRA_INSTANCE_BIND)
                         ((InstanceMap *)m)->PermBindAllPlayers(creditedPlayer);
+
+                    // Killer == Player
+                    if (cVictim->GetCreatureInfo()->rank == CREATURE_ELITE_WORLDBOSS && this->GetTypeId() == TYPEID_PLAYER)
+                    {
+                        Player *killer = (Player *)this;
+                        std::stringstream ss;
+                        ss << "BossEntry: " << cVictim->GetEntry() << " InstanceId: " << cVictim->GetInstanceId()
+                           << " MapId: " << m->GetId() << " Players: ";
+                        if (Group *group = killer->GetGroup())
+                        {
+                            for (GroupReference *i = group->GetFirstMember(); true; i = i->next())
+                            {
+                                if (Player *member = i->getSource())
+                                    ss << member->GetName() << ":(" << member->GetGUIDLow() << ") ";
+
+                                if (!i->hasNext())
+                                    break;
+                            }
+                        }
+                        sLog.outBoss(ss.str().c_str());
+                    }
                 }
                 else
                 {
