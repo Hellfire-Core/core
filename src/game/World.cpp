@@ -2435,22 +2435,22 @@ void World::ResetDailyQuests()
         if(itr->second->GetPlayer())
             itr->second->GetPlayer()->ResetDailyQuestStatus();
 
-    uint32 heroicQuest[15] = { 11369, 11384, 11382, 11363, 11362, 11375, 11354, 11386, 11373, 11378, 11374, 11372, 11368, 11388, 11370 };
-    uint32 normalQuest[8]  = { 11389, 11371, 11376, 11383, 11364, 11500, 11385, 11387 };
+    uint32 heroicQuest[15] = { 11369, 11384, 11382, 11363, 11362, 11375, 11354, 11386, 11373, /*11378,*/ 11374, 11372, 11368, 11388, 11370 };
+    uint32 normalQuest[8]  = { 11389, 11371, 11376, 11383, 11364, /*11500,*/ 11385, 11387 };
     uint32 cookingQuest[4] = { 11380, 11377, 11381, 11379 };
     uint32 fishingQuest[5] = { 11666, 11665, 11669,11668, 11667 };
     uint32 alliancePVP[4]  = { 11335, 11336, 11337, 11338 };
     uint32 hordePVP[4]     = { 11339, 11340, 11341, 11342 };
 
-    uint32 temp = heroicQuest[urand(0,14)];
+    uint32 temp = heroicQuest[urand(0,13)];
     while(temp && temp == specialQuest[HEROIC])
-        temp = heroicQuest[urand(0,14)];
+        temp = heroicQuest[urand(0,13)];
 
     specialQuest[HEROIC]  = temp;
 
-    temp = normalQuest[urand(0,7)];
+    temp = normalQuest[urand(0,6)];
     while(temp && temp == specialQuest[QNORMAL])
-        temp = normalQuest[urand(0,7)];
+        temp = normalQuest[urand(0,6)];
 
     specialQuest[QNORMAL] = temp;
 

@@ -6444,6 +6444,17 @@ bool Unit::HandleProcTriggerSpell(Unit *pVictim, uint32 damage, Aura* triggeredB
         }
     }
 
+    SpellEntry const *spellInfo = sSpellStore.LookupEntry(trigger_spell_id);
+    if (!spellInfo)
+    {
+        sLog.outError("Unit:HandleProcTriggerSpell not found SpellEntry for spell_id: %u.", trigger_spell_id);
+        return false;
+    }
+
+    // not allow proc extra attack spell at extra attack
+    if (m_extraAttacks && IsSpellHaveEffect(spellInfo, SPELL_EFFECT_ADD_EXTRA_ATTACKS))
+        return false;
+
     if( cooldown && GetTypeId()==TYPEID_PLAYER && ((Player*)this)->HasSpellCooldown(trigger_spell_id))
         return false;
 
@@ -11526,9 +11537,9 @@ void Unit::Kill(Unit *pVictim, bool durabilityLoss)
                         ((InstanceMap *)m)->PermBindAllPlayers(creditedPlayer);
 
                     // Killer == Player
-                    if (cVictim->GetCreatureInfo()->rank == CREATURE_ELITE_WORLDBOSS && this->GetTypeId() == TYPEID_PLAYER)
+                    if (creditedPlayer && cVictim->GetCreatureInfo()->rank == CREATURE_ELITE_WORLDBOSS)
                     {
-                        Player *killer = (Player *)this;
+                        Player *killer = creditedPlayer;
                         std::stringstream ss;
                         ss << "BossEntry: " << cVictim->GetEntry() << " InstanceId: " << cVictim->GetInstanceId()
                            << " MapId: " << m->GetId() << " Players: ";
