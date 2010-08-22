@@ -228,8 +228,8 @@ void Creature::RemoveCorpse()
     if( getDeathState()!=CORPSE && !m_isDeadByDefault || getDeathState()!=ALIVE && m_isDeadByDefault )
         return;
 
-    m_deathTimer = 0;
     setDeathState(DEAD);
+    m_deathTimer = 0;
     UpdateObjectVisibility();
     loot.clear();
     m_respawnTime = time(NULL) + m_respawnDelay;
@@ -1663,8 +1663,9 @@ void Creature::setDeathState(DeathState s)
         if(m_formation && m_formation->getLeader() == this)
             m_formation->FormationReset(true);
 
-        if (canFly() && FallGround())
-            return;
+        // test
+        //if (canFly() && FallGround())
+        //    return;
     }
     Unit::setDeathState(s);
 
@@ -1679,8 +1680,9 @@ void Creature::setDeathState(DeathState s)
             if ( LootTemplates_Skinning.HaveLootFor(GetCreatureInfo()->SkinLootId) )
                 SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE);
 
-        if (canFly() && FallGround())
-            return;
+        // test
+        //if (canFly() && FallGround())
+        //    return;
 
         Unit::setDeathState(CORPSE);
     }

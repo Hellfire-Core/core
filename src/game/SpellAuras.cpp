@@ -1517,7 +1517,7 @@ void Aura::TriggerSpell()
                                 else
                                     player->SendEquipError( msg, NULL, NULL );
                             }
-                            creature->Kill(creature, false);
+                            creature->setDeathState(JUST_DIED);
                             creature->RemoveCorpse();
                         }
                         return;
