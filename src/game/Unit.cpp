@@ -7443,6 +7443,11 @@ uint32 Unit::SpellDamageBonus(Unit *pVictim, SpellEntry const *spellProto, uint3
             {
                 CastingTime = 3.5;
             }
+            // Seal and Judgement of Blood self damage 0%
+            else if (spellProto->Id == 32221 || spellProto->Id == 32220)
+            {
+                CastingTime = 0;
+            }
         case SPELLFAMILY_MAGE:
             // Ignite - do not modify, it is (8*Rank)% damage of procing Spell
             if(spellProto->Id==12654)
