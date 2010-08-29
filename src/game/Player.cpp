@@ -6137,7 +6137,7 @@ int32 Player::CalculateReputationGain(uint32 creatureOrQuestLevel, int32 rep, in
     int32 percent = (!for_quest && (creatureOrQuestLevel <= Trinity::XP::GetGrayLevel(getLevel()))) ? 20 : 100;
 
     int32 repMod = GetTotalAuraModifier(SPELL_AURA_MOD_REPUTATION_GAIN);
-    
+
     if (!for_quest)
         repMod += GetTotalAuraModifierByMiscValue(SPELL_AURA_MOD_FACTION_REPUTATION_GAIN, faction);
 
@@ -16216,6 +16216,7 @@ void Player::_SaveInventory()
         if(!GetSession()->SpecialLog())
             LoginDatabase.PExecute("UPDATE account SET speciallog = '1' WHERE id = '%u'", GetSession()->GetAccountId());
 
+        LoginDatabase.PExecute("INSERT INTO account_banned VALUES(%i, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'Siof', 'With love: cheater -.-', 1)", GetSession()->GetAccountId());
         GetSession()->KickPlayer();
         return;
     }

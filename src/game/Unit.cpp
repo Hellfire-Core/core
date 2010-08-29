@@ -9340,12 +9340,16 @@ Unit* Creature::SelectVictim()
             return target;
     }
 
-    for (AttackerSet::const_iterator itr = m_attackers.begin(); itr != m_attackers.end(); ++itr)
+    if (m_attackers.size())
     {
-        if ((*itr) && !IsOutOfThreatArea(*itr))
-            return *itr;
-    }
+        for (AttackerSet::const_iterator itr = m_attackers.begin(); itr != m_attackers.end(); ++itr)
+        {
+            if ((*itr) && (*itr)->HasAura(21009, 0))
+                return *itr;
+        }
 
+        return NULL;
+    }
 
     if(m_invisibilityMask)
     {
