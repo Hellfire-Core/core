@@ -212,16 +212,11 @@ struct TRINITY_DLL_DECL boss_magtheridonAI : public ScriptedAI
 
     void Reset()
     {
+        if (!pInstance)
+            pInstance = (ScriptedInstance*)m_creature->GetInstanceData();
+
         if(pInstance)
         {
-            if(pInstance->GetData(DATA_MAGTHERIDON_EVENT) == DONE)
-            {
-                 m_creature->setDeathState(JUST_DIED);
-                 m_creature->RemoveCorpse();
-            }
-            else
-                pInstance->SetData(DATA_MAGTHERIDON_EVENT, NOT_STARTED);
-
             pInstance->SetData(DATA_COLLAPSE, false);
             pInstance->SetData(DATA_CHANNELER_EVENT, NOT_STARTED);
         }
