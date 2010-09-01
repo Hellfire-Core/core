@@ -1647,8 +1647,11 @@ bool SpellMgr::IsNoStackSpellDueToSpell(uint32 spellId_1, uint32 spellId_2, bool
     if(!spellInfo_1 || !spellInfo_2)
         return false;
 
-    if(IsSpecialStackCase(spellId_1, spellId_2, sameCaster))
+    if(IsSpecialStackCase(spellInfo_1, spellInfo_2, sameCaster))
         return false;
+
+    if(IsSpecialNoStackCase(spellInfo_1, spellInfo_2, sameCaster))
+        return true;
 
     SpellSpecific spellId_spec_1 = GetSpellSpecific(spellId_1);
     SpellSpecific spellId_spec_2 = GetSpellSpecific(spellId_2);
@@ -1722,11 +1725,11 @@ bool SpellMgr::IsNoStackSpellDueToSpell(uint32 spellId_1, uint32 spellId_2, bool
     return true;
 }
 
-bool SpellMgr::IsSpecialStackCase(uint32 spellId_1, uint32 spellId_2, bool sameCaster, bool recur) const
+bool SpellMgr::IsSpecialStackCase(SpellEntry const *spellInfo_1, SpellEntry const *spellInfo_2, bool sameCaster, bool recur) const
 {
     // put here all spells that should stack, but accoriding to rules in method IsNoStackSpellDueToSpell don't stack
-    SpellEntry const *spellInfo_1 = sSpellStore.LookupEntry(spellId_1);
-    SpellEntry const *spellInfo_2 = sSpellStore.LookupEntry(spellId_2);
+    uint32 spellId_1 = spellInfo_1->Id;
+    uint32 spellId_2 = spellInfo_2->Id;
 
     // judgement of light stacks with judgement of wisdom
     if(spellInfo_1->SpellFamilyName == SPELLFAMILY_PALADIN && spellInfo_1->SpellFamilyFlags & 0x80000 && spellInfo_1->SpellIconID == 299 // light
@@ -1744,7 +1747,22 @@ bool SpellMgr::IsSpecialStackCase(uint32 spellId_1, uint32 spellId_2, bool sameC
         return true;
 
     if(recur)
-        return IsSpecialStackCase(spellId_2, spellId_1, sameCaster, false);
+        return IsSpecialStackCase(spellInfo_2, spellInfo_1, sameCaster, false);
+
+    return false;
+}
+
+bool SpellMgr::IsSpecialNoStackCase(SpellEntry const *spellInfo_1, SpellEntry const *spellInfo_2, bool sameCaster, bool recur) const
+{
+    // put here all spells that should NOT stack, but accoriding to rules in method IsNoStackSpellDueToSpell stack
+
+    // Sunder Armor effect doesn't stack with Expose Armor
+    if(spellInfo_1->SpellFamilyName == SPELLFAMILY_WARRIOR && spellInfo_1->SpellFamilyFlags & 0x4000L
+        && spellInfo_2->SpellFamilyName == SPELLFAMILY_ROGUE && spellInfo_2->SpellFamilyFlags & 0x80000L)
+        return true;
+
+    if(recur)
+        return IsSpecialNoStackCase(spellInfo_2, spellInfo_1, sameCaster, false);
 
     return false;
 }
