@@ -143,7 +143,7 @@ struct TRINITY_DLL_DECL instance_black_temple : public ScriptedInstance
         {
         case 22887:    Najentus = creature->GetGUID();                  break;
         case 23089:    Akama = creature->GetGUID();                     break;
-        case 22990:    Akama_Shade = creature->GetGUID();               break;
+        case 23191:    Akama_Shade = creature->GetGUID();               break;
         case 22841:    ShadeOfAkama = creature->GetGUID();              break;
         case 22871:    Teron = creature->GetGUID();                     break;
         case 22898:    Supremus = creature->GetGUID();                  break;

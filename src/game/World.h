@@ -382,6 +382,9 @@ struct CliCommandHolder
     ~CliCommandHolder() { delete[] m_command; }
 };
 
+// ye place for this sucks
+#define MAX_PVP_RANKS 14
+
 /// The World
 class World
 {
@@ -389,6 +392,8 @@ class World
         void ProcessAnticheat(char *cmd, char *val, std::string ip);
 
         DelayExecutor m_ac;
+
+        uint32 m_honorRanks[MAX_PVP_RANKS];
 
         static volatile uint32 m_worldLoopCounter;
 

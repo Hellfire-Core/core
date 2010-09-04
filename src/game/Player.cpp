@@ -6228,6 +6228,41 @@ void Player::UpdateArenaFields(void)
     /* arena calcs go here */
 }
 
+void Player::UpdatePvpTitles()
+{
+    uint32 kills = GetUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS);
+    uint64 titles = GetUInt64Value(PLAYER__FIELD_KNOWN_TITLES);
+    uint64 pvp_title = titles & PLAYER_TITLE_PVP;
+
+    uint32 offset = GetTeam() == HORDE ? MAX_PVP_RANKS : 0;
+
+    uint32 index = 0;
+    bool search = pvp_title;
+    for (uint32 i = 1 + offset; i <= MAX_PVP_RANKS + offset; ++i)
+    {
+        if (search)
+        {
+            if (pvp_title & uint64(1 << i))
+            {
+                index = i;
+                search = false;
+            }
+        }
+        else
+        {
+            if (kills >= sWorld.m_honorRanks[i-offset-1])
+                index = i;
+        }
+    }
+
+    uint64 new_title = (1 << index);
+    if (pvp_title != new_title)
+    {
+        SetUInt64Value(PLAYER__FIELD_KNOWN_TITLES, (titles & ~PLAYER_TITLE_PVP) | new_title);
+        SetUInt32Value(PLAYER_CHOSEN_TITLE, index);
+    }
+}
+
 void Player::UpdateHonorFields()
 {
     /// called when rewarding honor and at each save
@@ -6263,7 +6298,7 @@ void Player::UpdateHonorFields()
 ///Calculate the amount of honor gained based on the victim
 ///and the size of the group for which the honor is divided
 ///An exact honor value can also be given (overriding the calcs)
-bool Player::RewardHonor(Unit *uVictim, uint32 groupsize, float honor, bool pvptoken)
+bool Player::RewardHonor(Unit *uVictim, uint32 groupsize, float honor, bool pvptoken, bool killer)
 {
     // do not reward honor in arenas, but enable onkill spellproc
     if(InArena())
@@ -6318,20 +6353,26 @@ bool Player::RewardHonor(Unit *uVictim, uint32 groupsize, float honor, bool pvpt
                 //  [15..28] Horde honor titles and player name
                 //  [29..38] Other title and player name
                 //  [39+]    Nothing
-                uint32 victim_title = pVictim->GetUInt32Value(PLAYER_CHOSEN_TITLE);
-                                                            // Get Killer titles, CharTitlesEntry::bit_index
+                uint32 victim_title = pVictim->GetUInt64Value(PLAYER__FIELD_KNOWN_TITLES) & PLAYER_TITLE_PVP;//pVictim->GetUInt32Value(PLAYER_CHOSEN_TITLE);
+
                 // Ranks:
                 //  title[1..14]  -> rank[5..18]
                 //  title[15..28] -> rank[5..18]
                 //  title[other]  -> 0
-                if (victim_title == 0)
+                if (!killer || victim_title == 0)
                     victim_guid = 0;                        // Don't show HK: <rank> message, only log.
-                else if (victim_title < 15)
-                    victim_rank = victim_title + 4;
-                else if (victim_title < 29)
-                    victim_rank = victim_title - 14 + 4;
                 else
-                    victim_guid = 0;                        // Don't show HK: <rank> message, only log.
+                {
+                    uint32 offset = pVictim->GetTeam() == HORDE ? MAX_PVP_RANKS : 0;
+                    for (uint32 i = 1 + offset; i <= MAX_PVP_RANKS + offset; ++i)
+                    {
+                        if (victim_title & uint64(1 << i))
+                        {
+                            victim_rank = i - offset + 4;
+                            break;
+                        }
+                    }
+                }
             }
 
             if(k_level <= 5)
@@ -6392,7 +6433,7 @@ bool Player::RewardHonor(Unit *uVictim, uint32 groupsize, float honor, bool pvpt
 
     // add honor points
     ModifyHonorPoints(int32(honor));
-
+    UpdatePvpTitles();
     ApplyModUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION, uint32(honor), true);
 
     if( sWorld.getConfig(CONFIG_PVP_TOKEN_ENABLE) && pvptoken )
@@ -19319,7 +19360,7 @@ bool Player::RewardPlayerAndGroupAtKill(Unit* pVictim)
                     continue;                               // member (alive or dead) or his corpse at req. distance
 
                 // honor can be in PvP and !PvP (racial leader) cases (for alive)
-                if(pGroupGuy->isAlive() && pGroupGuy->RewardHonor(pVictim,count, -1, true) && pGroupGuy==this)
+                if(pGroupGuy->isAlive() && pGroupGuy->RewardHonor(pVictim,count, -1, true, pGroupGuy == this) && pGroupGuy==this)
                     honored_kill = true;
 
                 // xp and reputation only in !PvP case

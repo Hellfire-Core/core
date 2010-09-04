@@ -456,6 +456,24 @@ enum PlayerFlags
 #define PLAYER_TITLE_HAND_OF_ADAL          0x0000008000000000LL // 39
 #define PLAYER_TITLE_VENGEFUL_GLADIATOR    0x0000010000000000LL // 40
 
+#define MAX_PVP_RANKS 14
+
+#define PLAYER_TITLE_PVP \
+       (PLAYER_TITLE_PRIVATE | PLAYER_TITLE_CORPORAL |  \
+        PLAYER_TITLE_SERGEANT_A | PLAYER_TITLE_MASTER_SERGEANT | \
+        PLAYER_TITLE_SERGEANT_MAJOR | PLAYER_TITLE_KNIGHT | \
+        PLAYER_TITLE_KNIGHT_LIEUTENANT | PLAYER_TITLE_KNIGHT_CAPTAIN | \
+        PLAYER_TITLE_KNIGHT_CHAMPION | PLAYER_TITLE_LIEUTENANT_COMMANDER | \
+        PLAYER_TITLE_COMMANDER | PLAYER_TITLE_MARSHAL | \
+        PLAYER_TITLE_FIELD_MARSHAL | PLAYER_TITLE_GRAND_MARSHAL | \
+        PLAYER_TITLE_SCOUT | PLAYER_TITLE_GRUNT | \
+        PLAYER_TITLE_SERGEANT_H | PLAYER_TITLE_SENIOR_SERGEANT | \
+        PLAYER_TITLE_FIRST_SERGEANT | PLAYER_TITLE_STONE_GUARD | \
+        PLAYER_TITLE_BLOOD_GUARD | PLAYER_TITLE_LEGIONNAIRE | \
+        PLAYER_TITLE_CENTURION | PLAYER_TITLE_CHAMPION | \
+        PLAYER_TITLE_LIEUTENANT_GENERAL | PLAYER_TITLE_GENERAL | \
+        PLAYER_TITLE_WARLORD | PLAYER_TITLE_HIGH_WARLORD)
+
 // used in PLAYER_FIELD_BYTES values
 enum PlayerFieldByteFlags
 {
@@ -1536,6 +1554,8 @@ class TRINITY_DLL_SPEC Player : public Unit
         void UpdateZone(uint32 newZone);
         void UpdateArea(uint32 newArea);
 
+        void UpdatePvpTitles();
+
         void UpdateZoneDependentAuras( uint32 zone_id );    // zones
         void UpdateAreaDependentAuras( uint32 area_id );    // subzones
 
@@ -1788,7 +1808,7 @@ class TRINITY_DLL_SPEC Player : public Unit
         /*********************************************************/
         void UpdateArenaFields();
         void UpdateHonorFields();
-        bool RewardHonor(Unit *pVictim, uint32 groupsize, float honor = -1, bool pvptoken = false);
+        bool RewardHonor(Unit *pVictim, uint32 groupsize, float honor = -1, bool pvptoken = false, bool killer = false);
         uint32 GetHonorPoints() { return GetUInt32Value(PLAYER_FIELD_HONOR_CURRENCY); }
         uint32 GetArenaPoints() { return GetUInt32Value(PLAYER_FIELD_ARENA_CURRENCY); }
         void ModifyHonorPoints( int32 value );
