@@ -4920,7 +4920,13 @@ void Spell::EffectScriptEffect(uint32 effIndex)
     {
         // Gurtogg Bloodboil: Eject
         case 40486:
-        case 40597:
+        {
+            if(!m_caster->CanHaveThreatList())
+                return;
+
+            m_caster->getThreatManager().modifyThreatPercent(unitTarget, -urand(1, 25));
+            break;
+        }
         // Void Reaver: Knock Back
         case 25778:
         {

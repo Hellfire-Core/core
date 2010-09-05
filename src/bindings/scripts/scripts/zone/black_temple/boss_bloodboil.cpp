@@ -35,9 +35,12 @@ EndScriptData */
 #define SAY_DEATH               -1564036
 
 //Spells diff in p1 and p2
-#define SPELL_ARCING_SMASH          (Phase1 ? 40599 : 40457)
-#define SPELL_FELBREATH             (Phase1 ? 40508 : 40595)
-#define SPELL_EJECT                 (Phase1 ? 40486 : 40597)
+#define SPELL_ARCING_SMASH          Phase1 ? 40457 : 40599
+#define SPELL_FEL_ACID              Phase1 ? 40508 : 40595
+#define SPELL_EJECT                 Phase1 ? 40486 : 40597
+
+#define FEL_ACID_TIMER              Phase1 ? 20000, 25000 : 5000, 20000
+#define FEL_ACID_TARGET             Phase1 ? SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true) : m_creature->getVictim()
 
 #define SPELL_ACIDIC_WOUND          40484 //Trigger Aura
 
@@ -92,7 +95,7 @@ struct TRINITY_DLL_DECL boss_gurtogg_bloodboilAI : public ScriptedAI
     uint32 BewilderingStrikeTimer;
 
     uint32 ArcingSmashTimer;
-    uint32 FelBreathTimer;
+    uint32 FelAcidTimer;
     uint32 EjectTimer;
 
     uint32 PhaseChangeTimer;
@@ -118,7 +121,7 @@ struct TRINITY_DLL_DECL boss_gurtogg_bloodboilAI : public ScriptedAI
         BewilderingStrikeTimer = 15000;
 
         ArcingSmashTimer = 19000;
-        FelBreathTimer = 25000;
+        FelAcidTimer = 25000;
         EjectTimer = 10000;
 
         PhaseChangeTimer = 65000;
@@ -127,7 +130,7 @@ struct TRINITY_DLL_DECL boss_gurtogg_bloodboilAI : public ScriptedAI
         EnrageTimer = 600000;
 
         Phase1 = true;
-        ChargeTimer = 30000;
+        ChargeTimer = 2000;
 
         DoCast(m_creature, SPELL_ACIDIC_WOUND, true);
     }
@@ -157,6 +160,15 @@ struct TRINITY_DLL_DECL boss_gurtogg_bloodboilAI : public ScriptedAI
         DoScriptText(SAY_DEATH, m_creature);
     }
 
+    void MoveInLineOfSight(Unit *who)
+    {
+        if (!m_creature->isInCombat())
+        {
+            if (m_creature->GetDistance(who) <= 40 && m_creature->IsHostileTo(who))
+                m_creature->AI()->AttackStart(who);
+        }
+    }
+
     // Note: This seems like a very complicated fix. The fix needs to be handled by the core, as implementation of limited-target AoE spells are still not limited.
     void CastBloodboil()
     {
@@ -176,7 +188,7 @@ struct TRINITY_DLL_DECL boss_gurtogg_bloodboilAI : public ScriptedAI
         }
 
         if(targets.empty())
-            return; 
+            return;
 
         targets.sort(ObjectDistanceOrderReversed(m_creature));
         targets.resize(5);
@@ -213,8 +225,9 @@ struct TRINITY_DLL_DECL boss_gurtogg_bloodboilAI : public ScriptedAI
         {
             DoZoneInCombat();
             CheckTimer = 3000;
+            m_creature->SetSpeed(MOVE_RUN, Phase1 ? 2.0 : 3.0);
         }
-        else 
+        else
             CheckTimer -= diff;
 
         if (EnrageTimer)//if(!m_creature->HasAura(SPELL_BERSERK, 0))
@@ -236,34 +249,26 @@ struct TRINITY_DLL_DECL boss_gurtogg_bloodboilAI : public ScriptedAI
 
         if (ArcingSmashTimer < diff)
         {
-            AddSpellToCast(m_creature->getVictim(), SPELL_ARCING_SMASH);
+            AddSpellToCast(m_creature, SPELL_ARCING_SMASH);
             ArcingSmashTimer = 10000;
         }
         else
             ArcingSmashTimer -= diff;
 
-        if (FelBreathTimer < diff)
+        if (FelAcidTimer < diff)
         {
-            AddSpellToCast(m_creature->getVictim(), SPELL_FELBREATH);
-            FelBreathTimer = 25000;
+            AddSpellToCast(FEL_ACID_TARGET, SPELL_FEL_ACID);
+            FelAcidTimer = urand(FEL_ACID_TIMER);
         }
         else
-            FelBreathTimer -= diff;
-
-        if (EjectTimer < diff)
-        {
-            AddSpellToCast(m_creature->getVictim(), SPELL_EJECT);
-            EjectTimer = 15000;
-        }
-        else
-            EjectTimer -= diff;
+            FelAcidTimer -= diff;
 
         if (Phase1)
         {
             if (BewilderingStrikeTimer < diff)
             {
                 AddSpellToCast(m_creature->getVictim(), SPELL_BEWILDERING_STRIKE);
-                BewilderingStrikeTimer = 20000;
+                BewilderingStrikeTimer = urand(5000, 65000);
             }
             else
                 BewilderingStrikeTimer -= diff;
@@ -275,6 +280,31 @@ struct TRINITY_DLL_DECL boss_gurtogg_bloodboilAI : public ScriptedAI
             }
             else
                 BloodboilTimer -= diff;
+
+
+            if (EjectTimer < diff)
+            {
+                AddSpellToCast(m_creature->getVictim(), SPELL_EJECT);
+                EjectTimer = 15000;
+            }
+            else
+                EjectTimer -= diff;
+        }
+        else
+        {
+            if (ChargeTimer <= diff)
+            {
+                Unit * vict = m_creature->getVictim();
+                if (m_creature->GetDistance2d(vict) > 5);
+                {
+                    ForceSpellCast(vict, SPELL_EJECT);
+                    ForceSpellCast(vict, SPELL_CHARGE);
+                }
+
+                ChargeTimer = 2000;
+            }
+            else
+                ChargeTimer -= diff;
         }
 
         if (PhaseChangeTimer < diff)
@@ -294,12 +324,12 @@ struct TRINITY_DLL_DECL boss_gurtogg_bloodboilAI : public ScriptedAI
                     m_creature->AddThreat(target, 50000000.0f);
                     target->CastSpell(m_creature, SPELL_TAUNT_GURTOGG, true);
 
-                    ForceSpellCast(m_creature, SPELL_INSIGNIFIGANCE, INTERRUPT_AND_CAST, true);
+                    ForceSpellCast(m_creature, SPELL_INSIGNIFIGANCE, INTERRUPT_AND_CAST);
 
-                    ForceSpellCast(target, SPELL_FEL_RAGE_1, INTERRUPT_AND_CAST_INSTANTLY, true);
-                    ForceSpellCast(target, SPELL_FEL_RAGE_2, INTERRUPT_AND_CAST_INSTANTLY, true);
-                    ForceSpellCast(target, SPELL_FEL_RAGE_3, INTERRUPT_AND_CAST_INSTANTLY, true);
-                    ForceSpellCast(target, SPELL_FEL_RAGE_SCALE, INTERRUPT_AND_CAST_INSTANTLY, true);
+                    ForceSpellCast(target, SPELL_FEL_RAGE_1, INTERRUPT_AND_CAST_INSTANTLY);
+                    ForceSpellCast(target, SPELL_FEL_RAGE_2, INTERRUPT_AND_CAST_INSTANTLY);
+                    ForceSpellCast(target, SPELL_FEL_RAGE_3, INTERRUPT_AND_CAST_INSTANTLY);
+                    ForceSpellCast(target, SPELL_FEL_RAGE_SCALE, INTERRUPT_AND_CAST_INSTANTLY);
 
                     //Cast this without triggered so that it appears in combat logs and shows visual.
                     ForceSpellCast(m_creature, SPELL_FEL_RAGE_SELF, INTERRUPT_AND_CAST);
@@ -315,6 +345,9 @@ struct TRINITY_DLL_DECL boss_gurtogg_bloodboilAI : public ScriptedAI
                     PhaseChangeTimer = 30000;
                     m_creature->SetSpeed(MOVE_RUN, 3.0);
                 }
+                ArcingSmashTimer = 10000;
+                FelAcidTimer = urand(5000, 20000);
+                ChargeTimer = 2500;
             }
             else                                           // Encounter is a loop pretty much. Phase 1 -> Phase 2 -> Phase 1 -> Phase 2 till death or enrage
             {
@@ -323,16 +356,17 @@ struct TRINITY_DLL_DECL boss_gurtogg_bloodboilAI : public ScriptedAI
                 TargetGUID = 0;
                 Phase1 = true;
                 BloodboilTimer = 10000;
-                ArcingSmashTimer += 2000;
-                FelBreathTimer += 2000;
-                EjectTimer += 2000;
+                ArcingSmashTimer = 10000;
+                FelAcidTimer = urand(20000, 25000);
+                EjectTimer = 15000;
                 PhaseChangeTimer = 65000;
-                m_creature->SetSpeed(MOVE_RUN, 1.0);
+                m_creature->SetSpeed(MOVE_RUN, 2.0);
             }
         }
         else
             PhaseChangeTimer -= diff;
 
+        CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
     }
 };
