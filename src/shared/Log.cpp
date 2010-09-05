@@ -216,7 +216,7 @@ void Log::Initialize()
             }
             else
             {
-                m_gmlog_filename_format += "_#%u";
+                m_gmlog_filename_format += "__%u";
 
                 if(m_gmlog_timestamp)
                     m_gmlog_filename_format += m_logsTimestamp;
@@ -415,7 +415,7 @@ void Log::outError( const char * err, ... )
     if(m_colored)
         ResetColor(false);
 
-    fprintf( stderr, "\n" );
+    //fprintf( stderr, "\n" );
     if(logfile)
     {
         outTimestamp(logfile);
@@ -429,7 +429,7 @@ void Log::outError( const char * err, ... )
         fprintf(logfile, "\n" );
         fflush(logfile);
     }
-    fflush(stderr);
+    //fflush(stderr);
 }
 
 void Log::outBoss(const char *str, ...)
@@ -498,12 +498,12 @@ void Log::outErrorDb( const char * err, ... )
     if(m_includeTime)
         outTime();
 
-    UTF8PRINTF(stderr,err,);
+    //UTF8PRINTF(stderr,err,);
 
     if(m_colored)
         ResetColor(false);
 
-    fprintf( stderr, "\n" );
+    //fprintf( stderr, "\n" );
 
     if(logfile)
     {
@@ -531,7 +531,7 @@ void Log::outErrorDb( const char * err, ... )
         fprintf(dberLogfile, "\n" );
         fflush(dberLogfile);
     }
-    fflush(stderr);
+    //fflush(stderr);
 }
 
 void Log::outBasic( const char * str, ... )
@@ -603,7 +603,7 @@ void Log::outDetail( const char * str, ... )
         if(m_colored)
             ResetColor(true);
 
-        printf( "\n" );
+        //printf( "\n" );
     }
     if(logfile && m_logFileLevel > 1)
     {
