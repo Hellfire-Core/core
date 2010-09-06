@@ -804,6 +804,19 @@ enum AttributesCu
     SPELL_ATTR_CU_MOVEMENT_IMPAIR = 0x00008000,
 };
 
+inline bool IgnoreMagnetTargetAura(SpellEntry const* spellInfo)
+{
+    switch(spellInfo->Id)
+    {
+        case 41410:     //RoS: Deaden
+        case 41426:     //RoS: Spirit Shock
+            return true;
+        default:
+            return false;
+    }
+}
+
+
 typedef std::map<int32, std::vector<int32> > SpellLinkedMap;
 
 class SpellMgr

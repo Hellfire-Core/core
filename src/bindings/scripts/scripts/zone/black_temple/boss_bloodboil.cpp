@@ -133,6 +133,8 @@ struct TRINITY_DLL_DECL boss_gurtogg_bloodboilAI : public ScriptedAI
         ChargeTimer = 2000;
 
         DoCast(m_creature, SPELL_ACIDIC_WOUND, true);
+        m_creature->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_HASTE_SPELLS, true);
+        m_creature->ApplySpellImmune(1, IMMUNITY_EFFECT, SPELL_EFFECT_INTERRUPT_CAST, true);
     }
 
     void EnterCombat(Unit *who)
@@ -348,6 +350,7 @@ struct TRINITY_DLL_DECL boss_gurtogg_bloodboilAI : public ScriptedAI
                 ArcingSmashTimer = 10000;
                 FelAcidTimer = urand(5000, 20000);
                 ChargeTimer = 2500;
+                m_creature->RemoveAurasDueToSpell(SPELL_ACIDIC_WOUND);
             }
             else                                           // Encounter is a loop pretty much. Phase 1 -> Phase 2 -> Phase 1 -> Phase 2 till death or enrage
             {
@@ -361,6 +364,7 @@ struct TRINITY_DLL_DECL boss_gurtogg_bloodboilAI : public ScriptedAI
                 EjectTimer = 15000;
                 PhaseChangeTimer = 65000;
                 m_creature->SetSpeed(MOVE_RUN, 2.0);
+                m_creature->CastSpell(m_creature, SPELL_ACIDIC_WOUND, true);
             }
         }
         else

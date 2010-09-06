@@ -5274,7 +5274,7 @@ Unit* Spell::SelectMagnetTarget()
     if (!target)
         return NULL;
 
-    if (m_spellInfo->DmgClass == SPELL_DAMAGE_CLASS_MAGIC)
+    if (m_spellInfo->DmgClass == SPELL_DAMAGE_CLASS_MAGIC && !IgnoreMagnetTargetAura(m_spellInfo))
     {
         if(target->HasAuraType(SPELL_AURA_SPELL_MAGNET)) //Attributes & 0x10 what is this?
         {
