@@ -470,7 +470,7 @@ Map::EnsureGridLoaded(const Cell &cell, Player *player)
         ResetGridExpiry(*getNGrid(cell.GridX(), cell.GridY()), 0.1f);
         grid->SetGridState(GRID_STATE_ACTIVE);
     }
-    
+
     if(player)
         AddToGrid(player,grid,cell);
 }
@@ -535,7 +535,7 @@ Map::Add(T *obj)
 
     AddToGrid(obj,grid,cell);
     obj->AddToWorld();
-    
+
     if(obj->isActiveObject())
         AddToActive(obj);
 
@@ -878,7 +878,7 @@ void Map::SendObjectUpdates()
     UpdateDataMapType update_players;
     for(std::set<Object*>::const_iterator it = i_objectsToClientUpdate.begin();it!= i_objectsToClientUpdate.end();++it)
         (*it)->BuildUpdate(update_players);
- 
+
     i_objectsToClientUpdate.clear();
 
     WorldPacket packet;                                     // here we allocate a std::vector with a size of 0x10000
@@ -3154,7 +3154,7 @@ void Map::ScriptsProcess()
                             ((Creature*)source)->DealDamage(((Creature*)target), ((Creature*)target)->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
                         break;
                 }
-                
+
 
                 switch(step.script->dataint)
                 {
@@ -3213,11 +3213,20 @@ InstanceMap::~InstanceMap()
 void InstanceMap::InitVisibilityDistance()
 {
     //init visibility distance for instances
-    
-    if(i_mapEntry->MapID == 550 || i_mapEntry->MapID == 534)    // The Eye & Hyjal Summit
-       m_VisibleDistance = 100.0f;
-    else
-        m_VisibleDistance = sWorld.GetMaxVisibleDistanceInInstances();
+
+    switch (i_mapEntry->MapID)
+    {
+        case 550:   //The Eye
+        case 534:   //Hyjal Summit
+            m_VisibleDistance = 100.0f;
+            break;
+        case 564:   //Black Temple
+            m_VisibleDistance = 125.0f;
+            break;
+        default:
+            m_VisibleDistance = sWorld.GetMaxVisibleDistanceInInstances();
+            break;
+    }
 }
 
 /*

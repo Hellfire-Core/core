@@ -204,7 +204,7 @@ struct TRINITY_DLL_DECL boss_reliquary_of_soulsAI : public Scripted_NoMovementAI
     {
         if (!m_creature->isInCombat() && who->GetTypeId() == TYPEID_PLAYER)
         {
-            if (m_creature->GetDistance(who) <= 85 && m_creature->IsHostileTo(who))
+            if (m_creature->IsWithinDistInMap(who, 100) && m_creature->IsHostileTo(who))
             {
                 m_creature->AddThreat(who, 10000.0f);
                 DoZoneInCombat();
@@ -386,6 +386,7 @@ struct TRINITY_DLL_DECL boss_reliquary_of_soulsAI : public Scripted_NoMovementAI
                     DoScriptText(DESI_SAY_AFTER, Essence);
 
                 Essence->SetVisibility(VISIBILITY_OFF);
+                Essence->DestroyForNearbyPlayers();
                 Essence->setDeathState(DEAD);
                 m_creature->SetUInt32Value(UNIT_NPC_EMOTESTATE,0);
 
