@@ -95,18 +95,53 @@ uint32 instance_karazhan::GetData(uint32 identifier)
 
 void instance_karazhan::OnCreatureCreate(Creature *creature, uint32 entry)
 {
+    uint32 data = 0;
     switch (creature->GetEntry())
     {
-        case 17229:   KilrekGUID = creature->GetGUID();      break;
-        case 15688:   TerestianGUID = creature->GetGUID();   break;
-        case 15687:   MoroesGUID = creature->GetGUID();      break;
-        case 16524:   AranGUID = creature->GetGUID();        break;
-        case 16816:   MedivhGUID = creature->GetGUID();      break;
+        case 17229:
+            KilrekGUID = creature->GetGUID();
+            break;
+        case 15688:
+            TerestianGUID = creature->GetGUID();
+            data = DATA_TERESTIAN_EVENT;
+            break;
+        case 15687:
+            MoroesGUID = creature->GetGUID();
+            data = DATA_MOROES_EVENT;
+            break;
+        case 16524:
+            AranGUID = creature->GetGUID();
+            data = DATA_SHADEOFARAN_EVENT;
+            break;
+        case 16816:
+            MedivhGUID = creature->GetGUID();
+            break;
         case 17161:
             BlizzardGUID = creature->GetGUID();
             creature->SetReactState(REACT_PASSIVE);
             break;
+        case 15691:
+            data = DATA_CURATOR_EVENT;
+            break;
+        case 16457:
+            data = DATA_MAIDENOFVIRTUE_EVENT;
+            break;
+        case 16151:
+            data = DATA_ATTUMEN_EVENT;
+            break;
+        case 15689:
+            data = DATA_NETHERSPITE_EVENT;
+            break;
+        case 17225:
+            data = DATA_NIGHTBANE_EVENT;
+            break;
+        case 15690:
+            data = DATA_MALCHEZZAR_EVENT;
+            break;
     }
+
+    if(data && creature->isAlive() && GetData(data) == DONE)
+        creature->Kill(creature, false);
 }
 
 uint64 instance_karazhan::GetData64(uint32 data)
@@ -183,8 +218,8 @@ void instance_karazhan::SetData(uint32 type, uint32 data)
             Encounters[10] = data;
         break;
     case DATA_NIGHTBANE_EVENT:
-        if(Encounters[1] != DONE)
-            Encounters[1] = data;
+        if(Encounters[11] != DONE)
+            Encounters[11] = data;
         break;
     case DATA_OPERA_OZ_DEATHCOUNT:
         ++OzDeathCount;

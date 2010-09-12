@@ -4,13 +4,13 @@
  SDComment: Not sure about timing and portals placing
  SDCategory: Karazhan
  EndScriptData */
- 
+
  #include "precompiled.h"
  #include "def_karazhan.h"
- 
+
  #define EMOTE_PHASE_PORTAL          -1532089
  #define EMOTE_PHASE_BANISH          -1532090
- 
+
 #define SPELL_NETHERBURN_AURA       30522
 #define SPELL_VOIDZONE              37063
 #define SPELL_NETHER_INFUSION       38688
@@ -19,14 +19,14 @@
 #define SPELL_BANISH_ROOT           42716
 #define SPELL_EMPOWERMENT           38549
 #define SPELL_NETHERSPITE_ROAR      38684
- 
+
 const float PortalCoord[3][3] =
 {
     {-11195.353516, -1613.237183, 278.237258}, // Left side
     {-11137.846680, -1685.607422, 278.239258}, // Right side
     {-11094.493164, -1591.969238, 279.949188}  // Back side
 };
- 
+
 enum Netherspite_Portal
 {
     RED_PORTAL = 0, // Perseverence
@@ -87,7 +87,7 @@ struct TRINITY_DLL_DECL boss_netherspiteAI : public ScriptedAI
         // check if target is between (not checking distance from the beam yet)
         if(dist(xn,yn,xh,yh)>=dist(xn,yn,xp,yp) || dist(xp,yp,xh,yh)>=dist(xn,yn,xp,yp))
             return false;
-       
+
         // check  distance from the beam
         return (abs((xn-xp)*yh+(yp-yn)*xh-xn*yp+xp*yn)/dist(xn,yn,xp,yp) < 1.5f);
     }
@@ -120,7 +120,10 @@ struct TRINITY_DLL_DECL boss_netherspiteAI : public ScriptedAI
         {
            for(int i=0; i<10;++i)
               ExhaustCandidate[j][i] = 0;
-        }     
+        }
+
+        if(pInstance && pInstance->GetData(DATA_NETHERSPITE_EVENT) != DONE)
+            pInstance->SetData(DATA_NETHERSPITE_EVENT, NOT_STARTED);
     }
 
     void SummonPortals()
@@ -194,7 +197,7 @@ struct TRINITY_DLL_DECL boss_netherspiteAI : public ScriptedAI
                 if(Map* map = m_creature->GetMap())
                 {
                     Map::PlayerList const& players = map->GetPlayers();
-          
+
                     // get the best suitable target
                     for(Map::PlayerList::const_iterator i = players.begin(); i!=players.end(); ++i)
                     {
@@ -208,7 +211,7 @@ struct TRINITY_DLL_DECL boss_netherspiteAI : public ScriptedAI
                             target = p;
                     }
                 }
-                
+
                 // buff the target
                 if(target->GetTypeId() == TYPEID_PLAYER)
                 {
@@ -227,7 +230,7 @@ struct TRINITY_DLL_DECL boss_netherspiteAI : public ScriptedAI
                 }
                 else
                     target->AddAura(NetherBuff[j], target);
-           
+
                 // cast visual beam on the chosen target if switched
                 // simple target switching isn't working -> using BeamerGUID to cast (workaround)
                 if(!current || target != current)
@@ -242,7 +245,7 @@ struct TRINITY_DLL_DECL boss_netherspiteAI : public ScriptedAI
                         beamer->RemoveFromWorld();
                         BeamerGUID[j] = 0;
                     }
-                  
+
                     // create new one and start beaming on the target
                     if(Creature *beamer = portal->SummonCreature(PortalID[j],portal->GetPositionX(),portal->GetPositionY(),portal->GetPositionZ(),portal->GetOrientation(),TEMPSUMMON_TIMED_DESPAWN,60000))
                     {
@@ -296,19 +299,24 @@ struct TRINITY_DLL_DECL boss_netherspiteAI : public ScriptedAI
     {
         HandleDoors(false);
         SwitchToPortalPhase();
+
+        if (pInstance)
+            pInstance->SetData(DATA_NETHERSPITE_EVENT, IN_PROGRESS);
     }
 
     void JustDied(Unit* killer)
-    {        
+    {
         HandleDoors(true);
         DestroyPortals();
+        if (pInstance)
+            pInstance->SetData(DATA_NETHERSPITE_EVENT, DONE);
     }
 
     void UpdateAI(const uint32 diff)
     {
         if(!UpdateVictim())
             return;
-        
+
         if(ExhaustCheckTimer < diff)
         {
             //exhaust debuff check
@@ -323,7 +331,7 @@ struct TRINITY_DLL_DECL boss_netherspiteAI : public ScriptedAI
         // Void Zone
         if(VoidZoneTimer < diff)
         {
-            if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM,1,GetSpellMaxRange(SPELL_VOIDZONE),true, m_creature->getVictimGUID()))  
+            if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM,1,GetSpellMaxRange(SPELL_VOIDZONE),true, m_creature->getVictimGUID()))
                 DoCast(target,SPELL_VOIDZONE,true);
 
             VoidZoneTimer = 15000;
@@ -361,7 +369,7 @@ struct TRINITY_DLL_DECL boss_netherspiteAI : public ScriptedAI
             }
             else
                 EmpowermentTimer -= diff;
-      
+
             if(PhaseTimer < diff)
             {
                 if(!m_creature->IsNonMeleeSpellCasted(false))
@@ -416,7 +424,7 @@ CreatureAI* GetAI_boss_netherspite(Creature *_Creature)
 void AddSC_boss_netherspite()
 {
     Script *newscript;
- 
+
     newscript = new Script;
     newscript->Name="boss_netherspite";
     newscript->GetAI = GetAI_boss_netherspite;

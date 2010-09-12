@@ -69,7 +69,7 @@ struct TRINITY_DLL_DECL boss_nightbaneAI : public ScriptedAI
     ScriptedInstance* pInstance;
 
     uint32 Phase;
-    
+
     bool Summoned;
     bool RainBones;
     bool Skeletons;
@@ -131,7 +131,7 @@ struct TRINITY_DLL_DECL boss_nightbaneAI : public ScriptedAI
         m_creature->ApplySpellImmune(1, IMMUNITY_EFFECT, SPELL_EFFECT_INTERRUPT_CAST, true);
         m_creature->setActive(true);
 
-        if(pInstance)
+        if(pInstance && pInstance->GetData(DATA_NIGHTBANE_EVENT) != DONE)
             pInstance->SetData(DATA_NIGHTBANE_EVENT, NOT_STARTED);
 
         HandleTerraceDoors(true);

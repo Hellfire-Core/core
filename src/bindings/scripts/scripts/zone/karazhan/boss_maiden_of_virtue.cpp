@@ -22,6 +22,7 @@ SDCategory: Karazhan
 EndScriptData */
 
 #include "precompiled.h"
+#include "def_karazhan.h"
 
 #define SAY_AGGRO               -1532018
 #define SAY_SLAY1               -1532019
@@ -41,8 +42,11 @@ struct TRINITY_DLL_DECL boss_maiden_of_virtueAI : public ScriptedAI
 {
     boss_maiden_of_virtueAI(Creature *c) : ScriptedAI(c)
     {
+        pInstance = ((ScriptedInstance*)c->GetInstanceData());
         m_creature->GetPosition(wLoc);
     }
+
+    ScriptedInstance *pInstance;
 
     uint32 Repentance_Timer;
     uint32 Holyfire_Timer;
@@ -64,6 +68,9 @@ struct TRINITY_DLL_DECL boss_maiden_of_virtueAI : public ScriptedAI
         Enrage_Timer        = 600000;
         CheckTimer = 3000;
 
+        if(pInstance && pInstance->GetData(DATA_MAIDENOFVIRTUE_EVENT) != DONE)
+            pInstance->SetData(DATA_MAIDENOFVIRTUE_EVENT, NOT_STARTED);
+
         Enraged = false;
     }
 
@@ -78,11 +85,16 @@ struct TRINITY_DLL_DECL boss_maiden_of_virtueAI : public ScriptedAI
     void JustDied(Unit* Killer)
     {
         DoScriptText(SAY_DEATH, m_creature);
+
+        if (pInstance)
+            pInstance->SetData(DATA_MAIDENOFVIRTUE_EVENT, DONE);
     }
 
     void EnterCombat(Unit *who)
     {
         DoScriptText(SAY_AGGRO, m_creature);
+        if (pInstance)
+            pInstance->SetData(DATA_MAIDENOFVIRTUE_EVENT, IN_PROGRESS);
     }
 
     void UpdateAI(const uint32 diff)

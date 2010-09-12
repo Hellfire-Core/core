@@ -97,7 +97,7 @@ struct TRINITY_DLL_DECL boss_moroesAI : public ScriptedAI
             SpawnAdds();
         }
 
-        if(pInstance)
+        if(pInstance && pInstance->GetData(DATA_MOROES_EVENT) != DONE)
             pInstance->SetData(DATA_MOROES_EVENT, NOT_STARTED);
     }
 

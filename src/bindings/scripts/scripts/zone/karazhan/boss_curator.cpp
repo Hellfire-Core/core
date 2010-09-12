@@ -22,6 +22,7 @@ SDCategory: Karazhan
 EndScriptData */
 
 #include "precompiled.h"
+#include "def_karazhan.h"
 
 #define SAY_AGGRO                       -1532057
 #define SAY_SUMMON1                     -1532058
@@ -49,8 +50,11 @@ struct TRINITY_DLL_DECL boss_curatorAI : public ScriptedAI
 {
     boss_curatorAI(Creature *c) : ScriptedAI(c)
     {
+        pInstance = ((ScriptedInstance*)c->GetInstanceData());
         m_creature->GetPosition(wLoc);
     }
+
+    ScriptedInstance* pInstance;
 
     uint32 AddTimer;
     uint32 HatefulBoltTimer;
@@ -75,6 +79,9 @@ struct TRINITY_DLL_DECL boss_curatorAI : public ScriptedAI
         m_creature->ApplySpellImmune(4, IMMUNITY_STATE, SPELL_AURA_PERIODIC_MANA_LEECH, true);
         m_creature->ApplySpellImmune(5, IMMUNITY_STATE, SPELL_AURA_HASTE_SPELLS, true);
         m_creature->ApplySpellImmune(6, IMMUNITY_EFFECT, SPELL_EFFECT_INTERRUPT_CAST, true);
+
+        if(pInstance && pInstance->GetData(DATA_CURATOR_EVENT) != DONE)
+            pInstance->SetData(DATA_CURATOR_EVENT, NOT_STARTED);
     }
 
     void KilledUnit(Unit *victim)
@@ -85,11 +92,17 @@ struct TRINITY_DLL_DECL boss_curatorAI : public ScriptedAI
     void JustDied(Unit *victim)
     {
         DoScriptText(SAY_DEATH, m_creature);
+
+        if (pInstance)
+            pInstance->SetData(DATA_CURATOR_EVENT, DONE);
     }
 
     void EnterCombat(Unit *who)
     {
         DoScriptText(SAY_AGGRO, m_creature);
+
+        if(pInstance)
+            pInstance->SetData(DATA_CURATOR_EVENT, IN_PROGRESS);
     }
 
     void UpdateAI(const uint32 diff)

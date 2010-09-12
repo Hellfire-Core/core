@@ -205,7 +205,7 @@ struct TRINITY_DLL_DECL boss_terestianAI : public ScriptedAI
         SummonedPortals     = false;
         Berserk             = false;
 
-        if(pInstance)
+        if(pInstance && pInstance->GetData(DATA_TERESTIAN_EVENT) != DONE)
             pInstance->SetData(DATA_TERESTIAN_EVENT, NOT_STARTED);
     }
 

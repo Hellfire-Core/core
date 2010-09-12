@@ -187,7 +187,8 @@ struct TRINITY_DLL_DECL boss_aranAI : public ScriptedAI
         if(pInstance)
         {
             // Not in progress
-            pInstance->SetData(DATA_SHADEOFARAN_EVENT, NOT_STARTED);
+            if (pInstance->GetData(DATA_SHADEOFARAN_EVENT) != DONE)
+                pInstance->SetData(DATA_SHADEOFARAN_EVENT, NOT_STARTED);
 
             if(GameObject* Door = GameObject::GetGameObject(*m_creature, pInstance->GetData64(DATA_GAMEOBJECT_LIBRARY_DOOR)))
                 Door->SetGoState(0);
