@@ -2338,14 +2338,13 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
                     ((Player*)m_target)->RemovePet(m_target->GetPet(), PET_SAVE_NOT_IN_SLOT);
                 
                 m_target->CastSpell(m_target, 40266, true);   //summon Vengeful Spirit and 4 Shadowy Constructs
-                m_target->CastSpell(m_target, 40282, true);   //Possess Spirit Immune
                 m_target->CastSpell((Unit*)NULL, 40268, false); //Possess Vengeful Spirit
+                m_target->CastSpell(m_target, 40282, true);   //Possess Spirit Immune
             }
         }
     }
 
     // AT APPLY & REMOVE
-
     switch(m_spellProto->SpellFamilyName)
     {
         case SPELLFAMILY_GENERIC:
@@ -3345,7 +3344,7 @@ void Aura::HandleModCharm(bool apply, bool Real)
     {
         if(int32(m_target->getLevel()) > m_modifier.m_amount)
             return;
-
+        
         m_target->SetCharmedOrPossessedBy(caster, false);
     }
     else
@@ -5915,7 +5914,7 @@ void Aura::HandleAuraAoeCharm( bool apply, bool Real )
     if(!Real)
         return;
 
-    if(Unit* caster = this->GetCaster())
+    if(Unit* caster = GetCaster())
     {
         if(apply)
             m_target->SetCharmedOrPossessedBy(caster, false);

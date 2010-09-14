@@ -87,6 +87,7 @@ struct TRINITY_DLL_DECL mob_doom_blossomAI : public NullCreatureAI
 
         float newX, newY, newZ;
         m_creature->GetRandomPoint(m_creature->GetPositionX(),m_creature->GetPositionY(),m_creature->GetPositionZ(), 10.0, newX, newY, newZ);
+        
         newZ = 196.0;
         m_creature->GetMotionMaster()->MovePoint(0, newX, newY, newZ);
         m_creature->SetSpeed(MOVE_RUN, 0.2);
@@ -114,6 +115,7 @@ struct TRINITY_DLL_DECL mob_doom_blossomAI : public NullCreatureAI
 
                 float newX, newY, newZ;
                 m_creature->GetRandomPoint(m_creature->GetPositionX(),m_creature->GetPositionY(),m_creature->GetPositionZ(), 3.0, newX, newY, newZ);
+                
                 newZ = (newZ < 200.0) ? (newZ + 1.0) : newZ;
                 m_creature->GetMotionMaster()->MovePoint(1, newX, newY, newZ);
                 m_creature->SetSpeed(MOVE_RUN, 0.1);
@@ -134,6 +136,7 @@ struct TRINITY_DLL_DECL mob_doom_blossomAI : public NullCreatureAI
 
             if(Unit *target = ((ScriptedAI*)Teron->AI())->SelectUnit(SELECT_TARGET_RANDOM, 0, 200, true))
                 DoCast(target, SPELL_SHADOWBOLT);
+            
             ShadowBoltTimer = 1500+rand()%1000;
         }
         else
@@ -155,29 +158,32 @@ struct TRINITY_DLL_DECL mob_shadowy_constructAI : public ScriptedAI
 
     uint64 TeronGUID;
 
-    uint32 AtrophyTimer;
+    uint32 DelayTimer;
     uint32 CheckTeronTimer;
-    uint32 InvisibilityTimer;
+    uint32 ChangeTargetTimer;
 
     void Reset()
     {
         DoCast(m_creature, SPELL_PASSIVE_SHADOWFORM, false);
         DoCast(m_creature, SPELL_SHADOW_STRIKES, false);
 
-        AtrophyTimer = 3000;
+        ChangeTargetTimer = 5000;
         CheckTeronTimer = 5000;
-        InvisibilityTimer = 1000;
+        DelayTimer = 2500;
 
-        me->DestroyForNearbyPlayers();
-        me->SetVisibility(VISIBILITY_OFF);
+        me->SetSpeed(MOVE_RUN, 1.3f);
     }
 
     void MoveInLineOfSight(Unit *who)
     {
-        if(me->GetVisibility() == VISIBILITY_OFF || who->GetTypeId() == TYPEID_UNIT)
+        if(who->GetTypeId() == TYPEID_UNIT)
             return;
 
-        ScriptedAI::MoveInLineOfSight(who);
+        if(ChangeTargetTimer || DelayTimer)
+            return;
+
+        AttackStart(who);
+        ChangeTargetTimer = 5000;
     }
 
     void AttackStart(Unit* who)
@@ -218,6 +224,8 @@ struct TRINITY_DLL_DECL mob_shadowy_constructAI : public ScriptedAI
 
     void CheckPlayers()
     {
+        DoZoneInCombat();
+
         if(Creature* Teron = Unit::GetCreature((*m_creature), TeronGUID))
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 200, true, Teron->getVictimGUID()))
@@ -244,26 +252,22 @@ struct TRINITY_DLL_DECL mob_shadowy_constructAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(InvisibilityTimer > diff)
+        if(DelayTimer > diff)
         {
-            InvisibilityTimer -= diff;
+            DelayTimer -= diff;
             return;
         }
-        else
+        else if(DelayTimer)
         {
-            me->SetVisibility(VISIBILITY_ON);
             CheckPlayers();
+            DelayTimer = 0;
+            ChangeTargetTimer = 5000;
         }
 
-        if(AtrophyTimer < diff)
-        {
-            DoZoneInCombat();
-            CheckPlayers();
-            me->SetSpeed(MOVE_RUN, 1.0f);
-            AtrophyTimer = 3000;
-        }
+        if(ChangeTargetTimer > diff)
+            ChangeTargetTimer -= diff;
         else
-            AtrophyTimer -= diff;
+            ChangeTargetTimer = 0;
 
         if(CheckTeronTimer < diff)
         {
@@ -350,7 +354,8 @@ struct TRINITY_DLL_DECL boss_teron_gorefiendAI : public ScriptedAI
 
     void MoveInLineOfSight(Unit *who)
     {
-        if(!who || (!who->isAlive())) return;
+        if(!who || !who->isAlive())
+            return;
 
         if(!m_creature->isInCombat() && who->isTargetableForAttack() && who->isInAccessiblePlaceFor(m_creature) && m_creature->IsHostileTo(who))
         {

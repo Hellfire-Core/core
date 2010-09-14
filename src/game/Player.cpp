@@ -5569,7 +5569,7 @@ bool Player::SetPosition(float x, float y, float z, float orientation, bool tele
     }
 
     // code block for underwater state update
-    UpdateUnderwaterState(m, GetPositionX(), GetPositionY(), GetPositionZ());
+    UpdateUnderwaterState(GetMap(), GetPositionX(), GetPositionY(), GetPositionZ());
 
     CheckAreaExploreAndOutdoor();
 
