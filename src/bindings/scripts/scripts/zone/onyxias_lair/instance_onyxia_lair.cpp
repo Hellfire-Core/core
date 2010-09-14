@@ -111,6 +111,7 @@ struct TRINITY_DLL_DECL instance_onyxia_lair : public ScriptedInstance
 
     void DespawnWhelps()
     {
+        error_log("TSCR: Despawning Whelps in Onyxia's Lair: whelps count %u", m_whelps.size());
         for (std::list<uint64>::const_iterator itr = m_whelps.begin(); itr != m_whelps.end(); ++itr)
         {
             if (Creature *whelp = instance->GetCreature(*itr))

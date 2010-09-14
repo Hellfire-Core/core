@@ -240,7 +240,7 @@ struct TRINITY_DLL_DECL boss_onyxiaAI : public ScriptedAI
                 m_nextWay = 2;
                 m_nextMoveTimer = 3000;
                 if (pInstance)
-                    pInstance->SetData(DATA_HATCH_EGGS, 8);
+                    pInstance->SetData(DATA_HATCH_EGGS, 7);
             case 1:
                 Fly();
                 break;
@@ -361,7 +361,9 @@ struct TRINITY_DLL_DECL boss_onyxiaAI : public ScriptedAI
             {
                 if (pInstance)
                     pInstance->SetData(DATA_HATCH_EGGS, 2);
-                m_summonWhelpsTimer = irand(20, 32) * 1000;
+                m_summonWhelpsTimer = irand(18, 24) * 1000;
+                if (m_phaseMask & PHASE_3)
+                    m_summonWhelpsTimer *= 2.0;
             }
             else
                 m_summonWhelpsTimer -= diff;
