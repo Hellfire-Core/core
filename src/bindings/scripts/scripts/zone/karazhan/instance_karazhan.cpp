@@ -93,6 +93,33 @@ uint32 instance_karazhan::GetData(uint32 identifier)
     return 0;
 }
 
+uint32 GetEncounterForEntry(uint32 entry)
+{
+    switch(entry)
+    {
+        case 15688:
+            return DATA_TERESTIAN_EVENT;
+        case 15687:
+            return DATA_MOROES_EVENT;
+        case 16524:
+            return DATA_SHADEOFARAN_EVENT;
+        case 15691:
+            return DATA_CURATOR_EVENT;
+        case 16457:
+            return DATA_MAIDENOFVIRTUE_EVENT;
+        case 16151:
+            return DATA_ATTUMEN_EVENT;
+        case 15689:
+            return DATA_NETHERSPITE_EVENT;
+        case 17225:
+            return DATA_NIGHTBANE_EVENT;
+        case 15690:
+            return DATA_MALCHEZZAR_EVENT;
+        default:
+            return 0;
+    }
+}
+
 void instance_karazhan::OnCreatureCreate(Creature *creature, uint32 entry)
 {
     uint32 data = 0;
@@ -103,15 +130,12 @@ void instance_karazhan::OnCreatureCreate(Creature *creature, uint32 entry)
             break;
         case 15688:
             TerestianGUID = creature->GetGUID();
-            data = DATA_TERESTIAN_EVENT;
             break;
         case 15687:
             MoroesGUID = creature->GetGUID();
-            data = DATA_MOROES_EVENT;
             break;
         case 16524:
             AranGUID = creature->GetGUID();
-            data = DATA_SHADEOFARAN_EVENT;
             break;
         case 16816:
             MedivhGUID = creature->GetGUID();
@@ -120,75 +144,14 @@ void instance_karazhan::OnCreatureCreate(Creature *creature, uint32 entry)
             BlizzardGUID = creature->GetGUID();
             creature->SetReactState(REACT_PASSIVE);
             break;
-        case 15691:
-            data = DATA_CURATOR_EVENT;
-            break;
-        case 16457:
-            data = DATA_MAIDENOFVIRTUE_EVENT;
-            break;
-        case 16151:
-            data = DATA_ATTUMEN_EVENT;
-            break;
-        case 15689:
-            data = DATA_NETHERSPITE_EVENT;
-            break;
-        case 17225:
-            data = DATA_NIGHTBANE_EVENT;
-            break;
-        case 15690:
-            data = DATA_MALCHEZZAR_EVENT;
-            break;
     }
 
-    if(data)
-    {
-        if (creature->isAlive() && GetData(data) == DONE)
-            creature->Kill(creature, false);
-    }
-    else    //if it's trash
-    {
-        const CreatureData * tmp = creature->GetLinkedRespawnCreatureData();
+    const CreatureData *tmp = creature->GetLinkedRespawnCreatureData();
+    if (!tmp)
+        return;
 
-        if (!tmp)
-            return;
-
-        switch (tmp->id)
-        {
-            case 15688:
-                data = DATA_TERESTIAN_EVENT;
-                break;
-            case 15687:
-                data = DATA_MOROES_EVENT;
-                break;
-            case 16524:
-                data = DATA_SHADEOFARAN_EVENT;
-                break;
-            case 15691:
-                data = DATA_CURATOR_EVENT;
-                break;
-            case 16457:
-                data = DATA_MAIDENOFVIRTUE_EVENT;
-                break;
-            case 16151:
-                data = DATA_ATTUMEN_EVENT;
-                break;
-            case 15689:
-                data = DATA_NETHERSPITE_EVENT;
-                break;
-            case 17225:
-                data = DATA_NIGHTBANE_EVENT;
-                break;
-            case 15690:
-                data = DATA_MALCHEZZAR_EVENT;
-                break;
-        }
-
-        if (data && creature->isAlive() && GetData(data) == DONE)
-        {
-            creature->Kill(creature, false);
-            creature->RemoveCorpse();
-        }
-    }
+    if (GetEncounterForEntry(tmp->id) && creature->isAlive() && GetData(GetEncounterForEntry(tmp->id)) == DONE)
+        creature->Kill(creature, false);
 }
 
 uint64 instance_karazhan::GetData64(uint32 data)
