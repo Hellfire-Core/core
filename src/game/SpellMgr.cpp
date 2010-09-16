@@ -950,7 +950,6 @@ bool IsBinaryResistable(SpellEntry const* spellInfo)
         case 31306:     // Anetheron - Carrion Swarm
         case 31344:     // Howl of Azgalor
         case 31447:     // Mark of Kaz'Rogal
-        case 31970:     // Archimonde - Fear
         case 34190:     // Void - Arcane Orb
         case 37730:     // Morogrim - Tidal Wave
         case 38441:     // Fathom - Cataclysm bolt
