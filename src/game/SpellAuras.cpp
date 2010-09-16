@@ -630,16 +630,49 @@ void Aura::Update(uint32 diff)
 
 bool AreaAura::CheckTarget(Unit *target)
 {
-
-    // Special case: Healing stream totem, totem of wrath and grounding totem stacks if from different casters
-    if(GetSpellProto()->SpellFamilyName == SPELLFAMILY_SHAMAN && (GetSpellProto()->SpellIconID == 1677 ||
-        GetSpellProto()->SpellIconID == 1647 || GetSpellProto()->SpellIconID == 2019 ))
+    if(GetSpellProto()->SpellFamilyName == SPELLFAMILY_SHAMAN)
     {
-        Unit::spellEffectPair spair = Unit::spellEffectPair(GetId(), GetEffIndex());
-        for(Unit::AuraMap::iterator it = target->GetAuras().lower_bound(spair); it != target->GetAuras().upper_bound(spair); it++)
-            if(it->second->GetCasterGUID() == GetCasterGUID())
-                return false;
-        return true;
+        switch(GetSpellProto()->SpellIconID)
+        {
+            // Healing stream totem, totem of wrath and grounding totem stacks if from different casters
+            case 1677:
+            case 1647:
+            case 2019:
+            {
+                Unit::spellEffectPair spair = Unit::spellEffectPair(GetId(), GetEffIndex());
+                for(Unit::AuraMap::iterator it = target->GetAuras().lower_bound(spair); it != target->GetAuras().upper_bound(spair); it++)
+                    if(it->second->GetCasterGUID() == GetCasterGUID())
+                        return false;
+                return true;
+            }
+            // Other totems should not stack, even if different ranks are used
+            case 690:   // Stoneskin
+            case 691:   // Strength of Earth
+            case 338:   // Mana Spring
+            case 337:   // Grace of Air
+            case 174:   // Windwall
+            {
+                if(target->HasAura(GetId(), m_effIndex))
+                    return false;
+
+                Unit::AuraMap auras = target->GetAuras();
+                for(Unit::AuraMap::iterator it = auras.begin(); it != auras.end(); it++)
+                {
+                    Aura* aur = (*it).second;
+                    if(aur->GetSpellProto()->SpellFamilyName == SPELLFAMILY_SHAMAN && aur->GetSpellProto()->SpellIconID == GetSpellProto()->SpellIconID)
+                    {
+                        if(GetId() < aur->GetId())        // HACK: higher id => higher spell rank
+                            return false;
+                        else
+                        {
+                            target->RemoveAurasDueToSpell(aur->GetId());
+                            return true;
+                        }
+                    }
+                }
+                return true;
+            }
+        }
     }
 
     if(target->HasAura(GetId(), m_effIndex))
