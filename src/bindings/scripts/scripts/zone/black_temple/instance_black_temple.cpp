@@ -470,8 +470,20 @@ struct TRINITY_DLL_DECL instance_black_temple : public ScriptedInstance
     {
         switch(type)
         {
-            case DATA_SHADOWOFDEATH:
+            case DATA_SHADOWOFDEATH_APPLY:
                 sodList[value] = 70000;
+                //std::cout << "Player added to list" << std::endl;
+            break;
+            case DATA_SHADOWOFDEATH_DONE:
+                if(sodList.size() && GetData(DATA_TERONGOREFIENDEVENT) == IN_PROGRESS)
+                {
+                    for(std::map<uint64,uint32>::iterator itr = sodList.begin(); itr != sodList.end(); itr++)
+                        if(itr->first == value)
+                        {
+                            sodList.erase(itr);
+                            //std::cout << "Player removed from list" << std::endl;
+                        }
+                }
             break;
         }
     }
@@ -493,16 +505,6 @@ struct TRINITY_DLL_DECL instance_black_temple : public ScriptedInstance
             case DATA_WEAPONMASTER_LIST_SIZE:           return weaponmasterList.size();
         }
         return 0;
-    }
-
-    void OnPlayerDeath(Player *pPlayer)
-    {
-        if(sodList.size() && GetData(DATA_TERONGOREFIENDEVENT) == IN_PROGRESS)
-        {
-            for(std::map<uint64,uint32>::iterator itr = sodList.begin(); itr != sodList.end(); itr++)
-                if(itr->first == pPlayer->GetGUID())
-                    sodList.erase(itr);
-        }
     }
 
     void Update(uint32 diff)

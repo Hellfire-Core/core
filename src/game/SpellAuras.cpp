@@ -49,6 +49,7 @@
 #include "GridNotifiers.h"
 #include "GridNotifiersImpl.h"
 #include "CellImpl.h"
+#include "InstanceData.h"
 
 #define NULL_AURA_SLOT 0xFF
 
@@ -2373,7 +2374,12 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
                 m_target->CastSpell(m_target, 40266, true);   //summon Vengeful Spirit and 4 Shadowy Constructs
                 m_target->CastSpell((Unit*)NULL, 40268, false); //Possess Vengeful Spirit
                 //m_target->CastSpell(m_target, 40282, true);   //Possess Spirit Immune
+
                 m_target->AddAura(40282, m_target);             //Possess Spirit Immune
+                
+                Map *pMap = m_target->GetMap();
+                if(((InstanceMap*)pMap)->GetInstanceData())
+                    ((InstanceMap*)pMap)->GetInstanceData()->SetData64(29, m_target->GetGUID());
             }
         }
     }

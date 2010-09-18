@@ -271,8 +271,8 @@ struct TRINITY_DLL_DECL mob_shadowy_constructAI : public ScriptedAI
 
         if(CheckTeronTimer < diff)
         {
-            Creature* Teron = (Unit::GetCreature((*m_creature), TeronGUID));
-            if(Teron && !Teron->isInCombat())
+            Creature* Teron = Unit::GetCreature((*m_creature), TeronGUID);
+            if(!Teron || !Teron->isInCombat())
                  m_creature->Kill(m_creature, false);
 
             CheckTeronTimer = 5000;
@@ -404,6 +404,15 @@ struct TRINITY_DLL_DECL boss_teron_gorefiendAI : public ScriptedAI
 
     }
 
+    void SpellHitTarget(Unit *target, const SpellEntry *spell)
+    {
+        if(!pInstance)
+            return;
+
+        if(spell->Id == SPELL_SHADOW_OF_DEATH)
+            pInstance->SetData64(DATA_SHADOWOFDEATH_APPLY, target->GetGUID());
+    }
+
     float CalculateRandomLocation(float Loc, uint32 radius)
     {
         float coord = Loc;
@@ -506,7 +515,6 @@ struct TRINITY_DLL_DECL boss_teron_gorefiendAI : public ScriptedAI
             if(target && target->isAlive() && !target->HasAura(SPELL_SHADOW_OF_DEATH, 0) && !target->HasAura(40282, 0) )
             {
                 AddSpellToCast(target, SPELL_SHADOW_OF_DEATH);
-                pInstance->SetData64(DATA_SHADOWOFDEATH, target->GetGUID());
                 ShadowOfDeathTimer = urand(30000, 50000);
             }
         }
