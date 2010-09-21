@@ -99,7 +99,7 @@ struct TRINITY_DLL_DECL boss_nightbaneAI : public ScriptedAI
     {
         if(Summoned)
         {
-            if(pInstance->GetData64(DATA_NIGHTBANE))
+            if(pInstance->GetData64(DATA_NIGHTBANE) || pInstance->GetData(DATA_NIGHTBANE_EVENT) == DONE)
             {
                 m_creature->setDeathState(JUST_DIED);
                 m_creature->RemoveCorpse();

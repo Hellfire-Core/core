@@ -42,6 +42,7 @@
 #include "CellImpl.h"
 #include "GridNotifiers.h"
 #include "GridNotifiersImpl.h"
+#include "InstanceData.h"
 
 #include "TemporarySummon.h"
 #include "OutdoorPvPMgr.h"
@@ -1725,6 +1726,9 @@ Creature* WorldObject::SummonCreature(uint32 id, float x, float y, float z, floa
 
     if(pCreature->IsAIEnabled)
         pCreature->AI()->JustRespawned();
+
+    if(((InstanceMap*)GetMap())->GetInstanceData())
+        ((InstanceMap*)GetMap())->GetInstanceData()->OnCreatureCreate(pCreature, id);
 
     if(pCreature->GetCreatureInfo()->flags_extra & CREATURE_FLAG_EXTRA_TRIGGER && pCreature->m_spells[0])
     {

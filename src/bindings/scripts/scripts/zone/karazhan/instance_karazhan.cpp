@@ -172,7 +172,7 @@ uint64 instance_karazhan::GetData64(uint32 data)
         case DATA_GAMEOBJECT_GAME_DOOR:        return GamesmansDoor;
         case DATA_GAMEOBJECT_GAME_EXIT_DOOR:   return GamesmansExitDoor;
         case DATA_GAMEOBJECT_NETHER_DOOR:      return NetherspaceDoor;
-        case DATA_MASTERS_TERRACE_DOOR_1:      return NetherspaceDoor;
+        case DATA_MASTERS_TERRACE_DOOR_1:      return MastersTerraceDoor[0];
         case DATA_MASTERS_TERRACE_DOOR_2:      return MastersTerraceDoor[1];
         case DATA_ARAN:                        return AranGUID;
         case DATA_BLIZZARD:                    return BlizzardGUID;
