@@ -5850,8 +5850,12 @@ bool Unit::HandleProcTriggerSpell(Unit *pVictim, uint32 damage, Aura* triggeredB
           target = pVictim;
           break;
      }
-//     else if (auraSpellInfo->Id==41248) // Consuming Strikes
-//          trigger_spell_id = 41249;
+     else if (auraSpellInfo->Id==41248) // Consuming Strikes
+     {
+         basepoints0 = damage;
+         target = pVictim;
+         trigger_spell_id = 41249;
+     }
 //     else if (auraSpellInfo->Id==41054) // Copy Weapon
 //          trigger_spell_id = 41055;
 //     else if (auraSpellInfo->Id==31255) // Deadly Swiftness (Rank 1)
