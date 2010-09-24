@@ -5585,6 +5585,26 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
                     triggered_spell_id = 28850;
                     break;
                 }
+                // Windfury Weapon Rank 5 - NOT players version
+                case 33727:
+                {
+                    if(GetTypeId() == TYPEID_PLAYER)
+                        return false;
+
+                    SpellEntry const* windfurySpellEntry = sSpellStore.LookupEntry(33727);
+
+                    int32 extra_attack_power = CalculateSpellDamage(windfurySpellEntry,0,windfurySpellEntry->EffectBasePoints[0],pVictim);
+
+                    // Value gained from additional AP
+                    basepoints0 = int32(extra_attack_power/14.0f * GetAttackTime(BASE_ATTACK)/1000);
+                    triggered_spell_id = 25504;
+
+                    // Attack Twice
+                    for ( uint32 i = 0; i<2; ++i )
+                        CastCustomSpell(pVictim,triggered_spell_id,&basepoints0,NULL,NULL,true,NULL,triggeredByAura);
+
+                    return true;
+                }
                 // Windfury Weapon (Passive) 1-5 Ranks
                 case 33757:
                 {
