@@ -413,7 +413,7 @@ struct TRINITY_DLL_DECL mob_ashtongue_elementalistAI : public ScriptedAI
 
         if (m_lightningBoltTimer < diff)
         {
-            AddSpellToCast(m_creature, SPELL_LIGHTNING_BOLT, false);
+            AddSpellToCast(m_creature->getVictim(), SPELL_LIGHTNING_BOLT, false);
             m_lightningBoltTimer = 10000;
         }
         else
