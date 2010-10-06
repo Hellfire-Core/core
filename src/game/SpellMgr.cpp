@@ -2724,6 +2724,9 @@ void SpellMgr::LoadSpellCustomAttr()
         case 6947:  // Curse of the Bleakheart
             spellInfo->procFlags = 65876;      //any succesfull melee, ranged or negative spell hit
             break;
+        case 66:    // Invisibility (fading) - break on casting spell
+            spellInfo->AuraInterruptFlags |= AURA_INTERRUPT_FLAG_CAST;
+            break;
         default:
             break;
         }

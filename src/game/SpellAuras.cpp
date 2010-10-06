@@ -1946,6 +1946,8 @@ void Aura::TriggerSpell()
                     {
                         if(!m_duration)
                             m_target->CastSpell(m_target, 32612, true, NULL, this);
+                        else if(m_tickNumber < 5)
+                            m_target->getHostilRefManager().addThreatPercent(-(int32)(100/(6-m_tickNumber)));
                         return;
                     }
                     default:
