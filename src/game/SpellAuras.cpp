@@ -878,8 +878,9 @@ void Aura::UpdateAuraDuration()
     if( m_target->GetTypeId() == TYPEID_PLAYER)
     {
         WorldPacket data;
-        data.Initialize(SMSG_UPDATE_AURA_DURATION, 5);
-        data << (uint8)m_auraSlot << (uint32)m_duration;
+        data.Initialize(SMSG_UPDATE_AURA_DURATION, 1+4);
+        data << (uint8)m_auraSlot;
+        data << (uint32)m_duration;
         ((Player *)m_target)->SendDirectMessage(&data);
 
         data.Initialize(SMSG_SET_EXTRA_AURA_INFO, (8+1+4+4+4));
