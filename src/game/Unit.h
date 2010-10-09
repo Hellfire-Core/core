@@ -1539,8 +1539,12 @@ class TRINITY_DLL_SPEC Unit : public WorldObject
         void addFollower(FollowerReference* pRef) { m_FollowingRefManager.insertFirst(pRef); }
         void removeFollower(FollowerReference* /*pRef*/ ) { /* nothing to do yet */ }
         static Unit* GetUnit(WorldObject& object, uint64 guid);
+        static Unit* GetUnit(const Unit& unit, uint64 guid);
         static Player* GetPlayer(uint64 guid);
         static Creature* GetCreature(WorldObject& object, uint64 guid);
+
+        Unit* GetUnit(uint64 guid);
+        Creature* GetCreature(uint64 guid);
 
         MotionMaster* GetMotionMaster() { return &i_motionMaster; }
 

@@ -48,7 +48,7 @@ void DynamicObject::AddToWorld()
     ///- Register the dynamicObject for guid lookup
     if(!IsInWorld())
     {
-        ObjectAccessor::Instance().AddObject(this);
+        GetMap()->InsertIntoObjMap(this);
         WorldObject::AddToWorld();
     }
 }
@@ -59,7 +59,7 @@ void DynamicObject::RemoveFromWorld()
     if(IsInWorld())
     {
         WorldObject::RemoveFromWorld();
-        ObjectAccessor::Instance().RemoveObject(this);
+        GetMap()->RemoveFromObjMap(GetGUID());
     }
 }
 
@@ -99,7 +99,7 @@ bool DynamicObject::Create( uint32 guidlow, Unit *caster, uint32 spellId, uint32
 Unit* DynamicObject::GetCaster() const
 {
     // can be not found in some cases
-    return ObjectAccessor::GetUnit(*this,m_casterGuid);
+    return GetMap()->GetUnit(m_casterGuid);
 }
 
 void DynamicObject::Update(uint32 p_time)

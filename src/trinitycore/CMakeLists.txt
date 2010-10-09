@@ -34,6 +34,8 @@ SET_TARGET_PROPERTIES(trinity-core PROPERTIES LINK_FLAGS "${trinity-core_LINK_FL
 
 target_link_libraries(
 trinity-core
+${TBB_LIBRARY}
+${TBB_LIBRARY_MALLOC}
 game
 shared
 zlib
@@ -53,7 +55,6 @@ ${SSLLIB}
 ${ACE_LIBRARY}
 ${ZLIB}
 ${OSX_LIBS}
-${TBB_LIBRARY_MALLOC}
 )
 
 IF (CENTOS)

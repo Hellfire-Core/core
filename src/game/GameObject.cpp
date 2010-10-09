@@ -40,6 +40,7 @@
 #include "Util.h"
 #include "OutdoorPvPMgr.h"
 #include "BattleGroundAV.h"
+#include "Map.h"
 
 GameObject::GameObject() : WorldObject()
 {
@@ -72,9 +73,9 @@ GameObject::~GameObject()
         {
             Unit* owner = NULL;
             if(IS_PLAYER_GUID(owner_guid))
-                owner = ObjectAccessor::GetObjectInWorld(owner_guid, (Player*)NULL);
+                owner = ObjectAccessor::GetPlayer(owner_guid);
             else
-                owner = ObjectAccessor::GetUnit(*this,owner_guid);
+                owner = GetMap()->GetUnit(owner_guid);
 
             if(owner)
                 owner->RemoveGameObject(this,false);
@@ -104,7 +105,7 @@ void GameObject::AddToWorld()
     ///- Register the gameobject for guid lookup
     if(!IsInWorld())
     {
-        ObjectAccessor::Instance().AddObject(this);
+        GetMap()->InsertIntoObjMap(this);
         WorldObject::AddToWorld();
     }
 }
@@ -119,7 +120,7 @@ void GameObject::RemoveFromWorld()
                 ((InstanceMap*)map)->GetInstanceData()->OnObjectRemove(this);
 
         WorldObject::RemoveFromWorld();
-        ObjectAccessor::Instance().RemoveObject(this);
+        GetMap()->RemoveFromObjMap(GetGUID());
     }
 }
 
@@ -748,7 +749,7 @@ bool GameObject::IsTransport() const
 
 Unit* GameObject::GetOwner() const
 {
-    return ObjectAccessor::GetUnit(*this, GetOwnerGUID());
+    return GetMap()->GetUnit(GetOwnerGUID());
 }
 
 void GameObject::SaveRespawnTime()

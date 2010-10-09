@@ -75,7 +75,7 @@ bool ChatHandler::HandleMuteCommand(const char* args)
         mutereasonstr = "No reason.";
     else
         mutereasonstr = mutereason;
-        
+
     uint32 notspeaktime = (uint32) atoi(timetonotspeak);
 
     if(!normalizePlayerName(cname))
@@ -1042,7 +1042,7 @@ bool ChatHandler::HandleDelObjectCommand(const char* args)
     uint64 owner_guid = obj->GetOwnerGUID();
     if(owner_guid)
     {
-        Unit* owner = ObjectAccessor::GetUnit(*m_session->GetPlayer(),owner_guid);
+        Unit* owner = m_session->GetPlayer()->GetMap()->GetUnit(owner_guid);
         if(!owner && !IS_PLAYER_GUID(owner_guid))
         {
             PSendSysMessage(LANG_COMMAND_DELOBJREFERCREATURE, GUID_LOPART(owner_guid), obj->GetGUIDLow());
@@ -3786,7 +3786,7 @@ bool ChatHandler::HandleCreatePetCommand(const char* args)
 
     if(!pet)
       return false;
-    
+
     if(!pet->CreateBaseAtCreature(creatureTarget))
     {
         delete pet;

@@ -95,7 +95,7 @@ Pet::~Pet()
     {
         for (PetSpellMap::iterator i = m_spells.begin(); i != m_spells.end(); ++i)
             delete i->second;
-        ObjectAccessor::Instance().RemoveObject(this);
+        GetMap()->RemoveFromObjMap(GetGUID());
     }
 
     delete m_declinedname;
@@ -105,8 +105,8 @@ void Pet::AddToWorld()
 {
     ///- Register the pet for guid lookup
     if(!IsInWorld())
-    {   
-        ObjectAccessor::Instance().AddObject(this);
+    {
+        ObjectAccessor::Instance().AddPet(this);
         Unit::AddToWorld();
     }
 }
@@ -117,7 +117,7 @@ void Pet::RemoveFromWorld()
     if(IsInWorld())
     {
         Unit::RemoveFromWorld();
-        ObjectAccessor::Instance().RemoveObject(this);
+        ObjectAccessor::Instance().RemovePet(this);
     }
 }
 
@@ -1679,7 +1679,7 @@ void Pet::InitPetCreateSpells()
             if(learn_spellproto->Effect[0] == SPELL_EFFECT_LEARN_SPELL || learn_spellproto->Effect[0] == SPELL_EFFECT_LEARN_PET_SPELL)
             {
                 petspellid = learn_spellproto->EffectTriggerSpell[0];
-                
+
                 if(p_owner && !p_owner->HasSpell(learn_spellproto->Id))
                 {
                     if(IsPassiveSpell(petspellid))          //learn passive skills when tamed, not sure if thats right

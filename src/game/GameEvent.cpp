@@ -1063,20 +1063,24 @@ void GameEvent::UpdateEventNPCFlags(uint16 event_id)
         // get the creature data from the low guid to get the entry, to be able to find out the whole guid
         if( CreatureData const* data = objmgr.GetCreatureData(itr->first) )
         {
-            Creature * cr = HashMapHolder<Creature>::Find(MAKE_NEW_GUID(itr->first,data->id,HIGHGUID_UNIT));
-            // if we found the creature, modify its npcflag
-            if(cr)
+            Map * map = MapManager::Instance().FindMap(data->mapid);
+            if(map)
             {
-                uint32 npcflag = GetNPCFlag(cr);
-                if(const CreatureInfo * ci = cr->GetCreatureInfo())
-                    npcflag |= ci->npcflag;
-                cr->SetUInt32Value(UNIT_NPC_FLAGS,npcflag);
-                // reset gossip options, since the flag change might have added / removed some
-                cr->ResetGossipOptions();
-                // update to world
-                //cr->SendUpdateObjectToAllExcept(NULL);
+                Creature * cr = map->GetCreature(MAKE_NEW_GUID(itr->first,data->id,HIGHGUID_UNIT));
+                // if we found the creature, modify its npcflag
+                if(cr)
+                {
+                    uint32 npcflag = GetNPCFlag(cr);
+                    if(const CreatureInfo * ci = cr->GetCreatureInfo())
+                        npcflag |= ci->npcflag;
+                    cr->SetUInt32Value(UNIT_NPC_FLAGS,npcflag);
+                    // reset gossip options, since the flag change might have added / removed some
+                    cr->ResetGossipOptions();
+                    // update to world
+                    //cr->SendUpdateObjectToAllExcept(NULL);
+                }
+                // if we didn't find it, then the npcflag will be updated when the creature is loaded
             }
-            // if we didn't find it, then the npcflag will be updated when the creature is loaded
         }
     }
 }
@@ -1192,10 +1196,14 @@ void GameEvent::GameEventUnspawn(int16 event_id)
         {
             objmgr.RemoveCreatureFromGrid(*itr, data);
 
-            if( Creature* pCreature = ObjectAccessor::Instance().GetObjectInWorld(MAKE_NEW_GUID(*itr, data->id, HIGHGUID_UNIT), (Creature*)NULL) )
+            Map * tmpMap = MapManager::Instance().FindMap(data->mapid);
+            if(tmpMap)
             {
-                pCreature->CleanupsBeforeDelete();
-                pCreature->AddObjectToRemoveList();
+                if (Creature * pCreature = tmpMap->GetCreature(MAKE_NEW_GUID(*itr, data->id, HIGHGUID_UNIT)))
+                {
+                    pCreature->CleanupsBeforeDelete();
+                    pCreature->AddObjectToRemoveList();
+                }
             }
         }
     }
@@ -1216,8 +1224,10 @@ void GameEvent::GameEventUnspawn(int16 event_id)
         {
             objmgr.RemoveGameobjectFromGrid(*itr, data);
 
-            if( GameObject* pGameobject = ObjectAccessor::Instance().GetObjectInWorld(MAKE_NEW_GUID(*itr, data->id, HIGHGUID_GAMEOBJECT), (GameObject*)NULL) )
-                pGameobject->AddObjectToRemoveList();
+            Map * tmpMap = MapManager::Instance().FindMap(data->mapid);
+            if(tmpMap)
+                if (GameObject* pGameobject = tmpMap->GetGameObject(MAKE_NEW_GUID(*itr, data->id, HIGHGUID_GAMEOBJECT)))
+                    pGameobject->AddObjectToRemoveList();
         }
     }
 }
@@ -1232,7 +1242,11 @@ void GameEvent::ChangeEquipOrModel(int16 event_id, bool activate)
             continue;
 
         // Update if spawned
-        Creature* pCreature = ObjectAccessor::Instance().GetObjectInWorld(MAKE_NEW_GUID(itr->first, data->id,HIGHGUID_UNIT), (Creature*)NULL);
+        Map * tmpMap = MapManager::Instance().FindMap(data->mapid);
+        if (!tmpMap)
+            continue;
+
+        Creature* pCreature = tmpMap->GetCreature(MAKE_NEW_GUID(itr->first, data->id,HIGHGUID_UNIT));
         if (pCreature)
         {
             if (activate)
@@ -1525,7 +1539,7 @@ TRINITY_DLL_SPEC bool isGameEventActive(uint16 event_id)
     for(GameEvent::ActiveEvents::const_iterator itr = ae.begin(); itr != ae.end(); ++itr)
         if(*itr == event_id)
         return true;
-        
+
     return false;
 }
 

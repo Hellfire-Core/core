@@ -179,9 +179,14 @@ void BattleGroundEY::AddPoints(uint32 Team, uint32 Points)
 void BattleGroundEY::CheckSomeoneJoinedPoint()
 {
     GameObject *obj = NULL;
+    Map * tmpMap = GetMap();
+
+    if(!tmpMap)
+        return;
+
     for (uint8 i = 0; i < EY_POINTS_MAX; ++i)
     {
-        obj = HashMapHolder<GameObject>::Find(m_BgObjects[BG_EY_OBJECT_TOWER_CAP_FEL_REALVER + i]);
+        obj = tmpMap->GetGameObject(m_BgObjects[BG_EY_OBJECT_TOWER_CAP_FEL_REALVER + i]);
         if (obj)
         {
             uint8 j = 0;
@@ -218,10 +223,16 @@ void BattleGroundEY::CheckSomeoneLeftPoint()
     //reset current point counts
     for (uint8 i = 0; i < 2*EY_POINTS_MAX; ++i)
         m_CurrentPointPlayersCount[i] = 0;
+
+    Map * tmpMap = GetMap();
+
+    if(!tmpMap)
+        return;
+
     GameObject *obj = NULL;
     for(uint8 i = 0; i < EY_POINTS_MAX; ++i)
     {
-        obj = HashMapHolder<GameObject>::Find(m_BgObjects[BG_EY_OBJECT_TOWER_CAP_FEL_REALVER + i]);
+        obj = tmpMap->GetGameObject(m_BgObjects[BG_EY_OBJECT_TOWER_CAP_FEL_REALVER + i]);
         if(obj)
         {
             uint8 j = 0;
@@ -573,7 +584,12 @@ void BattleGroundEY::RespawnFlagAfterDrop()
 {
     RespawnFlag(true);
 
-    GameObject *obj = HashMapHolder<GameObject>::Find(GetDroppedFlagGUID());
+    Map * tmpMap = GetMap();
+
+    if(!tmpMap)
+        return;
+
+    GameObject *obj = tmpMap->GetGameObject(GetDroppedFlagGUID());
     if(obj)
         obj->Delete();
     else

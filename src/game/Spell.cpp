@@ -158,7 +158,7 @@ void SpellCastTargets::Update(Unit* caster)
 {
     m_GOTarget   = !m_GOTargetGUID.IsEmpty() ? caster->GetMap()->GetGameObject(m_GOTargetGUID.GetRawValue()) : NULL;
     m_unitTarget = !m_unitTargetGUID.IsEmpty() ?
-        (m_unitTargetGUID.GetRawValue() == caster->GetGUID() ? caster : ObjectAccessor::GetUnit(*caster, m_unitTargetGUID.GetRawValue())) :
+        (m_unitTargetGUID.GetRawValue() == caster->GetGUID() ? caster : caster->GetMap()->GetUnit(m_unitTargetGUID.GetRawValue())) :
     NULL;
 
     m_itemTarget = NULL;
@@ -317,7 +317,7 @@ Spell::Spell( Unit* Caster, SpellEntry const *info, bool triggered, uint64 origi
     if(originalCasterGUID)
     {
         m_originalCasterGUID = originalCasterGUID;
-        m_originalCaster = ObjectAccessor::GetUnit(*m_caster,m_originalCasterGUID);
+        m_originalCaster = m_caster->GetMap()->GetUnit(m_originalCasterGUID);
         if (m_originalCaster && !m_originalCaster->IsInWorld()) m_originalCaster = NULL;
     }
     else
@@ -788,7 +788,7 @@ void Spell::AddUnitTarget(Unit* pVictim, uint32 effIndex)
 
 void Spell::AddUnitTarget(uint64 unitGUID, uint32 effIndex)
 {
-    Unit* unit = m_caster->GetGUID()==unitGUID ? m_caster : ObjectAccessor::GetUnit(*m_caster, unitGUID);
+    Unit* unit = m_caster->GetGUID()==unitGUID ? m_caster : m_caster->GetMap()->GetUnit(unitGUID);
     if (unit)
         AddUnitTarget(unit, effIndex);
 }
@@ -885,7 +885,7 @@ void Spell::DoAllEffectOnTarget(TargetInfo *target)
     if (mask == 0)                                          // No effects
         return;
 
-    Unit* unit = m_caster->GetGUID()==target->targetGUID ? m_caster : ObjectAccessor::GetUnit(*m_caster,target->targetGUID);
+    Unit* unit = m_caster->GetGUID()==target->targetGUID ? m_caster : m_caster->GetMap()->GetUnit(target->targetGUID);
     if (!unit)
         return;
 
@@ -1264,7 +1264,7 @@ bool Spell::IsAliveUnitPresentInTargetList()
 
         if( ihit->missCondition == SPELL_MISS_NONE && (needAliveTargetMask & ihit->effectMask) )
         {
-            Unit *unit = m_caster->GetGUID()==ihit->targetGUID ? m_caster : ObjectAccessor::GetUnit(*m_caster, ihit->targetGUID);
+            Unit *unit = m_caster->GetGUID()==ihit->targetGUID ? m_caster : m_caster->GetMap()->GetUnit(ihit->targetGUID);
 
             if (unit && (unit->isAlive() != IsDeathOnlySpell(m_spellInfo)))
                 needAliveTargetMask &= ~ihit->effectMask;   // remove from need alive mask effect that have alive target
@@ -2173,7 +2173,7 @@ void Spell::cancel()
 
                 if( ihit->missCondition == SPELL_MISS_NONE )
                 {
-                    Unit* unit = m_caster->GetGUID()==(*ihit).targetGUID ? m_caster : ObjectAccessor::GetUnit(*m_caster, ihit->targetGUID);
+                    Unit* unit = m_caster->GetGUID()==(*ihit).targetGUID ? m_caster : m_caster->GetMap()->GetUnit(ihit->targetGUID);
                     if( unit && unit->isAlive() )
                         unit->RemoveAurasByCasterSpell(m_spellInfo->Id, m_caster->GetGUID());
                 }
@@ -2714,7 +2714,7 @@ void Spell::update(uint32 difftime)
                         if(!IS_CREATURE_GUID(target->targetGUID))
                             continue;
 
-                        Unit* unit = m_caster->GetGUID()==target->targetGUID ? m_caster : ObjectAccessor::GetUnit(*m_caster,target->targetGUID);
+                        Unit* unit = m_caster->GetGUID()==target->targetGUID ? m_caster : m_caster->GetMap()->GetUnit(target->targetGUID);
                         if (unit==NULL)
                             continue;
 
@@ -3183,7 +3183,7 @@ void Spell::SendChannelStart(uint32 duration)
 
             if( (itr->effectMask & (1<<0)) && itr->reflectResult==SPELL_MISS_NONE && itr->targetGUID != m_caster->GetGUID())
             {
-                target = ObjectAccessor::GetUnit(*m_caster, itr->targetGUID);
+                target = m_caster->GetMap()->GetUnit(itr->targetGUID);
                 break;
             }
         }
@@ -5089,7 +5089,7 @@ void Spell::DelayedChannel()
 
         if ((*ihit).missCondition == SPELL_MISS_NONE)
         {
-            Unit* unit = m_caster->GetGUID()==ihit->targetGUID ? m_caster : ObjectAccessor::GetUnit(*m_caster, ihit->targetGUID);
+            Unit* unit = m_caster->GetGUID()==ihit->targetGUID ? m_caster : m_caster->GetMap()->GetUnit(ihit->targetGUID);
             if (unit)
             {
                 for (int j=0;j<3;j++)
@@ -5117,7 +5117,7 @@ void Spell::UpdatePointers()
         m_originalCaster = m_caster;
     else
     {
-        m_originalCaster = ObjectAccessor::GetUnit(*m_caster,m_originalCasterGUID);
+        m_originalCaster = m_caster->GetMap()->GetUnit(m_originalCasterGUID);
         if(m_originalCaster && !m_originalCaster->IsInWorld()) m_originalCaster = NULL;
     }
 
@@ -5520,7 +5520,7 @@ void Spell::CalculateDamageDoneForAllTargets()
         if(!mask)
             continue;
 
-        Unit* unit = m_caster->GetGUID()==target.targetGUID ? m_caster : ObjectAccessor::GetUnit(*m_caster, target.targetGUID);
+        Unit* unit = m_caster->GetGUID()==target.targetGUID ? m_caster : m_caster->GetMap()->GetUnit(target.targetGUID);
         if (!unit)
             continue;
 

@@ -144,7 +144,7 @@ void PetAI::PrepareSpellForAutocast(uint32 spellID)
         bool spellUsed = false;
         for(std::set<uint64>::iterator tar = m_AllySet.begin(); tar != m_AllySet.end(); ++tar)
         {
-            Unit* Target = ObjectAccessor::GetUnit(*m_creature,*tar);
+            Unit* Target = m_creature->GetMap()->GetUnit(*tar);
 
             //only buff targets that are in combat, unless the spell can only be cast while out of combat
             if(!Target)
@@ -169,7 +169,7 @@ void PetAI::AddSpellForAutocast(uint32 spellID, Unit* target)
 
     SpellEntry const *spellInfo = sSpellStore.LookupEntry(spellID);
     if (!spellInfo)
-        return;    
+        return;
 
     Spell *spell = new Spell(m_creature, spellInfo, false, 0);
     if(spell->CanAutoCast(target))
@@ -418,7 +418,7 @@ void FelhunterAI::PrepareSpellForAutocast(uint32 spellID)
         SpellEntry const *spellInfo = sSpellStore.LookupEntry(spellID);
         Unit *target = m_creature->getVictim();
         if (!spellInfo || !target)
-            return;   
+            return;
         Unit::AuraMap const& auras = target->GetAuras();
         for(Unit::AuraMap::const_iterator itr = auras.begin(); itr != auras.end(); ++itr)
         {
@@ -439,5 +439,5 @@ void FelhunterAI::PrepareSpellForAutocast(uint32 spellID)
         }
     }
     else
-        PetAI::PrepareSpellForAutocast(spellID); 
+        PetAI::PrepareSpellForAutocast(spellID);
 }
