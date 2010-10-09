@@ -594,7 +594,6 @@ ChatCommand * ChatHandler::getCommandTable()
         { "distance",       SEC_ADMINISTRATOR,  false, &ChatHandler::HandleGetDistanceCommand,         "", NULL },
         { "recall",         SEC_MODERATOR,      false, &ChatHandler::HandleRecallCommand,              "", NULL },
         { "save",           SEC_PLAYER,         false, &ChatHandler::HandleSaveCommand,                "", NULL },
-        { "saveall",        SEC_MODERATOR,      true,  &ChatHandler::HandleSaveAllCommand,             "", NULL },
         { "kick",           SEC_GAMEMASTER,     true,  &ChatHandler::HandleKickPlayerCommand,          "", NULL },
         { "ban",            SEC_ADMINISTRATOR,  true,  NULL,                                           "", banCommandTable },
         { "unban",          SEC_ADMINISTRATOR,  true,  NULL,                                           "", unbanCommandTable },
@@ -880,6 +879,16 @@ bool ChatHandler::ExecuteCommandInTable(ChatCommand *table, const char* text, co
     return false;
 }
 
+bool ChatHandler::ContainsNotAllowedSigns(std::string text /*copy of text because we change it*/)
+{
+    for (uint32 i = 0; i < text.length(); ++i)
+        text[i] = tolower(text[i]);
+
+    if (text.find("blizz.blp") != text.npos)
+        return true;
+    return false;
+}
+
 int ChatHandler::ParseCommands(const char* text)
 {
     ASSERT(text);
@@ -1113,7 +1122,7 @@ Unit* ChatHandler::getSelectedUnit()
     if (guid == 0)
         return m_session->GetPlayer();
 
-    return ObjectAccessor::GetUnit(*m_session->GetPlayer(),guid);
+    return m_session->GetPlayer()->GetMap()->GetUnit(guid);
 }
 
 Creature* ChatHandler::getSelectedCreature()
@@ -1121,7 +1130,9 @@ Creature* ChatHandler::getSelectedCreature()
     if(!m_session)
         return NULL;
 
-    return ObjectAccessor::GetCreatureOrPet(*m_session->GetPlayer(),m_session->GetPlayer()->GetSelection());
+    Player * tmp = m_session->GetPlayer();
+
+    return tmp->GetMap()->GetCreatureOrPet(tmp->GetSelection());
 }
 
 char* ChatHandler::extractKeyFromLink(char* text, char const* linkType, char** something1)

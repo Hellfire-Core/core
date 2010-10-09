@@ -1,5 +1,5 @@
 /*
-    Copyright 2005-2009 Intel Corporation.  All Rights Reserved.
+    Copyright 2005-2010 Intel Corporation.  All Rights Reserved.
 
     This file is part of Threading Building Blocks.
 
@@ -542,11 +542,7 @@ void TestSort() {
 
 //------------------------------------------------------------------------
 
-//! Test driver
-int main( int argc, char* argv[] ) {
-    // Test requires at least one thread.
-    MinThread = 1;
-    ParseCommandLine( argc, argv );
+int TestMain () {
     if( MinThread<1 ) {
         std::printf("ERROR: MinThread=%d, but must be at least 1\n",MinThread);
     }
@@ -565,6 +561,5 @@ int main( int argc, char* argv[] ) {
     }
     TestFindPrimes();
     TestSort();
-    std::printf("done\n");
-    return 0;
+    return Harness::Done;
 }

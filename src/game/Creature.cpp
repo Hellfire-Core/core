@@ -49,6 +49,7 @@
 #include "CreatureGroups.h"
 // apply implementation of the singletons
 #include "Policies/SingletonImp.h"
+#include "Map.h"
 
 void TrainerSpellData::Clear()
 {
@@ -185,7 +186,7 @@ void Creature::AddToWorld()
     ///- Register the creature for guid lookup
     if(!IsInWorld())
     {
-        ObjectAccessor::Instance().AddObject(this);
+        GetMap()->InsertIntoObjMap(this);
         Unit::AddToWorld();
         SearchFormation();
     }
@@ -204,7 +205,7 @@ void Creature::RemoveFromWorld()
             formation_mgr.RemoveCreatureFromGroup(m_formation, this);
 
         Unit::RemoveFromWorld();
-        ObjectAccessor::Instance().RemoveObject(this);
+        GetMap()->RemoveFromObjMap(GetGUID());
     }
 }
 

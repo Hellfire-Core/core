@@ -186,7 +186,7 @@ FleeingMovementGenerator<T>::Initialize(T &owner)
     if(!&owner)
         return;
 
-    Unit * fright = ObjectAccessor::GetUnit(owner, i_frightGUID);
+    Unit * fright = owner.GetMap()->GetUnit(i_frightGUID);
     if(!fright)
         return;
 

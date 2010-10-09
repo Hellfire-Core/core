@@ -7241,13 +7241,13 @@ Unit *Unit::GetOwner() const
     uint64 ownerid = GetOwnerGUID();
     if(!ownerid)
         return NULL;
-    return ObjectAccessor::GetUnit(*this, ownerid);
+    return GetMap()->GetUnit(ownerid);
 }
 
 Unit *Unit::GetCharmer() const
 {
     if(uint64 charmerid = GetCharmerGUID())
-        return ObjectAccessor::GetUnit(*this, charmerid);
+        return GetMap()->GetUnit(charmerid);
     return NULL;
 }
 
@@ -7255,7 +7255,7 @@ Player* Unit::GetCharmerOrOwnerPlayerOrPlayerItself() const
 {
     uint64 guid = GetCharmerOrOwnerGUID();
     if(IS_PLAYER_GUID(guid))
-        return ObjectAccessor::GetPlayer(*this, guid);
+        return ObjectAccessor::GetPlayer(guid);
 
     return GetTypeId()==TYPEID_PLAYER ? (Player*)this : NULL;
 }
@@ -7278,7 +7278,7 @@ Unit* Unit::GetCharm() const
 {
     if(uint64 charm_guid = GetCharmGUID())
     {
-        if(Unit* pet = ObjectAccessor::GetUnit(*this, charm_guid))
+        if(Unit* pet = Unit::GetUnit(*this, charm_guid))
             return pet;
 
         sLog.outError("Unit::GetCharm: Charmed creature %u not exist.",GUID_LOPART(charm_guid));
@@ -9710,7 +9710,17 @@ void Unit::ApplyDiminishingAura( DiminishingGroup group, bool apply )
 
 Unit* Unit::GetUnit(WorldObject& object, uint64 guid)
 {
-    return ObjectAccessor::GetUnit(object,guid);
+    return object.GetMap()->GetUnit(guid);
+}
+
+Unit* Unit::GetUnit(const Unit& unit, uint64 guid)
+{
+    return unit.GetMap()->GetUnit(guid);
+}
+
+Unit* Unit::GetUnit(uint64 guid)
+{
+    return GetMap()->GetUnit(guid);
 }
 
 Player* Unit::GetPlayer(uint64 guid)
@@ -9721,6 +9731,11 @@ Player* Unit::GetPlayer(uint64 guid)
 Creature* Unit::GetCreature(WorldObject& object, uint64 guid)
 {
     return object.GetMap()->GetCreature(guid);
+}
+
+Creature* Unit::GetCreature(uint64 guid)
+{
+    return GetMap()->GetCreature(guid);
 }
 
 bool Unit::isVisibleForInState( Player const* u, bool inVisibleList ) const
@@ -11607,7 +11622,7 @@ void Unit::Kill(Unit *pVictim, bool durabilityLoss)
                 uint32 ressSpellId = pVictim->GetUInt32Value(PLAYER_SELF_RES_SPELL);
                 if(!ressSpellId)
                     ressSpellId = ((Player*)pVictim)->GetResurrectionSpellId();
-                
+
                 //Remove all expected to remove at death auras (most important negative case like DoT or periodic triggers)
                 pVictim->RemoveAllAurasOnDeath();
                 // restore for use at real death
@@ -11914,7 +11929,7 @@ void Unit::SetFeared(bool apply)
         Unit *caster = NULL;
         Unit::AuraList const& fearAuras = GetAurasByType(SPELL_AURA_MOD_FEAR);
         if(!fearAuras.empty())
-            caster = ObjectAccessor::GetUnit(*this, fearAuras.front()->GetCasterGUID());
+            caster = GetMap()->GetUnit(fearAuras.front()->GetCasterGUID());
         if(!caster)
             caster = getAttackerForHelper();
 

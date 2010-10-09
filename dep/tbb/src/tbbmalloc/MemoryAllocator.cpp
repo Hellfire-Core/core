@@ -1,5 +1,5 @@
 /*
-    Copyright 2005-2009 Intel Corporation.  All Rights Reserved.
+    Copyright 2005-2010 Intel Corporation.  All Rights Reserved.
 
     This file is part of Threading Building Blocks.
 
@@ -51,13 +51,25 @@
 
 #endif
 
+// intrin.h available since VS2005
+#if defined(_MSC_VER) && _MSC_VER >= 1400
+#define __TBB_HAS_INTRIN_H 1
+#else
+#define __TBB_HAS_INTRIN_H 0
+#endif
+
+#if __sun || __SUNPRO_CC
+#define __asm__ asm 
+#endif
+
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
 #include <stdlib.h>
-#if MALLOC_CHECK_RECURSION
 #include <new>        /* for placement new */
-#endif /* MALLOC_CHECK_RECURSION */
+#if __TBB_HAS_INTRIN_H
+#include <intrin.h>   /* for __cpuid */
+#endif
 
 extern "C" {
     void * scalable_malloc(size_t size);
@@ -78,9 +90,9 @@ extern "C" {
 #define ASSERT_TEXT NULL
 
 //! Define the main synchronization method
-/** It should be specified before including LifoQueue.h */
+/** It should be specified before including LifoList.h */
 #define FINE_GRAIN_LOCKS
-#include "LifoQueue.h"
+#include "LifoList.h"
 
 #define COLLECT_STATISTICS MALLOC_DEBUG && defined(MALLOCENV_COLLECT_STATISTICS)
 #include "Statistics.h"
@@ -208,60 +220,31 @@ public:
 
 #endif  /* MALLOC_CHECK_RECURSION */
 
-/*********** Code to provide thread ID and a thread-local void pointer **********/
-
-typedef intptr_t ThreadId;
-
-static ThreadId ThreadIdCount;
-
-static tls_key_t TLS_pointer_key;
-static tls_key_t Tid_key;
-
-static inline ThreadId  getThreadId(void)
-{
-    ThreadId result;
-    result = reinterpret_cast<ThreadId>(TlsGetValue_func(Tid_key));
-    if( !result ) {
-        RecursiveMallocCallProtector scoped;
-        // Thread-local value is zero -> first call from this thread,
-        // need to initialize with next ID value (IDs start from 1)
-        result = AtomicIncrement(ThreadIdCount); // returned new value!
-        TlsSetValue_func( Tid_key, reinterpret_cast<void*>(result) );
-    }
-    return result;
-}
-
-static inline void* getThreadMallocTLS() {
-    void *result;
-    result = TlsGetValue_func( TLS_pointer_key );
-// The assert below is incorrect: with lazy initialization, it fails on the first call of the function.
-//    MALLOC_ASSERT( result, "Memory allocator not initialized" );
-    return result;
-}
-
-static inline void  setThreadMallocTLS( void * newvalue ) {
-    RecursiveMallocCallProtector scoped;
-    TlsSetValue_func( TLS_pointer_key, newvalue );
-}
-
-/*********** End code to provide thread ID and a TLS pointer **********/
-
-/*
- * The identifier to make sure that memory is allocated by scalable_malloc.
- */
-const uint64_t theMallocUniqueID=0xE3C7AF89A1E2D8C1ULL; 
-
 /*
  * This number of bins in the TLS that leads to blocks that we can allocate in.
  */
-const uint32_t numBlockBinLimit = 32;
+const uint32_t numBlockBinLimit = 31;
 
  /*
   * The number of bins to cache large objects.
   */
-const uint32_t numLargeObjectBins = 1024; // for 1024 max cached size is near 8MB
+const uint32_t numLargeBlockBins = 1024; // for 1024 max cached size is near 8MB
  
 /********* The data structures and global objects        **************/
+
+union BackRefIdx { // composite index to backreference array
+    uint32_t t;
+    struct {
+        uint16_t master;   // index in BackRefMaster
+        uint16_t offset;   // offset from beginning of BackRefBlock
+    } s;
+};
+
+const BackRefIdx invalidIdx = {(uint32_t)-1};
+
+inline bool operator== (const BackRefIdx &idx1, const BackRefIdx &idx2) {
+    return idx1.t == idx2.t;
+}
 
 struct FreeObject {
     FreeObject  *next;
@@ -293,12 +276,12 @@ struct Block;
 struct LocalBlockFields {
     Block       *next;            /* This field needs to be on a 16K boundary and the first field in the block
                                      for LIFO lists to work. */
-    uint64_t     mallocUniqueID;  /* The field to identify memory allocated by scalable_malloc */
     Block       *previous;        /* Use double linked list to speed up removal */
     unsigned int objectSize;
     unsigned int owner;
     FreeObject  *bumpPtr;         /* Bump pointer moves from the end to the beginning of a block */
     FreeObject  *freeList;
+    BackRefIdx   backRefIdx;
     unsigned int allocatedCount;  /* Number of objects allocated (obviously by the owning thread) */
     unsigned int isFull;
 };
@@ -316,70 +299,105 @@ struct Bin {
     MallocMutex mailLock;
 };
 
-/*
- * This is a LIFO linked list that one can init, push or pop from
+/* 
+ * To decrease contention for free blocks, free blocks are split, and access
+ * to them is based on process number.
  */
-static LifoQueue freeBlockList;
+const int numOfFreeBlockLists = 4;
+
+/*
+ * This is an array of LIFO linked lists that one can init, push or pop from
+ */
+static LifoList freeBlockList[numOfFreeBlockLists];
 
 /*
  * When a block that is not completely free is returned for reuse by other threads
  * this is where the block goes.
  *
- * LifoQueue assumes zero initialization; so below its constructors are omitted,
+ * LifoList assumes zero initialization; so below its constructors are omitted,
  * to avoid linking with C++ libraries on Linux.
  */
-static char globalBinSpace[sizeof(LifoQueue)*numBlockBinLimit];
-static LifoQueue* globalSizeBins = (LifoQueue*)globalBinSpace;
+static char globalBinSpace[sizeof(LifoList)*numBlockBinLimit];
+static LifoList* globalSizeBins = (LifoList*)globalBinSpace;
 
-static struct LargeObjectCacheStat {
+/*
+ * Per-thread pool of 16KB blocks. Idea behind it is to not share with other 
+ * threads memory that are likely in local cache(s) of our CPU.
+ */
+class FreeBlockPool {
+    Block *head;
+    Block *tail;
+    int    size;
+    void insertBlock(Block *block);
+public:
+    static const int POOL_HIGH_MARK = 32;
+    static const int POOL_LOW_MARK  = 8;
+
+    Block *getBlock();
+    void returnBlock(Block *block);
+    void releaseAllBlocks();
+};
+
+struct TLSData {
+    Bin           bin[numBlockBinLimit];
+    FreeBlockPool pool;
+};
+
+
+static struct LargeBlockCacheStat {
     uintptr_t age;
     size_t cacheSize;
 } loCacheStat;
 
-struct CachedObject {
-    CachedObject *next,
-                 *prev;
-    uintptr_t     age;
-    bool          fromMapMemory;
+struct LargeMemoryBlock {
+    LargeMemoryBlock *next,          // ptrs in list of cached blocks
+                     *prev;
+    uintptr_t         age;           // age of block while in cache
+    size_t            objectSize;    // the size requested by a client
+    size_t            unalignedSize; // the size requested from getMemory
+    bool              fromMapMemory;
+    BackRefIdx        backRefIdx;    // cached here, used copy is in LargeObjectHdr
 };
 
-class CachedObjectsList {
-    CachedObject *first,
-                 *last;
-    /* age of an oldest object in the list; equal to last->age, if last defined,
+struct LargeObjectHdr {
+    LargeMemoryBlock *memoryBlock;
+    /* Backreference points to LargeObjectHdr. 
+       Duplicated in LargeMemoryBlock to reuse in subsequent allocations. */
+    BackRefIdx       backRefIdx;
+};
+
+class CachedBlocksList {
+    LargeMemoryBlock *first,
+                     *last;
+    /* age of an oldest block in the list; equal to last->age, if last defined,
        used for quick cheching it without acquiring the lock. */
     uintptr_t     oldest;
     /* currAge when something was excluded out of list because of the age,
        not because of cache hit */
     uintptr_t     lastCleanedAge;
-    /* Current threshold value for the objects of a particular size. 
+    /* Current threshold value for the blocks of a particular size. 
        Set on cache miss. */
     uintptr_t     ageThreshold;
 
     MallocMutex   lock;
-    /* CachedObjectsList should be placed in zero-initialized memory,
+    /* CachedBlocksList should be placed in zero-initialized memory,
        ctor not needed. */
-    CachedObjectsList();
+    CachedBlocksList();
 public:
-    inline void push(void *buf, bool fromMapMemory, uintptr_t currAge);
-    inline CachedObject* pop(uintptr_t currAge);
+    inline void push(LargeMemoryBlock* ptr);
+    inline LargeMemoryBlock* pop();
     void releaseLastIfOld(uintptr_t currAge, size_t size);
 };
 
 /*
- * Array of bins with lists of recently freed objects cached for re-use.
+ * Array of bins with lists of recently freed large objects cached for re-use.
  */
-static char globalCachedObjectBinsSpace[sizeof(CachedObjectsList)*numLargeObjectBins];
-static CachedObjectsList* globalCachedObjectBins = (CachedObjectsList*)globalCachedObjectBinsSpace;
+static char globalCachedBlockBinsSpace[sizeof(CachedBlocksList)*numLargeBlockBins];
+static CachedBlocksList* globalCachedBlockBins = (CachedBlocksList*)globalCachedBlockBinsSpace;
 
 /********* End of the data structures                    **************/
 
 /********** Various numeric parameters controlling allocations ********/
-
-/*
- * The size of the TLS should be enough to hold numBlockBinLimit bins.
- */
-const uint32_t tlsSize = numBlockBinLimit * sizeof(Bin);
 
 /*
  * blockSize - the size of a block, it must be larger than maxSegregatedObjectSize.
@@ -436,12 +454,12 @@ const uint32_t minLargeObjectSize = fittingSize5 + 1;
 const unsigned int startupAllocObjSizeMark = ~(unsigned int)0;
 
 /*
- * Difference between object sizes in large object bins
+ * Difference between object sizes in large block bins
  */
-const uint32_t largeObjectCacheStep = 8*1024;
+const uint32_t largeBlockCacheStep = 8*1024;
 
 /*
- * Object cache cleanup frequency.
+ * Large blocks cache cleanup frequency.
  * It should be power of 2 for the fast checking.
  */
 const unsigned cacheCleanupFreq = 256;
@@ -476,6 +494,45 @@ static ALWAYSINLINE( void checkInitialization() );
 #undef NOINLINE
 #endif /* !MALLOC_DEBUG */
 
+
+/*********** Code to provide thread ID and a thread-local void pointer **********/
+
+typedef intptr_t ThreadId;
+
+static ThreadId ThreadIdCount;
+
+static tls_key_t TLS_pointer_key;
+static tls_key_t Tid_key;
+
+static inline ThreadId  getThreadId(void)
+{
+    ThreadId result;
+    result = reinterpret_cast<ThreadId>(TlsGetValue_func(Tid_key));
+    if( !result ) {
+        RecursiveMallocCallProtector scoped;
+        // Thread-local value is zero -> first call from this thread,
+        // need to initialize with next ID value (IDs start from 1)
+        result = AtomicIncrement(ThreadIdCount); // returned new value!
+        TlsSetValue_func( Tid_key, reinterpret_cast<void*>(result) );
+    }
+    return result;
+}
+
+static inline TLSData* getThreadMallocTLS() {
+    TLSData *result;
+    result = (TLSData *)TlsGetValue_func( TLS_pointer_key );
+// The assert below is incorrect: with lazy initialization, it fails on the first call of the function.
+//    MALLOC_ASSERT( result, "Memory allocator not initialized" );
+    return result;
+}
+
+static inline void  setThreadMallocTLS( TLSData * newvalue ) {
+    RecursiveMallocCallProtector scoped;
+    TlsSetValue_func( TLS_pointer_key, newvalue );
+}
+
+/*********** End code to provide thread ID and a TLS pointer **********/
+
 /*********** Code to acquire memory from the OS or other executive ****************/
 
 #if USE_DEFAULT_MEMORY_MAPPING
@@ -487,11 +544,11 @@ static ALWAYSINLINE( void checkInitialization() );
 #if USE_MALLOC_FOR_LARGE_OBJECT
 
 // (get|free)RawMemory only necessary for the USE_MALLOC_FOR_LARGE_OBJECT case
-static inline void* getRawMemory (size_t size, bool alwaysUseMap = false)
+static inline void* getRawMemory (size_t size, bool useMapMem = false)
 {
     void *object;
 
-    if (alwaysUseMap) 
+    if (useMapMem) 
         object = MapMemory(size);
     else
 #if MALLOC_CHECK_RECURSION
@@ -507,9 +564,9 @@ static inline void* getRawMemory (size_t size, bool alwaysUseMap = false)
     return object;
 }
 
-static inline void freeRawMemory (void *object, size_t size, bool alwaysUseMap)
+static inline void freeRawMemory (void *object, size_t size, bool useMapMem)
 {
-    if (alwaysUseMap)
+    if (useMapMem)
         UnmapMemory(object, size);
     else
 #if MALLOC_CHECK_RECURSION
@@ -574,6 +631,51 @@ static inline unsigned int highestBitPos(unsigned int n)
 #   error highestBitPos() not implemented for this platform
 #endif /* __ARCH_* */
     return pos;
+}
+
+unsigned int getCPUid()
+{
+    unsigned int id;
+
+#if (__ARCH_x86_32||__ARCH_x86_64) && (__linux__||__APPLE__||__FreeBSD__||__sun||__MINGW32__)
+    int res;
+ #if __ARCH_x86_32
+    /* EBX used for PIC support. Having EAX in output operands 
+       prevents ICC from crash like in __TBB_ICC_ASM_VOLATILE_BROKEN. */
+    int _eax, _ecx, _edx;
+    __asm__ ("xchgl %%ebx, %1\n\t"
+             "cpuid\n\t"
+             "xchgl %%ebx, %1\n\t"
+             : "=a" (_eax), "=r" (res)
+             : "a" (1) : "ecx", "edx");
+ #else
+    __asm__ ("cpuid\n\t"
+             : "=b" (res)
+             : "a" (1) );
+ #endif // __ARCH_x86_32
+    id = (res >> 24) & 0xff;
+#elif _WIN32 || _WIN64
+ #if __TBB_HAS_INTRIN_H
+    int CPUInfo[4];
+    __cpuid(CPUInfo, 1);
+    id = (CPUInfo[1] >> 24) & 0xff;
+ #else
+    int res;
+    _asm {
+        push ebx
+        push ecx
+        mov  eax,1
+        cpuid
+        mov  res,ebx
+        pop  ecx
+        pop  ebx
+    }
+    id = (res >> 24) & 0xff;
+ #endif
+# else
+    id = getThreadId();
+#endif
+    return id;
 }
 
 /*
@@ -653,7 +755,7 @@ static inline void *alignBigBlock(void *unalignedBigBlock)
  * This is done since we really need a lot of blocks on the freeBlockList or there will be
  * contention problems.
  */
-const unsigned int blocksPerBigBlock = 16;
+const unsigned int blocksPerBigBlock = 16/numOfFreeBlockLists;
 
 /* Returns 0 if unsuccessful, otherwise 1. */
 static int mallocBigBlock()
@@ -665,7 +767,7 @@ static int mallocBigBlock()
     void *splitEdge;
     size_t bigBlockSplitSize;
 
-    unalignedBigBlock = getRawMemory(mmapRequestSize, /*alwaysUseMap=*/true);
+    unalignedBigBlock = getRawMemory(mmapRequestSize, /*useMapMem=*/true);
 
     if (!unalignedBigBlock) {
         TRACEF(( "[ScalableMalloc trace] in mallocBigBlock, getMemory returns 0\n" ));
@@ -680,13 +782,17 @@ static int mallocBigBlock()
 
     splitBlock = (Block*)alignedBigBlock;
 
-    while ( ((uintptr_t)splitBlock + blockSize) <= (uintptr_t)bigBlockCeiling ) {
+    // distribute alignedBigBlock between all freeBlockList elements
+    for (unsigned currListIdx = 0;
+         ((uintptr_t)splitBlock + blockSize) <= (uintptr_t)bigBlockCeiling;
+         currListIdx = (currListIdx+1) % numOfFreeBlockLists) {
         splitEdge = (void*)((uintptr_t)splitBlock + bigBlockSplitSize);
         if( splitEdge > bigBlockCeiling) {
             splitEdge = alignDown(bigBlockCeiling, blockSize);
         }
         splitBlock->bumpPtr = (FreeObject*)splitEdge;
-        freeBlockList.push((void**) splitBlock);
+        MALLOC_ITT_SYNC_RELEASING(freeBlockList+currListIdx);
+        freeBlockList[currListIdx].push((void**) splitBlock);
         splitBlock = (Block*)splitEdge;
     }
 
@@ -703,8 +809,10 @@ static int mallocBigBlock()
 /*
  * Forward Refs
  */
-static void initEmptyBlock(Block *block, size_t size);
 static Block *getEmptyBlock(size_t size);
+static BackRefIdx newBackRef();
+static void setBackRef(BackRefIdx backRefIdx, void *newPtr);
+static void removeBackRef(BackRefIdx backRefIdx);
 
 static MallocMutex bootStrapLock;
 
@@ -716,7 +824,7 @@ static void *bootStrapMalloc(size_t size)
 {
     FreeObject *result;
 
-    MALLOC_ASSERT( size == tlsSize, ASSERT_TEXT );
+    MALLOC_ASSERT( size == sizeof(TLSData), ASSERT_TEXT );
 
     { // Lock with acquire
         MallocMutex::scoped_lock scoped_cs(bootStrapLock);
@@ -763,21 +871,18 @@ static void bootStrapFree(void* ptr)
 static void verifyTLSBin (Bin* bin, size_t size)
 {
     Block* temp;
-    Bin*   tls;
+    Bin*   tlsBin = getThreadMallocTLS()->bin;
     uint32_t index = getIndex(size);
     uint32_t objSize = getObjectSize(size);
 
-    tls = (Bin*)getThreadMallocTLS();
-    MALLOC_ASSERT( bin == tls+index, ASSERT_TEXT );
+    MALLOC_ASSERT( bin == tlsBin+index, ASSERT_TEXT );
 
-    if (tls[index].activeBlk) {
-        MALLOC_ASSERT( tls[index].activeBlk->mallocUniqueID==theMallocUniqueID, ASSERT_TEXT );
-        MALLOC_ASSERT( tls[index].activeBlk->owner == getThreadId(), ASSERT_TEXT );
-        MALLOC_ASSERT( tls[index].activeBlk->objectSize == objSize, ASSERT_TEXT );
+    if (tlsBin[index].activeBlk) {
+        MALLOC_ASSERT( tlsBin[index].activeBlk->owner == getThreadId(), ASSERT_TEXT );
+        MALLOC_ASSERT( tlsBin[index].activeBlk->objectSize == objSize, ASSERT_TEXT );
 
-        for (temp = tls[index].activeBlk->next; temp; temp=temp->next) {
-            MALLOC_ASSERT( temp!=tls[index].activeBlk, ASSERT_TEXT );
-            MALLOC_ASSERT( temp->mallocUniqueID==theMallocUniqueID, ASSERT_TEXT );
+        for (temp = tlsBin[index].activeBlk->next; temp; temp=temp->next) {
+            MALLOC_ASSERT( temp!=tlsBin[index].activeBlk, ASSERT_TEXT );
             MALLOC_ASSERT( temp->owner == getThreadId(), ASSERT_TEXT );
             MALLOC_ASSERT( temp->objectSize == objSize, ASSERT_TEXT );
             MALLOC_ASSERT( temp->previous->next == temp, ASSERT_TEXT );
@@ -785,9 +890,8 @@ static void verifyTLSBin (Bin* bin, size_t size)
                 MALLOC_ASSERT( temp->next->previous == temp, ASSERT_TEXT );
             }
         }
-        for (temp = tls[index].activeBlk->previous; temp; temp=temp->previous) {
+        for (temp = tlsBin[index].activeBlk->previous; temp; temp=temp->previous) {
             MALLOC_ASSERT( temp!=tls[index].activeBlk, ASSERT_TEXT );
-            MALLOC_ASSERT( temp->mallocUniqueID==theMallocUniqueID, ASSERT_TEXT );
             MALLOC_ASSERT( temp->owner == getThreadId(), ASSERT_TEXT );
             MALLOC_ASSERT( temp->objectSize == objSize, ASSERT_TEXT );
             MALLOC_ASSERT( temp->next->previous == temp, ASSERT_TEXT );
@@ -869,22 +973,22 @@ static void outofTLSBin (Bin* bin, Block* block)
  */
 static Bin* getAllocationBin(size_t size)
 {
-    Bin* tls = (Bin*)getThreadMallocTLS();
+    TLSData* tls = getThreadMallocTLS();
     if( !tls ) {
-        MALLOC_ASSERT( tlsSize >= sizeof(Bin) * numBlockBins, ASSERT_TEXT );
-        tls = (Bin*) bootStrapMalloc(tlsSize);
+        MALLOC_ASSERT( sizeof(TLSData) >= sizeof(Bin) * numBlockBins + sizeof(FreeBlockPool), ASSERT_TEXT );
+        tls = (TLSData*) bootStrapMalloc(sizeof(TLSData));
         if ( !tls ) return NULL;
         /* the block contains zeroes after bootStrapMalloc, so bins are initialized */
 #if MALLOC_DEBUG
         for (int i = 0; i < numBlockBinLimit; i++) {
-            MALLOC_ASSERT( tls[i].activeBlk == 0, ASSERT_TEXT );
-            MALLOC_ASSERT( tls[i].mailbox == 0, ASSERT_TEXT );
+            MALLOC_ASSERT( tls->bin[i].activeBlk == 0, ASSERT_TEXT );
+            MALLOC_ASSERT( tls->bin[i].mailbox == 0, ASSERT_TEXT );
         }
 #endif
         setThreadMallocTLS(tls);
     }
     MALLOC_ASSERT( tls, ASSERT_TEXT );
-    return tls+getIndex(size);
+    return tls->bin + getIndex(size);
 }
 
 const float emptyEnoughRatio = 1.0 / 4.0; /* "Reactivate" a block if this share of its objects is free. */
@@ -942,9 +1046,9 @@ static void freePublicObject (Block *block, FreeObject *objectToFree)
     Bin* theBin;
     FreeObject *publicFreeList;
 
+    MALLOC_ITT_SYNC_RELEASING(&block->publicFreeList);
 #if FREELIST_NONBLOCKING
     FreeObject *temp = block->publicFreeList;
-    MALLOC_ITT_SYNC_RELEASING(&block->publicFreeList);
     do {
         publicFreeList = objectToFree->next = temp;
         temp = (FreeObject*)AtomicCompareExchange(
@@ -998,7 +1102,6 @@ static void privatizePublicFreeList (Block *mallocBlock)
                                 0, (intptr_t)publicFreeList);
         // no backoff necessary because trying to make change, not waiting for a change
     } while( temp != publicFreeList );
-    MALLOC_ITT_SYNC_ACQUIRED(&mallocBlock->publicFreeList);
 #else
     STAT_increment(mallocBlock->owner, ThreadCommonCounters, lockPublicFreeList);
     {
@@ -1008,6 +1111,7 @@ static void privatizePublicFreeList (Block *mallocBlock)
     }
     temp = publicFreeList;
 #endif
+    MALLOC_ITT_SYNC_ACQUIRED(&mallocBlock->publicFreeList);
 
     MALLOC_ASSERT( publicFreeList && publicFreeList==temp, ASSERT_TEXT ); // there should be something in publicFreeList!
     if( !isNotForUse(temp) ) { // return/getPartialBlock could set it to UNUSABLE
@@ -1055,7 +1159,7 @@ static Block *getPartialBlock(Bin* bin, unsigned int size)
     unsigned int index = getIndex(size);
     result = (Block *) globalSizeBins[index].pop();
     if (result) {
-        MALLOC_ASSERT( result->mallocUniqueID==theMallocUniqueID, ASSERT_TEXT );
+        MALLOC_ITT_SYNC_ACQUIRED(globalSizeBins+index);
         result->next = NULL;
         result->previous = NULL;
         MALLOC_ASSERT( result->publicFreeList!=NULL, ASSERT_TEXT );
@@ -1122,14 +1226,12 @@ static void returnPartialBlock(Bin* bin, Block *block)
     // formed by nextPrivatizable pointers is kept consistent if required.
     // if only called from thread shutdown code, it does not matter.
     (uintptr_t&)(block->nextPrivatizable) = UNUSABLE;
+    MALLOC_ITT_SYNC_RELEASING(globalSizeBins+index);
     globalSizeBins[index].push((void **)block);
 }
 
 static void cleanBlockHeader(Block *block)
 {
-#if MALLOC_DEBUG
-    memset (block, 0x0e5, blockSize);
-#endif
     block->next = NULL;
     block->previous = NULL;
     block->freeList = NULL;
@@ -1145,10 +1247,9 @@ static void initEmptyBlock(Block *block, size_t size)
     // allows better compiler optimization as they basically share the code.
     unsigned int index      = getIndex(size);
     unsigned int objectSize = getObjectSize(size); 
-    Bin* tls = (Bin*)getThreadMallocTLS();
+    Bin* tlsBin = getThreadMallocTLS()->bin;
 
     cleanBlockHeader(block);
-    block->mallocUniqueID = theMallocUniqueID;
     block->objectSize = objectSize;
     block->owner = getThreadId();
     // bump pointer should be prepared for first allocation - thus mode it down to objectSize
@@ -1156,27 +1257,91 @@ static void initEmptyBlock(Block *block, size_t size)
 
     // each block should have the address where the head of the list of "privatizable" blocks is kept
     // the only exception is a block for boot strap which is initialized when TLS is yet NULL
-    block->nextPrivatizable = tls? (Block*)(tls + index) : NULL;
+    block->nextPrivatizable = tlsBin? (Block*)(tlsBin + index) : NULL;
     TRACEF(( "[ScalableMalloc trace] Empty block %p is initialized, owner is %d, objectSize is %d, bumpPtr is %p\n",
              block, block->owner, block->objectSize, block->bumpPtr ));
-  }
+}
+
+void FreeBlockPool::insertBlock(Block *block)
+{
+    size++;
+    block->next = head;
+    head = block;
+    if (!tail)
+        tail = block;
+}
+
+Block *FreeBlockPool::getBlock()
+{
+    Block *result = head;
+    if (head) {
+        size--;
+        head = head->next;
+        if (!head)
+            tail = NULL;
+    }
+    return result;
+}
+
+void FreeBlockPool::returnBlock(Block *block)
+{
+    MALLOC_ASSERT( size <= POOL_HIGH_MARK, ASSERT_TEXT );
+    if (size == POOL_HIGH_MARK) {
+        // release cold blocks and add hot one
+        Block *headToFree = head, 
+              *tailToFree = tail;
+        for (int i=0; i<POOL_LOW_MARK-2; i++)
+            headToFree = headToFree->next;
+        tail = headToFree;
+        headToFree = headToFree->next;
+        tail->next = NULL;
+        size = POOL_LOW_MARK-1;
+        for (Block *currBl = headToFree; currBl; currBl = currBl->next)
+            removeBackRef(currBl->backRefIdx);
+        unsigned myFreeList = getCPUid()%numOfFreeBlockLists;
+        MALLOC_ITT_SYNC_RELEASING(freeBlockList+myFreeList);
+        freeBlockList[myFreeList].pushList((void **)headToFree, (void **)tailToFree);
+    }
+    insertBlock(block);
+}
+
+void FreeBlockPool::releaseAllBlocks()
+{
+    if (head) {
+        for (Block *currBl = head; currBl; currBl = currBl->next)
+            removeBackRef(currBl->backRefIdx);
+        unsigned myFreeList = getCPUid()%numOfFreeBlockLists;
+        MALLOC_ITT_SYNC_RELEASING(freeBlockList+myFreeList);
+        freeBlockList[myFreeList].pushList((void**)head, (void**)tail);
+    }
+}
 
 /* Return an empty uninitialized block in a non-blocking fashion. */
-static Block *getRawBlock()
+static Block *getRawBlock(bool startup)
 {
     Block *result;
     Block *bigBlock;
-
+    const unsigned myFreeList = startup? 0 : getCPUid()%numOfFreeBlockLists;
+    unsigned currListIdx = myFreeList;
+    
     result = NULL;
 
-    bigBlock = (Block *) freeBlockList.pop();
+    do {
+        if (bigBlock = (Block *) freeBlockList[currListIdx].pop()) {
+            MALLOC_ITT_SYNC_ACQUIRED(freeBlockList+currListIdx);
+            break;
+        }
+        currListIdx = (currListIdx+1) % numOfFreeBlockLists;
+    } while (currListIdx != myFreeList);
 
     while (!bigBlock) {
         /* We are out of blocks so go to the OS and get another one */
         if (!mallocBigBlock()) {
             return NULL;
         }
-        bigBlock = (Block *) freeBlockList.pop();
+        bigBlock = (Block *) freeBlockList[myFreeList].pop();
+        if (bigBlock)
+            MALLOC_ITT_SYNC_ACQUIRED(freeBlockList+myFreeList);
     }
 
     // check alignment
@@ -1188,47 +1353,62 @@ static Block *getRawBlock()
     result = (Block *)bigBlock->bumpPtr;
     if ( result!=bigBlock ) {
         TRACEF(( "[ScalableMalloc trace] Pushing partial rest of block back on.\n" ));
-        freeBlockList.push((void **)bigBlock);
+        MALLOC_ITT_SYNC_RELEASING(freeBlockList+myFreeList);
+        freeBlockList[myFreeList].push((void **)bigBlock);
     }
+
     return result;
 }
 
 /* Return an empty uninitialized block in a non-blocking fashion. */
 static Block *getEmptyBlock(size_t size)
 {
-    Block *result = getRawBlock();
-
+    Block *result = NULL;
+    TLSData* tls = getThreadMallocTLS();
+    if (tls)
+        result = tls->pool.getBlock();
+    if (!result) {
+        BackRefIdx backRefIdx = newBackRef();
+        if (backRefIdx == invalidIdx || !(result = getRawBlock(/*startup=*/false)))
+            return NULL;
+        setBackRef(backRefIdx, result);
+        result->backRefIdx = backRefIdx;
+    }
     if (result) {
         initEmptyBlock(result, size);
         STAT_increment(result->owner, getIndex(result->objectSize), allocBlockNew);
     }
-
     return result;
 }
 
 /* We have a block give it back to the malloc block manager */
-static void returnEmptyBlock (Block *block, bool keepTheBin = true)
+static void returnEmptyBlock (Block *block, bool poolTheBlock)
 {
     // it is caller's responsibility to ensure no data is lost before calling this
     MALLOC_ASSERT( block->allocatedCount==0, ASSERT_TEXT );
     MALLOC_ASSERT( block->publicFreeList==NULL, ASSERT_TEXT );
-    if (keepTheBin) {
-        /* We should keep the TLS bin structure */
-        MALLOC_ASSERT( block->next == NULL, ASSERT_TEXT );
-        MALLOC_ASSERT( block->previous == NULL, ASSERT_TEXT );
-    }
+    MALLOC_ASSERT( !poolTheBlock || block->next == NULL, ASSERT_TEXT );
+    MALLOC_ASSERT( !poolTheBlock || block->previous == NULL, ASSERT_TEXT );
     STAT_increment(block->owner, getIndex(block->objectSize), freeBlockBack);
 
     cleanBlockHeader(block);
 
     block->nextPrivatizable = NULL;
 
-    block->mallocUniqueID=0;
     block->objectSize = 0;
     block->owner = (unsigned)-1;
     // for an empty block, bump pointer should point right after the end of the block
     block->bumpPtr = (FreeObject *)((uintptr_t)block + blockSize);
-    freeBlockList.push((void **)block);
+    if (poolTheBlock) {
+        MALLOC_ASSERT(getThreadMallocTLS(), "Is TLS still not initialized?");
+        getThreadMallocTLS()->pool.returnBlock(block);
+    }
+    else {
+        removeBackRef(block->backRefIdx);
+        unsigned myFreeList = getCPUid()%numOfFreeBlockLists;
+        MALLOC_ITT_SYNC_RELEASING(freeBlockList+myFreeList);
+        freeBlockList[myFreeList].push((void **)block);
+    }
 }
 
 inline static Block* getActiveBlock( Bin* bin )
@@ -1279,12 +1459,15 @@ static StartupBlock *firstStartupBlock;
 
 static StartupBlock *getNewStartupBlock()
 {
-    StartupBlock *block = (StartupBlock *)getRawBlock();
+    BackRefIdx backRefIdx = newBackRef();
+    if (backRefIdx == invalidIdx) return NULL;
 
+    StartupBlock *block = (StartupBlock *)getRawBlock(/*startup=*/true);
     if (!block) return NULL;
 
     cleanBlockHeader(block);
-    block->mallocUniqueID = theMallocUniqueID;
+    setBackRef(backRefIdx, block);
+    block->backRefIdx = backRefIdx;
     // use startupAllocObjSizeMark to mark objects from startup block marker
     block->objectSize = startupAllocObjSizeMark;
     block->bumpPtr = (FreeObject *)((uintptr_t)block + sizeof(StartupBlock));
@@ -1328,7 +1511,7 @@ static FreeObject *startupAlloc(size_t size)
             (FreeObject *)((uintptr_t)firstStartupBlock->bumpPtr + reqSize);
     }
     if (newBlock && newBlockUnused)
-        returnEmptyBlock(newBlock);
+        returnEmptyBlock(newBlock, /*poolTheBlock=*/false);
 
     // keep object size at the negative offset
     *((size_t*)result) = size;
@@ -1367,13 +1550,195 @@ static void startupFree(StartupBlock *block, void *ptr)
     }
     if (blockToRelease) {
         blockToRelease->previous = blockToRelease->next = NULL;
-        returnEmptyBlock(blockToRelease);
+        returnEmptyBlock(blockToRelease, /*poolTheBlock=*/false);
     }
 }
 
 #endif /* MALLOC_CHECK_RECURSION */
 
 /********* End thread related code  *************/
+
+/********* backreferences ***********************/
+/* Each 16KB block and each large memory object header contains BackRefIdx 
+ * that points out in some BackRefBlock which points back to this block or header.
+ */
+struct BackRefBlock {
+    BackRefBlock *nextForUse;     // the next in the chain of blocks with free items
+    FreeObject   *bumpPtr;        // bump pointer moves from the end to the beginning of the block
+    FreeObject   *freeList;
+    int           allocatedCount; // the number of objects allocated
+    int           myNum;          // the index in the parent array
+    MallocMutex   blockMutex;
+    bool          addedToForUse;  // this block is already added to the listForUse chain
+
+    BackRefBlock(BackRefBlock *blockToUse, int myNum) :
+        nextForUse(NULL), bumpPtr((FreeObject*)((uintptr_t)blockToUse + blockSize - sizeof(void*))),
+        freeList(NULL), allocatedCount(0), myNum(myNum), addedToForUse(false) {}
+};
+
+// max number of backreference pointers in 16KB block
+static const int BR_MAX_CNT = (blockSize-sizeof(BackRefBlock))/sizeof(void*);
+
+struct BackRefMaster {
+/* A 16KB block can hold up to ~2K back pointers to 16KB blocks or large objects,
+ * so it can address at least 32MB. The array of 64KB holds 8K pointers
+ * to such blocks, addressing ~256 GB.
+ */
+    static const size_t bytes = 64*1024;
+    static const int dataSz;
+
+    BackRefBlock  *active;         // if defined, use it for allocations
+    BackRefBlock  *listForUse;     // the chain of data blocks with free items
+    int            lastUsed;       // index of the last used block
+    BackRefBlock  *backRefBl[1];   // the real size of the array is dataSz
+
+    BackRefBlock *findFreeBlock();
+    bool          addActiveBackRefBlock();
+};
+
+const int BackRefMaster::dataSz
+    = 1+(BackRefMaster::bytes-sizeof(BackRefMaster))/sizeof(BackRefBlock*);
+
+static MallocMutex backRefMutex;
+static BackRefMaster *backRefMaster;
+
+static bool initBackRefMaster()
+{
+    // MapMemory forced because the function runs during startup 
+    backRefMaster = (BackRefMaster*)getRawMemory(BackRefMaster::bytes, 
+                                                 /*useMapMem=*/true);
+    if (NULL == backRefMaster)
+        return false;
+    backRefMaster->listForUse = NULL;
+    backRefMaster->lastUsed = 0;
+    
+    if (!backRefMaster->addActiveBackRefBlock()) {
+        freeRawMemory(backRefMaster, BackRefMaster::bytes, /*useMapMem=*/true);
+        return false;
+    }
+    return true;
+}
+
+bool BackRefMaster::addActiveBackRefBlock()
+{
+    BackRefBlock *newBl = (BackRefBlock*)getRawBlock(/*startup=*/true);
+
+    if (!newBl) return false;
+    active = newBl;
+    memset(active, 0, blockSize);
+    new (active) BackRefBlock(active, lastUsed);
+    backRefBl[lastUsed] = active;
+    return true;
+}
+
+BackRefBlock *BackRefMaster::findFreeBlock()
+{
+    if (active->allocatedCount < BR_MAX_CNT)
+        return active;
+        
+    if (listForUse) {                                   // use released list
+        active = listForUse;
+        listForUse = listForUse->nextForUse;
+        MALLOC_ASSERT(active->addedToForUse, ASSERT_TEXT);
+        active->addedToForUse = false;
+    } else if (lastUsed-1 < backRefMaster->dataSz) {    // allocate new data node
+        lastUsed++;
+        if (!backRefMaster->addActiveBackRefBlock()) {
+            lastUsed--;
+            return NULL;
+        }
+    } else  // no free blocks, give up
+        return NULL;
+    return active;
+}
+
+static inline void *getBackRef(BackRefIdx backRefIdx)
+{
+    // !backRefMaster means no initialization done, so it can't be valid memory
+    if (!backRefMaster || backRefIdx.s.master > backRefMaster->lastUsed
+        || backRefIdx.s.offset >= BR_MAX_CNT) 
+        return NULL;
+    return *(void**)((uintptr_t)backRefMaster->backRefBl[backRefIdx.s.master]
+                     + sizeof(BackRefBlock)+backRefIdx.s.offset*sizeof(void*));
+}
+
+static void setBackRef(BackRefIdx backRefIdx, void *newPtr)
+{
+    MALLOC_ASSERT(backRefIdx.s.master<=backRefMaster->lastUsed && backRefIdx.s.offset<BR_MAX_CNT,
+                  ASSERT_TEXT);
+    *(void**)((uintptr_t)backRefMaster->backRefBl[backRefIdx.s.master]
+              + sizeof(BackRefBlock) + backRefIdx.s.offset*sizeof(void*)) = newPtr;
+}
+
+static BackRefIdx newBackRef()
+{
+    BackRefBlock *blockToUse;
+    void **toUse;
+    BackRefIdx res;
+
+    do {
+        { // global lock taken to find a block
+            MallocMutex::scoped_lock lock(backRefMutex);
+
+            MALLOC_ASSERT(backRefMaster, ASSERT_TEXT);
+            if (! (blockToUse = backRefMaster->findFreeBlock()))
+                return invalidIdx;
+        }
+        toUse = NULL;
+        { // the block is locked to find a reference
+            MallocMutex::scoped_lock lock(blockToUse->blockMutex);
+
+            if (blockToUse->freeList) {
+                toUse = (void**)blockToUse->freeList;
+                blockToUse->freeList = blockToUse->freeList->next;
+            } else if (blockToUse->allocatedCount < BR_MAX_CNT) {
+                toUse = (void**)blockToUse->bumpPtr;
+                blockToUse->bumpPtr = 
+                    (FreeObject*)((uintptr_t)blockToUse->bumpPtr - sizeof(void*));
+                if (blockToUse->allocatedCount == BR_MAX_CNT-1) {
+                    MALLOC_ASSERT((uintptr_t)blockToUse->bumpPtr
+                                  < (uintptr_t)blockToUse+sizeof(BackRefBlock),
+                                  ASSERT_TEXT);
+                    blockToUse->bumpPtr = NULL;
+                }
+            }
+            if (toUse)
+                blockToUse->allocatedCount++;
+        } // end of lock scope
+    } while (!toUse);
+    res.s.master = blockToUse->myNum;
+    res.s.offset = 
+        ((uintptr_t)toUse - ((uintptr_t)blockToUse + sizeof(BackRefBlock)))/sizeof(void*);
+    return res;
+}
+
+static void removeBackRef(BackRefIdx backRefIdx)
+{
+    MALLOC_ASSERT(backRefIdx.s.master<=backRefMaster->lastUsed 
+                  && backRefIdx.s.offset<BR_MAX_CNT, ASSERT_TEXT);
+    BackRefBlock *currBlock = backRefMaster->backRefBl[backRefIdx.s.master];
+    FreeObject *freeObj = (FreeObject*)((uintptr_t)currBlock + sizeof(BackRefBlock)
+                                        + backRefIdx.s.offset*sizeof(void*));
+    {
+        MallocMutex::scoped_lock lock(currBlock->blockMutex);
+
+        freeObj->next = currBlock->freeList;
+        currBlock->freeList = freeObj;
+        currBlock->allocatedCount--;
+    }
+    // TODO: do we need double-check here?
+    if (!currBlock->addedToForUse && currBlock!=backRefMaster->active) {
+        MallocMutex::scoped_lock lock(backRefMutex);
+
+        if (!currBlock->addedToForUse && currBlock!=backRefMaster->active) {
+            currBlock->nextForUse = backRefMaster->listForUse;
+            backRefMaster->listForUse = currBlock;
+            currBlock->addedToForUse = true;
+        }
+    }
+}
+
+/********* End of backreferences ***********************/
 
 /********* Library initialization *************/
 
@@ -1398,9 +1763,14 @@ static void initMemoryManager()
     TRACEF(( "[ScalableMalloc trace] sizeof(Block) is %d (expected 128); sizeof(uintptr_t) is %d\n",
              sizeof(Block), sizeof(uintptr_t) ));
     MALLOC_ASSERT( 2*blockHeaderAlignment == sizeof(Block), ASSERT_TEXT );
+    MALLOC_ASSERT( sizeof(FreeObject) == sizeof(void*), ASSERT_TEXT );
 
-// Create keys for thread-local storage and for thread id
 // TODO: add error handling, and on error do something better than exit(1)
+    if (!mallocBigBlock() || !initBackRefMaster()) {
+        fprintf (stderr, "The memory manager cannot access sufficient memory to initialize; exiting \n");
+        exit(1);
+    }
+// Create keys for thread-local storage and for thread id
 #if USE_WINTHREAD
     TLS_pointer_key = TlsAlloc();
     Tid_key = TlsAlloc();
@@ -1415,12 +1785,6 @@ static void initMemoryManager()
 #if COLLECT_STATISTICS
     initStatisticsCollection();
 #endif
-
-    TRACEF(( "[ScalableMalloc trace] Asking for a mallocBigBlock\n" ));
-    if (!mallocBigBlock()) {
-        fprintf (stderr, "The memory manager cannot access sufficient memory to initialize; exiting \n");
-        exit(1);
-    }
 }
 
 //! Ensures that initMemoryManager() is called once and only once.
@@ -1455,27 +1819,16 @@ static void checkInitialization()
 /********* Allocation of large objects ************/
 
 /*
- * The program wants a large object that we are not prepared to deal with.
- * so we pass the problem on to the OS. Large Objects are the only objects in
- * the system that begin on a 16K byte boundary since the blocks used for smaller
- * objects have the Block structure at each 16K boundary.
- *
+ * Large Objects are the only objects in the system that begin 
+ * on a 16K byte boundary since the blocks used for smaller objects 
+ * have the Block structure at each 16K boundary.
  */
+static uintptr_t cleanupCacheIfNeed();
 
-struct LargeObjectHeader {
-    void        *unalignedResult;   /* The base of the memory returned from getMemory, this is what is used to return this to the OS */
-    size_t       unalignedSize;     /* The size that was requested from getMemory */
-    uint64_t     mallocUniqueID;    /* The field to check whether the memory was allocated by scalable_malloc */
-    size_t       objectSize;        /* The size originally requested by a client */
-    bool         fromMapMemory;     /* Memory allocated when MapMemory usage is forced */
-};
-
-void CachedObjectsList::push(void *buf, bool fromMapMemory, uintptr_t currAge)
+void CachedBlocksList::push(LargeMemoryBlock *ptr)
 {   
-    CachedObject *ptr = (CachedObject*)buf;
     ptr->prev = NULL;
-    ptr->age  = currAge;
-    ptr->fromMapMemory = fromMapMemory;
+    ptr->age  = cleanupCacheIfNeed ();
 
     MallocMutex::scoped_lock scoped_cs(lock);
     ptr->next = first;
@@ -1483,14 +1836,15 @@ void CachedObjectsList::push(void *buf, bool fromMapMemory, uintptr_t currAge)
     if (ptr->next) ptr->next->prev = ptr;
     if (!last) {
         MALLOC_ASSERT(0 == oldest, ASSERT_TEXT);
-        oldest = currAge;
+        oldest = ptr->age;
         last = ptr;
     }
 }
 
-CachedObject *CachedObjectsList::pop(uintptr_t currAge)
+LargeMemoryBlock *CachedBlocksList::pop()
 {   
-    CachedObject *result=NULL;
+    uintptr_t currAge = cleanupCacheIfNeed();
+    LargeMemoryBlock *result=NULL;
     {
         MallocMutex::scoped_lock scoped_cs(lock);
         if (first) {
@@ -1511,9 +1865,9 @@ CachedObject *CachedObjectsList::pop(uintptr_t currAge)
     return result;
 }
 
-void CachedObjectsList::releaseLastIfOld(uintptr_t currAge, size_t size)
+void CachedBlocksList::releaseLastIfOld(uintptr_t currAge, size_t size)
 {
-    CachedObject *toRelease = NULL;
+    LargeMemoryBlock *toRelease = NULL;
  
     /* oldest may be more recent then age, that's why cast to signed type
        was used. age overflow is also processed correctly. */
@@ -1540,7 +1894,8 @@ void CachedObjectsList::releaseLastIfOld(uintptr_t currAge, size_t size)
             return;
     }
     while ( toRelease ) {
-        CachedObject *helper = toRelease->next;
+        LargeMemoryBlock *helper = toRelease->next;
+        removeBackRef(toRelease->backRefIdx);
         freeRawMemory(toRelease, size, toRelease->fromMapMemory);
         toRelease = helper;
     }
@@ -1558,7 +1913,7 @@ static uintptr_t cleanupCacheIfNeed ()
      * its current value and some recent.
      *
      * Both malloc and free should increment loCacheStat.age, as in 
-     * a different case mulitiple cache object would have same age,
+     * a different case multiple cached blocks would have same age,
      * and accuracy of predictors suffers.
      */
     uintptr_t currAge = (uintptr_t)AtomicIncrement((intptr_t&)loCacheStat.age);
@@ -1567,82 +1922,78 @@ static uintptr_t cleanupCacheIfNeed ()
         size_t objSize;
         int i;
 
-        for (i = numLargeObjectBins-1, 
-             objSize = (numLargeObjectBins-1)*largeObjectCacheStep+blockSize; 
+        for (i = numLargeBlockBins-1, 
+             objSize = (numLargeBlockBins-1)*largeBlockCacheStep+blockSize; 
              i >= 0; 
-             i--, objSize-=largeObjectCacheStep) {
-            /* cached object size on iteration is
-             * i*largeObjectCacheStep+blockSize, it seems iterative
+             i--, objSize-=largeBlockCacheStep) {
+            /* cached block size on iteration is
+             * i*largeBlockCacheStep+blockSize, it seems iterative
              * computation of it improves performance.
              */
-            // release from cache objects that are older then ageThreshold
-            globalCachedObjectBins[i].releaseLastIfOld(currAge, objSize);
+            // release from cache blocks that are older than ageThreshold
+            globalCachedBlockBins[i].releaseLastIfOld(currAge, objSize);
         }
     }
     return currAge;
 }
 
-static CachedObject* allocateCachedLargeObject (size_t size)
+static LargeMemoryBlock* getCachedLargeBlock (size_t size)
 {
-    MALLOC_ASSERT( size%largeObjectCacheStep==0, ASSERT_TEXT );
-    CachedObject *block = NULL;
+    MALLOC_ASSERT( size%largeBlockCacheStep==0, ASSERT_TEXT );
+    LargeMemoryBlock *lmb = NULL;
     // blockSize is the minimal alignment and thus the minimal size of a large object.
-    size_t idx = (size-blockSize)/largeObjectCacheStep;
-    if (idx<numLargeObjectBins) {
-        uintptr_t currAge = cleanupCacheIfNeed();
-        block = globalCachedObjectBins[idx].pop(currAge);
-        if (block) {
-            STAT_increment(getThreadId(), ThreadCommonCounters, allocCachedLargeObj);
+    size_t idx = (size-blockSize)/largeBlockCacheStep;
+    if (idx<numLargeBlockBins) {
+        lmb = globalCachedBlockBins[idx].pop();
+        if (lmb) {
+            MALLOC_ITT_SYNC_ACQUIRED(globalCachedBlockBins+idx);
+            STAT_increment(getThreadId(), ThreadCommonCounters, allocCachedLargeBlk);
         }
     }
-    return block;
+    return lmb;
 }
 
 static inline void* mallocLargeObject (size_t size, size_t alignment, 
                                        bool startupAlloc = false)
 {
-    void * unalignedArea;
-    size_t allocationSize = alignUp(size+sizeof(LargeObjectHeader)+alignment, 
-                                    largeObjectCacheStep);
-    bool   blockFromMapMemory = false;
+    LargeMemoryBlock* lmb;
+    size_t headersSize = sizeof(LargeMemoryBlock)+sizeof(LargeObjectHdr);
+    size_t allocationSize = alignUp(size+headersSize+alignment, largeBlockCacheStep);
 
-    if (startupAlloc) {
-        if (! (unalignedArea = getRawMemory(allocationSize, /*alwaysUseMap=*/true)))
-            return NULL;
-    } else {
-        CachedObject* cachedObj = allocateCachedLargeObject(allocationSize);
-        if (cachedObj) {
-            blockFromMapMemory = cachedObj->fromMapMemory;
-            unalignedArea = cachedObj;
-        } else {
-            unalignedArea = getRawMemory(allocationSize);
-            if (!unalignedArea)
-                return NULL;
-            STAT_increment(getThreadId(), ThreadCommonCounters, allocNewLargeObj);
-        }
+    if (startupAlloc || !(lmb = getCachedLargeBlock(allocationSize))) {
+        BackRefIdx backRefIdx;
+
+        if ((backRefIdx = newBackRef()) == invalidIdx) return NULL;
+        lmb = (LargeMemoryBlock*)getRawMemory(allocationSize, /*useMapMem=*/startupAlloc);
+        if (!lmb) return NULL;
+        lmb->fromMapMemory = startupAlloc;
+        lmb->backRefIdx = backRefIdx;
+        lmb->unalignedSize = allocationSize;
+        STAT_increment(getThreadId(), ThreadCommonCounters, allocNewLargeObj);
     }
-    void *alignedArea = (void*)alignUp((uintptr_t)unalignedArea+sizeof(LargeObjectHeader), alignment);
-    LargeObjectHeader *header = (LargeObjectHeader*)((uintptr_t)alignedArea-sizeof(LargeObjectHeader));
-    header->unalignedResult = unalignedArea;
-    header->mallocUniqueID=theMallocUniqueID;
-    header->unalignedSize = allocationSize;
-    header->objectSize = size;
-    header->fromMapMemory = startupAlloc || blockFromMapMemory;
+
+    void *alignedArea = (void*)alignUp((uintptr_t)lmb+headersSize, alignment);
+    LargeObjectHdr *header = (LargeObjectHdr*)alignedArea-1;
+    header->memoryBlock = lmb;
+    header->backRefIdx = lmb->backRefIdx;
+    setBackRef(header->backRefIdx, header);
+ 
+    lmb->objectSize = size;
+
     MALLOC_ASSERT( isLargeObject(alignedArea), ASSERT_TEXT );
     return alignedArea;
 }
 
-static bool freeLargeObjectToCache (LargeObjectHeader* header)
+static bool freeLargeObjectToCache (LargeMemoryBlock* largeBlock)
 {
-    size_t size = header->unalignedSize;
-    size_t idx = (size-blockSize)/largeObjectCacheStep;
-    if (idx<numLargeObjectBins) {
-        MALLOC_ASSERT( size%largeObjectCacheStep==0, ASSERT_TEXT );
-        uintptr_t currAge = cleanupCacheIfNeed ();
-        globalCachedObjectBins[idx].push(header->unalignedResult, 
-                                         header->fromMapMemory, currAge);
+    size_t size = largeBlock->unalignedSize;
+    size_t idx = (size-blockSize)/largeBlockCacheStep;
+    if (idx<numLargeBlockBins) {
+        MALLOC_ASSERT( size%largeBlockCacheStep==0, ASSERT_TEXT );
+        MALLOC_ITT_SYNC_RELEASING(globalCachedBlockBins+idx);
+        globalCachedBlockBins[idx].push(largeBlock);
 
-        STAT_increment(getThreadId(), ThreadCommonCounters, cacheLargeObj);
+        STAT_increment(getThreadId(), ThreadCommonCounters, cacheLargeBlk);
         return true;
     }
     return false;
@@ -1650,12 +2001,14 @@ static bool freeLargeObjectToCache (LargeObjectHeader* header)
 
 static inline void freeLargeObject (void *object)
 {
-    LargeObjectHeader *header;
-    header = (LargeObjectHeader *)((uintptr_t)object - sizeof(LargeObjectHeader));
-    header->mallocUniqueID = 0;
-    if (!freeLargeObjectToCache(header)) {
-        freeRawMemory(header->unalignedResult, header->unalignedSize, 
-                      /*alwaysUseMap=*/ header->fromMapMemory);
+    LargeObjectHdr *header = (LargeObjectHdr*)object - 1;
+
+    // overwrite backRefIdx to simplify double free detection
+    header->backRefIdx = invalidIdx;
+    if (!freeLargeObjectToCache(header->memoryBlock)) {
+        removeBackRef(header->memoryBlock->backRefIdx);
+        freeRawMemory(header->memoryBlock, header->memoryBlock->unalignedSize, 
+                      /*useMapMem=*/ header->memoryBlock->fromMapMemory);
         STAT_increment(getThreadId(), ThreadCommonCounters, freeLargeObj);
     }
 }
@@ -1732,10 +2085,10 @@ static void moveBlockToBinFront(Block *block)
 static void processLessUsedBlock(Block *block)
 {
     Bin* bin = getAllocationBin(block->objectSize);
-    if (block != getActiveBlock(bin) && block != getActiveBlock(bin)->previous ) {
+    if (block != getActiveBlock(bin)) {
         /* We are not actively using this block; return it to the general block pool */
         outofTLSBin(bin, block);
-        returnEmptyBlock(block);
+        returnEmptyBlock(block, /*poolTheBlock=*/true);
     } else {
         /* all objects are free - let's restore the bump pointer */
         restoreBumpPtr(block);
@@ -1785,19 +2138,17 @@ static void *reallocAligned(void *ptr, size_t size, size_t alignment = 0)
     size_t copySize;
 
     if (isLargeObject(ptr)) {
-        LargeObjectHeader* loh = (LargeObjectHeader *)((uintptr_t)ptr - sizeof(LargeObjectHeader));
-        MALLOC_ASSERT( loh->mallocUniqueID==theMallocUniqueID, ASSERT_TEXT );
-        copySize = loh->unalignedSize-((uintptr_t)ptr-(uintptr_t)loh->unalignedResult);
+        LargeMemoryBlock* lmb = ((LargeObjectHdr *)ptr - 1)->memoryBlock;
+        copySize = lmb->unalignedSize-((uintptr_t)ptr-(uintptr_t)lmb);
         if (size <= copySize && (0==alignment || isAligned(ptr, alignment))) {
-            loh->objectSize = size;
+            lmb->objectSize = size;
             return ptr;
         } else {
-            copySize = loh->objectSize;
+            copySize = lmb->objectSize;
             result = alignment ? allocateAligned(size, alignment) : scalable_malloc(size);
         }
     } else {
         Block* block = (Block *)alignDown(ptr, blockSize);
-        MALLOC_ASSERT( block->mallocUniqueID==theMallocUniqueID, ASSERT_TEXT );
         copySize = block->objectSize;
         if (size <= copySize && (0==alignment || isAligned(ptr, alignment))) {
             return ptr;
@@ -1853,7 +2204,7 @@ static unsigned int threadGoingDownCount = 0;
 */
 extern "C" void mallocThreadShutdownNotification(void* arg)
 {
-    Bin   *tls;
+    TLSData *tls;
     Block *threadBlock;
     Block *threadlessBlock;
     unsigned int index;
@@ -1866,39 +2217,42 @@ extern "C" void mallocThreadShutdownNotification(void* arg)
     TRACEF(( "[ScalableMalloc trace] Thread id %d blocks return start %d\n",
              getThreadId(),  threadGoingDownCount++ ));
 #ifdef USE_WINTHREAD
-    tls = (Bin*)getThreadMallocTLS();
+    tls = getThreadMallocTLS();
 #else
-    tls = (Bin*)arg;
+    tls = (TLSData*)arg;
 #endif
     if (tls) {
+        Bin *tlsBin = tls->bin;
+        tls->pool.releaseAllBlocks();
+
         for (index = 0; index < numBlockBins; index++) {
-            if (tls[index].activeBlk==NULL)
+            if (tlsBin[index].activeBlk==NULL)
                 continue;
-            threadlessBlock = tls[index].activeBlk->previous;
+            threadlessBlock = tlsBin[index].activeBlk->previous;
             while (threadlessBlock) {
                 threadBlock = threadlessBlock->previous;
                 if (threadlessBlock->allocatedCount==0 && threadlessBlock->publicFreeList==NULL) {
-                    /* we destroy the thread, no need to keep its TLS bin -> the second param is false */
-                    returnEmptyBlock(threadlessBlock, false);
+                    /* we destroy the thread, so not use its block pool */
+                    returnEmptyBlock(threadlessBlock, /*poolTheBlock=*/false);
                 } else {
-                    returnPartialBlock(tls+index, threadlessBlock);
+                    returnPartialBlock(tlsBin+index, threadlessBlock);
                 }
                 threadlessBlock = threadBlock;
             }
-            threadlessBlock = tls[index].activeBlk;
+            threadlessBlock = tlsBin[index].activeBlk;
             while (threadlessBlock) {
                 threadBlock = threadlessBlock->next;
                 if (threadlessBlock->allocatedCount==0 && threadlessBlock->publicFreeList==NULL) {
-                    /* we destroy the thread, no need to keep its TLS bin -> the second param is false */
-                    returnEmptyBlock(threadlessBlock, false);
+                    /* we destroy the thread, so not use its block pool */
+                    returnEmptyBlock(threadlessBlock, /*poolTheBlock=*/false);
                 } else {
-                    returnPartialBlock(tls+index, threadlessBlock);
+                    returnPartialBlock(tlsBin+index, threadlessBlock);
                 }
                 threadlessBlock = threadBlock;
             }
-            tls[index].activeBlk = 0;
+            tlsBin[index].activeBlk = 0;
         }
-        bootStrapFree((void*)tls);
+        bootStrapFree(tls);
         setThreadMallocTLS(NULL);
     }
 
@@ -1907,7 +2261,6 @@ extern "C" void mallocThreadShutdownNotification(void* arg)
 
 extern "C" void mallocProcessShutdownNotification(void)
 {
-    // for now, this function is only necessary for dumping statistics
 #if COLLECT_STATISTICS
     ThreadId nThreads = ThreadIdCount;
     for( int i=1; i<=nThreads && i<MAX_THREADS; ++i )
@@ -1921,9 +2274,9 @@ extern "C" void mallocProcessShutdownNotification(void)
  * Bad dereference caused by a foreign pointer is possible only here, not earlier in call chain.
  * Separate function isolates SEH code, as it has bad influence on compiler optimization.
  */
-static inline uint64_t safer_dereference (uint64_t *ptr)
+static inline BackRefIdx safer_dereference (BackRefIdx *ptr)
 {
-    uint64_t id;
+    BackRefIdx id;
 #if _MSC_VER
     __try {
 #endif
@@ -1931,7 +2284,7 @@ static inline uint64_t safer_dereference (uint64_t *ptr)
 #if _MSC_VER
     } __except( GetExceptionCode() == EXCEPTION_ACCESS_VIOLATION? 
                 EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH ) {
-        id = 0;
+        id = invalidIdx;
     }
 #endif
     return id;
@@ -1939,12 +2292,17 @@ static inline uint64_t safer_dereference (uint64_t *ptr)
 
 static inline bool isRecognized (void* ptr)
 {
-    uint64_t id = safer_dereference(
-        isLargeObject(ptr)
-            ? &((LargeObjectHeader*)((uintptr_t)ptr-sizeof(LargeObjectHeader)))->mallocUniqueID
-            : &((Block *)alignDown(ptr, blockSize))->mallocUniqueID
-    );
-    return id == theMallocUniqueID;
+    void* expected;
+    BackRefIdx* idx;
+
+    if (isLargeObject(ptr)) {
+        expected = (LargeObjectHdr*)ptr - 1;
+        idx = &((LargeObjectHdr*)expected)->backRefIdx;
+    } else {
+        expected = alignDown(ptr, blockSize);
+        idx = &((Block*)expected)->backRefIdx;
+    }
+    return expected == getBackRef(safer_dereference(idx));
 }
 
 /********* The malloc code          *************/
@@ -2069,6 +2427,7 @@ extern "C" void scalable_free (void *object) {
     if (!object) {
         return;
     }
+    MALLOC_ASSERT(isRecognized(object), "Invalid pointer in scalable_free detected.");
 
     if (isLargeObject(object)) {
         freeLargeObject(object);
@@ -2076,7 +2435,6 @@ extern "C" void scalable_free (void *object) {
     } 
 
     block = (Block *)alignDown(object, blockSize);/* mask low bits to get the block */
-    MALLOC_ASSERT( block->mallocUniqueID == theMallocUniqueID, ASSERT_TEXT );
     MALLOC_ASSERT( block->allocatedCount, ASSERT_TEXT );
 
 #if MALLOC_CHECK_RECURSION
@@ -2347,21 +2705,19 @@ extern "C" void scalable_aligned_free(void *ptr)
 extern "C" size_t scalable_msize(void* ptr)
 {
     if (ptr) {
+        MALLOC_ASSERT(isRecognized(ptr), "Invalid pointer in scalable_msize detected.");
         if (isLargeObject(ptr)) {
-            LargeObjectHeader* loh = (LargeObjectHeader*)((uintptr_t)ptr - sizeof(LargeObjectHeader));
-            if (loh->mallocUniqueID==theMallocUniqueID)
-                return loh->unalignedSize-((uintptr_t)ptr-(uintptr_t)loh->unalignedResult);
+            LargeMemoryBlock* lmb = ((LargeObjectHdr*)ptr - 1)->memoryBlock;
+            return lmb->objectSize;
         } else {
             Block* block = (Block *)alignDown(ptr, blockSize);
-            if (block->mallocUniqueID==theMallocUniqueID) {
 #if MALLOC_CHECK_RECURSION
-                size_t size = block->objectSize? block->objectSize : startupMsize(ptr);
+            size_t size = block->objectSize? block->objectSize : startupMsize(ptr);
 #else
-                size_t size = block->objectSize;
+            size_t size = block->objectSize;
 #endif
-                MALLOC_ASSERT(size>0 && size<minLargeObjectSize, ASSERT_TEXT);
-                return size;
-            }
+            MALLOC_ASSERT(size>0 && size<minLargeObjectSize, ASSERT_TEXT);
+            return size;
         }
     }
     errno = EINVAL;

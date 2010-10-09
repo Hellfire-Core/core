@@ -1,5 +1,5 @@
 /*
-    Copyright 2005-2009 Intel Corporation.  All Rights Reserved.
+    Copyright 2005-2010 Intel Corporation.  All Rights Reserved.
 
     This file is part of Threading Building Blocks.
 
@@ -109,15 +109,15 @@ namespace internal {
             poison_pointer(body);
             poison_pointer(incoming);
         }
-        task* create_child( const Range& range, final_sum_type& f, sum_node* n, final_sum_type* incoming, Body* stuff_last ) {
+        task* create_child( const Range& range_, final_sum_type& f, sum_node* n, final_sum_type* incoming_, Body* stuff_last_ ) {
             if( !n ) {
                 f.recycle_as_child_of( *this );
-                f.finish_construction( range, stuff_last );
+                f.finish_construction( range_, stuff_last_ );
                 return &f;
             } else {
                 n->body = &f;
-                n->incoming = incoming;
-                n->stuff_last = stuff_last;
+                n->incoming = incoming_;
+                n->stuff_last = stuff_last_;
                 return n;
             }
         }
@@ -201,15 +201,15 @@ namespace internal {
         typename Partitioner::partition_type partition;
         /*override*/ task* execute();
     public:
-        start_scan( sum_node_type*& return_slot_, start_scan& parent, sum_node_type* parent_sum_ ) :
-            body(parent.body),
-            sum(parent.sum),
+        start_scan( sum_node_type*& return_slot_, start_scan& parent_, sum_node_type* parent_sum_ ) :
+            body(parent_.body),
+            sum(parent_.sum),
             return_slot(&return_slot_),
             parent_sum(parent_sum_),
-            is_final(parent.is_final),
+            is_final(parent_.is_final),
             is_right_child(false),
-            range(parent.range,split()),
-            partition(parent.partition,split())
+            range(parent_.range,split()),
+            partition(parent_.partition,split())
         {
             __TBB_ASSERT( !*return_slot, NULL );
         }

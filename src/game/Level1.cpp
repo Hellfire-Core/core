@@ -2275,14 +2275,6 @@ bool ChatHandler::HandlePlaySoundCommand(const char* args)
     return false;
 }
 
-//Save all players in the world
-bool ChatHandler::HandleSaveAllCommand(const char* /*args*/)
-{
-    ObjectAccessor::Instance().SaveAllPlayers();
-    SendSysMessage(LANG_PLAYERS_SAVED);
-    return true;
-}
-
 //Send mail by command
 bool ChatHandler::HandleSendMailCommand(const char* args)
 {

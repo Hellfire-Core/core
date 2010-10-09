@@ -515,7 +515,7 @@ Unit* ScriptedAI::SelectUnit(SelectAggroTarget target, uint32 position)
     return NULL;
 }
 
-Unit* ScriptedAI::SelectUnit(SelectAggroTarget targetType, uint32 position, float dist, bool playerOnly, uint64 exclude)
+Unit* ScriptedAI::SelectUnit(SelectAggroTarget targetType, uint32 position, float dist, bool playerOnly, uint64 exclude, float mindist)
 {
     if(targetType == SELECT_TARGET_NEAREST || targetType == SELECT_TARGET_FARTHEST)
     {
@@ -529,7 +529,8 @@ Unit* ScriptedAI::SelectUnit(SelectAggroTarget targetType, uint32 position, floa
             if(!target
                 || playerOnly && target->GetTypeId() != TYPEID_PLAYER
                 || dist && !m_creature->IsWithinCombatRange(target, dist)
-                || exclude && exclude == target->GetGUID())
+                || exclude && exclude == target->GetGUID()
+                || mindist && m_creature->IsWithinCombatRange(target, mindist))
             {
                 continue;
             }
@@ -579,7 +580,86 @@ Unit* ScriptedAI::SelectUnit(SelectAggroTarget targetType, uint32 position, floa
                 || !target->isAlive()
                 || playerOnly && target->GetTypeId() != TYPEID_PLAYER
                 || dist && !m_creature->IsWithinCombatRange(target, dist)
-                || exclude && exclude == target->GetGUID())
+                || exclude && exclude == target->GetGUID()
+                || mindist && m_creature->IsWithinCombatRange(target, mindist))
+            {
+                m_threatlist.erase(i);
+            }
+            else
+            {
+                return target;
+            }
+        }
+    }
+
+    return NULL;
+}
+
+Unit* ScriptedAI::SelectUnit(SelectAggroTarget targetType, uint32 position, float maxdist, bool playerOnly, Powers power)
+{
+    if(targetType == SELECT_TARGET_NEAREST || targetType == SELECT_TARGET_FARTHEST)
+    {
+        std::list<HostilReference*> &m_threatlist = m_creature->getThreatManager().getThreatList();
+        if(m_threatlist.empty()) return NULL;
+        std::list<Unit*> targetList;
+        std::list<HostilReference*>::iterator itr = m_threatlist.begin();
+        for(; itr!= m_threatlist.end(); ++itr)
+        {
+            Unit *target = Unit::GetUnit(*m_creature, (*itr)->getUnitGuid());
+            if(!target
+                || playerOnly && target->GetTypeId() != TYPEID_PLAYER
+                || maxdist && !m_creature->IsWithinCombatRange(target, maxdist)
+                || power != target->getPowerType())
+            {
+                continue;
+            }
+            targetList.push_back(target);
+        }
+        if(position >= targetList.size())
+            return NULL;
+
+        targetList.sort(TargetDistanceOrder(m_creature));
+
+        if(targetType == SELECT_TARGET_NEAREST)
+        {
+            std::list<Unit*>::iterator i = targetList.begin();
+            advance(i, position);
+            return *i;
+        }
+        else
+        {
+            std::list<Unit*>::reverse_iterator i = targetList.rbegin();
+            advance(i, position);
+            return *i;
+        }
+    }
+    else
+    {
+        std::list<HostilReference*> m_threatlist = m_creature->getThreatManager().getThreatList();
+        std::list<HostilReference*>::iterator i;
+        Unit *target;
+        while(position < m_threatlist.size())
+        {
+            if(targetType == SELECT_TARGET_BOTTOMAGGRO)
+            {
+                i = m_threatlist.end();
+                advance(i, - (int32)position - 1);
+            }
+            else
+            {
+                i = m_threatlist.begin();
+                if(targetType == SELECT_TARGET_TOPAGGRO)
+                    advance(i, position);
+                else // random
+                    advance(i, position + rand()%(m_threatlist.size() - position));
+            }
+
+            target = Unit::GetUnit(*m_creature,(*i)->getUnitGuid());
+            if(!target
+                || !target->isAlive()
+                || playerOnly && target->GetTypeId() != TYPEID_PLAYER
+                || maxdist && !m_creature->IsWithinCombatRange(target, maxdist)
+                || power != target->getPowerType())
             {
                 m_threatlist.erase(i);
             }

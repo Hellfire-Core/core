@@ -39,7 +39,7 @@ VisibleChangesNotifier::Visit(PlayerMapType &m)
             continue;
 
         iter->getSource()->UpdateVisibilityOf(&i_object);
- 	
+
 
         if(!iter->getSource()->GetSharedVisionList().empty())
             for(SharedVisionList::const_iterator i = iter->getSource()->GetSharedVisionList().begin(); i != iter->getSource()->GetSharedVisionList().end(); ++i)
@@ -91,7 +91,7 @@ PlayerVisibilityNotifier::Notify()
             if(!IS_PLAYER_GUID(*iter))
                 continue;
 
-            Player* plr = ObjectAccessor::GetPlayer(i_player,*iter);
+            Player* plr = ObjectAccessor::GetPlayer(*iter);
             if(plr)
                 plr->UpdateVisibilityOf(&i_player);
         }

@@ -522,7 +522,7 @@ Unit* Aura::GetCaster() const
 
     //return ObjectAccessor::GetUnit(*m_target,m_caster_guid);
     //must return caster even if it's in another grid/map
-    Unit *unit = ObjectAccessor::GetObjectInWorld(m_caster_guid, (Unit*)NULL);
+    Unit *unit = m_target->GetMap()->GetUnit(m_caster_guid);
     return unit && unit->IsInWorld() ? unit : NULL;
 }
 
@@ -660,7 +660,7 @@ bool AreaAura::CheckTarget(Unit *target)
                 for(Unit::AuraMap::iterator it = auras.begin(); it != auras.end(); it++)
                 {
                     Aura* aur = (*it).second;
-                    if(aur->GetSpellProto()->SpellFamilyName == SPELLFAMILY_SHAMAN && aur->GetSpellProto()->SpellIconID == GetSpellProto()->SpellIconID && 
+                    if(aur->GetSpellProto()->SpellFamilyName == SPELLFAMILY_SHAMAN && aur->GetSpellProto()->SpellIconID == GetSpellProto()->SpellIconID &&
                         aur->GetSpellProto()->SpellFamilyFlags == GetSpellProto()->SpellFamilyFlags)
                     {
                         if(GetId() < aur->GetId())        // HACK: higher id => higher spell rank
@@ -878,8 +878,9 @@ void Aura::UpdateAuraDuration()
     if( m_target->GetTypeId() == TYPEID_PLAYER)
     {
         WorldPacket data;
-        data.Initialize(SMSG_UPDATE_AURA_DURATION, 5);
-        data << (uint8)m_auraSlot << (uint32)m_duration;
+        data.Initialize(SMSG_UPDATE_AURA_DURATION, 1+4);
+        data << (uint8)m_auraSlot;
+        data << (uint32)m_duration;
         ((Player *)m_target)->SendDirectMessage(&data);
 
         data.Initialize(SMSG_SET_EXTRA_AURA_INFO, (8+1+4+4+4));
@@ -2202,7 +2203,7 @@ void Aura::TriggerSpell()
 
 Unit* Aura::GetTriggerTarget() const
 {
-    Unit* target = ObjectAccessor::GetUnit(*m_target, m_target->GetUInt64Value(UNIT_FIELD_TARGET));
+    Unit* target = m_target->GetMap()->GetUnit(m_target->GetUInt64Value(UNIT_FIELD_TARGET));
     return target ? target : m_target;
 }
 
@@ -2399,15 +2400,15 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
                 m_target->SetHealth(m_target->GetMaxHealth());
 
                 m_target->RemoveAllAurasOnDeath();  //prevent spell immunities from cloak of shadows and others
-                
+
                 if (m_target->GetTypeId() == TYPEID_PLAYER && m_target->GetPet())
                     ((Player*)m_target)->RemovePet(m_target->GetPet(), PET_SAVE_NOT_IN_SLOT);
-                
+
                 m_target->CastSpell(m_target, 40266, true);   //summon Vengeful Spirit and 4 Shadowy Constructs
                 m_target->AddAura(40282, m_target);             //Possess Spirit Immune
                 m_target->CastSpell((Unit*)NULL, 40268, false); //Possess Vengeful Spirit
                 //m_target->CastSpell(m_target, 40282, true);   //Possess Spirit Immune
-                
+
                 Map *pMap = m_target->GetMap();
                 if(((InstanceMap*)pMap)->GetInstanceData())
                     ((InstanceMap*)pMap)->GetInstanceData()->SetData64(29, m_target->GetGUID());
@@ -3415,7 +3416,7 @@ void Aura::HandleModCharm(bool apply, bool Real)
     {
         if(int32(m_target->getLevel()) > m_modifier.m_amount)
             return;
-        
+
         m_target->SetCharmedOrPossessedBy(caster, false);
     }
     else
@@ -5758,7 +5759,7 @@ void Aura::HandleShapeshiftBoosts(bool apply)
                 }
             }
         }
-        
+
         if (spellId) m_target->CastSpell(m_target, spellId, true, NULL, this );
         if (spellId2) m_target->CastSpell(m_target, spellId2, true, NULL, this);
     }
@@ -5938,7 +5939,7 @@ void Aura::HandleAuraRetainComboPoints(bool apply, bool Real)
     // combo points was added in SPELL_EFFECT_ADD_COMBO_POINTS handler
     // remove only if aura expire by time (in case combo points amount change aura removed without combo points lost)
     if( !apply && m_duration==0 && target->GetComboTarget())
-        if(Unit* unit = ObjectAccessor::GetUnit(*m_target,target->GetComboTarget()))
+        if(Unit* unit = m_target->GetMap()->GetUnit(target->GetComboTarget()))
             target->AddComboPoints(unit, -GetModifierValue());
 }
 

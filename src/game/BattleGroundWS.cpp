@@ -263,7 +263,12 @@ void BattleGroundWS::RespawnFlagAfterDrop(uint32 team)
 
     PlaySoundToAll(BG_WS_SOUND_FLAGS_RESPAWNED);
 
-    GameObject *obj = HashMapHolder<GameObject>::Find(GetDroppedFlagGUID(team));
+    Map * tmpMap = GetMap();
+
+    if(!tmpMap)
+        return;
+
+    GameObject *obj = tmpMap->GetGameObject(GetDroppedFlagGUID(team));
     if(obj)
         obj->Delete();
     else

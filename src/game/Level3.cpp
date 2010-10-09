@@ -3595,7 +3595,7 @@ bool ChatHandler::HandleGuildCreateCommand(const char* args)
 
     std::string guildname = gname;
 
-    Player* player = ObjectAccessor::Instance ().FindPlayerByName (lname);
+    Player* player = ObjectAccessor::Instance ().GetPlayerByName (lname);
     if (!player)
     {
         SendSysMessage (LANG_PLAYER_NOT_FOUND);
@@ -3646,7 +3646,7 @@ bool ChatHandler::HandleGuildInviteCommand(const char *args)
     }
 
     uint64 plGuid = 0;
-    if (Player* targetPlayer = ObjectAccessor::Instance ().FindPlayerByName (plName.c_str ()))
+    if (Player* targetPlayer = ObjectAccessor::Instance ().GetPlayerByName (plName.c_str ()))
         plGuid = targetPlayer->GetGUID ();
     else
         plGuid = objmgr.GetPlayerGUIDByName (plName.c_str ());
@@ -3680,7 +3680,7 @@ bool ChatHandler::HandleGuildUninviteCommand(const char *args)
 
     uint64 plGuid = 0;
     uint32 glId   = 0;
-    if (Player* targetPlayer = ObjectAccessor::Instance ().FindPlayerByName (plName.c_str ()))
+    if (Player* targetPlayer = ObjectAccessor::Instance ().GetPlayerByName (plName.c_str ()))
     {
         plGuid = targetPlayer->GetGUID ();
         glId   = targetPlayer->GetGuildId ();
@@ -3722,7 +3722,7 @@ bool ChatHandler::HandleGuildRankCommand(const char *args)
 
     uint64 plGuid = 0;
     uint32 glId   = 0;
-    if (Player* targetPlayer = ObjectAccessor::Instance ().FindPlayerByName (plName.c_str ()))
+    if (Player* targetPlayer = ObjectAccessor::Instance ().GetPlayerByName (plName.c_str ()))
     {
         plGuid = targetPlayer->GetGUID ();
         glId   = targetPlayer->GetGuildId ();

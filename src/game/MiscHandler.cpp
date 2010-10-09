@@ -490,7 +490,7 @@ void WorldSession::HandleSetTargetOpcode( WorldPacket & recv_data )
     _player->SetUInt32Value(UNIT_FIELD_TARGET,guid);
 
     // update reputation list if need
-    Unit* unit = ObjectAccessor::GetUnit(*_player, guid );
+    Unit* unit = _player->GetMap()->GetUnit(guid );
     if(!unit)
         return;
 
@@ -507,7 +507,7 @@ void WorldSession::HandleSetSelectionOpcode( WorldPacket & recv_data )
     _player->SetSelection(guid);
 
     // update reputation list if need
-    Unit* unit = ObjectAccessor::GetUnit(*_player, guid );
+    Unit* unit = _player->GetMap()->GetUnit(guid );
     if(!unit)
         return;
 
