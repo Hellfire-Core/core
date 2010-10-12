@@ -74,10 +74,12 @@ enum autocastTargetMode
 class SpellToCast
 {
 public:
+    float castDest[3];
     uint64 targetGUID;
     uint32 spellId;
     bool triggered;
     bool isAOECast;
+    bool isDestCast;
     bool setAsTarget;
     int32 scriptTextEntry;
 
@@ -89,6 +91,7 @@ public:
         else
             this->targetGUID = 0;
 
+        this->isDestCast = false;
         this->spellId = spellId;
         this->triggered = triggered;
         this->isAOECast = isAOECast;
@@ -98,7 +101,21 @@ public:
 
     SpellToCast(uint64 target, uint32 spellId, bool triggered, int32 scriptTextEntry, bool isAOECast, bool visualTarget)
     {
+        this->isDestCast = false;
         this->targetGUID = target;
+        this->spellId = spellId;
+        this->triggered = triggered;
+        this->isAOECast = isAOECast;
+        this->scriptTextEntry = scriptTextEntry;
+        this->setAsTarget = visualTarget;
+    }
+
+    SpellToCast(float x, float y, float z, uint32 spellId, bool triggered, int32 scriptTextEntry, bool isAOECast, bool visualTarget)
+    {
+        isDestCast = true;
+        this->castDest[0] = x;
+        this->castDest[1] = y;
+        this->castDest[2] = z;
         this->spellId = spellId;
         this->triggered = triggered;
         this->isAOECast = isAOECast;
@@ -114,6 +131,9 @@ public:
         this->isAOECast = false;
         this->scriptTextEntry = 0;
         this->setAsTarget = false;
+        this->isDestCast = false;
+        for(uint8 i=0;i<3;++i)
+            this->castDest[i] = 0;
     }
 
     ~SpellToCast()
@@ -124,6 +144,9 @@ public:
         this->isAOECast = false;
         this->scriptTextEntry = 0;
         this->setAsTarget = false;
+        this->isDestCast = false;
+        for(uint8 i=0;i<3;++i)
+            this->castDest[i] = 0;
     }
 };
 
@@ -239,6 +262,7 @@ struct TRINITY_DLL_DECL ScriptedAI : public CreatureAI
 
     //Casts queue
     void AddSpellToCast(Unit* victim, uint32 spellId, bool triggered = false, bool visualTarget = false);
+    void AddSpellToCast(float x, float y, float z, uint32 spellId, bool triggered = false, bool visualTarget = false);
     void AddSpellToCastWithScriptText(Unit* victim, uint32 spellId, int32 scriptTextEntry, bool triggered = false, bool visualTarget = false);
     void AddAOESpellToCast(uint32 spellId, bool triggered = false);
     void AddAOESpellToCastWithScriptText(uint32 spellId, int32 scriptTextEntry, bool triggered = false);

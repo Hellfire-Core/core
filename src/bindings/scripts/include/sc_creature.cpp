@@ -190,6 +190,14 @@ void ScriptedAI::CastNextSpellIfAnyAndReady(uint32 diff)
         if (temp->scriptTextEntry)
             DoScriptText(temp->scriptTextEntry, m_creature, m_creature->getVictim());
 
+        if (temp->isDestCast)
+        {
+            m_creature->CastSpell(temp->castDest[0], temp->castDest[1], temp->castDest[2], temp->spellId, temp->triggered);
+            spellList.pop_front();
+            casted = true;
+            return;
+        }
+
         if (temp->targetGUID)
         {
             Unit * tempU = m_creature->GetUnit(*m_creature, temp->targetGUID);
@@ -293,6 +301,13 @@ void ScriptedAI::AddSpellToCast(Unit* victim, uint32 spellId, bool triggered, bo
         return;*/
 
     SpellToCast temp(victim ? victim->GetGUID() : NULL, spellId, triggered, 0, false, visualTarget);
+
+    spellList.push_back(temp);
+}
+
+void ScriptedAI::AddSpellToCast(float x, float y, float z, uint32 spellId, bool triggered, bool visualTarget)
+{
+    SpellToCast temp(x, y, z, spellId, triggered, 0, false, visualTarget);
 
     spellList.push_back(temp);
 }
