@@ -7569,8 +7569,8 @@ uint32 Unit::SpellDamageBonus(Unit *pVictim, SpellEntry const *spellProto, uint3
             {
                 CastingTime = 0;
             }
-            // Flame Cap
-            else if(spellProto->Id == 28715)
+            // Flame Cap & Scalding Water
+            else if(spellProto->Id == 28715 || spellProto->Id == 37284)
             {
                 CastingTime = 0;
             }
