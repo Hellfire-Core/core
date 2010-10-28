@@ -3537,7 +3537,8 @@ bool Unit::AddAura(Aura *Aur)
                 i2=m_Auras.lower_bound(spair);
                 continue;
             }
-            if(aurSpellInfo->Id == 28093)       // Allow mongoose procs from different weapons stack
+
+            if(aurSpellInfo->Id == 28093 || aurSpellInfo->Id == 20007)       // Allow mongoose procs from different weapons stack
             {
                 if(Aur->GetCastItemGUID() != i2->second->GetCastItemGUID())
                 {
