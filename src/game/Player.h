@@ -1029,6 +1029,8 @@ class TRINITY_DLL_SPEC Player : public Unit
         void Whisper(const std::string& text, const uint32 language,uint64 receiver);
         void BuildPlayerChat(WorldPacket *data, uint8 msgtype, const std::string& text, uint32 language) const;
 
+        uint8 GetClass(){ return m_class; }
+
         /*********************************************************/
         /***                    STORAGE SYSTEM                 ***/
         /*********************************************************/
@@ -2382,7 +2384,7 @@ class TRINITY_DLL_SPEC Player : public Unit
         uint8 m_MirrorTimerFlags;
         uint8 m_MirrorTimerFlagsLast;
         bool m_isInWater;
-        
+
         GridReference<Player> m_gridRef;
         MapReference m_mapRef;
 
