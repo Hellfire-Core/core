@@ -136,7 +136,7 @@ bool GridMap::loadAreaData(FILE *in, uint32 offset, uint32 /*size*/)
     GridMapAreaHeader header;
     fseek(in, offset, SEEK_SET);
     fread(&header, sizeof(header), 1, in);
-    if (header.fourcc != *((uint32 const*)(MAP_AREA_MAGIC)))
+    if (header.fourcc != uint32(MAP_AREA_MAGIC))
         return false;
 
     m_gridArea = header.gridArea;
@@ -145,7 +145,6 @@ bool GridMap::loadAreaData(FILE *in, uint32 offset, uint32 /*size*/)
         m_area_map = new uint16 [16*16];
         fread(m_area_map, sizeof(uint16), 16*16, in);
     }
-
     return true;
 }
 
@@ -154,7 +153,7 @@ bool GridMap::loadHeightData(FILE *in, uint32 offset, uint32 /*size*/)
     GridMapHeightHeader header;
     fseek(in, offset, SEEK_SET);
     fread(&header, sizeof(header), 1, in);
-    if (header.fourcc != *((uint32 const*)(MAP_HEIGHT_MAGIC)))
+    if (header.fourcc != uint32(MAP_HEIGHT_MAGIC))
         return false;
 
     m_gridHeight = header.gridHeight;
@@ -189,37 +188,33 @@ bool GridMap::loadHeightData(FILE *in, uint32 offset, uint32 /*size*/)
     }
     else
         m_gridGetHeight = &GridMap::getHeightFromFlat;
-
     return true;
 }
 
 bool GridMap::loadGridMapLiquidData(FILE *in, uint32 offset, uint32 /*size*/)
 {
-    GridMapLiquidHeader header;
     fseek(in, offset, SEEK_SET);
     fread(&header, sizeof(header), 1, in);
-    if (header.fourcc != *((uint32 const*)(MAP_LIQUID_MAGIC)))
+    if (header.fourcc != uint32(MAP_LIQUID_MAGIC))
         return false;
 
-    m_liquidType    = header.liquidType;
-    m_liquid_offX   = header.offsetX;
-    m_liquid_offY   = header.offsetY;
-    m_liquid_width  = header.width;
-    m_liquid_height = header.height;
-    m_liquidLevel   = header.liquidLevel;
+    m_liquidType   = header.liquidType;
+    m_liquid_offX  = header.offsetX;
+    m_liquid_offY  = header.offsetY;
+    m_liquid_width = header.width;
+    m_liquid_height= header.height;
+    m_liquidLevel  = header.liquidLevel;
 
     if (!(header.flags & MAP_LIQUID_NO_TYPE))
     {
         m_liquid_type = new uint8 [16*16];
         fread(m_liquid_type, sizeof(uint8), 16*16, in);
     }
-
     if (!(header.flags & MAP_LIQUID_NO_HEIGHT))
     {
         m_liquid_map = new float [m_liquid_width*m_liquid_height];
         fread(m_liquid_map, sizeof(float), m_liquid_width*m_liquid_height, in);
     }
-
     return true;
 }
 
@@ -471,7 +466,6 @@ float GridMap::getLiquidLevel(float x, float y)
 
     if (cx_int < 0 || cx_int >=m_liquid_height)
         return INVALID_HEIGHT;
-
     if (cy_int < 0 || cy_int >=m_liquid_width )
         return INVALID_HEIGHT;
 
@@ -487,6 +481,7 @@ uint8 GridMap::getTerrainType(float x, float y)
     y = 16 * (32 - y/SIZE_OF_GRIDS);
     int lx = (int)x & 15;
     int ly = (int)y & 15;
+
     return m_liquid_type[lx*16 + ly];
 }
 
