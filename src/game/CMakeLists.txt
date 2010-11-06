@@ -155,6 +155,8 @@ SET(game_STAT_SRCS
    ObjectGuid.cpp
    ObjectGridLoader.cpp
    ObjectGridLoader.h
+   ObjectPosSelector.cpp
+   ObjectPosSelector.h
    Object.h
    ObjectMgr.cpp
    ObjectMgr.h
