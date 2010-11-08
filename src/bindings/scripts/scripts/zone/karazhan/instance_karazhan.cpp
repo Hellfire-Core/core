@@ -87,6 +87,7 @@ uint32 instance_karazhan::GetData(uint32 identifier)
         case DATA_CHESS_EVENT:            return Encounters[9];
         case DATA_MALCHEZZAR_EVENT:       return Encounters[10];
         case DATA_NIGHTBANE_EVENT:        return Encounters[11];
+        case CHESS_EVENT_TEAM:            return Encounters[12];
         case DATA_OPERA_PERFORMANCE:      return OperaEvent;
         case DATA_OPERA_OZ_DEATHCOUNT:    return OzDeathCount;
         case DATA_IMAGE_OF_MEDIVH:        return ImageGUID;
@@ -179,6 +180,7 @@ uint64 instance_karazhan::GetData64(uint32 data)
         case DATA_MASTERS_TERRACE_DOOR_2:      return MastersTerraceDoor[1];
         case DATA_ARAN:                        return AranGUID;
         case DATA_BLIZZARD:                    return BlizzardGUID;
+	case DATA_CHESS_ECHO_OF_MEDIVH:        return MedivhGUID;
     }
 
     return 0;
@@ -238,6 +240,10 @@ void instance_karazhan::SetData(uint32 type, uint32 data)
     case DATA_CHESS_EVENT:
         if(Encounters[9] != DONE)
             Encounters[9] = data;
+        break;
+    case CHESS_EVENT_TEAM:
+        if(Encounters[12] != DONE)
+            Encounters[12] = data;
         break;
     case DATA_MALCHEZZAR_EVENT:
         if(Encounters[10] != DONE)
@@ -403,7 +409,6 @@ void instance_karazhan::Update(uint32 diff)
             CheckTimer -= diff;
     }
 }
-
 
 InstanceData* GetInstanceData_instance_karazhan(Map* map)
 {

@@ -1540,6 +1540,51 @@ void Spell::EffectDummy(uint32 i)
                     m_caster->CastSpell(m_caster, 39582, true);
                     break;
                 }
+                case 32225:                                 //Chess Event: Take Action (melee)
+                {
+                    switch (m_caster->GetEntry())
+                    {
+                        case 17211:     //alliance pawn (Human Footman)
+                            m_caster->CastSpell(unitTarget, 32227, true);
+                            break;
+                        case 17469:     //horde pawn (Orc Grunt)
+                            m_caster->CastSpell(unitTarget, 32228, true);
+                            break;
+                        case 21160:     //alliance rook (Conjured Water Elemental)
+                            m_caster->CastSpell(unitTarget, 37142, true);
+                            break;
+                        case 21726:     //horde rook (Summoned Daemon)
+                            m_caster->CastSpell(unitTarget, 37220, true);
+                            break;
+                        case 21664:     //alliance knight (Human Charger)
+                            m_caster->CastSpell(unitTarget, 37143, true);       //proper spell ??
+                            break;
+                        case 21748:     //horde knight (Orc Wolf)
+                            m_caster->CastSpell(unitTarget, 37339, true);
+                            break;
+                        case 21682:     //Alliance bishop (Human Cleric)
+                            m_caster->CastSpell(unitTarget, 37147, true);
+                            break;
+                        case 21747:     //Horde bishop (Orc Necrolyte)
+                            m_caster->CastSpell(unitTarget, 37337, true);
+                            break;
+                        case 21683:     //Alliance Queen (Human Conjurer)
+                            m_caster->CastSpell(unitTarget, 37149, true);
+                            break;
+                        case 21750:     //Horde Queen (Orc Warlock)
+                            m_caster->CastSpell(unitTarget, 37345, true);
+                            break;
+                        case 21684:     //Alliance King (King Llane)
+                            m_caster->CastSpell(unitTarget, 37150, true);
+                            break;
+                        case 21752:     //Horde King (Warchief Blackhand)
+                            m_caster->CastSpell(unitTarget, 37348, true);
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                }
             }
 
             //All IconID Check in there
@@ -4964,30 +5009,6 @@ void Spell::EffectScriptEffect(uint32 effIndex)
 
     switch(m_spellInfo->Id)
     {
-        // Demon Broiled Surprise HACKY WAY
-        /*case 43723:
-        {
-            bool cast = false;
-            std::list<Creature*> pList;
-            Trinity::AllCreaturesOfEntryInRange u_check(m_creature, entry, range);
-            Trinity::CreatureListSearcher<Trinity::AllCreaturesOfEntryInRange> searcher(pList, u_check);
-            m_creature->VisitNearbyObject(range, searcher);
-            for (std::list<Creature*>::iterator itr = pList.begin(); itr != pList.end(); ++itr)
-            {
-                if (tmp && tmp->GetEntry() == 19973 && !tmp->isAlive())
-                {
-                    cast = true;
-                    break;
-                }
-            }
-
-            if (cast)
-                m_caster->CastSpell(m_caster, 43753, false);
-            else
-                SendCastResult(SPELL_FAILED_BAD_TARGETS);
-
-            return;
-        }*/
         // Gurtogg Bloodboil: Eject
         case 40486:
         {
@@ -7028,3 +7049,4 @@ void Spell::EffectPlayMusic(uint32 i)
     data << uint32(soundid);
     ((Player*)unitTarget)->GetSession()->SendPacket(&data);
 }
+

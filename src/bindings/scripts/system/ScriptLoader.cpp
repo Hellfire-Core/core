@@ -305,6 +305,7 @@ extern void AddSC_instance_karazhan();
 extern void AddSC_karazhan();
 extern void AddSC_boss_nightbane();
 extern void AddSC_boss_netherspite();
+extern void AddSC_chess_event();
 
 //Loch Modan
 extern void AddSC_loch_modan();
