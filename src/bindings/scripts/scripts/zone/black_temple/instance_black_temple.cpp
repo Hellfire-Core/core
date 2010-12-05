@@ -103,10 +103,10 @@ struct TRINITY_DLL_DECL instance_black_temple : public ScriptedInstance
         m_gathiosGUID = 0;
         m_zerevorGUID = 0;
         m_verasGUID = 0;
-        
+
         m_illidariGUID = 0;
         m_voiceGUID = 0;
-        
+
         m_reliquaryGUID = 0;
 
         NajentusGate     = 0;
@@ -366,7 +366,7 @@ struct TRINITY_DLL_DECL instance_black_temple : public ScriptedInstance
             case DATA_GAMEOBJECT_ILLIDAN_DOOR_R:   return IllidanDoor[0];
             case DATA_GAMEOBJECT_ILLIDAN_DOOR_L:   return IllidanDoor[1];
             case DATA_GAMEOBJECT_SUPREMUS_DOORS:   return MainTempleDoors;
- 
+
             case DATA_WEAPONMASTER_SOLDIER:
             case DATA_WEAPONMASTER_SOLDIER+1:
             case DATA_WEAPONMASTER_SOLDIER+2:
@@ -414,8 +414,8 @@ struct TRINITY_DLL_DECL instance_black_temple : public ScriptedInstance
                 else
                     HandleGameObject(ShadeOfAkamaDoor, true);
 
-                //if(Encounters[2] != DONE)
-                Encounters[2] = data;
+                if (Encounters[2] != DONE)
+                    Encounters[2] = data;
             break;
             case EVENT_TERONGOREFIEND:
                 if (data == IN_PROGRESS)
@@ -483,11 +483,11 @@ struct TRINITY_DLL_DECL instance_black_temple : public ScriptedInstance
                     Encounters[7] = data;
             break;
             case EVENT_ILLIDANSTORMRAGE:
-                if(Encounters[8] != DONE)
+                if (Encounters[8] != DONE)
                     Encounters[8] = data;
             break;
             case DATA_ENSLAVED_SOUL:
-                if(data)
+                if (data)
                     EnslavedSoulsCount++;
                 else
                     EnslavedSoulsCount = 0;
@@ -594,7 +594,7 @@ struct TRINITY_DLL_DECL instance_black_temple : public ScriptedInstance
         OUT_LOAD_INST_DATA(in);
 
         std::istringstream loadStream(in);
-        loadStream 
+        loadStream
             >> Encounters[0] >> Encounters[1] >> Encounters[2] >> Encounters[3] >> Encounters[4] >> Encounters[5] >> Encounters[6]
         >> Encounters[7] >> Encounters[8] >> Encounters[9];
 

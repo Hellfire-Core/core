@@ -865,7 +865,7 @@ struct TRINITY_DLL_DECL boss_shade_of_akamaAI : public ScriptedAI
         if (!me->GetLootRecipient() && pDoneBy->GetTypeId() == TYPEID_PLAYER)
             me->SetLootRecipient(pDoneBy);
     }
-    
+
     void TurnOffChanneling()
     {
         for (std::list<uint64>::const_iterator itr = m_channelers.begin(); itr != m_channelers.end(); ++itr)
@@ -1385,6 +1385,9 @@ void boss_shade_of_akamaAI::JustDied(Unit *)
     m_summons.DespawnAll();
     if (Creature *akama = m_creature->GetCreature(*m_creature, AkamaGUID))
         ((npc_akamaAI *)akama->AI())->ShadeKilled();
+
+    if (pInstance)
+        pInstance->SetData(EVENT_SHADEOFAKAMA, DONE);   //na wszelki wypadek
 }
 
 CreatureAI* GetAI_boss_shade_of_akama(Creature *_Creature)
