@@ -1015,7 +1015,7 @@ void Aura::_AddAura()
             }
             else                                            // empty negative slot
             {
-                for (uint8 i = max_slot; i < MAX_AURAS; i++)
+                for (uint8 i = MAX_AURAS - 1; i >= max_slot; i--)
                 {
                     if (m_target->GetUInt32Value((uint16)(UNIT_FIELD_AURA + i)) == 0)
                     {
