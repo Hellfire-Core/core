@@ -3864,12 +3864,11 @@ bool ChatHandler::HandlePetLearnCommand(const char* args)
     if(!*args)
         return false;
 
-    Player *plr = m_session->GetPlayer();
-    Pet *pet = plr->GetPet();
+    Pet *pet = ObjectAccessor::GetPet(m_session->GetPlayer()->GetSelection());
 
     if(!pet)
     {
-        PSendSysMessage("You have no pet");
+        PSendSysMessage("You must select a pet");
         SetSentErrorMessage(true);
         return false;
     }
@@ -3907,12 +3906,11 @@ bool ChatHandler::HandlePetUnlearnCommand(const char *args)
     if(!*args)
         return false;
 
-    Player *plr = m_session->GetPlayer();
-    Pet *pet = plr->GetPet();
+    Pet *pet = ObjectAccessor::GetPet(m_session->GetPlayer()->GetSelection());
 
     if(!pet)
     {
-        PSendSysMessage("You have no pet");
+        PSendSysMessage("You must select a pet");
         SetSentErrorMessage(true);
         return false;
     }
