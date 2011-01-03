@@ -11513,12 +11513,15 @@ void Player::SwapItem( uint16 src, uint16 dst )
         return;
     }
 
-    InterruptNonMeleeSpells(false);
-    resetAttackTimer(BASE_ATTACK);
-    resetAttackTimer(OFF_ATTACK);
-    resetAttackTimer(RANGED_ATTACK);
-    // DST checks
+    if (isInCombat())
+    {
+        InterruptNonMeleeSpells(false);
+        resetAttackTimer(BASE_ATTACK);
+        resetAttackTimer(OFF_ATTACK);
+        resetAttackTimer(RANGED_ATTACK);
+    }
 
+    // DST checks
     if (pDstItem)
     {
         if (pDstItem->m_lootGenerated)                       // prevent swap looting item
