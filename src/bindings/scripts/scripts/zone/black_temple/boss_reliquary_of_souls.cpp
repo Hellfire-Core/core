@@ -220,7 +220,7 @@ struct TRINITY_DLL_DECL boss_reliquary_of_soulsAI : public Scripted_NoMovementAI
                 DelayTimer = 15000;
             }
         }
-        
+
     }
 
     void EnterCombat(Unit* who)
@@ -473,10 +473,10 @@ struct TRINITY_DLL_DECL npc_ros_triggerAI : public ScriptedAI
 };
 
 //This is used to sort the players by distance in preparation for the Fixate cast.
-struct TargetDistanceOrder : public std::binary_function<const Unit, const Unit, bool>
+struct ROSTargetDistanceOrder : public std::binary_function<const Unit, const Unit, bool>
 {
     const Unit* MainTarget;
-    TargetDistanceOrder(const Unit* Target) : MainTarget(Target) {};
+    ROSTargetDistanceOrder(const Unit* Target) : MainTarget(Target) {};
     // functor for operator "<"
     bool operator()(const Unit* _Left, const Unit* _Right) const
     {
@@ -576,7 +576,7 @@ struct TRINITY_DLL_DECL boss_essence_of_sufferingAI : public ScriptedAI
         if(targets.empty())
             return; // No targets added for some reason. No point continuing.
 
-        targets.sort(TargetDistanceOrder(m_creature)); // Sort players by distance.
+        targets.sort(ROSTargetDistanceOrder(m_creature)); // Sort players by distance.
         targets.resize(1); // Only need closest target.
 
         Unit* target = targets.front();
