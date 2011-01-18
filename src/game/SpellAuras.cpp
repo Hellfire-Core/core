@@ -4568,6 +4568,13 @@ void Aura::HandlePeriodicHeal(bool apply, bool Real)
     // For prevent double apply bonuses
     bool loading = (m_target->GetTypeId() == TYPEID_PLAYER && ((Player*)m_target)->GetSession()->PlayerLoading());
 
+    Unit *caster = GetCaster();
+    if(apply && caster)
+    {
+        m_casterModifiers.Apply = false;
+        caster->SpellHealingBonus(m_spellProto, 100, DOT, m_target, &m_casterModifiers);
+    }
+
     if (!loading && apply)
     {
         switch (m_spellProto->SpellFamilyName)
@@ -4615,6 +4622,12 @@ void Aura::HandlePeriodicDamage(bool apply, bool Real)
     bool loading = (m_target->GetTypeId() == TYPEID_PLAYER && ((Player*)m_target)->GetSession()->PlayerLoading());
 
     Unit *caster = GetCaster();
+
+    if(caster && apply)
+    {
+        m_casterModifiers.Apply = false;
+        caster->SpellDamageBonus(m_target, m_spellProto, 100, DOT, &m_casterModifiers);
+    }
 
     switch (m_spellProto->SpellFamilyName)
     {
@@ -4811,10 +4824,20 @@ void Aura::HandlePeriodicDamagePCT(bool apply, bool Real)
 
 void Aura::HandlePeriodicLeech(bool apply, bool Real)
 {
+    if (!Real)
+        return;
+
     if (m_periodicTimer <= 0)
         m_periodicTimer += m_amplitude;
 
     m_isPeriodic = apply;
+
+    Unit *caster = GetCaster();
+    if(apply && caster)
+    {
+        m_casterModifiers.Apply = false;
+        caster->SpellDamageBonus(m_target, m_spellProto, 100, DOT, &m_casterModifiers);
+    }
 }
 
 void Aura::HandlePeriodicManaLeech(bool apply, bool Real)
@@ -6301,7 +6324,8 @@ void Aura::PeriodicTick()
 
             if (m_modifier.m_auraname == SPELL_AURA_PERIODIC_DAMAGE)
             {
-                damageInfo.damage = pCaster->SpellDamageBonus(m_target,GetSpellProto(), amount,DOT);
+                m_casterModifiers.Apply = true;
+                damageInfo.damage = pCaster->SpellDamageBonus(m_target,GetSpellProto(), amount,DOT,&m_casterModifiers);
 
                 // Calculate armor mitigation if it is a physical spell
                 // But not for bleed mechanic spells
@@ -6404,7 +6428,8 @@ void Aura::PeriodicTick()
 
             damageInfo.damage = GetModifierValuePerStack() > 0 ? GetModifierValuePerStack() : 0;
 
-            damageInfo.damage = pCaster->SpellDamageBonus(m_target, GetSpellProto(), damageInfo.damage,DOT);
+            m_casterModifiers.Apply = true;
+            damageInfo.damage = pCaster->SpellDamageBonus(m_target, GetSpellProto(), damageInfo.damage,DOT, &m_casterModifiers);
 
             //Calculate armor mitigation if it is a physical spell
             if (GetSpellSchoolMask(GetSpellProto()) & SPELL_SCHOOL_MASK_NORMAL)
@@ -6550,7 +6575,10 @@ void Aura::PeriodicTick()
             if (m_modifier.m_auraname == SPELL_AURA_OBS_MOD_HEALTH)
                 pdamage = uint32(m_target->GetMaxHealth() * amount/100);
             else
-                pdamage = pCaster->SpellHealingBonus(GetSpellProto(), amount, DOT, m_target);
+            {
+                m_casterModifiers.Apply = true;
+                pdamage = pCaster->SpellHealingBonus(GetSpellProto(), amount, DOT, m_target, &m_casterModifiers);
+            }
 
             pdamage *= GetStackAmount();
 
