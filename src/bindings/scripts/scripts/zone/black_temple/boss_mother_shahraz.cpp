@@ -105,11 +105,13 @@ struct TRINITY_DLL_DECL boss_shahrazAI : public ScriptedAI
     boss_shahrazAI(Creature *c) : ScriptedAI(c)
     {
         pInstance = ((ScriptedInstance*)c->GetInstanceData());
+        c->GetPosition(wLoc);
     }
 
     ScriptedInstance* pInstance;
 
     uint8 m_position;
+    WorldLocation wLoc;
 
     uint32 m_shriekTimer;
     uint32 m_yellTimer;
@@ -220,6 +222,8 @@ struct TRINITY_DLL_DECL boss_shahrazAI : public ScriptedAI
 
         if (m_checkTimer < diff)
         {
+            if(me->GetDistance(wLoc.x, wLoc.y, wLoc.z) > 110)
+                EnterEvadeMode();
             DoZoneInCombat();
             me->SetSpeed(MOVE_RUN, 3.0);
 
