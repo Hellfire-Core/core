@@ -672,7 +672,7 @@ struct TRINITY_DLL_DECL boss_lady_malandeAI : public illidari_council_baseAI
     {
         ClearCastQueue();
 
-        m_smiteTimer = 2000;
+        m_smiteTimer = 200;
         m_cohTimer = 20000;
         m_wrathTimer = urand(8000,12000);
         m_shieldTimer = 15000;
@@ -698,11 +698,8 @@ struct TRINITY_DLL_DECL boss_lady_malandeAI : public illidari_council_baseAI
 
         if (m_smiteTimer < diff)
         {
-            if (Unit *pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true))
-            {
-                AddSpellToCast(pTarget, SPELL_EMPOWERED_SMITE, false, true);
-                m_smiteTimer = urand(5000, 9000);
-            }
+            AddSpellToCast(m_creature->getVictim(), SPELL_EMPOWERED_SMITE, false, true);
+            m_smiteTimer = urand(5000, 9000);
         }
         else
             m_smiteTimer -= diff;
