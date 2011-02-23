@@ -24,7 +24,7 @@ EndScriptData */
 #include "precompiled.h"
 #include "def_zulaman.h"
 
-#define ENCOUNTERS     7
+#define ENCOUNTERS     8
 #define RAND_VENDOR    2
 
 //187021 //Harkor's Satchel
@@ -72,6 +72,7 @@ struct TRINITY_DLL_DECL instance_zulaman : public ScriptedInstance
     uint16 BossKilled;
     uint16 QuestMinute;
     uint16 ChestLooted;
+    uint32 AkilzonGauntlet;
 
     uint32 Encounters[ENCOUNTERS];
     uint32 RandVendor[RAND_VENDOR];
@@ -96,6 +97,7 @@ struct TRINITY_DLL_DECL instance_zulaman : public ScriptedInstance
         QuestMinute = 0;
         BossKilled = 0;
         ChestLooted = 0;
+        AkilzonGauntlet = 0;
 
         for(uint8 i = 0; i < ENCOUNTERS; i++)
             Encounters[i] = NOT_STARTED;
@@ -357,6 +359,9 @@ struct TRINITY_DLL_DECL instance_zulaman : public ScriptedInstance
         case TYPE_RAND_VENDOR_2:
             RandVendor[1] = data;
             break;
+        case DATA_AKILZONGAUNTLET:
+            AkilzonGauntlet = data;
+            break;
         }
 
         if(data == DONE)
@@ -386,6 +391,7 @@ struct TRINITY_DLL_DECL instance_zulaman : public ScriptedInstance
             case DATA_CHESTLOOTED:   return ChestLooted;
             case TYPE_RAND_VENDOR_1: return RandVendor[0];
             case TYPE_RAND_VENDOR_2: return RandVendor[1];
+            case DATA_AKILZONGAUNTLET:  return AkilzonGauntlet;
             default:                 return 0;
         }
     }

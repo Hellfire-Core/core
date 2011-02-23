@@ -104,7 +104,7 @@ CreatureAI* GetAI_npc_forest_frog(Creature *_Creature)
 
 #define GOSSIP_HOSTAGE1        "I am glad to help you."
 
-static uint32 HostageEntry[] = {23790, 23999, 24024, 24001};
+static uint32 HostageEntry[] = {23790, 23999, 24001, 24024};
 static uint32 ChestEntry[] = {186648, 187021, 186672, 186667};
 
 struct TRINITY_DLL_DECL npc_zulaman_hostageAI : public ScriptedAI
@@ -391,7 +391,7 @@ struct TRINITY_DLL_DECL npc_zulaman_door_triggerAI : public Scripted_NoMovementA
     {
         if(CheckTimer < diff)
         {
-            if(CountChannelingPlayers() >= 5)
+            if(CountChannelingPlayers() >= 0)
                 StoperTime += (2000+diff);
             CheckTimer = 2000;
         }
@@ -418,9 +418,172 @@ CreatureAI* GetAI_npc_zulaman_door_trigger(Creature *_Creature)
     return new npc_zulaman_door_triggerAI(_Creature);
 }
 
+#define AKILZON_GAUNTLET_NOT_STARTED        0
+#define AKILZON_GAUNTLET_IN_PROGRESS        10
+#define AKILZON_GAUNTLET_TEMPEST_ENGAGED    11
+#define AKILZON_GAUNTLET_TEMPEST_DEAD       12
+
+#define NPC_AMANISHI_WARRIOR        24225
+#define NPC_AMANISHI_EAGLE          24159
+
+int32 GauntletWP[][3] =
+{
+    { 226, 1492, 26 },
+    { 227, 1439, 26 },
+    { 227, 1369, 48 },
+    { 284, 1379, 49 },
+    { 301, 1385, 58 },
+};
+
+struct TRINITY_DLL_DECL npc_amanishi_lookoutAI : public ScriptedAI
+{
+    npc_amanishi_lookoutAI(Creature *c) : ScriptedAI(c)
+    {
+        pInstance = c->GetInstanceData();
+        m_creature->setActive(true);
+    }
+
+    ScriptedInstance *pInstance;
+
+    bool EventStarted;
+    bool Move;
+    uint8 MovePoint;
+
+    uint32 warriorsTimer;
+    uint32 eaglesTimer;
+
+    void Reset()
+    {
+    //    m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+    //    m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+    //    m_creature->SetVisibility(VISIBILITY_ON);
+        EventStarted = false;
+        warriorsTimer = 10000; // TODO: set timers
+        eaglesTimer = 10000;
+        Move = false;
+
+        if(pInstance)
+            pInstance->SetData(DATA_AKILZONGAUNTLET, AKILZON_GAUNTLET_NOT_STARTED);
+    }
+
+    void StartEvent()
+    {
+        m_creature->GetMotionMaster()->MovePoint(0, 226, 1461, 26);
+        EventStarted = true;
+        DoZoneInCombat();
+        // TODO: do yell
+        // DEBUG
+        m_creature->Yell("Start event", 0, 0);
+    }
+
+    void EnterCombat(Unit *who)
+    {
+    }
+
+    void JustDied(Unit* Killer)
+    {
+        // should not be posible
+    }
+
+    void MoveInLineOfSight(Unit *who)
+    {
+        if(!EventStarted && m_creature->IsHostileTo( who ) && m_creature->IsWithinDistInMap(who, 50))
+        {
+            StartEvent();
+            if(pInstance)
+                pInstance->SetData(DATA_AKILZONGAUNTLET, AKILZON_GAUNTLET_IN_PROGRESS);
+        }
+    }
+
+    void MovementInform(uint32 type, uint32 id)
+    {
+        if(type == POINT_MOTION_TYPE)
+        {
+            if(id > 3)
+            {
+                // m_creature->SetVisibility(VISIBILITY_OFF);
+                m_creature->Yell("Turning visibility off", 0, 0);
+            }
+            else
+            {
+                Move = true;
+                MovePoint = id + 1;
+            }
+            
+        }
+    }
+
+    void UpdateAI(const uint32 diff)
+    {   
+        // Event started by entering combat with gauntlet mob
+        if(!EventStarted && pInstance && pInstance->GetData(DATA_AKILZONGAUNTLET) != AKILZON_GAUNTLET_NOT_STARTED)
+        {
+            StartEvent();
+            m_creature->Yell("Start event 2", 0, 0);
+        }
+
+        if(Move)
+        {
+            m_creature->GetMotionMaster()->MovePoint(MovePoint, GauntletWP[MovePoint][0], GauntletWP[MovePoint][1], GauntletWP[MovePoint][2]);
+            Move = false;
+            m_creature->Yell("Move", 0, 0);
+        }
+
+        if(!m_creature->isInCombat() && EventStarted)
+        {
+            EnterEvadeMode();
+            EventStarted = false;
+            // DEBUG
+            m_creature->Yell("Reset event", 0, 0);
+        }
+
+        else if (pInstance && pInstance->GetData(DATA_AKILZONGAUNTLET) == AKILZON_GAUNTLET_IN_PROGRESS)
+        {
+            if(warriorsTimer < diff)
+            {
+                for(uint8 i = 0; i < 2; i++)
+                    m_creature->SummonCreature(NPC_AMANISHI_WARRIOR, GauntletWP[0][0], GauntletWP[0][1], GauntletWP[0][2], 3.1415f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 120000);
+                warriorsTimer = 10000; // TODO: set timer
+            }
+            else
+                warriorsTimer -= diff;
+
+            if(eaglesTimer < diff)
+            {
+                uint8 maxEagles = RAND(5, 6);
+                for(uint8 i = 0; i < maxEagles; i++)
+                    m_creature->SummonCreature(NPC_AMANISHI_EAGLE, GauntletWP[0][0], GauntletWP[0][1], GauntletWP[0][2], 3.1415f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 120000);
+                eaglesTimer = 10000; // TODO: set timer
+            }
+            else
+                eaglesTimer -= diff;
+        }
+
+        else if(pInstance && pInstance->GetData(DATA_AKILZONGAUNTLET) == AKILZON_GAUNTLET_TEMPEST_DEAD)
+        {
+            Reset();
+            m_creature->DealDamage(m_creature, m_creature->GetMaxHealth());
+            m_creature->Yell("Reset event done", 0, 0);
+        }
+
+        
+    }
+};
+
+CreatureAI* GetAI_npc_amanishi_lookout(Creature *_Creature)
+{
+    return new npc_amanishi_lookoutAI (_Creature);
+}
+
+
 void AddSC_zulaman()
 {
     Script *newscript;
+
+    newscript = new Script;
+    newscript->Name="npc_amanishi_lookout";
+    newscript->GetAI = &GetAI_npc_amanishi_lookout;
+    newscript->RegisterSelf();
 
     newscript = new Script;
     newscript->Name="npc_forest_frog";

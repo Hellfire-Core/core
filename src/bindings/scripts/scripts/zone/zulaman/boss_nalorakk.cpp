@@ -89,7 +89,12 @@ struct TRINITY_DLL_DECL boss_nalorakkAI : public ScriptedAI
         {
             TempSpell->EffectImplicitTargetA[1] = TARGET_UNIT_TARGET_ENEMY;
         }
-        m_creature->GetPosition(wLoc);
+        wLoc.coord_x = NalorakkWay[7][0];
+        wLoc.coord_y = NalorakkWay[7][1];
+        wLoc.coord_z = NalorakkWay[7][2];
+        wLoc.orientation = 0;
+        wLoc.mapid = m_creature->GetMapId();
+        m_creature->setActive(true);
     }
 
     ScriptedInstance *pInstance;
