@@ -430,6 +430,7 @@ void Loot::loadLootFromDB(Creature *pCreature)
         while (result->NextRow());
 
         load = true;
+        save = true;
 
         // make body visible to loot
         pCreature->SetCorpseDelay(3600);
