@@ -57,6 +57,14 @@ EndContentData */
 #define SPELL_IRRIDATION    35046
 #define SPELL_STUNNED       28630
 
+/*######
+## npc_sethir_the_ancient
+######*/
+
+#define SUMMON_TIMED_OR_DEAD_DESPAWN     3000
+#define EMOTE_SOUND_DIE                  -1069090
+
+
 struct TRINITY_DLL_DECL npc_draenei_survivorAI : public ScriptedAI
 {
     npc_draenei_survivorAI(Creature *c) : ScriptedAI(c) {}
@@ -167,6 +175,64 @@ struct TRINITY_DLL_DECL npc_draenei_survivorAI : public ScriptedAI
             SayHelpTimer -= diff;
     }
 };
+
+struct TRINITY_DLL_DECL npc_sethir_the_ancientAI : public ScriptedAI
+{
+    npc_sethir_the_ancientAI(Creature *c) : ScriptedAI(c) {}
+
+	uint32 Timer;   // Do not spawn all mobs immediately
+	uint32 temp;  
+	bool pause_say; // wait some time until say sentence again
+	
+
+    void Reset()
+    {
+       Timer=1000;
+	   pause_say=false;
+	  
+    }
+
+    void EnterCombat(Unit *who) {	DoScriptText(EMOTE_SOUND_DIE, m_creature);   }
+
+
+    void SummonedCreatureDespawn(Creature*) {EnterEvadeMode(); } //evade after 3 seconds if summons do not aggro someone
+
+
+	void MoveInLineOfSight(Unit *who)
+    {   
+        if (!m_creature->isInCombat() && m_creature->IsWithinDistInMap(who, 30) && m_creature->IsHostileTo(who) &&  who->HasAuraType(SPELL_AURA_MOD_STEALTH) && pause_say == false )
+		{ me->Say("I know you are there, rogue. Leave my home or join the others at the bottom of the World Tree!", LANG_UNIVERSAL, NULL); pause_say = true; temp=0;}
+		//if (!m_creature->isInCombat() && m_creature->IsWithinDistInMap(who, 30) && m_creature->IsHostileTo(who)) AttackStart(who);
+		 ScriptedAI::MoveInLineOfSight(who);
+    }
+
+    void UpdateAI(const uint32 diff)
+    { 
+	 if (!UpdateVictim() )
+            return;
+	  temp+=diff;
+	 
+	  if(temp/60000  > 1) pause_say = false; // after 1 minute he can say it again
+	
+
+		
+		
+
+		if (Timer<diff) { for (int i=1; i<=6; i++)   m_creature->SummonCreature(6911, m_creature->GetPositionX(), m_creature->GetPositionY(), m_creature->GetPositionZ(), m_creature->GetOrientation(), TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 3000);
+		                                             m_creature->CallAssistance();
+		                }
+
+	 DoMeleeAttackIfReady();
+	  Timer-=diff;
+        return;
+    }
+
+};
+CreatureAI* GetAI_npc_sethir_the_ancient(Creature *_Creature)
+{
+    return new npc_sethir_the_ancientAI (_Creature);
+}
+
 CreatureAI* GetAI_npc_draenei_survivor(Creature *_Creature)
 {
     return new npc_draenei_survivorAI (_Creature);
@@ -790,6 +856,11 @@ bool go_bristlelimb_cage(Player* pPlayer, GameObject* pGo)
 void AddSC_azuremyst_isle()
 {
     Script *newscript;
+
+	newscript = new Script;
+    newscript->Name="npc_sethir_the_ancient";
+    newscript->GetAI = &GetAI_npc_sethir_the_ancient;
+    newscript->RegisterSelf();
 
     newscript = new Script;
     newscript->Name="npc_draenei_survivor";
