@@ -402,7 +402,8 @@ void OutdoorPvP::SendUpdateWorldState(uint32 field, uint32 value)
 {
     for (int i = 0; i < 2; ++i)
         for (PlayerSet::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
-            (*itr)->SendUpdateWorldState(field, value);
+            if ((*itr)->IsInWorld())
+                (*itr)->SendUpdateWorldState(field, value);
 }
 
 void OPvPCapturePoint::SendUpdateWorldState(uint32 field, uint32 value)
@@ -411,7 +412,8 @@ void OPvPCapturePoint::SendUpdateWorldState(uint32 field, uint32 value)
     {
         // send to all players present in the area
         for (PlayerSet::iterator itr = m_activePlayers[team].begin(); itr != m_activePlayers[team].end(); ++itr)
-            (*itr)->SendUpdateWorldState(field,value);
+            if ((*itr)->IsInWorld())
+                (*itr)->SendUpdateWorldState(field, value);
     }
 }
 
@@ -432,7 +434,8 @@ void OPvPCapturePoint::SendObjectiveComplete(uint32 id,uint64 guid)
 
     // send to all players present in the area
     for (PlayerSet::iterator itr = m_activePlayers[team].begin(); itr != m_activePlayers[team].end(); ++itr)
-        (*itr)->KilledMonster(id, guid);
+        if ((*itr)->IsInWorld())
+            (*itr)->KilledMonster(id, guid);
 }
 
 void OutdoorPvP::HandleKill(Player *killer, Unit * killed)
@@ -577,11 +580,17 @@ bool OutdoorPvP::HasPlayer(Player *plr) const
 void OutdoorPvP::TeamCastSpell(TeamId team, int32 spellId)
 {
     if (spellId > 0)
+    {
         for (PlayerSet::iterator itr = m_players[team].begin(); itr != m_players[team].end(); ++itr)
-            (*itr)->CastSpell(*itr, (uint32)spellId, true);
+            if ((*itr)->IsInWorld())
+                (*itr)->CastSpell(*itr, (uint32)spellId, true);
+    }
     else
+    {
         for (PlayerSet::iterator itr = m_players[team].begin(); itr != m_players[team].end(); ++itr)
-            (*itr)->RemoveAurasDueToSpell((uint32)-spellId);
+            if ((*itr)->IsInWorld())
+                (*itr)->RemoveAurasDueToSpell((uint32)-spellId);
+    }
 }
 
 void OutdoorPvP::TeamApplyBuff(TeamId team, uint32 spellId, uint32 spellId2)
