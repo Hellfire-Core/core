@@ -48,12 +48,19 @@
 
 INSTANTIATE_SINGLETON_1(InstanceSaveManager);
 
-InstanceSaveManager::InstanceSaveManager() : lock_instLists(false)
+InstanceSaveManager::InstanceSaveManager() : lock_instLists(false), unbinded(true)
 {
 }
 
 InstanceSaveManager::~InstanceSaveManager()
 {
+    if (!unbinded)
+        UnbindBeforeDelete();
+}
+
+void InstanceSaveManager::UnbindBeforeDelete()
+{
+    unbinded = true;
     // it is undefined whether this or objectmgr will be unloaded first
     // so we must be prepared for both cases
     lock_instLists = true;

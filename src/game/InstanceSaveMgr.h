@@ -120,6 +120,8 @@ class TRINITY_DLL_DECL InstanceSaveManager : public Trinity::Singleton<InstanceS
         InstanceSaveManager();
         ~InstanceSaveManager();
 
+        void UnbindBeforeDelete();
+
         typedef std::map<uint32 /*InstanceId*/, InstanceSave*> InstanceSaveMap;
         typedef UNORDERED_MAP<uint32 /*InstanceId*/, InstanceSave*> InstanceSaveHashMap;
         typedef std::map<uint32 /*mapId*/, InstanceSaveMap> InstanceSaveMapMap;
@@ -169,6 +171,8 @@ class TRINITY_DLL_DECL InstanceSaveManager : public Trinity::Singleton<InstanceS
         // fast lookup for reset times
         ResetTimeVector m_resetTimeByMapId;
         ResetTimeQueue m_resetTimeQueue;
+
+        bool unbinded;
 };
 
 #define sInstanceSaveManager Trinity::Singleton<InstanceSaveManager>::Instance()

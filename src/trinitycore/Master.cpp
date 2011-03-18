@@ -39,6 +39,7 @@
 #include "CliRunnable.h"
 #include "ScriptCalls.h"
 #include "Util.h"
+#include "InstanceSaveMgr.h"
 
 #ifndef WIN32
 #include "vmap/BIH.h"
@@ -364,11 +365,6 @@ int Master::Run()
     ///- Clean database before leaving
     clearOnlineAccounts();
 
-    ///- Wait for delay threads to end
-    CharacterDatabase.HaltDelayThread();
-    WorldDatabase.HaltDelayThread();
-    LoginDatabase.HaltDelayThread();
-
     sLog.outString( "Halting process..." );
 
     #ifdef WIN32
@@ -414,6 +410,13 @@ int Master::Run()
     // for some unknown reason, unloading scripts here and not in worldrunnable
     // fixes a memory leak related to detaching threads from the module
     UnloadScriptingModule();
+
+    sInstanceSaveManager.UnbindBeforeDelete();
+
+    ///- Wait for delay threads to end
+    CharacterDatabase.HaltDelayThread();
+    WorldDatabase.HaltDelayThread();
+    LoginDatabase.HaltDelayThread();
 
     // Exit the process with specified return value
     return World::GetExitCode();
