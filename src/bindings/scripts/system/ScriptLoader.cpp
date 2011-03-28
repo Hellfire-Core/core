@@ -320,6 +320,7 @@ extern void AddSC_boss_felblood_kaelthas();
 extern void AddSC_boss_selin_fireheart();
 extern void AddSC_boss_vexallus();
 extern void AddSC_boss_priestess_delrissa();
+extern void AddSC_magisters_terrace_trash();
 extern void AddSC_instance_magisters_terrace();
 
 //Maraudon
@@ -918,6 +919,7 @@ void AddScripts()
     AddSC_boss_selin_fireheart();
     AddSC_boss_vexallus();
     AddSC_boss_priestess_delrissa();
+    AddSC_magisters_terrace_trash();
     AddSC_instance_magisters_terrace();
 
     //Maraudon

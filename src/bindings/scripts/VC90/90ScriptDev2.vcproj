@@ -2384,6 +2384,10 @@
 						RelativePath="..\scripts\zone\magisters_terrace\instance_magisters_terrace.cpp"
 						>
 					</File>
+					<File
+						RelativePath="..\scripts\zone\magisters_terrace\magisters_terrace_trash.cpp"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="Sunwell Plateau"

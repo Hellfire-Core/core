@@ -6769,7 +6769,7 @@ bool Unit::HandleProcTriggerSpell(Unit *pVictim, uint32 damage, Aura* triggeredB
         // Hunter: Expose Weakness
         case 34501:
         {
-            basepoints0 = int32(GetStat(STAT_AGILITY) *2.5);
+            basepoints0 = int32(GetStat(STAT_AGILITY) *0.25);
             int32 basepoints1 = int32(GetStat(STAT_AGILITY) *0.25);
 
             CastCustomSpell(pVictim,trigger_spell_id,&basepoints0,&basepoints1,NULL,true,castItem,triggeredByAura);
