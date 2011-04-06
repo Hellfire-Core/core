@@ -398,6 +398,7 @@ bool ItemUse_item_specific_target(Player *player, Item* _Item, SpellCastTargets 
         case 30251: cEntry[0] = 20058; break; // Rina's Diminution Powder
         case 23417: cEntry[0] = 16975; break; // Sanctified Crystal
         case 32698: cEntry[0] = 22181; break; // Wrangling Rope
+        case 34257: cEntry[0] = 24918; targetState = T_ALIVE; break; // Fel Siphon
     }
 
     if(uTarget && uTarget->GetTypeId() == TYPEID_UNIT)
