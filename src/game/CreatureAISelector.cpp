@@ -49,7 +49,7 @@ namespace FactorySelector
             ai_factory = ai_registry.GetRegistryItem(ainame.c_str());
 
         // select by NPC flags
-        if (!ai_factory || (creature->isPet() && ((Pet*)creature)->getPetType() == HUNTER_PET || ((Pet*)creature)->getPetType() == SUMMON_PET))
+        if (!ai_factory || ((creature->isPet() && ((Pet*)creature)->getPetType() == HUNTER_PET) || (creature->isPet() && ((Pet*)creature)->getPetType() == SUMMON_PET)))
         {
             if (creature->isGuard() && creature->GetOwner() && creature->GetOwner()->GetTypeId() == TYPEID_PLAYER)
                 ai_factory = ai_registry.GetRegistryItem("PetAI");
