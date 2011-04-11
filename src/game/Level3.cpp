@@ -995,6 +995,14 @@ bool ChatHandler::HandleReloadSpellScriptTargetCommand(const char*)
     return true;
 }
 
+bool ChatHandler::HandleReloadEventAIScriptsCommand(const char*)
+{
+    sLog.outString("Re-Loading creature_ai_scripts...");
+    CreatureEAI_Mgr.LoadCreatureEventAI_Scripts();
+    SendGlobalGMSysMessage("DB table `creature_ai_scripts` reloaded.");
+    return true;
+}
+
 bool ChatHandler::HandleReloadSpellTargetPositionCommand(const char*)
 {
     sLog.outString("Re-Loading Spell target coordinates...");

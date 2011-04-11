@@ -208,6 +208,7 @@ class ChatHandler
         bool HandleNpcYellCommand(const char* args);
         bool HandleNpcAddFormationCommand(const char* args);
         bool HandleNpcSetLinkCommand(const char* args);
+        bool HandleNpcResetAICommand(const char* args);
 
         bool HandleReloadCommand(const char* args);
         bool HandleReloadAllCommand(const char* args);
@@ -270,6 +271,7 @@ class ChatHandler
         bool HandleReloadSpellProcEventCommand(const char* args);
         bool HandleReloadSpellEnchantDataCommand(const char*);
         bool HandleReloadSpellScriptTargetCommand(const char* args);
+        bool HandleReloadEventAIScriptsCommand(const char* args);
         bool HandleReloadSpellScriptsCommand(const char* args);
         bool HandleReloadSpellTargetPositionCommand(const char* args);
         bool HandleReloadSpellThreatsCommand(const char* args);

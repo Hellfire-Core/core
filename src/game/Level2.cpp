@@ -4001,3 +4001,19 @@ bool ChatHandler::HandleNpcSetLinkCommand(const char* args)
     PSendSysMessage("LinkGUID '%u' added to creature with DBTableGUID: '%u'", linkguid, pCreature->GetDBTableGUIDLow());
     return true;
 }
+
+bool ChatHandler::HandleNpcResetAICommand(const char* args)
+{
+    Creature* pCreature = getSelectedCreature();
+
+    if (!pCreature)
+    {
+        SendSysMessage(LANG_SELECT_CREATURE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    pCreature->AIM_Initialize();
+    PSendSysMessage("CreatureAI re-created.");
+    return true;
+}
