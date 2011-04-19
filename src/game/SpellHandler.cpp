@@ -195,8 +195,21 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
             Spell *spell = new Spell(pUser, spellInfo, (count > 0));
             spell->m_CastItem = pItem;
             spell->m_cast_count = cast_count;               //set count of casts
-            spell->prepare(&targets);
 
+            bool fillMap = false;
+            for (uint8 j = 0; j < 3; j++)
+            {
+                if (spellInfo->EffectImplicitTargetA[j] == TARGET_UNIT_NEARBY_ENTRY)
+                {
+                    fillMap = true;
+                    break;
+                }
+            }
+
+            if (fillMap)
+                spell->FillTargetMap();
+
+            spell->prepare(fillMap ? &spell->m_targets : &targets);
             ++count;
         }
     }
