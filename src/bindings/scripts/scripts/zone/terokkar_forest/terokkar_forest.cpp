@@ -1668,6 +1668,7 @@ struct TRINITY_DLL_DECL npc_razorthorn_ravagerAI : public ScriptedAI
     uint32 RendTimer;
     uint32 RavageTauntTimer;
     uint32 DiggingTimer;
+    uint32 CheckTimer;
     bool digging;
     bool checked;
 
@@ -1679,6 +1680,7 @@ struct TRINITY_DLL_DECL npc_razorthorn_ravagerAI : public ScriptedAI
         RendTimer = urand(3000, 6000);
         RavageTauntTimer = urand(6000, 10000);
         DiggingTimer = 5000;
+        CheckTimer = 2000;
         digging = false;
         checked = false;
     }
@@ -1738,6 +1740,18 @@ struct TRINITY_DLL_DECL npc_razorthorn_ravagerAI : public ScriptedAI
                 me->NeedChangeAI = true;
                 me->IsAIEnabled = false;
             }
+
+            // remove charm when not in Razorthorn Rise
+            if(CheckTimer < diff)
+            {
+                Unit* charmer = me->GetCharmer();
+                if(charmer->GetAreaId() != 4078)
+                    me->RemoveCharmedOrPossessedBy(charmer);
+                CheckTimer = 2000;
+                
+            }
+            else
+                CheckTimer -= diff;
         }
 
         if(me->GetMotionMaster()->GetCurrentMovementGeneratorType() == POINT_MOTION_TYPE && !checked)
