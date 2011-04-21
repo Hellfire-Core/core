@@ -736,7 +736,7 @@ namespace Trinity
                 if (!itr->getSource()->isAlive() || (itr->getSource()->GetTypeId() == TYPEID_PLAYER && ((Player*)itr->getSource())->isInFlight()))
                     continue;
 
-                if ((itr->getSource()->m_invisibilityMask || i_caster->m_invisibilityMask) && !i_caster->canDetectInvisibilityOf(itr->getSource()))
+                if (itr->getSource()->m_invisibilityMask && itr->getSource()->m_invisibilityMask & (1 << 10) && !i_caster->canDetectInvisibilityOf(itr->getSource()))
                     continue;
 
                 switch (i_TargetType)

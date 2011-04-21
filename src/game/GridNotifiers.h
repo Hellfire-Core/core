@@ -605,9 +605,9 @@ namespace Trinity
             AnyUnfriendlyUnitInObjectRangeCheck(WorldObject const* obj, Unit const* funit, float range) : i_obj(obj), i_funit(funit), i_range(range) {}
             bool operator()(Unit* u)
             {
-                if (i_obj->GetTypeId()==TYPEID_UNIT || i_obj->GetTypeId()==TYPEID_PLAYER)
+                if (i_obj->GetTypeId()==TYPEID_UNIT || i_obj->GetTypeId()==TYPEID_PLAYER)   // cant target when out of phase -> invisibility 10
                 {
-                    if((u->m_invisibilityMask || ((Unit*)i_obj)->m_invisibilityMask) && !u->canDetectInvisibilityOf(((Unit*)i_obj)))
+                    if (u->m_invisibilityMask && u->m_invisibilityMask & (1 << 10) && !u->canDetectInvisibilityOf(((Unit*)i_obj)))
                         return false;
                 }
 
@@ -631,9 +631,9 @@ namespace Trinity
                 if (!u->isAlive())
                     return false;
 
-                if (i_obj->GetTypeId()==TYPEID_UNIT || i_obj->GetTypeId()==TYPEID_PLAYER)
+                if (i_obj->GetTypeId()==TYPEID_UNIT || i_obj->GetTypeId()==TYPEID_PLAYER)   // cant target when out of phase -> invisibility 10
                 {
-                    if ((u->m_invisibilityMask || ((Unit*)i_obj)->m_invisibilityMask) && !u->canDetectInvisibilityOf(((Unit*)i_obj)))
+                    if (u->m_invisibilityMask && u->m_invisibilityMask & (1 << 10) && !u->canDetectInvisibilityOf(((Unit*)i_obj)))
                         return false;
                 }
 
@@ -739,9 +739,9 @@ namespace Trinity
                 // Check contains checks for: live, non-selectable, non-attackable flags, invisibility mask, flight check and GM check, ignore totems
                 if (!u->isTargetableForAttack())
                     return false;
-                if (i_obj->GetTypeId()==TYPEID_UNIT || i_obj->GetTypeId()==TYPEID_PLAYER)
+                if (i_obj->GetTypeId()==TYPEID_UNIT || i_obj->GetTypeId()==TYPEID_PLAYER)   // cant target when out of phase -> invisibility 10
                 {
-                    if ((u->m_invisibilityMask || ((Unit*)i_obj)->m_invisibilityMask) && !u->canDetectInvisibilityOf(((Unit*)i_obj)))
+                    if (u->m_invisibilityMask && u->m_invisibilityMask & (1 << 10) && !u->canDetectInvisibilityOf(((Unit*)i_obj)))
                         return false;
                 }
                 if (u->GetTypeId()==TYPEID_UNIT && ((Creature*)u)->isTotem())
