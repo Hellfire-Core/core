@@ -144,7 +144,7 @@ class GameEvent
         typedef std::list<GuidNPCFlagPair> NPCFlagList;
         typedef std::vector<NPCFlagList> GameEventNPCFlagMap;
         typedef std::pair<uint16 /*event id*/, uint32 /*gossip id*/> EventNPCGossipIdPair;
-        typedef std::map<uint32 /*guid*/, EventNPCGossipIdPair> GuidEventNpcGossipIdMap;
+        typedef std::multimap<uint32 /*guid*/, EventNPCGossipIdPair> GuidEventNpcGossipIdMap;
         typedef std::vector<uint32> GameEventBitmask;
         GameEventQuestMap mGameEventCreatureQuests;
         GameEventQuestMap mGameEventGameObjectQuests;

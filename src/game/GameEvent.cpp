@@ -840,7 +840,7 @@ void GameEvent::LoadFromDB()
                 continue;
             }
 
-            mNPCGossipIds[guid]=EventNPCGossipIdPair(event_id, textid);
+            mNPCGossipIds.insert(make_pair(guid, EventNPCGossipIdPair(event_id, textid)));
 
             ++count;
 
@@ -970,8 +970,14 @@ uint32 GameEvent::GetNpcTextId(uint32 guid)
 {
     GuidEventNpcGossipIdMap::iterator itr = mNPCGossipIds.find(guid);
     if (itr != mNPCGossipIds.end())
-        if (IsActiveEvent(itr->second.first))
-            return itr->second.second;
+    {
+        GuidEventNpcGossipIdMap::iterator guidItr = mNPCGossipIds.upper_bound(guid);
+        for ( ; itr != guidItr; ++itr)
+        {
+            if (IsActiveEvent(itr->second.first))
+                return itr->second.second;
+        }
+    }
     return 0;
 }
 
@@ -1593,9 +1599,16 @@ void GameEvent::HandleWorldEventGossip(Player *plr, Creature *c)
     // if present, send the event's world states
     GuidEventNpcGossipIdMap::iterator itr = mNPCGossipIds.find(c->GetDBTableGUIDLow());
     if (itr != mNPCGossipIds.end())
-        if (IsActiveEvent(itr->second.first))
-            // send world state updates to the player about the progress
-            SendWorldStateUpdate(plr, itr->second.first);
+    {
+        GuidEventNpcGossipIdMap::iterator guidItr = mNPCGossipIds.upper_bound(c->GetDBTableGUIDLow());
+        for ( ; itr != guidItr; ++itr)
+        {
+            if (IsActiveEvent(itr->second.first))
+                // send world state updates to the player about the progress
+                SendWorldStateUpdate(plr, itr->second.first);
+                return;
+        }
+    }
 }
 
 void GameEvent::SendWorldStateUpdate(Player * plr, uint16 event_id)
