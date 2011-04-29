@@ -1629,6 +1629,8 @@ struct TRINITY_DLL_DECL boss_illidan_flameofazzinothAI : public ScriptedAI
         events.Reset();
         summons.DespawnAll();
         ClearCastQueue();
+
+        m_creature->SetMeleeDamageSchool(SPELL_SCHOOL_FIRE);
     }
 
     void EnterCombat(Unit *pWho)
