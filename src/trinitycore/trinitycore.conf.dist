@@ -652,6 +652,10 @@ IrcParser = "parser.trc"
 #        Minimum character lvl for "DontDeleteChars" option.
 #        Default: 40
 #
+#    MinGMTextLevel
+#        Minimum gm lvl for SendGMText.
+#        Default: 1
+#
 ###################################################################################################################
 
 GameType = 1
@@ -704,6 +708,7 @@ Server.LoginInfo = 0
 
 DontDeleteChars = 0
 DontDeleteCharsLvl = 40
+MinGMTextLevel = 1
 
 ###################################################################################################################
 # PLAYER INTERACTION

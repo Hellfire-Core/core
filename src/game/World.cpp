@@ -1222,6 +1222,8 @@ void World::LoadConfigSettings(bool reload)
         token = strtok(NULL,delim);
     }
     delete[] forbiddenMaps;
+
+    m_configs[CONFIG_MIN_GM_TEXT_LVL] = sConfig.GetIntDefault("MinGMTextLevel", 1);
 }
 
 /// Initialize the World
@@ -2089,8 +2091,8 @@ void World::SendGMText(int32 string_id, ...)
             data_list = &data_cache[cache_idx];
 
         for (int i = 0; i < data_list->size(); ++i)
-            if (itr->second->GetSecurity() > SEC_PLAYER)
-            itr->second->SendPacket((*data_list)[i]);
+            if (itr->second->GetSecurity() >= sWorld.getConfig(CONFIG_MIN_GM_TEXT_LVL))
+                itr->second->SendPacket((*data_list)[i]);
     }
 
     // free memory
