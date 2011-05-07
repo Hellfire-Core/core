@@ -17,6 +17,8 @@
 
 #define NPC_BROOD_OF_ANZU               23132
 
+#define GO_RAVENS_CLAW                   185554
+
 uint32 AnzuSpirits[] = {NPC_HAWK_SPIRIT, NPC_EAGLE_SPIRIT, NPC_FALCON_SPIRIT};
 
 float AnzuSpiritLoc[][3] = {
@@ -59,10 +61,23 @@ struct TRINITY_DLL_DECL boss_anzuAI : public ScriptedAI
             pInstance->SetData(DATA_ANZUEVENT, NOT_STARTED);
     }
 
+    void IsSummonedBy(Unit *summoner) 
+    {
+        GameObject* go = FindGameObject(GO_RAVENS_CLAW, 20, me);
+        if(go)
+        {
+            go->Delete();
+        }
+
+    }
+
     void JustSummoned(Creature *summon)
     {
         if(summon->GetEntry() == NPC_BROOD_OF_ANZU)
+        {
             summon->AI()->AttackStart(me->getVictim());
+            BroodCount++;
+        }
         summons.Summon(summon);
     }
 
@@ -82,9 +97,8 @@ struct TRINITY_DLL_DECL boss_anzuAI : public ScriptedAI
 
     void SummonBrood()
     {
-        BroodCount = 5;
-        for(uint8 i = 0; i < BroodCount; i++)
-            DoSummon(NPC_BROOD_OF_ANZU, me, 5, 0, TEMPSUMMON_DEAD_DESPAWN);
+        for(uint8 i = 0; i < 5; i++)
+            DoSummon(NPC_BROOD_OF_ANZU, me, 5, 0, TEMPSUMMON_CORPSE_DESPAWN);
     }
 
     void EnterCombat(Unit *who)
@@ -153,9 +167,6 @@ struct TRINITY_DLL_DECL boss_anzuAI : public ScriptedAI
         if(!Banished)
             DoMeleeAttackIfReady();
     }
-
-    
-
 };
 
 CreatureAI* GetAI_boss_anzu(Creature *_Creature)
@@ -175,6 +186,7 @@ struct TRINITY_DLL_DECL npc_anzu_spiritAI : public Scripted_NoMovementAI
 
     void Reset() {
         Timer = 5000;
+        me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_PL_SPELL_TARGET);
     }
 
     bool isDruidHotSpell(const SpellEntry *spellProto)
