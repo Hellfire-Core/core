@@ -7327,7 +7327,8 @@ bool Unit::Attack(Unit *victim, bool meleeAttack)
     }
 
     //Set our target
-    SetUInt64Value(UNIT_FIELD_TARGET, victim->GetGUID());
+    if (GetTypeId() != TYPEID_UNIT || !m_currentSpells[CURRENT_GENERIC_SPELL] || !(m_currentSpells[CURRENT_GENERIC_SPELL]->m_spellInfo->AttributesCu & SPELL_ATTR_CU_VISUAL_TARGET))
+        SetUInt64Value(UNIT_FIELD_TARGET, victim->GetGUID());
 
     if (meleeAttack)
         addUnitState(UNIT_STAT_MELEE_ATTACKING);
