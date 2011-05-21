@@ -4898,8 +4898,7 @@ void Aura::HandlePeriodicDamage(bool apply, bool Real)
                 if (apply && !loading && caster)
                 {
                     float attackPower = caster->GetTotalAttackPowerValue(BASE_ATTACK) + m_target->GetMeleeApAttackerBonus();
-                    if (m_target->GetTypeId() == TYPEID_UNIT)
-                        attackPower += caster->GetTotalAuraMultiplierByMiscMask(SPELL_AURA_MOD_MELEE_ATTACK_POWER_VERSUS, ((Creature*)m_target)->GetCreatureTypeMask());
+                    attackPower += caster->GetTotalAuraMultiplierByMiscMask(SPELL_AURA_MOD_MELEE_ATTACK_POWER_VERSUS, m_target->GetCreatureTypeMask());
 
                     m_modifier.m_amount += int32(attackPower * 3 / 100);
                 }
@@ -4937,8 +4936,7 @@ void Aura::HandlePeriodicDamage(bool apply, bool Real)
                 if (apply && !loading && caster)
                 {
                     float ap = caster->GetTotalAttackPowerValue(BASE_ATTACK) + m_target->GetMeleeApAttackerBonus();
-                    if (m_target->GetTypeId() == TYPEID_UNIT)
-                        ap += caster->GetTotalAuraMultiplierByMiscMask(SPELL_AURA_MOD_MELEE_ATTACK_POWER_VERSUS, ((Creature*)m_target)->GetCreatureTypeMask());
+                    ap += caster->GetTotalAuraMultiplierByMiscMask(SPELL_AURA_MOD_MELEE_ATTACK_POWER_VERSUS, m_target->GetCreatureTypeMask());
 
                     int32 mws = caster->GetAttackTime(BASE_ATTACK);
                     float mwb_min = caster->GetWeaponDamageRange(BASE_ATTACK,MINDAMAGE);
@@ -4959,8 +4957,7 @@ void Aura::HandlePeriodicDamage(bool apply, bool Real)
                 if (apply && !loading && caster)
                 {
                     float attackPower = caster->GetTotalAttackPowerValue(BASE_ATTACK) + m_target->GetMeleeApAttackerBonus();
-                    if (m_target->GetTypeId() == TYPEID_UNIT)
-                        attackPower += caster->GetTotalAuraMultiplierByMiscMask(SPELL_AURA_MOD_MELEE_ATTACK_POWER_VERSUS, ((Creature*)m_target)->GetCreatureTypeMask());
+                    attackPower += caster->GetTotalAuraMultiplierByMiscMask(SPELL_AURA_MOD_MELEE_ATTACK_POWER_VERSUS, m_target->GetCreatureTypeMask());
 
                     m_modifier.m_amount += int32(attackPower * 2 / 100);
                 }
@@ -4973,8 +4970,7 @@ void Aura::HandlePeriodicDamage(bool apply, bool Real)
                 if (apply && !loading && caster)
                 {
                     float attackPower = caster->GetTotalAttackPowerValue(BASE_ATTACK) + m_target->GetMeleeApAttackerBonus();
-                    if (m_target->GetTypeId() == TYPEID_UNIT)
-                        attackPower += caster->GetTotalAuraMultiplierByMiscMask(SPELL_AURA_MOD_MELEE_ATTACK_POWER_VERSUS, ((Creature*)m_target)->GetCreatureTypeMask());
+                    attackPower += caster->GetTotalAuraMultiplierByMiscMask(SPELL_AURA_MOD_MELEE_ATTACK_POWER_VERSUS, m_target->GetCreatureTypeMask());
 
                     m_modifier.m_amount += int32(attackPower / 100);
                 }
@@ -5002,8 +4998,7 @@ void Aura::HandlePeriodicDamage(bool apply, bool Real)
                     if (cp > 4) cp = 4;
 
                     float attackPower = caster->GetTotalAttackPowerValue(BASE_ATTACK) + m_target->GetMeleeApAttackerBonus();
-                    if (m_target->GetTypeId() == TYPEID_UNIT)
-                        attackPower += caster->GetTotalAuraMultiplierByMiscMask(SPELL_AURA_MOD_MELEE_ATTACK_POWER_VERSUS, ((Creature*)m_target)->GetCreatureTypeMask());
+                    attackPower += caster->GetTotalAuraMultiplierByMiscMask(SPELL_AURA_MOD_MELEE_ATTACK_POWER_VERSUS, m_target->GetCreatureTypeMask());
 
                     m_modifier.m_amount += int32(attackPower * cp / 100);
                 }
@@ -5045,8 +5040,7 @@ void Aura::HandlePeriodicDamage(bool apply, bool Real)
                 if (apply && !loading && caster && caster->GetTypeId() == TYPEID_PLAYER)
                 {
                     float attackPower = caster->GetTotalAttackPowerValue(BASE_ATTACK) + m_target->GetMeleeApAttackerBonus();
-                    if (m_target->GetTypeId() == TYPEID_UNIT)
-                        attackPower += caster->GetTotalAuraMultiplierByMiscMask(SPELL_AURA_MOD_MELEE_ATTACK_POWER_VERSUS, ((Creature*)m_target)->GetCreatureTypeMask());
+                    attackPower += caster->GetTotalAuraMultiplierByMiscMask(SPELL_AURA_MOD_MELEE_ATTACK_POWER_VERSUS, m_target->GetCreatureTypeMask());
 
                     uint8 cp = ((Player*)caster)->GetComboPoints();
                     if (cp > 3) cp = 3;
@@ -5061,8 +5055,7 @@ void Aura::HandlePeriodicDamage(bool apply, bool Real)
                 if (apply && !loading && caster)
                 {
                     float attackPower = caster->GetTotalAttackPowerValue(BASE_ATTACK) + m_target->GetMeleeApAttackerBonus();
-                    if (m_target->GetTypeId() == TYPEID_UNIT)
-                        attackPower += caster->GetTotalAuraMultiplierByMiscMask(SPELL_AURA_MOD_MELEE_ATTACK_POWER_VERSUS, ((Creature*)m_target)->GetCreatureTypeMask());
+                    attackPower += caster->GetTotalAuraMultiplierByMiscMask(SPELL_AURA_MOD_MELEE_ATTACK_POWER_VERSUS, m_target->GetCreatureTypeMask());
 
                     m_modifier.m_amount += int32(attackPower * 3 / 100);
                 }
@@ -5079,8 +5072,7 @@ void Aura::HandlePeriodicDamage(bool apply, bool Real)
                 if (apply && !loading && caster)
                 {
                     float attackPower = caster->GetTotalAttackPowerValue(RANGED_ATTACK) + m_target->GetTotalAuraModifier(SPELL_AURA_RANGED_ATTACK_POWER_ATTACKER_BONUS);
-                    if (m_target->GetTypeId() == TYPEID_UNIT)
-                        attackPower += caster->GetTotalAuraMultiplierByMiscMask(SPELL_AURA_MOD_RANGED_ATTACK_POWER_VERSUS, ((Creature*)m_target)->GetCreatureTypeMask());
+                    attackPower += caster->GetTotalAuraMultiplierByMiscMask(SPELL_AURA_MOD_RANGED_ATTACK_POWER_VERSUS, m_target->GetCreatureTypeMask());
 
                     m_modifier.m_amount += int32(attackPower * 10 / 500);
                 }
@@ -5093,8 +5085,7 @@ void Aura::HandlePeriodicDamage(bool apply, bool Real)
                 if (apply && !loading && caster)
                 {
                     float attackPower = caster->GetTotalAttackPowerValue(RANGED_ATTACK) + m_target->GetTotalAuraModifier(SPELL_AURA_RANGED_ATTACK_POWER_ATTACKER_BONUS);
-                    if (m_target->GetTypeId() == TYPEID_UNIT)
-                        attackPower += caster->GetTotalAuraMultiplierByMiscMask(SPELL_AURA_MOD_RANGED_ATTACK_POWER_VERSUS, ((Creature*)m_target)->GetCreatureTypeMask());
+                    attackPower += caster->GetTotalAuraMultiplierByMiscMask(SPELL_AURA_MOD_RANGED_ATTACK_POWER_VERSUS, m_target->GetCreatureTypeMask());
 
                     m_modifier.m_amount += int32(attackPower * 10 / 500);
                 }
