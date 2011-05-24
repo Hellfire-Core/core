@@ -135,7 +135,7 @@ void PlayerRelocationNotifier::Visit(PlayerMapType &m)
 
         i_player.UpdateVisibilityOf(plr,i_data,i_visibleNow);
 
-        WorldObject const* viewPoint = plr->GetFarsightTarget();
+        WorldObject const* viewPoint = plr; //->GetFarsightTarget();
         if (!viewPoint) viewPoint = plr;
 
         if (viewPoint->isNeedNotify(NOTIFY_VISIBILITY_CHANGED))
@@ -215,7 +215,7 @@ void DelayedUnitRelocation::Visit(PlayerMapType &m)
     {
         Player * player = iter->getSource();
 
-        WorldObject const *viewPoint = player->GetFarsightTarget();
+        WorldObject const *viewPoint = player; //->GetFarsightTarget();
         if (!viewPoint) viewPoint = player;
 
         if (!viewPoint->isNeedNotify(NOTIFY_VISIBILITY_CHANGED))
