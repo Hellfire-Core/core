@@ -1185,7 +1185,7 @@ void Aura::SetAuraFlag(uint32 slot, bool add)
         flags |= AFLAG_EFF_INDEX_0;
         if(GetCasterGUID() == m_target->GetGUID())
             flags |= AFLAG_NOT_GUID;
-        if (m_maxduration > 0)
+        if (m_maxduration > 0 && !(GetSpellProto()->AttributesEx5 & SPELL_ATTR_EX5_HIDE_DURATION))
             flags |= AFLAG_HAS_DURATION;
 
         val |= flags << byte;
@@ -1445,8 +1445,13 @@ void Aura::TriggerSpell()
 //                    case 18347: break;
 //                    // Ranshalla Waiting
 //                    case 18953: break;
-//                    // Inferno
-//                    case 19695: break;
+                    // Inferno
+                    case 19695:
+                    {
+                        int32 damage = 500 * (m_tickNumber%2 == 0 ? m_tickNumber/2 : (m_tickNumber + 1)/2);
+                        m_target->CastCustomSpell(m_target, 19698, &damage, NULL, NULL, true, 0, this, originalCasterGUID);
+                        return;
+                    }
 //                    // Frostwolf Muzzle DND
 //                    case 21794: break;
 //                    // Alterac Ram Collar DND
@@ -2433,7 +2438,7 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
                 switch (GetId())
                 {
                     case 38224: spellId = (gender == GENDER_MALE ? 38225 : 38227); break;
-                    case 37096: spellId = (gender == GENDER_MALE ? 37092 : 37094); break;
+                    case 37096: spellId = (gender == GENDER_MALE ? 37093 : 37095); break;
                     case 46354: spellId = (gender == GENDER_MALE ? 46355 : 46356); break;
                     default: return;
                 }
@@ -7550,9 +7555,7 @@ void Aura::HandlePreventFleeing(bool apply, bool Real)
 
     Unit::AuraList const& fearAuras = m_target->GetAurasByType(SPELL_AURA_MOD_FEAR);
     if (!fearAuras.empty())
-    {
-        m_target->SetControlled(!apply, UNIT_STAT_FLEEING);
-    }
+        m_target->SetFeared(!apply);
 }
 
 void Aura::HandleManaShield(bool apply, bool Real)

@@ -336,9 +336,6 @@ void AuthSocket::_SetVSFields(const std::string& rI)
     OPENSSL_free((void*)s_hex);
 }
 
-#include <iostream>
-using namespace std;
-
 /// Logon Challenge command handler
 bool AuthSocket::_HandleLogonChallenge()
 {
@@ -683,10 +680,9 @@ bool AuthSocket::_HandleLogonProof()
         else
         {
             OS = 2;
+            LoginDatabase.escape_string(operatingSystem);
             sLog.outWarden("Client %s got unsupported operating system (%s)", _safelogin.c_str(), operatingSystem.c_str());
         }
-
-        cout << "Client " << _safelogin.c_str() << " got operating system " << operatingSystem.c_str() << " OS: " << OS << endl;
 
         LoginDatabase.PExecute("UPDATE account SET sessionkey = '%s', last_ip = '%s', last_login = NOW(), locale = '%u', failed_logins = 0, operatingSystem = '%u' WHERE username = '%s'", K_hex, GetRemoteAddress().c_str(), GetLocaleByName(_localizationName), OS, _safelogin.c_str());
         OPENSSL_free((void*)K_hex);

@@ -1313,8 +1313,10 @@ struct ChainHealingOrder : public std::binary_function<const Unit*, const Unit*,
             else
                 return 20000 - Target->GetMaxHealth() + Target->GetHealth();
         }
-        else
+        else if(!((Creature*)Target)->isTotem())
             return 40000 - Target->GetMaxHealth() + Target->GetHealth();
+        else
+            return 50000 - Target->GetMaxHealth() + Target->GetHealth();
     }
 };
 
@@ -1902,6 +1904,10 @@ void Spell::SetTargetMap(uint32 i, uint32 cur)
                             m_targets.setDestination(st->target_X, st->target_Y, st->target_Z, (int32)st->target_mapId);
                         else if (st->target_mapId == m_caster->GetMapId())
                             m_targets.setDestination(st->target_X, st->target_Y, st->target_Z);
+
+                        // for spells with implicit 17, 0
+                        if (!m_targets.getUnitTarget())
+                            m_targets.setUnitTarget(m_caster);
                     }
                     else
                         sLog.outError("SPELL: unknown target coordinates for spell ID %u\n", m_spellInfo->Id);

@@ -2176,7 +2176,7 @@ Creature* Player::GetNPCIfCanInteractWith(uint64 guid, uint32 npcflagmask)
         return NULL;
 
     // player check
-    if (!CanInteractWithNPCs(!unit->isSpiritService()))
+    if (!CanInteractWithNPCs(!unit->isSpiritService() && !(unit->GetCreatureInfo()->type_flags & CREATURE_TYPEFLAGS_GHOST)))
         return NULL;
 
     if (IsHostileTo(unit))
@@ -5627,8 +5627,13 @@ void Player::CheckAreaExploreAndOutdoor()
     bool isOutdoor;
     uint16 areaFlag = GetBaseMap()->GetAreaFlag(GetPositionX(),GetPositionY(),GetPositionZ(), &isOutdoor);
 
-    if (sWorld.getConfig(CONFIG_VMAP_INDOOR_CHECK) && !isOutdoor)
-        RemoveAurasWithAttribute(SPELL_ATTR_OUTDOORS_ONLY);
+    if (sWorld.getConfig(CONFIG_VMAP_INDOOR_CHECK))
+    {
+        if (!isOutdoor)
+            RemoveAurasWithAttribute(SPELL_ATTR_OUTDOORS_ONLY);
+//        else
+//            RemoveAurasWithAttribute(SPELL_ATTR_INDOORS_ONLY);
+    }
 
     if (areaFlag==0xffff)
         return;
@@ -6272,6 +6277,25 @@ void Player::UpdatePvpTitles()
         SetUInt64Value(PLAYER__FIELD_KNOWN_TITLES, (titles & ~PLAYER_TITLE_PVP) | new_title);
         SetUInt32Value(PLAYER_CHOSEN_TITLE, index);
     }
+}
+
+void Player::UpdateBgTitle()
+{
+    uint64 titles = GetUInt64Value(PLAYER__FIELD_KNOWN_TITLES);
+
+    uint32 index = 0;
+
+    if (m_team == HORDE && !HasTitle(PLAYER_TITLE_CONQUEROR) && GetReputationRank(729) == REP_EXALTED && GetReputationRank(510) == REP_EXALTED && GetReputationRank(889) == REP_EXALTED)
+    {
+        SetUInt64Value(PLAYER__FIELD_KNOWN_TITLES, titles | PLAYER_TITLE_CONQUEROR);
+        SetUInt32Value(PLAYER_CHOSEN_TITLE, index);
+    }
+    else if (m_team == ALLIANCE && !HasTitle(PLAYER_TITLE_JUSTICAR) && GetReputationRank(730) == REP_EXALTED && GetReputationRank(509) == REP_EXALTED && GetReputationRank(890) == REP_EXALTED)
+    {
+        SetUInt64Value(PLAYER__FIELD_KNOWN_TITLES, titles | PLAYER_TITLE_JUSTICAR);
+        SetUInt32Value(PLAYER_CHOSEN_TITLE, index);
+    }
+
 }
 
 void Player::UpdateHonorFields()
@@ -7278,7 +7302,6 @@ void Player::UpdateEquipSpellsAtFormChange()
 }
 void Player::CastItemCombatSpell(Unit *target, WeaponAttackType attType, uint32 procVictim, uint32 procEx, SpellEntry const *spellInfo)
 {
-
     if (spellInfo && ((spellInfo->Attributes & SPELL_ATTR_STOP_ATTACK_TARGET) ||
       (spellInfo->DmgClass == SPELL_DAMAGE_CLASS_MAGIC || spellInfo->DmgClass == SPELL_DAMAGE_CLASS_NONE)))
         return;
@@ -7305,19 +7328,19 @@ void Player::CastItemCombatSpell(Unit *target, WeaponAttackType attType, uint32 
                             case RANGED_ATTACK: slot = EQUIPMENT_SLOT_RANGED;   break;
                             default: slot = EQUIPMENT_SLOT_END; break;
                         }
+
                         if (slot != i)
                             continue;
+
                         // Check if item is useable (forms or disarm)
                         if (attType == BASE_ATTACK)
                         {
                             if (!((Player*)this)->IsUseEquipedWeapon(true))
                                 continue;
                         }
-                        else
-                        {
-                            if (((Player*)this)->IsInFeralForm())
-                                continue;
-                        }
+
+                        if (((Player*)this)->IsInFeralForm())
+                            continue;
                     }
                     ((Player*)this)->CastItemCombatSpell(target, attType, procVictim, procEx, item, proto, spellInfo);
                 }
@@ -7383,9 +7406,9 @@ void Player::CastItemCombatSpell(Unit *target, WeaponAttackType attType, uint32 
                 // Flametongue Weapon support
                 switch (pEnchant->ID)
                 {
-                    case 3:    spell_id =  8026; break; // Rank1
+                    case 3:    spell_id =  8029; break; // Rank1
                     case 4:    spell_id =  8028; break; // Rank2
-                    case 5:    spell_id =  8029; break; // Rank3
+                    case 5:    spell_id =  8026; break; // Rank3
                     case 523:  spell_id = 10445; break; // Rank4
                     case 1665: spell_id = 16343; break; // Rank5
                     case 1666: spell_id = 16344; break; // Rank6
@@ -10850,6 +10873,8 @@ Item* Player::EquipItem(uint16 pos, Item *pItem, bool update)
                     else
                     {
                         m_weaponChangeTimer = spellProto->StartRecoveryTime;
+
+                        GetGlobalCooldownMgr().AddGlobalCooldown(spellProto, m_weaponChangeTimer);
 
                         WorldPacket data(SMSG_SPELL_COOLDOWN, 8+1+4);
                         data << uint64(GetGUID());
