@@ -293,7 +293,7 @@ class TRINITY_DLL_SPEC Aura
         bool IsPassive() const { return m_isPassive; }
         bool IsPersistent() const { return m_isPersistent; }
         bool IsDeathPersistent() const { return m_isDeathPersist; }
-        bool IsRemovedOnShapeLost() const { return m_isRemovedOnShapeLost; }
+        bool IsRemovedOnShapeLost() const { return m_isRemovedOnShapeLost && GetId() != 6788 && GetId() != 12328; }
         bool IsInUse() const { return m_in_use;}
         bool StackNotByCaster()
         {

@@ -6259,7 +6259,7 @@ void Aura::HandleShapeshiftBoosts(bool apply)
         Unit::AuraMap& tAuras = m_target->GetAuras();
         for (Unit::AuraMap::iterator itr = tAuras.begin(); itr != tAuras.end();)
         {
-            if (itr->second->IsRemovedOnShapeLost() && itr->second->GetId() != 6788)    // not remove Weakened Soul debuff on ShapeLost
+            if (itr->second->IsRemovedOnShapeLost())
             {
                 m_target->RemoveAurasDueToSpell(itr->second->GetId());
                 itr = tAuras.begin();

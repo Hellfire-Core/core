@@ -49,7 +49,6 @@ class TRINITY_DLL_SPEC FleeingMovementGenerator
 
         bool is_water_ok   :1;
         bool is_land_ok    :1;
-        bool i_only_forward:1;
 
         float i_caster_x;
         float i_caster_y;

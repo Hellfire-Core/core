@@ -43,6 +43,7 @@ void FleeingMovementGenerator<T>::_setTargetLocation(T &owner)
         return;
 
     owner.addUnitState(UNIT_STAT_FLEEING | UNIT_STAT_ROAMING);
+
     Traveller<T> traveller(owner);
     i_destinationHolder.SetDestination(traveller, i_dest_x, i_dest_y, i_dest_z);
 }
@@ -188,11 +189,11 @@ void FleeingMovementGenerator<T>::Initialize(T &owner)
     owner.SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FLEEING);
     owner.SetUInt64Value(UNIT_FIELD_TARGET, 0);
     owner.RemoveUnitMovementFlag(SPLINEFLAG_WALKMODE_MODE);
+
     i_dest_x = i_caster_x = fright->GetPositionX();
     i_dest_y = i_caster_y = fright->GetPositionY();
     i_dest_z = i_caster_z = fright->GetPositionZ();
 
-    i_only_forward = true;
     i_cur_angle = fright->GetAngle(&owner);
 
     _setTargetLocation(owner);
