@@ -513,6 +513,9 @@ void Player::CleanupsBeforeDelete()
         }
     }
 
+    ClearLFG();
+    ClearLFM();
+
     Unit::CleanupsBeforeDelete();
 }
 
@@ -4609,6 +4612,9 @@ void Player::UpdateLocalChannels(uint32 newZone)
 
 void Player::LeaveLFGChannel()
 {
+    if (!sWorld.getConfig(CONFIG_RESTRICTED_LFG_CHANNEL) || GetSession()->GetSecurity() != SEC_PLAYER)
+        return;
+
     for (JoinedChannelsList::iterator i = m_channels.begin(); i != m_channels.end(); ++i)
     {
         if ((*i)->IsLFG())
