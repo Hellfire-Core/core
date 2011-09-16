@@ -821,6 +821,26 @@ private:
     GlobalCooldownList m_GlobalCooldowns;
 };
 
+class CastSpellEvent : public BasicEvent
+{
+    public:
+        CastSpellEvent(Unit& owner, uint64 target, uint32 spellId, bool triggered, uint64 orginalCaster) : 
+            BasicEvent(), m_owner(owner), m_target(target),  m_spellId(spellId), m_triggered(triggered), m_orginalCaster(orginalCaster), m_custom(false) { }
+        CastSpellEvent(Unit& owner, uint64 target, uint32 spellId, int32* bp0, int32* bp1, int32* bp2, bool triggered, uint64 orginalCaster);
+
+        bool Execute(uint64 e_time, uint32 p_time);
+    private:
+
+        uint64            m_target;
+        uint64            m_orginalCaster;
+        uint32            m_spellId;
+        bool              m_custom;
+        bool              m_triggered;
+        CustomSpellValues m_values;
+
+        Unit&             m_owner;
+};
+
 enum ReactStates
 {
     REACT_PASSIVE    = 0,

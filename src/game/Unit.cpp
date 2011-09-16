@@ -227,6 +227,37 @@ void MovementInfo::Write(ByteBuffer &data) const
         data << u_unk1;
 }
 
+
+CastSpellEvent::CastSpellEvent(Unit& owner, uint64 target, uint32 spellId, int32* bp0, int32* bp1, int32* bp2, bool triggered, uint64 orginalCaster):
+    BasicEvent(), m_owner(owner), m_target(target),  m_spellId(spellId), m_triggered(triggered), m_orginalCaster(orginalCaster), m_custom(true)
+{
+    if(bp0)
+        m_values.AddSpellMod(SPELLVALUE_BASE_POINT0, *bp0);
+    if(bp1)
+        m_values.AddSpellMod(SPELLVALUE_BASE_POINT1, *bp1);
+    if(bp2)
+        m_values.AddSpellMod(SPELLVALUE_BASE_POINT2, *bp2);
+}    
+
+
+
+bool CastSpellEvent::Execute(uint64 /*e_time*/, uint32 /*p_time*/)
+{
+    Unit *target = NULL;
+    if(m_target)
+    {
+        target = m_owner.GetUnit(m_target);
+        if(!target)
+            return true;
+    }
+
+    if(m_custom)
+        m_owner.CastCustomSpell(m_spellId, m_values, target, m_triggered, NULL, NULL, m_orginalCaster);
+    else
+        m_owner.CastSpell(target, m_spellId, m_triggered, NULL, NULL, m_orginalCaster);
+    return true;
+}
+
 Unit::Unit()
 : WorldObject(), i_motionMaster(this), m_ThreatManager(this), m_HostilRefManager(this)
 , IsAIEnabled(false), NeedChangeAI(false)
