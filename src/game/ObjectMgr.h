@@ -30,7 +30,6 @@
 #include "GameObject.h"
 #include "Corpse.h"
 #include "QuestDef.h"
-#include "Path.h"
 #include "ItemPrototype.h"
 #include "NPCHandler.h"
 #include "Database/DatabaseEnv.h"
@@ -58,8 +57,6 @@ extern SQLStorage sInstanceTemplate;
 class Group;
 class Guild;
 class ArenaTeam;
-class Path;
-class TransportPath;
 class Item;
 
 struct GameTele
@@ -121,6 +118,7 @@ typedef UNORDERED_MAP<uint32/*cell_id*/,CellObjectGuids> CellObjectGuidsMap;
 typedef UNORDERED_MAP<uint32/*(mapid,spawnMode) pair*/,CellObjectGuidsMap> MapObjectGuids;
 
 typedef UNORDERED_MAP<uint64/*(instance,guid) pair*/,time_t> RespawnTimes;
+typedef UNORDERED_MAP<uint32,time_t> GuildCooldowns;
 
 // trinity string ranges
 #define MIN_TRINITY_STRING_ID           1                    // 'TRINITY_string'
@@ -268,12 +266,8 @@ struct TRINITY_DLL_SPEC LanguageDesc
 extern LanguageDesc lang_description[LANGUAGES_COUNT];
 TRINITY_DLL_SPEC LanguageDesc const* GetLanguageDescByID(uint32 lang);
 
-class PlayerDumpReader;
-
 class ObjectMgr
 {
-    friend class PlayerDumpReader;
-
     public:
         ObjectMgr();
         ~ObjectMgr();
@@ -381,11 +375,9 @@ class ObjectMgr
         uint32 GetPlayerAccountIdByGUID(const uint64 &guid) const;
         uint32 GetPlayerAccountIdByPlayerName(const std::string& name) const;
 
-        uint32 GetNearestTaxiNode(float x, float y, float z, uint32 mapid);
+        uint32 GetNearestTaxiNode(float x, float y, float z, uint32 mapid, uint32 team);
         void GetTaxiPath(uint32 source, uint32 destination, uint32 &path, uint32 &cost);
         uint16 GetTaxiMount(uint32 id, uint32 team);
-        void GetTaxiPathNodes(uint32 path, Path &pathnodes, std::vector<uint32>& mapIds);
-        void GetTransportPathNodes(uint32 path, TransportPath &pathnodes);
 
         Quest const* GetQuestTemplate(uint32 quest_id) const
         {
@@ -499,6 +491,7 @@ class ObjectMgr
         bool CheckCreatureLinkedRespawn(uint32 guid, uint32 linkedGuid) const;
         bool SetCreatureLinkedRespawn(uint32 guid, uint32 linkedGuid);
         void LoadCreatureRespawnTimes();
+        void LoadGuildAnnCooldowns();
         void LoadUnqueuedAccountList();
         bool IsUnqueuedAccount(uint64 accid);
         void LoadCreatureAddons();
@@ -698,6 +691,9 @@ class ObjectMgr
         time_t GetGORespawnTime(uint32 loguid, uint32 instance) { return mGORespawnTimes[MAKE_PAIR64(loguid,instance)]; }
         void SaveGORespawnTime(uint32 loguid, uint32 instance, time_t t);
         void DeleteRespawnTimeForInstance(uint32 instance);
+
+        time_t GetGuildAnnCooldown(uint32 guild_id) { return mGuildCooldownTimes[guild_id]; }
+        void SaveGuildAnnCooldown(uint32 guild_id);
 
         // grid objects
         void AddCreatureToGrid(uint32 guid, CreatureData const* data);
@@ -901,6 +897,8 @@ class ObjectMgr
         NpcOptionLocaleMap mNpcOptionLocaleMap;
         RespawnTimes mCreatureRespawnTimes;
         RespawnTimes mGORespawnTimes;
+
+        GuildCooldowns mGuildCooldownTimes;
 
         typedef std::vector<uint32> GuildBankTabPriceMap;
         GuildBankTabPriceMap mGuildBankTabPrice;

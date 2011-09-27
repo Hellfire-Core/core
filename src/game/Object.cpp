@@ -286,7 +286,7 @@ void Object::BuildMovementUpdate(ByteBuffer * data, uint8 updateFlags) const
                 // remove unknown, unused etc flags for now
                 moveFlags &= ~MOVEFLAG_SPLINE_ENABLED;          // will be set manually
 
-                if (((Player*)this)->isInFlight())
+                if (((Player*)this)->IsTaxiFlying())
                 {
                     WPAssert(((Player*)this)->GetMotionMaster()->GetCurrentMovementGeneratorType() == FLIGHT_MOTION_TYPE);
                     moveFlags = (MOVEFLAG_FORWARD | MOVEFLAG_SPLINE_ENABLED);
@@ -339,7 +339,7 @@ void Object::BuildMovementUpdate(ByteBuffer * data, uint8 updateFlags) const
         }
 
         // 0x02200000
-        if (moveFlags & (MOVEFLAG_SWIMMING | SPLINEFLAG_FLYINGING2))
+        if (moveFlags & (MOVEFLAG_SWIMMING | MOVEFLAG_FLYING))
         {
             if (GetTypeId() == TYPEID_PLAYER)
                 *data << (float)((Player*)this)->m_movementInfo.s_pitch;
@@ -399,7 +399,7 @@ void Object::BuildMovementUpdate(ByteBuffer * data, uint8 updateFlags) const
                 return;
             }
 
-            if (!((Player*)this)->isInFlight())
+            if (!((Player*)this)->IsTaxiFlying())
             {
                 sLog.outDebug("BuildMovementUpdate: MOVEFLAG_SPLINE_ENABLED but not in flight");
                 return;
@@ -430,7 +430,7 @@ void Object::BuildMovementUpdate(ByteBuffer * data, uint8 updateFlags) const
                 *data << (float)0;
             }
 
-            Path &path = fmg->GetPath();
+            TaxiPathNodeList const& path = fmg->GetPath();
 
             float x, y, z;
             ((Player*)this)->GetPosition(x, y, z);
@@ -442,20 +442,20 @@ void Object::BuildMovementUpdate(ByteBuffer * data, uint8 updateFlags) const
             *data << uint32(traveltime);                    // full move time?
             *data << uint32(0);                             // ticks count?
 
-            uint32 poscount = uint32(path.Size());
+            uint32 poscount = uint32(path.size());
 
             *data << uint32(poscount);                      // points count
 
             for (uint32 i = 0; i < poscount; ++i)
             {
-                *data << float(path.GetNodes()[i].x);
-                *data << float(path.GetNodes()[i].y);
-                *data << float(path.GetNodes()[i].z);
+                *data << float(path[i].x);
+                *data << float(path[i].y);
+                *data << float(path[i].z);
             }
 
-            *data << float(path.GetNodes()[poscount-1].x);
-            *data << float(path.GetNodes()[poscount-1].y);
-            *data << float(path.GetNodes()[poscount-1].z);
+            *data << float(path[poscount-1].x);
+            *data << float(path[poscount-1].y);
+            *data << float(path[poscount-1].z);
         }
     }
 
@@ -1384,9 +1384,9 @@ void WorldObject::UpdateAllowedPositionZ(float x, float y, float &z) const
         {
             // non fly unit don't must be in air
             // non swim unit must be at ground (mostly speedup, because it don't must be in water and water level check less fast
-            if (!((Creature const*)this)->canFly())
+            if (!((Creature const*)this)->CanFly())
             {
-                bool CanSwim = ((Creature const*)this)->canSwim();
+                bool CanSwim = ((Creature const*)this)->CanSwim();
                 float ground_z = z;
                 float max_z = CanSwim
                     ? GetBaseMap()->GetWaterOrGroundLevel(x, y, z, &ground_z, !((Unit const*)this)->HasAuraType(SPELL_AURA_WATER_WALK))

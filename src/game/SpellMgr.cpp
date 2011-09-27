@@ -986,6 +986,34 @@ uint8 GetErrorAtShapeshiftedCast (SpellEntry const *spellInfo, uint32 form)
 
 bool IsBinaryResistable(SpellEntry const* spellInfo)
 {
+    if(spellInfo->SchoolMask & SPELL_SCHOOL_MASK_HOLY)                  // can't resist holy spells
+        return false;
+
+    if(spellInfo->SpellFamilyName)         // only player's spells, bosses don't follow that simple rule
+    {
+        for(int eff = 0; eff < 3; eff++)
+        {
+            if(!spellInfo->Effect[eff])
+                continue;
+
+            if (IsPositiveEffect(spellInfo->Id, eff))
+                continue;
+
+            switch(spellInfo->Effect[eff])
+            {
+                case SPELL_EFFECT_SCHOOL_DAMAGE:
+                    break;
+                case SPELL_EFFECT_APPLY_AURA:
+                case SPELL_EFFECT_APPLY_AREA_AURA_ENEMY:
+                    if(spellInfo->EffectApplyAuraName[eff] != SPELL_AURA_PERIODIC_DAMAGE)       // spells that apply aura other then DOT are binary resistable
+                        return true;
+                    break;
+                default:                            
+                    return true;                                                                // spells that have other effects then damage or apply aura are binary resistable
+            }
+        }
+    }
+
     switch (spellInfo->Id)
     {
         case 31306:     // Anetheron - Carrion Swarm
@@ -2659,11 +2687,16 @@ void SpellMgr::LoadSpellCustomAttr()
         {
         /* ROGUE CUSTOM ATTRIBUTES */
         case 2094:                     // Blind
-            spellInfo->speed = 590.0f; // add speed to add delay for hit.
+            spellInfo->AttributesCu |= SPELL_ATTR_CU_FAKE_DELAY; // add const fake delay
             break;
         case 5171:
         case 6774:                     // Slice'n'Dice
-            spellInfo->AttributesEx3 &= ~SPELL_ATTR_EX3_NO_INITIAL_AGGRO; // Do not put caster in combat after use
+            spellInfo->AttributesEx3 |= SPELL_ATTR_EX3_NO_INITIAL_AGGRO; // Do not put caster in combat after use
+            break;
+        // Triggered spells that should be delayed
+        case 20272:                     // Illumination
+        case 32848:                     // Mana Restore
+            spellInfo->AttributesCu |= SPELL_ATTR_CU_FAKE_DELAY;     
             break;
         /* UNSORTED */
         case 40017: // If we can't adjust speed :P we spawn it in bigger periods
@@ -2930,6 +2963,10 @@ void SpellMgr::LoadSpellCustomAttr()
         case 39093: // Negative Charge
         case 39968: // Needle Spine Explosion
             spellInfo->AttributesEx |= SPELL_ATTR_EX_CANT_TARGET_SELF;
+            break;
+        case 42992: //ram - neutral
+        case 43310: //ram - trot
+            spellInfo->EffectImplicitTargetA[1] = 1;
             break;
         default:
             break;
@@ -3308,6 +3345,9 @@ DiminishingGroup GetDiminishingReturnsGroupForSpell(SpellEntry const* spellproto
             // Unstable affliction dispel silence
             else if (spellproto->Id == 31117)
                 return DIMINISHING_UNSTABLE_AFFLICTION;
+            // Enslave deamon
+            else if(spellproto->SpellFamilyFlags & 0x800LL)
+                return DIMINISHING_ENSLAVE;
             break;
         }
         case SPELLFAMILY_DRUID:

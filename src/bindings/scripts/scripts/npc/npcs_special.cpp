@@ -165,7 +165,7 @@ struct TRINITY_DLL_DECL npc_dancing_flamesAI : public ScriptedAI
         float x, y, z;
         m_creature->GetPosition(x,y,z);
         m_creature->Relocate(x,y,z + 0.94f);
-        m_creature->AddUnitMovementFlag(MOVEFLAG_ONTRANSPORT | MOVEFLAG_LEVITATING);
+        m_creature->SetLevitate(true);
         m_creature->HandleEmoteCommand(EMOTE_ONESHOT_DANCE);
         WorldPacket data;                       //send update position to client
         m_creature->BuildHeartBeatMsg(&data);
@@ -413,7 +413,7 @@ struct TRINITY_DLL_DECL npc_injured_patientAI : public ScriptedAI
             DoSay(SAY_DOC1,LANG_UNIVERSAL,NULL);
 
             uint32 mobId = m_creature->GetEntry();
-            m_creature->RemoveUnitMovementFlag(SPLINEFLAG_WALKMODE_MODE);
+            m_creature->SetWalk(false);
             switch (mobId)
             {
                 case 12923:
@@ -2075,10 +2075,11 @@ struct TRINITY_DLL_DECL npc_crashin_trashin_robotAI : public ScriptedAI
 
                 int radius = me->GetAngle(tmp) * 100;
                 radius = rand()%radius;
-                float fRadius = radius/100.0;
 
-                if (fRadius <= 0)
-                    fRadius = 0.1;
+                if (radius == 0)
+                    radius = 1;
+
+                float fRadius = radius/100.0f;
 
                 tmp->GetNearPoint(tmp, x, y, z, 0, 5.0f, fRadius);
                 me->GetMotionMaster()->Clear();
@@ -2268,6 +2269,96 @@ CreatureAI* GetAI_pet_AleMugDrinker(Creature* pCreature)
     return new pet_AleMugDrinkerAI(pCreature);
 }
 
+/*########
+# brewfest triggers
+#########*/
+
+struct TRINITY_DLL_DECL trigger_appleAI : public ScriptedAI
+{
+    trigger_appleAI(Creature *c) : ScriptedAI(c){}
+
+    void MoveInLineOfSight(Unit *who)
+    {
+        if (!who)
+            return;
+
+        if (m_creature->IsWithinDistInMap(who, 7.0f) && who->HasAura(43052, 0))
+        {
+            who->RemoveAurasDueToSpell(43052);
+        }
+    }
+};
+
+CreatureAI* GetAI_trigger_apple(Creature* pCreature)
+{
+    return new trigger_appleAI(pCreature);
+}
+
+struct TRINITY_DLL_DECL trigger_deliveryAI : public ScriptedAI
+{
+    trigger_deliveryAI(Creature *c) : ScriptedAI(c){}
+
+    void MoveInLineOfSight(Unit *who)
+    {
+        if (!who || who->GetTypeId() != TYPEID_PLAYER)
+            return;
+
+        if (m_creature->IsWithinDistInMap(who, 10.0f) && who->HasAura(42146, 0) && ((Player*)who)->HasItemCount(33797, 1))
+        {
+            who->CastSpell(m_creature, 43662, true);
+            who->CastSpell(who, 44601, true);
+            ((Player*)who)->DestroyItemCount(33797, 1, true);
+        }
+    }
+};
+
+CreatureAI* GetAI_trigger_delivery(Creature* pCreature)
+{
+    return new trigger_deliveryAI(pCreature);
+}
+
+struct TRINITY_DLL_DECL trigger_delivery_kegAI : public ScriptedAI
+{
+    trigger_delivery_kegAI(Creature *c) : ScriptedAI(c){}
+
+    void MoveInLineOfSight(Unit *who)
+    {
+        if (!who || who->GetTypeId() != TYPEID_PLAYER)
+            return;
+
+        if (m_creature->IsWithinDistInMap(who, 10.0f) && who->HasAura(42146, 0))
+        {
+            who->CastSpell(who, 43660, true);
+        }
+    }
+};
+
+CreatureAI* GetAI_trigger_delivery_keg(Creature* pCreature)
+{
+    return new trigger_delivery_kegAI(pCreature);
+}
+
+struct TRINITY_DLL_DECL trigger_barkerAI : public ScriptedAI
+{
+    trigger_barkerAI(Creature *c) : ScriptedAI(c){}
+
+    void MoveInLineOfSight(Unit *who)
+    {
+        if (!who || who->GetTypeId() != TYPEID_PLAYER)
+            return;
+
+        if (m_creature->IsWithinDistInMap(who, 10.0f) && who->HasAura(42146, 0))
+        {
+            ((Player*)who)->CastedCreatureOrGO(m_creature->GetEntry(), m_creature->GetGUID(), 0);
+        }
+    }
+};
+
+CreatureAI* GetAI_trigger_barker(Creature* pCreature)
+{
+    return new trigger_barkerAI(pCreature);
+}
+
 void AddSC_npcs_special()
 {
     Script *newscript;
@@ -2402,5 +2493,25 @@ void AddSC_npcs_special()
     newscript = new Script;
     newscript->Name="pet_AleMugDrinker";
     newscript->GetAI = GetAI_pet_AleMugDrinker;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name="trigger_apple";
+    newscript->GetAI = GetAI_trigger_apple;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name="trigger_delivery";
+    newscript->GetAI = GetAI_trigger_delivery;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name="trigger_delivery_keg";
+    newscript->GetAI = GetAI_trigger_delivery_keg;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name="trigger_barker";
+    newscript->GetAI = GetAI_trigger_barker;
     newscript->RegisterSelf();
 }
