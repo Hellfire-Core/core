@@ -376,12 +376,13 @@ GmLogPerAccount = 0
 ArenaLogFile = ""
 CheatLogFile = "cheat.log"
 ACLogFile = "AC.log"
-mailLogFile = "sendmail.log"
-gannLogFile = "guildann.log"
+MailLogFile = "sendmail.log"
+GannLogFile = "guildann.log"
 WhispLogDir = "whisps/"
 LogColors = ""
 WardenLogFile = "warden.log"
-auctionLogFile = "auction.log
+AuctionLogFile = "auction.log"
+DiffLogFile = "diff.log"
 
 IrcParser = "parser.trc"
 

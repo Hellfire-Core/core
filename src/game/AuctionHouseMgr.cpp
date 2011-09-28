@@ -827,7 +827,7 @@ void WorldSession::BuildListAuctionItems(std::vector<AuctionEntry*> const& aucti
             if (levelmin != 0x00 && (proto->RequiredLevel < levelmin || (levelmax != 0x00 && proto->RequiredLevel > levelmax)))
                 continue;
 
-            if (usable != 0x00 && _player->CanUseItem(item) != EQUIP_ERR_OK)
+            if (usable != 0x00 && !_player->CanUseItem(item))
                 continue;
 
             std::string name = proto->Name1;

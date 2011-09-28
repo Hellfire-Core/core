@@ -10663,7 +10663,7 @@ bool Player::CanUseItem(ItemPrototype const *pProto)
         if (getLevel() < pProto->RequiredLevel)
             return false;
 
-        if (pProto->Class == ITEM_CLASS_RECIPE && pProto->Spells[0].SpellId != 0)
+        if (pProto->Class == ITEM_CLASS_RECIPE)
         {
             if (pProto->Spells[0].SpellId == SPELL_ID_GENERIC_LEARN)
             {

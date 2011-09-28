@@ -1704,7 +1704,7 @@ void World::RecordTimeDiff(const char *text, ...)
         va_start(ap, text);
         vsnprintf(str,256,text, ap);
         va_end(ap);
-        sLog.outError("Difftime %s: %u.", str, diff);
+        sLog.outDiff("Difftime %s: %u.", str, diff);
     }
 
     m_currentTime = thisTime;
@@ -1744,7 +1744,8 @@ void World::Update(time_t diff)
     {
         if (m_updateTimeSum > m_configs[CONFIG_INTERVAL_LOG_UPDATE])
         {
-            sLog.outBasic("Update time diff: %u. Players online: %u.", m_updateTimeSum / m_updateTimeCount, GetActiveSessionCount());
+            sLog.outError("Update time diff: %u. Players online: %u.", m_updateTimeSum / m_updateTimeCount, GetActiveSessionCount());
+            sLog.outDiff("Update time diff: %u. Players online: %u.", m_updateTimeSum / m_updateTimeCount, GetActiveSessionCount());
             sLog.outIrc("%u %u %u %u %u %u %s", GetUptime(), GetActiveSessionCount(), GetMaxActiveSessionCount(), GetQueuedSessionCount(), GetMaxQueuedSessionCount(), GetPlayerAmountLimit(), _REVISION);
 
             m_updateTimeSum = m_updateTime;
@@ -1766,8 +1767,8 @@ void World::Update(time_t diff)
         else
             m_timers[i].SetCurrent(0);
     }
-
     RecordTimeDiff("UpdateTimers");
+
     ///- Update the game time and check for shutdown time
     _UpdateGameTime();
     RecordTimeDiff("UpdateGameTime");
@@ -1832,6 +1833,7 @@ void World::Update(time_t diff)
             }
         }
     }
+
     /// <li> Update uptime table
     if (m_timers[WUPDATE_UPTIME].Passed())
     {
@@ -1842,6 +1844,7 @@ void World::Update(time_t diff)
         WorldDatabase.PExecute("UPDATE uptime SET uptime = %d, maxplayers = %d WHERE starttime = " UI64FMTD, tmpDiff, maxClientsNum, uint64(m_startTime));
     }
 
+    RecordTimeDiff(NULL);
     if (sWorld.getConfig(CONFIG_AUTOBROADCAST_INTERVAL))
     {
         if (m_timers[WUPDATE_AUTOBROADCAST].Passed())
@@ -1859,6 +1862,7 @@ void World::Update(time_t diff)
             sWorld.SendWorldText(LANG_AUTO_ANN, msg.c_str());
         }
     }
+    RecordTimeDiff("Send Autobroadcast");
 
     ///- send guild announces every one minute
     if (m_timers[WUPDATE_GUILD_ANNOUNCES].Passed())
@@ -1882,8 +1886,8 @@ void World::Update(time_t diff)
             m_GuildAnnounces[1].pop_front();
         }
     }
+    RecordTimeDiff("Send Guild announce");
 
-    RecordTimeDiff(NULL);
     /// <li> Handle all other objects
     ///- Update objects when the timer has passed (maps, transport, creatures,...)
     sMapMgr.Update(diff);                // As interval = 0
