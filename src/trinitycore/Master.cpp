@@ -41,13 +41,6 @@
 #include "Util.h"
 #include "InstanceSaveMgr.h"
 
-#include "sockets/TcpSocket.h"
-#include "sockets/Utility.h"
-#include "sockets/Parse.h"
-#include "sockets/Socket.h"
-#include "sockets/SocketHandler.h"
-#include "sockets/ListenSocket.h"
-
 #ifdef WIN32
 #include "ServiceWin32.h"
 #else
@@ -57,64 +50,10 @@
 
 extern RunModes runMode;
 
-//#define ANTICHEAT_SOCK
-
 /// \todo Warning disabling not useful under VC++2005. Can somebody say on which compiler it is useful?
 #pragma warning(disable:4305)
 
 INSTANTIATE_SINGLETON_1( Master );
-
-#ifdef ANTICHEAT_SOCK
-class AntiCheatSocket : public TcpSocket
-{
-    public:
-        AntiCheatSocket(ISocketHandler &h) : TcpSocket(h) {}
-    private:
-        void OnRead()
-        {
-            TcpSocket::OnRead();
-            if (ibuf.GetLength() != 2)
-            {
-                //sLog.outString("wrong packet size %i", ibuf.GetLength());
-                sLog.outError("Invalid packet size in AntiCheatSocket::OnRead()!");
-                ibuf.Remove(ibuf.GetLength());
-                return;
-            }
-
-            char cmd;
-            char val;
-            ibuf.Read(&cmd, 1);
-            ibuf.Read(&val, 1);
-            //sLog.outString("Processing %c %c", cmd, val);
-            sWorld.ProcessAnticheat(&cmd, &val, GetRemoteAddress());
-        }
-};
-
-class AntiCheatRunnable : public ACE_Based::Runnable
-{
-    public:
-        AntiCheatRunnable() {}
-
-        void run()
-        {
-            sLog.outString("Starting up anti-cheat socket.");
-            SocketHandler h;
-            ListenSocket<AntiCheatSocket> lsock(h);
-
-            if (lsock.Bind(5600))
-            {
-                sLog.outError("Failed to bind anti-cheat listening socket!.");
-                return;
-            }
-
-            h.Add(&lsock);
-            while (1)
-            {
-                h.Select(0, 500000);
-            }
-        }
-};
-#endif//anticheatsock
 
 volatile uint32 Master::m_masterLoopCounter = 0;
 #ifndef WIN32
@@ -341,7 +280,7 @@ int Master::Run()
 #endif
 
     ///- Launch the world listener socket
-    port_t wsport = sWorld.getConfig (CONFIG_PORT_WORLD);
+    uint16 wsport = sWorld.getConfig (CONFIG_PORT_WORLD);
     std::string bind_ip = sConfig.GetStringDefault ("BindIP", "0.0.0.0");
 
     if (sWorldSocketMgr->StartNetwork (wsport, bind_ip.c_str ()) == -1)

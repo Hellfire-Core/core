@@ -2517,20 +2517,6 @@ void World::UpdateSessions(time_t diff)
         if (!itr->second)
             continue;
 
-#ifdef ANTICHEAT_SOCK
-        if (m_ac_auth[itr->second->GetRemoteAddress()] < diff)
-        {
-            //sLog.outString("KICKING PLAYER %s", itr->second->GetRemoteAddress().c_str());
-            itr->second->KickPlayer();
-            m_ac_auth.erase(itr->second->GetRemoteAddress());
-        }
-        else
-        {
-            m_ac_auth[itr->second->GetRemoteAddress()] -= diff;
-            //sLog.outString("TIME TO KICK %s %i", itr->second->GetRemoteAddress().c_str(), m_ac_auth[itr->second->GetRemoteAddress()]);
-        }
-#endif // ANTICHEAT_SOCK
-
         ///- and remove not active sessions from the list
         WorldSession * pSession = itr->second;
         WorldSessionFilter updater(pSession);
