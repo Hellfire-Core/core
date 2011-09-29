@@ -2295,7 +2295,7 @@ struct TRINITY_DLL_DECL trigger_deliveryAI : public ScriptedAI
         if (!who || who->GetTypeId() != TYPEID_PLAYER)
             return;
 
-        if (m_creature->IsWithinDistInMap(who, 10.0f) && who->HasAura(43880, 0) && ((Player*)who)->HasItemCount(33797, 1))
+        if (m_creature->IsWithinDistInMap(who, 20.0f) && (who->HasAura(43880, 0) || who->HasAura(43883, 0)) && ((Player*)who)->HasItemCount(33797, 1))
         {
             who->CastSpell(m_creature, 43662, true);
             who->CastSpell(who, 44601, true);
@@ -2324,7 +2324,7 @@ struct TRINITY_DLL_DECL trigger_delivery_kegAI : public ScriptedAI
         if (!who || who->GetTypeId() != TYPEID_PLAYER)
             return;
 
-        if (m_creature->IsWithinDistInMap(who, 10.0f) && who->HasAura(43880, 0) && !((Player*)who)->HasItemCount(33797, 1))
+        if (m_creature->IsWithinDistInMap(who, 20.0f) && (who->HasAura(43880, 0) || who->HasAura(43883, 0)) && !((Player*)who)->HasItemCount(33797, 1))
         {
             who->CastSpell(who, 43660, true);
         }
@@ -2371,7 +2371,7 @@ struct TRINITY_DLL_DECL trigger_barkerAI : public ScriptedAI
         if (!who || who->GetTypeId() != TYPEID_PLAYER)
             return;
 
-        if (m_creature->IsWithinDistInMap(who, 10.0f) && who->HasAura(42146, 0))
+        if (m_creature->IsWithinDistInMap(who, 10.0f) && who->HasAura(43883, 0))
         {
             ((Player*)who)->CastedCreatureOrGO(m_creature->GetEntry(), m_creature->GetGUID(), 0);
         }
