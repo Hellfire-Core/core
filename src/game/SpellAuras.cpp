@@ -5049,7 +5049,8 @@ void Aura::HandlePeriodicDamage(bool apply, bool Real)
             {
                 InstanceMap *instance = dynamic_cast<InstanceMap*>(m_target->GetMap());
                 if(instance && instance->GetInstanceData() && instance->GetInstanceData()->IsEncounterInProgress())
-                    m_target->CastSpell(m_target, 45034, true, 0, this, GetCasterGUID());
+                    // jumping visual to be tested and fixed
+                    m_target->CastSpell((Unit*)NULL, 45034, true, 0, this, GetCasterGUID());
             }
             break;
         }
@@ -6752,6 +6753,7 @@ void Aura::PeriodicTick()
                     case 45032:
                     case 45034:
                     {
+                        m_target->CastSpell(m_target, 45083, true); // DoT visual on tick
                         if ((m_tickNumber-1) % 5 == 0 && (m_tickNumber-1) > 0)
                             m_modifier.m_amount *= 2;
                     }

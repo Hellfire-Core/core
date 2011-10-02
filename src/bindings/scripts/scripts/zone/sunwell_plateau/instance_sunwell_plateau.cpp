@@ -12,20 +12,22 @@ EndScriptData */
 #include "precompiled.h"
 #include "def_sunwell_plateau.h"
 
-#define ENCOUNTERS 6
+#define ENCOUNTERS 7
 
-enum GoState{
-CLOSE    = 1,
-OPEN    = 0
+enum GoState
+{
+    CLOSE    = 1,
+    OPEN    = 0
 };
 
 /* Sunwell Plateau:
 0 - Kalecgos and Sathrovarr
-1 - Brutallus
-2 - Felmyst
-3 - Eredar Twins (Alythess and Sacrolash)
-4 - M'uru
-5 - Kil'Jaeden
+1 - Brutallus & Madrigosa intro
+2 - Brutallus
+3 - Felmyst
+4 - Eredar Twins (Alythess and Sacrolash)
+5 - M'uru
+6 - Kil'Jaeden
 */
 
 struct TRINITY_DLL_DECL instance_sunwell_plateau : public ScriptedInstance
@@ -40,6 +42,7 @@ struct TRINITY_DLL_DECL instance_sunwell_plateau : public ScriptedInstance
     uint64 Sathrovarr;
     uint64 Brutallus;
     uint64 Madrigosa;
+    uint64 BrutallusTrigger;
     uint64 Felmyst;
     uint64 Alythess;
     uint64 Sacrolash;
@@ -51,7 +54,10 @@ struct TRINITY_DLL_DECL instance_sunwell_plateau : public ScriptedInstance
 
     /** GameObjects **/
     uint64 ForceField;                                      // Kalecgos Encounter
+    uint64 Collision_1;                                     // Kalecgos Encounter
+    uint64 Collision_2;                                     // Kalecgos Encounter
     uint64 FireBarrier;                                     // Brutallus Encounter
+    uint64 IceBarrier;                                      // Brutallus Encounter
     uint64 Gate[5];                                         // Rename this to be more specific after door placement is verified.
 
     /*** Misc ***/
@@ -67,6 +73,7 @@ struct TRINITY_DLL_DECL instance_sunwell_plateau : public ScriptedInstance
         Sathrovarr              = 0;
         Brutallus               = 0;
         Madrigosa               = 0;
+        BrutallusTrigger        = 0;
         Felmyst                 = 0;
         Alythess                = 0;
         Sacrolash               = 0;
@@ -78,7 +85,10 @@ struct TRINITY_DLL_DECL instance_sunwell_plateau : public ScriptedInstance
 
         /*** GameObjects ***/
         ForceField  = 0;
+        Collision_1 = 0;
+        Collision_2 = 0;
         FireBarrier = 0;
+        IceBarrier = 0;
         Gate[0]     = 0;                                    // TODO: Rename Gate[n] with gate_<boss name> for better specificity
         Gate[1]     = 0;
         Gate[2]     = 0;
@@ -160,6 +170,8 @@ struct TRINITY_DLL_DECL instance_sunwell_plateau : public ScriptedInstance
 
     void OnCreatureCreate(Creature* creature, uint32 entry)
     {
+        if(creature->GetTypeId() == TYPEID_UNIT)    // just in case of something weird happening
+            creature->CastSpell(creature, SPELL_SUNWELL_RADIANCE, true);
         switch(entry)
         {
             case 24850: Kalecgos_Dragon     = creature->GetGUID(); break;
@@ -173,15 +185,40 @@ struct TRINITY_DLL_DECL instance_sunwell_plateau : public ScriptedInstance
             case 25608: KilJaedenController = creature->GetGUID(); break;
             case 26046: Anveena             = creature->GetGUID(); break;
             case 25319: KalecgosKJ          = creature->GetGUID(); break;
-            case 24895: Madrigosa           = creature->GetGUID(); break;
-            case 25038: 
+            // if Felmyst GUID exists, do not summom on Madrigosa create
+            case 25038: Felmyst             = creature->GetGUID(); break;
+            case 24895:
+                //TODO: Proper reseting when Felmyst not summoned, Brutallus not killed, etc.
+                Madrigosa = creature->GetGUID();
+                if(GetData(DATA_BRUTALLUS_INTRO_EVENT) == DONE)
+                {
+                    creature->setFaction(35);
+                    creature->SetVisibility(VISIBILITY_OFF);
+                }
+                break;
+                if(GetData(DATA_BRUTALLUS_EVENT) == DONE || GetData(DATA_FELMYST_EVENT) != DONE)
+                {
+                    // summon Felmyst
+                    if(!Felmyst)
+                    {
+                        creature->CastSpell(creature, 45069, true);/*
+                        float x, y, z;
+                        creature->GetPosition(x, y, z);
+                        creature->UpdateAllowedPositionZ(x, y, z);
+                        if(Creature* trigger = creature->SummonTrigger(x, y, z, 0, 10000))
+                            trigger->CastSpell(trigger, 45069, true);*/
+                    }
+                }
+            case 19871: BrutallusTrigger    = creature->GetGUID(); break;
+            /*case 25038:
+                // rewrite this, Felmyst summoned by spell
                 Felmyst = creature->GetGUID();
                 if(GetData(DATA_BRUTALLUS_EVENT) != DONE)
                 {
-                    creature->Kill(creature, false);
-                    creature->RemoveCorpse();
+                    creature->setFaction(35);
+                    creature->SetVisibility(VISIBILITY_OFF);
                 }
-                break;
+                break;*/
         }
 
         const CreatureData *tmp = creature->GetLinkedRespawnCreatureData();
@@ -197,7 +234,10 @@ struct TRINITY_DLL_DECL instance_sunwell_plateau : public ScriptedInstance
         switch(gobj->GetEntry())
         {
             case 188421: ForceField     = gobj->GetGUID(); break;
+            case 188523: Collision_1    = gobj->GetGUID(); break;
+            case 188524: Collision_2    = gobj->GetGUID(); break;
             case 188075: FireBarrier    = gobj->GetGUID(); break;
+            case 188119: IceBarrier     = gobj->GetGUID(); break;
             case 187979: Gate[0]        = gobj->GetGUID(); break;
             case 187770: Gate[1]        = gobj->GetGUID(); break;
             case 187896: Gate[2]        = gobj->GetGUID(); break;
@@ -210,13 +250,14 @@ struct TRINITY_DLL_DECL instance_sunwell_plateau : public ScriptedInstance
     {
         switch(id)
         {
-            case DATA_KALECGOS_EVENT:     return Encounters[0]; break;
-            case DATA_BRUTALLUS_EVENT:    return Encounters[1]; break;
-            case DATA_FELMYST_EVENT:      return Encounters[2]; break;
-            case DATA_EREDAR_TWINS_EVENT: return Encounters[3]; break;
-            case DATA_MURU_EVENT:         return Encounters[4]; break;
-            case DATA_KILJAEDEN_EVENT:    return Encounters[5]; break;
-            case DATA_KALECGOS_PHASE:     return KalecgosPhase; break;
+            case DATA_KALECGOS_EVENT:           return Encounters[0]; break;
+            case DATA_BRUTALLUS_INTRO_EVENT:    return Encounters[1]; break;
+            case DATA_BRUTALLUS_EVENT:          return Encounters[2]; break;
+            case DATA_FELMYST_EVENT:            return Encounters[3]; break;
+            case DATA_EREDAR_TWINS_EVENT:       return Encounters[4]; break;
+            case DATA_MURU_EVENT:               return Encounters[5]; break;
+            case DATA_KILJAEDEN_EVENT:          return Encounters[6]; break;
+            case DATA_KALECGOS_PHASE:           return KalecgosPhase; break;
         }
 
         return 0;
@@ -231,6 +272,7 @@ struct TRINITY_DLL_DECL instance_sunwell_plateau : public ScriptedInstance
             case DATA_SATHROVARR:           return Sathrovarr;          break;
             case DATA_BRUTALLUS:            return Brutallus;           break;
             case DATA_MADRIGOSA:            return Madrigosa;           break;
+            case DATA_BRUTALLUS_TRIGGER:    return BrutallusTrigger;    break;
             case DATA_FELMYST:              return Felmyst;             break;
             case DATA_ALYTHESS:             return Alythess;            break;
             case DATA_SACROLASH:            return Sacrolash;           break;
@@ -252,28 +294,53 @@ struct TRINITY_DLL_DECL instance_sunwell_plateau : public ScriptedInstance
     {
         switch(id)
         {
-            case DATA_KALECGOS_EVENT:      
+            case DATA_KALECGOS_EVENT:
+                if(data == IN_PROGRESS)
+                {
+                    HandleGameObject(ForceField, CLOSE);
+                    HandleGameObject(Collision_1, CLOSE);
+                    HandleGameObject(Collision_2, CLOSE);
+                }
+                else
+                {
+                    HandleGameObject(ForceField, OPEN);
+                    HandleGameObject(Collision_1, OPEN);
+                    HandleGameObject(Collision_2, OPEN);
+                }
                 if(Encounters[0] != DONE)
-                    Encounters[0] = data; 
+                    Encounters[0] = data;
                 break;
-            case DATA_BRUTALLUS_EVENT:     
+            case DATA_BRUTALLUS_INTRO_EVENT:
                 if(Encounters[1] != DONE)
                     Encounters[1] = data;
+                switch(data)
+                {
+                    case IN_PROGRESS:
+                        HandleGameObject(IceBarrier, CLOSE);
+                        break;
+                    case DONE:
+                        HandleGameObject(IceBarrier, OPEN);
+                        break;
+                }
+                break;
+            case DATA_BRUTALLUS_EVENT:
+                if(Encounters[2] != DONE)
+                    Encounters[2] = data;
                 break;
             case DATA_FELMYST_EVENT:
-                if(Encounters[2] != DONE)
+                if(Encounters[3] != DONE)
                 {
                     if(data == DONE)
                         HandleGameObject(FireBarrier, OPEN);
-                    Encounters[2] = data;
+                    Encounters[3] = data;
                 }
                 break;
             case DATA_EREDAR_TWINS_EVENT:
-                if(Encounters[3] != DONE)
-                    Encounters[3] = data;
+                if(Encounters[4] != DONE)
+                    Encounters[4] = data;
                 break;
             case DATA_MURU_EVENT:
-                if(Encounters[4] != DONE)
+                if(Encounters[5] != DONE)
                 {
                     switch(data){
                         case DONE:
@@ -289,14 +356,14 @@ struct TRINITY_DLL_DECL instance_sunwell_plateau : public ScriptedInstance
                             HandleGameObject(Gate[3], OPEN);
                             break;
                     }
-                    Encounters[4] = data;
+                    Encounters[5] = data;
                 }
                 break;
-            case DATA_KILJAEDEN_EVENT:     
-                if(Encounters[5] != DONE)
-                    Encounters[5] = data;
+            case DATA_KILJAEDEN_EVENT:
+                if(Encounters[6] != DONE)
+                    Encounters[6] = data;
                 break;
-            case DATA_KALECGOS_PHASE:      
+            case DATA_KALECGOS_PHASE:
                 KalecgosPhase = data; 
                 break;
         }
@@ -323,7 +390,8 @@ struct TRINITY_DLL_DECL instance_sunwell_plateau : public ScriptedInstance
         stream << Encounters[2] << " ";
         stream << Encounters[3] << " ";
         stream << Encounters[4] << " ";
-        stream << Encounters[5];
+        stream << Encounters[5] << " ";
+        stream << Encounters[6];
 
         OUT_SAVE_INST_DATA_COMPLETE;
 
@@ -341,7 +409,7 @@ struct TRINITY_DLL_DECL instance_sunwell_plateau : public ScriptedInstance
         OUT_LOAD_INST_DATA(in);
         std::istringstream stream(in);
         stream >> Encounters[0] >> Encounters[1] >> Encounters[2] >> Encounters[3]
-            >> Encounters[4] >> Encounters[5];
+            >> Encounters[4] >> Encounters[5] >> Encounters[6];
         for(uint8 i = 0; i < ENCOUNTERS; ++i)
             if(Encounters[i] == IN_PROGRESS)                // Do not load an encounter as "In Progress" - reset it instead.
                 Encounters[i] = NOT_STARTED;
