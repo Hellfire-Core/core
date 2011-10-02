@@ -25,7 +25,6 @@ Script *m_scripts[MAX_SCRIPTS];
 Config TScriptConfig;
 
 void FillSpellSummary();
-void LoadOverridenSQLData();
 
 // -------------------
 void LoadDatabase()

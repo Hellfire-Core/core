@@ -593,7 +593,7 @@ enum MovementFlags
     MOVEFLAG_SWIMMING           = 0x00200000,               // appears with fly flag also
     MOVEFLAG_ASCENDING          = 0x00400000,               // swim up also
     MOVEFLAG_CAN_FLY            = 0x00800000,
-    SPLINEFLAG_FLYINGING             = 0x01000000,
+    SPLINEFLAG_FLYINGING        = 0x01000000,
     MOVEFLAG_FLYING             = 0x02000000,               // Actual flying mode
     MOVEFLAG_SPLINE_ELEVATION   = 0x04000000,               // used for flight paths
     MOVEFLAG_SPLINE_ENABLED     = 0x08000000,               // used for flight paths

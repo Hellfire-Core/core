@@ -1210,7 +1210,6 @@ void Spell::DoSpellHitOnUnit(Unit *unit, const uint32 effectMask)
     if (m_caster->GetTypeId() == TYPEID_UNIT && ((Creature*)m_caster)->IsAIEnabled)
         ((Creature*)m_caster)->AI()->SpellHitTarget(unit, m_spellInfo);
 
-
     // trigger only for first effect targets
     if (m_ChanceTriggerSpells.size() && (effectMask & 0x1))
     {
@@ -1735,6 +1734,11 @@ void Spell::SetTargetMap(uint32 i, uint32 cur)
         case TARGET_TYPE_UNIT_NEARBY:
         {
             float range = GetSpellMaxRange(sSpellRangeStore.LookupEntry(m_spellInfo->rangeIndex));
+            
+            // limit check range for some spells
+            if(range > 400)
+                range = 400;
+
             if (modOwner)
                 modOwner->ApplySpellMod(m_spellInfo->Id, SPELLMOD_RANGE, range, this);
 
@@ -2156,6 +2160,22 @@ void Spell::SetTargetMap(uint32 i, uint32 cur)
 
         if (!unitList.empty())
         {
+            if (m_spellInfo->AttributesEx & SPELL_ATTR_EX_CANT_TARGET_SELF)
+            {
+                std::list<Unit*>::iterator next;
+                for (std::list<Unit*>::iterator itr = unitList.begin(); itr != unitList.end(); itr = next)
+                {
+                    next = itr;
+                    ++next;
+
+                    // remove m_caster from unitList before CheckTarget()
+		    if ((*itr) == m_caster)
+                    {
+                        unitList.remove(*itr);
+                        break;
+                    }
+                }
+            }
             switch (m_spellInfo->Id)
             {
                 case 40869:     // Fatal Attraction
@@ -2178,6 +2198,11 @@ void Spell::SetTargetMap(uint32 i, uint32 cur)
                     unitList.remove_if(Trinity::UnitAuraCheck(true, 44867));
                     if (m_caster->GetTypeId() == TYPEID_UNIT && ((Creature*)m_caster)->getVictim())
                         unitList.remove(((Creature*)m_caster)->getVictim());
+                    break;
+		case 45032:     // Curse of Boundless Agony
+		case 45034:
+		    unitList.remove_if(Trinity::UnitAuraCheck(true, 45032));
+                    unitList.remove_if(Trinity::UnitAuraCheck(true, 45034));
                     break;
                 default:
                     break;
@@ -2278,6 +2303,13 @@ void Spell::prepare(SpellCastTargets * targets, Aura* triggeredByAura)
 
     // calculate cast time (calculated after first CanCast check to prevent charge counting for first CanCast fail)
     m_casttime = GetSpellCastTime(m_spellInfo, this);
+
+    // HACK for instant opening of Spectral Blast Portal
+    if (m_spellInfo->Id == 3365)
+    {
+        if(m_targets.getGOTarget()&& m_targets.getGOTarget()->GetEntry() == 187055)
+            m_casttime = 0;
+    }
 
     // set timer base at cast time
     ReSetTimer();
