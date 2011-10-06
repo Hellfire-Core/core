@@ -417,6 +417,14 @@ struct TRINITY_DLL_DECL boss_alythessAI : public Scripted_NoMovementAI
         if (!UpdateVictim())
             return;
 
+        if (checkTimer < diff)
+        {
+            DoZoneInCombat();
+            checkTimer = 3000;
+        }
+        else
+            checkTimer -= diff;
+
         if (SisterDeath)
         {
             if (ShadownovaTimer < diff)
@@ -482,12 +490,17 @@ struct TRINITY_DLL_DECL mob_shadow_imageAI : public ScriptedAI
 
     void Reset()
     {
-        ShadowfuryTimer = 5000 + (rand()%15000);
+        ShadowfuryTimer = urand(5000, 20000);
         DarkstrikeTimer = 3000;
         KillTimer = 15000;
     }
 
-    void EnterCombat(Unit *who){}
+    void AttackStart(Unit * target)
+    {
+        if (target)
+            m_creature->getThreatManager().addThreat(target, 10000.0f);
+        ScriptedAI::AttackStart(target);
+    }
 
     void UpdateAI(const uint32 diff)
     {
@@ -496,7 +509,9 @@ struct TRINITY_DLL_DECL mob_shadow_imageAI : public ScriptedAI
 
         if (KillTimer < diff)
         {
-            m_creature->DealDamage(m_creature, m_creature->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+            m_creature->SetVisibility(VISIBILITY_OFF);
+            m_creature->DestroyForNearbyPlayers();
+            m_creature->Kill(m_creature, false);
             KillTimer = 9999999;
         }
         else
@@ -507,22 +522,23 @@ struct TRINITY_DLL_DECL mob_shadow_imageAI : public ScriptedAI
 
         if (ShadowfuryTimer < diff)
         {
-            DoCast(m_creature, SPELL_SHADOW_FURY);
+            m_creature->CastSpell((Unit*)NULL, SPELL_SHADOW_FURY, false);
             ShadowfuryTimer = 10000;
         }
         else
-            ShadowfuryTimer -=diff;
+            ShadowfuryTimer -= diff;
 
         // i think it should be handled by proc aura ?
         if (DarkstrikeTimer < diff)
         {
-            if(!m_creature->IsNonMeleeSpellCasted(false))
+            if (!m_creature->IsNonMeleeSpellCasted(false))
             {
                 //If we are within range melee the target
-                if(m_creature->IsWithinMeleeRange(m_creature->getVictim()))
-                    DoCast(m_creature->getVictim(), SPELL_DARK_STRIKE);
+                if (m_creature->IsWithinMeleeRange(m_creature->getVictim()))
+                    m_creature->CastSpell(m_creature->getVictim(), SPELL_DARK_STRIKE, false);
             }
-            DarkstrikeTimer = 3000;
+
+            DarkstrikeTimer = 1000;
         }
         else
             DarkstrikeTimer -= diff;
