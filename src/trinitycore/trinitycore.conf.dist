@@ -1460,17 +1460,23 @@ PlayerStart.String = ""
 #        set interval between sending next advertising on chat(in minutes)
 #        0 = disable autoannounce (default)
 #
-###################################################################################################################
-
-AutoBroadcast.Timer = 0
-
-###################################################################################################################
-#
 #    Auction.EnableSort
 #        Enable or disable auctions sorting feature.
 #        1 = enable sorting (default)
 #        0 = disable sorting
 #
+#    Mail.OldReturnMode
+#        0 - Return old mails only once per day.
+#        1 - Return old mails based on Mail.ReturnTimer.
+#        Default: 1
+#
+#    Mail.OldReturnTimer
+#        If Mail.OldReturnMode is set to 1 then this value contains time beatween each old mails return attempt (in seconds).
+#        Default: 60
+#
 ###################################################################################################################
 
+AutoBroadcast.Timer = 0
 Auction.EnableSort = 1
+Mail.OldReturnMode = 0
+Mail.OldReturnTimer = 60

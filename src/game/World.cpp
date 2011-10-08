@@ -670,6 +670,9 @@ void World::LoadConfigSettings(bool reload)
     m_configs[CONFIG_GUILD_ANN_INTERVAL] = (sConfig.GetIntDefault("GuildAnnounce.Timer", 1)*MINUTE*1000);
     m_configs[CONFIG_GUILD_ANN_COOLDOWN] = (sConfig.GetIntDefault("GuildAnnounce.Cooldown", 60)*MINUTE);
 
+    m_configs[CONFIG_RETURNOLDMAILS_MODE] = sConfig.GetIntDefault("Mail.OldReturnMode", 0);
+    m_configs[CONFIG_RETURNOLDMAILS_INTERVAL] = sConfig.GetIntDefault("Mail.OldReturnTimer", 60);
+
     m_configs[CONFIG_COMPRESSION] = sConfig.GetIntDefault("Compression", 1);
     if (m_configs[CONFIG_COMPRESSION] < 1 || m_configs[CONFIG_COMPRESSION] > 9)
     {
@@ -1587,13 +1590,14 @@ void World::SetInitialWorldSettings()
     m_timers[WUPDATE_AUTOBROADCAST].SetInterval(getConfig(CONFIG_AUTOBROADCAST_INTERVAL));
     m_timers[WUPDATE_GUILD_ANNOUNCES].SetInterval(getConfig(CONFIG_GUILD_ANN_INTERVAL));
     m_timers[WUPDATE_DELETECHARS].SetInterval(DAY*IN_MILISECONDS); // check for chars to delete every day
+    m_timers[WUPDATE_OLDMAILS].SetInterval(getConfig(CONFIG_RETURNOLDMAILS_INTERVAL)*1000);
 
     //to set mailtimer to return mails every day between 4 and 5 am
     //mailtimer is increased when updating auctions
     //one second is 1000 -(tested on win system)
-    mail_timer = ((((localtime(&m_gameTime)->tm_hour + 20) % 24)* HOUR * 1000) / m_timers[WUPDATE_AUCTIONS].GetInterval());
+    mail_timer = ((((localtime(&m_gameTime)->tm_hour + 20) % 24)* HOUR * 1000) / m_timers[WUPDATE_OLDMAILS].GetInterval());
                                                             //1440
-    mail_timer_expires = ((DAY * 1000) / (m_timers[WUPDATE_AUCTIONS].GetInterval()));
+    mail_timer_expires = ((DAY * 1000) / (m_timers[WUPDATE_OLDMAILS].GetInterval()));
     sLog.outDebug("Mail timer set to: %u, mail return is called every %u minutes", mail_timer, mail_timer_expires);
 
     ///- Initilize static helper structures
@@ -1795,19 +1799,36 @@ void World::Update(uint32 diff)
     }
 
     /// <ul><li> Handle auctions when the timer has passed
+    if (m_timers[WUPDATE_OLDMAILS].Passed())
+    {
+        m_timers[WUPDATE_OLDMAILS].Reset();
+
+        ///- Update mails (return old mails with item, or delete them)
+        RecordTimeDiff(NULL);
+
+        switch (m_configs[CONFIG_RETURNOLDMAILS_MODE])
+        {
+            case 1:
+                objmgr.ReturnOrDeleteOldMails(true);
+                break;
+            case 0:
+            default:
+                if (++mail_timer > mail_timer_expires)
+                {
+                    mail_timer = 0;
+                    objmgr.ReturnOrDeleteOldMails(true);
+                }
+                break;
+        }
+
+        RecordTimeDiff("ReturnOldMails");
+    }
+
+    /// <ul><li> Handle auctions when the timer has passed
     if (m_timers[WUPDATE_AUCTIONS].Passed())
     {
         m_timers[WUPDATE_AUCTIONS].Reset();
-
-        ///- Update mails (return old mails with item, or delete them)
-        //(tested... works on win)
         RecordTimeDiff(NULL);
-        if (++mail_timer > mail_timer_expires)
-        {
-            mail_timer = 0;
-            objmgr.ReturnOrDeleteOldMails(true);
-        }
-        RecordTimeDiff("ReturnOldMails");
         ///-Handle expired auctions
         sAuctionMgr.Update();
         RecordTimeDiff("UpdateAuctions");
