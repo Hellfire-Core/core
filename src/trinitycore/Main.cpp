@@ -30,6 +30,7 @@
 #include "ProgressBar.h"
 #include "Log.h"
 #include "Master.h"
+#include "vmap/VMapCluster.h"
 
 #include <ace/Get_Opt.h>
 
@@ -81,7 +82,10 @@ extern int main(int argc, char **argv)
 
     //sLog.Initialize();
 
-    char const *options = ":a:c:s:";
+    char const *options = ":a:c:s:p:i:";
+
+    char const *process = 0;
+    int process_id = 0;
 
     ACE_Get_Opt cmd_opts(argc, argv, options);
     cmd_opts.long_option("version", 'v', ACE_Get_Opt::NO_ARG);
@@ -116,18 +120,28 @@ extern int main(int argc, char **argv)
 #endif
                 else
                 {
-                    printf("Runtime-Error: -%c unsupported argument %s", cmd_opts.opt_opt(), mode);
+                    printf("Runtime-Error: -%c unsupported argument %s\n", cmd_opts.opt_opt(), mode);
                     usage(argv[0]);
                     return 1;
                 }
                 break;
             }
+            case 'p':
+            {
+                process = cmd_opts.opt_arg();
+                break;
+            }
+            case 'i':
+            {
+                process_id = atoi(cmd_opts.opt_arg());
+                break;
+            }
             case ':':
-                printf("Runtime-Error: -%c option requires an input argument", cmd_opts.opt_opt());
+                printf("Runtime-Error: -%c option requires an input argument\n", cmd_opts.opt_opt());
                 usage(argv[0]);
                 return 1;
             default:
-                printf("Runtime-Error: bad format of commandline arguments");
+                printf("Runtime-Error: bad format of commandline arguments\n");
                 usage(argv[0]);
                 return 1;
         }
@@ -155,6 +169,24 @@ extern int main(int argc, char **argv)
         printf("Could not find configuration file %s.", cfg_file);
         return 1;
     }
+
+    if(process)
+    {
+        if(strcmp(process, VMAP_CLUSTER_MANAGER_PROCESS) == 0)
+        {
+            VMAP::VMapClusterManager vmap_manager;
+            return vmap_manager.Run();
+        }
+        else if(strcmp(process, VMAP_CLUSTER_PROCESS) == 0)
+        {
+            VMAP::VMapClusterProcess process(process_id);
+            return process.Run();
+        } 
+        else
+            printf("Runtime-Error: bad format of process arguments\n");
+            return 1;
+    }
+
 
 #ifndef WIN32                                               // posix daemon commands need apply after config read
     switch (serviceDaemonMode)
@@ -187,6 +219,11 @@ extern int main(int argc, char **argv)
     }
 
     BarGoLink::SetOutputState(sConfig.GetBoolDefault("ShowProgressBars", false));
+
+
+    if(sConfig.GetBoolDefault("VMapProcess", true)) // TODO: change to false on release
+        VMAP::VMapClusterManager::SpawnVMapProcesses(argv[0], cfg_file);
+
 
     ///- and run the 'Master'
     /// \todo Why do we need this 'Master'? Can't all of this be in the Main as for Realmd?

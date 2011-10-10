@@ -1592,6 +1592,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\game\vmap\VMapCluster.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\game\vmap\VMapCluster.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\game\vmap\VMapDefinitions.h"
 				>
 			</File>
