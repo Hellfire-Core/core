@@ -1419,6 +1419,14 @@ void GameObject::CastSpell(Unit* target, uint32 spell)
     if (!trigger) return;
 
     trigger->SetVisibility(VISIBILITY_OFF); //should this be true?
+
+    if(spell == 7353) // cozy fire, TODO: find general rule?
+    {
+        trigger->setFaction(14);
+        trigger->CastSpell(target, spell, true); // no orginal caster should prevent 'on spell cast' triggering
+        return;
+    }
+
     if (Unit *owner = GetOwner())
     {
         trigger->setFaction(owner->getFaction());
