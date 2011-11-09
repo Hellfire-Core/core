@@ -67,38 +67,46 @@ bool PoolGroup<T>::IsSpawnedObject(uint32 guid)
 }
 
 template <class T>
-void PoolGroup<T>::RollOne(int32& index, PoolObjectList** store, uint32 triggerFrom)
+PoolObject* PoolGroup<T>::RollOne(uint32 triggerFrom)
 {
     if (!ExplicitlyChanced.empty())
     {
         float roll = (float)rand_chance();
 
-        for (uint32 i=0; i<ExplicitlyChanced.size(); ++i)
+        for (uint32 i = 0; i < ExplicitlyChanced.size(); ++i)
         {
             roll -= ExplicitlyChanced[i].chance;
             // Triggering object is marked as spawned at this time and can be also rolled (respawn case)
             // so this need explicit check for this case
             if (roll < 0 && (!ExplicitlyChanced[i].spawned || ExplicitlyChanced[i].guid == triggerFrom))
-            {
-                index = i;
-                *store = &ExplicitlyChanced;
-                return;
-            }
+                return &ExplicitlyChanced[i];
+            
         }
     }
     if (!EqualChanced.empty())
     {
-        index = irand(0, EqualChanced.size()-1);
-        // Triggering object is marked as spawned at this time and can be also rolled (respawn case)
-        // so this need explicit check for this case
-        if (!EqualChanced[index].spawned || EqualChanced[index].guid == triggerFrom)
+        uint32 count = 0;
+        for(uint32 i = 0; i < EqualChanced.size(); ++i)
+            if (!EqualChanced[i].spawned || EqualChanced[i].guid == triggerFrom)
+                count++;
+
+        if (count) // just to be sure, should always be >0
         {
-            *store = &EqualChanced;
-            return;
+            uint32 rand = irand(0, count - 1);
+            count = 0;
+            for(uint32 i = 0; i < EqualChanced.size(); ++i)
+            {
+                if (!EqualChanced[i].spawned || EqualChanced[i].guid == triggerFrom)
+                {
+                   if(count == rand)
+                       return &EqualChanced[i];
+                   count++;
+                }
+            }
         }
     }
 
-    index = -1;
+    return NULL;
 }
 
 // Main method to despawn a creature or gameobject in a pool
@@ -216,6 +224,7 @@ void PoolGroup<T>::SpawnObject(uint32 limit, uint32 triggerFrom)
 {
     uint32 lastDespawned = 0;
     int count = limit - m_SpawnedPoolAmount;
+    PoolObject *obj;
 
     // If triggered from some object respawn this object is still marked as spawned
     // and also counted into m_SpawnedPoolAmount so we need increase count to be
@@ -226,34 +235,33 @@ void PoolGroup<T>::SpawnObject(uint32 limit, uint32 triggerFrom)
     // This will try to spawn the rest of pool, not guaranteed
     for (int i = 0; i < count; ++i)
     {
-        int index;
-        PoolObjectList* store;
 
-        RollOne(index, &store, triggerFrom);
-        if (index == -1)
-            continue;
-        if ((*store)[index].guid == lastDespawned)
+        obj = RollOne(triggerFrom);
+        if (!obj)
             continue;
 
-        if ((*store)[index].guid == triggerFrom)
+        if (obj->guid == triggerFrom)
         {
-            (*store)[index].spawned = ReSpawn1Object(triggerFrom);
-            triggerFrom = 0;
-            continue;
+            obj->spawned = ReSpawn1Object(triggerFrom);
+            if(!obj->spawned)
+                --m_SpawnedPoolAmount;
+            else
+                triggerFrom = 0;
         }
         else
-            (*store)[index].spawned = Spawn1Object((*store)[index].guid);
-
-        if (triggerFrom)
         {
-            // One spawn one despawn no count increase
-            DespawnObject(triggerFrom);
-            lastDespawned = triggerFrom;
-            triggerFrom = 0;
-        }
-        else
-            ++m_SpawnedPoolAmount;
+            obj->spawned = Spawn1Object(obj->guid);
+            if(obj->spawned)
+                ++m_SpawnedPoolAmount;
+        }            
     }
+
+    if (triggerFrom)
+    {
+        DespawnObject(triggerFrom);
+        --m_SpawnedPoolAmount;
+    }
+        
 }
 
 // Method that is actualy doing the spawn job on 1 creature

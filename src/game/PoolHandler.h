@@ -47,7 +47,7 @@ class PoolGroup
         bool isEmpty() { return ExplicitlyChanced.empty() && EqualChanced.empty(); }
         void AddEntry(PoolObject& poolitem, uint32 maxentries);
         bool CheckPool(void);
-        void RollOne(int32& index, PoolObjectList** store, uint32 triggerFrom);
+        PoolObject* RollOne(uint32 triggerFrom);
         bool IsSpawnedObject(uint32 guid);
         void DespawnObject(uint32 guid=0);
         void Despawn1Object(uint32 guid);
