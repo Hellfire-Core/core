@@ -401,7 +401,7 @@ enum PlayerFlags
     PLAYER_FLAGS_UNK3           = 0x00008000,               // strange visual effect (2.0.1), looks like PLAYER_FLAGS_GHOST flag
     PLAYER_FLAGS_SANCTUARY      = 0x00010000,               // player entered sanctuary
     PLAYER_FLAGS_UNK4           = 0x00020000,               // taxi benchmark mode (on/off) (2.0.1)
-    PLAYER_UNK                  = 0x00040000,               // 2.0.8...
+    PLAYER_UNK                  = 0x00040000,               // in 3.0.2, pvp timer active (after you disable pvp manually)
 };
 
 // used for PLAYER__FIELD_KNOWN_TITLES field (uint64), (1<<bit_index) without (-1)
@@ -718,14 +718,13 @@ enum TradeSlots
 
 enum TransferAbortReason
 {
-    TRANSFER_ABORT_MAX_PLAYERS          = 0x0001,           // Transfer Aborted: instance is full
-    TRANSFER_ABORT_NOT_FOUND            = 0x0002,           // Transfer Aborted: instance not found
-    TRANSFER_ABORT_TOO_MANY_INSTANCES   = 0x0003,           // You have entered too many instances recently.
-    TRANSFER_ABORT_ZONE_IN_COMBAT       = 0x0005,           // Unable to zone in while an encounter is in progress.
-    TRANSFER_ABORT_INSUF_EXPAN_LVL1     = 0x0106,           // You must have TBC expansion installed to access this area.
-    TRANSFER_ABORT_DIFFICULTY1          = 0x0007,           // Normal difficulty mode is not available for %s.
-    TRANSFER_ABORT_DIFFICULTY2          = 0x0107,           // Heroic difficulty mode is not available for %s.
-    TRANSFER_ABORT_DIFFICULTY3          = 0x0207            // Epic difficulty mode is not available for %s.
+    TRANSFER_ABORT_ERROR                    = 0x00,
+    TRANSFER_ABORT_MAX_PLAYERS              = 0x01,         // Transfer Aborted: instance is full
+    TRANSFER_ABORT_NOT_FOUND                = 0x02,         // Transfer Aborted: instance not found
+    TRANSFER_ABORT_TOO_MANY_INSTANCES       = 0x03,         // You have entered too many instances recently.
+    TRANSFER_ABORT_ZONE_IN_COMBAT           = 0x05,         // Unable to zone in while an encounter is in progress.
+    TRANSFER_ABORT_INSUF_EXPAN_LVL          = 0x06,         // You must have TBC expansion installed to access this area.
+    TRANSFER_ABORT_DIFFICULTY               = 0x07,         // <Normal,Heroic,Epic> difficulty mode is not available for %s.
 };
 
 enum InstanceResetWarningType
@@ -941,7 +940,7 @@ class TRINITY_DLL_SPEC Player : public Unit
 
         void SendInitialPacketsBeforeAddToMap();
         void SendInitialPacketsAfterAddToMap();
-        void SendTransferAborted(uint32 mapid, uint16 reason);
+        void SendTransferAborted(uint32 mapid, uint8 reason, uint8 arg = 0);
         void SendInstanceResetWarning(uint32 mapid, uint32 time);
 
         GameObject* GetGameObjectIfCanInteractWith(uint64 guid, GameobjectTypes type = GAMEOBJECT_TYPE_GUILD_BANK) const;
@@ -1717,6 +1716,13 @@ class TRINITY_DLL_SPEC Player : public Unit
         void SetDontMove(bool dontMove);
         bool GetDontMove() const { return m_dontMove; }
 
+        WorldLocation& GetTeleportDest() { return m_teleport_dest; }
+        bool IsBeingTeleported() const { return mSemaphoreTeleport_Near || mSemaphoreTeleport_Far; }
+        bool IsBeingTeleportedNear() const { return mSemaphoreTeleport_Near; }
+        bool IsBeingTeleportedFar() const { return mSemaphoreTeleport_Far; }
+        void SetSemaphoreTeleportNear(bool semphsetting) { mSemaphoreTeleport_Near = semphsetting; }
+        void SetSemaphoreTeleportFar(bool semphsetting) { mSemaphoreTeleport_Far = semphsetting; }
+
         void CheckAreaExploreAndOutdoor(void);
 
         static uint32 TeamForRace(uint8 race);
@@ -2063,8 +2069,9 @@ class TRINITY_DLL_SPEC Player : public Unit
         // Temporarily removed pet cache
         uint32 GetTemporaryUnsummonedPetNumber() const { return m_temporaryUnsummonedPetNumber; }
         void SetTemporaryUnsummonedPetNumber(uint32 petnumber) { m_temporaryUnsummonedPetNumber = petnumber; }
-        uint32 GetOldPetSpell() const { return m_oldpetspell; }
-        void SetOldPetSpell(uint32 petspell) { m_oldpetspell = petspell; }
+        void UnsummonPetTemporaryIfAny();
+        void ResummonPetTemporaryUnSummonedIfAny();
+        bool IsPetNeedBeTemporaryUnsummoned() const { return !IsInWorld() || !isAlive() || IsMounted() /*+in flight*/; }
 
         void SendCinematicStart(uint32 CinematicSequenceId);
 
@@ -2127,8 +2134,6 @@ class TRINITY_DLL_SPEC Player : public Unit
         MapReference &GetMapRef() { return m_mapRef; }
 
         bool isAllowedToLoot(Creature* creature);
-
-        WorldLocation& GetTeleportDest() { return m_teleport_dest; }
 
         DeclinedName const* GetDeclinedNames() const { return m_declinedname; }
         bool HasTitle(uint32 bitIndex);
@@ -2398,14 +2403,16 @@ class TRINITY_DLL_SPEC Player : public Unit
         uint32 m_timeSyncClient;
         uint32 m_timeSyncServer;
 
+        GlobalCooldownMgr m_GlobalCooldownMgr;
+
         // Current teleport data
         WorldLocation m_teleport_dest;
+        bool mSemaphoreTeleport_Near;
+        bool mSemaphoreTeleport_Far;
 
         // Temporary removed pet cache
         uint32 m_temporaryUnsummonedPetNumber;
         uint32 m_oldpetspell;
-
-        GlobalCooldownMgr m_GlobalCooldownMgr;
 
         ReputationMgr  m_reputationMgr;
 };

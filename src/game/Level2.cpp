@@ -290,7 +290,7 @@ bool ChatHandler::HandleMuteInfoCommand(const char* args)
     return true;
 }
 
-bool ChatHandler::HandleTargetObjectCommand(const char* args)
+bool ChatHandler::HandleGameObjectTargetCommand(const char* args)
 {
     Player* pl = m_session->GetPlayer();
     QueryResultAutoPtr result;
@@ -1028,7 +1028,7 @@ bool ChatHandler::HandleNpcDeleteCommand(const char* args)
 }
 
 //delete object by selection or guid
-bool ChatHandler::HandleDelObjectCommand(const char* args)
+bool ChatHandler::HandleGameObjectDeleteCommand(const char* args)
 {
     // number or [name] Shift-click form |color|Hgameobject:go_guid|h[name]|h|r
     char* cId = extractKeyFromLink((char*)args,"Hgameobject");
@@ -1076,7 +1076,7 @@ bool ChatHandler::HandleDelObjectCommand(const char* args)
 }
 
 //turn selected object
-bool ChatHandler::HandleTurnObjectCommand(const char* args)
+bool ChatHandler::HandleGameObjectTurnCommand(const char* args)
 {
     // number or [name] Shift-click form |color|Hgameobject:go_id|h[name]|h|r
     char* cId = extractKeyFromLink((char*)args, "Hgameobject");
@@ -1211,7 +1211,7 @@ bool ChatHandler::HandleNpcMoveCommand(const char* args)
 }
 
 //move selected object
-bool ChatHandler::HandleMoveObjectCommand(const char* args)
+bool ChatHandler::HandleGameObjectMoveCommand(const char* args)
 {
     // number or [name] Shift-click form |color|Hgameobject:go_guid|h[name]|h|r
     char* cId = extractKeyFromLink((char*)args, "Hgameobject");
@@ -3079,7 +3079,7 @@ bool ChatHandler::HandleRenameCommand(const char* args)
 }
 
 //spawn go
-bool ChatHandler::HandleGameObjectCommand(const char* args)
+bool ChatHandler::HandleGameObjectAddCommand(const char* args)
 {
     if (!*args)
         return false;
@@ -3145,25 +3145,6 @@ bool ChatHandler::HandleGameObjectCommand(const char* args)
     objmgr.AddGameobjectToGrid(db_lowGUID, objmgr.GetGOData(db_lowGUID));
 
     PSendSysMessage(LANG_GAMEOBJECT_ADD,id,goI->name,db_lowGUID,x,y,z);
-    return true;
-}
-
-//show animation
-bool ChatHandler::HandleAnimCommand(const char* args)
-{
-    if (!*args)
-        return false;
-
-    Unit *pTarget = NULL;
-
-    if (m_session->GetPlayer()->GetSelection())
-        pTarget = Unit::GetUnit(*(m_session->GetPlayer()), m_session->GetPlayer()->GetSelection());
-
-    if (!pTarget)
-        pTarget = m_session->GetPlayer();
-
-    uint32 anim_id = atoi((char*)args);
-    pTarget->HandleEmoteCommand(anim_id);
     return true;
 }
 
@@ -3938,7 +3919,7 @@ bool ChatHandler::HandlePetTpCommand(const char *args)
     return true;
 }
 
-bool ChatHandler::HandleActivateObjectCommand(const char *args)
+bool ChatHandler::HandleGameObjectActivateCommand(const char *args)
 {
     if (!*args)
         return false;
@@ -3997,7 +3978,7 @@ bool ChatHandler::HandleTempAddSpwCommand(const char* args)
 }
 
 // add go, temp only
-bool ChatHandler::HandleTempGameObjectCommand(const char* args)
+bool ChatHandler::HandleGameObjectAddTempCommand(const char* args)
 {
     if (!*args)
         return false;

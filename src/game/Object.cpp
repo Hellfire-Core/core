@@ -1033,17 +1033,13 @@ bool Object::PrintIndexError(uint32 index, bool set) const
 
 WorldObject::WorldObject()
     : m_mapId(0), m_InstanceId(0),
-    m_positionX(0.0f), m_positionY(0.0f), m_positionZ(0.0f), m_orientation(0.0f),
-    mSemaphoreTeleport(false)
+    m_positionX(0.0f), m_positionY(0.0f), m_positionZ(0.0f), m_orientation(0.0f)
     , m_map(NULL), m_zoneScript(NULL)
     , m_isActive(false), IsTempWorldObject(false)
     , m_notifyflags(0), m_executed_notifies(0)
 {
-
     m_groupLootTimer    = 0;
     lootingGroupLeaderGUID = 0;
-
-    mSemaphoreTeleport  = false;
 }
 
 void WorldObject::SetWorldObject(bool on)

@@ -183,7 +183,7 @@ bool ChatHandler::HandleGuildAnnounceCommand(const char *args)
     return false;
 }
 
-bool ChatHandler::HandleNameAnnounceCommand(const char* args)
+bool ChatHandler::HandleNameCommand(const char* args)
 {
     WorldPacket data;
     if (!*args)
@@ -257,7 +257,7 @@ bool ChatHandler::HandleGMNotifyCommand(const char* args)
 }
 
 //Enable\Dissable GM Mode
-bool ChatHandler::HandleGMmodeCommand(const char* args)
+bool ChatHandler::HandleGMCommand(const char* args)
 {
     if (!*args)
     {
@@ -800,7 +800,7 @@ bool ChatHandler::HandleGMTicketReloadCommand(const char*)
 }
 
 //Enable\Dissable Invisible mode
-bool ChatHandler::HandleVisibleCommand(const char* args)
+bool ChatHandler::HandleGMVisibleCommand(const char* args)
 {
     if (!*args)
     {
@@ -1130,7 +1130,7 @@ bool ChatHandler::HandleGonameCommand(const char* args)
 
         // to point to see at target with same orientation
         float x,y,z;
-        target->GetContactPoint(m_session->GetPlayer(),x,y,z);
+        target->GetPosition(x, y, z);
         _player->TeleportTo(target->GetMapId(), x, y, z, _player->GetAngle(target), TELE_TO_GM_MODE);
 
         return true;
@@ -2501,7 +2501,7 @@ bool ChatHandler::HandleSendMailCommand(const char* args)
 }
 
 // teleport player to given game_tele.entry
-bool ChatHandler::HandleNameTeleCommand(const char * args)
+bool ChatHandler::HandleTeleNameCommand(const char * args)
 {
     if (!*args)
         return false;
@@ -2580,7 +2580,7 @@ bool ChatHandler::HandleNameTeleCommand(const char * args)
 }
 
 //Teleport group to given game_tele.entry
-bool ChatHandler::HandleGroupTeleCommand(const char * args)
+bool ChatHandler::HandleTeleGroupCommand(const char * args)
 {
     if (!*args)
         return false;
@@ -2960,7 +2960,7 @@ bool ChatHandler::HandleGoGridCommand(const char* args)
     return true;
 }
 
-bool ChatHandler::HandleDrunkCommand(const char* args)
+bool ChatHandler::HandleModifyDrunkCommand(const char* args)
 {
     if (!*args)    return false;
 

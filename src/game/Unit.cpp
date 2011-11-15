@@ -3179,7 +3179,7 @@ void Unit::_UpdateSpells(uint32 time)
 
     if (!m_gameObj.empty())
     {
-        std::list<GameObject*>::iterator itr;
+        GameObjectList::iterator itr;
         for (itr = m_gameObj.begin(); itr != m_gameObj.end();)
         {
             if (!(*itr)->isSpawned())
@@ -3329,8 +3329,12 @@ void Unit::InterruptSpell(uint32 spellType, bool withDelayed, bool withInstant)
         if (spell->getState() != SPELL_STATE_FINISHED)
             spell->cancel();
 
-        m_currentSpells[spellType] = NULL;
-        spell->SetReferencedFromCurrent(false);
+        // cancel can interrupt spell already (caster cancel ->target aura remove -> caster iterrupt)
+        if (m_currentSpells[spellType])
+        {
+            m_currentSpells[spellType]->SetReferencedFromCurrent(false);
+            m_currentSpells[spellType] = NULL;
+        }
     }
 }
 
@@ -4640,6 +4644,15 @@ DynamicObject * Unit::GetDynObject(uint32 spellId)
     return NULL;
 }
 
+GameObject* Unit::GetGameObject(uint32 spellId) const
+{
+    for (GameObjectList::const_iterator i = m_gameObj.begin(); i != m_gameObj.end();)
+        if ((*i)->GetSpellId() == spellId)
+            return *i;
+
+    return NULL;
+}
+
 void Unit::AddGameObject(GameObject* gameObj)
 {
     assert(gameObj && gameObj->GetOwnerGUID()==0);
@@ -4680,7 +4693,7 @@ void Unit::RemoveGameObject(uint32 spellid, bool del)
 {
     if (m_gameObj.empty())
         return;
-    std::list<GameObject*>::iterator i, next;
+    GameObjectList::iterator i, next;
     for (i = m_gameObj.begin(); i != m_gameObj.end(); i = next)
     {
         next = i;
@@ -4703,7 +4716,7 @@ void Unit::RemoveGameObject(uint32 spellid, bool del)
 void Unit::RemoveAllGameObjects()
 {
     // remove references to unit
-    for (std::list<GameObject*>::iterator i = m_gameObj.begin(); i != m_gameObj.end();)
+    for (GameObjectList::iterator i = m_gameObj.begin(); i != m_gameObj.end();)
     {
         (*i)->SetOwnerGUID(0);
         (*i)->SetRespawnTime(0);
@@ -8989,27 +9002,7 @@ void Unit::Mount(uint32 mount)
 
     // unsummon pet
     if (GetTypeId() == TYPEID_PLAYER)
-    {
-        Pet* pet = GetPet();
-        if (pet)
-        {
-            BattleGround *bg = ((Player *)this)->GetBattleGround();
-            // don't unsummon pet in arena but SetFlag UNIT_FLAG_DISABLE_ROTATE to disable pet's interface
-            if (bg && bg->isArena())
-                pet->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_ROTATE);
-            else
-            {
-                if (pet->isControlled())
-                {
-                    ((Player*)this)->SetTemporaryUnsummonedPetNumber(pet->GetCharmInfo()->GetPetNumber());
-                    ((Player*)this)->SetOldPetSpell(pet->GetUInt32Value(UNIT_CREATED_BY_SPELL));
-                }
-                ((Player*)this)->RemovePet(NULL, PET_SAVE_NOT_IN_SLOT);
-                return;
-            }
-        }
-        ((Player*)this)->SetTemporaryUnsummonedPetNumber(0);
-    }
+        ((Player*)this)->UnsummonPetTemporaryIfAny();
 }
 
 void Unit::Unmount()
@@ -9028,20 +9021,8 @@ void Unit::Unmount()
     // only resummon old pet if the player is already added to a map
     // this prevents adding a pet to a not created map which would otherwise cause a crash
     // (it could probably happen when logging in after a previous crash)
-    if (GetTypeId() == TYPEID_PLAYER && IsInWorld() && isAlive())
-    {
-        if (((Player*)this)->GetTemporaryUnsummonedPetNumber())
-        {
-            Pet* NewPet = new Pet;
-            if (!NewPet->LoadPetFromDB(this, 0, ((Player*)this)->GetTemporaryUnsummonedPetNumber(), true))
-                delete NewPet;
-            ((Player*)this)->SetTemporaryUnsummonedPetNumber(0);
-        }
-        else
-           if (Pet *pPet = GetPet())
-               if (pPet->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_ROTATE) && !pPet->hasUnitState(UNIT_STAT_STUNNED))
-                   pPet->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_ROTATE);
-    }
+    if (GetTypeId() == TYPEID_PLAYER)
+        ((Player*)this)->ResummonPetTemporaryUnSummonedIfAny();
 }
 
 void Unit::SetInCombatWith(Unit* enemy)

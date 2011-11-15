@@ -171,6 +171,27 @@ struct ChrRacesEntry
     uint32      addon;                                      // 68 (0 - original race, 1 - tbc addon, ...)
 };
 
+/* not used
+struct CinematicCameraEntry
+{
+    uint32      id;                                         // 0 index
+    char*       filename;                                   // 1
+    uint32      soundid;                                    // 2 in SoundEntries.dbc or 0
+    float       start_x;                                    // 3
+    float       start_y;                                    // 4
+    float       start_z;                                    // 5
+    float       unk6;                                       // 6 speed?
+};
+*/
+
+struct CinematicSequencesEntry
+{
+    uint32      Id;                                         // 0 index
+    //uint32      unk1;                                     // 1 always 0
+    //uint32      cinematicCamera;                          // 2 id in CinematicCamera.dbc
+                                                            // 3-9 always 0
+};
+
 struct CreatureDisplayInfoEntry
 {
     uint32      Displayid;                                  // 0
@@ -566,7 +587,7 @@ struct RandomPropertiesPointsEntry
 struct SkillLineEntry
 {
     uint32    id;                                           // 0
-    uint32    categoryId;                                   // 1 (index from SkillLineCategory.dbc)
+    int32    categoryId;                                    // 1 (index from SkillLineCategory.dbc)
     //uint32    skillCostID;                                // 2 not used
     char*     name[16];                                     // 3-18
                                                             // 19 string flags, not used
@@ -815,6 +836,18 @@ struct StableSlotPricesEntry
     uint32 Slot;
     uint32 Price;
 };
+
+/* unused currently
+struct SummonPropertiesEntry
+{
+    uint32  Id;                                             // 0
+    uint32  Group;                                          // 1, enum SummonPropGroup,  0 - can't be controlled?, 1 - something guardian?, 2 - pet?, 3 - something controllable?, 4 - taxi/mount?
+    uint32  Unk2;                                           // 2,                        14 rows > 0
+    uint32  Type;                                           // 3, enum SummonPropType
+    uint32  Slot;                                           // 4,                        0-6
+    uint32  Flags;                                          // 5, enum SummonPropFlags
+};
+*/
 
 struct TalentEntry
 {

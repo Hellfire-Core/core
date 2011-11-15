@@ -332,7 +332,8 @@ Player::Player (WorldSession *session): Unit(), m_reputationMgr(this)
 
     m_atLoginFlags = AT_LOGIN_NONE;
 
-    m_dontMove = false;
+    mSemaphoreTeleport_Near = false;
+    mSemaphoreTeleport_Far = false;
 
     pTrader = 0;
 
@@ -1696,7 +1697,7 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
         if (GetTransport())
             RepopAtGraveyard();                             // teleport to near graveyard if on transport, looks blizz like :)
 
-        SendTransferAborted(mapid, TRANSFER_ABORT_INSUF_EXPAN_LVL1);
+        SendTransferAborted(mapid, TRANSFER_ABORT_INSUF_EXPAN_LVL, mEntry->Expansion());
         return false;                                       // normal client can't teleport to this map...
     }
     else
@@ -1711,8 +1712,6 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
         m_transport = NULL;
         m_movementInfo.ClearTransportData();
     }
-
-    SetSemaphoreTeleport(true);
 
     m_AC_timer = 3000;
 
@@ -1734,6 +1733,8 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
         // prepare zone change detect
         uint32 old_zone = GetZoneId();
 
+        SetSemaphoreTeleportFar(false);
+
         // near teleport
         if (!GetSession()->PlayerLogout())
         {
@@ -1750,16 +1751,9 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
 
         if (!(options & TELE_TO_NOT_UNSUMMON_PET))
         {
-            //same map, only remove pet if out of range
+            //same map, only remove pet if out of range for new position
             if (pet && !IsWithinDistInMap(pet, OWNER_MAX_DISTANCE))
-            {
-                if (pet->isControlled() && !pet->isTemporarySummoned())
-                    m_temporaryUnsummonedPetNumber = pet->GetCharmInfo()->GetPetNumber();
-                else
-                    m_temporaryUnsummonedPetNumber = 0;
-
-                RemovePet(pet, PET_SAVE_NOT_IN_SLOT);
-            }
+                UnsummonPetTemporaryIfAny();
         }
 
         if (!(options & TELE_TO_NOT_LEAVE_COMBAT))
@@ -1768,21 +1762,16 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
         if (!(options & TELE_TO_NOT_UNSUMMON_PET))
         {
             // resummon pet
-            if (pet && m_temporaryUnsummonedPetNumber)
-            {
-                Pet* NewPet = new Pet;
-                if (!NewPet->LoadPetFromDB(this, 0, m_temporaryUnsummonedPetNumber, true))
-                    delete NewPet;
-
-                m_temporaryUnsummonedPetNumber = 0;
-            }
+            if (pet)
+                ResummonPetTemporaryUnSummonedIfAny();
         }
+
+        SetSemaphoreTeleportNear(true);
 
         // near teleport, triggering send MSG_MOVE_TELEPORT_ACK from client at landing
         if (!GetSession()->PlayerLogout())
         {
             // don't reset teleport semaphore while logging out, otherwise m_teleport_dest won't be used in Player::SaveToDB
-            SetSemaphoreTeleport(false);
             UpdateZone(GetZoneId());
         }
 
@@ -1814,7 +1803,7 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
         // this check not dependent from map instance copy and same for all instance copies of selected map
         if (!sMapMgr.CanPlayerEnter(mapid, this))
         {
-            SetSemaphoreTeleport(false);
+            SetSemaphoreTeleportFar(false);
             return false;
         }
 
@@ -1824,7 +1813,7 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
             {
                 if (iMap->EncounterInProgress(this))
                 {
-                    SetSemaphoreTeleport(false);
+                    SetSemaphoreTeleportFar(false);
                     return false;
                 }
             }
@@ -1835,6 +1824,7 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
         Map *map = sMapMgr.FindMap(mapid);
         if (!map || map->CanEnter(this))
         {
+            SetSemaphoreTeleportNear(false);
             SetSelection(0);
             CombatStop();
             ResetContestedPvP();
@@ -1851,15 +1841,7 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
 
             // remove pet on map change
             if (pet)
-            {
-                //leaving map -> delete pet right away (doing this later will cause problems)
-                if (pet->isControlled() && !pet->isTemporarySummoned())
-                    m_temporaryUnsummonedPetNumber = pet->GetCharmInfo()->GetPetNumber();
-                else
-                    m_temporaryUnsummonedPetNumber = 0;
-
-                RemovePet(pet, PET_SAVE_NOT_IN_SLOT);
-            }
+                UnsummonPetTemporaryIfAny();
 
             // remove all dyn objects
             RemoveAllDynObjects();
@@ -1942,9 +1924,8 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
             // this will be used instead of the current location in SaveToDB
 
             // move packet sent by client always after far teleport
-            // SetPosition(final_x, final_y, final_z, final_o, true);
-            SetDontMove(true);
             // code for finish transfer to new map called in WorldSession::HandleMoveWorldportAckOpcode at client packet
+            SetSemaphoreTeleportFar(true);
         }
         else
             return false;
@@ -14417,10 +14398,10 @@ bool Player::LoadFromDB(uint32 guid, SqlQueryHolder *holder)
     uint32 extraflags = fields[25].GetUInt32();
 
     m_stableSlots = fields[26].GetUInt32();
-    if (m_stableSlots > 2)
+    if (m_stableSlots > MAX_PET_STABLES)
     {
-        sLog.outError("Player can have not more 2 stable slots, but have in DB %u",uint32(m_stableSlots));
-        m_stableSlots = 2;
+        sLog.outError("Player can have not more %u stable slots, but have in DB %u", MAX_PET_STABLES, uint32(m_stableSlots));
+        m_stableSlots = MAX_PET_STABLES;
     }
 
     m_atLoginFlags = fields[27].GetUInt32();
@@ -15540,7 +15521,7 @@ bool Player::Satisfy(AccessRequirement const *ar, uint32 target_map, bool report
                 if (missingItem)
                     GetSession()->SendAreaTriggerMessage(GetSession()->GetTrinityString(LANG_LEVEL_MINREQUIRED_AND_ITEM), ar->levelMin, ObjectMgr::GetItemPrototype(missingItem)->Name1);
                 else if (missingKey)
-                    SendTransferAborted(target_map, TRANSFER_ABORT_DIFFICULTY2);
+                    SendTransferAborted(target_map, TRANSFER_ABORT_DIFFICULTY, DIFFICULTY_HEROIC);
                 else if (missingHeroicQuest)
                     GetSession()->SendAreaTriggerMessage(ar->heroicQuestFailedText.c_str());
                 else if (missingQuest)
@@ -18463,11 +18444,21 @@ void Player::SendUpdateToOutOfRangeGroupMembers()
         pet->ResetAuraUpdateMask();
 }
 
-void Player::SendTransferAborted(uint32 mapid, uint16 reason)
+void Player::SendTransferAborted(uint32 mapid, uint8 reason, uint8 arg)
 {
     WorldPacket data(SMSG_TRANSFER_ABORTED, 4+2);
     data << uint32(mapid);
-    data << uint16(reason);                                 // transfer abort reason
+    data << uint8(reason);                                  // transfer abort reason
+    switch(reason)
+    {
+        case TRANSFER_ABORT_INSUF_EXPAN_LVL:
+        case TRANSFER_ABORT_DIFFICULTY:
+            data << uint8(arg);
+            break;
+        default:                                            // possible not neaded (absent in 0.13, but add at backport for safe)
+            data << uint8(0);
+            break;
+    }
     GetSession()->SendPacket(&data);
 }
 
@@ -19948,7 +19939,7 @@ void Player::HandleFallDamage(MovementInfo& movementInfo)
     sLog.outDebug("zDiff = %f", z_diff);
 
     //Players with low fall distance, Feather Fall or physical immunity (charges used) are ignored
-    // 14.57 can be calculated by resolving damageperc formular below to 0
+    // 14.57 can be calculated by resolving damageperc formula below to 0
     if (z_diff >= 14.57f && !isDead() && !isGameMaster() &&
         !HasAuraType(SPELL_AURA_HOVER) && !HasAuraType(SPELL_AURA_FEATHER_FALL) &&
         !(HasAuraType(SPELL_AURA_FLY) && areaID != 550) && !IsImmunedToDamage(SPELL_SCHOOL_MASK_NORMAL,true))  //do not check for fly aura in Tempest Keep:Eye to properly deal fall dmg when after knockback (Gravity Lapse)
@@ -20171,4 +20162,38 @@ void Player::SendTimeSync()
     // Schedule next sync in 10 sec
     m_timeSyncTimer = 10000;
     m_timeSyncServer = WorldTimer::getMSTime();
+}
+
+void Player::UnsummonPetTemporaryIfAny()
+{
+    Pet* pet = GetPet();
+    if (!pet)
+        return;
+
+    if (!m_temporaryUnsummonedPetNumber && pet->isControlled() && !pet->isTemporarySummoned() )
+    {
+        m_temporaryUnsummonedPetNumber = pet->GetCharmInfo()->GetPetNumber();
+        m_oldpetspell = pet->GetUInt32Value(UNIT_CREATED_BY_SPELL);
+    }
+
+    RemovePet(pet, PET_SAVE_AS_CURRENT);
+}
+
+void Player::ResummonPetTemporaryUnSummonedIfAny()
+{
+    if (!m_temporaryUnsummonedPetNumber)
+        return;
+
+    // not resummon in not appropriate state
+    if (IsPetNeedBeTemporaryUnsummoned())
+        return;
+
+    if (GetPetGUID())
+        return;
+
+    Pet* NewPet = new Pet;
+    if (!NewPet->LoadPetFromDB(this, 0, m_temporaryUnsummonedPetNumber, true))
+        delete NewPet;
+
+    m_temporaryUnsummonedPetNumber = 0;
 }

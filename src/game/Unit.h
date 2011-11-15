@@ -535,9 +535,10 @@ enum UnitFlags
 // Value masks for UNIT_FIELD_FLAGS_2
 enum UnitFlags2
 {
-    UNIT_FLAG2_FEIGN_DEATH    = 0x00000001,
-    UNIT_FLAG2_COMPREHEND_LANG= 0x00000008,
-    UNIT_FLAG2_FORCE_MOVE     = 0x00000040
+    UNIT_FLAG2_FEIGN_DEATH      = 0x00000001,
+    UNIT_FLAG2_COMPREHEND_LANG  = 0x00000008,
+    UNIT_FLAG2_FORCE_MOVE       = 0x00000040,
+    UNIT_FLAG2_UNKNOWN1         = 0x00000800
 };
 
 /// Non Player Character flags
@@ -1554,16 +1555,20 @@ class TRINITY_DLL_SPEC Unit : public WorldObject
         void SetNativeDisplayId(uint32 modelId) { SetUInt32Value(UNIT_FIELD_NATIVEDISPLAYID, modelId); }
         void setTransForm(uint32 spellid) { m_transform = spellid;}
         uint32 getTransForm() const { return m_transform;}
+
+        DynamicObject* GetDynObject(uint32 spellId, uint32 effIndex);
+        DynamicObject* GetDynObject(uint32 spellId);
         void AddDynObject(DynamicObject* dynObj);
         void RemoveDynObject(uint32 spellid);
         void RemoveDynObjectWithGUID(uint64 guid) { m_dynObjGUIDs.remove(guid); }
         void RemoveAllDynObjects();
+
+        GameObject* GetGameObject(uint32 spellId) const;
         void AddGameObject(GameObject* gameObj);
         void RemoveGameObject(GameObject* gameObj, bool del);
         void RemoveGameObject(uint32 spellid, bool del);
         void RemoveAllGameObjects();
-        DynamicObject *GetDynObject(uint32 spellId, uint32 effIndex);
-        DynamicObject *GetDynObject(uint32 spellId);
+
         uint32 CalculateDamage(WeaponAttackType attType, bool normalized);
         float GetAPMultiplier(WeaponAttackType attType, bool normalized);
         void ModifyAuraState(AuraState flag, bool apply);
@@ -1727,7 +1732,8 @@ class TRINITY_DLL_SPEC Unit : public WorldObject
         typedef std::list<uint64> DynObjectGUIDs;
         DynObjectGUIDs m_dynObjGUIDs;
 
-        std::list<GameObject*> m_gameObj;
+        typedef std::list<GameObject*> GameObjectList;
+        GameObjectList m_gameObj;
         bool m_isSorted;
         uint32 m_transform;
         AuraList m_removedAuras;

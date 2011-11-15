@@ -3522,8 +3522,11 @@ void Aura::HandleAuraTransform(bool apply, bool Real)
                 if (GetId()==42016 && m_target->GetMountID() && !m_target->GetAurasByType(SPELL_AURA_MOD_INCREASE_FLIGHT_SPEED).empty())
                     m_target->SetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID,16314);
             }
-            m_target->setTransForm(GetId());
         }
+
+        // update active transform spell only not set or not overwriting negative by positive case
+        if (!m_target->getTransForm() || !IsPositiveSpell(GetId()) || IsPositiveSpell(m_target->getTransForm()))
+            m_target->setTransForm(GetId());
 
         // polymorph case
         if (Real && m_target->GetTypeId() == TYPEID_PLAYER && m_target->IsPolymorphed())
@@ -3540,13 +3543,13 @@ void Aura::HandleAuraTransform(bool apply, bool Real)
     }
     else
     {
+        // ApplyModifier(true) will reapply it if need
+        m_target->setTransForm(0);
+        m_target->SetDisplayId(m_target->GetNativeDisplayId());
+
+        // re-aplly some from still active with preference negative cases
         Unit::AuraList const& otherTransforms = m_target->GetAurasByType(SPELL_AURA_TRANSFORM);
-        if (otherTransforms.empty())
-        {
-            m_target->SetDisplayId(m_target->GetNativeDisplayId());
-            m_target->setTransForm(0);
-        }
-        else
+        if (!otherTransforms.empty())
         {
             m_target->setTransForm(0);
 
@@ -4025,19 +4028,36 @@ void Aura::HandleModStealth(bool apply, bool Real)
             // for RACE_NIGHTELF stealth
             if (pTarget->GetTypeId() == TYPEID_PLAYER && spell_id == 20580)
                 pTarget->CastSpell(pTarget, 21009, true, NULL, this);
+
+            // apply full stealth period bonuses only at first stealth aura in stack
+            if (pTarget->GetAurasByType(SPELL_AURA_MOD_STEALTH).size() <= 1)
+            {
+                Unit::AuraList const& mDummyAuras = pTarget->GetAurasByType(SPELL_AURA_DUMMY);
+                for (Unit::AuraList::const_iterator i = mDummyAuras.begin(); i != mDummyAuras.end(); ++i)
+                {
+                    // Master of Subtlety
+                    if ((*i)->GetSpellProto()->SpellIconID == 2114)
+                    {
+                        pTarget->RemoveAurasDueToSpell(31666);
+                        int32 bp = (*i)->GetModifier()->m_amount;
+                        pTarget->CastCustomSpell(pTarget, 31665, &bp, NULL, NULL, true);
+                        break;
+                    }
+                }
+            }
         }
     }
     else
     {
-        // only at real aura remove
-        if (Real)
-        {
-            // for RACE_NIGHTELF stealth
-            if (pTarget->GetTypeId() == TYPEID_PLAYER && spell_id == 20580)
-                pTarget->RemoveAurasDueToSpell(21009);
+        // for RACE_NIGHTELF stealth
+        if (pTarget->GetTypeId() == TYPEID_PLAYER && spell_id == 20580)
+            pTarget->RemoveAurasDueToSpell(21009);
 
-            // if last SPELL_AURA_MOD_STEALTH and no GM invisibility
-            if (!pTarget->HasAuraType(SPELL_AURA_MOD_STEALTH) && pTarget->GetVisibility()!=VISIBILITY_OFF)
+        // only at real aura remove of _last_ SPELL_AURA_MOD_STEALTH
+        if (Real && !pTarget->HasAuraType(SPELL_AURA_MOD_STEALTH))
+        {
+            // if no GM invisibility
+            if(pTarget->GetVisibility()!=VISIBILITY_OFF)
             {
                 pTarget->SetByteValue(UNIT_FIELD_BYTES_1, 2, 0x00);
                 if (pTarget->GetTypeId() == TYPEID_PLAYER)
@@ -4049,32 +4069,20 @@ void Aura::HandleModStealth(bool apply, bool Real)
                     pTarget->SetVisibility(VISIBILITY_OFF);
                 }
                 else
+                pTarget->SetVisibility(VISIBILITY_ON);
+            }
+
+            // apply delayed talent bonus remover at last stealth aura remove
+            Unit::AuraList const& mDummyAuras = pTarget->GetAurasByType(SPELL_AURA_DUMMY);
+            for (Unit::AuraList::const_iterator i = mDummyAuras.begin(); i != mDummyAuras.end(); ++i)
+            {
+                // Master of Subtlety
+                if ((*i)->GetSpellProto()->SpellIconID == 2114)
                 {
-                    pTarget->SetVisibility(VISIBILITY_ON);
-                    /*
-                    if (pTarget->GetTypeId() == TYPEID_PLAYER)
-                        if (OutdoorPvP * pvp = ((Player*)pTarget)->GetOutdoorPvP())
-                            pvp->HandlePlayerActivityChanged((Player*)pTarget);
-                    */
+                    pTarget->CastSpell(pTarget, 31666, true);
+                    break;
                 }
             }
-        }
-    }
-
-    // Master of Subtlety
-    Unit::AuraList const& mDummyAuras = pTarget->GetAurasByType(SPELL_AURA_DUMMY);
-    for (Unit::AuraList::const_iterator i = mDummyAuras.begin();i != mDummyAuras.end(); ++i)
-    {
-        if ((*i)->GetSpellProto()->SpellIconID == 2114 && Real)
-        {
-            if (apply)
-            {
-                int32 bp = (*i)->GetModifier()->m_amount;
-                pTarget->CastCustomSpell(pTarget,31665,&bp,NULL,NULL,true);
-            }
-            else
-                pTarget->CastSpell(pTarget,31666,true);
-            break;
         }
     }
 }
@@ -4178,16 +4186,9 @@ void Aura::HandleAuraModSilence(bool apply, bool Real)
 
         // Stop cast only spells vs PreventionType == SPELL_PREVENTION_TYPE_SILENCE
         for (uint32 i = CURRENT_MELEE_SPELL; i < CURRENT_MAX_SPELL;i++)
-        {
-            Spell* currentSpell = m_target->m_currentSpells[i];
-            if (currentSpell && currentSpell->m_spellInfo->PreventionType == SPELL_PREVENTION_TYPE_SILENCE)
-            {
-                uint32 state = currentSpell->getState();
-                // Stop spells on prepare or casting state
-                if (state == SPELL_STATE_PREPARING || state == SPELL_STATE_CASTING)
-                    currentSpell->cancel();
-            }
-        }
+            if (m_target->m_currentSpells[i] && m_target->m_currentSpells[i]->m_spellInfo->PreventionType == SPELL_PREVENTION_TYPE_SILENCE)
+                m_target->InterruptSpell(i, false);         // Stop spells on prepare or casting state
+
 
         switch (GetId())
         {
