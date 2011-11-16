@@ -4063,11 +4063,9 @@ void Aura::HandleModStealth(bool apply, bool Real)
 
                 // restore invisibility if any
                 if (pTarget->HasAuraType(SPELL_AURA_MOD_INVISIBILITY))
-                {
-                    pTarget->SetVisibility(VISIBILITY_OFF); // or maybe VISIBILITY_GROUP_STEALTH ?
-                }
+                    pTarget->SetVisibility(VISIBILITY_GROUP_STEALTH); // or maybe VISIBILITY_GROUP_STEALTH ?
                 else
-                pTarget->SetVisibility(VISIBILITY_ON);
+                    pTarget->SetVisibility(VISIBILITY_ON);
             }
 
             // apply delayed talent bonus remover at last stealth aura remove
