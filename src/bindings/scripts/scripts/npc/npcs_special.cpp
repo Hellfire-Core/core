@@ -42,6 +42,7 @@ npc_lurky                   100%    AI for Lurky, Blue Murloc and Pink Murloc
 EndContentData */
 
 #include "precompiled.h"
+//#include "Battleground.h"
 #include "Totem.h"
 #include "PetAI.h"
 #include <list>
@@ -2423,6 +2424,8 @@ bool GossipHello_npc_arena_spectator(Player *player, Creature *_Creature)
     return true;
 }
 
+#define ARENA_NPC_SPECTATOR 0 // its from battleground.h but why we should include whole header for only one enum :F
+
 bool GossipSelectWithCode_npc_arena_spectator(Player *player, Creature *_Creature, uint32 sender, uint32 action, const char* sCode)
 {
     if (sender == GOSSIP_SENDER_MAIN)
@@ -2431,15 +2434,12 @@ bool GossipSelectWithCode_npc_arena_spectator(Player *player, Creature *_Creatur
         {
             if (Player *pPlayer = player->GetPlayerByName(sCode))
             {
-                /*if (BattleGround *pBG = pPlayer->GetBattleGround())
-                {
-                    if (!pBG->isArena())
-                        return false;
+                if (!pPlayer->InArena())
+                    return false;
 
-                    // temp, for now I have no idea if cross map bindsight is allowed :p
-                    if (Creature *pSpectator = pBG->GetBGCreature(ARENA_NPC_SPECTATOR))
-                        pPlayer->SetFarsightTarget(pSpectator);
-                }*/
+                // temp, for now I have no idea if cross map bindsight is allowed :p
+                if (Creature *pSpectator = pPlayer->GetBGCreature(ARENA_NPC_SPECTATOR))
+                    player->SetFarsightTarget(pSpectator);
             }
             player->CLOSE_GOSSIP_MENU();
             return true;
