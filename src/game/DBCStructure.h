@@ -738,9 +738,18 @@ struct SpellEntry
     // helpers
     int32 CalculateSimpleValue(uint8 eff) const { return EffectBasePoints[eff]+int32(EffectBaseDice[eff]); }
 
+    bool HasEffect(uint32 eff)
+    {
+        for (uint8 i = 0; i < 3; ++i)
+            if (Effect[i] == eff)
+                return true;
+
+        return false;
+    }
+
     bool HasApplyAura(uint32 aur)
     {
-        for (uint8 i = 0 i < 3; ++i)
+        for (uint8 i = 0; i < 3; ++i)
             if (Effect[i] == SPELL_EFFECT_APPLY_AURA && EffectApplyAuraName[i] == aur)
                 return true;
 
