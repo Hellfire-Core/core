@@ -720,7 +720,8 @@ int WorldSocket::HandleAuthSession (WorldPacket& recvPacket)
                                 "speciallogs, "     //10
                                 "opcodesDisabled, " //11
                                 "operatingSystem, " //12
-                                "last_local_ip "    //13
+                                "last_local_ip, "   //13
+                                "customRates "      //14
                                 "FROM account "
                                 "WHERE username = '%s'",
                                 safe_account.c_str ());
@@ -742,6 +743,7 @@ int WorldSocket::HandleAuthSession (WorldPacket& recvPacket)
     std::string lastLocalIp = fields[13].GetString();
     uint8 operatingSystem = fields[12].GetUInt8();
     uint8 expansion = fields[8].GetUInt8();
+    bool customRates = fields[14].GetBool();
     uint32 world_expansion = sWorld.getConfig(CONFIG_EXPANSION);
     if (expansion > world_expansion)
         expansion = world_expansion;
@@ -882,11 +884,11 @@ int WorldSocket::HandleAuthSession (WorldPacket& recvPacket)
         return -1;
     }
 
-    std::string address = GetRemoteAddress ();
+    std::string address = GetRemoteAddress();
 
     DEBUG_LOG ("WorldSocket::HandleAuthSession: Client '%s' authenticated successfully from %s.",
-                account.c_str (),
-                address.c_str ());
+                account.c_str(),
+                address.c_str());
 
     // Update the last_ip in the database
     // No SQL injection, username escaped.
@@ -926,10 +928,10 @@ int WorldSocket::HandleAuthSession (WorldPacket& recvPacket)
     }
 
     // NOTE ATM the socket is singlethreaded, have this in mind ...
-    ACE_NEW_RETURN (m_Session, WorldSession (id, this, security, expansion, locale, mutetime, mutereason, speciallogs, opcDis), -1);
+    ACE_NEW_RETURN(m_Session, WorldSession(id, this, security, expansion, locale, mutetime, mutereason, speciallogs, opcDis, customRates), -1);
 
-    m_Crypt.SetKey (&K);
-    m_Crypt.Init ();
+    m_Crypt.SetKey(&K);
+    m_Crypt.Init();
 
     LoginDatabase.escape_string(lastLocalIp);
 
@@ -940,7 +942,7 @@ int WorldSocket::HandleAuthSession (WorldPacket& recvPacket)
     // In case needed sometime the second arg is in microseconds 1 000 000 = 1 sec
     ACE_OS::sleep (ACE_Time_Value (0, 10000));
 
-    sWorld.AddSession (m_Session);
+    sWorld.AddSession(m_Session);
 
     // Create and send the Addon packet
     if (sAddOnHandler.BuildAddonPacket (&recvPacket, &SendAddonPacked))

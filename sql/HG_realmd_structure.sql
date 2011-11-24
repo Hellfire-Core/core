@@ -23,6 +23,7 @@ CREATE TABLE `account` (
   `opcodesDisabled` int(11) NOT NULL DEFAULT '0',
   `speciallogs` double DEFAULT '0',
   `operatingSystem` tinyint unsigned DEFAULT '0',
+  `customRates` tinyint unsigned DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `idx_username` (`username`),
   KEY `idx_gmlevel` (`gmlevel`)

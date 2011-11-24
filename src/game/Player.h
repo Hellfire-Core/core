@@ -2070,6 +2070,14 @@ class TRINITY_DLL_SPEC Player : public Unit
 
         void SendCinematicStart(uint32 CinematicSequenceId);
 
+        void GetXPRate(uint32 rate)
+        {
+            if (sWorld.getConfig(CONFIG_ENABLE_CUSTOM_XP_RATES) && m_session->IsCustomRateEnabled())
+                return 1.0;
+            else
+                sWorld.getRate(rate);
+        }
+
         /*********************************************************/
         /***                 INSTANCE SYSTEM                   ***/
         /*********************************************************/

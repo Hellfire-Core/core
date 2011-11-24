@@ -123,7 +123,7 @@ class TRINITY_DLL_SPEC WorldSession
 {
     friend class CharacterHandler;
     public:
-        WorldSession(uint32 id, WorldSocket *sock, uint32 sec, uint8 expansion, LocaleConstant locale, time_t mute_time = 0, std::string mute_reason = "", uint64 speciallog = 0, uint16 opcDisabled = 0);
+        WorldSession(uint32 id, WorldSocket *sock, uint32 sec, uint8 expansion, LocaleConstant locale, time_t mute_time = 0, std::string mute_reason = "", uint64 speciallog = 0, uint16 opcDisabled = 0, bool customrates = false);
         ~WorldSession();
 
         bool PlayerLoading() const { return m_playerLoading; }
@@ -281,6 +281,11 @@ class TRINITY_DLL_SPEC WorldSession
         uint32 GetLatency() const { return m_latency; }
         void SetLatency(uint32 latency) { m_latency = latency; }
         uint32 getDialogStatus(Player *pPlayer, Object* questgiver, uint32 defstatus);
+
+        bool IsCustomRateEnabled()
+        {
+            return m_customRates;
+        }
 
     public:                                                 // opcodes handlers
 
@@ -734,6 +739,8 @@ class TRINITY_DLL_SPEC WorldSession
         int m_sessionDbLocaleIndex;
         uint32 m_latency;
         uint32 m_kickTimer;
+
+        bool m_customRates;
 
         uint16 m_opcodesDisabled;
 

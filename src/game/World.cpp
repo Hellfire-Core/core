@@ -1161,6 +1161,8 @@ void World::LoadConfigSettings(bool reload)
     m_configs[CONFIG_VMSS_MAPFREEMETHOD] = sConfig.GetIntDefault("VMSS.MapFreeMethod", 0);
     m_configs[CONFIG_VMSS_FREEZECHECKPERIOD] = sConfig.GetIntDefault("VMSS.FreezeCheckPeriod", 1000);
     m_configs[CONFIG_VMSS_FREEZEDETECTTIME] = sConfig.GetIntDefault("VMSS.MapFreezeDetectTime", 1000);
+
+    m_configs[CONFIG_ENABLE_CUSTOM_XP_RATES] = sConfig.GetBoolDefault("EnableCustomXPRates", true);
 }
 
 /// Initialize the World
