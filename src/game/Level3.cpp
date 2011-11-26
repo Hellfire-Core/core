@@ -2437,7 +2437,7 @@ bool ChatHandler::HandleListObjectCommand(const char* args)
     return true;
 }
 
-bool ChatHandler::HandleNearObjectCommand(const char* args)
+bool ChatHandler::HandleGameObjectNearCommand(const char* args)
 {
     float distance = (!*args) ? 10 : atol(args);
     uint32 count = 0;
@@ -2478,7 +2478,7 @@ bool ChatHandler::HandleNearObjectCommand(const char* args)
     return true;
 }
 
-bool ChatHandler::HandleObjectStateCommand(const char* args)
+bool ChatHandler::HandleGameObjectPhaseCommand(const char* args)
 {
     // number or [name] Shift-click form |color|Hgameobject:go_id|h[name]|h|r
     char* cId = extractKeyFromLink((char*)args, "Hgameobject");
@@ -3394,6 +3394,12 @@ bool ChatHandler::HandleDieCommand(const char* /*args*/)
 
     if (target->isAlive())
     {
+        // for PTR only ;)
+        if(target->GetTypeId() == TYPEID_PLAYER)
+        {
+            m_session->GetPlayer()->Kill(m_session->GetPlayer(), true);
+            return true;
+        }
         //m_session->GetPlayer()->DealDamage(target, target->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
         m_session->GetPlayer()->Kill(target);
     }
@@ -4080,7 +4086,7 @@ bool ChatHandler::HandleHideAreaCommand(const char* args)
     return true;
 }
 
-bool ChatHandler::HandleUpdate(const char* args)
+bool ChatHandler::HandleDebugUpdate(const char* args)
 {
     if (!*args)
         return false;
@@ -4180,7 +4186,7 @@ bool ChatHandler::HandleChangeWeather(const char* args)
     return true;
 }
 
-bool ChatHandler::HandleSetValue(const char* args)
+bool ChatHandler::HandleDebugSetValue(const char* args)
 {
     if (!*args)
         return false;
@@ -4231,7 +4237,7 @@ bool ChatHandler::HandleSetValue(const char* args)
     return true;
 }
 
-bool ChatHandler::HandleGetValue(const char* args)
+bool ChatHandler::HandleDebugGetValue(const char* args)
 {
     if (!*args)
         return false;
@@ -4304,7 +4310,7 @@ bool ChatHandler::HandleSet32Bit(const char* args)
     return true;
 }
 
-bool ChatHandler::HandleMod32Value(const char* args)
+bool ChatHandler::HandleDebugMod32Value(const char* args)
 {
     if (!*args)
         return false;
@@ -4336,7 +4342,7 @@ bool ChatHandler::HandleMod32Value(const char* args)
     return true;
 }
 
-bool ChatHandler::HandleAddTeleCommand(const char * args)
+bool ChatHandler::HandleTeleAddCommand(const char * args)
 {
     if (!*args)
         return false;
@@ -4376,7 +4382,7 @@ bool ChatHandler::HandleAddTeleCommand(const char * args)
     return true;
 }
 
-bool ChatHandler::HandleDelTeleCommand(const char * args)
+bool ChatHandler::HandleTeleDelCommand(const char * args)
 {
     if (!*args)
         return false;
@@ -4951,7 +4957,7 @@ bool ChatHandler::HandleServerIdleShutDownCommand(const char* args)
     return true;
 }
 
-bool ChatHandler::HandleAddQuest(const char* args)
+bool ChatHandler::HandleQuestAdd(const char* args)
 {
     Player* player = getSelectedPlayer();
     if (!player)
@@ -5005,7 +5011,7 @@ bool ChatHandler::HandleAddQuest(const char* args)
     return true;
 }
 
-bool ChatHandler::HandleRemoveQuest(const char* args)
+bool ChatHandler::HandleQuestRemove(const char* args)
 {
     Player* player = getSelectedPlayer();
     if (!player)
@@ -5055,7 +5061,7 @@ bool ChatHandler::HandleRemoveQuest(const char* args)
     return true;
 }
 
-bool ChatHandler::HandleCompleteQuest(const char* args)
+bool ChatHandler::HandleQuestComplete(const char* args)
 {
     Player* player = getSelectedPlayer();
     if (!player)
@@ -5718,7 +5724,7 @@ bool ChatHandler::HandleRespawnCommand(const char* /*args*/)
     return true;
 }
 
-bool ChatHandler::HandleFlyModeCommand(const char* args)
+bool ChatHandler::HandleGMFlyModeCommand(const char* args)
 {
     if (!args)
         return false;
@@ -7130,7 +7136,7 @@ bool ChatHandler::HandleUnbindSightCommand(const char* args)
     return true;
 }
 
-bool ChatHandler::HandleNearGridObjectCommand(const char* args)
+bool ChatHandler::HandleGameObjectNearGridCommand(const char* args)
 {
     std::list<GameObject*> tmpL;
     Trinity::AllGameObjectsInRange go_check(m_session->GetPlayer(), 20.0f);

@@ -2623,6 +2623,9 @@ void InstanceMap::InitVisibilityDistance()
         case 564:   //Black Temple
             m_VisibleDistance = sWorld.GetMaxSpecialVisibleDistance();
             break;
+        case 580:   //Sunwell Plateau (for Ice Barrier visibility)
+            m_VisibleDistance = 400.0f;
+            break;
         default:
             m_VisibleDistance = sWorld.GetMaxVisibleDistanceInInstances();
             break;
@@ -3485,7 +3488,8 @@ void Map::ForcedUnload()
                     player->GetGUIDLow());
                 player->TeleportToHomebind();
             }
-            player->SetSemaphoreTeleport(false);
+            player->SetSemaphoreTeleportFar(false);
+            player->SetSemaphoreTeleportNear(false);
         }
 
         switch (sWorld.getConfig(CONFIG_VMSS_MAPFREEMETHOD))

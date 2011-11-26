@@ -59,7 +59,7 @@ message(
     ACE_USE_EXTERNAL: Use external ACE library instead of built in (default)
     USE_STD_MALLOC  : Use standard malloc instead of TBB
     LARGE_CELL      : Use large cell size
-    ADD_COMPILE_F : Add additional compile flags (default)
+    ADD_COMPILE_F   : Add additional compile flags (default)
 
   To set an option simply type -D<OPTION>=<VALUE> after 'cmake <srcs>'.
   For example: cmake .. -DDEBUG=1 -DPREFIX=/opt/mangos\n"

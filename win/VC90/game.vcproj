@@ -1100,10 +1100,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\game\MovementGeneratorImpl.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\src\game\PointMovementGenerator.cpp"
 				>
 			</File>
@@ -1289,14 +1285,6 @@
 			</File>
 			<File
 				RelativePath="..\..\src\game\MapRefManager.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\game\MapUpdater.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\game\MapUpdater.h"
 				>
 			</File>
 			<File
@@ -1682,6 +1670,18 @@
 		</File>
 		<File
 			RelativePath="..\..\src\game\DBCStructure.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\game\MapUpdater.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\game\MapUpdater.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\game\MovementGeneratorImpl.h"
 			>
 		</File>
 	</Files>
