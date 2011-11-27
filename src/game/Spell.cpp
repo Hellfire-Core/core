@@ -3866,7 +3866,19 @@ SpellCastResult Spell::CheckCast(bool strict)
                 return SPELL_FAILED_NOT_IN_ARENA;
 
     // zone check
-    if (!IsSpellAllowedInLocation(m_spellInfo, m_caster->GetMapId(), m_caster->GetZoneId(), m_caster->GetAreaId()))
+    uint32 zoneid, areaid;
+    if (m_caster->GetTypeId() == TYPEID_PLAYER)
+    {
+        zoneid = ((Player*)m_caster)->GetCachedZone();
+        areaid = ((Player*)m_caster)->GetCachedArea();
+    }
+    else
+    {
+        zoneid =  m_caster->GetZoneId();
+        areaid =  m_caster->GetAreaId();
+    }
+
+    if (!IsSpellAllowedInLocation(m_spellInfo, m_caster->GetMapId(), zoneid, areaid))
         return SPELL_FAILED_REQUIRES_AREA;
 
     // not let players cast spells at mount (and let do it to creatures)
@@ -4346,7 +4358,8 @@ SpellCastResult Spell::CheckCast(bool strict)
                 if (m_caster->GetTypeId()==TYPEID_PLAYER && !sMapStore.LookupEntry(m_caster->GetMapId())->IsMountAllowed() && !m_IsTriggeredSpell && !m_spellInfo->AreaId)
                     return SPELL_FAILED_NO_MOUNTS_ALLOWED;
 
-                if (m_caster->GetAreaId()==35)
+                uint32 areaid = m_caster->GetTypeId() == TYPEID_PLAYER ? ((Player*)m_caster)->GetCachedArea() : m_caster->GetAreaId();
+                if (areaid == 35)
                     return SPELL_FAILED_NO_MOUNTS_ALLOWED;
 
                 ShapeshiftForm form = m_caster->m_form;

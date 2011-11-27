@@ -1494,7 +1494,7 @@ void Unit::DealSpellDamage(SpellDamageLog *damageInfo, bool durabilityLoss)
     //You still see it in the combat log though
     if (pVictim != this && GetTypeId() == TYPEID_PLAYER && pVictim->GetTypeId() == TYPEID_PLAYER)
     {
-        const AreaTableEntry *area = GetAreaEntryByAreaID(pVictim->GetAreaId());
+        const AreaTableEntry *area = GetAreaEntryByAreaID(((Player*)pVictim)->GetCachedArea());
         if (area && area->flags & 0x800)                     //sanctuary
             return;
     }
@@ -1610,7 +1610,7 @@ void Unit::DealMeleeDamage(MeleeDamageLog *damageInfo, bool durabilityLoss)
     //You still see it in the combat log though
     if (pVictim != this && GetTypeId() == TYPEID_PLAYER && pVictim->GetTypeId() == TYPEID_PLAYER)
     {
-        const AreaTableEntry *area = GetAreaEntryByAreaID(pVictim->GetAreaId());
+        const AreaTableEntry *area = GetAreaEntryByAreaID(((Player*)pVictim)->GetCachedArea());
         if (area && area->flags & 0x800)                     //sanctuary
             return;
     }

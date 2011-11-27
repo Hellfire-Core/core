@@ -4520,7 +4520,7 @@ void Player::RepopAtGraveyard()
     // note: this can be called also when the player is alive
     // for example from WorldSession::HandleMovementOpcodes
 
-    AreaTableEntry const *zone = GetAreaEntryByAreaID(GetAreaId());
+    AreaTableEntry const *zone = GetAreaEntryByAreaID(GetCachedArea());
 
     // Such zones are considered unreachable as a ghost and the player must be automatically revived
     if (!isAlive() && zone && zone->flags & AREA_FLAG_NEED_FLY || GetTransport() || GetPositionZ() < -500.0f)
@@ -7670,7 +7670,7 @@ void Player::SendInitWorldStates(bool forceZone, uint32 forceZoneId)
     else
         zoneid = GetZoneId();
     OutdoorPvP * pvp = sOutdoorPvPMgr.GetOutdoorPvPToZoneId(zoneid);
-    uint32 areaid = GetAreaId();
+    uint32 areaid = GetCachedArea();
     sLog.outDebug("Sending SMSG_INIT_WORLD_STATES to Map:%u, Zone: %u", mapid, zoneid);
     // may be exist better way to do this...
     switch (zoneid)

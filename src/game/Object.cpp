@@ -1625,7 +1625,7 @@ void WorldObject::MonsterYellToZone(int32 textId, uint32 language, uint64 Target
 
     Map::PlayerList const& pList = GetMap()->GetPlayers();
     for (Map::PlayerList::const_iterator itr = pList.begin(); itr != pList.end(); ++itr)
-        if (itr->getSource()->GetZoneId()==zoneid)
+        if (itr->getSource()->GetCachedZone()==zoneid)
             say_do(itr->getSource());
 }
 
