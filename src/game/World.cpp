@@ -1303,6 +1303,9 @@ void World::SetInitialWorldSettings()
     sLog.outString("Loading Creature Reputation OnKill Data...");
     objmgr.LoadReputationOnKill();
 
+    sLog.outString( "Loading Reputation Spillover Data..." );
+    sObjectMgr.LoadReputationSpilloverTemplate();
+
     sLog.outString("Loading Pet Create Spells...");
     objmgr.LoadPetCreateSpells();
 

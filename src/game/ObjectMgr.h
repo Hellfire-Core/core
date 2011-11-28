@@ -145,6 +145,13 @@ struct ReputationOnKillEntry
     bool team_dependent;
 };
 
+struct RepSpilloverTemplate
+{
+    uint32 faction[MAX_SPILLOVER_FACTIONS];
+    float faction_rate[MAX_SPILLOVER_FACTIONS];
+    uint32 faction_rank[MAX_SPILLOVER_FACTIONS];
+};
+
 struct PetCreateSpellEntry
 {
     uint32 spellid[4];
@@ -252,19 +259,13 @@ class TRINITY_DLL_DECL ObjectMgr
         typedef std::set< Group * > GroupSet;
 
         typedef UNORDERED_MAP<uint32, Guild *> GuildMap;
-
         typedef UNORDERED_MAP<uint32, ArenaTeam*> ArenaTeamMap;
-
         typedef UNORDERED_MAP<uint32, Quest*> QuestMap;
-
         typedef UNORDERED_MAP<uint32, AreaTrigger> AreaTriggerMap;
-
         typedef UNORDERED_MAP<uint32, AccessRequirement> AccessRequirementMap;
-
         typedef UNORDERED_MAP<uint32, ReputationOnKillEntry> RepOnKillMap;
-
+        typedef UNORDERED_MAP<uint32, RepSpilloverTemplate> RepSpilloverTemplateMap;
         typedef UNORDERED_MAP<uint32, WeatherZoneChances> WeatherZoneMap;
-
         typedef UNORDERED_MAP<uint32, PetCreateSpellEntry> PetCreateSpellMap;
 
         UNORDERED_MAP<uint32, uint32> TransportEventMap;
@@ -410,6 +411,14 @@ class TRINITY_DLL_DECL ObjectMgr
             return NULL;
         }
 
+        RepSpilloverTemplate const* GetRepSpilloverTemplate(uint32 factionId) const
+        {
+            RepSpilloverTemplateMap::const_iterator itr = m_RepSpilloverTemplateMap.find(factionId);
+            if (itr != m_RepSpilloverTemplateMap.end())
+                return &itr->second;
+            return NULL;
+        }
+
         PetCreateSpellEntry const* GetPetCreateSpellEntry(uint32 id) const
         {
             PetCreateSpellMap::const_iterator itr = mPetCreateSpell.find(id);
@@ -489,6 +498,7 @@ class TRINITY_DLL_DECL ObjectMgr
         void LoadFishingBaseSkillLevel();
 
         void LoadReputationOnKill();
+        void LoadReputationSpilloverTemplate();
 
         void LoadWeatherZoneChances();
         void LoadGameTele();
@@ -782,6 +792,7 @@ class TRINITY_DLL_DECL ObjectMgr
         AccessRequirementMap  mAccessRequirements;
 
         RepOnKillMap        mRepOnKill;
+        RepSpilloverTemplateMap m_RepSpilloverTemplateMap;
 
         WeatherZoneMap      mWeatherZoneMap;
 

@@ -379,7 +379,6 @@ class TRINITY_DLL_SPEC WorldSession
         void HandleAreaTriggerOpcode(WorldPacket& recvPacket);
 
         void HandleSetFactionAtWar(WorldPacket & recv_data);
-        void HandleSetFactionCheat(WorldPacket & recv_data);
         void HandleSetWatchedFactionIndexOpcode(WorldPacket & recv_data);
         void HandleSetWatchedFactionInactiveOpcode(WorldPacket & recv_data);
 
