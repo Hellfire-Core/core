@@ -1265,6 +1265,12 @@ bool Map::IsOutdoors(float x, float y, float z) const
 
 bool Map::GetAreaInfo(float x, float y, float z, uint32 &flags, int32 &adtId, int32 &rootId, int32 &groupId) const
 {
+    if (!Trinity::IsValidMapCoord(x, y, z))
+    {
+        sLog.outDebug("Unit::GetAreaId()(%f, %f, %f) .. bad coordinates!",x, y, z);
+        return false;
+    }
+
     float vmap_z = z;
     VMAP::IVMapManager* vmgr = VMAP::VMapFactory::createOrGetVMapManager();
     if (vmgr->getAreaInfo(GetId(), x, y, vmap_z, flags, adtId, rootId, groupId))
@@ -1284,6 +1290,12 @@ bool Map::GetAreaInfo(float x, float y, float z, uint32 &flags, int32 &adtId, in
 
 uint16 Map::GetAreaFlag(float x, float y, float z, bool *isOutdoors) const
 {
+    if (!Trinity::IsValidMapCoord(x, y, z))
+    {
+        sLog.outDebug("Unit::GetAreaId()(%f, %f, %f) .. bad coordinates!",x, y, z);
+        return 0;
+    }
+
     uint32 mogpFlags;
     int32 adtId, rootId, groupId;
     WMOAreaTableEntry const* wmoEntry = 0;
