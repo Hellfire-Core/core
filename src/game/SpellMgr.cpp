@@ -1100,6 +1100,7 @@ bool IsPartialyResistable(SpellEntry const* spellInfo)
         case 44335:     // Vexallus: Energy Feedback
         case 47002:     // Felmyst: Noxious Fumes
         case 45866:     // Felmyst: Corrosion
+        case 45855:     // Felmyst: Gas Nova
             return false;
     }
 

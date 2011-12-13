@@ -759,7 +759,7 @@ CreatureAI* GetAI_npc_shattered_hand_berserker(Creature *_Creature)
 }
 
 /*######
-## npc_felblood_initiate
+## npc_felblood_initiate & npc_emaciated_felblood
 ######*/
 
 #define SPELL_FELBLOOD_CHANNEL      44864
@@ -792,12 +792,16 @@ struct TRINITY_DLL_DECL npc_felblood_initiateAI : public ScriptedAI
     uint32 Spellbreaker;
     uint32 ChangeTimer;
     uint32 OOCTimer;
+    uint32 BitterWithdrawal;
+    uint32 SinisterStrike;
 
     void Reset()
     {
         Spellbreaker = urand(6000, 10000);
         ChangeTimer = 0;
         OOCTimer = 5000;
+        BitterWithdrawal = urand(10000, 15000);
+        SinisterStrike = urand(5000, 15000);
     }
 
     void HandleOffCombatEffects()
@@ -845,7 +849,6 @@ struct TRINITY_DLL_DECL npc_felblood_initiateAI : public ScriptedAI
           {
               me->UpdateEntry(MOB_EMACIATED_FELBLOOD);
               me->Yell(YellChange[urand(0,2)], 0, 0);
-              me->AIM_Initialize();
               me->RemoveAurasDueToSpell(SPELL_SELF_STUN);
               me->AI()->AttackStart(me->getVictim());
               ChangeTimer = 0;
@@ -853,13 +856,34 @@ struct TRINITY_DLL_DECL npc_felblood_initiateAI : public ScriptedAI
           else ChangeTimer -= diff;
       }
 
-      if(Spellbreaker < diff)
+      if(me->GetEntry() == MOB_EMACIATED_FELBLOOD)
       {
-          AddSpellToCast(SPELL_SPELLBREAKER);
-          Spellbreaker = urand(8000, 12000);
+          if(BitterWithdrawal < diff)
+          {
+              AddSpellToCast(SPELL_BITTER_WITHDRAWAL);
+              BitterWithdrawal = urand(12000, 18000);
+          }
+          else
+              BitterWithdrawal -= diff;
+
+           if(SinisterStrike < diff)
+           {
+               AddSpellToCast(SPELL_SINISTER_STRIKE);
+               SinisterStrike = urand(10000, 15000);
+           }
+           else
+                SinisterStrike -= diff;
       }
       else
-            Spellbreaker -= diff;
+      {
+          if(Spellbreaker < diff)
+          {
+              AddSpellToCast(SPELL_SPELLBREAKER);
+              Spellbreaker = urand(8000, 12000);
+          }
+          else
+                Spellbreaker -= diff;
+      }
 
        CastNextSpellIfAnyAndReady();
        DoMeleeAttackIfReady();
@@ -869,56 +893,6 @@ struct TRINITY_DLL_DECL npc_felblood_initiateAI : public ScriptedAI
 CreatureAI* GetAI_npc_felblood_initiate(Creature *_Creature)
 {
     CreatureAI* newAI = new npc_felblood_initiateAI(_Creature);
-    return newAI;
-}
-
-/*######
-## npc_emaciated_felblood
-######*/
-
-struct TRINITY_DLL_DECL npc_emaciated_felbloodAI : public ScriptedAI
-{
-    npc_emaciated_felbloodAI(Creature *c) : ScriptedAI(c) { }
-
-    uint32 BitterWithdrawal;
-    uint32 SinisterStrike;
-    uint32 OOCTimer;
-
-    void Reset()
-    {
-        BitterWithdrawal = urand(10000, 15000);
-        SinisterStrike = urand(5000, 15000);
-    }
-
-    void UpdateAI(const uint32 diff)
-    {
-      if(!UpdateVictim())
-          return;
-
-      if(BitterWithdrawal < diff)
-      {
-          AddSpellToCast(SPELL_BITTER_WITHDRAWAL);
-          BitterWithdrawal = urand(12000, 18000);
-      }
-      else
-          BitterWithdrawal -= diff;
-
-       if(SinisterStrike < diff)
-       {
-           AddSpellToCast(SPELL_SINISTER_STRIKE);
-           SinisterStrike = urand(10000, 15000);
-       }
-       else
-            SinisterStrike -= diff;
-
-       CastNextSpellIfAnyAndReady();
-       DoMeleeAttackIfReady();
-    }
-};
-
-CreatureAI* GetAI_npc_emaciated_felblood(Creature *_Creature)
-{
-    CreatureAI* newAI = new npc_emaciated_felbloodAI(_Creature);
     return newAI;
 }
 
@@ -1037,11 +1011,6 @@ void AddSC_hellfire_peninsula()
     newscript = new Script;
     newscript->Name="npc_felblood_initiate";
     newscript->GetAI = &GetAI_npc_felblood_initiate;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name="npc_emaciated_felblood";
-    newscript->GetAI = &GetAI_npc_emaciated_felblood;
     newscript->RegisterSelf();
 
     newscript = new Script;
