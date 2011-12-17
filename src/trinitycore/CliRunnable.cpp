@@ -397,7 +397,7 @@ bool ChatHandler::HandleAccountWhispLogCommand(const char* args)
 
         if (WorldSession *s = sWorld.FindSession(account_id))
         {
-            if (s->IsAccountFlagged(ACC_WHISPER_LOG))
+            if (accFlags & ACC_WHISPER_LOG)
                 s->RemoveAccountFlag(ACC_WHISPER_LOG);
             else
                 s->AddAccountFlag(ACC_WHISPER_LOG);

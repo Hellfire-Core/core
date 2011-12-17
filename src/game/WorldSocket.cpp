@@ -792,12 +792,12 @@ int WorldSocket::HandleAuthSession(WorldPacket& recvPacket)
 
     K.SetHexStr(fields[2].GetString());
 
-    locale = LocaleConstant(fields[9].GetUInt8());
+    locale = LocaleConstant(fields[8].GetUInt8());
     if (locale >= MAX_LOCALE)
         locale = LOCALE_enUS;
 
-    uint64 accFlags = fields[10].GetUInt64();
-    uint16 opcDis = fields[11].GetUInt16();
+    uint64 accFlags = fields[9].GetUInt64();
+    uint16 opcDis = fields[10].GetUInt16();
 
     // Re-check account ban(same check as in realmd)
     QueryResultAutoPtr banresult =

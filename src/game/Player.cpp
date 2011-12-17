@@ -16728,26 +16728,32 @@ void Player::Whisper(const std::string& text, uint32 language,uint64 receiver)
 
     Player *rPlayer = objmgr.GetPlayer(receiver);
 
+    std::string tmpText = text;
+
     // when player you are whispering to is dnd, he cannot receive your message, unless you are in gm mode
     if (!rPlayer->isDND() || isGameMaster())
     {
         WorldPacket data(SMSG_MESSAGECHAT, 200);
         BuildPlayerChat(&data, CHAT_MSG_WHISPER, text, language);
         rPlayer->GetSession()->SendPacket(&data);
-        if (rPlayer->GetSession()->IsAccountFlagged(ACC_WHISPER_LOG))
-            sLog.outWhisp(rPlayer->GetSession()->GetAccountId(), "[%s | %u] FROM: %u (%s) : %s ", rPlayer->GetName(), rPlayer->GetGUID(), GetGUID(), GetName(), text.c_str());
 
         data.Initialize(SMSG_MESSAGECHAT, 200);
         rPlayer->BuildPlayerChat(&data, CHAT_MSG_REPLY, text, language);
         GetSession()->SendPacket(&data);
-        if (GetSession()->IsAccountFlagged(ACC_WHISPER_LOG))
-            sLog.outWhisp(GetSession()->GetAccountId(), "[%s | %u] TO: %u (%s), %s", GetName(), GetGUID(), rPlayer->GetGUID(), rPlayer->GetName(), text.c_str());
     }
     else
     {
         // announce to player that player he is whispering to is dnd and cannot receive his message
         ChatHandler(this).PSendSysMessage(LANG_PLAYER_DND, rPlayer->GetName(), rPlayer->dndMsg.c_str());
+
+        tmpText = "receiver DND ! text: " + tmpText;
     }
+
+    if (rPlayer->GetSession()->IsAccountFlagged(ACC_WHISPER_LOG))
+        sLog.outWhisp(rPlayer->GetSession()->GetAccountId(), "[%s | %u] FROM: %u (%s) : %s ", rPlayer->GetName(), rPlayer->GetGUID(), GetGUID(), GetName(), tmpText.c_str());
+
+    if (GetSession()->IsAccountFlagged(ACC_WHISPER_LOG))
+        sLog.outWhisp(GetSession()->GetAccountId(), "[%s | %u] TO: %u (%s) : %s", GetName(), GetGUID(), rPlayer->GetGUID(), rPlayer->GetName(), tmpText.c_str());
 
     if (!isAcceptWhispers() && !isGameMaster() && !rPlayer->isGameMaster())
     {
