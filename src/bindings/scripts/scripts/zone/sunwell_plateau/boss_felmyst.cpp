@@ -581,7 +581,7 @@ struct TRINITY_DLL_DECL boss_felmystAI : public ScriptedAI
                 IntroTimer -= diff;
         }
 
-        if (!UpdateVictim())
+        if (!UpdateVictim() && Phase != PHASE_FLIGHT)
             return;
 
         if(PulseCombat < diff)
