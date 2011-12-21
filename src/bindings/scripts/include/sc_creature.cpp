@@ -274,6 +274,13 @@ void ScriptedAI::CheckShooterNoMovementInRange(uint32 diff, float maxrange)
         casterTimer -= diff;
 }
 
+void ScriptedAI::DoStopAttack()
+{
+    if (m_creature->getVictim())
+        m_creature->AttackStop();
+
+}
+
 void ScriptedAI::CastNextSpellIfAnyAndReady(uint32 diff)
 {
     // creature can't cast if lost control

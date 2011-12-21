@@ -575,7 +575,7 @@ struct TRINITY_DLL_DECL boss_sathrovarrAI : public ScriptedAI
 
         // to be tested
         if(!me->getVictim()->HasAura(AURA_SPECTRAL_REALM) || me->getVictim()->GetPositionZ() > -50)
-            DoResetThreat();
+            me->getVictim()->getThreatManager().modifyThreatPercent(me->getVictim(), -101.0);
 
         // be sure to attack only players in spectral realm
         if (me->getVictim()->HasAura(AURA_SPECTRAL_EXHAUSTION))
