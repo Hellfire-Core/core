@@ -363,7 +363,7 @@ CreatureAI* GetAI_npc_erratic_sentry(Creature* _Creature)
 
 #define SPELL_LOOKOUT_SHOOT     45172
 
-const char* LookoutYell[3] = 
+const char* LookoutYell[3] =
 {
     "Shattered Sun scum! Fire at will!",
     "Don't let that dragonhawk through! Open fire!",
@@ -627,7 +627,7 @@ CreatureAI* GetAI_npc_eredar_sorcerer(Creature* _Creature)
 
 #define BOMBARDIER_FLY_PATH     1776
 
-const char* BombardierYell[6] = 
+const char* BombardierYell[6] =
 {
     "Fall into formation! We're approaching the Dead Scar.",
     "Keep your eye on the demons. We're not concerned with killing Scourge today.",

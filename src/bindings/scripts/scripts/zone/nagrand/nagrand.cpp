@@ -758,7 +758,7 @@ enum eNagrandCaptive
     SAY_MAG_NO_ESCAPE           = -1000483,
     SAY_MAG_MORE                = -1000484,
     SAY_MAG_MORE_REPLY          = -1000485,
-    SAY_MAG_LIGHTNING           = -1000486,
+    SAY_SPELL_AGONY_CURSEMAG_LIGHTNING           = -1000486,
     SAY_MAG_SHOCK               = -1000487,
     SAY_MAG_COMPLETE            = -1000488,
 
@@ -935,8 +935,45 @@ CreatureAI* GetAI_npc_nagrand_captive(Creature* pCreature)
 }
 
 /*####
-#
+#  npc_multiphase_disurbanceAI
 ####*/
+
+#define SPELL_TAKE_MULTIPHASE_READING   46281
+
+struct npc_multiphase_disurbanceAI : public ScriptedAI
+{
+    npc_multiphase_disurbanceAI(Creature *c) : ScriptedAI(c){}
+
+    uint32 despawnTimer;
+
+    void Reset()
+    {
+        despawnTimer = 0;
+    }
+
+    void UpdateAI(const uint32 diff)
+    {
+        if (despawnTimer)
+        {
+            if (despawnTimer <= 0)
+            {
+                me->ForceDespawn();
+                despawnTimer = 0;
+            }
+        }
+    }
+
+    void SpellHit(Unit * /*caster*/, const SpellEntry * spell)
+    {
+        if (spell && spell->Id == SPELL_TAKE_MULTIPHASE_READING)
+            despawnTimer = 2500;
+    }
+};
+
+CreatureAI* GetAI_npc_multiphase_disturbance(Creature* pCreature)
+{
+    return new npc_multiphase_disurbanceAI(pCreature);
+}
 
 void AddSC_nagrand()
 {
@@ -1002,5 +1039,10 @@ void AddSC_nagrand()
     newscript->Name = "npc_nagrand_captive";
     newscript->GetAI = &GetAI_npc_nagrand_captive;
     newscript->pQuestAcceptNPC = &QuestAccept_npc_nagrand_captive;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_multiphase_disturbance";
+    newscript->GetAI = &GetAI_npc_multiphase_disturbance;
     newscript->RegisterSelf();
 }
