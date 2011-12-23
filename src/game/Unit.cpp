@@ -2759,17 +2759,17 @@ SpellMissInfo Unit::MeleeSpellHitResult(Unit *pVictim, SpellEntry const *spell, 
     if (canDodge)
     {
         // Roll dodge
-        int32 dodgeChance = int32(pVictim->GetUnitDodgeChance()*100.0f) - skillDiff * 4;
+        float dodgeChance = pVictim->GetUnitDodgeChance() * 100.0f - skillDiff * 4;
         // Reduce enemy dodge chance by SPELL_AURA_MOD_COMBAT_RESULT_CHANCE
-        dodgeChance+= GetTotalAuraModifierByMiscValue(SPELL_AURA_MOD_COMBAT_RESULT_CHANCE, VICTIMSTATE_DODGE)*100;
-        dodgeChance = int32 (float (dodgeChance) * GetTotalAuraMultiplier(SPELL_AURA_MOD_ENEMY_DODGE));
+        dodgeChance += GetTotalAuraModifierByMiscValue(SPELL_AURA_MOD_COMBAT_RESULT_CHANCE, VICTIMSTATE_DODGE) * 100.0f;
+        dodgeChance += GetTotalAuraModifier(SPELL_AURA_MOD_ENEMY_DODGE) * 100.0f;
         // Reduce dodge chance by attacker expertise rating
         if (GetTypeId() == TYPEID_PLAYER)
-            dodgeChance-=int32(((Player*)this)->GetExpertiseDodgeOrParryReduction(attType) * 100.0f);
+            dodgeChance -= ((Player*)this)->GetExpertiseDodgeOrParryReduction(attType) * 100.0f;
         if (dodgeChance < 0)
             dodgeChance = 0;
 
-        tmp += dodgeChance;
+        tmp += (int32)dodgeChance;
         if (roll < tmp)
             return SPELL_MISS_DODGE;
     }
@@ -2777,25 +2777,25 @@ SpellMissInfo Unit::MeleeSpellHitResult(Unit *pVictim, SpellEntry const *spell, 
     if (canParry)
     {
         // Roll parry
-        int32 parryChance = int32(pVictim->GetUnitParryChance()*100.0f)  - skillDiff * 4;
+        float parryChance = pVictim->GetUnitParryChance() * 100.0f - skillDiff * 4;
         // Reduce parry chance by attacker expertise rating
         if (GetTypeId() == TYPEID_PLAYER)
-            parryChance-=int32(((Player*)this)->GetExpertiseDodgeOrParryReduction(attType) * 100.0f);
+            parryChance -= ((Player*)this)->GetExpertiseDodgeOrParryReduction(attType) * 100.0f;
         if (parryChance < 0)
             parryChance = 0;
 
-        tmp += parryChance;
+        tmp += (int32)parryChance;
         if (roll < tmp)
             return SPELL_MISS_PARRY;
     }
 
     if (canBlock)
     {
-        int32 blockChance = int32(pVictim->GetUnitBlockChance()*100.0f)  - skillDiff * 4;
+        float blockChance = pVictim->GetUnitBlockChance() * 100.0f - skillDiff * 4;
         if (blockChance < 0)
             blockChance = 0;
-        tmp += blockChance;
 
+        tmp += (int32)blockChance;
         if (roll < tmp)
             return SPELL_MISS_BLOCK;
     }
