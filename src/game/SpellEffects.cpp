@@ -6669,7 +6669,7 @@ void Spell::EffectStuck(uint32 /*i*/)
         return;
 
     // if player hasn't cooldown on HearthStone then use him
-    // otherwise
+    // otherwise teleport to player start location
     if (!pTarget->GetSpellCooldownDelay(8690))
     {
         // homebind location is loaded always

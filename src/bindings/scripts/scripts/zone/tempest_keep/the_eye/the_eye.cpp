@@ -56,14 +56,14 @@ struct TRINITY_DLL_DECL mob_crystalcore_devastatorAI : public ScriptedAI
 
         //Check if we have a current target
         //Knockaway_Timer
-        if(Knockaway_Timer < diff)
+        if (Knockaway_Timer < diff)
         {
             m_creature->CastSpell(m_creature->getVictim(), SPELL_KNOCKAWAY, true);
 
             // current aggro target is knocked away pick new target
             Unit* target = SelectUnit(SELECT_TARGET_TOPAGGRO, 0, 60, true, m_creature->getVictimGUID());
 
-            if(target)
+            if (target)
                 m_creature->TauntApply(target);
 
             Knockaway_Timer = 23000;

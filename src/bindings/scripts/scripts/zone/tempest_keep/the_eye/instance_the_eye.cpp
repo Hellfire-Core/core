@@ -61,14 +61,14 @@ struct TRINITY_DLL_DECL instance_the_eye : public ScriptedInstance
         Astromancer = 0;
         Alar = 0;
 
-        for(uint8 i = 0; i < ENCOUNTERS; i++)
+        for(uint8 i = 0; i < ENCOUNTERS; ++i)
             Encounters[i] = NOT_STARTED;
     }
 
     bool IsEncounterInProgress() const
     {
-        for(uint8 i = 0; i < ENCOUNTERS; i++)
-            if(Encounters[i] != DONE && Encounters[i] != NOT_STARTED)
+        for (uint8 i = 0; i < ENCOUNTERS; ++i)
+            if (Encounters[i] != DONE && Encounters[i] != NOT_STARTED)
                 return true;
 
         return false;
@@ -119,10 +119,10 @@ struct TRINITY_DLL_DECL instance_the_eye : public ScriptedInstance
         }
 
         const CreatureData *tmp = creature->GetLinkedRespawnCreatureData();
-        if(!tmp)
+        if (!tmp)
             return;
 
-        if(GetEncounterForEntry(tmp->id) && creature->isAlive() && GetData(GetEncounterForEntry(tmp->id)) == DONE)
+        if (GetEncounterForEntry(tmp->id) && creature->isAlive() && GetData(GetEncounterForEntry(tmp->id)) == DONE)
         {
             creature->Kill(creature, false);
             creature->RemoveCorpse();
@@ -131,22 +131,22 @@ struct TRINITY_DLL_DECL instance_the_eye : public ScriptedInstance
 
     void OnObjectCreate(GameObject *go)
     {
-        switch(go->GetEntry())
+        switch (go->GetEntry())
         {
-        case 184324:
-            DoorGUID.insert(go->GetGUID());
-            break;
-        case 184069: // main window
-        case 184596: // statues
-        case 184597:
-            ExplodeObjectGUID.insert(go->GetGUID());
-            break;
+            case 184324:
+                DoorGUID.insert(go->GetGUID());
+                break;
+            case 184069: // main window
+            case 184596: // statues
+            case 184597:
+                ExplodeObjectGUID.insert(go->GetGUID());
+                break;
         }
     }
 
     uint64 GetData64(uint32 identifier)
     {
-        switch(identifier)
+        switch (identifier)
         {
             case DATA_THALADREDTHEDARKENER:         return ThaladredTheDarkener;
             case DATA_LORDSANGUINAR:                return LordSanguinar;

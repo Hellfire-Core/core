@@ -16,8 +16,8 @@
 
 /* ScriptData
 SDName: Boss_Void_Reaver
-SD%Complete: 90
-SDComment: Should reset if raid are out of room.
+SD%Complete: 99
+SDComment:
 SDCategory: Tempest Keep, The Eye
 EndScriptData */
 
@@ -36,6 +36,7 @@ EndScriptData */
 #define SPELL_ARCANE_ORB            34172
 #define SPELL_KNOCK_AWAY            25778
 #define SPELL_BERSERK               27680
+
 #define TRIGGER                     29530
 
 struct TRINITY_DLL_DECL boss_void_reaverAI : public ScriptedAI
@@ -69,8 +70,7 @@ struct TRINITY_DLL_DECL boss_void_reaverAI : public ScriptedAI
         m_creature->ApplySpellImmune(3, IMMUNITY_STATE, SPELL_AURA_PERIODIC_LEECH, true);
         m_creature->ApplySpellImmune(4, IMMUNITY_STATE, SPELL_AURA_PERIODIC_MANA_LEECH, true);
 
-        if (pInstance && pInstance->GetData(DATA_VOIDREAVEREVENT) != DONE)
-            pInstance->SetData(DATA_VOIDREAVEREVENT, NOT_STARTED);
+        pInstance->SetData(DATA_VOIDREAVEREVENT, NOT_STARTED);
     }
 
     void KilledUnit(Unit *victim)
@@ -82,8 +82,7 @@ struct TRINITY_DLL_DECL boss_void_reaverAI : public ScriptedAI
     {
         DoScriptText(SAY_DEATH, m_creature);
 
-        if(pInstance)
-            pInstance->SetData(DATA_VOIDREAVEREVENT, DONE);
+        pInstance->SetData(DATA_VOIDREAVEREVENT, DONE);
     }
 
     void EnterCombat(Unit *who)
@@ -91,15 +90,14 @@ struct TRINITY_DLL_DECL boss_void_reaverAI : public ScriptedAI
         DoScriptText(SAY_AGGRO, m_creature);
         DoZoneInCombat();
 
-        if(pInstance)
-            pInstance->SetData(DATA_VOIDREAVEREVENT, IN_PROGRESS);
+        pInstance->SetData(DATA_VOIDREAVEREVENT, IN_PROGRESS);
     }
 
     void SpellHitTarget(Unit *target, SpellEntry *spell)
     {
-        if(spell->Id == SPELL_KNOCK_AWAY)
+        if (spell->Id == SPELL_KNOCK_AWAY)
         {
-            if(Unit *target = SelectUnit(SELECT_TARGET_TOPAGGRO,0))
+            if (Unit *target = SelectUnit(SELECT_TARGET_TOPAGGRO, 0))
                AttackStart(target, true);
         }
     }
@@ -110,9 +108,9 @@ struct TRINITY_DLL_DECL boss_void_reaverAI : public ScriptedAI
             return;
 
         //Check_Timer
-        if(Check_Timer < diff)
+        if (Check_Timer < diff)
         {
-            if(!m_creature->IsWithinDistInMap(&wLoc, 135.0f))
+            if (!m_creature->IsWithinDistInMap(&wLoc, 135.0f))
                 EnterEvadeMode();
             else
                 DoZoneInCombat();
@@ -123,72 +121,55 @@ struct TRINITY_DLL_DECL boss_void_reaverAI : public ScriptedAI
             Check_Timer -= diff;
 
         // Pounding
-        if(Pounding_Timer < diff)
+        if (Pounding_Timer < diff)
         {
-            m_creature->InterruptNonMeleeSpells(false);
-            DoCast(m_creature->getVictim(),SPELL_POUNDING);
+            AddSpellToCastWithScriptText(m_creature, SPELL_POUNDING, RAND(SAY_POUNDING1, SAY_POUNDING2));
 
-            DoScriptText(RAND(SAY_POUNDING1, SAY_POUNDING2), m_creature);
-
-            if(KnockAway_Timer < 3100)
+            if (KnockAway_Timer < 3100)
                 KnockAway_Timer = 3100;
 
-            Pounding_Timer = 15000;                         //cast time(3000) + cooldown time(12000)
+            Pounding_Timer = 12000;
         }
         else
             Pounding_Timer -= diff;
 
         // Arcane Orb
-        if(ArcaneOrb_Timer < diff)
+        if (ArcaneOrb_Timer < diff)
         {
-            Unit *target = NULL;
-            std::list<HostilReference *> t_list = m_creature->getThreatManager().getThreatList();
-            std::vector<Unit *> target_list;
-            for(std::list<HostilReference *>::iterator itr = t_list.begin(); itr!= t_list.end(); ++itr)
-            {
-                target = Unit::GetUnit(*m_creature, (*itr)->getUnitGuid());
-                //18 yard radius minimum
-                if(target && target->GetTypeId() == TYPEID_PLAYER && target->isAlive() && target->GetDistance2d(m_creature) >= 18)
-                    target_list.push_back(target);
-                target = NULL;
-            }
-            if(target_list.size())
-                target = *(target_list.begin()+rand()%target_list.size());
-            else
+            Unit * target = SelectUnit(SELECT_TARGET_RANDOM, 0, 200.0f, true, 0, 18.0f);
+
+            if (!target)
                 target = m_creature->getVictim();
 
-            if(target)
-              if(Creature* t = DoSpawnCreature(TRIGGER, 0, 0, 10, 0, TEMPSUMMON_TIMED_DESPAWN, 10000))
+            if (target)
+              if (Creature* t = DoSpawnCreature(TRIGGER, 0.0f, 0.0f, 10.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN, 40000))
                  t->CastSpell(target, SPELL_ARCANE_ORB, false, 0, 0, m_creature->GetGUID());
 
-
-            ArcaneOrb_Timer = 3000 + rand()%1001;
+            ArcaneOrb_Timer = urand(3000, 4000);
         }
         else
             ArcaneOrb_Timer -= diff;
 
         // Single Target knock back, reduces aggro
-        if(KnockAway_Timer < diff)
+        if (KnockAway_Timer < diff)
         {
-            m_creature->InterruptNonMeleeSpells(false);
-            DoCast(m_creature->getVictim(),SPELL_KNOCK_AWAY);
-
+            AddSpellToCast(m_creature->getVictim(), SPELL_KNOCK_AWAY);
             KnockAway_Timer = 30000;
         }
         else
             KnockAway_Timer -= diff;
 
         //Berserk
-        if(Berserk_Timer < diff)
+        if (Berserk_Timer < diff)
         {
-            m_creature->InterruptNonMeleeSpells(false);
-            DoCast(m_creature,SPELL_BERSERK);
+            ForceSpellCast(m_creature, SPELL_BERSERK);
             Berserk_Timer = 600000;
         }
         else
             Berserk_Timer -= diff;
 
         m_creature->RemoveAurasWithDispelType(DISPEL_POISON);
+        CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
     }
 };
