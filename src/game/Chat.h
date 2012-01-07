@@ -140,10 +140,12 @@ class ChatHandler
         bool HandleDebugSetInstanceData64Command(const char* args);
         bool HandleDebugSetItemFlagCommand(const char * args);
         bool HandleDebugSetValue(const char* args);
+        bool HandleDebugShowCombatStats(const char* args);
         bool HandleDebugThreatList(const char * args);
         bool HandleDebugUpdate(const char* args);
         bool HandleDebugUpdateWorldStateCommand(const char* args);
         bool HandleDebugWPCommand(const char* args);
+
 
         bool HandleDebugPlayCinematicCommand(const char* args);
         bool HandleDebugPlaySoundCommand(const char* args);

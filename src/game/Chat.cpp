@@ -241,6 +241,7 @@ ChatCommand * ChatHandler::getCommandTable()
         { "setinstdata64",  SEC_ADMINISTRATOR,  false,  &ChatHandler::HandleDebugSetInstanceData64Command,  "", NULL },
         { "setitemflag",    SEC_ADMINISTRATOR,  false,  &ChatHandler::HandleDebugSetItemFlagCommand,        "", NULL },
         { "setvalue",       SEC_ADMINISTRATOR,  false,  &ChatHandler::HandleDebugSetValue,                  "", NULL },
+        { "showcombatstats",SEC_ADMINISTRATOR,  false,  &ChatHandler::HandleDebugShowCombatStats,           "", NULL },
         { "threatlist",     SEC_GAMEMASTER,     false,  &ChatHandler::HandleDebugThreatList,                "", NULL },
         { "update",         SEC_ADMINISTRATOR,  false,  &ChatHandler::HandleDebugUpdate,                    "", NULL },
         { "uws",            SEC_ADMINISTRATOR,  false,  &ChatHandler::HandleDebugUpdateWorldStateCommand,   "", NULL },

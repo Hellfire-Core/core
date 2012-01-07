@@ -2684,6 +2684,7 @@ SpellMissInfo Unit::MeleeSpellHitResult(Unit *pVictim, SpellEntry const *spell, 
     {
         uint32 missChance = uint32(MeleeSpellMissChance(pVictim, attType, fullSkillDiff, spell->Id)*100.0f);
 
+        SendCombatStats("MeleeSpellHitResult: miss chance = %d", missChance);
         // Roll miss
         tmp += missChance;
         if (roll < tmp)
@@ -2692,6 +2693,7 @@ SpellMissInfo Unit::MeleeSpellHitResult(Unit *pVictim, SpellEntry const *spell, 
 
     // Chance resist mechanic
     int32 resist_chance = pVictim->GetMechanicResistChance(spell)*100;
+    SendCombatStats("MeleeSpellHitResult: mechanic resist chance = %d", resist_chance);
     tmp += resist_chance;
     if (roll < tmp)
         return SPELL_MISS_RESIST;
@@ -2830,6 +2832,7 @@ SpellMissInfo Unit::MagicSpellHitResult(Unit *pVictim, SpellEntry const *spell)
     if (HitChance <  100) HitChance =  100;
     if (HitChance > 9900) HitChance = 9900;
 
+    SendCombatStats("MagicSpellHitResult: hit chance = %d", HitChance);
     uint32 rand = GetMap()->urand(0,10000);
     if (rand > HitChance)
         return SPELL_MISS_RESIST;
@@ -13119,4 +13122,32 @@ float Unit::GetDeterminativeSize() const
     float _size = sqrt(dx*dx + dy*dy +dz*dz) * info->scale;
 
     return _size;
+}
+
+void Unit::SendCombatStats(const char* format, ...) const
+{
+    Player *target = GetGMToSendCombatStats();
+    if(!target)
+        return;
+    
+    va_list ap;
+    char message[1024];
+    va_start(ap, format);
+    vsnprintf(message, 1024, format, ap);
+    va_end(ap);
+    
+    WorldPacket data;
+    uint32 messageLength = (message ? strlen(message) : 0) + 1;
+
+    data.Initialize(SMSG_MESSAGECHAT, 100);                // guess size
+    data << uint8(CHAT_MSG_SYSTEM);
+    data << uint32(LANG_UNIVERSAL);
+    data << uint64(0);                           
+    data << uint32(0);                           
+    data << uint64(0);
+    data << uint32(messageLength);
+    data << message;
+    data << uint8(0);
+
+    target->SendDirectMessage(&data);
 }

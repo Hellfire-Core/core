@@ -1707,6 +1707,10 @@ class TRINITY_DLL_SPEC Unit : public WorldObject
 
         float GetDeterminativeSize() const;
 
+        Player* GetGMToSendCombatStats() const { return m_GMToSendCombatStats ? GetPlayer(m_GMToSendCombatStats) : NULL; }
+        void SetGMToSendCombatStats(uint64 guid) { m_GMToSendCombatStats = guid; }
+        void SendCombatStats(const char* str, ...) const;
+
     protected:
         explicit Unit ();
 
@@ -1801,6 +1805,8 @@ class TRINITY_DLL_SPEC Unit : public WorldObject
         uint64 m_misdirectionTargetGUID;
 
         uint32 m_procDeep;
+
+        uint64 m_GMToSendCombatStats;
 };
 
 namespace Trinity

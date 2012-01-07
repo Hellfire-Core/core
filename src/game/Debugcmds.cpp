@@ -940,3 +940,29 @@ bool ChatHandler::HandleDebugAnimCommand(const char* args)
     pTarget->HandleEmoteCommand(anim_id);
     return true;
 }
+
+bool ChatHandler::HandleDebugShowCombatStats(const char* args)
+{
+    if(!args)
+        return false;
+
+    Unit *target = getSelectedUnit();
+
+    if(!target)
+        return false;
+
+    if(strcmp(args, "on") == 0)
+    {
+        target->SetGMToSendCombatStats(m_session->GetPlayer()->GetGUID());
+        PSendSysMessage("Combat stats for unit %s (%d) enabled", target->GetName(), target->GetGUID());
+    }
+    else if(strcmp(args, "off") == 0)
+    {
+        target->SetGMToSendCombatStats(0);
+        PSendSysMessage("Combat stats for unit %s (%d) disabled", target->GetName(), target->GetGUID());
+    }
+    else
+        return false;
+
+    return true;
+}
