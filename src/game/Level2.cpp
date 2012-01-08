@@ -400,6 +400,8 @@ bool ChatHandler::HandleGameObjectTargetCommand(const char* args)
         std::string defRespawnDelayStr = secsToTimeString(target->GetRespawnDelay(),true);
 
         PSendSysMessage(LANG_COMMAND_RAWPAWNTIMES, defRespawnDelayStr.c_str(),curRespawnDelayStr.c_str());
+        const uint32 GOflags = target->GetUInt32Value(GAMEOBJECT_FLAGS);
+        PSendSysMessage("Selected GameObject flags: %u", GOflags);
     }
     return true;
 }
