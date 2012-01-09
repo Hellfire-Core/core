@@ -115,56 +115,16 @@ namespace VMAP
         }
     }
 
-    void VMapManager2::setHeightonmaps(const char* pMapIdString)
-    {
-        mapsWithHeight.clear();
-        if (pMapIdString != NULL)
-        {
-            std::string map_str;
-            std::stringstream map_ss;
-            map_ss.str(std::string(pMapIdString));
-            while (std::getline(map_ss, map_str, ','))
-            {
-                std::stringstream ss2(map_str);
-                int map_num = -1;
-                ss2 >> map_num;
-                if (map_num >= 0)
-                    mapsWithHeight.set(map_num, true);
-            }
-        }
-    }
-
-    void VMapManager2::setPosCollisiononmaps(const char* pMapIdString)
-    {
-        mapsWithPosCollision.clear();
-        if (pMapIdString != NULL)
-        {
-            std::string map_str;
-            std::stringstream map_ss;
-            map_ss.str(std::string(pMapIdString));
-            while (std::getline(map_ss, map_str, ','))
-            {
-                std::stringstream ss2(map_str);
-                int map_num = -1;
-                ss2 >> map_num;
-                if (map_num >= 0)
-                    mapsWithPosCollision.set(map_num, true);
-            }
-        }
-    }
-
     //=========================================================
 
     VMAPLoadResult VMapManager2::loadMap(const char* pBasePath, unsigned int pMapId, int x, int y)
     {
         VMAPLoadResult result = VMAP_LOAD_RESULT_IGNORED;
-        if (isMapLoadingEnabled(pMapId))
-        {
-            if (_loadMap(pMapId, pBasePath, x, y))
-                result = VMAP_LOAD_RESULT_OK;
-            else
-                result = VMAP_LOAD_RESULT_ERROR;
-        }
+        if (_loadMap(pMapId, pBasePath, x, y))
+            result = VMAP_LOAD_RESULT_OK;
+        else
+            result = VMAP_LOAD_RESULT_ERROR;
+
         return result;
     }
 
@@ -284,18 +244,13 @@ namespace VMAP
     float VMapManager2::getHeight(unsigned int pMapId, float x, float y, float z, float maxSearchDist)
     {
         float height = VMAP_INVALID_HEIGHT_VALUE;           //no height
-        if (isHeightCalcEnabled(pMapId))
+        InstanceTreeMap::iterator instanceTree = iInstanceMapTrees.find(pMapId);
+        if (instanceTree != iInstanceMapTrees.end())
         {
-            InstanceTreeMap::iterator instanceTree = iInstanceMapTrees.find(pMapId);
-            if (instanceTree != iInstanceMapTrees.end())
-            {
-                Vector3 pos = convertPositionToInternalRep(x,y,z);
-                height = instanceTree->second->getHeight(pos, maxSearchDist);
-                if (!(height < G3D::inf()))
-                {
-                    height = VMAP_INVALID_HEIGHT_VALUE;         //no height
-                }
-            }
+            Vector3 pos = convertPositionToInternalRep(x,y,z);
+            height = instanceTree->second->getHeight(pos, maxSearchDist);
+            if (!(height < G3D::inf()))
+                height = VMAP_INVALID_HEIGHT_VALUE;         //no height
         }
         return height;
     }

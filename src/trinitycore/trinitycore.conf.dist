@@ -145,20 +145,12 @@ EAIErrorLevel = 2
 #        Default: 0 (disabled)
 #
 #    vmap.enableLOS
-#    vmap.enableHeight
-#        Enable/Disable VMmap support for line of sight and height calculation
+#        Enable/Disable VMmap support for line of sight
 #        Default: 1 (true)
 #                 0 (false)
 #
 #    vmap.losMaps
 #        Map ids where LOS calculations will be enabled.
-#
-#    vmap.heightMaps
-#        Map ids where height calculations will be enabled.
-#
-#    vmap.posCollisionMaps
-#        Map ids where position calculations will be enabled (if DetectPosCollision is set to 1).
-#        Needs enabled height on this maps.
 #
 #    vmap.ignoreSpellIds
 #        These spells are ignored for LoS calculation
@@ -247,18 +239,13 @@ PlayerSaveInterval = 900000
 DisconnectToleranceInterval = 0
 
 vmap.enableLOS = 0
-vmap.enableHeight = 0
 vmap.losMaps = ""
-vmap.heightMaps = ""
-vmap.posCollisionMaps = ""
 vmap.ignoreSpellIds = "7720"
 vmap.petLOS = 0
 vmap.totem = 0
 vmap.enableCluster = 0
 vmap.clusterProcesses = 4
 
-DetectPosCollision = 1
-TargetPosRecalculateRange = 1.5
 UpdateUptimeInterval = 10
 MaxCoreStuckTime = 0
 AddonChannel = 1

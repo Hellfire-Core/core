@@ -582,16 +582,13 @@ bool GridMap::ExistVMap(uint32 mapid,int gx,int gy)
 {
     if (VMAP::IVMapManager* vmgr = VMAP::VMapFactory::createOrGetVMapManager())
     {
-        if (vmgr->isMapLoadingEnabled(mapid))
+        // x and y are swapped !! => fixed now
+        bool exists = vmgr->existsMap((sWorld.GetDataPath()+ "vmaps").c_str(), mapid, gx,gy);
+        if (!exists)
         {
-                                                            // x and y are swapped !! => fixed now
-            bool exists = vmgr->existsMap((sWorld.GetDataPath()+ "vmaps").c_str(), mapid, gx,gy);
-            if (!exists)
-            {
-                std::string name = vmgr->getDirFileName(mapid,gx,gy);
-                sLog.outError("VMap file '%s' is missing or point to wrong version vmap file, redo vmaps with latest vmap_assembler.exe program", (sWorld.GetDataPath()+"vmaps/"+name).c_str());
-                return false;
-            }
+            std::string name = vmgr->getDirFileName(mapid,gx,gy);
+            sLog.outError("VMap file '%s' is missing or point to wrong version vmap file, redo vmaps with latest vmap_assembler.exe program", (sWorld.GetDataPath()+"vmaps/"+name).c_str());
+            return false;
         }
     }
 
@@ -737,19 +734,14 @@ float TerrainInfo::GetHeight(float x, float y, float z, bool pUseVmaps, float ma
      if (pUseVmaps)
      {
          VMAP::IVMapManager* vmgr = VMAP::VMapFactory::createOrGetVMapManager();
-         if (vmgr->isHeightCalcEnabled(m_mapId))
-         {
-             // if mapHeight has been found search vmap height at least until mapHeight point
-             // this prevent case when original Z "too high above ground and vmap height search fail"
-             // this will not affect most normal cases (no map in instance, or stay at ground at continent)
-             if (mapHeight > INVALID_HEIGHT && z2 - mapHeight > maxSearchDist)
-                 maxSearchDist = z2 - mapHeight + 1.0f;      // 1.0 make sure that we not fail for case when map height near but above for vamp height
+         // if mapHeight has been found search vmap height at least until mapHeight point
+         // this prevent case when original Z "too high above ground and vmap height search fail"
+         // this will not affect most normal cases (no map in instance, or stay at ground at continent)
+         if (mapHeight > INVALID_HEIGHT && z2 - mapHeight > maxSearchDist)
+             maxSearchDist = z2 - mapHeight + 1.0f;      // 1.0 make sure that we not fail for case when map height near but above for vamp height
 
-             // look from a bit higher pos to find the floor
-             vmapHeight = vmgr->getHeight(GetMapId(), x, y, z2, maxSearchDist);
-         }
-         else
-             vmapHeight = VMAP_INVALID_HEIGHT_VALUE;
+         // look from a bit higher pos to find the floor
+         vmapHeight = vmgr->getHeight(GetMapId(), x, y, z2, maxSearchDist);
      }
      else
          vmapHeight = VMAP_INVALID_HEIGHT_VALUE;

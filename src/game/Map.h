@@ -190,10 +190,6 @@ class TRINITY_DLL_SPEC Map : public GridRefManager<NGridType>, public Trinity::O
         static void InitStateMachine();
         static void DeleteStateMachine();
 
-        bool hasVMapHeight();
-
-        bool hasPosCollisionCalcEnabled();
-
         void MoveAllCreaturesInMoveList();
         void RemoveAllObjectsInRemoveList();
 

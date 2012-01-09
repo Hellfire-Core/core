@@ -1031,18 +1031,6 @@ void Map::UnloadAll()
     }
 }
 
-bool Map::hasVMapHeight()
-{
-    VMAP::IVMapManager *vMgr = VMAP::VMapFactory::createOrGetVMapManager();
-    return vMgr && vMgr->isHeightCalcEnabled(GetId());
-}
-
-bool Map::hasPosCollisionCalcEnabled()
-{
-    VMAP::IVMapManager *vMgr = VMAP::VMapFactory::createOrGetVMapManager();
-    return vMgr && vMgr->isPosCollisionCalcEnabled(GetId());
-}
-
 bool Map::CheckGridIntegrity(Creature* c, bool moved) const
 {
     Cell const& cur_cell = c->GetCurrentCell();

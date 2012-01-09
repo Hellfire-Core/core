@@ -891,7 +891,6 @@ bool ChatHandler::HandleGPSCommand(const char* args)
 
     uint32 have_map = GridMap::ExistMap(obj->GetMapId(),gx,gy) ? 1 : 0;
     uint32 have_vmap = GridMap::ExistVMap(obj->GetMapId(),gx,gy) ? 1 : 0;
-    uint32 have_posCollisionEnabled = obj->GetMap()->hasPosCollisionCalcEnabled();
 
     if (have_vmap)
     {
@@ -909,7 +908,7 @@ bool ChatHandler::HandleGPSCommand(const char* args)
         area_id, (areaEntry ? areaEntry->area_name[m_session->GetSessionDbcLocale()] : "<unknown>"),
         obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), obj->GetOrientation(),
         cell.GridX(), cell.GridY(), cell.CellX(), cell.CellY(), obj->GetInstanceId(),
-        zone_x, zone_y, ground_z, floor_z, have_map, have_vmap, have_posCollisionEnabled);
+        zone_x, zone_y, ground_z, floor_z, have_map, have_vmap, have_vmap);
 
     sLog.outDebug("Player %s GPS call for %s '%s' (%s: %u):",
         GetName(),
@@ -921,7 +920,7 @@ bool ChatHandler::HandleGPSCommand(const char* args)
         area_id, (areaEntry ? areaEntry->area_name[sWorld.GetDefaultDbcLocale()] : "<unknown>"),
         obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), obj->GetOrientation(),
         cell.GridX(), cell.GridY(), cell.CellX(), cell.CellY(), obj->GetInstanceId(),
-        zone_x, zone_y, ground_z, floor_z, have_map, have_vmap, have_posCollisionEnabled);
+        zone_x, zone_y, ground_z, floor_z, have_map, have_vmap, have_vmap);
 
     return true;
 }

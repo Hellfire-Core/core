@@ -269,7 +269,6 @@
     <ClCompile Include="..\..\src\game\Object.cpp" />
     <ClCompile Include="..\..\src\game\ObjectAccessor.cpp" />
     <ClCompile Include="..\..\src\game\ObjectGuid.cpp" />
-    <ClCompile Include="..\..\src\game\ObjectPosSelector.cpp" />
     <ClCompile Include="..\..\src\game\Pet.cpp" />
     <ClCompile Include="..\..\src\game\Player.cpp" />
     <ClCompile Include="..\..\src\game\PoolHandler.cpp" />
@@ -438,7 +437,6 @@
     <ClInclude Include="..\..\src\game\Object.h" />
     <ClInclude Include="..\..\src\game\ObjectAccessor.h" />
     <ClInclude Include="..\..\src\game\ObjectGuid.h" />
-    <ClInclude Include="..\..\src\game\ObjectPosSelector.h" />
     <ClInclude Include="..\..\src\game\Pet.h" />
     <ClInclude Include="..\..\src\game\Player.h" />
     <ClInclude Include="..\..\src\game\PoolHandler.h" />

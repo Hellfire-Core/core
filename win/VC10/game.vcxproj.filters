@@ -123,9 +123,6 @@
     <ClCompile Include="..\..\src\game\ObjectGuid.cpp">
       <Filter>Objects</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\game\ObjectPosSelector.cpp">
-      <Filter>Objects</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\game\Pet.cpp">
       <Filter>Objects</Filter>
     </ClCompile>
@@ -595,9 +592,6 @@
       <Filter>Objects</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\game\ObjectGuid.h">
-      <Filter>Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\game\ObjectPosSelector.h">
       <Filter>Objects</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\game\Pet.h">

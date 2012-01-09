@@ -1611,11 +1611,8 @@ void Spell::EffectDummy(uint32 i)
                         m_caster->GetPosition(cx,cy,cz);
 
                         //Check use of vamps//
-                        bool useVmap = false;
+                        bool useVmap = true;
                         bool swapZone = true;
-
-                        if (VMAP::VMapFactory::createOrGetVMapManager()->isHeightCalcEnabled(mapid))
-                            useVmap = true;
 
                         //Going foward 0.5f until max distance
                         for (float i=0.5f; i<45; i+=0.5f)
@@ -7098,11 +7095,8 @@ void Spell::EffectLeapForward(uint32 i)
         unitTarget->GetPosition(cx,cy,cz);
 
         //Check use of vamps//
-        bool useVmap = false;
+        bool useVmap = true;
         bool swapZone = true;
-
-        if (VMAP::VMapFactory::createOrGetVMapManager()->isHeightCalcEnabled(mapid))
-            useVmap = true;
 
         //Going foward 0.5f until max distance
         for (float i=0.5f; i<dis; i+=0.5f)
