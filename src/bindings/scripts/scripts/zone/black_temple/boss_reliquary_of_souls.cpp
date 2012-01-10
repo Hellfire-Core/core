@@ -449,6 +449,8 @@ struct TRINITY_DLL_DECL npc_ros_triggerAI : public ScriptedAI
 
     void JustRespawned(){}
 
+    void AttackStart(Unit *){}
+
     void MoveInLineOfSight(Unit * who)
     {
         if (!me->IsWithinLOSInMap(who))

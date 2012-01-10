@@ -150,9 +150,10 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket & recv_data)
         //if only one person is supposed to loot the item, then set it to looted
         if (!item->freeforall)
             loot->setItemLooted(item);
+        else
+            loot->removeItemFromSavedLoot(item);
 
         --loot->unlootedCount;
-
         player->SendNewItem(newitem, uint32(item->count), false, false, true);
     }
     else
