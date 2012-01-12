@@ -7327,9 +7327,11 @@ bool ChatHandler::HandleCrashMapCommand(const char */*args*/)
         return false;
 
     tmpPlayer->GetMap()->SetBroken(true);
+    return false;
 }
 
 bool ChatHandler::HandleCrashServerCommand(const char */*args*/)
 {
     *((uint32 volatile*)NULL) = 0;                       // bang crash
+    return false;
 }
