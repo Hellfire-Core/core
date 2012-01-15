@@ -936,6 +936,7 @@ struct TRINITY_DLL_DECL npc_amanishi_lookoutAI : public ScriptedAI
     {
         //m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        m_creature->SetReactState(REACT_AGGRESSIVE);
         m_creature->SetVisibility(VISIBILITY_ON);
         m_creature->setActive(true);
         EventStarted = false;

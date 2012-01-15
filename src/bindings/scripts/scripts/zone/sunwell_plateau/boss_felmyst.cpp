@@ -382,10 +382,11 @@ struct TRINITY_DLL_DECL boss_felmystAI : public ScriptedAI
             m_creature->SetLevitate(true);
         else if(Type == POINT_MOTION_TYPE)
         {
+            // stop moving on each waypoint
+            me->GetMotionMaster()->MoveIdle();
             switch(Id)
             {
                 case 0: // on landing after aggroing
-                    me->GetMotionMaster()->MoveIdle();
                     me->HandleEmoteCommand(EMOTE_ONESHOT_LAND);
                     me->SetLevitate(false);
                     me->setHover(false);
@@ -398,7 +399,6 @@ struct TRINITY_DLL_DECL boss_felmystAI : public ScriptedAI
                     break;
                 case 2: // on left/right side marker
                     me->setHover(true);
-                    me->GetMotionMaster()->MoveIdle();
                     Timer[EVENT_FLIGHT_SEQUENCE] = 2000;
                     break;
                 case 3: // on path start node
@@ -409,7 +409,6 @@ struct TRINITY_DLL_DECL boss_felmystAI : public ScriptedAI
                 case 4: // on path stop node
                     me->setHover(true);
                     me->SetSpeed(MOVE_FLIGHT, 1.8, false);
-                    me->GetMotionMaster()->MoveIdle();
                     m_creature->RemoveAurasDueToSpell(SPELL_FOG_BREATH);
                     side = side?LEFT_SIDE:RIGHT_SIDE;
                     BreathCount++;
