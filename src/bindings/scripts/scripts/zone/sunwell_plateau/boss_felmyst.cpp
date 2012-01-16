@@ -171,7 +171,7 @@ float FogCoords[25][3][3] =
 
 struct TRINITY_DLL_DECL boss_felmystAI : public ScriptedAI
 {
-    boss_felmystAI(Creature *c) : ScriptedAI(c)
+    boss_felmystAI(Creature *c) : ScriptedAI(c), summons(c)
     {
         pInstance = (c->GetInstanceData());
     }
@@ -181,6 +181,8 @@ struct TRINITY_DLL_DECL boss_felmystAI : public ScriptedAI
     EventFelmyst Event;
     uint32 Timer[10];
     uint32 PulseCombat;
+
+    SummonList summons;
 
     uint8 side;
     uint8 path;
@@ -208,9 +210,12 @@ struct TRINITY_DLL_DECL boss_felmystAI : public ScriptedAI
         m_creature->SetFloatValue(UNIT_FIELD_COMBATREACH, 10);
         m_creature->setActive(true);
         m_creature->SetWalk(false);
+        DespawnSummons();   // for unyielding dead summoned by trigger
 
         if(pInstance)
             pInstance->SetData(DATA_FELMYST_EVENT, NOT_STARTED);
+
+        summons.DespawnAll();   // for any other summons? (should not be needed?)
     }
 
     void EnterCombat(Unit *who)
@@ -258,7 +263,7 @@ struct TRINITY_DLL_DECL boss_felmystAI : public ScriptedAI
 
     void KilledUnit(Unit* victim)
     {
-        if(!urand(0,3))
+        if(roll_chance_i(15))
             DoScriptText(RAND(YELL_KILL1, YELL_KILL2), m_creature);
     }
 
@@ -293,6 +298,19 @@ struct TRINITY_DLL_DECL boss_felmystAI : public ScriptedAI
             }
     }
 
+    void DespawnSummons()
+    {
+        std::list<uint64> AddList = me->GetMap()->GetCreaturesGUIDList(MOB_UNYIELDING_DEAD, GET_FIRST_CREATURE_GUID, 0);
+        if (AddList.empty())
+            return;
+
+        for (std::list<uint64>::iterator i = AddList.begin(); i!= AddList.end(); ++i)
+        {
+            if(Creature* Skeleton = me->GetCreature(*i))
+                Skeleton->ForcedDespawn();
+        }
+    }
+
     void JustSummoned(Creature *summon)
     {
         if(summon->GetEntry() == MOB_KALECGOS)
@@ -303,6 +321,8 @@ struct TRINITY_DLL_DECL boss_felmystAI : public ScriptedAI
             summon->SetSpeed(MOVE_FLIGHT, 1.2);
             summon->GetMotionMaster()->MovePoint(50, 1471, 632, 37);
         }
+
+        summons.Summon(summon);
     }
 
     void DamageTaken(Unit*, uint32 &damage)
