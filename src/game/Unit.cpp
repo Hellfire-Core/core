@@ -1156,6 +1156,12 @@ void Unit::CastSpell(Unit* Victim,SpellEntry const *spellInfo, bool triggered, I
     if (!originalCaster && triggeredByAura)
         originalCaster = triggeredByAura->GetCasterGUID();
 
+    if (!triggered && spellInfo->InterruptFlags & SPELL_INTERRUPT_FLAG_MOVEMENT)
+    {
+        DisableSpline();
+        StopMoving();
+    }
+
     Spell *spell = new Spell(this, spellInfo, triggered, originalCaster);
 
     if (Victim)
@@ -11419,7 +11425,6 @@ void Unit::StopMoving()
     Movement::MoveSplineInit init(*this);
     init.SetFacing(GetOrientation());
     init.Launch();
-    DisableSpline();
 }
 
 bool Unit::IsSitState() const

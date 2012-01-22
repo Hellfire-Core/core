@@ -24,6 +24,8 @@
 #include "CreatureAI.h"
 #include "World.h"
 
+#include "Spell.h"
+
 #include "movement/MoveSplineInit.h"
 #include "movement/MoveSpline.h"
 
@@ -37,6 +39,15 @@ void TargetedMovementGeneratorMedium<T,D>::_setTargetLocation(T &owner)
 
     if (owner.hasUnitState(UNIT_STAT_NOT_MOVE))
         return;
+
+    if (owner.IsNonMeleeSpellCasted(false, false, true))
+    {
+        if (!owner.m_currentSpells[CURRENT_GENERIC_SPELL] || owner.m_currentSpells[CURRENT_GENERIC_SPELL]->m_spellInfo->InterruptFlags & SPELL_INTERRUPT_FLAG_MOVEMENT)
+            return;
+
+        if (!owner.m_currentSpells[CURRENT_CHANNELED_SPELL] || owner.m_currentSpells[CURRENT_CHANNELED_SPELL]->m_spellInfo->ChannelInterruptFlags & CHANNEL_FLAG_MOVEMENT)
+            return;
+    }
 
     float x, y, z;
 
@@ -135,10 +146,19 @@ bool TargetedMovementGeneratorMedium<T,D>::Update(T &owner, const uint32 & time_
     // prevent movement while casting spells with cast time or channel time
     if (owner.IsNonMeleeSpellCasted(false, false,  true))
     {
-        if (!owner.IsStopped())
-            owner.StopMoving();
-        D::_clearUnitStateMove(owner);
-        return true;
+        bool needToStop = false;
+        if (!owner.m_currentSpells[CURRENT_GENERIC_SPELL] || owner.m_currentSpells[CURRENT_GENERIC_SPELL]->m_spellInfo->InterruptFlags & SPELL_INTERRUPT_FLAG_MOVEMENT)
+            needToStop = true;
+        else if (!owner.m_currentSpells[CURRENT_CHANNELED_SPELL] || owner.m_currentSpells[CURRENT_CHANNELED_SPELL]->m_spellInfo->ChannelInterruptFlags & CHANNEL_FLAG_MOVEMENT)
+            needToStop = true;
+
+        if (needToStop)
+        {
+            if (!owner.IsStopped())
+                owner.StopMoving();
+
+            return true;
+        }
     }
 
     // prevent crash after creature killed pet
@@ -197,7 +217,6 @@ void ChaseMovementGenerator<Player>::Initialize(Player &owner)
 template<>
 void ChaseMovementGenerator<Creature>::Initialize(Creature &owner)
 {
-    owner.SetWalk(false);
     owner.addUnitState(UNIT_STAT_CHASE|UNIT_STAT_CHASE_MOVE);
     _setTargetLocation(owner);
 }
@@ -218,7 +237,7 @@ void ChaseMovementGenerator<T>::Reset(T &owner)
 template<>
 bool FollowMovementGenerator<Creature>::EnableWalking() const
 {
-    return i_target.isValid() && i_target->IsWalking();
+    return i_target.isValid() && (i_target->IsWalking() || i_target->ToCreature()->GetCreatureInfo()->flags_extra & CREATURE_FLAG_EXTRA_ALWAYS_WALK);
 }
 
 template<>
