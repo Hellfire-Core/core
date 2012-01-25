@@ -45,12 +45,19 @@ void WaypointMovementGenerator<Creature>::Initialize(Creature &creature)
 {
     LoadPath(creature);
     creature.addUnitState(UNIT_STAT_ROAMING|UNIT_STAT_ROAMING_MOVE);
+
+    _wasActive = creature.isActiveObject();
+    if (!_wasActive)
+        creature.setActive(true);
 }
 
 void WaypointMovementGenerator<Creature>::Finalize(Creature &creature)
 {
     creature.clearUnitState(UNIT_STAT_ROAMING|UNIT_STAT_ROAMING_MOVE);
     creature.SetWalk(false);
+
+    if (!_wasActive)
+        creature.setActive(false);
 }
 
 void WaypointMovementGenerator<Creature>::Reset(Creature &creature)

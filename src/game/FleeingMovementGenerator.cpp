@@ -66,11 +66,8 @@ bool FleeingMovementGenerator<T>::_getPoint(T &owner, float &x, float &y, float 
 
         if (roll_chance_i(33))
         {
-            switch (urand(0, 7))
+            switch (urand(1, 7))
             {
-                case 0:
-                    angle = i_cur_angle;
-                    break;
                 case 1:
                     angle = i_cur_angle + M_PI/4.0f;
                     break;

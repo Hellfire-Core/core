@@ -104,6 +104,7 @@ public PathMovementBase<Creature, WaypointPath const*>
         bool m_isArrivalDone;
         uint32 path_id;
         bool repeating;
+        bool _wasActive;
 };
 
 /** FlightPathMovementGenerator generates movement of the player for the paths
