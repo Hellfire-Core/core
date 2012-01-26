@@ -271,6 +271,9 @@ void MotionMaster::MoveChase(Unit* target, float dist, float angle)
     if (i_owner->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_MOVE))
         return;
 
+    if (Impl[MOTION_SLOT_ACTIVE] && Impl[MOTION_SLOT_ACTIVE]->GetMovementGeneratorType() == HOME_MOTION_TYPE)
+        return;
+
     if (i_owner->GetTypeId() == TYPEID_PLAYER)
         Mutate(new ChaseMovementGenerator<Player>(*target,dist,angle), MOTION_SLOT_ACTIVE);
     else
