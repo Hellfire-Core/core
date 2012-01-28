@@ -64,6 +64,14 @@ enum NotifyFlags
     NOTIFY_ALL                      = 0xFF
 };
 
+enum ActiveObject
+{
+    ACTIVE_BY_NONE                  = 0x00,
+    ACTIVE_BY_MANUAL                = 0x01,
+    ACTIVE_BY_WAYPOINT_MOVEMENT     = 0x02,
+    ACTIVE_BY_ALL                   = 0x03
+};
+
 class WorldPacket;
 class UpdateData;
 class ByteBuffer;
@@ -588,8 +596,8 @@ class TRINITY_DLL_SPEC WorldObject : public Object//, public WorldLocation
         GameObject* SummonGameObject(uint32 entry, float x, float y, float z, float ang, float rotation0, float rotation1, float rotation2, float rotation3, uint32 respawnTime);
         Creature* SummonTrigger(float x, float y, float z, float ang, uint32 dur, CreatureAI* (*GetAI)(Creature*) = NULL);
 
-        bool isActiveObject() const { return m_isActive; }
-        void setActive(bool isActiveObject);
+        bool isActiveObject() const { return m_activeBy; }
+        void setActive(bool isActiveObject, ActiveObject activeBy = ACTIVE_BY_MANUAL);
         void SetWorldObject(bool apply);
 
         bool IsTempWorldObject;
@@ -619,7 +627,7 @@ class TRINITY_DLL_SPEC WorldObject : public Object//, public WorldLocation
     protected:
         explicit WorldObject();
         std::string m_name;
-        bool m_isActive;
+        uint32 m_activeBy;
 
         ZoneScript *m_zoneScript;
 

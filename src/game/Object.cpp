@@ -883,7 +883,7 @@ WorldObject::WorldObject()
     m_positionX(0.0f), m_positionY(0.0f), m_positionZ(0.0f), m_orientation(0.0f),
     mSemaphoreTeleport(false)
     , m_map(NULL), m_zoneScript(NULL)
-    , m_isActive(false), IsTempWorldObject(false)
+    , m_activeBy(0), IsTempWorldObject(false)
     , m_notifyflags(0), m_executed_notifies(0)
 {
 
@@ -901,15 +901,22 @@ void WorldObject::SetWorldObject(bool on)
     GetMap()->AddObjectToSwitchList(this, on);
 }
 
-void WorldObject::setActive(bool on)
+void WorldObject::setActive(bool on, ActiveObject activeBy)
 {
-    if (m_isActive == on)
-        return;
-
     if (GetTypeId() == TYPEID_PLAYER)
         return;
 
-    m_isActive = on;
+    bool wasActive = m_activeBy;
+
+    if(on)
+        m_activeBy |= activeBy;
+    else
+        m_activeBy &= ~activeBy;
+
+    bool isActive = m_activeBy;
+
+    if (wasActive == isActive)
+        return;
 
     if (!IsInWorld())
         return;
