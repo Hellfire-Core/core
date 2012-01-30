@@ -72,20 +72,28 @@ void WaypointMovementGenerator<Creature>::OnArrived(Creature& creature)
     creature.clearUnitState(UNIT_STAT_ROAMING_MOVE);
     m_isArrivalDone = true;
 
-    if(creature.GetFormation() && !creature.IsFormationLeader())
-        creature.GetFormation()->ReachedWaypoint();
+    const WaypointData *node = i_path->at(i_currentNode);
 
-    if (i_path->at(i_currentNode)->event_id && urand(0, 99) < i_path->at(i_currentNode)->event_chance)
-        creature.GetMap()->ScriptsStart(sWaypointScripts, i_path->at(i_currentNode)->event_id, &creature, NULL/*, false*/);
+    if (node->event_id && urand(0, 99) < node->event_chance)
+        creature.GetMap()->ScriptsStart(sWaypointScripts, node->event_id, &creature, NULL/*, false*/);
 
     // Inform script
     MovementInform(creature);
-    Stop(i_path->at(i_currentNode)->delay);
+    Stop(node->delay);
+
+    if ((i_currentNode == i_path->size() - 1) && !repeating) // If that's our last waypoint
+    {
+        creature.SetHomePosition(node->x, node->y, node->z, creature.GetOrientation());
+        creature.GetMotionMaster()->Initialize();
+        i_currentNode = i_path->size();
+        return;
+    }
+    i_currentNode = (i_currentNode+1) % i_path->size();
 }
 
 bool WaypointMovementGenerator<Creature>::StartMove(Creature &creature)
 {
-    if (!i_path || i_path->empty())
+    if (!i_path || i_path->empty() || i_currentNode == i_path->size())
         return false;
 
     if (Stopped())
@@ -97,18 +105,6 @@ bool WaypointMovementGenerator<Creature>::StartMove(Creature &creature)
     {
         Stop(1);
         return true;   
-    }
-
-    if (m_isArrivalDone)
-    {
-        if ((i_currentNode == i_path->size() - 1) && !repeating) // If that's our last waypoint
-        {
-            creature.SetHomePosition(node->x, node->y, node->z, creature.GetOrientation());
-            creature.GetMotionMaster()->Initialize();
-            return false;
-        }
-
-        i_currentNode = (i_currentNode+1) % i_path->size();
     }
 
     m_isArrivalDone = false;
