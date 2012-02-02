@@ -287,7 +287,7 @@ bool WorldSession::Update(uint32 diff, PacketFilter& updater)
     else
         m_kickTimer = MINUTE * 15 * 1000;
 
-    sWorld.RecordTimeDiff(NULL);
+    sWorld.RecordSessionTimeDiff(NULL);
 
     ///- Retrieve packets from the receive queue and call the appropriate handlers
     /// not proccess packets if socket already closed
@@ -300,13 +300,13 @@ bool WorldSession::Update(uint32 diff, PacketFilter& updater)
     }
 
     bool overtime = false;
-    if (sWorld.RecordTimeDiff("WorldSession:Update: packets. Accid %u | ", GetAccountId()) > sWorld.getConfig(CONFIG_SESSION_UPDATE_MAX_TIME))
+    if (sWorld.RecordSessionTimeDiff("WorldSession:Update: packets. Accid %u | ", GetAccountId()) > sWorld.getConfig(CONFIG_SESSION_UPDATE_MAX_TIME))
         overtime = true;
 
     if (m_Socket && m_Warden)
         m_Warden->Update();
 
-    if (sWorld.RecordTimeDiff("WorldSession:Update: warden. Accid %u | ", GetAccountId()) > sWorld.getConfig(CONFIG_SESSION_UPDATE_MAX_TIME))
+    if (sWorld.RecordSessionTimeDiff("WorldSession:Update: warden. Accid %u | ", GetAccountId()) > sWorld.getConfig(CONFIG_SESSION_UPDATE_MAX_TIME))
         overtime = true;
 
     if (overtime)

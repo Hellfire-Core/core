@@ -698,6 +698,7 @@ class World
         uint32 m_updateTime, m_updateTimeSum, m_avgUpdateTime, m_curAvgUpdateTime;
         uint32 m_updateTimeCount;
         uint32 m_currentTime;
+        uint32 m_currentSessionTime;
 
         uint64 m_serverUpdateTimeSum, m_serverUpdateTimeCount;
 
