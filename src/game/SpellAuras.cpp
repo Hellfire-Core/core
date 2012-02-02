@@ -4119,8 +4119,8 @@ void Aura::HandleModStealth(bool apply, bool Real)
                 }
             }
 
-            if (m_removeMode == AURA_REMOVE_BY_CANCEL)
-                pTarget->RemoveSpellsCausingAura(SPELL_AURA_MOD_STEALTH);
+            //if (m_removeMode == AURA_REMOVE_BY_CANCEL)
+            //    pTarget->RemoveSpellsCausingAura(SPELL_AURA_MOD_STEALTH);
         }
     }
 
