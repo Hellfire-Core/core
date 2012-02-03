@@ -96,8 +96,9 @@ void MapUpdateDiffInfo::PrintCumulativeMapUpdateDiff()
 {
     for (int i = DIFF_SESSION_UPDATE; i < DIFF_MAX_CUMULATIVE_INFO; i++)
     {
-        if (_cumulativeDiffInfo[i] >= sWorld.getConfig(CONFIG_MIN_LOG_UPDATE))
-            sLog.outDiff("Cumulative Map Update for: %u - %u", i, _cumulativeDiffInfo[i]);
+        uint32 diff = _cumulativeDiffInfo[i].value();
+        if (diff >= sWorld.getConfig(CONFIG_MIN_LOG_UPDATE))
+            sLog.outDiff("Cumulative Map Update for: %i - %u", i, diff);
     }
 }
 

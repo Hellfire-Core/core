@@ -296,7 +296,7 @@ struct TRINITY_DLL_DECL boss_aranAI : public ScriptedAI
         {
             AddSpellToCast(SPELL_POTION, CAST_SELF);
             AddSpellToCast(SPELL_AOE_PYROBLAST, CAST_SELF);
-            Drinking = DRINKING_POTION
+            Drinking = DRINKING_POTION;
         }
 
         if(Drinking == DRINKING_NO_DRINKING)
@@ -663,7 +663,6 @@ bool FlameWreathHandleEffect(Unit *pCaster, Unit* pUnit, Item* pItem, GameObject
 
     return true;
 }
-
 
 void AddSC_boss_shade_of_aran()
 {
