@@ -53,6 +53,8 @@ class MovementInfo;
 
 struct OpcodeHandler;
 
+enum Opcodes;
+
 #define CHECK_PACKET_SIZE(P,S) if ((P).size() < (S)) return SizeError((P),(S));
 
 enum OpcodeDisabled
@@ -751,6 +753,9 @@ class TRINITY_DLL_SPEC WorldSession
         bool m_customRates;
 
         uint16 m_opcodesDisabled;
+
+        typedef std::map<Opcodes, ShortIntervalTimer> OpcodesCooldownMap;
+        OpcodesCooldownMap _opcodeCooldowns;
 
         ACE_Based::LockedQueue<WorldPacket*, ACE_Thread_Mutex> _recvQueue;
 
