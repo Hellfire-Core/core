@@ -440,6 +440,7 @@ void Master::_OnSignal(int s)
         case SIGFPE:
         case SIGSEGV:
         case SIGABRT:
+        {
             if (sWorld.getConfig(CONFIG_VMSS_ENABLE))
             {
                 ACE_thread_t const threadId = ACE_OS::thr_self();
@@ -466,6 +467,7 @@ void Master::_OnSignal(int s)
 
             World::StopNow(SHUTDOWN_EXIT_CODE);
             break;
+        }
         case SIGINT:
             World::StopNow(RESTART_EXIT_CODE);
             break;
