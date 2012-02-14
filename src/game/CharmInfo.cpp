@@ -1,9 +1,10 @@
 #include "CharmInfo.h"
 
-#include "Spell.h"
+#include "WorldPacket.h"
 #include "Player.h"
 #include "Creature.h"
 #include "CreatureAI.h"
+#include "Spell.h"
 
 #include "MovementGenerator.h"
 

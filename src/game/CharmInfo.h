@@ -4,6 +4,7 @@
 #include "Common.h"
 
 class Unit;
+struct SpellEntry;
 
 enum ReactStates
 {

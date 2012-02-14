@@ -315,11 +315,8 @@ void WorldSession::HandleSendMail(WorldPacket & recv_data)
                         GetPlayerName(), GetAccountId(), item->GetProto()->Name1, item->GetEntry(), item->GetCount(), receiver.c_str(), rc_account);
                 }
 
-                //if (_player->GetSession()->IsAccountFlagged(ACC_SPECIAL_LOG))
-                //{
-                    sLog.outMail("Player %s (Account: %u) mail item: %s (Entry: %u Count: %u) to player: %s (Account: %u)",
-                        GetPlayerName(), GetAccountId(), item->GetProto()->Name1, item->GetEntry(), item->GetCount(), receiver.c_str(), rc_account);
-                //}
+                sLog.outMail("Player %s (Account: %u) mail item: %s (Entry: %u Count: %u) to player: %s (Account: %u)",
+                    GetPlayerName(), GetAccountId(), item->GetProto()->Name1, item->GetEntry(), item->GetCount(), receiver.c_str(), rc_account);
 
                 pl->MoveItemFromInventory(item->GetBagSlot(), item->GetSlot(), true);
                 CharacterDatabase.BeginTransaction();
@@ -350,7 +347,7 @@ void WorldSession::HandleSendMail(WorldPacket & recv_data)
                     GetPlayerName(), GetAccountId(), money, receiver.c_str(), rc_account);
             }
 
-                sLog.outMail("Player %s (Account: %u) mail money: %u  with subject: %s and body: %s to player: %s (Account: %u)",
+            sLog.outMail("Player %s (Account: %u) mail money: %u  with subject: %s and body: %s to player: %s (Account: %u)",
                 GetPlayerName(), GetAccountId(), money, subject.c_str(), body.c_str(), receiver.c_str(), rc_account);
         }
     }
