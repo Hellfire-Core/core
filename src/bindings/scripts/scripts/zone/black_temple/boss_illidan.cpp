@@ -860,9 +860,20 @@ struct TRINITY_DLL_DECL boss_illidan_stormrageAI : public BossAI
         }
     }
 
+    bool UpdateVictim()
+    {
+        if (m_phase == PHASE_MAIEV)
+            return true;
+            
+        if (m_phase == PHASE_DEATH)
+            return true;
+            
+        return ScriptedAI::UpdateVictim();
+    }
+   
     void UpdateAI(const uint32 diff)
     {
-        if (m_phase != PHASE_MAIEV && !UpdateVictim())
+        if (!UpdateVictim())
             return;
 
         if (m_combatTimer < diff)
