@@ -6764,8 +6764,6 @@ void Aura::PeriodicTick()
             if (!pCaster)
                 return;
 
-            damageType = DOT;
-
             // tick resisting probably in wotlk
             //if (GetSpellProto()->Effect[GetEffIndex()]==SPELL_EFFECT_PERSISTENT_AREA_AURA && pCaster->SpellHitResult(m_target,GetSpellProto(),false)!=SPELL_MISS_NONE)
             //    return;
