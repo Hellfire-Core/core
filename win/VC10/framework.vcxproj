@@ -323,6 +323,7 @@
     <ClInclude Include="..\..\src\framework\Utilities\LinkedReference\RefManager.h" />
     <ClInclude Include="..\..\src\framework\Dynamic\FactoryHolder.h" />
     <ClInclude Include="..\..\src\framework\Dynamic\ObjectRegistry.h" />
+    <ClInclude Include="..\..\src\shared\LockedVector.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\framework\Policies\MemoryManagement.cpp" />

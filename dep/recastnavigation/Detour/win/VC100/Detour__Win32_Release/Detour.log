@@ -1,8 +1,6 @@
-﻿Build started 2012-02-18 21:06:42.
-     1>Project "D:\Repozytoria\hellground\dep\recastnavigation\Detour\win\VC100\Detour.vcxproj" on node 2 (rebuild target(s)).
-     1>_PrepareForClean:
-         Deleting file ".\Detour__Win32_Release\Detour.lastbuildstate".
-       InitializeBuildStatus:
+﻿Build started 2012-04-20 19:18:13.
+     1>Project "D:\Repozytoria\hellground\dep\recastnavigation\Detour\win\VC100\Detour.vcxproj" on node 3 (build target(s)).
+     1>InitializeBuildStatus:
          Creating ".\Detour__Win32_Release\Detour.unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I..\..\include /Zi /nologo /W3 /WX- /O2 /Oi /Ot /Oy- /D WIN32 /D NDEBUG /D _MBCS /D _MBCS /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo".\Detour__Win32_Release\\" /Fd".\Detour__Win32_Release\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt ..\..\Source\DetourAlloc.cpp ..\..\Source\DetourCommon.cpp ..\..\Source\DetourNavMesh.cpp ..\..\Source\DetourNavMeshBuilder.cpp ..\..\Source\DetourNavMeshQuery.cpp ..\..\Source\DetourNode.cpp
@@ -24,8 +22,8 @@
        FinalizeBuildStatus:
          Deleting file ".\Detour__Win32_Release\Detour.unsuccessfulbuild".
          Touching ".\Detour__Win32_Release\Detour.lastbuildstate".
-     1>Done Building Project "D:\Repozytoria\hellground\dep\recastnavigation\Detour\win\VC100\Detour.vcxproj" (rebuild target(s)).
+     1>Done Building Project "D:\Repozytoria\hellground\dep\recastnavigation\Detour\win\VC100\Detour.vcxproj" (build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:05.05
+Time Elapsed 00:00:02.48
