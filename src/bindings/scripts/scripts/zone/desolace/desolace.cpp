@@ -165,7 +165,7 @@ bool GOUse_go_iruxos(Player *pPlayer, GameObject* pGO)
 {
         if (pPlayer->GetQuestStatus(5381) == QUEST_STATUS_INCOMPLETE)
         {
-            Creature* Demon = pPlayer->SummonCreature(11876, pPlayer->GetInnPosX(),pPlayer->GetInnPosY(),pPlayer->GetInnPosZ(),0,TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT,10000);
+            Creature* Demon = pPlayer->SummonCreature(11876, pPlayer->GetPositionX()+frand(-2,2),pPlayer->GetPositionY()+frand(-2,2),pPlayer->GetPositionZ(),0,TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT,10000);
             if(Demon)
             {
                 Demon->AI()->AttackStart(pPlayer);
