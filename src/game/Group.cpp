@@ -654,8 +654,9 @@ void Group::PrepareLootRolls(const uint64& playerGUID, Loot *loot, WorldObject* 
                 }
             }
 
-            if (r->totalPlayersRolling > 0)
+            if (r->totalPlayersRolling > 1)
             {
+                r->setLoot(loot);
                 r->itemSlot = itemSlot;
                 r->rollTimer = 60000;
                 if (object->ToCreature())
@@ -667,8 +668,6 @@ void Group::PrepareLootRolls(const uint64& playerGUID, Loot *loot, WorldObject* 
             }
             else
                 delete r;
-
-            r->setLoot(loot);
         }
     }
 }
