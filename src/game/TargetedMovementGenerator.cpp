@@ -224,7 +224,7 @@ void ChaseMovementGenerator<T>::Finalize(T &owner)
         if (creature->isPet())
             return;
 
-        if (!creature->isInCombat() || (_target.getTarget() && !_target.getTarget()->isInAccessiblePlacefor(creature)))
+        if (!creature->isInCombat() || (this->_target.getTarget() && !this->_target.getTarget()->isInAccessiblePlacefor(creature)))
             creature->GetMotionMaster()->MoveTargetedHome();
     }
 }
