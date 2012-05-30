@@ -436,7 +436,13 @@ void Creature::Update(uint32 update_diff, uint32 diff)
         {
             if (m_respawnTime <= time(NULL))
             {
-                if (!GetLinkedCreatureRespawnTime()) // Can respawn
+                // encounter in progress - don't respawn
+                if (GetMap()->GetActiveObjectUpdateDistance() && ((InstanceMap*)GetMap())->GetInstanceData() && ((InstanceMap*)GetMap())->GetInstanceData()->IsEncounterInProgress())
+                {
+                    SetRespawnTime(MINUTE);
+                    SaveRespawnTime();
+                }
+                else if (!GetLinkedCreatureRespawnTime()) // Can respawn
                     Respawn();
                 else // the master is dead
                 {
