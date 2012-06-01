@@ -49,6 +49,9 @@ void TargetedMovementGeneratorMedium<T,D>::_setTargetLocation(T &owner)
     }
     else if (!_offset)
     {
+        if (_target->IsWithinMeleeRange(&owner))
+            return;
+
         // this should prevent weird behavior on tight spaces like lines between columns and bridge on BEM
         if (Pet* pet = owner.ToPet())
             _target->GetPosition(x, y, z);
@@ -62,7 +65,7 @@ void TargetedMovementGeneratorMedium<T,D>::_setTargetLocation(T &owner)
             return;
 
         // to at _offset distance from target and _angle from target facing
-        _target->GetClosePoint(x, y, z, owner.GetObjectBoundingRadius(), _offset, _angle);
+        _target->GetClosePoint(x, y, z, owner.GetObjectSize(), _offset, _angle);
     }
 
     if (!_path)
@@ -122,9 +125,6 @@ bool TargetedMovementGeneratorMedium<T,D>::Update(T &owner, const uint32 & time_
     if (static_cast<D*>(this)->_lostTarget(owner))
         return true;
 
-    //if (!_target->isInAccessiblePlacefor(&owner))
-    //    return true;
-
     _recheckDistance.Update(time_diff);
     if (_recheckDistance.Passed())
     {
@@ -132,16 +132,7 @@ bool TargetedMovementGeneratorMedium<T,D>::Update(T &owner, const uint32 & time_
 
         //float allowed_dist = 0.0f;
         bool targetIsVictim = owner.getVictimGUID() == _target->GetGUID();
-        /*if (targetIsVictim)
-            allowed_dist = owner.GetObjectBoundingRadius() + owner.GetCombatReach() + _target->GetCombatReach();
-        else
-            allowed_dist = _target->GetObjectBoundingRadius() + owner.GetObjectBoundingRadius();
-        
-        allowed_dist += sWorld.getConfig(CONFIG_TARGET_POS_RECALCULATION_RANGE);
 
-        if (allowed_dist < owner.GetObjectBoundingRadius())
-            allowed_dist = owner.GetObjectBoundingRadius();
-        */
         float allowed_dist = owner.GetObjectBoundingRadius() + sWorld.getConfig(CONFIG_TARGET_POS_RECALCULATION_RANGE);	
         G3D::Vector3 dest = owner.movespline->FinalDestination();
         bool targetMoved = !_target->IsWithinDist3d(dest.x, dest.y, dest.z, allowed_dist);
