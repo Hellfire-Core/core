@@ -205,7 +205,7 @@ void ChaseMovementGenerator<T>::Finalize(T &owner)
             return;
 
         if (!creature->isInCombat())
-            creature->AI()->EnterEvadeMode();
+            creature->GetMotionMaster()->MoveTargetedHome();
     }
 }
 
