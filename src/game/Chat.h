@@ -61,6 +61,7 @@ class ChatHandler
         }
 
         static char* LineFromMessage(char*& pos) { char* start = strtok(pos,"\n"); pos = NULL; return start; }
+        static std::string GetNameLink(std::string & name);
 
         virtual const char *GetTrinityString(int32 entry) const;
 
@@ -572,8 +573,6 @@ class ChatHandler
         bool GetPlayerGroupAndGUIDByName(const char* cname, Player* &plr, Group* &group, uint64 &guid, bool offline = false);
 
         GameObject* GetObjectGlobalyWithGuidOrNearWithDbGuid(uint32 lowguid,uint32 entry);
-
-        std::string GetNameLink(std::string & name);
 
         // Utility methods for commands
         bool LookupPlayerSearchCommand(QueryResultAutoPtr result, int32 limit);
