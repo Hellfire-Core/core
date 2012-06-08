@@ -495,8 +495,8 @@ AreaAura::~AreaAura()
 {
 }
 
-PersistentAreaAura::PersistentAreaAura(SpellEntry const* spellproto, uint32 eff, int32 *currentBasePoints, Unit *target,
-Unit *caster, Item* castItem, uint64 dynObjGUID) : Aura(spellproto, eff, currentBasePoints, target, caster, castItem)
+PersistentAreaAura::PersistentAreaAura(SpellEntry const* spellproto, uint32 eff, int32 *currentBasePoints, Unit *target, Unit *caster, Item* castItem, uint64 dynObjGUID)
+    : Aura(spellproto, eff, currentBasePoints, target, caster, castItem)
 {
     m_dynamicObjectGUID = dynObjGUID;
     m_isPersistent = true;
@@ -2545,7 +2545,12 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
                 }
                 return;
             }
-
+            case 45043: // Power Circle (Shifting Naaru Silver trinket)
+            {
+                if (m_target->GetTypeId() == TYPEID_PLAYER && m_target->GetGUID() == caster->GetGUID())
+                    caster->CastSpell(caster, 45044, true);
+                return;
+            }
         }
 
         // Earth Shield

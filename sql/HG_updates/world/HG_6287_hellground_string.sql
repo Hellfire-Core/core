@@ -1,1 +1,0 @@
-UPDATE `hellground_string` SET `content_default`='|cff00ff00Created by|r: |cff00ccff%s|r' WHERE `entry`='2018';

@@ -1,1 +1,0 @@
-UPDATE script_texts SET `type` = 7 WHERE entry = -1811004;
