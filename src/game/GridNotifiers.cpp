@@ -275,6 +275,10 @@ void DynamicObjectUpdater::VisitHelper(Unit* target)
         return;
 
     SpellEntry const *spellInfo = sSpellStore.LookupEntry(i_dynobject.GetSpellId());
+
+    if (!spellInfo->AttributesEx2 & SPELL_ATTR_EX2_IGNORE_LOS && !i_dynobject.IsWithinLOSInMap(target)) // combined with same in spellauras.cpp
+        return;
+
     uint32 eff_index  = i_dynobject.GetEffIndex();
     if (spellInfo->EffectImplicitTargetB[eff_index] == TARGET_DEST_DYNOBJ_ALLY
         || spellInfo->EffectImplicitTargetB[eff_index] == TARGET_UNIT_AREA_ALLY_DST)

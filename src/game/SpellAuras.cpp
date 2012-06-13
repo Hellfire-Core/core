@@ -861,7 +861,7 @@ void PersistentAreaAura::Update(uint32 diff)
 
         if (dynObj)
         {
-            if (!m_target->IsWithinDistInMap(dynObj, dynObj->GetRadius()))
+            if (!m_target->IsWithinDistInMap(dynObj, dynObj->GetRadius()) || !m_target->IsWithinLOSInMap(dynObj))
                 remove = true;
         }
         else
