@@ -1369,8 +1369,8 @@ void WorldObject::GetValidPointInAngle(Position &pos, float dist, float angle, b
     Hellground::NormalizeMapCoord(pos.y);
     pos.z = 0.666f + GetTerrain()->GetHeight(pos.x, pos.y, pos.z +2.0f, true);
 
-    // we do NOT love micromovement :p
-    if (IsInRange2d(pos.x, pos.y, 0.0f, 1.5f))
+    // we do NOT love micromovement :p but not for Players :p
+    if (IsInRange2d(pos.x, pos.y, 0.0f, 1.5f) && GetTypeId() != TYPEID_PLAYER)
         GetPosition(pos);
 }
 
