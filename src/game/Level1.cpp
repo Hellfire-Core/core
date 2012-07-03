@@ -653,7 +653,7 @@ bool ChatHandler::HandleGMTicketAssignToCommand(const char* args)
     uint64 tarGUID = sObjectMgr.GetPlayerGUIDByName(targm.c_str());
     uint64 accid = sObjectMgr.GetPlayerAccountIdByGUID(tarGUID);
     QueryResultAutoPtr result = AccountsDatabase.PQuery("SELECT `gmlevel` FROM `account` WHERE `id` = '%u'", accid);
-    if (!tarGUID|| !result || result->Fetch()->GetUInt32() < SEC_MODERATOR)
+    if (!tarGUID|| !result || !(result->Fetch()->GetUInt64() & PERM_GMT))
     {
         SendSysMessage(LANG_COMMAND_TICKETASSIGNERROR_A);
         return true;
@@ -704,7 +704,7 @@ bool ChatHandler::HandleGMTicketUnAssignCommand(const char* args)
     std::string gmname;
     sObjectMgr.GetPlayerNameByGUID(ticket->assignedToGM, gmname);
     Player *plr = sObjectMgr.GetPlayer(ticket->assignedToGM);
-    if (plr && plr->IsInWorld() && plr->GetSession()->GetSecurity() > cplr->GetSession()->GetSecurity())
+    if (plr && plr->IsInWorld() && plr->GetSession()->GetPermissions() > cplr->GetSession()->GetPermissions())
     {
         SendSysMessage(LANG_COMMAND_TICKETUNASSIGNSECURITY);
         return true;

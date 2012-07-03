@@ -134,11 +134,11 @@ bool ChatHandler::HandleAccountDeleteCommand(const char* args)
     /// Commands not recommended call from chat, but support anyway
     if(m_session)
     {
-        uint32 targetSecurity = AccountMgr::GetSecurity(account_id);
+        uint32 targetSecurity = AccountMgr::GetPermissions(account_id);
 
         /// can delete only for account with less security
         /// This is also reject self apply in fact
-        if (targetSecurity >= m_session->GetSecurity())
+        if (targetSecurity >= m_session->GetPermissions())
         {
             SendSysMessage (LANG_YOURS_SECURITY_IS_LOW);
             SetSentErrorMessage (true);
@@ -312,7 +312,7 @@ bool ChatHandler::HandleAccountSpecialLogCommand(const char* args)
 
     if(uint32 account_id = AccountMgr::GetId(args))
     {
-        QueryResultAutoPtr result = AccountsDatabase.PQuery("SELECT account_flags FROM account WHERE id = '%u'", account_id);
+        QueryResultAutoPtr result = AccountsDatabase.PQuery("SELECT account_flags FROM account WHERE account_id = '%u'", account_id);
         if (!result)
             return false;
 
@@ -330,12 +330,12 @@ bool ChatHandler::HandleAccountSpecialLogCommand(const char* args)
 
         if (accFlags & ACC_SPECIAL_LOG)
         {
-            AccountsDatabase.PExecute("UPDATE account SET account_flags = account_flags & '%u' WHERE id = '%u'", ~ACC_SPECIAL_LOG, account_id);
+            AccountsDatabase.PExecute("UPDATE account SET account_flags = account_flags & '%u' WHERE account_id = '%u'", ~ACC_SPECIAL_LOG, account_id);
             PSendSysMessage("SpecialLog have been disabled for account: %u.", account_id);
         }
         else
         {
-            AccountsDatabase.PExecute("UPDATE account SET account_flags = account_flags | '%u' WHERE id = '%u'", ACC_SPECIAL_LOG, account_id);
+            AccountsDatabase.PExecute("UPDATE account SET account_flags = account_flags | '%u' WHERE account_id = '%u'", ACC_SPECIAL_LOG, account_id);
             PSendSysMessage("SpecialLog have been enabled for account: %u.", account_id);
         }
     }
@@ -359,14 +359,14 @@ bool ChatHandler::HandleAccountGuildAnnToggleCommand(const char* args)
             {
                 session->RemoveAccountFlag(ACC_DISABLED_GANN);
 
-                AccountsDatabase.PExecute("UPDATE account SET account_flags = account_flags & '%u' WHERE id = '%u'", ~ACC_DISABLED_GANN, account_id);
+                AccountsDatabase.PExecute("UPDATE account SET account_flags = account_flags & '%u' WHERE account_id = '%u'", ~ACC_DISABLED_GANN, account_id);
                 PSendSysMessage("Guild announces have been enabled for this account.");
             }
             else
             {
                 session->AddAccountFlag(ACC_DISABLED_GANN);
 
-                AccountsDatabase.PExecute("UPDATE account SET account_flags = account_flags | '%u' WHERE id = '%u'", ACC_DISABLED_GANN, account_id);
+                AccountsDatabase.PExecute("UPDATE account SET account_flags = account_flags | '%u' WHERE account_id = '%u'", ACC_DISABLED_GANN, account_id);
                 PSendSysMessage("Guild announces have been disabled for this account.");
             }
         }
@@ -388,7 +388,7 @@ bool ChatHandler::HandleAccountWhispLogCommand(const char* args)
 
     if (uint32 account_id = AccountMgr::GetId(args))
     {
-        QueryResultAutoPtr result = AccountsDatabase.PQuery("SELECT account_flags FROM account WHERE id = '%u'", account_id);
+        QueryResultAutoPtr result = AccountsDatabase.PQuery("SELECT account_flags FROM account WHERE account_id = '%u'", account_id);
         if (!result)
             return false;
 
@@ -406,12 +406,12 @@ bool ChatHandler::HandleAccountWhispLogCommand(const char* args)
 
         if (accFlags & ACC_WHISPER_LOG)
         {
-            AccountsDatabase.PExecute("UPDATE account SET account_flags = account_flags & '%u' WHERE id = '%u'", ~ACC_WHISPER_LOG, account_id);
+            AccountsDatabase.PExecute("UPDATE account SET account_flags = account_flags & '%u' WHERE account_id = '%u'", ~ACC_WHISPER_LOG, account_id);
             PSendSysMessage("WhispLog have been disabled for account: %u.", account_id);
         }
         else
         {
-            AccountsDatabase.PExecute("UPDATE account SET account_flags = account_flags | '%u' WHERE id = '%u'", ACC_WHISPER_LOG, account_id);
+            AccountsDatabase.PExecute("UPDATE account SET account_flags = account_flags | '%u' WHERE account_id = '%u'", ACC_WHISPER_LOG, account_id);
             PSendSysMessage("WhispLog have been enabled for account: %u.", account_id);
         }
     }

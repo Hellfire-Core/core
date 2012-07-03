@@ -246,7 +246,7 @@ extern int main(int argc, char **argv)
     }
 
 #ifdef REGEX_NAMESPACE
-    QueryResultAutoPtr result = AccountsDatabase.PQuery("SELECT ip_pattern, localip_pattern FROM pattern_banned");
+    QueryResultAutoPtr result = AccountsDatabase.PQuery("SELECT ip_pattern, local_ip_pattern FROM pattern_banned");
     if (result)
     {
         AuthSocket::pattern_banned.clear();
@@ -263,10 +263,7 @@ extern int main(int argc, char **argv)
 
     // cleanup query
     // set expired bans to inactive
-    AccountsDatabase.BeginTransaction();
-    AccountsDatabase.Execute("UPDATE account_banned SET active = 0 WHERE unbandate<=UNIX_TIMESTAMP() AND unbandate<>bandate");
-    AccountsDatabase.Execute("DELETE FROM ip_banned WHERE unbandate<=UNIX_TIMESTAMP() AND unbandate<>bandate");
-    AccountsDatabase.CommitTransaction();
+    AccountsDatabase.Execute("DELETE FROM ip_banned WHERE unban_date <= UNIX_TIMESTAMP() AND unban_date <> ban_date");
 
     ///- Launch the listening network socket
     ACE_Acceptor<AuthSocket, ACE_SOCK_Acceptor> acceptor;

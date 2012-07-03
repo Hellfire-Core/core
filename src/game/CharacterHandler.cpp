@@ -121,7 +121,7 @@ class CharacterHandler
 void WorldSession::HandleCharEnum(QueryResultAutoPtr result)
 {
     // keys can be non cleared if player open realm list and close it by 'cancel'
-    AccountsDatabase.PExecute("UPDATE account SET v = '0', s = '0' WHERE id = '%u'", GetAccountId());
+    AccountsDatabase.PExecute("UPDATE account_session SET v = '0', s = '0' WHERE account_id = '%u'", GetAccountId());
 
     WorldPacket data(SMSG_CHAR_ENUM, 100);                  // we guess size
 
@@ -134,7 +134,7 @@ void WorldSession::HandleCharEnum(QueryResultAutoPtr result)
         do
         {
             uint32 guidlow = (*result)[0].GetUInt32();
-            sLog.outDetail("Loading char guid %u from account %u.",guidlow,GetAccountId());
+            sLog.outDetail("Loading char guid %u from account %u.", guidlow, GetAccountId());
 
             if (Player::BuildEnumData(result, &data))
                 ++num;
@@ -179,22 +179,22 @@ void WorldSession::HandleCharEnumOpcode(WorldPacket & /*recv_data*/)
 
 void WorldSession::HandleCharCreateOpcode(WorldPacket & recv_data)
 {
-    CHECK_PACKET_SIZE(recv_data,1+1+1+1+1+1+1+1+1+1);
+    CHECK_PACKET_SIZE(recv_data, 1+1+1+1+1+1+1+1+1+1);
 
     std::string name;
-    uint8 race_,class_;
+    uint8 race_, class_;
 
     recv_data >> name;
 
     // recheck with known string size
-    CHECK_PACKET_SIZE(recv_data,(name.size()+1)+1+1+1+1+1+1+1+1+1);
+    CHECK_PACKET_SIZE(recv_data, (name.size()+1)+1+1+1+1+1+1+1+1+1);
 
     recv_data >> race_;
     recv_data >> class_;
 
     WorldPacket data(SMSG_CHAR_CREATE, 1);                  // returned with diff.values in all cases
 
-    if (GetSecurity() == SEC_PLAYER)
+    if (!(GetPermissions() & PERM_GMT))
     {
         if (uint32 mask = sWorld.getConfig(CONFIG_CHARACTERS_CREATING_DISABLED))
         {
@@ -209,7 +209,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket & recv_data)
 
             if (disabled)
             {
-                data << (uint8)CHAR_CREATE_DISABLED;
+                data << uint8(CHAR_CREATE_DISABLED);
                 SendPacket(&data);
                 return;
             }
@@ -221,7 +221,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket & recv_data)
 
     if (!classEntry || !raceEntry)
     {
-        data << (uint8)CHAR_CREATE_FAILED;
+        data << uint8(CHAR_CREATE_FAILED);
         SendPacket(&data);
         sLog.outError("Class: %u or Race %u not found in DBC (Wrong DBC files?) or Cheater?", class_, race_);
         return;
@@ -230,8 +230,8 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket & recv_data)
     // prevent character creating Expansion race without Expansion account
     if (raceEntry->addon > Expansion())
     {
-        data << (uint8)CHAR_CREATE_EXPANSION;
-        sLog.outError("Expansion %u account:[%d] tried to Create character with expansion %u race (%u)",Expansion(),GetAccountId(),raceEntry->addon,race_);
+        data << uint8(CHAR_CREATE_EXPANSION);
+        sLog.outError("Expansion %u account:[%d] tried to Create character with expansion %u race (%u)", Expansion(), GetAccountId(), raceEntry->addon, race_);
         SendPacket(&data);
         return;
     }
@@ -240,7 +240,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket & recv_data)
     // TODO: use possible addon field in ChrClassesEntry in next dbc version
     if (Expansion() < 2 && class_ == CLASS_DEATH_KNIGHT)
     {
-        data << (uint8)CHAR_CREATE_EXPANSION;
+        data << uint8(CHAR_CREATE_EXPANSION);
         sLog.outError("Not Expansion 2 account:[%d] but tried to Create character with expansion 2 class (%u)",GetAccountId(),class_);
         SendPacket(&data);
         return;
@@ -249,7 +249,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket & recv_data)
     // prevent character creating with invalid name
     if (!normalizePlayerName(name))
     {
-        data << (uint8)CHAR_NAME_INVALID_CHARACTER;
+        data << uint8(CHAR_NAME_INVALID_CHARACTER);
         SendPacket(&data);
         sLog.outError("Account:[%d] but tried to Create character with empty [name] ",GetAccountId());
         return;
@@ -258,26 +258,26 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket & recv_data)
     // check name limitations
     if (!ObjectMgr::IsValidName(name,true))
     {
-        data << (uint8)CHAR_NAME_INVALID_CHARACTER;
+        data << uint8(CHAR_NAME_INVALID_CHARACTER);
         SendPacket(&data);
         return;
     }
 
-    if (GetSecurity() == SEC_PLAYER && sObjectMgr.IsReservedName(name))
+    if (!(GetPermissions() & PERM_GMT) && sObjectMgr.IsReservedName(name))
     {
-        data << (uint8)CHAR_NAME_RESERVED;
+        data << uint8(CHAR_NAME_RESERVED);
         SendPacket(&data);
         return;
     }
 
     if (sObjectMgr.GetPlayerGUIDByName(name))
     {
-        data << (uint8)CHAR_CREATE_NAME_IN_USE;
+        data << uint8(CHAR_CREATE_NAME_IN_USE);
         SendPacket(&data);
         return;
     }
 
-    QueryResultAutoPtr resultacct = AccountsDatabase.PQuery("SELECT SUM(numchars) FROM realmcharacters WHERE acctid = '%d'", GetAccountId());
+    QueryResultAutoPtr resultacct = AccountsDatabase.PQuery("SELECT SUM(characters_count) FROM realm_characters WHERE account_id = '%u'", GetAccountId());
     if (resultacct)
     {
         Field *fields=resultacct->Fetch();
@@ -285,13 +285,13 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket & recv_data)
 
         if (acctcharcount >= sWorld.getConfig(CONFIG_CHARACTERS_PER_ACCOUNT))
         {
-            data << (uint8)CHAR_CREATE_ACCOUNT_LIMIT;
+            data << uint8(CHAR_CREATE_ACCOUNT_LIMIT);
             SendPacket(&data);
             return;
         }
     }
 
-    QueryResultAutoPtr result = RealmDataDatabase.PQuery("SELECT COUNT(guid) FROM characters WHERE account = '%d'", GetAccountId());
+    QueryResultAutoPtr result = RealmDataDatabase.PQuery("SELECT COUNT(guid) FROM characters WHERE account = '%u'", GetAccountId());
     uint8 charcount = 0;
     if (result)
     {
@@ -300,13 +300,13 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket & recv_data)
 
         if (charcount >= sWorld.getConfig(CONFIG_CHARACTERS_PER_REALM))
         {
-            data << (uint8)CHAR_CREATE_SERVER_LIMIT;
+            data << uint8(CHAR_CREATE_SERVER_LIMIT);
             SendPacket(&data);
             return;
         }
     }
 
-    bool AllowTwoSideAccounts = !sWorld.IsPvPRealm() || sWorld.getConfig(CONFIG_ALLOW_TWO_SIDE_ACCOUNTS) || GetSecurity() > SEC_PLAYER;
+    bool AllowTwoSideAccounts = !sWorld.IsPvPRealm() || sWorld.getConfig(CONFIG_ALLOW_TWO_SIDE_ACCOUNTS) || GetPermissions() & PERM_GMT;
     uint32 skipCinematics = sWorld.getConfig(CONFIG_SKIP_CINEMATICS);
 
     bool have_same_race = false;
@@ -330,7 +330,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket & recv_data)
 
                 if (team != team_)
                 {
-                    data << (uint8)CHAR_CREATE_PVP_TEAMS_VIOLATION;
+                    data << uint8(CHAR_CREATE_PVP_TEAMS_VIOLATION);
                     SendPacket(&data);
                     return;
                 }
@@ -360,7 +360,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket & recv_data)
         // Player not create (race/class problem?)
         delete pNewChar;
 
-        data << (uint8)CHAR_CREATE_ERROR;
+        data << uint8(CHAR_CREATE_ERROR);
         SendPacket(&data);
 
         return;
@@ -371,14 +371,19 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket & recv_data)
 
     // Player created, save it now
     pNewChar->SaveToDB();
-    charcount+=1;
+    charcount += 1;
 
-    AccountsDatabase.PExecute("DELETE FROM realmcharacters WHERE acctid= '%d' AND realmid = '%d'", GetAccountId(), realmID);
-    AccountsDatabase.PExecute("INSERT INTO realmcharacters (numchars, acctid, realmid) VALUES (%u, %u, %u)",  charcount, GetAccountId(), realmID);
+    // direct to be sure that character count has proper value (also should fix possible multi char create in some cases)
+    static SqlStatementID updateRealmChars;
+    SqlStatement stmt = AccountsDatabase.CreateStatement(updateRealmChars, "UPDATE realm_characters SET characters_count = ? WHERE account_id = ? AND realmid = ?");
+    stmt.addUInt8(charcount);
+    stmt.addUInt32(GetAccountId());
+    stmt.addUInt32(realmID);
+    stmt.DirectExecute();
 
     delete pNewChar;                                        // created only to call SaveToDB()
 
-    data << (uint8)CHAR_CREATE_SUCCESS;
+    data << uint8(CHAR_CREATE_SUCCESS);
     SendPacket(&data);
 
     std::string IP_str = GetRemoteAddress();
@@ -636,7 +641,7 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder * holder)
     pCurrChar->SendInitialPacketsAfterAddToMap();
 
     RealmDataDatabase.PExecute("UPDATE characters SET online = 1 WHERE guid = '%u'", pCurrChar->GetGUIDLow());
-    AccountsDatabase.PExecute("UPDATE account SET online = 1 WHERE id = '%u'", GetAccountId());
+    AccountsDatabase.PExecute("UPDATE account SET online = 1 WHERE account_id = '%u'", GetAccountId());
     pCurrChar->SetInGameTime(WorldTimer::getMSTime());
 
     // announce group about member online (must be after add to player list to receive announce to self)
@@ -878,7 +883,7 @@ void WorldSession::HandleChangePlayerNameOpcode(WorldPacket& recv_data)
     }
 
     // check name limitations
-    if (GetSecurity() == SEC_PLAYER && sObjectMgr.IsReservedName(newname))
+    if (!(GetPermissions() & PERM_GMT) && sObjectMgr.IsReservedName(newname))
     {
         WorldPacket data(SMSG_CHAR_RENAME, 1);
         data << uint8(CHAR_NAME_RESERVED);

@@ -59,8 +59,8 @@ bool ChatHandler::HandleCommandsCommand(const char* args)
 
 bool ChatHandler::HandleAccountCommand(const char* /*args*/)
 {
-    uint32 gmlevel = m_session->GetSecurity();
-    PSendSysMessage(LANG_ACCOUNT_LEVEL, gmlevel);
+    uint64 permissions = m_session->GetPermissions();
+    PSendSysMessage(LANG_ACCOUNT_LEVEL, permissions);
     return true;
 }
 
@@ -97,7 +97,7 @@ bool ChatHandler::HandleAccountWeatherCommand(const char* args)
 
     std::string argstr = (char*)args;
     if (argstr == "on")
-        m_session->SetOpcodeDisableFlag(OPC_DISABLE_WEATHER);
+        m_session->AddOpcodeDisableFlag(OPC_DISABLE_WEATHER);
     else if (argstr == "off")
         m_session->RemoveOpcodeDisableFlag(OPC_DISABLE_WEATHER);
     else
@@ -154,7 +154,7 @@ bool ChatHandler::HandleSaveCommand(const char* /*args*/)
     Player *player=m_session->GetPlayer();
 
     // save GM account without delay and output message (testing, etc)
-    if (m_session->GetSecurity())
+    if (m_session->GetPermissions() & PERM_GMT)
     {
         player->SaveToDB();
         SendSysMessage(LANG_PLAYER_SAVED);
@@ -231,14 +231,14 @@ bool ChatHandler::HandleLockAccountCommand(const char* args)
     std::string argstr = (char*)args;
     if (argstr == "on")
     {
-        AccountsDatabase.PExecute("UPDATE account SET locked = '1' WHERE id = '%d'",m_session->GetAccountId());
+        AccountsDatabase.PExecute("UPDATE account SET account_state_id = '2' WHERE account_id = '%u'",m_session->GetAccountId());
         PSendSysMessage(LANG_COMMAND_ACCLOCKLOCKED);
         return true;
     }
 
     if (argstr == "off")
     {
-        AccountsDatabase.PExecute("UPDATE account SET locked = '0' WHERE id = '%d'",m_session->GetAccountId());
+        AccountsDatabase.PExecute("UPDATE account SET account_state_id = '1' WHERE account_id = '%u'",m_session->GetAccountId());
         PSendSysMessage(LANG_COMMAND_ACCLOCKUNLOCKED);
         return true;
     }

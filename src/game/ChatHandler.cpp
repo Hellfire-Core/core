@@ -275,9 +275,9 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
             }
 
             Player *player = sObjectMgr.GetPlayer(to.c_str());
-            uint32 tSecurity = GetSecurity();
-            uint32 pSecurity = player ? player->GetSession()->GetSecurity() : 0;
-            if (!player || tSecurity == SEC_PLAYER && pSecurity > SEC_PLAYER && !player->isAcceptWhispers())
+            uint64 tSecurity = GetPermissions();
+            uint64 pSecurity = player ? player->GetSession()->GetPermissions() : 0;
+            if (!player || (!(tSecurity & PERM_GMT) && !(pSecurity & PERM_GMT) && !player->isAcceptWhispers()))
             {
                 WorldPacket data(SMSG_CHAT_PLAYER_NOT_FOUND, (to.size()+1));
                 data<<to;
@@ -285,7 +285,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
                 return;
             }
 
-            if (!sWorld.getConfig(CONFIG_ALLOW_TWO_SIDE_INTERACTION_CHAT) && tSecurity == SEC_PLAYER && pSecurity == SEC_PLAYER)
+            if (!sWorld.getConfig(CONFIG_ALLOW_TWO_SIDE_INTERACTION_CHAT) && !(tSecurity & PERM_GMT) && !(pSecurity & PERM_GMT))
             {
                 uint32 sidea = GetPlayer()->GetTeam();
                 uint32 sideb = player->GetTeam();

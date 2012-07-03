@@ -286,7 +286,7 @@ Player::Player (WorldSession *session): Unit(), m_reputationMgr(this)
     m_ExtraFlags = 0;
 
     // players always accept
-    if (GetSession()->GetSecurity() == SEC_PLAYER)
+    if (!(GetSession()->GetPermissions() & PERM_GMT))
         SetAcceptWhispers(true);
 
     m_curSelection = 0;
@@ -623,7 +623,7 @@ bool Player::Create(uint32 guidlow, const std::string& name, uint8 race, uint8 c
     SetUInt32Value(PLAYER_FIELD_YESTERDAY_CONTRIBUTION, 0);
 
     // set starting level
-    if (GetSession()->GetSecurity() >= SEC_MODERATOR)
+    if (GetSession()->GetPermissions() & PERM_GMT)
         SetUInt32Value (UNIT_FIELD_LEVEL, sWorld.getConfig(CONFIG_START_GM_LEVEL));
     else
         SetUInt32Value (UNIT_FIELD_LEVEL, sWorld.getConfig(CONFIG_START_PLAYER_LEVEL));
@@ -913,7 +913,7 @@ int32 Player::getMaxTimer(MirrorTimerType timer)
             return MINUTE*IN_MILISECONDS;
         case BREATH_TIMER:
         {
-            if (!isAlive() || HasAuraType(SPELL_AURA_WATER_BREATHING) || GetSession()->GetSecurity() >= sWorld.getConfig(CONFIG_DISABLE_BREATHING))
+            if (!isAlive() || HasAuraType(SPELL_AURA_WATER_BREATHING) || GetSession()->GetPermissions() & sWorld.getConfig(CONFIG_DISABLE_BREATHING))
                 return DISABLED_MIRROR_TIMER;
             int32 UnderWaterTime = MINUTE*IN_MILISECONDS;
             AuraList const& mModWaterBreathing = GetAurasByType(SPELL_AURA_MOD_WATER_BREATHING);
@@ -1648,7 +1648,7 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
         return false;
     }
 
-    if ((GetSession()->GetSecurity() < SEC_GAMEMASTER) && !sWorld.IsAllowedMap(mapid))
+    if (!(GetSession()->GetPermissions() & PERM_ADM) && !sWorld.IsAllowedMap(mapid))
     {
         sLog.outError("Player %s tried to enter a forbidden map", GetName());
         return false;
@@ -2539,7 +2539,7 @@ void Player::UpdateFreeTalentPoints(bool resetIfNeed)
         // if used more that have then reset
         if (m_usedTalentCount > talentPointsForLevel)
         {
-            if (resetIfNeed && GetSession()->GetSecurity() < SEC_ADMINISTRATOR)
+            if (resetIfNeed && !(GetSession()->GetPermissions() & PERM_ADM))
                 resetTalents(true);
             else
                 SetFreeTalentPoints(0);
@@ -4663,7 +4663,7 @@ void Player::UpdateLocalChannels(uint32 newZone)
 
 void Player::LeaveLFGChannel()
 {
-    if (!sWorld.getConfig(CONFIG_RESTRICTED_LFG_CHANNEL) || GetSession()->GetSecurity() != SEC_PLAYER)
+    if (!sWorld.getConfig(CONFIG_RESTRICTED_LFG_CHANNEL) || GetSession()->GetPermissions() & PERM_GMT)
         return;
 
     // don't kick if on lfg or lfm
@@ -14202,7 +14202,7 @@ bool Player::LoadFromDB(uint32 guid, SqlQueryHolder *holder)
     m_name = fields[3].GetCppString();
 
     // check name limitations
-    if (!ObjectMgr::IsValidName(m_name) || GetSession()->GetSecurity() == SEC_PLAYER && sObjectMgr.IsReservedName(m_name))
+    if (!ObjectMgr::IsValidName(m_name) || !(GetSession()->GetPermissions() & PERM_GMT) && sObjectMgr.IsReservedName(m_name))
     {
         RealmDataDatabase.PExecute("UPDATE characters SET at_login = at_login | '%u' WHERE guid ='%u'", uint32(AT_LOGIN_RENAME),guid);
         return false;
@@ -14721,7 +14721,7 @@ bool Player::LoadFromDB(uint32 guid, SqlQueryHolder *holder)
     outDebugValues();
 
     // GM state
-    if (GetSession()->GetSecurity() > SEC_PLAYER)
+    if (GetSession()->GetPermissions() & PERM_GMT)
     {
         switch (sWorld.getConfig(CONFIG_GM_LOGIN_STATE))
         {
@@ -16147,10 +16147,10 @@ void Player::_SaveInventory()
                 if (!GetSession()->IsAccountFlagged(ACC_SPECIAL_LOG))
                 {
                     GetSession()->AddAccountFlag(ACC_SPECIAL_LOG);
-                    AccountsDatabase.PExecute("UPDATE account SET accounts_flag = accounts_flag | '%u' WHERE id = '%u'", ACC_SPECIAL_LOG, GetSession()->GetAccountId());
+                    AccountsDatabase.PExecute("UPDATE account SET account_flags = account_flags | '%u' WHERE account_id = '%u'", ACC_SPECIAL_LOG, GetSession()->GetAccountId());
                 }
 
-                AccountsDatabase.PExecute("INSERT INTO account_banned VALUES(%i, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'Siof', 'With love: cheater -.-', 1)", GetSession()->GetAccountId());
+                AccountsDatabase.PExecute("INSERT INTO account_punishment VALUES ('%u', '%u', UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), '[CONSOLE]', 'With love: cheater -.-')", GetSession()->GetAccountId(), PUNISHMENT_BAN);
                 AccountsDatabase.CommitTransaction();
                 //GetSession()->KickPlayer();
             }
@@ -16170,7 +16170,7 @@ void Player::_SaveInventory()
                     AccountsDatabase.PExecute("UPDATE account SET account_flags = account_flags | '%u' WHERE id = '%u'", ACC_SPECIAL_LOG, GetSession()->GetAccountId());
                 }
 
-                AccountsDatabase.PExecute("INSERT INTO account_banned VALUES(%i, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'Siof', 'With love: cheater -.-', 1)", GetSession()->GetAccountId());
+                AccountsDatabase.PExecute("INSERT INTO account_punishment VALUES ('%u', '%u', UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), '[CONSOLE]', 'With love: cheater -.-')", GetSession()->GetAccountId(), PUNISHMENT_BAN);
                 AccountsDatabase.CommitTransaction();
                 GetSession()->KickPlayer();
 
@@ -16184,8 +16184,17 @@ void Player::_SaveInventory()
                 RealmDataDatabase.PExecute("INSERT INTO character_inventory (guid,bag,slot,item,item_template) VALUES ('%u', '%u', '%u', '%u', '%u')", lowGuid, bag_guid, item->GetSlot(), item->GetGUIDLow(), item->GetEntry());
                 break;
             case ITEM_CHANGED:
-                RealmDataDatabase.PExecute("UPDATE character_inventory SET guid='%u', bag='%u', slot='%u', item_template='%u' WHERE item='%u'", lowGuid, bag_guid, item->GetSlot(), item->GetEntry(), item->GetGUIDLow());
+            {
+                static SqlStatementID charItemChanged;
+                SqlStatement stmt = RealmDataDatabase.CreateStatement(charItemChanged, "UPDATE character_inventory SET guid = ?, bag = ?, slot = ?, item_template = ? WHERE item = ?");
+                stmt.addUInt32(lowGuid);
+                stmt.addUInt32(bag_guid);
+                stmt.addUInt8(item->GetSlot());
+                stmt.addUInt32(item->GetEntry());
+                stmt.addUInt32(item->GetGUIDLow());
+                stmt.Execute();
                 break;
+            }
             case ITEM_REMOVED:
                 RealmDataDatabase.PExecute("DELETE FROM character_inventory WHERE item = '%u'", item->GetGUIDLow());
                 break;
@@ -16205,8 +16214,18 @@ void Player::_SaveMail()
         Mail *m = (*itr);
         if (m->state == MAIL_STATE_CHANGED)
         {
-            RealmDataDatabase.PExecute("UPDATE mail SET itemTextId = '%u',has_items = '%u',expire_time = '" UI64FMTD "', deliver_time = '" UI64FMTD "',money = '%u',cod = '%u',checked = '%u' WHERE id = '%u'",
-                m->itemTextId, m->HasItems() ? 1 : 0, (uint64)m->expire_time, (uint64)m->deliver_time, m->money, m->COD, m->checked, m->messageID);
+            static SqlStatementID mailStateChanged;
+            SqlStatement stmt = RealmDataDatabase.CreateStatement(mailStateChanged, "UPDATE mail SET itemTextId = ?, has_items = ?, expire_time = ?, deliver_time = ?, money = ?, cod = ?, checked = ? WHERE id = ?");
+            stmt.addUInt32(m->itemTextId);
+            stmt.addBool(m->HasItems() ? true : false);
+            stmt.addUInt64(uint64(m->expire_time));
+            stmt.addUInt64(uint64(m->deliver_time));
+            stmt.addUInt32(m->money);
+            stmt.addUInt32(m->COD);
+            stmt.addUInt32(m->checked);
+            stmt.addUInt32(m->messageID);
+            stmt.Execute();
+
             if (m->removedItems.size())
             {
                 for (std::vector<uint32>::iterator itr2 = m->removedItems.begin(); itr2 != m->removedItems.end(); ++itr2)
@@ -16251,15 +16270,32 @@ void Player::_SaveQuestStatus()
     {
         switch (i->second.uState)
         {
-            case QUEST_NEW :
+            case QUEST_NEW:
                 RealmDataDatabase.PExecute("INSERT INTO character_queststatus (guid,quest,status,rewarded,explored,timer,mobcount1,mobcount2,mobcount3,mobcount4,itemcount1,itemcount2,itemcount3,itemcount4) "
                     "VALUES ('%u', '%u', '%u', '%u', '%u', '" UI64FMTD "', '%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u')",
                     GetGUIDLow(), i->first, i->second.m_status, i->second.m_rewarded, i->second.m_explored, uint64(i->second.m_timer / 1000 + sWorld.GetGameTime()), i->second.m_creatureOrGOcount[0], i->second.m_creatureOrGOcount[1], i->second.m_creatureOrGOcount[2], i->second.m_creatureOrGOcount[3], i->second.m_itemcount[0], i->second.m_itemcount[1], i->second.m_itemcount[2], i->second.m_itemcount[3]);
                 break;
-            case QUEST_CHANGED :
-                RealmDataDatabase.PExecute("UPDATE character_queststatus SET status = '%u',rewarded = '%u',explored = '%u',timer = '" UI64FMTD "',mobcount1 = '%u',mobcount2 = '%u',mobcount3 = '%u',mobcount4 = '%u',itemcount1 = '%u',itemcount2 = '%u',itemcount3 = '%u',itemcount4 = '%u'  WHERE guid = '%u' AND quest = '%u' ",
-                    i->second.m_status, i->second.m_rewarded, i->second.m_explored, uint64(i->second.m_timer / 1000 + sWorld.GetGameTime()), i->second.m_creatureOrGOcount[0], i->second.m_creatureOrGOcount[1], i->second.m_creatureOrGOcount[2], i->second.m_creatureOrGOcount[3], i->second.m_itemcount[0], i->second.m_itemcount[1], i->second.m_itemcount[2], i->second.m_itemcount[3], GetGUIDLow(), i->first);
+            case QUEST_CHANGED:
+            {
+                static SqlStatementID questStatusChanged;
+                SqlStatement stmt = RealmDataDatabase.CreateStatement(questStatusChanged, "UPDATE character_queststatus SET status = ?, rewarded = ?, explored = ?, timer = ?, mobcount1 = ?, mobcount2 = ?, mobcount3 = ?, mobcount4 = ?, itemcount1 = ?, itemcount2 = ?, itemcount3 = ?, itemcount4 = ? WHERE guid = ? AND quest = ?");
+                stmt.addUInt32(i->second.m_status);
+                stmt.addBool(i->second.m_rewarded);
+                stmt.addBool(i->second.m_explored);
+                stmt.addUInt64(uint64(i->second.m_timer / 1000 + sWorld.GetGameTime()));
+                stmt.addUInt32(i->second.m_creatureOrGOcount[0]);
+                stmt.addUInt32(i->second.m_creatureOrGOcount[1]);
+                stmt.addUInt32(i->second.m_creatureOrGOcount[2]);
+                stmt.addUInt32(i->second.m_creatureOrGOcount[3]);
+                stmt.addUInt32(i->second.m_itemcount[0]);
+                stmt.addUInt32(i->second.m_itemcount[1]);
+                stmt.addUInt32(i->second.m_itemcount[2]);
+                stmt.addUInt32(i->second.m_itemcount[3]);
+                stmt.addUInt32(GetGUIDLow());
+                stmt.addUInt32(i->first);
+                stmt.Execute();
                 break;
+            }
             case QUEST_UNCHANGED:
                 break;
         };
@@ -16353,7 +16389,7 @@ void Player::outDebugValues() const
 void Player::UpdateSpeakTime()
 {
     // ignore chat spam protection for GMs in any mode
-    if (GetSession()->GetSecurity() > SEC_PLAYER)
+    if (GetSession()->GetPermissions() & PERM_GMT)
         return;
 
     time_t current = time (NULL);
@@ -18209,7 +18245,7 @@ bool Player::canSeeOrDetect(Unit const* u, bool detect, bool inVisibleList, bool
         if (isGameMaster())
         {
             if (u->GetTypeId() == TYPEID_PLAYER)
-                return ((Player *)u)->GetSession()->GetSecurity() <= GetSession()->GetSecurity();
+                return ((Player *)u)->GetSession()->GetPermissions() <= GetSession()->GetPermissions();
             else
                 return true;
         }
@@ -18222,7 +18258,7 @@ bool Player::canSeeOrDetect(Unit const* u, bool detect, bool inVisibleList, bool
         if (isGameMaster())
         {
             if (u->GetTypeId() == TYPEID_PLAYER)
-                return ((Player*)u)->GetSession()->GetSecurity() <= GetSession()->GetSecurity();
+                return ((Player*)u)->GetSession()->GetPermissions() <= GetSession()->GetPermissions();
             else
                 return true;
         }
@@ -18259,7 +18295,7 @@ bool Player::canSeeOrDetect(Unit const* u, bool detect, bool inVisibleList, bool
 bool Player::IsVisibleInGridForPlayer(Player const * pl) const
 {
     // gamemaster in GM mode see all, including ghosts
-    if (pl->isGameMaster() && GetSession()->GetSecurity() <= pl->GetSession()->GetSecurity())
+    if (pl->isGameMaster() && GetSession()->GetPermissions() <= pl->GetSession()->GetPermissions())
         return true;
 
     // It seems in battleground everyone sees everyone, except the enemy-faction ghosts
@@ -18310,8 +18346,8 @@ bool Player::IsVisibleGloballyfor (Player* u) const
         return true;
 
     // GMs are visible for higher gms (or players are visible for gms)
-    if (u->GetSession()->GetSecurity() > SEC_PLAYER)
-        return GetSession()->GetSecurity() <= u->GetSession()->GetSecurity();
+    if (u->GetSession()->GetPermissions() & PERM_GMT)
+        return GetSession()->GetPermissions() <= u->GetSession()->GetPermissions();
 
     // non faction visibility non-breakable for non-GMs
     if (GetVisibility() == VISIBILITY_OFF)
@@ -19810,7 +19846,7 @@ void Player::LFGSet(uint8 slot, uint32 entry, uint32 type)
         return;
 
     // don't add GM to lfg list
-    if (GetSession()->GetSecurity() > SEC_PLAYER)
+    if (GetSession()->GetPermissions() & PERM_GMT)
         return;
 
     LfgContainerType::accessor a;
@@ -19869,7 +19905,7 @@ void Player::LFGSet(uint8 slot, uint32 entry, uint32 type)
 void Player::LFMSet(uint32 entry, uint32 type)
 {
     // don't add GM to lfm list
-    if (GetSession()->GetSecurity() > SEC_PLAYER)
+    if (GetSession()->GetPermissions() & PERM_GMT)
         return;
 
     // don't add to lfm list if still in lfg

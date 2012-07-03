@@ -111,7 +111,7 @@ void MapUpdateDiffInfo::PrintCumulativeMapUpdateDiff()
 World::World()
 {
     m_playerLimit = 0;
-    m_allowedSecurityLevel = SEC_PLAYER;
+    m_requiredPermissionMask = 0;
     m_allowMovement = true;
     m_ShutdownMask = 0;
     m_ShutdownTimer = 0;
@@ -279,7 +279,7 @@ void World::AddSession_ (WorldSession* s)
     if (decrease_session)
         --Sessions;
 
-    if (pLimit > 0 && Sessions >= pLimit && s->GetSecurity () == SEC_PLAYER)
+    if (pLimit > 0 && Sessions >= pLimit && !(s->GetPermissions () & PERM_GMT))
     {
         if (!sObjectMgr.IsUnqueuedAccount(s->GetAccountId()) && !HasRecentlyDisconnected(s))
         {
@@ -291,11 +291,11 @@ void World::AddSession_ (WorldSession* s)
     }
 
     WorldPacket packet(SMSG_AUTH_RESPONSE, 1 + 4 + 1 + 4 + 1);
-    packet << uint8 (AUTH_OK);
-    packet << uint32 (0);                       // unknown random value...
-    packet << uint8 (0);
-    packet << uint32 (0);
-    packet << uint8 (s->Expansion());           // 0 - normal, 1 - TBC, must be set in database manually for each account
+    packet << uint8(AUTH_OK);
+    packet << uint32(0);                        // unknown random value...
+    packet << uint8(0);
+    packet << uint32(0);
+    packet << uint8(s->Expansion());            // 0 - normal, 1 - TBC, must be set in database manually for each account
     s->SendPacket (&packet);
 
     UpdateMaxSessionCounters();
@@ -306,7 +306,7 @@ void World::AddSession_ (WorldSession* s)
         float popu = GetActiveSessionCount (); //updated number of users on the server
         popu /= pLimit;
         popu *= 2;
-        AccountsDatabase.PExecute ("UPDATE realmlist SET population = '%f' WHERE id = '%d'", popu, realmID);
+        AccountsDatabase.PExecute ("UPDATE realms SET population = '%f' WHERE realm_id = '%u'", popu, realmID);
         sLog.outDetail ("Server Population (%f).", popu);
     }
 }
@@ -900,7 +900,7 @@ void World::LoadConfigSettings(bool reload)
     m_configs[CONFIG_SAVE_RESPAWN_TIME_IMMEDIATELY] = sConfig.GetBoolDefault("SaveRespawnTimeImmediately",true);
     m_configs[CONFIG_WEATHER] = sConfig.GetBoolDefault("ActivateWeather",true);
 
-    m_configs[CONFIG_DISABLE_BREATHING] = sConfig.GetIntDefault("DisableWaterBreath", SEC_CONSOLE);
+    m_configs[CONFIG_DISABLE_BREATHING] = sConfig.GetIntDefault("DisableWaterBreath", PERM_GMT);
 
     m_configs[CONFIG_ALWAYS_MAX_SKILL_FOR_LEVEL] = sConfig.GetBoolDefault("AlwaysMaxSkillForLevel", false);
 
@@ -971,7 +971,7 @@ void World::LoadConfigSettings(bool reload)
     m_configs[CONFIG_ARENA_LOG_EXTENDED_INFO] = sConfig.GetBoolDefault("ArenaLogExtendedInfo", false);
 
     m_configs[CONFIG_BATTLEGROUND_PREMATURE_FINISH_TIMER] = sConfig.GetIntDefault("BattleGround.PrematureFinishTimer", 0);
-    m_configs[CONFIG_INSTANT_LOGOUT] = sConfig.GetIntDefault("InstantLogout", SEC_MODERATOR);
+    m_configs[CONFIG_INSTANT_LOGOUT] = sConfig.GetIntDefault("InstantLogout", PERM_GMT);
 
     m_configs[CONFIG_GROUPLEADER_RECONNECT_PERIOD] = sConfig.GetIntDefault("GroupLeaderReconnectPeriod", 180);
 
@@ -1183,7 +1183,7 @@ void World::SetInitialWorldSettings()
     // not send custom type REALM_FFA_PVP to realm list
     uint32 server_type = IsFFAPvPRealm() ? REALM_TYPE_PVP : getConfig(CONFIG_GAME_TYPE);
     uint32 realm_zone = getConfig(CONFIG_REALM_ZONE);
-    AccountsDatabase.PExecute("UPDATE realmlist SET icon = %u, timezone = %u WHERE id = '%d'", server_type, realm_zone, realmID);
+    AccountsDatabase.PExecute("UPDATE realms SET icon = %u, timezone = %u WHERE realm_id = '%u'", server_type, realm_zone, realmID);
 
     ///- Remove the bones after a restart
     RealmDataDatabase.PExecute("DELETE FROM corpse WHERE corpse_type = '0'");
@@ -1542,8 +1542,8 @@ void World::SetInitialWorldSettings()
     sLog.outString("Starting Outdoor PvP System");
     sOutdoorPvPMgr.InitOutdoorPvP();
 
-    sLog.outString("Deleting expired bans...");
-    AccountsDatabase.Execute("DELETE FROM ip_banned WHERE unbandate<=UNIX_TIMESTAMP() AND unbandate<>bandate");
+    sLog.outString("Deleting expired IP bans...");
+    AccountsDatabase.Execute("DELETE FROM ip_banned WHERE unban_date <= UNIX_TIMESTAMP() AND unban_date <> ban_date");
 
     sLog.outString("Starting objects Pooling system...");
     sPoolMgr.Initialize();
@@ -2100,7 +2100,7 @@ void World::SendGlobalGMMessage(WorldPacket *packet, WorldSession *self, uint32 
             itr->second->GetPlayer() &&
             itr->second->GetPlayer()->IsInWorld() &&
             itr->second != self &&
-            itr->second->GetSecurity() >SEC_PLAYER &&
+            itr->second->GetPermissions() & PERM_GMT &&
             (team == 0 || itr->second->GetPlayer()->GetTeam() == team))
         {
             itr->second->SendPacket(packet);
@@ -2263,7 +2263,7 @@ void World::SendGMText(int32 string_id, ...)
             data_list = &data_cache[cache_idx];
 
         for (int i = 0; i < data_list->size(); ++i)
-            if (itr->second->GetSecurity() >= sWorld.getConfig(CONFIG_MIN_GM_TEXT_LVL))
+            if (itr->second->GetPermissions() & sWorld.getConfig(CONFIG_MIN_GM_TEXT_LVL))
                 itr->second->SendPacket((*data_list)[i]);
     }
 
@@ -2328,11 +2328,11 @@ void World::KickAll()
 }
 
 /// Kick (and save) all players with security level less `sec`
-void World::KickAllLess(AccountTypes sec)
+void World::KickAllWithoutPermissions(uint64 perms)
 {
     // session not removed at kick and will removed in next update tick
     for (SessionMap::iterator itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
-        if (itr->second->GetSecurity() < sec)
+        if (itr->second->GetPermissions() & perms)
             itr->second->KickPlayer();
 }
 
@@ -2380,20 +2380,20 @@ BanReturn World::BanAccount(BanMode mode, std::string nameIPOrMail, std::string 
     {
         case BAN_IP:
             //No SQL injection as strings are escaped
-            resultAccounts = AccountsDatabase.PQuery("SELECT id FROM account WHERE last_ip = '%s'",nameIPOrMail.c_str());
-            AccountsDatabase.PExecute("INSERT INTO ip_banned VALUES ('%s',UNIX_TIMESTAMP(),UNIX_TIMESTAMP()+%u,'%s','%s')",nameIPOrMail.c_str(),duration_secs,safe_author.c_str(),reason.c_str());
+            resultAccounts = AccountsDatabase.PQuery("SELECT account_id FROM account WHERE last_ip = '%s'", nameIPOrMail.c_str());
+            AccountsDatabase.PExecute("INSERT INTO ip_banned VALUES ('%s', UNIX_TIMESTAMP(), UNIX_TIMESTAMP()+%u, '%s', '%s')", nameIPOrMail.c_str(), duration_secs, safe_author.c_str(), reason.c_str());
             break;
         case BAN_ACCOUNT:
             //No SQL injection as string is escaped
-            resultAccounts = AccountsDatabase.PQuery("SELECT id FROM account WHERE username = '%s'",nameIPOrMail.c_str());
+            resultAccounts = AccountsDatabase.PQuery("SELECT account_id FROM account WHERE username = '%s'", nameIPOrMail.c_str());
             break;
         case BAN_CHARACTER:
             //No SQL injection as string is escaped
-            resultAccounts = RealmDataDatabase.PQuery("SELECT account FROM characters WHERE name = '%s'",nameIPOrMail.c_str());
+            resultAccounts = RealmDataDatabase.PQuery("SELECT account FROM characters WHERE name = '%s'", nameIPOrMail.c_str());
             break;
         case BAN_EMAIL:
-            resultAccounts = AccountsDatabase.PQuery("SELECT id FROM account WHERE email = '%s'",nameIPOrMail.c_str());
-            AccountsDatabase.PExecute("INSERT INTO email_banned VALUES ('%s',UNIX_TIMESTAMP(),'%s','%s')",nameIPOrMail.c_str(),safe_author.c_str(),reason.c_str());
+            resultAccounts = AccountsDatabase.PQuery("SELECT account_id FROM account WHERE email = '%s'", nameIPOrMail.c_str());
+            AccountsDatabase.PExecute("INSERT INTO email_banned VALUES ('%s', UNIX_TIMESTAMP(), '%s', '%s')", nameIPOrMail.c_str(), safe_author.c_str(), reason.c_str());
             break;
         default:
             return BAN_SYNTAX_ERROR;
@@ -2416,8 +2416,8 @@ BanReturn World::BanAccount(BanMode mode, std::string nameIPOrMail, std::string 
         if (mode != BAN_IP && mode != BAN_EMAIL)
         {
             //No SQL injection as strings are escaped
-            AccountsDatabase.PExecute("INSERT INTO account_banned VALUES ('%u', UNIX_TIMESTAMP(), UNIX_TIMESTAMP()+%u, '%s', '%s', '1')",
-                account,duration_secs,safe_author.c_str(),reason.c_str());
+            AccountsDatabase.PExecute("INSERT INTO account_punishment VALUES ('%u', '%u', UNIX_TIMESTAMP(), UNIX_TIMESTAMP()+%u, '%s', '%s')",
+                                    account, PUNISHMENT_BAN, duration_secs, safe_author.c_str(), reason.c_str());
         }
 
         if (WorldSession* sess = FindSession(account))
@@ -2454,7 +2454,7 @@ bool World::RemoveBanAccount(BanMode mode, std::string nameIPOrMail)
                 return false;
 
             //NO SQL injection as account is uint32
-            AccountsDatabase.PExecute("UPDATE account_banned SET active = '0' WHERE id = '%u'",account);
+            AccountsDatabase.PExecute("UPDATE account_punishment SET expiration_date = UNIX_TIMESTAMP() WHERE account_id = '%u' AND punishment_type_id = '%u'", account, PUNISHMENT_BAN);
             break;
     }
     return true;
@@ -2601,22 +2601,19 @@ void World::UpdateResultQueue()
 
 void World::UpdateRealmCharCount(uint32 accountId)
 {
-    RealmDataDatabase.AsyncPQuery(this, &World::_UpdateRealmCharCount, accountId,
-        "SELECT COUNT(guid) FROM characters WHERE account = '%u'", accountId);
-}
+    QueryResultAutoPtr resultCharCount = RealmDataDatabase.PQuery("SELECT COUNT(guid) FROM characters WHERE account = '%u'", accountId);
 
-void World::_UpdateRealmCharCount(QueryResultAutoPtr resultCharCount, uint32 accountId)
-{
-    if (resultCharCount)
-    {
-        Field *fields = resultCharCount->Fetch();
-        uint32 charCount = fields[0].GetUInt32();
+    if (!resultCharCount)
+        return;
 
-        AccountsDatabase.BeginTransaction();
-        AccountsDatabase.PExecute("DELETE FROM realmcharacters WHERE acctid= '%d' AND realmid = '%d'", accountId, realmID);
-        AccountsDatabase.PExecute("INSERT INTO realmcharacters (numchars, acctid, realmid) VALUES (%u, %u, %u)", charCount, accountId, realmID);
-        AccountsDatabase.CommitTransaction();
-    }
+    Field *fields = resultCharCount->Fetch();
+
+    static SqlStatementID updateRealmChars;
+    SqlStatement stmt = AccountsDatabase.CreateStatement(updateRealmChars, "UPDATE realm_characters SET characters_count = ? WHERE = account_id = ? AND realm_id = ?");
+    stmt.addUInt8(fields[0].GetUInt8());
+    stmt.addUInt32(accountId);
+    stmt.addUInt32(realmID);
+    stmt.DirectExecute();
 }
 
 void World::InitDailyQuestResetTime()
@@ -2657,13 +2654,13 @@ void World::InitDailyQuestResetTime()
     }
 }
 
-void World::UpdateAllowedSecurity()
+void World::UpdateRequiredPermissions()
 {
-     QueryResultAutoPtr result = AccountsDatabase.PQuery("SELECT allowedSecurityLevel from realmlist WHERE id = '%d'", realmID);
+     QueryResultAutoPtr result = AccountsDatabase.PQuery("SELECT required_permission_mask from realms WHERE realm_id = '%u'", realmID);
      if (result)
      {
-        m_allowedSecurityLevel = AccountTypes(result->Fetch()->GetUInt16());
-        sLog.outDebug("Allowed Level: %u Result %u", m_allowedSecurityLevel, result->Fetch()->GetUInt16());
+        m_requiredPermissionMask = result->Fetch()->GetUInt64();
+        sLog.outDebug("Required permission mask: %u", m_requiredPermissionMask);
      }
 }
 
@@ -2851,7 +2848,7 @@ void World::CleanupDeletedChars()
     if (keepDays < 1)
         return;
 
-    QueryResultAutoPtr result = RealmDataDatabase.PQuery("SELECT char_guid FROM deleted_chars WHERE datediff(now(), date) >= %u", keepDays);
+    QueryResultAutoPtr result = RealmDataDatabase.PQuery("SELECT char_guid FROM deleted_chars WHERE DATEDIFF(now(), date) >= %u", keepDays);
     if (result)
     {
         do
