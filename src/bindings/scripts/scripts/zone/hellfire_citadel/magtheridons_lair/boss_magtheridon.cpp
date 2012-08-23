@@ -426,17 +426,13 @@ struct HELLGROUND_DLL_DECL mob_magtheridon_triggerAI : public Scripted_NoMovemen
 
     uint32 debrisTimer;
 
-    void Reset()
-    {
-        debrisTimer = 5000;
-    }
-
     void JustRespawned()
     {
         me->CastSpell(me, SPELL_DEBRIS, true);
+        debrisTimer = 5000;
     }
 
-    void UpdateAI(const uint32 & diff)
+    void UpdateAI(const uint32 diff)
     {
         if (debrisTimer)
         {
