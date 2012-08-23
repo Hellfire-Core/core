@@ -5681,7 +5681,7 @@ void ObjectMgr::LoadReservedPlayersNames()
 {
     m_ReservedNames.clear();                                // need for reload case
 
-    QueryResultAutoPtr result = GameDataDatabase.Query("SELECT name FROM reserved_name");
+    QueryResultAutoPtr result = AccountsDatabase.Query("SELECT name FROM reserved_name");
 
     uint32 count = 0;
 
