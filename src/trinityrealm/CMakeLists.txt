@@ -3,7 +3,7 @@ file(GLOB_RECURSE EXECUTABLE_SRCS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp *.h
 
 if(WIN32)
   list(APPEND EXECUTABLE_SRCS
-    realmd.rc
+    TrinityRealm.rc
   )
 endif()
 
