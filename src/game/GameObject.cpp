@@ -475,10 +475,7 @@ void GameObject::Update(uint32 update_diff, uint32 p_time)
                 }
             }
 
-            if (IsInWorld())
-                UpdateObjectVisibility();
-
-            if(GetDespawnPossibility())
+            if (GetDespawnPossibility())
                 Despawn();
 
             break;
@@ -843,7 +840,7 @@ void GameObject::Reset()
 
 void GameObject::Despawn()
 {
-    if(GetUInt32Value(GAMEOBJECT_FLAGS) & GO_FLAG_NODESPAWN)
+    if (GetUInt32Value(GAMEOBJECT_FLAGS) & GO_FLAG_NODESPAWN)
         return;
 
     if (GetOwnerGUID())

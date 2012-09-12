@@ -74,6 +74,9 @@ void BattleGroundEY::Update(uint32 diff)
             SpawnBGObject(BG_EY_OBJECT_DOOR_A, RESPAWN_IMMEDIATELY);
             SpawnBGObject(BG_EY_OBJECT_DOOR_H, RESPAWN_IMMEDIATELY);
 
+            DoorClose(BG_EY_OBJECT_DOOR_A);
+            DoorClose(BG_EY_OBJECT_DOOR_H);
+
 //            SpawnBGCreature(EY_SPIRIT_MAIN_ALLIANCE, RESPAWN_IMMEDIATELY);
 //            SpawnBGCreature(EY_SPIRIT_MAIN_HORDE, RESPAWN_IMMEDIATELY);
             for (uint32 i = BG_EY_OBJECT_A_BANNER_FEL_REALVER_CENTER; i < BG_EY_OBJECT_MAX; ++i)
@@ -99,6 +102,9 @@ void BattleGroundEY::Update(uint32 diff)
             m_Events |= 0x10;
             SpawnBGObject(BG_EY_OBJECT_DOOR_A, RESPAWN_ONE_DAY);
             SpawnBGObject(BG_EY_OBJECT_DOOR_H, RESPAWN_ONE_DAY);
+
+            DoorOpen(BG_EY_OBJECT_DOOR_A);
+            DoorOpen(BG_EY_OBJECT_DOOR_H);
 
             for (uint32 i = BG_EY_OBJECT_N_BANNER_FEL_REALVER_CENTER; i <= BG_EY_OBJECT_FLAG_NETHERSTORM; ++i)
                 SpawnBGObject(i, RESPAWN_IMMEDIATELY);
