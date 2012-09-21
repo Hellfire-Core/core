@@ -127,7 +127,11 @@ inline void ObjectUpdater::Visit(CreatureMapType &m)
     UpdateList updateList;
     for (CreatureMapType::iterator iter = m.begin(); iter != m.end(); ++iter)
     {
-        if (WorldObject::UpdateHelper::ProcessUpdate(iter->getSource()))
+        WorldObject::UpdateHelper helper(iter->getSource());
+        helper.Update(i_timeDiff);
+    }
+    
+/*    if (WorldObject::UpdateHelper::ProcessUpdate(iter->getSource()))
             updateList.push_back(iter->getSource());
     }
 
@@ -143,6 +147,7 @@ inline void ObjectUpdater::Visit(CreatureMapType &m)
         WorldObject::UpdateHelper helper(*it);
         helper.Update(i_timeDiff);
     }
+*/
 }
 
 template<class T, class Check>
