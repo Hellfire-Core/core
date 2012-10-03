@@ -7884,9 +7884,6 @@ uint32 Unit::SpellDamageBonus(Unit *pVictim, SpellEntry const *spellProto, uint3
     // Damage Done
     uint32 CastingTime = !SpellMgr::IsChanneledSpell(spellProto) ? SpellMgr::GetSpellBaseCastTime(spellProto) : SpellMgr::GetSpellDuration(spellProto);
 
-    if (spellProto->AttributesCu & SPELL_ATTR_CU_NO_SPELL_DMG_COEFF)
-        CastingTime = 0;
-
     // Taken/Done fixed damage bonus auras
     int32 DoneAdvertisedBenefit  = SpellBaseDamageBonus(SpellMgr::GetSpellSchoolMask(spellProto))+BonusDamage;
     if (casterModifiers)
@@ -8034,7 +8031,9 @@ uint32 Unit::SpellDamageBonus(Unit *pVictim, SpellEntry const *spellProto, uint3
 
     // Distribute Damage over multiple effects, reduce by AoE
     CastingTime = GetCastingTimeForBonus(spellProto, damagetype, CastingTime);
-
+    if (spellProto->AttributesCu & SPELL_ATTR_CU_NO_SPELL_DMG_COEFF)
+        CastingTime = 0;
+        
     // 50% for damage and healing spells for leech spells from damage bonus and 0% from healing
     for (int j = 0; j < 3; ++j)
     {
