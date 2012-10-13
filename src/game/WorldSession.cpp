@@ -95,6 +95,8 @@ m_sessionDbcLocale(sWorld.GetAvailableDbcLocale(locale)), m_sessionDbLocaleIndex
 _logoutTime(0), m_inQueue(false), m_playerLoading(false), m_playerLogout(false), m_playerSave(false), m_playerRecentlyLogout(false), m_latency(0),
 m_accFlags(accFlags), m_Warden(NULL)
 {
+    _mailSendTimer.Reset(5*IN_MILISECONDS);
+
     _kickTimer.Reset(sWorld.getConfig(CONFIG_SESSION_UPDATE_IDLE_KICK));
 
     if (sock)
@@ -307,6 +309,16 @@ bool WorldSession::Update(uint32 diff, PacketFilter& updater)
         }
         else
             _kickTimer.Reset(sWorld.getConfig(CONFIG_SESSION_UPDATE_IDLE_KICK));
+
+        if (GetPlayer() && GetPlayer()->IsInWorld())
+        {
+            _mailSendTimer.Update(diff);
+            if (_mailSendTimer.Passed())
+            {
+                SendExternalMails();
+                _mailSendTimer.Reset(sWorld.getConfig(CONFIG_EXTERNAL_MAIL_INTERVAL));
+            }
+        }
 
         for (OpcodesCooldown::iterator itr = _opcodesCooldown.begin(); itr != _opcodesCooldown.end(); ++itr)
             itr->second.Update(diff);

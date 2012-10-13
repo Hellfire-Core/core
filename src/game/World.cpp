@@ -1682,17 +1682,6 @@ void World::Update(uint32 diff)
 
         diffRecorder.RecordTimeFor(true, "ResetDailyQuests");
     }
-
-    /// Handle external mail
-    if (m_configs[CONFIG_EXTERNAL_MAIL] != 0 && m_timers[WUPDATE_EXTERNALMAILS].Passed())
-    {
-        m_timers[WUPDATE_EXTERNALMAILS].Reset();
-
-        WorldSession::SendExternalMails();
-
-        diffRecorder.RecordTimeFor(true, "SendExternalMails");
-    }
-
     /// <ul><li> Handle auctions when the timer has passed
     if (m_timers[WUPDATE_OLDMAILS].Passed())
     {

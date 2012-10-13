@@ -254,7 +254,8 @@ class HELLGROUND_DLL_SPEC WorldSession
         bool SendItemInfo(uint32 itemid, WorldPacket data);
 
         // External Mail
-        static void SendExternalMails();
+        void SendExternalMails();
+        TimeTrackerSmall _mailSendTimer;
 
         //auction
         void SendAuctionHello(Unit *unit);
