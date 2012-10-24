@@ -121,12 +121,12 @@ struct HELLGROUND_DLL_DECL boss_kalecgosAI : public ScriptedAI
 {
     boss_kalecgosAI(Creature *c) : ScriptedAI(c)
     {
-        pInstance = (c->GetInstanceData());
+        instance = c->GetInstanceData();
         me->SetAggroRange(26.0f);
         me->GetPosition(wLoc);
     }
 
-    ScriptedInstance *pInstance;
+    ScriptedInstance *instance;
 
     uint32 ArcaneBuffetTimer;
     uint32 FrostBreathTimer;
@@ -143,13 +143,15 @@ struct HELLGROUND_DLL_DECL boss_kalecgosAI : public ScriptedAI
     bool isEnraged;
     bool isBanished;
 
+    TimeTrackerSmall stateCheckTimer;
+
     void Reset()
     {
-        m_creature->setFaction(14);
-        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
-        m_creature->SetLevitate(false);
+        me->setFaction(14);
+        me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
+        me->SetLevitate(false);
         me->RemoveUnitMovementFlag(MOVEFLAG_ONTRANSPORT);
-        m_creature->SetStandState(PLAYER_STATE_SLEEP);
+        me->SetStandState(PLAYER_STATE_SLEEP);
 
         ArcaneBuffetTimer = 8000;
         FrostBreathTimer = 15000;
@@ -159,42 +161,40 @@ struct HELLGROUND_DLL_DECL boss_kalecgosAI : public ScriptedAI
         SpectralBlastTimer = 20000+(rand()%5000);
         CheckTimer = 1000;
 
+        stateCheckTimer.Reset(2000);
+
         TalkTimer = 0;
         TalkSequence = 0;
         isFriendly = false;
         isEnraged = false;
         isBanished = false;
 
-        if(pInstance)
-        {
-            pInstance->SetData(DATA_KALECGOS_EVENT, NOT_STARTED);
-            pInstance->SetData(DATA_KALECGOS_PHASE, NOT_STARTED);
-        }
+        instance->SetData(DATA_KALECGOS_EVENT, NOT_STARTED);
+        instance->SetData(DATA_KALECGOS_PHASE, NOT_STARTED);
     }
 
     void DamageTaken(Unit *done_by, uint32 &damage)
     {
-        if(damage >= m_creature->GetHealth() && done_by != m_creature)
+        if (damage >= me->GetHealth() && done_by != me)
             damage = 0;
     }
 
     void EnterCombat(Unit* who)
     {
-        m_creature->SetStandState(PLAYER_STATE_NONE);
-        DoScriptText(SAY_EVIL_AGGRO, m_creature);
+        me->SetStandState(PLAYER_STATE_NONE);
+        DoScriptText(SAY_EVIL_AGGRO, me);
 
         DoZoneInCombat();
-        if(pInstance)
-        {
-            pInstance->SetData(DATA_KALECGOS_EVENT, IN_PROGRESS);
-            pInstance->SetData(DATA_KALECGOS_PHASE, PHASE_COMBAT);
-        }
+
+        instance->SetData(DATA_KALECGOS_EVENT, IN_PROGRESS);
+        instance->SetData(DATA_KALECGOS_PHASE, PHASE_COMBAT);
     }
 
     void EnterEvadeMode()
     {
         CreatureAI::EnterEvadeMode();
         TalkSequence = 0;
+
         me->setFaction(35); //friendly for when invisible
         me->SetVisibility(VISIBILITY_OFF);
         ResetTimer = 20000;
@@ -202,16 +202,16 @@ struct HELLGROUND_DLL_DECL boss_kalecgosAI : public ScriptedAI
 
     void KilledUnit(Unit *victim)
     {
-        if(roll_chance_f(10.0))
-            DoScriptText(RAND(SAY_EVIL_SLAY1, SAY_EVIL_SLAY2), m_creature);
+        if (roll_chance_f(10.0))
+            DoScriptText(RAND(SAY_EVIL_SLAY1, SAY_EVIL_SLAY2), me);
     }
 
     void GoodEnding()
     {
-        switch(TalkSequence)
+        switch (TalkSequence)
         {
         case 1:
-            m_creature->setFaction(35);
+            me->setFaction(35);
             TalkTimer = 8000;
             break;
         case 2:
@@ -224,27 +224,27 @@ struct HELLGROUND_DLL_DECL boss_kalecgosAI : public ScriptedAI
             break;
         case 3:
             float x, y, z;
-            m_creature->GetPosition(x, y, z);
-            m_creature->GetMotionMaster()->Clear();
-            m_creature->GetMotionMaster()->MovePoint(0,x,y,z+7);
+            me->GetPosition(x, y, z);
+            me->GetMotionMaster()->Clear();
+            me->GetMotionMaster()->MovePoint(0,x,y,z+7);
             TalkTimer = 4000;
             break;
         case 4:
-            DoScriptText(SAY_GOOD_PLRWIN, m_creature);
+            DoScriptText(SAY_GOOD_PLRWIN, me);
             TalkTimer = 10000;
             break;
         case 5:
             DoScriptText(RAND(SAY_GOOD_GREET1, SAY_GOOD_GREET2, SAY_GOOD_GREET3), me);
-            m_creature->GetMotionMaster()->MovePoint(1,FlyCoord[0][0],FlyCoord[0][1],FlyCoord[0][2]);
+            me->GetMotionMaster()->MovePoint(1,FlyCoord[0][0],FlyCoord[0][1],FlyCoord[0][2]);
             TalkTimer = 7000;
             break;
         case 6:
-            if(pInstance)
+            if (instance)
             {
-                if(Creature* Sathrovarr = Creature::GetCreature(*m_creature, pInstance->GetData64(DATA_SATHROVARR)))
+                if (Creature* Sathrovarr = Creature::GetCreature(*me, instance->GetData64(DATA_SATHROVARR)))
                     Sathrovarr->NearTeleportTo(Sathrovarr->GetPositionX(), Sathrovarr->GetPositionY(), DRAGON_REALM_Z, Sathrovarr->GetOrientation());
             }
-            m_creature->GetMotionMaster()->MovePoint(2, FlyCoord[1][0],FlyCoord[1][1],FlyCoord[1][2]);
+            me->GetMotionMaster()->MovePoint(2, FlyCoord[1][0],FlyCoord[1][1],FlyCoord[1][2]);
             TalkTimer = 20000;
             break;
         case 7:
@@ -258,7 +258,7 @@ struct HELLGROUND_DLL_DECL boss_kalecgosAI : public ScriptedAI
 
     void MoveInLineOfSight(Unit *who)
     {
-        if(!TalkTimer && !ResetTimer)
+        if (!TalkTimer && !ResetTimer)
             CreatureAI::MoveInLineOfSight(who);
     }
 
@@ -266,35 +266,56 @@ struct HELLGROUND_DLL_DECL boss_kalecgosAI : public ScriptedAI
     {
         switch(TalkSequence)
         {
-        case 1:
-            DoScriptText(SAY_EVIL_ENRAGE, m_creature);
-            TalkTimer = 3000;
-            break;
-        case 2:
-            me->HandleEmoteCommand(EMOTE_ONESHOT_LIFTOFF);
-            me->SetLevitate(true);
-            me->setHover(true);
-            me->SendHeartBeat();
-            TalkTimer = 3000;
-            break;
-        case 3:
-            m_creature->GetMotionMaster()->Clear();
-            m_creature->GetMotionMaster()->MovePoint(0,FlyCoord[1][0],FlyCoord[1][1],FlyCoord[1][2]);
-            TalkTimer = 10000;
-            break;
-        case 4:
-            EnterEvadeMode();
-            break;
-        default:
-            break;
+            case 1:
+                DoScriptText(SAY_EVIL_ENRAGE, me);
+                TalkTimer = 3000;
+                break;
+            case 2:
+                me->HandleEmoteCommand(EMOTE_ONESHOT_LIFTOFF);
+                me->SetLevitate(true);
+                me->setHover(true);
+                me->SendHeartBeat();
+                TalkTimer = 3000;
+                break;
+            case 3:
+                me->GetMotionMaster()->Clear();
+                me->GetMotionMaster()->MovePoint(0,FlyCoord[1][0],FlyCoord[1][1],FlyCoord[1][2]);
+                TalkTimer = 10000;
+                break;
+            case 4:
+                EnterEvadeMode();
+                break;
+            default:
+                break;
         }
+    }
+
+    bool EncounterInProgressCheck()
+    {
+        if (me->IsInEvadeMode())
+            return false;
+
+        if (me->GetMap()->GetAlivePlayersCountExceptGMs() == 0)
+        {
+            EnterEvadeMode();
+            return false;
+        }
+        return true;
     }
 
     void UpdateAI(const uint32 diff)
     {
-        if(ResetTimer)
+        stateCheckTimer.Update(diff);
+        if (stateCheckTimer.Passed())
         {
-            if(ResetTimer <= diff)
+            stateCheckTimer.Reset(2000);
+            if (!EncounterInProgressCheck())
+                return;
+        }
+
+        if (ResetTimer)
+        {
+            if (ResetTimer <= diff)
             {
                 ResetTimer = 0;
                 me->setFaction(16);     //aggresive
@@ -304,24 +325,25 @@ struct HELLGROUND_DLL_DECL boss_kalecgosAI : public ScriptedAI
                 ResetTimer -= diff;
             return;
         }
-        else if(TalkTimer)
+        else if (TalkTimer)
         {
-            if(!TalkSequence)
+            if (!TalkSequence)
             {
-                m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE + UNIT_FLAG_NOT_SELECTABLE);
-                m_creature->InterruptNonMeleeSpells(true);
-                m_creature->RemoveAllAuras();
-                m_creature->DeleteThreatList();
-                m_creature->CombatStop();
+                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE + UNIT_FLAG_NOT_SELECTABLE);
+                me->InterruptNonMeleeSpells(true);
+                me->RemoveAllAuras();
+                me->DeleteThreatList();
+                me->CombatStop();
                 TalkSequence++;
             }
 
-            if(TalkTimer <= diff)
+            if (TalkTimer <= diff)
             {
-                if(isFriendly)
+                if (isFriendly)
                     GoodEnding();
                 else
                     BadEnding();
+
                 TalkSequence++;
             }
             else
@@ -335,12 +357,13 @@ struct HELLGROUND_DLL_DECL boss_kalecgosAI : public ScriptedAI
             // be sure to not attack players in spectral realm
             if (me->getVictim()->HasAura(AURA_SPECTRAL_REALM, 0))
             {
-                // if player in spectral realm is on top of threat list eirther
+                // if player in spectral realm is on top of threat list either
                 // he has taunted us or there is no alive player outside spectral realm
                 me->RemoveSpellsCausingAura(SPELL_AURA_MOD_TAUNT);
-                if(!UpdateVictim())
+                if (!UpdateVictim())
                     return;
-                if(me->getVictim()->HasAura(AURA_SPECTRAL_REALM, 0))
+
+                if (me->getVictim()->HasAura(AURA_SPECTRAL_REALM, 0))
                 {
                     EnterEvadeMode();
                     return;
@@ -348,53 +371,54 @@ struct HELLGROUND_DLL_DECL boss_kalecgosAI : public ScriptedAI
             }
 
             // if still having victim with aura, drop some threat
-            if( me->getVictim()->HasAura(AURA_SPECTRAL_REALM, 0))
+            if (me->getVictim()->HasAura(AURA_SPECTRAL_REALM, 0))
                 me->getThreatManager().modifyThreatPercent(me->getVictim(), -10);
 
             // various checks + interaction with sathrovarr
-            if(CheckTimer < diff)
+            if (CheckTimer < diff)
             {
-                if(!me->IsWithinDistInMap(&wLoc, 30))
+                if (!me->IsWithinDistInMap(&wLoc, 30))
                     EnterEvadeMode();
+
                 DoZoneInCombat();
-                if (pInstance && pInstance->GetData(DATA_KALECGOS_PHASE) == PHASE_ENRAGE && !isEnraged)
+                if (instance && instance->GetData(DATA_KALECGOS_PHASE) == PHASE_ENRAGE && !isEnraged)
                 {
-                    me->CastSpell(m_creature, SPELL_ENRAGE, true);
+                    me->CastSpell(me, SPELL_ENRAGE, true);
                     isEnraged = true;
                 }
 
                 if (!isEnraged && HealthBelowPct(10))
                 {
-                    if(pInstance)
-                        pInstance->SetData(DATA_KALECGOS_PHASE, PHASE_ENRAGE);
-                    else
-                        return;
+                    instance->SetData(DATA_KALECGOS_PHASE, PHASE_ENRAGE);
+
                     DoScriptText(EMOTE_SATHROVARR_ENRAGE, me);
-                    if(Unit* pSathrovarr = Unit::GetUnit(*me, pInstance->GetData64(DATA_SATHROVARR)))
+                    if (Unit* pSathrovarr = Unit::GetUnit(*me, instance->GetData64(DATA_SATHROVARR)))
                         DoScriptText(SAY_SATH_ENRAGE, pSathrovarr);
-                    me->CastSpell(m_creature, SPELL_ENRAGE, true);  // this will affect also sathrovarr
+
+                    me->CastSpell(me, SPELL_ENRAGE, true);  // this will affect also sathrovarr
                     isEnraged = true;
                 }
-                if(!isBanished && HealthBelowPct(1))
+
+                if (!isBanished && HealthBelowPct(1))
                 {
-                    ForceSpellCast(m_creature, SPELL_BANISH);
+                    ForceSpellCast(me, SPELL_BANISH);
                     isBanished = true;
-                    if(pInstance)
+                    if (instance)
                     {
-                        if(pInstance->GetData(DATA_KALECGOS_PHASE) == PHASE_BANISH)
-                            pInstance->SetData(DATA_KALECGOS_PHASE, PHASE_DOUBLE_BANISH);
+                        if (instance->GetData(DATA_KALECGOS_PHASE) == PHASE_BANISH)
+                            instance->SetData(DATA_KALECGOS_PHASE, PHASE_DOUBLE_BANISH);
                         else
-                            pInstance->SetData(DATA_KALECGOS_PHASE, PHASE_BANISH);
+                            instance->SetData(DATA_KALECGOS_PHASE, PHASE_BANISH);
                     }
                 }
-                if(pInstance && pInstance->GetData(DATA_KALECGOS_PHASE) == PHASE_KALEC_DEAD)
+                if (instance->GetData(DATA_KALECGOS_PHASE) == PHASE_KALEC_DEAD)
                 {
                     TalkTimer = 1;
                     TalkSequence = 0;
                     isFriendly = false;
                     return;
                 }
-                if(pInstance && pInstance->GetData(DATA_KALECGOS_EVENT) == DONE)
+                if (instance->GetData(DATA_KALECGOS_EVENT) == DONE)
                 {
                     TalkTimer = 1;
                     TalkSequence = 0;
@@ -407,37 +431,40 @@ struct HELLGROUND_DLL_DECL boss_kalecgosAI : public ScriptedAI
                 CheckTimer -= diff;
 
             // cast spells
-            if(ArcaneBuffetTimer < diff)
+            if (ArcaneBuffetTimer < diff)
             {
                 AddSpellToCast(SPELL_ARCANE_BUFFET, CAST_SELF);
-                if(roll_chance_f(20.0))
+                if (roll_chance_f(20.0))
                     DoScriptText(RAND(SAY_EVIL_SPELL1, SAY_EVIL_SPELL2), me);
+
                 ArcaneBuffetTimer = 8000;
             }
             else
                 ArcaneBuffetTimer -= diff;
 
-            if(FrostBreathTimer < diff)
+            if (FrostBreathTimer < diff)
             {
-                if(roll_chance_f(20.0))
+                if (roll_chance_f(20.0))
                     DoScriptText(RAND(SAY_EVIL_SPELL1, SAY_EVIL_SPELL2), me);
+
                 AddSpellToCast(SPELL_FROST_BREATH, CAST_SELF);
                 FrostBreathTimer = 15000;
             }
             else
                 FrostBreathTimer -= diff;
 
-            if(TailLashTimer < diff)
+            if (TailLashTimer < diff)
             {
-                if(roll_chance_f(20.0))
+                if (roll_chance_f(20.0))
                     DoScriptText(RAND(SAY_EVIL_SPELL1, SAY_EVIL_SPELL2), me);
+
                 AddSpellToCast(SPELL_TAIL_LASH, CAST_SELF);
                 TailLashTimer = 15000;
             }
             else
                 TailLashTimer -= diff;
 
-            if(WildMagicTimer < diff)
+            if (WildMagicTimer < diff)
             {
                 AddSpellToCast(WildMagic[rand()%6], CAST_SELF);
                 WildMagicTimer = 20000;
@@ -445,7 +472,7 @@ struct HELLGROUND_DLL_DECL boss_kalecgosAI : public ScriptedAI
             else
                 WildMagicTimer -= diff;
 
-            if(SpectralBlastTimer < diff)
+            if (SpectralBlastTimer < diff)
             {
                 AddSpellToCast(SPELL_SPECTRAL_BLAST, CAST_SELF);
                 SpectralBlastTimer = 20000+(rand()%5000);
@@ -463,11 +490,11 @@ struct HELLGROUND_DLL_DECL boss_sathrovarrAI : public ScriptedAI
 {
     boss_sathrovarrAI(Creature *c) : ScriptedAI(c)
     {
-        pInstance = (c->GetInstanceData());
+        instance = c->GetInstanceData();
         KalecGUID = 0;
     }
 
-    ScriptedInstance *pInstance;
+    ScriptedInstance *instance;
 
     uint32 CorruptionStrikeTimer;
     uint32 AgonyCurseTimer;
@@ -480,32 +507,24 @@ struct HELLGROUND_DLL_DECL boss_sathrovarrAI : public ScriptedAI
 
     void Reset()
     {
-        /*
-        if(KalecGUID)
-        {
-            if(Unit* Kalec = Unit::GetUnit(*m_creature, KalecGUID))
-                Kalec->setDeathState(JUST_DIED);
-            KalecGUID = 0;
-        }*/
-
         ShadowBoltTimer = 7000 + rand()%3 * 1000;
         AgonyCurseTimer = urand(20000, 35000);
         CorruptionStrikeTimer = 13000;
         CheckTimer = 1000;
         isEnraged = false;
         isBanished = false;
-        m_creature->setActive(true);
+        me->setActive(true);
 
-        if(pInstance)
-            pInstance->SetData(DATA_KALECGOS_EVENT, NOT_STARTED);
+        instance->SetData(DATA_KALECGOS_EVENT, NOT_STARTED);
     }
 
     void EnterEvadeMode()
     {
-        if(KalecGUID)
+        if (KalecGUID)
         {
-            if(Unit* Kalec = Unit::GetUnit(*m_creature, KalecGUID))
+            if (Unit* Kalec = Unit::GetUnit(*me, KalecGUID))
                 Kalec->setDeathState(JUST_DIED);
+
             KalecGUID = 0;
         }
         ScriptedAI::EnterEvadeMode();
@@ -518,60 +537,59 @@ struct HELLGROUND_DLL_DECL boss_sathrovarrAI : public ScriptedAI
         me->UpdateAllowedPositionZ(x, y, z);
         ori = me->GetAngle(x, y);
         Creature* Kalec = me->SummonCreature(MOB_KALEC, x, y, z, ori, TEMPSUMMON_CORPSE_DESPAWN, 0);
-        if(Kalec)
+        if (Kalec)
         {
             KalecGUID = Kalec->GetGUID();
             AttackStart(Kalec);
             Kalec->Attack(me, true);
             Kalec->GetMotionMaster()->MoveChase(me);
-            m_creature->AddThreat(Kalec, 100.0f);
+            me->AddThreat(Kalec, 100.0f);
         }
-        DoScriptText(SAY_SATH_AGGRO, m_creature);
+        DoScriptText(SAY_SATH_AGGRO, me);
         DoZoneInCombat();   // put all players into threatlist
     }
 
     void DamageTaken(Unit *done_by, uint32 &damage)
     {
-        if(damage >= m_creature->GetHealth() && done_by != m_creature)
+        if (damage >= me->GetHealth() && done_by != me)
             damage = 0;
     }
 
     void KilledUnit(Unit *target)
     {
-        if(target->GetGUID() == KalecGUID)
+        if (target->GetGUID() == KalecGUID)
         {
-            if(pInstance)
-            {
-                pInstance->SetData(DATA_KALECGOS_EVENT, NOT_STARTED);
-                pInstance->SetData(DATA_KALECGOS_PHASE, PHASE_KALEC_DEAD);
-            }
+            instance->SetData(DATA_KALECGOS_EVENT, NOT_STARTED);
+            instance->SetData(DATA_KALECGOS_PHASE, PHASE_KALEC_DEAD);
+
             TeleportAllPlayersBack();
             EnterEvadeMode();
             return;
         }
 
-        if(roll_chance_f(10.0))
-            DoScriptText(RAND(SAY_SATH_SLAY1, SAY_SATH_SLAY2), m_creature);
+        if (roll_chance_f(10.0))
+            DoScriptText(RAND(SAY_SATH_SLAY1, SAY_SATH_SLAY2), me);
     }
 
     void JustDied(Unit *killer)
     {
-        DoScriptText(SAY_SATH_DEATH, m_creature);
-        DoTeleportTo(m_creature->GetPositionX(), m_creature->GetPositionY(), DRAGON_REALM_Z, 0);
+        DoScriptText(SAY_SATH_DEATH, me);
+        DoTeleportTo(me->GetPositionX(), me->GetPositionY(), DRAGON_REALM_Z, 0);
 
-        if(pInstance)
-            pInstance->SetData(DATA_KALECGOS_EVENT, DONE);
+        instance->SetData(DATA_KALECGOS_EVENT, DONE);
         TeleportAllPlayersBack();  // must be called after setting encounter done
     }
 
     void TeleportAllPlayersBack()
     {
-        Map *map = m_creature->GetMap();
-        if(!map->IsDungeon()) return;
+        Map *map = me->GetMap();
+        if (!map->IsDungeon())
+            return;
+
         Map::PlayerList const &PlayerList = map->GetPlayers();
         Map::PlayerList::const_iterator i;
         for(i = PlayerList.begin(); i != PlayerList.end(); ++i)
-            if(Player* i_pl = i->getSource())
+            if (Player* i_pl = i->getSource())
             {
                 i_pl->RemoveAurasDueToSpell(AURA_SPECTRAL_REALM);
                 i_pl->RemoveAurasDueToSpell(SPELL_AGONY_CURSE);
@@ -581,68 +599,67 @@ struct HELLGROUND_DLL_DECL boss_sathrovarrAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
         // to be tested
-        if((!me->getVictim()->HasAura(AURA_SPECTRAL_REALM)  || me->getVictim()->GetPositionZ() > -50)  && !(me->getVictim()->GetEntry() == MOB_KALEC))
+        if ((!me->getVictim()->HasAura(AURA_SPECTRAL_REALM)  || me->getVictim()->GetPositionZ() > -50)  && !(me->getVictim()->GetEntry() == MOB_KALEC))
             DoModifyThreatPercent(me->getVictim(), -100);
 
         // be sure to attack only players in spectral realm
         if (me->getVictim()->HasAura(AURA_SPECTRAL_EXHAUSTION))
         {
             me->RemoveSpellsCausingAura(SPELL_AURA_MOD_TAUNT);
-            if(!UpdateVictim())
+            if (!UpdateVictim())
                 return;
         }
 
         // interaction with kalecgos
-        if(CheckTimer < diff)
+        if (CheckTimer < diff)
         {
             DoZoneInCombat();
 
             // should not leave Inner Veil
-            if(me->GetPositionZ() > -60)
+            if (me->GetPositionZ() > -60)
                 me->GetMap()->CreatureRelocation(me, me->GetPositionX(), me->GetPositionY(), DEMON_REALM_Z, me->GetOrientation());
 
-            if (pInstance && pInstance->GetData(DATA_KALECGOS_PHASE) == PHASE_ENRAGE)
+            if (instance && instance->GetData(DATA_KALECGOS_PHASE) == PHASE_ENRAGE)
             {
-                DoCast(m_creature, SPELL_ENRAGE, true);
+                DoCast(me, SPELL_ENRAGE, true);
                 isEnraged = true;
             }
 
             if (!isEnraged && HealthBelowPct(10))
             {
-                DoCast(m_creature, SPELL_ENRAGE, true); // this will cast enrage also on kalecgos
+                DoCast(me, SPELL_ENRAGE, true); // this will cast enrage also on kalecgos
                 DoScriptText(SAY_SATH_ENRAGE, me);
                 DoScriptText(EMOTE_KALECGOS_ENRAGE, me);
-                if(pInstance)
-                    pInstance->SetData(DATA_KALECGOS_PHASE, PHASE_ENRAGE);
+                instance->SetData(DATA_KALECGOS_PHASE, PHASE_ENRAGE);
                 isEnraged = true;
             }
 
-            if(!isBanished && HealthBelowPct(1))
+            if (!isBanished && HealthBelowPct(1))
             {
-                if(pInstance && pInstance->GetData(DATA_KALECGOS_PHASE) == PHASE_BANISH)
+                if (instance->GetData(DATA_KALECGOS_PHASE) == PHASE_BANISH)
                 {
-                    m_creature->DealDamage(m_creature, m_creature->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+                    me->DealDamage(me, me->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
                     return;
-                } else
+                }
+                else
                 {
-                    ForceSpellCast(m_creature, SPELL_BANISH);
+                    ForceSpellCast(me, SPELL_BANISH);
                     isBanished = true;
-                    if(pInstance)
-                        pInstance->SetData(DATA_KALECGOS_PHASE, PHASE_BANISH);
+                    instance->SetData(DATA_KALECGOS_PHASE, PHASE_BANISH);
                 }
             }
 
-            if(isBanished && pInstance && pInstance->GetData(DATA_KALECGOS_PHASE) == PHASE_DOUBLE_BANISH)
+            if (isBanished && instance->GetData(DATA_KALECGOS_PHASE) == PHASE_DOUBLE_BANISH)
             {
-                m_creature->DealDamage(m_creature, m_creature->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+                me->DealDamage(me, me->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
                 return;
             }
 
-            if(pInstance && pInstance->GetData(DATA_KALECGOS_EVENT) == NOT_STARTED) // kalecgos evaded
+            if (instance->GetData(DATA_KALECGOS_EVENT) == NOT_STARTED) // kalecgos evaded
             {
                 TeleportAllPlayersBack();
                 EnterEvadeMode();
@@ -655,19 +672,21 @@ struct HELLGROUND_DLL_DECL boss_sathrovarrAI : public ScriptedAI
             CheckTimer -= diff;
 
         // cast spells
-        if(ShadowBoltTimer < diff)
+        if (ShadowBoltTimer < diff)
         {
             Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 40.0f, true);
-            if(target)
+            if (target)
                 AddSpellToCast(target, SPELL_SHADOW_BOLT);
-            if(roll_chance_f(10.0))
+
+            if (roll_chance_f(10.0))
                 DoScriptText(SAY_SATH_SPELL1, me);
+
             ShadowBoltTimer = 7000+(rand()%3000);
         }
         else
             ShadowBoltTimer -= diff;
 
-        if(AgonyCurseTimer < diff)
+        if (AgonyCurseTimer < diff)
         {
             AddSpellToCast(SPELL_AGONY_CURSE, CAST_SELF);
             AgonyCurseTimer = 35000;
@@ -675,11 +694,12 @@ struct HELLGROUND_DLL_DECL boss_sathrovarrAI : public ScriptedAI
         else
             AgonyCurseTimer -= diff;
 
-        if(CorruptionStrikeTimer < diff)
+        if (CorruptionStrikeTimer < diff)
         {
-            AddSpellToCast(m_creature->getVictim(), SPELL_CORRUPTION_STRIKE);
-            if(roll_chance_f(10.0))
+            AddSpellToCast(me->getVictim(), SPELL_CORRUPTION_STRIKE);
+            if (roll_chance_f(10.0))
                 DoScriptText(SAY_SATH_SPELL2, me);
+
             CorruptionStrikeTimer = 13000;
         }
         else
@@ -692,7 +712,7 @@ struct HELLGROUND_DLL_DECL boss_sathrovarrAI : public ScriptedAI
 
 struct HELLGROUND_DLL_DECL boss_kalecAI : public ScriptedAI
 {
-    ScriptedInstance *pInstance;
+    ScriptedInstance *instance;
 
     uint32 RevitalizeTimer;
     uint32 HeroicStrikeTimer;
@@ -706,7 +726,7 @@ struct HELLGROUND_DLL_DECL boss_kalecAI : public ScriptedAI
 
     boss_kalecAI(Creature *c) : ScriptedAI(c)
     {
-        pInstance = (c->GetInstanceData());
+        instance = c->GetInstanceData();
         SathGUID = 0;
     }
 
@@ -721,8 +741,7 @@ struct HELLGROUND_DLL_DECL boss_kalecAI : public ScriptedAI
 
         isEnraged = false;
 
-        if(pInstance)
-            SathGUID = pInstance->GetData64(DATA_SATHROVARR);
+        SathGUID = instance->GetData64(DATA_SATHROVARR);
     }
 
     Unit* SelectUnitToRevitalize()
@@ -731,18 +750,18 @@ struct HELLGROUND_DLL_DECL boss_kalecAI : public ScriptedAI
         std::list<HostilReference*>& ThreatList = me->getThreatManager().getThreatList();
         RealmUnitList.clear();
 
-        if(ThreatList.empty())
+        if (ThreatList.empty())
             return NULL;
 
         for(std::list<HostilReference*>::iterator i = ThreatList.begin() ; i!=ThreatList.end() ; ++i)
         {
             Unit* target = Unit::GetUnit(*me, (*i)->getUnitGuid());
             // only castable on players in spectral realm that have mana pool and are not revitalized yet
-            if(target && (!target->HasAura(AURA_SPECTRAL_REALM, 0) || !target->HasAura(SPELL_REVITALIZE, 0)) && target->GetPower(POWER_MANA))
+            if (target && (!target->HasAura(AURA_SPECTRAL_REALM, 0) || !target->HasAura(SPELL_REVITALIZE, 0)) && target->GetPower(POWER_MANA))
                 RealmUnitList.push_back(target);
         }
 
-        if(RealmUnitList.empty())
+        if (RealmUnitList.empty())
             return NULL;
 
         std::list<Unit*>::iterator itr = RealmUnitList.begin();
@@ -752,9 +771,9 @@ struct HELLGROUND_DLL_DECL boss_kalecAI : public ScriptedAI
 
     void DamageTaken(Unit *done_by, uint32 &damage)
     {
-        if(done_by->GetGUID() != SathGUID)
+        if (done_by->GetGUID() != SathGUID)
             damage = 0;
-        else if(isEnraged)
+        else if (isEnraged)
             damage *= 3;
     }
 
@@ -763,25 +782,25 @@ struct HELLGROUND_DLL_DECL boss_kalecAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if(YellTimer < diff)
+        if (YellTimer < diff)
         {
             switch(YellSequence)
             {
             case 0:
-                DoScriptText(SAY_GOOD_AGGRO, m_creature);
+                DoScriptText(SAY_GOOD_AGGRO, me);
                 YellSequence++;
                 break;
             case 1:
-                if(HealthBelowPct(50))
+                if (HealthBelowPct(50))
                 {
-                    DoScriptText(SAY_GOOD_NEAR_DEATH, m_creature);
+                    DoScriptText(SAY_GOOD_NEAR_DEATH, me);
                     YellSequence++;
                 }
                 break;
             case 2:
-                if(HealthBelowPct(10))
+                if (HealthBelowPct(10))
                 {
-                    DoScriptText(SAY_GOOD_NEAR_DEATH2, m_creature);
+                    DoScriptText(SAY_GOOD_NEAR_DEATH2, me);
                     YellSequence++;
                 }
                 break;
@@ -793,13 +812,13 @@ struct HELLGROUND_DLL_DECL boss_kalecAI : public ScriptedAI
         else
             YellTimer -= diff;
 
-        if(CheckTimer < diff)
+        if (CheckTimer < diff)
         {
-            if (pInstance && pInstance->GetData(DATA_KALECGOS_PHASE) == PHASE_ENRAGE)
+            if (instance && instance->GetData(DATA_KALECGOS_PHASE) == PHASE_ENRAGE)
                 isEnraged = true;
 
             // should not leave Inner Veil
-            if(me->GetPositionZ() > -60)
+            if (me->GetPositionZ() > -60)
                 me->GetMap()->CreatureRelocation(me, me->GetPositionX(), me->GetPositionY(), DEMON_REALM_Z, me->GetOrientation());
 
             CheckTimer = 1000;
@@ -807,18 +826,18 @@ struct HELLGROUND_DLL_DECL boss_kalecAI : public ScriptedAI
         else
             CheckTimer -= diff;
 
-        if(RevitalizeTimer < diff)
+        if (RevitalizeTimer < diff)
         {
-            if(Unit* target = SelectUnitToRevitalize())
+            if (Unit* target = SelectUnitToRevitalize())
                 AddSpellToCast(target, SPELL_REVITALIZE, false, true);
             RevitalizeTimer = 7000;
         }
         else
             RevitalizeTimer -= diff;
 
-        if(HeroicStrikeTimer < diff)
+        if (HeroicStrikeTimer < diff)
         {
-            AddSpellToCast(m_creature->getVictim(), SPELL_HEROIC_STRIKE);
+            AddSpellToCast(me->getVictim(), SPELL_HEROIC_STRIKE);
             HeroicStrikeTimer = 2000;
         }
         else
@@ -831,7 +850,7 @@ struct HELLGROUND_DLL_DECL boss_kalecAI : public ScriptedAI
 
 bool GOkalecgos_teleporter(Player *player, GameObject* _GO)
 {
-    if(player->HasAura(AURA_SPECTRAL_EXHAUSTION, 0))
+    if (player->HasAura(AURA_SPECTRAL_EXHAUSTION, 0))
     {
         player->GetSession()->SendNotification(GO_FAILED);
         return true;
