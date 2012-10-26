@@ -1565,7 +1565,7 @@ void ObjectMgr::LoadItemPrototypes()
         }
         else
         {
-            sLog.outLog(LOG_DB_ERR, "Item (Entry: %u) not correct (not listed in list of existed items).",i);
+            sLog.outLog(LOG_DEFAULT, "WARNING: Item (Entry: %u) not listed in list of existed items. Maybe Custom Item?",i);
         }
 
         if (proto->Class >= MAX_ITEM_CLASS)

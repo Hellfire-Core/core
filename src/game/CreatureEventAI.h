@@ -434,9 +434,7 @@ struct CreatureEventAI_Action
 struct CreatureEventAI_Event
 {
     uint32 event_id;
-
-    int64 entryOrGUID;
-
+    uint32 entryOrGUID; // needs to be uint32 for correct work
     uint32 event_inverse_phase_mask;
 
     EventAI_Type event_type : 16;

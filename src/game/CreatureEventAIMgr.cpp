@@ -255,11 +255,15 @@ void CreatureEventAIMgr::LoadCreatureEventAI_Scripts()
             Field *fields = result->Fetch();
 
             CreatureEventAI_Event temp;
-            temp.event_id = EventAI_Type(fields[0].GetUInt32());
-            uint32 i = temp.event_id;
 
-            temp.entryOrGUID = fields[1].GetInt64();
-            int64 entryOrGUID = temp.entryOrGUID;
+            uint32 i = fields[0].GetUInt32();
+            temp.event_id = EventAI_Type(i);
+
+            int64 entryOrGUID = fields[1].GetInt64();
+            if (entryOrGUID > 0)
+                temp.entryOrGUID = uint32(entryOrGUID);
+            else
+                temp.entryOrGUID = 0;
 
             uint32 e_type = fields[2].GetUInt32();
             //Report any errors in event
@@ -289,7 +293,7 @@ void CreatureEventAIMgr::LoadCreatureEventAI_Scripts()
             }
             else
             {
-                if (!sObjectMgr.GetCreatureData(-entryOrGUID))
+                if (!sObjectMgr.GetCreatureData(uint32(-entryOrGUID)))
                 {
                     sLog.outLog(LOG_DB_ERR, "CreatureEventAI:  Event %u has script for non-existing creature GUID ("SI64FMTD"), skipping.", i, entryOrGUID);
                     continue;
@@ -343,11 +347,11 @@ void CreatureEventAIMgr::LoadCreatureEventAI_Scripts()
                         }
 
                         if ((temp.spell_hit.schoolMask & pSpell->SchoolMask) != pSpell->SchoolMask)
-                            sLog.outLog(LOG_DB_ERR, "CreatureEventAI:  Creature %i has param1(spellId %u) but param2 is not -1 and not equal to spell's school mask. Event %u can never trigger.", temp.entryOrGUID, temp.spell_hit.schoolMask, i);
+                            sLog.outLog(LOG_DB_ERR, "CreatureEventAI:  Creature %i has param1(spellId %u) but param2 is not -1 and not equal to spell's school mask. Event %u can never trigger.", temp.entryOrGUID, temp.spell_hit.spellId, i);
 
-                        // if you fill schoolmask field it will show an error
-                        if (temp.spell_hit.schoolMask)
-                            sLog.outLog(LOG_DB_ERR, "CreatureEventAI:  Creature %i has param1(spellId %u) but param2 is not 0. Event %u can never trigger.", temp.entryOrGUID, temp.spell_hit.schoolMask, i);
+                        // if you fill schoolmask field it will show an error (-1 is a exception)
+                        if (temp.spell_hit.schoolMask && temp.spell_hit.schoolMask != -1)
+                            sLog.outLog(LOG_DB_ERR, "CreatureEventAI:  Creature %i has param1(spellId %u) but param2 is not 0. Event %u can never trigger.", temp.entryOrGUID, temp.spell_hit.spellId, i);
                     }
 
                     if (!temp.spell_hit.schoolMask)
@@ -869,7 +873,7 @@ void CreatureEventAIMgr::LoadCreatureEventAI_Scripts(uint32 creatureId)
             temp.event_id = EventAI_Type(fields[0].GetUInt32());
             uint32 i = temp.event_id;
 
-            temp.entryOrGUID = fields[1].GetInt64();
+            temp.entryOrGUID = creatureId;
             uint32 creature_id = temp.entryOrGUID;
 
             uint32 e_type = fields[2].GetUInt32();
@@ -943,11 +947,11 @@ void CreatureEventAIMgr::LoadCreatureEventAI_Scripts(uint32 creatureId)
                         }
 
                         if ((temp.spell_hit.schoolMask & pSpell->SchoolMask) != pSpell->SchoolMask)
-                            sLog.outLog(LOG_DB_ERR, "CreatureEventAI:  Creature %i has param1(spellId %u) but param2 is not -1 and not equal to spell's school mask. Event %u can never trigger.", temp.entryOrGUID, temp.spell_hit.schoolMask, i);
+                            sLog.outLog(LOG_DB_ERR, "CreatureEventAI:  Creature %i has param1(spellId %u) but param2 is not -1 and not equal to spell's school mask. Event %u can never trigger.", temp.entryOrGUID, temp.spell_hit.spellId, i);
 
-                        // if you fill schoolmask field it will show an error
-                        if (temp.spell_hit.schoolMask)
-                            sLog.outLog(LOG_DB_ERR, "CreatureEventAI:  Creature %i has param1(spellId %u) but param2 is not 0. Event %u can never trigger.", temp.entryOrGUID, temp.spell_hit.schoolMask, i);
+                        // if you fill schoolmask field it will show an error (-1 is a exception)
+                        if (temp.spell_hit.schoolMask && temp.spell_hit.schoolMask != -1)
+                            sLog.outLog(LOG_DB_ERR, "CreatureEventAI:  Creature %i has param1(spellId %u) but param2 is not 0. Event %u can never trigger.", temp.entryOrGUID, temp.spell_hit.spellId, i);
                     }
 
                     if (!temp.spell_hit.schoolMask)
