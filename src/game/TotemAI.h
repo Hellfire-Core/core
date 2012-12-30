@@ -27,7 +27,7 @@
 class Creature;
 class Totem;
 
-class TotemAI : public CreatureAI
+class HELLGROUND_DLL_DECL TotemAI : public CreatureAI
 {
     public:
 

@@ -26,7 +26,7 @@ EndScriptData */
 
 #define ENCOUNTERS              4
 
-struct instance_shadowfang_keep : public ScriptedInstance
+struct HELLGROUND_DLL_DECL instance_shadowfang_keep : public ScriptedInstance
 {
     instance_shadowfang_keep(Map *map) : ScriptedInstance(map) {Initialize();};
 

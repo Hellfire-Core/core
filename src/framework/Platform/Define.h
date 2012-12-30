@@ -51,15 +51,11 @@ typedef ACE_SHLIB_HANDLE HELLGROUND_LIBRARY_HANDLE;
 #define HELLGROUND_GET_PROC_ADDR(hlib,name) ACE_OS::dlsym(hlib,name)
 
 #if PLATFORM == PLATFORM_WINDOWS
-#  ifndef THIS_IS_SCRIPT_DLL
-#    define HELLGROUND_EXPORT __declspec(dllexport)
-#  else
-#    define HELLGROUND_EXPORT
-#  endif
+#  define HELLGROUND_EXPORT __declspec(dllexport)
 #  define HELLGROUND_IMPORT __cdecl
 #  define HELLGROUND_PATH_MAX MAX_PATH
 #else //PLATFORM != PLATFORM_WINDOWS
-#  define HELLGROUND_EXPORT
+#  define HELLGROUND_EXPORT export
 #  if defined(__APPLE_CC__) && defined(BIG_ENDIAN)
 #    define HELLGROUND_IMPORT __attribute__ ((longcall))
 #  elif defined(__x86_64__)
@@ -70,25 +66,29 @@ typedef ACE_SHLIB_HANDLE HELLGROUND_LIBRARY_HANDLE;
 #  define HELLGROUND_PATH_MAX PATH_MAX
 #endif //PLATFORM
 
-//
-// Use HELLGROUND_IMPORT_EXPORT define to proper export from core/shared/etc to script dll
-// While compile core - defined like __declspec(dllexport)
-// While compile script dll - defined like __declspec(dllimport)
-//
-// Use just HELLGROUND_EXPORT for static objects
-//
-// Make sense only in windows OS
-//
 #if PLATFORM == PLATFORM_WINDOWS
-#  ifndef THIS_IS_SCRIPT_DLL
-#    define HELLGROUND_IMPORT_EXPORT  __declspec(dllexport)
-#  else 
-#    define HELLGROUND_IMPORT_EXPORT __declspec(dllimport)
-#  endif
+#  ifdef HELLGROUND_WIN32_DLL_IMPORT
+#    define HELLGROUND_DLL_DECL __declspec(dllimport)
+#  else //!HELLGROUND_WIN32_DLL_IMPORT
+#    ifdef HELLGROUND_WIND_DLL_EXPORT
+#      define HELLGROUND_DLL_DECL __declspec(dllexport)
+#    else //!HELLGROUND_WIND_DLL_EXPORT
+#      define HELLGROUND_DLL_DECL
+#    endif //HELLGROUND_WIND_DLL_EXPORT
+#  endif //HELLGROUND_WIN32_DLL_IMPORT
 #else //PLATFORM != PLATFORM_WINDOWS
-#  define HELLGROUND_IMPORT_EXPORT
+#  define HELLGROUND_DLL_DECL
 #endif //PLATFORM
 
+#if PLATFORM == PLATFORM_WINDOWS
+#  define HELLGROUND_DLL_SPEC __declspec(dllexport)
+#  ifndef DECLSPEC_NORETURN
+#    define DECLSPEC_NORETURN __declspec(noreturn)
+#  endif //DECLSPEC_NORETURN
+#else //PLATFORM != PLATFORM_WINDOWS
+#  define HELLGROUND_DLL_SPEC
+#  define DECLSPEC_NORETURN
+#endif //PLATFORM
 
 #if !defined(DEBUG)
 #  define HELLGROUND_INLINE inline

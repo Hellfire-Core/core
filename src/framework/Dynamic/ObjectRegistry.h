@@ -31,7 +31,7 @@
 /** ObjectRegistry holds all registry item of the same type
  */
 template<class T, class Key = std::string>
-class ObjectRegistry
+class HELLGROUND_DLL_DECL ObjectRegistry
 {
     public:
         typedef std::map<Key, T *> RegistryMapType;

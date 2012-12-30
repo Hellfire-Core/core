@@ -42,7 +42,7 @@ class ACTIVE_OBJECT,
 class WORLD_OBJECT_TYPES,
 class GRID_OBJECT_TYPES
 >
-class GridLoader
+class HELLGROUND_DLL_DECL GridLoader
 {
     public:
 

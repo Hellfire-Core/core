@@ -148,7 +148,7 @@ class WorldSessionFilter : public PacketFilter
 };
 
 /// Player session in the World
-class HELLGROUND_IMPORT_EXPORT WorldSession
+class HELLGROUND_DLL_SPEC WorldSession
 {
     friend class CharacterHandler;
     public:

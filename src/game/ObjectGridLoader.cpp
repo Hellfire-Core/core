@@ -30,7 +30,7 @@
 #include "CreatureAI.h"
 #include "GridDefines.h"
 
-class ObjectGridRespawnMover
+class HELLGROUND_DLL_DECL ObjectGridRespawnMover
 {
     public:
         ObjectGridRespawnMover() {}

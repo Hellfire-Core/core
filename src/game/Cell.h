@@ -27,7 +27,7 @@
 class Map;
 class WorldObject;
 
-struct CellArea
+struct HELLGROUND_DLL_DECL CellArea
 {
     CellArea() {}
     CellArea(CellPair low, CellPair high) : low_bound(low), high_bound(high) {}
@@ -44,7 +44,7 @@ struct CellArea
     CellPair high_bound;
 };
 
-struct Cell
+struct HELLGROUND_DLL_DECL Cell
 {
     public:
         Cell() { data.All = 0; }

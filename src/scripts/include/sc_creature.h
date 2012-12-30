@@ -191,7 +191,7 @@ public:
     }
 };
 
-struct ScriptedAI : public CreatureAI
+struct HELLGROUND_DLL_DECL ScriptedAI : public CreatureAI
 {
     explicit ScriptedAI(Creature* pCreature);
     ~ScriptedAI() {}
@@ -394,7 +394,7 @@ struct ScriptedAI : public CreatureAI
     uint32 m_uiEvadeCheckCooldown;
 };
 
-struct Scripted_NoMovementAI : public ScriptedAI
+struct HELLGROUND_DLL_DECL Scripted_NoMovementAI : public ScriptedAI
 {
     Scripted_NoMovementAI(Creature* creature) : ScriptedAI(creature) {}
 
@@ -402,7 +402,7 @@ struct Scripted_NoMovementAI : public ScriptedAI
     void AttackStart(Unit *);
 };
 
-struct BossAI : public ScriptedAI
+struct HELLGROUND_DLL_DECL BossAI : public ScriptedAI
 {
     BossAI(Creature *c, uint32 id);
 

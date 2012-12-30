@@ -26,7 +26,7 @@
 #include "Creature.h"
 
 template<class UNIT>
-class FleeingMovementGenerator : public MovementGeneratorMedium< UNIT, FleeingMovementGenerator<UNIT> >
+class HELLGROUND_DLL_SPEC FleeingMovementGenerator : public MovementGeneratorMedium< UNIT, FleeingMovementGenerator<UNIT> >
 {
     public:
         FleeingMovementGenerator(uint64 frightGUID) : _nextCheckTime(0), _frightGUID(frightGUID) {}
@@ -49,7 +49,7 @@ class FleeingMovementGenerator : public MovementGeneratorMedium< UNIT, FleeingMo
         TimeTracker _nextCheckTime;
 };
 
-class TimedFleeingMovementGenerator : public FleeingMovementGenerator<Creature>
+class HELLGROUND_DLL_SPEC TimedFleeingMovementGenerator : public FleeingMovementGenerator<Creature>
 {
     public:
         TimedFleeingMovementGenerator(uint64 fright, uint32 time) : FleeingMovementGenerator<Creature>(fright), _totalFleeTime(time) {}

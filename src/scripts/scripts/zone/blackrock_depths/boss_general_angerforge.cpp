@@ -27,7 +27,7 @@ EndScriptData */
 #define SPELL_HAMSTRING             9080
 #define SPELL_CLEAVE                20691
 
-struct boss_general_angerforgeAI : public ScriptedAI
+struct HELLGROUND_DLL_DECL boss_general_angerforgeAI : public ScriptedAI
 {
     boss_general_angerforgeAI(Creature *c) : ScriptedAI(c) {}
 

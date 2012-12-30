@@ -68,7 +68,7 @@ class GlobalCooldownMgr
         GlobalCooldownList m_GlobalCooldowns;
 };
 
-struct HELLGROUND_IMPORT_EXPORT CharmInfo
+struct HELLGROUND_DLL_SPEC CharmInfo
 {
     public:
         explicit CharmInfo(Unit* unit);

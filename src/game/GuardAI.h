@@ -26,7 +26,7 @@
 
 class Creature;
 
-class GuardAI : public CreatureAI
+class HELLGROUND_DLL_DECL GuardAI : public CreatureAI
 {
     enum GuardState
     {

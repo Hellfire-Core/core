@@ -37,7 +37,7 @@ class Database;
 #define MAX_QUERY_LEN   32*1024
 
 //
-class SqlConnection
+class HELLGROUND_DLL_SPEC SqlConnection
 {
     public:
         virtual ~SqlConnection() {}
@@ -99,7 +99,7 @@ class SqlConnection
         StmtHolder m_holder;
 };
 
-class Database
+class HELLGROUND_DLL_SPEC Database
 {
     public:
         virtual ~Database();
@@ -236,7 +236,7 @@ class Database
         //factory method to create SqlDelayThread objects
         virtual SqlDelayThread * CreateDelayThread();
 
-        class TransHelper
+        class HELLGROUND_DLL_SPEC TransHelper
         {
             public:
                 TransHelper() : m_pTrans(NULL) {}

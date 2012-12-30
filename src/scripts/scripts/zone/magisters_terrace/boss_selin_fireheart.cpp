@@ -50,7 +50,7 @@ EndScriptData */
 
 #define CREATURE_FEL_CRYSTAL            24722
 
-struct boss_selin_fireheartAI : public ScriptedAI
+struct HELLGROUND_DLL_DECL boss_selin_fireheartAI : public ScriptedAI
 {
     boss_selin_fireheartAI(Creature* c) : ScriptedAI(c)
     {
@@ -302,7 +302,7 @@ CreatureAI* GetAI_boss_selin_fireheart(Creature *_Creature)
     return new boss_selin_fireheartAI (_Creature);
 };
 
-struct mob_fel_crystalAI : public ScriptedAI
+struct HELLGROUND_DLL_DECL mob_fel_crystalAI : public ScriptedAI
 {
     mob_fel_crystalAI(Creature *c) : ScriptedAI(c)
     {

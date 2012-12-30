@@ -25,7 +25,7 @@
 
 class Unit;
 
-class ReactorAI : public CreatureAI
+class HELLGROUND_DLL_DECL ReactorAI : public CreatureAI
 {
     public:
 

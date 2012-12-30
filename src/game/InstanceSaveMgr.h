@@ -113,7 +113,7 @@ class InstanceSave
         bool m_canReset;
 };
 
-class InstanceSaveManager
+class HELLGROUND_DLL_DECL InstanceSaveManager
 {
     friend class ACE_Singleton<InstanceSaveManager, ACE_Thread_Mutex>;
     InstanceSaveManager();

@@ -65,7 +65,7 @@ struct GridMapAreaHeader
 };
 
 template<typename Countable>
-class HELLGROUND_IMPORT_EXPORT Referencable
+class HELLGROUND_DLL_SPEC Referencable
 {
     public:
         Referencable() { m_count = 0; }
@@ -228,7 +228,7 @@ typedef struct MapTemplate
 } TerrainSpecifics;
 
 //class for sharing and managing GridMap objects
-class HELLGROUND_IMPORT_EXPORT TerrainInfo : public Referencable<AtomicLong>
+class HELLGROUND_DLL_SPEC TerrainInfo : public Referencable<AtomicLong>
 {
     public:
         TerrainInfo(uint32 mapid, TerrainSpecifics terrainspecifics);
@@ -302,7 +302,7 @@ class HELLGROUND_IMPORT_EXPORT TerrainInfo : public Referencable<AtomicLong>
 };
 
 //class for managing TerrainData object and all sort of geometry querying operations
-class TerrainManager
+class HELLGROUND_DLL_DECL TerrainManager
 {
     friend class ACE_Singleton<TerrainManager, ACE_Thread_Mutex>;
     TerrainManager();

@@ -24,7 +24,7 @@
 #include "Map.h"
 #include "Object.h"
 
-class GridState
+class HELLGROUND_DLL_DECL GridState
 {
     public:
 #ifdef HELLGROUND_DEBUG
@@ -45,28 +45,28 @@ class GridState
         virtual void Update(Map &, NGridType&, GridInfo &, const uint32 &x, const uint32 &y, const uint32 &t_diff) const = 0;
 };
 
-class InvalidState : public GridState
+class HELLGROUND_DLL_DECL InvalidState : public GridState
 {
     public:
 
         void Update(Map &, NGridType &, GridInfo &, const uint32 &x, const uint32 &y, const uint32 &t_diff) const;
 };
 
-class ActiveState : public GridState
+class HELLGROUND_DLL_DECL ActiveState : public GridState
 {
     public:
 
         void Update(Map &, NGridType &, GridInfo &, const uint32 &x, const uint32 &y, const uint32 &t_diff) const;
 };
 
-class IdleState : public GridState
+class HELLGROUND_DLL_DECL IdleState : public GridState
 {
     public:
 
         void Update(Map &, NGridType &, GridInfo &, const uint32 &x, const uint32 &y, const uint32 &t_diff) const;
 };
 
-class RemovalState : public GridState
+class HELLGROUND_DLL_DECL RemovalState : public GridState
 {
     public:
 

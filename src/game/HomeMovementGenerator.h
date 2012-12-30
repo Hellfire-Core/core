@@ -26,10 +26,10 @@
 class Creature;
 
 template <class T>
-class HELLGROUND_IMPORT_EXPORT HomeMovementGenerator;
+class HELLGROUND_DLL_SPEC HomeMovementGenerator;
 
 template <>
-class HELLGROUND_IMPORT_EXPORT HomeMovementGenerator<Creature> : public MovementGeneratorMedium< Creature, HomeMovementGenerator<Creature> >
+class HELLGROUND_DLL_SPEC HomeMovementGenerator<Creature> : public MovementGeneratorMedium< Creature, HomeMovementGenerator<Creature> >
 {
     public:
         HomeMovementGenerator() : arrived(false) {}

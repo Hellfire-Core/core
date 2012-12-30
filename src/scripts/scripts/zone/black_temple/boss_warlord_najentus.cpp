@@ -46,7 +46,7 @@ EndScriptData */
 
 #define GOBJECT_SPINE                  185584
 
-struct boss_najentusAI : public ScriptedAI
+struct HELLGROUND_DLL_DECL boss_najentusAI : public ScriptedAI
 {
     boss_najentusAI(Creature *c) : ScriptedAI(c)
     {

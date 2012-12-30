@@ -97,7 +97,7 @@ float hatcherway[2][5][3] =
     }
 };
 
-struct boss_janalaiAI : public ScriptedAI
+struct HELLGROUND_DLL_DECL boss_janalaiAI : public ScriptedAI
 {
     boss_janalaiAI(Creature *c) : ScriptedAI(c)
     {
@@ -481,7 +481,7 @@ CreatureAI* GetAI_boss_janalaiAI(Creature *_Creature)
     return new boss_janalaiAI(_Creature);
 }
 
-struct mob_janalai_firebombAI : public ScriptedAI
+struct HELLGROUND_DLL_DECL mob_janalai_firebombAI : public ScriptedAI
 {
     mob_janalai_firebombAI(Creature *c) : ScriptedAI(c){}
 
@@ -507,7 +507,7 @@ CreatureAI* GetAI_mob_janalai_firebombAI(Creature *_Creature)
     return new mob_janalai_firebombAI(_Creature);
 }
 
-struct mob_amanishi_hatcherAI : public ScriptedAI
+struct HELLGROUND_DLL_DECL mob_amanishi_hatcherAI : public ScriptedAI
 {
     mob_amanishi_hatcherAI(Creature *c) : ScriptedAI(c)
     {
@@ -630,7 +630,7 @@ CreatureAI* GetAI_mob_amanishi_hatcherAI(Creature *_Creature)
     return new mob_amanishi_hatcherAI(_Creature);
 }
 
-struct mob_hatchlingAI : public ScriptedAI
+struct HELLGROUND_DLL_DECL mob_hatchlingAI : public ScriptedAI
 {
     mob_hatchlingAI(Creature *c) : ScriptedAI(c)
     {
@@ -680,7 +680,7 @@ CreatureAI* GetAI_mob_hatchlingAI(Creature *_Creature)
     return new mob_hatchlingAI(_Creature);
 }
 
-struct mob_eggAI : public ScriptedAI
+struct HELLGROUND_DLL_DECL mob_eggAI : public ScriptedAI
 {
     mob_eggAI(Creature *c) : ScriptedAI(c){}
     void Reset() {}

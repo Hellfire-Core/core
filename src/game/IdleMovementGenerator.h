@@ -23,7 +23,7 @@
 
 #include "MovementGenerator.h"
 
-class HELLGROUND_IMPORT_EXPORT IdleMovementGenerator : public MovementGenerator
+class HELLGROUND_DLL_SPEC IdleMovementGenerator : public MovementGenerator
 {
     public:
         void Initialize(Unit &) {}
@@ -38,7 +38,7 @@ class HELLGROUND_IMPORT_EXPORT IdleMovementGenerator : public MovementGenerator
 
 extern IdleMovementGenerator si_idleMovement;
 
-class HELLGROUND_IMPORT_EXPORT RotateMovementGenerator : public MovementGenerator
+class HELLGROUND_DLL_SPEC RotateMovementGenerator : public MovementGenerator
 {
     public:
         explicit RotateMovementGenerator(uint32 time, RotateDirection direction) : m_duration(time), m_maxDuration(time), m_direction(direction) {}
@@ -57,7 +57,7 @@ class HELLGROUND_IMPORT_EXPORT RotateMovementGenerator : public MovementGenerato
         RotateDirection m_direction;
 };
 
-class HELLGROUND_IMPORT_EXPORT DistractMovementGenerator : public MovementGenerator
+class HELLGROUND_DLL_SPEC DistractMovementGenerator : public MovementGenerator
 {
     public:
         explicit DistractMovementGenerator(uint32 timer) : m_timer(timer) {}
@@ -75,7 +75,7 @@ class HELLGROUND_IMPORT_EXPORT DistractMovementGenerator : public MovementGenera
         uint32 m_timer;
 };
 
-class HELLGROUND_IMPORT_EXPORT AssistanceDistractMovementGenerator : public DistractMovementGenerator
+class HELLGROUND_DLL_SPEC AssistanceDistractMovementGenerator : public DistractMovementGenerator
 {
     public:
         AssistanceDistractMovementGenerator(uint32 timer) :

@@ -63,7 +63,7 @@ template<class H, class T> struct ContainerMapList<TypeList<H, T> >
  */
 
 template<class OBJECT_TYPES>
-class TypeMapContainer
+class HELLGROUND_DLL_DECL TypeMapContainer
 {
     public:
         template<class SPECIFIC_TYPE> size_t Count() const { return Hellground::Count(i_elements, (SPECIFIC_TYPE*)NULL); }

@@ -63,7 +63,7 @@ template<class VISITOR, class OBJECT_TYPES> void VisitorHelper(VISITOR &v, TypeM
 }
 
 template<class VISITOR, class TYPE_CONTAINER>
-class TypeContainerVisitor
+class HELLGROUND_DLL_DECL TypeContainerVisitor
 {
     public:
         TypeContainerVisitor(VISITOR &v) : i_visitor(v) {}

@@ -27,7 +27,7 @@
 
 class ACE_Configuration_Heap;
 
-class Config
+class HELLGROUND_DLL_SPEC Config
 {
     friend class ACE_Singleton<Config, ACE_Null_Mutex>;
     Config();

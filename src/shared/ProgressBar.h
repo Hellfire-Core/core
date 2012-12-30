@@ -23,7 +23,7 @@
 #include <stdio.h>
 #include "Platform/Define.h"
 
-class BarGoLink
+class HELLGROUND_DLL_SPEC BarGoLink
 {
     public:
         BarGoLink(int row_count, bool on = true);

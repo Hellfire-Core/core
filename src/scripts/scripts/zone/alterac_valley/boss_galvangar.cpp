@@ -31,7 +31,7 @@ EndScriptData */
 #define SPELL_MORTAL_STRIKE        16856
 
 
-struct boss_galvangarAI : public ScriptedAI
+struct HELLGROUND_DLL_DECL boss_galvangarAI : public ScriptedAI
 {
     boss_galvangarAI(Creature *c) : ScriptedAI(c)
     {

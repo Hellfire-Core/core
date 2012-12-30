@@ -260,7 +260,7 @@ This class is used to:
 3. some certain cases, same for all battlegrounds
 4. It has properties same for all battlegrounds
 */
-class HELLGROUND_IMPORT_EXPORT BattleGround
+class HELLGROUND_DLL_SPEC BattleGround
 {
     friend class BattleGroundMgr;
 

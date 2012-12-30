@@ -645,7 +645,7 @@ class Spell
 
 namespace Hellground
 {
-    struct SpellNotifierGameObject
+    struct HELLGROUND_DLL_DECL SpellNotifierGameObject
     {
         std::list<GameObject*> *i_data;
         Spell &i_spell;
@@ -720,7 +720,7 @@ namespace Hellground
         #endif
     };
 
-    struct SpellNotifierCreatureAndPlayer
+    struct HELLGROUND_DLL_DECL SpellNotifierCreatureAndPlayer
     {
         std::list<Unit*> *i_data;
         Spell &i_spell;
@@ -828,7 +828,7 @@ namespace Hellground
     };
 
 
-    struct SpellNotifierDeadCreature
+    struct HELLGROUND_DLL_DECL SpellNotifierDeadCreature
     {
         std::list<Unit*> *i_data;
         Spell &i_spell;
