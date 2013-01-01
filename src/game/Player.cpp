@@ -14274,7 +14274,8 @@ bool Player::LoadFromDB(uint32 guid, SqlQueryHolder *holder)
                 bytes0 = newBytes0;
 
                 pBytes = GetUInt32ValueFromDB(PLAYER_BYTES, guid);
-                pBytes2 = GetUInt32ValueFromDB(PLAYER_BYTES_2, guid);
+
+                pBytes2 = (pBytes2 & 0xFFFFFF00) | (GetUInt32ValueFromDB(PLAYER_BYTES_2, guid) & 0x000000FF);
 
                 gender = (newBytes0 & 0x00FF0000) >> 16;
                 uint32 display = GetUInt32ValueFromDB(UNIT_FIELD_NATIVEDISPLAYID, guid);
