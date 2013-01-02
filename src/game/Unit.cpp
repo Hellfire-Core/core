@@ -4182,18 +4182,21 @@ void Unit::RemoveAurasDueToSpellBySteal(uint32 spellId, uint64 casterGUID, Unit 
             // Unregister _before_ adding to stealer
             aur->UnregisterSingleCastAura();
 
-            // check for similar aura on stealer, not to override better spell or with longer duration
-            Unit::AuraMap const& auras = stealer->GetAuras();
-            for (Unit::AuraMap::const_iterator itr = auras.begin(); itr != auras.end(); ++itr)
+            // check for similar aura on player stealer, not to override better spell or with longer duration
+            if(GetTypeId() == TYPEID_PLAYER)
             {
-                Aura *stealer_aur = (*itr).second;
-                if (aur->GetSpellProto()->SpellFamilyName == stealer_aur->GetSpellProto()->SpellFamilyName &&
-                    aur->GetSpellProto()->SpellFamilyFlags == stealer_aur->GetSpellProto()->SpellFamilyFlags &&
-                    (aur->GetBasePoints() < stealer_aur->GetBasePoints() ||  // better values
-                    (aur->GetBasePoints() == stealer_aur->GetBasePoints() && stealer_aur->GetAuraDuration() > max_dur))) // same values but timer longer than 2 minutes
+                Unit::AuraMap const& auras = stealer->GetAuras();
+                for (Unit::AuraMap::const_iterator itr = auras.begin(); itr != auras.end(); ++itr)
                 {
-                    onlyDispel = true;
-                    break;
+                    Aura *stealer_aur = (*itr).second;
+                    if (aur->GetSpellProto()->SpellFamilyName == stealer_aur->GetSpellProto()->SpellFamilyName &&
+                        aur->GetSpellProto()->SpellFamilyFlags == stealer_aur->GetSpellProto()->SpellFamilyFlags &&
+                        (aur->GetBasePoints() < stealer_aur->GetBasePoints() ||  // better values
+                        (aur->GetBasePoints() == stealer_aur->GetBasePoints() && stealer_aur->GetAuraDuration() > max_dur))) // same values but timer longer than 2 minutes
+                    {
+                        onlyDispel = true;
+                        break;
+                    }
                 }
             }
             // set its duration and maximum duration

@@ -505,7 +505,7 @@ struct mob_sunblade_scoutAI : public ScriptedAI
 
     bool ActivateProtector(Unit* who)
     {
-        if(Unit* Protector = GetClosestCreatureWithEntry(me, 25507, 65, true, true))
+        if(Unit* Protector = GetClosestCreatureWithEntry(me, 25507, 100, true, true))
         {
             if(Protector->GetMotionMaster()->GetCurrentMovementGeneratorType() == IDLE_MOTION_TYPE)
             {
