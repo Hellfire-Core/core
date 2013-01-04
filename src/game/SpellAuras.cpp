@@ -2555,7 +2555,7 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
                 }
                 return;
             }
-            case 45043: // Power Circle (Shifting Naaru Silver trinket)
+            case 45042: // Power Circle (Shifting Naaru Silver trinket)
             {
                 if (m_target->GetTypeId() == TYPEID_PLAYER && m_target->GetGUID() == caster->GetGUID())
                     caster->CastSpell(caster, 45044, true);
