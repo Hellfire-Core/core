@@ -941,10 +941,11 @@ struct mob_shadowsword_commanderAI : public ScriptedAI
         DoCast(me, SPELL_BATTLE_SHOUT);
     }
 
-    void MoveInLineOfSight(Unit*)
+    void MoveInLineOfSight(Unit* who)
     {
         if(pInstance->GetData(DATA_FELMYST_EVENT) != DONE)
             return;
+        ScriptedAI::MoveInLineOfSight(who);
     }
 
     void JustDied(Unit* killer)
@@ -1136,10 +1137,11 @@ struct mob_shadowsword_lifeshaperAI : public ScriptedAI
         ScriptedAI::EnterEvadeMode();
     }
 
-    void MoveInLineOfSight(Unit*)
+    void MoveInLineOfSight(Unit* who)
     {
         if(pInstance->GetData(DATA_FELMYST_EVENT) != DONE)
             return;
+        ScriptedAI::MoveInLineOfSight(who);
     }
 
     void EnterCombat(Unit*)
@@ -1245,10 +1247,11 @@ struct mob_shadowsword_manafiendAI : public ScriptedAI
         ScriptedAI::EnterEvadeMode();
     }
 
-    void MoveInLineOfSight(Unit*)
+    void MoveInLineOfSight(Unit* who)
     {
         if(pInstance->GetData(DATA_FELMYST_EVENT) != DONE)
             return;
+        ScriptedAI::MoveInLineOfSight(who);
     }
 
     void EnterCombat(Unit*)
@@ -1344,10 +1347,11 @@ struct mob_shadowsword_soulbinderAI : public ScriptedAI
         ScriptedAI::EnterEvadeMode();
     }
 
-    void MoveInLineOfSight(Unit*)
+    void MoveInLineOfSight(Unit* who)
     {
         if(pInstance->GetData(DATA_FELMYST_EVENT) != DONE)
             return;
+        ScriptedAI::MoveInLineOfSight(who);
     }
 
     void EnterCombat(Unit*)
@@ -1447,10 +1451,11 @@ struct mob_shadowsword_vanquisherAI : public ScriptedAI
         ScriptedAI::EnterEvadeMode();
     }
 
-    void MoveInLineOfSight(Unit*)
+    void MoveInLineOfSight(Unit* who)
     {
         if(pInstance->GetData(DATA_FELMYST_EVENT) != DONE)
             return;
+        ScriptedAI::MoveInLineOfSight(who);
     }
 
     void EnterCombat(Unit*)
