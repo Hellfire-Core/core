@@ -134,20 +134,20 @@ World::World()
     loggedInHordes = 0;
 
     // TODO: move to config
-    m_honorRanks[0] = 10000000;//100;
-    m_honorRanks[1] = 10000000;//500;
-    m_honorRanks[2] = 10000000;//1000;
-    m_honorRanks[3] = 10000000;//2000;
-    m_honorRanks[4] = 10000000;//5000;
-    m_honorRanks[5] = 10000000;//10000;
-    m_honorRanks[6] = 10000000;//16000;
-    m_honorRanks[7] = 10000000;//23000;
-    m_honorRanks[8] = 10000000;//31000;
-    m_honorRanks[9] = 10000000;//40000;
-    m_honorRanks[10] = 10000000;//50000;
-    m_honorRanks[11] = 10000000;//60000;
-    m_honorRanks[12] = 10000000;//75000;
-    m_honorRanks[13] = 10000000;//100000;
+    m_honorRanks[0] = 100;
+    m_honorRanks[1] = 500;
+    m_honorRanks[2] = 1000;
+    m_honorRanks[3] = 2000;
+    m_honorRanks[4] = 5000;
+    m_honorRanks[5] = 10000;
+    m_honorRanks[6] = 16000;
+    m_honorRanks[7] = 23000;
+    m_honorRanks[8] = 31000;
+    m_honorRanks[9] = 40000;
+    m_honorRanks[10] = 50000;
+    m_honorRanks[11] = 60000;
+    m_honorRanks[12] = 70000;
+    m_honorRanks[13] = 100000;
 }
 
 /// World destructor
@@ -2401,6 +2401,7 @@ bool World::RemoveBanAccount(BanMode mode, std::string nameIPOrMail)
 
             //NO SQL injection as account is uint32
             AccountsDatabase.PExecute("UPDATE account_punishment SET expiration_date = UNIX_TIMESTAMP() WHERE account_id = '%u' AND punishment_type_id = '%u'", account, PUNISHMENT_BAN);
+
             break;
     }
     return true;
@@ -2560,7 +2561,7 @@ void World::UpdateRealmCharCount(uint32 accountId)
     Field *fields = resultCharCount->Fetch();
 
     static SqlStatementID updateRealmChars;
-    SqlStatement stmt = AccountsDatabase.CreateStatement(updateRealmChars, "UPDATE realm_characters SET characters_count = ? WHERE = account_id = ? AND realm_id = ?");
+    SqlStatement stmt = AccountsDatabase.CreateStatement(updateRealmChars, "UPDATE realm_characters SET characters_count = ? WHERE account_id = ? AND realm_id = ?");
     stmt.addUInt8(fields[0].GetUInt8());
     stmt.addUInt32(accountId);
     stmt.addUInt32(realmID);

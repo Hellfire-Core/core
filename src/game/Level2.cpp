@@ -264,7 +264,7 @@ bool ChatHandler::HandleMuteInfoCommand(const char* args)
     }
 
     QueryResultAutoPtr result = AccountsDatabase.PQuery("SELECT FROM_UNIXTIME(punishment_date), expiration_date-punishment_date, expiration_date, reason, punished_by "
-                                                        "FROM account_mute "
+                                                        "FROM account_punishment "
                                                         "WHERE account_id = '%u' AND punishment_type_id = '%u' "
                                                         "ORDER BY punishment_date ASC", accountid, PUNISHMENT_MUTE);
 
@@ -318,7 +318,7 @@ bool ChatHandler::HandleGameObjectTargetCommand(const char* args)
             GameDataDatabase.escape_string(name);
             result = GameDataDatabase.PQuery(
                 "SELECT guid, id, position_x, position_y, position_z, orientation, map, (POW(position_x - %f, 2) + POW(position_y - %f, 2) + POW(position_z - %f, 2)) AS order_ "
-                "FROM gameobject,gameobject_template WHERE gameobject_template.entry = gameobject.id AND map = %i AND name "_LIKE_" "_CONCAT3_("'%%'","'%s'","'%%'")" ORDER BY order_ ASC LIMIT 1",
+                "FROM gameobject,gameobject_template WHERE gameobject_template.entry = gameobject.id AND map = %i AND name " _LIKE_ " " _CONCAT3_("'%%'","'%s'","'%%'") " ORDER BY order_ ASC LIMIT 1",
                 pl->GetPositionX(), pl->GetPositionY(), pl->GetPositionZ(), pl->GetMapId(),name.c_str());
         }
     }
@@ -629,7 +629,7 @@ bool ChatHandler::HandleGoCreatureCommand(const char* args)
         {
             std::string name = pParam1;
             GameDataDatabase.escape_string(name);
-            whereClause << ", creature_template WHERE creature.id = creature_template.entry AND creature_template.name "_LIKE_" '" << name << "'";
+            whereClause << ", creature_template WHERE creature.id = creature_template.entry AND creature_template.name " _LIKE_ " '" << name << "'";
         }
         else
         {
@@ -4379,15 +4379,13 @@ bool ChatHandler::HandleMmapOffsetCreateCommand(const char* /*args*/)
     int32 gx = 32 - player->GetPositionX() / SIZE_OF_GRIDS;
     int32 gy = 32 - player->GetPositionY() / SIZE_OF_GRIDS;
 
-    char fileName[25];
-    sprintf(fileName, "%03u%02i%02i.offmesh", player->GetMapId(), gy, gx);
-
     std::ofstream file;
-    file.open(fileName, std::ios_base::out | std::ios_base::app);
+    file.open("mmaps.offmesh", std::ios_base::out | std::ios_base::app);
     if (file.fail())
         return false;
 
-    file << player->GetMapId() << " " << gy << "," << gx << "("
+    // YEP THEY are swapped itnernally, mmap filename is mapidgxgy.mmap offmesh use gygx order
+    file << player->GetMapId() << " " << gy << "," << gx << " ("
          << player->GetPositionX() << " "
          << player->GetPositionY() << " "
          << player->GetPositionZ() << ")" << " " << "("

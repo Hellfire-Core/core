@@ -192,7 +192,7 @@ class HELLGROUND_IMPORT_EXPORT WorldSession
         void RemoveAccountFlag(AccountFlags flag);
 
         void SaveOpcodesDisableFlags();
-        void SetOpcodeDisableFlag(uint16 flag);
+        void AddOpcodeDisableFlag(uint16 flag);
         void RemoveOpcodeDisableFlag(uint16 flag);
         uint16 GetOpcodesDisabledFlag() { return m_opcodesDisabled;}
 

@@ -57,6 +57,7 @@ ChatCommand * ChatHandler::getCommandTable()
         { "log",            PERM_ADM,       true,   &ChatHandler::HandleAccountSpecialLogCommand,   "", NULL },
         { "onlinelist",     PERM_CONSOLE,   true,   &ChatHandler::HandleAccountOnlineListCommand,   "", NULL },
         { "set",            PERM_ADM,       true,   NULL,                                           "", accountSetCommandTable },
+        { "xp",             PERM_PLAYER,    false,  &ChatHandler::HandleAccountXPToggleCommand,     "", NULL },
         { "whisp",          PERM_ADM,       true,   &ChatHandler::HandleAccountWhispLogCommand,     "", NULL },
         { "",               PERM_PLAYER,    false,  &ChatHandler::HandleAccountCommand,             "", NULL },
         { NULL,             0,              false,  NULL,                                           "", NULL }
@@ -384,14 +385,14 @@ ChatCommand * ChatHandler::getCommandTable()
 
     static ChatCommand guildDisableCommandTable[] =
     {
-        { "announce",       PERM_GM,        true,   &ChatHandler::HandleGuildDisableAnnounceCommand,    "", NULL},
-        { NULL,             0,                  false,  NULL,                                               "", NULL}
+        { "announce",       PERM_GMT,       true,   &ChatHandler::HandleGuildDisableAnnounceCommand,    "", NULL},
+        { NULL,             0,              false,  NULL,                                               "", NULL}
     };
 
     static ChatCommand guildEnableCommandTable[] =
     {
-        { "announce",       PERM_GM,        true,   &ChatHandler::HandleGuildEnableAnnounceCommand,     "", NULL},
-        { NULL,             0,                  false,  NULL,                                               "", NULL}
+        { "announce",       PERM_GMT,       true,   &ChatHandler::HandleGuildEnableAnnounceCommand,     "", NULL},
+        { NULL,             0,              false,  NULL,                                               "", NULL}
     };
 
     static ChatCommand guildCommandTable[] =
@@ -399,8 +400,8 @@ ChatCommand * ChatHandler::getCommandTable()
         { "ann",            PERM_PLAYER,    false,  &ChatHandler::HandleGuildAnnounceCommand,       "", NULL },
         { "create",         PERM_HIGH_GMT,  true,   &ChatHandler::HandleGuildCreateCommand,         "", NULL },
         { "delete",         PERM_HIGH_GMT,  true,   &ChatHandler::HandleGuildDeleteCommand,         "", NULL },
-        { "disable",        PERM_GM,        true,   NULL,                                           "", guildDisableCommandTable },
-        { "enable",         PERM_GM,        true,   NULL,                                           "", guildEnableCommandTable },
+        { "disable",        PERM_GMT,       true,   NULL,                                           "", guildDisableCommandTable },
+        { "enable",         PERM_GMT,       true,   NULL,                                           "", guildEnableCommandTable },
         { "invite",         PERM_HIGH_GMT,  true,   &ChatHandler::HandleGuildInviteCommand,         "", NULL },
         { "rank",           PERM_HIGH_GMT,  true,   &ChatHandler::HandleGuildRankCommand,           "", NULL },
         { "uninvite",       PERM_HIGH_GMT,  true,   &ChatHandler::HandleGuildUninviteCommand,       "", NULL },

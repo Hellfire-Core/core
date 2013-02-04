@@ -2232,6 +2232,10 @@ void Unit::RollMeleeHit(MeleeDamageLog *damageInfo) const
 
     // stunned target cannot dodge and this is check in GetUnitDodgeChance() (returned 0 in this case)
     float dodge_chance = damageInfo->target->GetUnitDodgeChance();
+    if(HasAuraType(SPELL_AURA_MOD_ENEMY_DODGE))
+        dodge_chance += GetTotalAuraModifier(SPELL_AURA_MOD_ENEMY_DODGE);
+    if(dodge_chance < 0)
+        dodge_chance = 0;
     float block_chance = damageInfo->target->GetUnitBlockChance();
     float parry_chance = damageInfo->target->GetUnitParryChance();
 
@@ -3163,6 +3167,9 @@ uint32 Unit::GetWeaponSkillValue (WeaponAttackType attType, Unit const* target) 
     uint32 value = 0;
     if (GetTypeId() == TYPEID_PLAYER)
     {
+        if (target && target->isCharmedOwnedByPlayerOrPlayer())
+            return GetMaxSkillValueForLevel();
+
         Item* item = ((Player*)this)->GetWeaponForAttack(attType,true);
 
         // feral or unarmed skill only for base attack
@@ -6973,6 +6980,18 @@ bool Unit::HandleProcTriggerSpell(Unit *pVictim, uint32 damage, Aura* triggeredB
             else if (!(procFlags & (PROC_FLAG_TAKEN_MELEE_HIT | PROC_FLAG_TAKEN_MELEE_SPELL_HIT)))
                 return false;
         }
+        // Trinket - Hand of Justice
+        case 15600:
+        {
+            float chance = 0;
+            chance = 6.02-0.067*getLevel();
+            if (!roll_chance_f(chance))
+                return false;
+            
+            trigger_spell_id = 15601;
+            
+            break;
+        }
     }
 
     // Custom basepoints/target for exist spell
@@ -8094,7 +8113,7 @@ uint32 Unit::SpellDamageBonus(Unit *pVictim, SpellEntry const *spellProto, uint3
         case SPELLFAMILY_MAGE:
             // Mana Tap(Racial)
             if (spellProto->Id == 28734)
-                pdamage += getLevel();
+                return pdamage += getLevel();
             // Ice Lance
             else if ((spellProto->SpellFamilyFlags & 0x20000LL) && spellProto->SpellIconID == 186)
             {
@@ -12671,7 +12690,7 @@ void Unit::RemoveCharmedOrPossessedBy(Unit *charmer)
             if (GetCharmInfo())
                 GetCharmInfo()->SetPetNumber(0, true);
             else
-                sLog.outLog(LOG_DEFAULT, "ERROR: Aura::HandleModCharm: target="UI64FMTD" with typeid=%d has a charm aura but no charm info!", GetGUID(), GetTypeId());
+                sLog.outLog(LOG_DEFAULT, "ERROR: Aura::HandleModCharm: target=" UI64FMTD " with typeid=%d has a charm aura but no charm info!", GetGUID(), GetTypeId());
         }
     }
 

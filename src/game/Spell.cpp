@@ -2870,6 +2870,11 @@ void Spell::update(uint32 difftime)
     // check if caster has moved before the spell finished
     if (m_timer != 0 && m_caster->hasUnitState(UNIT_STAT_CASTING_NOT_MOVE) && !m_caster->HasUnitMovementFlag(MOVEFLAG_FALLINGFAR))
     {
+        // Check for movin' by(rotation keys ft. mouse button)
+        if ((m_caster->GetTypeId() == TYPEID_PLAYER && ((Player*)m_caster)->isMoving() && m_casttime && !m_spellInfo->speed &&
+            m_spellInfo->SpellFamilyFlags != SPELLFAMILY_GENERIC && !m_delayMoment))
+            cancel();
+
         // add little offset for creature stop movement
         if (!IsNextMeleeSwingSpell() && !IsAutoRepeat() && !m_IsTriggeredSpell)
         {
@@ -3757,10 +3762,14 @@ SpellCastResult Spell::CheckCast(bool strict)
     if (GetSpellInfo()->CasterAuraStateNot && m_caster->HasAuraState(AuraState(GetSpellInfo()->CasterAuraStateNot)))
         return SPELL_FAILED_CASTER_AURASTATE;
 
-    // cancel autorepeat spells if cast start when moving
+    // cancel autorepeat spells if cast start when moving 'n' Check for movin' by(rotation keys ft. mouse button)
     // (not wand currently autorepeat cast delayed to moving stop anyway in spell update code)
     if (m_caster->GetTypeId()==TYPEID_PLAYER && m_caster->ToPlayer()->isMoving())
     {
+        uint32 ct = SpellMgr::GetSpellCastTime(GetSpellInfo(), this);
+        if (ct && m_spellInfo->SpellFamilyFlags != SPELLFAMILY_GENERIC)
+            return SPELL_FAILED_MOVING;
+
         if (!m_caster->HasUnitMovementFlag(MOVEFLAG_FALLINGFAR) && IsAutoRepeat())
             return SPELL_FAILED_MOVING;
     }
@@ -4791,18 +4800,26 @@ SpellCastResult Spell::CheckRange(bool strict)
 
     // NOTE(asj) For now, let as be as selective as possible, so call this only
     // in case of Traps. In future this might be also required by other GO.
-    if (pGoTarget && pGoTarget->GetGoType() == GAMEOBJECT_TYPE_TRAP)
+    if (pGoTarget)
     {
         // distance from target in checks
         float dist = m_caster->GetDistance(pGoTarget);
 
-        if(dist > max_range)
-            return SPELL_FAILED_OUT_OF_RANGE;
-        if(min_range && dist < min_range)
-            return SPELL_FAILED_TOO_CLOSE;
-        if( m_caster->GetTypeId() == TYPEID_PLAYER &&
-            (GetSpellInfo()->FacingCasterFlags & SPELL_FACING_FLAG_INFRONT) && !m_caster->HasInArc( M_PI, pGoTarget ) )
-            return SPELL_FAILED_NOT_INFRONT;
+        switch (pGoTarget->GetGoType())
+        {
+            case GAMEOBJECT_TYPE_TRAP:
+                if (dist > max_range)
+                    return SPELL_FAILED_OUT_OF_RANGE;
+                if (min_range && dist < min_range)
+                    return SPELL_FAILED_TOO_CLOSE;
+                if ( m_caster->GetTypeId() == TYPEID_PLAYER && (GetSpellInfo()->FacingCasterFlags & SPELL_FACING_FLAG_INFRONT) && !m_caster->HasInArc(M_PI, pGoTarget))
+                    return SPELL_FAILED_NOT_INFRONT;
+                break;
+           case GAMEOBJECT_TYPE_CHEST:
+               if (dist > max_range)
+                   return SPELL_FAILED_OUT_OF_RANGE;
+               break;
+        }
     }
 
     // TODO verify that such spells really use bounding radius

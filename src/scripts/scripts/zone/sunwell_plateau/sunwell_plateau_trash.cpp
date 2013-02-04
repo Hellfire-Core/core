@@ -405,6 +405,7 @@ enum SunbladeProtector
 };
 
 #define PROTECTOR_YELL "Unit entering energy conservation mode."
+#define PROTECTOR_AGGRO "Enemy presence detected."
 
 struct mob_sunblade_protectorAI : public ScriptedAI
 {
@@ -438,7 +439,12 @@ struct mob_sunblade_protectorAI : public ScriptedAI
         CreatureAI::EnterEvadeMode();
     }
 
-    void EnterCombat(Unit*) { DoZoneInCombat(80.0f); }
+    void EnterCombat(Unit*)
+    {
+        if(!isInactive)
+            DoYell(PROTECTOR_AGGRO, 0, me);
+        DoZoneInCombat(80.0f);
+    }
 
     void UpdateAI(const uint32 diff)
     {
@@ -747,8 +753,6 @@ CreatureAI* GetAI_mob_sunblade_vindicator(Creature *_Creature)
 * ============================*/
 
 /* Content Data
-    * Blazing Infernal (??)
-    * Felguard Slayer (??)
     * Shadowsword Assassin
     * Shadowsword Commander - responsible for gauntlet
     * Shadowsword Deathbringer - gauntlet
@@ -760,17 +764,9 @@ CreatureAI* GetAI_mob_sunblade_vindicator(Creature *_Creature)
 */
 
 /****************
-* Blazing Infernal - id
-*****************/
-
-/****************
-* Felguard Slayer - id
-*****************/
-
-/****************
 * Shadowsword Assassin - id 25484
 
-  Immunities: root, slow, fear, polymorph, disarm
+  Immunities: polymorph, disarm, stun
 
 *****************/
 
@@ -789,11 +785,13 @@ struct mob_shadowsword_assassinAI : public ScriptedAI
     mob_shadowsword_assassinAI(Creature *c) : ScriptedAI(c) { pInstance = c->GetInstanceData(); }
 
     uint32 Shadowstep;
+    uint32 CheckTimer;
     ScriptedInstance* pInstance;
 
     void Reset()
     {
         ClearCastQueue();
+        CheckTimer = 2000;
         Shadowstep = urand(10000, 20000);
         DoCast(me, SPELL_GREATER_INVISIBILITY, true);
     }
@@ -815,40 +813,56 @@ struct mob_shadowsword_assassinAI : public ScriptedAI
         ScriptedAI::EnterEvadeMode();
     }
 
-    void MoveInLineOfSight(Unit *who)
+    void DoRandomShadowstep(Unit* who)
     {
-        if(who->GetTypeId() != TYPEID_PLAYER || me->getVictim() || me->IsInEvadeMode())
+        Map::PlayerList const &plList = me->GetMap()->GetPlayers();
+        if (plList.isEmpty())
             return;
-
-        if(me->IsWithinDistInMap(who, 15))
+        for (Map::PlayerList::const_iterator i = plList.begin(); i != plList.end(); ++i)
         {
-            Map::PlayerList const &plList = me->GetMap()->GetPlayers();
-            if (plList.isEmpty())
-                return;
-
-            for (Map::PlayerList::const_iterator i = plList.begin(); i != plList.end(); ++i)
+            if (Player* plr = i->getSource())
             {
-                if (Player* plr = i->getSource())
+                if (plr->isGameMaster() || plr->IsFriendlyTo(me))
+                    continue;
+                if (plr->isAlive() && me->IsWithinDistInMap(plr, 40))
                 {
-                    if (plr->isGameMaster() || plr->IsFriendlyTo(me))
-                        continue;
-                    if (plr->isAlive() && me->IsWithinDistInMap(plr, 35))
-                    {
-                        DoCast(plr, SPELL_ASSASSINS_MARK, true);
-                        DoCast(plr, SPELL_SHADOWSTEP);
-                        AttackStart(plr);
-                    }
+                    DoCast(plr, SPELL_ASSASSINS_MARK, true);
+                    DoCast(plr, SPELL_SHADOWSTEP);
+                    AttackStart(plr);
                 }
             }
         }
     }
 
-    void EnterCombat(Unit* who) { DoZoneInCombat(80.0f); }
+    void MoveInLineOfSight(Unit *who)
+    {
+        if(pInstance->GetData(DATA_FELMYST_EVENT) != DONE || who->GetTypeId() != TYPEID_PLAYER || me->getVictim() || me->IsInEvadeMode())
+            return;
+        if(me->IsWithinDistInMap(who, 50) && me->IsWithinLOSInMap(who))
+            DoRandomShadowstep(who);
+    }
+
+    void EnterCombat(Unit* who)
+    {
+        if(pInstance->GetData(DATA_FELMYST_EVENT) != DONE)
+            return;
+        DoZoneInCombat(80.0f);
+        DoRandomShadowstep(who);
+    }
 
     void UpdateAI(const uint32 diff)
     {
         if(!UpdateVictim())
             return;
+
+        if(CheckTimer < diff)
+        {
+            if(me->isInRoots())
+                DoCast(me->getVictim(), SPELL_SHADOWSTEP);
+            CheckTimer = 2000;
+        }
+        else
+            CheckTimer -= diff;
 
         if(Shadowstep < diff)
         {
@@ -882,49 +896,32 @@ enum ShadowswordCommander
 
     MOB_VOLATILE_FIEND              = 25851,
     MOB_SHADOWSWORD_DEATHBRINGER    = 25485,
+    MOB_GAUNTLET_IMP_TRIGGER        = 25848,
 
     YELL_GAUNTLET_START             = -1811006
 };
 
 struct mob_shadowsword_commanderAI : public ScriptedAI
 {
-    mob_shadowsword_commanderAI(Creature *c) : ScriptedAI(c), summons(c)
+    mob_shadowsword_commanderAI(Creature *c) : ScriptedAI(c)
     { 
         me->SetAggroRange(AGGRO_RANGE);
         pInstance = c->GetInstanceData();
-        me->GetPosition(wLoc);
     }
 
     ScriptedInstance* pInstance;
-    WorldLocation wLoc;
-    SummonList summons;
-
     uint32 ShieldSlam;
     uint32 Yell_timer;
-    uint32 Imp_timer;
-    uint32 Deathbringer_timer;
-    uint8 i;
+    uint32 ShoutTimer;
+    uint64 TriggerGUID;
 
     void Reset()
     {
         me->setActive(true);
-        i = 0;
         ShieldSlam = urand(5000, 10000);
         Yell_timer = 3000;
-        Imp_timer = 1000;
-        Deathbringer_timer = 6000;
-        summons.DespawnAll();
-    }
-
-    void JustRespawned()
-    {
-        pInstance->SetData(DATA_TRASH_GAUNTLET_EVENT, NOT_STARTED);
-        summons.DespawnAll();
-    }
-
-    void JustSummoned(Creature *summon)
-    {
-        summons.Summon(summon);
+        ShoutTimer = 30000;
+        TriggerGUID = 0;
     }
 
     void EnterEvadeMode()
@@ -937,20 +934,38 @@ struct mob_shadowsword_commanderAI : public ScriptedAI
     }
 
     void EnterCombat(Unit* who)
-    { 
+    {
+        if(pInstance->GetData(DATA_FELMYST_EVENT) != DONE)
+            return;
         DoZoneInCombat(80.0f); 
         DoCast(me, SPELL_BATTLE_SHOUT);
     }
 
+    void MoveInLineOfSight(Unit* who)
+    {
+        if(pInstance->GetData(DATA_FELMYST_EVENT) != DONE)
+            return;
+        ScriptedAI::MoveInLineOfSight(who);
+    }
+
     void JustDied(Unit* killer)
     {
-        pInstance->SetData(DATA_TRASH_GAUNTLET_EVENT, DONE);
+        if(Creature* ImpTrigger = me->GetCreature(TriggerGUID))
+        {
+            ImpTrigger->Kill(ImpTrigger, false);
+            pInstance->SetData(DATA_TRASH_GAUNTLET_EVENT, DONE);
+        }
     }
 
     void UpdateAI(const uint32 diff)
     {
         if(pInstance->GetData(DATA_TRASH_GAUNTLET_EVENT) == IN_PROGRESS)
         {
+            if(!TriggerGUID)
+            {
+                if(Creature* ImpTrigger = GetClosestCreatureWithEntry(me, MOB_GAUNTLET_IMP_TRIGGER, 70))
+                    TriggerGUID = ImpTrigger->GetGUID();
+            }
             if(Yell_timer)
             {
                 if(Yell_timer <= diff)
@@ -961,25 +976,7 @@ struct mob_shadowsword_commanderAI : public ScriptedAI
                 else
                     Yell_timer -= diff;
             }
-            if(Imp_timer < diff)
-            {
-                me->SummonCreature(MOB_VOLATILE_FIEND, wLoc.coord_x+frand(-2.5,2.5), wLoc.coord_y+frand(-2,2), wLoc.coord_z, wLoc.orientation, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 60000);
-                Imp_timer = 15000;
-            }
-            else
-                Imp_timer -= diff;
-
-            if(Deathbringer_timer < diff)
-            {
-                ++i;
-                me->SummonCreature(MOB_SHADOWSWORD_DEATHBRINGER, wLoc.coord_x+frand(-2.5,2.5), wLoc.coord_y+frand(-2,2), wLoc.coord_z, wLoc.orientation, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 60000);
-                Deathbringer_timer = i%2?15000:45000;	// 15sec and than 60sec summon intervals
-            }
-            Deathbringer_timer -= diff;
         }
-
-        if(pInstance->GetData(DATA_TRASH_GAUNTLET_EVENT) == FAIL)
-            JustRespawned();
 
         if(!UpdateVictim())
             return;
@@ -991,6 +988,14 @@ struct mob_shadowsword_commanderAI : public ScriptedAI
         }
         else
             ShieldSlam -= diff;
+
+        if(ShoutTimer < diff)
+        {
+            DoCast(me, SPELL_BATTLE_SHOUT);
+            ShoutTimer = 30000;
+        }
+        else
+            ShoutTimer -= diff;
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -1017,10 +1022,15 @@ enum ShadowswordDeathbringer
 
 struct mob_shadowsword_deathbringerAI : public ScriptedAI
 {
-    mob_shadowsword_deathbringerAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
+    mob_shadowsword_deathbringerAI(Creature *c) : ScriptedAI(c)
+    {
+        pInstance = c->GetInstanceData();
+        me->SetAggroRange(AGGRO_RANGE);
+    }
 
     uint32 DiseaseBuffet;
     uint32 VolatileDisease;
+    ScriptedInstance* pInstance;
 
     void Reset()
     {
@@ -1028,6 +1038,12 @@ struct mob_shadowsword_deathbringerAI : public ScriptedAI
         DiseaseBuffet = urand(5000, 10000);
         VolatileDisease = urand(3000, 6000);
         DoCast(me, SPELL_DUAL_WIELD, true);
+    }
+
+    void EnterEvadeMode()
+    {
+        if (pInstance->GetData(DATA_TRASH_GAUNTLET_EVENT) == IN_PROGRESS)
+            pInstance->SetData(DATA_TRASH_GAUNTLET_EVENT, FAIL);
     }
 
     void EnterCombat(Unit*) { DoZoneInCombat(80.0f); }
@@ -1121,8 +1137,17 @@ struct mob_shadowsword_lifeshaperAI : public ScriptedAI
         ScriptedAI::EnterEvadeMode();
     }
 
+    void MoveInLineOfSight(Unit* who)
+    {
+        if(pInstance->GetData(DATA_FELMYST_EVENT) != DONE)
+            return;
+        ScriptedAI::MoveInLineOfSight(who);
+    }
+
     void EnterCombat(Unit*)
-    { 
+    {
+        if(pInstance->GetData(DATA_FELMYST_EVENT) != DONE)
+            return;
         if(pInstance->GetData(DATA_TRASH_GAUNTLET_EVENT) == NOT_STARTED)
             pInstance->SetData(DATA_TRASH_GAUNTLET_EVENT, IN_PROGRESS);
         DoZoneInCombat(80.0f); 
@@ -1201,7 +1226,6 @@ struct mob_shadowsword_manafiendAI : public ScriptedAI
     {
         ClearCastQueue();
         DoCast(me, SPELL_CHILLING_TOUCH_AURA);
-        SetAutocast(SPELL_ARCANE_EXPLOSION_2, 2600, false, CAST_NULL);
         DrainMana = urand(3000, 5000);
         CheckTimer = 1000;
     }
@@ -1223,8 +1247,17 @@ struct mob_shadowsword_manafiendAI : public ScriptedAI
         ScriptedAI::EnterEvadeMode();
     }
 
+    void MoveInLineOfSight(Unit* who)
+    {
+        if(pInstance->GetData(DATA_FELMYST_EVENT) != DONE)
+            return;
+        ScriptedAI::MoveInLineOfSight(who);
+    }
+
     void EnterCombat(Unit*)
-    { 
+    {
+        if(pInstance->GetData(DATA_FELMYST_EVENT) != DONE)
+            return;
         if(pInstance->GetData(DATA_TRASH_GAUNTLET_EVENT) == NOT_STARTED)
             pInstance->SetData(DATA_TRASH_GAUNTLET_EVENT, IN_PROGRESS);
         DoZoneInCombat(80.0f);
@@ -1238,10 +1271,8 @@ struct mob_shadowsword_manafiendAI : public ScriptedAI
         if(CheckTimer < diff)
         {
             if(me->IsWithinDistInMap(me->getVictim(), 15))
-                StartAutocast();
-            else
-                StopAutocast();
-            CheckTimer = 2000;
+                AddSpellToCast(SPELL_ARCANE_EXPLOSION_2, CAST_SELF);
+            CheckTimer = urand(4000, 8000);
         }
         else
             CheckTimer -= diff;
@@ -1249,7 +1280,7 @@ struct mob_shadowsword_manafiendAI : public ScriptedAI
         if(DrainMana < diff)
         {
             AddSpellToCast(SPELL_DRAIN_MANA, CAST_NULL);
-            DrainMana = urand(6000, 10000);
+            DrainMana = urand(10000, 20000);
         }
         else
             DrainMana -= diff;
@@ -1316,8 +1347,17 @@ struct mob_shadowsword_soulbinderAI : public ScriptedAI
         ScriptedAI::EnterEvadeMode();
     }
 
+    void MoveInLineOfSight(Unit* who)
+    {
+        if(pInstance->GetData(DATA_FELMYST_EVENT) != DONE)
+            return;
+        ScriptedAI::MoveInLineOfSight(who);
+    }
+
     void EnterCombat(Unit*)
     {
+        if(pInstance->GetData(DATA_FELMYST_EVENT) != DONE)
+            return;
         if(pInstance->GetData(DATA_TRASH_GAUNTLET_EVENT) == NOT_STARTED)
             pInstance->SetData(DATA_TRASH_GAUNTLET_EVENT, IN_PROGRESS);
         DoZoneInCombat(80.0f);
@@ -1330,24 +1370,24 @@ struct mob_shadowsword_soulbinderAI : public ScriptedAI
 
         if(CurseOfExhaustion < diff)
         {
-            AddSpellToCast(SPELL_BRUTAL_STRIKE, CAST_TANK);
-            CurseOfExhaustion = urand(5000,11000);
+            AddSpellToCast(SPELL_CURSE_OF_EXHAUSTION, CAST_RANDOM);
+            CurseOfExhaustion = urand(5000,10000);
         }
         else
             CurseOfExhaustion -= diff;
 
         if(Domination < diff)
         {
-            AddSpellToCast(SPELL_CLEAVE, CAST_TANK);
-            Domination = urand(4000, 9000);
+            AddSpellToCast(SPELL_DOMINATION, CAST_TANK);
+            Domination = urand(14000, 24000);
         }
         else
             Domination -= diff;
 
         if(FlashOfDarkness < diff)
         {
-            AddSpellToCast(SPELL_MORTAL_STRIKE, CAST_TANK);
-            FlashOfDarkness = urand(8000, 15000);
+            AddSpellToCast(SPELL_FLASH_OF_DARKNESS, CAST_NULL);
+            FlashOfDarkness = urand(10000, 15000);
         }
         else
             FlashOfDarkness -= diff;
@@ -1411,8 +1451,17 @@ struct mob_shadowsword_vanquisherAI : public ScriptedAI
         ScriptedAI::EnterEvadeMode();
     }
 
+    void MoveInLineOfSight(Unit* who)
+    {
+        if(pInstance->GetData(DATA_FELMYST_EVENT) != DONE)
+            return;
+        ScriptedAI::MoveInLineOfSight(who);
+    }
+
     void EnterCombat(Unit*)
     {
+        if(pInstance->GetData(DATA_FELMYST_EVENT) != DONE)
+            return;
         if(pInstance->GetData(DATA_TRASH_GAUNTLET_EVENT) == NOT_STARTED)
             pInstance->SetData(DATA_TRASH_GAUNTLET_EVENT, IN_PROGRESS);
         DoZoneInCombat(80.0f);
@@ -1478,21 +1527,11 @@ struct mob_volatile_fiendAI : public ScriptedAI
         explosion_timer = 2000;
     }
 
-    void EnterCombat(Unit*) { DoZoneInCombat(80.0f); }
-
-    void DamageTaken(Unit* attacker, uint32& damage)
+    void EnterCombat(Unit*)
     {
-        if(attacker->GetTypeId() == TYPEID_PLAYER && damage && !exploding)
-        {
-            DoCast(me, SPELL_BURNING_DESTRUCTION);
-            exploding = true;
-        }
-    }
-
-    void SpellHitTarget(Unit* target, const SpellEntry* spell) 
-    {
-        if(spell->Id == SPELL_BURNING_DESTRUCTION_EXPLOSION)
-            me->Kill(me, false);
+        DoZoneInCombat(80.0f);
+        DoCast(me, SPELL_BURNING_DESTRUCTION);
+        exploding = true;
     }
 
     void IsSummonedBy(Unit *summoner)
@@ -1509,12 +1548,6 @@ struct mob_volatile_fiendAI : public ScriptedAI
             return;
 
         ScriptedAI::MoveInLineOfSight(who);
-
-        if(me->IsWithinDistInMap(who, 12))  // to be tested
-        {
-            DoCast(me, SPELL_BURNING_DESTRUCTION);
-            exploding = true;
-        }
     }
 
     void UpdateAI(const uint32 diff)
@@ -1523,6 +1556,7 @@ struct mob_volatile_fiendAI : public ScriptedAI
         {
             if(explosion_timer < diff)
             {
+                me->Kill(me,false);
                 exploding = false;
                 explosion_timer = 2000;
             }
@@ -1589,55 +1623,89 @@ CreatureAI* GetAI_mob_volatile_fiend(Creature *_Creature)
 *****************/
 
 /****************
-* SWP gatekeeper - id 25848
-*
-*  script for not used "Gauntlet Imp Trigger" creature
+* Gauntlet Imp Trigger - id 25848
 *
 *****************/
-#define EMOTE_WARNING_YELL  -1811007
 
-struct npc_SWP_gatekeeperAI : public Scripted_NoMovementAI
+#define SPELL_SUMMON_VISUAL    46172
+
+struct npc_gauntlet_imp_triggerAI : public Scripted_NoMovementAI
 {
-    npc_SWP_gatekeeperAI(Creature *c) : Scripted_NoMovementAI(c) { me->SetAggroRange(20.0f); }
+    npc_gauntlet_imp_triggerAI(Creature *c) : Scripted_NoMovementAI(c), summons(c)
+    { 
+        me->SetAggroRange(1.0);
+        pInstance = c->GetInstanceData();
+        me->GetPosition(wLoc);
+    }
+
+    ScriptedInstance* pInstance;
+    WorldLocation wLoc;
+    SummonList summons;
+    uint32 Deathbringer_timer;
+    uint32 Imp_timer;
 
     void Reset()
     {
+        me->setActive(true);
+        Deathbringer_timer = 30000;
+        Imp_timer = 1000;
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        summons.DespawnAll();
+    }
+
+    void JustRespawned()
+    {
+        pInstance->SetData(DATA_TRASH_GAUNTLET_EVENT, NOT_STARTED);
+        if(me->HasAura(SPELL_SUMMON_VISUAL))
+            me->RemoveAura(SPELL_SUMMON_VISUAL, 0);
+        summons.DespawnAll();
+    }
+
+    void JustSummoned(Creature *summon)
+    {
+        summons.Summon(summon);
     }
 
     void EnterCombat(Unit* who)
     {
-        Player* plr = who->GetCharmerOrOwnerPlayerOrPlayerItself();
-        if(plr)
-            ExilePlayer(plr);
+        return;
     }
 
-    void MoveInLineOfSight(Unit *who)
+    void UpdateAI(const uint32 diff)
     {
-        if(who->GetTypeId() != TYPEID_PLAYER)
-            return;
+        if(pInstance->GetData(DATA_TRASH_GAUNTLET_EVENT) == IN_PROGRESS)
+        {
+            if(!me->HasAura(SPELL_SUMMON_VISUAL))
+                DoCast(me, SPELL_SUMMON_VISUAL, true);
 
-        if(who->ToPlayer()->isGameMaster())
-            return;
+            if(Imp_timer < diff)
+            {
+                me->SummonCreature(MOB_VOLATILE_FIEND, wLoc.coord_x, wLoc.coord_y, wLoc.coord_z, wLoc.orientation, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 60000);
+                Imp_timer = 12000;
+            }
+            else
+                Imp_timer -= diff;
 
-        if(me->IsWithinDistInMap(who, 20))
-            ExilePlayer(who->ToPlayer());
-    }
+            if(Deathbringer_timer < diff)
+            {
+                me->SummonCreature(MOB_SHADOWSWORD_DEATHBRINGER, wLoc.coord_x, wLoc.coord_y, wLoc.coord_z, wLoc.orientation, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 60000);
+                Deathbringer_timer = 45000;
+            }
+            Deathbringer_timer -= diff;
+        }
 
-    void ExilePlayer(Player* player)
-    {
-        if(player->HasAura(36952))
-            player->GetSession()->KickPlayer(); // ban here?
-        me->MonsterTextEmote(EMOTE_WARNING_YELL, player->GetGUID(), true, true);
-        player->TeleportTo(580, 1784, 924, 15.6, player->GetOrientation());
-        player->CastSpell(player, 36952, true); // bad-ass curse that should persist through death, removable by GMT
+        if(pInstance->GetData(DATA_TRASH_GAUNTLET_EVENT) == FAIL)
+            JustRespawned();
+
+        if(pInstance->GetData(DATA_TRASH_GAUNTLET_EVENT) == DONE)
+            me->Kill(me, false);
     }
 };
 
-CreatureAI* GetAI_npc_SWP_gatekeeper(Creature *_Creature)
+CreatureAI* GetAI_npc_gauntlet_imp_trigger(Creature *_Creature)
 {
-    return new npc_SWP_gatekeeperAI(_Creature);
+    return new npc_gauntlet_imp_triggerAI(_Creature);
 }
 
 void AddSC_sunwell_plateau_trash()
@@ -1727,7 +1795,7 @@ void AddSC_sunwell_plateau_trash()
     newscript->RegisterSelf();
 
     newscript = new Script;
-    newscript->Name = "npc_SWP_gatekeeper";
-    newscript->GetAI = &GetAI_npc_SWP_gatekeeper;
+    newscript->Name = "npc_gauntlet_imp_trigger";
+    newscript->GetAI = &GetAI_npc_gauntlet_imp_trigger;
     newscript->RegisterSelf();
 }

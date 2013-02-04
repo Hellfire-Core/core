@@ -1154,7 +1154,7 @@ struct npc_simon_bunnyAI : public ScriptedAI
 
         if (rewSpell)
             if (Player* player = me->GetPlayer(playerGUID))
-                DoCast(player, rewSpell, true);
+                player->CastSpell(player, rewSpell, true);
     }
 
     /*
@@ -1219,15 +1219,15 @@ struct npc_simon_bunnyAI : public ScriptedAI
     }
 };
 
-CreatureAI* Get_npc_simmon_bunnyAI(Creature* creature)
+CreatureAI* Get_npc_simon_bunnyAI(Creature* creature)
 {
     return new npc_simon_bunnyAI(creature);
 }
 
 bool OnGossipHello_go_simon_cluster(Player* player, GameObject* go)
 {
-    if (Creature* bunny = GetClosestCreatureWithEntry(go, NPC_SIMON_BUNNY, 12.0f, true))
-        bunny->AI()->SetData(go->GetEntry(), 0);
+    if (Creature* bunny = GetClosestCreatureWithEntry(go, NPC_SIMON_BUNNY, 13.0f, true))
+        CAST_AI(npc_simon_bunnyAI, bunny->AI())->SetData(go->GetEntry(), 0);
 
     player->CastSpell(player, go->GetGOInfo()->goober.spellId, true);
     go->AddUse();
@@ -1236,100 +1236,771 @@ bool OnGossipHello_go_simon_cluster(Player* player, GameObject* go)
 
 enum ApexisRelic
 {
-    QUEST_CRYSTALS            = 11025,
-    GOSSIP_TEXT_ID            = 10948,
+    QUEST_APEXIS                 = 11058,
+    QUEST_EMANATION              = 11080,
+    QUEST_GUARDIAN               = 11059,
+    GOSSIP_TEXT_ID               = 10948,
 
-    ITEM_APEXIS_SHARD         = 32569,
-    SPELL_TAKE_REAGENTS_SOLO  = 41145,
-    SPELL_TAKE_REAGENTS_GROUP = 41146,
+    ITEM_APEXIS_SHARD            = 32569,
+    SPELL_TAKE_REAGENTS_SOLO     = 41145,
+    SPELL_TAKE_REAGENTS_GROUP    = 41146,
 };
 
-#define GOSSIP_ITEM_1 "Insert shard"
+#define GOSSIP_ITEM_1 "Insert an Apexis Shard, and begin!"
+#define GOSSIP_ITEM_2 "Insert Apexis Shards, and begin!"
+
 bool OnGossipHello_go_apexis_relic(Player* player, GameObject* go)
 {
     bool large = (go->GetEntry() == GO_APEXIS_MONUMENT);
 
-    if (player->HasItemCount(ITEM_APEXIS_SHARD, large ? 35 : 1))
-        player->ADD_GOSSIP_ITEM(0, GOSSIP_ITEM_1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
-
-    player->Kill(player, false);
+    if (player->HasItemCount(ITEM_APEXIS_SHARD, large ? 35 : 1) && large ? player->GetQuestStatus(QUEST_GUARDIAN) == QUEST_STATUS_INCOMPLETE : (player->GetQuestStatus(QUEST_APEXIS) == QUEST_STATUS_INCOMPLETE || player->GetQuestStatus(QUEST_EMANATION) == QUEST_STATUS_INCOMPLETE))
+        player->ADD_GOSSIP_ITEM(0, large ? GOSSIP_ITEM_2 : GOSSIP_ITEM_1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
     player->SEND_GOSSIP_MENU(GOSSIP_TEXT_ID, go->GetGUID());
+
     return true;
 }
 
-bool OnGossipSelect_go_apexis_relic(Player* player, GameObject* go, uint32 /*sender*/, uint32 /*action*/)
+bool OnGossipSelect_go_apexis_relic(Player* player, GameObject* go, uint32 sender, uint32 action)
 {
-    player->CLOSE_GOSSIP_MENU();
-
     bool large = (go->GetEntry() == GO_APEXIS_MONUMENT);
+
     if (player->HasItemCount(ITEM_APEXIS_SHARD, large ? 35 : 1))
     {
         player->CastSpell(player, large ? SPELL_TAKE_REAGENTS_GROUP : SPELL_TAKE_REAGENTS_SOLO, false);
 
         if (Creature* bunny = player->SummonCreature(NPC_SIMON_BUNNY, go->GetPositionX(), go->GetPositionY(), go->GetPositionZ(), 0.0f, TEMPSUMMON_MANUAL_DESPAWN, 0))
-             bunny->AI()->SetGUID(player->GetGUID(), large);
-    }
+            CAST_AI(npc_simon_bunnyAI, bunny->AI())->SetGUID(player->GetGUID(), large);
 
-    return true;
+        player->CLOSE_GOSSIP_MENU();
+    } 
+    return false;
 }
+
+/*#########
+# Q 10674 && 10859
+#########*/
 
 enum Entries
 {
-    NPC_LIGHT_ORB = 20635,
-    NPC_QUEST_CREDIT2 = 21929,
+    NPC_LIGHT_ORB         = 20635,
+    NPC_QUEST_CREDIT2     = 21929,
 };
 
 struct AttractOrbs
 {
     AttractOrbs(Creature* t) : totem(t) {}
+    Creature* totem;
+
     void operator()(Creature* orb)
     {
         if (orb->GetMotionMaster()->GetCurrentMovementGeneratorType() != POINT_MOTION_TYPE)
             orb->GetMotionMaster()->MovePoint(0, totem->GetPositionX(), totem->GetPositionY(), totem->GetPositionZ(), true);
-    }
 
-    Creature* totem;
-};
-
-struct npc_light_orb_attracterAI : public Scripted_NoMovementAI
-{
-    npc_light_orb_attracterAI(Creature *c) : Scripted_NoMovementAI(c)
-    {
-        me->SetReactState(REACT_PASSIVE);
-        attractTimer.Reset(1000);
-    }
-
-    void MoveInLineOfSight(Unit *who)
-    {
-        if (who->GetEntry() == NPC_LIGHT_ORB)
+        if (orb->IsWithinDistInMap(totem, 2.0f))
         {
-            if (who->IsWithinDistInMap(me, 2.0f))
-            {
-                who->ToCreature()->DisappearAndDie();
-                if (Player* player = me->GetCharmerOrOwnerPlayerOrPlayerItself())
-                    player->KilledMonster(NPC_QUEST_CREDIT2, who->GetGUID());
-            }
+            orb->ForcedDespawn();
+            KillCredit();
         }
     }
 
+    void KillCredit()
+    { 
+        Map* map = totem->GetMap();
+        Map::PlayerList const &PlayerList = map->GetPlayers();
+
+        for(Map::PlayerList::const_iterator itr = PlayerList.begin(); itr != PlayerList.end(); ++itr)
+        {
+            if (Player* player = itr->getSource())
+            {
+                if(totem->IsWithinDistInMap(player, 15.0f) && (player->GetQuestStatus(10674) || player->GetQuestStatus(10859) == QUEST_STATUS_INCOMPLETE))
+                    player->KilledMonster(NPC_QUEST_CREDIT2, totem->GetGUID());
+            }
+        }
+    }
+};
+
+struct npc_orb_attracterAI : public Scripted_NoMovementAI
+{
+    npc_orb_attracterAI(Creature *c) : Scripted_NoMovementAI(c) {}
+
     TimeTrackerSmall attractTimer;
+
+    void Reset()
+    {
+        me->SetReactState(REACT_PASSIVE);
+        attractTimer.Reset(1500);
+        me->ForcedDespawn(10000);
+	}
 
     void UpdateAI(const uint32 diff)
     {
         attractTimer.Update(diff);
+
         if (attractTimer.Passed())
         {
             std::list<Creature*> orbs = FindAllCreaturesWithEntry(NPC_LIGHT_ORB, 35.0f);
             std::for_each(orbs.begin(), orbs.end(), AttractOrbs(me));
 
-            attractTimer.Reset(2000);
+            attractTimer.Reset(1000);
         }
     }
 };
 
-CreatureAI* Get_orb_attracterAI(Creature* creature)
+CreatureAI* Get_npc_orb_attracterAI(Creature* creature)
 {
-    return new npc_light_orb_attracterAI(creature);
+    return new npc_orb_attracterAI(creature);
+}
+
+/*######
+## npc_razaan_event
+######*/
+
+enum
+{
+    QUEST_MERCY        = 10675,
+    QUEST_RESPONSE     = 10867,
+
+    GO_SOULS           = 185033,
+
+    YELL_RAZAAN        = -1900225,
+
+    NPC_RAZAAN         = 21057
+};
+
+struct npc_razaan_eventAI : public ScriptedAI
+{
+    npc_razaan_eventAI(Creature* creature) : ScriptedAI(creature) {}
+
+    bool Check;
+
+    uint32 CheckTimer;
+    uint32 Count;
+
+    void Reset()
+    {
+        Check = false;
+        CheckTimer = 0;
+        Count = 0;
+    }
+
+    void HeyYa()
+    {
+        ++Count;
+
+        if (Count == 6)
+        {
+            me->SummonCreature(NPC_RAZAAN, me->GetPositionX()+2.9f, me->GetPositionY()-5.8f, me->GetPositionZ()-8.9f, me->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000);
+            Check = true;
+            CheckTimer = 5000;
+            Count = 0;
+        }
+    }
+
+    void JustSummoned(Creature* summoned)
+    {
+        DoScriptText(YELL_RAZAAN, summoned);
+    }
+
+    void UpdateAI(const uint32 diff)
+    {
+        if (Check)
+        {
+            if (CheckTimer <= diff)
+            {
+                if (Creature* razaan = GetClosestCreatureWithEntry(me, NPC_RAZAAN, 75.0f, true))
+                {
+                    CheckTimer = 5000;
+                    return;
+                }
+                else
+                {
+                    if (Creature* razaan = GetClosestCreatureWithEntry(me, NPC_RAZAAN, 75.0f, false))
+                        me->SummonGameObject(GO_SOULS, razaan->GetPositionX(), razaan->GetPositionY(), razaan->GetPositionZ()+3.0f, razaan->GetOrientation(), 0, 0, 0, 0, 50);
+
+                    Reset();
+                }
+            }
+            else CheckTimer -= diff;
+        }
+    }
+};
+
+CreatureAI* GetAI_npc_razaan_event(Creature* creature)
+{
+    return new npc_razaan_eventAI (creature);
+}
+
+/*######
+## npc_razaani_raider
+######*/
+
+enum
+{
+    SPELL_FLARE        = 35922,
+    SPELL_WARP         = 32920,
+
+    NPC_EORB           = 21025,
+    NPC_DEADSOUL       = 20845
+};
+
+struct npc_razaani_raiderAI : public ScriptedAI
+{
+    npc_razaani_raiderAI(Creature* creature) : ScriptedAI(creature) {}
+
+    uint64 PlayerGUID;
+    uint32 FlareTimer;
+    uint32 WarpTimer;
+
+    void Reset()
+    {
+        PlayerGUID = 0;
+        FlareTimer = urand(4000, 8000);
+        WarpTimer = urand(8000, 13000);
+    }
+
+    void AttackStart(Unit* who)
+    {
+        if (who->GetTypeId() == TYPEID_PLAYER)
+        {
+            if (((Player*)who)->GetQuestStatus(QUEST_MERCY)== QUEST_STATUS_INCOMPLETE || ((Player*)who)->GetQuestStatus(QUEST_RESPONSE) == QUEST_STATUS_INCOMPLETE)
+                PlayerGUID = who->GetGUID();
+        }
+
+        ScriptedAI::AttackStart(who);
+    }
+
+    void JustSummoned(Creature* summoned)
+    {
+        Map* tmpMap = me->GetMap();
+
+        if (!tmpMap)
+            return;
+
+        if (Creature * eorb = tmpMap->GetCreature(tmpMap->GetCreatureGUID(NPC_EORB)))
+        {
+            summoned->SetLevitate(true);
+            summoned->GetMotionMaster()->MovePoint(0, eorb->GetPositionX(), eorb->GetPositionY(), eorb->GetPositionZ());
+        }
+    }
+
+    void JustDied(Unit* who)
+    {
+        if (PlayerGUID != NULL)
+        {
+            me->SummonCreature(NPC_DEADSOUL, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ()+3, me->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN, 20000);
+
+            Map* tmpMap = me->GetMap();
+
+            if (!tmpMap)
+                return;
+
+            if (Creature * eorb = tmpMap->GetCreature(tmpMap->GetCreatureGUID(NPC_EORB)))
+                CAST_AI(npc_razaan_eventAI, eorb->AI())->HeyYa();
+        }
+    }
+
+    void UpdateAI(const uint32 diff)
+    {
+        if (!UpdateVictim())
+            return;
+
+        if (FlareTimer <= diff)
+        {
+            DoCast (me->getVictim(), SPELL_FLARE);
+            FlareTimer = urand(9000, 14000);
+        }
+        else FlareTimer -= diff;
+
+        if (WarpTimer <= diff)
+        {
+            DoCast (me->getVictim(), SPELL_WARP);
+            WarpTimer = urand(14000, 18000);
+        }
+        else WarpTimer -= diff;
+
+        DoMeleeAttackIfReady();
+    }
+};
+
+CreatureAI* GetAI_npc_razaani_raider(Creature* creature)
+{
+    return new npc_razaani_raiderAI (creature);
+}
+
+/*######
+## npc_rally_zapnabber
+######*/
+
+enum
+{
+    SPELL_10557              = 37910,
+    SPELL_10710              = 37962,
+    SPELL_10711              = 36812,
+    SPELL_10712              = 37968,
+    //SPELL_10716            = 37940,
+    SPELL_CANNON_CHANNEL     = 36795,
+    SPELL_PORT               = 38213,
+    SPELL_CHARGED            = 37108,
+    SPELL_STATE1             = 36790,
+    SPELL_STATE2             = 36792,
+    SPELL_STATE3             = 36800,
+
+    QUEST_JAGGED             = 10557,
+    QUEST_SINGING            = 10710,
+    QUEST_RAZAAN             = 10711,
+    QUEST_RUUAN              = 10712,
+
+    ITEM_WAIVER_SIGNED       = 30539,
+
+    NPC_CHANNELER            = 21393,
+    NPC_CH_TARGET            = 21394
+};
+
+float Port[3] =
+{
+    1920.163,
+    5581.826,
+    269.222
+};
+
+struct npc_rally_zapnabberAI : public ScriptedAI
+{
+    npc_rally_zapnabberAI(Creature* creature) : ScriptedAI(creature) {}
+
+    bool Flight;
+
+    uint64 playerGUID;
+    uint32 FlightTimer;
+    uint32 EffectTimer;
+    uint8 flights;
+    uint8 Count;
+
+    void Reset() 
+    {
+        Flight = false;
+        playerGUID = 0;
+        FlightTimer = 0;
+        EffectTimer = 0;
+        flights = 0;
+        Count = 0;
+        me->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+    }
+
+    void TestFlight(uint64 guid, uint8 flight)
+    {
+        playerGUID = guid;
+        flights = flight;
+
+        if (Player* player = me->GetPlayer(playerGUID))
+        {
+            if (player->IsMounted())
+            {
+                player->Unmount();
+                player->RemoveSpellsCausingAura(SPELL_AURA_MOUNTED);
+            }
+
+            player->GetUnitStateMgr().PushAction(UNIT_ACTION_STUN);
+
+            switch(flights)
+            {
+                 case 1:
+                     DoTeleportPlayer(player, Port[0], Port[1], Port[2], 5.1f);
+                     break;
+                 case 2:
+                     DoTeleportPlayer(player, Port[0], Port[1], Port[2], 1.1f);
+                     break;
+                 case 3:
+                     DoTeleportPlayer(player, Port[0], Port[1], Port[2], 2.7f);
+                     break;
+                 case 4:
+                     DoTeleportPlayer(player, Port[0], Port[1], Port[2], 3.0f);
+                     break;
+            }
+
+            player->CastSpell(player, SPELL_PORT, true);
+
+            Map* tmpMap = me->GetMap();
+
+            if (!tmpMap)
+                return;
+ 
+            if (Creature * channeler = tmpMap->GetCreature(tmpMap->GetCreatureGUID(NPC_CHANNELER)))
+                channeler->CastSpell(channeler, SPELL_CANNON_CHANNEL, true);
+
+            Flight = true;
+            EffectTimer = 3000;
+            FlightTimer = 10000;
+        }
+    }
+
+    void Flights()
+    {
+        if (Player* player = me->GetPlayer(playerGUID))
+        {
+            switch(flights)
+            {
+                case 1:
+                    player->GetUnitStateMgr().DropAction(UNIT_ACTION_STUN);
+                    player->CastSpell(player, SPELL_10557, true);
+                    player->CastSpell(player, SPELL_CHARGED, true);
+                    Reset();
+                    break;
+                case 2:
+                    player->GetUnitStateMgr().DropAction(UNIT_ACTION_STUN);
+                    player->CastSpell(player, SPELL_10710, true);
+                    player->CastSpell(player, SPELL_CHARGED, true);
+                    Reset();
+                    break;
+                case 3:
+                    player->GetUnitStateMgr().DropAction(UNIT_ACTION_STUN);
+                    player->CastSpell(player, SPELL_10711, true);
+                    player->CastSpell(player, SPELL_CHARGED, true);
+                    Reset();
+                    break;
+                case 4:
+                    player->GetUnitStateMgr().DropAction(UNIT_ACTION_STUN);
+                    player->CastSpell(player, SPELL_10712, true);
+                    player->CastSpell(player, SPELL_CHARGED, true);
+                    Reset();
+                    break;
+            }
+        }
+    }
+
+
+    void UpdateAI(const uint32 diff)
+    {
+        if (Flight)
+        {
+            if (EffectTimer <= diff)
+            {
+                Map* tmpMap = me->GetMap();
+
+                if (!tmpMap)
+                    return;
+
+                if (Creature * target = tmpMap->GetCreature(tmpMap->GetCreatureGUID(NPC_CH_TARGET)))
+                {
+                    ++Count;
+
+                    switch(Count)
+                    {
+                        case 1:
+                            target->CastSpell(target, SPELL_STATE1, true);
+                            break;
+                        case 2:
+                            target->CastSpell(target, SPELL_STATE2, true);
+                            break;
+                        case 3:
+                            target->CastSpell(target, SPELL_STATE3, true);
+                            break;
+                    }
+                }
+
+                EffectTimer = 3000;
+ 
+            }
+            else EffectTimer -= diff;
+
+            if (FlightTimer <= diff)
+            {
+                Flights();
+            }
+            else FlightTimer -= diff;
+        }
+
+        DoMeleeAttackIfReady();
+    }
+};
+
+CreatureAI* GetAI_npc_rally_zapnabber(Creature* creature)
+{
+    return new npc_rally_zapnabberAI (creature);
+}
+
+#define GOSSIP_ITEM_FLIGHT1 "I'm ready for my test flight!"
+#define GOSSIP_ITEM_FLIGHT2 "Take me to Singing Ridge."
+#define GOSSIP_ITEM_FLIGHT3 "Take me to Razaan's Landing."
+#define GOSSIP_ITEM_FLIGHT4 "Take me to Ruuan Weald."
+#define GOSSIP_ITEM_FLIGHT5 "I have the signed waiver! Fire me into the Singing Ridge!"
+#define GOSSIP_ITEM_FLIGHT6 "I want to fly to an old location!"
+#define GOSSIP_ITEM_FLIGHT7 "Take me to Jagged Ridge!"
+#define GOSSIP_ITEM_FLIGHT8 "Take me to The Singing Ridge!"
+#define GOSSIP_ITEM_FLIGHT9 "Take me to Razaan's Landing!"
+#define GOSSIP_ITEM_FLIGHT10 "Take me to Ruuan Weald!"
+
+bool GossipHello_npc_rally_zapnabber(Player* player, Creature* creature)
+{
+    if (player->GetQuestStatus(QUEST_JAGGED) == QUEST_STATUS_INCOMPLETE && !player->HasAura(SPELL_CHARGED))
+        player->ADD_GOSSIP_ITEM(0, GOSSIP_ITEM_FLIGHT1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+
+    if (player->GetQuestStatus(QUEST_SINGING) == QUEST_STATUS_INCOMPLETE && !player->HasAura(SPELL_CHARGED))
+        player->ADD_GOSSIP_ITEM(0, GOSSIP_ITEM_FLIGHT2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 6);
+
+    if (player->GetQuestStatus(QUEST_RAZAAN) == QUEST_STATUS_INCOMPLETE && !player->HasAura(SPELL_CHARGED))
+        player->ADD_GOSSIP_ITEM(0, GOSSIP_ITEM_FLIGHT3, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
+
+    if (player->GetQuestStatus(QUEST_RUUAN) == QUEST_STATUS_INCOMPLETE && !player->HasAura(SPELL_CHARGED))
+        player->ADD_GOSSIP_ITEM(0, GOSSIP_ITEM_FLIGHT4, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 4);
+
+    if ((player->GetQuestRewardStatus(QUEST_JAGGED) || player->GetQuestRewardStatus(QUEST_SINGING) || player->GetQuestRewardStatus(QUEST_RAZAAN) || player->GetQuestRewardStatus(QUEST_RUUAN)) && !player->HasAura(SPELL_CHARGED))
+        player->ADD_GOSSIP_ITEM(0, GOSSIP_ITEM_FLIGHT6, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 7);
+
+    player->SEND_GOSSIP_MENU(creature->GetNpcTextId(), creature->GetGUID());
+
+    return true;
+}
+
+bool GossipSelect_npc_rally_zapnabber(Player* player, Creature* creature, uint32 sender, uint32 action )
+{
+    uint8 flight;
+    flight = 0;
+
+    switch(action)
+    {
+        case GOSSIP_ACTION_INFO_DEF + 1:
+            flight = 1;
+            creature->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+            CAST_AI(npc_rally_zapnabberAI, creature->AI())->TestFlight(player->GetGUID(), flight);
+            player->CLOSE_GOSSIP_MENU();
+            break;
+        case GOSSIP_ACTION_INFO_DEF + 2:
+            if (player->HasItemCount(ITEM_WAIVER_SIGNED, 1))
+            {
+                flight = 2;
+                creature->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+                CAST_AI(npc_rally_zapnabberAI, creature->AI())->TestFlight(player->GetGUID(), flight);
+                player->CLOSE_GOSSIP_MENU();
+            }
+            else player->CLOSE_GOSSIP_MENU();
+            break;
+        case GOSSIP_ACTION_INFO_DEF + 3:
+            flight = 3;
+            creature->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+            CAST_AI(npc_rally_zapnabberAI, creature->AI())->TestFlight(player->GetGUID(), flight);
+            player->CLOSE_GOSSIP_MENU();
+            break;
+        case GOSSIP_ACTION_INFO_DEF + 4:
+            flight = 4;
+            creature->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+            CAST_AI(npc_rally_zapnabberAI, creature->AI())->TestFlight(player->GetGUID(), flight);
+            player->CLOSE_GOSSIP_MENU();
+            break;
+        case GOSSIP_ACTION_INFO_DEF + 5:
+            flight = 2;
+            creature->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+            CAST_AI(npc_rally_zapnabberAI, creature->AI())->TestFlight(player->GetGUID(), flight);
+            player->CLOSE_GOSSIP_MENU();
+            break;
+        case GOSSIP_ACTION_INFO_DEF + 6:
+            player->ADD_GOSSIP_ITEM(0, GOSSIP_ITEM_FLIGHT5, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
+            player->SEND_GOSSIP_MENU(10561, creature->GetGUID());
+            break;
+        case GOSSIP_ACTION_INFO_DEF + 7:
+            if (player->GetQuestRewardStatus(QUEST_JAGGED) && !player->HasAura(SPELL_CHARGED))
+                player->ADD_GOSSIP_ITEM(0, GOSSIP_ITEM_FLIGHT7, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+
+            if (player->GetQuestRewardStatus(QUEST_SINGING) && !player->HasAura(SPELL_CHARGED))
+                player->ADD_GOSSIP_ITEM(0, GOSSIP_ITEM_FLIGHT8, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 5);
+
+            if (player->GetQuestRewardStatus(QUEST_RAZAAN) && !player->HasAura(SPELL_CHARGED))
+                player->ADD_GOSSIP_ITEM(0, GOSSIP_ITEM_FLIGHT9, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
+
+            if (player->GetQuestRewardStatus(QUEST_RUUAN) && !player->HasAura(SPELL_CHARGED))
+                player->ADD_GOSSIP_ITEM(0, GOSSIP_ITEM_FLIGHT10, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 4);
+            player->SEND_GOSSIP_MENU(10562, creature->GetGUID());
+            break;
+    }
+
+    return true;
+}
+
+/*######
+## Q 10821
+######*/
+
+enum
+{
+    SPELL_BEAM        = 35846,
+
+    QUEST_FIRED       = 10821,
+
+    NPC_ANGER         = 22422,
+    NPC_INVISB        = 20736,
+    NPC_DOOMCRYER     = 19963
+};
+
+struct npc_anger_campAI : public ScriptedAI
+{
+    npc_anger_campAI(Creature* creature) : ScriptedAI(creature) {}
+
+    uint8 Count;
+
+    void Reset() 
+    {
+        Count = 0;
+    }
+
+    void Activate()
+    {
+        ++Count;
+
+        if (Count == 5)
+        {
+            me->SummonCreature(NPC_DOOMCRYER, me->GetPositionX()+26.8f, me->GetPositionY()+9.1f, me->GetPositionZ()-9.6f, me->GetOrientation()/2.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000);
+            Reset();
+        }
+    }
+};
+
+CreatureAI* GetAI_npc_anger_camp(Creature* creature)
+{
+    return new npc_anger_campAI (creature);
+}
+
+bool GOUse_go_obeliks(Player *player, GameObject* go)
+{
+    if (player->GetQuestStatus(QUEST_FIRED) == QUEST_STATUS_INCOMPLETE)
+    {
+        Map* tmpMap = go->GetMap();
+
+        if (!tmpMap)
+            return true;
+
+        if (Creature* anger = tmpMap->GetCreature(tmpMap->GetCreatureGUID(NPC_ANGER)))
+        {
+            if (Creature* bunny = go->SummonCreature(NPC_INVISB, go->GetPositionX()-2.0f, go->GetPositionY(), go->GetPositionZ(), go->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN, 181000))
+            {
+                bunny->CastSpell(anger, SPELL_BEAM, true);
+                CAST_AI(npc_anger_campAI, anger->AI())->Activate();
+            }
+        }
+    }
+    return false;
+}
+
+/*######
+## npc_cannon_target
+######*/
+
+enum
+{
+    SPELL_ARTILLERY      = 39221,
+    SPELL_IMP_AURA       = 39227,
+    SPELL_HOUND_AURA     = 39275,
+
+    NPC_IMP              = 22474,
+    NPC_HOUND            = 22500,
+    NPC_SOUTH_GATE       = 22472,
+    NPC_NORTH_GATE       = 22471,
+    CREDIT_SOUTH         = 22504,
+    CREDIT_NORTH         = 22503,
+
+    GO_FIRE              = 185317,
+    GO_BIG_FIRE          = 185319
+};
+
+struct npc_cannon_targetAI : public ScriptedAI
+{
+    npc_cannon_targetAI(Creature* creature) : ScriptedAI(creature) {}
+
+    bool PartyTime;
+
+    uint64 PlayerGUID;
+    uint64 CannonGUID;
+    uint32 PartyTimer;
+    uint8 Count;
+
+    void Reset() 
+    {
+        PartyTime= false;
+        PlayerGUID = 0;
+        CannonGUID = 0;
+        PartyTimer = 0;
+        Count = 0;
+    }
+
+    void SpellHit(Unit* caster, const SpellEntry* spell)
+    {
+        if (spell->Id ==  SPELL_ARTILLERY)
+        {
+            ++Count;
+
+            if (Count == 1)
+            {
+                if (Player* player = caster->GetCharmerOrOwnerPlayerOrPlayerItself())
+                    PlayerGUID = player->GetGUID();
+
+                CannonGUID = caster->GetGUID();
+                PartyTime = true;
+                PartyTimer = 3000;
+            }
+
+            if (Count == 3)
+                me->SummonGameObject(GO_FIRE, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 130);
+
+            if (Count == 7)
+            {
+                if (Player* player = me->GetPlayer(PlayerGUID))
+                {
+                    if (Creature* bunny = GetClosestCreatureWithEntry(me, NPC_SOUTH_GATE, 20.0f))
+                        player->KilledMonster(CREDIT_SOUTH, me->GetGUID());
+                    else
+                    {   
+                        if (Creature* bunny = GetClosestCreatureWithEntry(me, NPC_NORTH_GATE, 20.0f))
+                            player->KilledMonster(CREDIT_NORTH, me->GetGUID());
+                    }
+                }
+
+                me->SummonGameObject(GO_BIG_FIRE, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 60);
+                Reset();
+            }
+        }
+
+        return;
+    }
+
+    void JustSummoned(Creature* summoned)
+    {
+        if (summoned->GetEntry() == NPC_IMP)
+            summoned->CastSpell(summoned, SPELL_IMP_AURA, true);
+        else
+        {
+            if (summoned->GetEntry() == NPC_HOUND)
+                summoned->CastSpell(summoned, SPELL_HOUND_AURA, true);
+        }
+
+        if (Creature* cannon = me->GetCreature(CannonGUID))
+            summoned->AI()->AttackStart(cannon); 
+    }
+
+    void UpdateAI(const uint32 diff)
+    {
+        if (PartyTime)
+        {
+            if (PartyTimer <= diff)
+            {
+                if (Creature* cannon = me->GetCreature(CannonGUID))
+                {
+                    if (cannon->isDead())
+                        Reset();
+                }
+
+                if (roll_chance_i(20))
+                    me->SummonCreature(NPC_HOUND, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 5000);
+                else
+                    me->SummonCreature(NPC_IMP, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 5000);
+
+                PartyTimer = 3000;
+            }
+            else PartyTimer -= diff;
+        }
+    }
+};
+
+CreatureAI* GetAI_npc_cannon_target(Creature* creature)
+{
+    return new npc_cannon_targetAI (creature);
 }
 
 /*######
@@ -1422,12 +2093,44 @@ void AddSC_blades_edge_mountains()
     newscript->RegisterSelf();
 
     newscript = new Script;
-    newscript->Name="npc_orb_attracter";
-    newscript->GetAI = &Get_orb_attracterAI;
+    newscript->Name="npc_simon_bunny";
+    newscript->GetAI = &Get_npc_simon_bunnyAI;
     newscript->RegisterSelf();
 
     newscript = new Script;
-    newscript->Name="npc_simmon_bunny";
-    newscript->GetAI = &Get_npc_simmon_bunnyAI;
+    newscript->Name="npc_orb_attracter";
+    newscript->GetAI = &Get_npc_orb_attracterAI;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name="npc_razaan_event";
+    newscript->GetAI = &GetAI_npc_razaan_event;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name="npc_razaani_raider";
+    newscript->GetAI = &GetAI_npc_razaani_raider;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name="npc_rally_zapnabber";
+    newscript->GetAI = &GetAI_npc_rally_zapnabber;
+    newscript->pGossipHello =   &GossipHello_npc_rally_zapnabber;
+    newscript->pGossipSelect =  &GossipSelect_npc_rally_zapnabber;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name="npc_anger_camp";
+    newscript->GetAI = &GetAI_npc_anger_camp;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "go_obeliks";
+    newscript->pGOUse = &GOUse_go_obeliks;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name="npc_cannon_target";
+    newscript->GetAI = &GetAI_npc_cannon_target;
     newscript->RegisterSelf();
 }

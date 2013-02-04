@@ -726,6 +726,7 @@ bool SpellMgr::IsPositiveEffect(uint32 spellId, uint32 effIndex)
         case 30422:
         case 30423:
         case 47002:                                         // Noxious Fumes (not sure if needed, just in case)
+        case 41350:                                         // Aura of Desire
             return false;
     }
 
@@ -2889,6 +2890,8 @@ void SpellMgr::LoadSpellCustomAttr()
             // Heart of Wyrmthalak: Flame Lash proc
             case 27655:
             case 45055:
+            // Arcane Torrent
+            case 28733:
                 spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
                 break;
             /* WELL FEED */
@@ -3075,6 +3078,7 @@ void SpellMgr::LoadSpellCustomAttr()
                 break;
             case 38281: // Static Charge (LV)
             case 39992: // Najentus: Needle Spine
+            case 46019: // Teleport: Spectral Realm
                 spellInfo->AttributesEx3 |= SPELL_ATTR_EX3_PLAYERS_ONLY;
             case 41357: // L1 Acane Charge
             case 41376: // Spite
@@ -4021,6 +4025,9 @@ DiminishingGroup SpellMgr::GetDiminishingReturnsGroupForSpell(SpellEntry const* 
             // Freezing trap
             if (spellproto->SpellFamilyFlags & 0x00000000008LL)
                 return DIMINISHING_FREEZE;
+            // Intimidation
+            else if (spellproto->Id == 24394)
+                return DIMINISHING_CONTROL_STUN;
             break;
         }
         case SPELLFAMILY_WARLOCK:
@@ -4037,7 +4044,7 @@ DiminishingGroup SpellMgr::GetDiminishingReturnsGroupForSpell(SpellEntry const* 
             // Curses/etc
             else if (spellproto->SpellFamilyFlags & 0x00080000000LL)
                 return DIMINISHING_LIMITONLY;
-            // Unstable affliction dispel silence
+            // Unstable Affliction dispel silence
             else if (spellproto->Id == 31117)
                 return DIMINISHING_UNSTABLE_AFFLICTION;
             // Enslave deamon

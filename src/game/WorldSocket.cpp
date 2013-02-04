@@ -612,7 +612,7 @@ int WorldSocket::ProcessIncoming(WorldPacket* new_pct)
 
                 return HandleAuthSession(*new_pct);
             case CMSG_KEEP_ALIVE:
-                DEBUG_LOG("CMSG_KEEP_ALIVE ,size: "SIZEFMTD" ", new_pct->size());
+                DEBUG_LOG("CMSG_KEEP_ALIVE ,size: " SIZEFMTD " ", new_pct->size());
 
                 return 0;
             default:
@@ -721,7 +721,7 @@ int WorldSocket::HandleAuthSession(WorldPacket& recvPacket)
 
     QueryResultAutoPtr result =
           AccountsDatabase.PQuery("SELECT "
-                                "account_id, "                  //0
+                                "account.account_id, "          //0
                                 "permission_mask, "             //1
                                 "session_key, "                 //2
                                 "last_ip, "                     //3
@@ -734,7 +734,7 @@ int WorldSocket::HandleAuthSession(WorldPacket& recvPacket)
                                 "opcodes_disabled, "            //10
                                 "client_os_version_id, "        //11
                                 "last_local_ip "                //12
-                                "FROM account JOIN account_permission ON account.account_id = account_permission_account.id "
+                                "FROM account JOIN account_permissions ON account.account_id = account_permissions.account_id "
                                 "   JOIN account_session ON account.account_id = account_session.account_id "
                                 "WHERE username = '%s' AND realm_id = '%u'",
                                 safe_account.c_str(), realmID);
@@ -806,8 +806,9 @@ int WorldSocket::HandleAuthSession(WorldPacket& recvPacket)
                                 "expiration_date "
                                 "FROM account_punishment "
                                 "WHERE account_id = '%u' "
+                                "AND punishment_type_id = '%u' "
                                 "AND expiration_date > UNIX_TIMESTAMP()",
-                                id);
+                                id, PUNISHMENT_BAN);
 
     if (banresult) // if account banned
     {
@@ -876,16 +877,14 @@ int WorldSocket::HandleAuthSession(WorldPacket& recvPacket)
     SqlStatement stmt = AccountsDatabase.CreateStatement(updAccount, "UPDATE account SET last_ip = ? WHERE account_id = ?");
     stmt.PExecute(address.c_str(), id);
 
-    AccountsDatabase.Execute("UPDATE account_mute SET active = 0 WHERE unmutedate <= UNIX_TIMESTAMP()");
-
     QueryResultAutoPtr muteresult =
           AccountsDatabase.PQuery("SELECT "
-                                "unmutedate, "
-                                "mutereason "
-                                "FROM account_mute "
-                                "WHERE id = '%u' "
-                                "AND active = 1 "
-                                "ORDER BY unmutedate DESC LIMIT 1",
+                                "expiration_date, "
+                                "reason "
+                                "FROM account_punishment "
+                                "WHERE account_id = '%u' "
+                                "AND expiration_date > UNIX_TIMESTAMP() "
+                                "ORDER BY expiration_date DESC LIMIT 1",
                                 id);
 
     time_t mutetime;

@@ -2574,6 +2574,93 @@ CreatureAI* GetAI_npc_small_pet_handler(Creature* pCreature)
     return new npc_small_pet_handlerAI(pCreature);
 }
 
+bool GossipHello_npc_combatstop(Player* player, Creature* _Creature) 
+{ 
+    player->ADD_GOSSIP_ITEM(0, "Clear in combat state.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1); 
+
+    // Hey there, $N. How can I help you?
+    player->SEND_GOSSIP_MENU(2, _Creature->GetGUID()); 
+    return true; 
+} 
+
+bool GossipSelect_npc_combatstop(Player* player, Creature* _Creature, uint32 sender, uint32 action) 
+{ 
+    if (action == GOSSIP_ACTION_INFO_DEF + 1)
+        player->CombatStop(true); 
+
+    return true; 
+}
+
+struct npc_resurrectAI : public ScriptedAI
+{
+    npc_resurrectAI(Creature* c) : ScriptedAI(c) {}
+
+    TimeTrackerSmall timer;
+
+    void Reset()
+    {
+        me->setDeathState(DEAD);
+
+        me->SetUInt64Value(UNIT_FIELD_CHANNEL_OBJECT, me->GetGUID());
+        // aura
+        me->SetUInt32Value(UNIT_FIELD_AURA, SPELL_SPIRIT_HEAL_CHANNEL);
+        me->SetUInt32Value(UNIT_FIELD_AURAFLAGS, 0x00000009);
+        me->SetUInt32Value(UNIT_FIELD_AURALEVELS, 0x0000003C);
+        me->SetUInt32Value(UNIT_FIELD_AURAAPPLICATIONS, 0x000000FF);
+        // casting visual effect
+        me->SetUInt32Value(UNIT_CHANNEL_SPELL, SPELL_SPIRIT_HEAL_CHANNEL);
+        // correct cast speed
+        me->SetFloatValue(UNIT_MOD_CAST_SPEED, 1.0f);
+
+        timer.Reset(2000);
+    }
+
+    void AttackStart(Unit* who) {}
+    void EnterCombat(Unit *who) {}
+
+    struct PlayerRemove
+    {
+        PlayerRemove(Creature* c) : me(c) {}
+
+        Creature* me;
+        bool operator()(Player* plr)
+        {
+            return plr->isAlive() || me->IsHostileTo(plr);
+        }
+    };
+
+    void UpdateAI(const uint32 uiDiff)
+    {
+        timer.Update(uiDiff);
+        if (timer.Passed())
+        {
+            std::list<Player*> players;
+            Hellground::AnyPlayerInObjectRangeCheck check(me, 15.0f);
+            Hellground::ObjectListSearcher<Player, Hellground::AnyPlayerInObjectRangeCheck> searcher(players, check);
+
+            Cell::VisitAllObjects(me, searcher, 15.0f);
+
+            players.remove_if(PlayerRemove(me));
+
+            while (!players.empty())
+            {
+                Player* player = players.front();
+
+                players.pop_front();
+
+                player->ResurrectPlayer(10.0f);
+                player->CastSpell(player, SPELL_RESURRECTION_VISUAL, true);   // Resurrection visual
+            }
+            timer.Reset(2000);
+        }
+    }
+};
+
+CreatureAI* GetAI_npc_resurrect(Creature* pCreature)
+{
+    return new npc_resurrectAI(pCreature);
+}
+
 void AddSC_npcs_special()
 {
     Script *newscript;
@@ -2741,5 +2828,16 @@ void AddSC_npcs_special()
     newscript = new Script;
     newscript->Name = "npc_small_pet_handler";
     newscript->GetAI = &GetAI_npc_small_pet_handler;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_combatstop";
+    newscript->pGossipHello =  &GossipHello_npc_combatstop;
+    newscript->pGossipSelect = &GossipSelect_npc_combatstop;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_resurrect";
+    newscript->GetAI = &GetAI_npc_resurrect;
     newscript->RegisterSelf();
 }

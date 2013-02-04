@@ -35,6 +35,34 @@
 #include "Util.h"
 #include "GameEvent.h"
 
+bool ChatHandler::HandleAccountXPToggleCommand(const char* args)
+{
+    if (uint32 account_id = m_session->GetAccountId())
+    {
+        if (WorldSession *session = sWorld.FindSession(account_id))
+        {
+            if (session->IsAccountFlagged(ACC_BLIZZLIKE_RATES))
+            {
+                session->RemoveAccountFlag(ACC_BLIZZLIKE_RATES);
+                PSendSysMessage("Now your rates are serverlike: x2.");
+            }
+            else
+            {
+                session->AddAccountFlag(ACC_BLIZZLIKE_RATES);
+                PSendSysMessage("Now your rates are blizzlike: x1.");
+            }
+        }
+    }
+    else
+    {
+        PSendSysMessage("Specified account not found.");
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    return true;
+}
+
 bool ChatHandler::HandleAccountBonesHideCommand(const char* args)
 {
     if (uint32 account_id = m_session->GetAccountId())
@@ -101,14 +129,14 @@ bool ChatHandler::HandleAccountBattleGroundAnnCommand(const char* args)
             {
                 session->RemoveAccountFlag(ACC_DISABLED_BGANN);
 
-                AccountsDatabase.PExecute("UPDATE account SET account_flags = account_flags & '%u' WHERE id = '%u'", ~ACC_DISABLED_GANN, account_id);
+                AccountsDatabase.PExecute("UPDATE account SET account_flags = account_flags & '%u' WHERE account_id = '%u'", ~ACC_DISABLED_GANN, account_id);
                 PSendSysMessage("BattleGround announces have been enabled for this account.");
             }
             else
             {
                 session->AddAccountFlag(ACC_DISABLED_BGANN);
 
-                AccountsDatabase.PExecute("UPDATE account SET account_flags = account_flags | '%u' WHERE id = '%u'", ACC_DISABLED_GANN, account_id);
+                AccountsDatabase.PExecute("UPDATE account SET account_flags = account_flags | '%u' WHERE account_id = '%u'", ACC_DISABLED_GANN, account_id);
                 PSendSysMessage("BattleGround announces have been disabled for this account.");
             }
         }
@@ -208,7 +236,7 @@ bool ChatHandler::HandleServerInfoCommand(const char* /*args*/)
     std::string str = secsToTimeString(sWorld.GetUptime());
     uint32 updateTime = sWorld.GetUpdateTime();
 
-    PSendSysMessage("Hellground.pl - rev: "_REVISION);
+    PSendSysMessage("Hellground.pl - rev: " _REVISION);
     PSendSysMessage(LANG_CONNECTED_USERS, activeClientsNum, maxActiveClientsNum, queuedClientsNum, maxQueuedClientsNum);
     PSendSysMessage(LANG_UPTIME, str.c_str());
     PSendSysMessage("Update time diff: %u.", updateTime);

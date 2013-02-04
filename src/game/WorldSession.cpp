@@ -164,7 +164,7 @@ void WorldSession::SaveOpcodesDisableFlags()
     stmt.PExecute(m_opcodesDisabled, GetAccountId());
 }
 
-void WorldSession::SetOpcodeDisableFlag(uint16 flag)
+void WorldSession::AddOpcodeDisableFlag(uint16 flag)
 {
     m_opcodesDisabled |= flag;
     SaveOpcodesDisableFlags();
@@ -179,7 +179,7 @@ void WorldSession::RemoveOpcodeDisableFlag(uint16 flag)
 void WorldSession::SaveAccountFlags()
 {
     static SqlStatementID saveAccountFlags;
-    SqlStatement stmt = AccountsDatabase.CreateStatement(saveAccountFlags, "UPDATE account SET account_flags = ? WHERE id = ?");
+    SqlStatement stmt = AccountsDatabase.CreateStatement(saveAccountFlags, "UPDATE account SET account_flags = ? WHERE account_id = ?");
     stmt.PExecute(m_accFlags, GetAccountId());
 }
 

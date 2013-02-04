@@ -6186,7 +6186,7 @@ bool Player::RewardHonor(Unit *uVictim, uint32 groupsize, float honor, bool pvpt
 
     // add honor points
     ModifyHonorPoints(int32(honor));
-    //UpdatePvpTitles();
+    UpdatePvpTitles();
     ApplyModUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION, uint32(honor), true);
 
     if (sWorld.getConfig(CONFIG_PVP_TOKEN_ENABLE) && pvptoken)
@@ -14274,7 +14274,7 @@ bool Player::LoadFromDB(uint32 guid, SqlQueryHolder *holder)
             uint32 newBytes0 = GetUInt32ValueFromDB(UNIT_FIELD_BYTES_0, guid) & 0x00FF00FF;
 
             // same race, continue
-            if (newBytes0 & fields[4].GetUInt8())
+            if ((newBytes0 & 0x000000FF) == fields[4].GetUInt8())
             {
                 newBytes0 |= fields[5].GetUInt8() << 8;  // class
                 newBytes0 |= bytes0 & 0xFF000000; // powertype
@@ -14729,7 +14729,7 @@ bool Player::LoadFromDB(uint32 guid, SqlQueryHolder *holder)
 
     // check PLAYER_CHOSEN_TITLE compatibility with PLAYER__FIELD_KNOWN_TITLES
     // note: PLAYER__FIELD_KNOWN_TITLES updated at quest status loaded
-    SetUInt32Value(PLAYER__FIELD_KNOWN_TITLES, (GetUInt32Value(PLAYER__FIELD_KNOWN_TITLES) & ~PLAYER_TITLE_PVP));
+    SetUInt64Value(PLAYER__FIELD_KNOWN_TITLES, fields[42].GetUInt64());
     if (uint32 curTitle = GetUInt32Value(PLAYER_CHOSEN_TITLE))
     {
         if (!HasTitle(curTitle))
@@ -15924,13 +15924,13 @@ void Player::SaveToDB()
                                             "taximask, online, cinematic, "
                                             "totaltime, leveltime, rest_bonus, logout_time, is_logout_resting, resettalents_cost, resettalents_time, "
                                             "trans_x, trans_y, trans_z, trans_o, transguid, extra_flags, stable_slots, at_login, zone, "
-                                            "death_expire_time, taxi_path, arena_pending_points, latency) "
+                                            "death_expire_time, taxi_path, arena_pending_points, latency, title) "
                                             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
                                                 "?, ?, ?, ?, ?, ?, ?, ?, "
                                                 "?, ?, ?, "
                                                 "?, ?, ?, ?, ?, ?, ?, "
                                                 "?, ?, ?, ?, ?, ?, ?, ?, ?, "
-                                                "?, ?, ?, ?)");
+                                                "?, ?, ?, ?, ?)");
 
     stmt.addUInt32(GetGUIDLow());
     stmt.addUInt32(GetSession()->GetAccountId());
@@ -16008,6 +16008,7 @@ void Player::SaveToDB()
     stmt.addString(m_taxi.SaveTaxiDestinationsToString());
     stmt.addUInt32(0);
     stmt.addUInt32(GetSession()->GetLatency());
+    stmt.addUInt64(GetUInt64Value(PLAYER__FIELD_KNOWN_TITLES));
     stmt.Execute();
 
     if (m_mailsUpdated)                                      //save mails only when needed
@@ -16275,8 +16276,8 @@ void Player::_SaveInventory()
                 if (!GetSession()->IsAccountFlagged(ACC_SPECIAL_LOG))
                     GetSession()->AddAccountFlag(ACC_SPECIAL_LOG);
 
-                stmt = AccountsDatabase.CreateStatement(insertBan, "INSERT INTO account_banned VALUES (?, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), '[CONSOLE]', 'With love: cheater -.-', 1)");
-                stmt.PExecute(GetSession()->GetAccountId());
+                stmt = AccountsDatabase.CreateStatement(insertBan, "INSERT INTO account_punishment VALUES (?, ?, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), '[CONSOLE]', 'With love: cheater -.-', 1)");
+                stmt.PExecute(GetSession()->GetAccountId(), uint32(PUNISHMENT_BAN));
 
                 AccountsDatabase.CommitTransaction();
                 //GetSession()->KickPlayer();
@@ -16291,8 +16292,8 @@ void Player::_SaveInventory()
 
                 AccountsDatabase.BeginTransaction();
 
-                SqlStatement stmt = AccountsDatabase.CreateStatement(insertBan, "INSERT INTO account_banned VALUES (?, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), '[CONSOLE]', 'With love: cheater -.-', 1)");
-                stmt.PExecute(GetSession()->GetAccountId());
+                SqlStatement stmt = AccountsDatabase.CreateStatement(insertBan, "INSERT INTO account_panishment VALUES (?, ?, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), '[CONSOLE]', 'With love: cheater -.-', 1)");
+                stmt.PExecute(GetSession()->GetAccountId(), uint32(PUNISHMENT_BAN));
 
                 if (!GetSession()->IsAccountFlagged(ACC_SPECIAL_LOG))
                     GetSession()->AddAccountFlag(ACC_SPECIAL_LOG);
@@ -17231,7 +17232,7 @@ void Player::PossessSpellInitialize()
 
     if (!charmInfo)
     {
-        sLog.outLog(LOG_DEFAULT, "ERROR: Player::PossessSpellInitialize(): charm ("UI64FMTD") has no charminfo!", charm->GetGUID());
+        sLog.outLog(LOG_DEFAULT, "ERROR: Player::PossessSpellInitialize(): charm (" UI64FMTD ") has no charminfo!", charm->GetGUID());
         return;
     }
 
@@ -17267,7 +17268,7 @@ void Player::CharmSpellInitialize()
     CharmInfo *charmInfo = charm->GetCharmInfo();
     if (!charmInfo)
     {
-        sLog.outLog(LOG_DEFAULT, "ERROR: Player::CharmSpellInitialize(): the player's charm ("UI64FMTD") has no charminfo!", charm->GetGUID());
+        sLog.outLog(LOG_DEFAULT, "ERROR: Player::CharmSpellInitialize(): the player's charm (" UI64FMTD ") has no charminfo!", charm->GetGUID());
         return;
     }
 
@@ -18412,6 +18413,9 @@ bool Player::canSeeOrDetect(Unit const* u, WorldObject const* viewPoint, bool de
     if (u == this)
         return true;
 
+    if (u->GetObjectGuid().IsAnyTypeCreature() && u->ToCreature()->IsAIEnabled && !u->ToCreature()->AI()->IsVisible())
+        return false;
+
     // player visible for other player if not logout and at same transport
     // including case when player is out of world
     bool at_same_transport =
@@ -18494,7 +18498,8 @@ bool Player::canSeeOrDetect(Unit const* u, WorldObject const* viewPoint, bool de
                 return true;
         }
 
-        if (u->canDetectInvisibilityOf(this, u->GetObjectGuid().IsPlayer() ? ((Player*)u)->GetCamera().GetBody() : u))
+        // why do we need this?
+        if (u->GetTypeId() == TYPEID_PLAYER && u->canDetectInvisibilityOf(this, ((Player*)u)->GetCamera().GetBody()))
             return true;
 
         // player see other player with stealth/invisibility only if he in same group or raid or same team (raid/team case dependent from conf setting)

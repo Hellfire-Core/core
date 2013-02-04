@@ -5455,7 +5455,7 @@ bool ChatHandler::HandleBanListCharacterCommand(const char* args)
 
     std::string filter = cFilter;
     AccountsDatabase.escape_string(filter);
-    QueryResultAutoPtr result = RealmDataDatabase.PQuery("SELECT account FROM characters WHERE name "_LIKE_" "_CONCAT3_("'%%'","'%s'","'%%'"),filter.c_str());
+    QueryResultAutoPtr result = RealmDataDatabase.PQuery("SELECT account FROM characters WHERE name LIKE '%%%s%%'", filter.c_str());
     if (!result)
     {
         PSendSysMessage(LANG_BANLIST_NOCHARACTER);
@@ -5590,7 +5590,7 @@ bool ChatHandler::HandleBanListIPCommand(const char* args)
             " ORDER BY unban_date");
     else
         result = AccountsDatabase.PQuery("SELECT ip, ban_date, unban_date, banned_by, ban_reason FROM ip_banned"
-            " WHERE (ban_date = unban_date OR unban_date > UNIX_TIMESTAMP()) AND ip "_LIKE_" "_CONCAT3_("'%%'","'%s'","'%%'")
+            " WHERE (ban_date = unban_date OR unban_date > UNIX_TIMESTAMP()) AND ip LIKE '%%%s%%'"
             " ORDER BY unban_date", filter.c_str());
 
     if (!result)
