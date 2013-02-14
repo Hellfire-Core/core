@@ -2033,17 +2033,225 @@ struct npc_gargromAI : public ScriptedAI
     void MovementInform(uint32 type, uint32 id)
     {
         if (type == POINT_MOTION_TYPE)
-        {
+		{
             me->setDeathState(JUST_DIED);
             me->SummonGameObject(GO_TEMP, sum[1].x, sum[1].y, sum[1].z, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 25);
             me->SummonGameObject(GO_TEMP, sum[1].x-(rand()%4), sum[1].y-(rand()%4), sum[1].z, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 25);
-        }
+		}
     }
 };
 
 CreatureAI* GetAI_npc_gargrom(Creature* creature)
 {
     return new npc_gargromAI (creature);
+}
+
+/*######
+## npc_soulgrinder
+######*/
+
+enum
+{
+    SPELL_VRITUAL            = 39918,
+    SPELL_GTRANSFORM         = 39916,
+    SPELL_RBEAM              = 39920,
+    SPELL_SHADOWFORMONE      = 39943,
+    SPELL_SHADOWFORMTWO      = 39944,
+    SPELL_SHADOWFORMTHREE    = 39946,
+    SPELL_SHADOWFORMFOUR     = 39947,
+
+    NPC_SOULGRINGER          = 23019,
+    NPC_SSPIRIT              = 22912,
+    NPC_BRITUAL              = 23037,
+    NPC_SCULLOC              = 22910,
+
+    QUEST_SOULGRINGER        = 11000
+};
+
+struct Ev
+{
+    float x, y, z, o;
+};
+
+static Ev ent[]=
+{
+    {3493.81f, 5530.01f, 19.57f, 0.80f},
+    {3466.89f, 5566.49f, 20.24f, 0.30f},
+    {3486.58f, 5551.74f, 7.51f, 0.65f},
+    {3515.08f, 5527.14f, 20.17f, 1.20f},
+    {3470.48f, 5583.96f, 20.68f, 6.20f}
+};
+
+struct npc_soulgrinderAI : public ScriptedAI
+{
+    npc_soulgrinderAI(Creature* creature) : ScriptedAI(creature), summons(me) {}
+
+    bool DoSpawns;
+
+    SummonList summons;
+    uint32 SpawnTimer;
+    uint32 BeamTimer;
+    uint8 Count;
+    uint64 PlayerGUID;
+    uint64 SkullocGUID;
+
+    void Reset() 
+    {
+        if (Creature* bm = GetClosestCreatureWithEntry(me, NPC_SOULGRINGER, 10.0f))
+        {
+            if (me->GetGUID() != bm->GetGUID())
+                me->ForcedDespawn();
+        }
+
+        DoSpawns = true;
+        SpawnTimer = 5000;
+        BeamTimer = 35000;
+        Count = 0;
+        PlayerGUID = 0;
+        SkullocGUID = 0;
+        DoCast(me, SPELL_VRITUAL, true);
+        INeedTarget();
+    }
+
+    void INeedTarget()
+    { 
+        Map* map = me->GetMap();
+        Map::PlayerList const &PlayerList = map->GetPlayers();
+
+        for(Map::PlayerList::const_iterator itr = PlayerList.begin(); itr != PlayerList.end(); ++itr)
+        {
+            if (Player* player = itr->getSource())
+            {
+                if(me->IsWithinDistInMap(player, 10.0f) && player->GetQuestStatus(QUEST_SOULGRINGER))
+                    PlayerGUID = player->GetGUID();
+            }
+        }
+    }
+
+    void DoSpawn()
+    {
+        float fx, fy, fz;
+
+        me->GetNearPoint(me, fx, fy, fz, 0.0f, 20.0f, 0.0f);
+        me->SummonCreature(NPC_SSPIRIT, fx, fy, fz, me->GetAngle(fx, fy), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 5000);
+        me->GetNearPoint(me, fx, fy, fz, 0.0f, 20.0f, 4.6f);
+        me->SummonCreature(NPC_SSPIRIT, fx, fy, fz, me->GetAngle(fx, fy), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 5000);
+
+        if (roll_chance_i(60))
+        {
+            me->GetNearPoint(me, fx, fy, fz, 0.0f, 20.0f, 1.5f);
+            me->SummonCreature(NPC_SSPIRIT, fx, fy, fz, me->GetAngle(fx, fy), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 5000);
+        }
+
+        if (roll_chance_i(50))
+        {
+            me->GetNearPoint(me, fx, fy, fz, 0.0f, 20.0f, 3.1f);
+            me->SummonCreature(NPC_SSPIRIT, fx, fy, fz, me->GetAngle(fx, fy), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 5000);
+        }
+    }
+
+    void JustSummoned(Creature* summoned)
+    {
+        summons.Summon(summoned);
+
+        if (summoned->GetEntry() == NPC_SSPIRIT)
+        {
+            summoned->CastSpell(summoned , SPELL_GTRANSFORM, true);
+
+            if (Unit* target = me->GetPlayer(PlayerGUID))
+                summoned->AI()->AttackStart(target);
+        }
+
+        if (summoned->GetEntry() == NPC_BRITUAL)
+        {
+            summoned->CastSpell(me, SPELL_RBEAM, true);
+        }
+        else 
+        {
+            if (summoned->GetEntry() == NPC_SCULLOC)
+                SkullocGUID = summoned->GetGUID();
+        }
+    }
+
+    void Beam()
+    {
+        ++Count;
+
+        switch (Count)
+        {
+            case 1:
+                DoCast(me, SPELL_SHADOWFORMONE, true);
+                me->SummonCreature(NPC_BRITUAL, ent[0].x, ent[0].y, ent[0].z, ent[0].o, TEMPSUMMON_DEAD_DESPAWN, 5000);
+                break;
+            case 2:
+                DoCast(me, SPELL_SHADOWFORMTWO, true);
+                me->SummonCreature(NPC_BRITUAL, ent[1].x, ent[1].y, ent[1].z, ent[1].o, TEMPSUMMON_DEAD_DESPAWN, 5000);
+                me->SummonCreature(NPC_SCULLOC, ent[2].x, ent[2].y, ent[2].z, ent[2].o, TEMPSUMMON_DEAD_DESPAWN, 5000);
+                break;
+            case 3:
+                DoCast(me, SPELL_SHADOWFORMTHREE, true);
+                me->SummonCreature(NPC_BRITUAL, ent[3].x, ent[3].y, ent[3].z, ent[3].o, TEMPSUMMON_DEAD_DESPAWN, 5000);
+                break;
+            case 4:
+                DoCast(me, SPELL_SHADOWFORMFOUR, true);
+                me->SummonCreature(NPC_BRITUAL, ent[4].x, ent[4].y, ent[4].z, ent[4].o, TEMPSUMMON_DEAD_DESPAWN, 5000);
+                break;
+            case 5:
+                DoSpawns = false;
+                summons.DespawnEntry(NPC_BRITUAL);
+
+                if (Creature* Skulloc = me->GetCreature(SkullocGUID))
+                    Skulloc->CastSpell(me, SPELL_RBEAM, true);
+                break;
+            case 6:
+                summons.DespawnEntry(NPC_SSPIRIT);
+
+                if (Creature* Skulloc = me->GetCreature(SkullocGUID))
+                    Skulloc->SetVisibility(VISIBILITY_OFF);
+
+                summons.DespawnEntry(NPC_SCULLOC);
+
+                if (Creature* Skulloc = me->SummonCreature(NPC_SCULLOC, ent[2].x, ent[2].y, ent[2].z, ent[2].o, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000))
+                {
+                    Skulloc->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+
+                    if (Unit* target = me->GetPlayer(PlayerGUID))
+                        Skulloc->AI()->AttackStart(target);
+                }
+                me->ForcedDespawn();
+                break;
+        }
+
+    }
+
+    void UpdateAI(const uint32 diff)
+    {
+        if (DoSpawns)
+        {            
+            if (SpawnTimer <= diff)
+            {
+                DoSpawn();
+
+                SpawnTimer = 20000;
+            }
+            else SpawnTimer -= diff;
+        }
+
+        if (BeamTimer <= diff)
+        {
+            Beam();
+
+            if (Count == 5)
+                BeamTimer = 5000;
+            else BeamTimer = 80000;
+        }
+        else BeamTimer -= diff;
+    }
+};
+
+CreatureAI* GetAI_npc_soulgrinder(Creature* creature)
+{
+    return new npc_soulgrinderAI (creature);
 }
 
 /*######
@@ -2180,5 +2388,10 @@ void AddSC_blades_edge_mountains()
     newscript = new Script;
     newscript->Name="npc_gargrom";
     newscript->GetAI = &GetAI_npc_gargrom;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name="npc_soulgrinder";
+    newscript->GetAI = &GetAI_npc_soulgrinder;
     newscript->RegisterSelf();
 }
