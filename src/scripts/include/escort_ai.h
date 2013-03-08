@@ -82,6 +82,7 @@ struct npc_escortAI : public ScriptedAI
         bool GetAttack() { return IsActiveAttacker; }//used in EnterEvadeMode override
         void SetCanAttack(bool attack) { IsActiveAttacker = attack; }
         uint64 GetEventStarterGUID() { return PlayerGUID; }
+        void SetClearWaypoints(bool clear) { ClearWaypoints = clear; }
 
     protected:
         Player* GetPlayerForEscort() { return (Player*)Unit::GetUnit(*m_creature, PlayerGUID); }
@@ -113,5 +114,6 @@ struct npc_escortAI : public ScriptedAI
         bool DespawnAtEnd;
         bool DespawnAtFar;
         bool ScriptWP;
+        bool ClearWaypoints;                             //clear WaypointList and drop escort if DespawnAtEnd is off
 };
 #endif

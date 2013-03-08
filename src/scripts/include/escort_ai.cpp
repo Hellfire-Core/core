@@ -32,7 +32,8 @@ npc_escortAI::npc_escortAI(Creature* pCreature) : ScriptedAI(pCreature),
     QuestForEscort(NULL),
     CanInstantRespawn(false),
     CanReturnToStart(false),
-    ScriptWP(false)
+    ScriptWP(false),
+    ClearWaypoints(false)
 {}
 
 void npc_escortAI::AttackStart(Unit* pWho)
@@ -42,8 +43,14 @@ void npc_escortAI::AttackStart(Unit* pWho)
 
     if (me->Attack(pWho, true))
     {
+        if (me->GetMotionMaster()->GetCurrentMovementGeneratorType() == POINT_MOTION_TYPE)
+            CurrentWP = ReachedLastWP;
+
         if (IsCombatMovement())
+        {
+            me->StopMoving(); // please don't remove before fix the issue
             me->GetMotionMaster()->MoveChase(pWho);
+        }
     }
 }
 
@@ -247,6 +254,12 @@ void npc_escortAI::UpdateAI(const uint32 uiDiff)
                 }
                 else
                 {
+                    if (ClearWaypoints)
+                    {
+                        WaypointList.clear();
+                        RemoveEscortState(STATE_ESCORT_ESCORTING);
+                    }
+
                     debug_log("TSCR: EscortAI reached end of waypoints with Despawn off");
 
                     return;
@@ -344,11 +357,21 @@ void npc_escortAI::MovementInform(uint32 uiMoveType, uint32 uiPointId)
 
         debug_log("TSCR: EscortAI Waypoint %u reached", CurrentWP->id);
 
-        //Call WP function
-        WaypointReached(CurrentWP->id);
+        if (CurrentWP == ReachedLastWP)
+        {
+            WPWaitTimer = CurrentWP->WaitTimeMs + 1;
+            ReachedLastWP = CurrentWP++;
 
-        WPWaitTimer = CurrentWP->WaitTimeMs + 1;
-        ReachedLastWP = CurrentWP++;
+            debug_log("TSCR: Don't recall WP function", CurrentWP->id);
+        }
+        else
+        {
+            //Call WP function
+            WaypointReached(CurrentWP->id);
+
+            WPWaitTimer = CurrentWP->WaitTimeMs + 1;
+            ReachedLastWP = CurrentWP++;
+        }
     }
 }
 
