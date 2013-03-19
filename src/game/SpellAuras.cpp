@@ -3106,7 +3106,7 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
             // Sentry Totem
             if (GetId() == 6495)
             {
-                if (caster->GetTypeId() == TYPEID_PLAYER)
+                if (caster->GetTypeId() != TYPEID_PLAYER)
                     return;
 
                 if (apply)
