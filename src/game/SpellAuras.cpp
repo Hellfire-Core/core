@@ -3044,7 +3044,7 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
             // Improved Aspect of the Viper
             if (GetId() == 38390)
             {
-                if (m_target->GetTypeId() == TYPEID_PLAYER)
+                if (m_target->GetTypeId() != TYPEID_PLAYER)
                     return;
 
                 if (apply)
@@ -3073,7 +3073,7 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
             // Improved Weapon Totems
             if (GetSpellProto()->SpellIconID == 57)
             {
-                if (m_target->GetTypeId()==TYPEID_PLAYER)
+                if (m_target->GetTypeId()!=TYPEID_PLAYER)
                     return;
 
                 if (apply)

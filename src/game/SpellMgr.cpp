@@ -2793,7 +2793,9 @@ void SpellMgr::LoadSpellCustomAttr()
             case SPELLFAMILY_SHAMAN:
             {
                 // Flametongue weapon proc
-                if (spellInfo->SpellFamilyFlags & 2097152 && spellInfo->SpellVisual == 0)
+                /*if (spellInfo->SpellFamilyFlags & 2097152 && spellInfo->SpellVisual == 0)
+                    spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;*/ // Flametongue totem proc procs spell 16368
+                if (spellInfo->Id == 16368)
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
                 break;
             }
