@@ -50,7 +50,7 @@ void TotemAI::MoveInLineOfSight(Unit *)
 
 void TotemAI::EnterEvadeMode()
 {
-    i_totem.addUnitState(UNIT_STAT_CANNOT_TURN);
+    i_totem.addUnitState(UNIT_STAT_STUNNED);
     i_totem.CombatStop();
 }
 
