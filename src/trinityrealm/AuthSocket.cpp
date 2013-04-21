@@ -491,13 +491,13 @@ bool AuthSocket::_HandleLogonChallenge()
                         DEBUG_LOG("database authentication values: v='%s' s='%s'", databaseV.c_str(), databaseS.c_str());
 
                         // multiply with 2, bytes are stored as hexstring
-                        if (databaseV.size() != s_BYTE_SIZE*2 || databaseS.size() != s_BYTE_SIZE*2)
+//                        if (databaseV.size() != s_BYTE_SIZE*2 || databaseS.size() != s_BYTE_SIZE*2)
                             _SetVSFields(rI);
-                        else
-                        {
-                            s.SetHexStr(databaseS.c_str());
-                            v.SetHexStr(databaseV.c_str());
-                        }
+//                        else
+//                        {
+//                            s.SetHexStr(databaseS.c_str());
+//                            v.SetHexStr(databaseV.c_str());
+//                        }
 
                         b.SetRand(19 * 8);
                         BigNumber gmod = g.ModExp(b, N);
