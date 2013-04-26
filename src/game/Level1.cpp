@@ -1061,7 +1061,7 @@ bool ChatHandler::HandleNamegoCommand(const char* args)
             ChatHandler(target).PSendSysMessage(LANG_SUMMONED_BY, GetName());
 
         // stop flight if need
-        m_session->GetPlayer()->InterruptTaxiFlying();
+        target->InterruptTaxiFlying();
 
         // before GM
         float x,y,z;
