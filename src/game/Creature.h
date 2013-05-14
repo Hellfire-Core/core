@@ -288,7 +288,6 @@ struct CreatureData
     uint8 movementType;
     uint8 spawnMask;
     bool dbData;
-    float xpMod;
 };
 
 struct CreatureDataAddonAura

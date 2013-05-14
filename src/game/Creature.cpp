@@ -1565,6 +1565,12 @@ bool Creature::LoadFromDB(uint32 guid, Map *map)
 
     // checked at creature_template loading
     m_defaultMovementType = MovementGeneratorType(data->movementType);
+    
+
+    if (CreatureInfo const* info = sObjectMgr.GetCreatureTemplate(data->id))
+        m_xpMod = info->xpMod;
+    else
+        m_xpMod = 0.0f;
 
     m_creatureData = data;
     return true;
