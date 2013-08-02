@@ -241,7 +241,7 @@ struct instance_mechanar : public ScriptedInstance
     {
         if (Player* player = instance->GetPlayers().begin()->getSource())
         {
-            if (BridgeEventPhase == 7)
+            if (BridgeEventPhase == MAX_BRIDGE_LOCATIONS)
             {
                 if (Creature* Pathaleon = instance->GetCreature(PathaleonGUID))
                 {
