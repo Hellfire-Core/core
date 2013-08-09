@@ -978,6 +978,10 @@ void World::LoadConfigSettings(bool reload)
     m_configs[CONFIG_ARENA_AUTO_DISTRIBUTE_INTERVAL_DAYS] = sConfig.GetIntDefault("Arena.AutoDistributeInterval", 7);
     m_configs[CONFIG_ARENA_LOG_EXTENDED_INFO] = sConfig.GetBoolDefault("ArenaLogExtendedInfo", false);
 
+    m_configs[CONFIG_ENABLE_ARENA_STEP_BY_STEP_MATCHING] = sConfig.GetBoolDefault("ArenaStepByStep.Enable",false);
+    m_configs[CONFIG_ARENA_STEP_BY_STEP_TIME] = sConfig.GetIntDefault("ArenaStepByStep.Time",60000);
+    m_configs[CONFIG_ARENA_STEP_BY_STEP_VALUE] = sConfig.GetIntDefault("ArenaStepByStep.Value",100);
+
     m_configs[CONFIG_BATTLEGROUND_PREMATURE_FINISH_TIMER] = sConfig.GetIntDefault("BattleGround.PrematureFinishTimer", 0);
     m_configs[CONFIG_INSTANT_LOGOUT] = sConfig.GetIntDefault("InstantLogout", SEC_MODERATOR);
 
