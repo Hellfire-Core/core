@@ -289,7 +289,7 @@ Player::Player (WorldSession *session): Unit(), m_reputationMgr(this), m_camera(
     m_ExtraFlags = 0;
 
     // players always accept
-    if (GetSession()->GetSecurity() == SEC_PLAYER)
+    if (!GetSession()->HasPermissions(PERM_GMT))
         SetAcceptWhispers(true);
 
     m_curSelection = 0;
@@ -624,7 +624,7 @@ bool Player::Create(uint32 guidlow, const std::string& name, uint8 race, uint8 c
     SetUInt32Value(PLAYER_FIELD_YESTERDAY_CONTRIBUTION, 0);
 
     // set starting level
-    if (GetSession()->GetSecurity() >= SEC_MODERATOR)
+    if (GetSession()->HasPermissions(PERM_GMT))
         SetUInt32Value (UNIT_FIELD_LEVEL, sWorld.getConfig(CONFIG_START_GM_LEVEL));
     else
         SetUInt32Value (UNIT_FIELD_LEVEL, sWorld.getConfig(CONFIG_START_PLAYER_LEVEL));
@@ -914,18 +914,21 @@ int32 Player::getMaxTimer(MirrorTimerType timer)
             return MINUTE*IN_MILISECONDS;
         case BREATH_TIMER:
         {
-            if (!isAlive() || HasAuraType(SPELL_AURA_WATER_BREATHING) || GetSession()->GetSecurity() >= sWorld.getConfig(CONFIG_DISABLE_BREATHING))
+            if (!isAlive() || HasAuraType(SPELL_AURA_WATER_BREATHING) || GetSession()->HasPermissions(sWorld.getConfig(CONFIG_DISABLE_BREATHING)))
                 return DISABLED_MIRROR_TIMER;
+
             int32 UnderWaterTime = MINUTE*IN_MILISECONDS;
             AuraList const& mModWaterBreathing = GetAurasByType(SPELL_AURA_MOD_WATER_BREATHING);
             for (AuraList::const_iterator i = mModWaterBreathing.begin(); i != mModWaterBreathing.end(); ++i)
                 UnderWaterTime = uint32(UnderWaterTime * (100.0f + (*i)->GetModifierValue()) / 100.0f);
+
             return UnderWaterTime;
         }
         case FIRE_TIMER:
         {
             if (!isAlive())
                 return DISABLED_MIRROR_TIMER;
+
             return IN_MILISECONDS;
         }
         default:
@@ -1645,7 +1648,7 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
         return false;
     }
 
-    if ((GetSession()->GetSecurity() < SEC_GAMEMASTER) && !sWorld.IsAllowedMap(mapid))
+    if (!GetSession()->HasPermissions(PERM_ADM) && !sWorld.IsAllowedMap(mapid))
     {
         sLog.outLog(LOG_DEFAULT, "ERROR: Player %s tried to enter a forbidden map", GetName());
         return false;
@@ -2524,7 +2527,7 @@ void Player::UpdateFreeTalentPoints(bool resetIfNeed)
         // if used more that have then reset
         if (m_usedTalentCount > talentPointsForLevel)
         {
-            if (resetIfNeed && GetSession()->GetSecurity() < SEC_ADMINISTRATOR)
+            if (resetIfNeed && !GetSession()->HasPermissions(PERM_ADM))
                 resetTalents(true);
             else
                 SetFreeTalentPoints(0);
@@ -3324,7 +3327,7 @@ void Player::RemoveSpellCooldown(uint32 spell_id, bool update /* = false */)
         WorldPacket data(SMSG_CLEAR_COOLDOWN, (4+8));
         data << uint32(spell_id);
         data << uint64(GetGUID());
-         SendPacketToSelf(&data);
+    SendPacketToSelf(&data);
     }
 }
 
@@ -4655,7 +4658,7 @@ void Player::UpdateLocalChannels(uint32 newZone)
 
 void Player::LeaveLFGChannel()
 {
-    if (!sWorld.getConfig(CONFIG_RESTRICTED_LFG_CHANNEL) || GetSession()->GetSecurity() != SEC_PLAYER)
+    if (!sWorld.getConfig(CONFIG_RESTRICTED_LFG_CHANNEL) || GetSession()->HasPermissions(PERM_GMT))
         return;
 
     // don't kick if on lfg or lfm
@@ -5973,7 +5976,7 @@ void Player::UpdatePvpTitles()
     {
         if (search)
         {
-            if (pvp_title & (uint64(1) << i))
+            if (pvp_title & uint64(1) << i)
             {
                 index = i;
                 search = false;
@@ -7461,7 +7464,7 @@ void Player::SendLootRelease(uint64 guid)
 {
     WorldPacket data(SMSG_LOOT_RELEASE_RESPONSE, (8+1));
     data << uint64(guid) << uint8(1);
-     SendPacketToSelf(&data);
+    SendPacketToSelf(&data);
 }
 
 void Player::SendLoot(uint64 guid, LootType loot_type)
@@ -7718,7 +7721,7 @@ void Player::SendLoot(uint64 guid, LootType loot_type)
     data << uint8(loot_type);
     data << LootView(*loot, this, permission);
 
-     SendPacketToSelf(&data);
+    SendPacketToSelf(&data);
 
     // add 'this' player as one of the players that are looting 'loot'
     if (permission != NONE_PERMISSION)
@@ -14278,7 +14281,7 @@ bool Player::LoadFromDB(uint32 guid, SqlQueryHolder *holder)
     // player should be able to load/delete character only with correct account!
     if (dbAccountId != GetSession()->GetAccountId())
     {
-        sLog.outLog(LOG_DEFAULT, "ERROR: Player (GUID: %u) loading from wrong account (is: %u, should be: %u)",guid,GetSession()->GetAccountId(),dbAccountId);
+        sLog.outLog(LOG_DEFAULT, "ERROR: Player (GUID: %u) loading from wrong account (is: %u, should be: %u)", guid, GetSession()->GetAccountId(), dbAccountId);
         return false;
     }
 
@@ -14287,7 +14290,7 @@ bool Player::LoadFromDB(uint32 guid, SqlQueryHolder *holder)
     m_name = fields[3].GetCppString();
 
     // check name limitations
-    if (!ObjectMgr::IsValidName(m_name) || GetSession()->GetSecurity() == SEC_PLAYER && sObjectMgr.IsReservedName(m_name))
+    if (!ObjectMgr::IsValidName(m_name) || !GetSession()->HasPermissions(PERM_GMT) && sObjectMgr.IsReservedName(m_name))
     {
         RealmDataDatabase.PExecute("UPDATE characters SET at_login = at_login | '%u' WHERE guid ='%u'", uint32(AT_LOGIN_RENAME),guid);
         return false;
@@ -14852,7 +14855,7 @@ bool Player::LoadFromDB(uint32 guid, SqlQueryHolder *holder)
     outDebugValues();
 
     // GM state
-    if (GetSession()->GetSecurity() > SEC_PLAYER)
+    if (GetSession()->HasPermissions(PERM_GMT))
     {
         switch (sWorld.getConfig(CONFIG_GM_LOGIN_STATE))
         {
@@ -16330,8 +16333,8 @@ void Player::_SaveInventory()
                 if (!GetSession()->IsAccountFlagged(ACC_SPECIAL_LOG))
                     GetSession()->AddAccountFlag(ACC_SPECIAL_LOG);
 
-                stmt = AccountsDatabase.CreateStatement(insertBan, "INSERT INTO account_banned VALUES (?, ?, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), '[CONSOLE]', 'With love: cheater -.-', 1)");
-                stmt.PExecute(GetSession()->GetAccountId(), realmID);
+                stmt = AccountsDatabase.CreateStatement(insertBan, "INSERT INTO account_punishment VALUES (?, ?, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), '[CONSOLE]', 'With love: cheater -.-', 1)");
+                stmt.PExecute(GetSession()->GetAccountId(), uint32(PUNISHMENT_BAN));
 
                 AccountsDatabase.CommitTransaction();
                 //GetSession()->KickPlayer();
@@ -16346,8 +16349,8 @@ void Player::_SaveInventory()
 
                 AccountsDatabase.BeginTransaction();
 
-                SqlStatement stmt = AccountsDatabase.CreateStatement(insertBan, "INSERT INTO account_banned VALUES (?, ?, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), '[CONSOLE]', 'With love: cheater -.-', 1)");
-                stmt.PExecute(GetSession()->GetAccountId(), realmID);
+                SqlStatement stmt = AccountsDatabase.CreateStatement(insertBan, "INSERT INTO account_panishment VALUES (?, ?, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), '[CONSOLE]', 'With love: cheater -.-', 1)");
+                stmt.PExecute(GetSession()->GetAccountId(), uint32(PUNISHMENT_BAN));
 
                 if (!GetSession()->IsAccountFlagged(ACC_SPECIAL_LOG))
                     GetSession()->AddAccountFlag(ACC_SPECIAL_LOG);
@@ -16672,7 +16675,7 @@ void Player::outDebugValues() const
 void Player::UpdateSpeakTime()
 {
     // ignore chat spam protection for GMs in any mode
-    if (GetSession()->GetSecurity() > SEC_PLAYER)
+    if (GetSession()->HasPermissions(PERM_GMT))
         return;
 
     time_t current = time (NULL);
@@ -17461,7 +17464,7 @@ void Player::AddSpellMod(SpellModifier* mod, bool apply)
             data << uint8(eff);
             data << uint8(mod->op);
             data << int32(val);
-             SendPacketToSelf(&data);
+        SendPacketToSelf(&data);
         }
     }
 
@@ -18232,7 +18235,7 @@ void Player::SendCooldownEvent(SpellEntry const *spellInfo)
     WorldPacket data(SMSG_COOLDOWN_EVENT, (4+8));
     data << spellInfo->Id;
     data << GetGUID();
-     SendPacketToSelf(&data);
+    SendPacketToSelf(&data);
 }
                                                            //slot to be excluded while counting
 bool Player::EnchantmentFitsRequirements(uint32 enchantmentcondition, int8 slot)
@@ -18534,7 +18537,7 @@ bool Player::canSeeOrDetect(Unit const* u, WorldObject const* viewPoint, bool de
         if (isGameMaster())
         {
             if (u->GetTypeId() == TYPEID_PLAYER)
-                return ((Player *)u)->GetSession()->GetSecurity() <= GetSession()->GetSecurity();
+                return ((Player *)u)->GetSession()->GetPermissions() <= GetSession()->GetPermissions();
             else
                 return true;
         }
@@ -18547,7 +18550,7 @@ bool Player::canSeeOrDetect(Unit const* u, WorldObject const* viewPoint, bool de
         if (isGameMaster())
         {
             if (u->GetTypeId() == TYPEID_PLAYER)
-                return ((Player*)u)->GetSession()->GetSecurity() <= GetSession()->GetSecurity();
+                return ((Player*)u)->GetSession()->GetPermissions() <= GetSession()->GetPermissions();
             else
                 return true;
         }
@@ -18585,7 +18588,7 @@ bool Player::canSeeOrDetect(Unit const* u, WorldObject const* viewPoint, bool de
 bool Player::IsVisibleInGridForPlayer(Player const * pl) const
 {
     // gamemaster in GM mode see all, including ghosts
-    if (pl->isGameMaster() && GetSession()->GetSecurity() <= pl->GetSession()->GetSecurity())
+    if (pl->isGameMaster() && GetSession()->GetPermissions() <= pl->GetSession()->GetPermissions())
         return true;
 
     // It seems in battleground everyone sees everyone, except the enemy-faction ghosts
@@ -18636,8 +18639,8 @@ bool Player::IsVisibleGloballyfor (Player* u) const
         return true;
 
     // GMs are visible for higher gms (or players are visible for gms)
-    if (u->GetSession()->GetSecurity() > SEC_PLAYER)
-        return GetSession()->GetSecurity() <= u->GetSession()->GetSecurity();
+    if (u->GetSession()->HasPermissions(PERM_GMT))
+        return GetSession()->GetPermissions() <= u->GetSession()->GetPermissions();
 
     // non faction visibility non-breakable for non-GMs
     if (GetVisibility() == VISIBILITY_OFF)
@@ -20167,7 +20170,7 @@ void Player::LFGSet(uint8 slot, uint32 entry, uint32 type)
         return;
 
     // don't add GM to lfg list
-    if (GetSession()->GetSecurity() > SEC_PLAYER)
+    if (GetSession()->HasPermissions(PERM_GMT))
         return;
 
     LfgContainerType::accessor a;
@@ -20226,7 +20229,7 @@ void Player::LFGSet(uint8 slot, uint32 entry, uint32 type)
 void Player::LFMSet(uint32 entry, uint32 type)
 {
     // don't add GM to lfm list
-    if (GetSession()->GetSecurity() > SEC_PLAYER)
+    if (GetSession()->HasPermissions(PERM_GMT))
         return;
 
     // don't add to lfm list if still in lfg

@@ -222,7 +222,6 @@ void WorldSession::HandleWhoOpcode(WorldPacket & recv_data)
         level_max = STRONG_MAX_LEVEL;
 
     uint32 team = _player->GetTeam();
-    uint32 security = GetSecurity();
     bool allowTwoSideWhoList = sWorld.getConfig(CONFIG_ALLOW_TWO_SIDE_WHO_LIST);
     bool gmInWhoList         = sWorld.getConfig(CONFIG_GM_IN_WHO_LIST);
 
@@ -234,23 +233,23 @@ void WorldSession::HandleWhoOpcode(WorldPacket & recv_data)
     HashMapHolder<Player>::MapType& m = sObjectAccessor.GetPlayers();
     for (HashMapHolder<Player>::MapType::iterator itr = m.begin(); itr != m.end(); ++itr)
     {
-        if (security == SEC_PLAYER)
+        if (!HasPermissions(PERM_GMT))
         {
             // player can see member of other team only if CONFIG_ALLOW_TWO_SIDE_WHO_LIST
             if (itr->second->GetTeam() != team && !allowTwoSideWhoList)
                 continue;
 
             // player can see MODERATOR, GAME MASTER, ADMINISTRATOR only if CONFIG_GM_IN_WHO_LIST
-            if ((itr->second->GetSession()->GetSecurity() > SEC_PLAYER && !gmInWhoList))
+            if (itr->second->GetSession()->HasPermissions(PERM_GMT) && !gmInWhoList)
                 continue;
         }
 
         //do not process players which are not in world
-        if (!(itr->second->IsInWorld()))
+        if (!itr->second->IsInWorld())
             continue;
 
         // check if target is globally visible for player
-        if (!(itr->second->IsVisibleGloballyfor (_player)))
+        if (!itr->second->IsVisibleGloballyfor(_player))
             continue;
 
         // check if target's level is in level range
@@ -357,7 +356,7 @@ void WorldSession::HandleWhoOpcode(WorldPacket & recv_data)
 
 void WorldSession::HandleLogoutRequestOpcode(WorldPacket & /*recv_data*/)
 {
-    sLog.outDebug("WORLD: Recvd CMSG_LOGOUT_REQUEST Message, security - %u", GetSecurity());
+    sLog.outDebug("WORLD: Recvd CMSG_LOGOUT_REQUEST Message, security - %u", GetPermissions());
 
     if (uint64 lguid = GetPlayer()->GetLootGUID())
         DoLootRelease(lguid);
@@ -370,7 +369,7 @@ void WorldSession::HandleLogoutRequestOpcode(WorldPacket & /*recv_data*/)
         GetPlayer()->HasUnitMovementFlag(MOVEFLAG_FALLING | MOVEFLAG_FALLINGFAR))
     {
         WorldPacket data(SMSG_LOGOUT_RESPONSE, (2+4)) ;
-        data << (uint8)0xC;
+        data << uint8(0xC);
         data << uint32(0);
         data << uint8(0);
         SendPacket(&data);
@@ -380,7 +379,7 @@ void WorldSession::HandleLogoutRequestOpcode(WorldPacket & /*recv_data*/)
 
     //instant logout in taverns/cities or on taxi or for admins, gm's, mod's if its enabled in mangosd.conf
     if (GetPlayer()->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_RESTING) || GetPlayer()->IsTaxiFlying() ||
-        GetSecurity() >= sWorld.getConfig(CONFIG_INSTANT_LOGOUT))
+        HasPermissions(sWorld.getConfig(CONFIG_INSTANT_LOGOUT)))
     {
         LogoutPlayer(true);
         return;
@@ -591,19 +590,19 @@ void WorldSession::HandleAddFriendOpcodeCallBack(QueryResultAutoPtr result, uint
         team = Player::TeamForRace((*result)[1].GetUInt8());
         friendAcctid = (*result)[2].GetUInt32();
 
-        if (session->GetSecurity() >= SEC_MODERATOR || sWorld.getConfig(CONFIG_ALLOW_GM_FRIEND) || AccountMgr::GetSecurity(friendAcctid, realmID) < SEC_MODERATOR)
+        if (session->HasPermissions(PERM_GMT) || sWorld.getConfig(CONFIG_ALLOW_GM_FRIEND) || !AccountMgr::HasPermissions(friendAcctid, PERM_GMT))
             if (friendGuid)
             {
                 if (friendGuid==session->GetPlayer()->GetGUID())
                     friendResult = FRIEND_SELF;
-                else if (session->GetPlayer()->GetTeam() != team && !sWorld.getConfig(CONFIG_ALLOW_TWO_SIDE_ADD_FRIEND) && session->GetSecurity() < SEC_MODERATOR)
+                else if (session->GetPlayer()->GetTeam() != team && !sWorld.getConfig(CONFIG_ALLOW_TWO_SIDE_ADD_FRIEND) && !session->HasPermissions(PERM_GMT))
                     friendResult = FRIEND_ENEMY;
                 else if (session->GetPlayer()->GetSocial()->HasFriend(GUID_LOPART(friendGuid)))
                     friendResult = FRIEND_ALREADY;
                 else
                 {
                     Player* pFriend = ObjectAccessor::FindPlayer(friendGuid);
-                    if (pFriend && pFriend->IsInWorld() && pFriend->IsVisibleGloballyfor (session->GetPlayer()))
+                    if (pFriend && pFriend->IsInWorld() && pFriend->IsVisibleGloballyfor(session->GetPlayer()))
                     friendResult = FRIEND_ADDED_ONLINE;
                     else
                         friendResult = FRIEND_ADDED_OFFLINE;
@@ -680,9 +679,9 @@ void WorldSession::HandleAddIgnoreOpcodeCallBack(QueryResultAutoPtr result, uint
         if (IgnoreGuid)
         {
             Player * tmp = ObjectAccessor::GetPlayer(IgnoreGuid);
-            if (!tmp || tmp->GetSession()->GetSecurity() <= session->GetSecurity()) //add only players with the same or lower security level
+            if (!tmp || !session->HasPermissions(PERM_GMT))                    // add only players
             {
-                if (IgnoreGuid==session->GetPlayer()->GetGUID())              //not add yourself
+                if (IgnoreGuid==session->GetPlayer()->GetGUID())            // not add yourself
                     ignoreResult = FRIEND_IGNORE_SELF;
                 else if (session->GetPlayer()->GetSocial()->HasIgnore(GUID_LOPART(IgnoreGuid)))
                     ignoreResult = FRIEND_IGNORE_ALREADY;
@@ -1292,8 +1291,8 @@ void WorldSession::HandleWorldTeleportOpcode(WorldPacket& recv_data)
     recv_data >> Orientation;                               // o (3.141593 = 180 degrees)
     DEBUG_LOG("Time %u sec, map=%u, x=%f, y=%f, z=%f, orient=%f", time/1000, mapid, PositionX, PositionY, PositionZ, Orientation);
 
-    if (GetSecurity() >= SEC_ADMINISTRATOR)
-        GetPlayer()->TeleportTo(mapid,PositionX,PositionY,PositionZ,Orientation);
+    if (HasPermissions(PERM_ADM))
+        GetPlayer()->TeleportTo(mapid, PositionX, PositionY, PositionZ, Orientation);
     else
         SendNotification(LANG_YOU_NOT_HAVE_PERMISSION);
     sLog.outDebug("Received worldport command from player %s", GetPlayer()->GetName());
@@ -1307,7 +1306,7 @@ void WorldSession::HandleWhoisOpcode(WorldPacket& recv_data)
     std::string charname;
     recv_data >> charname;
 
-    if (GetSecurity() < SEC_ADMINISTRATOR)
+    if (!HasPermissions(PERM_ADM))
     {
         SendNotification(LANG_YOU_NOT_HAVE_PERMISSION);
         return;
@@ -1329,7 +1328,7 @@ void WorldSession::HandleWhoisOpcode(WorldPacket& recv_data)
 
     uint32 accid = plr->GetSession()->GetAccountId();
 
-    QueryResultAutoPtr result = AccountsDatabase.PQuery("SELECT username,email,last_ip FROM account WHERE id=%u", accid);
+    QueryResultAutoPtr result = AccountsDatabase.PQuery("SELECT username, email, last_ip FROM account WHERE account_id = '%u'", accid);
     if (!result)
     {
         SendNotification(LANG_ACCOUNT_FOR_PLAYER_NOT_FOUND, charname.c_str());

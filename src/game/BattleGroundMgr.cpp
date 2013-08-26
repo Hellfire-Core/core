@@ -1686,7 +1686,8 @@ void BattleGroundMgr::CreateInitialBattleGrounds()
             continue;
 
         ++count;
-    } while (result->NextRow());
+    }
+    while (result->NextRow());
 
     sLog.outString();
     sLog.outString(">> Loaded %u battlegrounds", count);
