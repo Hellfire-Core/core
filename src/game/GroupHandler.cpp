@@ -439,7 +439,7 @@ void WorldSession::HandleMinimapPingOpcode(WorldPacket& recv_data)
     data << GetPlayer()->GetGUID();
     data << x;
     data << y;
-    GetPlayer()->GetGroup()->BroadcastPacket(&data, -1, GetPlayer()->GetGUID());
+    GetPlayer()->GetGroup()->BroadcastPacket(&data, false, -1, GetPlayer()->GetGUID());
 }
 
 void WorldSession::HandleRandomRollOpcode(WorldPacket& recv_data)
