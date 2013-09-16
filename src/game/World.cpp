@@ -624,6 +624,9 @@ void World::LoadConfigSettings(bool reload)
     m_configs[CONFIG_BATTLEGROUND_ANNOUNCE_START] = sConfig.GetIntDefault("BattleGround.AnnounceStart", 0);
     m_configs[CONFIG_BATTLEGROUND_QUEUE_INFO] = sConfig.GetIntDefault("BattleGround.QueueInfo", 0);
     m_configs[CONFIG_BATTLEGROUND_TIMER_INFO] = sConfig.GetBoolDefault("BattleGround.TimerInfo");
+    m_configs[CONFIG_BATTLEGROUND_WSG_END_AFTER_ENABLED] = sConfig.GetBoolDefault("BattleGround.WSGEndAfter.Enabled",false);
+    m_configs[CONFIG_BATTLEGROUND_WSG_END_AFTER_TIME] = sConfig.GetIntDefault("BatleGround.WSGEndAfter.Time",1800000);
+    m_configs[CONFIG_BATTLEGROUND_WSG_END_AFTER_ALWAYS_DRAW] = sConfig.GetBoolDefault("BattleGround.WSGEndAfter.AlwaysDraw",true);
 
     m_configs[CONFIG_INTERVAL_MAPUPDATE] = sConfig.GetIntDefault("MapUpdateInterval", 100);
     if (m_configs[CONFIG_INTERVAL_MAPUPDATE] < MIN_MAP_UPDATE_DELAY)

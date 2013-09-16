@@ -22,6 +22,7 @@
 #include "Player.h"
 #include "BattleGround.h"
 #include "BattleGroundWS.h"
+#include "BattleGroundMgr.h"
 #include "Creature.h"
 #include "GameObject.h"
 #include "Chat.h"
@@ -57,6 +58,7 @@ BattleGroundWS::BattleGroundWS()
     m_BgCreatures.resize(BG_CREATURES_MAX_WS);
     m_AllianceFlagUpdate = 0;
     m_HordeFlagUpdate = 0;
+    m_TimeElapsedSinceBeggining = 0;
 }
 
 BattleGroundWS::~BattleGroundWS()
@@ -66,6 +68,35 @@ BattleGroundWS::~BattleGroundWS()
 void BattleGroundWS::Update(uint32 diff)
 {
     BattleGround::Update(diff);
+
+    m_TimeElapsedSinceBeggining += diff;
+    if (sBattleGroundMgr.IsWSGEndAfterEnabled())
+    {
+        if (m_TimeElapsedSinceBeggining > sBattleGroundMgr.GetWSGEndAfterTime() && GetStatus() == STATUS_IN_PROGRESS)
+        {
+            if (!sBattleGroundMgr.IsWSGEndAfterAlwaysDraw())
+            {
+                if(GetTeamScore(HORDE) > GetTeamScore(ALLIANCE))
+                {
+                    EndBattleGround(HORDE);
+                    return;
+                }
+                else if (GetTeamScore(HORDE) < GetTeamScore(ALLIANCE))
+                {
+                    EndBattleGround(ALLIANCE);
+                    return;
+                }
+            }
+
+            EndBattleGround(0);
+            return;
+        }
+
+        if(m_TimeElapsedSinceBeggining> sBattleGroundMgr.GetWSGEndAfterTime()/2 &&
+            m_TimeElapsedSinceBeggining/180000 > (m_TimeElapsedSinceBeggining - diff)/180000) //warning every 3 mins
+            PrepareMessageToAll("This battleground will end in %u min.",m_TimeElapsedSinceBeggining /60000);
+
+    }
 
     // after bg start we get there (once)
     if (GetStatus() == STATUS_WAIT_JOIN && GetPlayersSize())
@@ -112,6 +143,7 @@ void BattleGroundWS::Update(uint32 diff)
         else if (GetStartDelayTime() < 0 && !(m_Events & 0x10))
         {
             m_Events |= 0x10;
+            m_TimeElapsedSinceBeggining = 0;
             for (uint32 i = BG_WS_OBJECT_DOOR_A_1; i <= BG_WS_OBJECT_DOOR_A_4; i++)
                 DoorOpen(i);
             for (uint32 i = BG_WS_OBJECT_DOOR_H_1; i <= BG_WS_OBJECT_DOOR_H_2; i++)
