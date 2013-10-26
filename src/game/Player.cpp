@@ -2419,6 +2419,19 @@ void Player::GiveXP(uint32 xp, Unit* victim)
     for (Unit::AuraList::const_iterator i = ModXPPctAuras.begin();i != ModXPPctAuras.end(); ++i)
         xp = uint32(xp*(1.0f + (*i)->GetModifierValue() / 100.0f));
 
+    if (uint32 goodEntry = sWorld.getConfig(CONFIG_XP_RATE_MODIFY_ITEM_ENTRY))
+    {
+        for (int i = EQUIPMENT_SLOT_START; i < EQUIPMENT_SLOT_END; i++)
+        {
+            Item *pItem = GetItemByPos(INVENTORY_SLOT_BAG_0, i);
+            if (pItem && pItem->GetEntry() == goodEntry)
+            {
+                xp = uint32(xp*(1.0f + sWorld.getConfig(CONFIG_XP_RATE_MODIFY_ITEM_PCT) / 100.0f));
+                break;
+            }
+        }
+    }
+    
     // XP resting bonus for kill
     uint32 rested_bonus_xp = victim ? GetXPRestBonus(xp) : 0;
 
