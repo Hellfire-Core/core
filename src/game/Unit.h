@@ -53,7 +53,7 @@ enum SpellInterruptFlags
 enum SpellChannelInterruptFlags
 {
  // CHANNEL_INTERRUPT_FLAG_DAMAGE       = 0x0002,
-    CHANNEL_INTERRUPT_FLAG_INTERRUPT    = 0x0004,
+ // CHANNEL_INTERRUPT_FLAG_INTERRUPT    = 0x0004,
     CHANNEL_INTERRUPT_FLAG_MOVEMENT     = 0x0008,
  // CHANNEL_INTERRUPT_FLAG_TURNING      = 0x0010,
  // CHANNEL_INTERRUPT_FLAG_DAMAGE2      = 0x0080,
@@ -1293,7 +1293,7 @@ class HELLGROUND_IMPORT_EXPORT Unit : public WorldObject
         float GetCreateStat(Stats stat) const { return m_createStats[stat]; }
 
         void SetCurrentCastedSpell(Spell * pSpell);
-        virtual void ProhibitSpellScholl(SpellSchoolMask /*idSchoolMask*/, uint32 /*unTimeMs*/) { }
+        virtual void ProhibitSpellSchool(SpellSchoolMask /*idSchoolMask*/, uint32 /*unTimeMs*/) { }
 
         void InterruptSpell(uint32 spellType, bool withDelayed = true, bool withInstant = true);
         void FinishSpell(CurrentSpellTypes spellType, bool ok = true);

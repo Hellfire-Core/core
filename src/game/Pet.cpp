@@ -1917,7 +1917,7 @@ void Pet::CastPetAura(PetAura const* aura)
         CastSpell(this, auraId, true);
 }
 
-void Pet::ProhibitSpellScholl(SpellSchoolMask idSchoolMask, uint32 unTimeMs)
+void Pet::ProhibitSpellSchool(SpellSchoolMask idSchoolMask, uint32 unTimeMs)
 {
     Unit* unitOwner = GetOwner();
     if (!unitOwner || unitOwner->GetTypeId() != TYPEID_PLAYER)

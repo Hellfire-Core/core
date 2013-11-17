@@ -5282,25 +5282,28 @@ void Spell::EffectHealMaxHealth(uint32 /*i*/)
 
 void Spell::EffectInterruptCast(uint32 i)
 {
-    if (!unitTarget)
-        return;
-    if (!unitTarget->isAlive())
+    if (!unitTarget || !unitTarget->isAlive())
         return;
 
     // TODO: not all spells that used this effect apply cooldown at school spells
     // also exist case: apply cooldown to interrupted cast only and to all spells
     for (uint32 k = CURRENT_FIRST_NON_MELEE_SPELL; k < CURRENT_MAX_SPELL; k++)
     {
-        if (unitTarget->m_currentSpells[k])
+        if (Spell* spell = unitTarget->m_currentSpells[k])
         {
+            const SpellEntry* curSpellInfo = spell->GetSpellInfo();
             // check if we can interrupt spell
-            if ((unitTarget->m_currentSpells[k]->getState() == SPELL_STATE_CASTING || (unitTarget->m_currentSpells[k]->getState() == SPELL_STATE_PREPARING && unitTarget->m_currentSpells[k]->GetCastTime() > 0.0f)) && unitTarget->m_currentSpells[k]->GetSpellInfo()->InterruptFlags & SPELL_INTERRUPT_FLAG_INTERRUPT && unitTarget->m_currentSpells[k]->GetSpellInfo()->PreventionType == SPELL_PREVENTION_TYPE_SILENCE)
+            if ((spell->getState() == SPELL_STATE_CASTING || (spell->getState() == SPELL_STATE_PREPARING && spell->GetCastTime() > 0.0f)) &&
+                curSpellInfo->PreventionType == SPELL_PREVENTION_TYPE_SILENCE &&
+                ((k == CURRENT_GENERIC_SPELL && curSpellInfo->InterruptFlags & SPELL_INTERRUPT_FLAG_INTERRUPT) ||
+                (k == CURRENT_CHANNELED_SPELL && curSpellInfo->ChannelInterruptFlags & CHANNEL_INTERRUPT_FLAG_MOVEMENT)))
             {
                 if (m_originalCaster)
                 {
                     int32 duration = m_originalCaster->CalculateSpellDuration(GetSpellInfo(), i, unitTarget);
-                    unitTarget->ProhibitSpellScholl(SpellMgr::GetSpellSchoolMask(unitTarget->m_currentSpells[k]->GetSpellInfo()), duration/*GetSpellDuration(GetSpellInfo())*/);
+                    unitTarget->ProhibitSpellSchool(SpellMgr::GetSpellSchoolMask(curSpellInfo), duration /* GetSpellDuration(GetSpellInfo())? */);
                 }
+                // TODO: send combat log interrupt message here
                 unitTarget->InterruptSpell(k,false);
             }
         }

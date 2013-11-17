@@ -163,7 +163,7 @@ class Pet : public Creature
                 return m_autospells[pos];
         }
 
-        void ProhibitSpellScholl(SpellSchoolMask idSchoolMask, uint32 unTimeMs);
+        void ProhibitSpellSchool(SpellSchoolMask idSchoolMask, uint32 unTimeMs);
 
         void RegenerateFocus();
         void LooseHappiness();
