@@ -634,6 +634,90 @@ bool GOGossipSelect_go_draconic_for_dummies(Player* pPlayer, GameObject* pGO, ui
     return true;
 }
 
+const char* ImpInABottleQuotes[] =
+{
+    "Hey! You try telling the future when someone's shaking up your house!",
+    "I don't think so, boss.",
+    "The answer's yes in here, don't see why it'd be different out there!",
+    "I suppose.",
+    "It's as sure as the warts on my backside",
+    "Yes, unless I have anything to do with it",
+    "Jump three times and dance for ten minutes and it will definitely happen!",
+    "My sources say \"no\". Before the torture, that is.",
+    "Definitely.",
+    "I can't see why not, although, I can't see a lot of things right now.",
+    "Yes, it will rain. That's not what you asked? Too bad!",
+    "My fortune telling powers are immeasureable - your chances are though: NO CHANCE",
+    "The odds are 32.33 [repeating of course] percent change of success.",
+    "Didn't you already ask that once? Yes already!",
+    "Avoid taking unnecessary gambles. Your lucky numbers are two, two and a half, and eleven-teen.",
+    "When Blackrock Freezes over",
+    "Survey says: BZZZZT!",
+    "Imp in a ball is ignoring you.",
+    "Hey! You try arranging furniture with some jerk shaking your house",
+    "Yes, but if anyone else asks... it wasn't me who told you",
+    "Hahahahahah, you're kidding right?",
+    "Sure but you're not going to like it.",
+    "I don't have to be a fortune-telling imp to know the answer to that one - No!",
+    "Yes, now stop pestering me",
+    "Yes! I mean no! I mean... which answer will get me out of here?",
+    "When dwarves fly. Oh they do? Then yes.",
+    "Want to trade places?",
+    "You remember that time you tried to drill that hole in your head?",
+    "What happens in the twisting nether, stays in the twisting nether.",
+    "Yes, yes, a thousand times, yes already!",
+    "Not unless you're some kind of super-person. And don't kid yourself, you're not.",
+    "NO - and don't try shaking me again for a better answer!",
+    "Yes, but I hoped I would never have to answer that",
+    "Word on the peninsula is YES!",
+    "Oh, that's one for sure.",
+    "Do you ask this question to everything that's trapped in a ball?",
+    "I ask myself that question everyday.",
+    "Da King! Chort ready to serve.",
+    "Are you making fun of me?",
+    "It's like my mother always said: \"Razxx khaj jhashxx xashjx.\"",
+    "It pains me to say this, but \"Yes\".",
+    "This was NOT in my contract!",
+    "It's times like these that I wish I had a cooldown.",
+    "Are you my pal, Danny?",
+    "Wouldn't you like to know?",
+    "That's about as likely as me getting a date with a succubuss.",
+    "Yes, it will rain. That's not what you asked? Too bad!",
+    "Please... is Kil'jaeden red?",
+    "You should be asking \"Is that rogue behind me going to kill me?\"",
+    "Yes, is my answer..........NOT!",
+    "Yeah, sure. You just keep thinking that.",
+    "XRA RAHKI MAZIZRA!",
+    "What kind of imp do you think I am?",
+    "Three Words - \"ab - so - lutely\"!",
+    "Looks good for you...and bad for me.",
+    "You need Arcane Intellect, because that answer is obvious! NO!",
+    "Ruk!",
+    "It won't matter, you'll be dead by tomorrow.",
+    "I can make that happen. Just sign below the dotted line...",
+    "The outlook is very bad for YOU that is! Haha, take it!",
+    "I've consulted my fellow imps, and we think YES, except for that one imp."
+};
+
+bool GOUse_go_imp_in_a_bottle(Player* player, GameObject* go)
+{
+    go->Whisper(ImpInABottleQuotes[urand(0, sizeof(ImpInABottleQuotes)/sizeof(char*))], player->GetGUID());
+    return true;
+};
+
+bool GOUse_go_personal_mole_machine(Player* player, GameObject* go)
+{
+    if (Player* owner = go->GetOwner()->ToPlayer())
+    {
+        if (player->IsInRaidWith(owner) || owner == player)
+        {
+            WorldLocation location(230, 446.82f, 21.14f, -70.65f, 5.28f);
+            player->TeleportTo(location);
+        }
+    }
+    return true;
+};
+
 void AddSC_go_scripts()
 {
     Script *newscript;
@@ -641,6 +725,16 @@ void AddSC_go_scripts()
     newscript = new Script;
     newscript->Name="go_northern_crystal_pylon";
     newscript->pGOUse = &GOUse_go_northern_crystal_pylon;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name="go_imp_in_a_bottle";
+    newscript->pGOUse = &GOUse_go_imp_in_a_bottle;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name="go_personal_mole_machine";
+    newscript->pGOUse = &GOUse_go_personal_mole_machine;
     newscript->RegisterSelf();
 
     newscript = new Script;

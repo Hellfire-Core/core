@@ -2793,8 +2793,10 @@ void SpellMgr::LoadSpellCustomAttr()
         {
             case SPELLFAMILY_GENERIC:
             {
+                 if (spellInfo->Id == 52009)
+                     spellInfo->EffectMiscValue[0] = 20865;
                  // Goblin Rocket Launcher
-                 if (spellInfo->SpellIconID == 184 && spellInfo->Attributes == 4259840)
+                 else if (spellInfo->SpellIconID == 184 && spellInfo->Attributes == 4259840)
                      spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
                  else if (spellInfo->Id == 15852)
                      spellInfo->Dispel = DISPEL_NONE;
