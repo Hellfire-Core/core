@@ -2365,6 +2365,48 @@ void SpellMgr::LoadSpellChains()
     mSpellChains[spell_id].last = 40120;
     mSpellChains[spell_id].rank = 2;
 
+    // Blessing of Kings
+    spell_id = 20217;
+    mSpellChains[spell_id].prev = 0;
+    mSpellChains[spell_id].next = 25898;
+    mSpellChains[spell_id].first = 20217;
+    mSpellChains[spell_id].last = 25898;
+    mSpellChains[spell_id].rank = 1;
+
+    // Greater Blessing of Kings
+    spell_id = 25898;
+    mSpellChains[spell_id].prev = 20217;
+    mSpellChains[spell_id].next = 0;
+    mSpellChains[spell_id].first = 20217;
+    mSpellChains[spell_id].last = 25898;
+    mSpellChains[spell_id].rank = 2;
+
+    // Greater Blessing of Sanctuary I
+    spell_id = 25899;
+    mSpellChains[spell_id].prev = 27168;    // BoS V
+    mSpellChains[spell_id].next = 27169;    // GBoS II
+    mSpellChains[spell_id].first = 20911;   // BoS I
+    mSpellChains[spell_id].last = 27169;    // GBoS II
+    mSpellChains[spell_id].rank = 6;
+
+    // link BoS V with GBoS I
+    mSpellChains[27168].next = spell_id;
+
+    // Greater Blessing of Sanctuary II
+    spell_id = 27169;
+    mSpellChains[spell_id].prev = 25899;    // GBoS I
+    mSpellChains[spell_id].next = 0;        // none
+    mSpellChains[spell_id].first = 20911;   // BoS I
+    mSpellChains[spell_id].last = 27169;    // GBoS II
+    mSpellChains[spell_id].rank = 7;
+
+    // set GBoS II as last for all BoS ranks
+    mSpellChains[20911].last = spell_id;
+    mSpellChains[20912].last = spell_id;
+    mSpellChains[20913].last = spell_id;
+    mSpellChains[20914].last = spell_id;
+    mSpellChains[27168].last = spell_id;
+
 //uncomment these two lines to print yourself list of spell_chains on startup
 //    for (UNORDERED_MAP<uint32, SpellChainNode>::iterator itr=mSpellChains.begin();itr!=mSpellChains.end();itr++)
 //       sLog.outString("Id: %u, Rank: %d , %s",itr->first,itr->second.rank, sSpellStore.LookupEntry(itr->first)->Rank[sWorld.GetDefaultDbcLocale()]);
