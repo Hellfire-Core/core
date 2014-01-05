@@ -332,6 +332,7 @@ struct boss_nalorakkAI : public ScriptedAI
                     return;
                 case 7:
                     m_creature->SetOrientation(3.1415*0.5);
+                    m_creature->SetHomePosition(NalorakkWay[7][0], NalorakkWay[7][1], NalorakkWay[7][2], m_creature->GetOrientation()); 
                     inMove = false;
                     return;
             }
