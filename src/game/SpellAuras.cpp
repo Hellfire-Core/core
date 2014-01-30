@@ -3571,6 +3571,12 @@ void Aura::HandleAuraTransform(bool apply, bool Real)
                 case 4: m_target->SetDisplayId(20317); break;
             }
         }
+        // Ethereal Mutagen
+        else if (m_target->HasAura(52009) || GetId() == 52009)
+            m_target->SetDisplayId(25003);
+        // Ethereal Liqueur Mutation
+        else if (m_target->HasAura(50368) || GetId() == 50368)
+            m_target->SetDisplayId(19454);
         // special case (spell specific functionality)
         else if (m_modifier.m_miscvalue==0)
         {
