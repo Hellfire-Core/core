@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef DEF_ZUL_FARRAK
-#define DEF_ZUL_FARRAK
+#ifndef SC_DEF_ZUL_FARRAK
+#define SC_DEF_ZUL_FARRAK
 
 #define DATA_PYRAMID_BATTLE 1
 #define DATA_DOOR_EVENT     2

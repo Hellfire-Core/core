@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef __BATTLEGROUNDAV_H
-#define __BATTLEGROUNDAV_H
+#ifndef HELLGROUND_BATTLEGROUNDAV_H
+#define HELLGROUND_BATTLEGROUNDAV_H
 
 class BattleGround;
 

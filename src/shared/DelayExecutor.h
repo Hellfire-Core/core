@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef _M_DELAY_EXECUTOR_H
-#define    _M_DELAY_EXECUTOR_H
+#ifndef HELLGROUND_DELAY_EXECUTOR_H
+#define HELLGROUND_DELAY_EXECUTOR_H
 
 #include <ace/Task.h>
 #include <ace/Activation_Queue.h>

@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef __CHARMINFO_H
-#define __CHARMINFO_H
+#ifndef HELLGROUND_CHARMINFO_H
+#define HELLGROUND_CHARMINFO_H
 
 #include "Common.h"
 #include "Unit.h"

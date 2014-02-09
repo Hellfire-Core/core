@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef __InstanceSaveMgr_H
-#define __InstanceSaveMgr_H
+#ifndef HELLGROUND_INSTANCESAVEMGR_H
+#define HELLGROUND_INSTANCESAVEMGR_H
 
 #include "Platform/Define.h"
 #include "ace/Singleton.h"

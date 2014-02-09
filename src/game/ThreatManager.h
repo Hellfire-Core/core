@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef _THREATMANAGER
-#define _THREATMANAGER
+#ifndef HELLGROUND_THREATMANAGER_H
+#define HELLGROUND_THREATMANAGER_H
 
 #include "Common.h"
 #include "SharedDefines.h"

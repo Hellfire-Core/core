@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005-2008 MaNGOS <http://www.mangosproject.org/>
+ * Copyright (C) 2005-2008 MaNGOS <http://getmangos.com/>
  * Copyright (C) 2008 TrinityCore <http://www.trinitycore.org/>
  * Copyright (C) 2008-2014 Hellground <http://hellground.net/>
  *
@@ -22,8 +22,8 @@
 /// @{
 /// \file
 
-#ifndef __CLIRUNNABLE_H
-#define __CLIRUNNABLE_H
+#ifndef HELLGROUND_CLIRUNNABLE_H
+#define HELLGROUND_CLIRUNNABLE_H
 
 /// Command Line Interface handling thread
 class CliRunnable : public ACE_Based::Runnable

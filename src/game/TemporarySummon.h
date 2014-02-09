@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef _TEMPSUMMON_H
-#define _TEMPSUMMON_H
+#ifndef HELLGROUND_TEMPSUMMON_H
+#define HELLGROUND_TEMPSUMMON_H
 
 #include "Creature.h"
 #include "ObjectAccessor.h"

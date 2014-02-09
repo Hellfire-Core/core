@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005-2009 MaNGOS <http://www.mangosproject.org/>
+ * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
  * Copyright (C) 2008-2014 Hellground <http://hellground.net/>
  *
@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef _COMMON_H
-#define _COMMON_H
+#ifndef HELLGROUND_COMMON_H
+#define HELLGROUND_COMMON_H
 
 // config.h needs to be included 1st
 // TODO this thingy looks like hack ,but its not, need to

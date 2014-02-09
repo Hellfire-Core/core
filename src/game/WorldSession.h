@@ -22,8 +22,8 @@
 /// @{
 /// \file
 
-#ifndef __WORLDSESSION_H
-#define __WORLDSESSION_H
+#ifndef HELLGROUND_WORLDSESSION_H
+#define HELLGROUND_WORLDSESSION_H
 
 #include "Common.h"
 #include "Log.h"

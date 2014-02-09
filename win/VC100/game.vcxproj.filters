@@ -1082,5 +1082,8 @@
     <ClInclude Include="..\..\src\game\WardenChat.h">
       <Filter>Warden</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\game\MovementGeneratorImpl.h">
+      <Filter>Movement</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

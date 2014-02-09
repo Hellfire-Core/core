@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef DEF_MECHANAR_H
-#define DEF_MECHANAR_H
+#ifndef SC_DEF_MECHANAR_H
+#define SC_DEF_MECHANAR_H
 
 #define DATA_NETHERMANCER_EVENT     1
 #define DATA_IRONHAND_EVENT         2

@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef _FOLLOWERREFMANAGER
-#define _FOLLOWERREFMANAGER
+#ifndef HELLGROUND_FOLLOWERREFMANAGER_H
+#define HELLGROUND_FOLLOWERREFMANAGER_H
 
 #include "Utilities/LinkedReference/RefManager.h"
 

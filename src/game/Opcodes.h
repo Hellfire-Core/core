@@ -22,8 +22,8 @@
 /// @{
 /// \file
 
-#ifndef _OPCODES_H
-#define _OPCODES_H
+#ifndef HELLGROUND_OPCODES_H
+#define HELLGROUND_OPCODES_H
 
 #include "Common.h"
 

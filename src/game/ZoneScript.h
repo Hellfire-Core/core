@@ -17,8 +17,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef ZONE_SCRIPT_H_
-#define ZONE_SCRIPT_H_
+#ifndef HELLGROUND_ZONE_SCRIPT_H
+#define HELLGROUND_ZONE_SCRIPT_H
 
 #include "Common.h"
 #include "Creature.h"

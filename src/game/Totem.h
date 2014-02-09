@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef _TOTEM_H
-#define _TOTEM_H
+#ifndef HELLGROUND_TOTEM_H
+#define HELLGROUND_TOTEM_H
 
 #include "Creature.h"
 

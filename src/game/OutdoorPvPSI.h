@@ -17,8 +17,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef OUTDOOR_PVP_SI_
-#define OUTDOOR_PVP_SI_
+#ifndef HELLGROUND_OUTDOOR_PVP_SI_H
+#define HELLGROUND_OUTDOOR_PVP_SI_H
 
 #include "OutdoorPvPImpl.h"
 

@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef DEF_DEADMINES_H
-#define DEF_DEADMINES_H
+#ifndef SC_DEF_DEADMINES_H
+#define SC_DEF_DEADMINES_H
 
 #include "precompiled.h"
 

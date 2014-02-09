@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef __NPCHANDLER_H
-#define __NPCHANDLER_H
+#ifndef HELLGROUND_NPCHANDLER_H
+#define HELLGROUND_NPCHANDLER_H
 
 // GCC have alternative #pragma pack(N) syntax and old gcc version not support pack(push,N), also any gcc version not support it at some platform
 #if defined(__GNUC__)

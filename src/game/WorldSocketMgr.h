@@ -24,8 +24,8 @@
  *  \author Derex <derex101@gmail.com>
  */
 
-#ifndef __WORLDSOCKETMGR_H
-#define __WORLDSOCKETMGR_H
+#ifndef HELLGROUND_WORLDSOCKETMGR_H
+#define HELLGROUND_WORLDSOCKETMGR_H
 
 #include <ace/Basic_Types.h>
 #include <ace/Singleton.h>

@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef __BATTLEGROUNDWS_H
-#define __BATTLEGROUNDWS_H
+#ifndef HELLGROUND_BATTLEGROUNDWS_H
+#define HELLGROUND_BATTLEGROUNDWS_H
 
 #include "BattleGround.h"
 

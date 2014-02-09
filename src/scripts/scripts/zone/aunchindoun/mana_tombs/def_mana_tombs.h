@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef DEF_MANA_TOMBS_H
-#define DEF_MANA_TOMBS_H
+#ifndef SC_DEF_MANA_TOMBS_H
+#define SC_DEF_MANA_TOMBS_H
 
 #define DATA_YOREVENT 1
 #define DATA_PANDEMONIUSEVENT 2

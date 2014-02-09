@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef _GROUPREFERENCE_H
-#define _GROUPREFERENCE_H
+#ifndef HELLGROUND_GROUPREFERENCE_H
+#define HELLGROUND_GROUPREFERENCE_H
 
 #include "Utilities/LinkedReference/Reference.h"
 

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug_PCH|Win32">
@@ -649,6 +649,7 @@
     <ClInclude Include="..\..\src\game\movemap\MoveMap.h" />
     <ClInclude Include="..\..\src\game\movemap\MoveMapSharedDefines.h" />
     <ClInclude Include="..\..\src\game\movemap\PathFinder.h" />
+    <ClInclude Include="..\..\src\game\MovementGeneratorImpl.h" />
     <ClInclude Include="..\..\src\game\movement\MoveSpline.h" />
     <ClInclude Include="..\..\src\game\movement\MoveSplineFlag.h" />
     <ClInclude Include="..\..\src\game\movement\MoveSplineInit.h" />

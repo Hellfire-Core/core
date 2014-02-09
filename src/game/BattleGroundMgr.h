@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef __BATTLEGROUNDMGR_H
-#define __BATTLEGROUNDMGR_H
+#ifndef HELLGROUND_BATTLEGROUNDMGR_H
+#define HELLGROUND_BATTLEGROUNDMGR_H
 
 #include "ace/Singleton.h"
 

@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef _PET_H
-#define _PET_H
+#ifndef HELLGROUND_PET_H
+#define HELLGROUND_PET_H
 
 #include "ObjectGuid.h"
 #include "Creature.h"

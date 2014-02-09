@@ -22,8 +22,8 @@
 /// @{
 /// \file
 
-#ifndef __WEATHER_H
-#define __WEATHER_H
+#ifndef HELLGROUND_WEATHER_H
+#define HELLGROUND_WEATHER_H
 
 #include "Common.h"
 #include "SharedDefines.h"

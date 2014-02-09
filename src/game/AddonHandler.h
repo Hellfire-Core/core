@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef __ADDONHANDLER_H
-#define __ADDONHANDLER_H
+#ifndef HELLGROUND_ADDONHANDLER_H
+#define HELLGROUND_ADDONHANDLER_H
 
 #include "Common.h"
 #include "WorldPacket.h"

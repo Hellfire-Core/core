@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef _GROUP_H
-#define _GROUP_H
+#ifndef HELLGROUND_GROUP_H
+#define HELLGROUND_GROUP_H
 
 #include "GroupReference.h"
 #include "GroupRefManager.h"

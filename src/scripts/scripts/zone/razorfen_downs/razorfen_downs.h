@@ -17,8 +17,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef DEF_RAZORFEN_DOWNS_H
-#define DEF_RAZORFEN_DOWNS_H
+#ifndef SC_DEF_RAZORFEN_DOWNS_H
+#define SC_DEF_RAZORFEN_DOWNS_H
 
 enum eData
 {

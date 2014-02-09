@@ -9,20 +9,20 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
 /** \file
   \ingroup realmd
   */
 
-#ifndef _PATCHHANDLER_H_
-#define _PATCHHANDLER_H_
+#ifndef HELLGROUND_PATCHHANDLER_H
+#define HELLGROUND_PATCHHANDLER_H
 
 #include <ace/Basic_Types.h>
 #include <ace/Synch_Traits.h>

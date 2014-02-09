@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef _SPELLMGR_H
-#define _SPELLMGR_H
+#ifndef HELLGROUND_SPELLMGR_H
+#define HELLGROUND_SPELLMGR_H
 
 // For static or at-server-startup loaded spell data
 // For more high level function for sSpellStore data

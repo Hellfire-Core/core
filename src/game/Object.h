@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef _OBJECT_H
-#define _OBJECT_H
+#ifndef HELLGROUND_OBJECT_H
+#define HELLGROUND_OBJECT_H
 
 #include "Common.h"
 #include "ByteBuffer.h"

@@ -16,6 +16,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#ifndef SC_DEF_ONYXIA_LAIR_H
+#define SC_DEF_ONYXIA_LAIR_H
+
 struct cPosition
 {
     float x;
@@ -43,3 +46,5 @@ enum OnyxiaData
     DATA_HATCH_EGGS = 2,
     DATA_ERUPT      = 3
 };
+
+#endif

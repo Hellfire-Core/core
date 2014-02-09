@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef _QUEST_H
-#define _QUEST_H
+#ifndef HELLGROUND_QUESTDEF_H
+#define HELLGROUND_QUESTDEF_H
 
 #include "Platform/Define.h"
 #include "Database/DatabaseEnv.h"
