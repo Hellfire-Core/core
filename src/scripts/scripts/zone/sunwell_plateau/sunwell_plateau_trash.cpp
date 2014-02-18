@@ -2256,7 +2256,7 @@ CreatureAI* GetAI_mob_priestess_of_torment(Creature *_Creature)
 enum ShadowswordGuardian
 {
     SPELL_BEAR_DOWN                 = 46239,
-    SPELL_EARTHQUAKE                = 46240
+    SPELL_EARTHQUAKE                = 46932
 };
 
 struct mob_shadowsword_guardianAI : public ScriptedAI
@@ -2285,6 +2285,8 @@ struct mob_shadowsword_guardianAI : public ScriptedAI
 
     void EnterCombat(Unit*)
     {
+        if (pInstance->GetData(DATA_MURU_EVENT) != DONE)
+            EnterEvadeMode();
         DoCast(me, SPELL_EARTHQUAKE);
         DoZoneInCombat(80.0f);
     }
