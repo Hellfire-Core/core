@@ -2012,7 +2012,7 @@ void Aura::TriggerSpell()
                     // Open Portal Periodic
                     case 45994: trigger_spell_id = 45976; break;
 //                    // Earthquake
-//                    case 46240: break;
+                    case 46240: trigger_spell_id = 46243; break;
                     // Personalized Weather
                     case 46736: trigger_spell_id = 46737; break;
 //                    // Stay Submerged
