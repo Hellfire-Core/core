@@ -1571,7 +1571,7 @@ bool Player::BuildEnumData(QueryResultAutoPtr result, WorldPacket * p_data)
     *p_data << uint32(char_flags);                          // character flags
 
     // First login
-    *p_data << uint8(atLoginFlags & AT_LOGIN_FIRST ? 1 : 0);
+    *p_data << uint8(1);//uint8(atLoginFlags & AT_LOGIN_FIRST ? 1 : 0);
 
     // Pets info
     {
