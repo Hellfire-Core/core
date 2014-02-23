@@ -58,14 +58,8 @@ void HostilRefManager::threatAssist(Unit *pVictim, float pThreat, SpellEntry con
 
 void HostilRefManager::addThreatPercent(int32 pValue)
 {
-    HostilReference* ref;
-
-    ref = getFirst();
-    while (ref != NULL)
-    {
+    for (HostilReference* ref = getFirst(); ref != NULL; ref = ref->next())
         ref->addThreatPercent(pValue);
-        ref = ref->next();
-    }
 }
 
 //=================================================
@@ -73,14 +67,8 @@ void HostilRefManager::addThreatPercent(int32 pValue)
 
 void HostilRefManager::setOnlineOfflineState(bool pIsOnline)
 {
-    HostilReference* ref;
-
-    ref = getFirst();
-    while (ref != NULL)
-    {
+    for (HostilReference* ref = getFirst(); ref != NULL; ref = ref->next())
         ref->setOnlineOfflineState(pIsOnline);
-        ref = ref->next();
-    }
 }
 
 //=================================================
@@ -88,12 +76,8 @@ void HostilRefManager::setOnlineOfflineState(bool pIsOnline)
 
 void HostilRefManager::updateThreatTables()
 {
-    HostilReference* ref = getFirst();
-    while (ref)
-    {
+    for (HostilReference* ref = getFirst(); ref != NULL; ref = ref->next())
         ref->updateOnlineStatus();
-        ref = ref->next();
-    }
 }
 
 //=================================================
