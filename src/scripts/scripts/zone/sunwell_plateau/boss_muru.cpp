@@ -1,21 +1,21 @@
 /* 
- * Copyright (C) 2009 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2008-2014 Hellground <http://hellground.net/>
- * 
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+* Copyright (C) 2009 TrinityCore <http://www.trinitycore.org/>
+* Copyright (C) 2008-2014 Hellground <http://hellground.net/>
+* 
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+*/
 
 
 /* ScriptData
@@ -25,10 +25,12 @@ SDComment:
 */
 
 /* Additional scripts
-    * Shadowsword Berserker
-    * Shadowsword Fury Mage
-    * Void Sentinel
-    * Void Spawn
+
+* Shadowsword Berserker
+* Shadowsword Fury Mage
+* Void Sentinel
+* Void Spawn
+
 */
 
 #include "precompiled.h"
@@ -155,21 +157,9 @@ struct boss_muruAI : public Scripted_NoMovementAI
         ResetTimer = 30000;
     }
 
-    /*void SendMessageAtStart(const char *format, ...)
-    {
-        va_list ap;
-        char str [1024];
-        va_start(ap, format);
-        vsnprintf(str,1024,format, ap);
-        va_end(ap);
-        me->Yell(str, 0, me->GetGUID());
-    }*/
-
     void EnterCombat(Unit *who)
     {
         me->SetIngoreVictimSelection(true);
-        //uint32 counter = pInstance->GetData(DATA_MURU_TESTING_COUNTER);
-        //SendMessageAtStart("Welcome testers! You have still: %u boss tries left. Good luck!!", counter);
         DoCast(me, SPELL_NEGATIVE_ENERGY_PERIODIC);
         DoCast(me, SPELL_OPEN_PORTAL_PERIODIC);
         DoCast(me, SPELL_DARKNESS_PERIODIC);
@@ -299,8 +289,7 @@ struct boss_entropiusAI : public ScriptedAI
     {
         if(Unit* Muru = me->GetUnit(pInstance->GetData64(DATA_MURU)))
             ((boss_muruAI*)Muru)->EnterEvadeMode();
-        me->setDeathState(JUST_DIED);
-        me->RemoveCorpse();
+        me->DisappearAndDie();
         Summons.DespawnAll();
     }
 
@@ -398,11 +387,13 @@ struct npc_muru_portalAI : public Scripted_NoMovementAI
     Creature* Muru;
     uint32 SummonTimer;
     uint32 TransformTimer;
+    uint32 CheckTimer;
 
     void Reset()
     {
         SummonTimer = 0;
         TransformTimer = 0;
+        CheckTimer = 1000;
     }
 
     void EnterCombat(Unit *who) {}
@@ -433,6 +424,18 @@ struct npc_muru_portalAI : public Scripted_NoMovementAI
 
     void UpdateAI(const uint32 diff)
     {
+        if(me->isInCombat())
+        {
+            if (CheckTimer < diff)
+            {
+                if (pInstance->GetData(DATA_MURU_EVENT) == DONE || pInstance->GetData(DATA_MURU_EVENT) == NOT_STARTED)
+                    EnterEvadeMode();
+                CheckTimer = 1000;
+            }
+            else
+                CheckTimer -= diff;
+        }
+
         if(SummonTimer)
         {
             if(SummonTimer <= diff)
@@ -768,7 +771,7 @@ struct npc_blackholeAI : public ScriptedAI
 
     void Reset()
     {
-        DespawnTimer = 17000;
+        DespawnTimer = urand(15000, 17000);
         me->SetLevitate(true);
         me->SetSpeed(MOVE_FLIGHT, 0.5);
         me->setFaction(14);
@@ -838,10 +841,13 @@ struct npc_blackholeAI : public ScriptedAI
             {
                 if (Unit* victim = me->GetUnit(victimGUID))
                 {
-                    if(me->IsWithinDistInMap(victim, 4.0))
+                    if(me->IsWithinDistInMap(victim, 5.0))
                     {
                         if(Unit* victim = SelectUnit(SELECT_TARGET_NEAREST, 0, 200, true, me->getVictimGUID(), 10.0))
+                        {
+                            victimGUID = victim->GetGUID();
                             me->GetMotionMaster()->MovePoint(0, victim->GetPositionX(), victim->GetPositionY(), 72.0, false);
+                        }
                     }
                     else
                         me->GetMotionMaster()->MovePoint(0, victim->GetPositionX(), victim->GetPositionY(), 72.0, false);
@@ -875,21 +881,14 @@ struct npc_darknessAI : public Scripted_NoMovementAI
     }
 
     ScriptedInstance* pInstance;
-    Creature* Muru;
     uint32 VoidZoneTimer;
+    uint32 CheckTimer;
 
     void Reset()
     {
         DoCast(me, SPELL_VOID_ZONE_PRE_EFFECT_VISUAL, true);
         VoidZoneTimer = 3000;
-        if(Unit* Muru = me->GetUnit(pInstance->GetData64(DATA_MURU)))
-            ((boss_muruAI*)Muru)->JustSummoned(me);
-    }
-
-    void IsSummonedBy(Unit* summoner)
-    {
-        if(Creature* Muru = me->GetCreature(pInstance->GetData64(DATA_MURU)))
-            Muru->AI()->JustSummoned(me);
+        CheckTimer = 1000;
     }
 
     void UpdateAI(const uint32 diff)
@@ -906,6 +905,14 @@ struct npc_darknessAI : public Scripted_NoMovementAI
             else
                 VoidZoneTimer -= diff;
         }
+        if (CheckTimer)
+        {
+            if (pInstance->GetData(DATA_MURU_EVENT) == DONE || pInstance->GetData(DATA_MURU_EVENT) == NOT_STARTED)
+                me->DisappearAndDie();
+            CheckTimer = 1000;
+        }
+        else
+            CheckTimer -= diff;
     }
 };
 
