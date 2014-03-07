@@ -22,6 +22,7 @@
 #include "CellImpl.h"
 #include "Log.h"
 #include "Player.h"
+#include "ObjectAccessor.h"
 
 Camera::Camera(Player* pl) : _owner(*pl), _source(pl)
 {
