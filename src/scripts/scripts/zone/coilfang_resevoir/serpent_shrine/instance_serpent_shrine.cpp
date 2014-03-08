@@ -408,7 +408,11 @@ struct instance_serpentshrine_cavern : public ScriptedInstance
                 else
                     Water = WATERSTATE_FRENZY;
             }
-
+            else if (Encounters[2] == DONE)
+            {
+                Water = WATERSTATE_NONE;
+            }
+            
             trashCheckTimer = 10000;
         }
         else
@@ -447,6 +451,10 @@ struct instance_serpentshrine_cavern : public ScriptedInstance
                                 }
                                 DoSpawnFrenzy = false;
                             }
+                        }
+                        else if (Water == WATERSTATE_NONE)
+                        {
+                            break;
                         }
                     }
                 }
