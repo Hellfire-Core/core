@@ -62,7 +62,7 @@ source_group("AI"
 
 add_library(hellgroundscript SHARED ${hellgroundscript_SRCS})
 
-add_definitions(-D_TRINITY_SCRIPT_CONFIG='"${CONF_DIR}/hellgroundcore.conf"')
+add_definitions(-D_TRINITY_SCRIPT_CONFIG='"${CONF_DIR}/hellgroundcore.conf"' -DTHIS_IS_SCRIPT_DLL)
 
 IF (CMAKE_SYSTEM_NAME MATCHES "Darwin")
     SET_TARGET_PROPERTIES(hellgroundscript PROPERTIES LINK_FLAGS "-flat_namespace -undefined suppress")
