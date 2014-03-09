@@ -35,6 +35,7 @@ class ChatCommand
     public:
         const char *       Name;
         uint64             RequiredPermissions;                   // function pointer required correct align (use uint32)
+        uint64             SelfPermissions;
         bool               AllowConsole;
         bool (ChatHandler::*Handler)(const char* args);
         std::string        Help;
@@ -82,7 +83,7 @@ class ChatHandler
 
         bool hasStringAbbr(const char* name, const char* part);
 
-        virtual bool isAvailable(ChatCommand const& cmd) const;
+        virtual bool isAvailable(ChatCommand const& cmd, bool self) const;
         virtual bool needReportToTarget(Player* chr) const;
 
         void SendGlobalSysMessage(const char *str);
