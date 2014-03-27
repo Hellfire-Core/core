@@ -4197,8 +4197,8 @@ void Aura::HandleModStealth(bool apply, bool Real)
             if (pTarget->GetVisibility() != VISIBILITY_OFF)
                 pTarget->SetVisibility(VISIBILITY_GROUP_STEALTH);
 
-            // for RACE_NIGHTELF stealth
-            if (pTarget->GetTypeId() == TYPEID_PLAYER && spell_id == 20580)
+            // for RACE_NIGHTELF improved stealth from shadowmeld (this should actually be a learned spell)
+            if(m_target->GetTypeId()==TYPEID_PLAYER && m_target->getRace() == RACE_NIGHTELF)
                 pTarget->CastSpell(pTarget, 21009, true, NULL, this);
         }
     }
@@ -4207,10 +4207,6 @@ void Aura::HandleModStealth(bool apply, bool Real)
         // only at real aura remove
         if (Real)
         {
-            // for RACE_NIGHTELF stealth
-            if (pTarget->GetTypeId() == TYPEID_PLAYER && spell_id == 20580)
-                pTarget->RemoveAurasDueToSpell(21009);
-
             // if last SPELL_AURA_MOD_STEALTH and no GM invisibility
             if (!pTarget->HasAuraType(SPELL_AURA_MOD_STEALTH) && pTarget->GetVisibility()!=VISIBILITY_OFF)
             {
