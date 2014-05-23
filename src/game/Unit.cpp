@@ -150,7 +150,7 @@ bool IsPassiveStackableSpell(uint32 spellId)
 
     for (int j = 0; j < 3; ++j)
     {
-        if (std::find(procAuraTypes.begin(),procAuraTypes.end(),spellProto->EffectApplyAuraName[j])!=procAuraTypes.end())
+		if(procAuraTypes.find(Unit::AuraTypeSet::value_type(spellProto->EffectApplyAuraName[j])) != procAuraTypes.end())
             return false;
     }
 
