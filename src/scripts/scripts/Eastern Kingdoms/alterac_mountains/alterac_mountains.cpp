@@ -141,7 +141,7 @@ bool GossipHello_npc_av_trinket_questgiver(Player* player,Creature* creature)
     }
 
     if(!hasTrinket && (player->GetQuestStatus(7161) == QUEST_STATUS_COMPLETE || player->GetQuestStatus(7162) == QUEST_STATUS_COMPLETE))
-        player->ADD_GOSSIP_ITEM(0, , GOSSIP_SENDER_MAIN, GOSSIP_SENDER_INFO);
+        player->ADD_GOSSIP_ITEM(0, GOSSIP_AV_TRINKET, GOSSIP_SENDER_MAIN, GOSSIP_SENDER_INFO);
 
     player->SEND_GOSSIP_MENU(creature->GetNpcTextId(),creature->GetGUID());
     return true;
