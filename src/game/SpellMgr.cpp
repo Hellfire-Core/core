@@ -2835,20 +2835,23 @@ void SpellMgr::LoadSpellCustomAttr()
         {
             case SPELLFAMILY_GENERIC:
             {
-                 if (spellInfo->Id == 52009)
-                     spellInfo->EffectMiscValue[0] = 20865;
-                 // Goblin Rocket Launcher
-                 else if (spellInfo->SpellIconID == 184 && spellInfo->Attributes == 4259840)
-                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
-                 else if (spellInfo->Id == 15852)
-                     spellInfo->Dispel = DISPEL_NONE;
-                 else if (spellInfo->Id == 46337) // Crab disguise
-                     spellInfo->AuraInterruptFlags |= AURA_INTERRUPT_FLAG_CAST;
-                 else if (spellInfo->SpellIconID == 2367) // remove flag from steam tonk & crashin trashin racers
-                     spellInfo->AttributesEx4 &= ~SPELL_ATTR_EX4_FORCE_TRIGGERED;
-                 else if (spellInfo->Id == 34171 || spellInfo->Id == 37956) // underbat tentacle lash
-                     spellInfo->AttributesEx2 |= SPELL_ATTR_EX2_FROM_BEHIND;
-                 break;
+                if (spellInfo->Id == 52009)
+                    spellInfo->EffectMiscValue[0] = 20865;
+                // Goblin Rocket Launcher
+                else if (spellInfo->SpellIconID == 184 && spellInfo->Attributes == 4259840)
+                    spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
+                else if (spellInfo->Id == 15852)
+                    spellInfo->Dispel = DISPEL_NONE;
+                else if (spellInfo->Id == 46337) // Crab disguise
+                    spellInfo->AuraInterruptFlags |= AURA_INTERRUPT_FLAG_CAST;
+                else if (spellInfo->SpellIconID == 2367) // remove flag from steam tonk & crashin trashin racers
+                    spellInfo->AttributesEx4 &= ~SPELL_ATTR_EX4_FORCE_TRIGGERED;
+                else if (spellInfo->Id == 34171 || spellInfo->Id == 37956) // Underbat - Tentacle Lash
+                {
+                    spellInfo->AttributesEx |= SPELL_ATTR_EX_UNK9;
+                    spellInfo->AttributesEx2 |= SPELL_ATTR_EX2_FROM_BEHIND;
+                }
+                break;
             }
             case SPELLFAMILY_SHAMAN:
             {
