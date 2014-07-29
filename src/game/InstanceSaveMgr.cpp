@@ -294,8 +294,8 @@ void InstanceSaveManager::CleanupInstances()
     _DelHelper(RealmDataDatabase, "group_instance.leaderGuid, instance", "group_instance", "LEFT JOIN instance ON group_instance.instance = instance.id WHERE instance.id IS NULL");
 
     // clean creature/gameobject respawn times
-    RealmDataDatabase.DirectExecute("DELETE FROM creature_respawn WHERE NOT EXISTS (SELECT id FROM instance WHERE instance.id = creature_respawn.instance)");
-    RealmDataDatabase.DirectExecute("DELETE FROM gameobject_respawn WHERE NOT EXISTS (SELECT id FROM instance WHERE instance.id = gameobject_respawn.instance)");
+    RealmDataDatabase.DirectExecute("DELETE FROM creature_respawn WHERE creature_respawn.instance != 0 AND NOT EXISTS (SELECT id FROM instance WHERE instance.id = creature_respawn.instance)");
+    RealmDataDatabase.DirectExecute("DELETE FROM gameobject_respawn WHERE gameobject_respawn.instance != 0 AND NOT EXISTS (SELECT id FROM instance WHERE instance.id = gameobject_respawn.instance)");
 
     RealmDataDatabase.CommitTransaction();
     bar.step();
