@@ -243,21 +243,27 @@ void ScriptedAI::CheckCasterNoMovementInRange(uint32 diff, float maxrange)
 
 void ScriptedAI::CheckShooterNoMovementInRange(uint32 diff, float maxrange)
 {
-    if(!UpdateVictim() || !me->getVictim())
+    if (!UpdateVictim() || !me->getVictim())
         return;
 
-    if(!me->IsInMap(me->getVictim()))
+    if (!me->IsInMap(me->getVictim()))
         return;
 
-    if(casterTimer > 3000)  // just in case
+    if (casterTimer > 3000)  // just in case
         casterTimer = 3000;
 
-    if(casterTimer < diff)
+    if (casterTimer < diff)
     {
-        // if victim in melee range, than chase it
-        if(me->IsWithinDistInMap(me->getVictim(), 5.0))
+        if (me->GetMotionMaster()->GetCurrentMovementGeneratorType() == CONFUSED_MOTION_TYPE)
         {
-            if(me->GetMotionMaster()->GetCurrentMovementGeneratorType() != CHASE_MOTION_TYPE)
+            casterTimer = 1000;
+            return;
+        }
+
+        // if victim in melee range, than chase it
+        if (me->IsWithinDistInMap(me->getVictim(), 5.0))
+        {
+            if (me->GetMotionMaster()->GetCurrentMovementGeneratorType() != CHASE_MOTION_TYPE)
                 DoStartMovement(me->getVictim());
             else
             {
@@ -269,7 +275,7 @@ void ScriptedAI::CheckShooterNoMovementInRange(uint32 diff, float maxrange)
             me->GetMotionMaster()->MoveIdle();
 
         // when victim is in distance, stop and shoot
-        if(!me->IsWithinDistInMap(me->getVictim(), maxrange) || !me->IsWithinLOSInMap(me->getVictim()))
+        if (!me->IsWithinDistInMap(me->getVictim(), maxrange) || !me->IsWithinLOSInMap(me->getVictim()))
         {
             float x, y, z;
             me->getVictim()->GetPosition(x, y, z);
