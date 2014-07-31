@@ -34,7 +34,9 @@ EndContentData */
 
 enum
 {
+    EMOTE_CHECK_BODY   = -1966601,
     SAY_INTRO          = -1900235,
+    EMOTE_MANIPULATE   = -1966602,
     SAY_STOP           = -1900236,
     SAY_START          = -1900237,
     SAY_1              = -1900238,
@@ -170,6 +172,7 @@ struct npc_shaheenAI : public npc_escortAI
                 switch(i)
                 {
                     case 1:
+                        DoScriptText(EMOTE_MANIPULATE, me);
                         me->SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_WORK_NOSHEATHE);
                         break;
                     case 2:
@@ -297,7 +300,6 @@ struct npc_shaheenAI : public npc_escortAI
                     case 4:
                         if (Creature* Xiraxis = (Unit::GetCreature(*me, XiraxisGUID)))
                         {
-                            DoScriptText(SAY_13, Xiraxis);
                             Xiraxis->SetReactState(REACT_AGGRESSIVE);
                             Xiraxis->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                             Xiraxis->setFaction(14);
@@ -359,6 +361,7 @@ bool GOUse_go_transportercp(Player *player, GameObject* go)
 
         if (Creature* shaheen = go->SummonCreature(NPC_SHAHEEN, -351.21f, -69.19f, -0.962f, 3.414f, TEMPSUMMON_CORPSE_DESPAWN, 10000))
         {
+            DoScriptText(EMOTE_CHECK_BODY, shaheen);
             DoScriptText(SAY_INTRO, shaheen, player);
             if (npc_shaheenAI* escortAI = dynamic_cast<npc_shaheenAI*>(shaheen->AI()))
                 escortAI->StartEscortPartOne(player);
