@@ -205,19 +205,25 @@ void ScriptedAI::DoStartNoMovement(Unit* pVictim, movementCheckType type)
 
 void ScriptedAI::CheckCasterNoMovementInRange(uint32 diff, float maxrange)
 {
-    if(!UpdateVictim() || !me->getVictim())
+    if (!UpdateVictim() || !me->getVictim())
         return;
 
-    if(!me->IsInMap(me->getVictim()))
+    if (!me->IsInMap(me->getVictim()))
         return;
 
-    if(casterTimer > 2000)  // just in case
+    if (casterTimer > 2000)  // just in case
         casterTimer = 2000;
 
-    if(casterTimer < diff)
+    if (casterTimer < diff)
     {
+        if (me->GetMotionMaster()->GetCurrentMovementGeneratorType() == CONFUSED_MOTION_TYPE)
+        {
+            casterTimer = 1000;
+            return;
+        }
+
         // go to victim
-        if(!me->IsWithinDistInMap(me->getVictim(), maxrange) || !me->IsWithinLOSInMap(me->getVictim()))
+        if (!me->IsWithinDistInMap(me->getVictim(), maxrange) || !me->IsWithinLOSInMap(me->getVictim()))
         {
             float x, y, z;
             /*
