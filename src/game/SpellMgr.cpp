@@ -2938,6 +2938,9 @@ void SpellMgr::LoadSpellCustomAttr()
                 // Healthstone
                 else if (spellInfo->SpellFamilyFlags & 0x10000LL)
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
+                // Death Coil
+                else if (spellInfo->SpellVisual == 9152)
+                    spellInfo->Attributes |= SPELL_ATTR_CANT_CANCEL;
 
                 break;
             }
