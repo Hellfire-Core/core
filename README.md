@@ -11,3 +11,9 @@ World of Warcraft TBC server
 * Site: https://hellground.net
 
 Welcome!
+
+
+
+
+
+Copyright (C) 2008-2014 HellGround team <http://hellground.net/>
