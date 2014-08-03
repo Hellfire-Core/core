@@ -1,4 +1,4 @@
-![logox.png](https://bitbucket.org/repo/7EMrE/images/632678489-logox.png)
+![logox.png](https://bitbucket.org/repo/Xjqaeg/images/1264307093-logox.png)
 
 ######################
 #   HellGroundCore   #
