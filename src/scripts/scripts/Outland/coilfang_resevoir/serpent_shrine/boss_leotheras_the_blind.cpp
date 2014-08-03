@@ -221,8 +221,14 @@ struct boss_leotheras_the_blindAI : public ScriptedAI
 
         m_creature->SetReactState(REACT_AGGRESSIVE);
         m_creature->SetMeleeDamageSchool(SPELL_SCHOOL_NORMAL);
-    }
 
+    }
+    void JustReachedHome()
+    {
+        Reset();
+        CheckChannelers();
+        CheckBanish();   
+    }
     void CheckChannelers()
     {
         for(uint8 i = 0; i < 3; i++)
@@ -247,6 +253,7 @@ struct boss_leotheras_the_blindAI : public ScriptedAI
             Creature* binder = m_creature->SummonCreature(MOB_SPELLBINDER,nx,ny,z,o,TEMPSUMMON_DEAD_DESPAWN,0);
             if (binder)
                 SpellBinderGUID[i] = binder->GetGUID();
+
         }
     }
     void MoveInLineOfSight(Unit *who)
@@ -278,7 +285,7 @@ struct boss_leotheras_the_blindAI : public ScriptedAI
         if(pInstance)
             pInstance->SetData(DATA_LEOTHERASTHEBLINDEVENT, IN_PROGRESS);
     }
-
+    
     void CheckBanish()
     {
         uint8 AliveChannelers = 0;
@@ -716,19 +723,6 @@ struct mob_greyheart_spellbinderAI : public ScriptedAI
     {
         Mindblast_Timer  = 3000 + rand()%5000;
         Earthshock_Timer = 5000 + rand()%5000;
-
-        if(pInstance)
-        {
-            if (pInstance->GetData(DATA_LEOTHERASTHEBLINDEVENT) != NOT_STARTED)
-            {
-                m_creature->Kill(m_creature,false);
-                return;
-            }
-            pInstance->SetData64(DATA_LEOTHERAS_EVENT_STARTER, 0);
-            Creature *leotheras = (Creature *)Unit::GetUnit(*m_creature, leotherasGUID);
-            if(leotheras && leotheras->isAlive())
-                ((boss_leotheras_the_blindAI*)leotheras->AI())->CheckChannelers();
-        }
     }
 
     void EnterCombat(Unit *who)
