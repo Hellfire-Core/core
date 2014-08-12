@@ -219,7 +219,10 @@ struct boss_leotheras_the_blindAI : public ScriptedAI
         m_creature->SetCorpseDelay(1000*60*60);
 
         if(pInstance && pInstance->GetData(DATA_LEOTHERASTHEBLINDEVENT) != DONE)
+        {
             pInstance->SetData(DATA_LEOTHERASTHEBLINDEVENT, NOT_STARTED);
+            pInstance->SetData(DATA_LEOTHERAS_EVENT_STARTER, 0);
+        }
 
         m_creature->SetReactState(REACT_AGGRESSIVE);
         m_creature->SetMeleeDamageSchool(SPELL_SCHOOL_NORMAL);
@@ -227,10 +230,10 @@ struct boss_leotheras_the_blindAI : public ScriptedAI
     }
     void JustReachedHome()
     {  
-        m_creature->Say("Error code: 1, if stuck - report to Elyrion", 0,0);
+        m_creature->Say("Error code: 1, if stuck - report", 0,0);
         Reset();
         CheckChannelers();
-        CheckBanish();   
+        CheckBanish();
     }
     void CheckChannelers()
     {
@@ -285,6 +288,7 @@ struct boss_leotheras_the_blindAI : public ScriptedAI
     {
         DoZoneInCombat();
         DoScriptText(SAY_AGGRO, m_creature);
+        m_creature->Yell("If boss will get stuck you are OBLIGED to screenshot the first debug message (he will get in loop after it) and report it on the bugtracker or by PM to Elyrion.",0,0);
         if(pInstance)
             pInstance->SetData(DATA_LEOTHERASTHEBLINDEVENT, IN_PROGRESS);
     }
@@ -379,7 +383,7 @@ struct boss_leotheras_the_blindAI : public ScriptedAI
     {
         if (victim->GetTypeId() != TYPEID_PLAYER)
             return;
-
+        DoZoneInCombat();
         if (DemonForm)
             DoScriptText(RAND(SAY_DEMON_SLAY1, SAY_DEMON_SLAY2, SAY_DEMON_SLAY3), m_creature);
         else
@@ -440,7 +444,7 @@ struct boss_leotheras_the_blindAI : public ScriptedAI
             {
                 if(Unit *newTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
                 {
-                    m_creature->Say("Error code: 2, if stuck - report to Elyrion", 0,0);
+                    m_creature->Say("Error code: 2, if stuck - report", 0,0);
                     DoResetThreat();
                     m_creature->GetMotionMaster()->Clear();
                     m_creature->GetMotionMaster()->MovePoint(0,newTarget->GetPositionX(),newTarget->GetPositionY(),newTarget->GetPositionZ());
@@ -463,7 +467,7 @@ struct boss_leotheras_the_blindAI : public ScriptedAI
             actualtarget = m_creature->getVictimGUID();
             if (actualtarget)
             {
-                m_creature->Say("Error code: 3, if stuck - report to Elyrion", 0,0);
+                m_creature->Say("Error code: 3, if stuck - report", 0,0);
                 NeedThreatReset = false;
                 DoResetThreat();
                 m_creature->GetMotionMaster()->Clear();
@@ -648,7 +652,7 @@ struct boss_leotheras_the_blind_demonformAI : public ScriptedAI
 
     void Reset()
     {
-        m_creature->Say("Reset #3 starting)",0,0);
+        m_creature->Say("Reset #3 starting",0,0);
         ChaosBlast_Timer = 1000;
         checkTimer = 2000;
         DealDamage = true;
@@ -782,7 +786,7 @@ struct mob_greyheart_spellbinderAI : public ScriptedAI
 
         if(pInstance && !pInstance->GetData64(DATA_LEOTHERAS_EVENT_STARTER))
         {   
-            m_creature->Say("Error code: 4, if stuck - report to Elyrion", 0,0);
+            m_creature->Say("Error code: 4, if stuck - report", 0,0);
             Reset();
             return;
         }
