@@ -87,8 +87,7 @@ struct mob_inner_demonAI : public ScriptedAI
     uint64 victimGUID;
 
     void Reset()
-    {   
-        m_creature->Say("Reset #1 starting",0,0);
+    {
         ShadowBolt_Timer = 10000;
         Link_Timer = 1000;
     }
@@ -161,14 +160,15 @@ struct boss_leotheras_the_blindAI : public ScriptedAI
         m_creature->GetPosition(x,y,z);
         m_creature->GetPosition(wLoc);
         pInstance = (c->GetInstanceData());
+        minstance = m_creature->GetMap();
         Demon = 0;
         Berserk_Timer = 600000;
-
-        for(uint8 i = 0; i < 3; i++)//clear guids
-            SpellBinderGUID[i] = 0;
+        ChannelersAlive = true;
     }
 
     ScriptedInstance *pInstance;
+
+    Map *minstance;
 
     uint32 Whirlwind_Timer;
     uint32 ChaosBlast_Timer;
@@ -185,6 +185,7 @@ struct boss_leotheras_the_blindAI : public ScriptedAI
     bool NeedThreatReset;
     bool DemonForm;
     bool IsFinalForm;
+    bool ChannelersAlive;
     float x,y,z;
 
     uint64 InnderDemon[5];
@@ -195,8 +196,8 @@ struct boss_leotheras_the_blindAI : public ScriptedAI
 
     void Reset()
     {
-        m_creature->Say("Reset #2 starting",0,0);
-        CheckChannelers();
+        ChannelersAlive = true;
+        EnterEvadeMode();
         BanishTimer = 1000;
         PulseCombat_Timer = 5000;
         Whirlwind_Timer = 15000;
@@ -221,47 +222,13 @@ struct boss_leotheras_the_blindAI : public ScriptedAI
         if(pInstance && pInstance->GetData(DATA_LEOTHERASTHEBLINDEVENT) != DONE)
         {
             pInstance->SetData(DATA_LEOTHERASTHEBLINDEVENT, NOT_STARTED);
-            pInstance->SetData(DATA_LEOTHERAS_EVENT_STARTER, 0);
+            pInstance->SetData64(DATA_LEOTHERAS_EVENT_STARTER, 0);
         }
 
         m_creature->SetReactState(REACT_AGGRESSIVE);
         m_creature->SetMeleeDamageSchool(SPELL_SCHOOL_NORMAL);
+    }
 
-    }
-    void JustReachedHome()
-    {  
-        m_creature->Say("Error code: 1, if stuck - report", 0,0);
-        Reset();
-        CheckChannelers();
-        CheckBanish();
-    }
-    void CheckChannelers()
-    {
-        for(uint8 i = 0; i < 3; i++)
-        {
-            Creature *add = Unit::GetCreature(*m_creature,SpellBinderGUID[i]);
-            if (add && add->isAlive())
-            {
-                add->setDeathState(DEAD);
-                add->RemoveCorpse();
-            }
-            else
-            {
-                if(add && add->isDead())
-                    add->RemoveCorpse();
-            }
-            float nx = x;
-            float ny = y;
-            float o = 2.4f;
-            if (i == 0) {nx += 10; ny -= 5; o=2.5f;}
-            if (i == 1) {nx -= 8; ny -= 7; o=0.9f;}
-            if (i == 2) {nx -= 3; ny += 9; o=5.0f;}
-            Creature* binder = m_creature->SummonCreature(MOB_SPELLBINDER,nx,ny,z,o,TEMPSUMMON_DEAD_DESPAWN,0);
-            if (binder)
-                SpellBinderGUID[i] = binder->GetGUID();
-
-        }
-    }
     void MoveInLineOfSight(Unit *who)
     {
         if(m_creature->HasAura(AURA_BANISH, 0))
@@ -288,23 +255,13 @@ struct boss_leotheras_the_blindAI : public ScriptedAI
     {
         DoZoneInCombat();
         DoScriptText(SAY_AGGRO, m_creature);
-        m_creature->Yell("If boss will get stuck you are OBLIGED to screenshot the first debug message (he will get in loop after it) and report it on the bugtracker or by PM to Elyrion.",0,0);
         if(pInstance)
             pInstance->SetData(DATA_LEOTHERASTHEBLINDEVENT, IN_PROGRESS);
     }
-    
+
     void CheckBanish()
     {
-        uint8 AliveChannelers = 0;
-        for(uint8 i = 0; i < 3; i++)
-        {
-            Unit *add = Unit::GetUnit(*m_creature,SpellBinderGUID[i]);
-            if (add && add->isAlive())
-                AliveChannelers++;
-        }
-
-        // channelers == 0 remove banish aura
-        if(AliveChannelers == 0 && m_creature->HasAura(AURA_BANISH, 0))
+        if (!ChannelersAlive && m_creature->HasAura(AURA_BANISH, 0))
         {
             // removing banish aura
             m_creature->RemoveAurasDueToSpell(AURA_BANISH);
@@ -320,16 +277,15 @@ struct boss_leotheras_the_blindAI : public ScriptedAI
 
             if(pInstance && pInstance->GetData64(DATA_LEOTHERAS_EVENT_STARTER))
             {
-
                 Unit *victim = Unit::GetUnit(*m_creature, pInstance->GetData64(DATA_LEOTHERAS_EVENT_STARTER));
                 if(victim)
-                    m_creature->getThreatManager().addThreat(victim, 1); 
+                    m_creature->getThreatManager().addThreat(victim, 1);
                 StartEvent();
             }
         }
-        else if(AliveChannelers != 0 && !m_creature->HasAura(AURA_BANISH, 0))
+        else if(ChannelersAlive && !m_creature->HasAura(AURA_BANISH, 0))
         {
-            // channelers != 0 apply banish aura
+            // Channelers are alive and banish is not present, reapply
             // removing Leotheras banish immune to apply AURA_BANISH
             m_creature->ApplySpellImmune(AURA_BANISH, IMMUNITY_MECHANIC, MECHANIC_BANISH, false);
             DoCast(m_creature, AURA_BANISH);
@@ -340,6 +296,9 @@ struct boss_leotheras_the_blindAI : public ScriptedAI
             // and removing weapons
             m_creature->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_DISPLAY  , 0);
             m_creature->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_DISPLAY+1, 0);
+
+            if (m_creature->isInCombat())
+                EnterEvadeMode();
         }
     }
 
@@ -383,7 +342,7 @@ struct boss_leotheras_the_blindAI : public ScriptedAI
     {
         if (victim->GetTypeId() != TYPEID_PLAYER)
             return;
-        DoZoneInCombat();
+
         if (DemonForm)
             DoScriptText(RAND(SAY_DEMON_SLAY1, SAY_DEMON_SLAY2, SAY_DEMON_SLAY3), m_creature);
         else
@@ -409,7 +368,6 @@ struct boss_leotheras_the_blindAI : public ScriptedAI
     {
         if(m_creature->HasAura(AURA_BANISH, 0))
             return;
-
         m_creature->LoadEquipment(m_creature->GetEquipmentId());
     }
 
@@ -421,6 +379,10 @@ struct boss_leotheras_the_blindAI : public ScriptedAI
 
             if(BanishTimer < diff)
             {
+                if (minstance->GetCreatureById(MOB_SPELLBINDER, GET_ALIVE_CREATURE_GUID))
+                    ChannelersAlive = true;
+                else
+                    ChannelersAlive = false;
                 CheckBanish();         //no need to check every update tick
                 BanishTimer = 1000;
             }
@@ -442,13 +404,9 @@ struct boss_leotheras_the_blindAI : public ScriptedAI
         {
             if(Whirlwind_Timer < diff)
             {
-                if(Unit *newTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
-                {
-                    m_creature->Say("Error code: 2, if stuck - report", 0,0);
-                    DoResetThreat();
-                    m_creature->GetMotionMaster()->Clear();
-                    m_creature->GetMotionMaster()->MovePoint(0,newTarget->GetPositionX(),newTarget->GetPositionY(),newTarget->GetPositionZ());
-                }
+                
+                DoResetThreat();
+                
                 Whirlwind_Timer = 2000;
             }
             else
@@ -467,7 +425,6 @@ struct boss_leotheras_the_blindAI : public ScriptedAI
             actualtarget = m_creature->getVictimGUID();
             if (actualtarget)
             {
-                m_creature->Say("Error code: 3, if stuck - report", 0,0);
                 NeedThreatReset = false;
                 DoResetThreat();
                 m_creature->GetMotionMaster()->Clear();
@@ -499,7 +456,7 @@ struct boss_leotheras_the_blindAI : public ScriptedAI
                     // while whirlwinding this variable is used to countdown target's change
                     Whirlwind_Timer = 2000;
                     NeedThreatReset = true;
-                    m_creature->SetReactState(REACT_PASSIVE);
+                    //m_creature->SetReactState(REACT_PASSIVE);
                 }
                 else
                     Whirlwind_Timer -= diff;
@@ -652,7 +609,6 @@ struct boss_leotheras_the_blind_demonformAI : public ScriptedAI
 
     void Reset()
     {
-        m_creature->Say("Reset #3 starting",0,0);
         ChaosBlast_Timer = 1000;
         checkTimer = 2000;
         DealDamage = true;
@@ -685,6 +641,7 @@ struct boss_leotheras_the_blind_demonformAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
+       
         //Return since we have no target
         if (!UpdateVictim() )
             return;
@@ -732,9 +689,20 @@ struct mob_greyheart_spellbinderAI : public ScriptedAI
 
     void Reset()
     {
-        m_creature->Say("Reset #4 starting",0,0);
         Mindblast_Timer  = 3000 + rand()%5000;
         Earthshock_Timer = 5000 + rand()%5000;
+        if(pInstance)
+        {
+            if (pInstance->GetData(DATA_LEOTHERASTHEBLINDEVENT) != NOT_STARTED)
+            {
+                m_creature->Respawn();
+                return;
+            }
+            pInstance->SetData64(DATA_LEOTHERAS_EVENT_STARTER, 0);
+            Creature *leotheras = (Creature *)Unit::GetUnit(*m_creature, leotherasGUID);
+            if(leotheras && leotheras->isAlive())
+                ((boss_leotheras_the_blindAI*)leotheras->AI())->CheckBanish();
+        }
     }
 
     void EnterCombat(Unit *who)
@@ -774,7 +742,6 @@ struct mob_greyheart_spellbinderAI : public ScriptedAI
                 Unit *victim = Unit::GetUnit(*m_creature, pInstance->GetData64(DATA_LEOTHERAS_EVENT_STARTER));
                 if(victim)
                     AttackStart(victim);
-
             }
         }
 
@@ -784,9 +751,8 @@ struct mob_greyheart_spellbinderAI : public ScriptedAI
             return;
         }
 
-        if(pInstance && !pInstance->GetData64(DATA_LEOTHERAS_EVENT_STARTER))
-        {   
-            m_creature->Say("Error code: 4, if stuck - report", 0,0);
+        if(pInstance && pInstance->GetData64(DATA_LEOTHERAS_EVENT_STARTER) == 0)
+        {
             Reset();
             return;
         }
