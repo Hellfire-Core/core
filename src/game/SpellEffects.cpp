@@ -6187,7 +6187,7 @@ void Spell::EffectScriptEffect(uint32 effIndex)
                 if (!unitTarget || unitTarget->GetTypeId() != TYPEID_PLAYER)
                     return;
 
-                unitTarget->Mount(22653);
+                //unitTarget->Mount(22653);
 
                 if (GetVirtualMapForMapAndZone(unitTarget->GetMapId(), ((Player*)unitTarget)->GetCachedZone()) != 530)
                 {
