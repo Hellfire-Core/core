@@ -321,6 +321,7 @@ struct boss_felmystAI : public ScriptedAI
                     me->Kill(p, false);
             }
         summons.DespawnAll();
+        DespawnSummons();
     }
 
     void DespawnSummons()
