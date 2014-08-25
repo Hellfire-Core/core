@@ -327,7 +327,7 @@ extern int main(int argc, char **argv)
     AccountsDatabase.EnableLogging();
 
     // maximum counter for next ping
-    uint32 numLoops = (sConfig.GetIntDefault("MaxPingTime", 30) * (MINUTE * 1000000 / 100000));
+    uint32 numLoops = sConfig.GetIntDefault("MaxPingTime", 30) * 10;
     uint32 loopCounter = 0;
 
 #ifndef WIN32

@@ -39,7 +39,7 @@ void SqlDelayThread::run()
 
     const uint32 loopSleepms = 10;
 
-    const uint32 pingEveryLoop = m_dbEngine->GetPingIntervall() / loopSleepms;
+    const uint32 pingEveryLoop = m_dbEngine->GetPingInterval() / loopSleepms;
 
     uint32 loopCounter = 0;
     while (m_running)

@@ -112,7 +112,7 @@ bool Database::Initialize(const char * infoString, int nConns /*= 1*/)
             m_logsDir.append("/");
     }
 
-    m_pingIntervallms = (uint32)sConfig.GetIntDefault("MaxPingTime", 30) * (MINUTE * 1000);
+    m_pingIntervalms = (uint32)sConfig.GetIntDefault("MaxPingTime", 30) * IN_MILISECONDS;
     m_minLogTimems = (uint32)sConfig.GetIntDefault("DBDiffLog.LogTime", 10);
 
     //create DB connections
@@ -250,14 +250,14 @@ void Database::Ping()
 
     {
         SqlConnection::Lock guard(m_pAsyncConn);
-        if (guard->Query(sql) == QueryResultAutoPtr(nullptr))
+        if (!guard->Query(sql))
             abort();
     }
 
     for (int i = 0; i < m_nQueryConnPoolSize; ++i)
     {
         SqlConnection::Lock guard(m_pQueryConnections[i]);
-        if (guard->Query(sql) == QueryResultAutoPtr(nullptr))
+        if (!guard->Query(sql))
             abort();
     }
 }

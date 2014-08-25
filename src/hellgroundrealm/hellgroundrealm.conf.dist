@@ -16,7 +16,7 @@ ConfVersion=2014021201
 #                       Unix sockets: experimental, not tested
 #
 #    MaxPingTime
-#         Settings for maximum database-ping interval (minutes between pings)
+#         Settings for maximum database-ping interval (seconds between pings)
 #
 #    RealmServerPort
 #         Default RealmServerPort

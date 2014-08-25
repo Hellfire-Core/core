@@ -210,7 +210,7 @@ class Database
         void ProcessResultQueue();
 
         bool CheckRequiredField(char const* table_name, char const* required_name);
-        uint32 GetPingIntervall() { return m_pingIntervallms; }
+        uint32 GetPingInterval() { return m_pingIntervalms; }
         bool CheckMinLogTime(uint32 time);
 
         //function to ping database connections
@@ -224,7 +224,7 @@ class Database
 
     protected:
         Database() : m_pAsyncConn(NULL), m_pResultQueue(NULL), m_threadBody(NULL), m_delayThread(NULL),
-            m_logSQL(false), m_pingIntervallms(0), m_nQueryConnPoolSize(1), m_bAllowAsyncTransactions(false), m_iStmtIndex(-1)
+            m_logSQL(false), m_pingIntervalms(0), m_nQueryConnPoolSize(1), m_bAllowAsyncTransactions(false), m_iStmtIndex(-1)
         {
             m_nQueryCounter = -1;
             m_enableLogging = false;
@@ -307,7 +307,7 @@ class Database
 
         bool m_logSQL;
         std::string m_logsDir;
-        uint32 m_pingIntervallms;
+        uint32 m_pingIntervalms;
         uint32 m_minLogTimems;
         bool m_enableLogging;
 };
