@@ -2944,11 +2944,8 @@ void SpellMgr::LoadSpellCustomAttr()
 
                 break;
             }
-            case SPELLFAMILY_HUNTER:
-                // Viper Sting
-                if (spellInfo->SpellIconID == 253)
-                    spellInfo->EffectMultipleValue[0] = 1.0f;
             case SPELLFAMILY_WARRIOR:
+            case SPELLFAMILY_HUNTER:
             case SPELLFAMILY_ROGUE:
                 spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
                 break;
