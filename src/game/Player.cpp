@@ -3500,14 +3500,17 @@ void Player::RemoveAllSpellCooldown()
 {
     if (!m_spellCooldowns.empty())
     {
-        for (SpellCooldowns::const_iterator itr = m_spellCooldowns.begin();itr != m_spellCooldowns.end(); ++itr)
+        for (SpellCooldowns::const_iterator itr = m_spellCooldowns.begin(); itr != m_spellCooldowns.end(); ++itr)
         {
-            WorldPacket data(SMSG_CLEAR_COOLDOWN, (4+8));
+            WorldPacket data(SMSG_CLEAR_COOLDOWN, (4 + 8));
             data << uint32(itr->first);
             data << uint64(GetGUID());
             SendPacketToSelf(&data);
         }
         m_spellCooldowns.clear();
+    }
+    if (!m_itemCooldowns.empty())
+    {
         for (ItemCooldowns::const_iterator itr = m_itemCooldowns.begin(); itr != m_itemCooldowns.end(); ++itr)
         {
             WorldPacket data(SMSG_CLEAR_COOLDOWN, (4 + 8));
