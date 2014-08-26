@@ -2788,8 +2788,8 @@ void Player::InitStatsForLevel(bool reapplyMods)
 void Player::SendInitialSpells()
 {
     uint16 spellCount = 0;
-
-    WorldPacket data(SMSG_INITIAL_SPELLS, (1+2+4*m_spells.size()+2+m_spellCooldowns.size()*(2+2+2+4+4)));
+    uint16 spellCooldowns = m_spellCooldowns.size() + m_itemCooldowns.size();
+    WorldPacket data(SMSG_INITIAL_SPELLS, (1+2+4*m_spells.size()+2+(spellCooldowns)*(2+2+2+4+4)));
     data << uint8(0);
 
     size_t countPos = data.wpos();
@@ -2810,8 +2810,6 @@ void Player::SendInitialSpells()
     }
 
     data.put<uint16>(countPos,spellCount);                  // write real count value
-
-    uint16 spellCooldowns = m_spellCooldowns.size();
     data << uint16(spellCooldowns);
     for (SpellCooldowns::const_iterator itr=m_spellCooldowns.begin(); itr!=m_spellCooldowns.end(); ++itr)
     {
@@ -2823,12 +2821,12 @@ void Player::SendInitialSpells()
 
         time_t cooldown = 0;
         time_t curTime = time(NULL);
-        if (itr->second.end > curTime)
-            cooldown = (itr->second.end-curTime)*1000;
+        if (itr->second > curTime)
+            cooldown = (itr->second-curTime)*1000;
 
-        data << uint16(itr->second.itemid);                 // cast item id
+        data << uint16(0);                                  // cast item id
         data << uint16(sEntry->Category);                   // spell category
-        if (sEntry->Category)                                // may be wrong, but anyway better than nothing...
+        if (sEntry->Category)                               // may be wrong, but anyway better than nothing...
         {
             data << uint32(0);                              // cooldown
             data << uint32(cooldown);                       // category cooldown
@@ -2839,7 +2837,32 @@ void Player::SendInitialSpells()
             data << uint32(0);                              // category cooldown
         }
     }
+    for (ItemCooldowns::const_iterator itr = m_itemCooldowns.begin(); itr != m_itemCooldowns.end(); ++itr)
+    {
+        SpellEntry const *sEntry = sSpellStore.LookupEntry(itr->first);
+        if (!sEntry)
+            continue;
 
+        data << uint16(itr->first);
+
+        time_t cooldown = 0;
+        time_t curTime = time(NULL);
+        if (itr->second.end > curTime)
+            cooldown = (itr->second.end - curTime) * 1000;
+
+        data << uint16(itr->second.itemid);                 // cast item id
+        data << uint16(sEntry->Category);                   // spell category
+        if (sEntry->Category)                               // may be wrong, but anyway better than nothing...
+        {
+            data << uint32(0);                              // cooldown
+            data << uint32(cooldown);                       // category cooldown
+        }
+        else
+        {
+            data << uint32(cooldown);                       // cooldown
+            data << uint32(0);                              // category cooldown
+        }
+    }
     SendPacketToSelf(&data);
 
     sLog.outDetail("CHARACTER: Sent Initial Spells");
@@ -3422,14 +3445,14 @@ void Player::removeSpell(uint32 spell_id, bool disabled)
 
 void Player::RemoveSpellCooldown(uint32 spell_id, bool update /* = false */)
 {
-    m_spellCooldowns.erase(spell_id);
+    m_spellCooldowns.erase(spell_id); // not intended to remove item cooldowns!
 
     if (update)
     {
         WorldPacket data(SMSG_CLEAR_COOLDOWN, (4+8));
         data << uint32(spell_id);
         data << uint64(GetGUID());
-    SendPacketToSelf(&data);
+        SendPacketToSelf(&data);
     }
 }
 
@@ -3455,6 +3478,22 @@ void Player::RemoveArenaSpellCooldowns()
             m_spellCooldowns.erase(itr);
         }
     }
+    ItemCooldowns::iterator iitr, inext;
+    // iterate item cooldowns
+    for (iitr = m_itemCooldowns.begin(); iitr != m_itemCooldowns.end(); iitr = inext)
+    {
+        inext = iitr;
+        ++inext;
+        SpellEntry const * entry = sSpellStore.LookupEntry(iitr->first);
+        if (entry && !(entry->AttributesEx4 & SPELL_ATTR_EX4_NOT_USABLE_IN_ARENA) && entry->RecoveryTime <= 15 * MINUTE * 1000 && entry->CategoryRecoveryTime <= 15 * MINUTE * 1000)
+        {
+            WorldPacket data(SMSG_CLEAR_COOLDOWN, (4 + 8));
+            data << uint32(iitr->first);
+            data << GetGUID();
+            SendPacketToSelf(&data);
+            m_itemCooldowns.erase(iitr);
+        }
+    }
 }
 
 void Player::RemoveAllSpellCooldown()
@@ -3469,12 +3508,21 @@ void Player::RemoveAllSpellCooldown()
             SendPacketToSelf(&data);
         }
         m_spellCooldowns.clear();
+        for (ItemCooldowns::const_iterator itr = m_itemCooldowns.begin(); itr != m_itemCooldowns.end(); ++itr)
+        {
+            WorldPacket data(SMSG_CLEAR_COOLDOWN, (4 + 8));
+            data << uint32(itr->first);
+            data << uint64(GetGUID());
+            SendPacketToSelf(&data);
+        }
+        m_itemCooldowns.clear();
     }
 }
 
 void Player::_LoadSpellCooldowns(QueryResultAutoPtr result)
 {
     m_spellCooldowns.clear();
+    m_itemCooldowns.clear();
 
     //QueryResultAutoPtr result = CharacterDatabase.PQuery("SELECT spell,item,time FROM character_spell_cooldown WHERE guid = '%u'",GetGUIDLow());
 
@@ -3517,8 +3565,18 @@ void Player::_SaveSpellCooldowns()
     // remove outdated and save active
     for (SpellCooldowns::iterator itr = m_spellCooldowns.begin();itr != m_spellCooldowns.end();)
     {
-        if (itr->second.end <= curTime)
+        if (itr->second <= curTime)
             m_spellCooldowns.erase(itr++);
+        else
+        {
+            RealmDataDatabase.PExecute("INSERT INTO character_spell_cooldown (guid,spell,item,time) VALUES ('%u', '%u', '%u', '" UI64FMTD "')", GetGUIDLow(), itr->first, 0, uint64(itr->second));
+            ++itr;
+        }
+    }
+    for (ItemCooldowns::iterator itr = m_itemCooldowns.begin(); itr != m_itemCooldowns.end();)
+    {
+        if (itr->second.end <= curTime)
+            m_itemCooldowns.erase(itr++);
         else
         {
             RealmDataDatabase.PExecute("INSERT INTO character_spell_cooldown (guid,spell,item,time) VALUES ('%u', '%u', '%u', '" UI64FMTD "')", GetGUIDLow(), itr->first, itr->second.itemid, uint64(itr->second.end));
@@ -18491,10 +18549,39 @@ void Player::UpdatePvP(bool state, bool ovrride)
 
 void Player::AddSpellCooldown(uint32 spellid, uint32 itemid, time_t end_time)
 {
-    SpellCooldown sc;
-    sc.end = end_time;
-    sc.itemid = itemid;
-    m_spellCooldowns[spellid] = sc;
+    if (itemid == 0)
+        m_spellCooldowns[spellid] = end_time;
+    else
+    {
+        for (ItemCooldowns::const_iterator itr = m_itemCooldowns.lower_bound(spellid);
+            itr != m_itemCooldowns.upper_bound(spellid); itr++)
+            if (itr->second.itemid == itemid)
+                {
+                m_itemCooldowns.erase(itr);
+                break;  //we don't need to look for more, each time a cooldown is inserted
+                        //previous cooldown with same spell and item should be deleted
+                }
+        ItemCooldown ic;
+        ic.itemid = itemid;
+        ic.end = end_time;
+        m_itemCooldowns.insert(std::make_pair(spellid,ic));
+    }
+}
+
+bool Player::HasSpellCooldown(uint32 spell_id, uint32 item /*= 0*/) const
+{
+    if (item == 0)
+    {
+        SpellCooldowns::const_iterator itr = m_spellCooldowns.find(spell_id);
+        return itr != m_spellCooldowns.end() && itr->second > time(NULL);
+    }
+    // else -> item cooldown
+    for (ItemCooldowns::const_iterator iitr = m_itemCooldowns.lower_bound(spell_id);
+        iitr != m_itemCooldowns.upper_bound(spell_id); iitr++)
+        if ((iitr->second.itemid == item || iitr->second.itemid == ITEM_COOLDOWN_ALL_ITEMS) && iitr->second.end > time(NULL))
+            return true; // cooldown placed on this particular item or all items
+
+    return false; // no item cooldown
 }
 
 void Player::SendCooldownEvent(SpellEntry const *spellInfo)

@@ -124,13 +124,15 @@ typedef std::list<SpellModifier*> SpellModList;
 
 typedef UNORDERED_MAP<uint64, std::pair<uint32, uint64>> ConsecutiveKillsMap;
 
-struct SpellCooldown
+#define ITEM_COOLDOWN_ALL_ITEMS 4 // item entry=4 does not exist, used for category cooldowns
+struct ItemCooldown
 {
     time_t end;
     uint16 itemid;
 };
 
-typedef std::map<uint32, SpellCooldown> SpellCooldowns;
+typedef std::multimap<uint32, ItemCooldown> ItemCooldowns;
+typedef std::map<uint32, time_t> SpellCooldowns;
 
 enum TrainerSpellState
 {
@@ -1533,23 +1535,19 @@ class HELLGROUND_EXPORT Player : public Unit
 
         CooldownMgr& GetCooldownMgr() { return m_CooldownMgr; }
 
-        bool HasSpellCooldown(uint32 spell_id) const
-        {
-            SpellCooldowns::const_iterator itr = m_spellCooldowns.find(spell_id);
-            return itr != m_spellCooldowns.end() && itr->second.end > time(NULL);
-        }
+        bool HasSpellCooldown(uint32 spell_id, uint32 item = 0) const;
         uint32 GetSpellCooldownDelay(uint32 spell_id) const
         {
             SpellCooldowns::const_iterator itr = m_spellCooldowns.find(spell_id);
             time_t t = time(NULL);
-            return itr != m_spellCooldowns.end() && itr->second.end > t ? itr->second.end - t : 0;
+            return itr != m_spellCooldowns.end() && itr->second > t ? itr->second - t : 0;
         }
         void AddSpellCooldown(uint32 spell_id, uint32 itemid, time_t end_time);
         void SendCooldownEvent(SpellEntry const *spellInfo);
         void ProhibitSpellSchool(SpellSchoolMask idSchoolMask, uint32 unTimeMs);
         void RemoveSpellCooldown(uint32 spell_id, bool update = false);
         void RemoveArenaSpellCooldowns();
-        void RemoveAllSpellCooldown();
+        void RemoveAllSpellCooldown(); // item?
         void _LoadSpellCooldowns(QueryResultAutoPtr result);
         void _SaveSpellCooldowns();
 
@@ -2409,6 +2407,7 @@ class HELLGROUND_EXPORT Player : public Unit
         PlayerMails m_mail;
         PlayerSpellMap m_spells;
         SpellCooldowns m_spellCooldowns;
+        ItemCooldowns m_itemCooldowns;
 
         ActionButtonList m_actionButtons;
 

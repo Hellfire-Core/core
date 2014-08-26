@@ -2863,7 +2863,8 @@ void Spell::SendSpellCooldown()
                 if (*i_scset == GetSpellEntry()->Id)             // skip main spell, already handled above
                     continue;
 
-                _player->AddSpellCooldown(*i_scset, m_CastItem ? m_CastItem->GetEntry() : 0, catrecTime);
+                _player->AddSpellCooldown(*i_scset, m_CastItem ? ITEM_COOLDOWN_ALL_ITEMS : 0, catrecTime);
+                // category cooldown should apply to all items
             }
         }
     }
@@ -3723,7 +3724,8 @@ void Spell::TriggerSpell()
 SpellCastResult Spell::CheckCast(bool strict)
 {
     // check cooldowns to prevent cheating
-    if (!IsTriggeredSpell() && m_caster->GetTypeId()==TYPEID_PLAYER && ((Player*)m_caster)->HasSpellCooldown(GetSpellEntry()->Id))
+    if (!IsTriggeredSpell() && m_caster->GetTypeId()==TYPEID_PLAYER &&
+        ((Player*)m_caster)->HasSpellCooldown(GetSpellEntry()->Id, m_CastItem? m_CastItem->GetEntry():0 ))
     {
        //triggered spells shouldn't be cast (cooldown check in handleproctriggerspell)
        // if (m_triggeredByAuraSpell)
