@@ -6,8 +6,8 @@
 
 World of Warcraft TBC server
 
-* Repository: http://tbc-core.hellground.net
-* Wiki: http://tbc-wiki.hellground.net
+* Repository: http://emu.hellground.net
+* Wiki: http://wiki.hellground.net
 * Site: https://hellground.net
 
 Welcome!
