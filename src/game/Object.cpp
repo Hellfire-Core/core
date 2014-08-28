@@ -1947,7 +1947,7 @@ void WorldObject::GetValidPointInAngle(Position &pos, float dist, float angle, b
     if (meAsSourcePos)
         GetPosition(pos);
 
-    pos.z += 2.0f;
+    //pos.z += 2.0f;   this caused npcs to stuck in textures over them?
 
     Position dest;
     dest.x = pos.x + dist * cos(angle);
@@ -2065,5 +2065,5 @@ void WorldObject::UpdateAllowedPositionZ(float x, float y, float &z) const
                 z = ground_z;
             break;
         }
-    }
+    }                                                                                  
 }
