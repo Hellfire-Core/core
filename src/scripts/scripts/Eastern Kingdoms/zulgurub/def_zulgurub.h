@@ -20,25 +20,29 @@
 #ifndef SC_DEF_ZULGURUB_H
 #define SC_DEF_ZULGURUB_H
 
-#define DATA_JEKLIKEVENT        1
-#define DATA_VENOXISEVENT       2
-#define DATA_MARLIEVENT         3
-#define DATA_THEKALEVENT        4
-#define DATA_ARLOKKEVENT        5
-#define DATA_HAKKAREVENT        6
-#define DATA_MANDOKIREVENT      7
-#define DATA_JINDOEVENT         8
-#define DATA_GAHZRANKAEVENT     9
-#define DATA_EDGEOFMADNESSEVENT 10
-#define DATA_JINDO              11
-#define DATA_LORKHAN            12
-#define DATA_THEKAL             13
-#define DATA_ZATH               14
-#define DATA_THEKALFAKEDEATH    15
-#define DATA_LORKHANISDEAD      16
-#define DATA_ZATHISDEAD         17
-#define DATA_OHGAN              18
-
+#define ENCOUNTERS              10
 #define GO_GONG_OF_BETHEKK      180526
+
+enum InstanceZulGurub {
+    DATA_JEKLIKEVENT            = 1,
+    DATA_VENOXISEVENT           = 2,
+    DATA_MARLIEVENT             = 3,
+    DATA_THEKALEVENT            = 4,
+    DATA_ARLOKKEVENT            = 5,
+    DATA_HAKKAREVENT            = 6,
+    DATA_MANDOKIREVENT          = 7,
+    DATA_JINDOEVENT             = 8,
+    DATA_GAHZRANKAEVENT         = 9,
+    DATA_EDGEOFMADNESSEVENT     = 10,
+    DATA_JINDO                  = 11,
+    DATA_LORKHAN                = 12,
+    DATA_THEKAL                 = 13,
+    DATA_ZATH                   = 14,
+    DATA_THEKALFAKEDEATH        = 15,
+    DATA_LORKHANISDEAD          = 16,
+    DATA_ZATHISDEAD             = 17,
+    DATA_OHGAN                  = 18
+};
+
 #endif
 

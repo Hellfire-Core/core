@@ -49,7 +49,10 @@ struct boss_gahzrankaAI : public ScriptedAI
         MassiveGeyser_Timer = 25000;
         Slam_Timer = 17000;
 
-        pInstance->SetData(DATA_GAHZRANKAEVENT, NOT_STARTED);
+        if (pInstance->GetData(DATA_GAHZRANKAEVENT) == DONE)
+            m_creature->ForcedDespawn();
+        else
+            pInstance->SetData(DATA_GAHZRANKAEVENT, NOT_STARTED);
     }
 
     void EnterCombat(Unit *who)
