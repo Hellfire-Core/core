@@ -2341,6 +2341,9 @@ EndContentData */
 # npc_shadowlord_trigger
 ######*/
 
+#define NPC_RETAINER_ID 22102
+#define NPC_SOULSTEALER_ID 22061
+
 struct npc_shadowlord_triggerAI : public Scripted_NoMovementAI
 {
     npc_shadowlord_triggerAI(Creature* c) : Scripted_NoMovementAI(c)
@@ -2369,7 +2372,7 @@ struct npc_shadowlord_triggerAI : public Scripted_NoMovementAI
         Check_Timer = 0;
         Wave_Timer = 0;
         SoulstealerList.clear();
-        SoulstealerList = FindAllCreaturesWithEntry(22061, 80.0f);
+        SoulstealerList = FindAllCreaturesWithEntry(NPC_SOULSTEALER_ID, 80.0f);
         m_creature->Relocate(x, y, z);
     }
 
@@ -2390,7 +2393,7 @@ struct npc_shadowlord_triggerAI : public Scripted_NoMovementAI
             counter = 0;
             Ccounter = 0;
             m_creature->CallAssistance();
-            SoulstealerList = FindAllCreaturesWithEntry(22061, 80.0f);
+            SoulstealerList = FindAllCreaturesWithEntry(NPC_SOULSTEALER_ID, 80.0f);
             if(!SoulstealerList.empty())
                 for(std::list<Creature*>::iterator i = SoulstealerList.begin(); i != SoulstealerList.end(); ++i)
                 {
@@ -2421,8 +2424,9 @@ struct npc_shadowlord_triggerAI : public Scripted_NoMovementAI
                 {
                     m_creature->GetRandomPoint(SpawnX,SpawnY,SpawnZ,3.0f,x,y,z);
                     z = SpawnZ;
-                    Unit *Retainer = m_creature->SummonCreature(22102,x,y,z,m_creature->GetOrientation(),
+                    Unit *Retainer = m_creature->SummonCreature(NPC_RETAINER_ID,x,y,z,m_creature->GetOrientation(),
                     TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT,80000);
+                    Retainer->GetMotionMaster()->MoveIdle();
                     Retainer->GetMotionMaster()->MovePath(2096+i, false);
                 }
                 Wave_Timer = 25000;
@@ -2493,6 +2497,7 @@ struct mob_shadowlord_deathwailAI : public ScriptedAI
         ClearCastQueue();
 
         m_creature->SetNoCallAssistance(true);
+        m_creature->LoadCreaturesAddon(true);
         Check_Timer = 2000;
         landed = true;
         felfire = false;
@@ -2550,6 +2555,7 @@ struct mob_shadowlord_deathwailAI : public ScriptedAI
 
             if(!m_creature->IsWalking() && m_creature->GetPositionZ() < 142)
             {
+                m_creature->Unmount();
                 me->SetWalk(true);
                 m_creature->SetSpeed(MOVE_WALK, 4.0);
                 m_creature->SetSpeed(MOVE_RUN, 2.0);
@@ -2557,7 +2563,7 @@ struct mob_shadowlord_deathwailAI : public ScriptedAI
             if(felfire && trigger && !trigger->isInCombat())
                 felfire = false;
             if(felfire)
-                AddSpellToCast(m_creature, SPELL_FEL_FIREBALL);
+                DoCast(m_creature, SPELL_FEL_FIREBALL);
             Check_Timer = 5000;
         }
         else
