@@ -2871,7 +2871,7 @@ void SpellMgr::LoadSpellCustomAttr()
                 else if (spellInfo->SpellIconID==25 && spellInfo->AttributesEx4 & 0x00800000LL)
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_FIXED_DAMAGE;
                 // Blessing of Sanctuary, greater and normal
-                else if (spellInfo->SpellIconID == 1804 || spellInfo->SpellIconID == 29)
+                else if (spellInfo->SpellIconID == 1804 || spellInfo->SpellIconID == 19)
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
 
                 // Devotion Aura
