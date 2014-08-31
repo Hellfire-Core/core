@@ -6770,6 +6770,9 @@ void Spell::EffectDuel(uint32 i)
     sHookMgr->OnDuelRequest(target, caster);
 }
 
+#define HEARTHSTONE_SPELL 8690
+#define HEARTHSTONE_ITEM 6948
+
 void Spell::EffectStuck(uint32 /*i*/)
 {
     if (!unitTarget)
@@ -6791,8 +6794,11 @@ void Spell::EffectStuck(uint32 /*i*/)
     {
         // if player hasn't cooldown on HearthStone and have in bags then use him
         // otherwise teleport to player start location
-        if (!pTarget->GetSpellCooldownDelay(8690) && pTarget->HasItemCount(6948, 1))
-            pTarget->CastSpell(pTarget, 8690, true);
+        if (!pTarget->HasSpellCooldown(HEARTHSTONE_SPELL, HEARTHSTONE_ITEM) && pTarget->HasItemCount(HEARTHSTONE_ITEM, 1))
+        {
+            pTarget->CastSpell(pTarget, HEARTHSTONE_SPELL, true);
+            pTarget->AddSpellCooldown(GetSpellEntry()->Id, HEARTHSTONE_ITEM, time(NULL) + HOUR);
+        }
         else
             if (PlayerInfo const * tmpPlInfo = sObjectMgr.GetPlayerInfo(pTarget->getRace(), pTarget->getClass()))
                 pTarget->TeleportTo(tmpPlInfo->mapId, tmpPlInfo->positionX, tmpPlInfo->positionY, tmpPlInfo->positionZ, 0.0f);
@@ -6803,6 +6809,8 @@ void Spell::EffectStuck(uint32 /*i*/)
             pTarget->BuildPlayerRepop();
         pTarget->TeleportToNearestGraveyard();
     }
+
+    pTarget->SaveToDB(); // just in case
 }
 
 void Spell::EffectSummonPlayer(uint32 /*i*/)
