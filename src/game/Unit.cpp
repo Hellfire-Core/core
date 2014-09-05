@@ -7698,7 +7698,7 @@ bool Unit::AttackStop()
 {
     if (!m_attacking)
         return false;
-
+    uint64 attacker_guid = m_attacking->GetGUID();
     m_attacking->_removeAttacker(this);
 
     //Clear our target
@@ -7715,7 +7715,7 @@ bool Unit::AttackStop()
         ((Creature*)this)->SetNoSearchAssistance(false);
     }
 
-    SendMeleeAttackStop(m_attacking->GetGUID());
+    SendMeleeAttackStop(attacker_guid);
     m_attacking = NULL;
 
     return true;
