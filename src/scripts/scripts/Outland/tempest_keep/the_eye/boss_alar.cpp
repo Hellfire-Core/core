@@ -159,6 +159,7 @@ struct boss_alarAI : public ScriptedAI
         m_creature->SetDisplayId(m_creature->GetNativeDisplayId());
         m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
         m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        m_creature->Relocate(331.717987, -0.059397, -2.389479);                        //prevent loot-bug and mid-air stuck, hope it will work after dc too
 
         Map::PlayerList const &PlayerList = ((InstanceMap*)m_creature->GetMap())->GetPlayers();
         for(Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
