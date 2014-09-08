@@ -333,7 +333,7 @@ struct boss_felmystAI : public ScriptedAI
         for (std::list<uint64>::iterator i = AddList.begin(); i!= AddList.end(); ++i)
         {
             if(Creature* Skeleton = me->GetCreature(*i))
-                Skeleton->ForcedDespawn();
+                Skeleton->DisappearAndDie();
         }
     }
 
