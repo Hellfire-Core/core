@@ -2903,6 +2903,7 @@ struct mob_shadowmoon_houndmasterAI: public ScriptedAI
     uint32 Volley;
     uint32 WingClip;
     uint32 Flare;
+    uint32 RangeCheck;
 
     void Reset()
     {
@@ -2914,38 +2915,49 @@ struct mob_shadowmoon_houndmasterAI: public ScriptedAI
             Hound->RemoveCorpse();
         }
         me->Mount(14334);
-        me->UpdateObjectVisibility();
-        Shoot = 2000;
+        me->UpdateVisibilityAndView();
+        me->UpdateObjectVisibility();          // works nice for players; though still visual bug when: .die -> .respawn (need to get out of vision to see him mounted)
+        me->GetMotionMaster()->Initialize();   // start moving in waypoints after exiting combat
         FreezingTrap = 15000;
         SilencingShot = urand(5000, 15000);
         Volley = urand(10000, 25000);
         WingClip = urand(8000, 20000);
         Flare = urand(2000, 20000);
+        RangeCheck = 1000;
     }
 
-    void EnterCombat(Unit *)
+    void EnterCombat(Unit * who)
     {
         me->Unmount();
         DoCast(me, SPELL_SUMMON_RIDING_WARHOUND);
         DoCast(me, SPELL_FREEZING_TRAP);
         DoZoneInCombat(80.0f);
+        DoStartMovement(who);
     }
-
-    void AttackStart(Unit *who)
-    {
-        ScriptedAI::AttackStartNoMove(who);
-
-        DoStartMovement(who, 30.0f);
-    }
+    
 
     void UpdateAI(const uint32 diff)
     {
         if(!UpdateVictim())
             return;
 
+        if (RangeCheck < diff)
+        {
+            Unit* victim = me->getVictim();
+            if (me->IsInRange(victim, 5.0f, 30.0f))
+                DoStartNoMovement(victim,CHECK_TYPE_SHOOTER);     
+            else
+                if (!me->IsInRange(victim, 5.0f, 30.0f))
+                    DoStartMovement(victim);
+            RangeCheck = 2000;
+        }
+        else
+            RangeCheck -= diff;
+
+
         if (FreezingTrap < diff)
         {
-            DoCast(me, SPELL_FREEZING_TRAP);
+            AddSpellToCast(SPELL_FREEZING_TRAP, CAST_NULL);
             FreezingTrap = 15000;
         }
         else
