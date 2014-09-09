@@ -2910,10 +2910,7 @@ struct mob_shadowmoon_houndmasterAI: public ScriptedAI
         ClearCastQueue();
 
         if(Creature* Hound = GetClosestCreatureWithEntry(me, MOB_SHADOWMOON_RIDING_HOUND, 80))
-        {
-            Hound->Kill(Hound, false);
-            Hound->RemoveCorpse();
-        }
+            Hound->DisappearAndDie(); 
         me->Mount(14334);
         me->UpdateVisibilityAndView();
         me->UpdateObjectVisibility();          // works nice for players; though still visual bug when: .die -> .respawn (need to get out of vision to see him mounted)
