@@ -1963,7 +1963,7 @@ void WorldObject::GetValidPointInAngle(Position &pos, float dist, float angle, b
     if (ignoreLOSOffset)
         result = VMAP::VMapFactory::createOrGetVMapManager()->getObjectHitPos(GetMapId(), pos.x, pos.y, pos.z +0.5f, dest.x, dest.y, dest.z +1.0f, dest.x, dest.y, dest.z, -0.5f);
     else
-        result = VMAP::VMapFactory::createOrGetVMapManager()->getObjectHitPos(GetMapId(), pos.x, pos.y, pos.z +3.0f, dest.x, dest.y, dest.z +7.0f, dest.x, dest.y, dest.z, -0.5f);
+        result = VMAP::VMapFactory::createOrGetVMapManager()->getObjectHitPos(GetMapId(), pos.x, pos.y, pos.z +0.5f, dest.x, dest.y, dest.z +2.0f, dest.x, dest.y, dest.z, -0.5f);
 
     if (result)
     {
