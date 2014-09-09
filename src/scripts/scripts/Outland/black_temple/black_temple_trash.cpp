@@ -3089,7 +3089,8 @@ CreatureAI* GetAI_mob_shadowmoon_reaver(Creature *_Creature)
 
 #define SPELL_CARNIVOROUS_BITE              41092
 #define SPELL_CHARGE                        25821
-#define SPELL_ENRAGE_1                       8599
+#define SPELL_ENRAGE_1                      8599
+#define MOB_SHADOWMOON_HOUNDMASTER          23018
 
 struct mob_shadowmoon_riding_houndAI: public ScriptedAI
 {
@@ -3104,6 +3105,12 @@ struct mob_shadowmoon_riding_houndAI: public ScriptedAI
 
         Charge = urand(5000, 20000);
         Enrage = 15000;
+    }
+    
+    void JustRespawned()
+    {
+        if (Unit* hunter = GetClosestCreatureWithEntry(me, MOB_SHADOWMOON_HOUNDMASTER,30.0f))
+            AttackStart(hunter->getVictim());
     }
 
     void DamageMade(Unit* target, uint32 &damage, bool direct_damage)
