@@ -77,7 +77,7 @@ void WorldRunnable::run()
 
     // unload battleground templates before different singletons destroyed
     sBattleGroundMgr.DeleteAllBattleGrounds();
-    sInstanceSaveManager.UnbindBeforeDelete();
+    //sInstanceSaveManager.UnbindBeforeDelete();
 
     sWorldSocketMgr->StopNetwork();
     sMapMgr.UnloadAll();                                    // unload all grids (including locked in memory)
