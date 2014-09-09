@@ -2914,6 +2914,7 @@ struct mob_shadowmoon_houndmasterAI: public ScriptedAI
             Hound->RemoveCorpse();
         }
         me->Mount(14334);
+        me->UpdateObjectVisibility();
         Shoot = 2000;
         FreezingTrap = 15000;
         SilencingShot = urand(5000, 15000);
