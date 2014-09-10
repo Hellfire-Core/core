@@ -195,6 +195,7 @@ class Pet : public Creature
         void UpdateDamagePhysical(WeaponAttackType attType);
 
         bool canSeeOrDetect(Unit const* u, WorldObject const*, bool detect, bool inVisibleList = false, bool is3dDistance = true) const;
+        bool CanSwim() const { return true; }
 
         bool   CanTakeMoreActiveSpells(uint32 SpellIconID);
         void   ToggleAutocast(uint32 spellid, bool apply);

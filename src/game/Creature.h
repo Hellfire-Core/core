@@ -472,7 +472,7 @@ class HELLGROUND_IMPORT_EXPORT Creature : public Unit
         bool isTrigger() const { return GetCreatureInfo()->flags_extra & CREATURE_FLAG_EXTRA_TRIGGER; }
 
         bool CanWalk() const { return GetCreatureInfo()->InhabitType & INHABIT_GROUND; }
-        bool CanSwim() const { return GetCreatureInfo()->InhabitType & INHABIT_WATER; }
+        virtual bool CanSwim() const { return GetCreatureInfo()->InhabitType & INHABIT_WATER; }
         bool CanFly()  const;
 
         void SetWalk(bool enable);

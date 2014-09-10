@@ -3781,8 +3781,6 @@ SpellCastResult Spell::CheckCast(bool strict)
         if (!m_caster->HasUnitMovementFlag(MOVEFLAG_FALLINGFAR) && IsAutoRepeat())
             return SPELL_FAILED_MOVING;
     }
-    if (m_spellInfo->Attributes & SPELL_ATTR_CANT_USED_IN_COMBAT && m_caster->isInCombat())
-        return SPELL_FAILED_AFFECTING_COMBAT;
 
     if (m_caster->GetTypeId() == TYPEID_PLAYER && !((Player*)m_caster)->isGameMaster() && sWorld.getConfig(CONFIG_VMAP_INDOOR_CHECK))
     {
