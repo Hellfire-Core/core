@@ -390,7 +390,7 @@ struct instance_black_temple : public ScriptedInstance
             case DATA_WEAPONMASTER_SOLDIER+5:
             case DATA_WEAPONMASTER_SOLDIER+6:
             case DATA_WEAPONMASTER_SOLDIER+7:
-                return weaponmasterList[identifier-30];
+                return weaponmasterList[identifier-DATA_WEAPONMASTER_SOLDIER];
         }
         return 0;
     }
