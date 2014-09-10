@@ -359,7 +359,7 @@ bool ItemUse_item_specific_target(Player *player, Item* _Item, SpellCastTargets 
         case 12284: cEntry[0] = 7047;  cEntry[1] = 7048;  cEntry[2] = 7049; break;      // Draco-Incarcinatrix 900
         case 23337: cEntry[0] = 16880; targetState = T_ALIVE; break;                    // Cenarion Antidote
         case 29818: cEntry[0] = 20774; targetState = T_ALIVE; break;                    // Energy Field Modulator
-        case 13289: cEntry[0] = 10384; cEntry[1] = 10385; targetState = T_ALIVE; break; // Egan's Blaster
+        case 13289: cEntry[0] = 10384; cEntry[1] = 10385; cEntry[2] = 11122; targetState = T_ALIVE; break; // Egan's Blaster
         case 10699: cEntry[0] = 5307;  cEntry[1] = 5308;  targetState = T_DEAD; break;  // Yehkinyas Bramble
         case 25552: cEntry[0] = 17148; cEntry[1] = 17147; cEntry[2] = 17146; targetState = T_DEAD; break; // Warmaul Ogre Banner
     }
