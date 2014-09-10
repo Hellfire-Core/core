@@ -147,7 +147,7 @@ class HELLGROUND_IMPORT_EXPORT CreatureAI : public UnitAI
         //virtual void SpellClick(Player *player) {}
  
         // Called at reaching home after evade
-        virtual void JustReachedHome() {}
+        virtual void JustReachedHome();
  
         void DoZoneInCombat(float max_dist = 200.0f);
  

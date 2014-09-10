@@ -118,4 +118,9 @@ void CreatureAI::EnterEvadeMode()
         formation->EvadeFormation(me);
 
     Reset();
+
+}
+void CreatureAI::JustReachedHome()
+{
+    me->GetMotionMaster()->Initialize();
 }
