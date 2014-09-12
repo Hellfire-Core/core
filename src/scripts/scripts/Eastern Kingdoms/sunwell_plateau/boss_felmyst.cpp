@@ -326,7 +326,7 @@ struct boss_felmystAI : public ScriptedAI
 
     void DespawnSummons()
     {
-        std::list<uint64> AddList = me->GetMap()->GetCreaturesGUIDList(MOB_UNYIELDING_DEAD, GET_FIRST_CREATURE_GUID, 0);
+     /*   std::list<uint64> AddList = me->GetMap()->GetCreaturesGUIDList(MOB_UNYIELDING_DEAD, GET_FIRST_CREATURE_GUID, 0);
         if (AddList.empty())
             return;
 
@@ -334,6 +334,13 @@ struct boss_felmystAI : public ScriptedAI
         {
             if(Creature* Skeleton = me->GetCreature(*i))
                 Skeleton->DisappearAndDie();
+        }
+        */
+        //hack fix for some-magical-way stay-alive skeletons after wipe
+        //remove when summons.DespawnAll() is fixed
+        while (Creature* skeleton = GetClosestCreatureWithEntry(me, MOB_UNYIELDING_DEAD, 400.0F))
+        {
+            skeleton->DisappearAndDie();
         }
     }
 
