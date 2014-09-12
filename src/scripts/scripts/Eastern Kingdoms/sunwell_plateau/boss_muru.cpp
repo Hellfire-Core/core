@@ -128,6 +128,15 @@ struct boss_muruAI : public Scripted_NoMovementAI
         HumanoidStart = 10000;
         TransitionTimer = 0;
         Summons.DespawnAll();
+        //hack fix for some summons worshipping satan after wipe
+        //delete when Summons.DespawnAll() is fixed
+        //the interesting part is that only void_spawn summons
+        //sometimes stay alive after wipe, all other spawns
+        //disappear are despawned propely
+        while (Creature* void_spawn = GetClosestCreatureWithEntry(me, CREATURE_VOID_SPAWN, 100.0f))
+        {
+               void_spawn->DisappearAndDie();
+        }
 
         if(pInstance->GetData(DATA_EREDAR_TWINS_EVENT) == DONE)
         {
