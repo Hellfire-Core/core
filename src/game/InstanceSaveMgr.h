@@ -123,8 +123,6 @@ class InstanceSaveManager
     public:
         ~InstanceSaveManager();
 
-        void UnbindBeforeDelete();
-
         typedef std::map<uint32 /*InstanceId*/, InstanceSave*> InstanceSaveMap;
         typedef UNORDERED_MAP<uint32 /*InstanceId*/, InstanceSave*> InstanceSaveHashMap;
         typedef std::map<uint32 /*mapId*/, InstanceSaveMap> InstanceSaveMapMap;

@@ -50,37 +50,6 @@ InstanceSaveManager::~InstanceSaveManager()
 {
 }
 
-void InstanceSaveManager::UnbindBeforeDelete()
-{
-    // it is undefined whether this or objectmgr will be unloaded first
-    // so we must be prepared for both cases
-    lock_instLists = true;
-    for (InstanceSaveHashMap::iterator itr = m_instanceSaveById.begin(); itr != m_instanceSaveById.end(); ++itr)
-    {
-        InstanceSave *save = itr->second;
-        if (save == nullptr)
-			continue;
-			
-        for (InstanceSave::PlayerListType::iterator itr2 = save->m_playerList.begin(); itr2 != save->m_playerList.end(); ++itr2)
-        {
-            if (Player* player = sObjectMgr.GetPlayer(*itr2))
-                player->UnbindInstance(save->GetMapId(), save->GetDifficulty(), true);
-        }
-
-        save->m_playerList.clear();
-
-        for (InstanceSave::GroupListType::iterator itr2 = save->m_groupList.begin(); itr2 != save->m_groupList.end(); ++itr2)
-            (*itr2)->UnbindInstance(save->GetMapId(), save->GetDifficulty(), true);
-
-        save->m_groupList.clear();
-		
-        delete save;
-		itr->second = nullptr;
-    }
-
-    m_instanceSaveById.clear();
-}
-
 /*
 - adding instance into manager
 - called from InstanceMap::Add, _LoadBoundInstances, LoadGroups
