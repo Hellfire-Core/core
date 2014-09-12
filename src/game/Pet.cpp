@@ -124,8 +124,6 @@ void Pet::RemoveFromWorld()
 
 bool Pet::LoadPetFromDB(Unit* owner, uint32 petentry, uint32 petnumber, bool current, float x, float y, float z, float ang)
 {
-    m_loading = true;
-
     uint32 ownerid = owner->GetGUIDLow();
 
     QueryResultAutoPtr result;
@@ -147,6 +145,8 @@ bool Pet::LoadPetFromDB(Unit* owner, uint32 petentry, uint32 petnumber, bool cur
 
     if (!result)
         return false;
+
+    m_loading = true;
 
     Field *fields = result->Fetch();
 

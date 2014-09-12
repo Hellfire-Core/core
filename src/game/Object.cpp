@@ -1657,7 +1657,12 @@ Pet* Player::SummonPet(uint32 entry, float x, float y, float z, float ang, PetTy
     pet->SetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE, getFaction());
 
     // this enables pet details window (Shift+P)
-    pet->GetCharmInfo()->SetPetNumber(pet_number, false);
+    CreatureInfo const *cinfo = pet->GetCreatureInfo();
+    if (petType==HUNTER_PET || (petType==SUMMON_PET && cinfo->type == CREATURE_TYPE_DEMON && getClass() == CLASS_WARLOCK))
+        pet->GetCharmInfo()->SetPetNumber(pet_number, true);
+    else
+        pet->GetCharmInfo()->SetPetNumber(pet_number, false);
+    //pet->GetCharmInfo()->SetPetNumber(pet_number, false);
 
     map->Add((Creature*)pet);
 
@@ -1685,6 +1690,8 @@ Pet* Player::SummonPet(uint32 entry, float x, float y, float z, float ang, PetTy
             PetSpellInitialize();
             break;
     }
+    if (GetTypeId() == TYPEID_PLAYER && (getClass() == CLASS_HUNTER || getClass() == CLASS_WARLOCK) && pet->isControlled() && !pet->isTemporarySummoned() && (petType == SUMMON_PET || petType == HUNTER_PET))
+        SetLastPetNumber(pet_number);
 
     if (petType == SUMMON_PET)
     {
