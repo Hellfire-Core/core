@@ -269,6 +269,7 @@ ChatCommand * ChatHandler::getCommandTable()
         { "anim",           PERM_GMT_DEV,   PERM_CONSOLE, false,  &ChatHandler::HandleDebugAnimCommand,               "", NULL },
         { "arena",          PERM_ADM,       PERM_CONSOLE, false,  &ChatHandler::HandleDebugArenaCommand,              "", NULL },
         { "bg",             PERM_ADM,       PERM_CONSOLE, false,  &ChatHandler::HandleDebugBattleGroundCommand,       "", NULL },
+        { "bossemote",      PERM_GMT_DEV,   PERM_CONSOLE, false,  &ChatHandler::HandleDebugBossEmoteCommand,          "", NULL },
         { "getitemstate",   PERM_ADM,       PERM_CONSOLE, false,  &ChatHandler::HandleDebugGetItemState,              "", NULL },
         { "getinstdata",    PERM_ADM,       PERM_CONSOLE, false,  &ChatHandler::HandleDebugGetInstanceDataCommand,    "", NULL },
         { "getinstdata64",  PERM_ADM,       PERM_CONSOLE, false,  &ChatHandler::HandleDebugGetInstanceData64Command,  "", NULL },

@@ -982,3 +982,25 @@ bool ChatHandler::HandleDebugShowCombatStats(const char* args)
 
     return true;
 }
+
+// Sends chat message of boss emote type
+bool ChatHandler::HandleDebugBossEmoteCommand(const char* args)
+{
+    if (!args || !*args)
+    {
+        SendSysMessage(LANG_BAD_VALUE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    Player *pPlayer = m_session->GetPlayer();
+
+    if (!pPlayer)
+        return false;
+
+    WorldPacket data(SMSG_MESSAGECHAT, 200);
+    pPlayer->BuildMonsterChat(&data, CHAT_MSG_RAID_BOSS_EMOTE, args, LANG_UNIVERSAL, pPlayer->GetName(), 0, true);
+    pPlayer->BroadcastPacketInRange(&data, sWorld.getConfig(CONFIG_LISTEN_RANGE_YELL), true);
+
+    return true;
+}

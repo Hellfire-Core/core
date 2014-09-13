@@ -141,12 +141,15 @@ class ChatHandler
         bool HandleDebugAnimCommand(const char* args);
         bool HandleDebugArenaCommand(const char * args);
         bool HandleDebugBattleGroundCommand(const char * args);
+        bool HandleDebugBossEmoteCommand(const char* args);
         bool HandleDebugGetInstanceDataCommand(const char* args);
         bool HandleDebugGetInstanceData64Command(const char* args);
         bool HandleDebugGetItemState(const char * args);
         bool HandleDebugGetLootRecipient(const char * args);
         bool HandleDebugGetValue(const char* args);
         bool HandleDebugMod32Value(const char* args);
+        bool HandleDebugPlayCinematicCommand(const char* args);
+        bool HandleDebugPlaySoundCommand(const char* args);
         bool HandleDebugSetInstanceDataCommand(const char* args);
         bool HandleDebugSetInstanceData64Command(const char* args);
         bool HandleDebugSetItemFlagCommand(const char * args);
@@ -157,10 +160,6 @@ class ChatHandler
         bool HandleDebugUpdate(const char* args);
         bool HandleDebugUpdateWorldStateCommand(const char* args);
         bool HandleDebugWPCommand(const char* args);
-
-
-        bool HandleDebugPlayCinematicCommand(const char* args);
-        bool HandleDebugPlaySoundCommand(const char* args);
 
         bool HandleDebugSendBuyErrorCommand(const char* args);
         bool HandleDebugSendChannelNotifyCommand(const char* args);
