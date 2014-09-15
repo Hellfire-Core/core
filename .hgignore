@@ -17,11 +17,13 @@ bin/
 *.ipch
 *.user
 *.gitignore
-dep/lib/*/ACE*
-dep/lib/*/Detour*
 dep/ACE_wrappers/lib/*
 dep/ACE_wrappers/ace/Release*/*/*
 dep/ACE_wrappers/ace/Debug*/*/*
+dep/lib/*/ACE*
+dep/lib/*/Detour*
+dep/recastnavigation/RecastDemo/Bin
+dep/recastnavigation/RecastDemo/Build
 win/VC1*0/*/*
 win/_*/
 
