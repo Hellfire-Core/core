@@ -154,7 +154,6 @@ class SpellCastTargets
 
         uint64 getCorpseTargetGUID() const { return m_CorpseTargetGUID.GetRawValue(); }
         void setCorpseTarget(Corpse* corpse);
-        Corpse *getCorpseTarget() const { return m_corpseTarget; }
         uint64 getItemTargetGUID() const { return m_itemTargetGUID.GetRawValue(); }
         Item* getItemTarget() const { return m_itemTarget; }
         uint32 getItemTargetEntry() const { return m_itemTargetEntry; }
@@ -185,7 +184,6 @@ class SpellCastTargets
         Unit *m_unitTarget;
         GameObject *m_GOTarget;
         Item *m_itemTarget;
-        Corpse* m_corpseTarget;
 
         // object GUID/etc, can be used always
         ObjectGuid m_unitTargetGUID;

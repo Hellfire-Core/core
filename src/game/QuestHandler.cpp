@@ -33,7 +33,6 @@
 #include "Group.h"
 #include "BattleGround.h"
 #include "BattleGroundAV.h"
-#include "luaengine/HookMgr.h"
 
 void WorldSession::HandleQuestgiverStatusQueryOpcode(WorldPacket & recv_data)
 {
@@ -396,9 +395,6 @@ void WorldSession::HandleQuestLogRemoveQuest(WorldPacket& recv_data)
         {
             if (!_player->TakeQuestSourceItem(quest, true))
                 return;                                     // can't un-equip some items, reject quest cancel
-
-            // used by eluna
-            sHookMgr->OnQuestAbandon(_player, quest);
 
             _player->SetQuestStatus(quest, QUEST_STATUS_NONE);
         }

@@ -46,7 +46,6 @@
 #include "WorldSocketMgr.h"
 #include "Log.h"
 #include "DBCStores.h"
-#include "luaengine/HookMgr.h"
 
 #if defined(__GNUC__)
 #pragma pack(1)
@@ -140,9 +139,6 @@ int WorldSocket::SendPacket(const WorldPacket& pct)
 
     if (closing_)
         return -1;
-
-    //if (!sHookMgr->OnPacketSend(m_Session, *const_cast<WorldPacket*>(&pct)))
-    //    return 0;
 
     if (iSendPacket(pct) == -1)
     {

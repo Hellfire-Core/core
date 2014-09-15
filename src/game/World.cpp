@@ -66,12 +66,11 @@
 #include "CreatureEventAIMgr.h"
 #include "WardenDataStorage.h"
 #include "WorldEventProcessor.h"
-#include "luaengine/HookMgr.h"
+
 //#include "Timer.h"
 #include "GuildMgr.h"
 #include <tbb/parallel_for.h>
 
-extern bool StartEluna();
 volatile bool World::m_stopEvent = false;
 uint8 World::m_ExitCode = SHUTDOWN_EXIT_CODE;
 volatile uint32 World::m_worldLoopCounter = 0;
@@ -1412,10 +1411,6 @@ void World::SetInitialWorldSettings()
     sLog.outString("Initializing Scripts...");
     sScriptMgr.LoadScriptLibrary(HELLGROUND_SCRIPT_NAME);
 
-    ///- Initialize Lua Engine
-    sLog.outString("Initialize Eluna Lua Engine...");
-    StartEluna();
-
     ///- Initialize game time and timers
     sLog.outDebug("DEBUG:: Initialize game time and timers");
     m_gameTime = time(NULL);
@@ -1849,9 +1844,6 @@ void World::Update(uint32 diff)
     //cleanup unused GridMap objects as well as VMaps
     sTerrainMgr.Update(diff);
     diffRecorder.RecordTimeFor("UpdateTerrainMGR");
-
-    ///- used by eluna
-    sHookMgr->OnWorldUpdate(diff);
 }
 
 void World::UpdateSessions(const uint32 & diff)

@@ -46,7 +46,6 @@
 #include "WardenWin.h"
 #include "WardenMac.h"
 #include "WardenChat.h"
-#include "luaengine/HookMgr.h"
 #include "GuildMgr.h"
 
 bool MapSessionFilter::Process(WorldPacket * packet)
@@ -282,9 +281,6 @@ void WorldSession::ProcessPacket(WorldPacket* packet)
     if (!packet)
         return;
 
-    //if (!sHookMgr->OnPacketReceive(this, *packet))
-    //    return;
-
     if (packet->GetOpcode() >= NUM_MSG_TYPES)
     {
         sLog.outLog(LOG_DEFAULT, "ERROR: SESSION: received non-existed opcode %s (0x%.4X)",
@@ -504,8 +500,6 @@ void WorldSession::LogoutPlayer(bool Save)
         if (uint64 lguid = GetPlayer()->GetLootGUID())
             DoLootRelease(lguid);
 
-        ///- used by eluna
-        sHookMgr->OnLogout(_player);
         sLog.outLog(LOG_CHAR, "Account: %u Character:[%s] (guid:%u) Logged out.",
             GetAccountId(),_player->GetName(),_player->GetGUIDLow());
 

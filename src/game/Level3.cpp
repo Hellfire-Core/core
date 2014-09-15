@@ -54,7 +54,6 @@
 #include "InstanceData.h"
 #include "CreatureEventAIMgr.h"
 #include "ChannelMgr.h"
-#include "luaengine/HookMgr.h"
 #include "GuildMgr.h"
 
 bool ChatHandler::HandleReloadAutobroadcastCommand(const char*)
@@ -71,18 +70,6 @@ bool ChatHandler::HandleReloadCommand(const char* arg)
     PSendSysMessage("Db table with name starting from '%s' not found and can't be reloaded.",arg);
     SetSentErrorMessage(true);
     return false;
-}
-
-extern bool StartEluna();
-bool ChatHandler::HandleReloadElunaCommand(const char* /*args*/)
-{
-    sLog.outString("Re-Loading Eluna LuaEngine...");
-
-    if (StartEluna())
-        SendGlobalGMSysMessage("Eluna LuaEngine reloaded.");
-    else
-        SendGlobalGMSysMessage("Eluna Lua Engine is disabled can't reload.");
-    return true;
 }
 
 bool ChatHandler::HandleReloadAllCommand(const char*)

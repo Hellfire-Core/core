@@ -589,8 +589,7 @@ enum AtLoginFlags
     AT_LOGIN_RENAME         = 0x1,
     AT_LOGIN_RESET_SPELLS   = 0x2,
     AT_LOGIN_RESET_TALENTS  = 0x4,
-    AT_LOGIN_DISPLAY_CHANGE = 0x8,
-    AT_LOGIN_FIRST          = 0x20,
+    AT_LOGIN_DISPLAY_CHANGE = 0x8
 };
 
 typedef std::map<uint32, QuestStatusData> QuestStatusMap;
@@ -1510,7 +1509,7 @@ class HELLGROUND_EXPORT Player : public Unit
         void learnQuestRewardedSpells(Quest const* quest);
 
         uint32 GetFreeTalentPoints() const { return GetUInt32Value(PLAYER_CHARACTER_POINTS1); }
-        void SetFreeTalentPoints(uint32 points);
+        void SetFreeTalentPoints(uint32 points) { SetUInt32Value(PLAYER_CHARACTER_POINTS1,points); }
         bool resetTalents(bool no_cost = false);
         uint32 resetTalentsCost() const;
         void UpdateFreeTalentPoints(bool resetIfNeed = true);

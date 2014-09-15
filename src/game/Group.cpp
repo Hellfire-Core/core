@@ -32,7 +32,6 @@
 #include "MapManager.h"
 #include "InstanceSaveMgr.h"
 #include "Util.h"
-#include "luaengine/HookMgr.h"
 
 Group::Group()
 {
@@ -151,9 +150,6 @@ bool Group::Create(const uint64 &guid, const char * name, bool lfg)
     if (!isBGGroup())
         RealmDataDatabase.CommitTransaction();
 
-    // used by eluna
-    sHookMgr->OnCreate(this, m_leaderGuid, m_groupType);
-
     return true;
 }
 
@@ -269,9 +265,6 @@ bool Group::AddInvite(Player *player)
 
     player->SetGroupInvite(this);
 
-    // used by eluna
-    sHookMgr->OnInviteMember(this, player->GetGUID());
-
     return true;
 }
 
@@ -359,9 +352,6 @@ bool Group::AddMember(const uint64 &guid, const char* name, bool lfg)
             player->ClearLFG();
             player->ClearLFM();
         }
-
-        // used by eluna
-        sHookMgr->OnAddMember(this, player->GetGUID());
     }
 
     return true;
@@ -415,9 +405,6 @@ uint32 Group::RemoveMember(const uint64 &guid, const uint8 &method)
     else
         Disband(true);
 
-    // used by eluna
-    sHookMgr->OnRemoveMember(this, guid, method);
-
     return m_memberSlots.size();
 }
 
@@ -437,9 +424,6 @@ void Group::ChangeLeader(const uint64 &guid)
         plr->ClearLFM();
 
     _setLeader(guid);
-
-    // used by eluna
-    sHookMgr->OnChangeLeader(this, guid, GetLeaderGUID());
 
     WorldPacket data(SMSG_GROUP_SET_LEADER, slot->name.size()+1);
     data << slot->name;
@@ -504,9 +488,6 @@ bool Group::ChangeLeaderToFirstOnlineMember()
 
 void Group::Disband(bool hideDestroy)
 {
-    // used by eluna
-    sHookMgr->OnDisband(this);
-
     Player *player;
 
     for (member_citerator citr = m_memberSlots.begin(); citr != m_memberSlots.end(); ++citr)

@@ -50,7 +50,6 @@
 #include "OutdoorPvPMgr.h"
 
 #include "movement/packet_builder.h"
-#include "luaengine/HookMgr.h"
 
 uint32 GuidHigh2TypeId(uint32 guid_hi)
 {
@@ -1556,9 +1555,6 @@ Creature* WorldObject::SummonCreature(uint32 id, float x, float y, float z, floa
     if (GetTypeId()==TYPEID_UNIT && ((Creature*)this)->IsAIEnabled)
         ((Creature*)this)->AI()->JustSummoned(pCreature);
 
-    if (Unit* summoner = ToUnit())
-        sHookMgr->OnSummoned(pCreature, summoner);
-
     if (pCreature->IsAIEnabled)
     {
         pCreature->AI()->JustRespawned();
@@ -1597,7 +1593,7 @@ Pet* Player::SummonPet(uint32 entry, float x, float y, float z, float ang, PetTy
     if (petType == SUMMON_PET && pet->LoadPetFromDB(this, entry, 0, false, x, y, z, ang))
     {
         // Remove Demonic Sacrifice auras (known pet)
-        Unit::AuraList const& auraClassScripts = GetAurasByType(SPELL_AURA_override_CLASS_SCRIPTS);
+        Unit::AuraList const& auraClassScripts = GetAurasByType(SPELL_AURA_OVERRIDE_CLASS_SCRIPTS);
         for (Unit::AuraList::const_iterator itr = auraClassScripts.begin();itr!=auraClassScripts.end();)
         {
             if ((*itr)->GetModifier()->m_miscvalue==2228)
@@ -1696,7 +1692,7 @@ Pet* Player::SummonPet(uint32 entry, float x, float y, float z, float ang, PetTy
     if (petType == SUMMON_PET)
     {
         // Remove Demonic Sacrifice auras (known pet)
-        Unit::AuraList const& auraClassScripts = GetAurasByType(SPELL_AURA_override_CLASS_SCRIPTS);
+        Unit::AuraList const& auraClassScripts = GetAurasByType(SPELL_AURA_OVERRIDE_CLASS_SCRIPTS);
         for (Unit::AuraList::const_iterator itr = auraClassScripts.begin();itr!=auraClassScripts.end();)
         {
             if ((*itr)->GetModifier()->m_miscvalue==2228)

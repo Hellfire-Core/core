@@ -167,7 +167,7 @@ pAuraHandler AuraHandler[TOTAL_AURAS]=
     &Aura::HandleNoImmediateEffect,                         //109 SPELL_AURA_ADD_TARGET_TRIGGER
     &Aura::HandleModPowerRegenPCT,                          //110 SPELL_AURA_MOD_POWER_REGEN_PERCENT
     &Aura::HandleNoImmediateEffect,                         //111 SPELL_AURA_ADD_CASTER_HIT_TRIGGER implemented in Spell::SelectMagnetTarget and Unit::AttackerStateUpdate
-    &Aura::HandleNoImmediateEffect,                         //112 SPELL_AURA_override_CLASS_SCRIPTS
+    &Aura::HandleNoImmediateEffect,                         //112 SPELL_AURA_OVERRIDE_CLASS_SCRIPTS
     &Aura::HandleNoImmediateEffect,                         //113 SPELL_AURA_MOD_RANGED_DAMAGE_TAKEN implemented in Unit::MeleeDamageBonus
     &Aura::HandleNoImmediateEffect,                         //114 SPELL_AURA_MOD_RANGED_DAMAGE_TAKEN_PCT implemented in Unit::MeleeDamageBonus
     &Aura::HandleNoImmediateEffect,                         //115 SPELL_AURA_MOD_HEALING                 implemented in Unit::SpellBaseHealingBonusForVictim
@@ -5116,7 +5116,7 @@ void Aura::HandlePeriodicHeal(bool apply, bool Real)
                 {
                     if (Unit* caster = GetCaster())
                     {
-                        Unit::AuraList const& classScripts = caster->GetAurasByType(SPELL_AURA_override_CLASS_SCRIPTS);
+                        Unit::AuraList const& classScripts = caster->GetAurasByType(SPELL_AURA_OVERRIDE_CLASS_SCRIPTS);
                         for (Unit::AuraList::const_iterator k = classScripts.begin(); k != classScripts.end(); ++k)
                         {
                             int32 tickcount = SpellMgr::GetSpellDuration(m_spellProto) / m_spellProto->EffectAmplitude[m_effIndex];
@@ -5389,7 +5389,7 @@ void Aura::HandlePeriodicDamage(bool apply, bool Real)
                 {
                     if (Unit* caster = GetCaster())
                     {
-                        Unit::AuraList const& classScripts = caster->GetAurasByType(SPELL_AURA_override_CLASS_SCRIPTS);
+                        Unit::AuraList const& classScripts = caster->GetAurasByType(SPELL_AURA_OVERRIDE_CLASS_SCRIPTS);
                         for (Unit::AuraList::const_iterator k = classScripts.begin(); k != classScripts.end(); ++k)
                         {
                             int32 tickcount = SpellMgr::GetSpellDuration(m_spellProto) / m_spellProto->EffectAmplitude[m_effIndex];
@@ -7135,7 +7135,7 @@ void Aura::PeriodicTick()
             if (GetSpellProto()->SpellFamilyName == SPELLFAMILY_WARLOCK && (GetSpellProto()->SpellFamilyFlags & 0x8))
             {
                 // find talent max bonus percentage
-                Unit::AuraList const& mClassScriptAuras = pCaster->GetAurasByType(SPELL_AURA_override_CLASS_SCRIPTS);
+                Unit::AuraList const& mClassScriptAuras = pCaster->GetAurasByType(SPELL_AURA_OVERRIDE_CLASS_SCRIPTS);
                 for (Unit::AuraList::const_iterator i = mClassScriptAuras.begin(); i != mClassScriptAuras.end(); ++i)
                 {
                     if ((*i)->GetModifier()->m_miscvalue == 4992 || (*i)->GetModifier()->m_miscvalue == 4993)
@@ -8090,7 +8090,7 @@ void Aura::HandleAuraMeleeAPAttackerBonus(bool apply, bool Real)
         {
             if (Unit* caster = GetCaster())
             {
-                Unit::AuraList overrideClassScriptAuras = caster->GetAurasByType(SPELL_AURA_override_CLASS_SCRIPTS);
+                Unit::AuraList overrideClassScriptAuras = caster->GetAurasByType(SPELL_AURA_OVERRIDE_CLASS_SCRIPTS);
                 for (Unit::AuraList::iterator i = overrideClassScriptAuras.begin(); i != overrideClassScriptAuras.end();)
                 {
                     switch ((*i)->GetSpellProto()->Id)

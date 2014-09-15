@@ -319,7 +319,6 @@ class ChatHandler
         bool HandleQuestRemove(const char * args);
         bool HandleQuestComplete(const char * args);
 
-        bool HandleReloadElunaCommand(const char* args);
         bool HandleReloadCommand(const char* args);
         bool HandleReloadAllCommand(const char* args);
         bool HandleReloadAllAreaCommand(const char* args);

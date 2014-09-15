@@ -51,7 +51,6 @@
 #include "TemporarySummon.h"
 #include "PetAI.h"
 #include "MovementGenerator.h"
-#include "luaengine/HookMgr.h"
 
 #define SPELL_CHANNEL_UPDATE_INTERVAL 1000
 
@@ -157,7 +156,6 @@ void SpellCastTargets::setItemTarget(Item* item)
 void SpellCastTargets::setCorpseTarget(Corpse* corpse)
 {
     m_CorpseTargetGUID = corpse->GetGUID();
-    m_corpseTarget = corpse;
 }
 
 void SpellCastTargets::Update(Unit* caster)
@@ -2504,10 +2502,6 @@ void Spell::cast(bool skipCheck)
     // do NOT fill again spell target map if there are already some targets defined
     if (m_UniqueTargetInfo.empty())
         FillTargetMap();
-
-    // used by eluna
-    if (m_caster->GetTypeId() == TYPEID_PLAYER)
-        sHookMgr->OnSpellCast(m_caster->ToPlayer(), this, skipCheck);
 
     if (m_spellState == SPELL_STATE_FINISHED)                // stop cast if spell marked as finish somewhere in Take*/FillTargetMap
     {

@@ -319,18 +319,15 @@ ChatCommand * ChatHandler::getCommandTable()
 
     static ChatCommand reloadCommandTable[] =
     {
-        { "all",            PERM_ADM,       PERM_CONSOLE, true,   &ChatHandler::HandleReloadAllCommand,           "", NULL },
-        { "all_item",       PERM_ADM,       PERM_CONSOLE, true,   &ChatHandler::HandleReloadAllItemCommand,       "", NULL },
-        { "all_locales",    PERM_ADM,       PERM_CONSOLE, true,   &ChatHandler::HandleReloadAllLocalesCommand,    "", NULL },
-        { "all_loot",       PERM_ADM,       PERM_CONSOLE, true,   &ChatHandler::HandleReloadAllLootCommand,       "", NULL },
-        { "all_npc",        PERM_ADM,       PERM_CONSOLE, true,   &ChatHandler::HandleReloadAllNpcCommand,        "", NULL },
-        { "all_quest",      PERM_ADM,       PERM_CONSOLE, true,   &ChatHandler::HandleReloadAllQuestCommand,      "", NULL },
-        { "all_scripts",    PERM_ADM,       PERM_CONSOLE, true,   &ChatHandler::HandleReloadAllScriptsCommand,    "", NULL },
-        { "all_spell",      PERM_ADM,       PERM_CONSOLE, true,   &ChatHandler::HandleReloadAllSpellCommand,      "", NULL },
-
-        { "config",         PERM_ADM,       PERM_CONSOLE, true,   &ChatHandler::HandleReloadConfigCommand,        "", NULL },
-        { "eluna",          PERM_ADM,       PERM_CONSOLE, true,   &ChatHandler::HandleReloadElunaCommand,         "", NULL },
-
+        { "all",                         PERM_ADM,  PERM_CONSOLE, true,   &ChatHandler::HandleReloadAllCommand,                       "", NULL },
+        { "all_item",                    PERM_ADM,  PERM_CONSOLE, true,   &ChatHandler::HandleReloadAllItemCommand,                   "", NULL },
+        { "all_locales",                 PERM_ADM,  PERM_CONSOLE, true,   &ChatHandler::HandleReloadAllLocalesCommand,                "", NULL },
+        { "all_loot",                    PERM_ADM,  PERM_CONSOLE, true,   &ChatHandler::HandleReloadAllLootCommand,                   "", NULL },
+        { "all_npc",                     PERM_ADM,  PERM_CONSOLE, true,   &ChatHandler::HandleReloadAllNpcCommand,                    "", NULL },
+        { "all_quest",                   PERM_ADM,  PERM_CONSOLE, true,   &ChatHandler::HandleReloadAllQuestCommand,                  "", NULL },
+        { "all_scripts",                 PERM_ADM,  PERM_CONSOLE, true,   &ChatHandler::HandleReloadAllScriptsCommand,                "", NULL },
+        { "all_spell",                   PERM_ADM,  PERM_CONSOLE, true,   &ChatHandler::HandleReloadAllSpellCommand,                  "", NULL },
+        { "config",                      PERM_ADM,  PERM_CONSOLE, true,   &ChatHandler::HandleReloadConfigCommand,                    "", NULL },
         { "areatrigger_tavern",          PERM_ADM,  PERM_CONSOLE, true,   &ChatHandler::HandleReloadAreaTriggerTavernCommand,         "", NULL },
         { "areatrigger_teleport",        PERM_ADM,  PERM_CONSOLE, true,   &ChatHandler::HandleReloadAreaTriggerTeleportCommand,       "", NULL },
         { "access_requirement",          PERM_ADM,  PERM_CONSOLE, true,   &ChatHandler::HandleReloadAccessRequirementCommand,         "", NULL },
@@ -397,7 +394,6 @@ ChatCommand * ChatHandler::getCommandTable()
         { "hellground_string",           PERM_ADM,  PERM_CONSOLE, true,   &ChatHandler::HandleReloadHellgroundStringCommand,          "", NULL },
         { "unqueue_account",             PERM_ADM,  PERM_CONSOLE, true,   &ChatHandler::HandleReloadUnqueuedAccountListCommand,       "", NULL },
         { "waypoint_scripts",            PERM_ADM,  PERM_CONSOLE, true,   &ChatHandler::HandleReloadWpScriptsCommand,                 "", NULL },
-
         { "",                            PERM_ADM,  PERM_CONSOLE, true,   &ChatHandler::HandleReloadCommand,                          "", NULL },
         { NULL,                          0,         0,            false,  NULL,                                                       "", NULL }
     };

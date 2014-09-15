@@ -60,7 +60,6 @@
 #include "GridNotifiers.h"
 #include "GridNotifiersImpl.h"
 #include "PathFinder.h"
-#include "luaengine/HookMgr.h"
 
 #include <sstream>
 
@@ -566,7 +565,7 @@ void Spell::SpellDamageSchoolDmg(uint32 effect_idx)
                 // Starfire
                 else if (spellInfo->SpellFamilyFlags & 0x0004LL)
                 {
-                    Unit::AuraList const& m_OverrideClassScript = m_caster->GetAurasByType(SPELL_AURA_override_CLASS_SCRIPTS);
+                    Unit::AuraList const& m_OverrideClassScript = m_caster->GetAurasByType(SPELL_AURA_OVERRIDE_CLASS_SCRIPTS);
                     for (Unit::AuraList::const_iterator i = m_OverrideClassScript.begin(); i != m_OverrideClassScript.end(); ++i)
                     {
                         // Starfire Bonus (caster)
@@ -734,7 +733,7 @@ void Spell::SpellDamageSchoolDmg(uint32 effect_idx)
                 if (spellInfo->SpellFamilyFlags & 0x0003LL)
                 {
                     bool stop = false;
-                    Unit::AuraList const& auras = m_caster->GetAurasByType(SPELL_AURA_override_CLASS_SCRIPTS);
+                    Unit::AuraList const& auras = m_caster->GetAurasByType(SPELL_AURA_OVERRIDE_CLASS_SCRIPTS);
                     for (Unit::AuraList::const_iterator itr = auras.begin(); itr != auras.end(); ++itr)
                     {
                         switch ((*itr)->GetId())
@@ -937,7 +936,6 @@ void Spell::EffectDummy(uint32 i)
                             unitTarget->RemoveAllAuras();
                             unitTarget->DeleteThreatList();
                             unitTarget->CombatStop();
-                            SpellEntry const *sleepSpellEntry = sSpellStore.LookupEntry(34664);
                             Aura* sleepAura = CreateAura(sleepSpellEntry, 0, NULL, unitTarget,unitTarget, 0);
 
                             unitTarget->AddAura(sleepAura); // Apply Visual Sleep
@@ -5147,7 +5145,7 @@ void Spell::SpellDamageWeaponDmg(uint32 i)
             // Stormstrike
             if (GetSpellEntry()->SpellFamilyFlags & 0x001000000000LL)
             {
-                Unit::AuraList const& m_OverrideClassScript = m_caster->GetAurasByType(SPELL_AURA_override_CLASS_SCRIPTS);
+                Unit::AuraList const& m_OverrideClassScript = m_caster->GetAurasByType(SPELL_AURA_OVERRIDE_CLASS_SCRIPTS);
                 for (Unit::AuraList::const_iterator citr = m_OverrideClassScript.begin(); citr != m_OverrideClassScript.end(); ++citr)
                 {
                     // Stormstrike AP Buff
@@ -6765,9 +6763,6 @@ void Spell::EffectDuel(uint32 i)
 
     caster->SetUInt64Value(PLAYER_DUEL_ARBITER,pGameObj->GetGUID());
     target->SetUInt64Value(PLAYER_DUEL_ARBITER,pGameObj->GetGUID());
-
-    // used by eluna
-    sHookMgr->OnDuelRequest(target, caster);
 }
 
 #define HEARTHSTONE_SPELL 8690

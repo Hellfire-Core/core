@@ -31,7 +31,6 @@
 #include "Mail.h"
 #include "Util.h"
 #include "Chat.h"
-#include "luaengine/HookMgr.h"
 
 //please DO NOT use iterator++, because it is slower than ++iterator!!!
 //post-incrementation is always slower than pre-incrementation !
@@ -345,9 +344,6 @@ void WorldSession::HandleAuctionSellItem(WorldPacket & recv_data)
 
     AuctionEntry* AH = auctionHouse->AddAuction(auctionHouseEntry, it, etime, bid, buyout, deposit, pl);
 
-    // used by eluna
-    sHookMgr->OnAdd(auctionHouse);
-
     SendAuctionCommandResult(AH, AUCTION_STARTED, AUCTION_OK);
 }
 
@@ -500,10 +496,6 @@ void WorldSession::HandleAuctionRemoveItem(WorldPacket & recv_data)
     RealmDataDatabase.CommitTransaction();
     sAuctionMgr.RemoveAItem(auction->itemGuidLow);
     auctionHouse->RemoveAuction(auction->Id);
-    
-    // used by eluna
-    sHookMgr->OnRemove(auctionHouse);
-
     delete auction;
 }
 

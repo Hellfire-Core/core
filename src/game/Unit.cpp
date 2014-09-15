@@ -55,7 +55,6 @@
 #include "MovementGenerator.h"
 #include "movement/MoveSplineInit.h"
 #include "movement/MoveSpline.h"
-#include "luaengine/HookMgr.h"
 
 #include <math.h>
 
@@ -80,7 +79,7 @@ static Unit::AuraTypeSet GenerateAttakerProcCastAuraTypes()
     auraTypes.insert(SPELL_AURA_DUMMY);
     auraTypes.insert(SPELL_AURA_PROC_TRIGGER_SPELL);
     auraTypes.insert(SPELL_AURA_MOD_HASTE);
-    auraTypes.insert(SPELL_AURA_override_CLASS_SCRIPTS);
+    auraTypes.insert(SPELL_AURA_OVERRIDE_CLASS_SCRIPTS);
     return auraTypes;
 }
 
@@ -1935,7 +1934,7 @@ void Unit::CalcAbsorb(Unit *pVictim,SpellSchoolMask schoolMask, const uint32 dam
             {
                 if (Unit* caster = (*i)->GetCaster())
                 {
-                    AuraList const& vOverRideCS = caster->GetAurasByType(SPELL_AURA_override_CLASS_SCRIPTS);
+                    AuraList const& vOverRideCS = caster->GetAurasByType(SPELL_AURA_OVERRIDE_CLASS_SCRIPTS);
                     for (AuraList::const_iterator k = vOverRideCS.begin(); k != vOverRideCS.end(); ++k)
                     {
                         switch ((*k)->GetModifier()->m_miscvalue)
@@ -8091,7 +8090,7 @@ uint32 Unit::SpellDamageBonus(Unit *pVictim, SpellEntry const *spellProto, uint3
             TakenTotalMod *= ((*i)->GetModifierValue() +100.0f)/100.0f;
 
     // .. taken pct: scripted (increases damage of * against targets *)
-    AuraList const& mOverrideClassScript = GetAurasByType(SPELL_AURA_override_CLASS_SCRIPTS);
+    AuraList const& mOverrideClassScript = GetAurasByType(SPELL_AURA_OVERRIDE_CLASS_SCRIPTS);
     for (AuraList::const_iterator i = mOverrideClassScript.begin(); i != mOverrideClassScript.end(); ++i)
     {
         switch ((*i)->GetModifier()->m_miscvalue)
@@ -8533,7 +8532,7 @@ bool Unit::isSpellCrit(Unit *pVictim, SpellEntry const *spellProto, SpellSchoolM
                 // scripted (increase crit chance ... against ... target by x%
                 if (pVictim->isFrozen()) // Shatter
                 {
-                    AuraList const& mOverrideClassScript = GetAurasByType(SPELL_AURA_override_CLASS_SCRIPTS);
+                    AuraList const& mOverrideClassScript = GetAurasByType(SPELL_AURA_OVERRIDE_CLASS_SCRIPTS);
                     for (AuraList::const_iterator i = mOverrideClassScript.begin(); i != mOverrideClassScript.end(); ++i)
                     {
                         switch ((*i)->GetModifier()->m_miscvalue)
@@ -8686,7 +8685,7 @@ uint32 Unit::SpellHealingBonus(SpellEntry const *spellProto, uint32 healamount, 
     // Lesser Healing Wave
     if (spellProto->SpellFamilyName == SPELLFAMILY_SHAMAN && spellProto->SpellFamilyFlags & 0x80)
     {
-        AuraList const& classScriptsAuras = GetAurasByType(SPELL_AURA_override_CLASS_SCRIPTS);
+        AuraList const& classScriptsAuras = GetAurasByType(SPELL_AURA_OVERRIDE_CLASS_SCRIPTS);
         for (AuraList::const_iterator i = classScriptsAuras.begin(); i != classScriptsAuras.end(); i++)
         {
             // Increased Lesser Healing Wave (few items has this effect)
@@ -9107,7 +9106,7 @@ void Unit::MeleeDamageBonus(Unit *pVictim, uint32 *pdamage,WeaponAttackType attT
     }
 
     // .. taken pct: class scripts
-    AuraList const& mclassScritAuras = GetAurasByType(SPELL_AURA_override_CLASS_SCRIPTS);
+    AuraList const& mclassScritAuras = GetAurasByType(SPELL_AURA_OVERRIDE_CLASS_SCRIPTS);
     for (AuraList::const_iterator i = mclassScritAuras.begin(); i != mclassScritAuras.end(); ++i)
     {
         switch ((*i)->GetMiscValue())
@@ -9355,9 +9354,6 @@ void Unit::SetInCombatState(bool PvP, Unit* enemy)
 
     if (GetTypeId() == TYPEID_PLAYER)
     {
-        // used by eluna
-        sHookMgr->OnPlayerEnterCombat(ToPlayer(), enemy);
-
         if (Spell *spell = GetCurrentSpell(CURRENT_GENERIC_SPELL))
             if (spell->getState() != SPELL_STATE_FINISHED &&
                 spell->GetSpellEntry()->Attributes & SPELL_ATTR_CANT_USED_IN_COMBAT &&
@@ -9408,10 +9404,6 @@ void Unit::ClearInCombat()
 {
     m_CombatTimer = 0;
     RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IN_COMBAT);
-
-    // used by eluna
-    if (GetTypeId() == TYPEID_PLAYER)
-        sHookMgr->OnPlayerLeaveCombat(ToPlayer());
 
     // Player's state will be cleared in Player::UpdateContestedPvP
     if (Creature *creature = ToCreature())
@@ -11040,7 +11032,7 @@ void InitTriggerAuraData()
     isTriggerAura[SPELL_AURA_SPELL_MAGNET] = true;
     isTriggerAura[SPELL_AURA_MOD_ATTACK_POWER] = true;
     isTriggerAura[SPELL_AURA_ADD_CASTER_HIT_TRIGGER] = true;
-    isTriggerAura[SPELL_AURA_override_CLASS_SCRIPTS] = true;
+    isTriggerAura[SPELL_AURA_OVERRIDE_CLASS_SCRIPTS] = true;
     isTriggerAura[SPELL_AURA_MOD_MECHANIC_RESISTANCE] = true;
     isTriggerAura[SPELL_AURA_RANGED_ATTACK_POWER_ATTACKER_BONUS] = true;
     isTriggerAura[SPELL_AURA_MOD_HASTE] = true;
@@ -11272,7 +11264,7 @@ void Unit::ProcDamageAndSpellfor (bool isVictim, Unit * pTarget, uint32 procFlag
                     continue;
                 break;
             }
-            case SPELL_AURA_override_CLASS_SCRIPTS:
+            case SPELL_AURA_OVERRIDE_CLASS_SCRIPTS:
             {
                 sLog.outDebug("ProcDamageAndSpell: casting spell id %u (triggered by %s aura of spell %u)", spellInfo->Id,(isVictim?"a victim's":"an attacker's"), triggeredByAura->GetId());
                 if (!HandleOverrideClassScriptAuraProc(pTarget, triggeredByAura, procSpell, cooldown))
@@ -12564,25 +12556,6 @@ void Unit::Kill(Unit *pVictim, bool durabilityLoss)
 
         ((Player*)this)->RemoveCharmAuras();
     }
-
-    if (Creature* killer = ToCreature())
-    {
-        // used by eluna
-        if (Player* killed = pVictim->ToPlayer())
-            sHookMgr->OnPlayerKilledByCreature(killer, killed);
-    }
-    else if (Player* killer = ToPlayer())
-    {
-        if (Player* killed = pVictim->ToPlayer())
-            sHookMgr->OnPVPKill(killer, killed);
-        else if (Creature* killed = pVictim->ToCreature())
-        {
-            // used by eluna
-            sHookMgr->OnCreatureKill(killer, killed);
-        }
-    }
-
-
 
     // battleground things (do this at the end, so the death state flag will be properly set to handle in the bg->handlekill)
     if (player && player->InBattleGround())
