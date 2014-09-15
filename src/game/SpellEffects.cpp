@@ -8150,7 +8150,7 @@ void Spell::EffectFriendSummon(uint32 eff_idx)
         return;
 
     uint64 selection = ((Player*) m_caster)->GetSelection();
-    if (selection == NULL || !IS_PLAYER_GUID(selection))
+    if (!selection || !IS_PLAYER_GUID(selection))
     {
         DEBUG_LOG("Spell::EffectFriendSummon is called, but no selection or selection is not player");
         return;

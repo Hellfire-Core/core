@@ -222,7 +222,7 @@ struct boss_muruAI : public Scripted_NoMovementAI
         DoSpecialThings(diff, DO_COMBAT_N_EVADE, 80.0f);
 
         if (me->GetSelection())
-            me->SetSelection(NULL);
+            me->SetSelection(0);
 
         if (EnrageTimer < diff)
         {
@@ -999,7 +999,7 @@ struct mob_shadowsword_fury_mageAI : public ScriptedAI
         if (me->GetMotionMaster()->GetCurrentMovementGeneratorType() == POINT_MOTION_TYPE)
         {
             if (me->GetSelection())
-                me->SetSelection(NULL);
+                me->SetSelection(0);
             return;
         }
 
@@ -1093,7 +1093,7 @@ struct mob_shadowsword_berserkerAI : public ScriptedAI
         if (me->GetMotionMaster()->GetCurrentMovementGeneratorType() == POINT_MOTION_TYPE)
         {
             if (me->GetSelection())
-                me->SetSelection(NULL);
+                me->SetSelection(0);
             return;
         }
 

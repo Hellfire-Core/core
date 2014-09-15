@@ -596,7 +596,7 @@ bool GOUse_go_draconic_for_dummies(Player* pPlayer, GameObject* pGO)
             default:
                 return true;
         }
-        pPlayer->ADD_GOSSIP_ITEM(NULL, GOSSIP_BOOK_HELLO, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+        pPlayer->ADD_GOSSIP_ITEM(0, GOSSIP_BOOK_HELLO, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
         pPlayer->SEND_GOSSIP_MENU(50010, pGO->GetGUID());
     }
     return true;

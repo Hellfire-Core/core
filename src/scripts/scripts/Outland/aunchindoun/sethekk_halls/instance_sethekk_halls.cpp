@@ -114,7 +114,7 @@ struct instance_sethekk_halls : public ScriptedInstance
                 if (Player* player = itr->getSource())
                 {
                     if (player->GetQuestStatus(QUEST_BROTHER) == QUEST_STATUS_INCOMPLETE)
-                        player->KilledMonster(NPC_LAKKA, NULL);
+                        player->KilledMonster(NPC_LAKKA, 0);
                 }
             }
         }

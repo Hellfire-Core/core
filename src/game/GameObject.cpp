@@ -1500,7 +1500,7 @@ void GameObject::CastSpell(Unit* target, uint32 spell)
     else
     {
         trigger->setFaction(14);
-        trigger->CastSpell(target, spell, true, 0, 0, target != nullptr ? target->GetGUID() : NULL);
+        trigger->CastSpell(target, spell, true, 0, 0, target != nullptr ? target->GetGUID() : 0);
     }
     //trigger->setDeathState(JUST_DIED);
     //trigger->RemoveCorpse();

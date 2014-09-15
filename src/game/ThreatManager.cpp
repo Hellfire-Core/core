@@ -510,7 +510,7 @@ Unit* ThreatManager::getHostilTarget()
 float ThreatManager::getThreat(Unit *pVictim, bool pAlsoSearchOfflineList)
 {
     if (!pVictim)
-        return NULL;
+        return 0;
 
     float threat = 0.0f;
     HostileReference* ref = iThreatContainer.getReferenceByTarget(pVictim);

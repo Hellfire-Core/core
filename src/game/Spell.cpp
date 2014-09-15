@@ -4382,7 +4382,7 @@ SpellCastResult Spell::CheckCast(bool strict)
                 if (m_caster->GetTypeId() != TYPEID_PLAYER)
                     return SPELL_FAILED_BAD_TARGETS;
 
-                if (((Player*) m_caster)->GetSelection() == NULL)
+                if (!((Player*) m_caster)->GetSelection())
                     return SPELL_FAILED_BAD_TARGETS;
 
                 Player* target = sObjectMgr.GetPlayer(((Player*) m_caster)->GetSelection());
