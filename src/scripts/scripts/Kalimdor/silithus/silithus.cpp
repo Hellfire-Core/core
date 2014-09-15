@@ -737,11 +737,11 @@ struct WaveData
 
 static WaveData WavesInfo[] =
 {
-    {30, 0, 15423, 0, 0,24000, NULL},   //Kaldorei Soldier
-    {3, 35, 15424, 0, 0,24000, NULL},   //Anubisath Conqueror
-    {12, 38, 15414, 0, 0,24000, NULL},  //Qiraji Wasps
-    {6, 50, 15422, 0, 0,24000, NULL},   //Qiraji Tanks
-    {15, 15, 15423, 0, 0,24000, NULL}   //Kaldorei Soldier
+    {30, 0, 15423, 0, 0,24000, 0},   //Kaldorei Soldier
+    {3, 35, 15424, 0, 0,24000, 0},   //Anubisath Conqueror
+    {12, 38, 15414, 0, 0,24000, 0},  //Qiraji Wasps
+    {6, 50, 15422, 0, 0,24000, 0},   //Qiraji Tanks
+    {15, 15, 15423, 0, 0,24000, 0}   //Kaldorei Soldier
 
 };
 
