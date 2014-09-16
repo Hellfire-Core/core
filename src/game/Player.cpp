@@ -5434,7 +5434,7 @@ void Player::UpdateCombatSkills(Unit *pVictim, WeaponAttackType attType, bool de
             lvldif = 3;
     }
 
-    uint32 skilldif = 5 * plevel - (defence ? GetBaseDefenseSkillValue() : GetBaseWeaponSkillValue(attType));
+    uint32 skilldif = 5 * plevel - (defence ? GetPureSkillValue(SKILL_DEFENSE) : GetBaseWeaponSkillValue(attType));
     if (skilldif <= 0)
         return;
 
