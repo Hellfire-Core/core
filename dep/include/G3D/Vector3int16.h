@@ -12,6 +12,7 @@
 #ifndef VECTOR3INT16_H
 #define VECTOR3INT16_H
 
+#include <algorithm>
 #include "G3D/platform.h"
 #include "G3D/g3dmath.h"
 #include "G3D/HashTrait.h"
