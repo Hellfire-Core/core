@@ -370,7 +370,6 @@ Unit::Unit() :
 // Methods of class Unit
 Unit::~Unit()
 {
-    AttackStop();   // crashfix ... ale tego chyba tu nie powinno byc? Oo przydałoby sie znaleźć co jest nie tak że w destruktorze peta m_attacking nie jest NULLem
     // set current spells as deletable
     for (uint32 i = 0; i < CURRENT_MAX_SPELL; i++)
     {
@@ -10893,6 +10892,7 @@ void Unit::RemoveFromWorld()
     // cleanup
     if (IsInWorld())
     {
+        CombatStop();
         getHostileRefManager().deleteReferences();
 
         RemoveBindSightAuras();
