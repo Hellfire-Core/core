@@ -15493,7 +15493,7 @@ void Player::_LoadInventory(QueryResultAutoPtr result, uint32 timediff)
                 item->SetSlot(NULL_SLOT);
                 // the item is in a bag, find the bag
                 std::map<uint64, Bag*>::iterator itr = bagMap.find(bag_guid);
-                if (itr != bagMap.end())
+                if (itr != bagMap.end() && !itr->second->GetItemByPos(slot))
                 {
                     itr->second->StoreItem(slot, item, true);
                     AddItemDurations(item); // FIXME shouldn't be here. As for now fixes a bug with an infinity of items which should have time duration limit.
