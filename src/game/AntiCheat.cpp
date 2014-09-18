@@ -149,10 +149,10 @@ bool ACRequest::DetectSpeedHack(Player *pPlayer)
     // how many yards the player should do in one sec. (server-side speed)
     float speedRate = pPlayer->GetSpeed(UnitMoveType(moveType)) + GetNewMovementInfo().j_xyspeed;
 
-    // how long the player took to move to here.
+    // time passed between reading movement infos
     uint32 timeDiff = WorldTimer::getMSTimeDiff(GetLastMovementInfo().time, GetNewMovementInfo().time);
-    if (!timeDiff)
-        timeDiff = 1;
+    if (!timeDiff)//less than 1 ms, for gods sake prevent dividing by zero
+        return false;
 
     //client-side speed, traveled distance div by movement time.
     float clientSpeedRate = exact2dDist * 1000 / timeDiff;
