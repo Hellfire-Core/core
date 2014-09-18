@@ -505,3 +505,63 @@ bool ChatHandler::HandleServerPVPCommand(const char* /*args*/)
 
     return true;
 }
+
+bool ChatHandler::HandleArenaSpectateCommand(const char* args)
+{
+    if (!*args)
+        return false;
+
+    Player* _player = m_session->GetPlayer();
+
+    std::string name = args;
+
+    if (!normalizePlayerName(name))
+    {
+        SendSysMessage(LANG_PLAYER_NOT_FOUND);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    Player *target = sObjectMgr.GetPlayer(name.c_str());
+    if (!target)
+    {
+        SendSysMessage(LANG_PLAYER_NOT_FOUND);
+        SetSentErrorMessage(true);
+        return false;
+    }
+    
+    Map* cMap = target->GetMap();
+    if (!cMap || !cMap->IsBattleArena())
+    {
+        SendSysMessage(LANG_SPECTATE_TARGET_NOT_IN_ARENA);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    if (_player->isArenaSpectating())
+    {
+        SendSysMessage(LANG_SPECTATE_ALREADY_SPECTATING);
+        SetSentErrorMessage(true);
+        return false;
+    }
+    _player->SetBattleGroundId(target->GetBattleGroundId(), target->GetBattleGroundTypeId());
+    _player->SetBattleGroundEntryPoint(_player->GetMapId(), _player->GetPositionX(), _player->GetPositionY(), _player->GetPositionZ(), _player->GetOrientation());
+    
+    _player->SpectateArena(target->GetMapId());
+    return true;
+
+}
+
+bool ChatHandler::HandleArenaUnspectateCommand(const char* /*args*/)
+{
+    Player* _player = m_session->GetPlayer();
+    if (_player->isArenaSpectating())
+    {
+        _player->UnspectateArena(true);
+        return true;
+    }
+    //else
+    SendSysMessage(LANG_SPECTATE_NOT_SPECTATNING);
+    SetSentErrorMessage(true);
+    return false;
+}

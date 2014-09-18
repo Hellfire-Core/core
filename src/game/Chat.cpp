@@ -41,7 +41,9 @@ ChatCommand * ChatHandler::getCommandTable()
 {
     static ChatCommand arenaCommandTable[] =
     {
-        { "ready",          PERM_PLAYER,    PERM_CONSOLE, true,   &ChatHandler::HandleArenaReadyCommand,     "", NULL },
+        { "ready",          PERM_PLAYER,    PERM_CONSOLE, false,  &ChatHandler::HandleArenaReadyCommand,     "", NULL },
+        { "spectate",       PERM_PLAYER,    PERM_CONSOLE, false,  &ChatHandler::HandleArenaSpectateCommand,  "", NULL },
+        { "unspectate",     PERM_PLAYER,    PERM_CONSOLE, false,  &ChatHandler::HandleArenaUnspectateCommand,"", NULL },
         { NULL,             0,              0,            false,  NULL,                                      "", NULL }
     };
 

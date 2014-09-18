@@ -1731,6 +1731,9 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
         m_movementInfo.ClearTransportData();
     }
 
+    if (isArenaSpectating() && !(options & TELE_TO_SPECTATE_ARENA))
+        UnspectateArena(false);
+
     SetSemaphoreTeleport(true);
 
     m_AC_timer = 3000;
@@ -21432,4 +21435,27 @@ void Player::CumulativeACReport(AnticheatChecks check)
         m_AC_cumulative_count[check] = 0;
     }
 
+}
+
+void Player::SpectateArena(uint32 arenaMap)
+{
+    SetVisibility(VISIBILITY_OFF);
+    SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED);
+    m_ExtraFlags |= PLAYER_EXTRA_ARENA_SPECTATING;
+    float x, y, z;
+    // stop flight if need
+    InterruptTaxiFlying();
+    TeleportTo(arenaMap, x, y, z, GetOrientation(), TELE_TO_SPECTATE_ARENA);
+
+    ChatHandler(this).SendSysMessage(LANG_SPECTATE_INFO_AFTER_JOIN);
+}
+
+void Player::UnspectateArena(const bool teleport)
+{
+    if (teleport)
+        TeleportTo(GetBattleGroundEntryPointMap(), GetBattleGroundEntryPointX(), GetBattleGroundEntryPointY(),
+        GetBattleGroundEntryPointZ(), GetBattleGroundEntryPointO());
+    SetVisibility(VISIBILITY_ON);
+    RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED);
+    m_ExtraFlags &= ~PLAYER_EXTRA_ARENA_SPECTATING;
 }

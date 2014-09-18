@@ -113,6 +113,8 @@ class ChatHandler
         bool HandleAccountAnnounceBroadcastCommand(const char* args);
 
         bool HandleArenaReadyCommand(const char* args);
+        bool HandleArenaSpectateCommand(const char* args);
+        bool HandleArenaUnspectateCommand(const char* args);
 
         bool HandleBanAccountCommand(const char* args);
         bool HandleBanCharacterCommand(const char* args);

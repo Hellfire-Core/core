@@ -1871,6 +1871,12 @@ void BattleGround::HandleKillUnit(Creature *creature, Player *killer)
 // This method should be called when player logs out from running battleground
 void BattleGround::EventPlayerLoggedOut(Player* player)
 {
+    if (player->isArenaSpectating())
+    {
+        player->UnspectateArena(true);
+        return;
+    }
+
     if (GetStatus() == STATUS_IN_PROGRESS)
     {
         if (isBattleGround())

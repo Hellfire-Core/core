@@ -579,7 +579,8 @@ enum PlayerExtraFlags
     PLAYER_EXTRA_GM_CHAT            = 0x0020,               // Show GM badge in chat messages
 
     // other states
-    PLAYER_EXTRA_PVP_DEATH          = 0x0100                // store PvP death status until corpse creating.
+    PLAYER_EXTRA_PVP_DEATH          = 0x0100,               // store PvP death status until corpse creating.
+    PLAYER_EXTRA_ARENA_SPECTATING   = 0x0200                // player should be in arena, pacified and invisible, not saved
 };
 
 // 2^n values
@@ -808,6 +809,7 @@ enum TeleportToOptions
     TELE_TO_NOT_LEAVE_COMBAT    = 0x04,
     TELE_TO_NOT_UNSUMMON_PET    = 0x08,
     TELE_TO_SPELL               = 0x10,
+    TELE_TO_SPECTATE_ARENA      = 0x20,
 };
 
 /// Type of environmental damages
@@ -1059,6 +1061,10 @@ class HELLGROUND_EXPORT Player : public Unit
         bool isGMVisible() const { return !(m_ExtraFlags & PLAYER_EXTRA_GM_INVISIBLE); }
         void SetGMVisible(bool on);
         void SetPvPDeath(bool on) { if (on) m_ExtraFlags |= PLAYER_EXTRA_PVP_DEATH; else m_ExtraFlags &= ~PLAYER_EXTRA_PVP_DEATH; }
+        // arena spectate
+        bool isArenaSpectating() const { return m_ExtraFlags & PLAYER_EXTRA_ARENA_SPECTATING; }
+        void SpectateArena(uint32 arenaMap);
+        void UnspectateArena(const bool teleport);
 
         void GiveXP(uint32 xp, Unit* victim);
         void GiveLevel(uint32 level);
