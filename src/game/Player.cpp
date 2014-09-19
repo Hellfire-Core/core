@@ -658,6 +658,9 @@ bool Player::Create(uint32 guidlow, const std::string& name, uint8 race, uint8 c
     else
         SetUInt32Value (UNIT_FIELD_LEVEL, sWorld.getConfig(CONFIG_START_PLAYER_LEVEL));
 
+    if (sWorld.getConfig(CONFIG_ALWAYS_MAXSKILL))
+        UpdateSkillsToMaxSkillsForLevel();
+
     SetUInt32Value (PLAYER_FIELD_COINAGE, sWorld.getConfig(CONFIG_START_PLAYER_MONEY));
     SetUInt32Value (PLAYER_FIELD_HONOR_CURRENCY, sWorld.getConfig(CONFIG_START_HONOR_POINTS));
     SetUInt32Value (PLAYER_FIELD_ARENA_CURRENCY, sWorld.getConfig(CONFIG_START_ARENA_POINTS));
@@ -5537,7 +5540,10 @@ void Player::SetSkill(uint32 id, uint16 currVal, uint16 maxVal)
     if (i<PLAYER_MAX_SKILLS)                                 //has skill
     {
         if (currVal)
-            SetUInt32Value(PLAYER_SKILL_VALUE_INDEX(i),MAKE_SKILL_VALUE(currVal,maxVal));
+        {
+            if (sWorld.getConfig(CONFIG_ALWAYS_MAXSKILL) && !SpellMgr::IsProfessionSkill(id) && id != SKILL_RIDING)
+            SetUInt32Value(PLAYER_SKILL_VALUE_INDEX(i),MAKE_SKILL_VALUE(currVal, maxVal));
+        }
         else                                                //remove
         {
             // clear skill fields
