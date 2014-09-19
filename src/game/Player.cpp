@@ -21439,6 +21439,27 @@ void Player::CumulativeACReport(AnticheatChecks check)
 
 void Player::SpectateArena(uint32 arenaMap)
 {
+    WorldLocation loc(arenaMap,0.0f,0.0f,0.0f,GetOrientation());
+    switch (arenaMap)
+    {
+    case 559: // nagrand
+        loc.coord_x = 4058.0f;
+        loc.coord_y = 2919.0f;
+        loc.coord_z = 14.0f;
+        break;
+    case 562: // bem
+        loc.coord_x = 6238.0f;
+        loc.coord_y = 263.0f;
+        loc.coord_z = 12.0f;
+        break;
+    case 572: // ruins
+        loc.coord_x = 1286.0f;
+        loc.coord_y = 1668.0f;
+        loc.coord_z = 41.0f;
+        break;
+    default:
+        return;
+    }
     SetVisibility(VISIBILITY_OFF);
     SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED);
     m_ExtraFlags |= PLAYER_EXTRA_ARENA_SPECTATING;
