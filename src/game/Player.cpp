@@ -21465,7 +21465,7 @@ void Player::SpectateArena(uint32 arenaMap)
     m_ExtraFlags |= PLAYER_EXTRA_ARENA_SPECTATING;
     // stop flight if need
     InterruptTaxiFlying();
-    TeleportTo(arenaMap, 0, 0, 0, GetOrientation(), TELE_TO_SPECTATE_ARENA);
+    TeleportTo(loc, TELE_TO_SPECTATE_ARENA);
 
     ChatHandler(this).SendSysMessage(LANG_SPECTATE_INFO_AFTER_JOIN);
 }
