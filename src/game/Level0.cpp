@@ -35,6 +35,7 @@
 #include "Util.h"
 #include "GameEvent.h"
 #include "BattleGroundMgr.h"
+#include "ObjectMgr.h"
 
 bool ChatHandler::HandleAccountXPToggleCommand(const char* args)
 {

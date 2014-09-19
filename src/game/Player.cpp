@@ -21442,10 +21442,9 @@ void Player::SpectateArena(uint32 arenaMap)
     SetVisibility(VISIBILITY_OFF);
     SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED);
     m_ExtraFlags |= PLAYER_EXTRA_ARENA_SPECTATING;
-    float x, y, z;
     // stop flight if need
     InterruptTaxiFlying();
-    TeleportTo(arenaMap, x, y, z, GetOrientation(), TELE_TO_SPECTATE_ARENA);
+    TeleportTo(arenaMap, 0, 0, 0, GetOrientation(), TELE_TO_SPECTATE_ARENA);
 
     ChatHandler(this).SendSysMessage(LANG_SPECTATE_INFO_AFTER_JOIN);
 }
