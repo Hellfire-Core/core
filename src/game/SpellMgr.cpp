@@ -2982,6 +2982,7 @@ void SpellMgr::LoadSpellCustomAttr()
             case 27655: // Heart of Wyrmthalak: Flame Lash proc
             case 45055: // Shadow Bolt (Timbal's Focusing Crystal)
             case 37661: // The Lightning Capacitor, lightning bolt spell
+            case 38324: // Regeneration (Fel Reaver's Piston)
             case 28733: // Arcane Torrent
             case 43731: // Lightning Zap on critters (Stormchops)
             case 43733: // Lightning Zap on others (Stormchops)
