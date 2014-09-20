@@ -10892,7 +10892,7 @@ void Unit::RemoveFromWorld()
     // cleanup
     if (IsInWorld())
     {
-        CombatStop();
+        CombatStop(true);
         getHostileRefManager().deleteReferences();
 
         RemoveBindSightAuras();
