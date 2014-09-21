@@ -5871,9 +5871,12 @@ void Player::CheckAreaExploreAndOutdoor()
 
     if (m_outdoors != isOutdoor)
     {
-        UpdateSpeed(MOVE_RUN, true);
-        UpdateSpeed(MOVE_SWIM, true);
-        UpdateSpeed(MOVE_FLIGHT, true);
+        if (!isGameMaster())
+        {
+            UpdateSpeed(MOVE_RUN, true);
+            UpdateSpeed(MOVE_SWIM, true);
+            UpdateSpeed(MOVE_FLIGHT, true);
+        }
 
         m_outdoors = isOutdoor;
     }
