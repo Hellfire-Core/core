@@ -129,6 +129,7 @@ void BattleGroundEY::Update(uint32 diff)
     }
     else if (GetStatus() == STATUS_IN_PROGRESS)
     {
+
         m_PointAddingTimer -= diff;
         if (m_PointAddingTimer <= 0)
         {
@@ -166,6 +167,36 @@ void BattleGroundEY::Update(uint32 diff)
             this->UpdatePointStatuses();
             m_TowerCapCheckTimer = BG_EY_FPOINTS_TICK_TIME;
         }
+
+        //checking for players walking on the bottom of the map (yup, it's possible)
+        if (uCheckDelayer <= diff)
+        {
+            for (BattleGroundPlayerMap::const_iterator itr = GetPlayers().begin(); itr != GetPlayers().end(); ++itr)
+            {
+                if (Player *plr = sObjectMgr.GetPlayer(itr->first))
+                    if (plr->GetPositionZ() < 850.0f)
+                        Exploiter = plr;
+
+                uCheckDelayer = 5000;
+            }
+        }
+        else {uCheckDelayer -=diff;}
+
+        if (Exploiter && Exploiter->isAlive())
+        {
+            if (uWalkingDead <= diff)
+            {
+                sLog.outLog(LOG_CHEAT, "[EXPLOIT] Player (%s (%u)) using walking on the bottom of EOTS map exploit", Exploiter->GetName(), Exploiter->GetGUID());
+                Exploiter->SetHealth(0);
+                Exploiter = NULL;
+            }
+            else {uWalkingDead -= diff;}
+        }
+        else if (Exploiter && !Exploiter->isAlive())
+        {
+            Exploiter = NULL;
+        }       
+                    
     }
 }
 
