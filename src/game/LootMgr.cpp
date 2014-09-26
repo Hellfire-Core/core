@@ -279,7 +279,7 @@ bool LootStoreItem::IsValid(LootStore const& store, uint32 entry) const
     {
         if (needs_quest)
             sLog.outLog(LOG_DB_ERR, "Table '%s' entry %d item %d: quest chance will be treated as non-quest chance", store.GetName(), entry, itemid);
-        else if (chance == 0)                              // no chance for the reference
+        else if (!chance && !group)                              // no chance for the reference
         {
             sLog.outLog(LOG_DB_ERR, "Table '%s' entry %d item %d: zero chance is specified for a reference, skipped", store.GetName(), entry, itemid);
             return false;
