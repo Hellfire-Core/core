@@ -2853,6 +2853,16 @@ void SpellMgr::LoadSpellCustomAttr()
                 }
                 break;
             }
+            case SPELLFAMILY_DRUID:
+            {
+                switch (spellInfo->Id)
+                {
+                    case 16998: // Savage Fury
+                    case 16999:
+                        spellInfo->Effect[2] = 0;
+                }
+                break;
+            }
             case SPELLFAMILY_SHAMAN:
             {
                 // Flametongue weapon proc
