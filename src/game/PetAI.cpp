@@ -466,3 +466,66 @@ void FelhunterAI::PrepareSpellForAutocast(uint32 spellID)
     else
         PetAI::PrepareSpellForAutocast(spellID);
 }
+
+int WaterElementalAI::Permissible(const Creature *creature)
+{
+    if (creature->isPet())
+        return PERMIT_BASE_SPECIAL;
+
+    return PERMIT_BASE_NO;
+}
+
+void WaterElementalAI::UpdateAI(const uint32 diff)
+{
+    if (!me->isAlive())
+        return;
+
+    m_owner = me->GetCharmerOrOwner();
+
+    updateAlliesTimer.Update(diff);
+    if (updateAlliesTimer.Passed())
+        UpdateAllies();
+
+    if (m_forceTimer)
+    {
+        if (m_forceTimer < diff)
+            m_forceTimer = 0;
+        else
+            m_forceTimer -= diff;
+    }
+
+    if (Unit *target = me->getVictim())
+    {
+        if (_needToStop())
+        {
+            _stopAttack();
+            return;
+        }
+    }
+    else
+    {
+        if (me->isInCombat())
+        {
+            if (!m_owner || !m_owner->GetObjectGuid().IsPlayer())
+                _stopAttack();
+        }
+        else if (m_owner && me->GetCharmInfo())
+        {
+            if (m_owner->isInCombat() && !(me->HasReactState(REACT_PASSIVE) || me->GetCharmInfo()->HasCommandState(COMMAND_STAY)))
+                AttackStart(m_owner->getAttackerForHelper());
+            else if (me->GetCharmInfo()->HasCommandState(COMMAND_FOLLOW) && !me->hasUnitState(UNIT_STAT_FOLLOW))
+                me->GetMotionMaster()->MoveFollow(m_owner, PET_FOLLOW_DIST, PET_FOLLOW_ANGLE);
+        }
+    }
+
+    if (!me->GetCharmInfo())
+        return;
+
+    if (!me->hasUnitState(UNIT_STAT_CASTING))
+    {
+        for (uint8 i = 0; i < me->GetPetAutoSpellSize(); i++)
+            PrepareSpellForAutocast(me->GetPetAutoSpellOnPos(i));
+
+        AutocastPreparedSpells();
+    }
+}

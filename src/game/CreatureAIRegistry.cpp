@@ -49,6 +49,7 @@ namespace AIRegistry
         (new CreatureAIFactory<TotemAI>("TotemAI"))->RegisterSelf();
         (new CreatureAIFactory<PossessedAI>("PossessedAI"))->RegisterSelf();
         (new CreatureAIFactory<CreatureEventAI>("EventAI"))->RegisterSelf();
+        (new CreatureAIFactory<WaterElementalAI>("WaterElementalAI"))->RegisterSelf();
 
         (new MovementGeneratorFactory<RandomMovementGenerator<Creature> >(RANDOM_MOTION_TYPE))->RegisterSelf();
         (new MovementGeneratorFactory<WaypointMovementGenerator<Creature> >(WAYPOINT_MOTION_TYPE))->RegisterSelf();

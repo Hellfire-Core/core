@@ -94,5 +94,13 @@ class FelhunterAI : public PetAI
 
 };
 
+class WaterElementalAI : public PetAI
+{
+    public:
+        WaterElementalAI(Creature *c) : PetAI(c) {}
+        static int Permissible(const Creature *);
+        void UpdateAI(const uint32);
+};
+
 #endif
 
