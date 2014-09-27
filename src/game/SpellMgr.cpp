@@ -2951,6 +2951,9 @@ void SpellMgr::LoadSpellCustomAttr()
                 // Death Coil
                 else if (spellInfo->SpellVisual == 9152)
                     spellInfo->Attributes |= SPELL_ATTR_CANT_CANCEL;
+                // Shadowfury
+                else if (spellInfo->SpellIconID == 1988)
+                    spellInfo->AttributesEx2 |= SPELL_ATTR_EX2_IGNORE_LOS;
 
                 break;
             }
