@@ -3443,6 +3443,12 @@ void SpellMgr::LoadSpellCustomAttr()
             case 37052:
                 spellInfo->rangeIndex = 6;
                 break;
+            case 29951: // Blizzard (Shade of Aran)
+                spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_TARGET_ENEMY;
+                spellInfo->EffectImplicitTargetB[0] = 0;
+                spellInfo->EffectImplicitTargetA[1] = TARGET_UNIT_TARGET_ENEMY;
+                spellInfo->EffectImplicitTargetB[1] = 0;
+                break;
             case 36952: // (temporary) Ogre Building Bunny Curse Visual Large - penalty curse for SWP
             case 40214: // Dragonmaw illusion
                 spellInfo->AttributesEx3 |= SPELL_ATTR_EX3_DEATH_PERSISTENT;
