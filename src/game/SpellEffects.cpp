@@ -3106,6 +3106,9 @@ void Spell::EffectPowerDrain(uint32 i)
 
     unitTarget->ModifyPower(drain_power,-new_damage);
 
+    if (GetSpellEntry()->Id == 28734) // Mana Tap is a pure mana drain (mana is lost)
+        return;
+
     if (drain_power == POWER_MANA)
     {
         float manaMultiplier = GetSpellEntry()->EffectMultipleValue[i];
