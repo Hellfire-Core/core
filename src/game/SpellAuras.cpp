@@ -581,6 +581,11 @@ void Aura::Update(uint32 diff)
         if (m_target->GetPositionZ() >= -19.9645)
             m_target->RemoveAurasDueToSpell(37284);
     }
+    else if (GetId() == 40627) // Apexis Emanations
+    {
+        if (m_target->GetZoneId() != 3522) // Blade's Edge only
+            m_target->RemoveAurasDueToSpell(40625);
+    }
 
     // Channeled aura required check distance from caster except in possessed cases
     Unit *pRealTarget = (GetSpellProto()->EffectApplyAuraName[m_effIndex] == SPELL_AURA_PERIODIC_TRIGGER_SPELL &&
