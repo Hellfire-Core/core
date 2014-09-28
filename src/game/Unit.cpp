@@ -7591,7 +7591,7 @@ bool Unit::Attack(Unit *victim, bool meleeAttack)
         return false;
 
     // dead units can neither attack nor be attacked
-    if (!isAlive() || !victim->IsInWorld() || !victim->isAlive())
+    if (!isAlive() || !IsInWorld() || !victim->IsInWorld() || !victim->isAlive())
         return false;
 
     if (victim->hasUnitState(UNIT_STAT_IGNORE_ATTACKERS))
