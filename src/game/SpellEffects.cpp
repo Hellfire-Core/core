@@ -7343,7 +7343,7 @@ void Spell::EffectCharge(uint32 /*i*/)
         target->GetPosition(dest);
 
         float angle = m_caster->GetAngle(target) - m_caster->GetOrientation() - M_PI;
-        m_caster->GetValidPointInAngle(dest, 1.0f, angle, false,false,2.0f);
+        m_caster->GetValidPointInAngle(dest, 1.0f, angle, false, false, (m_caster->ToPet()) ? COMMON_ALLOW_HEIGHT_DIFF : 2.0f);
         m_caster->GetMotionMaster()->MoveCharge(dest.x, dest.y, dest.z);
     }
     else
