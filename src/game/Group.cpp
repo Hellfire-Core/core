@@ -760,7 +760,7 @@ void Group::SendMasterLoot(Loot* loot, WorldObject* object)
     }
 }
 
-void Group::CountRollVote(const uint64& playerGUID, const uint64& Guid, uint32 NumberOfPlayers, uint8 Choise)
+void Group::CountRollVote(const uint64& playerGUID, const uint64& Guid, uint32 NumberOfPlayers, uint8 Choice)
 {
     Rolls::iterator rollI = GetRoll(Guid);
     if (rollI == RollId.end())
@@ -776,7 +776,7 @@ void Group::CountRollVote(const uint64& playerGUID, const uint64& Guid, uint32 N
         if (roll->getLoot()->items.empty())
             return;
 
-    switch (Choise)
+    switch (Choice)
     {
         case 0:                                             //Player choose pass
         {
