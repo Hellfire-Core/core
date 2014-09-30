@@ -870,7 +870,7 @@ void WorldSession::BuildListAuctionItems(AuctionHouseObject::AuctionEntryMap con
             if (levelmin != 0x00 && (proto->RequiredLevel < levelmin || (levelmax != 0x00 && proto->RequiredLevel > levelmax)))
                 continue;
 
-            if (usable != 0x00 && !_player->CanUseItem(proto))
+            if (usable != 0x00 && !_player->CanUseItem(item))
                 continue;
 
             std::string name = proto->Name1;
