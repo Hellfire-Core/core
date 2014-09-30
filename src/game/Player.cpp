@@ -16616,9 +16616,6 @@ void Player::_SaveInventory()
                 item->FSetState(ITEM_REMOVED); // we are IN updateQueue right now, can't use SetState which modifies the queue
                 item->RemoveFromWorld();
 
-                // don't skip, let the switch delete it
-                //continue;
-
                 AccountsDatabase.BeginTransaction();
                 if (!GetSession()->IsAccountFlagged(ACC_SPECIAL_LOG))
                     GetSession()->AddAccountFlag(ACC_SPECIAL_LOG);
@@ -16628,6 +16625,10 @@ void Player::_SaveInventory()
 
                 AccountsDatabase.CommitTransaction();
                 //GetSession()->KickPlayer();
+
+                stmt = RealmDataDatabase.CreateStatement(deleteCharInvByItem, "DELETE FROM character_inventory WHERE item = ?");
+                stmt.PExecute(item->GetGUIDLow());
+                continue; //dont SaveToDB() this item, causes crashes
             }
             else if (test != item)
             {
