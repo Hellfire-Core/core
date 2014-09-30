@@ -119,8 +119,10 @@ enum InventoryResult
     EQUIP_ERR_TOO_MUCH_GOLD                      = 77,
     EQUIP_ERR_NOT_DURING_ARENA_MATCH             = 78,
     EQUIP_ERR_CANNOT_TRADE_THAT                  = 79,
-    EQUIP_ERR_PERSONAL_ARENA_RATING_TOO_LOW      = 80
+    EQUIP_ERR_PERSONAL_ARENA_RATING_TOO_LOW      = 80,
     // probably exist more
+
+    EQUIP_ERR_DEBUG_SPECIAL                      = 100
 };
 
 enum BuyFailure
