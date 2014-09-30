@@ -2851,6 +2851,8 @@ void SpellMgr::LoadSpellCustomAttr()
                     spellInfo->AttributesEx |= SPELL_ATTR_EX_UNK9;
                     spellInfo->AttributesEx2 |= SPELL_ATTR_EX2_FROM_BEHIND;
                 }
+                else if (spellInfo->Id == 16613)// some quest spell spamming with non-existing triggered
+                    spellInfo->Effect[2] = 0;
                 break;
             }
             case SPELLFAMILY_DRUID:
@@ -2937,7 +2939,9 @@ void SpellMgr::LoadSpellCustomAttr()
                 // Arcane Intellect/Brilliance
                 else if (spellInfo->SpellFamilyFlags & 0x0400)
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SCROLL_STACK;
-
+                // some quest spell spamming with non-existing triggered
+                else if (spellInfo->Id == 39280)
+                    spellInfo->Effect[1] = 0;
                 break;
             }
             case SPELLFAMILY_WARLOCK:
