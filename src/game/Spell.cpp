@@ -4182,9 +4182,10 @@ SpellCastResult Spell::CheckCast(bool strict)
                     target->GetPosition(dest);
 
                     float angle = m_caster->GetAngle(target) - m_caster->GetOrientation() - M_PI;
-                    m_caster->GetValidPointInAngle(dest, 1.0f, angle, false, false, 2.0f);
-                    _path.setPathLengthLimit(SpellMgr::GetSpellMaxRange(GetSpellEntry()) * 1.5f);
+                    //_path.setPathLengthLimit(SpellMgr::GetSpellMaxRange(GetSpellEntry()) * 1.5f);
+                    // no limit, real warrior charges even through kamboja if he has to
                     bool result = _path.calculate(dest.x, dest.y, dest.z);
+                    _path.stepBack(2.0f);
 
                     if (_path.getPathType() & PATHFIND_SHORT)
                         return SPELL_FAILED_OUT_OF_RANGE;
