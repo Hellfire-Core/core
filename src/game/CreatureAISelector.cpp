@@ -61,7 +61,7 @@ namespace FactorySelector
                     case 417:
                         ai_factory = ai_registry.GetRegistryItem("FelhunterAI");
                         break;
-                    case 520:
+                    case 510:
                         ai_factory = ai_registry.GetRegistryItem("WaterElementalAI");
                         break;
                     default:
