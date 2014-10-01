@@ -5536,8 +5536,22 @@ bool Spell::CheckTarget(Unit* target, uint32 eff)
 
             // all ok by some way or another, skip normal check
             break;
-        default:                                            // normal case
-            if (target!=m_caster && !SpellMgr::SpellIgnoreLOS(GetSpellEntry(), eff) && !target->IsWithinLOSInMap(m_caster))
+        default:
+            if (target == m_caster || SpellMgr::SpellIgnoreLOS(GetSpellEntry(), eff))
+                return true;
+
+            // AOE spells with destination
+            if ((sSpellMgr.SpellTargetType[GetSpellEntry()->EffectImplicitTargetA[eff]] == TARGET_TYPE_AREA_DST ||
+                sSpellMgr.SpellTargetType[GetSpellEntry()->EffectImplicitTargetB[eff]] == TARGET_TYPE_AREA_DST) &&
+                m_targets.HasDst())
+            {
+                //caster and victim must see spell destination, not nesescary see each other
+                if (target->IsInMap(m_caster) &&
+                    target->IsWithinLOS(m_targets.m_destX, m_targets.m_destY, m_targets.m_destZ) &&
+                    m_caster->IsWithinLOS(m_targets.m_destX, m_targets.m_destY, m_targets.m_destZ))
+                return true;
+            }
+            else if (!target->IsWithinLOSInMap(m_caster)) // normal case
                 return false;
 
             break;
