@@ -75,7 +75,9 @@ bool PetAI::_needToStop() const
         (me->GetOwner() && me->GetOwner()->isInSanctuary() &&  me->getVictim()->GetCharmerOrOwnerPlayerOrPlayerItself()))
         return true;
 
-    return targetHasInterruptableAura(me->getVictim()) || !me->canAttack(me->getVictim());
+    return false;
+    //i don't know what is this doing, but for sure it's casusing pets to drop combat every 5 seconds -.-
+    //return targetHasInterruptableAura(me->getVictim()) || !me->canAttack(me->getVictim());
 }
 
 void PetAI::_stopAttack()
