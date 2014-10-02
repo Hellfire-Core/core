@@ -2242,10 +2242,20 @@ bool InstanceMap::Add(Player *player)
                         // players also become permanently bound when they enter
                         if (groupBind->perm)
                         {
-                            WorldPacket data(SMSG_INSTANCE_SAVE_CREATED, 4);
-                            data << uint32(0);
-                            player->SendPacketToSelf(&data);
-                            player->BindToInstance(mapSave, true);
+                            Player* leader = player->GetPlayer(player->GetGroup()->GetLeaderGUID());
+                            //accept binding only when leader is in the instance to prevent joining
+                            //wrong instance ids
+                            if (leader && leader->GetMapId() == groupBind->save->GetMapId())
+                            {
+                                WorldPacket data(SMSG_INSTANCE_SAVE_CREATED, 4);
+                                data << uint32(0);
+                                player->SendPacketToSelf(&data);
+                                player->BindToInstance(mapSave, true);
+                            }
+                            else
+                            {
+                                return false;
+                            }
                         }
                     }
                 }
