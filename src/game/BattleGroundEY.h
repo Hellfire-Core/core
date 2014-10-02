@@ -374,5 +374,5 @@ class BattleGroundEY : public BattleGround
         uint16 uWalkingDead;
         Player *Exploiter;
 };
-#endif HELLGROUND_BATTLEGROUNDEY_H
+#endif
 

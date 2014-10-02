@@ -39,6 +39,9 @@ uint32 BG_EY_HonorScoreTicks[BG_HONOR_MODE_NUM] = {
 
 BattleGroundEY::BattleGroundEY()
 {
+    Exploiter = NULL;
+    uWalkingDead = 5000;
+    uCheckDelayer = 5000;
     m_BuffChange = true;
     m_BgObjects.resize(BG_EY_OBJECT_MAX);
     m_BgCreatures.resize(BG_EY_CREATURES_MAX);
