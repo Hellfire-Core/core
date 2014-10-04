@@ -15503,6 +15503,9 @@ void Player::_LoadInventory(QueryResultAutoPtr result, uint32 timediff)
                 std::map<uint64, Bag*>::iterator itr = bagMap.find(bag_guid);
                 if (itr != bagMap.end())
                 {
+                    if (Item * oldItem = itr->second->GetItemByPos(slot))
+                        sLog.outLog(LOG_DEFAULT, "ERROR: Player::_LoadInventory: Player %s is loading item (GUID: %u Entry: %u) bun in its place there is (GUID: %u Entry: %u)",
+                        GetName(),item_guid,item_id,oldItem->GetGUIDLow(),oldItem->GetEntry());
                     itr->second->StoreItem(slot, item, true);
                     AddItemDurations(item); // FIXME shouldn't be here. As for now fixes a bug with an infinity of items which should have time duration limit.
                 }
