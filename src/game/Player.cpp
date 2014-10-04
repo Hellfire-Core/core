@@ -15459,7 +15459,7 @@ void Player::_LoadInventory(QueryResultAutoPtr result, uint32 timediff)
                 continue;
             }
 
-            uint8 success;
+            bool success = true;
 
             if (!bag_guid)
             {
@@ -15470,26 +15470,29 @@ void Player::_LoadInventory(QueryResultAutoPtr result, uint32 timediff)
                 if (IsInventoryPos(INVENTORY_SLOT_BAG_0, slot))
                 {
                     ItemPosCountVec dest;
-                    success = CanStoreItem(INVENTORY_SLOT_BAG_0, slot, dest, item, false);
-                    if (success == EQUIP_ERR_OK)
+                    if (CanStoreItem(INVENTORY_SLOT_BAG_0, slot, dest, item, false) == EQUIP_ERR_OK)
                         item = StoreItem(dest, item, true);
+                    else
+                        success = false;
                 }
                 else if (IsEquipmentPos(INVENTORY_SLOT_BAG_0, slot))
                 {
                     uint16 dest;
-                    success = CanEquipItem(slot, dest, item, false, false);
-                    if (success == EQUIP_ERR_OK)
+                    if (CanEquipItem(slot, dest, item, false, false) == EQUIP_ERR_OK)
                         QuickEquipItem(dest, item);
+                    else
+                        success = false;
                 }
                 else if (IsBankPos(INVENTORY_SLOT_BAG_0, slot))
                 {
                     ItemPosCountVec dest;
-                    success = CanBankItem(INVENTORY_SLOT_BAG_0, slot, dest, item, false, false);
-                    if (success == EQUIP_ERR_OK)
+                    if (CanBankItem(INVENTORY_SLOT_BAG_0, slot, dest, item, false, false) == EQUIP_ERR_OK)
                         item = BankItem(dest, item, true);
+                    else
+                        success = false;
                 }
 
-                if (success == EQUIP_ERR_OK)
+                if (success)
                 {
                     // store bags that may contain items in them
                     if (item->IsBag() && IsBagPos(item->GetPos()))
@@ -15507,15 +15510,15 @@ void Player::_LoadInventory(QueryResultAutoPtr result, uint32 timediff)
                     AddItemDurations(item); // FIXME shouldn't be here. As for now fixes a bug with an infinity of items which should have time duration limit.
                 }
                 else
-                    success = EQUIP_ERR_DEBUG_SPECIAL;
+                    success = false;
             }
 
             // item's state may have changed after stored
-            if (success == EQUIP_ERR_OK)
+            if (success)
                 item->SetState(ITEM_UNCHANGED, this);
             else
             {
-                sLog.outLog(LOG_DEFAULT, "ERROR: Player::_LoadInventory: Player %s has item (GUID: %u Entry: %u) can't be loaded to inventory (Bag GUID: %u Slot: %u) result %u, will send by mail.", GetName(),item_guid, item_id, bag_guid, slot, success);
+                sLog.outLog(LOG_DEFAULT, "ERROR: Player::_LoadInventory: Player %s has item (GUID: %u Entry: %u) can't be loaded to inventory (Bag GUID: %u Slot: %u) by some reason, will send by mail.", GetName(),item_guid, item_id, bag_guid, slot);
                 RealmDataDatabase.PExecute("DELETE FROM character_inventory WHERE item = '%u'", item_guid);
                 if (!GetSession()->IsAccountFlagged(ACC_SPECIAL_LOG))
                     problematicItems.push_back(item);
