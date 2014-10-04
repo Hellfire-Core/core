@@ -808,23 +808,3 @@ float PathFinder::dist3DSqr(const Vector3 &p1, const Vector3 &p2) const
 {
     return (p1-p2).squaredLength();
 }
-
-void PathFinder::stepBack(float distance)
-{
-    // not good path
-    if (m_pathPoints.size() < 2 || !(m_type & PATHFIND_NORMAL))
-        return;
-
-    // we are already far enough
-    if (dist3DSqr(getActualEndPosition(), getEndPosition()) < distance*distance)
-        return;
-
-    Vector3 lastVector = ((*m_pathPoints.end()) - (m_pathPoints[m_pathPoints.size() - 2]));
-    // point before last would be closer than distance to desired end, hope it would be enough
-    if (lastVector.squaredLength() < distance*distance)
-        m_pathPoints.pop_back();
-    else // whole idea is here, we make a step back on last straight
-        *m_pathPoints.end() -= lastVector*distance / (lastVector.length());
-
-    setActualEndPosition(*m_pathPoints.end());
-}
