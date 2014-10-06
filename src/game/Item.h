@@ -26,7 +26,6 @@
 #include "LootMgr.h"
 #include "ItemPrototype.h"
 #include "QueryResult.h"
-#include "Log.h"
 
 struct SpellEntry;
 class Bag;
@@ -285,8 +284,6 @@ class HELLGROUND_IMPORT_EXPORT Item : public Object
         uint16 GetQueuePos() const { return uQueuePos; }
         void FSetState(ItemUpdateState state)               // forced
         {
-            if (state == ITEM_NEW)
-                sLog.outLog(LOG_DEFAULT, "Forcing item_new state for item guid %u ",GetGUIDLow());
             uState = state;
         }
 

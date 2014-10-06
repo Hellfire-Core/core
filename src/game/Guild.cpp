@@ -1846,7 +1846,7 @@ Item* Guild::_StoreItem(uint8 tab, uint8 slot, Item *pItem, uint32 count, bool c
         AddGBankItemToDB(GetId(), tab, slot, pItem->GetGUIDLow(), pItem->GetEntry());
         pItem->FSetState(ITEM_NEW);
         pItem->SaveToDB();                                  // not in onventory and can be save standalone
-
+        sLog.outLog(LOG_DEFAULT, "Forcing item_new state for item guid %u ", pItem->GetGUIDLow());
         return pItem;
     }
     else
