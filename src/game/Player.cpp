@@ -15504,8 +15504,15 @@ void Player::_LoadInventory(QueryResultAutoPtr result, uint32 timediff)
                 if (itr != bagMap.end())
                 {
                     if (Item * oldItem = itr->second->GetItemByPos(slot))
-                        sLog.outLog(LOG_DEFAULT, "ERROR: Player::_LoadInventory: Player %s is loading item (GUID: %u Entry: %u) bun in its place there is (GUID: %u Entry: %u)",
-                        GetName(),item_guid,item_id,oldItem->GetGUIDLow(),oldItem->GetEntry());
+                    {
+                        sLog.outLog(LOG_DEFAULT, "ERROR: Player::_LoadInventory: Player %s is loading item (GUID: %u Entry: %u) bun in its place there was (GUID: %u Entry: %u), will send old by mail",
+                            GetName(), item_guid, item_id, oldItem->GetGUIDLow(), oldItem->GetEntry());
+                        // other cleaning stuff will be done by StoreItem
+                        oldItem->SetContainer(NULL); 
+                        oldItem->SetSlot(NULL);
+                        // player is not in game yet, no update needed
+                        problematicItems.push_back(oldItem);
+                    }
                     itr->second->StoreItem(slot, item, true);
                     AddItemDurations(item); // FIXME shouldn't be here. As for now fixes a bug with an infinity of items which should have time duration limit.
                 }
@@ -15520,8 +15527,7 @@ void Player::_LoadInventory(QueryResultAutoPtr result, uint32 timediff)
             {
                 sLog.outLog(LOG_DEFAULT, "ERROR: Player::_LoadInventory: Player %s has item (GUID: %u Entry: %u) can't be loaded to inventory (Bag GUID: %u Slot: %u) result %u, will send by mail.", GetName(),item_guid, item_id, bag_guid, slot, success);
                 RealmDataDatabase.PExecute("DELETE FROM character_inventory WHERE item = '%u'", item_guid);
-                if (!GetSession()->IsAccountFlagged(ACC_SPECIAL_LOG))
-                    problematicItems.push_back(item);
+                problematicItems.push_back(item);
             }
         } while (result->NextRow());
 
