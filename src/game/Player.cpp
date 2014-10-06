@@ -16414,6 +16414,14 @@ void Player::_SaveActions()
         {
             case ACTIONBUTTON_NEW:
             {
+                //for 'primary-key already exists' errors, they find a way.. :P
+                {
+                    SqlStatement stmt = RealmDataDatabase.CreateStatement(deleteCharacterAction, "DELETE FROM character_action where guid= ? AND button= ? ");
+                    stmt.addUInt32(GetGUIDLow());
+                    stmt.addUInt32(uint32(itr->first));
+                    stmt.Execute();
+                }
+
                 SqlStatement stmt = RealmDataDatabase.CreateStatement(insertCharacterAction, "INSERT INTO character_action (guid, button, action, type, misc) VALUES (?, ?, ?, ?, ?)");
                 stmt.addUInt32(GetGUIDLow());
                 stmt.addUInt32(uint32(itr->first));
@@ -16875,6 +16883,12 @@ void Player::_SaveSpells()
 
         if (itr->second.state == PLAYERSPELL_NEW || itr->second.state == PLAYERSPELL_CHANGED)
         {
+            {
+                //in some way we have primary-key insert errors, due to what characters are not saved (!!!)
+                SqlStatement stmt = RealmDataDatabase.CreateStatement(deleteSpell, "DELETE FROM character_spell WHERE guid = ? and spell = ?");
+                stmt.PExecute(GetGUIDLow(), itr->first);
+            }
+
             SqlStatement stmt = RealmDataDatabase.CreateStatement(insertSpell, "INSERT INTO character_spell (guid, spell, slot, active, disabled) VALUES (?, ?, ?, ?, ?)");
             stmt.addUInt32(GetGUIDLow());
             stmt.addUInt32(itr->first);
