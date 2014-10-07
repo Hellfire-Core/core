@@ -15511,6 +15511,7 @@ void Player::_LoadInventory(QueryResultAutoPtr result, uint32 timediff)
                         oldItem->SetContainer(NULL); 
                         oldItem->SetSlot(NULL);
                         // player is not in game yet, no update needed
+                        RealmDataDatabase.PExecute("DELETE FROM character_inventory WHERE item = '%u'", oldItem->GetGUIDLow());
                         problematicItems.push_back(oldItem);
                     }
                     itr->second->StoreItem(slot, item, true);
