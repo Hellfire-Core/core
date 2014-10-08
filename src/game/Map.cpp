@@ -2941,10 +2941,6 @@ void Map::RemoveFromObjMap(uint64 guid)
             sObjectAccessor.RemovePet(guid);
             break;
 
-        case HIGHGUID_PLAYER:
-            sObjectAccessor.RemovePlayer(guid);
-            break;
-
         case HIGHGUID_CORPSE:
             HashMapHolder<Corpse>::Remove(guid);
             break;
@@ -2990,11 +2986,6 @@ void Map::RemoveFromObjMap(Object * obj)
         case HIGHGUID_PET:
         {
             sObjectAccessor.RemovePet(objGuid.GetRawValue());
-            break;
-        }
-        case HIGHGUID_PLAYER:
-        {
-            sObjectAccessor.RemovePlayer(objGuid.GetRawValue());
             break;
         }
         case HIGHGUID_CORPSE:

@@ -509,7 +509,12 @@ void InstanceSaveManager::_ResetSave(InstanceSaveHashMap::iterator &itr)
     InstanceSave::PlayerListType &pList = itr->second->m_playerList;
     while (!pList.empty())
     {
-        Player *player = sObjectMgr.GetPlayer(*pList.begin());
+        Player *player = ObjectAccessor::GetPlayer(*pList.begin());
+        if (!player)
+        {
+            sLog.outLog(LOG_DEFAULT, "ERROR: _ResetSave. Player GUID:%u is still in instance save but no longer in object accessor",*pList.begin());
+            continue;
+        }
         player->UnbindInstance(itr->second->GetMapId(), itr->second->GetDifficulty(), true);
     }
 
