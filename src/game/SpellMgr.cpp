@@ -2851,8 +2851,10 @@ void SpellMgr::LoadSpellCustomAttr()
                     spellInfo->AttributesEx |= SPELL_ATTR_EX_UNK9;
                     spellInfo->AttributesEx2 |= SPELL_ATTR_EX2_FROM_BEHIND;
                 }
-                else if (spellInfo->Id == 16613)// some quest spell spamming with non-existing triggered
+                else if (spellInfo->Id == 16613) // some quest spell spamming with non-existing triggered
                     spellInfo->Effect[2] = 0;
+                else if (spellInfo->Id == 38829) // arcatraz sentinels prevent spam
+                    spellInfo->EffectImplicitTargetB[0] = TARGET_UNIT_AREA_ENEMY_DST;
                 break;
             }
             case SPELLFAMILY_DRUID:
@@ -2958,8 +2960,10 @@ void SpellMgr::LoadSpellCustomAttr()
                 
                 break;
             }
-            case SPELLFAMILY_WARRIOR:
             case SPELLFAMILY_HUNTER:
+                if (spellInfo->Id == 45172) // BE guards shooting at flying players on isle, prevent spam
+                    spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_AREA_ENEMY_DST;
+            case SPELLFAMILY_WARRIOR:
             case SPELLFAMILY_ROGUE:
                 spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
                 break;
