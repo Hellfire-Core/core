@@ -2929,6 +2929,7 @@ void SpellMgr::LoadSpellCustomAttr()
                     spellInfo->EffectImplicitTargetA[2] = TARGET_UNIT_AREA_ENEMY_DST;
                     spellInfo->EffectRadiusIndex[2] = 13;
                     spellInfo->EffectTriggerSpell[2] = 39897;
+                    spellInfo->AttributesEx2 |= SPELL_ATTR_EX2_IGNORE_LOS;
                 }
                 break;
             }
