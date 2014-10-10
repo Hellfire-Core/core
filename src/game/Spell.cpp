@@ -1878,7 +1878,7 @@ void Spell::SetTargetMap(uint32 i, uint32 cur)
         {
             if (!m_targets.HasDst())
             {
-                sLog.outLog(LOG_DEFAULT, "ERROR: SPELL: no destination for spell ID %u\n", GetSpellEntry()->Id);
+                sLog.outLog(LOG_DEFAULT, "ERROR: SPELL: no destination for spell ID %u", GetSpellEntry()->Id);
                 break;
             }
 
