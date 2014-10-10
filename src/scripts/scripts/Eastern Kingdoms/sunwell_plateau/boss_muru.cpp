@@ -251,8 +251,8 @@ struct boss_muruAI : public Scripted_NoMovementAI
         }
 
         if(TransitionTimer)
-        {
-            if(TransitionTimer <= diff)
+        {                                  // SOMEHOW we had 2x entropius spawned, so better check it
+            if(TransitionTimer <= diff && !GetClosestCreatureWithEntry(me, BOSS_ENTROPIUS, 400.0f))
             {
                 DoCast(me, SPELL_ENTROPIUS_COSMETIC_SPAWN);
                 DoCast(me, SPELL_SUMMON_ENTROPIUS);
