@@ -12080,6 +12080,8 @@ void Player::UpdateEnchantTime(uint32 time)
 
 void Player::AddEnchantmentDurations(Item *item)
 {
+    ASSERT(item);
+
     for (int x=0;x<MAX_ENCHANTMENT_SLOT;++x)
     {
         if (!item->GetEnchantmentId(EnchantmentSlot(x)))
