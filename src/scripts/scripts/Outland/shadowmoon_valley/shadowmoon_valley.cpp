@@ -133,18 +133,19 @@ struct mob_azalothAI : public ScriptedAI
         }
         else
             cripple_timer-=diff;
-/* This spell has been disabled due to HUGE spam in logs: 
-2013-11-10 09:41:01 ERROR: SPELL: no destination for spell ID 38741
-x 20 0000 000 times... or more
+
+        //This spell has been disabled due to HUGE spam in logs: 
+        //2013-11-10 09:41:01 ERROR: SPELL: no destination for spell ID 38741
+        //x 20 0000 000 times... or more
         //spell rain of fire
         if (rain_timer<diff)
         {
-            DoCast(m_creature->getVictim(), SPELL_RAIN_OF_FIRE);
+            me->CastSpell(m_creature->getVictim(), SPELL_RAIN_OF_FIRE, false);
             rain_timer    = 15000;
         }
         else
             rain_timer-=diff;
-*/
+
         //spell warstomp
         if (warstomp_timer<diff)
         {
