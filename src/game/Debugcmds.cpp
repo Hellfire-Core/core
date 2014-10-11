@@ -39,6 +39,7 @@
 #include "GridNotifiers.h"
 #include "GridNotifiersImpl.h"
 #include "CellImpl.h"
+#include "vmap\VMapFactory.h"
 
 #define COMMAND_COOLDOWN 2
 
@@ -1001,6 +1002,33 @@ bool ChatHandler::HandleDebugBossEmoteCommand(const char* args)
     WorldPacket data(SMSG_MESSAGECHAT, 200);
     pPlayer->BuildMonsterChat(&data, CHAT_MSG_RAID_BOSS_EMOTE, args, LANG_UNIVERSAL, pPlayer->GetName(), 0, true);
     pPlayer->BroadcastPacketInRange(&data, sWorld.getConfig(CONFIG_LISTEN_RANGE_YELL), true);
+
+    return true;
+}
+
+bool ChatHandler::HandleDebugVmapsCommand(const char* args)
+{
+    Player *pPlayer = m_session->GetPlayer();
+    Unit* target = getSelectedUnit();
+    if (!target || target == pPlayer)
+    {
+        SendSysMessage(LANG_NO_SELECTION);
+        SetSentErrorMessage(true);
+        return false;
+    }
+    VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
+    if (!mgr)
+        return false;
+
+    mgr->SetHitGroupModel(0);
+    bool los = mgr->isInLineOfSight2(pPlayer->GetMapId(),
+        pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ() + 2.0f,
+        target->GetPositionX(), target->GetPositionY(), target->GetPositionZ() + 2.0f);
+
+    if (los)
+        SendSysMessage("No collision detected");
+    else
+        PSendSysMessage("Detected collision with group model %u",mgr->GetHitGroupModel());
 
     return true;
 }

@@ -21,6 +21,7 @@
 #include "WorldModel.h"
 #include "VMapDefinitions.h"
 #include "MapTree.h"
+#include "VMapFactory.h"
 
 using G3D::Vector3;
 using G3D::Ray;
@@ -360,12 +361,14 @@ namespace VMAP
         bool hit;
     };
 
-    bool GroupModel::IntersectRay(const G3D::Ray &ray, float &distance, bool stopAtFirstHit) const
+    bool GroupModel::IntersectRay(const G3D::Ray &ray, float &distance, bool stopAtFirstHit, bool debug) const
     {
         if (!triangles.size())
             return false;
         GModelRayCallback callback(triangles, vertices);
         meshTree.intersectRay(ray, callback, distance, stopAtFirstHit);
+        if (debug && callback.hit)
+            VMAP::VMapFactory::createOrGetVMapManager()->SetHitGroupModel(iGroupWMOID);
         return callback.hit;
     }
 
@@ -408,25 +411,25 @@ namespace VMAP
 
     struct WModelRayCallBack
     {
-        WModelRayCallBack(const std::vector<GroupModel> &mod): models(mod.begin()), hit(false) {}
+        WModelRayCallBack(const std::vector<GroupModel> &mod, bool debug): models(mod.begin()), hit(false), m_debug(debug){}
         bool operator()(const G3D::Ray& ray, uint32 entry, float& distance, bool pStopAtFirstHit)
         {
-            bool result = models[entry].IntersectRay(ray, distance, pStopAtFirstHit);
+            bool result = models[entry].IntersectRay(ray, distance, pStopAtFirstHit,m_debug);
             if (result)  hit=true;
             return hit;
         }
         std::vector<GroupModel>::const_iterator models;
-        bool hit;
+        bool hit,m_debug;
     };
 
-    bool WorldModel::IntersectRay(const G3D::Ray &ray, float &distance, bool stopAtFirstHit) const
+    bool WorldModel::IntersectRay(const G3D::Ray &ray, float &distance, bool stopAtFirstHit, bool debug) const
     {
         // small M2 workaround, maybe better make separate class with virtual intersection funcs
         // in any case, there's no need to use a bound tree if we only have one submodel
         if (groupModels.size() == 1)
             return groupModels[0].IntersectRay(ray, distance, stopAtFirstHit);
 
-        WModelRayCallBack isc(groupModels);
+        WModelRayCallBack isc(groupModels,debug);
         groupTree.intersectRay(ray, isc, distance, stopAtFirstHit);
         return isc.hit;
     }

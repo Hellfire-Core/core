@@ -73,7 +73,7 @@ namespace VMAP
 
             bool _loadMap(uint32 pMapId, const std::string &basePath, uint32 tileX, uint32 tileY);
             /* void _unloadMap(uint32 pMapId, uint32 x, uint32 y); */
-
+            uint32 hitGroupModel;
         public:
             // public for debug
             G3D::Vector3 convertPositionToInternalRep(float x, float y, float z) const;
@@ -91,14 +91,12 @@ namespace VMAP
             void unloadMap(unsigned int pMapId);
 
             bool isInLineOfSight(unsigned int pMapId, float x1, float y1, float z1, float x2, float y2, float z2) ;
-            bool isInLineOfSight2(unsigned int pMapId, float x1, float y1, float z1, float x2, float y2, float z2);
+            bool isInLineOfSight2(unsigned int pMapId, float x1, float y1, float z1, float x2, float y2, float z2, bool debug = false);
             /**
             fill the hit pos and return true, if an object was hit
             */
             bool getObjectHitPos(unsigned int pMapId, float x1, float y1, float z1, float x2, float y2, float z2, float& rx, float &ry, float& rz, float pModifyDist);
             float getHeight(unsigned int pMapId, float x, float y, float z, float maxSearchDist);
-
-            bool processCommand(char *pCommand) { return false; }      // for debug and extensions
 
             void preventMapsFromBeingUsed(const char* pMapIdString);
             bool getAreaInfo(unsigned int pMapId, float x, float y, float &z, uint32 &flags, int32 &adtId, int32 &rootId, int32 &groupId) const;
@@ -114,6 +112,8 @@ namespace VMAP
             }
             virtual bool existsMap(const char* pBasePath, unsigned int pMapId, int x, int y);
 
+            void SetHitGroupModel(uint32 id) { hitGroupModel = id; };
+            uint32 GetHitGroupModel() {return hitGroupModel;};
 #ifdef MMAP_GENERATOR
         public:
             void getInstanceMapTree(InstanceTreeMap &instanceMapTree);

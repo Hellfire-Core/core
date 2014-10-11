@@ -41,10 +41,6 @@
 #include "SocialMgr.h"
 #include "GuildMgr.h"
 
-#ifdef _DEBUG_VMAPS
-#include "VMapFactory.h"
-#endif
-
 bool ChatHandler::HandleNpcSayCommand(const char* args)
 {
     if (!*args)
@@ -299,10 +295,6 @@ bool ChatHandler::HandleGMCommand(const char* args)
     {
         m_session->GetPlayer()->SetGameMaster(true);
         m_session->SendNotification(LANG_GM_ON);
-        #ifdef _DEBUG_VMAPS
-        VMAP::IVMapManager *vMapManager = VMAP::VMapFactory::createOrGetVMapManager();
-        vMapManager->processCommand("stoplog");
-        #endif
         return true;
     }
 
@@ -310,10 +302,6 @@ bool ChatHandler::HandleGMCommand(const char* args)
     {
         m_session->GetPlayer()->SetGameMaster(false);
         m_session->SendNotification(LANG_GM_OFF);
-        #ifdef _DEBUG_VMAPS
-        VMAP::IVMapManager *vMapManager = VMAP::VMapFactory::createOrGetVMapManager();
-        vMapManager->processCommand("startlog");
-        #endif
         return true;
     }
 

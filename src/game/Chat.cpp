@@ -292,6 +292,7 @@ ChatCommand * ChatHandler::getCommandTable()
         { "printstate",     PERM_PLAYER,    PERM_CONSOLE, false,  &ChatHandler::HandleDebugUnitState,                 "", NULL },
         { "update",         PERM_ADM,       PERM_CONSOLE, false,  &ChatHandler::HandleDebugUpdate,                    "", NULL },
         { "uws",            PERM_ADM,       PERM_CONSOLE, false,  &ChatHandler::HandleDebugUpdateWorldStateCommand,   "", NULL },
+        { "vmap",           PERM_PLAYER,    PERM_CONSOLE, false,  &ChatHandler::HandleDebugVmapsCommand,              "", NULL },
         { NULL,             0,              0,            false,  NULL,                                               "", NULL }
     };
 
