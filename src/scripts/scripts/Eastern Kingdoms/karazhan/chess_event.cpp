@@ -783,8 +783,8 @@ bool boss_MedivhAI::Enemy(uint64 piece1, uint64 piece2)
     {
 #ifdef CHESS_DEBUG_INFO
         printf("\npiece1: %u, %i  | piece2: %u, %i", piece1, tmp1 ? 1 : 0, piece2 , tmp2 ? 1 : 0);
-#endif
         me->Say("Cosik pionkow 2 nie znalazlem do sprawdzenia", LANG_UNIVERSAL, 0);
+#endif
         return false;
     }
 
