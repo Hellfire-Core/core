@@ -5501,7 +5501,7 @@ bool Spell::CheckTarget(Unit* target, uint32 eff)
     }
 
     //Do not check LOS for triggered spells
-    if (IsTriggeredSpell() && !m_caster->ToTotem())
+    if (IsTriggeredSpell())
         return true;
 
     //Check targets for LOS visibility (except spells without range limitations)
