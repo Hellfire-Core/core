@@ -14,6 +14,10 @@ Welcome!
 
 
 
+Do not share this code with anyone who does not have access to repository.
+
+
+
 
 
 Copyright (C) 2008-2014 HellGround team <http://hellground.net/>
