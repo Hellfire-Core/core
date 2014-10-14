@@ -39,7 +39,7 @@
 #include "GridNotifiers.h"
 #include "GridNotifiersImpl.h"
 #include "CellImpl.h"
-#include "vmap\VMapFactory.h"
+#include "vmap/VMapFactory.h"
 
 #define COMMAND_COOLDOWN 2
 
