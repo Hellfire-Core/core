@@ -1023,7 +1023,7 @@ bool ChatHandler::HandleDebugVmapsCommand(const char* args)
     mgr->SetHitGroupModel(0);
     bool los = mgr->isInLineOfSight2(pPlayer->GetMapId(),
         pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ() + 2.0f,
-        target->GetPositionX(), target->GetPositionY(), target->GetPositionZ() + 2.0f);
+        target->GetPositionX(), target->GetPositionY(), target->GetPositionZ() + 2.0f,true);
 
     if (los)
         SendSysMessage("No collision detected");
