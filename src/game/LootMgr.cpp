@@ -362,7 +362,7 @@ void Loot::AddItem(LootStoreItem const & item)
             quest_items.push_back(LootItem(item));
         everyone_can_open = true;
         ItemPrototype const* proto = ObjectMgr::GetItemPrototype(item.itemid);
-        if (proto && !(proto->Flags & ITEM_FLAGS_PARTY_LOOT))
+        if (proto && !(proto->Flags & ITEM_FLAGS_PARTY_LOOT) && !m_creatureGUID)
             unlootedCount++;
     }
     else if (items.size() < MAX_NR_LOOT_ITEMS)              // Non-quest drop
