@@ -427,7 +427,7 @@ namespace VMAP
         // small M2 workaround, maybe better make separate class with virtual intersection funcs
         // in any case, there's no need to use a bound tree if we only have one submodel
         if (groupModels.size() == 1)
-            return groupModels[0].IntersectRay(ray, distance, stopAtFirstHit);
+            return groupModels[0].IntersectRay(ray, distance, stopAtFirstHit,debug);
 
         WModelRayCallBack isc(groupModels,debug);
         groupTree.intersectRay(ray, isc, distance, stopAtFirstHit);
