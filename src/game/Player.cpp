@@ -10779,7 +10779,7 @@ Item* Player::_StoreItem(uint16 pos, Item *pItem, uint32 count, bool clone, bool
 
         return pItem;
     }
-    else
+    else if (pItem2 != pItem)
     {
         if (pItem2->GetProto()->Bonding == BIND_WHEN_PICKED_UP ||
             pItem2->GetProto()->Bonding == BIND_QUEST_ITEM ||
@@ -10810,6 +10810,11 @@ Item* Player::_StoreItem(uint16 pos, Item *pItem, uint32 count, bool clone, bool
 
         pItem2->SetState(ITEM_CHANGED, this);
 
+        return pItem2;
+    }
+    else
+    {
+        //item is in this place already ... for me its WTF but it does happens for bugged items when picking them from mail
         return pItem2;
     }
 }
