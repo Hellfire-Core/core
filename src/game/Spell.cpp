@@ -5501,7 +5501,7 @@ bool Spell::CheckTarget(Unit* target, uint32 eff)
     }
 
     //Do not check LOS for triggered spells
-    if (IsTriggeredSpell())
+    if (IsTriggeredSpell() && (!sWorld.getConfig(CONFIG_VMAP_TOTEM) || !m_caster->ToTotem()))
         return true;
 
     //Check targets for LOS visibility (except spells without range limitations)
