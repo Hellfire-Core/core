@@ -145,7 +145,7 @@ namespace VMAP
     bool StaticMapTree::getIntersectionTime(const G3D::Ray& pRay, float &pMaxDist, bool pStopAtFirstHit, bool debug) const
     {
         float distance = pMaxDist;
-        MapRayCallback intersectionCallBack(iTreeValues);
+        MapRayCallback intersectionCallBack(iTreeValues,debug);
         iTree.intersectRay(pRay, intersectionCallBack, distance, pStopAtFirstHit);
         if (intersectionCallBack.didHit())
             pMaxDist = distance;
