@@ -26,9 +26,11 @@ EndScriptData */
 
 /* ContentData
 npc_blood_knight_stillblade
+npc_silvermoon_guard
 EndContentData */
 
 #include "precompiled.h"
+#include "guard_ai.h"
 
 /*#######
 # npc_blood_knight_stillblade
@@ -96,6 +98,45 @@ CreatureAI* GetAI_npc_blood_knight_stillblade(Creature *_Creature)
     return new npc_blood_knight_stillbladeAI (_Creature);
 }
 
+/*#######
+# npc_silvermoon_guard
+#######*/
+
+//Obtain Guard AI
+CreatureAI* GetAI_npc_silvermoon_guard(Creature *_Creature)
+{
+    return new guardAI (_Creature);
+}
+
+//Recive emote and replay for this
+bool ReciveEmote_npc_silvermoon_guard(Player *player, Creature *_Creature, uint32 emote)
+{
+    switch(emote)
+    {
+        case TEXTEMOTE_DANCE:
+            ((guardAI*)_Creature->AI())->EnterEvadeMode();
+            break;
+        case TEXTEMOTE_RUDE:
+            if (_Creature->IsWithinDistInMap(player, 5))
+                _Creature->HandleEmoteCommand(EMOTE_ONESHOT_RUDE);
+            else
+                _Creature->HandleEmoteCommand(EMOTE_ONESHOT_RUDE);
+            break;
+        case TEXTEMOTE_WAVE:
+            _Creature->HandleEmoteCommand(EMOTE_ONESHOT_WAVE);
+            break;
+        case TEXTEMOTE_BOW:
+            _Creature->HandleEmoteCommand(EMOTE_ONESHOT_BOW);
+            break;
+        case TEXTEMOTE_KISS:
+            _Creature->HandleEmoteCommand(EMOTE_ONESHOT_FLEX);
+            break;
+    }
+
+    return true;
+}
+
+
 void AddSC_silvermoon_city()
 {
     Script *newscript;
@@ -103,5 +144,11 @@ void AddSC_silvermoon_city()
     newscript->Name="npc_blood_knight_stillblade";
     newscript->GetAI = &GetAI_npc_blood_knight_stillblade;
     newscript->RegisterSelf();
+
+	newscript = new Script;
+	newscript->Name = "npc_silvermoon_guard";
+	newscript->GetAI = &GetAI_npc_silvermoon_guard;
+	newscript->pReceiveEmote = &ReciveEmote_npc_silvermoon_guard;
+	newscript->RegisterSelf();
 }
 
