@@ -3937,6 +3937,51 @@ CreatureAI* GetAI_guard_undercity(Creature *_Creature)
 }
 
 /*******************************************************
+ * npc_silvermoon_guard end
+ *******************************************************/
+
+//Recive emote and replay for this
+bool ReciveEmote_npc_silvermoon_guard(Player *player, Creature *_Creature, uint32 emote)
+{
+    switch(emote)
+    {
+        case TEXTEMOTE_DANCE:
+            ((guardAI*)_Creature->AI())->EnterEvadeMode();
+            break;
+        case TEXTEMOTE_RUDE:
+            if (_Creature->IsWithinDistInMap(player, 5))
+                _Creature->HandleEmoteCommand(EMOTE_ONESHOT_RUDE);
+            else
+                _Creature->HandleEmoteCommand(EMOTE_ONESHOT_RUDE);
+            break;
+        case TEXTEMOTE_WAVE:
+            _Creature->HandleEmoteCommand(EMOTE_ONESHOT_WAVE);
+            break;
+        case TEXTEMOTE_BOW:
+            _Creature->HandleEmoteCommand(EMOTE_ONESHOT_BOW);
+            break;
+        case TEXTEMOTE_KISS:
+            _Creature->HandleEmoteCommand(EMOTE_ONESHOT_FLEX);
+            break;
+    }
+
+    return true;
+
+}
+
+
+//Obtain Guard AI
+CreatureAI* GetAI_npc_silvermoon_guard(Creature *_Creature)
+{
+    return new guardAI (_Creature);
+}
+
+/*******************************************************
+ * guard_silvermoon end
+ *******************************************************/
+
+
+/*******************************************************
  * AddSC
  *******************************************************/
 
@@ -4082,6 +4127,12 @@ void AddSC_guards()
     newscript->pGossipHello          = &GossipHello_guard_undercity;
     newscript->pGossipSelect         = &GossipSelect_guard_undercity;
     newscript->GetAI = &GetAI_guard_undercity;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_silvermoon_guard";
+    newscript->GetAI = &GetAI_npc_silvermoon_guard;
+    newscript->pReceiveEmote = &ReciveEmote_npc_silvermoon_guard;
     newscript->RegisterSelf();
 }
 
