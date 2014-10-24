@@ -73,7 +73,7 @@ namespace VMAP
 
             bool _loadMap(uint32 pMapId, const std::string &basePath, uint32 tileX, uint32 tileY);
             /* void _unloadMap(uint32 pMapId, uint32 x, uint32 y); */
-            uint32 hitGroupModel;
+            std::string hitModelName;
         public:
             // public for debug
             G3D::Vector3 convertPositionToInternalRep(float x, float y, float z) const;
@@ -112,8 +112,8 @@ namespace VMAP
             }
             virtual bool existsMap(const char* pBasePath, unsigned int pMapId, int x, int y);
 
-            void SetHitGroupModel(uint32 id) { hitGroupModel = id; };
-            uint32 GetHitGroupModel() {return hitGroupModel;};
+            void SetHitModelName(std::string name) { hitModelName = name; };
+            std::string GetHitModelName() {return hitModelName;};
 #ifdef MMAP_GENERATOR
         public:
             void getInstanceMapTree(InstanceTreeMap &instanceMapTree);

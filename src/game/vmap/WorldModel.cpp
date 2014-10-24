@@ -361,14 +361,12 @@ namespace VMAP
         bool hit;
     };
 
-    bool GroupModel::IntersectRay(const G3D::Ray &ray, float &distance, bool stopAtFirstHit, bool debug) const
+    bool GroupModel::IntersectRay(const G3D::Ray &ray, float &distance, bool stopAtFirstHit) const
     {
         if (!triangles.size())
             return false;
         GModelRayCallback callback(triangles, vertices);
         meshTree.intersectRay(ray, callback, distance, stopAtFirstHit);
-        if (debug && callback.hit)
-            VMAP::VMapFactory::createOrGetVMapManager()->SetHitGroupModel(iGroupWMOID);
         return callback.hit;
     }
 
@@ -411,27 +409,37 @@ namespace VMAP
 
     struct WModelRayCallBack
     {
-        WModelRayCallBack(const std::vector<GroupModel> &mod, bool debug): models(mod.begin()), hit(false), m_debug(debug){}
+        WModelRayCallBack(const std::vector<GroupModel> &mod): models(mod.begin()), hit(false){}
         bool operator()(const G3D::Ray& ray, uint32 entry, float& distance, bool pStopAtFirstHit)
         {
-            bool result = models[entry].IntersectRay(ray, distance, pStopAtFirstHit,m_debug);
-            if (result)  hit=true;
-            return hit;
+            bool result = models[entry].IntersectRay(ray, distance, pStopAtFirstHit);
+            if (result)  hit=entry;
+            return result;
         }
         std::vector<GroupModel>::const_iterator models;
-        bool hit,m_debug;
+        uint32 hit;
     };
 
     bool WorldModel::IntersectRay(const G3D::Ray &ray, float &distance, bool stopAtFirstHit, bool debug) const
     {
+        uint32 hit = 0;
         // small M2 workaround, maybe better make separate class with virtual intersection funcs
         // in any case, there's no need to use a bound tree if we only have one submodel
         if (groupModels.size() == 1)
-            return groupModels[0].IntersectRay(ray, distance, stopAtFirstHit,debug);
-
-        WModelRayCallBack isc(groupModels,debug);
-        groupTree.intersectRay(ray, isc, distance, stopAtFirstHit);
-        return isc.hit;
+            hit = groupModels[0].IntersectRay(ray, distance, stopAtFirstHit) ? groupModels[0].GetWmoID() : 0 ;
+        else
+        {
+            WModelRayCallBack isc(groupModels);
+            groupTree.intersectRay(ray, isc, distance, stopAtFirstHit);
+            hit = isc.hit;
+        }
+        if (debug && hit != 0)
+        {
+            char name[200];
+            sprintf(name, "%s : %u", ModelFilename, hit);
+            VMAP::VMapFactory::createOrGetVMapManager()->SetHitModelName(std::string(name));
+        }
+        return hit;
     }
 
     class WModelAreaCallback {
@@ -570,6 +578,7 @@ namespace VMAP
         }
 
         fclose(rf);
+        ModelFilename = filename;
         return result;
     }
 }
