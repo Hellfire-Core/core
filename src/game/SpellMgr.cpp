@@ -3636,6 +3636,26 @@ void SpellMgr::LoadCustomSpellCooldowns(SpellEntry* spellInfo)
         case 29992: //Quest spell - needs cooldown to be able to add to possessed unit
             spellInfo->RecoveryTime = 1080;
             break;
+        case 32096: // Thrallmar's Favor
+            spellInfo->EffectBasePoints[0] = 24;
+            spellInfo->EffectApplyAuraName[0] = 190;
+            spellInfo->EffectMiscValue[0] = 947;
+            spellInfo->Effect[1] = 6;
+            spellInfo->EffectBasePoints[1] = 4;
+            spellInfo->EffectImplicitTargetA[1] = 1;
+            spellInfo->EffectApplyAuraName[1] = 200;
+            spellInfo->EffectBaseDice[1] = 1;
+            break;
+        case 32098: // Honor Hold's Favor
+            spellInfo->EffectBasePoints[0] = 24;
+            spellInfo->EffectApplyAuraName[0] = 190;
+            spellInfo->EffectMiscValue[0] = 946;
+            spellInfo->Effect[1] = 6;
+            spellInfo->EffectBasePoints[1] = 4;
+            spellInfo->EffectImplicitTargetA[1] = 1;
+            spellInfo->EffectApplyAuraName[1] = 200;
+            spellInfo->EffectBaseDice[1] = 1;
+            break;
         default:
             break;
     }
@@ -3965,6 +3985,20 @@ bool SpellMgr::IsSpellAllowedInLocation(SpellEntry const *spellInfo,uint32 map_i
         // Ritual of summoning in Zul'Aman
         case 698:
             return map_id != 568;
+        case 32096:
+        case 32098:
+        case 39911:
+        case 39913:
+        {
+            if (zone_id == 3483)
+                return true;
+
+            MapEntry const* mapEntry = sMapStore.LookupEntry(map_id);
+            if (!mapEntry)
+                return false;
+
+            return mapEntry->multimap_id == 199 || mapEntry->multimap_id == 208;
+        }
     }
 
     return true;
