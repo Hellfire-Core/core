@@ -65,6 +65,7 @@ bool Spell_deep_wounds(Unit *pCaster, Unit* pUnit, Item* pItem, GameObject* pGam
 
     if (Aura *deepWounds = pUnit->GetAuraByCasterSpell(12721, pCaster->GetGUID()))
     {
+        deepWounds->GetModifier()->m_amount = deepWoundsDotBasePoints0;
         deepWounds->SetAuraDuration(deepWounds->GetAuraMaxDuration());
         deepWounds->UpdateAuraDuration();
 

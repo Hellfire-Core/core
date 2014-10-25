@@ -3079,6 +3079,10 @@ void SpellMgr::LoadSpellCustomAttr()
             case 1543:                      // Flare no longer produces combat
                 spellInfo->AttributesEx3 |= SPELL_ATTR_EX3_NO_INITIAL_AGGRO;
                 break;
+            /* WARRIOR CUSTOM ATTRIBUTES */
+            case 12721: // Deep Wounds
+                spellInfo->AttributesEx3 |= SPELL_ATTR_EX3_NO_DONE_BONUS;
+                break;
             // Triggered spells that should be delayed
             case 20272:                     // Illumination
             case 32848:                     // Mana Restore
