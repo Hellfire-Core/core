@@ -877,6 +877,9 @@ class HELLGROUND_EXPORT World
 
         LfgContainerType & GetLfgContainer(uint32 team)
         {
+            if (getConfig(CONFIG_ALLOW_TWO_SIDE_INTERACTION_GROUP))
+                return lfgAllyContainer;
+
             switch (team)
             {
                 case ALLIANCE:
