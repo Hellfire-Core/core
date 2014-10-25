@@ -19749,16 +19749,43 @@ bool Player::CanBeSummonedBy(const Unit * summoner)
     // if summoning to instance
     if (summoner->GetMap()->IsDungeon())
     {
+        // if both in same map-dungeon and have different instanceId's - don't summon for both dungeons/raids
+        if (GetMap()->IsDungeon() && GetMapId() == summoner->GetMapId() && GetInstanceId() != summoner->GetInstanceId()) // for dungeons
+            return false;
+
         // check for permbinded id's
-        InstanceSave * tmpInst = GetInstanceSave(summoner->GetMapId());
-        if (tmpInst)
+        InstanceSave * tmpInst = GetInstanceSave(summoner->GetMapId()); // dungeons save only on heroic AND there are no heroics for raids - thus it will only get bound instances
+        if (tmpInst) // if there IS save on the summoned player
         {
-            if (tmpInst->GetInstanceId() != summoner->GetInstanceId())
+            if (tmpInst->GetInstanceId() != summoner->GetInstanceId()) // if summoned player inst id != summoner inst id
                 return false;
         }
-        // check for temp id's
-        else if (GetMap()->IsDungeon() && GetMapId() == summoner->GetMapId() && GetInstanceId() != summoner->GetInstanceId())
-            return false;
+        // summoned player had no cooldown yet - then check summoner
+        else
+        {
+            if (const Player* summPlr = summoner->ToPlayer())
+            {
+                if (const Group* grp = summPlr->GetGroup())
+                {
+                    if (Player* leader = GetPlayer(grp->GetLeaderGUID()))
+                    {
+                        InstanceSave * tmpLeaderInst = leader->GetInstanceSave(summoner->GetMapId());
+                        if (tmpLeaderInst)
+                        {
+                            if (tmpLeaderInst->GetInstanceId() != summoner->GetInstanceId()) // if raid leader inst id != summoner inst id
+                                return false;
+                        }
+                        else // warlock has cooldown, and raid leader not? - definetely trying to exploit!
+                            return false;
+                    }
+                    else // leader is offline, so why should we care?
+                        return false;
+                }
+                else // well, should have group
+                    return false;
+            }
+            // no else, might creature/GO/item be a summoner?
+        }            
     }
 
     return true;
