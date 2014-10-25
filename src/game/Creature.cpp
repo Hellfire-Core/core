@@ -2774,6 +2774,14 @@ RestoreReactState::RestoreReactState(Creature& owner) : BasicEvent(), _owner(own
 
     _owner.addUnitState(UNIT_STAT_IGNORE_ATTACKERS);
 
+    if (!owner.HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
+    {
+        owner.SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        _WasAttackable = true;
+    }
+    else
+        _WasAttackable = false;
+
     _oldState = _owner.GetReactState();
     _owner.SetReactState(REACT_PASSIVE);
 }
@@ -2784,6 +2792,8 @@ bool RestoreReactState::Execute(uint64 e_time, uint32 p_time)
         return true;
 
     _owner.clearUnitState(UNIT_STAT_IGNORE_ATTACKERS);
+    if (_WasAttackable)
+        _owner.RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
     _owner.SetReactState(_oldState);
     return true;
 }
