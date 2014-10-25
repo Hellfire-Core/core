@@ -4430,7 +4430,7 @@ void ObjectMgr::SetHighestGuids()
 
     result = GameDataDatabase.Query("SELECT MAX(guid) FROM creature");
     if (result)
-        m_hiCreatureGuid = (*result)[0].GetUInt32()+1;
+        m_hiCreatureGuid = (*result)[0].GetUInt32()+10000;
 
     result = RealmDataDatabase.Query("SELECT MAX(guid) FROM item_instance");
     if (result)
@@ -4446,7 +4446,7 @@ void ObjectMgr::SetHighestGuids()
 
     result = GameDataDatabase.Query("SELECT MAX(guid) FROM gameobject");
     if (result)
-        m_hiGoGuid = (*result)[0].GetUInt32()+1;
+        m_hiGoGuid = (*result)[0].GetUInt32()+10000;
 
     result = RealmDataDatabase.Query("SELECT MAX(id) FROM auctionhouse");
     if (result)
@@ -4535,7 +4535,7 @@ uint32 ObjectMgr::GenerateLowGuid(HighGuid guidhigh)
             }
             return m_hiItemGuid++;
         case HIGHGUID_UNIT:
-            if (m_hiCreatureGuid>=0xFFFFFFFE)
+            if (m_hiCreatureGuid>=0x00FFFFFE) // npc add command bugs at more than this 
             {
                 sLog.outLog(LOG_DEFAULT, "ERROR: Creature guid overflow!! Can't continue, shutting down server. ");
                 World::StopNow(ERROR_EXIT_CODE);

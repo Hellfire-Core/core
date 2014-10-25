@@ -996,8 +996,14 @@ bool ChatHandler::HandleNpcAddCommand(const char* args)
     float o = chr->GetOrientation();
     Map *map = chr->GetMap();
 
+    QueryResultAutoPtr result = GameDataDatabase.Query("SELECT MAX(guid) FROM creature");
+    if (!result)
+        return false;
+
+    uint32 newCreatureGuid = (*result)[0].GetUInt32()+1;
+
     Creature* pCreature = new Creature;
-    if (!pCreature->Create(sObjectMgr.GenerateLowGuid(HIGHGUID_UNIT), map, id, uint32(teamval), x, y, z, o))
+    if (!pCreature->Create(newCreatureGuid, map, id, uint32(teamval), x, y, z, o))
     {
         delete pCreature;
         return false;
@@ -3181,8 +3187,14 @@ bool ChatHandler::HandleGameObjectAddCommand(const char* args)
     float o = float(chr->GetOrientation());
     Map *map = chr->GetMap();
 
+    QueryResultAutoPtr result = GameDataDatabase.Query("SELECT MAX(guid) FROM gameobject");
+    if (!result)
+        return false;
+
+    uint32 newGameObjectGuid = (*result)[0].GetUInt32()+1;
+
     GameObject* pGameObj = new GameObject;
-    uint32 db_lowGUID = sObjectMgr.GenerateLowGuid(HIGHGUID_GAMEOBJECT);
+    uint32 db_lowGUID = newGameObjectGuid;
 
     if (!pGameObj->Create(db_lowGUID, goI->id, map, x, y, z, o, 0.0f, 0.0f, 0.0f, 0.0f, 0, GO_STATE_READY))
     {
