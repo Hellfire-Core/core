@@ -19791,11 +19791,6 @@ bool Player::CanBeSummonedBy(const Unit * summoner)
     return true;
 }
 
-bool Player::CanBeSummonedBy(uint64 summoner)
-{
-    return CanBeSummonedBy(GetUnit(summoner));
-}
-
 void Player::SummonIfPossible(bool agree, uint64 summonerGUID)
 {
     Unit* summoner = GetUnit(summonerGUID);
@@ -19810,6 +19805,8 @@ void Player::SummonIfPossible(bool agree, uint64 summonerGUID)
         if (!CanBeSummonedBy(summoner))
             return;
     }
+    else
+        return;
 
     if (!agree)
     {
