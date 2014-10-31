@@ -86,7 +86,7 @@ namespace VMAP
             //! pass mesh data to object and create BIH. Passed vectors get get swapped with old geometry!
             void setMeshData(std::vector<Vector3> &vert, std::vector<MeshTriangle> &tri);
             void setLiquidData(WmoLiquid *liquid) { iLiquid = liquid; }
-            bool IntersectRay(const G3D::Ray &ray, float &distance, bool stopAtFirstHit) const;
+            bool IntersectRay(const G3D::Ray &ray, float &distance, bool stopAtFirstHit, bool debug= false) const;
             bool IsInsideObject(const Vector3 &pos, const Vector3 &down, float &z_dist) const;
             bool GetLiquidLevel(const Vector3 &pos, float &liqHeight) const;
             uint32 GetLiquidType() const;
@@ -127,7 +127,7 @@ namespace VMAP
             uint32 RootWMOID;
             std::vector<GroupModel> groupModels;
             BIH groupTree;
-            std::string ModelFilename;
+
 #ifdef MMAP_GENERATOR
         public:
             void getGroupModels(std::vector<GroupModel> &groupModels);
