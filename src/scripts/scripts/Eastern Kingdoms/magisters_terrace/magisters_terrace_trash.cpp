@@ -52,12 +52,12 @@ EndScriptData */
 // mobs DB GUIDs that should respawn group formation on evade
 uint32 KaelTrashDBguid[6]=
 {
-    96850,
-    96781,
-    96841,
-    96809,
-    96770,
-    96847
+    92705,
+    92630,
+    92667,
+    92699,
+    92641,
+    92708
 };
 
 #define SPELL_GLAIVE_THROW              (HeroicMode?46028:44478)
