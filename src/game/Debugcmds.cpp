@@ -1020,7 +1020,7 @@ bool ChatHandler::HandleDebugVmapsCommand(const char* args)
     if (!mgr)
         return false;
 
-    mgr->SetHitGroupModel(666);
+    mgr->SetHitModelName("<unknown>");
     bool los = mgr->isInLineOfSight2(pPlayer->GetMapId(),
         pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ() + 2.0f,
         target->GetPositionX(), target->GetPositionY(), target->GetPositionZ() + 2.0f,true);
@@ -1028,7 +1028,7 @@ bool ChatHandler::HandleDebugVmapsCommand(const char* args)
     if (los)
         SendSysMessage("No collision detected");
     else
-        PSendSysMessage("Detected collision with group model %u",mgr->GetHitGroupModel());
+        PSendSysMessage("Detected collision with %s",mgr->GetHitModelName());
 
     return true;
 }
