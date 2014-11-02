@@ -3015,6 +3015,174 @@ CreatureAI* GetAI_npc_gnomish_flame_turret(Creature *_Creature)
     return new npc_gnomish_flame_turret(_Creature);
 }
 
+struct npc_bad_santaAI : public ScriptedAI
+{
+    npc_bad_santaAI(Creature *c) : ScriptedAI(c)
+    {
+    }
+
+#define SPELL_BLIZZARD         41482
+#define SPELL_ICE_ARMOR        36881 // 30 min
+#define SPELL_ICEBOLT          22357 // bolt stun
+#define SPELL_ICE_CHAINS       29991 // root
+#define SPELL_ENRAGE           47008 // 900/150
+#define SPELL_FROST_NOVA       44177 // 8s
+#define SPELL_FROSTBOLT_VOLLEY 38837
+#define SPELL_FROST_MIST       29292
+#define SPELL_FROST_AURA       28531 // 3x600 36yd
+#define SPELL_FROST_WEAKNESS   25178
+#define SPELL_FROST_BUFFET     38142
+
+#define NPC_EVIL_REVELER       66715
+
+
+    int Frost_Buffet_Timer;
+    int Weakness_Timer;
+    int Blizzard_Timer;
+    int Volley_Timer;
+    int Armor_Timer;
+    int Nova_Timer;
+
+    void Reset()
+    {
+        if (me->HasAura(SPELL_ENRAGE))
+            for (uint8 i = 0; i < 3; i++)
+                me->RemoveAura(SPELL_ENRAGE, i);
+        ClearCastQueue();
+        Frost_Buffet_Timer = 3000;
+        Weakness_Timer = 5000;
+        StopAutocast();
+        Blizzard_Timer = 13000;
+        Volley_Timer = 15000;
+        Armor_Timer = 30000;
+        Nova_Timer = 10000;
+    }
+
+    void EnterEvadeMode()
+    {
+        CreatureAI::EnterEvadeMode();
+        Reset();
+    }
+
+    void EnterCombat(Unit* who)
+    {
+        ForceSpellCast(SPELL_ICE_ARMOR, CAST_SELF);
+        me->MonsterSay("YOU WILL FREEZ TO DEATH!", 0, 0);
+        me->HandleEmoteCommand(EMOTE_ONESHOT_ROAR);
+        AddSpellToCast(me->getVictim(), SPELL_FROSTBOLT_VOLLEY);
+        SetAutocast(SPELL_ENRAGE, 1000*60*10, true, CAST_SELF);
+        StartAutocast();
+    }
+
+    void SpellHitTarget(Unit* who, const SpellEntry* SpellID)
+    {
+        if (SpellID->Id != SPELL_FROST_BUFFET)
+                me->AddAura(SPELL_FROST_BUFFET, who);
+
+        if (SpellID->Id == SPELL_ICEBOLT)
+            ForceSpellCast(who, SPELL_ICE_CHAINS);
+
+        if (SpellID->Id != SPELL_FROST_MIST)
+            who->CastSpell(who, SPELL_FROST_MIST, true, 0, 0, me->GetGUID());
+    }
+
+    void KilledUnit(Unit* who)
+    {
+        who->CastSpell(who, SPELL_FROST_MIST, true);
+        if (who->GetObjectGuid().IsPlayer())
+            me->MonsterSay("HA! You can't handle true winter temperatures!", 0, 0);
+        who->CastSpell(who, SPELL_FROST_MIST, true, 0, 0, me->GetGUID());
+
+    }
+
+    void JustDied(Unit* who)
+    {
+     while (Creature* reveler = GetClosestCreatureWithEntry(me, NPC_EVIL_REVELER, 200.0f))
+     {
+         me->Kill(reveler);
+     }
+     me->MonsterSay("This winter... is... saved...",0,0);
+    }
+
+    void UpdateAI(const uint32 diff)
+    {
+          if (!me->isInCombat())
+              return;
+          if (!UpdateVictim())
+              return;
+
+
+          if (Frost_Buffet_Timer <= diff)
+          {
+              if(me->getVictim())
+              {
+                  me->AddAura(SPELL_FROST_BUFFET, me->getVictim());
+                  Frost_Buffet_Timer = 3000;
+              }
+
+          }
+          else
+              Frost_Buffet_Timer -= diff;          
+
+          if (Blizzard_Timer <= diff)
+          {
+              AddSpellToCast(SPELL_BLIZZARD, CAST_RANDOM);
+              Blizzard_Timer = 13000;
+          }
+          else
+          Blizzard_Timer -= diff;
+        
+
+          if (Volley_Timer <= diff)
+          {
+              AddSpellToCast(SPELL_FROSTBOLT_VOLLEY, CAST_TANK);
+              Volley_Timer = 15000;
+          }
+          else
+          Volley_Timer -= diff;
+
+          if (Armor_Timer <= diff)
+          {
+              AddSpellToCast(SPELL_ICE_ARMOR, CAST_SELF);
+              Armor_Timer = 30000;
+          }
+          else
+              Armor_Timer -= diff;
+
+          if (Nova_Timer <= diff)
+          {
+              AddSpellToCast(SPELL_FROST_NOVA, CAST_TANK);
+              Nova_Timer = 10000;
+          }
+          else
+          Nova_Timer -= diff;
+
+
+
+          if (Weakness_Timer <= diff)
+          {
+              if (Unit* target = me->getVictim())
+                  if (target->GetAura(SPELL_FROST_BUFFET, 1) && target->GetAura(SPELL_FROST_BUFFET, 1)->GetStackAmount() == 20)
+                  {
+                      me->MonsterSay("TASTE THE TRUE MEANINGNESS OF COLD!",0,0);
+                      me->AddAura(SPELL_FROST_WEAKNESS, target);                      
+                      me->CastSpell(target, SPELL_BLIZZARD, true);
+                      me->CastSpell(target, SPELL_ICEBOLT, true);
+                      Weakness_Timer = 10000;
+                  }
+          }
+          else
+              Weakness_Timer -= diff;
+          CastNextSpellIfAnyAndReady();
+          DoMeleeAttackIfReady();
+    }
+};
+
+CreatureAI* GetAI_npc_bad_santaAI(Creature *_Creature)
+{
+    return new npc_bad_santaAI(_Creature);
+}
+
 struct npc_nearly_dead_combat_dummyAI : public Scripted_NoMovementAI
 {
     npc_nearly_dead_combat_dummyAI(Creature *c) : Scripted_NoMovementAI(c)
@@ -3052,7 +3220,7 @@ struct npc_nearly_dead_combat_dummyAI : public Scripted_NoMovementAI
 
         if (attacker && Check_Timer < diff)
         {
-            if(m_creature->GetDistance2d(attacker) > 12.0f)
+            if(m_creature->GetDistance(attacker) > 5.0f)
                 EnterEvadeMode();
 
             Check_Timer = 3000;
@@ -3325,5 +3493,10 @@ void AddSC_npcs_special()
     newscript = new Script;
     newscript->Name="npc_instakill_guardian";
     newscript->GetAI = &GetAI_npc_instakill_guardian;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name="npc_bad_santa";
+    newscript->GetAI=&GetAI_npc_bad_santaAI;
     newscript->RegisterSelf();
 }
