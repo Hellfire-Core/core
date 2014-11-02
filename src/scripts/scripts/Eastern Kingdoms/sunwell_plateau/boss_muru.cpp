@@ -138,6 +138,12 @@ struct boss_muruAI : public Scripted_NoMovementAI
                void_spawn->DisappearAndDie();
         }
 
+        //well.. we had one fiend.... :F remove this hack after fix
+        while (Creature* fiend = GetClosestCreatureWithEntry(me, CREATURE_DARK_FIENDS, 100.0f))
+        {
+            fiend->DisappearAndDie();
+        }
+
         if(pInstance->GetData(DATA_EREDAR_TWINS_EVENT) == DONE)
         {
             me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
