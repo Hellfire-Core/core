@@ -554,7 +554,7 @@ void WorldSession::HandleTakeItem(WorldPacket & recv_data)
     }
 
     Item *it = pl->GetMItem(itemId);
-
+    assert(it);
     ItemPosCountVec dest;
     uint8 msg = _player->CanStoreItem(NULL_BAG, NULL_SLOT, dest, it, false);
     if (msg == EQUIP_ERR_OK)

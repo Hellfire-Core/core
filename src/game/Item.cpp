@@ -719,7 +719,8 @@ void Item::RemoveFromUpdateQueueOf(Player *player)
         sLog.outDebug("Item::RemoveFromUpdateQueueOf - Owner's guid (%u) and player's guid (%u) don't match!", GUID_LOPART(GetOwnerGUID()), player->GetGUIDLow());
         return;
     }
-
+    ASSERT(player->mMitems.find(GetGUIDLow()) == player->mMitems.end());
+    // we remove item, lets make sure there is no trace of it
     if (player->m_itemUpdateQueueBlocked) return;
 
     player->m_itemUpdateQueue[uQueuePos] = NULL;

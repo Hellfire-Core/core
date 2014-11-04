@@ -1477,7 +1477,9 @@ class HELLGROUND_EXPORT Player : public Unit
         void AddMItem(Item* it)
         {
             ASSERT(it);
-            //assert deleted, because items can be added before loading
+            ASSERT(mMitems.find(it->GetGUIDLow()) != mMitems.end());
+            // if some pointer is already there we can get some invalid pointers and stuff
+
             mMitems[it->GetGUIDLow()] = it;
         }
 
