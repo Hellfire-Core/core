@@ -3042,6 +3042,7 @@ struct npc_bad_santaAI : public ScriptedAI
     int Volley_Timer;
     int Armor_Timer;
     int Nova_Timer;
+    int IceBolt_Timer;
 
     void Reset()
     {
@@ -3051,11 +3052,12 @@ struct npc_bad_santaAI : public ScriptedAI
         ClearCastQueue();
         Frost_Buffet_Timer = 3000;
         Weakness_Timer = 5000;
-        StopAutocast();
-        Blizzard_Timer = 13000;
-        Volley_Timer = 15000;
+        Blizzard_Timer = 15000;
+        Volley_Timer = 20000;
         Armor_Timer = 30000;
         Nova_Timer = 10000;
+        IceBolt_Timer = 45000;
+        StopAutocast();
     }
 
     void EnterEvadeMode()
@@ -3070,13 +3072,14 @@ struct npc_bad_santaAI : public ScriptedAI
         me->MonsterSay("YOU WILL FREEZ TO DEATH!", 0, 0);
         me->HandleEmoteCommand(EMOTE_ONESHOT_ROAR);
         AddSpellToCast(me->getVictim(), SPELL_FROSTBOLT_VOLLEY);
-        SetAutocast(SPELL_ENRAGE, 1000*60*10, true, CAST_SELF);
+        SetAutocast(SPELL_ENRAGE, 1000*60*15, true, CAST_SELF);
         StartAutocast();
     }
 
     void SpellHitTarget(Unit* who, const SpellEntry* SpellID)
     {
         if (SpellID->Id != SPELL_FROST_BUFFET)
+            if (SpellID->Id == SPELL_FROSTBOLT_VOLLEY && who != me->getVictim())
                 me->AddAura(SPELL_FROST_BUFFET, who);
 
         if (SpellID->Id == SPELL_ICEBOLT)
@@ -3084,11 +3087,13 @@ struct npc_bad_santaAI : public ScriptedAI
 
         if (SpellID->Id != SPELL_FROST_MIST)
             who->CastSpell(who, SPELL_FROST_MIST, true, 0, 0, me->GetGUID());
+
+
+            
     }
 
     void KilledUnit(Unit* who)
     {
-        who->CastSpell(who, SPELL_FROST_MIST, true);
         if (who->GetObjectGuid().IsPlayer())
             me->MonsterSay("HA! You can't handle true winter temperatures!", 0, 0);
         who->CastSpell(who, SPELL_FROST_MIST, true, 0, 0, me->GetGUID());
@@ -3136,7 +3141,7 @@ struct npc_bad_santaAI : public ScriptedAI
           if (Volley_Timer <= diff)
           {
               AddSpellToCast(SPELL_FROSTBOLT_VOLLEY, CAST_TANK);
-              Volley_Timer = 15000;
+              Volley_Timer = 20000;
           }
           else
           Volley_Timer -= diff;
@@ -3152,10 +3157,18 @@ struct npc_bad_santaAI : public ScriptedAI
           if (Nova_Timer <= diff)
           {
               AddSpellToCast(SPELL_FROST_NOVA, CAST_TANK);
-              Nova_Timer = 10000;
+              Nova_Timer = 8000;
           }
           else
           Nova_Timer -= diff;
+
+          if (IceBolt_Timer <= diff)
+          {
+              AddSpellToCast(SPELL_ICEBOLT, CAST_TANK);
+              IceBolt_Timer = 45000;
+          }
+          else
+              IceBolt_Timer -= diff;
 
 
 
@@ -3170,6 +3183,8 @@ struct npc_bad_santaAI : public ScriptedAI
                       me->CastSpell(target, SPELL_ICEBOLT, true);
                       Weakness_Timer = 10000;
                   }
+                  else
+                      Weakness_Timer = 1000;
           }
           else
               Weakness_Timer -= diff;
