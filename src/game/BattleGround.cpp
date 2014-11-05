@@ -898,6 +898,19 @@ void BattleGround::RemovePlayerAtLeave(uint64 guid, bool Transport, bool SendPac
         plr->SpawnCorpseBones();
     }
 
+    if (plr && participant && isArena() && isRated() && GetStatus() == STATUS_IN_PROGRESS)
+    {
+        //left a rated match while the encounter was in progress, consider as loser
+        //need to be done before RemovePlayer which can cause EndBattleground and last removed player rating wont be updated
+        if (!team) team = plr->GetTeam();
+        ArenaTeam* winner_arena_team = sObjectMgr.GetArenaTeamById(GetArenaTeamIdForTeam(team == HORDE? ALLIANCE : HORDE));
+        ArenaTeam* loser_arena_team = sObjectMgr.GetArenaTeamById(GetArenaTeamIdForTeam(team));
+
+        if (winner_arena_team && loser_arena_team)
+            loser_arena_team->MemberLost(plr, winner_arena_team->GetRating(),
+            winner_arena_team->GetAverageMMR(GetBgRaid(team == HORDE ? ALLIANCE : HORDE)));
+    }
+
     RemovePlayer(plr, guid);                                // BG subclass specific code
     DecreaseInvitedCount(team);
 
@@ -927,29 +940,6 @@ void BattleGround::RemovePlayerAtLeave(uint64 guid, bool Transport, bool SendPac
                         delete NewPet;
 
                     (plr)->SetTemporaryUnsummonedPetNumber(0);
-                }
-
-                if (isRated() && GetStatus() == STATUS_IN_PROGRESS)
-                {
-                    //left a rated match while the encounter was in progress, consider as loser
-                    ArenaTeam * winner_arena_team = 0;
-                    ArenaTeam * loser_arena_team = 0;
-                    uint32 win = TEAM_NONE;
-                    if (team == HORDE)
-                    {
-                        win = ALLIANCE;
-                        winner_arena_team = sObjectMgr.GetArenaTeamById(GetArenaTeamIdForTeam(ALLIANCE));
-                        loser_arena_team = sObjectMgr.GetArenaTeamById(GetArenaTeamIdForTeam(HORDE));
-                    }
-                    else
-                    {
-                        win = HORDE;
-                        winner_arena_team = sObjectMgr.GetArenaTeamById(GetArenaTeamIdForTeam(HORDE));
-                        loser_arena_team = sObjectMgr.GetArenaTeamById(GetArenaTeamIdForTeam(ALLIANCE));
-                    }
-
-                    if (winner_arena_team && loser_arena_team)
-                        loser_arena_team->MemberLost(plr, winner_arena_team->GetRating(), winner_arena_team->GetAverageMMR(GetBgRaid(win)));
                 }
             }
 
