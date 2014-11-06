@@ -1149,7 +1149,10 @@ void Unit::CastSpell(Unit* Victim, uint32 spellId, bool triggered, Item *castIte
 
     if (!spellInfo)
     {
-        sLog.outLog(LOG_DEFAULT, "ERROR: CastSpell: unknown spell id %i by caster: %s %u)", spellId,(GetTypeId()==TYPEID_PLAYER ? "player (GUID:" : "creature (Entry:"),(GetTypeId()==TYPEID_PLAYER ? GetGUIDLow() : GetEntry()));
+        sLog.outLog(LOG_DEFAULT, "ERROR: CastSpell: unknown spell id %i by caster: %s %u) triggered: %s", spellId,
+            (GetTypeId()==TYPEID_PLAYER ? "player (GUID:" : "creature (Entry:"),
+            (GetTypeId()==TYPEID_PLAYER ? GetGUIDLow() : GetEntry()),
+            triggered ? "true" : "false");
         return;
     }
 
@@ -1231,7 +1234,10 @@ void Unit::CastCustomSpell(uint32 spellId, CustomSpellValues const &value, Unit*
     SpellEntry const *spellInfo = sSpellStore.LookupEntry(spellId);
     if (!spellInfo)
     {
-        sLog.outLog(LOG_DEFAULT, "ERROR: CastSpell: unknown spell id %i by caster: %s %u)", spellId,(GetTypeId()==TYPEID_PLAYER ? "player (GUID:" : "creature (Entry:"),(GetTypeId()==TYPEID_PLAYER ? GetGUIDLow() : GetEntry()));
+        sLog.outLog(LOG_DEFAULT, "ERROR: CastCustomSpell: unknown spell id %i by caster: %s %u) triggered: %s", spellId,
+            (GetTypeId()==TYPEID_PLAYER ? "player (GUID:" : "creature (Entry:"),
+            (GetTypeId()==TYPEID_PLAYER ? GetGUIDLow() : GetEntry()),
+            triggered ? "true" : "false");
         return;
     }
 
