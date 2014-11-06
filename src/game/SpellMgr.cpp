@@ -2853,12 +2853,16 @@ void SpellMgr::LoadSpellCustomAttr()
                 }
                 else if (spellInfo->Id == 16613) // some quest spell spamming with non-existing triggered
                     spellInfo->Effect[2] = 0;
+                else if (spellInfo->Id == 39280) // same here
+                    spellInfo->Effect[1] = 0;
                 else if (spellInfo->Id == 38829) // arcatraz sentinels prevent spam
                     spellInfo->EffectImplicitTargetB[0] = TARGET_UNIT_AREA_ENEMY_DST;
                 break;
             }
             case SPELLFAMILY_DRUID:
             {
+                if (spellInfo->EffectImplicitTargetB[0] == TARGET_UNIT_AREA_PARTY_DST) //tranquility, targetA is useless and spamming in logs
+                    spellInfo->EffectImplicitTargetA[0] = 0;
                 switch (spellInfo->Id)
                 {
                     case 16998: // Savage Fury
