@@ -1614,9 +1614,20 @@ Arena.ReadyStartTimer = 5000
 #              Default: 1 - enable
 #                       0 - disable
 #
+# DeserterOnInactive: Cast Deserter also when player ends battleground with Inactive debuff
+#              Default: 0 - disable
+#                       1 - enable
+#
+# DeserterRealtime: Deserter debuff timer will continue countdown when player offline
+#              Default: 1 - enable
+#                       0 - disable
+#
 # InvitationType: Set Battleground invitation type
 #              Default: 0 (normal - invite as much players to bg as possible, don't bother with ballance)
 #                       1 (Experimental - don't allow to invite much more players of one faction)
+#
+# KickAfterInactiveTime: Kick player from bg if he has Inactive buff for this time (in seconds)
+#              Default: 0 - disabled
 #
 # PremadeGroupWaitForMatch: The time in which premade group of 1 faction waits in BG Queue for premade group of other faction
 #              Default: 1800000 (30 minutes)
@@ -1646,7 +1657,10 @@ Arena.ReadyStartTimer = 5000
 
 BattleGround.AnnounceStart = 0
 Battleground.CastDeserter = 1
+BattleGround.DeserterOnInactive = 0
+BattleGround.DeserterRealtime = 1
 Battleground.InvitationType = 1
+BattleGround.KickAfterInactiveTime = 0
 BattleGround.PremadeGroupWaitForMatch = 300000
 BattleGround.PrematureFinishTimer = 300000
 Battleground.PrematureReward = 1

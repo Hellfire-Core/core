@@ -15347,8 +15347,9 @@ void Player::_LoadAuras(QueryResultAutoPtr result, uint32 timediff)
             {
                 if (remaintime/IN_MILISECONDS <= int32(timediff))
                     continue;
-
-                remaintime -= timediff*IN_MILISECONDS;
+                
+                if (spellid != SPELL_AURA_PLAYER_INACTIVE || sWorld.getConfig(CONFIG_BATTLEGROUND_DESERTER_REALTIME))
+                    remaintime -= timediff*IN_MILISECONDS;
             }
 
             // prevent wrong values of remaincharges
@@ -18764,8 +18765,11 @@ void Player::LeaveBattleground(bool teleportToEntryPoint)
         bg->RemovePlayerAtLeave(GetGUID(), teleportToEntryPoint, true);
 
         if (bg->isBattleGround() && sWorld.getConfig(CONFIG_BATTLEGROUND_CAST_DESERTER))
-            if (bg->GetStatus() == STATUS_IN_PROGRESS || bg->GetStatus() == STATUS_WAIT_JOIN)
+        {
+            if ((sWorld.getConfig(CONFIG_BATTLEGROUND_DESERTER_ON_INACTIVE) &&  HasAura(SPELL_AURA_PLAYER_INACTIVE)) ||
+                bg->GetStatus() == STATUS_IN_PROGRESS || bg->GetStatus() == STATUS_WAIT_JOIN)
                 CastSpell(this, 26013, true);               // Deserter
+        }
     }
 }
 
@@ -18795,7 +18799,7 @@ void Player::ReportedAfkBy(Player* reporter)
         return;
 
     // check if player has 'Idle' or 'Inactive' debuff
-    if (m_bgAfkReporter.find(reporter->GetGUIDLow()) == m_bgAfkReporter.end() && !HasAura(43680,0) && !HasAura(43681,0) && reporter->CanReportAfkDueToLimit())
+    if (m_bgAfkReporter.find(reporter->GetGUIDLow()) == m_bgAfkReporter.end() && !HasAura(43680,0) && !HasAura(SPELL_AURA_PLAYER_INACTIVE,0) && reporter->CanReportAfkDueToLimit())
     {
         m_bgAfkReporter.insert(reporter->GetGUIDLow());
         // 3 players have to complain to apply debuff

@@ -788,7 +788,10 @@ void World::LoadConfigSettings(bool reload)
     // Battleground settings
     loadConfig(CONFIG_BATTLEGROUND_ANNOUNCE_START, "BattleGround.AnnounceStart", 0);
     loadConfig(CONFIG_BATTLEGROUND_CAST_DESERTER, "Battleground.CastDeserter", true);
+    loadConfig(CONFIG_BATTLEGROUND_DESERTER_ON_INACTIVE, "BattleGround.DeserterOnInactive", false);
+    loadConfig(CONFIG_BATTLEGROUND_DESERTER_REALTIME,"BattleGround.DeserterRealtime",true);
     loadConfig(CONFIG_BATTLEGROUND_INVITATION_TYPE, "Battleground.InvitationType", 1);
+    loadConfig(CONFIG_BATTLEGROUND_KICK_AFTER_INACTIVE_TIME, "BattleGround.KickAfterInactiveTime", 0);
     loadConfig(CONFIG_BATTLEGROUND_PREMADE_GROUP_WAIT_FOR_MATCH, "BattleGround.PremadeGroupWaitForMatch", 10 * MINUTE * IN_MILISECONDS);
     loadConfig(CONFIG_BATTLEGROUND_PREMATURE_FINISH_TIMER, "BattleGround.PrematureFinishTimer", 0);
     loadConfig(CONFIG_PREMATURE_BG_REWARD, "Battleground.PrematureReward", true);

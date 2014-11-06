@@ -2500,6 +2500,7 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
                 m_isPeriodic = true;
                 m_modifier.periodictime = 30*IN_MILISECONDS;
                 m_periodicTimer = m_modifier.periodictime;
+                m_amplitude = m_modifier.periodictime;
                 return;
             case 10255:                             // Stoned
             {
@@ -2551,6 +2552,10 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
                 if (!m_target->HasAura(6947, 0))
                     m_target->CastSpell(m_target, 6947, true);
                 return;
+            case 43681:                                     // Inactive
+                m_periodicTimer = sWorld.getConfig(CONFIG_BATTLEGROUND_KICK_AFTER_INACTIVE_TIME) * IN_MILISECONDS;
+                if (m_periodicTimer)
+                    m_isPeriodic = true;
             case 43873:                                     // Headless Horseman Laugh
                 m_target->PlayDistanceSound(11965);
                 return;
@@ -7875,6 +7880,11 @@ void Aura::PeriodicDummyTick()
 //        // Energy Feedback
 //        case 44328: break;
 //        // Romantic Picnic
+        case 43681: // Inactive
+            m_target->RemoveAurasDueToSpell(SPELL_AURA_PLAYER_INACTIVE);
+            if (m_target->ToPlayer() && m_target->ToPlayer()->InBattleGround())
+                m_target->ToPlayer()->LeaveBattleground();
+            break;
 //        case 45102: break;
 //        // Romantic Picnic
 //        case 45123: break;
