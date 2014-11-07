@@ -10280,6 +10280,19 @@ int32 Unit::CalculateSpellDuration(SpellEntry const* spellProto, uint8 effect_in
 
     if (duration > 0)
     {
+        // Duration of crowd control abilities on pvp target is limited by 10 sec. First do this then apply mods
+        Player* targetPlayer = target->GetCharmerOrOwnerOrSelf()->ToPlayer();
+        unitPlayer = GetCharmerOrOwnerOrSelf()->ToPlayer();
+        if (unitPlayer && targetPlayer && target != this && duration > 10000 &&
+            !SpellMgr::IsChanneledSpell(spellProto) && !SpellMgr::IsPositiveSpell(spellProto->Id) &&
+            SpellMgr::IsDiminishingReturnsGroupDurationLimited(SpellMgr::GetDiminishingReturnsGroupForSpell(spellProto,false)))
+            // isDimnishing...(getdimnishing...(SpellEntry*,bool triggered)) does not depend on triggered value
+        {
+            duration = 10000;
+            if (spellProto->SpellFamilyName == SPELLFAMILY_WARLOCK && spellProto->SpellFamilyFlags & 0x80000000LL) // Curse of Tongues
+                duration = 12000;
+        }
+
         int32 mechanic = SpellMgr::GetEffectMechanic(spellProto, effect_index);
         // Find total mod value (negative bonus)
         int32 durationMod_always = target->GetTotalAuraModifierByMiscValue(SPELL_AURA_MECHANIC_DURATION_MOD, mechanic);
@@ -10353,38 +10366,20 @@ void Unit::IncrDiminishing(DiminishingGroup group)
         m_Diminishing.push_back(DiminishingReturn(group,WorldTimer::getMSTime(),DIMINISHING_LEVEL_2));
 }
 
-void Unit::ApplyDiminishingToDuration(DiminishingGroup group, int32 &duration,Unit* caster,DiminishingLevels Level, SpellEntry const *spellInfo)
+void Unit::ApplyDiminishingToDuration(DiminishingGroup group, int32 &duration,Unit* /*caster*/,DiminishingLevels Level, SpellEntry const *spellInfo)
 {
     if (duration == -1 || group == DIMINISHING_NONE)/*(caster->IsFriendlyTo(this) && caster != this)*/
         return;
 
-    // test pet/charm masters instead pets/charmedsz
+    // test pet/charm master
     Unit const* targetOwner = GetCharmerOrOwner();
-    Unit const* casterOwner = caster->GetCharmerOrOwner();
-
-    // Duration of crowd control abilities on pvp target is limited by 10 sec. (2.2.0)
-    if (duration > 10000 && SpellMgr::IsDiminishingReturnsGroupDurationLimited(group))
-    {
-        Unit const* target = targetOwner ? targetOwner : this;
-        Unit const* source = casterOwner ? casterOwner : caster;
-
-        if (target->GetTypeId() == TYPEID_PLAYER && source->GetTypeId() == TYPEID_PLAYER)
-        {
-            duration = 10000;
-            if (spellInfo)
-            {
-                if (spellInfo->SpellFamilyName == SPELLFAMILY_WARLOCK && spellInfo->SpellFamilyFlags & 0x80000000LL) // Curse of Tongues
-                    duration = 12000;
-
-                ((Player*)source)->ApplySpellMod(spellInfo->Id, SPELLMOD_DURATION, duration);
-            }
-        }
-    }
 
     float mod = 1.0f;
-
-    // Some diminishings applies to mobs too (for example, Stun)                                                                                                                                     // Freezing trap exception, since it is cast by GO ?
-    if ((SpellMgr::GetDiminishingReturnsGroupType(group) == DRTYPE_PLAYER && (targetOwner ? targetOwner->GetTypeId() : GetTypeId())  == TYPEID_PLAYER) || SpellMgr::GetDiminishingReturnsGroupType(group) == DRTYPE_ALL || (spellInfo && spellInfo ->SpellFamilyName == SPELLFAMILY_HUNTER && spellInfo ->SpellFamilyFlags & 0x00000000008LL))
+                                                                                                                                    // Freezing trap exception, since it is cast by GO ?
+    if ((SpellMgr::GetDiminishingReturnsGroupType(group) == DRTYPE_PLAYER &&
+        (targetOwner ? targetOwner->GetTypeId() : GetTypeId())  == TYPEID_PLAYER) ||
+        SpellMgr::GetDiminishingReturnsGroupType(group) == DRTYPE_ALL ||
+        (spellInfo && spellInfo ->SpellFamilyName == SPELLFAMILY_HUNTER && spellInfo ->SpellFamilyFlags & 0x00000000008LL))
     {
         DiminishingLevels diminish = Level;
         switch (diminish)
