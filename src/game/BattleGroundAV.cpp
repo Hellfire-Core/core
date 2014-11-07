@@ -508,7 +508,7 @@ void BattleGroundAV::EndBattleGround(uint32 winner)
                 }
                 else
                 {
-                    rep[0]   += BG_AV_KILL_SURVIVING_TOWER;
+                    rep[1]   += BG_AV_REP_SURVIVING_TOWER;
                     kills[1] += BG_AV_KILL_SURVIVING_TOWER;
                 }
             }
