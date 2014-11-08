@@ -131,12 +131,6 @@ enum BG_WS_CreatureTypes
     BG_CREATURES_MAX_WS       = 2
 };
 
-enum BG_WS_CarrierDebuffs
-{
-    WS_SPELL_FOCUSED_ASSAULT   = 46392,
-    WS_SPELL_BRUTAL_ASSAULT    = 46393
-};
-
 class BattleGroundWGScore : public BattleGroundScore
 {
     public:
