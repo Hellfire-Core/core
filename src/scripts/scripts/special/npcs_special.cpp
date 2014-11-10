@@ -3082,13 +3082,14 @@ struct npc_bad_santaAI : public ScriptedAI
             if (SpellID->Id == SPELL_FROSTBOLT_VOLLEY && who != me->getVictim())
                 me->AddAura(SPELL_FROST_BUFFET, who);
 
-        if (SpellID->Id == SPELL_ICEBOLT)
+        if (SpellID->Id == SPELL_FROSTBOLT_VOLLEY)
             ForceSpellCast(who, SPELL_ICE_CHAINS);
 
         if (SpellID->Id != SPELL_FROST_MIST)
-            who->CastSpell(who, SPELL_FROST_MIST, true, 0, 0, me->GetGUID());
-
-
+            if (Unit* uglyhack = me->SummonTrigger(who->GetPositionX(), who->GetPositionY(), who->GetPositionZ(), 0, 5.0))   //so ugly it hurts
+                uglyhack->CastSpell(who, SPELL_FROST_MIST, true, 0, 0, me->GetGUID());
+        
+            
             
     }
 
