@@ -3097,7 +3097,11 @@ struct npc_bad_santaAI : public ScriptedAI
     {
         if (who->GetObjectGuid().IsPlayer())
             me->MonsterSay("HA! You can't handle true winter temperatures!", 0, 0);
-        who->CastSpell(who, SPELL_FROST_MIST, true, 0, 0, me->GetGUID());
+        if (Unit* uglyhack = me->SummonTrigger(who->GetPositionX(), who->GetPositionY(), who->GetPositionZ(), 0, 5.0)) 
+        {
+            uglyhack->CastSpell(who, SPELL_FROST_MIST, true, 0, 0, me->GetGUID());
+            uglyhack->CastSpell(who, SPELL_FROST_NOVA, true, 0, 0, me->GetGUID());
+        }
 
     }
 
