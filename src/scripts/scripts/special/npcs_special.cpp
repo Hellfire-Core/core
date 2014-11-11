@@ -3069,7 +3069,7 @@ struct npc_bad_santaAI : public ScriptedAI
     void EnterCombat(Unit* who)
     {
         ForceSpellCast(SPELL_ICE_ARMOR, CAST_SELF);
-        me->MonsterSay("YOU WILL FREEZ TO DEATH!", 0, 0);
+        me->MonsterSay("YOU WILL FREEZE TO DEATH!", 0, 0);
         me->HandleEmoteCommand(EMOTE_ONESHOT_ROAR);
         AddSpellToCast(me->getVictim(), SPELL_FROSTBOLT_VOLLEY);
         SetAutocast(SPELL_ENRAGE, 1000*60*15, true, CAST_SELF);
@@ -3086,8 +3086,9 @@ struct npc_bad_santaAI : public ScriptedAI
             ForceSpellCast(who, SPELL_ICE_CHAINS);
 
         if (SpellID->Id != SPELL_FROST_MIST)
-            if (Unit* uglyhack = me->SummonTrigger(who->GetPositionX(), who->GetPositionY(), who->GetPositionZ(), 0, 5.0))   //so ugly it hurts
-                uglyhack->CastSpell(who, SPELL_FROST_MIST, true, 0, 0, me->GetGUID());
+            if (!who->HasAura(SPELL_FROST_MIST))
+                if (Unit* uglyhack = me->SummonTrigger(who->GetPositionX(), who->GetPositionY(), who->GetPositionZ(), 0, 5.0))   //so ugly it hurts
+                    uglyhack->CastSpell(who, SPELL_FROST_MIST, true, 0, 0, me->GetGUID());
         
             
             
