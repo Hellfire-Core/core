@@ -63,8 +63,7 @@ class PathFinder
         // Calculate the path from owner to given destination
         // return: true if new path was calculated, false otherwise (no change needed)
         bool calculate(float destX, float destY, float destZ, bool forceDest = false);
-        // after calculating we can make our path a bit shorter (to arive distance before end point)
-        void stepBack(float distance);
+
         // option setters - use optional
         void setUseStrightPath(bool useStraightPath) { m_useStraightPath = useStraightPath; };
         void setPathLengthLimit(float distance) { m_pointPathLimit = std::min<uint32>(uint32(distance/SMOOTH_PATH_STEP_SIZE), MAX_POINT_PATH_LENGTH); };
