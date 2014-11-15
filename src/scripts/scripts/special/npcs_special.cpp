@@ -3282,10 +3282,10 @@ struct npc_instakill_guardianAI : public Scripted_NoMovementAI
         { 
             sWorld.SendGMText(LANG_INSTA_KILL_GUARDIAN,
                 player->GetName(),player->GetGUIDLow(),
-                float(player->GetPositionX()),float(player->GetPositionY()),float(player->GetPositionZ()),player->GetMapId());
-            sLog.outLog(LOG_CHEAT,"Player %s (%u) killed by instakill guardian, position X: %f Y: %f Z: %f Map: %u",
+                float(player->GetPositionX()),float(player->GetPositionY()),float(player->GetPositionZ()),player->GetMapId(),player->GetInstanceId());
+            sLog.outLog(LOG_CHEAT,"Player %s (%u) killed by instakill guardian, position X: %f Y: %f Z: %f Map: %u Instance: %u",
                 player->GetName(),player->GetGUIDLow(),
-                float(player->GetPositionX()),float(player->GetPositionY()),float(player->GetPositionZ()),player->GetMapId());
+                float(player->GetPositionX()),float(player->GetPositionY()),float(player->GetPositionZ()),player->GetMapId(),player->GetInstanceId());
             who->Kill(player);
         }
     }
