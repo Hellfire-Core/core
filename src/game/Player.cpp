@@ -7937,8 +7937,14 @@ void Player::SendLoot(uint64 guid, LootType loot_type)
                     permission = NONE_PERMISSION;
             }
         }
-    }
+        if (Player* debugReciver = creature->GetGMToSendCombatStats())
+        {
+            ChatHandler(debugReciver).PSendSysMessage(
+                "Player::SendLoot for %s (%u): looted creature Guid %u; loot_type %u; permission %u",
+                GetName(),GetGUIDLow(),guid,loot_type,permission);
+        }
 
+    }
     SetLootGUID(guid);
 
     // LOOT_PICKPOCKETING, LOOT_PROSPECTING, LOOT_DISENCHANTING and LOOT_INSIGNIA unsupported by client, sending LOOT_SKINNING instead
