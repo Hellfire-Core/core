@@ -10283,8 +10283,8 @@ int32 Unit::CalculateSpellDuration(SpellEntry const* spellProto, uint8 effect_in
         // Duration of crowd control abilities on pvp target is limited by 10 sec. First do this then apply mods
         Player* targetPlayer = target->GetCharmerOrOwnerOrSelf()->ToPlayer();
         unitPlayer = GetCharmerOrOwnerOrSelf()->ToPlayer();
-        if (unitPlayer && targetPlayer && target != this && duration > 10000 &&
-            !SpellMgr::IsChanneledSpell(spellProto) && !SpellMgr::IsPositiveSpell(spellProto->Id) &&
+        if (unitPlayer && targetPlayer && duration > 10000 && !SpellMgr::IsPositiveSpell(spellProto->Id) &&
+            (target !=this || !SpellMgr::IsChanneledSpell(spellProto) )&&
             SpellMgr::IsDiminishingReturnsGroupDurationLimited(SpellMgr::GetDiminishingReturnsGroupForSpell(spellProto,false)))
             // isDimnishing...(getdimnishing...(SpellEntry*,bool triggered)) does not depend on triggered value
         {
