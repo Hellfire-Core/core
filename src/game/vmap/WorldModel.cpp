@@ -409,34 +409,37 @@ namespace VMAP
 
     struct WModelRayCallBack
     {
-        WModelRayCallBack(const std::vector<GroupModel> &mod): models(mod.begin()), hit(false){}
+        WModelRayCallBack(const std::vector<GroupModel> &mod): models(mod.begin()), hit(false), hitID(0){}
         bool operator()(const G3D::Ray& ray, uint32 entry, float& distance, bool pStopAtFirstHit)
         {
-            bool result = models[entry].IntersectRay(ray, distance, pStopAtFirstHit);
-            if (result)  hit = models[entry].GetWmoID();
-            return result;
+            hit = models[entry].IntersectRay(ray, distance, pStopAtFirstHit);
+            if (hit)  hitID = models[entry].GetWmoID();
+            return hit;
         }
         std::vector<GroupModel>::const_iterator models;
-        uint32 hit;
+        uint32 hitID;
+        bool   hit;
     };
 
     bool WorldModel::IntersectRay(const G3D::Ray &ray, float &distance, bool stopAtFirstHit, bool debug) const
     {
         // small M2 workaround, maybe better make separate class with virtual intersection funcs
         // in any case, there's no need to use a bound tree if we only have one submodel
-        uint32 hit = 0;
+        uint32 hitID = 0;
+        bool   hit = false;
         if (groupModels.size() == 1)
-            hit = groupModels[0].IntersectRay(ray, distance, stopAtFirstHit) ? groupModels[0].GetWmoID() : 0 ;
+            hit = groupModels[0].IntersectRay(ray, distance, stopAtFirstHit);
         else
         {
             WModelRayCallBack isc(groupModels);
             groupTree.intersectRay(ray, isc, distance, stopAtFirstHit);
             hit = isc.hit;
+            hitID = isc.hitID;
         }
-        if (debug && hit != 0)
+        if (debug && hit)
         {
             char name[200];
-            sprintf(name, "%s : %u", ModelFilename.c_str(), hit);
+            sprintf(name, "%s : %u", ModelFilename.c_str(), hitID);
             VMAP::VMapFactory::createOrGetVMapManager()->SetHitModelName(std::string(name));
         }
         return hit;
