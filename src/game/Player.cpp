@@ -15349,13 +15349,12 @@ void Player::_LoadAuras(QueryResultAutoPtr result, uint32 timediff)
             }
 
             // negative effects should continue counting down after logout
-            if (remaintime != -1 && !SpellMgr::IsPositiveEffect(spellid, effindex))
+            if (remaintime != -1 && SpellMgr::IsAuraCountdownContinueOffline(spellid, effindex))
             {
                 if (remaintime/IN_MILISECONDS <= int32(timediff))
                     continue;
-                
-                if (spellid != SPELL_AURA_PLAYER_INACTIVE || sWorld.getConfig(CONFIG_BATTLEGROUND_DESERTER_REALTIME))
-                    remaintime -= timediff*IN_MILISECONDS;
+
+                remaintime -= timediff*IN_MILISECONDS;
             }
 
             // prevent wrong values of remaincharges

@@ -712,7 +712,7 @@ class HELLGROUND_IMPORT_EXPORT SpellMgr
         static bool IsSingleTargetSpells(SpellEntry const *spellInfo1, SpellEntry const *spellInfo2);
 
         static bool IsAuraAddedBySpell(uint32 auraType, uint32 spellId);
-
+        static bool IsAuraCountdownContinueOffline(uint32 spellId, uint32 effIndex);
         static bool IsSpellAllowedInLocation(SpellEntry const *spellInfo,uint32 map_id,uint32 zone_id,uint32 area_id);
 
         static bool IsAreaOfEffectSpell(SpellEntry const *spellInfo);

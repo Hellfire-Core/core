@@ -4546,3 +4546,14 @@ bool SpellMgr::IsTauntSpell(SpellEntry const* spellInfo)
     }
     return false;
 }
+
+bool SpellMgr::IsAuraCountdownContinueOffline(uint32 spellID, uint32 effIndex)
+{
+    if (IsPositiveEffect(spellID, effIndex))
+        return false;
+
+    if (spellID == 26013 && sWorld.getConfig(CONFIG_BATTLEGROUND_DESERTER_REALTIME))
+        return false;
+
+    return true;
+}
