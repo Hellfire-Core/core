@@ -412,9 +412,13 @@ namespace VMAP
         WModelRayCallBack(const std::vector<GroupModel> &mod): models(mod.begin()), hit(false), hitID(0){}
         bool operator()(const G3D::Ray& ray, uint32 entry, float& distance, bool pStopAtFirstHit)
         {
-            hit = models[entry].IntersectRay(ray, distance, pStopAtFirstHit);
-            if (hit)  hitID = models[entry].GetWmoID();
-            return hit;
+            bool result = models[entry].IntersectRay(ray, distance, pStopAtFirstHit);
+            if (result)
+            {
+                hitID = models[entry].GetWmoID();
+                hit = true;
+            }
+            return result;
         }
         std::vector<GroupModel>::const_iterator models;
         uint32 hitID;
