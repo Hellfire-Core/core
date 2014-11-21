@@ -1835,7 +1835,7 @@ void Spell::SetTargetMap(uint32 i, uint32 cur)
             Unit *target = m_targets.getUnitTarget();
             if (!target)
             {
-                sLog.outLog(LOG_DEFAULT, "ERROR: SPELL: no unit target for spell ID %u\n", GetSpellEntry()->Id);
+                sLog.outLog(LOG_DEFAULT, "ERROR: SPELL: no unit target for spell ID %u", GetSpellEntry()->Id);
                 break;
             }
 
