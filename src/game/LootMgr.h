@@ -284,6 +284,7 @@ struct Loot
     void NotifyMoneyRemoved();
     void AddLooter(uint64 GUID) { PlayersLooting.insert(GUID); }
     void RemoveLooter(uint64 GUID) { PlayersLooting.erase(GUID); }
+    bool HasLooters() { return !PlayersLooting.empty(); }
 
     void generateMoneyLoot(uint32 minAmount, uint32 maxAmount);
     void FillLoot(uint32 loot_id, LootStore const& store, Player* loot_owner, bool personal);

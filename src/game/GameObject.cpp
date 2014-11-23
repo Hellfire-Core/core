@@ -411,6 +411,11 @@ void GameObject::Update(uint32 update_diff, uint32 p_time)
                 case GAMEOBJECT_TYPE_CHEST:
                     if(loot.isLooted())
                     {
+                        // there are some questitems in loot (and isLooted() can be in that case true),
+                        // and someone is still viewing loot window, don't close chest yet.
+                        if (!loot.quest_items.empty() && loot.HasLooters())
+                            break;
+
                         if ((GetUseCount() >= GetGOInfo()->chest.maxSuccessOpens) ||
                             ((GetUseCount() >= GetGOInfo()->chest.minSuccessOpens) && (GetUseCount() >= irand(GetGOInfo()->chest.minSuccessOpens, GetGOInfo()->chest.maxSuccessOpens))))
                         {
