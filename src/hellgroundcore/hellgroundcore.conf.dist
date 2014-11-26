@@ -1761,9 +1761,14 @@ Visibility.Distance.ActiveObjectUpdate.Instances = 132
 #        How often perform check, if target moved and wee need to updte our destination
 #        Default: 100 (ms)
 #
-#    Movement..WaypointPathfinding.*
+#    Movement.WaypointPathfinding.*
 #        Decides if WaypointMovegen have to generate movepath between nodes ot go in straight line
 #        Default: 1 (on)
+#
+#    Movement.LongCharge
+#        Experimental and possibly crashing setting! If enabled charge spell range checks are performed blizzlike
+#        (in straight line instead of along path)
+#        Default: 0 (off)
 #
 ###################################################################################################################
 
@@ -1771,6 +1776,7 @@ Movement.RecalculateRange = 1
 Movement.RecheckTimer = 100
 Movement.WaypointPathfinding.Continents = 1
 Movement.WaypointPathfinding.Instances = 1
+Movement.LongCharge = 0
 
 ###################################################################################################################
 # COREBALANCER

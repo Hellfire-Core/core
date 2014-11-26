@@ -830,6 +830,7 @@ void World::LoadConfigSettings(bool reload)
     loadConfig(CONFIG_TARGET_POS_RECHECK_TIMER, "Movement.RecheckTimer", 100);
     loadConfig(CONFIG_WAYPOINT_MOVEMENT_PATHFINDING_ON_CONTINENTS, "Movement.WaypointPathfinding.Continents", true);
     loadConfig(CONFIG_WAYPOINT_MOVEMENT_PATHFINDING_IN_INSTANCES, "Movement.WaypointPathfinding.Instances", true);
+    loadConfig(CONFIG_MOVEMENT_ENABLE_LONG_CHARGE, "Movement.LongCharge", false);
 
     // CoreBalancer
     loadConfig(CONFIG_COREBALANCER_ENABLED, "CoreBalancer.Enable", false);

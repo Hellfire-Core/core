@@ -4180,11 +4180,21 @@ SpellCastResult Spell::CheckCast(bool strict)
 
                     Position dest;
                     target->GetPosition(dest);
+                    bool result;
 
                     float angle = m_caster->GetAngle(target) - m_caster->GetOrientation() - M_PI;
-                    m_caster->GetValidPointInAngle(dest, 1.0f, angle, false, false, 2.0f);
-                    _path.setPathLengthLimit(SpellMgr::GetSpellMaxRange(GetSpellEntry()) * 1.5f);
-                    bool result = _path.calculate(dest.x, dest.y, dest.z);
+                    if (sWorld.getConfig(CONFIG_MOVEMENT_ENABLE_LONG_CHARGE))
+                    {
+                        // no length limit, real warrior charges even through kamboja if he has to
+                        result = _path.calculate(dest.x, dest.y, dest.z);
+                        _path.stepBack(2.0f);
+                    }
+                    else
+                    {
+                        m_caster->GetValidPointInAngle(dest, 1.0f, angle, false, false, 2.0f);
+                        _path.setPathLengthLimit(SpellMgr::GetSpellMaxRange(GetSpellEntry()) * 1.5f);
+                        result = _path.calculate(dest.x, dest.y, dest.z);
+                    }
 
                     if (_path.getPathType() & PATHFIND_SHORT)
                         return SPELL_FAILED_OUT_OF_RANGE;
