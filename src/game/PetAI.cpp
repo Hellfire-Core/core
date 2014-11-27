@@ -61,8 +61,13 @@ bool PetAI::targetHasInterruptableAura(Unit *target) const
     Unit::AuraMap const &auramap = target->GetAuras();
     for (Unit::AuraMap::const_iterator itr = auramap.begin(); itr != auramap.end(); ++itr)
     {
-        if (itr->second && (itr->second->GetSpellProto()->AuraInterruptFlags & (AURA_INTERRUPT_FLAG_DIRECT_DAMAGE | AURA_INTERRUPT_FLAG_HITBYSPELL | AURA_INTERRUPT_FLAG_DAMAGE)))
+        if (itr->second && itr->second->GetSpellProto()->AuraInterruptFlags & (AURA_INTERRUPT_FLAG_DIRECT_DAMAGE | AURA_INTERRUPT_FLAG_HITBYSPELL | AURA_INTERRUPT_FLAG_DAMAGE))
+        {
+            //seduction should return false, this aura can be interrupted but not by us, we are to busy channeling, so dont stop combat
+            if (sSpellMgr.IsChanneledSpell(itr->second->GetSpellProto()) && itr->second->GetCasterGUID() == m_creature->GetGUID())
+                return false;
             return true;
+        }
     }
     return false;
 }
@@ -75,9 +80,7 @@ bool PetAI::_needToStop() const
         (me->GetOwner() && me->GetOwner()->isInSanctuary() &&  me->getVictim()->GetCharmerOrOwnerPlayerOrPlayerItself()))
         return true;
 
-    return false;
-    //i don't know what is this doing, but for sure it's casusing pets to drop combat every 5 seconds -.-
-    //return targetHasInterruptableAura(me->getVictim()) || !me->canAttack(me->getVictim());
+    return targetHasInterruptableAura(me->getVictim()) || !me->canAttack(me->getVictim());
 }
 
 void PetAI::_stopAttack()
