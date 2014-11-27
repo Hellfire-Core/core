@@ -5804,7 +5804,7 @@ void Player::removeActionButton(uint8 button)
 
 bool Player::SetPosition(float x, float y, float z, float orientation, bool teleport)
 {
-    bool groupUpdate = (GetGroup() && (teleport || abs(GetPositionX() - x) > 1.0f || abs(GetPositionY() - y) > 1.0f));
+    bool groupUpdate = (GetGroup() && (teleport || fabs(GetPositionX() - x) > 1.0f || fabs(GetPositionY() - y) > 1.0f));
     if (!Unit::SetPosition(x, y, z, orientation, teleport))
         return false;
 

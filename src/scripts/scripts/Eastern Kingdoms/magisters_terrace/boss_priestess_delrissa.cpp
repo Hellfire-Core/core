@@ -317,7 +317,7 @@ struct boss_priestess_delrissaAI : public ScriptedAI
         {
             DoZoneInCombat();
             RegenMana();
-            if(abs(me->GetPositionZ() - wLoc.coord_z) > 10.0)
+            if(fabs(me->GetPositionZ() - wLoc.coord_z) > 10.0)
             {
                 EnterEvadeMode();
                 return;

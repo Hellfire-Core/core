@@ -2199,7 +2199,7 @@ void Spell::SetTargetMap(uint32 i, uint32 cur)
                     unitList.remove_if(Hellground::ObjectGUIDCheck(m_caster->getVictimGUID()));
                     break;
                 case 45248:     // Shadow Blades
-                    unitList.remove_if([=](Unit* unit)->bool {return abs(m_caster->GetPositionZ()-unit->GetPositionZ()) > 5.0;});
+                    unitList.remove_if([=](Unit* unit)->bool {return fabs(m_caster->GetPositionZ()-unit->GetPositionZ()) > 5.0;});
                     break;
                 default:
                     break;
