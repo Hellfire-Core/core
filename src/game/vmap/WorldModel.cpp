@@ -418,7 +418,7 @@ namespace VMAP
                 hitID = models[entry].GetWmoID();
                 hit = true;
             }
-            return result;
+            return hit;
         }
         std::vector<GroupModel>::const_iterator models;
         uint32 hitID;
