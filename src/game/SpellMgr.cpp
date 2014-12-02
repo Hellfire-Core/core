@@ -2868,6 +2868,10 @@ void SpellMgr::LoadSpellCustomAttr()
                     case 16998: // Savage Fury
                     case 16999:
                         spellInfo->Effect[2] = 0;
+                        break;
+                    case 17768: //Wolfshead Helm - Wolfshead Helm Energy in cat form
+                        spellInfo->EffectTriggerSpell[1] = 29940;
+                        break;
                 }
                 break;
             }
