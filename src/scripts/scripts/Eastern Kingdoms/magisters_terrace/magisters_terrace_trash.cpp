@@ -49,17 +49,6 @@ EndScriptData */
 *
 **********/
 
-// mobs DB GUIDs that should respawn group formation on evade
-uint32 KaelTrashDBguid[6]=
-{
-    92705,
-    92630,
-    92667,
-    92699,
-    92641,
-    92708
-};
-
 #define SPELL_GLAIVE_THROW              (HeroicMode?46028:44478)
 #define SPELL_MAGIC_DAMPENING_FIELD     44475
 #define NPC_BROKEN_SENTINEL             24808
@@ -83,34 +72,6 @@ struct mob_sunwell_mage_guardAI : public ScriptedAI
         Glaive_Timer = (HeroicMode?urand(3000, 6000):urand(5000,10000));
         Magic_Field_Timer = (10000, 20000);
         OOCTimer = 5000;
-    }
-
-    void EnterEvadeMode()
-    {
-        for(uint8 i = 0; i < 6; ++i)
-        {
-            if(me->GetDBTableGUIDLow() == KaelTrashDBguid[i])
-            {
-                if(pInstance)
-                    pInstance->SetData(DATA_KAEL_TRASH_COUNTER, 0);
-                if(CreatureGroup *formation = me->GetFormation())
-                    formation->RespawnFormation(me);
-                break;
-            }
-        }
-        ScriptedAI::EnterEvadeMode();
-    }
-
-    void JustDied(Unit* killer)
-    {
-        for(uint8 i = 0; i < 6; ++i)
-        {
-            if(me->GetDBTableGUIDLow() == KaelTrashDBguid[i])
-            {
-                if(pInstance)
-                    pInstance->SetData(DATA_KAEL_TRASH_COUNTER, 1);
-            }
-        }
     }
 
     void HandleOffCombatEffects()
@@ -187,34 +148,6 @@ struct mob_sunblade_magisterAI : public ScriptedAI
         Frostbolt_Timer = 0;
         Arcane_Nova_Timer = urand (12000, 20000);
         OOCTimer = 5000;
-    }
-
-    void EnterEvadeMode()
-    {
-        for(uint8 i = 0; i < 6; ++i)
-        {
-            if(me->GetDBTableGUIDLow() == KaelTrashDBguid[i])
-            {
-                if(pInstance)
-                    pInstance->SetData(DATA_KAEL_TRASH_COUNTER, 0);
-                if(CreatureGroup *formation = me->GetFormation())
-                    formation->RespawnFormation(me);
-                break;
-            }
-        }
-        ScriptedAI::EnterEvadeMode();
-    }
-
-    void JustDied(Unit* killer)
-    {
-        for(uint8 i = 0; i < 6; ++i)
-        {
-            if(me->GetDBTableGUIDLow() == KaelTrashDBguid[i])
-            {
-                if(pInstance)
-                    pInstance->SetData(DATA_KAEL_TRASH_COUNTER, 1);
-            }
-        }
     }
 
     void HandleOffCombatEffects()
@@ -305,32 +238,8 @@ struct mob_sunblade_warlockAI : public ScriptedAI
         OOCTimer = 5000;
     }
 
-    void EnterEvadeMode()
-    {
-        for(uint8 i = 0; i < 6; ++i)
-        {
-            if(me->GetDBTableGUIDLow() == KaelTrashDBguid[i])
-            {
-                if(pInstance)
-                    pInstance->SetData(DATA_KAEL_TRASH_COUNTER, 0);
-                if(CreatureGroup *formation = me->GetFormation())
-                    formation->RespawnFormation(me);
-                break;
-            }
-        }
-        ScriptedAI::EnterEvadeMode();
-    }
-
     void JustDied(Unit* killer)
     {
-        for(uint8 i = 0; i < 6; ++i)
-        {
-            if(me->GetDBTableGUIDLow() == KaelTrashDBguid[i])
-            {
-                if(pInstance)
-                    pInstance->SetData(DATA_KAEL_TRASH_COUNTER, 1);
-            }
-        }
         Summons.DespawnAll();
     }
 
@@ -462,34 +371,6 @@ struct mob_sunblade_physicianAI : public ScriptedAI
         OOCTimer = 5000;
     }
 
-    void EnterEvadeMode()
-    {
-        for(uint8 i = 0; i < 6; ++i)
-        {
-            if(me->GetDBTableGUIDLow() == KaelTrashDBguid[i])
-            {
-                if(pInstance)
-                    pInstance->SetData(DATA_KAEL_TRASH_COUNTER, 0);
-                if(CreatureGroup *formation = me->GetFormation())
-                    formation->RespawnFormation(me);
-                break;
-            }
-        }
-        ScriptedAI::EnterEvadeMode();
-    }
-
-    void JustDied(Unit* killer)
-    {
-        for(uint8 i = 0; i < 6; ++i)
-        {
-            if(me->GetDBTableGUIDLow() == KaelTrashDBguid[i])
-            {
-                if(pInstance)
-                    pInstance->SetData(DATA_KAEL_TRASH_COUNTER, 1);
-            }
-        }
-    }
-
     void HandleOffCombatEffects()
     {
         if(Unit* sentinel = FindCreature(NPC_BROKEN_SENTINEL, 10.0f, me))
@@ -581,34 +462,6 @@ struct mob_sunblade_blood_knightAI : public ScriptedAI
         Judgement_Timer = urand(10000, 15000);
         Holy_Light_Timer = urand(8000, 20000);
         OOCTimer = 5000;
-    }
-
-    void EnterEvadeMode()
-    {
-        for(uint8 i = 0; i < 6; ++i)
-        {
-            if(me->GetDBTableGUIDLow() == KaelTrashDBguid[i])
-            {
-                if(pInstance)
-                    pInstance->SetData(DATA_KAEL_TRASH_COUNTER, 0);
-                if(CreatureGroup *formation = me->GetFormation())
-                    formation->RespawnFormation(me);
-                break;
-            }
-        }
-        ScriptedAI::EnterEvadeMode();
-    }
-
-    void JustDied(Unit* killer)
-    {
-        for(uint8 i = 0; i < 6; ++i)
-        {
-            if(me->GetDBTableGUIDLow() == KaelTrashDBguid[i])
-            {
-                if(pInstance)
-                    pInstance->SetData(DATA_KAEL_TRASH_COUNTER, 1);
-            }
-        }
     }
 
     void HandleOffCombatEffects()
@@ -972,34 +825,6 @@ struct mob_sister_of_tormentAI : public ScriptedAI
         OOCTimer = 5000;
     }
 
-    void EnterEvadeMode()
-    {
-        for(uint8 i = 0; i < 6; ++i)
-        {
-            if(me->GetDBTableGUIDLow() == KaelTrashDBguid[i])
-            {
-                if(pInstance)
-                    pInstance->SetData(DATA_KAEL_TRASH_COUNTER, 0);
-                if(CreatureGroup *formation = me->GetFormation())
-                    formation->RespawnFormation(me);
-                break;
-            }
-        }
-        ScriptedAI::EnterEvadeMode();
-    }
-
-    void JustDied(Unit* killer)
-    {
-        for(uint8 i = 0; i < 6; ++i)
-        {
-            if(me->GetDBTableGUIDLow() == KaelTrashDBguid[i])
-            {
-                if(pInstance)
-                    pInstance->SetData(DATA_KAEL_TRASH_COUNTER, 1);
-            }
-        }
-    }
-
     void HandleOffCombatEffects()
     {
         if(Unit* sentinel = FindCreature(NPC_BROKEN_SENTINEL, 10.0f, me))
@@ -1098,34 +923,6 @@ struct mob_coilskar_witchAI : public ScriptedAI
         ForkedLightning_Timer = urand(5000, 10000);
         OOCTimer = 5000;
         canShield = true;
-    }
-
-    void EnterEvadeMode()
-    {
-        for(uint8 i = 0; i < 6; ++i)
-        {
-            if(me->GetDBTableGUIDLow() == KaelTrashDBguid[i])
-            {
-                if(pInstance)
-                    pInstance->SetData(DATA_KAEL_TRASH_COUNTER, 0);
-                if(CreatureGroup *formation = me->GetFormation())
-                    formation->RespawnFormation(me);
-                break;
-            }
-        }
-        ScriptedAI::EnterEvadeMode();
-    }
-
-    void JustDied(Unit* killer)
-    {
-        for(uint8 i = 0; i < 6; ++i)
-        {
-            if(me->GetDBTableGUIDLow() == KaelTrashDBguid[i])
-            {
-                if(pInstance)
-                    pInstance->SetData(DATA_KAEL_TRASH_COUNTER, 1);
-            }
-        }
     }
 
     void HandleOffCombatEffects()
@@ -1228,34 +1025,6 @@ struct mob_ethereum_smugglerAI : public ScriptedAI
         Check_Timer = 0;
         ExplosionCombo_Timer = 5000;
         OOCTimer = 5000;
-    }
-
-    void EnterEvadeMode()
-    {
-        for(uint8 i = 0; i < 6; ++i)
-        {
-            if(me->GetDBTableGUIDLow() == KaelTrashDBguid[i])
-            {
-                if(pInstance)
-                    pInstance->SetData(DATA_KAEL_TRASH_COUNTER, 0);
-                if(CreatureGroup *formation = me->GetFormation())
-                    formation->RespawnFormation(me);
-                break;
-            }
-        }
-        ScriptedAI::EnterEvadeMode();
-    }
-
-    void JustDied(Unit* killer)
-    {
-        for(uint8 i = 0; i < 6; ++i)
-        {
-            if(me->GetDBTableGUIDLow() == KaelTrashDBguid[i])
-            {
-                if(pInstance)
-                    pInstance->SetData(DATA_KAEL_TRASH_COUNTER, 1);
-            }
-        }
     }
 
     void HandleOffCombatEffects()

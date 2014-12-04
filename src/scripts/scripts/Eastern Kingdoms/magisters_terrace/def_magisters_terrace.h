@@ -43,7 +43,6 @@
 #define DATA_KAEL                   16
 #define DATA_KAEL_PHASE             17
 #define DATA_KAEL_TRASH_EVENT       18
-#define DATA_KAEL_TRASH_COUNTER     19
 #define DATA_KAEL_DOOR              20
 #define DATA_KALEC                  21
 #define DATA_VEXALLUS               22

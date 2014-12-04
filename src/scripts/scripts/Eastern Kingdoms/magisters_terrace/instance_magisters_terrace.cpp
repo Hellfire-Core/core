@@ -29,28 +29,6 @@ EndScriptData */
 
 #define ENCOUNTERS      6
 
-// mobs DB GUIDs that should respawn group formation on evade
-uint32 KaelTrashGuid[6]=
-{
-    96850,
-    96781,
-    96841,
-    96809,
-    96770,
-    96847
-};
-uint32 TrashPackEntry[8] = 
-{
-    24683,  // mob_sunwell_mage_guard
-    24685,  // mob_sunblade_magister
-    24686,  // mob_sunblade_warlock
-    24687,  // mob_sunblade_physician
-    24684,  // mob_sunblade_blood_knight
-    24697,  // mob_sister_of_torment
-    24696,  // mob_coilskar_witch
-    24698   // mob_ethereum_smuggler
-};
-
 /*
 0  - Selin Fireheart
 1  - Vexallus
@@ -79,7 +57,6 @@ struct instance_magisters_terrace : public ScriptedInstance
     uint64 DelrissaDoorGUID;
     uint64 KaelStatue[2];
     uint64 KaelDoorGUID;
-    std::list<uint32> TrashEntry;
 
     void Initialize()
     {
@@ -87,7 +64,6 @@ struct instance_magisters_terrace : public ScriptedInstance
             Encounters[i] = NOT_STARTED;
 
         DelrissaDeathCount = 0;
-        KaelTrashCounter = 0;
 
         KaelPhase = 0;
         KaelGUID = 0;
@@ -101,24 +77,6 @@ struct instance_magisters_terrace : public ScriptedInstance
         KaelStatue[0] = 0;
         KaelStatue[1] = 0;
         KaelDoorGUID = 0;
-        TrashEntry.clear();
-        BuildKaelTrashEntries();
-    }
-
-    void BuildKaelTrashEntries()
-    {
-        std::set<uint32> TrashList;
-        TrashList.clear();
-        while(TrashList.size() < 6)
-        {
-            uint8 i = urand(0, 7); 
-            if(TrashList.find(TrashPackEntry[i]) == TrashList.end())
-                TrashList.insert(TrashPackEntry[i]);
-        }
-        for(std::set<uint32>::iterator i = TrashList.begin(); i != TrashList.end(); ++i)
-        {
-            TrashEntry.push_back(*i);
-        }
     }
 
     bool IsEncounterInProgress() const
@@ -140,7 +98,6 @@ struct instance_magisters_terrace : public ScriptedInstance
             case DATA_KAEL_TRASH_EVENT:     return Encounters[4];
             case DATA_KALEC:                return Encounters[5];
             case DATA_DELRISSA_DEATH_COUNT: return DelrissaDeathCount;
-            case DATA_KAEL_TRASH_COUNTER:   return KaelTrashCounter;
             case DATA_KAEL_PHASE:           return KaelPhase;
         }
         return 0;
@@ -179,12 +136,6 @@ struct instance_magisters_terrace : public ScriptedInstance
                     ++DelrissaDeathCount;
                 else
                     DelrissaDeathCount = 0;
-                break;
-            case DATA_KAEL_TRASH_COUNTER:
-                if(data)
-                    ++KaelTrashCounter;
-                else
-                    KaelTrashCounter = 0;
                 break;
             case DATA_KAEL_TRASH_EVENT:
                 if(Encounters[4] != DONE)
@@ -247,19 +198,6 @@ struct instance_magisters_terrace : public ScriptedInstance
             case 24560: DelrissaGUID = creature->GetGUID(); break;
             case 24664: KaelGUID = creature->GetGUID();
                 break;
-        }
-        if(TrashEntry.empty())
-            return;
-        for(uint8 i = 0; i < 6; ++i)
-        {
-            if(creature->GetDBTableGUIDLow() == KaelTrashGuid[i])
-            {
-                creature->UpdateEntry(TrashEntry.front());
-                creature->SetOriginalEntry(TrashEntry.front());
-                creature->AIM_Initialize();
-                TrashEntry.pop_front();
-                break;
-            }
         }
     }
 
