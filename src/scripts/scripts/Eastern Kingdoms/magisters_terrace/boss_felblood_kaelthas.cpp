@@ -301,6 +301,8 @@ struct boss_felblood_kaelthasAI : public ScriptedAI
                     if (allDead)
                     {
                         pInstance->SetData(DATA_KAEL_TRASH_EVENT, DONE);
+                        DoScriptText(TEXT_AGGRO, m_creature);
+                        Intro = true;
                     }
                 }
                 TrashCheckTimer = 2000;
