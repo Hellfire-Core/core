@@ -38,6 +38,18 @@ EndScriptData */
 5  - Kalecgos event
 */
 
+uint32 TrashPackEntry[8] =
+{
+    24683,  // mob_sunwell_mage_guard
+    24685,  // mob_sunblade_magister
+    24686,  // mob_sunblade_warlock
+    24687,  // mob_sunblade_physician
+    24684,  // mob_sunblade_blood_knight
+    24697,  // mob_sister_of_torment
+    24696,  // mob_coilskar_witch
+    24698   // mob_ethereum_smuggler
+};
+
 struct instance_magisters_terrace : public ScriptedInstance
 {
     instance_magisters_terrace(Map* map) : ScriptedInstance(map) {Initialize();}
@@ -57,6 +69,8 @@ struct instance_magisters_terrace : public ScriptedInstance
     uint64 DelrissaDoorGUID;
     uint64 KaelStatue[2];
     uint64 KaelDoorGUID;
+    std::list<uint32> TrashEntry;
+    std::list<uint64> TrashGuids;
 
     void Initialize()
     {
@@ -77,6 +91,25 @@ struct instance_magisters_terrace : public ScriptedInstance
         KaelStatue[0] = 0;
         KaelStatue[1] = 0;
         KaelDoorGUID = 0;
+        TrashEntry.clear();
+        TrashGuids.clear();
+        BuildKaelTrashEntries();
+    }
+
+    void BuildKaelTrashEntries()
+    {
+        std::set<uint32> TrashList;
+        TrashList.clear();
+        while (TrashList.size() < 6)
+        {
+            uint8 i = urand(0, 7);
+            if (TrashList.find(TrashPackEntry[i]) == TrashList.end())
+                TrashList.insert(TrashPackEntry[i]);
+        }
+        for (std::set<uint32>::iterator i = TrashList.begin(); i != TrashList.end(); ++i)
+        {
+            TrashEntry.push_back(*i);
+        }
     }
 
     bool IsEncounterInProgress() const
@@ -95,7 +128,16 @@ struct instance_magisters_terrace : public ScriptedInstance
             case DATA_VEXALLUS_EVENT:       return Encounters[1];
             case DATA_DELRISSA_EVENT:       return Encounters[2];
             case DATA_KAELTHAS_EVENT:       return Encounters[3];
-            case DATA_KAEL_TRASH_EVENT:     return Encounters[4];
+            case DATA_KAEL_TRASH_EVENT:
+            {
+                if (Encounters[4] == DONE)
+                    return Encounters[4];
+                for (std::list<uint64>::iterator itr = TrashGuids.begin(); itr != TrashGuids.end(); itr++)
+                    if (Creature* trash = GetCreature(*itr))
+                        if (trash->isAlive() && !trash->isCharmed())
+                            return NOT_STARTED;
+                return SPECIAL;
+            }
             case DATA_KALEC:                return Encounters[5];
             case DATA_DELRISSA_DEATH_COUNT: return DelrissaDeathCount;
             case DATA_KAEL_PHASE:           return KaelPhase;
@@ -198,6 +240,20 @@ struct instance_magisters_terrace : public ScriptedInstance
             case 24560: DelrissaGUID = creature->GetGUID(); break;
             case 24664: KaelGUID = creature->GetGUID();
                 break;
+        }
+        if (TrashEntry.empty())
+            return;
+        for (uint8 i = 0; i < 6; ++i)
+        {
+            if (creature->GetDistance2d(151.0f, 142.0f) < 10.0f)
+            {
+                creature->UpdateEntry(TrashEntry.front());
+                creature->SetOriginalEntry(TrashEntry.front());
+                creature->AIM_Initialize();
+                TrashEntry.pop_front();
+                TrashGuids.push_front(creature->GetGUID());
+                break;
+            }
         }
     }
 

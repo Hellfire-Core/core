@@ -28,18 +28,6 @@ EndScriptData */
 #include "def_magisters_terrace.h"
 #include "WorldPacket.h"
 
-uint32 TrashPackEntry[8] =
-{
-    24683,  // mob_sunwell_mage_guard
-    24685,  // mob_sunblade_magister
-    24686,  // mob_sunblade_warlock
-    24687,  // mob_sunblade_physician
-    24684,  // mob_sunblade_blood_knight
-    24697,  // mob_sister_of_torment
-    24696,  // mob_coilskar_witch
-    24698   // mob_ethereum_smuggler
-};
-
 #define SAY_AGGRO                   -1585023
 #define SAY_PHOENIX                 -1585024
 #define SAY_FLAMESTRIKE             -1585025
@@ -104,7 +92,6 @@ struct boss_felblood_kaelthasAI : public ScriptedAI
     uint32 FireballTimer;
     uint32 PhoenixTimer;
     uint32 FlameStrikeTimer;
-    uint32 TrashCheckTimer;
     uint32 CheckTimer;
     uint32 IntroTimer;
     uint32 OutroTimer;
@@ -127,7 +114,6 @@ struct boss_felblood_kaelthasAI : public ScriptedAI
         FireballTimer = 0;
         PhoenixTimer = urand(15000,20000);
         FlameStrikeTimer = urand(25000, 35000);
-        TrashCheckTimer = 2000;
         CheckTimer = 2000;
         IntroTimer = 36000;
         OutroTimer = 11000;
@@ -198,7 +184,14 @@ struct boss_felblood_kaelthasAI : public ScriptedAI
 
     void MoveInLineOfSight(Unit* who)
     {
-        if(Intro || (pInstance && pInstance->GetData(DATA_KAEL_TRASH_EVENT) == NOT_STARTED))
+        if (pInstance && pInstance->GetData(DATA_KAEL_TRASH_EVENT) == SPECIAL)
+        {
+            Intro = true;
+            DoScriptText(SAY_AGGRO, m_creature);
+            pInstance->SetData(DATA_KAEL_TRASH_EVENT, DONE);
+        }
+
+        if(Intro || (pInstance && pInstance->GetData(DATA_KAEL_TRASH_EVENT) != DONE))
             return;
         ScriptedAI::MoveInLineOfSight(who);
     }
@@ -254,62 +247,6 @@ struct boss_felblood_kaelthasAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(pInstance && pInstance->GetData(DATA_KAEL_TRASH_EVENT) != DONE)
-        {
-            if(TrashCheckTimer < diff)
-            {
-                if (trashList.size() < 6)// find last trash group
-                {
-                    pInstance->SetData(DATA_KAEL_TRASH_EVENT, SPECIAL);
-                    trashList.clear();
-                    std::list<Unit*> UnitList;
-                    Hellground::AllFriendlyCreaturesInGrid check(m_creature);
-                    Hellground::UnitListSearcher<Hellground::AllFriendlyCreaturesInGrid > searcher(UnitList, check);
-                    Cell::VisitWorldObjects(151,142,m_creature->GetMap(), searcher, 10);
-
-                    for (std::list<Unit*>::iterator itr = UnitList.begin(); itr != UnitList.end(); itr++)
-                        trashList.push_front((*itr)->GetGUID());
-                    /* To be tested
-                    if (UnitList.size() == 6)// set random entries
-                    {
-                        std::set<uint32> entries;
-                        while (entries.size < 6)
-                            entries.insert(TrashPackEntry[urand(0,7)]);
-                        for (std::list<Unit*>::iterator itr = UnitList.begin(); itr != UnitList.end(); itr++)
-                        {
-                            if ((*itr)->GetTypeId() != TYPEID_UNIT)
-                                break;
-                            ((Creature*)(*itr))->UpdateEntry(*entries.begin());
-                            ((Creature*)(*itr))->SetOriginalEntry(*entries.begin());
-                            ((Creature*)(*itr))->AIM_Initialize();
-                            entries.erase(entries.begin());
-                            
-                        }
-                    }
-                    */
-                    
-                }
-                else //check if last trash is alive
-                {
-                    pInstance->SetData(DATA_KAEL_TRASH_EVENT, NOT_STARTED);
-                    bool allDead=true;
-                    for (std::list<uint64>::iterator itr = trashList.begin(); itr != trashList.end(); itr++)
-                        if (Creature* mob = m_creature->GetMap()->GetCreature(*itr))
-                            if (mob->isAlive() && !mob->isCharmed())
-                                allDead = false;
-
-                    if (allDead)
-                    {
-                        pInstance->SetData(DATA_KAEL_TRASH_EVENT, DONE);
-                        DoScriptText(SAY_AGGRO, m_creature);
-                        Intro = true;
-                    }
-                }
-                TrashCheckTimer = 2000;
-            }
-            else
-                TrashCheckTimer -= diff;
-        }
 
         if(Intro)
         {
