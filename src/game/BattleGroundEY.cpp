@@ -827,7 +827,27 @@ void BattleGroundEY::EventTeamCapturedPoint(Player *Source, uint32 Point)
     SendPacketToAll(&data);
 
     if (m_BgCreatures[Point])
+    {
+        // send ghosts to other gy
+        std::vector<uint64> ghost_list = m_ReviveQueue[m_BgCreatures[Point]];
+        if (!ghost_list.empty())
+        {
+            WorldSafeLocsEntry const *ClosestGrave = NULL;
+            Player *plr;
+            for (std::vector<uint64>::iterator itr = ghost_list.begin(); itr != ghost_list.end(); ++itr)
+            {
+                plr = sObjectMgr.GetPlayer(*itr);
+                if (!plr)
+                    continue;
+                if (!ClosestGrave)
+                    ClosestGrave = GetClosestGraveYard(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), plr->GetTeam());
+
+                plr->NearTeleportTo(ClosestGrave->x, ClosestGrave->y, ClosestGrave->z, plr->GetOrientation());
+            }
+            m_ReviveQueue[m_BgCreatures[Point]].clear();
+        }
         DelCreature(Point);
+    }
 
     WorldSafeLocsEntry const *sg = NULL;
     sg = sWorldSafeLocsStore.LookupEntry(m_CapturingPointTypes[Point].GraveYardId);
