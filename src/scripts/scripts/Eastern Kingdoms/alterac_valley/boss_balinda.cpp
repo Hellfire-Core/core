@@ -34,10 +34,6 @@ EndScriptData */
 #define SPELL_FROSTBOLT                   46987
 #define SPELL_WATER_ELEMENTAL             45067
 
-#define SPELL_ICE_BLOCK                   46604
-#define SPELL_HYPOTHERMIA                 41425
-
-
 struct boss_balindaAI : public ScriptedAI
 {
     boss_balindaAI(Creature *c) : ScriptedAI(c), summons(c)
@@ -47,7 +43,6 @@ struct boss_balindaAI : public ScriptedAI
 
     uint32 CoCTimer;
     uint32 CheckTimer;
-    uint32 IceBlockTimer;
     uint32 WaterElementalTimer;
     uint32 CastTimer;
     uint32 SpellId;
@@ -56,7 +51,6 @@ struct boss_balindaAI : public ScriptedAI
 
     void Reset()
     {
-        IceBlockTimer       = 10000;
         CoCTimer            = 8000;
         CheckTimer          = 2000;
         CastTimer            = 0;
@@ -114,24 +108,6 @@ struct boss_balindaAI : public ScriptedAI
         }
         else
             WaterElementalTimer -= diff;
-
-        if (IceBlockTimer < diff)
-        {
-            if (!m_creature->HasAura(SPELL_HYPOTHERMIA, 0))
-            {
-                uint32 negativeAuras = m_creature->GetAurasAmountByType(SPELL_AURA_PERIODIC_DAMAGE) + m_creature->GetAurasAmountByType(SPELL_AURA_PERIODIC_LEECH);
-                // cast if no hypothermia && has 3 or more dot/leech auras
-                if (negativeAuras >= 3)
-                {
-                    m_creature->InterruptNonMeleeSpells(false);
-                    ForceSpellCast(m_creature, SPELL_HYPOTHERMIA, DONT_INTERRUPT, true);
-                    ForceSpellCast(m_creature, SPELL_ICE_BLOCK);
-                    IceBlockTimer = 60000; // 60s
-                }
-            }
-        }
-        else
-            IceBlockTimer -= diff;
 
         // update CoC timer
         if (CoCTimer > diff)
