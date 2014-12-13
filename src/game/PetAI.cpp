@@ -393,7 +393,7 @@ void ImpAI::UpdateAI(const uint32 diff)
             _stopAttack();
             return;
         }
-        float dist = me->GetDistance2d(target);
+        float dist = me->GetDistance(target);
         if (dist < 30 && m_chasing)
         {
             me->clearUnitState(UNIT_STAT_FOLLOW);
