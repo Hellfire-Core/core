@@ -223,7 +223,7 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket & /*recv_data*/)
                 Player* playerGroup = itr->getSource();
                 if (!playerGroup)
                     continue;
-                if (player->GetDistance2d(playerGroup) < sWorld.getConfig(CONFIG_GROUP_XP_DISTANCE))
+                if (player->GetDistance(playerGroup) < sWorld.getConfig(CONFIG_GROUP_XP_DISTANCE))
                     playersNear.push_back(playerGroup);
             }
 
