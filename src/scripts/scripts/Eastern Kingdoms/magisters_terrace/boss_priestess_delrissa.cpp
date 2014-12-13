@@ -1435,7 +1435,7 @@ struct boss_garaxxasAI : public boss_priestess_guestAI
         {
             ForceSpellCast(SPELL_FREEZING_TRAP, CAST_SELF, INTERRUPT_AND_CAST_INSTANTLY);
             float x, y, z;
-            float dist = me->GetDistance2d(me->getVictim());
+            // float dist = me->GetDistance2d(me->getVictim()); <- unused, so why it's here?
             float angle = me->GetAngle(me->getVictim());
             me->GetPosition(x, y, z);
             x = x - 5.5 * cos(angle);
