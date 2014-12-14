@@ -2835,28 +2835,40 @@ void SpellMgr::LoadSpellCustomAttr()
         {
             case SPELLFAMILY_GENERIC:
             {
-                if (spellInfo->Id == 52009)
-                    spellInfo->EffectMiscValue[0] = 20865;
-                // Goblin Rocket Launcher
-                else if (spellInfo->SpellIconID == 184 && spellInfo->Attributes == 4259840)
-                    spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
-                else if (spellInfo->Id == 15852)
-                    spellInfo->Dispel = DISPEL_NONE;
-                else if (spellInfo->Id == 46337) // Crab disguise
-                    spellInfo->AuraInterruptFlags |= AURA_INTERRUPT_FLAG_CAST;
-                else if (spellInfo->SpellIconID == 2367) // remove flag from steam tonk & crashin trashin racers
-                    spellInfo->AttributesEx4 &= ~SPELL_ATTR_EX4_FORCE_TRIGGERED;
-                else if (spellInfo->Id == 34171 || spellInfo->Id == 37956) // Underbat - Tentacle Lash
+                switch (spellInfo->Id)
                 {
+                case 52009: // Goblin Rocket Launcher
+                    spellInfo->EffectMiscValue[0] = 20865;
+                    break;
+                case 15852:
+                    spellInfo->Dispel = DISPEL_NONE;
+                    break;
+                case 46337: // Crab disguise
+                    spellInfo->AuraInterruptFlags |= AURA_INTERRUPT_FLAG_CAST;
+                    break;
+                case 34171: // Underbat - Tentacle Lash
+                case 37956:
                     spellInfo->AttributesEx |= SPELL_ATTR_EX_UNK9;
                     spellInfo->AttributesEx2 |= SPELL_ATTR_EX2_FROM_BEHIND;
-                }
-                else if (spellInfo->Id == 16613) // some quest spell spamming with non-existing triggered
+                    break;
+                case 16613: // some quest spell spamming with non-existing triggered
                     spellInfo->Effect[2] = 0;
-                else if (spellInfo->Id == 39280) // same here
+                    break;
+                case 39280: // same here
                     spellInfo->Effect[1] = 0;
-                else if (spellInfo->Id == 38829) // arcatraz sentinels prevent spam
+                    break;
+                case 38829: // arcatraz sentinels prevent spam
                     spellInfo->EffectImplicitTargetB[0] = TARGET_UNIT_AREA_ENEMY_DST;
+                    break;
+                case 26635: // berserking troll racial
+                    spellInfo->EffectDieSides[0] = 1;
+                    break;
+                }
+                if (spellInfo->SpellIconID == 184 && spellInfo->Attributes == 4259840)
+                    spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
+                else if (spellInfo->SpellIconID == 2367) // remove flag from steam tonk & crashin trashin racers
+                    spellInfo->AttributesEx4 &= ~SPELL_ATTR_EX4_FORCE_TRIGGERED;
+
                 break;
             }
             case SPELLFAMILY_DRUID:
