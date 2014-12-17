@@ -652,6 +652,7 @@ CreatureAI* GetAI_npc_apprentice_mirvedaAI(Creature *_Creature)
 #define MOB_ENRAGED_WRAITH  17086
 #define EMOTE   -1000283
 #define QUEST_POWERING_OUR_DEFENSES 8490
+#define POWERING_OUR_DEFENSES_CREDIT 16364
 
 struct Location
 {
@@ -726,16 +727,17 @@ struct npc_infused_crystalAI : public Scripted_NoMovementAI
     {
         if(EndTimer < diff && Progress)
         {
-            DoScriptText(EMOTE, m_creature);
             Completed = true;
             if (PlayerGUID)
             {
                 Player* player = Unit::GetPlayer(PlayerGUID);
                 if(player)
-                    player->CompleteQuest(QUEST_POWERING_OUR_DEFENSES);
+                {
+                    DoScriptText(EMOTE, m_creature);
+                    player->KilledMonster(POWERING_OUR_DEFENSES_CREDIT, 0);
+                }
             }
-            m_creature->DealDamage(m_creature,m_creature->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
-            m_creature->RemoveCorpse();
+            m_creature->DisappearAndDie();
         }
         else
             EndTimer -= diff;
