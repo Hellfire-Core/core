@@ -1809,11 +1809,14 @@ void Spell::EffectDummy(uint32 i)
                         haste_mod = 30;
                     if (healthPerc < 100 && healthPerc > 40)
                         haste_mod = 10+(100-healthPerc)/3;
-                    haste_mod--; // it will be increased in CalculateSpellBamage by EffectBaseDice = 1
 
                     // FIXME: custom spell required this aura state by some unknown reason, we not need remove it anyway
                     m_caster->ModifyAuraState(AURA_STATE_BERSERKING,true);
-                    m_caster->CastCustomSpell(m_caster,26635,&haste_mod,0,&haste_mod,true,NULL);
+                    CustomSpellValues cvalues;
+                    cvalues.AddSpellMod(SPELLVALUE_BASE_POINT0, haste_mod);
+                    cvalues.AddSpellMod(SPELLVALUE_BASE_POINT1, 0);
+                    cvalues.AddSpellMod(SPELLVALUE_BASE_POINT2, haste_mod);
+                    m_caster->CastCustomSpell(26635, cvalues, m_caster, true, NULL);
                     return;
                 }
             }
