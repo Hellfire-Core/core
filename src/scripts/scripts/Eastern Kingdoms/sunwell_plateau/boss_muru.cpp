@@ -128,21 +128,6 @@ struct boss_muruAI : public Scripted_NoMovementAI
         HumanoidStart = 10000;
         TransitionTimer = 0;
         Summons.DespawnAll();
-        //hack fix for some summons worshipping satan after wipe
-        //delete when Summons.DespawnAll() is fixed
-        //the interesting part is that only void_spawn summons
-        //sometimes stay alive after wipe, all other spawns
-        //disappear are despawned propely
-        while (Creature* void_spawn = GetClosestCreatureWithEntry(me, CREATURE_VOID_SPAWN, 100.0f))
-        {
-               void_spawn->DisappearAndDie();
-        }
-
-        //well.. we had one fiend.... :F remove this hack after fix
-        while (Creature* fiend = GetClosestCreatureWithEntry(me, CREATURE_DARK_FIENDS, 100.0f))
-        {
-            fiend->DisappearAndDie();
-        }
 
         if(pInstance->GetData(DATA_EREDAR_TWINS_EVENT) == DONE)
         {
@@ -547,12 +532,13 @@ struct npc_dark_fiendAI : public ScriptedAI
     {
         me->DisappearAndDie();
     }
-
-    void IsSummonedBy(Unit* Muru)
+    
+    void IsSummonedBy(Unit* summoner)
     {
-        Muru->ToCreature()->AI()->JustSummoned(me);
+        if(Unit* Muru = me->GetUnit(pInstance->GetData64(DATA_MURU)))
+            Muru->ToCreature()->AI()->JustSummoned(me);
     }
-
+    
     void DamageTaken(Unit* /*done_by*/, uint32 &damage)
     {
         if(damage > me->GetHealth())
@@ -657,12 +643,6 @@ struct npc_void_sentinelAI : public ScriptedAI
         me->DisappearAndDie();
     }
 
-    void IsSummonedBy(Unit* summoner)
-    {
-        if(Unit* Muru = me->GetUnit(pInstance->GetData64(DATA_MURU)))
-            Muru->ToCreature()->AI()->JustSummoned(me);
-    }
-
     void DamageTaken(Unit*, uint32 &damage)
     {
         if(damage >= me->GetHealth())
@@ -724,7 +704,13 @@ struct mob_void_spawnAI : public ScriptedAI
     {
         me->DisappearAndDie();
     }
-
+    
+    void IsSummonedBy(Unit* summoner)
+    {
+        if(Unit* Muru = me->GetUnit(pInstance->GetData64(DATA_MURU)))
+            Muru->ToCreature()->AI()->JustSummoned(me);
+    }
+    
     void Reset()
     {
         Volley = urand(3000, 7000);
