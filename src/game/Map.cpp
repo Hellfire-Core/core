@@ -434,6 +434,12 @@ void Map::BroadcastPacketExcept(WorldObject* sender, WorldPacket* msg, Player* e
 
 bool Map::loaded(const GridPair &p) const
 {
+    volatile uint32 map_id = GetId();
+    volatile uint32 x = p.x_coord;
+    volatile uint32 y = p.y_coord;
+    getNGrid(p.x_coord, p.y_coord);
+    // End of debug
+
     if (NGridType* grid_type = getNGrid(p.x_coord, p.y_coord))
     {
         return grid_type->isGridObjectDataLoaded();
