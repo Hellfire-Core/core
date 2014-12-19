@@ -764,18 +764,10 @@ struct mob_felmyst_trailAI : public Scripted_NoMovementAI
 
     void JustSummoned(Creature* summon)
     {
-        Map::PlayerList const& players = me->GetMap()->GetPlayers();
-        if (!players.isEmpty())
-        {
-            for(Map::PlayerList::const_iterator itr = players.begin(); itr != players.end(); ++itr)
-            {
-                if(Player* plr = itr->getSource())
-                {
-                    summon->SetInCombatWith(plr);
-                    summon->AddThreat(plr, 0.0f);
-                }
-            }
-        }
+        if(summon->AI())
+            summon->AI()->DoZoneInCombat();
+        if(Unit* Felmyst = me->GetUnit(pInstance->GetData64(DATA_FELMYST)))
+            Felmyst->ToCreature()->AI()->JustSummoned(summon);
     }
 
     void UpdateAI(const uint32 diff)
