@@ -379,7 +379,6 @@ struct boss_aranAI : public ScriptedAI
             {
                 ElementalsSpawned = true;
                 AddSpellToCast(SPELL_TELEPORT_MIDDLE, CAST_SELF);
-                AddSpellToCast(SPELL_MAGNETIC_PULL, CAST_SELF); 
                 AddSpellToCastWithScriptText(SPELL_ELEMENTAL1, CAST_SELF, SAY_ELEMENTALS);
                 AddSpellToCast(SPELL_ELEMENTAL2, CAST_SELF);
                 AddSpellToCast(SPELL_ELEMENTAL3, CAST_SELF);
