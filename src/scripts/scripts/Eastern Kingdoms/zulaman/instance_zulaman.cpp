@@ -267,8 +267,12 @@ struct instance_zulaman : public ScriptedInstance
         if(BossKilled >= 4)
             HandleGameObject(HexLordEntranceGateGUID, true);
 
-        if(BossKilled >= 5)
-            HandleGameObject(HexLordExitGateGUID, true);
+        if (BossKilled >= 5)
+        {
+            GameObject* gate = instance->GetGameObject(HexLordExitGateGUID);
+            if (gate)
+                gate->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_NOTSELECTABLE);
+        }
     }
 
     void UpdateWorldState(uint32 field, uint32 value)
