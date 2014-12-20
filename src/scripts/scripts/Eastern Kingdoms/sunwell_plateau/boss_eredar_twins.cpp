@@ -288,8 +288,8 @@ struct boss_sacrolashAI : public ScriptedAI
         else
             EnrageTimer -= diff;
 
-        CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
+        CastNextSpellIfAnyAndReady();
     }
 };
 
