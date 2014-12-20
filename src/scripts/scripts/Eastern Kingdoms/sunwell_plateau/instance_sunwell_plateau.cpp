@@ -320,8 +320,12 @@ struct instance_sunwell_plateau : public ScriptedInstance
                     HandleGameObject(Gate[0], OPEN);
                 break;
             case 187990: // door 7
-                if(gobj->GetDBTableGUIDLow() == 32982) // M'uru - entrance
+                if (gobj->GetPositionZ() > 60.0f) // M'uru - entrance
+                {
                     Gate[1] = gobj->GetGUID();
+                    if (GetData(DATA_EREDAR_TWINS_EVENT) == DONE)
+                        HandleGameObject(Gate[1], OPEN);
+                }
                 else    // Eredar Twins Down
                 {
                     Gate[2] = gobj->GetGUID();
