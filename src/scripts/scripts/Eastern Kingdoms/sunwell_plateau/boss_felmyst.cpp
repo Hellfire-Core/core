@@ -725,12 +725,13 @@ struct mob_felmyst_trailAI : public Scripted_NoMovementAI
 {
     mob_felmyst_trailAI(Creature *c) : Scripted_NoMovementAI(c)
     {
+        pInstance = (c->GetInstanceData());
         me->CastSpell(me, SPELL_TRAIL_TRIGGER, true);
         me->setFaction(1771);
         Delay = 6000;
         Despawn = 20000;
     }
-
+    ScriptedInstance* pInstance;
     uint32 Delay;   // timer for Unyielding Dead summoning
     uint32 Despawn; // for despawning
 
