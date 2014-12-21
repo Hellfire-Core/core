@@ -877,13 +877,16 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
 
     uint32 ShadowBoltVolleyTimer;
     uint32 FelfirePortalTimer;
+    uint32 DeceiverReviveTimer;
+
 
     void Reset()
     {
         DoCast(m_creature, SPELL_SHADOW_CHANNELING);
         // TODO: Timers!
-        ShadowBoltVolleyTimer = 8000 + rand()%6000; // So they don't all cast it in the same moment.
+        ShadowBoltVolleyTimer = 8000 + urand(0, 3000); // So they don't all cast it in the same moment.
         FelfirePortalTimer = 20000;
+        DeceiverReviveTimer = 10000;
         if(pInstance)
             pInstance->SetData(DATA_KILJAEDEN_EVENT, NOT_STARTED);
     }
@@ -914,7 +917,7 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
         Creature* Control = Unit::GetCreature(*m_creature, pInstance->GetData64(DATA_KILJAEDEN_CONTROLLER));
         if(Control)
             ((mob_kiljaeden_controllerAI*)Control->AI())->DeceiverDeathCount++;
-    }
+    }                                                                          
 
     void UpdateAI(const uint32 diff)
     {
@@ -924,6 +927,34 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
 
         if(!UpdateVictim())
             return;
+
+        if(me->isAlive())
+        {
+           // !! HARDCODED GUIDS !! //
+           Creature* Deceiver1 = pInstance->GetCreature(95839); 
+           Creature* Deceiver2 = pInstance->GetCreature(95840); 
+           Creature* Deceiver3 = pInstance->GetCreature(95841);
+           // !!                 !! //
+
+
+           //When Deceiver dies we have 10 seconds untill other deceiver brings him back to life
+           //this is the reason why we have to kill them possibly in one moment
+           if ((Deceiver1 && !Deceiver1->isAlive()) || (Deceiver2 && !Deceiver2->isAlive()) || (Deceiver3 && !Deceiver3->isAlive()))
+           {
+               if (DeceiverReviveTimer <= diff)
+               {
+                   if (Deceiver1 && !Deceiver1->isAlive())
+                       Deceiver1->Respawn();
+                   if (Deceiver2 && !Deceiver2->isAlive())
+                       Deceiver2->Respawn();
+                   if (Deceiver3 && !Deceiver3->isAlive())
+                       Deceiver3->Respawn();
+               }
+               else
+                   DeceiverReviveTimer -= diff;
+           }
+
+        }
 
         // Gain Shadow Infusion at 20% health
         if(((m_creature->GetHealth()*100 / m_creature->GetMaxHealth()) < 20) && !m_creature->HasAura(SPELL_SHADOW_INFUSION, 0))
