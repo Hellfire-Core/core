@@ -171,9 +171,10 @@ enum CreatureIds
     CREATURE_SHIELD_ORB                     = 25502, // Shield orbs circle the room raining shadow bolts on raid
     CREATURE_THE_CORE_OF_ENTROPIUS          = 26262, // Used in the ending cinematic?
     CREATURE_POWER_OF_THE_BLUE_DRAGONFLIGHT = 25653, // NPC that players possess when using the Orb of the Blue Dragonflight
-    CREATURE_SPIKE_TARGET1                  = 30598, //Should summon these under Shadow Spike Channel on targets place
+    CREATURE_SPIKE_TARGET1                  = 30598, // Should summon these under Shadow Spike Channel on targets place
     CREATURE_SPIKE_TARGET2                  = 30614,
-    CREATURE_SINISTER_REFLECTION            = 25708  //Sinister Relection spawnd on Phase swichtes
+    CREATURE_SINISTER_REFLECTION            = 25708, // Sinister Relection spawnd on Phase swichtes
+    CREATURE_KILJAEDEN_CONTROLLER           = 25608  // controller mob
 };
 
 /*** GameObjects ***/
@@ -784,12 +785,14 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
     Creature* KalecKJ;
     SummonList Summons;
 
-    bool SummonedDeceivers;
+    uint8 DeceiversStatus;
+    bool SummonedAnveena;
     bool KiljaedenDeath;
+    std::list<uint64> deceivers;
 
     uint32 RandomSayTimer;
     uint32 Phase;
-    uint8 DeceiverDeathCount;
+    uint32 DeceiverDeathTimer;
 
     void InitializeAI(){
         KalecKJ = Unit::GetCreature((*m_creature), pInstance->GetData64(DATA_KALECGOS_KJ));
@@ -801,11 +804,13 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
     void Reset(){
         Phase = PHASE_DECEIVERS;
         //if(KalecKJ)((boss_kalecgos_kjAI*)KalecKJ->AI())->ResetOrbs();
-        DeceiverDeathCount = 0;
-        SummonedDeceivers = false;
+        DeceiverDeathTimer = 0;
+        DeceiversStatus = 3;
+        SummonedAnveena = false;
         KiljaedenDeath = false;
         RandomSayTimer = 30000;
         Summons.DespawnAll();
+        deceivers.clear();
     }
 
     void JustSummoned(Creature* summoned){
@@ -829,6 +834,9 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
 
     void UpdateAI(const uint32 diff)
     {
+        if (!pInstance)
+            return;
+
         if(RandomSayTimer < diff && pInstance->GetData(DATA_MURU_EVENT) != DONE && pInstance->GetData(DATA_KILJAEDEN_EVENT) == NOT_STARTED)
         {
             RandomSayTimer = 60000;
@@ -841,20 +849,54 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
         else
             RandomSayTimer -= diff;
 
-        if(!SummonedDeceivers)
+        if(!SummonedAnveena)
         {
-            for(uint8 i = 0; i < 3; ++i)
-                m_creature->SummonCreature(CREATURE_HAND_OF_THE_DECEIVER, DeceiverLocations[i][0], DeceiverLocations[i][1], FLOOR_Z, DeceiverLocations[i][2], TEMPSUMMON_DEAD_DESPAWN, 0);
-
             DoSpawnCreature(CREATURE_ANVEENA,  0, 0, 40, 0, TEMPSUMMON_DEAD_DESPAWN, 0);
             DoCast(m_creature, SPELL_ANVEENA_ENERGY_DRAIN);
-            SummonedDeceivers = true;
+            SummonedAnveena = true;
         }
 
-        if(DeceiverDeathCount > 2 && Phase == PHASE_DECEIVERS){
-            m_creature->RemoveAurasDueToSpell(SPELL_ANVEENA_ENERGY_DRAIN) ;
+        if (deceivers.size() < 3)
+        {
+            deceivers.clear();
+            deceivers = pInstance->instance->GetCreaturesGUIDList(CREATURE_HAND_OF_THE_DECEIVER);
+            return; //dont go to timing stuff, have to check size again in next loop
+        }
+        if (Phase == PHASE_DECEIVERS && DeceiversStatus != 3)
+        {
+            if (DeceiverDeathTimer < diff)
+            {
+                std::for_each(deceivers.begin(), deceivers.end(),
+                    [this](uint64& guid)
+                    {
+                    if (Creature* c = pInstance->GetCreature(guid))
+                        if (c->isDead())
+                            c->Respawn();
+                    }
+                );
+                DeceiversStatus = 3;
+            }
+            else
+                DeceiverDeathTimer -= diff;
+        }
+
+    }
+
+    void DoAction(const int32 param)
+    {
+        if (param != CREATURE_HAND_OF_THE_DECEIVER || Phase != PHASE_DECEIVERS)
+            return;
+
+        if (DeceiversStatus == 3)
+            DeceiverDeathTimer = 10000;
+
+        DeceiversStatus--;
+
+        if (DeceiversStatus == 0)
+        {
+            m_creature->RemoveAurasDueToSpell(SPELL_ANVEENA_ENERGY_DRAIN);
             Phase = PHASE_NORMAL;
-            DoSpawnCreature(CREATURE_KILJAEDEN, 0, 0,0, 0, TEMPSUMMON_MANUAL_DESPAWN, 0);
+            DoSpawnCreature(CREATURE_KILJAEDEN, 0, 0, 0, 0, TEMPSUMMON_MANUAL_DESPAWN, 0);
         }
     }
 };
@@ -914,8 +956,8 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
             return;
 
         Creature* Control = Unit::GetCreature(*m_creature, pInstance->GetData64(DATA_KILJAEDEN_CONTROLLER));
-        if(Control)
-            ((mob_kiljaeden_controllerAI*)Control->AI())->DeceiverDeathCount++;
+        if (Control)
+            Control->AI()->DoAction(CREATURE_HAND_OF_THE_DECEIVER);
     }                                                                          
 
     void UpdateAI(const uint32 diff)
@@ -926,35 +968,6 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
 
         if(!UpdateVictim())
             return;
-
-        if(me->isAlive())
-        {
-           // !! HARDCODED GUIDS !! //
-           Creature* Deceiver1 = pInstance->GetCreature(95839); 
-           Creature* Deceiver2 = pInstance->GetCreature(95840); 
-           Creature* Deceiver3 = pInstance->GetCreature(95841);
-           // !!                 !! //
-
-
-           //When Deceiver dies we have 10 seconds untill other deceiver brings him back to life
-           //this is the reason why we have to kill them possibly in one moment
-           if ((Deceiver1 && !Deceiver1->isAlive()) || (Deceiver2 && !Deceiver2->isAlive()) || (Deceiver3 && !Deceiver3->isAlive()))
-           {
-               if (DeceiverReviveTimer <= diff)
-               {
-                   if (Deceiver1 && !Deceiver1->isAlive())
-                       Deceiver1->Respawn();
-                   if (Deceiver2 && !Deceiver2->isAlive())
-                       Deceiver2->Respawn();
-                   if (Deceiver3 && !Deceiver3->isAlive())
-                       Deceiver3->Respawn();
-                   DeceiverReviveTimer = 10000;
-               }
-               else
-                   DeceiverReviveTimer -= diff;
-           }
-
-        }
 
         // Gain Shadow Infusion at 20% health
         if(((m_creature->GetHealth()*100 / m_creature->GetMaxHealth()) < 20) && !m_creature->HasAura(SPELL_SHADOW_INFUSION, 0))
