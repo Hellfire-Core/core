@@ -833,10 +833,9 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
         {
             RandomSayTimer = 60000;
             for(uint32 i = 0; i < 6; ++i)   // do not yell when any encounter in progress
-            {
                 if(pInstance->GetData(i) == IN_PROGRESS)
                     return;
-            }
+
             DoScriptText(RAND(SAY_KJ_OFFCOMBAT1, SAY_KJ_OFFCOMBAT2, SAY_KJ_OFFCOMBAT3, SAY_KJ_OFFCOMBAT4, SAY_KJ_OFFCOMBAT5), m_creature);
         }
         else
@@ -949,6 +948,7 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
                        Deceiver2->Respawn();
                    if (Deceiver3 && !Deceiver3->isAlive())
                        Deceiver3->Respawn();
+                   DeceiverReviveTimer = 10000;
                }
                else
                    DeceiverReviveTimer -= diff;
