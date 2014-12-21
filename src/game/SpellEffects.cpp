@@ -4456,7 +4456,7 @@ void Spell::EffectSummonGuardian(uint32 i)
         stream << "Guardians summoning exploit(spellid: " << GetSpellEntry()->Id << "), guardians count: " << guardians.size();
         
         sWorld.SendGMText(LANG_POSSIBLE_CHEAT, stream.str().c_str(), caster->GetName(), caster->GetName());
-        sLog.outLog(LOG_CHEAT, "Possible cheater: %s, trying to exploit guardians(spellid: %d), guardians count: %d.", caster->GetName(), GetSpellEntry()->Id, guardians.size());
+        sLog.outLog(LOG_EXPLOITS_CHEATS, "Possible cheater: %s, trying to exploit guardians(spellid: %d), guardians count: %d.", caster->GetName(), GetSpellEntry()->Id, guardians.size());
     }
     
     // in another case summon new

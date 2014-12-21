@@ -189,7 +189,6 @@ void BattleGroundEY::Update(uint32 diff)
         {
             if (uWalkingDead <= diff)
             {
-                sLog.outLog(LOG_CHEAT, "[EXPLOIT] Player (%s (%u)) using walking on the bottom of EOTS map exploit", Exploiter->GetName(), Exploiter->GetGUID());
                 Exploiter->Kill(Exploiter, false);
                 Exploiter = NULL;
                 uWalkingDead = 5000;

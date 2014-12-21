@@ -6366,7 +6366,7 @@ bool Player::RewardHonor(Unit *uVictim, uint32 groupsize, float honor, bool pvpt
                     stream << "Possible HK / Honor farming exploit (killer: " << GetName() << ", victim: " << pVictim->GetName() << ") kills count: " << killsCount;
         
                     sWorld.SendGMText(LANG_POSSIBLE_CHEAT, stream.str().c_str(), GetName(), GetName());
-                    sLog.outLog(LOG_CHEAT, "%s", stream.str().c_str());
+                    sLog.outLog(LOG_EXPLOITS_CHEATS, "%s", stream.str().c_str());
                 }
 
                 if (honor <= 0.0f)

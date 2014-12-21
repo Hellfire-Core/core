@@ -55,6 +55,7 @@ enum LogNames
     LOG_EXP             = 17,
     LOG_TRADE           = 18,
     LOG_RACE_CHANGE     = 19,
+    LOG_EXPLOITS_CHEATS = 20,
 
     LOG_MAX_FILES
 };

@@ -245,7 +245,7 @@ void InstanceData::LogPossibleCheaters(const char* cheatName)
             playerlist += itr->getSource()->GetName();
             playerlist += " ";
         }
-        sLog.outLog(LOG_CHEAT,"Possible cheaters(%s): %s",cheatName,playerlist.c_str());
+        sLog.outLog(LOG_EXPLOITS_CHEATS,"Possible cheaters(%s): %s",cheatName,playerlist.c_str());
     
         sWorld.SendGMText(LANG_POSSIBLE_CHEAT, cheatName, pPlayer->GetName(),playerlist.c_str());
     }
