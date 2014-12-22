@@ -27,28 +27,28 @@
 #include "Util.h"
 
 const char* logToStr[LOG_MAX_FILES][3] =
-{     // file name conf    mode  timestamp conf name
-    { "GMLogFile",          "a", "GmLogTimestamp" },    // LOG_GM
-    { "LogFile",            "w", "LogTimestamp" },      // LOG_DEFAULT
-    { "StatusParserFile",   "w", NULL },                // LOG_STATUS
-    { "CharLogFile",        "a", "CharLogTimestamp" },  // LOG_CHAR
-    { "DBErrorLogFile",     "a", NULL },                // LOG_DB_ERR
-    { "ArenaLogFile",       "a", NULL },                // LOG_ARENA
-    { "CheatLogFile",       "a", NULL },                // LOG_CHEAT
-    { "SpecialLogFile",     "a", NULL },                // LOG_SPECIAL
-    { "MailLogFile",        "a", NULL },                // LOG_MAIL
-    { "GannLogFile",        "a", NULL },                // LOG_GUILD_ANN
-    { "BossLogFile",        "a", NULL },                // LOG_BOSS
-    { "WardenLogFile",      "a", NULL },                // LOG_WARDEN
-    { "AuctionLogFile",     "a", NULL },                // LOG_AUCTION
-    { "DiffLogFile",        "a", NULL },                // LOG_DIFF
-    { "SessionDiffLogFile", "a", NULL },                // LOG_SESSION_DIFF
-    { "CrashLogFile",       "a", NULL },                // LOG_CRASH
-    { "DBDiffFile",         "a", NULL },                // LOG_DB_DIFF
-    { "ExpLogFile",         "a", NULL },                // LOG_EXP
-    { "TradeLogFile",       "a", NULL },                // LOG_TRADE
-    { "RaceChangeLogFile",  "a", NULL },                // LOG_RACE_CHANGE
-    { "ExploitsCheats",     "a", NULL }                 // LOG_EXPLOITS_AND_CHEATS
+{     // file name conf        mode  timestamp conf name
+    { "GMLogFile",              "a", "GmLogTimestamp" },    // LOG_GM
+    { "LogFile",                "w", "LogTimestamp" },      // LOG_DEFAULT
+    { "StatusParserFile",       "w", NULL },                // LOG_STATUS
+    { "CharLogFile",            "a", "CharLogTimestamp" },  // LOG_CHAR
+    { "DBErrorLogFile",         "a", NULL },                // LOG_DB_ERR
+    { "ArenaLogFile",           "a", NULL },                // LOG_ARENA
+    { "CheatLogFile",           "a", NULL },                // LOG_CHEAT
+    { "SpecialLogFile",         "a", NULL },                // LOG_SPECIAL
+    { "MailLogFile",            "a", NULL },                // LOG_MAIL
+    { "GannLogFile",            "a", NULL },                // LOG_GUILD_ANN
+    { "BossLogFile",            "a", NULL },                // LOG_BOSS
+    { "WardenLogFile",          "a", NULL },                // LOG_WARDEN
+    { "AuctionLogFile",         "a", NULL },                // LOG_AUCTION
+    { "DiffLogFile",            "a", NULL },                // LOG_DIFF
+    { "SessionDiffLogFile",     "a", NULL },                // LOG_SESSION_DIFF
+    { "CrashLogFile",           "a", NULL },                // LOG_CRASH
+    { "DBDiffFile",             "a", NULL },                // LOG_DB_DIFF
+    { "ExpLogFile",             "a", NULL },                // LOG_EXP
+    { "TradeLogFile",           "a", NULL },                // LOG_TRADE
+    { "RaceChangeLogFile",      "a", NULL },                // LOG_RACE_CHANGE
+    { "ExploitsCheatsLogFile",  "a", NULL }                 // LOG_EXPLOITS_AND_CHEATS
 };
 
 Log::Log() : m_includeTime(false), m_gmlog_per_account(false)
