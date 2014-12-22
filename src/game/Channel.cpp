@@ -604,7 +604,7 @@ void Channel::Say(uint64 p, const char *what, uint32 lang)
         if (!plr || !plr->IsTrollmuted())
         {
             // exclude LFG from two-side channels
-            if (sWorld.getConfig(CONFIG_ALLOW_TWO_SIDE_INTERACTION_CHANNEL) && IsLFG() && plr)
+            if (sWorld.getConfig(CONFIG_ALLOW_TWO_SIDE_INTERACTION_CHANNEL) && HasFlag(CHANNEL_FLAG_LFG | CHANNEL_FLAG_TRADE) && plr)
             {
                 uint32 fromteam = plr->GetTeam();
                 for (PlayerList::iterator i = players.begin(); i != players.end(); ++i)
