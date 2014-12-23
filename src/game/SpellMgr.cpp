@@ -2863,6 +2863,9 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 26635: // berserking troll racial
                     spellInfo->EffectDieSides[0] = 1;
                     break;
+                case 40669: // egbert egg- run away spell
+                    spellInfo->DurationIndex = 29; // 12 secs, guess
+                    break;
                 }
                 if (spellInfo->SpellIconID == 184 && spellInfo->Attributes == 4259840)
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
