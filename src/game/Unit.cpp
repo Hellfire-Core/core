@@ -9163,34 +9163,21 @@ void Unit::MeleeDamageBonus(Unit *pVictim, uint32 *pdamage,WeaponAttackType attT
 
 void Unit::ApplySpellImmune(uint32 spellId, uint32 op, uint32 type, bool apply)
 {
+    for (SpellImmuneList::iterator itr = m_spellImmune[op].begin(); itr != m_spellImmune[op].end();)
+    {
+        if (itr->spellId == spellId && itr->type == type)
+            itr = m_spellImmune[op].erase(itr);
+        else
+            itr++;
+    }
+
     if (apply)
     {
-        for (SpellImmuneList::iterator itr = m_spellImmune[op].begin(), next; itr != m_spellImmune[op].end(); itr = next)
-        {
-            next = itr; ++next;
-            if (itr->type == type)
-            {
-                m_spellImmune[op].erase(itr);
-                next = m_spellImmune[op].begin();
-            }
-        }
         SpellImmune Immune;
         Immune.spellId = spellId;
         Immune.type = type;
         m_spellImmune[op].push_back(Immune);
     }
-    else
-    {
-        for (SpellImmuneList::iterator itr = m_spellImmune[op].begin(); itr != m_spellImmune[op].end(); ++itr)
-        {
-            if (itr->spellId == spellId)
-            {
-                m_spellImmune[op].erase(itr);
-                break;
-            }
-        }
-    }
-
 }
 
 void Unit::ApplySpellDispelImmunity(const SpellEntry * spellProto, DispelType type, bool apply)
