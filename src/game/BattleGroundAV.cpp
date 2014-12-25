@@ -470,6 +470,7 @@ void BattleGroundAV::Update(uint32 diff)
 
         //looks for all timers of the nodes and destroy the building (for graveyards the building wont get destroyed, it goes just to the other team
         for (BG_AV_Nodes i = BG_AV_NODES_FIRSTAID_STATION; i < BG_AV_NODES_MAX; ++i)
+        {
             if (m_Nodes[i].State == POINT_ASSAULTED) //maybe remove this
             {
                 if (m_Nodes[i].Timer > diff)
@@ -477,6 +478,7 @@ void BattleGroundAV::Update(uint32 diff)
                 else
                      EventPlayerDestroyedPoint(i);
             }
+        }
     }
 }
 
