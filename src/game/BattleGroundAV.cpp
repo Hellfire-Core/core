@@ -446,7 +446,7 @@ void BattleGroundAV::Update(uint32 diff)
                     if (creature)
                         YellToAll(creature,LANG_BG_AV_H_CAPTAIN_BUFF,LANG_ORCISH);
                 }
-                m_CaptainBuffTimer[i] = 120000 + urand(0,4)* 60000; //as far as i could see, the buff is randomly so i make 2minutes (thats the duration of the buff itself) + 0-4minutes TODO get the right times
+                m_CaptainBuffTimer[i] = 600000; // 10 minutes + after captain slain
             }
         }
         //add points from mine owning, and look if he neutral team wanrts to reclaim the mine
@@ -1447,7 +1447,7 @@ void BattleGroundAV::ResetBGSubclass()
     m_Team_Scores[i]=BG_AV_SCORE_INITIAL_POINTS;
         m_IsInformedNearVictory[i]=false;
         m_CaptainAlive[i] = true;
-        m_CaptainBuffTimer[i] = 120000 + urand(0,4)* 60; //as far as i could see, the buff is randomly so i make 2minutes (thats the duration of the buff itself) + 0-4minutes TODO get the right times
+        m_CaptainBuffTimer[i] = 600000; // every 10 minutes (+ instantly after killing a captain)
         m_Mine_Owner[i] = AV_NEUTRAL_TEAM;
         m_Mine_PrevOwner[i] = m_Mine_Owner[i];
     }
