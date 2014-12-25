@@ -28,7 +28,6 @@ class BattleGround;
 #define LANG_BG_AV_S_MINE_BOSS_CLAIMS   "Snivvle is here! Snivvle claims the Coldtooth Mine!"
 
 #define BG_AV_CAPTIME                    240000  //4:00
-#define BG_AV_SNOWFALL_FIRSTCAP          300000  //5:00 but i also have seen 4:05
 
 #define BG_AV_SCORE_INITIAL_POINTS       600
 #define SEND_MSG_NEAR_LOSE               120

@@ -1395,7 +1395,7 @@ void BattleGroundAV::AssaultNode(BG_AV_Nodes node, uint16 team)
     ASSERT(m_Nodes[node].State != POINT_DESTROYED);
     ASSERT(m_Nodes[node].State != POINT_ASSAULTED || !m_Nodes[node].TotalOwner); //only assault an assaulted node if no totalowner exists
     //the timer gets another time, if the previous owner was 0==Neutral
-    m_Nodes[node].Timer      = (m_Nodes[node].PrevOwner)? BG_AV_CAPTIME : BG_AV_SNOWFALL_FIRSTCAP;
+    m_Nodes[node].Timer      = BG_AV_CAPTIME;
     m_Nodes[node].PrevOwner  = m_Nodes[node].Owner;
     m_Nodes[node].Owner      = team;
     m_Nodes[node].PrevState  = m_Nodes[node].State;
