@@ -435,10 +435,8 @@ void Map::BroadcastPacketExcept(WorldObject* sender, WorldPacket* msg, Player* e
 bool Map::loaded(const GridPair &p) const
 {
     volatile uint32 map_id = GetId();
-    volatile uint32 x = p.x_coord;
-    volatile uint32 y = p.y_coord;
-    getNGrid(p.x_coord, p.y_coord);
-    // End of debug
+    // sometimes when removing old corpse (converting to bones) this goes to incredible values then... BANG CRASH!
+    // possible cause: map pointer becomes invalid somewhere between ObjectAccessor::ConvertCorpseForPlayer and here.
 
     if (NGridType* grid_type = getNGrid(p.x_coord, p.y_coord))
     {
@@ -618,6 +616,7 @@ void Map::SendObjectUpdates()
 
 void Map::Remove(Player *player, bool remove)
 {
+    volatile uint32 debugMapId = GetId();
     // this may be called during Map::Update
     // after decrement+unlink, ++m_mapRefIter will continue correctly
     // when the first element of the list is being removed
