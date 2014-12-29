@@ -182,7 +182,7 @@ class WorldSocket : protected WorldHandler
         bool iFlushPacketQueue ();
 
         // Use to check if custom chat only client can use such opcode
-        bool IsChatOpcode(uint16 opcode);
+        static bool IsChatOpcode(uint16 opcode);
 
         static uint32 IPToLocation(const std::string& IP);
     private:

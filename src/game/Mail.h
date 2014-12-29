@@ -44,7 +44,7 @@ class Item;
 class Object;
 class Player;
 
-#define MAIL_BODY_ITEM_TEMPLATE 8383                        ///< - plain letter, A Dusty Unsent Letter: 889
+#define MAIL_BODY_ITEM_TEMPLATE 8383                        /// - plain letter, A Dusty Unsent Letter: 889
 /// The maximal amount of items a mail can contain.
 #define MAX_MAIL_ITEMS 12
 /**
@@ -257,7 +257,7 @@ class MailDraft
         MailDraft& operator=(MailDraft const&);             // trap decl, no body, ...because items clone is high price operation
 
         void deleteIncludedItems(bool inDB = false);
-        bool prepareItems(Player* receiver);                ///< called from SendMailTo for generate mailTemplateBase items
+        bool prepareItems(Player* receiver);                /// called from SendMailTo for generate mailTemplateBase items
 
         /// The ID of the template associated with this MailDraft.
         uint16      m_mailTemplateId;
@@ -268,7 +268,7 @@ class MailDraft
         /// The ID of the body of the MailDraft.
         uint32      m_bodyId;
         /// A map of items in this MailDraft.
-        MailItemMap m_items;                                ///< Keep the items in a map to avoid duplicate guids (which can happen), store only low part of guid
+        MailItemMap m_items;                                /// Keep the items in a map to avoid duplicate guids (which can happen), store only low part of guid
 
         /// The amount of money in this MailDraft.
         uint32 m_money;
@@ -280,8 +280,8 @@ class MailDraft
  */
 struct MailItemInfo
 {
-    uint32 item_guid;                                       ///< the GUID of the item.
-    uint32 item_template;                                   ///< the ID of the template of the item.
+    uint32 item_guid;                                       /// the GUID of the item.
+    uint32 item_template;                                   /// the ID of the template of the item.
 };
 
 typedef std::vector<MailItemInfo> MailItemInfoVec;
@@ -380,7 +380,7 @@ struct Mail
      * Generate items for template if items not genereated before (receiver has been offline, has_items == false)
      *
      */
-    void prepareTemplateItems(Player* receiver);            ///< called from _LoadMails for generate mailTemplateBase items not generated for offline player
+    void prepareTemplateItems(Player* receiver);            /// called from _LoadMails for generate mailTemplateBase items not generated for offline player
 };
 
 #endif
