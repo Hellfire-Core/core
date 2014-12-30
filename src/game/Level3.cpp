@@ -4020,7 +4020,7 @@ bool ChatHandler::HandleLevelUpCommand(const char* args)
     else
     {
         // update level and XP at level, all other will be updated at loading
-        RealmDataDatabase.PExecute("UPDATE characters SET level = '%u', xp = 0 WHERE guid = '%u'", newlevel, chr_guid);
+        RealmDataDatabase.PExecute("UPDATE characters SET level = '%u', xp = 0 WHERE guid = '%lu'", newlevel, chr_guid);
     }
 
     if (m_session->GetPlayer() != chr)                       // including chr==NULL
@@ -5664,8 +5664,8 @@ bool ChatHandler::HandleBanListEmailCommand(const char* args)
     else
     {
         result = AccountsDatabase.PQuery("SELECT email, punishment_date, punished_by, ban_reason FROM email_banned"
-            " WHERE email LIKE CONCAT('%', '%s', '%')"
-            " ORDER BY bandate ASC" , filter.c_str());
+            " WHERE email LIKE CONCAT('%%', '%s', '%%')"
+            " ORDER BY bandate ASC", filter.c_str());
     }
 
     if (!result)
@@ -5876,7 +5876,7 @@ bool ChatHandler::HandlePLimitCommand(const char *args)
     uint32 pLimit = sWorld.GetPlayerAmountLimit();
     uint64 requiredPermissions = sWorld.GetMinimumPermissionMask();
 
-    PSendSysMessage("Player limits: amount %u, required permissions %u.", pLimit, requiredPermissions);
+    PSendSysMessage("Player limits: amount %u, required permissions %lu.", pLimit, requiredPermissions);
 
     return true;
 }
@@ -6991,7 +6991,7 @@ bool ChatHandler::HandleUnFreezeCommand(const char *args)
             //if player found: delete his freeze aura
             Field *fields=result->Fetch();
             uint64 pguid = fields[0].GetUInt64();
-            RealmDataDatabase.PQuery("DELETE FROM `character_aura` WHERE character_aura.spell = 9454 AND character_aura.guid = '%u'",pguid);
+            RealmDataDatabase.PQuery("DELETE FROM `character_aura` WHERE character_aura.spell = 9454 AND character_aura.guid = '%lu'",pguid);
             PSendSysMessage(LANG_COMMAND_UNFREEZE,name.c_str());
             return true;
         }
@@ -7365,7 +7365,7 @@ bool ChatHandler::HandleMmapTestArea(const char* args)
 
     if (!creatureList.empty())
     {
-        PSendSysMessage("Found %i Creatures.", creatureList.size());
+        PSendSysMessage("Found %lu creatures.", creatureList.size());
 
         uint32 paths = 0;
         uint32 uStartTime = WorldTimer::getMSTime();

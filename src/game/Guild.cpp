@@ -296,7 +296,7 @@ bool Guild::LoadRanksFromDB(uint32 GuildId)
             std::string name = m_ranks[i].name;
             uint32 rights = m_ranks[i].rights;
             RealmDataDatabase.escape_string(name);
-            RealmDataDatabase.PExecute("INSERT INTO guild_rank (guildid,rid,rname,rights) VALUES ('%u', '%u', '%s', '%u')", GuildId, i+1, name.c_str(), rights);
+            RealmDataDatabase.PExecute("INSERT INTO guild_rank (guildid,rid,rname,rights) VALUES ('%u', '%lu', '%s', '%u')", GuildId, i+1, name.c_str(), rights);
         }
         RealmDataDatabase.CommitTransaction();
     }
@@ -638,7 +638,7 @@ void Guild::CreateRank(std::string name_,uint32 rights)
 
     // name now can be used for encoding to DB
     RealmDataDatabase.escape_string(name_);
-    RealmDataDatabase.PExecute("INSERT INTO guild_rank (guildid,rid,rname,rights) VALUES ('%u', '%u', '%s', '%u')", Id, m_ranks.size(), name_.c_str(), rights);
+    RealmDataDatabase.PExecute("INSERT INTO guild_rank (guildid,rid,rname,rights) VALUES ('%u', '%lu', '%s', '%u')", Id, m_ranks.size(), name_.c_str(), rights);
 }
 
 void Guild::AddRank(const std::string& name_,uint32 rights, uint32 money)

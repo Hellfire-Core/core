@@ -150,7 +150,7 @@ WorldSession::~WorldSession()
 
 void WorldSession::SizeError(WorldPacket const& packet, uint32 size) const
 {
-    sLog.outLog(LOG_DEFAULT, "ERROR: Client (account %u) send packet %s (%u) with size %u but expected %u (attempt crash server?), skipped",
+    sLog.outLog(LOG_DEFAULT, "ERROR: Client (account %u) send packet %s (%u) with size %lu but expected %u (attempt crash server?), skipped",
         GetAccountId(),LookupOpcodeName(packet.GetOpcode()),packet.GetOpcode(),packet.size(),size);
 }
 
@@ -453,7 +453,7 @@ bool WorldSession::Update(uint32 diff, PacketFilter& updater)
             overtimeText << "  " << (*itr).opcode << " (" << (*itr).diff << ")\n";
 
         overtimeText << "#################################################";
-        sLog.outLog(LOG_SESSION_DIFF, overtimeText.str().c_str());
+        sLog.outLog(LOG_SESSION_DIFF, "%s", overtimeText.str().c_str());
     }
 
     //check if we are safe to proceed with logout

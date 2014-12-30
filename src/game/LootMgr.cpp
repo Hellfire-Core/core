@@ -158,7 +158,7 @@ void LootStore::LoadLootTable()
         Verify();                                           // Checks validity of the loot store
 
         sLog.outString();
-        sLog.outString(">> Loaded %u loot definitions (%d templates)", count, m_LootTemplates.size());
+        sLog.outString(">> Loaded %u loot definitions (%lu templates)", count, m_LootTemplates.size());
     }
     else
     {
@@ -491,7 +491,7 @@ void Loot::FillLootFromDB(Creature *pCreature, Player* pLootOwner)
         //set variable to true even if we don't load anything so new loot won't be generated
         m_lootLoadedFromDB = true;
 
-        sLog.outLog(LOG_BOSS, ss.str().c_str());
+        sLog.outLog(LOG_BOSS, "%s", ss.str().c_str());
 
         // make body visible to loot
         pCreature->setDeathState(JUST_DIED);
@@ -520,7 +520,7 @@ void Loot::removeItemFromSavedLoot(LootItem *item)
     {
         // log only for raids
         if (pMap->IsRaid())
-            sLog.outLog(LOG_BOSS, "Loot::removeItemFromSavedLoot: pCreature not found !! guid: %u, instanceid: %u) ", m_creatureGUID, pMap->GetInstanceId());
+            sLog.outLog(LOG_BOSS, "Loot::removeItemFromSavedLoot: pCreature not found!! guid: %lu, instanceid: %u) ", m_creatureGUID, pMap->GetInstanceId());
         return;
     }
 
@@ -658,7 +658,7 @@ void Loot::saveLootToDB(Player *owner)
         }
     }
 
-    sLog.outLog(LOG_BOSS, ss.str().c_str());
+    sLog.outLog(LOG_BOSS, "%s", ss.str().c_str());
     RealmDataDatabase.CommitTransaction();
 }
 

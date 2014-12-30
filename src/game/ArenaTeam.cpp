@@ -76,7 +76,7 @@ bool ArenaTeam::Create(uint64 captainGuid, uint32 type, std::string ArenaTeamNam
     RealmDataDatabase.CommitTransaction();
 
     AddMember(CaptainGuid);
-    sLog.outLog(LOG_ARENA, "New ArenaTeam created [Name: %s] [Id: %u] [Type: %u] [Captain GUID: %u]", ArenaTeamName.c_str(), GetId(), GetType(), GetCaptain());
+    sLog.outLog(LOG_ARENA, "New ArenaTeam created [Name: %s] [Id: %u] [Type: %u] [Captain GUID: %lu]", ArenaTeamName.c_str(), GetId(), GetType(), GetCaptain());
     return true;
 }
 
@@ -298,7 +298,7 @@ void ArenaTeam::SetCaptain(const uint64& guid)
     if (newcaptain)
     {
         newcaptain->SetUInt32Value(PLAYER_FIELD_ARENA_TEAM_INFO_1_1 + 1 + (GetSlot() * 6), 0);
-        sLog.outLog(LOG_ARENA, "Player: %s [GUID: %u] promoted player: %s [GUID: %u] to leader of arena team [Id: %u] [Type: %u].", oldcaptain->GetName(), oldcaptain->GetGUIDLow(), newcaptain->GetName(), newcaptain->GetGUID(), GetId(), GetType());
+        sLog.outLog(LOG_ARENA, "Player: %s [GUID: %u] promoted player: %s [GUID: %lu] to leader of arena team [Id: %u] [Type: %u].", oldcaptain->GetName(), oldcaptain->GetGUIDLow(), newcaptain->GetName(), newcaptain->GetGUID(), GetId(), GetType());
     }
 }
 

@@ -237,8 +237,7 @@ void Log::outTitle( const char * str)
 
     if(logFile[LOG_DEFAULT])
     {
-        fprintf(logFile[LOG_DEFAULT], str);
-        fprintf(logFile[LOG_DEFAULT], "\n" );
+        fprintf(logFile[LOG_DEFAULT], "%s\n", str);
         fflush(logFile[LOG_DEFAULT]);
     }
 }
@@ -446,7 +445,7 @@ void outstring_log(const char * str, ...)
     vsnprintf(buf,256, str, ap);
     va_end(ap);
 
-    sLog.outString(buf);
+    sLog.outString("%s", buf);
 }
 
 void detail_log(const char * str, ...)
@@ -460,7 +459,7 @@ void detail_log(const char * str, ...)
     vsnprintf(buf,256, str, ap);
     va_end(ap);
 
-    sLog.outDetail(buf);
+    sLog.outDetail("%s", buf);
 }
 
 void debug_log(const char * str, ...)
@@ -474,7 +473,7 @@ void debug_log(const char * str, ...)
     vsnprintf(buf,256, str, ap);
     va_end(ap);
 
-    sLog.outDebug(buf);
+    sLog.outDebug("%s", buf);
 }
 
 void error_log(const char * str, ...)
@@ -488,7 +487,7 @@ void error_log(const char * str, ...)
     vsnprintf(buf,256, str, ap);
     va_end(ap);
 
-    sLog.outLog(LOG_DEFAULT, buf);
+    sLog.outLog(LOG_DEFAULT, "%s", buf);
 }
 
 void error_db_log(const char * str, ...)
@@ -502,5 +501,5 @@ void error_db_log(const char * str, ...)
     vsnprintf(buf,256, str, ap);
     va_end(ap);
 
-    sLog.outLog(LOG_DB_ERR, buf);
+    sLog.outLog(LOG_DB_ERR, "%s", buf);
 }

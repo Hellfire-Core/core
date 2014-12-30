@@ -1107,7 +1107,7 @@ void World::SetInitialWorldSettings()
     }
 
     ///- Loading strings. Getting no records means core load has to be canceled because no error message can be output.
-    sLog.outString("");
+    sLog.outString();
     sLog.outString("Loading Hellground strings...");
     if (!sObjectMgr.LoadHellgroundStrings())
         exit(1);                                            // Error message displayed in function already
@@ -1598,7 +1598,7 @@ void World::Update(uint32 diff)
 
             sLog.outLog(LOG_DEFAULT, "[Diff]: Update time diff: %u, avg: %u. Players online: %u.", m_curAvgUpdateTime, m_avgUpdateTime, GetActiveSessionCount());
             sLog.outLog(LOG_DIFF, "Update time diff: %u, avg: %u. Players online: %u.", m_curAvgUpdateTime, m_avgUpdateTime, GetActiveSessionCount());
-            sLog.outLog(LOG_STATUS, "%u %u %u %u %u %u %s %u %u %u %u %u",
+            sLog.outLog(LOG_STATUS, "%u %u %u %u %u %u %s %u %u %u %u %ld",
                         GetUptime(), GetActiveSessionCount(), GetMaxActiveSessionCount(), GetQueuedSessionCount(), GetMaxQueuedSessionCount(),
                         m_playerLimit, _REVISION, m_curAvgUpdateTime, m_avgUpdateTime, loggedInAlliances.value(), loggedInHordes.value(), sWorld.GetGameTime());
 
@@ -2574,7 +2574,7 @@ void World::UpdateRequiredPermissions()
      if (result)
      {
         m_requiredPermissionMask = result->Fetch()->GetUInt64();
-        sLog.outDebug("Required permission mask: %u", m_requiredPermissionMask);
+        sLog.outDebug("Required permission mask: %lu", m_requiredPermissionMask);
      }
 }
 

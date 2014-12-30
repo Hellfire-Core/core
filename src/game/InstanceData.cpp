@@ -79,7 +79,7 @@ void InstanceData::LoadDoorData(const DoorData *data)
 
         ++data;
     }
-    sLog.outDebug("InstanceData::LoadDoorData: %u doors loaded.", doors.size());
+    sLog.outDebug("InstanceData::LoadDoorData: %lu doors loaded.", doors.size());
 }
 
 void InstanceData::UpdateDoorState(GameObject *door)

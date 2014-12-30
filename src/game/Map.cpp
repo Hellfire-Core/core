@@ -238,7 +238,7 @@ void Map::SwitchGridContainers(T* obj, bool on)
     CellPair p = Hellground::ComputeCellPair(obj->GetPositionX(), obj->GetPositionY());
     if (p.x_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP || p.y_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP)
     {
-        sLog.outLog(LOG_DEFAULT, "ERROR: Map::SwitchGridContainers: Object " I64FMT " have invalid coordinates X:%f Y:%f grid cell [%u:%u]", obj->GetGUID(), obj->GetPositionX(), obj->GetPositionY(), p.x_coord, p.y_coord);
+        sLog.outLog(LOG_DEFAULT, "ERROR: Map::SwitchGridContainers: Object %lu have invalid coordinates X:%f Y:%f grid cell [%u:%u]", obj->GetGUID(), obj->GetPositionX(), obj->GetPositionY(), p.x_coord, p.y_coord);
         return;
     }
 
@@ -670,7 +670,7 @@ void Map::Remove(T *obj, bool remove)
     CellPair p = Hellground::ComputeCellPair(obj->GetPositionX(), obj->GetPositionY());
     if (p.x_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP || p.y_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP)
     {
-        sLog.outLog(LOG_DEFAULT, "ERROR: Map::Remove: Object " I64FMT " have invalid coordinates X:%f Y:%f grid cell [%u:%u]", obj->GetGUID(), obj->GetPositionX(), obj->GetPositionY(), p.x_coord, p.y_coord);
+        sLog.outLog(LOG_DEFAULT, "ERROR: Map::Remove: Object %lu have invalid coordinates X:%f Y:%f grid cell [%u:%u]", obj->GetGUID(), obj->GetPositionX(), obj->GetPositionY(), p.x_coord, p.y_coord);
         return;
     }
 
@@ -1922,7 +1922,7 @@ void Map::ScriptsProcess()
 
                 if (!sWaypointMgr.GetPath(step.script->datalong))
                 {
-                    sLog.outLog(LOG_DEFAULT, "ERROR: SCRIPT_COMMAND_START_MOVE source mover has an invallid path, skipping.", step.script->datalong2);
+                    sLog.outLog(LOG_DEFAULT, "ERROR: SCRIPT_COMMAND_START_MOVE source mover has an invallid path, skipping.");
                     break;
                 }
 
@@ -2876,7 +2876,7 @@ void Map::InsertIntoObjMap(Object * obj)
                     InsertIntoCreatureGUIDList(a->second);
                 }
                 else
-                    error_log("Map::InsertIntoCreatureMap: GUID %u already in map", guid.GetRawValue());
+                    error_log("Map::InsertIntoCreatureMap: GUID %lu already in map", guid.GetRawValue());
 
                 a.release();
                 break;
@@ -2888,7 +2888,7 @@ void Map::InsertIntoObjMap(Object * obj)
                 if (gameObjectsMap.insert(a, guid.GetRawValue()))
                     a->second = (GameObject*)obj;
                 else
-                    error_log("Map::InsertIntoGameObjectMap: GUID %u already in map", guid.GetRawValue());
+                    error_log("Map::InsertIntoGameObjectMap: GUID %lu already in map", guid.GetRawValue());
 
                 a.release();
                 break;
@@ -2900,7 +2900,7 @@ void Map::InsertIntoObjMap(Object * obj)
                 if (dynamicObjectsMap.insert(a, guid.GetRawValue()))
                     a->second = (DynamicObject*)obj;
                 else
-                    error_log("Map::InsertIntoDynamicObjectMap: GUID %u already in map", guid.GetRawValue());
+                    error_log("Map::InsertIntoDynamicObjectMap: GUID %lu already in map", guid.GetRawValue());
 
                 a.release();
                 break;
@@ -2929,17 +2929,17 @@ void Map::RemoveFromObjMap(uint64 guid)
     {
         case HIGHGUID_UNIT:
             if (!creaturesMap.erase(guid))
-                error_log("Map::RemoveFromCreatureMap: Creature GUID %u not in map", guid);
+                error_log("Map::RemoveFromCreatureMap: Creature GUID %lu not in map", guid);
             break;
 
         case HIGHGUID_GAMEOBJECT:
             if (!gameObjectsMap.erase(guid))
-                error_log("Map::RemoveFromGameObjectMap: Game Object GUID %u not in map", guid);
+                error_log("Map::RemoveFromGameObjectMap: Game Object GUID %lu not in map", guid);
             break;
 
         case HIGHGUID_DYNAMICOBJECT:
             if (!dynamicObjectsMap.erase(guid))
-                error_log("Map::RemoveFromDynamicObjectMap: Dynamic Object GUID %u not in map", guid);
+                error_log("Map::RemoveFromDynamicObjectMap: Dynamic Object GUID %lu not in map", guid);
             break;
 
         case HIGHGUID_PET:

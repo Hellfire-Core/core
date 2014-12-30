@@ -339,7 +339,7 @@ QueryNamedResult* Database::PQueryNamed(const char *format,...)
     if(res==-1)
     {
         sLog.outLog(LOG_DEFAULT, "ERROR: SQL Query truncated (and not execute) for format: %s",format);
-        return false;
+        return NULL;
     }
 
     return QueryNamed(szQuery);

@@ -222,7 +222,7 @@ void ObjectMgr::LoadCreatureLocales()
 
         bar.step();
 
-        sLog.outString("");
+        sLog.outString();
         sLog.outString(">> Loaded 0 creature locale strings. DB table `locales_creature` is empty.");
         return;
     }
@@ -268,7 +268,7 @@ void ObjectMgr::LoadCreatureLocales()
     } while (result->NextRow());
 
     sLog.outString();
-    sLog.outString(">> Loaded %u creature locale strings", mCreatureLocaleMap.size());
+    sLog.outString(">> Loaded %lu creature locale strings", mCreatureLocaleMap.size());
 }
 
 void ObjectMgr::LoadNpcOptionLocales()
@@ -288,7 +288,7 @@ void ObjectMgr::LoadNpcOptionLocales()
 
         bar.step();
 
-        sLog.outString("");
+        sLog.outString();
         sLog.outString(">> Loaded 0 npc_option locale strings. DB table `locales_npc_option` is empty.");
         return;
     }
@@ -334,7 +334,7 @@ void ObjectMgr::LoadNpcOptionLocales()
     } while (result->NextRow());
 
     sLog.outString();
-    sLog.outString(">> Loaded %u npc_option locale strings", mNpcOptionLocaleMap.size());
+    sLog.outString(">> Loaded %lu npc_option locale strings", mNpcOptionLocaleMap.size());
 }
 
 struct SQLCreatureLoader : public SQLStorageLoaderBase<SQLCreatureLoader>
@@ -369,7 +369,7 @@ void ObjectMgr::LoadCreatureTemplates()
             CreatureInfo const* heroicInfo = GetCreatureTemplate(cInfo->HeroicEntry);
             if (!heroicInfo)
             {
-                sLog.outLog(LOG_DB_ERR, "Creature (Entry: %u) have `heroic_entry`=%u but creature entry %u not exist.",cInfo->HeroicEntry,cInfo->HeroicEntry);
+                sLog.outLog(LOG_DB_ERR, "Creature (Entry: %u) have `heroic_entry`=%u but creature entry does not exist.", i, cInfo->HeroicEntry);
                 continue;
             }
 
@@ -493,7 +493,7 @@ void ObjectMgr::LoadCreatureTemplates()
         {
             if (!GetEquipmentInfo(cInfo->equipmentId))
             {
-                sLog.outLog(LOG_DB_ERR, "Table `creature_template` have creature (Entry: %u) with equipment_id %u not found in table `creature_equip_template`, set to no equipment.", cInfo->Entry, cInfo->equipmentId);
+                sLog.outLog(LOG_DB_ERR, "Table `creature_template` has creature (Entry: %u) with equipment_id %u not found in table `creature_equip_template`, set to no equipment.", cInfo->Entry, cInfo->equipmentId);
                 const_cast<CreatureInfo*>(cInfo)->equipmentId = 0;
             }
         }
@@ -508,7 +508,7 @@ void ObjectMgr::LoadCreatureTemplates()
 
         if (cInfo->xpMod < 0)
         {
-            sLog.outLog(LOG_DB_ERR, "Table `creature_template` have creature (Entry: %u) with wrong xpMod: %u. Defaulting to 0.0f", cInfo->Entry, cInfo->equipmentId);
+            sLog.outLog(LOG_DB_ERR, "Table `creature_template` has creature (Entry: %u) with wrong xpMod: %u. Defaulting to 0.0f", cInfo->Entry, cInfo->equipmentId);
             const_cast<CreatureInfo*>(cInfo)->xpMod = 0.0f;
         }
     }
@@ -750,7 +750,7 @@ void ObjectMgr::LoadCreatureLinkedRespawn()
 
         bar.step();
 
-        sLog.outString("");
+        sLog.outString();
         sLog.outLog(LOG_DB_ERR, ">> Loaded 0 linked respawns. DB table `creature_linked_respawn` is empty.");
         return;
     }
@@ -771,7 +771,7 @@ void ObjectMgr::LoadCreatureLinkedRespawn()
     } while (result->NextRow());
 
     sLog.outString();
-    sLog.outString(">> Loaded %u linked respawns", mCreatureLinkedRespawnMap.size());
+    sLog.outString(">> Loaded %lu linked respawns", mCreatureLinkedRespawnMap.size());
 }
 
 bool ObjectMgr::SetCreatureLinkedRespawn(uint32 guid, uint32 linkedGuid)
@@ -806,7 +806,7 @@ void ObjectMgr::LoadUnqueuedAccountList()
 
         bar.step();
 
-        sLog.outString("");
+        sLog.outString();
         sLog.outString(">> Loaded 0 unqueued accounts. DB table `unqueue_account` is empty.");
         return;
     }
@@ -823,7 +823,7 @@ void ObjectMgr::LoadUnqueuedAccountList()
     }while (result->NextRow());
 
     sLog.outString();
-    sLog.outString(">> Loaded %u unqueued accounts", m_UnqueuedAccounts.size());
+    sLog.outString(">> Loaded %lu unqueued accounts", m_UnqueuedAccounts.size());
 }
 
 bool ObjectMgr::IsUnqueuedAccount(uint64 accid)
@@ -850,7 +850,7 @@ void ObjectMgr::LoadCreatures()
 
         bar.step();
 
-        sLog.outString("");
+        sLog.outString();
         sLog.outLog(LOG_DB_ERR, ">> Loaded 0 creature. DB table `creature` is empty.");
         return;
     }
@@ -902,7 +902,7 @@ void ObjectMgr::LoadCreatures()
 
         if (heroicCreatures.find(data.id)!=heroicCreatures.end())
         {
-            sLog.outLog(LOG_DB_ERR, "Table `creature` have creature (GUID: %u) that listed as heroic template in `creature_template_substitution`, skipped.",guid,data.id);
+            sLog.outLog(LOG_DB_ERR, "Table `creature` has creature (GUID: %u) that listed as heroic template in `creature_template_substitution`, skipped.",guid);
             continue;
         }
 
@@ -910,33 +910,33 @@ void ObjectMgr::LoadCreatures()
         {
             if (!GetEquipmentInfo(data.equipmentId))
             {
-                sLog.outLog(LOG_DB_ERR, "Table `creature` have creature (Entry: %u) with equipment_id %u not found in table `creature_equip_template`, set to no equipment.", data.id, data.equipmentId);
+                sLog.outLog(LOG_DB_ERR, "Table `creature` has creature (Entry: %u) with equipment_id %u not found in table `creature_equip_template`, set to no equipment.", data.id, data.equipmentId);
                 data.equipmentId = -1;
             }
         }
 
         if (cInfo->RegenHealth && data.curhealth < cInfo->minhealth)
         {
-            sLog.outLog(LOG_DB_ERR, "Table `creature` have creature (GUID: %u Entry: %u) with `creature_template`.`RegenHealth`=1 and low current health (%u), `creature_template`.`minhealth`=%u.",guid,data.id,data.curhealth, cInfo->minhealth);
+            sLog.outLog(LOG_DB_ERR, "Table `creature` has creature (GUID: %u Entry: %u) with `creature_template`.`RegenHealth`=1 and low current health (%u), `creature_template`.`minhealth`=%u.",guid,data.id,data.curhealth, cInfo->minhealth);
             data.curhealth = cInfo->minhealth;
         }
 
         if (data.curmana < cInfo->minmana)
         {
-            sLog.outLog(LOG_DB_ERR, "Table `creature` have creature (GUID: %u Entry: %u) with low current mana (%u), `creature_template`.`minmana`=%u.",guid,data.id,data.curmana, cInfo->minmana);
+            sLog.outLog(LOG_DB_ERR, "Table `creature` has creature (GUID: %u Entry: %u) with low current mana (%u), `creature_template`.`minmana`=%u.",guid,data.id,data.curmana, cInfo->minmana);
             data.curmana = cInfo->minmana;
         }
 
         if (data.spawndist < 0.0f)
         {
-            sLog.outLog(LOG_DB_ERR, "Table `creature` have creature (GUID: %u Entry: %u) with `spawndist`< 0, set to 0.",guid,data.id);
+            sLog.outLog(LOG_DB_ERR, "Table `creature` has creature (GUID: %u Entry: %u) with `spawndist`< 0, set to 0.",guid,data.id);
             data.spawndist = 0.0f;
         }
         else if (data.movementType == RANDOM_MOTION_TYPE)
         {
             if (data.spawndist == 0.0f)
             {
-                sLog.outLog(LOG_DB_ERR, "Table `creature` have creature (GUID: %u Entry: %u) with `MovementType`=1 (random movement) but with `spawndist`=0, replace by idle movement type (0).",guid,data.id);
+                sLog.outLog(LOG_DB_ERR, "Table `creature` has creature (GUID: %u Entry: %u) with `MovementType`=1 (random movement) but with `spawndist`=0, replace by idle movement type (0).",guid,data.id);
                 data.movementType = IDLE_MOTION_TYPE;
             }
         }
@@ -944,7 +944,7 @@ void ObjectMgr::LoadCreatures()
         {
             if (data.spawndist != 0.0f)
             {
-                sLog.outLog(LOG_DB_ERR, "Table `creature` have creature (GUID: %u Entry: %u) with `MovementType`=0 (idle) have `spawndist`<>0, set to 0.",guid,data.id);
+                sLog.outLog(LOG_DB_ERR, "Table `creature` has creature (GUID: %u Entry: %u) with `MovementType`=0 (idle) have `spawndist`<>0, set to 0.",guid,data.id);
                 data.spawndist = 0.0f;
             }
         }
@@ -956,7 +956,7 @@ void ObjectMgr::LoadCreatures()
     } while (result->NextRow());
 
     sLog.outString();
-    sLog.outString(">> Loaded %u creatures", mCreatureDataMap.size());
+    sLog.outString(">> Loaded %lu creatures", mCreatureDataMap.size());
 }
 
 void ObjectMgr::AddCreatureToGrid(uint32 guid, CreatureData const* data)
@@ -1179,7 +1179,7 @@ void ObjectMgr::LoadGameobjects()
     } while (result->NextRow());
 
     sLog.outString();
-    sLog.outString(">> Loaded %u gameobjects", mGameObjectDataMap.size());
+    sLog.outString(">> Loaded %lu gameobjects", mGameObjectDataMap.size());
 }
 
 void ObjectMgr::AddGameobjectToGrid(uint32 guid, GameObjectData const* data)
@@ -1247,7 +1247,7 @@ void ObjectMgr::LoadCreatureRespawnTimes()
         ++count;
     } while (result->NextRow());
 
-    sLog.outString(">> Loaded %u creature respawn times", mCreatureRespawnTimes.size());
+    sLog.outString(">> Loaded %lu creature respawn times", mCreatureRespawnTimes.size());
     sLog.outString();
 }
 
@@ -1288,7 +1288,7 @@ void ObjectMgr::LoadGameobjectRespawnTimes()
         ++count;
     } while (result->NextRow());
 
-    sLog.outString(">> Loaded %u gameobject respawn times", mGORespawnTimes.size());
+    sLog.outString(">> Loaded %lu gameobject respawn times", mGORespawnTimes.size());
     sLog.outString();
 }
 
@@ -1383,7 +1383,7 @@ void ObjectMgr::LoadItemLocales()
 
         bar.step();
 
-        sLog.outString("");
+        sLog.outString();
         sLog.outString(">> Loaded 0 Item locale strings. DB table `locales_item` is empty.");
         return;
     }
@@ -1430,7 +1430,7 @@ void ObjectMgr::LoadItemLocales()
     } while (result->NextRow());
 
     sLog.outString();
-    sLog.outString(">> Loaded %u Item locale strings", mItemLocaleMap.size());
+    sLog.outString(">> Loaded %lu Item locale strings", mItemLocaleMap.size());
 }
 
 struct SQLItemLoader : public SQLStorageLoaderBase<SQLItemLoader>
@@ -3163,7 +3163,7 @@ void ObjectMgr::LoadQuests()
     }
 
     sLog.outString();
-    sLog.outString(">> Loaded %u quests definitions", mQuestTemplates.size());
+    sLog.outString(">> Loaded %lu quests definitions", mQuestTemplates.size());
 }
 
 void ObjectMgr::LoadQuestLocales()
@@ -3188,7 +3188,7 @@ void ObjectMgr::LoadQuestLocales()
 
         bar.step();
 
-        sLog.outString("");
+        sLog.outString();
         sLog.outString(">> Loaded 0 Quest locale strings. DB table `locales_quest` is empty.");
         return;
     }
@@ -3301,7 +3301,7 @@ void ObjectMgr::LoadQuestLocales()
     while (result->NextRow());
 
     sLog.outString();
-    sLog.outString(">> Loaded %u Quest locale strings", mQuestLocaleMap.size());
+    sLog.outString(">> Loaded %lu Quest locale strings", mQuestLocaleMap.size());
 }
 
 void ObjectMgr::LoadPetCreateSpells()
@@ -3388,7 +3388,7 @@ void ObjectMgr::LoadPageTexts()
                     ss << *itr << " ";
                 ss << "create(s) a circular reference, which can cause the server to freeze. Changing Next_Page of page "
                     << pageItr->Page_ID <<" to 0";
-                sLog.outLog(LOG_DB_ERR, ss.str().c_str());
+                sLog.outLog(LOG_DB_ERR, "%s", ss.str().c_str());
                 const_cast<PageText*>(pageItr)->Next_Page = 0;
                 break;
             }
@@ -3407,7 +3407,7 @@ void ObjectMgr::LoadPageTextLocales()
 
         bar.step();
 
-        sLog.outString("");
+        sLog.outString();
         sLog.outString(">> Loaded 0 PageText locale strings. DB table `locales_page_text` is empty.");
         return;
     }
@@ -3443,7 +3443,7 @@ void ObjectMgr::LoadPageTextLocales()
     while (result->NextRow());
 
     sLog.outString();
-    sLog.outString(">> Loaded %u PageText locale strings", mPageTextLocaleMap.size());
+    sLog.outString(">> Loaded %lu PageText locale strings", mPageTextLocaleMap.size());
 }
 
 struct SQLInstanceLoader : public SQLStorageLoaderBase<SQLInstanceLoader>
@@ -3584,7 +3584,7 @@ void ObjectMgr::LoadNpcTextLocales()
 
         bar.step();
 
-        sLog.outString("");
+        sLog.outString();
         sLog.outString(">> Loaded 0 Quest locale strings. DB table `locales_npc_text` is empty.");
         return;
     }
@@ -3633,7 +3633,7 @@ void ObjectMgr::LoadNpcTextLocales()
     } while (result->NextRow());
 
     sLog.outString();
-    sLog.outString(">> Loaded %u NpcText locale strings", mNpcTextLocaleMap.size());
+    sLog.outString(">> Loaded %lu NpcText locale strings", mNpcTextLocaleMap.size());
 }
 
 //not very fast function but it is called only once a day, or on starting-up
@@ -4599,7 +4599,7 @@ void ObjectMgr::LoadGameObjectLocales()
 
         bar.step();
 
-        sLog.outString("");
+        sLog.outString();
         sLog.outString(">> Loaded 0 gameobject locale strings. DB table `locales_gameobject` is empty.");
         return;
     }
@@ -4650,7 +4650,7 @@ void ObjectMgr::LoadGameObjectLocales()
     } while (result->NextRow());
 
     sLog.outString();
-    sLog.outString(">> Loaded %u gameobject locale strings", mGameObjectLocaleMap.size());
+    sLog.outString(">> Loaded %lu gameobject locale strings", mGameObjectLocaleMap.size());
 }
 
 struct SQLGameObjectLoader : public SQLStorageLoaderBase<SQLGameObjectLoader>
@@ -5333,19 +5333,19 @@ void ObjectMgr::LoadWeatherZoneChances()
             if (wzc.data[season].rainChance > 100)
             {
                 wzc.data[season].rainChance = 25;
-                sLog.outLog(LOG_DB_ERR, "Weather for zone %u season %u has wrong rain chance > 100%",zone_id,season);
+                sLog.outLog(LOG_DB_ERR, "Weather for zone %u season %u has wrong rain chance > 100%%",zone_id,season);
             }
 
             if (wzc.data[season].snowChance > 100)
             {
                 wzc.data[season].snowChance = 25;
-                sLog.outLog(LOG_DB_ERR, "Weather for zone %u season %u has wrong snow chance > 100%",zone_id,season);
+                sLog.outLog(LOG_DB_ERR, "Weather for zone %u season %u has wrong snow chance > 100%%",zone_id,season);
             }
 
             if (wzc.data[season].stormChance > 100)
             {
                 wzc.data[season].stormChance = 25;
-                sLog.outLog(LOG_DB_ERR, "Weather for zone %u season %u has wrong storm chance > 100%",zone_id,season);
+                sLog.outLog(LOG_DB_ERR, "Weather for zone %u season %u has wrong storm chance > 100%%",zone_id,season);
             }
         }
 
@@ -6773,7 +6773,8 @@ void ObjectMgr::LoadTransportEvents()
     {
         BarGoLink bar1(1);
         bar1.step();
-        sLog.outString("\n>> Transport events table is empty \n");
+        sLog.outString();
+        sLog.outString(">> Transport events table is empty");
         return;
     }
 
@@ -6795,7 +6796,8 @@ void ObjectMgr::LoadTransportEvents()
     }
     while (result->NextRow());
 
-    sLog.outString("\n>> Loaded %u transport events \n", result->GetRowCount());
+    sLog.outString();
+    sLog.outString(">> Loaded %lu transport events", result->GetRowCount());
 }
 
 void ObjectMgr::GetCreatureLocaleStrings(uint32 entry, int32 loc_idx, char const** namePtr, char const** subnamePtr) const
@@ -6906,5 +6908,6 @@ void ObjectMgr::LoadOpcodesCooldown()
     }
     while (result->NextRow());
 
-    sLog.outString("\n>> Loaded %u opcode cooldowns \n", _opcodesCooldown.size());
+    sLog.outString();
+    sLog.outString(">> Loaded %lu opcode cooldowns", _opcodesCooldown.size());
 }

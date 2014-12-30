@@ -5960,7 +5960,7 @@ uint32 Player::TeamForRace(uint8 race)
         case 1: return HORDE;
     }
 
-    sLog.outLog(LOG_DEFAULT, "ERROR: Race %u have wrong team id in DBC: wrong DBC files?",uint32(race),rEntry->TeamID);
+    sLog.outLog(LOG_DEFAULT, "ERROR: Race %u have wrong team id %u in DBC: wrong DBC files?",uint32(race),rEntry->TeamID);
     return ALLIANCE;
 }
 
@@ -7940,7 +7940,7 @@ void Player::SendLoot(uint64 guid, LootType loot_type)
         if (Player* debugReciver = creature->GetGMToSendCombatStats())
         {
             ChatHandler(debugReciver).PSendSysMessage(
-                "Player::SendLoot for %s (%u): looted creature Guid %u; loot_type %u; permission %u",
+                "Player::SendLoot for %s (%u): looted creature Guid %lu; loot_type %u; permission %u",
                 GetName(),GetGUIDLow(),guid,loot_type,permission);
         }
 
@@ -16158,13 +16158,13 @@ bool Player::Satisfy(AccessRequirement const *ar, uint32 target_map, bool report
                 else if (missingKey)
                     SendTransferAborted(target_map, TRANSFER_ABORT_DIFFICULTY2);
                 else if (missingHeroicQuest)
-                    GetSession()->SendAreaTriggerMessage(ar->heroicQuestFailedText.c_str());
+                    GetSession()->SendAreaTriggerMessage("%s", ar->heroicQuestFailedText.c_str());
                 else if (missingQuest)
-                    GetSession()->SendAreaTriggerMessage(ar->questFailedText.c_str());
+                    GetSession()->SendAreaTriggerMessage("%s", ar->questFailedText.c_str());
                 else if (LevelMin)
                     GetSession()->SendAreaTriggerMessage(GetSession()->GetHellgroundString(LANG_LEVEL_MINREQUIRED), LevelMin);
                 else if (missingAura)
-                    GetSession()->SendAreaTriggerMessage(ar->missingAuraText.c_str());
+                    GetSession()->SendAreaTriggerMessage("%s", ar->missingAuraText.c_str());
             }
             return false;
         }
@@ -17534,10 +17534,10 @@ void Player::Whisper(const std::string& text, uint32 language,uint64 receiver)
     if (language != LANG_ADDON)
     {
         if (rPlayer->GetSession()->IsAccountFlagged(ACC_WHISPER_LOG))
-            sLog.outWhisp(rPlayer->GetSession()->GetAccountId(), "[%s | %u] FROM: %u (%s) : %s ", rPlayer->GetName(), rPlayer->GetGUID(), GetGUID(), GetName(), tmpText.c_str());
+            sLog.outWhisp(rPlayer->GetSession()->GetAccountId(), "[%s | %lu] FROM: %lu (%s) : %s ", rPlayer->GetName(), rPlayer->GetGUID(), GetGUID(), GetName(), tmpText.c_str());
 
         if (GetSession()->IsAccountFlagged(ACC_WHISPER_LOG))
-            sLog.outWhisp(GetSession()->GetAccountId(), "[%s | %u] TO: %u (%s) : %s", GetName(), GetGUID(), rPlayer->GetGUID(), rPlayer->GetName(), tmpText.c_str());
+            sLog.outWhisp(GetSession()->GetAccountId(), "[%s | %lu] TO: %lu (%s) : %s", GetName(), GetGUID(), rPlayer->GetGUID(), rPlayer->GetName(), tmpText.c_str());
     }
 
     if (!isAcceptWhispers() && !isGameMaster() && !rPlayer->isGameMaster())
@@ -20000,7 +20000,7 @@ uint32 Player::GetResurrectionSpellId()
                 case 20765: spell_id = 20761; break;        // rank 5
                 case 27239: spell_id = 27240; break;        // rank 6
                 default:
-                    sLog.outLog(LOG_DEFAULT, "ERROR: Unhandled spell %%u: S.Resurrection",(*itr)->GetId());
+                    sLog.outLog(LOG_DEFAULT, "ERROR: Unhandled spell %u: S.Resurrection",(*itr)->GetId());
                     continue;
             }
 
@@ -21274,7 +21274,7 @@ void Player::LoadAccountLinkedState()
     m_referredAccounts = AccountMgr::GetRAFAccounts(GetSession()->GetAccountId(), true);
 
     if (m_referredAccounts.size() > sWorld.getConfig(CONFIG_UINT32_RAF_MAXREFERERS))
-        sLog.outLog(LOG_DEFAULT, "Player:RAF:Warning: loaded %u referred accounts instead of %u for player %u", m_referredAccounts.size(), sWorld.getConfig(CONFIG_UINT32_RAF_MAXREFERERS), GetObjectGuid().GetCounter());
+        sLog.outLog(LOG_DEFAULT, "Player:RAF:Warning: loaded %lu referred accounts instead of %u for player %u", m_referredAccounts.size(), sWorld.getConfig(CONFIG_UINT32_RAF_MAXREFERERS), GetObjectGuid().GetCounter());
     else
         DEBUG_LOG("Player:RAF: loaded %u referred accounts for player %u", m_referredAccounts.size(), GetObjectGuid().GetCounter());
 
@@ -21282,7 +21282,7 @@ void Player::LoadAccountLinkedState()
     m_referalAccounts = AccountMgr::GetRAFAccounts(GetSession()->GetAccountId(), false);
 
     if (m_referalAccounts.size() > sWorld.getConfig(CONFIG_UINT32_RAF_MAXREFERALS))
-        sLog.outLog(LOG_DEFAULT, "Player:RAF:Warning: loaded %u referal accounts instead of %u for player %u", m_referalAccounts.size(), sWorld.getConfig(CONFIG_UINT32_RAF_MAXREFERALS), GetObjectGuid().GetCounter());
+        sLog.outLog(LOG_DEFAULT, "Player:RAF:Warning: loaded %lu referal accounts instead of %u for player %u", m_referalAccounts.size(), sWorld.getConfig(CONFIG_UINT32_RAF_MAXREFERALS), GetObjectGuid().GetCounter());
     else
         DEBUG_LOG("Player:RAF: loaded %u referal accounts for player %u", m_referalAccounts.size(), GetObjectGuid().GetCounter());
 }

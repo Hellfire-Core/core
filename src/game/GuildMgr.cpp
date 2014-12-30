@@ -141,7 +141,7 @@ void GuildMgr::LoadGuildAnnCooldowns()
         ++count;
     } while (result->NextRow());
 
-    sLog.outString(">> Loaded %u guild ann cooldowns.", m_guildCooldownTimes.size());
+    sLog.outString(">> Loaded %lu guild ann cooldowns.", m_guildCooldownTimes.size());
     sLog.outString();
 }
 

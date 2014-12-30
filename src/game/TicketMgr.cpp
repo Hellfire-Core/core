@@ -114,7 +114,7 @@ void TicketMgr::DeleteGMTicketPermanently(uint64 ticketGuid)
     }
 
     // delete database record
-    RealmDataDatabase.PExecute("DELETE FROM `gm_tickets` WHERE guid= '%u'", ticketGuid);
+    RealmDataDatabase.PExecute("DELETE FROM `gm_tickets` WHERE guid= '%lu'", ticketGuid);
 }
 
 

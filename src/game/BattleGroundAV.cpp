@@ -1383,7 +1383,7 @@ const char* BattleGroundAV::GetNodeName(BG_AV_Nodes node)
         case BG_AV_NODES_FROSTWOLF_HUT:     return GetHellgroundString(LANG_BG_AV_NODE_GRAVE_FROST_HUT);
         default:
             {
-            sLog.outLog(LOG_DEFAULT, "ERROR: tried to get name for node %u%",node);
+            sLog.outLog(LOG_DEFAULT, "ERROR: tried to get name for node %u",node);
             return "Unknown";
             break;
             }

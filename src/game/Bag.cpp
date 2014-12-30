@@ -61,7 +61,7 @@ void Bag::AddToWorld()
         {
             if (m_bagslot[i] == this)
             {
-                sLog.outLog(LOG_DEFAULT, "ERROR: Bag has self in slot: %u, bag size: %u, owner: " I64FMT, GetSlotByItemGUID(m_bagslot[i]->GetGUID()), GetBagSize(), GetOwnerGUID());
+                sLog.outLog(LOG_DEFAULT, "ERROR: Bag has self in slot: %u, bag size: %u, owner: %lu", GetSlotByItemGUID(m_bagslot[i]->GetGUID()), GetBagSize(), GetOwnerGUID());
                 continue;
             }
             m_bagslot[i]->AddToWorld();

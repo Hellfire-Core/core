@@ -212,7 +212,7 @@ inline void LoadDBC(uint32& availableDbcLocales, BarGoLink& bar, StoreProblemLis
         if(f)
         {
             char buf[100];
-            snprintf(buf,100," (exist, but have %d fields instead %d) Wrong client version DBC file?",storage.GetFieldCount(),strlen(storage.GetFormat()));
+            snprintf(buf,100," (exist, but have %d fields instead %lu) Wrong client version DBC file?",storage.GetFieldCount(),strlen(storage.GetFormat()));
             errlist.push_back(dbc_filename + buf);
             fclose(f);
         }
@@ -547,7 +547,7 @@ void LoadDBCStores(const std::string& dataPath)
         for(std::list<std::string>::iterator i = bad_dbc_files.begin(); i != bad_dbc_files.end(); ++i)
             str += *i + "\n";
 
-        sLog.outLog(LOG_DEFAULT, "ERROR: \nSome required *.dbc files (%u from %d) not found or not compatible:\n%s",bad_dbc_files.size(),DBCFilesCount,str.c_str());
+        sLog.outLog(LOG_DEFAULT, "ERROR: \nSome required *.dbc files (%lu from %d) not found or not compatible:\n%s",bad_dbc_files.size(),DBCFilesCount,str.c_str());
         exit(1);
     }
 

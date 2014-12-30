@@ -512,7 +512,7 @@ void InstanceSaveManager::_ResetSave(InstanceSaveHashMap::iterator &itr)
         Player *player = ObjectAccessor::GetPlayer(*pList.begin());
         if (!player)
         {
-            sLog.outLog(LOG_DEFAULT, "ERROR: _ResetSave. Player GUID:%u is still in instance save but no longer in object accessor",*pList.begin());
+            sLog.outLog(LOG_DEFAULT, "ERROR: _ResetSave. Player GUID:%lu is still in instance save but no longer in object accessor",*pList.begin());
             continue;
         }
         player->UnbindInstance(itr->second->GetMapId(), itr->second->GetDifficulty(), true);
@@ -548,7 +548,7 @@ void InstanceSaveManager::_ResetInstance(uint32 mapid, uint32 instanceId)
     {
         const MapEntry *mapEntry = sMapStore.LookupEntry(mapid);
         if (mapEntry->IsRaid())
-            sLog.outLog(LOG_DEFAULT, "ERROR: Called _ResetInstance for mapid: %u, canreset: %B", mapid, itr->second->CanReset());
+            sLog.outLog(LOG_DEFAULT, "ERROR: Called _ResetInstance for mapid: %u, canreset: %u", mapid, itr->second->CanReset());
 
         _ResetSave(itr);
     }

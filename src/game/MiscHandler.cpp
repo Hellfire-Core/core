@@ -357,7 +357,7 @@ void WorldSession::HandleWhoOpcode(WorldPacket & recv_data)
 
 void WorldSession::HandleLogoutRequestOpcode(WorldPacket & /*recv_data*/)
 {
-    sLog.outDebug("WORLD: Recvd CMSG_LOGOUT_REQUEST Message, security - %u", GetPermissions());
+    sLog.outDebug("WORLD: Recvd CMSG_LOGOUT_REQUEST Message, security - %lu", GetPermissions());
 
     if (uint64 lguid = GetPlayer()->GetLootGUID())
         DoLootRelease(lguid);
@@ -750,8 +750,8 @@ void WorldSession::HandleBugOpcode(WorldPacket & recv_data)
     else
         sLog.outDebug("WORLD: Received CMSG_BUG [Suggestion]");
 
-    sLog.outDebug(type.c_str());
-    sLog.outDebug(content.c_str());
+    sLog.outDebug("%s", type.c_str());
+    sLog.outDebug("%s", content.c_str());
 
     RealmDataDatabase.escape_string(type);
     RealmDataDatabase.escape_string(content);
@@ -1508,7 +1508,7 @@ void WorldSession::HandleResetInstancesOpcode(WorldPacket & /*recv_data*/)
             }
             else
             {
-                sLog.outLog(LOG_DEFAULT, "ERROR: WorldSession::HandleResetInstancesOpcode: player %d tried to reset instances while player %d offline!", _player->GetGUIDLow(), citr->guid);
+                sLog.outLog(LOG_DEFAULT, "ERROR: WorldSession::HandleResetInstancesOpcode: player %d tried to reset instances while player %lu offline!", _player->GetGUIDLow(), citr->guid);
                 //_player->SendResetInstanceFailed(0, /* mapid pl ktorego nie ma ;] */);
                 return;
             }
@@ -1575,7 +1575,7 @@ void WorldSession::HandleDungeonDifficultyOpcode(WorldPacket & recv_data)
             }
             else
             {
-                sLog.outLog(LOG_DEFAULT, "ERROR: WorldSession::HandleDungeonDifficultyOpcode: player %d tried to change difficulty while player %d offline!", _player->GetGUIDLow(), citr->guid);
+                sLog.outLog(LOG_DEFAULT, "ERROR: WorldSession::HandleDungeonDifficultyOpcode: player %d tried to change difficulty while player %lu offline!", _player->GetGUIDLow(), citr->guid);
                 ChatHandler(this).SendSysMessage(LANG_CHANGE_DIFFICULTY_OFFLINE);
                 return;
             }

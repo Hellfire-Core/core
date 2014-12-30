@@ -171,7 +171,7 @@ void WardenBase::EncryptData(uint8 *Buffer, uint32 Len)
 
 void WardenBase::PrintHexArray(const char *Before, const uint8 *Buffer, uint32 Len, bool BreakWithNewline)
 {
-    printf(Before);
+    printf("%s", Before);
     for (uint32 i = 0; i < Len; ++i)
         printf("%02X ", Buffer[i]);
     if (BreakWithNewline)
@@ -234,7 +234,7 @@ void WorldSession::HandleWardenDataOpcode(WorldPacket & recv_data)
             sLog.outLog(LOG_WARDEN, "NYI WARDEN_CMSG_MODULE_FAILED received! account %u", GetAccountId());
             break;
         default:
-            sLog.outLog(LOG_WARDEN, "Got unknown warden opcode %02X of size %u. account %u", Opcode, recv_data.size() - 1, GetAccountId());
+            sLog.outLog(LOG_WARDEN, "Got unknown warden opcode %02X of size %lu. account %u", Opcode, recv_data.size() - 1, GetAccountId());
             break;
     }
 }
