@@ -262,7 +262,7 @@ class Database
         typedef ACE_TSS<Database::TransHelper> DBTransHelperTSS;
         Database::DBTransHelperTSS m_TransStorage;
 
-        ///< DB connections
+        /// DB connections
 
         //round-robin connection selection
         SqlConnection * getQueryConnection();
@@ -286,11 +286,11 @@ class Database
         //only one single DB connection for transactions
         SqlConnection * m_pAsyncConn;
 
-        SqlResultQueue *    m_pResultQueue;                  ///< Transaction queues from diff. threads
-        SqlDelayThread *    m_threadBody;                    ///< Pointer to delay sql executer (owned by m_delayThread)
-        ACE_Based::Thread * m_delayThread;                   ///< Pointer to executer thread
+        SqlResultQueue *    m_pResultQueue;                  /// Transaction queues from diff. threads
+        SqlDelayThread *    m_threadBody;                    /// Pointer to delay sql executer (owned by m_delayThread)
+        ACE_Based::Thread * m_delayThread;                   /// Pointer to executer thread
 
-        bool m_bAllowAsyncTransactions;                      ///< flag which specifies if async transactions are enabled
+        bool m_bAllowAsyncTransactions;                      /// flag which specifies if async transactions are enabled
 
         //PREPARED STATEMENT REGISTRY
         typedef ACE_Thread_Mutex LOCK_TYPE;
@@ -299,7 +299,7 @@ class Database
         mutable LOCK_TYPE m_stmtGuard;
         typedef UNORDERED_MAP<std::string, int> PreparedStmtRegistry;
 
-        PreparedStmtRegistry m_stmtRegistry;                 ///< 
+        PreparedStmtRegistry m_stmtRegistry;                 /// 
 
         int m_iStmtIndex;
 

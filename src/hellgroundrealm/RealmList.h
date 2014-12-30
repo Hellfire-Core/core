@@ -79,7 +79,7 @@ class RealmList
         void UpdateRealms(bool init);
         void UpdateRealm(uint32 ID, const std::string& name, const std::string& address, uint32 port, uint8 icon, RealmFlags realmflags, uint8 timezone, uint64 requiredPermissionMask, float popu, const std::string& builds);
     private:
-        RealmMap m_realms;                                  ///< Internal map of realms
+        RealmMap m_realms;                                  /// Internal map of realms
         uint32   m_UpdateInterval;
         time_t   m_NextUpdateTime;
         std::string m_ChatboxOsName;

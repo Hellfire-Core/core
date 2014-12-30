@@ -54,11 +54,11 @@ char serviceDescription[] = "Massive Network Game Object Server";
 
 RunModes runMode = MODE_NORMAL;
 
-DatabaseType GameDataDatabase;                              ///< Accessor to the world database
-DatabaseType RealmDataDatabase;                             ///< Accessor to the character database
-DatabaseType AccountsDatabase;                              ///< Accessor to the realm/login database
+DatabaseType GameDataDatabase;                              /// Accessor to the world database
+DatabaseType RealmDataDatabase;                             /// Accessor to the character database
+DatabaseType AccountsDatabase;                              /// Accessor to the realm/login database
 
-uint32 realmID;                                             ///< Id of the realm
+uint32 realmID;                                             /// Id of the realm
 
 /// Print out the usage string for this program on the console.
 void usage(const char *prog)

@@ -66,9 +66,9 @@ bool StartDB();
 void UnhookSignals();
 void HookSignals();
 
-bool stopEvent = false;                                     ///< Setting it to true stops the server
+bool stopEvent = false;                                     /// Setting it to true stops the server
 
-DatabaseType AccountsDatabase;                                 ///< Accessor to the realm server database
+DatabaseType AccountsDatabase;                                 /// Accessor to the realm server database
 
 /// Print out the usage string for this program on the console.
 void usage(const char *prog)

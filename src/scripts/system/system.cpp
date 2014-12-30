@@ -25,9 +25,9 @@
 #include "Database/DatabaseEnv.h"
 
 #if PLATFORM == PLATFORM_WINDOWS
-HELLGROUND_IMPORT_EXPORT DatabaseType GameDataDatabase;                              ///< Accessor to the world database
-HELLGROUND_IMPORT_EXPORT DatabaseType RealmDataDatabase;                             ///< Accessor to the character database
-HELLGROUND_IMPORT_EXPORT DatabaseType AccountsDatabase;                              ///< Accessor to the realm/login database
+HELLGROUND_IMPORT_EXPORT DatabaseType GameDataDatabase;                              /// Accessor to the world database
+HELLGROUND_IMPORT_EXPORT DatabaseType RealmDataDatabase;                             /// Accessor to the character database
+HELLGROUND_IMPORT_EXPORT DatabaseType AccountsDatabase;                              /// Accessor to the realm/login database
 #endif
 
 SystemMgr::SystemMgr()
@@ -205,7 +205,7 @@ void SystemMgr::LoadScriptWaypoints()
         uiCreatureCount = pResult->GetRowCount();
     }
 
-    outstring_log("TSCR: Loading Script Waypoints for %u creature(s)...", uiCreatureCount);
+    outstring_log("TSCR: Loading Script Waypoints for %lu creature(s)...", uiCreatureCount);
 
     pResult = GameDataDatabase.PQuery("SELECT entry, pointid, location_x, location_y, location_z, waittime FROM script_waypoint ORDER BY pointid");
 
