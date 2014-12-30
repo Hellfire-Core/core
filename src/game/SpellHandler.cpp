@@ -57,7 +57,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    sLog.outDetail("WORLD: CMSG_USE_ITEM packet, bagIndex: %u, slot: %u, spell_count: %u , cast_count: %u, Item: %u, data length = %i", bagIndex, slot, spell_count, cast_count, pItem->GetEntry(), recvPacket.size());
+    sLog.outDetail("WORLD: CMSG_USE_ITEM packet, bagIndex: %u, slot: %u, spell_count: %u , cast_count: %u, Item: %u, data length = %lu", bagIndex, slot, spell_count, cast_count, pItem->GetEntry(), recvPacket.size());
 
     ItemPrototype const *proto = pItem->GetProto();
     if (!proto)
@@ -218,7 +218,7 @@ void WorldSession::HandleOpenItemOpcode(WorldPacket& recvPacket)
 {
     CHECK_PACKET_SIZE(recvPacket,1+1);
 
-    sLog.outDetail("WORLD: CMSG_OPEN_ITEM packet, data length = %i",recvPacket.size());
+    sLog.outDetail("WORLD: CMSG_OPEN_ITEM packet, data length = %lu",recvPacket.size());
 
     Player* pUser = _player;
     uint8 bagIndex, slot;
@@ -314,7 +314,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
     recvPacket >> spellId;
     recvPacket >> cast_count;
 
-    sLog.outDebug("WORLD: got cast spell packet, spellId - %u, cast_count: %u data length = %i",
+    sLog.outDebug("WORLD: got cast spell packet, spellId - %u, cast_count: %u data length = %lu",
         spellId, cast_count, recvPacket.size());
 
     // can't use our own spells when we're in possession of another unit,

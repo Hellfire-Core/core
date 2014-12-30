@@ -42,7 +42,7 @@ void WorldSession::HandleBattleGroundHelloOpcode(WorldPacket & recv_data)
 
     uint64 guid;
     recv_data >> guid;
-    sLog.outDebug("WORLD: Recvd CMSG_BATTLEMASTER_HELLO Message from: " I64FMT, guid);
+    sLog.outDebug("WORLD: Recvd CMSG_BATTLEMASTER_HELLO Message from: %lu", guid);
 
     Creature *unit = GetPlayer()->GetMap()->GetCreature(guid);
     if (!unit)

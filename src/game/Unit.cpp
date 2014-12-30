@@ -2610,7 +2610,7 @@ void Unit::SendMeleeAttackStop( uint64 victimGUID )
     data << victimGUID;                                     // can be 0x00...
     data << uint32(0);                                      // can be 0x1
     BroadcastPacket(&data, true);
-    sLog.outDetail("%s %u stopped attacking %s %u", (GetTypeId()==TYPEID_PLAYER ? "player" : "creature"), GetGUIDLow(), (IS_PLAYER_GUID(victimGUID) ? "player" : "creature"),victimGUID);
+    sLog.outDetail("%s %u stopped attacking %s %lu", (GetTypeId()==TYPEID_PLAYER ? "player" : "creature"), GetGUIDLow(), (IS_PLAYER_GUID(victimGUID) ? "player" : "creature"),victimGUID);
 }
 
 int32 Unit::GetCurrentSpellCastTime(uint32 spell_id) const
@@ -12498,7 +12498,7 @@ void Unit::Kill(Unit *pVictim, bool durabilityLoss)
                                 break;
                         }
                     }
-                    sLog.outLog(LOG_BOSS, ss.str().c_str());
+                    sLog.outLog(LOG_BOSS, "%s", ss.str().c_str());
                 }
 
                 if (m->IsRaid() || m->IsHeroic())
@@ -13153,9 +13153,9 @@ void Unit::SendCombatStats(const char* format, Unit *pVictim, ...) const
     va_start(ap, pVictim);
     vsnprintf(str, 1024, format, ap);
     if (pVictim)
-        snprintf(message, 1024, "Combat result for %s (%ld) against %s (%ld). %s", GetName(), GetGUIDLow(), pVictim->GetName(), pVictim->GetGUIDLow(), str);
+        snprintf(message, 1024, "Combat result for %s (%u) against %s (%u). %s", GetName(), GetGUIDLow(), pVictim->GetName(), pVictim->GetGUIDLow(), str);
     else
-        snprintf(message, 1024, "Combat result for %s (%ld). %s", GetName(), GetGUIDLow(), str);
+        snprintf(message, 1024, "Combat result for %s (%u). %s", GetName(), GetGUIDLow(), str);
 
     va_end(ap);
 

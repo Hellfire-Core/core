@@ -145,7 +145,7 @@ bool ChatHandler::HandleMuteCommand(const char* args)
 
     AccountsDatabase.escape_string(author);
 
-    AccountsDatabase.PExecute("INSERT INTO account_punishment VALUES ('%u', '%u', UNIX_TIMESTAMP(), '%u', '%s', '%s', '1')",
+    AccountsDatabase.PExecute("INSERT INTO account_punishment VALUES ('%u', '%u', UNIX_TIMESTAMP(), '%lu', '%s', '%s', '1')",
                               account_id, PUNISHMENT_MUTE, uint64(mutetime), author.c_str(), mutereasonstr.c_str());
 
     SendGlobalGMSysMessage(LANG_GM_DISABLE_CHAT, author.c_str(), cname.c_str(), notspeaktime, mutereasonstr.c_str());
@@ -2934,7 +2934,7 @@ bool ChatHandler::HandleWpShowCommand(const char* args)
                 return false;
             }
 
-            sLog.outDebug("DEBUG: UPDATE waypoint_data SET wpguid = '%u");
+            sLog.outDebug("DEBUG: UPDATE waypoint_data SET wpguid = '%u", wpCreature->GetGUIDLow());
             // set "wpguid" column to the visual waypoint
             GameDataDatabase.PExecuteLog("UPDATE waypoint_data SET wpguid = '%u' WHERE id = '%u' and point = '%u'", wpCreature->GetGUIDLow(), pathid, point);
 
@@ -4241,7 +4241,7 @@ bool ChatHandler::HandleNpcSetLinkCommand(const char* args)
 
     if (!pCreature->GetDBTableGUIDLow())
     {
-        PSendSysMessage("Selected creature isn't in `creature` table", pCreature->GetGUIDLow());
+        PSendSysMessage("Selected creature %u isn't in `creature` table", pCreature->GetGUIDLow());
         SetSentErrorMessage(true);
         return false;
     }
@@ -4376,7 +4376,7 @@ bool ChatHandler::HandleMmapPathCommand(const char* args)
     PointsArray pointPath = path.getPath();
     PSendSysMessage("%s's path to %s:", target->GetName(), player->GetName());
     PSendSysMessage("Building %s", useStraightPath ? "StraightPath" : "SmoothPath");
-    PSendSysMessage("length %i type %u", pointPath.size(), path.getPathType());
+    PSendSysMessage("length %lu type %u", pointPath.size(), path.getPathType());
 
     Vector3 start = path.getStartPosition();
     Vector3 end = path.getEndPosition();
@@ -4678,7 +4678,7 @@ bool ChatHandler::HandleTrollmuteCommand(const char* args)
 
     AccountsDatabase.escape_string(author);
 
-    AccountsDatabase.PExecute("INSERT INTO account_punishment VALUES ('%u', '%u', UNIX_TIMESTAMP(), '%u', '%s', '%s', '1')",
+    AccountsDatabase.PExecute("INSERT INTO account_punishment VALUES ('%u', '%u', UNIX_TIMESTAMP(), '%lu', '%s', '%s', '1')",
                               account_id, PUNISHMENT_TROLLMUTE, uint64(mutetime), author.c_str(), mutereasonstr.c_str());
 
     SendGlobalGMSysMessage(LANG_GM_TROLLMUTED_PLAYER, author.c_str(), cname.c_str(), notspeaktime, mutereasonstr.c_str());

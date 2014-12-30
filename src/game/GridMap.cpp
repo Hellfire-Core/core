@@ -1169,7 +1169,7 @@ void TerrainManager::LoadTerrainSpecifics()
 
         bar.step();
 
-        sLog.outString("");
+        sLog.outString();
         sLog.outString(">> Loaded 0 map template data. DB table `map_template` is empty.");
         return;
     }
@@ -1197,7 +1197,7 @@ void TerrainManager::LoadTerrainSpecifics()
     while (result->NextRow());
 
     sLog.outString();
-    sLog.outString(">> Loaded %u map template data.", i_TerrainSpecifics.size());
+    sLog.outString(">> Loaded %lu map template data.", i_TerrainSpecifics.size());
 }
 
 TerrainInfo * TerrainManager::LoadTerrain(const uint32 mapId)

@@ -283,8 +283,8 @@ bool ChatHandler::HandleServerInfoCommand(const char* /*args*/)
 
     if (sWorld.IsShutdowning())
     {
-        PSendSysMessage("");
-        PSendSysMessage("Server will %s in: %s", (sWorld.GetShutdownMask() & SHUTDOWN_MASK_RESTART ? "restart" : "be shutteddown"), secsToTimeString(sWorld.GetShutdownTimer()).c_str());
+        PSendSysMessage(" ");
+        PSendSysMessage("Server will %s in: %s", (sWorld.GetShutdownMask() & SHUTDOWN_MASK_RESTART ? "restart" : "shut down"), secsToTimeString(sWorld.GetShutdownTimer()).c_str());
         PSendSysMessage("Reason: %s.", sWorld.GetShutdownReason());
     }
 
@@ -294,7 +294,7 @@ bool ChatHandler::HandleServerInfoCommand(const char* /*args*/)
 bool ChatHandler::HandleServerEventsCommand(const char*)
 {
     std::string active_events = sGameEventMgr.getActiveEventsString();
-    PSendSysMessage(active_events.c_str());//ChatHandler::FillMessageData(&data, this, CHAT_MSG_SYSTEM, LANG_UNIVERSAL, NULL, GetPlayer()->GetGUID(), active_events, NULL);
+    PSendSysMessage("%s", active_events.c_str());//ChatHandler::FillMessageData(&data, this, CHAT_MSG_SYSTEM, LANG_UNIVERSAL, NULL, GetPlayer()->GetGUID(), active_events, NULL);
     if(sWorld.getConfig(CONFIG_ARENA_DAILY_REQUIREMENT))
     {
         PSendSysMessage("Daily Arenas! Get %u AP for winning %u rated arenas",

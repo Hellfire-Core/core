@@ -789,7 +789,7 @@ int WorldSocket::HandleAuthSession(WorldPacket& recvPacket)
     // Check locked state for server
     sWorld.UpdateRequiredPermissions();
     uint64 minimumPermissions = sWorld.GetMinimumPermissionMask();
-    sLog.outDebug("Allowed permission mask: %u Player permission mask: %u", minimumPermissions, permissionMask);
+    sLog.outDebug("Allowed permission mask: %lu Player permission mask: %lu", minimumPermissions, permissionMask);
     if (!(permissionMask & minimumPermissions))
     {
         WorldPacket Packet(SMSG_AUTH_RESPONSE, 1);
@@ -1091,7 +1091,7 @@ uint32 WorldSocket::IPToLocation(const std::string& IP)
 
     QueryResultAutoPtr result = GameDataDatabase.PQuery(
         "SELECT locId FROM blocks "
-        "WHERE endIpNum >= %u order by endIpNum limit 1;",addressAsNumber,addressAsNumber);
+        "WHERE endIpNum >= %u order by endIpNum limit 1;", addressAsNumber);
     
     if (!result)
     {

@@ -553,7 +553,7 @@ void CreatureEventAI::ProcessAction(CreatureEventAI_Action const& action, uint32
 
             if (!target)
             {
-                sLog.outLog(LOG_DB_ERR, "CreatureEventAI: event %d creature %d attempt to cast spell on targetGUID %d that doesn't exists in map", EventId, m_creature->GetEntry(), action.castguid.targetGUID);
+                sLog.outLog(LOG_DB_ERR, "CreatureEventAI: event %d creature %d attempt to cast spell on targetGUID %lu that doesn't exists in map", EventId, m_creature->GetEntry(), action.castguid.targetGUID);
                 return;
             }
 

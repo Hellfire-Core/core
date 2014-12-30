@@ -1165,7 +1165,7 @@ void GameEventMgr::GameEventSpawn(int16 event_id)
 
     if (internal_event_id < 0 || internal_event_id >= mGameEventCreatureGuids.size())
     {
-        sLog.outLog(LOG_DEFAULT, "ERROR: GameEventMgr::GameEventSpawn attempt access to out of range mGameEventCreatureGuids element %i (size: %u)",internal_event_id,mGameEventCreatureGuids.size());
+        sLog.outLog(LOG_DEFAULT, "ERROR: GameEventMgr::GameEventSpawn attempt access to out of range mGameEventCreatureGuids element %i (size: %lu)",internal_event_id,mGameEventCreatureGuids.size());
         return;
     }
 
@@ -1195,7 +1195,7 @@ void GameEventMgr::GameEventSpawn(int16 event_id)
 
     if (internal_event_id < 0 || internal_event_id >= mGameEventGameobjectGuids.size())
     {
-        sLog.outLog(LOG_DEFAULT, "ERROR: GameEventMgr::GameEventSpawn attempt access to out of range mGameEventGameobjectGuids element %i (size: %u)",internal_event_id,mGameEventGameobjectGuids.size());
+        sLog.outLog(LOG_DEFAULT, "ERROR: GameEventMgr::GameEventSpawn attempt access to out of range mGameEventGameobjectGuids element %i (size: %lu)",internal_event_id,mGameEventGameobjectGuids.size());
         return;
     }
 
@@ -1229,7 +1229,7 @@ void GameEventMgr::GameEventSpawn(int16 event_id)
 
     if (internal_event_id < 0 || internal_event_id >= mGameEventPoolIds.size())
     {
-        sLog.outLog(LOG_DEFAULT, "ERROR: GameEventMgr::GameEventSpawn attempt access to out of range mGameEventPoolIds element %i (size: %u)", internal_event_id, mGameEventPoolIds.size());
+        sLog.outLog(LOG_DEFAULT, "ERROR: GameEventMgr::GameEventSpawn attempt access to out of range mGameEventPoolIds element %i (size: %lu)", internal_event_id, mGameEventPoolIds.size());
         return;
     }
 
@@ -1243,7 +1243,7 @@ void GameEventMgr::GameEventUnspawn(int16 event_id)
 
     if (internal_event_id < 0 || internal_event_id >= mGameEventCreatureGuids.size())
     {
-        sLog.outLog(LOG_DEFAULT, "ERROR: GameEventMgr::GameEventUnspawn attempt access to out of range mGameEventCreatureGuids element %i (size: %u)",internal_event_id,mGameEventCreatureGuids.size());
+        sLog.outLog(LOG_DEFAULT, "ERROR: GameEventMgr::GameEventUnspawn attempt access to out of range mGameEventCreatureGuids element %i (size: %lu)",internal_event_id,mGameEventCreatureGuids.size());
         return;
     }
 
@@ -1266,7 +1266,7 @@ void GameEventMgr::GameEventUnspawn(int16 event_id)
 
     if (internal_event_id < 0 || internal_event_id >= mGameEventGameobjectGuids.size())
     {
-        sLog.outLog(LOG_DEFAULT, "ERROR: GameEventMgr::GameEventUnspawn attempt access to out of range mGameEventGameobjectGuids element %i (size: %u)",internal_event_id,mGameEventGameobjectGuids.size());
+        sLog.outLog(LOG_DEFAULT, "ERROR: GameEventMgr::GameEventUnspawn attempt access to out of range mGameEventGameobjectGuids element %i (size: %lu)",internal_event_id,mGameEventGameobjectGuids.size());
         return;
     }
 
@@ -1289,7 +1289,7 @@ void GameEventMgr::GameEventUnspawn(int16 event_id)
 
     if (internal_event_id < 0 || internal_event_id >= mGameEventPoolIds.size())
     {
-        sLog.outLog(LOG_DEFAULT, "ERROR: GameEventMgr::GameEventUnspawn attempt access to out of range mGameEventPoolIds element %i (size: %u)", internal_event_id, mGameEventPoolIds.size());
+        sLog.outLog(LOG_DEFAULT, "ERROR: GameEventMgr::GameEventUnspawn attempt access to out of range mGameEventPoolIds element %i (size: %lu)", internal_event_id, mGameEventPoolIds.size());
         return;
     }
 
