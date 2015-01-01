@@ -271,7 +271,7 @@ struct instance_zulaman : public ScriptedInstance
         {
             GameObject* gate = instance->GetGameObject(HexLordExitGateGUID);
             if (gate)
-                gate->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_NOTSELECTABLE);
+                gate->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_LOCKED);
         }
     }
 
