@@ -133,7 +133,8 @@ struct boss_vazruden_the_heraldAI : public ScriptedAI
             switch (id)
             {
                 case POINT_ID_CENTER:
-                    DoSplit();
+                    if (!VazrudenGUID)
+                        DoSplit();
                     break;
                 case POINT_ID_COMBAT:
                     me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
