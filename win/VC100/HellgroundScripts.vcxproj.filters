@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Scripts">
@@ -1707,6 +1707,30 @@
     </ClInclude>
     <ClInclude Include="..\..\src\scripts\scripts\Eastern Kingdoms\molten_core\def_molten_core.h">
       <Filter>Scripts\Eastern Kingdoms\Molten Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\scripts\include\escort_ai.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\scripts\scripts\Eastern Kingdoms\blackwing_lair\def_blackwing_lair.h">
+      <Filter>Scripts\Eastern Kingdoms\Blackwing Lair</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\scripts\scripts\Eastern Kingdoms\karazhan\instance_karazhan.h">
+      <Filter>Scripts\Eastern Kingdoms\Karazhan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\scripts\scripts\Eastern Kingdoms\naxxramas\def_naxxramas.h">
+      <Filter>Scripts\Eastern Kingdoms\Naxxramas</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\scripts\scripts\Eastern Kingdoms\uldaman\def_uldaman.h">
+      <Filter>Scripts\Eastern Kingdoms\Uldaman</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\scripts\scripts\Kalimdor\ruins_of_ahnqiraj\def_ruins_of_ahnqiraj.h">
+      <Filter>Scripts\Kalimdor\Ruins of Ahn%27Qiraj</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\scripts\scripts\Outland\hellfire_citadel\hellfire_ramparts\hellfire_ramparts.h">
+      <Filter>Scripts\Outland\Hellfire Citadel\Hellfire Ramparts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\scripts\system\system.h">
+      <Filter>System</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
