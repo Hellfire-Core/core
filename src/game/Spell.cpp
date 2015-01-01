@@ -4181,6 +4181,8 @@ SpellCastResult Spell::CheckCast(bool strict)
                     Position dest;
                     target->GetPosition(dest);
                     bool result;
+                    // in pet cast/autocast cases CheckCast is called multiple times, we need only last of paths
+                    _path.reinitialize(); 
 
                     float angle = m_caster->GetAngle(target) - m_caster->GetOrientation() - M_PI;
                     if (sWorld.getConfig(CONFIG_MOVEMENT_ENABLE_LONG_CHARGE))
