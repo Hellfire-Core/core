@@ -604,6 +604,15 @@ void BattleGround::EndBattleGround(uint32 winner)
                 for (BattleGroundScoreMap::const_iterator itr = GetPlayerScoresBegin();itr !=GetPlayerScoresEnd(); ++itr)
                     if (Player* player = sObjectMgr.GetPlayer(itr->first))
                         sLog.outLog(LOG_ARENA, "Statistics for %s (GUID: " UI64FMTD ", Team: %d, IP: %s): %u damage, %u healing, %u killing blows", player->GetName(), itr->first, player->GetArenaTeamId(m_ArenaType == 5 ? 2 : m_ArenaType == 3), player->GetSession()->GetRemoteAddress().c_str(), itr->second->DamageDone, itr->second->HealingDone, itr->second->KillingBlows);
+            if (sWorld.getConfig(CONFIG_ARENA_EXPORT_RESULTS))
+            {
+                RealmDataDatabase.PExecute("INSERT INTO arena_fights VALUES (%u, '%01u', %u, %u, &u, %u, %i, SYSDATE());",
+                    GetInstanceID(), m_ArenaType, winner_arena_team->GetId(),loser_arena_team->GetId(), winner_rating, loser_rating, winner_change);
+                for (BattleGroundScoreMap::const_iterator itr = GetPlayerScoresBegin(); itr != GetPlayerScoresEnd(); ++itr)
+                    if (Player* player = sObjectMgr.GetPlayer(itr->first))
+                        RealmDataDatabase.PExecute("INSERT INTO arena_fights_detailed VALUES (%u, " UI64FMTD", %u, %u, %u, %u, 0, 0);",
+                        GetInstanceID(), itr->first, player->GetArenaTeamId(m_ArenaType == 5 ? 2 : m_ArenaType == 3), itr->second->DamageDone, itr->second->HealingDone, itr->second->KillingBlows);
+            }
         }
         else
         {

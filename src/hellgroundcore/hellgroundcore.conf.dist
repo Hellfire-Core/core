@@ -1552,6 +1552,12 @@ WorldBossLevelDiff = 3
 # LogExtendedInfo: Extended Info Log file of arena fights and arena team creations
 #             Default: 0 (disabled)
 #
+# ReadyStartTimer: timer to set when everyone on arena are ready to fight
+#             Default: 5000
+#
+# ExportResults: export arena match result to database tables (for online arena logs)
+#             Default: 0 (disabled)
+#
 # StepByStep: while selecting teams for matches, max rating difference will be decreased by Value every Time miliseconds
 #             Default: 0, 60000, 100
 #
@@ -1573,9 +1579,6 @@ WorldBossLevelDiff = 3
 # DailyAPReward: AP reward for daily arena
 #             Default: 0
 #
-# ReadyStartTimer: timer to set when everyone on arena are ready to fight
-#             Default: 5000
-#
 ###################################################################################################################
 
 Arena.MaxRatingDifference = 0
@@ -1585,6 +1588,8 @@ Arena.AutoDistributeInterval = 7
 Arena.EnableFakeWho = 0
 Arena.EnableFakeWho.ForGuild = 0
 Arena.LogExtendedInfo = 0
+Arena.ReadyStartTimer = 5000
+Arena.ExportResults = 0
 
 Arena.EnableMMR = 0
 Arena.EnableMMRPenalty = 0
@@ -1600,7 +1605,6 @@ Arena.StatusInfo = 1
 Arena.ELOCoefficient = 32
 Arena.DailyRequirement = 0
 Arena.DailyAPReward = 0
-Arena.ReadyStartTimer = 5000
 
 ###################################################################################################################
 # BATTLEGROUND SETTINGS

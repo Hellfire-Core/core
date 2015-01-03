@@ -768,6 +768,8 @@ void World::LoadConfigSettings(bool reload)
     loadConfig(CONFIG_ENABLE_FAKE_WHO_ON_ARENA, "Arena.EnableFakeWho", false);
     loadConfig(CONFIG_ENABLE_FAKE_WHO_IN_GUILD, "Arena.EnableFakeWho.ForGuild", false);
     loadConfig(CONFIG_ARENA_LOG_EXTENDED_INFO, "Arena.LogExtendedInfo", false);
+    loadConfig(CONFIG_ARENA_READY_START_TIMER, "Arena.ReadyStartTimer", 5000);
+    loadConfig(CONFIG_ARENA_EXPORT_RESULTS, "Arena.ExportResults", false);
 
     loadConfig(CONFIG_ENABLE_HIDDEN_RATING, "Arena.EnableMMR", false);
     loadConfig(CONFIG_ENABLE_HIDDEN_RATING_PENALTY, "Arena.EnableMMRPenalty", false);
@@ -783,7 +785,6 @@ void World::LoadConfigSettings(bool reload)
     loadConfig(CONFIG_ARENA_ELO_COEFFICIENT, "Arena.ELOCoefficient",32);
     loadConfig(CONFIG_ARENA_DAILY_REQUIREMENT, "Arena.DailyRequirement",0);
     loadConfig(CONFIG_ARENA_DAILY_AP_REWARD, "Arena.DailyAPReward",0);
-    loadConfig(CONFIG_ARENA_READY_START_TIMER, "Arena.ReadyStartTimer", 5000);
 
     // Battleground settings
     loadConfig(CONFIG_BATTLEGROUND_ANNOUNCE_START, "BattleGround.AnnounceStart", 0);
