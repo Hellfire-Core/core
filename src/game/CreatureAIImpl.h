@@ -541,7 +541,7 @@ inline bool CreatureAI::UpdateVictim()
         return false;
 
     bool outofthreat = me->IsOutOfThreatArea(me->getVictim());
-    if (me->hasUnitState(UNIT_STAT_LOST_CONTROL) && !outofthreat)
+    if (me->hasUnitState(UNIT_STAT_LOST_CONTROL) || !outofthreat)
     {
         me->SetSelection(0);
         return me->getVictim();
