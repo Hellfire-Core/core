@@ -234,6 +234,10 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
     if (opcode == MSG_MOVE_FALL_LAND && plMover && !plMover->IsTaxiFlying())
         plMover->HandleFallDamage(movementInfo);
 
+    // we dont want to switch to walk when MC other player
+    if (!_player->IsSelfMover() && plMover)
+        movementInfo.RemoveMovementFlag(MOVEFLAG_WALK_MODE);
+
     /* process position-change */
     HandleMoverRelocation(movementInfo);
 
