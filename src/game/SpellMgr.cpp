@@ -3518,8 +3518,7 @@ void SpellMgr::LoadSpellCustomAttr()
                 spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_CASTER;
                 break;
             case 31790: // Righteous Defense taunt
-                spellInfo->DmgClass = SPELL_DAMAGE_CLASS_MELEE;
-                spellInfo->Attributes |= SPELL_ATTR_IMPOSSIBLE_DODGE_PARRY_BLOCK;
+                spellInfo->Attributes |= SPELL_ATTR_ABILITY;
                 break;
             case 28509: // Greater Mana Regeneration - Elixir of Major Mageblood
             case 24363: // Mana Regeneration - Mageblood Potion

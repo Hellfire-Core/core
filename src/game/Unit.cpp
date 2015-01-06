@@ -2754,7 +2754,8 @@ SpellMissInfo Unit::MeleeSpellHitResult(Unit *pVictim, SpellEntry const *spell, 
         attType = RANGED_ATTACK;
 
     // bonus from skills is 0.04% per skill Diff
-    int32 attackerWeaponSkill = !(spell->DmgClass == SPELL_DAMAGE_CLASS_RANGED && !(spell->Attributes & SPELL_ATTR_RANGED))
+    int32 attackerWeaponSkill = (!((spell->DmgClass == SPELL_DAMAGE_CLASS_RANGED && !(spell->Attributes & SPELL_ATTR_RANGED)) /*example: avenger's shield or hammer of wrath*/ ||
+        (spell->Attributes & SPELL_ATTR_ABILITY && spell->DmgClass == SPELL_DAMAGE_CLASS_MAGIC))) /* example: taunt, demoralizing roar*/
         ? int32(GetWeaponSkillValue(attType,pVictim))
         : int32(GetMaxSkillValueForLevel());
 
@@ -2806,7 +2807,7 @@ SpellMissInfo Unit::MeleeSpellHitResult(Unit *pVictim, SpellEntry const *spell, 
         return SPELL_MISS_RESIST;
 
     // Some spells cannot be parried, dodged nor blocked
-    if (spell->Attributes & SPELL_ATTR_IMPOSSIBLE_DODGE_PARRY_BLOCK)
+    if (spell->Attributes & SPELL_ATTR_IMPOSSIBLE_DODGE_PARRY_BLOCK || (spell->Attributes & SPELL_ATTR_ABILITY && spell->DmgClass == SPELL_DAMAGE_CLASS_MAGIC))
         return SPELL_MISS_NONE;
 
     // Handle ranged attacks
@@ -3038,7 +3039,12 @@ SpellMissInfo Unit::SpellHitResult(Unit *pVictim, SpellEntry const *spell, bool 
         case SPELL_DAMAGE_CLASS_NONE:
             return SPELL_MISS_NONE;
         case SPELL_DAMAGE_CLASS_MAGIC:
-            return MagicSpellHitResult(pVictim, spell);
+        {
+            if (spell->Attributes & SPELL_ATTR_ABILITY)
+                return MeleeSpellHitResult(pVictim, spell, canMiss); // depend on hit rating, not spell hit rating, and also cannot be dodged/parried/blocked
+            else
+                return MagicSpellHitResult(pVictim, spell);
+        }
     }
     return SPELL_MISS_NONE;
 }
