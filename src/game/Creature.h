@@ -857,7 +857,6 @@ class RestoreReactState : public BasicEvent
 
     private:
         ReactStates _oldState;
-        bool _WasAttackable;
         Creature& _owner;
 };
 
