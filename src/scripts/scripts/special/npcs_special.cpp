@@ -42,6 +42,7 @@ npc_master_omarion          100%    Master Craftsman Omarion, patterns menu
 npc_lorekeeper_lydros       100%    Dialogue (story) + add A Dull and Flat Elven Blade
 npc_crashin_thrashin_robot  100%    AI for Crashin' Thrashin' Robot from engineering
 npc_gnomish_flame_turret
+npc_voodoo_servant          100%    AI for Voodoo trinket with entry 24529
 EndContentData */
 
 #include "precompiled.h"
@@ -3300,6 +3301,98 @@ CreatureAI* GetAI_npc_instakill_guardian(Creature *_Creature)
     return new npc_instakill_guardianAI(_Creature);
 }
 
+/*######
+# npc_voodoo_servant
+######*/
+#define SPELL_LIGHTING_BLAST 43996
+
+struct npc_voodoo_servantAI : public ScriptedAI
+{
+    npc_voodoo_servantAI(Creature* c) : ScriptedAI(c){}
+
+    uint32 LightingBlast_Timer;
+
+    void Reset()
+    {
+        LightingBlast_Timer = 100;
+        me->SetReactState(REACT_DEFENSIVE);
+        me->SetAggroRange(0);
+        me->CombatStopWithPets();
+        me->ClearInCombat();
+        me->AttackStop();
+    }
+
+    void UpdateAI(const uint32 diff)
+    {
+       Unit *pOwner = me->GetOwner();
+       Unit *victim = me->getVictim();
+       Unit *attacker = pOwner->getAttackerForHelper();
+
+       if (pOwner)
+       {
+            if (!pOwner->isAlive())
+            {
+                me->ForcedDespawn();
+                return;
+            }
+            if (!me->IsWithinDistInMap(pOwner, 30.0f) || (!victim || !attacker))
+            {
+                if (!me->getVictim()|| !me->IsWithinDistInMap(pOwner, 30.0f))
+                    if (!me->hasUnitState(UNIT_STAT_FOLLOW)) 
+                    {
+                    victim = NULL;
+                    attacker = NULL;
+                    me->GetMotionMaster()->MoveFollow(pOwner, 2.0f, M_PI);
+                    Reset();
+                    return;
+                    }
+            }
+            if (me->getVictim() && me->getVictim()->GetCharmerOrOwnerPlayerOrPlayerItself() &&
+                (pOwner->isInSanctuary() || me->isInSanctuary() || me->getVictim()->isInSanctuary()))
+            {
+                victim = NULL;
+                attacker = NULL;
+                me->GetMotionMaster()->MoveFollow(pOwner, 2.0f, M_PI);
+                Reset();
+                return;
+            }
+    
+            if (victim || attacker)
+            {
+                if (attacker)
+                {
+                    me->SetInCombatWith(attacker);
+                    AttackStart(attacker);
+                }
+                else
+                {
+                    me->SetInCombatWith(victim);
+                    AttackStart(victim);
+                }
+                if (me->hasUnitState(UNIT_STAT_CASTING))
+                    return;
+    
+    
+                if (LightingBlast_Timer <= diff)
+                {
+                    DoCast(me->getVictim(), SPELL_LIGHTING_BLAST);
+                    LightingBlast_Timer = 2000;
+                }
+                else
+                    LightingBlast_Timer -= diff;
+    
+                DoMeleeAttackIfReady();
+            }
+       }
+    }
+};
+
+CreatureAI *GetAI_npc_voodoo_servant(Creature* c)
+{
+     return new npc_voodoo_servantAI(c);
+};
+
+
 void AddSC_npcs_special()
 {
     Script *newscript;
@@ -3520,4 +3613,10 @@ void AddSC_npcs_special()
     newscript->Name="npc_bad_santa";
     newscript->GetAI=&GetAI_npc_bad_santaAI;
     newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_voodoo_servant";
+    newscript->GetAI = &GetAI_npc_voodoo_servant;
+    newscript->RegisterSelf();
+
 }
