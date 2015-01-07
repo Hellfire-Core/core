@@ -1,22 +1,22 @@
 /*
- * Copyright (C) 2005-2008 MaNGOS <http://getmangos.com/>
- * Copyright (C) 2008 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+* Copyright (C) 2005-2008 MaNGOS <http://getmangos.com/>
+* Copyright (C) 2008 TrinityCore <http://www.trinitycore.org/>
+* Copyright (C) 2008-2015 Hellground <http://hellground.net/>
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+*/
 
 #include "PetAI.h"
 #include "Log.h"
@@ -129,11 +129,11 @@ void PetAI::PrepareSpellForAutocast(uint32 spellID)
         if (SpellMgr::IsNonCombatSpell(spellInfo))
             return;
     }
-/*
+    /*
     if (m_owner && m_owner->GetTypeId() == TYPEID_PLAYER)
-        if(((Player*)m_owner)->HasSpellCooldown(spellID))
-            return;
-*/
+    if(((Player*)m_owner)->HasSpellCooldown(spellID))
+    return;
+    */
     Spell *spell = new Spell(me, spellInfo, false, 0);
 
     if (inCombat && !me->hasUnitState(UNIT_STAT_FOLLOW) && spell->CanAutoCast(me->getVictim()))
@@ -269,14 +269,22 @@ void PetAI::UpdateAI(const uint32 diff)
         {
             if (!me->HasReactState(REACT_PASSIVE) && !me->GetCharmInfo()->HasCommandState(COMMAND_STAY))
             {
-                Unit* target = NULL;
-                if (m_owner->isInCombat())
-                    target = m_owner->getAttackerForHelper();
-                else
-                    target = me->getAttackerForHelper();
 
-                if (target)
-                    AttackStart(target);
+                if (m_owner->getVictim())
+                    AttackStart(m_owner->getVictim());
+                else
+                {
+                    if (!m_owner->getAttackers().empty())
+                        AttackStart(m_owner->getAttackerForHelper());
+                    else if (!me->getAttackers().empty())
+                        AttackStart(me->getAttackerForHelper());
+                    /*else if (me->HasReactState(REACT_AGGRESSIVE))
+                      here attacking nearest target
+                    */
+                       
+
+                }
+
             }
 
             // we still do NOT have target, if follow command were appliend and we are NOT followin, reapply movegen :P
@@ -366,7 +374,7 @@ void ImpAI::UpdateAI(const uint32 diff)
 
 
 
-   // me->getVictim() can't be used for check in case stop fighting, me->getVictim() clear at Unit death etc.
+    // me->getVictim() can't be used for check in case stop fighting, me->getVictim() clear at Unit death etc.
     if (Unit *target = me->getVictim())
     {
         if (_needToStop())
