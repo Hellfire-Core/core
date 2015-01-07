@@ -265,18 +265,13 @@ void PetAI::UpdateAI(const uint32 diff)
     }
     else
     {
-        if (me->isInCombat())
-        {
-            if (!me->GetOwner() || !me->GetOwner()->GetObjectGuid().IsPlayer())
-                _stopAttack();
-        }
-        else if (Unit* owner = me->GetOwner())
+        if (m_owner)
         {
             if (!me->HasReactState(REACT_PASSIVE) && !me->GetCharmInfo()->HasCommandState(COMMAND_STAY))
             {
                 Unit* target = NULL;
-                if (owner->isInCombat())
-                    target = owner->getAttackerForHelper();
+                if (m_owner->isInCombat())
+                    target = m_owner->getAttackerForHelper();
                 else
                     target = me->getAttackerForHelper();
 
@@ -286,7 +281,7 @@ void PetAI::UpdateAI(const uint32 diff)
 
             // we still do NOT have target, if follow command were appliend and we are NOT followin, reapply movegen :P
             if (!me->getVictim() && me->GetCharmInfo()->HasCommandState(COMMAND_FOLLOW) && !me->hasUnitState(UNIT_STAT_FOLLOW))
-                me->GetMotionMaster()->MoveFollow(owner, PET_FOLLOW_DIST,PET_FOLLOW_ANGLE);
+                me->GetMotionMaster()->MoveFollow(m_owner, PET_FOLLOW_DIST,PET_FOLLOW_ANGLE);
         }
     }
 
