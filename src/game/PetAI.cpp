@@ -55,8 +55,6 @@ bool PetAI::targetHasInterruptableAura(Unit *target) const
     if (!target)
         return false;
 
-    if (m_forceTimer)
-        return false;
 
     Unit::AuraMap const &auramap = target->GetAuras();
     for (Unit::AuraMap::const_iterator itr = auramap.begin(); itr != auramap.end(); ++itr)
@@ -252,13 +250,8 @@ void PetAI::UpdateAI(const uint32 diff)
     if (updateAlliesTimer.Passed())
         UpdateAllies();
 
-    if (m_forceTimer)
-    {
-        if (m_forceTimer < diff)
-            m_forceTimer = 0;
-        else
-            m_forceTimer -= diff;
-    }
+
+
 
     if (me->getVictim())
     {
@@ -376,13 +369,7 @@ void ImpAI::UpdateAI(const uint32 diff)
     if (updateAlliesTimer.Passed())
         UpdateAllies();
 
-    if (m_forceTimer)
-    {
-        if (m_forceTimer < diff)
-            m_forceTimer = 0;
-        else
-            m_forceTimer -= diff;
-    }
+
 
    // me->getVictim() can't be used for check in case stop fighting, me->getVictim() clear at Unit death etc.
     if (Unit *target = me->getVictim())
@@ -491,12 +478,6 @@ void WaterElementalAI::UpdateAI(const uint32 diff)
     if (updateAlliesTimer.Passed())
         UpdateAllies();
 
-    if (m_forceTimer)
-    {
-        if (m_forceTimer < diff)
-            m_forceTimer = 0;
-        else
-            m_forceTimer -= diff;
     }
 
     if (Unit *target = me->getVictim())

@@ -42,7 +42,6 @@ class PetAI : public CreatureAI
 
         void AttackStart(Unit *target)
         {
-            m_forceTimer = 5000;
             CreatureAI::AttackStart(target);
         }
 
@@ -66,7 +65,6 @@ class PetAI : public CreatureAI
         std::set<uint64> m_AllySet;
         
         TimeTrackerSmall updateAlliesTimer;
-        uint32 m_forceTimer;
 
         typedef std::pair<Unit*, Spell*> TargetSpellPair;
         std::vector<TargetSpellPair> m_targetSpellStore;
