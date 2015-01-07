@@ -60,6 +60,7 @@ class PetAI : public CreatureAI
         void _stopAttack(void);
 
         void UpdateAllies();
+        Unit* FindValidTarget(); // for aggresive stance
 
         TimeTracker i_tracker;
         std::set<uint64> m_AllySet;

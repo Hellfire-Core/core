@@ -728,6 +728,7 @@ class HELLGROUND_IMPORT_EXPORT Creature : public Unit
         bool GetIsDeadByDefault() { return m_isDeadByDefault; }
 
         void SetAggroRange(float t) { m_aggroRange = t; }
+        float GetAggroRange() { return m_aggroRange; }
 
         bool CanReactToPlayerOnTaxi();
 

@@ -1,23 +1,24 @@
 /*
-* Copyright (C) 2005-2008 MaNGOS <http://getmangos.com/>
-* Copyright (C) 2008 TrinityCore <http://www.trinitycore.org/>
-* Copyright (C) 2008-2015 Hellground <http://hellground.net/>
-*
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation; either version 2 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program; if not, write to the Free Software
-* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-*/
+ * Copyright (C) 2005-2008 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2008 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
 
+#include "GridNotifiersImpl.h"
 #include "PetAI.h"
 #include "Log.h"
 #include "Pet.h"
@@ -29,6 +30,7 @@
 #include "SpellMgr.h"
 #include "Creature.h"
 #include "Util.h"
+
 
 int PetAI::Permissible(const Creature *creature)
 {
@@ -278,9 +280,8 @@ void PetAI::UpdateAI(const uint32 diff)
                         AttackStart(m_owner->getAttackerForHelper());
                     else if (!me->getAttackers().empty())
                         AttackStart(me->getAttackerForHelper());
-                    /*else if (me->HasReactState(REACT_AGGRESSIVE))
-                      here attacking nearest target
-                    */
+                    else if (Unit* target = FindValidTarget())
+                        AttackStart(target);
                        
 
                 }
@@ -339,6 +340,38 @@ void PetAI::UpdateAllies()
     }
     else                                                    //remove group
         m_AllySet.insert(m_owner->GetGUID());
+}
+
+Unit* PetAI::FindValidTarget()
+{
+    std::list<Unit *> targets;
+    Hellground::AnyUnfriendlyUnitInObjectRangeCheck u_check(m_creature, m_creature, m_creature->GetAggroRange());
+    Hellground::UnitListSearcher<Hellground::AnyUnfriendlyUnitInObjectRangeCheck> searcher(targets, u_check);
+    Cell::VisitAllObjects(me, searcher, m_creature->GetAggroRange());
+
+    // remove not LoS targets
+    for (std::list<Unit *>::iterator tIter = targets.begin(); tIter != targets.end();)
+    {
+        if (!m_creature->IsWithinLOSInMap(*tIter) || (*tIter)->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE) ||
+            (*tIter)->GetTypeId() == TYPEID_UNIT && ((Creature*)(*tIter))->isTrigger() )
+        {
+            std::list<Unit *>::iterator tIter2 = tIter;
+            ++tIter;    
+            targets.erase(tIter2);
+        }
+        else
+            ++tIter;
+    }
+
+    if (targets.empty())
+        return NULL;
+
+    uint32 rIdx = urand(0, targets.size() - 1);
+    std::list<Unit *>::const_iterator tcIter = targets.begin();
+    for (uint32 i = 0; i < rIdx; ++i)
+        ++tcIter;
+
+    return *tcIter;
 }
 
 int ImpAI::Permissible(const Creature *creature)
