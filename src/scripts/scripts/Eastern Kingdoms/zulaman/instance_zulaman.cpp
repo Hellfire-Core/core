@@ -269,9 +269,12 @@ struct instance_zulaman : public ScriptedInstance
 
         if (BossKilled >= 5)
         {
+            HandleGameObject(HexLordExitGateGUID, true);
+            /* TODO: It should be activated by players
             GameObject* gate = instance->GetGameObject(HexLordExitGateGUID);
             if (gate)
                 gate->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_LOCKED);
+                */
         }
     }
 
