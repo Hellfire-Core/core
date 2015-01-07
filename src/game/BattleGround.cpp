@@ -881,12 +881,15 @@ void BattleGround::RemovePlayerAtLeave(uint64 guid, bool Transport, bool SendPac
         }
     }
 
-    std::map<uint64, BattleGroundScore*>::iterator itr2 = m_PlayerScores.find(guid);
-    if (itr2 != m_PlayerScores.end())
+    if (isBattleGround())
     {
-        BattleGroundScore *temp = itr2->second;  // delete player's score
-        m_PlayerScores.erase(itr2);
-        delete temp;
+        std::map<uint64, BattleGroundScore*>::iterator itr2 = m_PlayerScores.find(guid);
+        if (itr2 != m_PlayerScores.end())
+        {
+            BattleGroundScore *temp = itr2->second;  // delete player's score
+            m_PlayerScores.erase(itr2);
+            delete temp;
+        }
     }
 
     RemovePlayerFromResurrectQueue(guid);
@@ -918,6 +921,8 @@ void BattleGround::RemovePlayerAtLeave(uint64 guid, bool Transport, bool SendPac
         if (winner_arena_team && loser_arena_team)
             loser_arena_team->MemberLost(plr, winner_arena_team->GetRating(),
             winner_arena_team->GetAverageMMR(GetBgRaid(team == HORDE ? ALLIANCE : HORDE)));
+        sLog.outLog(LOG_ARENA, "Player %s (team id:%u) left arena (against team %u) before it ended",
+            plr->GetName(), loser_arena_team->GetId(), winner_arena_team->GetId());
     }
 
     RemovePlayer(plr, guid);                                // BG subclass specific code
