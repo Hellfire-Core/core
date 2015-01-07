@@ -38,7 +38,7 @@ int PetAI::Permissible(const Creature *creature)
     return PERMIT_BASE_NO;
 }
 
-PetAI::PetAI(Creature *c) : CreatureAI(c), i_tracker(TIME_INTERVAL_LOOK), m_forceTimer(0)
+PetAI::PetAI(Creature *c) : CreatureAI(c), i_tracker(TIME_INTERVAL_LOOK)
 {
     m_AllySet.clear();
     m_owner = me->GetCharmerOrOwner();
@@ -478,7 +478,7 @@ void WaterElementalAI::UpdateAI(const uint32 diff)
     if (updateAlliesTimer.Passed())
         UpdateAllies();
 
-    }
+
 
     if (Unit *target = me->getVictim())
     {
