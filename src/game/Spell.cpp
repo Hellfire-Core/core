@@ -921,13 +921,27 @@ void Spell::DoAllEffectOnTarget(TargetInfo *target)
 
     SpellMissInfo missInfo = target->missCondition;
 
-    // Need init unitTarget by default unit (can changed in code on reflect)
-    // Or on missInfo!=SPELL_MISS_NONE unitTarget undefined (but need in trigger subsystem)
-    unitTarget = unit;
-
     // Reset damage/healing counter
     m_damage = target->damage;
     m_healing = -target->damage;
+
+    // maybe we have grounding totem? check now not in fill target map cause it wont work well with delayed spells
+    if (GetSpellEntry()->EffectImplicitTargetA[0] == TARGET_UNIT_TARGET_ENEMY ||
+        GetSpellEntry()->EffectImplicitTargetA[1] == TARGET_UNIT_TARGET_ENEMY ||
+        GetSpellEntry()->EffectImplicitTargetA[2] == TARGET_UNIT_TARGET_ENEMY)
+        // do not need to check B's, there is only one spell with B=6 and it never target players
+    {
+        Unit* magnet = SelectGroundingTarget(unit);
+        if (magnet)
+        {
+            unit = magnet;
+            m_damage = magnet->GetHealth();
+        }
+    }
+
+    // Need init unitTarget by default unit (can changed in code on reflect)
+    // Or on missInfo!=SPELL_MISS_NONE unitTarget undefined (but need in trigger subsystem)
+    unitTarget = unit;
 
     // Fill base trigger info
     uint32 procAttacker = m_procAttacker;
@@ -1708,7 +1722,7 @@ void Spell::SetTargetMap(uint32 i, uint32 cur)
             switch (cur)
             {
                 case TARGET_UNIT_TARGET_ENEMY:
-                    SelectMagnetTarget();
+                    SelectInterveneTarget();
                 case TARGET_UNIT_CHAINHEAL:
                     pushType = PUSH_CHAIN;
                     break;
@@ -5571,74 +5585,66 @@ bool Spell::CheckTarget(Unit* target, uint32 eff)
     return true;
 }
 
-Unit* Spell::SelectMagnetTarget()
+Unit* Spell::SelectGroundingTarget(Unit* target)
+{
+    if (GetSpellEntry()->DmgClass != SPELL_DAMAGE_CLASS_MAGIC)
+        return NULL;
+    if (GetSpellEntry()->Attributes & (SPELL_ATTR_ABILITY | SPELL_ATTR_UNAFFECTED_BY_INVULNERABILITY) || GetSpellEntry()->AttributesEx & SPELL_ATTR_EX_CANT_BE_REDIRECTED)
+        return NULL;
+    if (!target || !target->HasAuraType(SPELL_AURA_SPELL_MAGNET))
+        return NULL;
+
+    Unit* magnet = NULL;
+    Unit::AuraList const& magnetAuras = target->GetAurasByType(SPELL_AURA_SPELL_MAGNET);
+    for (Unit::AuraList::const_iterator itr = magnetAuras.begin(); itr != magnetAuras.end(); ++itr)
+    {
+        magnet = (*itr)->GetCaster();
+        if (magnet)
+        {
+            if ((*itr)->m_procCharges > 0)
+            {
+                (*itr)->SetAuraProcCharges((*itr)->m_procCharges - 1);
+                break;
+            }
+            else
+                magnet == NULL;
+        }
+    }
+   
+    return magnet;
+}
+
+void Spell::SelectInterveneTarget()
 {
     Unit* target = m_targets.getUnitTarget();
 
     if (!target)
-        return NULL;
+        return;
 
-    if (GetSpellEntry()->DmgClass == SPELL_DAMAGE_CLASS_MAGIC)
+    if (GetSpellEntry()->DmgClass != SPELL_DAMAGE_CLASS_MELEE && GetSpellEntry()->DmgClass != SPELL_DAMAGE_CLASS_RANGED)
+        return;
+
+    if (!target->HasAuraType(SPELL_AURA_ADD_CASTER_HIT_TRIGGER))
+        return;
+
+    Unit::AuraList const& hitTriggerAuras = target->GetAurasByType(SPELL_AURA_ADD_CASTER_HIT_TRIGGER);
+    for (Unit::AuraList::const_iterator itr = hitTriggerAuras.begin(); itr != hitTriggerAuras.end(); ++itr)
     {
-        if (GetSpellEntry()->Attributes & (SPELL_ATTR_ABILITY | SPELL_ATTR_UNAFFECTED_BY_INVULNERABILITY) || GetSpellEntry()->AttributesEx & SPELL_ATTR_EX_CANT_BE_REDIRECTED)
-            return target;
-
-        if (target->HasAuraType(SPELL_AURA_SPELL_MAGNET))
+        if (Unit* hitTarget = (*itr)->GetCaster())
         {
-            Unit::AuraList const& magnetAuras = target->GetAurasByType(SPELL_AURA_SPELL_MAGNET);
-            for (Unit::AuraList::const_iterator itr = magnetAuras.begin(); itr != magnetAuras.end(); ++itr)
+            if ((*itr)->m_procCharges > 0)
             {
-                if (Unit* magnet = (*itr)->GetCaster())
-                {
-                    if ((*itr)->m_procCharges>0)
-                    {
-                        (*itr)->SetAuraProcCharges((*itr)->m_procCharges-1);
-                        target = magnet;
-                        m_targets.setUnitTarget(target);
-                        AddUnitTarget(target, 0, true);
-                        uint64 targetGUID = target->GetGUID();
-                        for (std::list<TargetInfo>::iterator ihit= m_UniqueTargetInfo.begin(); ihit != m_UniqueTargetInfo.end(); ++ihit)
-                        {
-                            if (ihit->deleted)
-                                continue;
-
-                            if (targetGUID == ihit->targetGUID)                 // Found in list
-                            {
-                                (*ihit).damage = target->GetHealth();
-                                break;
-                            }
-                        }
-                        break;
-                    }
-                }
+                (*itr)->SetAuraProcCharges((*itr)->m_procCharges - 1);
+                (*itr)->UpdateAuraCharges();
+                if ((*itr)->m_procCharges <= 0)
+                    target->RemoveAurasByCasterSpell((*itr)->GetId(), (*itr)->GetCasterGUID());
             }
+            target = hitTarget;
+            m_targets.setUnitTarget(target);
+            AddUnitTarget(target, 0, true);
+            break;
         }
     }
-    else if(GetSpellEntry()->DmgClass == SPELL_DAMAGE_CLASS_MELEE || GetSpellEntry()->DmgClass == SPELL_DAMAGE_CLASS_RANGED)
-    {
-        if (target->HasAuraType(SPELL_AURA_ADD_CASTER_HIT_TRIGGER))
-        {
-            Unit::AuraList const& hitTriggerAuras = target->GetAurasByType(SPELL_AURA_ADD_CASTER_HIT_TRIGGER);
-            for (Unit::AuraList::const_iterator itr = hitTriggerAuras.begin(); itr != hitTriggerAuras.end(); ++itr)
-            {
-                if (Unit* hitTarget = (*itr)->GetCaster())
-                {
-                    if ((*itr)->m_procCharges > 0)
-                    {
-                        (*itr)->SetAuraProcCharges((*itr)->m_procCharges-1);
-                        (*itr)->UpdateAuraCharges();
-                        if ((*itr)->m_procCharges <= 0)
-                            target->RemoveAurasByCasterSpell((*itr)->GetId(), (*itr)->GetCasterGUID());
-                    }
-                    target = hitTarget;
-                    m_targets.setUnitTarget(target);
-                    AddUnitTarget(target, 0, true);
-                    break;
-                }
-            }
-        }
-    }
-    return target;
 }
 
 bool Spell::IsNeedSendToClient() const

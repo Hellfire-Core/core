@@ -396,11 +396,15 @@ class Spell
 
         void WriteSpellGoTargets(WorldPacket * data);
         void WriteAmmoToPacket(WorldPacket * data);
-        void FillTargetMap();
 
+        void FillTargetMap();
         void SetTargetMap(uint32 i, uint32 cur);
 
-        Unit* SelectMagnetTarget();
+        // returns targets grounding totem if exists
+        Unit* SelectGroundingTarget(Unit* target);
+        // if nessesary replaces spell target with intervening warrior
+        void SelectInterveneTarget(); 
+
         void HandleHitTriggerAura();
         bool CheckTarget(Unit* target, uint32 eff);
         bool CanAutoCast(Unit* target);
