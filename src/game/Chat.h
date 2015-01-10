@@ -110,6 +110,7 @@ class ChatHandler
         bool HandleAccountBonesHideCommand(const char* args);
         bool HandleAccountXPToggleCommand(const char* args);
         bool HandleAccountBattleGroundAnnCommand(const char* args);
+        bool HandleAccountBGMarksCommand(const char* args);
         bool HandleAccountAnnounceBroadcastCommand(const char* args);
 
         bool HandleArenaReadyCommand(const char* args);

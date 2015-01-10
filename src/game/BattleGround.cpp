@@ -784,7 +784,12 @@ void BattleGround::RewardMark(Player *plr,uint32 count)
                 plr->SendNewItem(item, count, true, false);
 
         if (no_space_count > 0)
-            SendRewardMarkByMail(plr,mark,no_space_count);
+        {
+            if (plr->GetSession()->IsAccountFlagged(ACC_RESTRICT_BG_MARKS))
+                ChatHandler(plr).SendSysMessage("This account has BG marks restriction enabled, you won't receive additional marks by mail. Use \".account bgmarks\" to disable");
+            else
+                SendRewardMarkByMail(plr, mark, no_space_count);
+        }
     }
 }
 

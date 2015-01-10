@@ -2758,9 +2758,12 @@ void World::SelectRandomPvPDaily()
     if (!sWorld.getConfig(CONFIG_DAILY_BLIZZLIKE))
         return;
 
-    uint8 random = urand(PvPEventStart, PvPEventEnd);;
+    uint8 random = urand(PvPEventStart, PvPEventEnd + 1);
     while (random == currentId)
-        random = urand(PvPEventStart, PvPEventEnd);
+        random = urand(PvPEventStart, PvPEventEnd + 1);
+
+    if (random == PvPEventEnd + 1) // hack for greater AV chance
+        random = 134;
 
     sGameEventMgr.GetEventMap()[currentId].occurence = 5184000;
     sGameEventMgr.GetEventMap()[random].occurence = 1400;

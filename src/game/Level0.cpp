@@ -566,3 +566,19 @@ bool ChatHandler::HandleArenaUnspectateCommand(const char* /*args*/)
     SetSentErrorMessage(true);
     return false;
 }
+
+bool ChatHandler::HandleAccountBGMarksCommand(const char* /*args*/)
+{
+    if (m_session->IsAccountFlagged(ACC_RESTRICT_BG_MARKS))
+    {
+        m_session->RemoveAccountFlag(ACC_RESTRICT_BG_MARKS);
+        SendSysMessage("Battleground Marks of Honor restriction has been enabled for this account.");
+    }
+    else
+    {
+        m_session->AddAccountFlag(ACC_RESTRICT_BG_MARKS);
+        SendSysMessage("Battleground Marks of Honor restriction has been enabled for this account.");
+    }
+
+    return true;
+}
