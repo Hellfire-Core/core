@@ -5598,8 +5598,7 @@ Unit* Spell::SelectGroundingTarget(Unit* target)
     Unit::AuraList const& magnetAuras = target->GetAurasByType(SPELL_AURA_SPELL_MAGNET);
     for (Unit::AuraList::const_iterator itr = magnetAuras.begin(); itr != magnetAuras.end(); ++itr)
     {
-        magnet = (*itr)->GetCaster();
-        if (magnet)
+        if (magnet = (*itr)->GetCaster())
         {
             if ((*itr)->m_procCharges > 0)
             {
@@ -5607,7 +5606,7 @@ Unit* Spell::SelectGroundingTarget(Unit* target)
                 break;
             }
             else
-                magnet == NULL;
+                magnet = NULL;
         }
     }
    
