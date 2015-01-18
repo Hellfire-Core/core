@@ -417,11 +417,12 @@ class ChatHandler
         bool HandleSendMoneyCommand(const char* args);
 
         bool HandleServerCorpsesCommand(const char* args);
+        bool HandleServerEventsCommand(const char* args);
         bool HandleServerExitCommand(const char* args);
         bool HandleServerIdleRestartCommand(const char* args);
         bool HandleServerIdleShutDownCommand(const char* args);
         bool HandleServerInfoCommand(const char* args);
-        bool HandleServerEventsCommand(const char* args);
+        bool HandleServerKickallCommand(const char* args);
         bool HandleServerMotdCommand(const char* args);
         bool HandleServerMuteCommand(const char* args);
         bool HandleServerRestartCommand(const char* args);

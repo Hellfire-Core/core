@@ -7464,3 +7464,9 @@ bool ChatHandler::HandleAccountFriendListCommand(const char* args)
 {
     return false;
 }
+
+bool ChatHandler::HandleServerKickallCommand(const char* args)
+{
+    sWorld.KickAllWithoutPermissions(m_session ? PERM_ADM : 0);
+    return true;
+}

@@ -2225,7 +2225,7 @@ void World::KickAllWithoutPermissions(uint64 perms)
 {
     // session not removed at kick and will removed in next update tick
     for (SessionMap::iterator itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
-        if (itr->second->HasPermissions(perms))
+        if (!itr->second->HasPermissions(perms))
             itr->second->KickPlayer();
 }
 

@@ -138,11 +138,12 @@ ChatCommand * ChatHandler::getCommandTable()
     static ChatCommand serverCommandTable[] =
     {
         { "corpses",        PERM_HIGH_GMT,  PERM_CONSOLE, true,   &ChatHandler::HandleServerCorpsesCommand,       "", NULL },
+        { "events",         PERM_PLAYER,    PERM_CONSOLE, true,   &ChatHandler::HandleServerEventsCommand,        "", NULL },
         { "exit",           PERM_CONSOLE,   PERM_CONSOLE, true,   &ChatHandler::HandleServerExitCommand,          "", NULL },
         { "idlerestart",    PERM_ADM,       PERM_CONSOLE, true,   NULL,                                           "", serverIdleRestartCommandTable },
         { "idleshutdown",   PERM_ADM,       PERM_CONSOLE, true,   NULL,                                           "", serverShutdownCommandTable },
         { "info",           PERM_PLAYER,    PERM_CONSOLE, true,   &ChatHandler::HandleServerInfoCommand,          "", NULL },
-        { "events",         PERM_PLAYER,    PERM_CONSOLE, true,   &ChatHandler::HandleServerEventsCommand,        "", NULL },
+        { "kickall",        PERM_ADM,       PERM_CONSOLE, true,   &ChatHandler::HandleServerKickallCommand,       "", NULL },
         { "motd",           PERM_PLAYER,    PERM_CONSOLE, true,   &ChatHandler::HandleServerMotdCommand,          "", NULL },
         { "mute",           PERM_ADM,       PERM_CONSOLE, true,   &ChatHandler::HandleServerMuteCommand,          "", NULL },
         { "pvp",            PERM_PLAYER,    PERM_CONSOLE, false,  &ChatHandler::HandleServerPVPCommand,           "", NULL },
