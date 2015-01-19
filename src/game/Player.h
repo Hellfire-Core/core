@@ -856,6 +856,7 @@ enum PlayerLoginQueryIndex
     PLAYER_LOGIN_QUERY_LOADMAILS                = 18,
     PLAYER_LOGIN_QUERY_LOADMAILEDITEMS          = 19,
     PLAYER_LOGIN_QUERY_LOADDAILYARENA           = 20,
+    PLAYER_LOGIN_QUERY_LOADFREERESPECTIME       = 21,
 
     MAX_PLAYER_LOGIN_QUERY
 };
@@ -1519,6 +1520,7 @@ class HELLGROUND_EXPORT Player : public Unit
         void SetFreeTalentPoints(uint32 points) { SetUInt32Value(PLAYER_CHARACTER_POINTS1,points); }
         bool resetTalents(bool no_cost = false);
         uint32 resetTalentsCost() const;
+        void buyFreeRespec();
         void UpdateFreeTalentPoints(bool resetIfNeed = true);
         void InitTalentForLevel();
 
@@ -2486,6 +2488,7 @@ class HELLGROUND_EXPORT Player : public Unit
         uint32 m_resetTalentsCost;
         time_t m_resetTalentsTime;
         uint32 m_usedTalentCount;
+        time_t m_freeTalentRespecTime;
 
         // Social
         PlayerSocial *m_social;

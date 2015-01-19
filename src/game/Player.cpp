@@ -419,6 +419,7 @@ Player::Player (WorldSession *session): Unit(), m_reputationMgr(this), m_camera(
 
     m_resetTalentsCost = 0;
     m_resetTalentsTime = 0;
+    m_freeTalentRespecTime = 0;
     m_itemUpdateQueueBlocked = false;
 
     for (int i = 0; i < MAX_MOVE_TYPE; ++i)
@@ -3574,6 +3575,8 @@ void Player::_SaveSpellCooldowns()
 
 uint32 Player::resetTalentsCost() const
 {
+    if (m_freeTalentRespecTime > sWorld.GetGameTime())
+        return 0;
     // The first time reset costs 1 gold
     if (m_resetTalentsCost < 1*GOLD)
         return 1*GOLD;
@@ -15210,10 +15213,12 @@ bool Player::LoadFromDB(uint32 guid, SqlQueryHolder *holder)
     }
 
     result = holder->GetResult(PLAYER_LOGIN_QUERY_LOADDAILYARENA);
-    if(result)
-    {
+    if (result)
         m_DailyArenasWon = result->Fetch()->GetUInt16();
-    }
+
+    result = holder->GetResult(PLAYER_LOGIN_QUERY_LOADFREERESPECTIME);
+    if (result)
+        m_freeTalentRespecTime = time_t(result->Fetch()->GetUInt64());
 
     return true;
 }
@@ -21550,4 +21555,30 @@ void Player::UnspectateArena(const bool teleport)
     SetVisibility(VISIBILITY_ON);
     RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED);
     m_ExtraFlags &= ~PLAYER_EXTRA_ARENA_SPECTATING;
+}
+
+void Player::buyFreeRespec()
+{
+    uint32 required = sWorld.getConfig(CONFIG_FREE_RESPEC_COST);
+    if (m_freeTalentRespecTime > sWorld.GetGameTime())
+    {
+        ChatHandler(this).SendSysMessage(LANG_FREE_RESPEC_ALREADY_ENABLED);
+        return;
+    }
+    else if (required == 0)
+    {
+        ChatHandler(this).SendSysMessage(LANG_FREE_RESPEC_NOT_ENABLED);
+        return;
+    }
+    else if (GetMoney() < required)
+    {
+        ChatHandler(this).SendSysMessage(LANG_FREE_RESPEC_NOT_ENOUGH_MONEY);
+        return;
+    }
+    
+    ModifyMoney((-1)*((int32)required));
+    m_freeTalentRespecTime = sWorld.GetGameTime() + sWorld.getConfig(CONFIG_FREE_RESPEC_DURATION);
+    RealmDataDatabase.PExecute("DELETE FROM character_freerespecs WHERE guid = %u;",GetGUIDLow());
+    RealmDataDatabase.PExecute("INSERT INTO character_freerespecs VALUES (%u , " UI64FMTD ") ;", GetGUIDLow(),(uint64)m_freeTalentRespecTime);
+    ChatHandler(this).SendSysMessage(LANG_FREE_RESPEC_SUCCESFUL);
 }

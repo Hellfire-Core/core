@@ -946,6 +946,7 @@ void Creature::prepareGossipMenu(Player *pPlayer,uint32 gossipid)
                             cantalking=false;
                         break;
                     case GOSSIP_OPTION_UNLEARNTALENTS:
+                    case GOSSIP_OPTION_BUY_FREE_RESPEC:
                         if (!isCanTrainingAndResetTalentsOf(pPlayer))
                             cantalking=false;
                         break;
@@ -1133,6 +1134,9 @@ void Creature::OnGossipSelect(Player* player, uint32 option)
             player->GetSession()->SendBattlegGroundList(ObjectGuid(GetGUID()), bgTypeId);
             break;
         }
+        case GOSSIP_OPTION_BUY_FREE_RESPEC:
+            player->buyFreeRespec();
+            break;
         default:
             OnPoiSelect(player, gossip);
             break;

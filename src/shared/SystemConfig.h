@@ -54,7 +54,7 @@
 // Format is YYYYMMDDRR where RR is the change in the conf file
 // for that day.
 #ifndef _HELLGROUND_CORE_CONFVER
-# define _HELLGROUND_CORE_CONFVER 2014022101
+# define _HELLGROUND_CORE_CONFVER 2015011901
 #endif //_HELLGROUND_CORE_CONFVER
 
 // Format is YYYYMMDDRR where RR is the change in the conf file

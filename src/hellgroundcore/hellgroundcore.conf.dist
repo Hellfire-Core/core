@@ -2,7 +2,7 @@
 # Hellground Core world configuration file #
 ############################################
 [CoreConf]
-ConfVersion=2014022101
+ConfVersion=2015011901
 
 ###################################################################################################################
 # DATABASES AND DIRECTORIES
@@ -796,6 +796,15 @@ KeepDeletedCharsTime = 31
 #        set interval between sending next advertising on chat(in minutes)
 #        0 = disable autoannounce (default)
 #
+#    FreeRespec.Cost
+#        Free talent respec service cost.
+#        Default: 10000000
+#                 0 disable
+#
+#    FreeRespec.Duration
+#        Free talent respec service duration.
+#        Default: 15778463 (6 months)
+# 
 #    GroupLeaderReconnectPeriod
 #        The time the leader of a group has to reconnect before the lead goes to another player (also applies for a server crash)
 #        Default: 180 (seconds)
@@ -908,6 +917,8 @@ KeepDeletedCharsTime = 31
 ActivateWeather = 1
 Auction.EnableSort = 1
 AutoBroadcast.Timer = 0
+FreeRespec.Cost = 10000000
+FreeRespec.Duration = 15778463 
 GroupLeaderReconnectPeriod = 180
 Instance.ResetTimeHour = 4
 Instance.UnloadDelay = 1800000

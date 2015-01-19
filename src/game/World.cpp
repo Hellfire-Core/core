@@ -578,6 +578,8 @@ void World::LoadConfigSettings(bool reload)
     loadConfig(CONFIG_GROUP_XP_DISTANCE, "MaxGroupXPDistance", 74);
     loadConfig(CONFIG_MAX_WHO, "MaxWhoListReturns", 49);
     loadConfig(CONFIG_NO_RESET_TALENT_COST, "NoResetTalentsCost", false);
+    loadConfig(CONFIG_FREE_RESPEC_COST, "FreeRespec.Cost", 10000000);
+    loadConfig(CONFIG_FREE_RESPEC_DURATION, "FreeRespec.Duration", 6 * MONTH);
     loadConfig(CONFIG_RABBIT_DAY, "Rabbit.Day", 0);
     loadConfig(CONFIG_SKILL_PROSPECTING, "SkillChance.Prospecting",false);
 

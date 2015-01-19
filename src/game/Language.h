@@ -744,7 +744,11 @@ enum HellgroundStrings
     LANG_SPECTATE_ALREADY_SPECTATING    = 813,
     LANG_SPECTATE_INFO_AFTER_JOIN       = 814,
     LANG_SPECTATE_NOT_SPECTATNING       = 815,
-    // Room for in-game strings           816-999 not used
+    LANG_FREE_RESPEC_NOT_ENABLED        = 816,
+    LANG_FREE_RESPEC_ALREADY_ENABLED    = 817,
+    LANG_FREE_RESPEC_NOT_ENOUGH_MONEY   = 818,
+    LANG_FREE_RESPEC_SUCCESFUL          = 819,
+    // Room for in-game strings           820-999 not used
 
     // Level 4 (CLI only commands)
     LANG_COMMAND_EXIT                   = 1000,
