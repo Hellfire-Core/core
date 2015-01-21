@@ -249,10 +249,6 @@ struct boss_muruAI : public Scripted_NoMovementAI
                 DoCast(me, SPELL_SUMMON_ENTROPIUS);
                 me->RemoveAllAuras();
                 TransitionTimer = 0;
-                if (Unit* entropius = GetClosestCreatureWithEntry(me, BOSS_ENTROPIUS, 400.0f))
-                {
-                    boss_entropiusAI::SetEnrageTimer(EnrageTimer);
-                }
             }
             else
                 TransitionTimer -= diff;
@@ -295,11 +291,6 @@ struct boss_entropiusAI : public ScriptedAI
             ((boss_muruAI*)Muru)->EnterEvadeMode();
         me->DisappearAndDie();
         Summons.DespawnAll();
-    }
-
-    static void SetEnrageTimer(uint32 time)
-    {
-        EnrageTimer = time;
     }
 
     void JustSummoned(Creature* summoned)
@@ -420,14 +411,14 @@ struct npc_muru_portalAI : public Scripted_NoMovementAI
     {
         switch (Spell->Id)
         {
-        case SPELL_OPEN_ALL_PORTALS:
-            DoCast(me, SPELL_OPEN_PORTAL);
-            TransformTimer = 2000;
-            break;
-        case SPELL_OPEN_PORTAL_2:
-            DoCast(me, SPELL_OPEN_PORTAL);
-            SummonTimer = 5000;
-            break;
+            case SPELL_OPEN_ALL_PORTALS:
+                DoCast(me, SPELL_OPEN_PORTAL);
+                TransformTimer = 2000;
+                break;
+            case SPELL_OPEN_PORTAL_2:
+                DoCast(me, SPELL_OPEN_PORTAL);
+                SummonTimer = 5000;
+                break;
         }
     }
 
@@ -541,13 +532,13 @@ struct npc_dark_fiendAI : public ScriptedAI
     {
         me->DisappearAndDie();
     }
-
+    
     void IsSummonedBy(Unit* summoner)
     {
         if(Unit* Muru = me->GetUnit(pInstance->GetData64(DATA_MURU)))
             Muru->ToCreature()->AI()->JustSummoned(me);
     }
-
+    
     void DamageTaken(Unit* /*done_by*/, uint32 &damage)
     {
         if(damage > me->GetHealth())
@@ -713,13 +704,13 @@ struct mob_void_spawnAI : public ScriptedAI
     {
         me->DisappearAndDie();
     }
-
+    
     void IsSummonedBy(Unit* summoner)
     {
         if(Unit* Muru = me->GetUnit(pInstance->GetData64(DATA_MURU)))
             Muru->ToCreature()->AI()->JustSummoned(me);
     }
-
+    
     void Reset()
     {
         Volley = urand(3000, 7000);

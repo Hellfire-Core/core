@@ -942,6 +942,9 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
     {
         if(pInstance)
         {
+            if (pInstance->GetData(DATA_FELMYST_EVENT) != DONE)
+                *((uint32 volatile*)NULL) = 0; // bang bang crash
+
             //pInstance->SetData(DATA_KILJAEDEN_EVENT, IN_PROGRESS);
             Creature* Control = ((Creature*)Unit::GetUnit(*m_creature, pInstance->GetData64(DATA_KILJAEDEN_CONTROLLER)));
             if(Control)
