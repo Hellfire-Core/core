@@ -544,7 +544,7 @@ inline bool CreatureAI::UpdateVictim()
     if (me->hasUnitState(UNIT_STAT_LOST_CONTROL))
     {
         me->SetSelection(0);
-        return me->getVictim();
+        return false;
     }
 
     if (me->getVictim() && !outofthreat)
