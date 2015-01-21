@@ -303,9 +303,9 @@ void WorldSession::HandleGossipHelloOpcode(WorldPacket & recv_data)
     }
 }
 
-/*void WorldSession::HandleGossipSelectOptionOpcode(WorldPacket & recv_data)
+void WorldSession::HandleGossipSelectOptionOpcode(WorldPacket & recv_data)
 {
-    CHECK_PACKET_SIZE(recv_data,8+4+4);
+    CHECK_PACKET_SIZE(recv_data, 8 + 4 + 4);
 
     sLog.outDebug("WORLD: CMSG_GOSSIP_SELECT_OPTION");
 
@@ -319,16 +319,39 @@ void WorldSession::HandleGossipHelloOpcode(WorldPacket & recv_data)
     if (_player->PlayerTalkClass->GossipOptionCoded(option))
     {
         // recheck
-        CHECK_PACKET_SIZE(recv_data,8+4+1);
-        sLog.outDebug("reading string");
+        CHECK_PACKET_SIZE(recv_data, 8 + 4 + 1);
+        sLog.outBasic("reading string");
         recv_data >> code;
-        sLog.outDebug("string read: %s", code.c_str());
+        sLog.outBasic("string read: %s", code.c_str());
     }
 
-    Creature *unit = GetPlayer()->GetNPCIfCanInteractWith(guid, UNIT_NPC_FLAG_NONE);
-    if (!unit)
+    Creature *unit = NULL;
+    GameObject *go = NULL;
+
+    uint32 sender = _player->PlayerTalkClass->GossipOptionSender(option);
+    uint32 action = _player->PlayerTalkClass->GossipOptionAction(option);
+
+    if (IS_CREATURE_GUID(guid))
     {
-        sLog.outDebug("WORLD: HandleGossipSelectOptionOpcode - Unit (GUID: %u) not found or you can't interact with him.", uint32(GUID_LOPART(guid)));
+        unit = GetPlayer()->GetNPCIfCanInteractWith(guid, UNIT_NPC_FLAG_NONE);
+        if (!unit)
+        {
+            sLog.outDebug("WORLD: HandleGossipSelectOptionOpcode - Unit (GUID: %u) not found or you can't interact with him.", uint32(GUID_LOPART(guid)));
+            return;
+        }
+    }
+    else if (IS_GAMEOBJECT_GUID(guid))
+    {
+        go = _player->GetMap()->GetGameObject(guid);
+        if (!go)
+        {
+            sLog.outDebug("WORLD: HandleGossipSelectOptionOpcode - GameObject (GUID: %u) not found.", uint32(GUID_LOPART(guid)));
+            return;
+        }
+    }
+    else
+    {
+        sLog.outDebug("WORLD: HandleGossipSelectOptionOpcode - unsupported GUID type for highguid %u. lowpart %u.", uint32(GUID_HIPART(guid)), uint32(GUID_LOPART(guid)));
         return;
     }
 
@@ -336,17 +359,14 @@ void WorldSession::HandleGossipHelloOpcode(WorldPacket & recv_data)
     if (GetPlayer()->hasUnitState(UNIT_STAT_DIED))
         GetPlayer()->RemoveSpellsCausingAura(SPELL_AURA_FEIGN_DEATH);
 
-    if (!code.empty())
+    if (unit)
     {
-        if (!Script->GossipSelectWithCode(_player, unit, _player->PlayerTalkClass->GossipOptionSender (option), _player->PlayerTalkClass->GossipOptionAction(option), code.c_str()))
-            unit->OnGossipSelect (_player, option);
+        if (!sScriptMgr.OnGossipSelect(_player, unit, sender, action, code.empty() ? NULL : code.c_str()))
+            unit->OnGossipSelect(_player, option);
     }
     else
-    {
-        if (!Script->GossipSelect (_player, unit, _player->PlayerTalkClass->GossipOptionSender (option), _player->PlayerTalkClass->GossipOptionAction (option)))
-           unit->OnGossipSelect (_player, option);
-    }
-}*/
+        sScriptMgr.OnGossipSelect(_player, go, sender, action, code.empty() ? NULL : code.c_str());
+}
 
 void WorldSession::HandleSpiritHealerActivateOpcode(WorldPacket & recv_data)
 {

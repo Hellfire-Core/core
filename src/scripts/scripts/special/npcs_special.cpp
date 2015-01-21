@@ -786,14 +786,7 @@ bool GossipSelect_npc_mount_vendor(Player *player, Creature *_Creature, uint32 s
 
 bool GossipHello_npc_rogue_trainer(Player *player, Creature *_Creature)
 {
-    if( _Creature->isQuestGiver() )
-        player->PrepareQuestMenu( _Creature->GetGUID() );
-
-    if( _Creature->isTrainer() )
-        player->ADD_GOSSIP_ITEM(2, GOSSIP_TEXT_TRAIN, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_TRAIN);
-
-    if( _Creature->isCanTrainingAndResetTalentsOf(player) )
-        player->ADD_GOSSIP_ITEM(2, "I wish to unlearn my talents", GOSSIP_SENDER_MAIN, GOSSIP_OPTION_UNLEARNTALENTS);
+    _Creature->prepareGossipMenu(player); // why to rewrite other function? just add new line if nessessary
 
     if( player->getClass() == CLASS_ROGUE && player->getLevel() >= 24 && !player->HasItemCount(17126,1) && !player->GetQuestRewardStatus(6681) )
     {
