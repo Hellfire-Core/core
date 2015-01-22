@@ -1013,6 +1013,17 @@ namespace Hellground
             WorldObject *_source;
             bool _within;
     };
+
+    // returns true for alive creature contested guards in LOS with enabled AI
+    struct ContestedGuardCheck
+    {
+        ContestedGuardCheck(WorldObject* source) : _source(source) {};
+        bool operator()(Unit* u) { 
+            (u->IsContestedGuard() && u->isAlive() && u->IsWithinLOSInMap(_source) && (u->GetTypeId() == TYPEID_UNIT) && u->IsAIEnabled);
+        }
+        WorldObject* _source;
+    };
+
 #pragma endregion Checks
 
 #pragma region Sorters

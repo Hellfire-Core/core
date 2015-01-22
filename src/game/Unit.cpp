@@ -11882,18 +11882,31 @@ void Unit::SetContestedPvP(Player *attackedPlayer)
         return;
 
     player->SetContestedPvPTimer(30000);
+
     if (!player->hasUnitState(UNIT_STAT_ATTACK_PLAYER))
     {
         player->addUnitState(UNIT_STAT_ATTACK_PLAYER);
         player->SetFlag(PLAYER_FLAGS, PLAYER_FLAGS_CONTESTED_PVP);
-        // call MoveInLineOfSight for nearby contested guards
         player->SetVisibility(player->GetVisibility());
+
+        std::list<Unit*> targets;
+        Hellground::ContestedGuardCheck check(player);
+        Hellground::UnitListSearcher<Hellground::ContestedGuardCheck> searcher(targets, check);
+        Cell::VisitAllObjects(player, searcher, 20.0f * sWorld.getConfig(RATE_CREATURE_GUARD_AGGRO));
+        for (std::list<Unit *>::iterator itr = targets.begin(); itr != targets.end(); itr++)
+            (*itr)->ToCreature()->AI()->MoveInLineOfSight_Safe(player);
     }
     if (!hasUnitState(UNIT_STAT_ATTACK_PLAYER))
     {
         addUnitState(UNIT_STAT_ATTACK_PLAYER);
-        // call MoveInLineOfSight for nearby contested guards
         SetVisibility(GetVisibility());
+
+        std::list<Unit*> targets;
+        Hellground::ContestedGuardCheck check(this);
+        Hellground::UnitListSearcher<Hellground::ContestedGuardCheck> searcher(targets, check);
+        Cell::VisitAllObjects(this, searcher, 20.0f * sWorld.getConfig(RATE_CREATURE_GUARD_AGGRO));
+        for (std::list<Unit *>::iterator itr = targets.begin(); itr != targets.end(); itr++)
+            (*itr)->ToCreature()->AI()->MoveInLineOfSight_Safe(this);
     }
 }
 
