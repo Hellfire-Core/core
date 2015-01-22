@@ -8888,7 +8888,11 @@ uint32 Player::GetItemCount(uint32 item, bool inBankAlso, Item* skipItem) const
         {
             Bag* pBag = (Bag*)GetItemByPos(INVENTORY_SLOT_BAG_0, i);
             if (pBag)
-                count += pBag->GetItemCount(item,skipItem);
+            {
+                count += pBag->GetItemCount(item, skipItem);
+                if (pBag->GetEntry == item) // count the bag itself
+                    count++;
+            }
         }
 
         if (skipItem && skipItem->GetProto()->GemProperties)
