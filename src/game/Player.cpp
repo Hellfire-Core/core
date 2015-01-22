@@ -8890,7 +8890,7 @@ uint32 Player::GetItemCount(uint32 item, bool inBankAlso, Item* skipItem) const
             if (pBag)
             {
                 count += pBag->GetItemCount(item, skipItem);
-                if (pBag->GetEntry() == item) // count the bag itself
+                if (pBag->GetEntry() == item && pBag != skipItem) // count the bag itself
                     count++;
             }
         }
