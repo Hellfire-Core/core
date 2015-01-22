@@ -807,7 +807,7 @@ bool GossipSelect_npc_rogue_trainer(Player *player, Creature *_Creature, uint32 
         player->CLOSE_GOSSIP_MENU();
         player->CastSpell(player,21100,false);
         break;
-    case GOSSIP_ACTION_TRAIN:
+    case GOSSIP_OPTION_TRAINER:
         player->SEND_TRAINERLIST( _Creature->GetGUID() );
         break;
     case GOSSIP_OPTION_UNLEARNTALENTS:
