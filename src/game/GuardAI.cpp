@@ -43,17 +43,19 @@ void GuardAI::MoveInLineOfSight(Unit *u)
     if (!m_creature->CanFly() && m_creature->GetDistanceZ(u) > CREATURE_Z_ATTACK_RANGE)
         return;
 
-    if (!m_creature->getVictim() && m_creature->canAttack(u) &&
-        (u->IsHostileToPlayers() || m_creature->IsHostileTo(u) /*|| u->getVictim() && m_creature->IsFriendlyTo(u->getVictim())*/) &&
-        u->isInAccessiblePlacefor (m_creature))
+    if (m_creature->canAttack(u) && (u->IsHostileToPlayers() || m_creature->IsHostileTo(u)))
     {
-        float attackRadius = m_creature->GetAttackDistance(u);
-        if (m_creature->IsWithinDistInMap(u,attackRadius))
+        if (!m_creature->getVictim() && u->isInAccessiblePlacefor(m_creature))
         {
-            //Need add code to let guard support player
-            AttackStart(u);
-            //u->RemoveAurasByType(SPELL_AURA_MOD_STEALTH);
+            float attackRadius = m_creature->GetAttackDistance(u);
+            if (m_creature->IsWithinDistInMap(u, attackRadius))
+            {
+                //Need add code to let guard support player
+                AttackStart(u);
+                //u->RemoveAurasByType(SPELL_AURA_MOD_STEALTH);
+            }
         }
+        m_creature->AddThreat(u, 0.0f);
     }
 }
 
