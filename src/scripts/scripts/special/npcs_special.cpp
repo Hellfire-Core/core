@@ -397,13 +397,14 @@ struct npc_injured_patientAI : public ScriptedAI
     npc_injured_patientAI(Creature *c) : ScriptedAI(c) {}
 
     uint64 Doctorguid;
-
+    uint32 BleedTimer;
+    uint8  Status;
     Location* Coord;
 
     void Reset()
     {
         Doctorguid = 0;
-
+        BleedTimer = 1000;
         Coord = NULL;
         //no select
         me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
@@ -420,14 +421,17 @@ struct npc_injured_patientAI : public ScriptedAI
         case 12923:
         case 12938:                                     //Injured Soldier
             me->SetHealth(uint32(me->GetMaxHealth()*.75));
+            Status = 75;
             break;
         case 12924:
         case 12936:                                     //Badly injured Soldier
             me->SetHealth(uint32(me->GetMaxHealth()*.50));
+            Status = 50;
             break;
         case 12925:
         case 12937:                                     //Critically injured Soldier
             me->SetHealth(uint32(me->GetMaxHealth()*.25));
+            Status = 25;
             break;
         }
     }
@@ -474,26 +478,33 @@ struct npc_injured_patientAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (me->isAlive() && me->GetHealth() > 6)
-        {
-            //lower HP on every world tick makes it a useful counter, not officlone though
-            me->SetHealth(uint32(me->GetHealth()-5) );
-        }
+        if (!me->isAlive())
+            return;
 
-        if (me->isAlive() && me->GetHealth() <= 6)
+        if (BleedTimer <= diff)
         {
-            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IN_COMBAT);
-            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-            me->setDeathState(JUST_DIED);
-            me->SetFlag(UNIT_DYNAMIC_FLAGS, 32);
-
-            if(Doctorguid)
+            Status--;
+            if (Status > 0)
             {
-                Creature* Doctor = (Unit::GetCreature((*me), Doctorguid));
-                if(Doctor)
-                    ((npc_doctorAI*)Doctor->AI())->PatientDied(Coord);
+                me->SetHealth(uint32(me->GetMaxHealth()* Status / 100));
+                BleedTimer = 650; // guess, gives about 15 secs for criticaly injured ones
+            }
+            else
+            {
+                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IN_COMBAT);
+                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                me->setDeathState(JUST_DIED);
+                me->SetFlag(UNIT_DYNAMIC_FLAGS, 32);
+                if (Doctorguid)
+                {
+                    Creature* Doctor = (Unit::GetCreature((*me), Doctorguid));
+                    if (Doctor)
+                        ((npc_doctorAI*)Doctor->AI())->PatientDied(Coord);
+                }
             }
         }
+        else
+            BleedTimer -= diff;
     }
 };
 
