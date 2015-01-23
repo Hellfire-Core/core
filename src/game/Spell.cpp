@@ -1345,18 +1345,25 @@ struct ChainHealingOrder : public std::binary_function<const Unit*, const Unit*,
 
     int32 ChainHealingHash(Unit const* Target) const
     {
-        if (Target->GetTypeId() == TYPEID_PLAYER && MainTarget->GetTypeId() == TYPEID_PLAYER &&
-            ((Player const*)Target)->IsInSameRaidWith((Player const*)MainTarget))
-        {
-            if (Target->GetHealth() == Target->GetMaxHealth())
-                return 40000;
+        if (Target->IsFriendlyTo(MainTarget))
+            return 100000; // 'never' happens, though when no other are available it will still happen, search function should not consider those! return false sets them on the first place
+        // (if main target is a player in a group OR is a pet of a player which is in a group)
+        if (((MainTarget->GetTypeId() == TYPEID_PLAYER && ((Player const*)MainTarget)->GetGroup()) ||  (MainTarget->GetCharmerOrOwner() && MainTarget->GetCharmerOrOwner()->GetTypeId() == TYPEID_PLAYER && ((Player*)(MainTarget->GetCharmerOrOwner()))->GetGroup())))
+        {   // AND target is not a totem ------------> we target only this group members and their pets
+            if ((Target)->IsInRaidWith(MainTarget) || ((Target->GetCharmerOrOwner() && Target->GetCharmerOrOwner()->IsInRaidWith(MainTarget))) && !((Creature*)Target)->isTotem())
+            {
+                if (Target->GetHealth() == Target->GetMaxHealth())
+                    return 100;
+                else
+                    return int(Target->GetHealth() / Target->GetMaxHealth());
+            }
             else
-                return 20000 - Target->GetMaxHealth() + Target->GetHealth();
-        }
+                return 100000; // 'never' happens, though when no other are available it will still happen, search function should not consider those! return false sets them on the first place
+        }                      
         else if(!((Creature*)Target)->isTotem())
-            return 40000 - Target->GetMaxHealth() + Target->GetHealth();
+            return int(Target->GetHealth() / Target->GetMaxHealth());
         else
-            return 50000 - Target->GetMaxHealth() + Target->GetHealth();
+            return int(Target->GetHealth() / Target->GetMaxHealth());
     }
 };
 
