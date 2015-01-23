@@ -1018,8 +1018,11 @@ namespace Hellground
     struct ContestedGuardCheck
     {
         ContestedGuardCheck(WorldObject* source) : _source(source) {};
-        bool operator()(Unit* u) { 
-            (u->IsContestedGuard() && u->isAlive() && u->IsWithinLOSInMap(_source) && (u->GetTypeId() == TYPEID_UNIT) && u->IsAIEnabled);
+        bool operator()(Unit* u)
+        { 
+            if (u->IsContestedGuard() && u->isAlive() && u->IsWithinLOSInMap(_source) && (u->GetTypeId() == TYPEID_UNIT) && u->IsAIEnabled)
+                return true;
+            return false;
         }
         WorldObject* _source;
     };
