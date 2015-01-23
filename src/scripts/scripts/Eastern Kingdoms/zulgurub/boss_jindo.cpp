@@ -203,6 +203,8 @@ struct mob_shade_of_jindoAI : public ScriptedAI
 
     void UpdateAI (const uint32 diff)
     {
+        if (!UpdateVictim())
+            return;
 
         //ShadowShock_Timer
         if(ShadowShock_Timer < diff)
