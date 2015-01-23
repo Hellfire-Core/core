@@ -15483,7 +15483,7 @@ void Player::_LoadInventory(QueryResultAutoPtr result, uint32 timediff)
                 continue;
             }
 
-            uint8 success;
+            uint8 success = EQUIP_ERR_OK;
 
             if (!bag_guid)
             {
