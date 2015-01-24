@@ -812,21 +812,13 @@ bool GossipHello_npc_rogue_trainer(Player *player, Creature *_Creature)
 
 bool GossipSelect_npc_rogue_trainer(Player *player, Creature *_Creature, uint32 sender, uint32 action)
 {
-    switch( action )
+    if (action == GOSSIP_ACTION_INFO_DEF + 1)
     {
-    case GOSSIP_ACTION_INFO_DEF+1:
         player->CLOSE_GOSSIP_MENU();
         player->CastSpell(player,21100,false);
-        break;
-    case GOSSIP_OPTION_TRAINER:
-        player->SEND_TRAINERLIST( _Creature->GetGUID() );
-        break;
-    case GOSSIP_OPTION_UNLEARNTALENTS:
-        player->CLOSE_GOSSIP_MENU();
-        player->SendTalentWipeConfirm( _Creature->GetGUID() );
-        break;
+        return true;
     }
-    return true;
+    return false;
 }
 
 /*######
