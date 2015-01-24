@@ -375,8 +375,8 @@ void WardenWin::HandleData(ByteBuffer &buff)
         if (result == 0x00)
         {
             sLog.outLog(LOG_WARDEN, "TIMING CHECK FAIL result 0x00, account %u", Client->GetAccountId());
-            if (found && sWorld.getConfig(CONFIG_WARDEN_KICK))
-               Client->KickPlayer();
+            if (sWorld.getConfig(CONFIG_WARDEN_KICK))
+                Client->KickPlayer();
 
             return;
         }
@@ -397,7 +397,7 @@ void WardenWin::HandleData(ByteBuffer &buff)
     const WardenData * rd;
 
     uint8 type;
- 
+
     std::stringstream ids;
     ids << "AntiCheat failed checks: ";
 
@@ -545,13 +545,16 @@ void WardenWin::HandleData(ByteBuffer &buff)
         }
     }
 
-    if (found && sWorld.getConfig(CONFIG_WARDEN_KICK))
-       Client->KickPlayer();
-
     if (found && sWorld.getConfig(CONFIG_WARDEN_BAN))
     {
         std::string accountname;
         if (AccountMgr::GetName(Client->GetAccountId(), accountname))
             sWorld.BanAccount(BAN_ACCOUNT, accountname.c_str(), "-1", ids.str(), "Warden");
     }
+
+    if (found && sWorld.getConfig(CONFIG_WARDEN_KICK))
+        if(Client)
+            Client->KickPlayer();
+
+
 }
