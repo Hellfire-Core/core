@@ -1020,9 +1020,7 @@ namespace Hellground
         ContestedGuardCheck(WorldObject* source) : _source(source) {};
         bool operator()(Unit* u)
         { 
-            if (u->IsContestedGuard() && u->isAlive() && u->IsWithinLOSInMap(_source) && (u->GetTypeId() == TYPEID_UNIT) && u->IsAIEnabled)
-                return true;
-            return false;
+            return (u->IsContestedGuard() && u->isAlive() && u->IsWithinLOSInMap(_source) && (u->GetTypeId() == TYPEID_UNIT) && u->IsAIEnabled);
         }
         WorldObject* _source;
     };
