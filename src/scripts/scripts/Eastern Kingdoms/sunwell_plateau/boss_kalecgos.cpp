@@ -337,6 +337,7 @@ struct boss_kalecgosAI : public ScriptedAI
                 me->RemoveAllAuras();
                 me->DeleteThreatList();
                 me->CombatStop();
+                ClearCastQueue();
                 TalkSequence++;
             }
 
