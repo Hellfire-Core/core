@@ -1480,7 +1480,6 @@ class HELLGROUND_EXPORT Player : public Unit
             ASSERT(it);
             ASSERT(mMitems.find(it->GetGUIDLow()) == mMitems.end());
             // if some pointer is already there we can get some invalid pointers and stuff
-            ASSERT(GetItemByGuid(it->GetGUID()) == NULL);
 
             mMitems[it->GetGUIDLow()] = it;
         }

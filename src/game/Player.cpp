@@ -9422,8 +9422,6 @@ uint8 Player::_CanStoreItem_InBag(uint8 bag, ItemPosCountVec &dest, ItemPrototyp
     if (!ItemCanGoIntoBag(pProto,pBagProto))
         return EQUIP_ERR_ITEM_DOESNT_GO_INTO_BAG;
 
-    volatile uint32 debugBagEntry = pBag->GetEntry();
-    volatile uint32 debugBagLowGUID = pBag->GetGUIDLow();
     for (uint32 j = 0; j < pBag->GetBagSize(); j++)
     {
         // skip specific slot already processed in first called _CanStoreItem_InSpecificSlot

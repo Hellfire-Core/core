@@ -559,10 +559,6 @@ void WorldSession::HandleTakeItem(WorldPacket & recv_data)
     uint8 msg = _player->CanStoreItem(NULL_BAG, NULL_SLOT, dest, it, false);
     if (msg == EQUIP_ERR_OK)
     {
-        if (it->IsBag())
-            for (uint8 i = 0; i< MAX_BAG_SIZE;i++)
-                ASSERT(((Bag*)it)->GetItemByPos(i) == NULL);
-
         m->RemoveItem(itemId);
         m->removedItems.push_back(itemId);
 
