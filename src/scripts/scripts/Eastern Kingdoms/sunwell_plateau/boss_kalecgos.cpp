@@ -242,11 +242,6 @@ struct boss_kalecgosAI : public ScriptedAI
             TalkTimer = 7000;
             break;
         case 6:
-            if (instance)
-            {
-                if (Creature* Sathrovarr = Creature::GetCreature(*me, instance->GetData64(DATA_SATHROVARR)))
-                    Sathrovarr->NearTeleportTo(Sathrovarr->GetPositionX(), Sathrovarr->GetPositionY(), DRAGON_REALM_Z, Sathrovarr->GetOrientation());
-            }
             me->GetMotionMaster()->MovePoint(2, FlyCoord[1][0],FlyCoord[1][1],FlyCoord[1][2]);
             TalkTimer = 20000;
             break;
@@ -287,6 +282,9 @@ struct boss_kalecgosAI : public ScriptedAI
                 break;
             case 4:
                 EnterEvadeMode();
+                if (Creature* Sathrovarr = Creature::GetCreature(*me, instance->GetData64(DATA_SATHROVARR)))
+                    Sathrovarr->AI()->EnterEvadeMode();
+                
                 break;
             default:
                 break;
@@ -355,11 +353,9 @@ struct boss_kalecgosAI : public ScriptedAI
         }
         else
         {
-            if (!UpdateVictim())
-                return;
 
             // be sure to not attack players in spectral realm
-            if (me->getVictim()->HasAura(AURA_SPECTRAL_REALM, 0))
+            if (me->getVictim() && me->getVictim()->HasAura(AURA_SPECTRAL_REALM, 0))
             {
                 // if player in spectral realm is on top of threat list either
                 // he has taunted us or there is no alive player outside spectral realm
@@ -375,7 +371,7 @@ struct boss_kalecgosAI : public ScriptedAI
             }
 
             // if still having victim with aura, drop some threat
-            if (me->getVictim()->HasAura(AURA_SPECTRAL_REALM, 0))
+            if (me->getVictim() && me->getVictim()->HasAura(AURA_SPECTRAL_REALM, 0))
                 me->getThreatManager().modifyThreatPercent(me->getVictim(), -10);
 
             // various checks + interaction with sathrovarr
@@ -433,6 +429,9 @@ struct boss_kalecgosAI : public ScriptedAI
             }
             else
                 CheckTimer -= diff;
+
+            if (!UpdateVictim())
+                return;
 
             // cast spells
             if (ArcaneBuffetTimer < diff)
@@ -602,16 +601,14 @@ struct boss_sathrovarrAI : public ScriptedAI
     }
 
     void UpdateAI(const uint32 diff)
-    {
-        if (!UpdateVictim())
-            return;
+    {;
 
         // to be tested
         if ((!me->getVictim()->HasAura(AURA_SPECTRAL_REALM)  || me->getVictim()->GetPositionZ() > -50)  && !(me->getVictim()->GetEntry() == MOB_KALEC))
             DoModifyThreatPercent(me->getVictim(), -100);
 
         // be sure to attack only players in spectral realm
-        if (me->getVictim()->HasAura(AURA_SPECTRAL_EXHAUSTION))
+        if (me->getVictim() && me->getVictim()->HasAura(AURA_SPECTRAL_EXHAUSTION))
         {
             me->RemoveSpellsCausingAura(SPELL_AURA_MOD_TAUNT);
             if (!UpdateVictim())
@@ -674,6 +671,9 @@ struct boss_sathrovarrAI : public ScriptedAI
         }
         else
             CheckTimer -= diff;
+
+        if (!UpdateVictim())
+            return;
 
         // cast spells
         if (ShadowBoltTimer < diff)
