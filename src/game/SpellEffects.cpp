@@ -2816,7 +2816,7 @@ void Spell::EffectTeleportUnits(uint32 i)
     // If not exist data for dest location - return
     if (!m_targets.HasDst())
     {
-        sLog.outLog(LOG_DEFAULT, "ERROR: Spell::EffectTeleportUnits - does not have destination for spell ID %u\n", GetSpellEntry()->Id);
+        sLog.outLog(LOG_DEFAULT, "ERROR: Spell::EffectTeleportUnits - does not have destination for spell ID %u", GetSpellEntry()->Id);
         return;
     }
     // Init dest coordinates
