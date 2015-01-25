@@ -8135,7 +8135,6 @@ uint32 Unit::SpellDamageBonus(Unit *pVictim, SpellEntry const *spellProto, uint3
             //This is changed in WLK, using aura 255
             //Mangle
             case 2312:
-            case 44955:
                 // don't apply mod twice
                 if (hasmangle)
                     break;
