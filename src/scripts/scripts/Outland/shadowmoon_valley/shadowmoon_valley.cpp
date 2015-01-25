@@ -2547,7 +2547,6 @@ struct mob_shadowlord_deathwailAI : public ScriptedAI
                 m_creature->GetMotionMaster()->MovePoint(1, -3247, 284, 138.1);
                 m_creature->SetHomePosition( -3247, 284, 138.1, 0);
                 m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                DoZoneInCombat(50);
                 landed = true;
                 felfire = false;
             }
