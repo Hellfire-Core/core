@@ -23,18 +23,16 @@
 #define SPELL_LIGHTNING_BOLT            35010
 #define SPELL_EARTHGRAB_TOTEM           31981
 #define SPELL_STONESKIN_TOTEM           31985
+#define SPELL_HEALING_TOTEM             34980
 
-#define SPELL_HEALING_WARD_HEAL         34977
-#define SPELL_H_HEALING_WARD_HEAL       38800
 #define SPELL_FIRE_NOVA                 33132
 #define SPELL_ENTANGLING_ROOTS          20654
 #define SPELL_STONESKIN                 31986
 
-#define NPC_HEALING_WARD                20208
-#define NPC_H_HEALING_WARD              22322
 #define NPC_STONESKIN_TOTEM             18177
 #define NPC_H_STONESKIN_TOTEM           19900
 
+//todo: move all this useless code to eventai
 
 struct boss_mennu_the_betrayerAI : public ScriptedAI
 {
@@ -109,7 +107,7 @@ struct boss_mennu_the_betrayerAI : public ScriptedAI
 
         if(HealingWard_Timer < diff)
         {
-            AddSpellToCast(m_creature, SPELL_HEALING_WARD);
+            AddSpellToCast(m_creature, SPELL_HEALING_TOTEM);
             HealingWard_Timer = 30000;
         }
         else
@@ -220,46 +218,6 @@ CreatureAI* GetAI_npc_corrupted_nova_totem(Creature *_Creature)
     return new npc_corrupted_nova_totemAI (_Creature);
 }
 
-struct npc_mennu_healing_wardAI : public ScriptedAI
-{
-    npc_mennu_healing_wardAI(Creature *c) : ScriptedAI(c)
-    {
-        pInstance = (c->GetInstanceData());
-        HeroicMode = m_creature->GetMap()->IsHeroic();
-    }
-
-    ScriptedInstance *pInstance;
-    bool HeroicMode;
-
-    uint32 Timer;
-
-    void Reset()
-    {
-        Timer = 2000;
-    }
-
-    void JustDied(Unit *u)
-    {
-    }
-
-    void UpdateAI(const uint32 diff)
-    {
-        if(Timer < diff)
-        {
-            DoCast(m_creature, HeroicMode?SPELL_H_HEALING_WARD_HEAL:SPELL_HEALING_WARD_HEAL);
-            Timer = 2000;
-        }
-        else
-            Timer -= diff;
-    }
-
-};
-
-CreatureAI* GetAI_npc_mennu_healing_ward(Creature *_Creature)
-{
-    return new npc_mennu_healing_wardAI (_Creature);
-}
-
 struct npc_earthgrab_totemAI : public Scripted_NoMovementAI
 {
     npc_earthgrab_totemAI(Creature *c) : Scripted_NoMovementAI(c)
@@ -312,10 +270,5 @@ void AddSC_boss_mennu_the_betrayer()
     newscript = new Script;
     newscript->Name="npc_earthgrab_totem";
     newscript->GetAI = &GetAI_npc_earthgrab_totem;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name="npc_mennu_healing_ward";
-    newscript->GetAI = &GetAI_npc_mennu_healing_ward;
     newscript->RegisterSelf();
 }
