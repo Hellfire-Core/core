@@ -354,6 +354,8 @@ struct boss_kalecgosAI : public ScriptedAI
         else
         {
 
+            if (!UpdateVictim())
+                return;
             // be sure to not attack players in spectral realm
             if (me->getVictim() && me->getVictim()->HasAura(AURA_SPECTRAL_REALM, 0))
             {
@@ -430,8 +432,7 @@ struct boss_kalecgosAI : public ScriptedAI
             else
                 CheckTimer -= diff;
 
-            if (!UpdateVictim())
-                return;
+
 
             // cast spells
             if (ArcaneBuffetTimer < diff)
@@ -603,6 +604,8 @@ struct boss_sathrovarrAI : public ScriptedAI
     void UpdateAI(const uint32 diff)
     {
 
+        if (!UpdateVictim())
+            return;
         // to be tested
         if (me->getVictim() && (!me->getVictim()->HasAura(AURA_SPECTRAL_REALM)  || me->getVictim()->GetPositionZ() > -50)  && !(me->getVictim()->GetEntry() == MOB_KALEC))
             DoModifyThreatPercent(me->getVictim(), -100);
@@ -672,8 +675,7 @@ struct boss_sathrovarrAI : public ScriptedAI
         else
             CheckTimer -= diff;
 
-        if (!UpdateVictim())
-            return;
+
 
         // cast spells
         if (ShadowBoltTimer < diff)
