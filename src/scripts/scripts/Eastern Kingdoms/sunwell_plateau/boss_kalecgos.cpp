@@ -601,10 +601,10 @@ struct boss_sathrovarrAI : public ScriptedAI
     }
 
     void UpdateAI(const uint32 diff)
-    {;
+    {
 
         // to be tested
-        if ((!me->getVictim()->HasAura(AURA_SPECTRAL_REALM)  || me->getVictim()->GetPositionZ() > -50)  && !(me->getVictim()->GetEntry() == MOB_KALEC))
+        if (me->getVictim() && (!me->getVictim()->HasAura(AURA_SPECTRAL_REALM)  || me->getVictim()->GetPositionZ() > -50)  && !(me->getVictim()->GetEntry() == MOB_KALEC))
             DoModifyThreatPercent(me->getVictim(), -100);
 
         // be sure to attack only players in spectral realm
