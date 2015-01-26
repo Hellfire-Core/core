@@ -263,6 +263,7 @@ struct boss_illidan_stormrageAI : public BossAI
 
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
         me->SetLevitate(false);
+        me->setHover(false);
         me->HandleEmoteCommand(EMOTE_ONESHOT_LAND);
         me->SetSelection(0);
 
@@ -290,12 +291,15 @@ struct boss_illidan_stormrageAI : public BossAI
             {
                 events.ScheduleEvent(EVENT_ILLIDAN_SOFT_ENRAGE, 40000, m_phase);
                 events.ScheduleEvent(EVENT_ILLIDAN_CAGE_TRAP, urand(25000, 32000), m_phase);
+                me->SetLevitate(false);
+                me->setHover(false);
             }
             case PHASE_THREE:
             {
                 events.ScheduleEvent(EVENT_ILLIDAN_AGONIZING_FLAMES, urand(28000, 35000), m_phase);
                 events.ScheduleEvent(EVENT_ILLIDAN_CHANGE_PHASE, m_phase == PHASE_FIVE ? 60000 : urand(40000, 55000), m_phase);
-
+                me->SetLevitate(false);
+                me->setHover(false);
                 if (Creature *pMaiev = GetClosestCreatureWithEntry(me, 23197, 200.0f))
                     pMaiev->AI()->DoAction(4); // SET MELEE ATTACK TYPE
             }
@@ -306,6 +310,9 @@ struct boss_illidan_stormrageAI : public BossAI
                 events.ScheduleEvent(EVENT_ILLIDAN_DRAW_SOUL, urand(35000, 45000), m_phase);
                 events.ScheduleEvent(EVENT_ILLIDAN_PARASITIC_SHADOWFIEND, 30000, m_phase);
                 events.ScheduleEvent(EVENT_ILLIDAN_RANDOM_YELL, urand(32000, 35000), m_phase);
+                                
+                me->SetLevitate(false);
+                me->setHover(false);
 
                 SetWarglaivesEquipped(true);
 
@@ -352,6 +359,7 @@ struct boss_illidan_stormrageAI : public BossAI
 
                 me->HandleEmoteCommand(EMOTE_ONESHOT_LIFTOFF);
                 me->SetLevitate(true);
+                me->setHover(true);
 
                 me->GetMotionMaster()->MovePoint(0, CENTER_X +5.0f, CENTER_Y, CENTER_Z, UNIT_ACTION_CONTROLLED);
 
@@ -376,6 +384,9 @@ struct boss_illidan_stormrageAI : public BossAI
 
                 SetAutocast(SPELL_ILLIDAN_SHADOW_BLAST, 3000, false, CAST_TANK);
 
+                me->SetLevitate(false);
+                me->setHover(false); // set both to true after his casting state is fixed in demon form
+
                 events.ScheduleEvent(EVENT_ILLIDAN_TRANSFORM_NO1, 0, m_phase);
                 events.ScheduleEvent(EVENT_ILLIDAN_FLAME_BURST, 20000, m_phase);
                 events.ScheduleEvent(EVENT_ILLIDAN_SHADOW_DEMON, 30000, m_phase);
@@ -387,6 +398,8 @@ struct boss_illidan_stormrageAI : public BossAI
 
                 me->AttackStop();
                 me->SetReactState(REACT_PASSIVE);
+                me->SetLevitate(false);
+                me->setHover(false);
 
                 events.ScheduleEvent(EVENT_ILLIDAN_INPRISON_RAID, 500, m_phase);
                 events.ScheduleEvent(EVENT_ILLIDAN_SUMMON_MAIEV, 6000, m_phase);
@@ -396,6 +409,8 @@ struct boss_illidan_stormrageAI : public BossAI
             {
                 me->AttackStop();
                 me->RemoveAllAuras();
+                me->SetLevitate(false);
+                me->setHover(false);
 
                 ForceSpellCast(me, SPELL_ILLIDAN_DEATH_OUTRO, INTERRUPT_AND_CAST_INSTANTLY);
                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
@@ -435,7 +450,7 @@ struct boss_illidan_stormrageAI : public BossAI
 
                             if (me->getThreatManager().isThreatListEmpty())
                             {
-                                me->AI()->EnterEvadeMode();
+                                EnterEvadeMode();
                                 return false;
                             }
 
@@ -564,6 +579,7 @@ struct boss_illidan_stormrageAI : public BossAI
                 case EVENT_ILLIDAN_LAND:
                 {
                     me->SetLevitate(false);
+                    me->setHover(false);
                     me->HandleEmoteCommand(EMOTE_ONESHOT_LAND);
                     me->SetReactState(REACT_AGGRESSIVE);
                     ChangePhase(PHASE_THREE);
@@ -838,14 +854,13 @@ struct boss_illidan_stormrageAI : public BossAI
 
     void MovementInform(uint32 MovementType, uint32 uiData)
     {
-        if (MovementType == POINT_MOTION_TYPE)
-            me->setHover(true);
     }
 
     void EnterEvadeMode()
     {
         me->setActive(false);
-
+        me->SetLevitate(false);
+        me->setHover(false);
         summons.DespawnAll();
         events.Reset();
 
@@ -886,6 +901,8 @@ struct boss_illidan_stormrageAI : public BossAI
         {
             case EVENT_ILLIDAN_START:
             {
+                me->setHover(true);
+                me->SetLevitate(true);
                 DoScriptText(YELL_ILLIDAN_AGGRO, me);
                 me->SetReactState(REACT_AGGRESSIVE);
 
@@ -930,6 +947,7 @@ struct boss_illidan_stormrageAI : public BossAI
    
     void UpdateAI(const uint32 diff)
     {
+        events.Update(diff);
         if (!UpdateVictim())
             return;
 
@@ -978,7 +996,6 @@ struct boss_illidan_stormrageAI : public BossAI
             b_maievDone = true;
         }
 
-        events.Update(diff);
         if (HandlePhase(m_phase))
             DoMeleeAttackIfReady();
 
