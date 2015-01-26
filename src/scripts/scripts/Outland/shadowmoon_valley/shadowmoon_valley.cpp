@@ -2726,6 +2726,7 @@ EndContentData */
 #define VAGATH_INTRO      "A miserable defense from Light-swollen fools. Xi'ri, I will consume you myself! "
 #define VAGATH_DEATH      "You'ves sealed your fate, Akama! The master will learn of your betrayal! "
 #define XIRI_GOSSIP_HELLO "I am ready to join your forces in Battle Xi'ri"
+#define XIRI_GOSSIP_RESTORE_ITEM "Restore Medallion of Karabor"
 
 //NPC spawn positions and Waypoints
 static float MaievBT[4] =
@@ -3237,12 +3238,11 @@ bool GossipHello_npc_xiri(Player *player, Creature *_Creature)
         player->PrepareQuestMenu( _Creature->GetGUID() );
 
     if (player->GetQuestStatus(10985) == QUEST_STATUS_INCOMPLETE)
-    {
         player->ADD_GOSSIP_ITEM( 0, XIRI_GOSSIP_HELLO, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF);
-        player->SEND_GOSSIP_MENU(_Creature->GetNpcTextId(), _Creature->GetGUID());
-    }
-    else
-        player->SEND_GOSSIP_MENU(_Creature->GetNpcTextId(), _Creature->GetGUID());
+    else if (player->GetQuestStatus(10985) == QUEST_STATUS_COMPLETE && !player->HasItemCount(32649,1,true) && !player->HasItemCount(32757,1,true))
+        player->ADD_GOSSIP_ITEM(0, XIRI_GOSSIP_RESTORE_ITEM, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+
+    player->SEND_GOSSIP_MENU(_Creature->GetNpcTextId(), _Creature->GetGUID());
 
     return true;
 }
@@ -3255,6 +3255,20 @@ bool GossipSelect_npc_xiri(Player *player, Creature *_Creature, uint32 sender, u
             player->CLOSE_GOSSIP_MENU();
             ((npc_xiriAI*)_Creature->AI())->StartEvent();
             ((npc_xiriAI*)_Creature->AI())->PlayerGUID = player->GetGUID();
+            break;
+        case GOSSIP_ACTION_INFO_DEF +1:
+            player->CLOSE_GOSSIP_MENU();
+            // recheck quest status and select medallion version
+            if (player->GetQuestStatus(10985) != QUEST_STATUS_COMPLETE)
+                break;
+            uint32 entry = (player->GetQuestStatus(10959) == QUEST_STATUS_COMPLETE) ? 32757 : 32649;
+            ItemPosCountVec dest;
+            uint8 msg = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, entry, 1);
+            if (msg == EQUIP_ERR_OK)
+            {
+                Item* item = player->StoreNewItem(dest, entry, true);
+                player->SendNewItem(item, 1, true, false, true);
+            }
             break;
     }
     return true;
