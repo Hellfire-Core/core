@@ -50,16 +50,19 @@ EndContentData */
 #define SPELL_FIRE_NOVA             (HeroicMode ? 37371 : 33132)
 #define SPELL_SHADOW_BOLT_VOLLEY    (HeroicMode ? 40070 : 28599)
 
+#define SPELL_CHANNELING            39123
+
 #define ENTRY_KELIDAN               17377
 #define ENTRY_CHANNELER             17653
 
 const float ShadowmoonChannelers[5][4]=
 {
-    {302,-87,-24.4,0.157},
-    {321,-63.5,-24.6,4.887},
     {346,-74.5,-24.6,3.595},
-    {344,-103.5,-24.5,2.356},
-    {316,-109,-24.6,1.257}
+    {321,-63.5,-24.6,4.887},
+    {302,-87,-24.4,0.157},
+    {316,-109,-24.6,1.257},
+    {344,-103.5,-24.5,2.356}
+
 };
 
 class BurningNovaAura : public Aura
@@ -100,6 +103,7 @@ struct boss_kelidan_the_breakerAI : public ScriptedAI
 
         if (pInstance)
             pInstance->SetData(DATA_KELIDANEVENT, NOT_STARTED);
+        EnterEvadeMode();
     }
 
     void EnterCombat(Unit *who)
@@ -151,23 +155,15 @@ struct boss_kelidan_the_breakerAI : public ScriptedAI
             m_creature->AI()->AttackStart(killer);
     }
 
-    uint64 GetChanneled(Creature *channeler1)
-    {
-        SummonChannelers();
-        if(!channeler1) return 0;
-        int i;
-        for(i=0; i<5; ++i)
-        {
-            Creature *channeler = Unit::GetCreature(*m_creature, Channelers[i]);
-            if(channeler && channeler->GetGUID()==channeler1->GetGUID())
-                break;
-        }
-        return Channelers[(i+2)%5];
-    }
-
     void SummonChannelers()
     {
-        for(int i=0; i<5; ++i)
+        while (Creature *channeler = GetClosestCreatureWithEntry(me, ENTRY_CHANNELER, 500.0f))
+        {
+            channeler->DisappearAndDie();
+        }
+
+
+        for(uint8 i=0; i<5; i++)
         {
             Creature *channeler = Unit::GetCreature(*m_creature, Channelers[i]);
             if(!channeler || channeler->isDead())
@@ -177,8 +173,28 @@ struct boss_kelidan_the_breakerAI : public ScriptedAI
             else
                 Channelers[i] = 0;
         }
+
+        for (uint8 i=0; i<5; i++)
+        {
+
+            if (Unit* caster = me->GetCreature(Channelers[i]))
+                if (Unit* receiver = me->GetCreature(Channelers[GetChanneler(i)]))
+                    caster->CastSpell(receiver, SPELL_CHANNELING, true);
+        }
+
     }
 
+    uint32 GetChanneler(uint8 i)
+    {
+        switch (i)
+        {
+        case 0: return 2; break;
+        case 1: return 3; break;
+        case 2: return 4; break;
+        case 3: return 0; break;
+        case 4: return 1; break;
+        }
+    }
     void JustDied(Unit* Killer)
     {
         DoScriptText(SAY_DIE, m_creature);
@@ -187,16 +203,10 @@ struct boss_kelidan_the_breakerAI : public ScriptedAI
             pInstance->SetData(DATA_KELIDANEVENT, DONE);
     }
 
-    void MovementInform(uint32 type, uint32 id)
+    void JustReachedHome()
     {
-        if (type != POINT_MOTION_TYPE)
-            return;
-
-        if (id == 1)
-        {
-            SummonChannelers();
-            DoCast(m_creature,SPELL_EVOCATION);
-        }
+        SummonChannelers();
+        DoCast(m_creature,SPELL_EVOCATION);
     }
 
     void UpdateAI(const uint32 diff)
@@ -280,7 +290,6 @@ CreatureAI* GetAI_boss_kelidan_the_breaker(Creature *_Creature)
 #define SPELL_SHADOW_BOLT       (HeroicMode ? 15472 : 12739)
 
 #define SPELL_MARK_OF_SHADOW    30937
-#define SPELL_CHANNELING        39123
 
 struct mob_shadowmoon_channelerAI : public ScriptedAI
 {
@@ -302,6 +311,8 @@ struct mob_shadowmoon_channelerAI : public ScriptedAI
         check_Timer = 0;
         if (m_creature->IsNonMeleeSpellCast(false))
             m_creature->InterruptNonMeleeSpells(true);
+        if (Unit* Kelidan = GetClosestCreatureWithEntry(me, ENTRY_KELIDAN, 500.0f))
+            Kelidan->ToCreature()->AI()->Reset();
     }
 
     void EnterCombat(Unit* who)
@@ -309,9 +320,9 @@ struct mob_shadowmoon_channelerAI : public ScriptedAI
         if(Creature *Kelidan = (Creature *)FindCreature(ENTRY_KELIDAN, 100, m_creature))
             ((boss_kelidan_the_breakerAI*)Kelidan->AI())->ChannelerEngaged(who);
 
-        if (m_creature->IsNonMeleeSpellCast(false))
-            m_creature->InterruptNonMeleeSpells(true);
 
+        me->InterruptNonMeleeSpells(true);
+        me->RemoveAurasDueToSpell(SPELL_CHANNELING);
         DoStartMovement(who);
     }
 
@@ -324,23 +335,7 @@ struct mob_shadowmoon_channelerAI : public ScriptedAI
     void UpdateAI(const uint32 diff)
     {
         if (!UpdateVictim())
-        {
-            if(check_Timer < diff)
-            {
-                if (!m_creature->IsNonMeleeSpellCast(false))
-                    if(Creature *Kelidan = (Creature *)FindCreature(ENTRY_KELIDAN, 100, m_creature))
-                    {
-                        uint64 channeler = ((boss_kelidan_the_breakerAI*)Kelidan->AI())->GetChanneled(m_creature);
-                        if(Unit *channeled = Unit::GetUnit(*m_creature, channeler))
-                            DoCast(channeled,SPELL_CHANNELING);
-                    }
-                check_Timer = 5000;
-            }
-            else
-                check_Timer -= diff;
-
             return;
-        }
 
         if (MarkOfShadow_Timer < diff)
         {

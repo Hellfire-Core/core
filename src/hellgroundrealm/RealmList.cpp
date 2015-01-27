@@ -113,7 +113,7 @@ void RealmList::UpdateRealm( uint32 ID, const std::string& name, const std::stri
 void RealmList::UpdateIfNeed()
 {
     // maybe disabled or updated recently
-    if(!m_UpdateInterval || m_NextUpdateTime > time(NULL))
+    if(m_UpdateInterval == 0 || m_NextUpdateTime > time(NULL))
         return;
 
     m_NextUpdateTime = time(NULL) + m_UpdateInterval;
