@@ -202,23 +202,7 @@ struct boss_kelidan_the_breakerAI : public ScriptedAI
     void UpdateAI(const uint32 diff)
     {
         if (!UpdateVictim())
-        {
-            if(check_Timer < diff)
-            {
-                if (!m_creature->IsNonMeleeSpellCast(false))
-                {
-                    float x, y, z;
-                    me->GetRespawnCoord(x, y, z);
-                    me->GetMotionMaster()->MovePoint(1, x, y, z);
-                }
-
-                check_Timer = 5000;
-            }
-            else
-                check_Timer -= diff;
-
             return;
-        }
 
         if (Firenova)
         {
