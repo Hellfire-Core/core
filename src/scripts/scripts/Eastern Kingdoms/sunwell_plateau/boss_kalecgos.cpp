@@ -425,6 +425,9 @@ struct boss_kalecgosAI : public ScriptedAI
                     return;
                 }
                 CheckTimer = 1000;
+
+                if (me->isInCombat())
+                    DoZoneInCombat();
             }
             else
                 CheckTimer -= diff;
@@ -603,25 +606,9 @@ struct boss_sathrovarrAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-
-        if (!UpdateVictim())
-            return;
-        // to be tested
-        if (me->getVictim() && (!me->getVictim()->HasAura(AURA_SPECTRAL_REALM)  || me->getVictim()->GetPositionZ() > -50)  && !(me->getVictim()->GetEntry() == MOB_KALEC))
-            DoModifyThreatPercent(me->getVictim(), -100);
-
-        // be sure to attack only players in spectral realm
-        if (me->getVictim() && me->getVictim()->HasAura(AURA_SPECTRAL_EXHAUSTION))
-        {
-            me->RemoveSpellsCausingAura(SPELL_AURA_MOD_TAUNT);
-            if (!UpdateVictim())
-                return;
-        }
-
         // interaction with kalecgos
         if (CheckTimer < diff)
         {
-            DoZoneInCombat();
 
             // should not leave Inner Veil
             if (me->GetPositionZ() > -60)
@@ -669,12 +656,28 @@ struct boss_sathrovarrAI : public ScriptedAI
                 EnterEvadeMode();
                 return;
             }
+            if (me->isInCombat())
+                DoZoneInCombat();
 
             CheckTimer = 1000;
         }
         else
             CheckTimer -= diff;
 
+        // to be tested
+        if (me->getVictim() && (!me->getVictim()->HasAura(AURA_SPECTRAL_REALM)  || me->getVictim()->GetPositionZ() > -50)  && !(me->getVictim()->GetEntry() == MOB_KALEC))
+            DoModifyThreatPercent(me->getVictim(), -100);
+
+        // be sure to attack only players in spectral realm
+        if (me->getVictim() && me->getVictim()->HasAura(AURA_SPECTRAL_EXHAUSTION))
+        {
+            me->RemoveSpellsCausingAura(SPELL_AURA_MOD_TAUNT);
+            if (!UpdateVictim())
+                return;
+        }
+
+        if (!UpdateVictim())
+            return;
 
 
         // cast spells
