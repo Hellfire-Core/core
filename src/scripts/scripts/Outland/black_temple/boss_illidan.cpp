@@ -901,8 +901,6 @@ struct boss_illidan_stormrageAI : public BossAI
         {
             case EVENT_ILLIDAN_START:
             {
-                me->setHover(true);
-                me->SetLevitate(true);
                 DoScriptText(YELL_ILLIDAN_AGGRO, me);
                 me->SetReactState(REACT_AGGRESSIVE);
 
@@ -948,23 +946,18 @@ struct boss_illidan_stormrageAI : public BossAI
     void UpdateAI(const uint32 diff)
     {
         events.Update(diff);
+        if (me->isInCombat())
+        {
+            if (HandlePhase(m_phase))
+                DoMeleeAttackIfReady();
+
+            CastNextSpellIfAnyAndReady(diff);
+        }
+
         if (!UpdateVictim())
             return;
 
         DoSpecialThings(diff, DO_EVERYTHING, 200.0f, 2.5f);
-
-        if (m_combatTimer < diff)
-        {
-            if (Creature *pAkama = instance->GetCreature(instance->GetData64(DATA_AKAMA)))
-                DoModifyThreatPercent(pAkama, -101);
-
-            if (Creature *pMaiev = GetClosestCreatureWithEntry(me, 23197, 200.0f))
-                DoModifyThreatPercent(pMaiev, -101);
-
-            m_combatTimer = 2000;
-        }
-        else
-            m_combatTimer -= diff;
 
         if (m_enrageTimer < diff)
         {
@@ -996,10 +989,7 @@ struct boss_illidan_stormrageAI : public BossAI
             b_maievDone = true;
         }
 
-        if (HandlePhase(m_phase))
-            DoMeleeAttackIfReady();
 
-        CastNextSpellIfAnyAndReady(diff);
     }
 };
 
@@ -1352,12 +1342,14 @@ struct boss_illidan_akamaAI : public BossAI
                     {
                         me->SetSelection(pIllidan->GetGUID());
                         pIllidan->SetSelection(me->GetGUID());
+                        pIllidan->setHover(true);
+                        pIllidan->SetLevitate(true);
                         pIllidan->RemoveAurasDueToSpell(SPELL_ILLIDAN_KNEEL_INTRO);
                         me->SetFacingToObject(pIllidan);
                         DoScriptText(SAY_ILLIDAN_NO1, pIllidan);
                     }
 
-                    events.ScheduleEvent(EVENT_AKAMA_TALK_SEQUENCE_NO2, 11000);
+                    events.ScheduleEvent(EVENT_AKAMA_TALK_SEQUENCE_NO2, 12000);
                     return;
                 }
                 case EVENT_AKAMA_TALK_SEQUENCE_NO2:
@@ -1369,7 +1361,12 @@ struct boss_illidan_akamaAI : public BossAI
                 case EVENT_AKAMA_TALK_SEQUENCE_NO3:
                 {
                     if (Creature *pIllidan = instance->GetCreature(instance->GetData64(DATA_ILLIDANSTORMRAGE)))
+                    {
+                        pIllidan->HandleEmoteCommand(EMOTE_ONESHOT_LAND);
+                        pIllidan->setHover(false);
+                        pIllidan->SetFlying(false);
                         DoScriptText(SAY_ILLIDAN_NO2, pIllidan);
+                    }
 
                     events.ScheduleEvent(EVENT_AKAMA_TALK_SEQUENCE_NO4, 7000);
                     return;
