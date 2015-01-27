@@ -356,6 +356,7 @@ struct boss_illidan_stormrageAI : public BossAI
                 me->SetReactState(REACT_PASSIVE);
 
                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                me->RemoveAllAttackers();
 
                 me->HandleEmoteCommand(EMOTE_ONESHOT_LIFTOFF);
                 me->SetLevitate(true);
@@ -567,6 +568,7 @@ struct boss_illidan_stormrageAI : public BossAI
                 {
                     if (m_flameCount >= 2)
                     {
+                        ClearCastQueue();
                         StopAutocast();
                         me->GetMotionMaster()->MovePoint(0, CENTER_X, CENTER_Y, CENTER_Z);
                         events.ScheduleEvent(EVENT_ILLIDAN_RETURN_GLAIVE, 3000, m_phase);
@@ -637,14 +639,14 @@ struct boss_illidan_stormrageAI : public BossAI
                     DoScriptText(YELL_ILLIDAN_DEMON_FORM, me);
 
                     ForceSpellCast(me, SPELL_ILLIDAN_DEMON_TRANSFORM_1, INTERRUPT_AND_CAST_INSTANTLY);
-                    events.ScheduleEvent(EVENT_ILLIDAN_TRANSFORM_NO2, 1300, m_phase);
+                    events.ScheduleEvent(EVENT_ILLIDAN_TRANSFORM_NO2, 1200, m_phase);
                     break;
                 }
                 case EVENT_ILLIDAN_TRANSFORM_NO2:
                 {
                     me->RemoveAurasDueToSpell(SPELL_ILLIDAN_DEMON_TRANSFORM_1);
                     ForceSpellCast(me, SPELL_ILLIDAN_DEMON_TRANSFORM_2, INTERRUPT_AND_CAST_INSTANTLY);
-                    events.ScheduleEvent(EVENT_ILLIDAN_TRANSFORM_NO3, 4000, m_phase);
+                    events.ScheduleEvent(EVENT_ILLIDAN_TRANSFORM_NO3, 3900, m_phase);
                     break;
                 }
                 case EVENT_ILLIDAN_TRANSFORM_NO3:
@@ -655,7 +657,7 @@ struct boss_illidan_stormrageAI : public BossAI
                     me->RemoveAurasDueToSpell(SPELL_ILLIDAN_DEMON_TRANSFORM_2);
                     ForceSpellCast(me, SPELL_ILLIDAN_DEMON_FORM, INTERRUPT_AND_CAST_INSTANTLY, true);
                     ForceSpellCast(me, SPELL_ILLIDAN_DEMON_TRANSFORM_2, INTERRUPT_AND_CAST_INSTANTLY);
-                    events.ScheduleEvent(EVENT_ILLIDAN_TRANSFORM_NO4, 3000, m_phase);
+                    events.ScheduleEvent(EVENT_ILLIDAN_TRANSFORM_NO4, 2900, m_phase);
                     break;
                 }
                 case EVENT_ILLIDAN_TRANSFORM_NO4:
@@ -664,7 +666,7 @@ struct boss_illidan_stormrageAI : public BossAI
 
                     me->RemoveAurasDueToSpell(SPELL_ILLIDAN_DEMON_TRANSFORM_2);
                     ForceSpellCast(me, SPELL_ILLIDAN_DEMON_TRANSFORM_3, INTERRUPT_AND_CAST_INSTANTLY);
-                    events.ScheduleEvent(EVENT_ILLIDAN_TRANSFORM_NO5, 3500, m_phase);
+                    events.ScheduleEvent(EVENT_ILLIDAN_TRANSFORM_NO5, 3400, m_phase);
                     break;
                 }
                 case EVENT_ILLIDAN_TRANSFORM_NO5:
@@ -988,8 +990,6 @@ struct boss_illidan_stormrageAI : public BossAI
 
             b_maievDone = true;
         }
-
-
     }
 };
 
