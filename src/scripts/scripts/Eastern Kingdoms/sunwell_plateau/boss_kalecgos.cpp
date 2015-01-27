@@ -354,8 +354,6 @@ struct boss_kalecgosAI : public ScriptedAI
         else
         {
 
-            if (!UpdateVictim())
-                return;
             // be sure to not attack players in spectral realm
             if (me->getVictim() && me->getVictim()->HasAura(AURA_SPECTRAL_REALM, 0))
             {
@@ -382,7 +380,6 @@ struct boss_kalecgosAI : public ScriptedAI
                 if (!me->IsWithinDistInMap(&wLoc, 30))
                     EnterEvadeMode();
 
-                DoZoneInCombat();
                 if (instance && instance->GetData(DATA_KALECGOS_PHASE) == PHASE_ENRAGE && !isEnraged)
                 {
                     me->CastSpell(me, SPELL_ENRAGE, true);
@@ -434,6 +431,9 @@ struct boss_kalecgosAI : public ScriptedAI
 
 
 
+            if (!UpdateVictim())
+                
+                return;
             // cast spells
             if (ArcaneBuffetTimer < diff)
             {
