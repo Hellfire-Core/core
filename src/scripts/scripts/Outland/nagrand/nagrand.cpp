@@ -1534,7 +1534,7 @@ struct npc_warmaul_pyreAI : public ScriptedAI
 
             case 27:
                 for (std::list<Creature*>::iterator itr = SaboteurList.begin(); itr != SaboteurList.end(); ++itr)
-                    (*itr)->ForcedDespawn();
+                    (*itr)->Kill(*itr);
                 Reset();
 
             default:
