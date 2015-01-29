@@ -280,6 +280,8 @@ extern void AddSC_feralas();
 extern void AddSC_ghostlands();
 
 //Gnomeregan
+extern void AddSC_gnomeregan();
+
 //Gruul's Lair
 extern void AddSC_boss_gruul();
 extern void AddSC_boss_high_king_maulgar();
@@ -899,6 +901,8 @@ void AddScripts()
     AddSC_ghostlands();
 
     //Gnomeregan
+    AddSC_gnomeregan();
+
     //Gruul's Lair
     AddSC_boss_gruul();
     AddSC_boss_high_king_maulgar();

@@ -1564,6 +1564,9 @@
     <ClCompile Include="..\..\src\scripts\scripts\Eastern Kingdoms\molten_core\molten_core.cpp">
       <Filter>Scripts\Eastern Kingdoms\Molten Core</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\scripts\scripts\Eastern Kingdoms\gnomeregan\gnomeregan.cpp">
+      <Filter>Scripts\Eastern Kingdoms\Gnomeregan</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\scripts\scripts\Eastern Kingdoms\deadmines\def_deadmines.h">
