@@ -8515,8 +8515,15 @@ bool Unit::isSpellCrit(Unit *pVictim, SpellEntry const *spellProto, SpellSchoolM
     switch (spellProto->DmgClass)
     {
         case SPELL_DAMAGE_CLASS_NONE:
-            if (spellProto->Id != 379 && spellProto->Id != 33778) // We need more spells to find a general way (if there is any)
-                return false;
+            switch (spellProto->Id)// We need more spells to find a general way (if there is any)
+            {
+                case 379:   // Earth Shield
+                case 33778: // Lifebloom
+                case 45064: // Vessel of the Naaru
+                    break;
+                default:
+                    return false;
+            }
         case SPELL_DAMAGE_CLASS_MAGIC:
         {
             if (schoolMask & SPELL_SCHOOL_MASK_NORMAL)
