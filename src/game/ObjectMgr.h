@@ -671,7 +671,13 @@ class ObjectMgr
 
         time_t GetCreatureRespawnTime(uint32 loguid, uint32 instance) { return mCreatureRespawnTimes[MAKE_PAIR64(loguid,instance)]; }
         void SaveCreatureRespawnTime(uint32 loguid, uint32 instance, time_t t);
-        time_t GetGORespawnTime(uint32 loguid, uint32 instance) { return mGORespawnTimes[MAKE_PAIR64(loguid,instance)]; }
+        time_t GetGORespawnTime(uint32 loguid, uint32 instance)
+        { 
+            RespawnTimes::iterator itr = mGORespawnTimes.find(MAKE_PAIR64(loguid, instance));
+            if (itr == mGORespawnTimes.end())
+                return time_t(0);
+            return itr->second;
+        }
         void SaveGORespawnTime(uint32 loguid, uint32 instance, time_t t);
         void DeleteRespawnTimeForInstance(uint32 instance);
 
