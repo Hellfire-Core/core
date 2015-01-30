@@ -678,11 +678,6 @@ bool GameObject::LoadFromDB(uint32 guid, Map *map)
                 m_respawnTime = 0;
                 sObjectMgr.SaveGORespawnTime(m_DBTableGuid,GetInstanceId(),0);
             }
-            else if (m_respawnDelayTime>0)// && m_respawnTime == 0
-            {
-                m_respawnTime = urand(1, m_respawnDelayTime);
-                sObjectMgr.SaveGORespawnTime(m_DBTableGuid, GetInstanceId(), 0);
-            }
         }
         else
         {
