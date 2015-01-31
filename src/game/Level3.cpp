@@ -5409,7 +5409,7 @@ bool ChatHandler::HandleBanInfoIPCommand(const char* args)
     std::string IP = cIP;
 
     AccountsDatabase.escape_string(IP);
-    QueryResultAutoPtr result = AccountsDatabase.PQuery("SELECT ip, FROM_UNIXTIME(punishment_date), FROM_UNIXTIME(expiration_date), expiration_date-UNIX_TIMESTAMP(), ban_reason, punished_by, expiration_date-punishment_date FROM ip_banned WHERE ip = '%s'", IP.c_str());
+    QueryResultAutoPtr result = AccountsDatabase.PQuery("SELECT ip, FROM_UNIXTIME(punishment_date), FROM_UNIXTIME(expiration_date), expiration_date-UNIX_TIMESTAMP(), ban_reason, punished_by, expiration_date-punishment_date, active FROM ip_banned WHERE ip = '%s'", IP.c_str());
     if (!result)
     {
         PSendSysMessage(LANG_BANINFO_NOIP);
@@ -5420,7 +5420,7 @@ bool ChatHandler::HandleBanInfoIPCommand(const char* args)
     bool permanent = !fields[6].GetUInt64();
     PSendSysMessage(LANG_BANINFO_IPENTRY,
         fields[0].GetString(), fields[1].GetString(), permanent ? GetHellgroundString(LANG_BANINFO_NEVER):fields[2].GetString(),
-        permanent ? GetHellgroundString(LANG_BANINFO_INFINITE):secsToTimeString(fields[3].GetUInt64(), true).c_str(), fields[4].GetString(), fields[5].GetString());
+        permanent ? GetHellgroundString(LANG_BANINFO_INFINITE):secsToTimeString(fields[3].GetUInt64(), true).c_str(), fields[4].GetString(), fields[5].GetString(), fields[6].GetString());
     return true;
 }
 

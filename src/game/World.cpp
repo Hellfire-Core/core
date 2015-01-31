@@ -1481,7 +1481,7 @@ void World::SetInitialWorldSettings()
     sOutdoorPvPMgr.InitOutdoorPvP();
 
     sLog.outString("Deleting expired IP bans...");
-    AccountsDatabase.Execute("DELETE FROM ip_banned WHERE expiration_date <= UNIX_TIMESTAMP() AND expiration_date <> punishment_date");
+    AccountsDatabase.Execute("UPDATE ip_banned SET active = 0 WHERE expiration_date <= UNIX_TIMESTAMP() AND expiration_date <> punishment_date");
 
     sLog.outString("Starting objects Pooling system...");
     sPoolMgr.Initialize();
@@ -2347,7 +2347,7 @@ bool World::RemoveBanAccount(BanMode mode, std::string nameIPOrMail)
     {
         case BAN_IP:
             AccountsDatabase.escape_string(nameIPOrMail);
-            AccountsDatabase.PExecute("DELETE FROM ip_banned WHERE ip = '%s'",nameIPOrMail.c_str());
+            AccountsDatabase.PExecute("UPDATE ip_banned set active = 0 WHERE ip = '%s'",nameIPOrMail.c_str());
             break;
         case BAN_EMAIL:
             AccountsDatabase.escape_string(nameIPOrMail);
