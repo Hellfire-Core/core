@@ -3363,8 +3363,9 @@ void SpellMgr::LoadSpellCustomAttr()
             case 35413: // Summon Goliathon cooldown
                 spellInfo->RecoveryTime = 300000;
                 break;
-            case 13280: // Gnomish Death Ray
+            case 13278: // Gnomish Death Ray
                 spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_TARGET_ENEMY;
+                spellInfo->EffectImplicitTargetA[1] = TARGET_UNIT_CASTER;
                 break;
             case 6947:  // Curse of the Bleakheart
                 spellInfo->procFlags = 65876;      //any succesfull melee, ranged or negative spell hit

@@ -1149,14 +1149,14 @@ void Spell::EffectDummy(uint32 i)
                 }
                 case 13280:                                 // Gnomish Death Ray direct damage
                 {
-                    int custdamage = m_caster->GetMaxHealth() * 0.35f;
-                    m_caster->CastCustomSpell(unitTarget, 13279, &custdamage, NULL, NULL, true);
+                    int custdamage = m_originalCaster->GetMaxHealth() * 0.35f;
+                    m_originalCaster->CastCustomSpell(m_caster, 13279, &custdamage, NULL, NULL, true);
                     return;
                 }
                 case 13278:                                 // Gnomish Death Ray self DOT
                 {
                     int custdamage = m_caster->GetMaxHealth() * frand(0.03f, 0.05f);
-                    m_caster->CastCustomSpell(unitTarget, 13493, &custdamage, NULL, NULL, true);
+                    m_caster->CastCustomSpell(m_caster, 13493, &custdamage, NULL, NULL, true);
                     return;
                 }
                 case 13180:                                 // Gnomish Mind Control Cap
