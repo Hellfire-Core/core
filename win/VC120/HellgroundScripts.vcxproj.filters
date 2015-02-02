@@ -1689,6 +1689,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\..\src\scripts\trinityscripts.rc" />
+    <ResourceCompile Include="..\..\src\scripts\hellgroundscripts.rc" />
   </ItemGroup>
 </Project>
