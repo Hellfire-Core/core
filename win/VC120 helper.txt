@@ -5,12 +5,12 @@ Eventually you can install VS 2010, but it will take some disk space.
 But the fun is:
 Open solution, build it (I preffer _PCH, as of it's imba faster, if you get error like 'blah blah inconsistent values between game and something /Ym' just right click on game->Project Only->clean only game).
 Then:
-Open /bin/your_build_method/lib/shared.lib (and /dep/precompiled/Release/Detour.lib but remember NOT TO push changes in this file!)
+Open /bin/your_build_method/lib/shared.lib
 with notepad++ (or other text editor, but not notepad, notepad is lame)
-and replace all _MSC_VER=1600 to _MSC_VER=1800.
+and replace all _MSC_VER=1600 to _MSC_VER=1800
 
 Note: match case in _MSC_VER=1600 will result in replacing 0 things. Don't check it, just write _MSC_VER=1800 in caps. :P
-In shared.lib it should replace 42 items, and 2 in Detour.lib
+Shared.lib should replace 42 items.
 
 ???
 PROFIT!
