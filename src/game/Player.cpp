@@ -13942,7 +13942,7 @@ void Player::KilledMonster(uint32 entry, uint64 guid)
             continue;
         // just if !ingroup || !noraidgroup || raidgroup
         QuestStatusData& q_status = mQuestStatus[questid];
-        if (q_status.m_status == QUEST_STATUS_INCOMPLETE && (!GetGroup() || !GetGroup()->isRaidGroup() || qInfo->GetType() == QUEST_TYPE_RAID))
+        if (q_status.m_status == QUEST_STATUS_INCOMPLETE && (!GetGroup() || !GetGroup()->isRaidGroup() || GetGroup()->isBGGroup() || qInfo->GetType() == QUEST_TYPE_RAID))
         {
             if (qInfo->HasFlag(QUEST_HELLGROUND_FLAGS_KILL_OR_CAST))
             {
