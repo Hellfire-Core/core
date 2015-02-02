@@ -32,7 +32,7 @@ namespace VMAP
         if (id)
         {
             char addr_buf[50];
-            sprintf(addr_buf, "%s_%u", name, id);
+            sprintf(addr_buf, "%s_%u", name, *id);
             addr.set(addr_buf);
         }
         else
@@ -71,7 +71,7 @@ namespace VMAP
 
         char addr_buf[50];
         if (id)
-            sprintf(addr_buf, "%s_%u", name, id);
+            sprintf(addr_buf, "%s_%u", name, *id);
         else
             sprintf(addr_buf, "%s", name);
 
@@ -110,7 +110,7 @@ namespace VMAP
         if (id)
         {
             char addr_buf[50];
-            sprintf(addr_buf, "%s_%u", name, id);
+            sprintf(addr_buf, "%s_%u", name, *id);
             addr.set(addr_buf);
         }
         else
@@ -137,7 +137,7 @@ namespace VMAP
 
         char addr_buf[50];
         if (id)
-            sprintf(addr_buf, "%s_%u", name, id);
+            sprintf(addr_buf, "%s_%u", name, *id);
         else
             sprintf(addr_buf, "%s", name);
 
