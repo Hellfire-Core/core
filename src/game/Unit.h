@@ -1193,7 +1193,15 @@ class HELLGROUND_IMPORT_EXPORT Unit : public WorldObject
         Pet* GetPet() const;
         Unit* GetCharmer() const;
         Unit* GetCharm() const;
-        Unit* GetCharmerOrOwner() const { return GetCharmerGUID() ? GetCharmer() : GetOwner(); }
+        Unit* GetCharmerOrOwner() const 
+        {
+            if (GetCharmer())
+                return GetCharmer();
+            else if (GetOwner())
+                return GetOwner();
+            else
+                return false;
+        }
         Unit* GetCharmerOrOwnerOrSelf() const
         {
             if (Unit *u = GetCharmerOrOwner())
