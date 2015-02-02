@@ -1418,8 +1418,8 @@ void Spell::SearchChainTarget(std::list<Unit*> &TagUnitMap, float max_range, uin
 
             do
             {
-
-                while (cur->GetDistance(*next) > CHAIN_SPELL_JUMP_RADIUS || !ignoreLOS && !cur->IsWithinLOSInMap(*next) || (*next)->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_PL_SPELL_TARGET) || bad_target || ((*next) == m_caster) || ((*next)->getFaction() != cur->getFaction()))
+                while (cur->GetDistance(*next) > CHAIN_SPELL_JUMP_RADIUS || !ignoreLOS && !cur->IsWithinLOSInMap(*next) ||
+                    (*next)->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_PL_SPELL_TARGET) || bad_target || ((*next) == m_caster))
                 {
                     bad_target = false;
                     ++next;
@@ -1432,13 +1432,21 @@ void Spell::SearchChainTarget(std::list<Unit*> &TagUnitMap, float max_range, uin
                     tempUnitMap.clear();
                     break;
                 }
-              //now we can delete who we don't want in the list, we couldn't in the sorting function, and we can't get the value it saved
-              if (cur->GetCharmerOrOwnerOrSelf()->GetTypeId() == TYPEID_PLAYER && cur->GetCharmerOrOwnerOrSelf()->ToPlayer()->GetGroup()) // main target (or pet)[cur] is in raid, target[next] is not in the same raid, we go on
-              {
-                  if ((*next)->GetCharmerOrOwnerOrSelf()->GetTypeId() == TYPEID_PLAYER && !((*next)->GetCharmerOrOwnerOrSelf()->IsInRaidWith(cur->GetCharmerOrOwnerOrSelf())))
-                      bad_target = true;
-              }
-               
+
+                //sanctuary healing other faction
+                if (((*next)->GetTypeId() == TYPEID_PLAYER && cur->GetTypeId() == TYPEID_PLAYER) && ((*next)->GetCharmerOrOwnerOrSelf()->ToPlayer()->TeamForRace((*next)->getRace()) != cur->GetCharmerOrOwnerOrSelf()->ToPlayer()->TeamForRace(cur->getRace())))
+                {
+                    bad_target = true;
+                    return;
+                }
+
+                //now we can delete who we don't want in the list, we couldn't in the sorting function, and we can't get the value it saved
+                if (cur->GetCharmerOrOwnerOrSelf()->GetTypeId() == TYPEID_PLAYER && cur->GetCharmerOrOwnerOrSelf()->ToPlayer()->GetGroup()) // main target (or pet)[cur] is in raid, target[next] is not in the same raid, we go on
+                {
+                    if ((*next)->GetCharmerOrOwnerOrSelf()->GetTypeId() == TYPEID_PLAYER && !((*next)->GetCharmerOrOwnerOrSelf()->IsInRaidWith(cur->GetCharmerOrOwnerOrSelf())))
+                        bad_target = true;
+                }
+
 
 
             } while (bad_target);

@@ -1200,7 +1200,7 @@ class HELLGROUND_IMPORT_EXPORT Unit : public WorldObject
             else if (GetOwner())
                 return GetOwner();
             else
-                return false;
+                return NULL;
         }
         Unit* GetCharmerOrOwnerOrSelf() const
         {
