@@ -1330,9 +1330,6 @@ bool Spell::IsAliveUnitPresentInTargetList()
 }
 
 // Helper for Chain Healing
-// Spell target first
-// Raidmates then descending by injury suffered (MaxHealth - Health)
-// Other players/mobs then descending by injury suffered (MaxHealth - Health)
 struct ChainHealingOrder : public std::binary_function<const Unit*, const Unit*, bool>
 {
     const Unit* MainTarget;
@@ -1340,31 +1337,44 @@ struct ChainHealingOrder : public std::binary_function<const Unit*, const Unit*,
     // functor for operator ">"
     bool operator()(Unit const* _Left, Unit const* _Right) const
     {
-        return (ChainHealingHash(_Left) < ChainHealingHash(_Right));
+        return (ChainHealingHash(_Left) > ChainHealingHash(_Right));
     }
 
     int32 ChainHealingHash(Unit const* Target) const
     {
-        if (Target->IsFriendlyTo(MainTarget))
-            return 100000; // 'never' happens, though when no other are available it will still happen, search function should not consider those! return false sets them on the first place
-        // (if main target is a player in a group OR is a pet of a player which is in a group)
-        if (((MainTarget->GetTypeId() == TYPEID_PLAYER && ((Player const*)MainTarget)->GetGroup()) ||  (MainTarget->GetCharmerOrOwner() && MainTarget->GetCharmerOrOwner()->GetTypeId() == TYPEID_PLAYER && ((Player*)(MainTarget->GetCharmerOrOwner()))->GetGroup())))
-        {   // AND target is not a totem ------------> we target only this group members and their pets
-            if ((Target)->IsInRaidWith(MainTarget) || ((Target->GetCharmerOrOwner() && Target->GetCharmerOrOwner()->IsInRaidWith(MainTarget))) && !((Creature*)Target)->isTotem())
+
+        //totems are removed in the function that gives us the target list, we only sort them
+        // main is player or a pet of a player and is in a group
+        if (MainTarget->GetCharmerOrOwnerOrSelf()->GetTypeId() == TYPEID_PLAYER && MainTarget->GetCharmerOrOwnerOrSelf()->ToPlayer()->GetGroup()) //
+        {
+            //our main target or it's pet is in a raid, now we have to check if target or it's owner is in raid with main target
+            if (Target->GetCharmerOrOwnerOrSelf()->GetTypeId() == TYPEID_PLAYER && Target->GetCharmerOrOwnerOrSelf()->IsInRaidWith(/*main target OR it's owner*/MainTarget->GetCharmerOrOwnerOrSelf()))
             {
+                //both in one raid, we accept and check health
                 if (Target->GetHealth() == Target->GetMaxHealth())
-                    return 100;
+                    return 1;
                 else
-                    return int(Target->GetHealth() / Target->GetMaxHealth());
+                    return 1 + (int(Target->GetHealth() / Target->GetMaxHealth() * 100));
+
             }
-            else
-                return 100000; // 'never' happens, though when no other are available it will still happen, search function should not consider those! return false sets them on the first place
-        }                      
-        else if(!((Creature*)Target)->isTotem())
-            return int(Target->GetHealth() / Target->GetMaxHealth());
+            else // target is not in the raid with main target, but main target is in a raid, we don't accept this target
+            {
+                return 0;
+            }
+        }
         else
-            return int(Target->GetHealth() / Target->GetMaxHealth());
+        {
+            if (Target->GetHealth() == Target->GetMaxHealth())
+                return 1;
+            else
+                return 1 + (int(Target->GetHealth() / Target->GetMaxHealth() * 100));
+
+        }
+
+        return 0;
     }
+
+
 };
 
 void Spell::SearchChainTarget(std::list<Unit*> &TagUnitMap, float max_range, uint32 num, SpellTargets TargetType)
@@ -1376,6 +1386,7 @@ void Spell::SearchChainTarget(std::list<Unit*> &TagUnitMap, float max_range, uin
     //FIXME: This very like horrible hack and wrong for most spells
     if (GetSpellEntry()->DmgClass != SPELL_DAMAGE_CLASS_MELEE)
         max_range += num * CHAIN_SPELL_JUMP_RADIUS;
+    
 
     std::list<Unit*> tempUnitMap;
     if (TargetType == SPELL_TARGETS_CHAINHEAL)
@@ -1403,13 +1414,40 @@ void Spell::SearchChainTarget(std::list<Unit*> &TagUnitMap, float max_range, uin
         if (TargetType == SPELL_TARGETS_CHAINHEAL)
         {
             next = tempUnitMap.begin();
-            while (cur->GetDistance(*next) > CHAIN_SPELL_JUMP_RADIUS
-                || !ignoreLOS && !cur->IsWithinLOSInMap(*next) || (*next)->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_PL_SPELL_TARGET))
+            bool bad_target = false;
+
+            do
             {
-                ++next;
-                if (next == tempUnitMap.end())
-                    return;
-            }
+
+                while (cur->GetDistance(*next) > CHAIN_SPELL_JUMP_RADIUS || !ignoreLOS && !cur->IsWithinLOSInMap(*next) || (*next)->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_PL_SPELL_TARGET) || bad_target || ((*next) == m_caster))
+                {
+                    bad_target = false;
+                    ++next;
+                    if (next == tempUnitMap.end())
+                        break;
+                }
+
+              //now we can delete who we don't want in the list, we couldn't in the sorting function, and we can't get the value it saved
+              if (cur->GetCharmerOrOwnerOrSelf()->GetTypeId() == TYPEID_PLAYER && cur->GetCharmerOrOwnerOrSelf()->ToPlayer()->GetGroup()) // main target (or pet)[cur] is in raid, target[next] is not in the same raid, we go on
+              {
+                  if ((*next)->GetCharmerOrOwnerOrSelf()->GetTypeId() == TYPEID_PLAYER && !((*next)->GetCharmerOrOwnerOrSelf()->IsInRaidWith(cur->GetCharmerOrOwnerOrSelf())))
+                      bad_target = true;
+
+                  if (next == tempUnitMap.end())
+                  {
+                      tempUnitMap.clear();
+                      break;
+                  }
+
+              }
+               
+
+
+            } while (bad_target);
+
+            if (next == tempUnitMap.end() || tempUnitMap.empty())
+                break;
+
         }
         else
         {
