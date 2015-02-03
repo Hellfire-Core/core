@@ -2866,6 +2866,9 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 40669: // egbert egg- run away spell
                     spellInfo->DurationIndex = 29; // 12 secs, guess
                     break;
+                case 37675: // leotheras the blind - chaos blast should be spell not ability
+                    spellInfo->Attributes &= ~SPELL_ATTR_ABILITY;
+                    break;
                 }
                 if (spellInfo->SpellIconID == 184 && spellInfo->Attributes == 4259840)
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
