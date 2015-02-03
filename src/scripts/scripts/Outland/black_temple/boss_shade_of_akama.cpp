@@ -121,7 +121,7 @@ struct mob_ashtongue_channelerAI : public ScriptedAI
     mob_ashtongue_channelerAI(Creature* c) : ScriptedAI(c)
     {
         instance = (ScriptedInstance *)c->GetInstanceData();
-        ShadeGUID = 0;
+        ShadeGUID = instance ? instance->GetData64(DATA_SHADEOFAKAMA) : 0;
     }
 
     ScriptedInstance *instance;
@@ -719,14 +719,7 @@ struct boss_shade_of_akamaAI : public ScriptedAI
         me->SetHealth(me->GetMaxHealth());
         DespawnChannelersAndSorcerers();
 
-        if(Unit *owner = me->GetCharmerOrOwner())
-        {
-            me->GetMotionMaster()->Clear(false);
-            me->GetMotionMaster()->MoveFollow(owner, PET_FOLLOW_DIST, me->GetFollowAngle());
-            Reset();
-        }
-        else
-             me->GetMotionMaster()->MoveTargetedHome();
+        me->GetMotionMaster()->MoveTargetedHome();
     }
 
     ScriptedInstance* instance;
@@ -1003,6 +996,8 @@ struct boss_shade_of_akamaAI : public ScriptedAI
 
     void SpawnChannelers()
     {
+        DespawnChannelersAndSorcerers();
+
         if (m_channelers.empty())
         {
             float pos_x = me->GetPositionX();
@@ -1011,7 +1006,7 @@ struct boss_shade_of_akamaAI : public ScriptedAI
             {
                 float x = pos_x + 15.0f * cos(M_PI/3 * i);
                 float y = pos_y + 15.0f * sin(M_PI/3 * i);
-                Creature *channeler = me->SummonCreature(CREATURE_CHANNELER, x, y, CHANNELERS_Z, 0.0f, TEMPSUMMON_MANUAL_DESPAWN, 0);
+                Creature *channeler = me->SummonCreature(CREATURE_CHANNELER, x, y, CHANNELERS_Z, M_PI / 3 * i - M_PI, TEMPSUMMON_MANUAL_DESPAWN, 0);
                 if (channeler)
                 {
                     m_channelers.push_back(channeler->GetGUID());
@@ -1020,31 +1015,6 @@ struct boss_shade_of_akamaAI : public ScriptedAI
                 }
             }
         }
-        else
-        {
-            for (std::list<uint64>::const_iterator itr = m_channelers.begin(); itr != m_channelers.end(); ++itr)
-            {
-                Creature *channeler = me->GetCreature(*me, *itr);
-                if (channeler)
-                {
-                    me->DealDamage(channeler, channeler->GetMaxHealth());
-                    channeler->Respawn();
-                    channeler->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                }
-            }
-        }
-
-        // despawn sorcerers here
-        for (std::list<uint64>::const_iterator itr = m_sorcerers.begin(); itr != m_sorcerers.end(); ++itr)
-        {
-            Creature *sorc = me->GetCreature(*me, *itr);
-            if (sorc)
-            {
-                sorc->setDeathState(JUST_DIED);
-                sorc->RemoveCorpse();
-            }
-        }
-        m_sorcerers.clear();
     }
 
     void SetAkamaGUID(uint64 guid) { AkamaGUID = guid; }
@@ -1255,6 +1225,7 @@ struct npc_akamaAI : public Scripted_NoMovementAI
                 {
                     DoCast(shade, SPELL_AKAMA_SOUL_CHANNEL);
                     me->SetSelection(ShadeGUID);
+                    me->AddThreat(shade, 1000000.0f);
                 }
             }
             break;
@@ -1285,6 +1256,9 @@ struct npc_akamaAI : public Scripted_NoMovementAI
             break;
         }
     }
+    void DamageTaken(Unit *pDoneBy, uint32)
+    {
+    }
 
     void JustDied(Unit* killer)
     {
@@ -1296,7 +1270,7 @@ struct npc_akamaAI : public Scripted_NoMovementAI
         m_summons.DespawnAll();
     }
 
-    inline bool UpdateVictim()
+    bool UpdateVictim()
     {
         if (instance && instance->GetData(EVENT_SHADEOFAKAMA) == IN_PROGRESS)
         {
@@ -1327,16 +1301,16 @@ struct npc_akamaAI : public Scripted_NoMovementAI
                 {
                     case 0:
                         me->GetMotionMaster()->MovePoint(1, moveTo[1][0], moveTo[1][1], moveTo[1][2]);
-                    break;
+                        break;
                     case 1:
                         me->GetMotionMaster()->MovePoint(2, moveTo[0][0], moveTo[0][1], moveTo[0][2]);
-                    break;
+                        break;
                     case 2:
-                        me->GetMotionMaster()->MovePoint(3, moveTo[0][0]-5.0f, moveTo[0][1], moveTo[0][2]);
-                    break;
+                        me->GetMotionMaster()->MovePoint(3, moveTo[0][0] - 5.0f, moveTo[0][1], moveTo[0][2]);
+                        break;
                     case 3:
-                        me->GetMotionMaster()->MovePoint(4, moveTo[0][0]-4.0f, moveTo[0][1], moveTo[0][2]);
-                    break;
+                        me->GetMotionMaster()->MovePoint(4, moveTo[0][0] - 4.0f, moveTo[0][1], moveTo[0][2]);
+                        break;
                     case 4:
                     {
                         me->HandleEmoteCommand(EMOTE_ONESHOT_ROAR);
@@ -1368,7 +1342,7 @@ struct npc_akamaAI : public Scripted_NoMovementAI
                     break;
                     default:
                         me->AI()->EnterEvadeMode();
-                    break;
+                        break;
                 }
             }
             else
@@ -1378,7 +1352,7 @@ struct npc_akamaAI : public Scripted_NoMovementAI
         if (instance->GetData(EVENT_SHADEOFAKAMA) != IN_PROGRESS)
             return;
 
-        if (!m_yell && (me->GetHealth()*100 / me->GetMaxHealth()) < 15)
+        if (!m_yell && (me->GetHealth() * 100 / me->GetMaxHealth()) < 15)
         {
             DoScriptText(SAY_LOW_HEALTH, me);
             m_yell = true;
