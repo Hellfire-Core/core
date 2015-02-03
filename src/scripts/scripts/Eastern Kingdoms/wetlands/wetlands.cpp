@@ -108,20 +108,16 @@ struct npc_tapoke_slim_jahnAI : public npc_escortAI
     {
         if (me->GetHealth()*100 < me->GetMaxHealth()*20)
         {
-            if (Player* pPlayer = GetPlayerForEscort())
-            {
-                if (pPlayer->GetTypeId() == TYPEID_PLAYER)
-                    CAST_PLR(pPlayer)->GroupEventHappens(QUEST_MISSING_DIPLO_PT11, me);
+            uiDamage = 0;
 
-                uiDamage = 0;
+            me->RestoreFaction();
+            me->RemoveAllAuras();
+            me->DeleteThreatList();
+            me->CombatStop(true);
 
-                me->RestoreFaction();
-                me->RemoveAllAuras();
-                me->DeleteThreatList();
-                me->CombatStop(true);
-
-                SetRun(false);
-            }
+            SetRun(false);
+            if (pDoneBy->GetTypeId() == TYPEID_PLAYER)
+                ((Player*)pDoneBy)->AreaExploredOrEventHappens(QUEST_MISSING_DIPLO_PT11);
         }
     }
 };
