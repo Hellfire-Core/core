@@ -560,6 +560,8 @@ struct boss_sathrovarrAI : public ScriptedAI
     {
         if (damage >= me->GetHealth() && done_by != me)
             damage = 0;
+        if (!me->GetLootRecipient() && done_by->GetTypeId() == TYPEID_PLAYER)
+            me->SetLootRecipient(done_by);
     }
 
     void KilledUnit(Unit *target)
