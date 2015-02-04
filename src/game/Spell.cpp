@@ -1337,7 +1337,7 @@ struct ChainHealingOrder : public std::binary_function<const Unit*, const Unit*,
     // functor for operator ">"
     bool operator()(Unit const* _Left, Unit const* _Right) const
     {
-        return (ChainHealingHash(_Left) > ChainHealingHash(_Right));
+        return (ChainHealingHash(_Left) < ChainHealingHash(_Right));
     }
 
     int32 ChainHealingHash(Unit const* Target) const
