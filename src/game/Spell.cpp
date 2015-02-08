@@ -1352,9 +1352,9 @@ struct ChainHealingOrder : public std::binary_function<const Unit*, const Unit*,
             {
                 //both in one raid, we accept and check health
                 if (Target->GetHealth() == Target->GetMaxHealth())
-                    return 1;
+                    return 20000;
                 else
-                    return 1 + (int(Target->GetHealth() / Target->GetMaxHealth() * 100));
+                    return (int(Target->GetHealth() / Target->GetMaxHealth() * 10000));
 
             }
             else // target is not in the raid with main target, but main target is in a raid, we don't accept this target
@@ -1364,10 +1364,10 @@ struct ChainHealingOrder : public std::binary_function<const Unit*, const Unit*,
         }
         else
         {
-            if (Target->GetHealth() == Target->GetMaxHealth())
-                return 1;
+            if (Target->GetHealth() == Target->GetMaxHealth())      
+                    return 20000;
             else
-                return 1 + (int(Target->GetHealth() / Target->GetMaxHealth() * 100));
+                return (int(Target->GetHealth() / Target->GetMaxHealth() * 10000));
 
         }
 
@@ -1415,11 +1415,10 @@ void Spell::SearchChainTarget(std::list<Unit*> &TagUnitMap, float max_range, uin
         {
             next = tempUnitMap.begin();
             bool bad_target = false;
-
             do
             {
                 while (cur->GetDistance(*next) > CHAIN_SPELL_JUMP_RADIUS || !ignoreLOS && !cur->IsWithinLOSInMap(*next) ||
-                    (*next)->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_PL_SPELL_TARGET) || bad_target || ((*next) == m_caster))
+                    (*next)->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_PL_SPELL_TARGET) || bad_target || (*next) == cur)
                 {
                     bad_target = false;
                     ++next;
@@ -1434,17 +1433,22 @@ void Spell::SearchChainTarget(std::list<Unit*> &TagUnitMap, float max_range, uin
                 }
 
                 //sanctuary healing other faction
-                if (((*next)->GetTypeId() == TYPEID_PLAYER && cur->GetTypeId() == TYPEID_PLAYER) && ((*next)->GetCharmerOrOwnerOrSelf()->ToPlayer()->TeamForRace((*next)->getRace()) != cur->GetCharmerOrOwnerOrSelf()->ToPlayer()->TeamForRace(cur->getRace())))
+                if ((*next)->isInSanctuary() || cur->isInSanctuary())
                 {
-                    bad_target = true;
-                    return;
+                    if (((*next)->GetTypeId() == TYPEID_PLAYER && cur->GetTypeId() == TYPEID_PLAYER) && ((*next)->GetCharmerOrOwnerOrSelf()->ToPlayer()->TeamForRace((*next)->getRace()) != cur->GetCharmerOrOwnerOrSelf()->ToPlayer()->TeamForRace(cur->getRace())))
+                    {
+                        bad_target = true;
+                        return;
+                    }
                 }
 
                 //now we can delete who we don't want in the list, we couldn't in the sorting function, and we can't get the value it saved
                 if (cur->GetCharmerOrOwnerOrSelf()->GetTypeId() == TYPEID_PLAYER && cur->GetCharmerOrOwnerOrSelf()->ToPlayer()->GetGroup()) // main target (or pet)[cur] is in raid, target[next] is not in the same raid, we go on
                 {
                     if ((*next)->GetCharmerOrOwnerOrSelf()->GetTypeId() == TYPEID_PLAYER && !((*next)->GetCharmerOrOwnerOrSelf()->IsInRaidWith(cur->GetCharmerOrOwnerOrSelf())))
+                    {
                         bad_target = true;
+                    }
                 }
 
 

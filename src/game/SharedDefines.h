@@ -2291,7 +2291,7 @@ enum PetDiet
 #define PET_FOLLOW_DIST  1
 #define PET_FOLLOW_ANGLE (M_PI/2)
 
-#define CHAIN_SPELL_JUMP_RADIUS 10
+#define CHAIN_SPELL_JUMP_RADIUS 12.5f
 
 // Max values for Guild & Guild Bank
 #define GUILD_BANK_MAX_TABS         6
