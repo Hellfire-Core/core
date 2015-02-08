@@ -126,15 +126,17 @@ void DynamicObjectUpdater::VisitHelper(Unit* target)
     {
         if (i_check->IsFriendlyTo(target))
             return;
-
-        i_check->CombatStart(target);
+        
+        if (spellInfo->Id != 46648) // ugly hack for puling whole SWP 
+            i_check->CombatStart(target);
     }
     else
     {
         if (!i_check->IsHostileTo(target))
             return;
 
-        i_check->CombatStart(target);
+        if (spellInfo->Id != 46648) // ugly hack for puling whole SWP 
+            i_check->CombatStart(target);
     }
 
     // Check target immune to spell or aura
