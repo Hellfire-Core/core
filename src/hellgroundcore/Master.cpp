@@ -413,6 +413,13 @@ bool Master::_StartDB()
 /// Clear 'online' status for all accounts with characters in this realm
 void Master::clearOnlineAccounts()
 {
+    //if we use only one realm then we don't have to update for every single account separately
+    if (sWorld.getConfig(CONFIG_FASTBOOT))
+    {
+        AccountsDatabase.Execute("UPDATE account SET online = 0");
+        return;
+    }
+    
     // Cleanup online status for characters hosted at current realm
     QueryResultAutoPtr result = RealmDataDatabase.Query("SELECT DISTINCT account FROM characters WHERE online <> 0");
 
@@ -432,6 +439,7 @@ void Master::clearOnlineAccounts()
     AccountsDatabase.CommitTransaction();
 
     RealmDataDatabase.Execute("UPDATE characters SET online = 0");
+    
 }
 
 /// Handle termination signals

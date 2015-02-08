@@ -2,7 +2,7 @@
 # Hellground Core world configuration file #
 ############################################
 [CoreConf]
-ConfVersion=2015011901
+ConfVersion=2015020801
 
 ###################################################################################################################
 # DATABASES AND DIRECTORIES
@@ -402,6 +402,11 @@ EAIErrorLevel = 0
 #        only record update time diff which is greater than this value (in milliseconds)
 #        Default: 300
 #
+#	Accounts.Fastboot
+#		 If you use only one realm then you don't need to set offline for every account separately.
+#		 Default: 0 (false)
+#		 Set to 1 (true) to set offline for all accounts at all.
+#
 ###################################################################################################################
 
 UseProcessors = 0
@@ -433,6 +438,7 @@ SessionUpdate.IdleKickTimer = 900000
 SessionUpdate.MinLogDiff = 25
 RecordUpdateTimeDiffInterval = 60000
 MinRecordUpdateTimeDiff = 300
+Accounts.Fastboot = 0
 
 ###################################################################################################################
 # SERVER SETTINGS
