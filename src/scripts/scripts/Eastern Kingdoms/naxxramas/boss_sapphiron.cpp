@@ -49,9 +49,8 @@ enum SapphironEvents
     EVENT_FROST_BREATH      = 2,
     EVENT_LIFE_DRAIN        = 3,
     EVENT_BLIZZARD          = 4,
-    EVENT_BERSERK           = 5,
-    EVENT_PHASE_2           = 6,
-    EVENT_PHASE_1           = 7
+    EVENT_PHASE_2           = 5,
+    EVENT_PHASE_1           = 6
 };
 
 enum SapphironPhase
@@ -65,7 +64,7 @@ struct boss_sapphironAI : public BossAI
     boss_sapphironAI(Creature* c) : BossAI(c, DATA_SAPPHIRON) { }
 
     uint32 iceboltCount;
-    bool berserk;
+    uint32 enrageTimer;
 
     SapphironPhase phase;
 
@@ -78,7 +77,7 @@ struct boss_sapphironAI : public BossAI
         events.ScheduleEvent(EVENT_PHASE_2, 45000);
 
         iceboltCount = 0;
-        berserk = false;
+        enrageTimer = 900000; // 15 mins
 
         m_creature->SetLevitate(false);
 
@@ -139,7 +138,7 @@ struct boss_sapphironAI : public BossAI
                 }
                 case EVENT_PHASE_2:
                 {
-                    if (HealthBelowPct(10))
+                    if (!enrageTimer)
                         break;
 
                     iceboltCount = 0;
@@ -171,11 +170,16 @@ struct boss_sapphironAI : public BossAI
                 }
             }
         }
-
-        if (!berserk && HealthBelowPct(10))
+        
+        if (enrageTimer)
         {
-            berserk = true;
-            ForceSpellCastWithScriptText(SPELL_BERSERK, CAST_SELF, EMOTE_ENRAGE);
+            if (enrageTimer <= diff)
+            {
+                ForceSpellCastWithScriptText(SPELL_BERSERK, CAST_SELF, EMOTE_ENRAGE);
+                enrageTimer = 0;
+            }
+            else
+                enrageTimer -= diff;
         }
 
         CastNextSpellIfAnyAndReady();
