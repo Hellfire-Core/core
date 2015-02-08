@@ -416,7 +416,7 @@ bool AuthSocket::_HandleLogonChallenge()
 
     ///- Verify that this IP is not in the ip_banned table
     // No SQL injection possible (paste the IP address as passed by the socket)
-    AccountsDatabase.Execute("UPDATE ip_banned SET active = 0 WHERE unbandate<=UNIX_TIMESTAMP() AND unbandate<>bandate");
+    AccountsDatabase.Execute("UPDATE ip_banned SET active = 0 WHERE expiration_date<=UNIX_TIMESTAMP() AND expiration_date<>punishment_date");
     AccountsDatabase.escape_string(address);
     QueryResultAutoPtr result = AccountsDatabase.PQuery("SELECT * FROM ip_banned WHERE ip = '%s' and active = 1", address.c_str());
 
