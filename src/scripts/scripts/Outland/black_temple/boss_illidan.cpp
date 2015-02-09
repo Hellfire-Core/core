@@ -449,12 +449,7 @@ struct boss_illidan_stormrageAI : public BossAI
 
                             DoModifyThreatPercent(pAkama, -101);
 
-                            if (me->getThreatManager().isThreatListEmpty())
-                            {
-                                EnterEvadeMode();
-                                return false;
-                            }
-
+                            
                             pAkama->AI()->DoAction(8); // EVENT_AKAMA_MINIONS_FIGHT
                         }
                     }
