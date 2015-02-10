@@ -182,6 +182,13 @@ void MotionMaster::MovePath(uint32 path_id, bool repeatable)
         sLog.outLog(LOG_DEFAULT, "ERROR: MotionMaster: Non-creature %s attempt to MoveWaypoint()", m_owner->GetGuidStr().c_str());
 }
 
+void MotionMaster::MoveRotate(uint32 time, RotateDirection direction)
+{
+    if (!time)
+        return;
+    Mutate(new RotateMovementGenerator(time, direction), UNIT_ACTION_CONTROLLED);
+}
+
 void MotionMaster::MoveDistract(uint32 timer)
 {
     Mutate(new DistractMovementGenerator(timer), UNIT_ACTION_EFFECT);

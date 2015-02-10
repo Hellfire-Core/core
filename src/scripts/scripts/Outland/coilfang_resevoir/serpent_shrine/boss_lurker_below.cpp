@@ -45,13 +45,15 @@ float addPos[9][4] =
 
 enum lurkerSpells
 {
-    SPELL_SPOUT_VISUAL = 37429,
-    SPELL_SPOUT_BREATH = 37431,
-    SPELL_SPOUT_EFFECT = 37433,
-    SPELL_GEYSER       = 37478,
-    SPELL_WHIRL        = 37660,
-    SPELL_WATERBOLT    = 37138,
-    SPELL_SUBMERGE     = 37550,
+    SPELL_SPOUT_VISUAL       = 37429,
+    SPELL_SPOUT_BREATH       = 37431,
+    SPELL_SPOUT_EFFECT       = 37433,
+    SPELL_GEYSER             = 37478,
+    SPELL_WHIRL              = 37660,
+    SPELL_WATERBOLT          = 37138,
+    SPELL_SUBMERGE           = 37550,
+    SPELL_EMERGE             = 20568 // wrong spellid
+
 };
 
 #define SPOUT_WIDTH 1.2f
@@ -63,7 +65,8 @@ enum LurkerEvents
     LURKER_EVENT_WHIRL          = 3,
     LURKER_EVENT_GEYSER         = 4,
     LURKER_EVENT_SUBMERGE       = 5,
-    LURKER_EVENT_REEMERGE       = 6
+    LURKER_EVENT_REEMERGE       = 6,
+    LURKER_EVENT_REEMERGING     = 7
 };
 
 struct boss_the_lurker_belowAI : public BossAI
@@ -95,7 +98,7 @@ struct boss_the_lurker_belowAI : public BossAI
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
 
-        events.ScheduleEvent(LURKER_EVENT_SPOUT_EMOTE, 42000);
+        events.ScheduleEvent(LURKER_EVENT_SPOUT_EMOTE, 45000);
         events.ScheduleEvent(LURKER_EVENT_WHIRL, 18000);
         events.ScheduleEvent(LURKER_EVENT_GEYSER, 0);
         events.ScheduleEvent(LURKER_EVENT_SUBMERGE, 90000);
@@ -106,6 +109,7 @@ struct boss_the_lurker_belowAI : public BossAI
         // Bools
         m_rotating = false;
         m_submerged = false;
+        
 
         summons.DespawnAll();
         me->CastSpell(me, SPELL_SUBMERGE, false);
@@ -133,6 +137,13 @@ struct boss_the_lurker_belowAI : public BossAI
         if (me->GetVisibility() == VISIBILITY_OFF || me->isInCombat())
             return;
 
+        if (pWho->GetTypeId() == TYPEID_PLAYER && m_rotating && pWho->isInFront(me, 50.0f) && !pWho->IsInWater())
+        {
+            pWho->ToPlayer()->Say("DEBUG MESSAGE #1, have you been hit by spout (or should be?) - remember it", 0);
+            ForceSpellCast(pWho, SPELL_SPOUT_EFFECT);
+            return;
+        }
+
         AttackStart(pWho);
     }
 
@@ -140,6 +151,11 @@ struct boss_the_lurker_belowAI : public BossAI
     {
         instance->SetData(DATA_THELURKERBELOWEVENT, DONE);
     }
+
+    void SpellHitTarget(Unit *target, const SpellEntry *spell)
+    {
+    }
+
 
     void SummonAdds()
     {
@@ -155,8 +171,8 @@ struct boss_the_lurker_belowAI : public BossAI
         {
             if (data == 0) //Rotate movegen finalize
             {
+                me->SetIngoreVictimSelection(false);
                 me->RemoveAurasDueToSpell(SPELL_SPOUT_VISUAL);
-                me->SetReactState(REACT_AGGRESSIVE);
                 m_rotating = false;
             }
         }
@@ -202,20 +218,13 @@ struct boss_the_lurker_belowAI : public BossAI
         if (me->GetVisibility() == VISIBILITY_OFF)
         {
             me->SetVisibility(VISIBILITY_ON);
-            me->RemoveAurasDueToSpell(SPELL_SUBMERGE);
-
-            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
-            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-
+            events.RescheduleEvent(LURKER_EVENT_REEMERGING, 1000);
             DoZoneInCombat();
         }
-
-        if (!UpdateVictim())
-            return;
-
+        events.Update(diff);
         DoSpecialThings(diff, DO_PULSE_COMBAT);
 
-        events.Update(diff);
+
         while (uint32 eventId = events.ExecuteEvent())
         {
             switch (eventId)
@@ -223,19 +232,16 @@ struct boss_the_lurker_belowAI : public BossAI
                 case LURKER_EVENT_SPOUT_EMOTE:
                 {
                     me->MonsterTextEmote(EMOTE_SPOUT, 0, true);
-                    ForceSpellCast(me, SPELL_SPOUT_BREATH);
+                    ForceSpellCast(me, SPELL_SPOUT_BREATH, INTERRUPT_AND_CAST_INSTANTLY);
                     events.ScheduleEvent(LURKER_EVENT_SPOUT, 3000);
+                    me->SetSelection(0);
+                    me->SetIngoreVictimSelection(true);
                     break;
                 }
                 case LURKER_EVENT_SPOUT:
                 {
-                    me->SetReactState(REACT_PASSIVE);
-
-                    me->SetSelection(0);
-                   // me->GetMotionMaster()->MoveRotate(20000, RAND(ROTATE_DIRECTION_LEFT, ROTATE_DIRECTION_RIGHT));
-
-                    ForceSpellCast(me, SPELL_SPOUT_VISUAL, INTERRUPT_AND_CAST_INSTANTLY);
-
+                    ForceSpellCast(SPELL_SPOUT_VISUAL, CAST_NULL, INTERRUPT_AND_CAST_INSTANTLY);
+                    me->GetMotionMaster()->MoveRotate(20000, RAND(ROTATE_DIRECTION_LEFT, ROTATE_DIRECTION_RIGHT));
                     m_rotating = true;
 
                     events.DelayEvents(20000, 0);
@@ -257,10 +263,12 @@ struct boss_the_lurker_belowAI : public BossAI
                 }
                 case LURKER_EVENT_SUBMERGE:
                 {
+                    me->SetIngoreVictimSelection(true);
+                    me->SetSelection(0);
                     ForceSpellCast(me, SPELL_SUBMERGE, INTERRUPT_AND_CAST_INSTANTLY);
 
                     me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                    me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+                    me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
 
                     SummonAdds();
                     m_submerged = true;
@@ -269,22 +277,40 @@ struct boss_the_lurker_belowAI : public BossAI
                     events.CancelEvent(LURKER_EVENT_SPOUT);
                     events.CancelEvent(LURKER_EVENT_WHIRL);
                     events.CancelEvent(LURKER_EVENT_GEYSER);
-                    events.ScheduleEvent(LURKER_EVENT_REEMERGE, 60000);
+                    events.ScheduleEvent(LURKER_EVENT_REEMERGING, 55000);
                     break;
                 }
                 case LURKER_EVENT_REEMERGE:
                 {
-                    me->RemoveAurasDueToSpell(SPELL_SUBMERGE);
-
                     me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
                     me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                    me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                    me->SetIngoreVictimSelection(false);
 
                     m_submerged = false;
 
-                    events.ScheduleEvent(LURKER_EVENT_SPOUT_EMOTE, 0);
+                    events.ScheduleEvent(LURKER_EVENT_SPOUT_EMOTE, 45000);
                     events.ScheduleEvent(LURKER_EVENT_WHIRL, 2000);
                     events.ScheduleEvent(LURKER_EVENT_GEYSER, urand(5000, 15000));
                     events.ScheduleEvent(LURKER_EVENT_SUBMERGE, 90000);
+                    break;
+                }
+                case LURKER_EVENT_REEMERGING:
+                {
+                    me->SetIngoreVictimSelection(true);
+                    me->SetSelection(0);
+                    me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                    me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                    me->RemoveAurasDueToSpell(SPELL_SUBMERGE);
+                    me->UpdateVisibilityAndView();
+                    ForceSpellCast(SPELL_EMERGE, CAST_NULL, INTERRUPT_AND_CAST_INSTANTLY);
+                    me->UpdateVisibilityAndView();
+
+                    events.CancelEvent(LURKER_EVENT_SPOUT_EMOTE);
+                    events.CancelEvent(LURKER_EVENT_SPOUT);
+                    events.CancelEvent(LURKER_EVENT_WHIRL);
+                    events.CancelEvent(LURKER_EVENT_GEYSER);
+                    events.ScheduleEvent(LURKER_EVENT_REEMERGE, 5000);
                     break;
                 }
             }

@@ -168,7 +168,7 @@ struct instance_serpentshrine_cavern : public ScriptedInstance
                         if (go->GetDistance2d(pTemp) > 16.0f)
                             return;
 
-                        FishingTimer = 10000+rand()%30000;//random time before lurker emerges
+                        FishingTimer = 3000;//10000+rand()%30000;//random time before lurker emerges
                         LurkerSubEvent = LURKER_FISHING;
                     }
                 }
