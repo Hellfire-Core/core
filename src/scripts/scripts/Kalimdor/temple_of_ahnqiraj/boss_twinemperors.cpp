@@ -121,8 +121,7 @@ struct boss_twinemperorsAI : public ScriptedAI
             pOtherBoss->SetHealth(ohealth > 0 ? ohealth : 0);
             if (ohealth <= 0)
             {
-                pOtherBoss->setDeathState(JUST_DIED);
-                pOtherBoss->SetFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_LOOTABLE);
+                done_by->Kill(pOtherBoss);
             }
         }
     }
@@ -130,12 +129,11 @@ struct boss_twinemperorsAI : public ScriptedAI
     void JustDied(Unit* Killer)
     {
         Creature *pOtherBoss = GetOtherBoss();
-        if (pOtherBoss)
+        if (pOtherBoss && !DontYellWhenDead)
         {
-            pOtherBoss->SetHealth(0);
-            pOtherBoss->setDeathState(JUST_DIED);
-            pOtherBoss->SetFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_LOOTABLE);
             ((boss_twinemperorsAI *)pOtherBoss->AI())->DontYellWhenDead = true;
+            Killer->Kill(pOtherBoss);
+            pOtherBoss->SetHealth(0);
         }
 
         if (!DontYellWhenDead)                              // I hope AI is not threaded
