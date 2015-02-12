@@ -159,7 +159,7 @@ struct boss_muruAI : public Scripted_NoMovementAI
 
     void EnterCombat(Unit *who)
     {
-        me->SetIngoreVictimSelection(true);
+        me->SetIgnoreVictimSelection(true);
         DoCast(me, SPELL_NEGATIVE_ENERGY_PERIODIC);
         DoCast(me, SPELL_OPEN_PORTAL_PERIODIC);
         DoCast(me, SPELL_DARKNESS_PERIODIC);
