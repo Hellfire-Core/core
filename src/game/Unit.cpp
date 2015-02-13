@@ -3440,10 +3440,6 @@ void Unit::InterruptSpell(uint32 spellType, bool withDelayed, bool withInstant)
         && (withDelayed || spell->getState() != SPELL_STATE_DELAYED)
         && (withInstant || spell->GetCastTime() > 0))
     {
-        // remove this after getting crashlog
-        if(spell->GetSpellEntry()->Id == 43383)
-            *((uint32 volatile*)NULL) = 0;
-
         // for example, do not let self-stun aura interrupt itself
         if (!spell->IsInterruptable())
             return;

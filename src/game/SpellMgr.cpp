@@ -3471,7 +3471,7 @@ void SpellMgr::LoadSpellCustomAttr()
                 spellInfo->AttributesEx2 &= ~SPELL_ATTR_EX2_IGNORE_LOS;
                 break;
             case 43383: // Spirit Bolts (HexLord)
-                spellInfo->ChannelInterruptFlags |= CHANNEL_INTERRUPT_FLAG_MOVEMENT;
+                spellInfo->ChannelInterruptFlags = 0;
                 spellInfo->InterruptFlags &= ~SPELL_INTERRUPT_FLAG_INTERRUPT;
                 break;
             case 29962: // Summon Elemental (Shade of Aran)
