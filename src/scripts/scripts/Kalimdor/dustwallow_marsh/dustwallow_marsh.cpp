@@ -146,9 +146,38 @@ struct npc_deserter_agitatorAI : public ScriptedAI
 {
     npc_deserter_agitatorAI(Creature *c) : ScriptedAI(c) {}
 
+    uint32 reset_timer;
+    
     void Reset()
     {
         m_creature->setFaction(894);
+        reset_timer = 0;
+    }
+
+    void UpdateAI(const uint32 diff)
+    {
+        if (UpdateVictim())
+        {
+            DoMeleeAttackIfReady();
+            return;
+        }
+
+        if (reset_timer)
+        {
+            if (reset_timer <= diff)
+                Reset();
+            else
+                reset_timer -= diff;
+        }
+    }
+
+    void DoAction(const int32 param)
+    {
+        if (param == 1)
+        {
+            m_creature->setFaction(1883);
+            reset_timer = 30000;
+        }
     }
 };
 
@@ -161,8 +190,8 @@ bool GossipHello_npc_deserter_agitator(Player *player, Creature *_Creature)
 {
     if (player->GetQuestStatus(11126) == QUEST_STATUS_INCOMPLETE)
     {
-        _Creature->setFaction(1883);
         player->TalkedToCreature(_Creature->GetEntry(), _Creature->GetGUID());
+        _Creature->AI()->DoAction(1);
     }
     else
         player->SEND_GOSSIP_MENU(_Creature->GetNpcTextId(), _Creature->GetGUID());
