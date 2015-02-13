@@ -6571,7 +6571,7 @@ void Spell::EffectScriptEffect(uint32 effIndex)
             break;
         case 38650: // Rancid Mushroom
             m_caster->SummonCreature(22250, unitTarget->GetPositionX(), unitTarget->GetPositionY(), unitTarget->GetPositionZ(), unitTarget->GetOrientation(),
-                    TEMPSUMMON_DEAD_DESPAWN, 0);
+                    TEMPSUMMON_DEAD_DESPAWN, 30000);
             break;
         case 45235: // Eredar Twins: Blaze
             unitTarget->CastSpell(unitTarget, 45236, true, NULL, NULL, m_caster->GetGUID());
