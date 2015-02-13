@@ -1815,7 +1815,7 @@ void Aura::TriggerSpell()
                     // Spout
                     case 37429:
                     {
-                        trigger_spell_id = 42835;
+                        trigger_spell_id = 37433;
                         break;
                     }
 //                    // Spout

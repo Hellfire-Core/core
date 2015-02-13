@@ -2228,15 +2228,22 @@ void Spell::SetTargetMap(uint32 i, uint32 cur)
             }
         }
 
-        sScriptMgr.OnSpellSetTargetMap(m_caster, unitList, m_targets, GetSpellEntry(), i);
-
+sScriptMgr.OnSpellSetTargetMap(m_caster, unitList, m_targets, GetSpellEntry(), i);
         if (!unitList.empty())
         {
+
             if (GetSpellEntry()->AttributesEx & SPELL_ATTR_EX_CANT_TARGET_SELF)
                 unitList.remove_if(Hellground::ObjectGUIDCheck(m_caster->GetGUID()));
 
             switch (GetSpellEntry()->Id)
             {
+                case 37433:
+                {
+                    for (std::list<Unit*>::iterator itrr = unitList.begin(); itrr != unitList.end(); itrr++)
+                        if ((*itrr)->IsInWater())
+                            unitList.remove((*itrr));
+                    break;
+                }
                 case 40869:     // Fatal Attraction
                     unitList.remove_if(Hellground::UnitAuraCheck(true, 43690));
                     break;
