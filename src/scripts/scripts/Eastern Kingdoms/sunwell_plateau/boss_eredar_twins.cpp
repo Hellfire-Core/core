@@ -120,6 +120,7 @@ struct boss_sacrolashAI : public ScriptedAI
 
     void Reset()
     {
+        ClearCastQueue();
         ShadowbladesTimer = 10000;
         SpecialTimer = 30000;
         ConfoundingblowTimer = 25000;
@@ -320,6 +321,7 @@ struct boss_alythessAI : public Scripted_NoMovementAI
 
     void Reset()
     {
+        ClearCastQueue();
         SpecialTimer = urand(15000, 19000);
         PyrogenicsTimer = 15000;
         EnrageTimer = 360000;
