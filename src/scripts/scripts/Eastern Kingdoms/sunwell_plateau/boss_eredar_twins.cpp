@@ -226,7 +226,7 @@ struct boss_sacrolashAI : public ScriptedAI
     {
         if(Creature* Alythess = me->GetCreature(pInstance->GetData64(DATA_ALYTHESS)))
         {
-            Unit* target = Alythess->AI()->SelectUnit(SELECT_TARGET_TOPAGGRO, urand(0,4), 300.0f, true, Alythess->getVictimGUID());
+            Unit* target = Alythess->AI()->SelectUnit(SELECT_TARGET_TOPAGGRO, urand(1,5), 300.0f, true, Alythess->getVictimGUID());
             if(target && target->isAlive())
                 return target;
         }
@@ -484,7 +484,7 @@ struct boss_alythessAI : public Scripted_NoMovementAI
         if(Creature* Sacrolash = me->GetCreature(pInstance->GetData64(DATA_SACROLASH)))
         {
             
-            Unit* target = Sacrolash->AI()->SelectUnit(SELECT_TARGET_TOPAGGRO, urand(0,4), 300.0f, true, Sacrolash->getVictimGUID());
+            Unit* target = Sacrolash->AI()->SelectUnit(SELECT_TARGET_TOPAGGRO, urand(1,5), 300.0f, true, Sacrolash->getVictimGUID());
             if(target && target->isAlive())
                 return target;
         }
@@ -659,7 +659,7 @@ void AddSC_boss_eredar_twins()
     newscript->Name="boss_sacrolash";
     newscript->GetAI = &GetAI_boss_sacrolash;
     newscript->RegisterSelf();
-
+    
     newscript = new Script;
     newscript->Name="boss_alythess";
     newscript->GetAI = &GetAI_boss_alythess;
