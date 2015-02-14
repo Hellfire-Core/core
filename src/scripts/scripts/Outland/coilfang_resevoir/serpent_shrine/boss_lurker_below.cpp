@@ -159,31 +159,19 @@ struct boss_the_lurker_belowAI : public BossAI
         if (me->hasUnitState(UNIT_STAT_CASTING) || m_submerged || m_rotating)
             return;
 
-        //Make sure our attack is ready and we aren't currently casting before checking distance
-        if (me->isAttackReady())
+        Unit *melee = m_creature->getVictim();
+
+        if (!melee && !(melee = SelectUnit(SELECT_TARGET_TOPAGGRO, 0)))
+            return;
+
+        if (m_creature->IsWithinMeleeRange(melee), 10.0f)
         {
-            //If we are within range melee the target
-            if (me->IsWithinMeleeRange(me->getVictim()))
-            {
-                me->AttackerStateUpdate(me->getVictim());
-                me->resetAttackTimer();
-            }
-            else
-            {
-                if (Unit *pTarget = SelectUnit(SELECT_TARGET_TOPAGGRO, 0, 5.0f, true))
-                {
-                    me->AttackerStateUpdate(pTarget);
-                    me->resetAttackTimer();
-                }
-                else
-                {
-                    if (Unit *pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0, 100.0f, true, 0, 5.0f))
-                        AddSpellToCast(pTarget, SPELL_WATERBOLT);
-                    else
-                        EnterEvadeMode();
-                }
-            }
+            if (m_creature->hasUnitState(UNIT_STAT_CASTING))
+                m_creature->InterruptNonMeleeSpells(true); 
+            UnitAI::DoMeleeAttackIfReady();
         }
+        else
+            AddSpellToCast(SPELL_WATERBOLT, CAST_RANDOM);
     }
 
     void UpdateAI(const uint32 diff)
