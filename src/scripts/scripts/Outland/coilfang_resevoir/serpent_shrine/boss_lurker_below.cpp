@@ -159,16 +159,14 @@ struct boss_the_lurker_belowAI : public BossAI
         if (me->hasUnitState(UNIT_STAT_CASTING) || m_submerged || m_rotating)
             return;
 
-        Unit *melee = m_creature->getVictim();
-
-        if (!melee && !(melee = SelectUnit(SELECT_TARGET_TOPAGGRO, 0)))
-            return;
-
-        if (m_creature->IsWithinMeleeRange(melee), 10.0f)
+        if (Unit *melee = m_creature->getVictim())
         {
-            if (m_creature->hasUnitState(UNIT_STAT_CASTING))
-                m_creature->InterruptNonMeleeSpells(true); 
-            UnitAI::DoMeleeAttackIfReady();
+            if (m_creature->IsWithinMeleeRange(melee), 10.0f)
+            {
+                if (m_creature->hasUnitState(UNIT_STAT_CASTING))
+                    m_creature->InterruptNonMeleeSpells(true);
+                AttackStartNoMove(melee);
+            }
         }
         else
             AddSpellToCast(SPELL_WATERBOLT, CAST_RANDOM);
@@ -293,8 +291,9 @@ struct boss_the_lurker_belowAI : public BossAI
         }
 
 
-        DoMeleeAttackIfReady();
+
         CastNextSpellIfAnyAndReady();
+        DoMeleeAttackIfReady();
     }
 };
 
