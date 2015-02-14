@@ -222,8 +222,8 @@ struct boss_the_lurker_belowAI : public BossAI
                     me->SetOrientation(temp); // after setting ignore victim selection the creature sets its look to the 0, so we restore it :p
                     m_rotating = true;
 
-                    events.RescheduleEvent(LURKER_EVENT_WHIRL, 13100); // 100 ms after spout we whirl
-                    events.RescheduleEvent(LURKER_EVENT_GEYSER, urand(13100, 23000));
+                    events.RescheduleEvent(LURKER_EVENT_WHIRL, 15100); // 100 ms after spout we whirl
+                    events.RescheduleEvent(LURKER_EVENT_GEYSER, urand(15100, 25000));
 
                     events.ScheduleEvent(LURKER_EVENT_SPOUT, 3000);
                     break;
@@ -231,11 +231,11 @@ struct boss_the_lurker_belowAI : public BossAI
                 case LURKER_EVENT_SPOUT:
                 {
                     ForceSpellCast(SPELL_SPOUT_VISUAL, CAST_NULL, INTERRUPT_AND_CAST_INSTANTLY);
-                    me->GetMotionMaster()->MoveRotate(10000, RAND(ROTATE_DIRECTION_LEFT, ROTATE_DIRECTION_RIGHT));
+                    me->GetMotionMaster()->MoveRotate(12000, RAND(ROTATE_DIRECTION_LEFT, ROTATE_DIRECTION_RIGHT));
 
 
                     events.ScheduleEvent(LURKER_EVENT_SPOUT_EMOTE, 45000);
-                    events.ScheduleEvent(LURKER_EVENT_STOP_SPOUT, 10000);
+                    events.ScheduleEvent(LURKER_EVENT_STOP_SPOUT, 12000);
                     break;
                 }
                 case LURKER_EVENT_STOP_SPOUT:
