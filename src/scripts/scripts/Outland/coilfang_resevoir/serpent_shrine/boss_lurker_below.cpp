@@ -284,6 +284,7 @@ struct boss_the_lurker_belowAI : public BossAI
                     events.Reset();
                     events.ScheduleEvent(LURKER_EVENT_REEMERGE, 5000);
                     events.ScheduleEvent(LURKER_EVENT_WHIRL, 5250); // whirl right after reemerging, 250 ms to finish animation and shit
+                    ClearCastQueue(); // prevent casting waterbolt on random target even if someone is close
                     break;
                 }
                 case LURKER_EVENT_REEMERGE:
@@ -303,8 +304,9 @@ struct boss_the_lurker_belowAI : public BossAI
             }
         }
 
-        CastNextSpellIfAnyAndReady();
+
         DoMeleeAttackIfReady();
+        CastNextSpellIfAnyAndReady();
     }
 };
 
