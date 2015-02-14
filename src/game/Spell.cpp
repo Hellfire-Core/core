@@ -2244,8 +2244,18 @@ sScriptMgr.OnSpellSetTargetMap(m_caster, unitList, m_targets, GetSpellEntry(), i
                         if (unitList.empty())
                             return;
 
-                        if ((*itrr) && (*itrr)->GetTypeId() == TYPEID_PLAYER && (*itrr)->IsInWater())
-                            unitList.remove((*itrr));
+                        if ((*itrr))
+                        {
+                            if ((*itrr)->GetTypeId() == TYPEID_PLAYER)
+                            {
+                                if ((*itrr)->IsInWater())
+                                    unitList.remove((*itrr));
+                            }
+                            else
+                            {
+                                unitList.remove((*itrr));
+                            }
+                        }
                     }
                     break;
                 }
