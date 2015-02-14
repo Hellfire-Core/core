@@ -1740,7 +1740,7 @@ void Spell::SetTargetMap(uint32 i, uint32 cur)
                     m_caster->GetValidPointInAngle(pos, dis+DEFAULT_WORLD_OBJECT_SIZE, frand(-0.6, 0.6), true, false, max_dis);
                     float liquidLevel = m_caster->GetMap()->GetTerrain()->GetWaterOrGroundLevel(pos.x, pos.y, pos.z);
                     m_targets.setDestination(pos.x, pos.y, liquidLevel);
-                    if (!m_caster->GetTerrain()->IsInWater(pos.x, pos.y, liquidLevel + 1.f))
+                    if (!m_caster->GetTerrain()->IsInWater(pos.x, pos.y, liquidLevel + 2.0f))
                     {
                         SendCastResult(SPELL_FAILED_NOT_HERE);
                         SendChannelUpdate(0);
