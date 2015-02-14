@@ -2240,7 +2240,7 @@ sScriptMgr.OnSpellSetTargetMap(m_caster, unitList, m_targets, GetSpellEntry(), i
                 case 37433:
                 {
                     for (std::list<Unit*>::iterator itrr = unitList.begin(); itrr != unitList.end(); itrr++)
-                        if ((*itrr)->IsInWater())
+                        if ((*itrr) && (*itrr)->IsInWater())
                             unitList.remove((*itrr));
                     break;
                 }
