@@ -2241,9 +2241,8 @@ void Spell::SetTargetMap(uint32 i, uint32 cur)
                 {
                     for (std::list<Unit*>::iterator itr = unitList.begin(); itr != unitList.end(); itr++)
                     {
-                        if (unitList.empty())
-                            return;
-                       
+                        if (!(*itr)) continue;
+
                         if ((*itr)->GetTypeId() == TYPEID_PLAYER)
                         {
                             if ((*itr)->IsInWater())
