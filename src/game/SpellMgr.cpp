@@ -2872,6 +2872,9 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 43421: // hex lord malacrass - do not spellsteal lifebloom
                     spellInfo->AttributesEx4 |= SPELL_ATTR_EX4_NOT_STEALABLE;
                     break;
+                case 8690: // hearthstone - no haste bonus
+                    spellInfo->Attributes |= SPELL_ATTR_TRADESPELL;
+                    break;
                 }
                 if (spellInfo->SpellIconID == 184 && spellInfo->Attributes == 4259840)
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
