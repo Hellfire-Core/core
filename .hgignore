@@ -5,6 +5,7 @@ syntax: glob
 
 build/
 bin/
+doc/
 .directory
 .git/
 *~
