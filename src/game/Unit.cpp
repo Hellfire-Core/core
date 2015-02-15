@@ -4275,6 +4275,7 @@ void Unit::RemoveAurasDueToSpellBySteal(uint32 spellId, uint64 casterGUID, Unit 
                     Aura *stealer_aur = (*itr).second;
                     if (aur->GetSpellProto()->SpellFamilyName == stealer_aur->GetSpellProto()->SpellFamilyName &&
                         aur->GetSpellProto()->SpellFamilyFlags == stealer_aur->GetSpellProto()->SpellFamilyFlags &&
+                        aur->GetSpellProto()->SpellFamilyFlags != 0 && // some spells dont have sff, and they will fail to be stealed. Maybe icon check will be better?
                         (aur->GetBasePoints() < stealer_aur->GetBasePoints() ||  // better values
                         (aur->GetBasePoints() == stealer_aur->GetBasePoints() && stealer_aur->GetAuraDuration() > max_dur))) // same values but timer longer than 2 minutes
                     {
@@ -4283,6 +4284,8 @@ void Unit::RemoveAurasDueToSpellBySteal(uint32 spellId, uint64 casterGUID, Unit 
                     }
                 }
             }
+            if (aur->GetSpellProto()->AttributesEx4 & SPELL_ATTR_EX4_NOT_STEALABLE)
+                onlyDispel = true;
             // set its duration and maximum duration
             int32 dur = aur->GetAuraDuration();
             new_aur->SetAuraMaxDuration(max_dur > dur ? dur : max_dur);
@@ -4293,23 +4296,18 @@ void Unit::RemoveAurasDueToSpellBySteal(uint32 spellId, uint64 casterGUID, Unit 
             if (!onlyDispel)
                 stealer->AddAura(new_aur);
             // Remove aura as dispel
-            if (spellId == 43421)         // Special case - Hex Lord Malacrass Lifebloom (prevent lifebloom from blomming when spellstolen)
-                RemoveAura(iter, AURA_REMOVE_BY_DEFAULT);
-            else
+            if (aur->GetStackAmount() > 1)
             {
-                if (aur->GetStackAmount() > 1)
-                {
-                    // reapply modifier with reduced stack amount
-                    aur->ApplyModifier(false,true);
-                    aur->SetStackAmount(iter->second->GetStackAmount()-1);
-                    aur->ApplyModifier(true,true);
+                // reapply modifier with reduced stack amount
+                aur->ApplyModifier(false,true);
+                aur->SetStackAmount(iter->second->GetStackAmount()-1);
+                aur->ApplyModifier(true,true);
 
-                    aur->UpdateSlotCounterAndDuration();
-                    return; // should always only 1 aura per spell be stolen?
-                }
-                else
-                    RemoveAura(iter,AURA_REMOVE_BY_DISPEL);
+                aur->UpdateSlotCounterAndDuration();
+                return; // should always only 1 aura per spell be stolen?
             }
+            else
+                RemoveAura(iter,AURA_REMOVE_BY_DISPEL);
         }
         else
             ++iter;
