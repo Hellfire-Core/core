@@ -2239,19 +2239,12 @@ void Spell::SetTargetMap(uint32 i, uint32 cur)
             {
                 case 37433:
                 {
-                    for (std::list<Unit*>::iterator itr = unitList.begin(); itr != unitList.end(); itr++)
+                    for (std::list<Unit*>::iterator itr = unitList.begin(); itr != unitList.end();)
                     {
-                        if (!(*itr)) continue;
-
-                        if ((*itr)->GetTypeId() == TYPEID_PLAYER)
-                        {
-                            if ((*itr)->IsInWater())
-                                unitList.remove((*itr));
-                        }
+                        if ((*itr)->GetTypeId() != TYPEID_PLAYER || (*itr)->IsInWater())
+                            itr = unitList.erase(itr);
                         else
-                        {
-                            unitList.remove((*itr));
-                        }
+                            itr++;
                     }
                     break;
                 }
