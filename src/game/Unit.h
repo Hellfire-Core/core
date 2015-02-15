@@ -1151,7 +1151,10 @@ class HELLGROUND_IMPORT_EXPORT Unit : public WorldObject
 
         void MonsterMoveWithSpeed(float x, float y, float z, float speed, bool time=false, bool generatePath = false, bool forceDestination = false);
 
+        //Sends mobs movement (and movement end?) to client
         void SendMonsterStop();
+        //Sends visual updates to client, DOES NOT UPDATE ON SERVER SIDE;
+        //for server side update use UpdateVisibilityAndView()
         void SendHeartBeat();
 
         bool IsLevitating() const { return m_movementInfo.HasMovementFlag(MOVEFLAG_LEVITATING);}
@@ -1390,6 +1393,8 @@ class HELLGROUND_IMPORT_EXPORT Unit : public WorldObject
         void SetVisibility(UnitVisibility x);
         void DestroyForNearbyPlayers();
 
+        //Updates mobs and objects on SERVER SIDE, does not send update to CLIENTS;
+        //use SendHeartBeat() to update visibility for clients
         void UpdateVisibilityAndView();
 
         // common function for visibility checks for player/creatures with detection code

@@ -83,6 +83,7 @@ struct boss_the_lurker_belowAI : public BossAI
     bool m_rotating;
     bool m_submerged;
 
+    float hack; // hack for turning on MoveRotate
 
     void Reset()
     {
@@ -92,12 +93,12 @@ struct boss_the_lurker_belowAI : public BossAI
         instance->SetData(DATA_THELURKERBELOWEVENT, NOT_STARTED);
         instance->SetData(DATA_STRANGE_POOL, NOT_STARTED);
 
-        // Do not fall to the ground ;]
-
 
         // Set reactstate to: Defensive
         me->SetReactState(REACT_DEFENSIVE);
         me->SetVisibility(VISIBILITY_OFF);
+
+        hack = me->GetOrientation();
 
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
@@ -154,22 +155,42 @@ struct boss_the_lurker_belowAI : public BossAI
     {
     }
 
+    bool FindPlayers()
+    {
+        std::list<HostileReference*>& m_threatlist = me->getThreatManager().getThreatList();
+        if (m_threatlist.empty())
+            return false;
+
+        for (std::list<HostileReference*>::iterator itr = m_threatlist.begin(); itr != m_threatlist.end(); ++itr)
+        {
+            Unit* pUnit = Unit::GetUnit((*me), (*itr)->getUnitGuid());
+            if (pUnit && pUnit->isAlive() && pUnit->isInCombat() && me->canAttack(pUnit) && pUnit->IsWithinDistInMap(me, 100.0f))
+                return true;
+        }
+        return false;
+    }
+
     void DoMeleeAttackIfReady()
     {
-        if (me->hasUnitState(UNIT_STAT_CASTING) || m_submerged || m_rotating)
+        if (!FindPlayers())
+            EnterEvadeMode();
+
+        if (m_submerged || m_rotating)
             return;
 
-        if (Unit *melee = m_creature->getVictim())
+        if (me->isAttackReady())
         {
-            if (m_creature->IsWithinMeleeRange(melee), 10.0f)
+            if (Unit *melee = me->SelectNearestTarget())
             {
-                if (m_creature->hasUnitState(UNIT_STAT_CASTING))
-                    m_creature->InterruptNonMeleeSpells(true);
-                AttackStartNoMove(melee);
+                me->SetSelection(melee->GetGUID());
+                UnitAI::DoMeleeAttackIfReady();
+            }
+            else
+            {
+                ForceSpellCast(SPELL_WATERBOLT, CAST_RANDOM, INTERRUPT_AND_CAST_INSTANTLY, true);
+                me->resetAttackTimer();
             }
         }
-        else
-            AddSpellToCast(SPELL_WATERBOLT, CAST_RANDOM);
     }
 
     void UpdateAI(const uint32 diff)
@@ -184,12 +205,13 @@ struct boss_the_lurker_belowAI : public BossAI
             events.Reset();
             events.ScheduleEvent(LURKER_EVENT_REEMERGING, 1000);
             DoZoneInCombat();
+            me->SetIgnoreVictimSelection(true);
         }
         events.Update(diff);
         DoSpecialThings(diff, DO_PULSE_COMBAT);
 
         if (m_rotating)
-            me->SetSelection(0); // another importante! trigger spell forces him to set target on someone who attacks him, so this is a hack, very important hack!
+            me->SetSelection(0); // another !IMPORTANTE! hack! he sets target on someone who he hits with spell, so this is a hack, very important hack!
 
 
 
@@ -202,10 +224,11 @@ struct boss_the_lurker_belowAI : public BossAI
                     me->MonsterTextEmote(EMOTE_SPOUT, 0, true);
                     ForceSpellCast(me, SPELL_SPOUT_BREATH, INTERRUPT_AND_CAST_INSTANTLY);
 
-                    float temp = me->GetOrientation();
+                    hack = me->GetOrientation();
                     me->SetSelection(0);
-                    me->SetIgnoreVictimSelection(true); // importante!
-                    me->SetOrientation(temp); // after setting ignore victim selection the creature sets its look to the 0, so we restore it :p
+                    me->SetOrientation(hack); // important hack, w/o this he will start emote from someone else
+                    me->UpdateVisibilityAndView();  // just to be sure for server side
+                    me->SendHeartBeat(); // quite important too, otherwise players will see it casting from other place..
                     m_rotating = true;
 
                     events.RescheduleEvent(LURKER_EVENT_WHIRL, 15100); // 100 ms after spout we whirl
@@ -216,7 +239,9 @@ struct boss_the_lurker_belowAI : public BossAI
                 }
                 case LURKER_EVENT_SPOUT:
                 {
+
                     ForceSpellCast(SPELL_SPOUT_VISUAL, CAST_NULL, INTERRUPT_AND_CAST_INSTANTLY);
+
                     me->GetMotionMaster()->MoveRotate(12000, RAND(ROTATE_DIRECTION_LEFT, ROTATE_DIRECTION_RIGHT));
 
 
@@ -227,7 +252,6 @@ struct boss_the_lurker_belowAI : public BossAI
                 case LURKER_EVENT_STOP_SPOUT:
                 {
                     me->RemoveAurasDueToSpell(SPELL_SPOUT_VISUAL);
-                    me->SetIgnoreVictimSelection(false);
                     m_rotating = false;
                     
                     break;
@@ -291,9 +315,8 @@ struct boss_the_lurker_belowAI : public BossAI
         }
 
 
-
-        CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
+        CastNextSpellIfAnyAndReady();
     }
 };
 
