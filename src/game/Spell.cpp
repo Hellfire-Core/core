@@ -2529,7 +2529,7 @@ void Spell::cast(bool skipCheck)
         return;
     }
 
-    if (m_caster->GetTypeId() != TYPEID_PLAYER && m_targets.getUnitTarget() && m_targets.getUnitTarget() != m_caster)
+    if (m_caster->GetTypeId() != TYPEID_PLAYER && m_targets.getUnitTarget() && m_targets.getUnitTarget() != m_caster && m_targets.getUnitTargetGUID() != NULL)
         m_caster->SetInFront(m_targets.getUnitTarget());
 
     if (!IsTriggeredSpell() || IsAutoShootSpell())
