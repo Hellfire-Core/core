@@ -4122,7 +4122,7 @@ void Aura::HandleFeignDeath(bool apply, bool Real)
             }
         }
 
-        if(!resisted)
+        if(!resisted && (!m_target->GetInstanceData() || !m_target->GetInstanceData()->IsEncounterInProgress()))
         {
             m_target->AttackStop();
             m_target->ClearInCombat();
