@@ -35,10 +35,10 @@ void RotateMovementGenerator::Interrupt(Unit& unit)
 
 void RotateMovementGenerator::Initialize(Unit& owner)
 {
-    //if (owner.hasUnitState(UNIT_STAT_MOVE))
-    //    owner.StopMoving();
+    if (!owner.hasUnitState(UNIT_STAT_NOT_MOVE))
+        owner.StopMoving();
 
-    if (owner.getVictim())
+    if (owner.getVictim() && !owner.ToCreature()->hasIgnoreVictimSelection())
         owner.SetInFront(owner.getVictim());
 
     owner.addUnitState(UNIT_STAT_ROTATING);
