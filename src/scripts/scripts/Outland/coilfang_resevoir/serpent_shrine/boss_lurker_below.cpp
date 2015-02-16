@@ -176,20 +176,24 @@ struct boss_the_lurker_belowAI : public BossAI
         if (m_submerged || m_rotating)
             return;
 
-        if (me->isAttackReady())
+        if (me->GetSelection() && me->GetDistance(me->GetUnit(me->GetSelection())) <= 1.5f)
         {
-            if (Unit *melee = me->SelectNearestTarget(1.5f))
-            {
-                me->SetSelection(melee->GetGUID());
-                UnitAI::DoMeleeAttackIfReady();
-            }
-            else
-            {
-                ForceSpellCast(SPELL_WATERBOLT, CAST_RANDOM, INTERRUPT_AND_CAST_INSTANTLY, true);
-                me->resetAttackTimer();
-            }
+            me->Attack(me->GetUnit(me->GetSelection()), true);
+            UnitAI::DoMeleeAttackIfReady();
+            return;
         }
+
+        if (Unit *melee = me->SelectNearestTarget(1.5f))
+            me->SetSelection(melee->GetGUID());
+        else if (me->isAttackReady())
+        {
+            me->SetSelection(0);
+            ForceSpellCast(SPELL_WATERBOLT, CAST_RANDOM, INTERRUPT_AND_CAST_INSTANTLY, true);
+            me->resetAttackTimer();
+        }
+
     }
+    
 
     void UpdateAI(const uint32 diff)
     {
@@ -221,8 +225,10 @@ struct boss_the_lurker_belowAI : public BossAI
                 {
                     ClearCastQueue();
                     me->MonsterTextEmote(EMOTE_SPOUT, 0, true);
+                    float fix = me->GetOrientation();
                     me->SetSelection(0);
                     ForceSpellCast(SPELL_SPOUT_BREATH, CAST_NULL, INTERRUPT_AND_CAST_INSTANTLY);
+                    me->SetOrientation(fix);
                     me->SendHeartBeat(); // send this orientation change to players
                     m_rotating = true;
 
