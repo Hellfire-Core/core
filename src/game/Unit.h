@@ -1033,7 +1033,7 @@ class HELLGROUND_IMPORT_EXPORT Unit : public WorldObject
         void CalculateMeleeDamage(MeleeDamageLog *damageInfo);
         void DealMeleeDamage(MeleeDamageLog *damageInfo, bool durabilityLoss);
 
-        void CalculateSpellDamageTaken(SpellDamageLog *damageInfo, int32 damage, SpellEntry const *spellInfo, WeaponAttackType attackType = BASE_ATTACK, bool crit = false);
+        void CalculateSpellDamageTaken(SpellDamageLog *damageInfo, int32 damage, SpellEntry const *spellInfo, WeaponAttackType attackType = BASE_ATTACK, bool crit = false, bool blocked = false);
         void DealSpellDamage(SpellDamageLog *damageInfo, bool durabilityLoss);
 
         float MeleeSpellMissChance(const Unit *pVictim, WeaponAttackType attType, int32 skillDiff, uint32 spellId) const;
@@ -1500,7 +1500,6 @@ class HELLGROUND_IMPORT_EXPORT Unit : public WorldObject
         int32 SpellBaseHealingBonusForVictim(SpellSchoolMask schoolMask, Unit *pVictim);
         uint32 SpellDamageBonus(Unit *pVictim, SpellEntry const *spellProto, uint32 damage, DamageEffectType damagetype, CasterModifiers *casterModifiers = NULL);
         uint32 SpellHealingBonus(SpellEntry const *spellProto, uint32 healamount, DamageEffectType damagetype, Unit *pVictim, CasterModifiers *casterModifiers = NULL);
-        bool   isSpellBlocked(Unit *pVictim, SpellEntry const *spellProto, WeaponAttackType attackType = BASE_ATTACK);
         bool   isSpellCrit(Unit *pVictim, SpellEntry const *spellProto, SpellSchoolMask schoolMask, WeaponAttackType attackType = BASE_ATTACK);
         uint32 SpellCriticalBonus(SpellEntry const *spellProto, uint32 damage, Unit *pVictim);
 

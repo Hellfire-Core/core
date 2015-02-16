@@ -1376,7 +1376,7 @@ uint32 Unit::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
     return damageInfo.damage;
 }
 
-void Unit::CalculateSpellDamageTaken(SpellDamageLog *damageInfo, int32 damage, SpellEntry const *spellInfo, WeaponAttackType attackType, bool crit)
+void Unit::CalculateSpellDamageTaken(SpellDamageLog *damageInfo, int32 damage, SpellEntry const *spellInfo, WeaponAttackType attackType, bool crit, bool blocked)
 {
     if (damage < 0)
         return;
@@ -1394,7 +1394,6 @@ void Unit::CalculateSpellDamageTaken(SpellDamageLog *damageInfo, int32 damage, S
     uint32 crTypeMask = pVictim->GetCreatureTypeMask();
     // Check spell crit chance
     //bool crit = isSpellCrit(pVictim, spellInfo, damageSchoolMask, attackType);
-    bool blocked = false;
     // Per-school calc
     switch (spellInfo->DmgClass)
     {
@@ -1403,9 +1402,6 @@ void Unit::CalculateSpellDamageTaken(SpellDamageLog *damageInfo, int32 damage, S
         case SPELL_DAMAGE_CLASS_MELEE:
         {
             // Physical Damage
-            // Get blocked status
-            if (damageSchoolMask & SPELL_SCHOOL_MASK_NORMAL)
-                blocked = isSpellBlocked(pVictim, spellInfo, attackType);
 
             if (crit)
             {
@@ -1560,11 +1556,6 @@ void Unit::CalculateMeleeDamage(MeleeDamageLog *damageInfo)
             damageInfo->procAttacker = PROC_FLAG_SUCCESSFUL_MELEE_HIT | PROC_FLAG_SUCCESSFUL_OFFHAND_HIT;
             damageInfo->procVictim   = PROC_FLAG_TAKEN_MELEE_HIT;//|PROC_FLAG_TAKEN_OFFHAND_HIT // not used
             damageInfo->hitInfo = HITINFO_LEFTSWING;
-            break;
-        case RANGED_ATTACK:
-            damageInfo->procAttacker = PROC_FLAG_SUCCESSFUL_RANGED_HIT;
-            damageInfo->procVictim   = PROC_FLAG_TAKEN_RANGED_HIT;
-            damageInfo->hitInfo = HITINFO_RANGED;
             break;
         default:
             break;
@@ -2182,9 +2173,6 @@ void Unit::AttackerStateUpdate (Unit *pVictim, WeaponAttackType attType, bool ex
     CombatStart(pVictim);
     RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_ATTACK);
 
-    if (attType == RANGED_ATTACK)
-        return;                                             // ignore ranged case
-
     // melee attack spell cast at main hand attack only
     if (attType == BASE_ATTACK && m_currentSpells[CURRENT_MELEE_SPELL] && !extra)
     {
@@ -2334,13 +2322,6 @@ void Unit::RollMeleeHit(MeleeDamageLog *damageInfo, int32 crit_chance, int32 mis
         block_chance = 0;
     }
 
-    if (damageInfo->attackType == RANGED_ATTACK)
-    {
-        // this is not matrix :/
-        dodge_chance = 0;
-        parry_chance = 0;
-    }
-
     sLog.outDebug("RollMeleeOutcomeAgainst: skill bonus of %d for attacker", skillBonus);
     sLog.outDebug("RollMeleeOutcomeAgainst: rolled %d, miss %d, dodge %d, parry %d, block %d, crit %d",
         roll, miss_chance, dodge_chance, parry_chance, block_chance, crit_chance);
@@ -2386,7 +2367,7 @@ void Unit::RollMeleeHit(MeleeDamageLog *damageInfo, int32 crit_chance, int32 mis
     }
 
     // Max 40% chance to score a glancing blow against mobs that are higher level (can do only players and pets and not with ranged weapon)
-    if (attType != RANGED_ATTACK && getLevel() < pVictim->getLevelForTarget(this) &&
+    if (getLevel() < pVictim->getLevelForTarget(this) &&
         (GetTypeId() == TYPEID_PLAYER || ((Creature*)this)->isPet())  &&
         pVictim->GetTypeId() != TYPEID_PLAYER && !((Creature*)pVictim)->isPet())
     {
@@ -2470,11 +2451,7 @@ void Unit::RollMeleeHit(MeleeDamageLog *damageInfo, int32 crit_chance, int32 mis
                 int32 mod = 0;
 
                 mod += GetTotalAuraModifier(SPELL_AURA_MOD_CRIT_DAMAGE_BONUS);
-                // Apply SPELL_AURA_MOD_ATTACKER_RANGED_CRIT_DAMAGE or SPELL_AURA_MOD_ATTACKER_MELEE_CRIT_DAMAGE
-                if (damageInfo->attackType == RANGED_ATTACK)
-                    mod += damageInfo->target->GetTotalAuraModifier(SPELL_AURA_MOD_ATTACKER_RANGED_CRIT_DAMAGE);
-                else
-                    mod += damageInfo->target->GetTotalAuraModifier(SPELL_AURA_MOD_ATTACKER_MELEE_CRIT_DAMAGE);
+                mod += damageInfo->target->GetTotalAuraModifier(SPELL_AURA_MOD_ATTACKER_MELEE_CRIT_DAMAGE);
 
                 uint32 crTypeMask = damageInfo->target->GetCreatureTypeMask();
 
@@ -2637,28 +2614,6 @@ Spell* Unit::GetCurrentSpell(CurrentSpellTypes type) const
 SpellEntry const* Unit::GetCurrentSpellProto(CurrentSpellTypes type) const
 {
     return (m_currentSpells[type] ? m_currentSpells[type]->GetSpellEntry() : NULL);
-}
-
-bool Unit::isSpellBlocked(Unit *pVictim, SpellEntry const *spellProto, WeaponAttackType attackType)
-{
-    if (pVictim->HasInArc(M_PI,this))
-    {
-        if (spellProto && spellProto->Attributes & SPELL_ATTR_IMPOSSIBLE_DODGE_PARRY_BLOCK)
-            return false;
-
-        if (Player* player = pVictim->ToPlayer())
-        {
-            Item *tmpitem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND);
-            if (!tmpitem || !tmpitem->GetProto()->Block)
-                return false;
-        }
-
-        float blockChance = pVictim->GetUnitBlockChance();
-        blockChance += (GetWeaponSkillValue(attackType) - pVictim->GetMaxSkillValueForLevel())*0.04;
-        if (roll_chance_f(blockChance))
-            return true;
-    }
-    return false;
 }
 
 // Melee based spells can be miss, parry or dodge on this step

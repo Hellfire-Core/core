@@ -996,7 +996,7 @@ void Spell::DoAllEffectOnTarget(TargetInfo *target)
         SpellDamageLog damageInfo(GetSpellEntry()->Id, caster, unitTarget, m_spellSchoolMask);
 
         // Add bonuses and fill damageInfo struct
-        caster->CalculateSpellDamageTaken(&damageInfo, m_damage, GetSpellEntry(), m_attackType, target->crit);
+        caster->CalculateSpellDamageTaken(&damageInfo, m_damage, GetSpellEntry(), m_attackType, target->crit, target->missCondition == SPELL_MISS_BLOCK);
 
         // Send log damage message to client
         // caster->SendSpellNonMeleeDamageLog(&damageInfo);
