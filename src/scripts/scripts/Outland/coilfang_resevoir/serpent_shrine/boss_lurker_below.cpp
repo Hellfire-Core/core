@@ -83,7 +83,6 @@ struct boss_the_lurker_belowAI : public BossAI
     bool m_rotating;
     bool m_submerged;
 
-    float hack; // hack for turning on MoveRotate
 
     void Reset()
     {
@@ -98,7 +97,6 @@ struct boss_the_lurker_belowAI : public BossAI
         me->SetReactState(REACT_DEFENSIVE);
         me->SetVisibility(VISIBILITY_OFF);
 
-        hack = me->GetOrientation();
 
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
@@ -211,7 +209,7 @@ struct boss_the_lurker_belowAI : public BossAI
         DoSpecialThings(diff, DO_PULSE_COMBAT);
 
         if (m_rotating)
-            me->SetSelection(0); // another !IMPORTANTE! hack! he sets target on someone who he hits with spell, so this is a hack, very important hack!
+            me->SetSelection(0); // another !IMPORTANTE! hack! he sets target on someone who he hits with spell, so this is a hack, very important hack!  also i have no idea what is causing him to target the spout victim when he hits...
 
 
 
@@ -221,14 +219,11 @@ struct boss_the_lurker_belowAI : public BossAI
             {
                 case LURKER_EVENT_SPOUT_EMOTE:
                 {
+                    ClearCastQueue();
                     me->MonsterTextEmote(EMOTE_SPOUT, 0, true);
-                    ForceSpellCast(me, SPELL_SPOUT_BREATH, INTERRUPT_AND_CAST_INSTANTLY);
-
-                    hack = me->GetOrientation();
                     me->SetSelection(0);
-                    me->SetOrientation(hack); // important hack, w/o this he will start emote from someone else
-                    me->UpdateVisibilityAndView();  // just to be sure for server side
-                    me->SendHeartBeat(); // quite important too, otherwise players will see it casting from other place..
+                    ForceSpellCast(SPELL_SPOUT_BREATH, CAST_NULL, INTERRUPT_AND_CAST_INSTANTLY);
+                    me->SendHeartBeat(); // send this orientation change to players
                     m_rotating = true;
 
                     events.RescheduleEvent(LURKER_EVENT_WHIRL, 15100); // 100 ms after spout we whirl
@@ -239,12 +234,9 @@ struct boss_the_lurker_belowAI : public BossAI
                 }
                 case LURKER_EVENT_SPOUT:
                 {
-
                     ForceSpellCast(SPELL_SPOUT_VISUAL, CAST_NULL, INTERRUPT_AND_CAST_INSTANTLY);
-
                     me->GetMotionMaster()->MoveRotate(12000, RAND(ROTATE_DIRECTION_LEFT, ROTATE_DIRECTION_RIGHT));
-
-
+                    
                     events.ScheduleEvent(LURKER_EVENT_SPOUT_EMOTE, 45000);
                     events.ScheduleEvent(LURKER_EVENT_STOP_SPOUT, 12000);
                     break;
