@@ -474,11 +474,13 @@ bool AuthSocket::_HandleLogonChallenge()
             DEBUG_LOG("[AuthChallenge] Account '%s' is not locked to ip or frozen", _login.c_str());
             break;
     }
+    // update account punishments
+    AccountsDatabase.PQuery("UPDATE account_punishment SET active = 0 WHERE account_id = '%u' "
+        "AND active = 1 AND expiration_date <= UNIX_TIMESTAMP() AND expiration_date <> punishment_date", (*result)[1].GetUInt32());
     ///- If the account is banned, reject the logon attempt
     QueryResultAutoPtr  banresult = AccountsDatabase.PQuery("SELECT punishment_date, expiration_date "
-                                                            "FROM account_punishment "
-                                                            "WHERE account_id = '%u' AND punishment_type_id = '%u' AND active = 1 "
-                                                            "AND (punishment_date = expiration_date OR expiration_date > UNIX_TIMESTAMP())", (*result)[1].GetUInt32(), PUNISHMENT_BAN);
+                                                            "FROM account_punishment WHERE account_id = '%u' "
+                                                            "AND punishment_type_id = '%u' AND active = 1 ",(*result)[1].GetUInt32(), PUNISHMENT_BAN);
 
     if (banresult)
     {

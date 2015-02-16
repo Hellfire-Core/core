@@ -524,8 +524,6 @@ void World::LoadConfigSettings(bool reload)
     loadConfig(CONFIG_STRICT_PLAYER_NAMES, "StrictPlayerNames",  0);
     loadConfig(CONFIG_STRICT_CHARTER_NAMES, "StrictCharterNames", 0);
     loadConfig(CONFIG_STRICT_PET_NAMES, "StrictPetNames", 0);
-    loadConfig(CONFIG_ACTIVE_BANS_UPDATE_TIME, "ActiveBansUpdateTime", 30000);
-    loadConfig(CONFIG_ELUNA_ENABLED, "LuaEngine.Enabled", false);
 
     // Server customization basic
     loadConfig(CONFIG_CHARACTERS_CREATING_DISABLED, "CharactersCreatingDisabled", 0);
@@ -1447,7 +1445,6 @@ void World::SetInitialWorldSettings()
     m_timers[WUPDATE_GUILD_ANNOUNCES].SetInterval(getConfig(CONFIG_GUILD_ANN_INTERVAL));
     m_timers[WUPDATE_DELETECHARS].SetInterval(DAY*IN_MILISECONDS); // check for chars to delete every day
     m_timers[WUPDATE_OLDMAILS].SetInterval(getConfig(CONFIG_RETURNOLDMAILS_INTERVAL)*1000);
-    m_timers[WUPDATE_ACTIVE_BANS].SetInterval(getConfig(CONFIG_ACTIVE_BANS_UPDATE_TIME));
 
     //to set mailtimer to return mails every day between 4 and 5 am
     //mailtimer is increased when updating auctions
@@ -1824,20 +1821,6 @@ void World::Update(uint32 diff)
         m_timers[WUPDATE_EVENTS].SetInterval(nextGameEvent);
         m_timers[WUPDATE_EVENTS].Reset();
         diffRecorder.RecordTimeFor("UpdateGameEvents");
-    }
-    
-    if (m_timers[WUPDATE_ACTIVE_BANS].Passed())
-    {
-        m_timers[WUPDATE_ACTIVE_BANS].Reset();
-
-        static SqlStatementID updateBansStmt;
-        SqlStatement stmt = AccountsDatabase.CreateStatement(updateBansStmt, "UPDATE account_punishment "
-            "SET active = 0 WHERE expiration_date <= UNIX_TIMESTAMP() AND expiration_date <> punishment_date "
-            "AND punishment_type_id IN (?,?,?)");
-        stmt.addUInt8(PUNISHMENT_BAN);
-        stmt.addUInt8(PUNISHMENT_MUTE);
-        stmt.addUInt8(PUNISHMENT_TROLLMUTE);
-        stmt.Execute();
     }
     /// </ul>
 
