@@ -180,7 +180,7 @@ struct boss_the_lurker_belowAI : public BossAI
 
         if (me->isAttackReady())
         {
-            if (Unit *melee = me->SelectNearestTarget())
+            if (Unit *melee = me->SelectNearestTarget(1.5f))
             {
                 me->SetSelection(melee->GetGUID());
                 UnitAI::DoMeleeAttackIfReady();
