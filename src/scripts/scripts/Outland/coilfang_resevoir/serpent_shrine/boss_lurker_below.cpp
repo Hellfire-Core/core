@@ -82,6 +82,7 @@ struct boss_the_lurker_belowAI : public BossAI
 
     bool m_rotating;
     bool m_submerged;
+    bool m_emoting;
 
 
     void Reset()
@@ -104,6 +105,8 @@ struct boss_the_lurker_belowAI : public BossAI
         // Bools
         m_rotating = false;
         m_submerged = true;
+        m_emoting = false;
+        
         
 
         summons.DespawnAll();
@@ -136,6 +139,9 @@ struct boss_the_lurker_belowAI : public BossAI
     void JustDied(Unit* Killer)
     {
         instance->SetData(DATA_THELURKERBELOWEVENT, DONE);
+        me->AddUnitMovementFlag(MOVEFLAG_SWIMMING); 
+        me->SetLevitate(true); // just to be sure
+        DoTeleportTo(37.6721f, -417.457f, -21.62f, me->GetOrientation());
     }
 
     void SpellHitTarget(Unit *target, const SpellEntry *spell)
@@ -173,7 +179,7 @@ struct boss_the_lurker_belowAI : public BossAI
         if (!FindPlayers())
             EnterEvadeMode();
 
-        if (m_submerged || m_rotating)
+        if (m_submerged || m_rotating || m_emoting)
             return;
 
         if (me->GetSelection() && me->GetDistance(me->GetUnit(me->GetSelection())) <= 1.5f)
@@ -230,7 +236,7 @@ struct boss_the_lurker_belowAI : public BossAI
                     ForceSpellCast(SPELL_SPOUT_BREATH, CAST_NULL, INTERRUPT_AND_CAST_INSTANTLY);
                     me->SetOrientation(fix);
                     me->SendHeartBeat(); // send this orientation change to players
-                    m_rotating = true;
+                    m_emoting = true;
 
                     events.RescheduleEvent(LURKER_EVENT_WHIRL, 15100); // 100 ms after spout we whirl
                     events.RescheduleEvent(LURKER_EVENT_GEYSER, urand(15100, 25000));
@@ -240,6 +246,8 @@ struct boss_the_lurker_belowAI : public BossAI
                 }
                 case LURKER_EVENT_SPOUT:
                 {
+                    m_emoting = false;
+                    m_rotating = true;
                     ForceSpellCast(SPELL_SPOUT_VISUAL, CAST_NULL, INTERRUPT_AND_CAST_INSTANTLY);
                     me->GetMotionMaster()->MoveRotate(12000, RAND(ROTATE_DIRECTION_LEFT, ROTATE_DIRECTION_RIGHT));
                     
