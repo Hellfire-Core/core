@@ -10081,8 +10081,7 @@ Unit* Creature::SelectVictim()
     //This should not be called by unit who does not have a threatlist
     //or who does not have threat (totem/pet/critter)
     //otherwise enterevademode every update
-    if (hasIgnoreVictimSelection())
-        return NULL;
+
 
     if (IsInEvadeMode())
     {
