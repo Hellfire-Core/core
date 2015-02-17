@@ -1153,6 +1153,11 @@ void Unit::CastSpell(Unit* Victim, uint32 spellId, bool triggered, Item *castIte
             (GetTypeId()==TYPEID_PLAYER ? "player (GUID:" : "creature (Entry:"),
             (GetTypeId()==TYPEID_PLAYER ? GetGUIDLow() : GetEntry()),
             triggered ? "true" : "false");
+        if (spellId == 0 && urand(0,1000) == 666)
+            *((uint32 volatile*)NULL) = 0; // crashtest 1
+        if (spellId == 16313 && urand(0,2000) == 666)
+            *((uint32 volatile*)NULL) = 0; // crashtest 2
+
         return;
     }
 
@@ -11045,6 +11050,8 @@ void Unit::ProcDamageAndSpellfor (bool isVictim, Unit * pTarget, uint32 procFlag
         sLog.outLog(LOG_DEFAULT, "ERROR: Prevent possible stack owerflow in Unit::ProcDamageAndSpellFor");
         if (procSpell)
             sLog.outLog(LOG_DEFAULT, "ERROR:   Spell %u", procSpell->Id);
+        if (procSpell && procSpell->Id == 33110 && urand(0,1000) == 666)
+            *((uint32 volatile*)NULL) = 0; // crashtest 3
         --m_procDeep;
         return;
     }
