@@ -1155,8 +1155,6 @@ void Unit::CastSpell(Unit* Victim, uint32 spellId, bool triggered, Item *castIte
             triggered ? "true" : "false");
         if (spellId == 0 && urand(0,1000) == 666)
             *((uint32 volatile*)NULL) = 0; // crashtest 1
-        if (spellId == 16313 && urand(0,2000) == 666)
-            *((uint32 volatile*)NULL) = 0; // crashtest 2
 
         return;
     }

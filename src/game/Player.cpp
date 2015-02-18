@@ -7299,6 +7299,7 @@ void Player::CastItemCombatSpell(Unit *target, WeaponAttackType attType, uint32 
             {
                 if (ItemPrototype const *proto = item->GetProto())
                 {
+                    bool isRWC = false;
                     // Additional check for weapons
                     if (proto->Class == ITEM_CLASS_WEAPON)
                     {
@@ -7309,57 +7310,22 @@ void Player::CastItemCombatSpell(Unit *target, WeaponAttackType attType, uint32 
                             case BASE_ATTACK:   slot = EQUIPMENT_SLOT_MAINHAND; break;
                             case OFF_ATTACK:    slot = EQUIPMENT_SLOT_OFFHAND;  break;
                             case RANGED_ATTACK: slot = EQUIPMENT_SLOT_RANGED;   break;
-                            default: slot = EQUIPMENT_SLOT_END; break;
+                            default: continue;
                         }
 
-                        if (attType == RANGED_ATTACK && i == EQUIPMENT_SLOT_MAINHAND)
-                        {
-                            // exception for Righteous Weapon Coating, enchant on main hand should also proc from ranged attacks
-                            if(uint32 enchant_id = item->GetEnchantmentId(EnchantmentSlot(TEMP_ENCHANTMENT_SLOT)))
-                            {
-                                SpellItemEnchantmentEntry const *pEnchant = sSpellItemEnchantmentStore.LookupEntry(enchant_id);
-                                if(pEnchant && pEnchant->ID == 3266) // Blessed Weapon Coating
-                                {
-                                    ((Player*)this)->CastItemCombatSpell(target, attType, procVictim, procEx, item, proto, spellInfo);
-                                    continue;
-                                }
-                            }
-                        }
+                        if (item->GetEnchantmentId(TEMP_ENCHANTMENT_SLOT) == 3266)
+                            isRWC = true; // righteous weapon coating
 
-                        if (slot != i)
+                        if (slot != i && !(isRWC && attType == RANGED_ATTACK && i == EQUIPMENT_SLOT_MAINHAND))
                             continue;
 
                         // Check if item is useable (forms or disarm)
                         if (attType == BASE_ATTACK && HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISARMED))
                             continue;
 
-                        /*if (IsInFeralForm(true))
-                            continue;*/
                     }
 
-                    bool canProcInFeralForm = false;
-                    // check for exception combat item spells that can proc in feral form
-                    for (int e_slot = 0; e_slot < MAX_ENCHANTMENT_SLOT; ++e_slot)
-                    {
-                        uint32 enchant_id = item->GetEnchantmentId(EnchantmentSlot(e_slot));
-                        SpellItemEnchantmentEntry const *pEnchant = sSpellItemEnchantmentStore.LookupEntry(enchant_id);
-                        if (!pEnchant) continue;
-                        for (int s = 0; s < 3; ++s)
-                        {
-                            uint32 spell_id = 0;
-                            if (pEnchant->type[s] != ITEM_ENCHANTMENT_TYPE_COMBAT_SPELL)
-                            {
-                                switch (pEnchant->ID)
-                                {
-                                    // Righteous Weapon Coating can proc in feral form
-                                    case 3266: canProcInFeralForm = true; break;
-                                    default:
-                                        continue;
-                                }
-                            }
-                        }
-                    }
-                    if(!IsInFeralForm(true) || (!IsInFeralForm(true) && canProcInFeralForm))
+                    if(!IsInFeralForm(true) || isRWC)
                         ((Player*)this)->CastItemCombatSpell(target, attType, procVictim, procEx, item, proto, spellInfo);
                 }
             }
@@ -7420,26 +7386,6 @@ void Player::CastItemCombatSpell(Unit *target, WeaponAttackType attType, uint32 
         if (!pEnchant) continue;
         for (int s = 0; s < 3; ++s)
         {
-            uint32 spell_id = 0;
-            if (pEnchant->type[s] != ITEM_ENCHANTMENT_TYPE_COMBAT_SPELL)
-            {
-                // Flametongue Weapon support
-                switch (pEnchant->ID)
-                {
-                    case 3:    spell_id =  8029; break; // Rank1
-                    case 4:    spell_id =  8028; break; // Rank2
-                    case 5:    spell_id =  8026; break; // Rank3
-                    case 523:  spell_id = 10445; break; // Rank4
-                    case 1665: spell_id = 16343; break; // Rank5
-                    case 1666: spell_id = 16344; break; // Rank6
-                    case 2634: spell_id = 25488; break; // Rank7
-                    // Righteous Weapon Coating enchantment
-                    case 3266: spell_id = 45401; break; // Righteousness spell proc
-                    default:
-                        continue;
-                }
-            }
-
             SpellEnchantProcEntry const* entry = sSpellMgr.GetSpellEnchantProcEvent(enchant_id);
             if (entry && (entry->procEx || entry->procFlags))
             {
@@ -7463,8 +7409,7 @@ void Player::CastItemCombatSpell(Unit *target, WeaponAttackType attType, uint32 
                     continue;
             }
 
-            if (!spell_id)
-                spell_id = pEnchant->spellid[s];
+            uint32 spell_id = pEnchant->spellid[s];
 
             SpellEntry const *spellInfo = sSpellStore.LookupEntry(spell_id);
             if (!spellInfo)
@@ -12283,49 +12228,6 @@ void Player::ApplyEnchantment(Item *item,EnchantmentSlot slot,bool apply, bool a
             case ITEM_ENCHANTMENT_TYPE_EQUIP_SPELL:
                 if (enchant_spell_id)
                 {
-                    SpellEntry const *temp = sSpellStore.LookupEntry(enchant_spell_id);
-                    if (!temp) // unsupported enchant support
-                    {
-                        switch(enchant_spell_id)
-                        {
-                            case 22841: //arcanum of rapidity
-                                {
-                                    enchant_spell_id=13928;
-                                    break;
-                                }
-                            case 22847: //arcanum of protection
-                                {
-                                    enchant_spell_id=13669;
-                                    break;
-                                }
-                            case 22755: //elemental sharpening stone
-                                {
-                                    enchant_spell_id=7598;
-                                    break;
-                                }
-                            case 22843: //arcanum of focus
-                                {
-                                    enchant_spell_id=9398;
-                                    break;
-                                }
-                            case 28162: //savage guard
-                                {
-                                    enchant_spell_id=14630;
-                                    break;
-                                }
-                            case 28164: //ice guard
-                                {
-                                    enchant_spell_id=14550;
-                                    break;
-                                }
-                            case 28166: //shadow guard 
-                                {
-                                    enchant_spell_id=14673;
-                                    break;
-                                }
-                        }
-                    }
-
                     if (apply)
                     {
                         int32 basepoints = 0;
