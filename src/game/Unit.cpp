@@ -762,7 +762,7 @@ void Unit::RemoveSpellbyDamageTaken(uint32 damage, uint32 spell)
     // The chance to dispel an aura depends on the damage taken with respect to the casters level.
     uint32 max_dmg = getLevel() > 8 ? 30 * getLevel() - 100 : 50;
     float chance = float(damage) / max_dmg * 100.0f;
-    bool roll;
+    uint32 dispelable = 0;
 
     std::list<std::pair<uint32, uint64> > aurasToRemove;
     std::set<std::pair<uint32, uint64> > aurasDone;
@@ -780,12 +780,13 @@ void Unit::RemoveSpellbyDamageTaken(uint32 damage, uint32 spell)
             if (SpellMgr::GetDiminishingReturnsGroupForSpell((*i)->GetSpellProto(), false) == DIMINISHING_ENSLAVE)
                 continue;
 
-            roll = roll_chance_f(chance);
-            if (roll)
+            if (roll_chance_f(chance))
                 aurasToRemove.push_back(auraPair);
+            dispelable++;
         }
     }
 
+    SendCombatStats("Unit::RemoveSpellbyDamageTaken dispell chance %f; removing %u auras (dispelable %u, total %u)", 0, chance, aurasToRemove.size(), dispelable, m_ccAuras.size());
     for (std::list<std::pair<uint32, uint64> >::iterator i = aurasToRemove.begin(); i != aurasToRemove.end(); ++i)
         RemoveAurasByCasterSpell(i->first, i->second);
 }
