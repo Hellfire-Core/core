@@ -83,6 +83,9 @@ struct boss_moamAI : public ScriptedAI
     {
         if (pInstance)
             pInstance->SetData(DATA_MOAM, DONE);
+        // summon obsidian shard
+        m_creature->SummonGameObject(181069, m_creature->GetPositionX(), m_creature->GetPositionY(),
+            m_creature->GetPositionZ(), 0, 0, 0, 0, 0, 0);
     }
 
     void JustSummoned(Creature *creature)

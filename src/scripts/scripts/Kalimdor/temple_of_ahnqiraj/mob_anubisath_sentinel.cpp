@@ -279,6 +279,9 @@ struct aqsentinelAI : public ScriptedAI
             sent->SetHealth(h);
             ((aqsentinelAI *)sent->AI())->GainSentinelAbility(ability);
         }
+        // summon obsidian shard
+        m_creature->SummonGameObject(181068, m_creature->GetPositionX(), m_creature->GetPositionY(),
+            m_creature->GetPositionZ(), 0, 0, 0, 0, 0, 0);
     }
 
     Unit *GetHatedManaUser()
