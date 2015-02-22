@@ -1154,9 +1154,6 @@ void Unit::CastSpell(Unit* Victim, uint32 spellId, bool triggered, Item *castIte
             (GetTypeId()==TYPEID_PLAYER ? "player (GUID:" : "creature (Entry:"),
             (GetTypeId()==TYPEID_PLAYER ? GetGUIDLow() : GetEntry()),
             triggered ? "true" : "false");
-        if (spellId == 0 && urand(0,1000) == 666)
-            *((uint32 volatile*)NULL) = 0; // crashtest 1
-
         return;
     }
 
