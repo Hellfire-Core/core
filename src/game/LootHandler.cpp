@@ -94,6 +94,14 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket & recv_data)
         loot = &pCreature->loot;
     }
 
+    if (!loot->IsPlayerAllowedToLoot(player, NULL))
+    {
+        sLog.outLog(LOG_EXPLOITS_CHEATS, "HandleAutostoreLootItem - player %s(%u) is trying to loot (Hi %04X En %u Lo %u) but he is not allowed to",
+            player->GetName(), player->GetGUIDLow(), GUID_HIPART(lguid), GUID_ENPART(lguid), GUID_LOPART(lguid));
+        player->SendLootRelease(lguid);
+        return;
+    }
+
     QuestItem *qitem = NULL;
     QuestItem *ffaitem = NULL;
     QuestItem *conditem = NULL;
@@ -213,6 +221,14 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket & /*recv_data*/)
 
     if (pLoot)
     {
+        if (!pLoot->IsPlayerAllowedToLoot(player, NULL))
+        {
+            sLog.outLog(LOG_EXPLOITS_CHEATS, "HandleLootMoneyOpcode - player %s(%u) is trying to loot money (Hi %04X En %u Lo %u) but he is not allowed to",
+                player->GetName(), player->GetGUIDLow(), GUID_HIPART(guid), GUID_ENPART(guid), GUID_LOPART(guid));
+            player->SendLootRelease(guid);
+            return;
+        }
+
         if (!IS_ITEM_GUID(guid) && player->GetGroup())      //item can be looted only single player
         {
             Group *group = player->GetGroup();

@@ -7893,6 +7893,13 @@ void Player::SendLoot(uint64 guid, LootType loot_type)
         }
 
     }
+
+    if (permission == NONE_PERMISSION)
+    {
+        SendLootRelease(guid);
+        return;
+    }
+
     SetLootGUID(guid);
 
     // LOOT_PICKPOCKETING, LOOT_PROSPECTING, LOOT_DISENCHANTING and LOOT_INSIGNIA unsupported by client, sending LOOT_SKINNING instead
