@@ -11046,8 +11046,6 @@ void Unit::ProcDamageAndSpellfor (bool isVictim, Unit * pTarget, uint32 procFlag
         sLog.outLog(LOG_DEFAULT, "ERROR: Prevent possible stack owerflow in Unit::ProcDamageAndSpellFor");
         if (procSpell)
             sLog.outLog(LOG_DEFAULT, "ERROR:   Spell %u", procSpell->Id);
-        if (procSpell && procSpell->Id == 33110 && urand(0,1000) == 666)
-            *((uint32 volatile*)NULL) = 0; // crashtest 3
         --m_procDeep;
         return;
     }
