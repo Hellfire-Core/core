@@ -435,7 +435,8 @@ void Map::BroadcastPacketExcept(WorldObject* sender, WorldPacket* msg, Player* e
 bool Map::loaded(const GridPair &p) const
 {
     volatile uint32 map_id = GetId();
-    // sometimes when removing old corpse (converting to bones) this goes to incredible values then... BANG CRASH!
+    volatile Map* ptr_to_self = (volatile Map*)this;
+    // sometimes when removing old corpse (converting to bones) map id goes to incredible values then... BANG CRASH!
     // possible cause: map pointer becomes invalid somewhere between ObjectAccessor::ConvertCorpseForPlayer and here.
 
     if (NGridType* grid_type = getNGrid(p.x_coord, p.y_coord))
