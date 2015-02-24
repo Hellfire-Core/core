@@ -12078,7 +12078,7 @@ bool Unit::HandleMendingNPCAuraProc(Aura* triggeredByAura)
             if(!formation)
             {
                 RemoveAurasDueToSpell(spellProto->Id);
-                CastCustomSpell(this,33110,&heal,NULL,NULL,true);
+                CastCustomSpell(this,33110,&heal,NULL,NULL,true,NULL,triggeredByAura);
                 return false;
             }
 
@@ -12100,14 +12100,14 @@ bool Unit::HandleMendingNPCAuraProc(Aura* triggeredByAura)
             else
             {
                 RemoveAurasDueToSpell(spellProto->Id);
-                CastCustomSpell(this,33110,&heal,NULL,NULL,true);
+                CastCustomSpell(this,33110,&heal,NULL,NULL,true,NULL,triggeredByAura);
                 return false;
             }
         }
     }
 
     // heal
-    CastCustomSpell(this,33110,&heal,NULL,NULL,true);
+    CastCustomSpell(this,33110,&heal,NULL,NULL,true,NULL,triggeredByAura);
     return true;
 }
 
