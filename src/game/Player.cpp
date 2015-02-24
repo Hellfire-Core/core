@@ -7386,6 +7386,9 @@ void Player::CastItemCombatSpell(Unit *target, WeaponAttackType attType, uint32 
         if (!pEnchant) continue;
         for (int s = 0; s < 3; ++s)
         {
+            if (pEnchant->type[s] != ITEM_ENCHANTMENT_TYPE_COMBAT_SPELL)
+                continue;
+
             SpellEnchantProcEntry const* entry = sSpellMgr.GetSpellEnchantProcEvent(enchant_id);
             if (entry && (entry->procEx || entry->procFlags))
             {

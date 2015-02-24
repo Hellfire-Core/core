@@ -354,17 +354,35 @@ void LoadDBCStores(const std::string& dataPath)
     LoadDBC(availableDbcLocales,bar,bad_dbc_files,sSpellDurationStore,       dbcPath,"SpellDuration.dbc");
     LoadDBC(availableDbcLocales,bar,bad_dbc_files,sSpellFocusObjectStore,    dbcPath,"SpellFocusObject.dbc");
     LoadDBC(availableDbcLocales,bar,bad_dbc_files,sSpellItemEnchantmentStore,dbcPath,"SpellItemEnchantment.dbc");
-    {//HACK for +12spirit +12hit rating gems, those have wrong values in dbc
+    {
     SpellItemEnchantmentEntry* entry;
     for(uint32 i = 0; i < sSpellItemEnchantmentStore.GetNumRows(); ++i)
     {
         entry = (SpellItemEnchantmentEntry*)sSpellItemEnchantmentStore.LookupEntry(i);
         if(!entry)
             continue;
-        if (entry->GemID == 33137)
-            entry->amount[0] = 12;
-        else if (entry->GemID == 33142)
-            entry->amount[1] = 12;
+        switch (entry->ID)
+        {
+        // flametongue weapon
+        case 3: entry->spellid[0] = 8029; entry->type[0] = ITEM_ENCHANTMENT_TYPE_COMBAT_SPELL; break;
+        case 4: entry->spellid[0] = 8028; entry->type[0] = ITEM_ENCHANTMENT_TYPE_COMBAT_SPELL; break;
+        case 5: entry->spellid[0] = 8026; entry->type[0] = ITEM_ENCHANTMENT_TYPE_COMBAT_SPELL; break;
+        case 523: entry->spellid[0] = 10445; entry->type[0] = ITEM_ENCHANTMENT_TYPE_COMBAT_SPELL; break;
+        case 1665: entry->spellid[0] = 16343; entry->type[0] = ITEM_ENCHANTMENT_TYPE_COMBAT_SPELL; break;
+        case 1666: entry->spellid[0] = 16344; entry->type[0] = ITEM_ENCHANTMENT_TYPE_COMBAT_SPELL; break;
+        case 2634: entry->spellid[0] = 25488; entry->type[0] = ITEM_ENCHANTMENT_TYPE_COMBAT_SPELL; break;
+        case 3266: entry->spellid[0] = 45401; entry->type[0] = ITEM_ENCHANTMENT_TYPE_COMBAT_SPELL; break; // righteous weapon
+
+        case 2506: entry->spellid[0] = 7598; break; // elemental sharpening stone
+        case 2543: entry->spellid[0] = 13928; break; // arcanum of rapidity
+        case 2544: entry->spellid[0] = 9398; break; // arcanum of focus
+        case 2545: entry->spellid[0] = 13669; break; // arcanum of protection
+        case 2681: entry->spellid[0] = 14630; break; // savage guard
+        case 2682: entry->spellid[0] = 14550; break; // ice guard
+        case 2683: entry->spellid[0] = 14673; break; // shadow guard
+        case 3214: entry->amount[0] = 12; break; // sparkling falling star
+        case 3219: entry->amount[1] = 12; break; // rigid bladestone
+        }
     }}
 
     LoadDBC(availableDbcLocales,bar,bad_dbc_files,sSpellItemEnchantmentConditionStore,dbcPath,"SpellItemEnchantmentCondition.dbc");
