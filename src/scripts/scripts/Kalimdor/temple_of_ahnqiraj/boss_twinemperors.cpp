@@ -112,7 +112,7 @@ struct boss_twinemperorsAI : public ScriptedAI
 
     void DamageTaken(Unit *done_by, uint32 &damage)
     {
-        Unit *pOtherBoss = GetOtherBoss();
+        Creature* pOtherBoss = GetOtherBoss();
         if (pOtherBoss)
         {
             float dPercent = ((float)damage) / ((float)m_creature->GetMaxHealth());
@@ -122,6 +122,7 @@ struct boss_twinemperorsAI : public ScriptedAI
             if (ohealth <= 0)
             {
                 done_by->Kill(pOtherBoss);
+                pOtherBoss->SetLootRecipient(done_by);
             }
         }
     }
@@ -134,6 +135,7 @@ struct boss_twinemperorsAI : public ScriptedAI
             ((boss_twinemperorsAI *)pOtherBoss->AI())->DontYellWhenDead = true;
             Killer->Kill(pOtherBoss);
             pOtherBoss->SetHealth(0);
+            pOtherBoss->SetLootRecipient(Killer);
         }
 
         if (!DontYellWhenDead)                              // I hope AI is not threaded
