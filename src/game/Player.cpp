@@ -12782,7 +12782,7 @@ bool Player::CanCompleteQuest(uint32 quest_id)
             {
                 for (int i = 0; i < QUEST_OBJECTIVES_COUNT; i++)
                 {
-                    if (qInfo->ReqItemCount[i]!= 0 && GetItemCount(qInfo->ReqItemId[i]) < qInfo->ReqItemCount[i])
+                    if (qInfo->ReqItemCount[i]!= 0 && q_status.m_itemcount[i] < qInfo->ReqItemCount[i])
                         return false;
                 }
             }
