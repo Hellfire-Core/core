@@ -297,12 +297,27 @@ void WorldSession::HandleGameObjectUseOpcode(WorldPacket & recv_data)
     recv_data >> guid;
 
     sLog.outDebug("WORLD: Recvd CMSG_GAMEOBJ_USE Message [guid=%u]", GUID_LOPART(guid));
-    GameObject *obj = GetPlayer()->GetMap()->GetGameObject(guid);
+    Player* plr = GetPlayer();
+    GameObject *obj = plr->GetMap()->GetGameObject(guid);
 
     if (!obj)
         return;
 
-    obj->Use(_player);
+    float dist = obj->GetDistance(plr);
+    if (dist > sWorld.getConfig(CONFIG_GOBJECT_USE_EXPLOIT_RANGE))
+    {
+        sLog.outLog(LOG_EXPLOITS_CHEATS, "CMSG_GAMEOBJ_USE: Player %s (GUID: %u X: %f Y: %f Z: %f)"
+            " is attempting to use gobject (Entry %u lowGUID %u X: %f Y: %f Z: %f) from too far away (%f yds)",
+            plr->GetName(), plr->GetGUIDLow(), plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(),
+            obj->GetEntry(), obj->GetGUIDLow(), obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), dist);
+    }
+    if (obj->GetLockId())
+    {
+        sLog.outLog(LOG_EXPLOITS_CHEATS, "CMSG_GAMEOBJ_USE: Player %s (GUID: %u) is using locked gobject (Entry %u lowGUID %u)",
+            plr->GetName(), plr->GetGUIDLow(), obj->GetEntry(), obj->GetGUIDLow());
+    }
+
+    obj->Use(plr);
 }
 
 void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)

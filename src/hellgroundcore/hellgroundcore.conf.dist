@@ -1900,6 +1900,10 @@ VMSS.MapFreezeDetectTime = 1000
 #        Float value describing tolerance of speedhack check (eg 1.05 : 5% over limit is acceptable)
 #        Default: 1.00 (no tolerance!)
 #
+#    AntiCheat.GobjectUseExploitRange
+#        Float value of max distance from which gameobject use will be logged (possible packet edits)
+#        Default: 15.00 (in yards)
+#
 ###################################################################################################################
 
 Warden.Enabled = 1
@@ -1913,6 +1917,7 @@ Warden.RandomCheckMax = 5
 AntiCheat.Enable = 1
 AntiCheat.CumulativeDelay = 5000
 AntiCheat.SpeedhackTolerance = 1.00
+AntiCheat.GobjectUseExploitRange = 15.00
 
 ###################################################################################################################
 #    Refer-A-Friend system by Mas0n
