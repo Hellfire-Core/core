@@ -316,6 +316,8 @@ void WorldSession::HandleGameObjectUseOpcode(WorldPacket & recv_data)
         sLog.outLog(LOG_EXPLOITS_CHEATS, "CMSG_GAMEOBJ_USE: Player %s (GUID: %u) is using locked gobject (Entry %u lowGUID %u)",
             plr->GetName(), plr->GetGUIDLow(), obj->GetEntry(), obj->GetGUIDLow());
     }
+    if (!plr->IsWithinLOSInMap(obj))
+        return;
 
     obj->Use(plr);
 }
