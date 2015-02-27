@@ -96,8 +96,17 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket & recv_data)
 
     if (!loot->IsPlayerAllowedToLoot(player, NULL))
     {
-        sLog.outLog(LOG_EXPLOITS_CHEATS, "HandleAutostoreLootItem - player %s(%u) is trying to loot (Hi %04X En %u Lo %u) but he is not allowed to",
-            player->GetName(), player->GetGUIDLow(), GUID_HIPART(lguid), GUID_ENPART(lguid), GUID_LOPART(lguid));
+        std::ostringstream str;
+        str << "HandleAutostoreLootItem - player " << player->GetName() << " (GUID: " << player->GetGUIDLow();
+        if (lootSlot < loot->items.size())
+            str << ") is trying to loot item " << loot->items[lootSlot].itemid << "from ";
+        else
+            str << ") is trying to loot quest item (O_o) from ";
+        str << (IS_GAMEOBJECT_GUID(lguid) ? "gobject" : "creature");
+        str << " Entry " << GUID_ENPART(lguid) << " LowGUID " << GUID_LOPART(lguid) << "but he is not alowed to do so.\n";
+        str << "MapID: " << player->GetMapId() << " InstanceID: " << player->GetInstanceId() << " position X: ";
+        str << player->GetPositionX() << " Y: " << player->GetPositionY() << " Z: " << player->GetPositionZ();
+        sLog.outLog(LOG_EXPLOITS_CHEATS, str.str().c_str());
         player->SendLootRelease(lguid);
         return;
     }
