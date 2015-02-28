@@ -2875,6 +2875,9 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 8690: // hearthstone - no haste bonus
                     spellInfo->Attributes |= SPELL_ATTR_TRADESPELL;
                     break;
+                case 44586: // NPC prayer of mending
+                    spellInfo->procFlags &= ~PROC_FLAG_SUCCESSFUL_POSITIVE_SPELL;
+                    break;
                 }
                 if (spellInfo->SpellIconID == 184 && spellInfo->Attributes == 4259840)
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
