@@ -12260,6 +12260,10 @@ void Unit::UpdateVisibilityAndView()
 
 void Unit::Kill(Unit *pVictim, bool durabilityLoss)
 {
+    //prevent crash when pVictim is null
+    if (!pVictim)
+        return;
+
     // Prevent double kill the exact unit
     if (!pVictim->GetHealth())
         return;
