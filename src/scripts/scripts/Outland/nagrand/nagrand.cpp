@@ -1312,8 +1312,8 @@ struct npc_warmaul_pyreAI : public ScriptedAI
 
     bool Event;
 
-    std::list<Creature*> SaboteurList;
-    ObjectGuid PlayerGUID;
+    std::list<uint64> SaboteurList;
+    uint64 PlayerGUID;
     uint32 StepsTimer;
     uint32 Steps;
     uint32 CorpseCount;
@@ -1379,7 +1379,7 @@ struct npc_warmaul_pyreAI : public ScriptedAI
         if (Player* plr = who->ToPlayer())
             if (plr->GetQuestStatus(9932) == QUEST_STATUS_INCOMPLETE && me->IsWithinDistInMap(plr, 3.0f))
             {
-                PlayerGUID = who->GetObjectGuid();
+                PlayerGUID = who->GetGUID();
                 Event = true;                     // this is not the best way to start the event :)
             }
     }
@@ -1388,9 +1388,12 @@ struct npc_warmaul_pyreAI : public ScriptedAI
     {
         SaboteurList.clear();
 
+        std::list<Creature*> tempList;
         Hellground::AllCreaturesOfEntryInRange check(me, NPC_SABOTEUR, 25.0f);
-        Hellground::ObjectListSearcher<Creature, Hellground::AllCreaturesOfEntryInRange> searcher(SaboteurList, check);
+        Hellground::ObjectListSearcher<Creature, Hellground::AllCreaturesOfEntryInRange> searcher(tempList, check);
         Cell::VisitGridObjects(me, searcher, 25.0f);
+        for (std::list<Creature*>::iterator itr = tempList.begin(); itr != tempList.end(); itr++)
+            SaboteurList.push_front((*itr)->GetGUID());
     }
 
     Creature* GetSaboteur(uint8 ListNum)
@@ -1400,16 +1403,16 @@ struct npc_warmaul_pyreAI : public ScriptedAI
 
         uint8 Num = 1;
 
-        for (std::list<Creature*>::iterator itr = SaboteurList.begin(); itr != SaboteurList.end(); ++itr)
+        for (std::list<uint64>::iterator itr = SaboteurList.begin(); itr != SaboteurList.end(); ++itr)
         {
             if (ListNum && ListNum != Num)
             {
                 ++Num;
                 continue;
             }
-
-            if ((*itr)->isAlive() && (*itr)->IsWithinDistInMap(me, 25.0f))
-                return (*itr);
+            Unit* Saboteur = m_creature->GetUnit(*itr);
+            if (Saboteur->isAlive() && Saboteur->IsWithinDistInMap(me, 25.0f))
+                return Saboteur->ToCreature();
         }
 
         return NULL;
@@ -1533,8 +1536,11 @@ struct npc_warmaul_pyreAI : public ScriptedAI
                 return 2000;
 
             case 27:
-                for (std::list<Creature*>::iterator itr = SaboteurList.begin(); itr != SaboteurList.end(); ++itr)
-                    (*itr)->Kill(*itr);
+                for (std::list<uint64>::iterator itr = SaboteurList.begin(); itr != SaboteurList.end(); ++itr)
+                {
+                    if (Unit* Saboteur = m_creature->GetUnit(*itr))
+                        Saboteur->Kill(Saboteur);
+                }
                 Reset();
 
             default:
