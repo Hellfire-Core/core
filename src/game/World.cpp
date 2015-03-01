@@ -1580,7 +1580,6 @@ void World::LoadAutobroadcasts()
 /// Update the World !
 void World::Update(uint32 diff)
 {
-    sLog.outLog(LOG_DIFF, "1");
     m_updateTime = uint32(diff);
 
     if (getConfig(CONFIG_COREBALANCER_ENABLED))
@@ -1837,7 +1836,6 @@ void World::Update(uint32 diff)
     //cleanup unused GridMap objects as well as VMaps
     sTerrainMgr.Update(diff);
     diffRecorder.RecordTimeFor("UpdateTerrainMGR");
-    sLog.outLog(LOG_DIFF, "0");
 }
 
 void World::UpdateSessions(const uint32 & diff)

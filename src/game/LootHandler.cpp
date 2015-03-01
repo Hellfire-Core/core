@@ -99,7 +99,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket & recv_data)
         std::ostringstream str;
         str << "HandleAutostoreLootItem - player " << player->GetName() << " (GUID: " << player->GetGUIDLow();
         if (lootSlot < loot->items.size())
-            str << ") is trying to loot item " << loot->items[lootSlot].itemid << "from ";
+            str << ") is trying to loot item " << loot->items[lootSlot].itemid << " from ";
         else
             str << ") is trying to loot quest item (O_o) from ";
         str << (IS_GAMEOBJECT_GUID(lguid) ? "gobject" : "creature");
