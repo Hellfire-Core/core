@@ -4147,7 +4147,6 @@ bool GossipSelect_npc_chesspiece(Player* player, Creature* _Creature, uint32 sen
             ((boss_MedivhAI*)(_Creature->GetCreature(pInstance->GetData64(DATA_CHESS_ECHO_OF_MEDIVH))->AI()))->StartEvent();
         }
 
-        player->TeleportTo(_Creature->GetMapId(), -11108.2, -1841.56, 229.625, 5.39745);
         player->CastSpell(_Creature, SPELL_POSSES_CHESSPIECE, true);
     }
 

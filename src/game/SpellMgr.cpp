@@ -2878,6 +2878,12 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 44586: // NPC prayer of mending
                     spellInfo->procFlags &= ~PROC_FLAG_SUCCESSFUL_POSITIVE_SPELL;
                     break;
+                case 40176:
+                case 40177:
+                case 40178:
+                case 40179:
+                    spellInfo->Targets |= TARGET_FLAG_GAMEOBJECT;
+                    break;
                 }
                 if (spellInfo->SpellIconID == 184 && spellInfo->Attributes == 4259840)
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
