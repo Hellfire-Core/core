@@ -7835,6 +7835,14 @@ void Player::SendLoot(uint64 guid, LootType loot_type)
                 recipient = this;
             }
 
+            if (!loot->IsPlayerAllowedToLoot(this, NULL))
+            {
+                sLog.outLog(LOG_EXPLOITS_CHEATS, "Player::SendLoot Player %s (GUID: %u) is trying to open creature (Entry %u lowGUID %u)"
+                    " for looting, but not allowed to (X: %f Y: %f Z: %f Map %u Id %u",GetName(),GetGUIDLow(),creature->GetEntry(),
+                    creature->GetGUIDLow(),GetPositionX(),GetPositionY(),GetPositionZ(),GetMapId(),GetInstanceId());
+                return;
+            }
+
             if (!creature->lootForBody)
             {
                 creature->lootForBody = true;

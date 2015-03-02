@@ -565,10 +565,18 @@ void Group::Disband(bool hideDestroy)
 
 void Group::PrepareLootRolls(const uint64& playerGUID, Loot *loot, WorldObject* object)
 {
+    std::vector<LootItem>::iterator i;
+
+    if (m_lootMethod == MASTER_LOOT)
+    {
+        for (i = loot->items.begin(); i != loot->items.end(); ++i)
+            i->is_blocked = true; // lock all items, do not allow looting by simply leaving party
+    }
+
     if (!IsRollLootType())
         return;
 
-    std::vector<LootItem>::iterator i;
+    
     ItemPrototype const *item;
     uint8 itemSlot = 0;
     Player *player = sObjectMgr.GetPlayer(playerGUID);
