@@ -570,7 +570,10 @@ void Group::PrepareLootRolls(const uint64& playerGUID, Loot *loot, WorldObject* 
     if (m_lootMethod == MASTER_LOOT)
     {
         for (i = loot->items.begin(); i != loot->items.end(); ++i)
-            i->is_blocked = true; // lock all items, do not allow looting by simply leaving party
+        {
+            if (!i->freeforall && !i->conditionId)
+                i->is_blocked = true; // lock all items, do not allow looting by simply leaving party
+        }
     }
 
     if (!IsRollLootType())
