@@ -598,7 +598,7 @@ int32 ArenaTeam::LostAgainst(uint32 againstRating)
     return mod;
 }
 
-void ArenaTeam::MemberLost(Player * plr, uint32 againstRating, uint32 againstHiddenRating)
+void ArenaTeam::MemberLost(Player * plr, uint32 againstRating, uint32 againstHiddenRating, uint32* persRating, int32* persDiff)
 {
     // called for each participant of a match after losing
     for (MemberList::iterator itr = members.begin(); itr !=  members.end(); ++itr)
@@ -614,6 +614,12 @@ void ArenaTeam::MemberLost(Player * plr, uint32 againstRating, uint32 againstHid
             {
                 if (againstRating + 150 < againstHiddenRating)
                     mod /= 2;
+            }
+
+            if (persDiff && persRating)
+            {
+                *persDiff = mod;
+                *persRating = itr->personal_rating;
             }
 
             itr->ModifyPersonalRating(plr, mod, GetSlot());
@@ -635,7 +641,7 @@ void ArenaTeam::MemberLost(Player * plr, uint32 againstRating, uint32 againstHid
     }
 }
 
-void ArenaTeam::MemberWon(Player * plr, uint32 againstRating, uint32 againstHiddenRating)
+void ArenaTeam::MemberWon(Player * plr, uint32 againstRating, uint32 againstHiddenRating, uint32* persRating, int32* persDiff)
 {
     // called for each participant after winning a match
     for (MemberList::iterator itr = members.begin(); itr !=  members.end(); ++itr)
@@ -645,6 +651,11 @@ void ArenaTeam::MemberWon(Player * plr, uint32 againstRating, uint32 againstHidd
             // update personal rating
             float chance = GetChanceAgainst(itr->personal_rating, againstRating);
             int32 mod = (int32)floor((float)sWorld.getConfig(CONFIG_ARENA_ELO_COEFFICIENT) * (1.0f - chance));
+            if (persDiff && persRating)
+            {
+                *persDiff = mod;
+                *persRating = itr->personal_rating;
+            }
             itr->ModifyPersonalRating(plr, mod, GetSlot());
 
             // update matchmaker rating

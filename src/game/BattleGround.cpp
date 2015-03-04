@@ -132,6 +132,11 @@ BattleGround::~BattleGround()
 
     // remove from bg free slot queue
     this->RemoveFromBGFreeSlotQueue();
+
+    for (BattleGroundScoreMap::iterator itr = m_PlayerScores.begin(); itr != m_PlayerScores.end(); itr++)
+    {
+        delete itr->second;
+    }
 }
 
 void BattleGround::Update(uint32 diff)
@@ -606,12 +611,8 @@ void BattleGround::EndBattleGround(uint32 winner)
                         sLog.outLog(LOG_ARENA, "Statistics for %s (GUID: " UI64FMTD ", Team: %d, IP: %s): %u damage, %u healing, %u killing blows", player->GetName(), itr->first, player->GetArenaTeamId(m_ArenaType == 5 ? 2 : m_ArenaType == 3), player->GetSession()->GetRemoteAddress().c_str(), itr->second->DamageDone, itr->second->HealingDone, itr->second->KillingBlows);
             if (sWorld.getConfig(CONFIG_ARENA_EXPORT_RESULTS))
             {
-                RealmDataDatabase.PExecute("INSERT INTO arena_fights VALUES (%u, '%01u', %u, %u, %u, %u, %i, SYSDATE());",
-                    GetInstanceID(), m_ArenaType, winner_arena_team->GetId(),loser_arena_team->GetId(), winner_rating, loser_rating, winner_change);
-                for (BattleGroundScoreMap::const_iterator itr = GetPlayerScoresBegin(); itr != GetPlayerScoresEnd(); ++itr)
-                    if (Player* player = sObjectMgr.GetPlayer(itr->first))
-                        RealmDataDatabase.PExecute("INSERT INTO arena_fights_detailed VALUES (%u, " UI64FMTD", %u, %u, %u, %u, 0, 0);",
-                        GetInstanceID(), itr->first, player->GetArenaTeamId(m_ArenaType == 5 ? 2 : m_ArenaType == 3), itr->second->DamageDone, itr->second->HealingDone, itr->second->KillingBlows);
+                RealmDataDatabase.PExecute("INSERT INTO arena_fights VALUES (%u, '%01u', %u, %u, %u, %u, %i, SYSDATE(), %u);",
+                    GetInstanceID(), m_ArenaType, winner_arena_team->GetId(),loser_arena_team->GetId(), winner_rating, loser_rating, winner_change,uint32(m_TimeElapsedSinceBeggining/1000));
             }
         }
         else
@@ -663,12 +664,21 @@ void BattleGround::EndBattleGround(uint32 winner)
         // per player calculation
         if (isArena() && isRated() && winner_arena_team && loser_arena_team)
         {
+            uint32 persRating;
+            int32 persDiff;
             loser_hidden_rating = GetArenaTeamMMRSum(GetOtherTeam(winner))/GetMaxPlayersPerTeam();
             winner_hidden_rating = GetArenaTeamMMRSum(winner)/GetMaxPlayersPerTeam();
             if (team == winner)
-                winner_arena_team->MemberWon(plr, loser_rating, loser_hidden_rating);
+                winner_arena_team->MemberWon(plr, loser_rating, loser_hidden_rating,&persRating,&persDiff);
             else
-                loser_arena_team->MemberLost(plr, winner_rating, winner_hidden_rating);
+                loser_arena_team->MemberLost(plr, winner_rating, winner_hidden_rating,&persRating,&persDiff);
+            if (sWorld.getConfig(CONFIG_ARENA_EXPORT_RESULTS))
+            {
+                BattleGroundScore* score = m_PlayerScores[itr->first];
+                RealmDataDatabase.PExecute("INSERT INTO arena_fights_detailed VALUES (%u, " UI64FMTD", %u, %u, %u, %u, %u, %i);",
+                    GetInstanceID(), itr->first, (team == winner ? winner_arena_team->GetId() : loser_arena_team->GetId()),
+                    score->DamageDone, score->HealingDone, score->KillingBlows,persRating,persDiff);
+            }
         }
 
         if (team == winner)
@@ -922,12 +932,20 @@ void BattleGround::RemovePlayerAtLeave(uint64 guid, bool Transport, bool SendPac
         if (!team) team = plr->GetTeam();
         ArenaTeam* winner_arena_team = sObjectMgr.GetArenaTeamById(GetArenaTeamIdForTeam(team == HORDE? ALLIANCE : HORDE));
         ArenaTeam* loser_arena_team = sObjectMgr.GetArenaTeamById(GetArenaTeamIdForTeam(team));
-
+        uint32 persRating;
+        int32 persDiff;
         if (winner_arena_team && loser_arena_team)
             loser_arena_team->MemberLost(plr, winner_arena_team->GetRating(),
-            winner_arena_team->GetAverageMMR(GetBgRaid(team == HORDE ? ALLIANCE : HORDE)));
+            winner_arena_team->GetAverageMMR(GetBgRaid(team == HORDE ? ALLIANCE : HORDE)),&persRating,&persDiff);
         sLog.outLog(LOG_ARENA, "Player %s (team id:%u) left arena (against team %u) before it ended",
             plr->GetName(), loser_arena_team->GetId(), winner_arena_team->GetId());
+        if (sWorld.getConfig(CONFIG_ARENA_EXPORT_RESULTS))
+        {
+            BattleGroundScore* score = m_PlayerScores[guid];
+            RealmDataDatabase.PExecute("INSERT INTO arena_fights_detailed VALUES (%u, " UI64FMTD", %u, %u, %u, %u, %u, %i);",
+                GetInstanceID(), guid, loser_arena_team->GetId(),
+                score->DamageDone, score->HealingDone, score->KillingBlows, persRating, persDiff);
+        }
     }
 
     RemovePlayer(plr, guid);                                // BG subclass specific code
@@ -1041,6 +1059,10 @@ void BattleGround::Reset()
     m_InvitedHorde = 0;
     m_InBGFreeSlotQueue = false;
 
+    for (BattleGroundScoreMap::iterator itr = m_PlayerScores.begin(); itr != m_PlayerScores.end(); itr++)
+    {
+        delete itr->second;
+    }
     m_Players.clear();
     m_PlayerScores.clear();
 
