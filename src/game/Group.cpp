@@ -1119,22 +1119,29 @@ void Group::_setLeader(const uint64 &guid)
 
 void Group::_removeRolls(const uint64 &guid)
 {
-    for (Rolls::iterator it = RollId.begin(); it != RollId.end(); ++it)
+    for (Rolls::iterator it = RollId.begin(); it != RollId.end();)
     {
         Roll* roll = *it;
         Roll::PlayerVote::iterator itr2 = roll->playerVote.find(guid);
         if (itr2 == roll->playerVote.end())
+        {
+            ++it;
             continue;
+        }
 
-        if (itr2->second == GREED) --roll->totalGreed;
-        if (itr2->second == NEED) --roll->totalNeed;
-        if (itr2->second == PASS) --roll->totalPass;
-        if (itr2->second != NOT_VALID) --roll->totalPlayersRolling;
-
-        roll->playerVote.erase(itr2);
-
-
-        CountRollVote(guid, roll->itemGUID, GetMembersCount()-1, 3);
+        if (itr2->second == NOT_EMITED_YET)
+        {
+            --roll->totalPlayersRolling;
+            if (roll->CountRollVote(guid, GetMembersCount() - 1, 3))
+            {
+                it = RollId.erase(it);
+                delete roll;
+            }
+            else
+                it++;
+        }
+        else
+            it++;
     }
 }
 
