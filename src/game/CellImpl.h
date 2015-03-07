@@ -63,7 +63,7 @@ inline void Cell::Visit(const CellPair &standing_cell, TypeContainerVisitor<T, C
 {
     if (standing_cell.x_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP || standing_cell.y_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP)
         return;
-
+    volatile Map* ptr_to_map = &m;
     //no jokes here... Actually placing ASSERT() here was good idea, but
     //we had some problems with DynamicObjects, which pass radius = 0.0f (DB issue?)
     //maybe it is better to just return when radius <= 0.0f?
@@ -127,7 +127,7 @@ inline void Cell::VisitCircle(TypeContainerVisitor<T, CONTAINER> &visitor, Map &
     //lets calculate x_start/x_end coords for central strip...
     const uint32 x_start = begin_cell.x_coord + x_shift;
     const uint32 x_end = end_cell.x_coord - x_shift;
-
+    volatile Map* ptr_to_map = &m;
     //visit central strip with constant width...
     for (uint32 x = x_start; x <= x_end; ++x)
     {
@@ -192,7 +192,7 @@ inline void Cell::VisitWorldObjects(const WorldObject *center_obj, T &visitor, f
 
     if (dont_load)
         cell.SetNoCreate();
-
+    volatile Map* ptr_to_map = center_obj->GetMap();
     TypeContainerVisitor<T, WorldTypeMapContainer > gnotifier(visitor);
     cell.Visit(p, gnotifier, *center_obj->GetMap(), *center_obj, radius);
 }
