@@ -687,6 +687,8 @@ void Map::Remove(T *obj, bool remove)
     if (obj->isActiveObject())
         RemoveFromActive(obj);
 
+    if (obj->GetMap() != this)
+        sLog.outLog(LOG_DEFAULT, "Map::Remove, object not where he should? %u %p %p",obj->GetTypeId(),obj->GetMap(),this);
     obj->UpdateObjectVisibility();
 
     RemoveFromGrid(obj,grid,cell);
