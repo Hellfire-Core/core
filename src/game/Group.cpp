@@ -1119,7 +1119,7 @@ void Group::_setLeader(const uint64 &guid)
 
 void Group::_removeRolls(const uint64 &guid)
 {
-    for (Rolls::iterator it = RollId.begin(); it != RollId.end();)
+    for (Rolls::iterator it = RollId.begin(); it != RollId.end();++it)
     {
         Roll* roll = *it;
         Roll::PlayerVote::iterator itr2 = roll->playerVote.find(guid);
@@ -1811,9 +1811,8 @@ bool Roll::CountRollVote(const uint64& playerGUID, uint32 NumberOfPlayers, uint8
     if (itr == playerVote.end())
         return false;
 
-    if (getLoot())
-        if (getLoot()->items.empty())
-            return false;
+    if (!getLoot() || getLoot()->items.empty())
+        return true; // that is invalid roll, remove it!
 
     switch (Choice)
     {
