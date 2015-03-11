@@ -534,7 +534,6 @@ void Group::Disband(bool hideDestroy)
 
         _homebindIfInstance(player);
     }
-    RollId.clear();
     m_memberSlots.clear();
 
     RemoveAllInvites();
@@ -1119,7 +1118,7 @@ void Group::_setLeader(const uint64 &guid)
 
 void Group::_removeRolls(const uint64 &guid)
 {
-    for (Rolls::iterator it = RollId.begin(); it != RollId.end();++it)
+    for (Rolls::iterator it = RollId.begin(); it != RollId.end();)
     {
         Roll* roll = *it;
         Roll::PlayerVote::iterator itr2 = roll->playerVote.find(guid);
