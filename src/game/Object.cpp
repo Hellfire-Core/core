@@ -2007,7 +2007,7 @@ void WorldObject::UpdateGroundPositionZ(float x, float y, float &z) const
         z = new_z + 0.06f;                                  // just to be sure that we are not a few pixel under the surface
 }
 
-void WorldObject::UpdateAllowedPositionZ(float x, float y, float &z, bool IgnoreLos = false) const
+void WorldObject::UpdateAllowedPositionZ(float x, float y, float &z, bool IgnoreLos) const
 {
     switch (GetTypeId())
     {
