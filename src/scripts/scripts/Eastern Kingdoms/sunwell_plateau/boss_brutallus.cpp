@@ -501,7 +501,7 @@ struct npc_death_cloudAI : public ScriptedAI
                     {
                         me->GetNearPoint(x, y, z, 0.0f, 10.0f, me->GetAngle(pMadrigosa));
                         z = me->GetPositionZ();
-                        me->UpdateAllowedPositionZ(x, y, z);
+                        me->UpdateAllowedPositionZ(x, y, z, true);
                         me->GetMap()->CreatureRelocation(me, x, y, z, 0);
                         Creature* Trigger = me->SummonTrigger(x, y, z, 0, SummonTimer*4);
                         if(Trigger)
@@ -531,8 +531,8 @@ struct npc_death_cloudAI : public ScriptedAI
                 if (Unit* pMadrigosa= me->GetUnit(pInstance->GetData64(DATA_MADRIGOSA)))
                 {
                     pMadrigosa->RemoveAllAuras();
-                    pMadrigosa->SetVisibility(VISIBILITY_OFF);
                     pMadrigosa->CastSpell(pMadrigosa, SPELL_FELMYST_SUMMON, false);
+                    pMadrigosa->SetVisibility(VISIBILITY_OFF);
                     // kill madrigosa, not needed at this point
                     pMadrigosa->Kill(pMadrigosa, false);
                     ((Creature*)pMadrigosa)->RemoveCorpse();
