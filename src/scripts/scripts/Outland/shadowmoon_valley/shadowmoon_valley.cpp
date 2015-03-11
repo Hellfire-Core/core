@@ -1710,6 +1710,11 @@ struct npc_lord_illidan_stormrageAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
+        //there are checks bellow that *SHOULD* check for fail etc etc but i don't have time to read that wall of text
+        if (Player *range = me->GetPlayer(PlayerGUID))
+            if (me->GetDistance(range) >= 100.0f)
+                EnterEvadeMode();
+
         if(!PlayerGUID || !EventStarted)
             return;
 
