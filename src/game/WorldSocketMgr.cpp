@@ -303,6 +303,8 @@ void WorldSocketMgr::StopNetwork()
 
 void WorldSocketMgr::Wait()
 {
+    volatile size_t num_threads = m_NetThreadsCount; //debug
+
     if (m_NetThreadsCount != 0)
     {
         for (size_t i = 0; i < m_NetThreadsCount; ++i)

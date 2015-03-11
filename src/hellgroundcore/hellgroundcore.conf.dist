@@ -402,10 +402,10 @@ EAIErrorLevel = 0
 #        only record update time diff which is greater than this value (in milliseconds)
 #        Default: 300
 #
-#	Accounts.Fastboot
-#		 If you use only one realm then you don't need to set offline for every account separately.
-#		 Default: 0 (false)
-#		 Set to 1 (true) to set offline for all accounts at all.
+#   Accounts.Fastboot
+#        If you use only one realm then you don't need to set offline for every account separately.
+#        Default: 0 (false)
+#        Set to 1 (true) to set offline for all accounts at all.
 #
 ###################################################################################################################
 
@@ -810,7 +810,7 @@ KeepDeletedCharsTime = 31
 #    FreeRespec.Duration
 #        Free talent respec service duration.
 #        Default: 15778463 (6 months)
-# 
+#
 #    GroupLeaderReconnectPeriod
 #        The time the leader of a group has to reconnect before the lead goes to another player (also applies for a server crash)
 #        Default: 180 (seconds)
@@ -924,7 +924,7 @@ ActivateWeather = 1
 Auction.EnableSort = 1
 AutoBroadcast.Timer = 0
 FreeRespec.Cost = 10000000
-FreeRespec.Duration = 15778463 
+FreeRespec.Duration = 15778463
 GroupLeaderReconnectPeriod = 180
 Instance.ResetTimeHour = 4
 Instance.UnloadDelay = 1800000
@@ -1596,10 +1596,10 @@ WorldBossLevelDiff = 3
 # DailyAPReward: AP reward for daily arena
 #             Default: 0
 #
-#
-# KeepTeams: do not delete teams from database, just empty them
+# KeepTeams: Do not delete teams from database, just empty them
 #             Default: 0 (delete)
 #                      1 (enable)
+#
 ###################################################################################################################
 
 Arena.MaxRatingDifference = 0
@@ -1942,7 +1942,7 @@ Rate.RAF.LevelPerLevel  = 0.5
 
 ###################################################################################################################
 #   Ganking penalty system
-#    
+#
 #   PVP.EnableGankingPenalty     = 1         ( on / off )
 #   PVP.GankingPenaltyExpireTime = 600       ( time in secs that need to pass after kill, to penalty wear off )
 #   PVP.GankingPenaltyKillsAlert = 10        ( consecutive kills count after which GM will receive notice )
