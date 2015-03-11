@@ -207,7 +207,11 @@ bool ArenaTeam::LoadArenaTeamFromDB(uint32 ArenaTeamId)
     {
         // arena team is empty, delete from db
         RealmDataDatabase.BeginTransaction();
-        RealmDataDatabase.PExecute("DELETE FROM arena_team WHERE arenateamid = '%u'", ArenaTeamId);
+        if (sWorld.getConfig(CONFIG_ARENA_KEEP_TEAMS))
+            RealmDataDatabase.PExecute("UPDATE arena_team SET captainguid = 0 where arenateamid = '%u'", ArenaTeamId);
+        else
+            RealmDataDatabase.PExecute("DELETE FROM arena_team WHERE arenateamid = '%u'", ArenaTeamId);
+        
         RealmDataDatabase.PExecute("DELETE FROM arena_team_member WHERE arenateamid = '%u'", ArenaTeamId);
         RealmDataDatabase.PExecute("DELETE FROM arena_team_stats WHERE arenateamid = '%u'", ArenaTeamId);
         RealmDataDatabase.CommitTransaction();
@@ -346,7 +350,10 @@ void ArenaTeam::Disband(WorldSession *session)
         sLog.outLog(LOG_ARENA, "Player: %s [GUID: %u] disbanded arena team type: %u [Id: %u].", player->GetName(), player->GetGUIDLow(), GetType(), GetId());
 
     RealmDataDatabase.BeginTransaction();
-    RealmDataDatabase.PExecute("DELETE FROM arena_team WHERE arenateamid = '%u'", Id);
+    if (sWorld.getConfig(CONFIG_ARENA_KEEP_TEAMS))
+        RealmDataDatabase.PExecute("UPDATE arena_team SET captainguid = 0 where arenateamid = '%u'", Id);
+    else
+        RealmDataDatabase.PExecute("DELETE FROM arena_team WHERE arenateamid = '%u'", Id);
     RealmDataDatabase.PExecute("DELETE FROM arena_team_member WHERE arenateamid = '%u'", Id); //< this should be alredy done by calling DelMember(memberGuids[j]); for each member
     RealmDataDatabase.PExecute("DELETE FROM arena_team_stats WHERE arenateamid = '%u'", Id);
     RealmDataDatabase.CommitTransaction();

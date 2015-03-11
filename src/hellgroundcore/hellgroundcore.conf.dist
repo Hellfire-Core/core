@@ -1596,6 +1596,10 @@ WorldBossLevelDiff = 3
 # DailyAPReward: AP reward for daily arena
 #             Default: 0
 #
+#
+# KeepTeams: do not delete teams from database, just empty them
+#             Default: 0 (delete)
+#                      1 (enable)
 ###################################################################################################################
 
 Arena.MaxRatingDifference = 0
@@ -1623,6 +1627,7 @@ Arena.ELOCoefficient = 32
 Arena.DailyRequirement = 0
 Arena.DailyAPReward = 0
 
+Arena.KeepTeams = 0
 ###################################################################################################################
 # BATTLEGROUND SETTINGS
 #
