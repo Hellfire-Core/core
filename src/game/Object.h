@@ -427,7 +427,7 @@ class HELLGROUND_IMPORT_EXPORT WorldObject : public Object//, public WorldLocati
 
 #pragma region Move all this shit to Position struct
         void UpdateGroundPositionZ(float x, float y, float &z) const;
-        void UpdateAllowedPositionZ(float x, float y, float &z) const;
+        void UpdateAllowedPositionZ(float x, float y, float &z, bool IgnoreLos = false) const;
 
         void GetNearPoint(float &x, float &y, float &z, float searcher_size, float distance2d = 0.0f,float absAngle = 0.0f) const;
 

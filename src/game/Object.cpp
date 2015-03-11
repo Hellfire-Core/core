@@ -2007,7 +2007,7 @@ void WorldObject::UpdateGroundPositionZ(float x, float y, float &z) const
         z = new_z + 0.06f;                                  // just to be sure that we are not a few pixel under the surface
 }
 
-void WorldObject::UpdateAllowedPositionZ(float x, float y, float &z) const
+void WorldObject::UpdateAllowedPositionZ(float x, float y, float &z, bool IgnoreLos = false) const
 {
     switch (GetTypeId())
     {
@@ -2021,7 +2021,7 @@ void WorldObject::UpdateAllowedPositionZ(float x, float y, float &z) const
                 float ground_z = z;
                 float max_z = CanSwim
                     ? GetTerrain()->GetWaterOrGroundLevel(x, y, z, &ground_z, !((Unit const*)this)->HasAuraType(SPELL_AURA_WATER_WALK))
-                    : ((ground_z = GetTerrain()->GetHeight(x, y, z, true)));
+                    : ((ground_z = GetTerrain()->GetHeight(x, y, z, !IgnoreLos)));
                 if (max_z > INVALID_HEIGHT)
                 {
                     if (z > max_z)
