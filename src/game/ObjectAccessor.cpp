@@ -237,7 +237,6 @@ Corpse* ObjectAccessor::ConvertCorpseForPlayer(uint64 player_guid, bool insignia
 
     // remove resurrectble corpse from grid object registry (loaded state checked into call)
     // do not load the map if it's not loaded
-    volatile uint32 debugMapId = corpse->GetMapId();
     Map *map = sMapMgr.FindMap(corpse->GetMapId(), corpse->GetInstanceId());
     if (map)
         map->Remove(corpse, false);

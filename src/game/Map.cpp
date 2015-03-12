@@ -434,8 +434,6 @@ void Map::BroadcastPacketExcept(WorldObject* sender, WorldPacket* msg, Player* e
 
 bool Map::loaded(const GridPair &p) const
 {
-    volatile uint32 map_id = GetId();
-    volatile Map* ptr_to_self = (volatile Map*)this;
     // sometimes when removing old corpse (converting to bones) map id goes to incredible values then... BANG CRASH!
     // possible cause: map pointer becomes invalid somewhere between ObjectAccessor::ConvertCorpseForPlayer and here.
 
@@ -617,7 +615,6 @@ void Map::SendObjectUpdates()
 
 void Map::Remove(Player *player, bool remove)
 {
-    volatile uint32 debugMapId = GetId();
     // this may be called during Map::Update
     // after decrement+unlink, ++m_mapRefIter will continue correctly
     // when the first element of the list is being removed
@@ -688,7 +685,10 @@ void Map::Remove(T *obj, bool remove)
         RemoveFromActive(obj);
 
     if (obj->GetMap() != this)
-        sLog.outLog(LOG_DEFAULT, "Map::Remove, object not where it should be? %u %p %p",obj->GetTypeId(),obj->GetMap(),this);
+    {
+        sLog.outLog(LOG_DEFAULT, "Map::Remove, object not where it should be? %u %p %p | %u %u %u %u",
+            obj->GetTypeId(), obj->GetMap(), this, GetId(), GetInstanceId(), obj->GetMapId(), obj->GetInstanceId());
+    }
     obj->UpdateObjectVisibility();
 
     RemoveFromGrid(obj,grid,cell);
