@@ -443,6 +443,21 @@ struct boss_gathios_the_shattererAI : public illidari_council_baseAI
         me->SetPower(POWER_MANA, Mana+0.01*maxMana);
     }
 
+    void EnterEvadeMode()
+    {         
+        ScriptedAI::EnterEvadeMode();
+        if (Creature *mage = GetClosestCreatureWithEntry(me, 22950, 100.0f, true))
+            if (mage->isInCombat())
+                mage->AI()->EnterEvadeMode();
+
+        if (Creature *rogue = GetClosestCreatureWithEntry(me, 22952, 100.0f, true))
+            if (rogue->isInCombat())
+                rogue->AI()->EnterEvadeMode();
+
+        if (Creature *priest = GetClosestCreatureWithEntry(me, 22951, 100.0f, true))
+            if (priest->isInCombat())
+                priest->AI()->EnterEvadeMode();
+    }
     void UpdateAI(const uint32 diff)
     {
         if (!UpdateVictim())
@@ -575,6 +590,22 @@ struct boss_high_nethermancer_zerevorAI : public illidari_council_baseAI
                 me->GetMap()->CreatureRelocation(me, x, y, good_z+0.15, me->GetAngle(me->getVictim()));
         }
     }
+    void EnterEvadeMode()
+    {    
+        ScriptedAI::EnterEvadeMode();
+        if (Creature *rogue = GetClosestCreatureWithEntry(me, 22952, 100.0f, true))
+            if (rogue->isInCombat())
+                rogue->AI()->EnterEvadeMode();
+
+        if (Creature *priest = GetClosestCreatureWithEntry(me, 22951, 100.0f, true))
+            if (priest->isInCombat())
+                priest->AI()->EnterEvadeMode();
+
+        if (Creature *paladin = GetClosestCreatureWithEntry(me, 22949, 100.0f, true))
+            if (paladin->isInCombat())
+                paladin->AI()->EnterEvadeMode();
+    }
+
 
     void UpdateAI(const uint32 diff)
     {
@@ -706,6 +737,21 @@ struct boss_lady_malandeAI : public illidari_council_baseAI
 
         m_checkTimer = 1000;
     }
+    void EnterEvadeMode()
+    {
+        ScriptedAI::EnterEvadeMode();
+        if (Creature *mage = GetClosestCreatureWithEntry(me, 22950, 100.0f, true))
+            if (mage->isInCombat())
+                mage->AI()->EnterEvadeMode();
+
+        if (Creature *rogue = GetClosestCreatureWithEntry(me, 22952, 100.0f, true))
+            if (rogue->isInCombat())
+                rogue->AI()->EnterEvadeMode();
+
+        if (Creature *paladin = GetClosestCreatureWithEntry(me, 22949, 100.0f, true))
+            if (paladin->isInCombat())
+                paladin->AI()->EnterEvadeMode();
+    }
 
     void UpdateAI(const uint32 diff)
     {
@@ -800,6 +846,21 @@ struct boss_veras_darkshadowAI : public illidari_council_baseAI
         }
     }
 
+    void EnterEvadeMore()
+    {
+        ScriptedAI::EnterEvadeMode();
+        if (Creature *mage = GetClosestCreatureWithEntry(me, 22950, 100.0f, true))
+            if (mage->isInCombat())
+                mage->AI()->EnterEvadeMode();
+
+        if (Creature *priest = GetClosestCreatureWithEntry(me, 22951, 100.0f, true))
+            if (priest->isInCombat())
+                priest->AI()->EnterEvadeMode();
+
+        if (Creature *paladin = GetClosestCreatureWithEntry(me, 22949, 100.0f, true))
+            if (paladin->isInCombat())
+                paladin->AI()->EnterEvadeMode();
+    }
     void UpdateAI(const uint32 diff)
     {
         if (!UpdateVictim())
