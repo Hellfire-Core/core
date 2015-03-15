@@ -5471,8 +5471,7 @@ void Spell::EffectScriptEffect(uint32 effIndex)
     // TODO: we must implement hunter pet summon at login there (spell 6962)
     switch (GetSpellEntry()->Id)
     {
-        // we need script here, because KillCreadit in DB is used for diff quest :p
-        case 32314:
+        case 32314: // kil'sorrow banner
         {
             uint32 const CREDIT_MARKER = 18393;
             if (Player* caster = m_caster->ToPlayer())
@@ -5481,9 +5480,9 @@ void Spell::EffectScriptEffect(uint32 effIndex)
                 if (Creature* creature = unitTarget->ToCreature())
                     creature->RemoveCorpse();
             }
-            break;
+            return;
         }
-        case 32307:
+        case 32307: // warmaul banner
         {
             uint32 const CREDIT_MARKER = 18388;
             if (Player* caster = m_caster->ToPlayer())
@@ -5492,7 +5491,7 @@ void Spell::EffectScriptEffect(uint32 effIndex)
                 if (Creature* creature = unitTarget->ToCreature())
                     creature->RemoveCorpse();
             }
-            break;
+            return;
         }
         case 28338:
         case 28339:
@@ -6345,9 +6344,14 @@ void Spell::EffectScriptEffect(uint32 effIndex)
         }
     }
 
-    if (!unitTarget || !unitTarget->isAlive()) // can we remove this check?
+    if (!unitTarget)
     {
         sLog.outLog(LOG_DEFAULT, "ERROR: Spell %u in EffectScriptEffect does not have unitTarget", GetSpellEntry()->Id);
+        return;
+    }
+    if (!unitTarget->isAlive())
+    {
+        sLog.outLog(LOG_DEFAULT, "ERROR: Spell %u in EffectScriptEffect has dead target", GetSpellEntry()->Id);
         return;
     }
 

@@ -2878,7 +2878,7 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 44586: // NPC prayer of mending
                     spellInfo->procFlags &= ~PROC_FLAG_SUCCESSFUL_POSITIVE_SPELL;
                     break;
-                case 40176:
+                case 40176: // simon game spells
                 case 40177:
                 case 40178:
                 case 40179:
@@ -3003,8 +3003,15 @@ void SpellMgr::LoadSpellCustomAttr()
                 break;
             }
             case SPELLFAMILY_HUNTER:
+            {
                 if (spellInfo->Id == 45172) // BE guards shooting at flying players on isle, prevent spam
                     spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_AREA_ENEMY_DST;
+                else if (spellInfo->Id == 34026) // kill command, all handled by first dummy effect
+                    spellInfo->Effect[1] = 0;
+
+                spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
+                break;
+            }
             case SPELLFAMILY_WARRIOR:
             case SPELLFAMILY_ROGUE:
                 spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
