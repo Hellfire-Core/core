@@ -1,7 +1,7 @@
-/* 
+/*
  * Copyright (C) 2006-2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -23,6 +23,8 @@ SD%Complete: 99
 SDComment: Test event reseting and saving to DB (simplify some code..?)
 SDCategory: Black Temple
 EndScriptData */
+
+//TODO: Integrate all 4 EnterEvadeModes into illidari_council_baseAI::EnterEvadeMode().
 
 #include "precompiled.h"
 #include "def_black_temple.h"
@@ -77,6 +79,14 @@ static CouncilYells CouncilEnrage[]=
 
 #define SPELL_BERSERK 45078
 
+enum councilMembers
+{
+    NPC_GATHIOS     = 22949,
+    NPC_ZEREVOR     = 22950,
+    NPC_MALANDE     = 22951,
+    NPC_VERAS       = 22952
+};
+
 // Gathios the Shatterer's spells
 enum gathiosSpells
 {
@@ -114,8 +124,8 @@ enum malandeSpells
 // Veras Darkshadow's spells
 enum verasSpells
 {
-    SPELL_DEADLY_POISON = 41480,
-    SPELL_VANISH          = 41476
+    SPELL_DEADLY_POISON     = 41480,
+    SPELL_VANISH            = 41476
     // Spell Envenom triggered by Deadly Poison in Aura::HandlePeriodicDamage
 };
 
@@ -279,7 +289,7 @@ struct illidari_council_baseAI : public ScriptedAI
 
         DoZoneInCombat();
 
-        if (me->GetEntry() == 22950)  // Zerevor
+        if (me->GetEntry() == NPC_ZEREVOR)  // Zerevor
         {
             ClearCastQueue();
             ForceSpellCast(me, SPELL_DAMPEN_MAGIC);
@@ -301,10 +311,10 @@ struct illidari_council_baseAI : public ScriptedAI
     {
         switch (me->GetEntry())
         {
-            case 22949: DoScriptText(SAY_GATH_SLAY, me); break; // Gathios
-            case 22950: DoScriptText(SAY_ZERE_SLAY, me); break; // Zerevor
-            case 22951: DoScriptText(SAY_MALA_SLAY, me); break; // Melande
-            case 22952: DoScriptText(SAY_VERA_SLAY, me); break; // Veras
+            case NPC_GATHIOS: DoScriptText(SAY_GATH_SLAY, me); break; // Gathios
+            case NPC_ZEREVOR: DoScriptText(SAY_ZERE_SLAY, me); break; // Zerevor
+            case NPC_MALANDE: DoScriptText(SAY_MALA_SLAY, me); break; // Melande
+            case NPC_VERAS: DoScriptText(SAY_VERA_SLAY, me); break; // Veras
         }
     }
 
@@ -312,10 +322,10 @@ struct illidari_council_baseAI : public ScriptedAI
     {
         switch (me->GetEntry())
         {
-            case 22949: DoScriptText(SAY_GATH_DEATH, me); break; // Gathios
-            case 22950: DoScriptText(SAY_ZERE_DEATH, me); break; // Zerevor
-            case 22951: DoScriptText(SAY_MALA_DEATH, me); break; // Melande
-            case 22952: DoScriptText(SAY_VERA_DEATH, me); break; // Veras
+            case NPC_GATHIOS: DoScriptText(SAY_GATH_DEATH, me); break; // Gathios
+            case NPC_ZEREVOR: DoScriptText(SAY_ZERE_DEATH, me); break; // Zerevor
+            case NPC_MALANDE: DoScriptText(SAY_MALA_DEATH, me); break; // Melande
+            case NPC_VERAS: DoScriptText(SAY_VERA_DEATH, me); break; // Veras
         }
         if (Creature *pCouncil = pInstance->GetCreature(pInstance->GetData64(DATA_ILLIDARICOUNCIL)))
         {
@@ -444,20 +454,21 @@ struct boss_gathios_the_shattererAI : public illidari_council_baseAI
     }
 
     void EnterEvadeMode()
-    {         
+    {
         ScriptedAI::EnterEvadeMode();
-        if (Creature *mage = GetClosestCreatureWithEntry(me, 22950, 100.0f, true))
+        if (Creature *mage = GetClosestCreatureWithEntry(me, NPC_ZEREVOR, 100.0f, true))
             if (mage->isInCombat())
                 mage->AI()->EnterEvadeMode();
 
-        if (Creature *rogue = GetClosestCreatureWithEntry(me, 22952, 100.0f, true))
+        if (Creature *rogue = GetClosestCreatureWithEntry(me, NPC_VERAS, 100.0f, true))
             if (rogue->isInCombat())
                 rogue->AI()->EnterEvadeMode();
 
-        if (Creature *priest = GetClosestCreatureWithEntry(me, 22951, 100.0f, true))
+        if (Creature *priest = GetClosestCreatureWithEntry(me, NPC_MALANDE, 100.0f, true))
             if (priest->isInCombat())
                 priest->AI()->EnterEvadeMode();
     }
+
     void UpdateAI(const uint32 diff)
     {
         if (!UpdateVictim())
@@ -590,22 +601,22 @@ struct boss_high_nethermancer_zerevorAI : public illidari_council_baseAI
                 me->GetMap()->CreatureRelocation(me, x, y, good_z+0.15, me->GetAngle(me->getVictim()));
         }
     }
+
     void EnterEvadeMode()
-    {    
+    {
         ScriptedAI::EnterEvadeMode();
-        if (Creature *rogue = GetClosestCreatureWithEntry(me, 22952, 100.0f, true))
+        if (Creature *rogue = GetClosestCreatureWithEntry(me, NPC_VERAS, 100.0f, true))
             if (rogue->isInCombat())
                 rogue->AI()->EnterEvadeMode();
 
-        if (Creature *priest = GetClosestCreatureWithEntry(me, 22951, 100.0f, true))
+        if (Creature *priest = GetClosestCreatureWithEntry(me, NPC_MALANDE, 100.0f, true))
             if (priest->isInCombat())
                 priest->AI()->EnterEvadeMode();
 
-        if (Creature *paladin = GetClosestCreatureWithEntry(me, 22949, 100.0f, true))
+        if (Creature *paladin = GetClosestCreatureWithEntry(me, NPC_GATHIOS, 100.0f, true))
             if (paladin->isInCombat())
                 paladin->AI()->EnterEvadeMode();
     }
-
 
     void UpdateAI(const uint32 diff)
     {
@@ -621,19 +632,16 @@ struct boss_high_nethermancer_zerevorAI : public illidari_council_baseAI
                 EnterEvadeMode();
                 return;
             }
-                                                             
+
             if (me->GetDistance(me->getVictim()) <= 40.0f)
             {
                 me->SetFacingToObject(me->getVictim());  // he is getting stuck sometimes
                 me->StopMoving();
-                
+
             }
-            
             else
                 DoStartMovement(me->getVictim());
                 //me->GetMotionMaster()->MoveChase(me->getVictim(), 40.0f);  // It's not working. Simply.
-            
-
 
             // On front stairs, do not let boss to go into textures;
             CheckStairsPos();
@@ -737,18 +745,19 @@ struct boss_lady_malandeAI : public illidari_council_baseAI
 
         m_checkTimer = 1000;
     }
+
     void EnterEvadeMode()
     {
         ScriptedAI::EnterEvadeMode();
-        if (Creature *mage = GetClosestCreatureWithEntry(me, 22950, 100.0f, true))
+        if (Creature *mage = GetClosestCreatureWithEntry(me, NPC_ZEREVOR, 100.0f, true))
             if (mage->isInCombat())
                 mage->AI()->EnterEvadeMode();
 
-        if (Creature *rogue = GetClosestCreatureWithEntry(me, 22952, 100.0f, true))
+        if (Creature *rogue = GetClosestCreatureWithEntry(me, NPC_VERAS, 100.0f, true))
             if (rogue->isInCombat())
                 rogue->AI()->EnterEvadeMode();
 
-        if (Creature *paladin = GetClosestCreatureWithEntry(me, 22949, 100.0f, true))
+        if (Creature *paladin = GetClosestCreatureWithEntry(me, NPC_GATHIOS, 100.0f, true))
             if (paladin->isInCombat())
                 paladin->AI()->EnterEvadeMode();
     }
@@ -846,21 +855,22 @@ struct boss_veras_darkshadowAI : public illidari_council_baseAI
         }
     }
 
-    void EnterEvadeMore()
+    void EnterEvadeMode()
     {
         ScriptedAI::EnterEvadeMode();
-        if (Creature *mage = GetClosestCreatureWithEntry(me, 22950, 100.0f, true))
+        if (Creature *mage = GetClosestCreatureWithEntry(me, NPC_ZEREVOR, 100.0f, true))
             if (mage->isInCombat())
                 mage->AI()->EnterEvadeMode();
 
-        if (Creature *priest = GetClosestCreatureWithEntry(me, 22951, 100.0f, true))
+        if (Creature *priest = GetClosestCreatureWithEntry(me, NPC_MALANDE, 100.0f, true))
             if (priest->isInCombat())
                 priest->AI()->EnterEvadeMode();
 
-        if (Creature *paladin = GetClosestCreatureWithEntry(me, 22949, 100.0f, true))
+        if (Creature *paladin = GetClosestCreatureWithEntry(me, NPC_GATHIOS, 100.0f, true))
             if (paladin->isInCombat())
                 paladin->AI()->EnterEvadeMode();
     }
+
     void UpdateAI(const uint32 diff)
     {
         if (!UpdateVictim())
