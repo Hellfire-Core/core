@@ -1459,15 +1459,8 @@ void Player::Update(uint32 update_diff, uint32 p_time)
 
     // group update
     SendUpdateToOutOfRangeGroupMembers();
-    UpdateConsecutiveKills();
 
-    // send heartbeat if did not move for ~10 secs
-    if (m_movementInfo.time + 10000 < WorldTimer::getMSTime())
-    {
-        SendHeartBeat();
-        m_movementInfo.time += 10000;
-        m_AC_timer = IN_MILISECONDS;
-    }
+    UpdateConsecutiveKills();
 
     _preventUpdate = false;
     updateMutex.release();
