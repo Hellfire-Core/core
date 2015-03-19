@@ -340,9 +340,30 @@ struct illidari_council_baseAI : public ScriptedAI
             return;
         pInstance->SetData(EVENT_ILLIDARICOUNCIL, NOT_STARTED);
 
+        ScriptedAI::EnterEvadeMode();
+
         if (Creature *pTrigger = pInstance->GetCreature(pInstance->GetData64(DATA_BLOOD_ELF_COUNCIL_VOICE)))
             pTrigger->AI()->EnterEvadeMode();
-        ScriptedAI::EnterEvadeMode();
+
+            if (Creature *mage = GetClosestCreatureWithEntry(me, NPC_ZEREVOR, 100.0f, true))
+                if (mage->isInCombat())
+                    mage->AI()->EnterEvadeMode();
+
+            if (Creature *rogue = GetClosestCreatureWithEntry(me, NPC_VERAS, 100.0f, true))
+                if (rogue->isInCombat())
+                    rogue->AI()->EnterEvadeMode();
+
+            if (Creature *priest = GetClosestCreatureWithEntry(me, NPC_MALANDE, 100.0f, true))
+                if (priest->isInCombat())
+                    priest->AI()->EnterEvadeMode();
+
+            if (Creature *paladin = GetClosestCreatureWithEntry(me, NPC_GATHIOS, 100.0f, true))
+                if (paladin->isInCombat())
+                    paladin->AI()->EnterEvadeMode();
+
+
+
+
     }
 
     void SharedRule(uint32 &damage)
@@ -453,21 +474,6 @@ struct boss_gathios_the_shattererAI : public illidari_council_baseAI
         me->SetPower(POWER_MANA, Mana+0.01*maxMana);
     }
 
-    void EnterEvadeMode()
-    {
-        ScriptedAI::EnterEvadeMode();
-        if (Creature *mage = GetClosestCreatureWithEntry(me, NPC_ZEREVOR, 100.0f, true))
-            if (mage->isInCombat())
-                mage->AI()->EnterEvadeMode();
-
-        if (Creature *rogue = GetClosestCreatureWithEntry(me, NPC_VERAS, 100.0f, true))
-            if (rogue->isInCombat())
-                rogue->AI()->EnterEvadeMode();
-
-        if (Creature *priest = GetClosestCreatureWithEntry(me, NPC_MALANDE, 100.0f, true))
-            if (priest->isInCombat())
-                priest->AI()->EnterEvadeMode();
-    }
 
     void JustDied(Unit* killer)
     {
@@ -618,22 +624,6 @@ struct boss_high_nethermancer_zerevorAI : public illidari_council_baseAI
         }
     }
 
-    void EnterEvadeMode()
-    {
-        ScriptedAI::EnterEvadeMode();
-        if (Creature *rogue = GetClosestCreatureWithEntry(me, NPC_VERAS, 100.0f, true))
-            if (rogue->isInCombat())
-                rogue->AI()->EnterEvadeMode();
-
-        if (Creature *priest = GetClosestCreatureWithEntry(me, NPC_MALANDE, 100.0f, true))
-            if (priest->isInCombat())
-                priest->AI()->EnterEvadeMode();
-
-        if (Creature *paladin = GetClosestCreatureWithEntry(me, NPC_GATHIOS, 100.0f, true))
-            if (paladin->isInCombat())
-                paladin->AI()->EnterEvadeMode();
-    }
-
     void JustDied(Unit* killer)
     {
         ScriptedAI::JustDied(killer);
@@ -778,21 +768,7 @@ struct boss_lady_malandeAI : public illidari_council_baseAI
         m_checkTimer = 1000;
     }
 
-    void EnterEvadeMode()
-    {
-        ScriptedAI::EnterEvadeMode();
-        if (Creature *mage = GetClosestCreatureWithEntry(me, NPC_ZEREVOR, 100.0f, true))
-            if (mage->isInCombat())
-                mage->AI()->EnterEvadeMode();
 
-        if (Creature *rogue = GetClosestCreatureWithEntry(me, NPC_VERAS, 100.0f, true))
-            if (rogue->isInCombat())
-                rogue->AI()->EnterEvadeMode();
-
-        if (Creature *paladin = GetClosestCreatureWithEntry(me, NPC_GATHIOS, 100.0f, true))
-            if (paladin->isInCombat())
-                paladin->AI()->EnterEvadeMode();
-    }
 
     void JustDied(Unit* killer)
     {
@@ -901,22 +877,6 @@ struct boss_veras_darkshadowAI : public illidari_council_baseAI
             DoResetThreat();
             DoStartMovement(me->getVictim());
         }
-    }
-
-    void EnterEvadeMode()
-    {
-        ScriptedAI::EnterEvadeMode();
-        if (Creature *mage = GetClosestCreatureWithEntry(me, NPC_ZEREVOR, 100.0f, true))
-            if (mage->isInCombat())
-                mage->AI()->EnterEvadeMode();
-
-        if (Creature *priest = GetClosestCreatureWithEntry(me, NPC_MALANDE, 100.0f, true))
-            if (priest->isInCombat())
-                priest->AI()->EnterEvadeMode();
-
-        if (Creature *paladin = GetClosestCreatureWithEntry(me, NPC_GATHIOS, 100.0f, true))
-            if (paladin->isInCombat())
-                paladin->AI()->EnterEvadeMode();
     }
 
     void JustDied(Unit* killer)
