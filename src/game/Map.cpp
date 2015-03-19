@@ -686,8 +686,10 @@ void Map::Remove(T *obj, bool remove)
 
     if (obj->GetMap() != this)
     {
-        sLog.outLog(LOG_DEFAULT, "Map::Remove, object not where it should be? %u %p %p | %u %u %u %u",
-            obj->GetTypeId(), obj->GetMap(), this, GetId(), GetInstanceId(), obj->GetMapId(), obj->GetInstanceId());
+        sLog.outLog(LOG_DEFAULT, "Map::Remove, object not where it should be! %u %p %p %p | %u %u %u %u",
+            obj->GetTypeId(), obj->GetMap(), this, sMapMgr.FindMap(obj->GetMapId(), obj->GetInstanceId()),
+            GetId(), GetInstanceId(), obj->GetMapId(), obj->GetInstanceId());
+        return; // this still needs to be fixed, it will leave some useless object in memory, but at least shouldnt let them crash
     }
     obj->UpdateObjectVisibility();
 
