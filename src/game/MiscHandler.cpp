@@ -1182,7 +1182,7 @@ void WorldSession::HandleInspectHonorStatsOpcode(WorldPacket& recv_data)
 
     if (!player)
     {
-        sLog.outLog(LOG_DEFAULT, "ERROR: InspectHonorStats: WTF, player not found...");
+        sLog.outLog(LOG_DEFAULT, "ERROR: InspectHonorStats: WTF, player %lu not found...",guid);
         return;
     }
 
