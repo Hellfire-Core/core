@@ -1093,7 +1093,7 @@ void ScriptedAI::DoSpecialThings(uint32 diff, SpecialThing flags, float range, f
                 EnterEvadeMode();
         }
 
-        m_specialThingTimer = 3000;
+        m_specialThingTimer = 1000;
     }
     else
         m_specialThingTimer -= diff;
