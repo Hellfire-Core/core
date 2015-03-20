@@ -121,6 +121,7 @@ struct boss_vazruden_the_heraldAI : public ScriptedAI
             return;
 
         ScriptedAI::AttackStart(who);
+        DoZoneInCombat();
     }
 
     void MovementInform(uint32 type, uint32 id)
@@ -219,6 +220,7 @@ struct boss_vazruden_the_heraldAI : public ScriptedAI
                     summoned->AI()->AttackStart(pPlayer);
 
                 VazrudenGUID = summoned->GetGUID();
+                summoned->AI()->DoZoneInCombat();
                 break;
             case ENTRY_LIQUID_FIRE:
                 summoned->SetLevel(me->getLevel());
@@ -444,6 +446,7 @@ struct boss_vazrudenAI : public ScriptedAI
             {
                 Creature* Nazan = (Unit::GetCreature(*me, VazHeraldGUID));
                 CAST_AI(boss_vazruden_the_heraldAI, Nazan->AI())->DoDescend();
+                Nazan->AI()->DoZoneInCombat();
             }
 
             HealthBelow = true;
@@ -466,6 +469,7 @@ struct boss_vazrudenAI : public ScriptedAI
     {
         if (!UpdateVictim())
             return;
+        DoSpecialThings(diff, DO_PULSE_COMBAT);
 
         if (RevengeTimer < diff)
         {
