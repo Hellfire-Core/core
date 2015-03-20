@@ -2248,7 +2248,7 @@ BanReturn World::BanAccount(BanMode mode, std::string nameIPOrMail, std::string 
     AccountsDatabase.escape_string(nameIPOrMail);
     AccountsDatabase.escape_string(reason);
     std::string safe_author=author;
-    if (safe_author.length <= 1)
+    if (safe_author.length() <= 1)
         safe_author = "[CONSOLE]";
     AccountsDatabase.escape_string(safe_author);
 
