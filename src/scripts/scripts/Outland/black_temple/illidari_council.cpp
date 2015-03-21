@@ -327,6 +327,24 @@ struct illidari_council_baseAI : public ScriptedAI
             case NPC_MALANDE: DoScriptText(SAY_MALA_DEATH, me); break; // Melande
             case NPC_VERAS: DoScriptText(SAY_VERA_DEATH, me); break; // Veras
         }
+
+        if (Creature *priest = GetClosestCreatureWithEntry(me, NPC_MALANDE, 100.0f, true))
+            if (priest->isAlive())
+                priest->Kill(priest);
+
+        if (Creature *rogue = GetClosestCreatureWithEntry(me, NPC_VERAS, 100.0f, true))
+            if (rogue->isAlive())
+                rogue->Kill(rogue);
+
+        if (Creature *mage = GetClosestCreatureWithEntry(me, NPC_ZEREVOR, 100.0f, true))
+            if (mage->isAlive())
+                mage->Kill(mage);
+
+        if (Creature *paladin = GetClosestCreatureWithEntry(me, NPC_GATHIOS, 100.0f, true))
+            if (paladin->isAlive())
+                paladin->Kill(paladin);
+
+
         if (Creature *pCouncil = pInstance->GetCreature(pInstance->GetData64(DATA_ILLIDARICOUNCIL)))
         {
             if (pCouncil->isAlive())
@@ -475,21 +493,6 @@ struct boss_gathios_the_shattererAI : public illidari_council_baseAI
     }
 
 
-    void JustDied(Unit* killer)
-    {
-        ScriptedAI::JustDied(killer);
-        if (Creature *priest = GetClosestCreatureWithEntry(me, NPC_MALANDE, 100.0f, true))
-            if (priest->isAlive())
-                priest->Kill(priest);
-
-        if (Creature *rogue = GetClosestCreatureWithEntry(me, NPC_VERAS, 100.0f, true))
-            if (rogue->isAlive())
-                rogue->Kill(rogue);
-
-        if (Creature *mage = GetClosestCreatureWithEntry(me, NPC_ZEREVOR, 100.0f, true))
-            if (mage->isAlive())
-                mage->Kill(mage);
-    }
 
     void UpdateAI(const uint32 diff)
     {
@@ -624,21 +627,6 @@ struct boss_high_nethermancer_zerevorAI : public illidari_council_baseAI
         }
     }
 
-    void JustDied(Unit* killer)
-    {
-        ScriptedAI::JustDied(killer);
-        if (Creature *priest = GetClosestCreatureWithEntry(me, NPC_MALANDE, 100.0f, true))
-            if (priest->isAlive())
-                priest->Kill(priest);
-
-        if (Creature *rogue = GetClosestCreatureWithEntry(me, NPC_VERAS, 100.0f, true))
-            if (rogue->isAlive())
-                rogue->Kill(rogue);
-
-        if (Creature *paladin = GetClosestCreatureWithEntry(me, NPC_GATHIOS, 100.0f, true))
-            if (paladin->isAlive())
-                paladin->Kill(paladin);
-    }
 
     void UpdateAI(const uint32 diff)
     {
@@ -770,21 +758,7 @@ struct boss_lady_malandeAI : public illidari_council_baseAI
 
 
 
-    void JustDied(Unit* killer)
-    {
-        ScriptedAI::JustDied(killer);
-        if (Creature *mage = GetClosestCreatureWithEntry(me, NPC_ZEREVOR, 100.0f, true))
-            if (mage->isAlive())
-                mage->Kill(mage);
 
-        if (Creature *rogue = GetClosestCreatureWithEntry(me, NPC_VERAS, 100.0f, true))
-            if (rogue->isAlive())
-                rogue->Kill(rogue);
-
-        if (Creature *paladin = GetClosestCreatureWithEntry(me, NPC_GATHIOS, 100.0f, true))
-            if (paladin->isAlive())
-                paladin->Kill(paladin);
-    }
 
     void UpdateAI(const uint32 diff)
     {
@@ -879,21 +853,6 @@ struct boss_veras_darkshadowAI : public illidari_council_baseAI
         }
     }
 
-    void JustDied(Unit* killer)
-    {
-        ScriptedAI::JustDied(killer);
-        if (Creature *priest = GetClosestCreatureWithEntry(me, NPC_MALANDE, 100.0f, true))
-            if (priest->isAlive())
-                priest->Kill(priest);
-
-        if (Creature *paladin = GetClosestCreatureWithEntry(me, NPC_GATHIOS, 100.0f, true))
-            if (paladin->isAlive())
-                paladin->Kill(paladin);
-
-        if (Creature *mage = GetClosestCreatureWithEntry(me, NPC_ZEREVOR, 100.0f, true))
-            if (mage->isAlive())
-                mage->Kill(mage);
-    }
 
 
     void UpdateAI(const uint32 diff)
