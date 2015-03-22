@@ -2894,8 +2894,11 @@ void SpellMgr::LoadSpellCustomAttr()
             }
             case SPELLFAMILY_DRUID:
             {
-                if (spellInfo->EffectImplicitTargetB[0] == TARGET_UNIT_AREA_PARTY_DST) //tranquility, targetA is useless and spamming in logs
-                    spellInfo->EffectImplicitTargetA[0] = 0;
+                if ((spellInfo->SpellFamilyFlags & 128) &&
+                   ((spellInfo->EffectImplicitTargetA[0] == TARGET_DEST_DYNOBJ_ALLY) ||
+                   (spellInfo->EffectImplicitTargetA[0] == TARGET_DEST_CHANNEL)))
+                        spellInfo->EffectImplicitTargetA[0] = 0; // tranquility log spam
+
                 switch (spellInfo->Id)
                 {
                     case 16998: // Savage Fury
