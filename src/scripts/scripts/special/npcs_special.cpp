@@ -3282,13 +3282,16 @@ struct npc_instakill_guardianAI : public Scripted_NoMovementAI
     void MoveInLineOfSight(Unit* who)
     {
         Player* player = who->GetCharmerOrOwnerPlayerOrPlayerItself();
-        if (!player || player->isGameMaster() || !me->isAlive())
+        if (!player || player->isGameMaster())
             return;
 
         WorldLocation loc;
         player->GetPosition(loc);
         if( m_creature->GetExactDist(&loc) < distance)
         { 
+            if (who->isAlive())
+                who->Kill(player);
+
             sWorld.SendGMText(LANG_INSTA_KILL_GUARDIAN,
                 player->GetName(),player->GetGUIDLow(),
                 float(player->GetPositionX()),float(player->GetPositionY()),float(player->GetPositionZ()),player->GetMapId(),player->GetInstanceId());
