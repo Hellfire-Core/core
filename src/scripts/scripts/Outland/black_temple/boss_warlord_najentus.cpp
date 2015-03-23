@@ -111,7 +111,7 @@ struct boss_najentusAI : public ScriptedAI
         DoScriptText(RAND(SAY_SLAY1, SAY_SLAY2), m_creature);
     }
 
-    void JustDied(Unit *victim)
+    void JustDied(Unit *Killer)
     {
         if(pInstance)
             pInstance->SetData(EVENT_HIGHWARLORDNAJENTUS, DONE);
@@ -119,6 +119,7 @@ struct boss_najentusAI : public ScriptedAI
         DestroySpine();
 
         DoScriptText(SAY_DEATH, m_creature);
+        GBK_TryRegister(GBK_HIGH_WARLORD_NAJENTUS, Killer->GetCharmerOrOwnerPlayerOrPlayerItself());
     }
 
     void SpellHit(Unit *caster, const SpellEntry *spell)
@@ -138,6 +139,7 @@ struct boss_najentusAI : public ScriptedAI
         DoScriptText(SAY_AGGRO, m_creature);
         DoZoneInCombat();
         DestroySpine();
+        GBK_Start();
     }
 
     void DestroySpine()

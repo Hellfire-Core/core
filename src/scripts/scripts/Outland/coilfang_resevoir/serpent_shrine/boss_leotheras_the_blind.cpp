@@ -257,6 +257,7 @@ struct boss_leotheras_the_blindAI : public ScriptedAI
         DoScriptText(SAY_AGGRO, m_creature);
         if(pInstance)
             pInstance->SetData(DATA_LEOTHERASTHEBLINDEVENT, IN_PROGRESS);
+        GBK_Start();
     }
 
     void CheckBanish()
@@ -349,7 +350,7 @@ struct boss_leotheras_the_blindAI : public ScriptedAI
             DoScriptText(RAND(SAY_NIGHTELF_SLAY1, SAY_NIGHTELF_SLAY2, SAY_NIGHTELF_SLAY3), m_creature);
     }
 
-    void JustDied(Unit *victim)
+    void JustDied(Unit *Killer)
     {
         DoScriptText(SAY_DEATH, m_creature);
 
@@ -362,6 +363,7 @@ struct boss_leotheras_the_blindAI : public ScriptedAI
         }
         if (pInstance)
             pInstance->SetData(DATA_LEOTHERASTHEBLINDEVENT, DONE);
+        GBK_TryRegister(GBK_LEOTHERAS_THE_BLIND, Killer->GetCharmerOrOwnerPlayerOrPlayerItself());
     }
 
     void EnterCombat(Unit *who)

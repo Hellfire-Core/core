@@ -153,6 +153,7 @@ struct boss_sacrolashAI : public ScriptedAI
     {
         DoZoneInCombat();
         pInstance->SetData(DATA_EREDAR_TWINS_EVENT, IN_PROGRESS);
+        GBK_Start();
     }
 
     void MoveInLineOfSight(Unit *who)
@@ -208,6 +209,7 @@ struct boss_sacrolashAI : public ScriptedAI
         {
             DoScriptText(SAY_SAC_DEAD, me);
             pInstance->SetData(DATA_EREDAR_TWINS_EVENT, DONE);
+            GBK_TryRegister(GBK_HOT_DRAENEI_CHICKS, Killer->GetCharmerOrOwnerPlayerOrPlayerItself());
         }
         else
             me->SetLootRecipient(NULL);
@@ -359,6 +361,7 @@ struct boss_alythessAI : public Scripted_NoMovementAI
     {
         DoZoneInCombat();
         pInstance->SetData(DATA_EREDAR_TWINS_EVENT, IN_PROGRESS);
+        GBK_Start();
     }
 
     void SetData(uint32 a, uint32 b)
@@ -423,6 +426,7 @@ struct boss_alythessAI : public Scripted_NoMovementAI
         {
             DoScriptText(YELL_ALY_DEAD, me);
             pInstance->SetData(DATA_EREDAR_TWINS_EVENT, DONE);
+            GBK_TryRegister(GBK_HOT_DRAENEI_CHICKS, Killer->GetCharmerOrOwnerPlayerOrPlayerItself());
         }
         else
             me->SetLootRecipient(NULL);

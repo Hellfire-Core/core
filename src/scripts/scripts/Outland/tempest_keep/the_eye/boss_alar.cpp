@@ -152,9 +152,10 @@ struct boss_alarAI : public ScriptedAI
         m_creature->SetLevitate(true); // after enterevademode will be set walk movement
         m_creature->setActive(true);
         DoZoneInCombat();
+        GBK_Start();
     }
 
-    void JustDied(Unit *victim)
+    void JustDied(Unit *Killer)
     {
         m_creature->SetDisplayId(m_creature->GetNativeDisplayId());
         m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
@@ -171,6 +172,7 @@ struct boss_alarAI : public ScriptedAI
 
         if(pInstance)
             pInstance->SetData(DATA_ALAREVENT, DONE);
+        GBK_TryRegister(GBK_ALAR, Killer->GetCharmerOrOwnerPlayerOrPlayerItself());
     }
 
     void JustSummoned(Creature *summon)

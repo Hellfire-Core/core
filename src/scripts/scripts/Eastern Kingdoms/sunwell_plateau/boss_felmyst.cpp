@@ -253,6 +253,7 @@ struct boss_felmystAI : public ScriptedAI
             if(Creature* pBrutallus = me->GetCreature(pInstance->GetData64(DATA_BRUTALLUS)))
                 pBrutallus->RemoveCorpse();
         }
+        GBK_Start();
     }
 
     void AttackStart(Unit *who)
@@ -303,6 +304,7 @@ struct boss_felmystAI : public ScriptedAI
         DoScriptText(YELL_DEATH, me);
         pInstance->SetData(DATA_FELMYST_EVENT, DONE);
         me->SummonCreature(MOB_KALECGOS, 1555, 737, 88, 0, TEMPSUMMON_TIMED_DESPAWN, 300000);
+        GBK_TryRegister(GBK_FELMYST, Killer->GetCharmerOrOwnerPlayerOrPlayerItself());
     }
 
     void EnterEvadeMode()

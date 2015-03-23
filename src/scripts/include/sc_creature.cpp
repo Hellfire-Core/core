@@ -1137,7 +1137,7 @@ void ScriptedAI::GBK_TryRegister(GBK_Encounters encounter, Player* plr)
 
     if (!guild_id)
         return;
-    RealmDataDatabase.PExecute("INSERT INTO guild_boss_kills VALUES (%u,%u,%u,%u,SYSDATE())",
+    RealmDataDatabase.PExecute("INSERT INTO boss_fights VALUES (NULL,%u,%u,%u,%u,SYSDATE())",
         uint32(encounter),m_creature->GetInstanceId(),guild_id,uint32(time(NULL) - GBK_timer));
 }
 

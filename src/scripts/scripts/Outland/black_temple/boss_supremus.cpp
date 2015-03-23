@@ -141,6 +141,7 @@ struct boss_supremusAI : public ScriptedAI
 
         if(pInstance)
             pInstance->SetData(EVENT_SUPREMUS, IN_PROGRESS);
+        GBK_Start();
     }
 
     void ToggleDoors(bool close)
@@ -157,7 +158,7 @@ struct boss_supremusAI : public ScriptedAI
         }
     }
 
-    void JustDied(Unit *killer)
+    void JustDied(Unit *Killer)
     {
         if(pInstance)
         {
@@ -165,6 +166,7 @@ struct boss_supremusAI : public ScriptedAI
             ToggleDoors(false);
         }
         summons.DespawnAll();
+        GBK_TryRegister(GBK_SUPREMUS, Killer->GetCharmerOrOwnerPlayerOrPlayerItself());
     }
 
     void JustSummoned(Creature *summon) {summons.Summon(summon);}

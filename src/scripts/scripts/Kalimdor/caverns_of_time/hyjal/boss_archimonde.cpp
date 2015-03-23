@@ -377,6 +377,7 @@ struct boss_archimondeAI : public hyjal_trashAI
         DoZoneInCombat();
 
         pInstance->SetData(DATA_ARCHIMONDEEVENT, IN_PROGRESS);
+        GBK_Start();
     }
 
     void MoveInLineOfSight(Unit *who)
@@ -390,13 +391,14 @@ struct boss_archimondeAI : public hyjal_trashAI
         DoScriptText(RAND(SAY_SLAY1, SAY_SLAY2, SAY_SLAY3), me);
     }
 
-    void JustDied(Unit *victim)
+    void JustDied(Unit *Killer)
     {
-        hyjal_trashAI::JustDied(victim);
+        hyjal_trashAI::JustDied(Killer);
 
         DoScriptText(SAY_DEATH, me);
 
         pInstance->SetData(DATA_ARCHIMONDEEVENT, DONE);
+        GBK_TryRegister(GBK_ARCHIMONDE, Killer->GetCharmerOrOwnerPlayerOrPlayerItself());
     }
 
     bool CanUseFingerOfDeath()

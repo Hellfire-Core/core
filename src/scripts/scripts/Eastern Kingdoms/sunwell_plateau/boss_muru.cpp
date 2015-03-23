@@ -228,6 +228,7 @@ struct boss_muruAI : public Scripted_NoMovementAI
             if(HumanoidStart <= diff)
             {
                 pInstance->SetData(DATA_MURU_EVENT, IN_PROGRESS);
+                GBK_Start();
                 // if anyone trapped outside front door, evade
                 if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 400, true, 0, 60))
                 {
@@ -307,6 +308,7 @@ struct boss_entropiusAI : public ScriptedAI
         pInstance->SetData(DATA_MURU_EVENT, DONE);
         if(Unit* Muru = me->GetUnit(pInstance->GetData64(DATA_MURU)))
         {
+            ((boss_muruAI*)Muru)->GBK_TryRegister(GBK_MURU, killer->GetCharmerOrOwnerPlayerOrPlayerItself());
             Muru->Kill(Muru, false);
             Muru->ToCreature()->RemoveCorpse();
         }

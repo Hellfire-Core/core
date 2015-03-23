@@ -322,7 +322,7 @@ struct boss_illidan_stormrageAI : public BossAI
                 {
                     me->SetReactState(REACT_AGGRESSIVE);
                     instance->SetData(EVENT_ILLIDANSTORMRAGE, IN_PROGRESS);
-
+                    GBK_Start();
                     me->setActive(true);
 
                     Map::PlayerList const &plList = me->GetMap()->GetPlayers();
@@ -779,6 +779,7 @@ struct boss_illidan_stormrageAI : public BossAI
 
                     me->Kill(me, false);
                     instance->SetData(EVENT_ILLIDANSTORMRAGE, DONE);
+                    GBK_TryRegister(GBK_ILLIDAN_STORMRAGE,NULL);
                     break;
                 }
             }

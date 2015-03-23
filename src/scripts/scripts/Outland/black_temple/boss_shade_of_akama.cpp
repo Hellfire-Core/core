@@ -1138,13 +1138,14 @@ struct npc_akamaAI : public Scripted_NoMovementAI
         me->setActive(true);
     }
 
-    void ShadeKilled()
+    void ShadeKilled(Unit* Killer)
     {
         me->InterruptNonMeleeSpells(false);
         m_talk = 0;
         m_talkTimer = 3000;
         if (instance)
             instance->SetData(EVENT_SHADEOFAKAMA, DONE);
+        GBK_TryRegister(GBK_SHADE_OF_AKAMA, Killer->GetCharmerOrOwnerPlayerOrPlayerItself());
     }
 
     ScriptedInstance* instance;
@@ -1196,6 +1197,7 @@ struct npc_akamaAI : public Scripted_NoMovementAI
         me->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
         me->RemoveAurasDueToSpell(SPELL_STEALTH);
         me->GetMotionMaster()->MovePoint(0, AKAMA_X, AKAMA_Y, AKAMA_Z);
+        GBK_Start();
     }
 
     void MovementInform(uint32 type, uint32 id)
@@ -1385,12 +1387,12 @@ struct npc_akamaAI : public Scripted_NoMovementAI
     }
 };
 
-void boss_shade_of_akamaAI::JustDied(Unit *)
+void boss_shade_of_akamaAI::JustDied(Unit *Killer)
 {
     DespawnChannelersAndSorcerers();
     m_summons.DespawnAll();
     if (Creature *akama = me->GetCreature(*me, AkamaGUID))
-        ((npc_akamaAI *)akama->AI())->ShadeKilled();
+        ((npc_akamaAI *)akama->AI())->ShadeKilled(Killer);
 
     if (instance)
         instance->SetData(EVENT_SHADEOFAKAMA, DONE);   //na wszelki wypadek

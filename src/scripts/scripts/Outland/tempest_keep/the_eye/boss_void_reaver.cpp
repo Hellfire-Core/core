@@ -81,11 +81,12 @@ struct boss_void_reaverAI : public ScriptedAI
         DoScriptText(RAND(SAY_SLAY1, SAY_SLAY2, SAY_SLAY3), m_creature);
     }
 
-    void JustDied(Unit *victim)
+    void JustDied(Unit *Killer)
     {
         DoScriptText(SAY_DEATH, m_creature);
 
         pInstance->SetData(DATA_VOIDREAVEREVENT, DONE);
+        GBK_TryRegister(GBK_VOID_REAVER, Killer->GetCharmerOrOwnerPlayerOrPlayerItself());
     }
 
     void EnterCombat(Unit *who)
@@ -94,6 +95,7 @@ struct boss_void_reaverAI : public ScriptedAI
         DoZoneInCombat();
 
         pInstance->SetData(DATA_VOIDREAVEREVENT, IN_PROGRESS);
+        GBK_Start();
     }
 
     void SpellHitTarget(Unit *target, SpellEntry *spell)

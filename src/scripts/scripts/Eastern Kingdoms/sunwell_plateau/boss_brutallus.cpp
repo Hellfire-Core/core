@@ -149,10 +149,11 @@ struct boss_brutallusAI : public ScriptedAI
         }
     }
 
-    void JustDied(Unit* /*pKiller*/)
+    void JustDied(Unit* Killer)
     {
         ForceSpellCastWithScriptText(me, SPELL_SUMMON_DEATH_CLOUD, YELL_DEATH, INTERRUPT_AND_CAST_INSTANTLY);
         pInstance->SetData(DATA_BRUTALLUS_EVENT, DONE);
+        GBK_TryRegister(GBK_BRUTALLUS, Killer->GetCharmerOrOwnerPlayerOrPlayerItself());
     }
 
     void DamageMade(Unit* target, uint32 &damage, bool /*direct_damage*/)

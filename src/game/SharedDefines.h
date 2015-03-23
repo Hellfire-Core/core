@@ -2551,8 +2551,39 @@ enum BattleGroundTypeId
 
 enum GBK_Encounters
 {
-    GBK_NONE            = 0,
-    GBK_MAGTHERIDON     = 1,
+    GBK_NONE                    = 0,
+    GBK_MAGTHERIDON             = 1,
+    GBK_HIGH_KING_MAULGAR       = 2,
+    GBK_GRUUL                   = 3,
+    GBK_HYDROSS_THE_UNSTABLE    = 4,
+    GBK_LURKER_BELOW            = 5,
+    GBK_LEOTHERAS_THE_BLIND     = 6,
+    GBK_FATHOMLORD_KARATHRESS   = 7,
+    GBK_MOROGRIM_TIDEWALKER     = 8,
+    GBK_LADY_VASHJ              = 9,
+    GBK_ALAR                    = 10,
+    GBK_HIGH_ASTROMANCER_SOLARIAN = 11,
+    GBK_VOID_REAVER             = 12,
+    GBK_KAELTHAS_SUNSTRIDER     = 13,
+    GBK_RAGE_WINTERCHILL        = 14,
+    GBK_ANETHERON               = 15,
+    GBK_AZGALOR                 = 16,
+    GBK_KAZROGAL                = 17,
+    GBK_ARCHIMONDE              = 18,
+    GBK_HIGH_WARLORD_NAJENTUS   = 19,
+    GBK_SUPREMUS                = 20,
+    GBK_SHADE_OF_AKAMA          = 21,
+    GBK_REQUILARY_OF_SOULS      = 22,
+    GBK_GURTOG_BLOODBOIL        = 23,
+    GBK_TERON_GOREFIEND         = 24,
+    GBK_MOTHER_SHARAZ           = 25,
+    GBK_ILLIDARI_COUNCIL        = 26,
+    GBK_ILLIDAN_STORMRAGE       = 27,
+    GBK_KALECGOS                = 28,
+    GBK_BRUTALLUS               = 29,
+    GBK_FELMYST                 = 30,
+    GBK_HOT_DRAENEI_CHICKS      = 31,
+    GBK_MURU                    = 32
 };
 
 #define CONTACT_DISTANCE            0.5f

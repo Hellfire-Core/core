@@ -251,16 +251,17 @@ struct mob_illidari_councilAI : public ScriptedAI
                 }
             }
             pInstance->SetData(EVENT_ILLIDARICOUNCIL, IN_PROGRESS);
+            GBK_Start();
         }
     }
 
-    void JustDied(Unit *pVictim)
+    void JustDied(Unit *Killer)
     {
         if (Creature *pTrigger = pInstance->GetCreature(pInstance->GetData64(DATA_BLOOD_ELF_COUNCIL_VOICE)))
             pTrigger->Kill(pTrigger, false);
 
         pInstance->SetData(EVENT_ILLIDARICOUNCIL, DONE);
-
+        GBK_TryRegister(GBK_ILLIDARI_COUNCIL, Killer->GetCharmerOrOwnerPlayerOrPlayerItself());
         if (Creature *pAkama = me->SummonCreature(23089, 671.309f, 305.427f, 271.689f, 6.068f, TEMPSUMMON_DEAD_DESPAWN, 0))
             pAkama->AI()->DoAction(6);
     }

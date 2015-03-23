@@ -146,7 +146,7 @@ struct boss_high_astromancer_solarianAI : public ScriptedAI
         DoScriptText(RAND(SAY_KILL1, SAY_KILL2, SAY_KILL3), m_creature);
     }
 
-    void JustDied(Unit *victim)
+    void JustDied(Unit *Killer)
     {
         m_creature->SetFloatValue(OBJECT_FIELD_SCALE_X, defaultsize);
         m_creature->SetUInt32Value(UNIT_FIELD_DISPLAYID, MODEL_HUMAN);
@@ -154,6 +154,7 @@ struct boss_high_astromancer_solarianAI : public ScriptedAI
 
         if(pInstance)
             pInstance->SetData(DATA_HIGHASTROMANCERSOLARIANEVENT, DONE);
+        GBK_TryRegister(GBK_HIGH_ASTROMANCER_SOLARIAN, Killer->GetCharmerOrOwnerPlayerOrPlayerItself());
     }
 
     void EnterCombat(Unit *who)
@@ -163,6 +164,7 @@ struct boss_high_astromancer_solarianAI : public ScriptedAI
 
         if(pInstance)
             pInstance->SetData(DATA_HIGHASTROMANCERSOLARIANEVENT, IN_PROGRESS);
+        GBK_Start();
     }
 
     void SummonMinion(uint32 entry, float x, float y, float z)

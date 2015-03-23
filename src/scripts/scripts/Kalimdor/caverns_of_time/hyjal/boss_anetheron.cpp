@@ -91,6 +91,7 @@ struct boss_anetheronAI : public hyjal_trashAI
         DoPlaySoundToSet(m_creature, SOUND_ONAGGRO);
         DoYell(SAY_ONAGGRO, LANG_UNIVERSAL, NULL);
         DoCast(m_creature, SPELL_VAMPIRIC_AURA, true);
+        GBK_Start();
     }
 
     void KilledUnit(Unit *victim)
@@ -131,14 +132,15 @@ struct boss_anetheronAI : public hyjal_trashAI
         }
     }
 
-    void JustDied(Unit *victim)
+    void JustDied(Unit *Killer)
     {
-        hyjal_trashAI::JustDied(victim);
+        hyjal_trashAI::JustDied(Killer);
         if(pInstance && IsEvent)
             pInstance->SetData(DATA_ANETHERONEVENT, DONE);
 
         DoPlaySoundToSet(m_creature, SOUND_ONDEATH);
         DoYell(SAY_ONDEATH, LANG_UNIVERSAL, NULL);
+        GBK_TryRegister(GBK_ANETHERON, Killer->GetCharmerOrOwnerPlayerOrPlayerItself());
     }
 
     void UpdateAI(const uint32 diff)

@@ -89,6 +89,7 @@ struct boss_azgalorAI : public hyjal_trashAI
 
         DoPlaySoundToSet(m_creature, SOUND_ONAGGRO);
         DoYell(SAY_ONAGGRO, LANG_UNIVERSAL, NULL);
+        GBK_Start();
     }
 
     void KilledUnit(Unit *victim)
@@ -129,13 +130,14 @@ struct boss_azgalorAI : public hyjal_trashAI
         }
     }
 
-    void JustDied(Unit *victim)
+    void JustDied(Unit *Killer)
     {
-        hyjal_trashAI::JustDied(victim);
+        hyjal_trashAI::JustDied(Killer);
         if(pInstance && IsEvent)
             pInstance->SetData(DATA_AZGALOREVENT, DONE);
 
         DoPlaySoundToSet(m_creature, SOUND_ONDEATH);
+        GBK_TryRegister(GBK_AZGALOR, Killer->GetCharmerOrOwnerPlayerOrPlayerItself());
     }
 
     void UpdateAI(const uint32 diff)

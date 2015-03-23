@@ -2884,6 +2884,8 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 40179:
                     spellInfo->Targets |= TARGET_FLAG_GAMEOBJECT;
                     break;
+                case 30532: // karazhan chess teleport
+                    spellInfo->rangeIndex = 6;
                 }
                 if (spellInfo->SpellIconID == 184 && spellInfo->Attributes == 4259840)
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;

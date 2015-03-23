@@ -148,6 +148,7 @@ struct boss_gurtogg_bloodboilAI : public ScriptedAI
         DoScriptText(SAY_AGGRO, m_creature);
         if(pInstance)
             pInstance->SetData(EVENT_GURTOGGBLOODBOIL, IN_PROGRESS);
+        GBK_Start();
     }
 
     void JustSummoned(Unit *pSummon)
@@ -168,12 +169,13 @@ struct boss_gurtogg_bloodboilAI : public ScriptedAI
         DoScriptText(RAND(SAY_SLAY1, SAY_SLAY2), m_creature);
     }
 
-    void JustDied(Unit *victim)
+    void JustDied(Unit *Killer)
     {
         if(pInstance)
             pInstance->SetData(EVENT_GURTOGGBLOODBOIL, DONE);
 
         DoScriptText(SAY_DEATH, m_creature);
+        GBK_TryRegister(GBK_GURTOG_BLOODBOIL, Killer->GetCharmerOrOwnerPlayerOrPlayerItself());
     }
 
     void CastBloodboil()

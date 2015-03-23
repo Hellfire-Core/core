@@ -117,6 +117,7 @@ struct boss_the_lurker_belowAI : public BossAI
     {
         instance->SetData(DATA_THELURKERBELOWEVENT, IN_PROGRESS);
         me->SetReactState(REACT_AGGRESSIVE);
+        GBK_Start();
     }
 
     void AttackStart(Unit *pWho)
@@ -142,6 +143,7 @@ struct boss_the_lurker_belowAI : public BossAI
         me->AddUnitMovementFlag(MOVEFLAG_SWIMMING); 
         me->SetLevitate(true); // just to be sure
         DoTeleportTo(37.6721f, -417.457f, -21.62f, me->GetOrientation());
+        GBK_TryRegister(GBK_LURKER_BELOW, Killer->GetCharmerOrOwnerPlayerOrPlayerItself());
     }
 
     void SpellHitTarget(Unit *target, const SpellEntry *spell)
