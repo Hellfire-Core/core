@@ -125,9 +125,9 @@ bool SummonList::isEmpty()
 
 
 ScriptedAI::ScriptedAI(Creature* pCreature) :
-CreatureAI(pCreature), m_creature(pCreature), IsFleeing(false), m_bCombatMovement(true), m_uiEvadeCheckCooldown(2500), autocast(false)
+CreatureAI(pCreature), m_creature(pCreature), IsFleeing(false), m_bCombatMovement(true), m_uiEvadeCheckCooldown(2500),
+autocast(false), m_specialThingTimer(0), GBK_timer(0) 
 {
-    m_specialThingTimer = 0;
     HeroicMode = m_creature->GetMap()->IsHeroic();
 }
 
@@ -1097,6 +1097,48 @@ void ScriptedAI::DoSpecialThings(uint32 diff, SpecialThing flags, float range, f
     }
     else
         m_specialThingTimer -= diff;
+}
+
+#define GBK_REQUIRED_AMOUNT (float)0.75
+
+void ScriptedAI::GBK_TryRegister(GBK_Encounters encounter, Player* plr)
+{
+    if (!plr)
+        plr = m_creature->GetLootRecipient();
+    if (!plr)
+        return;
+
+    uint32 guild_id = 0;
+    if (Group* group = plr->GetGroup())
+    {
+        uint32 totalcount = 0;
+        std::map<uint32, uint32> guilds;
+        for (GroupReference* itr = group->GetFirstMember(); itr != NULL; itr++)
+        {
+            if (m_creature->IsPlayerAllowedToLoot(itr->getSource()))
+            {
+                totalcount++;
+                guilds[itr->getSource()->GetGuildId()]++;
+            }
+        }
+        for (std::map<uint32, uint32>::iterator mitr = guilds.begin(); mitr != guilds.end(); mitr++)
+        {
+            if (mitr->second >= GBK_REQUIRED_AMOUNT * totalcount)
+            {
+                guild_id = mitr->first;
+                break;
+            }
+        }
+    }
+    else // what for? xD
+    {
+        guild_id = plr->GetGuildId();
+    }
+
+    if (!guild_id)
+        return;
+    RealmDataDatabase.PExecute("INSERT INTO guild_boss_kills VALUES (%u,%u,%u,%u,SYSDATE())",
+        uint32(encounter),m_creature->GetInstanceId(),guild_id,uint32(time(NULL) - GBK_timer));
 }
 
 BossAI::BossAI(Creature *c, uint32 id) : ScriptedAI(c),

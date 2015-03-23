@@ -2549,6 +2549,11 @@ enum BattleGroundTypeId
 };
 #define MAX_BATTLEGROUND_TYPE_ID 9
 
+enum GBK_Encounters
+{
+    GBK_NONE            = 0,
+    GBK_MAGTHERIDON     = 1,
+};
 
 #define CONTACT_DISTANCE            0.5f
 #define INTERACTION_DISTANCE        5.0f

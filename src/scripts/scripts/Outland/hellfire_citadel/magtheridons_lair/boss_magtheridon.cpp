@@ -187,6 +187,7 @@ struct boss_magtheridonAI : public BossAI
         instance->SetData(DATA_MAGTHERIDON_EVENT, DONE);
 
         DoScriptText(MAGT_SAY_DEATH, me);
+        GBK_TryRegister(GBK_MAGTHERIDON,Killer->GetCharmerOrOwnerPlayerOrPlayerItself());
     }
 
     void MoveInLineOfSight(Unit*) {}
@@ -202,6 +203,7 @@ struct boss_magtheridonAI : public BossAI
         instance->SetData(DATA_MAGTHERIDON_EVENT, IN_PROGRESS);
         DoZoneInCombat();
         DoScriptText(MAGTHERIDON_EMOTE_BEGIN, me, me, true);
+        GBK_Start();
    }
 
     void OnAuraRemove(Aura* aur, bool removeStack)
