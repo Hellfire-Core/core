@@ -1115,6 +1115,8 @@ void ScriptedAI::GBK_TryRegister(GBK_Encounters encounter, Player* plr)
         std::map<uint32, uint32> guilds;
         for (GroupReference* itr = group->GetFirstMember(); itr != NULL; itr++)
         {
+            if (!itr->getSource())
+                continue;
             if (m_creature->IsPlayerAllowedToLoot(itr->getSource()))
             {
                 totalcount++;
