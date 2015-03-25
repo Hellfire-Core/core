@@ -1103,8 +1103,6 @@ void ScriptedAI::DoSpecialThings(uint32 diff, SpecialThing flags, float range, f
 
 void ScriptedAI::GBK_TryRegister(GBK_Encounters encounter, Player* plr)
 {
-    return;
-
     if (!plr)
         plr = m_creature->GetLootRecipient();
     if (!plr)
@@ -1115,14 +1113,15 @@ void ScriptedAI::GBK_TryRegister(GBK_Encounters encounter, Player* plr)
     {
         uint32 totalcount = 0;
         std::map<uint32, uint32> guilds;
-        for (GroupReference* itr = group->GetFirstMember(); itr != NULL; itr++)
+        for (GroupReference* itr = group->GetFirstMember(); itr != NULL; itr = itr->next())
         {
-            if (!itr->getSource())
+            Player* member = itr->getSource();
+            if (!member)
                 continue;
-            if (m_creature->IsPlayerAllowedToLoot(itr->getSource()))
+            if (m_creature->IsPlayerAllowedToLoot(member))
             {
                 totalcount++;
-                guilds[itr->getSource()->GetGuildId()]++;
+                guilds[member->GetGuildId()]++;
             }
         }
         for (std::map<uint32, uint32>::iterator mitr = guilds.begin(); mitr != guilds.end(); mitr++)
