@@ -71,7 +71,7 @@ bool ChatHandler::HandleMuteCommand(const char* args)
     std::string cname = charname;
 
     char *timetonotspeak = strtok(NULL, " ");
-    if (!timetonotspeak)
+    if (!timetonotspeak || !atoi(timetonotspeak))
         return false;
 
     char *mutereason = strtok(NULL, "");
@@ -81,7 +81,7 @@ bool ChatHandler::HandleMuteCommand(const char* args)
     else
         mutereasonstr = mutereason;
 
-    uint32 notspeaktime = (uint32) atoi(timetonotspeak);
+    uint32 notspeaktime = TimeStringToSecs(duration);
 
     if (notspeaktime == 0)
         return false;
