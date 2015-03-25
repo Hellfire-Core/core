@@ -1117,7 +1117,7 @@ void ScriptedAI::GBK_TryRegister(GBK_Encounters encounter, Player* plr)
         {
             if (!itr->getSource())
                 continue;
-            if (m_creature->IsPlayerAllowedToLoot(itr->getSource()))
+            //if (m_creature->IsPlayerAllowedToLoot(itr->getSource()))
             {
                 totalcount++;
                 guilds[itr->getSource()->GetGuildId()]++;
