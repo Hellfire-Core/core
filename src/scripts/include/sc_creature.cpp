@@ -1103,6 +1103,8 @@ void ScriptedAI::DoSpecialThings(uint32 diff, SpecialThing flags, float range, f
 
 void ScriptedAI::GBK_TryRegister(GBK_Encounters encounter, Player* plr)
 {
+    return;
+
     if (!plr)
         plr = m_creature->GetLootRecipient();
     if (!plr)
@@ -1117,7 +1119,7 @@ void ScriptedAI::GBK_TryRegister(GBK_Encounters encounter, Player* plr)
         {
             if (!itr->getSource())
                 continue;
-            //if (m_creature->IsPlayerAllowedToLoot(itr->getSource()))
+            if (m_creature->IsPlayerAllowedToLoot(itr->getSource()))
             {
                 totalcount++;
                 guilds[itr->getSource()->GetGuildId()]++;
