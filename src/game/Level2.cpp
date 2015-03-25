@@ -125,7 +125,7 @@ bool ChatHandler::HandleMuteCommand(const char* args)
         return false;
     }
 
-    time_t mutetime = time(NULL) + notspeaktime*60;
+    time_t mutetime = time(NULL) + notspeaktime;
 
     AccountsDatabase.escape_string(mutereasonstr);
 
