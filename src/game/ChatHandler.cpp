@@ -133,7 +133,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
     if (!HasPermissions(PERM_GMT) && sWorld.GetMassMuteTime() && sWorld.GetMassMuteTime() > time(NULL))
     {
         if (sWorld.GetMassMuteReason())
-            ChatHandler(_player).PSendSysMessage("Mass mute reason: %s", sWorld.GetMassMuteReason());
+            ChatHandler(_player).PSendSysMessage("Server has been muted. Mass mute reason: %s", sWorld.GetMassMuteReason());
 
         return;
     }

@@ -133,7 +133,8 @@ bool ChatHandler::HandleMuteCommand(const char* args)
     {
         chr->GetSession()->m_muteTime = mutetime;
         chr->GetSession()->m_muteReason = mutereasonstr;
-        ChatHandler(chr).PSendSysMessage(LANG_YOUR_CHAT_DISABLED, notspeaktime, mutereasonstr.c_str());
+        std::string smutetime = secsToTimeString(notspeaktime);
+        ChatHandler(chr).PSendSysMessage(LANG_YOUR_CHAT_DISABLED, smutetime, mutereasonstr.c_str());
     }
 
     std::string author;
@@ -147,8 +148,8 @@ bool ChatHandler::HandleMuteCommand(const char* args)
 
     AccountsDatabase.PExecute("INSERT INTO account_punishment VALUES ('%u', '%u', UNIX_TIMESTAMP(), '%lu', '%s', '%s', '1')",
                               account_id, PUNISHMENT_MUTE, uint64(mutetime), author.c_str(), mutereasonstr.c_str());
-
-    SendGlobalGMSysMessage(LANG_GM_DISABLE_CHAT, author.c_str(), cname.c_str(), notspeaktime, mutereasonstr.c_str());
+    std::string smutetime = secsToTimeString(notspeaktime);
+    SendGlobalGMSysMessage(LANG_GM_DISABLE_CHAT, author.c_str(), cname.c_str(), smutetime, mutereasonstr.c_str());
 
     return true;
 }
