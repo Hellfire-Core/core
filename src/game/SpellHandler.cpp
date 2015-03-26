@@ -304,14 +304,15 @@ void WorldSession::HandleGameObjectUseOpcode(WorldPacket & recv_data)
         return;
 
     float dist = obj->GetDistance(plr);
-    if (dist > sWorld.getConfig(CONFIG_GOBJECT_USE_EXPLOIT_RANGE))
+    if (dist > sWorld.getConfig(CONFIG_GOBJECT_USE_EXPLOIT_RANGE) &&
+        obj->GetEntry() != 187056 ) // shatt to isle portal
     {
         sLog.outLog(LOG_EXPLOITS_CHEATS, "CMSG_GAMEOBJ_USE: Player %s (GUID: %u X: %f Y: %f Z: %f Map: %u)"
             " is attempting to use gobject (Entry %u lowGUID %u X: %f Y: %f Z: %f) from too far away (%f yds)",
             plr->GetName(), plr->GetGUIDLow(), plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(),plr->GetMapId(),
             obj->GetEntry(), obj->GetGUIDLow(), obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), dist);
     }
-    if (obj->GetLockId())
+    if (obj->GetGoType() != GAMEOBJECT_TYPE_GOOBER && obj->GetGoType() != GAMEOBJECT_TYPE_DOOR && obj->GetLockId())
     {
         sLog.outLog(LOG_EXPLOITS_CHEATS, "CMSG_GAMEOBJ_USE: Player %s (GUID: %u) is using locked gobject (Entry %u lowGUID %u Type %u)",
             plr->GetName(), plr->GetGUIDLow(), obj->GetEntry(), obj->GetGUIDLow(), obj->GetGoType());
