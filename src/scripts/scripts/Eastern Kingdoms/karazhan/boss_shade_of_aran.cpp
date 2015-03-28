@@ -106,9 +106,9 @@ float shadowOfAranSpawnPoints[2][8] = {
     {-1914.26, -1928.2,  -1933.8,  -1925.05, -1909.7,  -1895.7, -1895.4,  -1899}    // Y coord
 };
 
-struct boss_aranAI : public ScriptedAI
+struct boss_aranAI : public Scripted_NoMovementAI
 {
-    boss_aranAI(Creature *c) : ScriptedAI(c)
+    boss_aranAI(Creature *c) : Scripted_NoMovementAI(c)
     {
         pInstance = (c->GetInstanceData());
         m_creature->GetPosition(wLoc);
