@@ -239,6 +239,17 @@ struct boss_nightbaneAI : public ScriptedAI
 
     void JustSummoned(Creature *summoned)
     {
+        if (summoned->GetPositionZ() < 85.0f)
+        {
+            if (Unit* victim = me->getVictim())
+                summoned->Relocate(victim->GetPositionX(), victim->GetPositionY(), victim->GetPositionZ());
+            else
+            {
+                summoned->DisappearAndDie();
+                return;
+            }
+        }
+
         summoned->AI()->AttackStart(m_creature->getVictim());
     }
 
