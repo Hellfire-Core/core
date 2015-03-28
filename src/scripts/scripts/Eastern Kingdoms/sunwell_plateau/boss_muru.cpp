@@ -846,7 +846,7 @@ struct npc_blackholeAI : public ScriptedAI
                 {
                     if(me->IsWithinDistInMap(victim, 5.0))
                     {
-                        if(Unit* victim = SelectUnit(SELECT_TARGET_NEAREST, 0, 200, true, me->getVictimGUID(), 10.0))
+                        if(Unit* victim = SelectUnit(SELECT_TARGET_NEAREST, 0, 200, true, me->getVictimGUID(), 8.0))
                         {
                             victimGUID = victim->GetGUID();
                             me->GetMotionMaster()->MovePoint(0, victim->GetPositionX(), victim->GetPositionY(), 72.0, false);
