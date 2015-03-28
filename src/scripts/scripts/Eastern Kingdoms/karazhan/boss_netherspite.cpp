@@ -124,6 +124,7 @@ struct boss_netherspiteAI : public ScriptedAI
                 PortalGUID[i] = portal->GetGUID();
                 portal->AddAura(PortalVisual[i], portal);
                 portal->AddAura(42176,portal);
+                portal->SetVisibility(VISIBILITY_ON);
             }
         }
     }
