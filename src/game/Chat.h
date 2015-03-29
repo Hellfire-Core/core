@@ -267,6 +267,9 @@ class ChatHandler
         bool HandleLookupSpellCommand(const char* args);
         bool HandleLookupTeleCommand(const char * args);
 
+        bool HandleModifyAddTitleCommand(const char* args);
+        bool HandleModifyRemoveTitleCommand(const char* args);
+        bool HandleModifyAwardTitleCommand(const char* args);
         bool HandleModifyKnownTitlesCommand(const char* args);
         bool HandleModifyHPCommand(const char* args);
         bool HandleModifyManaCommand(const char* args);

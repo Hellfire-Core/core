@@ -7471,3 +7471,60 @@ bool ChatHandler::HandleServerKickallCommand(const char* args)
     sWorld.KickAllWithoutPermissions(m_session ? PERM_ADM : 0);
     return true;
 }
+
+bool ChatHandler::HandleModifyAddTitleCommand(const char* args)
+{
+    if (!*args)
+        return false;
+
+    uint64 titles = 0;
+
+    sscanf((char*)args, UI64FMTD, &titles);
+
+    Player *chr = getSelectedPlayer();
+    if (!chr)
+    {
+        SendSysMessage(LANG_NO_CHAR_SELECTED);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    titles |= chr->GetUInt64Value(PLAYER__FIELD_KNOWN_TITLES);
+    uint64 existingTitles;
+
+    for (int i = 1; i < sCharTitlesStore.GetNumRows(); ++i)
+        if (CharTitlesEntry const* tEntry = sCharTitlesStore.LookupEntry(i))
+            existingTitles |= (uint64(1) << tEntry->bit_index);
+
+    titles &= existingTitles;
+
+    chr->SetUInt64Value(PLAYER__FIELD_KNOWN_TITLES, titles);
+    SendSysMessage(LANG_DONE);
+
+    return true;
+}
+
+bool ChatHandler::HandleModifyRemoveTitleCommand(const char* args)
+{
+    if (!*args)
+        return false;
+
+    uint64 titles = 0;
+
+    sscanf((char*)args, UI64FMTD, &titles);
+
+    Player *chr = getSelectedPlayer();
+    if (!chr)
+    {
+        SendSysMessage(LANG_NO_CHAR_SELECTED);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    titles = chr->GetUInt64Value(PLAYER__FIELD_KNOWN_TITLES) & ~(titles);
+
+    chr->SetUInt64Value(PLAYER__FIELD_KNOWN_TITLES, titles);
+    SendSysMessage(LANG_DONE);
+
+    return true;
+}

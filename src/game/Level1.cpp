@@ -1297,13 +1297,13 @@ bool ChatHandler::HandleModifyKnownTitlesCommand(const char* args)
         return false;
     }
 
-    uint64 titles2 = titles;
+    uint64 existingTitles;
 
-    for (int i=1; i < sCharTitlesStore.GetNumRows(); ++i)
+    for (int i = 1; i < sCharTitlesStore.GetNumRows(); ++i)
         if (CharTitlesEntry const* tEntry = sCharTitlesStore.LookupEntry(i))
-            titles2 &= ~(uint64(1) << tEntry->bit_index);
+            existingTitles |= (uint64(1) << tEntry->bit_index);
 
-    titles &= ~titles2;                                     // remove not existed titles
+    titles &= existingTitles;
 
     chr->SetUInt64Value(PLAYER__FIELD_KNOWN_TITLES, titles);
     SendSysMessage(LANG_DONE);
@@ -3076,5 +3076,46 @@ bool ChatHandler::HandleNpcStandState(const char* args)
 
     target->SetStandState(state);
 
+    return true;
+}
+
+void AwardTitleCallback(QueryResultAutoPtr result, uint32 gamemaster)
+{
+    Player* gm = sObjectAccessor.GetPlayer(gamemaster);
+    if (!gm)
+        return;
+
+    if (!result)
+    {
+        ChatHandler(gm).SendSysMessage("Cannot find player in titles_to_award");
+        return;
+    }
+    Field* fields = result->Fetch();
+    Player* target = sObjectAccessor.GetPlayer(fields[0].GetUInt32());
+    if (!target)
+    {
+        ChatHandler(gm).SendSysMessage("WTF, player not found, just went offline?");
+        return;
+    }
+    
+    uint64 titles = target->GetUInt64Value(PLAYER__FIELD_KNOWN_TITLES);
+    titles |= fields[1].GetUInt64();
+    target->SetUInt64Value(PLAYER__FIELD_KNOWN_TITLES, titles);
+    ChatHandler(gm).SendSysMessage("Player awarded");
+}
+
+bool ChatHandler::HandleModifyAwardTitleCommand(const char* args)
+{
+    Player *chr = getSelectedPlayer();
+    if (!chr)
+    {
+        SendSysMessage(LANG_NO_CHAR_SELECTED);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    RealmDataDatabase.AsyncPQuery(&AwardTitleCallback, m_session->GetPlayer()->GetGUIDLow(),
+        "SELECT guid, mask FROM titles_to_award WHERE guid = %u",chr->GetGUIDLow());
+    SendSysMessage("Command accepted");
     return true;
 }

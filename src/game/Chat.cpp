@@ -168,8 +168,10 @@ ChatCommand * ChatHandler::getCommandTable()
 
     static ChatCommand modifyCommandTable[] =
     {
+        { "addtitle",       PERM_ADM,       PERM_CONSOLE, false,  &ChatHandler::HandleModifyAddTitleCommand,      "", NULL },
         { "arena",          PERM_ADM,       PERM_CONSOLE, false,  &ChatHandler::HandleModifyArenaCommand,         "", NULL },
         { "aspeed",         PERM_GMT,       PERM_CONSOLE, false,  &ChatHandler::HandleModifyASpeedCommand,        "", NULL },
+        { "awardtitle",     PERM_GMT,       PERM_CONSOLE, false,  &ChatHandler::HandleModifyAwardTitleCommand,    "", NULL },
         { "bit",            PERM_GMT,       PERM_CONSOLE, false,  &ChatHandler::HandleModifyBitCommand,           "", NULL },
         { "bwalk",          PERM_GMT,       PERM_CONSOLE, false,  &ChatHandler::HandleModifyBWalkCommand,         "", NULL },
         { "drunk",          PERM_GMT,       PERM_CONSOLE, false,  &ChatHandler::HandleModifyDrunkCommand,         "", NULL },
@@ -184,6 +186,7 @@ ChatCommand * ChatHandler::getCommandTable()
         { "morph",          PERM_GMT,       PERM_CONSOLE, false,  &ChatHandler::HandleModifyMorphCommand,         "", NULL },
         { "mount",          PERM_GMT,       PERM_CONSOLE, false,  &ChatHandler::HandleModifyMountCommand,         "", NULL },
         { "rage",           PERM_GMT,       PERM_CONSOLE, false,  &ChatHandler::HandleModifyRageCommand,          "", NULL },
+        { "removetitle",    PERM_ADM,       PERM_CONSOLE, false,  &ChatHandler::HandleModifyRemoveTitleCommand,   "", NULL },
         { "rep",            PERM_ADM,       PERM_CONSOLE, false,  &ChatHandler::HandleModifyRepCommand,           "", NULL },
         { "scale",          PERM_GMT,       PERM_CONSOLE, false,  &ChatHandler::HandleModifyScaleCommand,         "", NULL },
         { "speed",          PERM_GMT,       PERM_CONSOLE, false,  &ChatHandler::HandleModifySpeedCommand,         "", NULL },
