@@ -974,7 +974,8 @@ void WorldSession::HandleGuildBankDeposit(WorldPacket & recv_data)
 
     // log
     pGuild->LogBankEvent(GUILD_BANK_LOG_DEPOSIT_MONEY, uint8(0), GetPlayer()->GetGUIDLow(), money);
-
+    sLog.outLog(LOG_TRADE, "Player %s (Account: %u) deposited %u money in guild bank (Guild %u)",
+        _player->GetName(),GetAccountId(),money, GuildId);
     pGuild->DisplayGuildBankTabsInfo(this);
     pGuild->DisplayGuildBankContent(this, 0);
     pGuild->DisplayGuildBankMoneyUpdate();
@@ -1029,6 +1030,8 @@ void WorldSession::HandleGuildBankWithdraw(WorldPacket & recv_data)
 
     // Log
     pGuild->LogBankEvent(GUILD_BANK_LOG_WITHDRAW_MONEY, uint8(0), GetPlayer()->GetGUIDLow(), money);
+    sLog.outLog(LOG_TRADE, "Player %s (Account: %u) withdraw %u money from guild bank (Guild %u)",
+        _player->GetName(), GetAccountId(), money, GuildId);
 
     pGuild->SendMoneyInfo(this, GetPlayer()->GetGUIDLow());
     pGuild->DisplayGuildBankTabsInfo(this);
