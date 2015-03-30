@@ -24,14 +24,13 @@
 #include "SocialMgr.h"
 
 Channel::Channel(const std::string& name, uint32 channel_id)
-: m_announce(true), m_moderate(false), m_name(name), m_flags(0), m_channelId(channel_id), m_ownerGUID(0)
+: m_announce(false), m_moderate(false), m_name(name), m_flags(0), m_ownerGUID(0)
 {
     // set special flags if built-in channel
     ChatChannelsEntry const* ch = GetChannelEntryFor(channel_id);
     if (ch)                                                  // it's built-in channel
     {
-        channel_id = ch->ChannelID;                         // built-in channel
-        m_announce = false;                                 // no join/leave announces
+        m_channelId = ch->ChannelID;                         // built-in channel
 
         m_flags |= CHANNEL_FLAG_GENERAL;                    // for all built-in channels
 
@@ -49,7 +48,7 @@ Channel::Channel(const std::string& name, uint32 channel_id)
     else                                                    // it's custom channel
     {
         m_flags |= CHANNEL_FLAG_CUSTOM;
-        m_announce = false;
+        m_channelId = 0;
     }
 }
 
