@@ -233,11 +233,12 @@ struct mob_shadowy_constructAI : public ScriptedAI
         if(ChangeTarget < diff)
         {
             DoZoneInCombat();
-            if(Creature* pTeron = pInstance->GetCreature(pInstance->GetData64(DATA_TERONGOREFIEND)))
-            {
-                if(Unit* pTarget = ((ScriptedAI*)pTeron->AI())->SelectUnit(SELECT_TARGET_RANDOM, 1, 100, true))
-                    AttackStart(pTarget);
-            }
+            if (pInstance)
+                if (Creature* pTeron = pInstance->GetCreature(pInstance->GetData64(DATA_TERONGOREFIEND)))
+                {
+                    if (Unit* pTarget = ((ScriptedAI*)pTeron->AI())->SelectUnit(SELECT_TARGET_RANDOM, 1, 100, true))
+                        AttackStart(pTarget);
+                }
 
             if(!UpdateVictim())
             {
@@ -265,10 +266,12 @@ struct mob_shadowy_constructAI : public ScriptedAI
 
         if(CheckTeronTimer < diff)
         {
-            Creature *pTeron = pInstance->GetCreature(pInstance->GetData64(DATA_TERONGOREFIEND));
-            if(!pTeron || !pTeron->isInCombat())
-                 m_creature->Kill(m_creature, false);
-
+            if (pInstance)
+            {
+                Creature *pTeron = pInstance->GetCreature(pInstance->GetData64(DATA_TERONGOREFIEND));
+                if (!pTeron || !pTeron->isInCombat())
+                    m_creature->Kill(m_creature, false);
+            }
             CheckTeronTimer = 2000;
         }
         else
