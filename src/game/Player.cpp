@@ -18729,7 +18729,7 @@ bool Player::CanReportAfkDueToLimit()
 void Player::ReportedAfkBy(Player* reporter)
 {
     BattleGround *bg = GetBattleGround();
-    if (!bg || bg != reporter->GetBattleGround() || GetTeam() != reporter->GetTeam())
+    if (!bg || bg != reporter->GetBattleGround() || GetTeam() != reporter->GetTeam() || bg->GetStartTime() == 0)
         return;
 
     // check if player has 'Idle' or 'Inactive' debuff
