@@ -112,7 +112,7 @@ bool Database::Initialize(const char * infoString, int nConns /*= 1*/)
             m_logsDir.append("/");
     }
 
-    m_pingIntervalms = (uint32)sConfig.GetIntDefault("MaxPingTime", 30) * IN_MILISECONDS;
+    m_pingIntervalms = (uint32)sConfig.GetIntDefault("MaxPingTime", 60) * IN_MILISECONDS;
     m_minLogTimems = (uint32)sConfig.GetIntDefault("DBDiffLog.LogTime", 10);
 
     //create DB connections
