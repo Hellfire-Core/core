@@ -1410,9 +1410,9 @@ struct npc_warmaul_pyreAI : public ScriptedAI
                 ++Num;
                 continue;
             }
-            Unit* Saboteur = m_creature->GetUnit(*itr);
-            if (Saboteur->isAlive() && Saboteur->IsWithinDistInMap(me, 25.0f))
-                return Saboteur->ToCreature();
+            if (Unit* Saboteur = m_creature->GetUnit(*itr))
+                if (Saboteur->isAlive() && Saboteur->IsWithinDistInMap(me, 25.0f))
+                    return Saboteur->ToCreature();
         }
 
         return NULL;
