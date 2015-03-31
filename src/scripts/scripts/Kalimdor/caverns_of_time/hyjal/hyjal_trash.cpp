@@ -627,7 +627,7 @@ struct mob_abominationAI : public hyjal_trashAI
                 }
             }
         }
-        if(!m_creature->HasAura(SPELL_DISEASE_CLOUD,0))
+        if(!m_creature->HasAura(SPELL_DISEASE_CLOUD, 0))
             DoCast(m_creature,SPELL_DISEASE_CLOUD);
 
         if (!UpdateVictim())
@@ -635,7 +635,7 @@ struct mob_abominationAI : public hyjal_trashAI
 
         if(KnockDownTimer<diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_KNOCKDOWN);
+            DoCast(m_creature->getVictim(), SPELL_KNOCKDOWN);
             KnockDownTimer = 15000+rand()%10000;
         }
         else
