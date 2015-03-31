@@ -103,7 +103,7 @@ struct npc_medivh_bmAI : public ScriptedAI
         Intro = false;
         Delay = false;
 
-        if (pInstance->GetData(TYPE_MEDIVH) == IN_PROGRESS)
+        if (pInstance && (pInstance->GetData(TYPE_MEDIVH) == IN_PROGRESS))
             m_creature->CastSpell(m_creature,SPELL_CHANNEL, true);
         else if (m_creature->HasAura(SPELL_CHANNEL,0))
             m_creature->RemoveAura(SPELL_CHANNEL,0);
