@@ -15075,7 +15075,7 @@ bool Player::LoadFromDB(uint32 guid, SqlQueryHolder *holder)
         }
     }
     
-    if (GetSession()->HasPermissions(PERM_GMT_HDEV)
+    if (GetSession()->HasPermissions(PERM_GMT_HDEV))
     {
         switch (sWorld.getConfig(CONFIG_GM_WISPERING_TO))
         {
