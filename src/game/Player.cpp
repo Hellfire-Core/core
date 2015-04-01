@@ -15061,19 +15061,22 @@ bool Player::LoadFromDB(uint32 guid, SqlQueryHolder *holder)
     outDebugValues();
 
     // GM state
-    if (GetSession()->HasPermissions(PERM_GMT_HDEV))
+    if (GetSession()->HasPermissions(PERM_GMT_DEV))
     {
         switch (sWorld.getConfig(CONFIG_GM_LOGIN_STATE))
         {
-            default:
-            case 0:                      break;             // disable
-            case 1: SetGameMaster(true); break;             // enable
-            case 2:                                         // save state
-                if (extraflags & PLAYER_EXTRA_GM_ON)
-                    SetGameMaster(true);
-                break;
+        default:
+        case 0:                      break;             // disable
+        case 1: SetGameMaster(true); break;             // enable
+        case 2:                                         // save state
+            if (extraflags & PLAYER_EXTRA_GM_ON)
+                SetGameMaster(true);
+            break;
         }
-        
+    }
+    
+    if (GetSession()->HasPermissions(PERM_GMT_HDEV)
+    {
         switch (sWorld.getConfig(CONFIG_GM_WISPERING_TO))
         {
             default:
