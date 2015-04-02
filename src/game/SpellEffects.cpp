@@ -2804,8 +2804,8 @@ void Spell::EffectTriggerMissileSpell(uint32 effect_idx)
 
     SpellCastTargets targets;
 
-    if (!spellInfo->IsDestTargetEffect(effect_idx))
-//    if (triggered_spell_id == 44008)     // Static Disruption needs direct targeting
+    if (!spellInfo->IsDestTargetEffect(effect_idx) ||
+        triggered_spell_id == 44008)     // Static Disruption needs direct targeting
         targets.setUnitTarget(unitTarget);
     else
         targets.setDestination(m_targets.m_destX,m_targets.m_destY,m_targets.m_destZ);
@@ -6353,6 +6353,8 @@ void Spell::EffectScriptEffect(uint32 effIndex)
     }
     if (!unitTarget->isAlive())
     {
+        if (GetSpellEntry()->Id == 20271) // player casted judgement, don't even log as this is caused by delays
+            return;
         sLog.outLog(LOG_DEFAULT, "ERROR: Spell %u in EffectScriptEffect has dead target", GetSpellEntry()->Id);
         return;
     }

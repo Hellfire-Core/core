@@ -1182,7 +1182,8 @@ void WorldSession::HandleInspectHonorStatsOpcode(WorldPacket& recv_data)
 
     if (!player)
     {
-        sLog.outLog(LOG_DEFAULT, "ERROR: InspectHonorStats: WTF, player %lu not found...",guid);
+        //sLog.outLog(LOG_DEFAULT, "ERROR: InspectHonorStats: WTF, player %lu not found...",guid);
+        // no reason to log, this is caused by inspecting 'ghosts' of players that recently logged off
         return;
     }
 
