@@ -7113,6 +7113,10 @@ void Spell::EffectSummonObject(uint32 i)
     pGameObj->SetRespawnTime(duration > 0 ? duration/1000 : 0);
     pGameObj->SetSpellId(GetSpellEntry()->Id);
     m_caster->AddGameObject(pGameObj);
+    if (pGameObj->GetGoType() == GAMEOBJECT_TYPE_TRAP)
+    {
+        pGameObj->Update(0, 0); // set arming time
+    }
 
     map->Add(pGameObj);
     WorldPacket data(SMSG_GAMEOBJECT_SPAWN_ANIM_OBSOLETE, 8);
