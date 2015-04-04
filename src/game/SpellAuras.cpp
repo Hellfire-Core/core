@@ -402,6 +402,9 @@ m_periodicTimer(0), m_amplitude(0), m_PeriodicEventId(0), m_AuraDRGroup(DIMINISH
 
     Player* modOwner = caster ? caster->GetSpellModOwner() : NULL;
 
+    if (!m_permanent && modOwner)
+        modOwner->ApplySpellMod(GetId(), SPELLMOD_DURATION, m_maxduration);
+
     m_duration = m_maxduration;
 
     // ZLA flaga, ZLA! Poki co w odstawke

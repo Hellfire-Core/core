@@ -10234,11 +10234,6 @@ int32 Unit::CalculateSpellDuration(SpellEntry const* spellProto, uint8 effect_in
 
     if (duration > 0)
     {
-        unitPlayer = GetSpellModOwner();
-        if (unitPlayer && this != target)
-        {
-            unitPlayer->ApplySpellMod(spellProto->Id, SPELLMOD_DURATION, duration);
-        }
         // Duration of crowd control abilities on pvp target is limited by 10 sec. First do this then apply mods
         Player* targetPlayer = target->GetCharmerOrOwnerOrSelf()->ToPlayer();
         unitPlayer = GetCharmerOrOwnerOrSelf()->ToPlayer();
