@@ -250,7 +250,6 @@ struct boss_lady_vashjAI : public ScriptedAI
         DoScriptText(SAY_DEATH, me);
 
         instance->SetData(DATA_LADYVASHJEVENT, DONE);
-        GBK_TryRegister(GBK_LADY_VASHJ, Killer->GetCharmerOrOwnerPlayerOrPlayerItself());
     }
 
     void StartEvent()
@@ -261,7 +260,6 @@ struct boss_lady_vashjAI : public ScriptedAI
         Phase = 1;
 
         instance->SetData(DATA_LADYVASHJEVENT, IN_PROGRESS);
-        GBK_Start();
     }
 
     void EnterCombat(Unit *who)

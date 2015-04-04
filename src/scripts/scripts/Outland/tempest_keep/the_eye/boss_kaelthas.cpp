@@ -531,7 +531,6 @@ struct boss_kaelthasAI : public ScriptedAI
     {
         if (pInstance && !pInstance->GetData(DATA_KAELTHASEVENT) && !Phase)
         {
-            GBK_Start();
             StartEvent();
         }
     }
@@ -581,7 +580,6 @@ struct boss_kaelthasAI : public ScriptedAI
                 pCreature->setDeathState(JUST_DIED);
             }
         }
-        GBK_TryRegister(GBK_KAELTHAS_SUNSTRIDER, Killer->GetCharmerOrOwnerPlayerOrPlayerItself());
     }
 
     uint32 Intro_next(uint32 Step)  //animation sequence when starting phase 5

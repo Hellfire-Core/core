@@ -349,7 +349,6 @@ struct boss_teron_gorefiendAI : public ScriptedAI
 
         if(pInstance)
             pInstance->SetData(EVENT_TERONGOREFIEND, IN_PROGRESS);
-        GBK_Start();
     }
 
     void MoveInLineOfSight(Unit *who)
@@ -393,7 +392,6 @@ struct boss_teron_gorefiendAI : public ScriptedAI
             i->getSource()->RemoveAurasDueToSpell(SPELL_SHADOW_OF_DEATH);
 
         DoScriptText(SAY_DEATH, m_creature);
-        GBK_TryRegister(GBK_TERON_GOREFIEND, Killer->GetCharmerOrOwnerPlayerOrPlayerItself());
     }
 
     void DamageTaken(Unit* done_by, uint32 &damage)

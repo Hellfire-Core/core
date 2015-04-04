@@ -86,7 +86,6 @@ struct boss_void_reaverAI : public ScriptedAI
         DoScriptText(SAY_DEATH, m_creature);
 
         pInstance->SetData(DATA_VOIDREAVEREVENT, DONE);
-        GBK_TryRegister(GBK_VOID_REAVER, Killer->GetCharmerOrOwnerPlayerOrPlayerItself());
     }
 
     void EnterCombat(Unit *who)
@@ -95,7 +94,6 @@ struct boss_void_reaverAI : public ScriptedAI
         DoZoneInCombat();
 
         pInstance->SetData(DATA_VOIDREAVEREVENT, IN_PROGRESS);
-        GBK_Start();
     }
 
     void SpellHitTarget(Unit *target, SpellEntry *spell)

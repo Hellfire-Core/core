@@ -121,14 +121,12 @@ struct boss_morogrim_tidewalkerAI : public ScriptedAI
     {
         DoScriptText(SAY_DEATH, m_creature);
         pInstance->SetData(DATA_MOROGRIMTIDEWALKEREVENT, DONE);
-        GBK_TryRegister(GBK_MOROGRIM_TIDEWALKER, Killer->GetCharmerOrOwnerPlayerOrPlayerItself());
     }
 
     void EnterCombat(Unit *who)
     {
         DoScriptText(SAY_AGGRO, m_creature);
         pInstance->SetData(DATA_MOROGRIMTIDEWALKEREVENT, IN_PROGRESS);
-        GBK_Start();
     }
 
     void UpdateAI(const uint32 diff)

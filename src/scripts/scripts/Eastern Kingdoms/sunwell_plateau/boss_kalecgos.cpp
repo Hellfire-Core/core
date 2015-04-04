@@ -191,7 +191,6 @@ struct boss_kalecgosAI : public ScriptedAI
 
         instance->SetData(DATA_KALECGOS_EVENT, IN_PROGRESS);
         instance->SetData(DATA_KALECGOS_PHASE, PHASE_COMBAT);
-        GBK_Start();
     }
 
     void EnterEvadeMode()
@@ -423,7 +422,6 @@ struct boss_kalecgosAI : public ScriptedAI
                     TalkTimer = 1;
                     TalkSequence = 0;
                     isFriendly = true;
-                    GBK_TryRegister(GBK_KALECGOS, NULL);
                     return;
                 }
                 CheckTimer = 1000;

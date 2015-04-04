@@ -200,7 +200,6 @@ struct boss_shahrazAI : public ScriptedAI
         pInstance->SetData(EVENT_MOTHERSHAHRAZ, IN_PROGRESS);
 
         DoZoneInCombat();
-        GBK_Start();
     }
 
     void KilledUnit(Unit *victim)
@@ -213,7 +212,6 @@ struct boss_shahrazAI : public ScriptedAI
         pInstance->SetData(EVENT_MOTHERSHAHRAZ, DONE);
 
         DoScriptText(SAY_DEATH, me);
-        GBK_TryRegister(GBK_MOTHER_SHARAZ, Killer->GetCharmerOrOwnerPlayerOrPlayerItself());
     }
 
     void UpdateAI(const uint32 diff)

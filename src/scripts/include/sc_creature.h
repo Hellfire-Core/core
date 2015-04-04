@@ -407,11 +407,6 @@ struct ScriptedAI : public CreatureAI
     bool m_bCombatMovement;
     bool HeroicMode;
     uint32 m_uiEvadeCheckCooldown;
-
-    // guild boss kills
-    void GBK_Start() { GBK_timer = time(NULL); };
-    void GBK_TryRegister(GBK_Encounters encounter,Player* plr);
-    time_t GBK_timer;
 };
 
 struct Scripted_NoMovementAI : public ScriptedAI

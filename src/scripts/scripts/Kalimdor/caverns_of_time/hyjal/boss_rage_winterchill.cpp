@@ -90,7 +90,6 @@ struct boss_rage_winterchillAI : public hyjal_trashAI
 
         DoPlaySoundToSet(m_creature, SOUND_ONAGGRO);
         DoYell(SAY_ONAGGRO, LANG_UNIVERSAL, NULL);
-        GBK_Start();
     }
 
     void KilledUnit(Unit *victim)
@@ -135,7 +134,6 @@ struct boss_rage_winterchillAI : public hyjal_trashAI
 
         DoPlaySoundToSet(m_creature, SOUND_ONDEATH);
         DoYell(SAY_ONDEATH, LANG_UNIVERSAL, NULL);
-        GBK_TryRegister(GBK_RAGE_WINTERCHILL, Killer->GetCharmerOrOwnerPlayerOrPlayerItself());
     }
 
     void UpdateAI(const uint32 diff)

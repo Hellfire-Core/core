@@ -111,7 +111,6 @@ struct boss_gruulAI : public ScriptedAI
     {
         DoScriptText(SAY_DEATH, me);
         pInstance->SetData(DATA_GRUULEVENT, DONE);
-        GBK_TryRegister(GBK_GRUUL, Killer->GetCharmerOrOwnerPlayerOrPlayerItself());
     }
 
     void EnterCombat(Unit *who)
@@ -119,7 +118,6 @@ struct boss_gruulAI : public ScriptedAI
         DoScriptText(SAY_AGGRO, me);
         DoZoneInCombat();
         pInstance->SetData(DATA_GRUULEVENT, IN_PROGRESS);
-        GBK_Start();
     }
 
     void KilledUnit()

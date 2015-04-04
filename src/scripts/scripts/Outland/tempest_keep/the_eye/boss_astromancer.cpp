@@ -154,7 +154,6 @@ struct boss_high_astromancer_solarianAI : public ScriptedAI
 
         if(pInstance)
             pInstance->SetData(DATA_HIGHASTROMANCERSOLARIANEVENT, DONE);
-        GBK_TryRegister(GBK_HIGH_ASTROMANCER_SOLARIAN, Killer->GetCharmerOrOwnerPlayerOrPlayerItself());
     }
 
     void EnterCombat(Unit *who)
@@ -164,7 +163,6 @@ struct boss_high_astromancer_solarianAI : public ScriptedAI
 
         if(pInstance)
             pInstance->SetData(DATA_HIGHASTROMANCERSOLARIANEVENT, IN_PROGRESS);
-        GBK_Start();
     }
 
     void SummonMinion(uint32 entry, float x, float y, float z)

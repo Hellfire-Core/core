@@ -168,7 +168,6 @@ struct boss_hydross_the_unstableAI : public ScriptedAI
 
         if (pInstance)
             pInstance->SetData(DATA_HYDROSSTHEUNSTABLEEVENT, IN_PROGRESS);
-        GBK_Start();
     }
 
     void KilledUnit(Unit *victim)
@@ -210,7 +209,6 @@ struct boss_hydross_the_unstableAI : public ScriptedAI
         if (pInstance)
             pInstance->SetData(DATA_HYDROSSTHEUNSTABLEEVENT, DONE);
         Summons.DespawnAll();
-        GBK_TryRegister(GBK_HYDROSS_THE_UNSTABLE, Killer->GetCharmerOrOwnerPlayerOrPlayerItself());
     }
 
     void UpdateAI(const uint32 diff)

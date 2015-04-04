@@ -222,7 +222,6 @@ struct boss_reliquary_of_soulsAI : public Scripted_NoMovementAI
                 Counter = 0;
                 Timer = 0;
                 DelayTimer = 15000;
-                GBK_Start();
             }
         }
 
@@ -255,7 +254,6 @@ struct boss_reliquary_of_soulsAI : public Scripted_NoMovementAI
     {
         if(pInstance)
             pInstance->SetData(EVENT_RELIQUARYOFSOULS, DONE);
-        GBK_TryRegister(GBK_REQUILARY_OF_SOULS, Killer->GetCharmerOrOwnerPlayerOrPlayerItself());
     }
 
     bool FindPlayers()

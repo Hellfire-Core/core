@@ -1145,7 +1145,6 @@ struct npc_akamaAI : public Scripted_NoMovementAI
         m_talkTimer = 3000;
         if (instance)
             instance->SetData(EVENT_SHADEOFAKAMA, DONE);
-        GBK_TryRegister(GBK_SHADE_OF_AKAMA, Killer->GetCharmerOrOwnerPlayerOrPlayerItself());
     }
 
     ScriptedInstance* instance;
@@ -1197,7 +1196,6 @@ struct npc_akamaAI : public Scripted_NoMovementAI
         me->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
         me->RemoveAurasDueToSpell(SPELL_STEALTH);
         me->GetMotionMaster()->MovePoint(0, AKAMA_X, AKAMA_Y, AKAMA_Z);
-        GBK_Start();
     }
 
     void MovementInform(uint32 type, uint32 id)

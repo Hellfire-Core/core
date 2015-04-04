@@ -1099,51 +1099,6 @@ void ScriptedAI::DoSpecialThings(uint32 diff, SpecialThing flags, float range, f
         m_specialThingTimer -= diff;
 }
 
-#define GBK_REQUIRED_AMOUNT (float)0.75
-
-void ScriptedAI::GBK_TryRegister(GBK_Encounters encounter, Player* plr)
-{
-    if (!plr)
-        plr = m_creature->GetLootRecipient();
-    if (!plr)
-        return;
-
-    uint32 guild_id = 0;
-    if (Group* group = plr->GetGroup())
-    {
-        uint32 totalcount = 0;
-        std::map<uint32, uint32> guilds;
-        for (GroupReference* itr = group->GetFirstMember(); itr != NULL; itr = itr->next())
-        {
-            Player* member = itr->getSource();
-            if (!member)
-                continue;
-            if (m_creature->IsPlayerAllowedToLoot(member))
-            {
-                totalcount++;
-                guilds[member->GetGuildId()]++;
-            }
-        }
-        for (std::map<uint32, uint32>::iterator mitr = guilds.begin(); mitr != guilds.end(); mitr++)
-        {
-            if (mitr->second >= GBK_REQUIRED_AMOUNT * totalcount)
-            {
-                guild_id = mitr->first;
-                break;
-            }
-        }
-    }
-    else // what for? xD
-    {
-        guild_id = plr->GetGuildId();
-    }
-
-    if (!guild_id)
-        return;
-    RealmDataDatabase.PExecute("INSERT INTO boss_fights VALUES (NULL,%u,%u,%u,%u,SYSDATE())",
-        uint32(encounter),m_creature->GetInstanceId(),guild_id,uint32(time(NULL) - GBK_timer));
-}
-
 BossAI::BossAI(Creature *c, uint32 id) : ScriptedAI(c),
     bossId(id), summons(me), instance(c->GetInstanceData())
 {

@@ -219,7 +219,6 @@ struct boss_fathomlord_karathressAI : public ScriptedAI
 
         pInstance->SetData64(DATA_KARATHRESSEVENT_STARTER, who->GetGUID());
         pInstance->SetData(DATA_KARATHRESSEVENT, IN_PROGRESS);
-        GBK_Start();
     }
 
     void KilledUnit(Unit *victim)
@@ -236,7 +235,6 @@ struct boss_fathomlord_karathressAI : public ScriptedAI
 
         //support for quest 10944
         m_creature->SummonCreature(SEER_OLUM, OLUM_X, OLUM_Y, OLUM_Z, OLUM_O, TEMPSUMMON_TIMED_DESPAWN, 3600000);
-        GBK_TryRegister(GBK_FATHOMLORD_KARATHRESS, killer->GetCharmerOrOwnerPlayerOrPlayerItself());
     }
 
     void EnterCombat(Unit *who)

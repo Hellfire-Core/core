@@ -96,7 +96,6 @@ struct boss_high_king_maulgarAI : public BossAI
     {
         DoScriptText(SAY_DEATH, me);
         instance->SetData(DATA_MAULGAREVENT, DONE);
-        GBK_TryRegister(GBK_HIGH_KING_MAULGAR, Killer->GetCharmerOrOwnerPlayerOrPlayerItself());
     }
 
     void EnterCombat(Unit *who)
@@ -106,7 +105,6 @@ struct boss_high_king_maulgarAI : public BossAI
         instance->SetData(DATA_MAULGAREVENT, IN_PROGRESS);
 
         DoZoneInCombat();
-        GBK_Start();
     }
 
     void DoAction(const int32 param)
