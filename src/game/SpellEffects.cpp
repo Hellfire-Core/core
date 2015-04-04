@@ -60,6 +60,7 @@
 #include "GridNotifiers.h"
 #include "GridNotifiersImpl.h"
 #include "PathFinder.h"
+#include "InstanceData.h"
 
 #include <sstream>
 
