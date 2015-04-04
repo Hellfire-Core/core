@@ -109,6 +109,10 @@ class HELLGROUND_IMPORT_EXPORT InstanceData : public ZoneScript
         //Called when a player deaths in the instance.
         virtual void OnPlayerDeath(Player *) {}
 
+        //Called when player deals damage/heals someone. Mainly for pve logs.
+        virtual void OnPlayerDealDamage(Player*, uint32) {};
+        virtual void OnPlayerHealDamage(Player*, uint32) {};
+
         //Called on creature death (after CreatureAI::JustDied)
         virtual void OnCreatureDeath(Creature *) {}
 
@@ -153,6 +157,42 @@ class HELLGROUND_IMPORT_EXPORT InstanceData : public ZoneScript
 
         virtual void OnObjectCreate(GameObject *) {}
         virtual void OnCreatureCreate(Creature *, uint32 entry) {}
+};
+
+class GBK_handler
+{
+    struct GBKStats
+    {
+        GBKStats() : healing(0), damage(0), deaths(0) {};
+        uint32 healing;
+        uint32 damage;
+        uint8 deaths;
+    };
+public:
+    GBK_handler(Map* map) : m_timer(0), m_encounter(GBK_NONE), m_map(map) {};
+
+    void StopCombat(bool win);
+    void StartCombat(GBK_Encounters encounter);
+    void HealingDone(uint32 guid, uint32 amount)
+    {
+        if (m_encounter != GBK_NONE)
+            stats[guid].healing += amount;
+    };
+    void DamageDone(uint32 guid, uint32 amount)
+    {
+        if (m_encounter != GBK_NONE)
+            stats[guid].damage += amount;
+    };
+    void PlayerDied(uint32 guid)
+    {
+        if (m_encounter != GBK_NONE)
+            stats[guid].deaths++;
+    };
+private:
+    GBK_Encounters m_encounter;
+    time_t m_timer;
+    std::map<uint32, GBKStats> stats;
+    Map* m_map;
 };
 
 #endif

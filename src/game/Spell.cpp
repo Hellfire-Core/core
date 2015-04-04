@@ -51,6 +51,7 @@
 #include "TemporarySummon.h"
 #include "PetAI.h"
 #include "MovementGenerator.h"
+#include "InstanceData.h"
 
 #define SPELL_CHANNEL_UPDATE_INTERVAL 1000
 
@@ -986,8 +987,13 @@ void Spell::DoAllEffectOnTarget(TargetInfo *target)
         unitTarget->getHostileRefManager().threatAssist(caster, threat, GetSpellEntry());
 
         if (caster->GetTypeId() == TYPEID_PLAYER)
+        {
             if (BattleGround *bg = ((Player*)caster)->GetBattleGround())
                 bg->UpdatePlayerScore(((Player*)caster), SCORE_HEALING_DONE, gain);
+            
+            if (caster->GetMap() && caster->GetMap()->IsDungeon() && ((InstanceMap*)caster->GetMap())->GetInstanceData())
+                ((InstanceMap*)caster->GetMap())->GetInstanceData()->OnPlayerHealDamage(caster->ToPlayer(),gain);
+        }
     }
     // Do damage and triggers
     else if (m_damage > 0)

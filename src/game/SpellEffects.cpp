@@ -3403,9 +3403,14 @@ void Spell::EffectHealPct(uint32 /*i*/)
         int32 gain = unitTarget->ModifyHealth(int32(addhealth));
         unitTarget->getHostileRefManager().threatAssist(m_caster, float(gain) * 0.5f, GetSpellEntry());
 
-        if (caster->GetTypeId()==TYPEID_PLAYER)
+        if (caster->GetTypeId() == TYPEID_PLAYER)
+        {
             if (BattleGround *bg = ((Player*)caster)->GetBattleGround())
                 bg->UpdatePlayerScore(((Player*)caster), SCORE_HEALING_DONE, gain);
+
+            if (caster->GetMap() && caster->GetMap()->IsDungeon() && ((InstanceMap*)caster->GetMap())->GetInstanceData())
+                ((InstanceMap*)caster->GetMap())->GetInstanceData()->OnPlayerHealDamage(caster->ToPlayer(), gain);
+        }
     }
 }
 

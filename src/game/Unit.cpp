@@ -1121,6 +1121,12 @@ uint32 Unit::DealDamage(DamageLog *damageInfo, DamageEffectType damagetype, cons
                 he->DuelComplete(DUEL_WON);
             }
         }
+
+        if (GetTypeId() == TYPEID_PLAYER && GetMap() && GetMap()->IsDungeon())
+        {
+            if (InstanceData* idata = ((InstanceMap*)GetMap())->GetInstanceData())
+                idata->OnPlayerDealDamage(ToPlayer(), damageInfo->damage);
+        }
     }
 
     // send damage to client here - after modifications
