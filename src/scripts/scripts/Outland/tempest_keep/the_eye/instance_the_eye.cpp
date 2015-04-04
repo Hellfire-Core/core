@@ -251,7 +251,9 @@ struct instance_the_eye : public ScriptedInstance
         }
         else if (data == DONE)
         {
-            m_gbk.StopCombat(true);
+            if (type == DATA_ALAREVENT || type == DATA_HIGHASTROMANCERSOLARIANEVENT ||
+                type == DATA_VOIDREAVEREVENT || type == DATA_KAELTHASEVENT)
+                m_gbk.StopCombat(true);
             SaveToDB();
         }
     }
@@ -307,6 +309,11 @@ struct instance_the_eye : public ScriptedInstance
     void OnPlayerHealDamage(Player* plr, uint32 amount)
     {
         m_gbk.HealingDone(plr->GetGUIDLow(), amount);
+    }
+
+    void OnPlayerDeath(Player* plr)
+    {
+        m_gbk.PlayerDied(plr->GetGUIDLow());
     }
 };
 

@@ -58,7 +58,7 @@ uint32 GauntletNPC[6] =
 
 struct instance_sunwell_plateau : public ScriptedInstance
 {
-    instance_sunwell_plateau(Map *map) : ScriptedInstance(map) {Initialize();};
+    instance_sunwell_plateau(Map *map) : ScriptedInstance(map), m_gbk(map) {Initialize();};
 
     uint32 Encounters[ENCOUNTERS];
 
@@ -94,8 +94,8 @@ struct instance_sunwell_plateau : public ScriptedInstance
 
     uint32 KJCounter;
     uint32 KJTesting;
-
     uint32 EredarTwinsAliveInfo[2];
+    GBK_handler m_gbk;
 
     void Initialize()
     {
@@ -574,6 +574,29 @@ struct instance_sunwell_plateau : public ScriptedInstance
                 break;*/
         }
 
+        if (data == NOT_STARTED)
+        {
+            m_gbk.StopCombat(false);
+        }
+        else if (data == IN_PROGRESS)
+        {
+            switch (id)
+            {
+            case DATA_KALECGOS_EVENT:       m_gbk.StartCombat(GBK_KALECGOS); break;
+            case DATA_BRUTALLUS_EVENT:      m_gbk.StartCombat(GBK_BRUTALLUS); break;
+            case DATA_FELMYST_EVENT:        m_gbk.StartCombat(GBK_FELMYST); break;
+            case DATA_EREDAR_TWINS_EVENT:   m_gbk.StartCombat(GBK_HOT_EREDAR_CHICKS); break;
+            case DATA_MURU_EVENT:           m_gbk.StartCombat(GBK_MURU); break;
+            case DATA_KILJAEDEN_EVENT:      m_gbk.StartCombat(GBK_KILJAEDEN); break;
+            }
+        }
+        else if (data == DONE)
+        {
+            if (id == DATA_KALECGOS_EVENT || id == DATA_BRUTALLUS_EVENT || id == DATA_FELMYST_EVENT ||
+                id == DATA_EREDAR_TWINS_EVENT || id == DATA_MURU_EVENT || id == DATA_KILJAEDEN_EVENT)
+                m_gbk.StopCombat(true);
+        }
+
         if(data == DONE || data == FAIL)
             SaveToDB();
 
@@ -624,6 +647,21 @@ struct instance_sunwell_plateau : public ScriptedInstance
             if(Encounters[i] == IN_PROGRESS)                // Do not load an encounter as "In Progress" - reset it instead.
                 Encounters[i] = NOT_STARTED;
         OUT_LOAD_INST_DATA_COMPLETE;
+    }
+
+    void OnPlayerDealDamage(Player* plr, uint32 amount)
+    {
+        m_gbk.DamageDone(plr->GetGUIDLow(), amount);
+    }
+
+    void OnPlayerHealDamage(Player* plr, uint32 amount)
+    {
+        m_gbk.HealingDone(plr->GetGUIDLow(), amount);
+    }
+
+    void OnPlayerDeath(Player* plr)
+    {
+        m_gbk.PlayerDied(plr->GetGUIDLow());
     }
 };
 

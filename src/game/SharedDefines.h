@@ -2582,8 +2582,9 @@ enum GBK_Encounters
     GBK_KALECGOS                = 28,
     GBK_BRUTALLUS               = 29,
     GBK_FELMYST                 = 30,
-    GBK_HOT_DRAENEI_CHICKS      = 31,
-    GBK_MURU                    = 32
+    GBK_HOT_EREDAR_CHICKS       = 31,
+    GBK_MURU                    = 32,
+    GBK_KILJAEDEN               = 33
 };
 
 #define CONTACT_DISTANCE            0.5f

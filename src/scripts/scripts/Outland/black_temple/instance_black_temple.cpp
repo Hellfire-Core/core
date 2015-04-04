@@ -44,7 +44,7 @@ EndScriptData */
 
 struct instance_black_temple : public ScriptedInstance
 {
-    instance_black_temple(Map *map) : ScriptedInstance(map) {Initialize();};
+    instance_black_temple(Map *map) : ScriptedInstance(map), m_gbk(map) {Initialize();};
 
     uint64 m_najentusGUID;
     uint64 m_akamaillidanGUID;    // This is the Akama that starts the Illidan encounter.
@@ -77,7 +77,7 @@ struct instance_black_temple : public ScriptedInstance
     uint32 EnslavedSoulsCount;
 
     uint32 Encounters[ENCOUNTERS];
-
+    GBK_handler m_gbk;
     std::map<uint64, uint32> sodList;
     std::vector<uint64> weaponmasterList;
     std::list<uint64> SoulFragmentsList;
@@ -533,8 +533,33 @@ struct instance_black_temple : public ScriptedInstance
             break;
         }
 
+        if (data == NOT_STARTED)
+        {
+            m_gbk.StopCombat(false);
+        }
+        else if (data == IN_PROGRESS)
+        {
+            switch (type)
+            {
+            case EVENT_HIGHWARLORDNAJENTUS: m_gbk.StartCombat(GBK_HIGH_WARLORD_NAJENTUS); break;
+            case EVENT_SUPREMUS:            m_gbk.StartCombat(GBK_SUPREMUS); break;
+            case EVENT_SHADEOFAKAMA:        m_gbk.StartCombat(GBK_SHADE_OF_AKAMA); break;
+            case EVENT_TERONGOREFIEND:      m_gbk.StartCombat(GBK_TERON_GOREFIEND); break;
+            case EVENT_GURTOGGBLOODBOIL:    m_gbk.StartCombat(GBK_GURTOG_BLOODBOIL); break;
+            case EVENT_RELIQUARYOFSOULS:    m_gbk.StartCombat(GBK_REQUILARY_OF_SOULS); break;
+            case EVENT_MOTHERSHAHRAZ:       m_gbk.StartCombat(GBK_MOTHER_SHARAZ); break;
+            case EVENT_ILLIDARICOUNCIL:     m_gbk.StartCombat(GBK_ILLIDARI_COUNCIL); break;
+            case EVENT_ILLIDANSTORMRAGE:    m_gbk.StartCombat(GBK_ILLIDAN_STORMRAGE); break;
+            }
+        }
         if (data == DONE)
+        {
+            if (type == EVENT_HIGHWARLORDNAJENTUS || type == EVENT_SUPREMUS || type == EVENT_SHADEOFAKAMA ||
+                type == EVENT_TERONGOREFIEND || type == EVENT_GURTOGGBLOODBOIL || type == EVENT_RELIQUARYOFSOULS ||
+                type == EVENT_MOTHERSHAHRAZ || type == EVENT_ILLIDARICOUNCIL || type == EVENT_ILLIDANSTORMRAGE)
+                m_gbk.StopCombat(true);
             SaveToDB();
+        }
     }
 
 
@@ -644,6 +669,21 @@ struct instance_black_temple : public ScriptedInstance
         }
 
         OUT_LOAD_INST_DATA_COMPLETE;
+    }
+
+    void OnPlayerDealDamage(Player* plr, uint32 amount)
+    {
+        m_gbk.DamageDone(plr->GetGUIDLow(), amount);
+    }
+
+    void OnPlayerHealDamage(Player* plr, uint32 amount)
+    {
+        m_gbk.HealingDone(plr->GetGUIDLow(), amount);
+    }
+
+    void OnPlayerDeath(Player* plr)
+    {
+        m_gbk.PlayerDied(plr->GetGUIDLow());
     }
 };
 

@@ -40,7 +40,7 @@ EndScriptData */
 
 struct instance_mount_hyjal : public ScriptedInstance
 {
-    instance_mount_hyjal(Map *map) : ScriptedInstance(map) {Initialize();};
+    instance_mount_hyjal(Map *map) : ScriptedInstance(map), m_gbk(map) {Initialize();};
 
     uint64 RageWinterchill;
     uint64 Anetheron;
@@ -59,8 +59,8 @@ struct instance_mount_hyjal : public ScriptedInstance
     uint32 hordeRetreat;
     uint32 allianceRetreat;
     bool ArchiYell;
-
     uint32 RaidDamage;
+    GBK_handler m_gbk;
 
     void Initialize()
     {
@@ -121,6 +121,8 @@ struct instance_mount_hyjal : public ScriptedInstance
                     break;
             }
         }
+
+        m_gbk.PlayerDied(pVictim->GetGUIDLow());
     }
 
     void OnObjectCreate(GameObject *go)
@@ -284,10 +286,30 @@ struct instance_mount_hyjal : public ScriptedInstance
                 break;
         }
 
-         debug_log("TSCR: Instance Hyjal: Instance data updated for event %u (Data=%u)",type,data);
+        debug_log("TSCR: Instance Hyjal: Instance data updated for event %u (Data=%u)",type,data);
 
-        if(data == DONE)
+        if (data == NOT_STARTED)
+        {
+            m_gbk.StopCombat(false);
+        }
+        else if (data == IN_PROGRESS)
+        {
+            switch (type)
+            {
+            case DATA_RAGEWINTERCHILLEVENT: m_gbk.StartCombat(GBK_RAGE_WINTERCHILL); break;
+            case DATA_ANETHERONEVENT:      m_gbk.StartCombat(GBK_ANETHERON); break;
+            case DATA_KAZROGALEVENT:       m_gbk.StartCombat(GBK_KAZROGAL); break;
+            case DATA_AZGALOREVENT:        m_gbk.StartCombat(GBK_AZGALOR); break;
+            case DATA_ARCHIMONDEEVENT:     m_gbk.StartCombat(GBK_ARCHIMONDE); break;
+            }
+        }
+        else if (data == DONE)
+        {
             SaveToDB();
+            if (type == DATA_RAGEWINTERCHILLEVENT || type == DATA_ANETHERONEVENT || type == DATA_KAZROGALEVENT ||
+                type == DATA_AZGALOREVENT || type == DATA_ARCHIMONDEEVENT)
+                m_gbk.StopCombat(true);
+        }
     }
 
     uint32 GetData(uint32 type)
@@ -357,6 +379,16 @@ struct instance_mount_hyjal : public ScriptedInstance
             if(Encounters[i] == IN_PROGRESS)                // Do not load an encounter as IN_PROGRESS - reset it instead.
                 Encounters[i] = NOT_STARTED;
         OUT_LOAD_INST_DATA_COMPLETE;
+    }
+
+    void OnPlayerDealDamage(Player* plr, uint32 amount)
+    {
+        m_gbk.DamageDone(plr->GetGUIDLow(), amount);
+    }
+
+    void OnPlayerHealDamage(Player* plr, uint32 amount)
+    {
+        m_gbk.HealingDone(plr->GetGUIDLow(), amount);
     }
 };
 

@@ -289,10 +289,13 @@ void GBK_handler::StopCombat(bool win)
 
         if (guild_id)
         {
+            RealmDataDatabase.DirectPExecute("INSERT INTO boss_fights VALUES (NULL,%u,%u,%u,%u,SYSDATE())",
+                uint32(m_encounter), m_map->GetInstanceId(), guild_id, uint32(time(NULL) - m_timer));
+            QueryResultAutoPtr result = RealmDataDatabase.PQuery(
+                "SELECT kill_id FROM boss_fights WHERE instance_id = %u AND encounter_id = %u",
+                m_map->GetInstanceId(), uint32(m_encounter));
+            uint32 kill_id = result->Fetch()[0].GetUInt32();
             RealmDataDatabase.BeginTransaction();
-            uint32 kill_id = (m_map->GetInstanceId()) * 100 + uint32(m_encounter);
-            RealmDataDatabase.PExecute("INSERT INTO boss_fights VALUES (%u,%u,%u,%u,%u,SYSDATE())",
-                kill_id, uint32(m_encounter), m_map->GetInstanceId(), guild_id, uint32(time(NULL) - m_timer));
             for (Map::PlayerList::const_iterator i = list.begin(); i != list.end(); ++i)
             {
                 if (Player* plr = i->getSource())

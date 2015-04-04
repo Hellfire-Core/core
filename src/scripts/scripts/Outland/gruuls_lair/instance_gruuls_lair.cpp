@@ -187,7 +187,8 @@ struct instance_gruuls_lair : public ScriptedInstance
         }
         else if (data == DONE)
         {
-            m_gbk.StopCombat(true);
+            if (type == DATA_MAULGAREVENT || type == DATA_GRUULEVENT)
+                m_gbk.StopCombat(true);
             SaveToDB();
         }
     }
@@ -242,6 +243,10 @@ struct instance_gruuls_lair : public ScriptedInstance
         m_gbk.HealingDone(plr->GetGUIDLow(), amount);
     }
 
+    void OnPlayerDeath(Player* plr)
+    {
+        m_gbk.PlayerDied(plr->GetGUIDLow());
+    }
 };
 
 InstanceData* GetInstanceData_instance_gruuls_lair(Map* map)

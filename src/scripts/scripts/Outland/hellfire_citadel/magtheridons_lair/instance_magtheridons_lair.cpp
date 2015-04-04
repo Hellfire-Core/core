@@ -272,6 +272,11 @@ struct instance_magtheridons_lair : public ScriptedInstance
     {
         m_gbk.HealingDone(plr->GetGUIDLow(), amount);
     }
+
+    void OnPlayerDeath(Player* plr)
+    {
+        m_gbk.PlayerDied(plr->GetGUIDLow());
+    }
 };
 
 InstanceData* GetInstanceData_instance_magtheridons_lair(Map* map)

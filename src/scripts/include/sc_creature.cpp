@@ -126,7 +126,7 @@ bool SummonList::isEmpty()
 
 ScriptedAI::ScriptedAI(Creature* pCreature) :
 CreatureAI(pCreature), m_creature(pCreature), IsFleeing(false), m_bCombatMovement(true), m_uiEvadeCheckCooldown(2500),
-autocast(false), m_specialThingTimer(0), GBK_timer(0) 
+autocast(false), m_specialThingTimer(0)
 {
     HeroicMode = m_creature->GetMap()->IsHeroic();
 }

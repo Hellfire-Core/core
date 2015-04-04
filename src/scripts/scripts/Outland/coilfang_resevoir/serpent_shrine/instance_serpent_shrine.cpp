@@ -341,7 +341,10 @@ struct instance_serpentshrine_cavern : public ScriptedInstance
         else if (data == DONE)
         {
             SaveToDB();
-            m_gbk.StopCombat(true);
+            if (type == DATA_HYDROSSTHEUNSTABLEEVENT || type == DATA_LEOTHERASTHEBLINDEVENT ||
+                type == DATA_THELURKERBELOWEVENT || type == DATA_KARATHRESSEVENT ||
+                type == DATA_MOROGRIMTIDEWALKEREVENT || type == DATA_LADYVASHJEVENT)
+                m_gbk.StopCombat(true);
         }
     }
 
@@ -522,6 +525,11 @@ struct instance_serpentshrine_cavern : public ScriptedInstance
     void OnPlayerHealDamage(Player* plr, uint32 amount)
     {
         m_gbk.HealingDone(plr->GetGUIDLow(), amount);
+    }
+
+    void OnPlayerDeath(Player* plr)
+    {
+        m_gbk.PlayerDied(plr->GetGUIDLow());
     }
 };
 
