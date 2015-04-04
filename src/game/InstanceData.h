@@ -228,8 +228,17 @@ public:
                 RealmDataDatabase.DirectPExecute("INSERT INTO boss_fights VALUES (NULL,%u,%u,%u,%u,SYSDATE())",
                     uint32(m_encounter), m_map->GetInstanceId(), guild_id, uint32(time(NULL) - m_timer));
                 QueryResultAutoPtr result = RealmDataDatabase.PQuery(
-                    "SELECT kill_id FROM boss_fights WHERE instance_id = %u AND encounter_id = %u",
+                    "SELECT kill_id, MAX('date') FROM boss_fights WHERE instance_id = %u AND mob_id = %u",
                     m_map->GetInstanceId(), uint32(m_encounter));
+                if (!result)
+                {
+                    sLog.outLog(LOG_DEFAULT,"GBK_handler: StopCombat - problem getting kill id, guild %u Map %u InstanceId %u",
+                        guild_id,m_map->GetId(),m_map->GetInstanceId());
+                    m_encounter = GBK_NONE;
+                    m_timer = 0;
+                    stats.clear();
+                    return;
+                }
                 uint32 kill_id = result->Fetch()[0].GetUInt32();
                 RealmDataDatabase.BeginTransaction();
                 for (Map::PlayerList::const_iterator i = list.begin(); i != list.end(); ++i)
