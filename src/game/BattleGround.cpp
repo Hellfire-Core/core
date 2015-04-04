@@ -210,6 +210,30 @@ void BattleGround::Update(uint32 diff)
                     }
 
                     plr->CastSpell(plr, SPELL_RESURRECTION_VISUAL, true);   // Resurrection visual
+
+                    if (plr->GetLastPetNumber() && plr->isAlive())
+                    {
+                        Pet* NewPet = new Pet();
+
+                        if (!NewPet->LoadPetFromDB(plr, 0, plr->GetLastPetNumber(), true))
+                            delete NewPet;
+                        //restore pet's Health and Mana
+                        else if (plr->getClass() == CLASS_HUNTER)
+                        {
+                            NewPet->SetHealth(NewPet->GetMaxHealth());
+                            //NewPet->SetPower(POWER_MANA,NewPet->GetMaxPower(POWER_MANA));
+                            NewPet->SetPower(POWER_HAPPINESS, NewPet->GetMaxPower(POWER_HAPPINESS));
+                        }
+                        else if (plr->getClass() == CLASS_WARLOCK)
+                        {
+                            NewPet->SetHealth(NewPet->GetMaxHealth());
+                            NewPet->SetPower(POWER_MANA, NewPet->GetMaxPower(POWER_MANA));
+
+                            if (NewPet->GetEntry() == 11859 || NewPet->GetEntry() == 89)
+                                NewPet->SetEntry(416);
+                        }
+
+                    }
                     m_ResurrectQueue.push_back(*itr2);
                 }
                 (itr->second).clear();
