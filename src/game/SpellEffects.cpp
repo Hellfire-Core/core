@@ -369,15 +369,13 @@ void Spell::SpellDamageSchoolDmg(uint32 effect_idx)
                 if (spellInfo->AttributesCu & SPELL_ATTR_CU_SHARE_DAMAGE)
                 {
                     uint32 count = 0;
-                    for (std::list<TargetInfo>::iterator ihit = m_UniqueTargetInfo.begin(); ihit != m_UniqueTargetInfo.end();)
+                    for (std::list<TargetInfo>::iterator ihit = m_UniqueTargetInfo.begin(); ihit != m_UniqueTargetInfo.end(); ++ihit)
                     {
                         if (ihit->deleted)
                             continue;
 
                         if (ihit->effectMask & (1<<effect_idx))
                             ++count;
-
-                        ++ihit;
                     }
 
                     damage /= count;                    // divide to all targets
