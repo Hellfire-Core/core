@@ -31,7 +31,7 @@ EndScriptData */
 
 struct instance_magtheridons_lair : public ScriptedInstance
 {
-    instance_magtheridons_lair(Map *Map) : ScriptedInstance(Map)
+    instance_magtheridons_lair(Map *Map) : ScriptedInstance(Map), m_gbk(Map)
     {
         Initialize();
     }
@@ -45,6 +45,7 @@ struct instance_magtheridons_lair : public ScriptedInstance
 
     uint32 CageTimer;
     uint32 RespawnTimer;
+    GBK_handler m_gbk;
 
     void Initialize()
     {
@@ -147,10 +148,15 @@ struct instance_magtheridons_lair : public ScriptedInstance
                     case IN_PROGRESS:
                         CageTimer = 120000;
                         HandleGameObject(DoorGUID, false);
+                        m_gbk.StartCombat(GBK_MAGTHERIDON);
                         break;
                     case NOT_STARTED:
                         RespawnTimer = 10000;
+                        m_gbk.StopCombat(false);
+                        HandleGameObject(DoorGUID, true);
+                        break;
                     default:
+                        m_gbk.StopCombat(true);
                         HandleGameObject(DoorGUID, true);
                         break;
                 }
@@ -255,6 +261,16 @@ struct instance_magtheridons_lair : public ScriptedInstance
             if(Encounters[i] == IN_PROGRESS)                // Do not load an encounter as "In Progress" - reset it instead.
                 Encounters[i] = NOT_STARTED;
         OUT_LOAD_INST_DATA_COMPLETE;
+    }
+
+    void OnPlayerDealDamage(Player* plr, uint32 amount)
+    {
+        m_gbk.DamageDone(plr->GetGUIDLow(), amount);
+    }
+
+    void OnPlayerHealDamage(Player* plr, uint32 amount)
+    {
+        m_gbk.HealingDone(plr->GetGUIDLow(), amount);
     }
 };
 

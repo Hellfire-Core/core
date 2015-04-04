@@ -57,7 +57,7 @@ bool GOUse_go_bridge_console(Player *player, GameObject* go)
 
 struct instance_serpentshrine_cavern : public ScriptedInstance
 {
-    instance_serpentshrine_cavern(Map *map) : ScriptedInstance(map) {Initialize();};
+    instance_serpentshrine_cavern(Map *map) : ScriptedInstance(map),m_gbk(map) {Initialize();};
 
     uint64 LurkerBelow;
     uint64 Sharkkis;
@@ -85,6 +85,7 @@ struct instance_serpentshrine_cavern : public ScriptedInstance
     bool ShieldGeneratorDeactivated[4];
     uint32 Encounters[ENCOUNTERS];
     bool DoSpawnFrenzy;
+    GBK_handler m_gbk;
 
     void Initialize()
     {
@@ -321,8 +322,27 @@ struct instance_serpentshrine_cavern : public ScriptedInstance
             case DATA_SHIELDGENERATOR4:ShieldGeneratorDeactivated[3] = (data) ? true : false;   break;
         }
 
-        if (data == DONE)
+        if (data == NOT_STARTED)
+        {
+            m_gbk.StopCombat(false);
+        }
+        else if (data == IN_PROGRESS)
+        {
+            switch (type)
+            {
+            case DATA_HYDROSSTHEUNSTABLEEVENT:  m_gbk.StartCombat(GBK_HYDROSS_THE_UNSTABLE); break;
+            case DATA_LEOTHERASTHEBLINDEVENT:   m_gbk.StartCombat(GBK_LEOTHERAS_THE_BLIND); break;
+            case DATA_THELURKERBELOWEVENT:      m_gbk.StartCombat(GBK_LURKER_BELOW); break;
+            case DATA_KARATHRESSEVENT:          m_gbk.StartCombat(GBK_FATHOMLORD_KARATHRESS); break;
+            case DATA_MOROGRIMTIDEWALKEREVENT:  m_gbk.StartCombat(GBK_MOROGRIM_TIDEWALKER); break;
+            case DATA_LADYVASHJEVENT:           m_gbk.StartCombat(GBK_LADY_VASHJ); break;
+            }
+        }
+        else if (data == DONE)
+        {
             SaveToDB();
+            m_gbk.StopCombat(true);
+        }
     }
 
     uint32 GetData(uint32 type)
@@ -492,6 +512,16 @@ struct instance_serpentshrine_cavern : public ScriptedInstance
         }
         else
             FrenzySpawnTimer -= diff;
+    }
+
+    void OnPlayerDealDamage(Player* plr, uint32 amount)
+    {
+        m_gbk.DamageDone(plr->GetGUIDLow(), amount);
+    }
+
+    void OnPlayerHealDamage(Player* plr, uint32 amount)
+    {
+        m_gbk.HealingDone(plr->GetGUIDLow(), amount);
     }
 };
 

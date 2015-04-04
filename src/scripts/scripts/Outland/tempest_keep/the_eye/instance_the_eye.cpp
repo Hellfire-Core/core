@@ -38,7 +38,7 @@ EndScriptData */
 
 struct instance_the_eye : public ScriptedInstance
 {
-    instance_the_eye(Map *map) : ScriptedInstance(map) {Initialize();};
+    instance_the_eye(Map *map) : ScriptedInstance(map), m_gbk(map) {Initialize();};
 
     uint64 ThaladredTheDarkener;
     uint64 LordSanguinar;
@@ -53,6 +53,7 @@ struct instance_the_eye : public ScriptedInstance
     std::list<uint64> VoidTrash;
 
     uint32 Encounters[ENCOUNTERS];
+    GBK_handler m_gbk;
 
     void Initialize()
     {
@@ -234,8 +235,25 @@ struct instance_the_eye : public ScriptedInstance
                 }
         }
 
-        if(data == DONE)
+        if (data == NOT_STARTED)
+        {
+            m_gbk.StopCombat(false);
+        }
+        else if (data == IN_PROGRESS)
+        {
+            switch (type)
+            {
+            case DATA_ALAREVENT:                    m_gbk.StartCombat(GBK_ALAR); break;
+            case DATA_HIGHASTROMANCERSOLARIANEVENT: m_gbk.StartCombat(GBK_HIGH_ASTROMANCER_SOLARIAN); break;
+            case DATA_VOIDREAVEREVENT:              m_gbk.StartCombat(GBK_VOID_REAVER); break;
+            case DATA_KAELTHASEVENT:                m_gbk.StartCombat(GBK_KAELTHAS_SUNSTRIDER); break;
+            }
+        }
+        else if (data == DONE)
+        {
+            m_gbk.StopCombat(true);
             SaveToDB();
+        }
     }
 
     uint32 GetData(uint32 type)
@@ -279,6 +297,16 @@ struct instance_the_eye : public ScriptedInstance
             if(Encounters[i] == IN_PROGRESS)                // Do not load an encounter as "In Progress" - reset it instead.
                 Encounters[i] = NOT_STARTED;
         OUT_LOAD_INST_DATA_COMPLETE;
+    }
+
+    void OnPlayerDealDamage(Player* plr, uint32 amount)
+    {
+        m_gbk.DamageDone(plr->GetGUIDLow(), amount);
+    }
+
+    void OnPlayerHealDamage(Player* plr, uint32 amount)
+    {
+        m_gbk.HealingDone(plr->GetGUIDLow(), amount);
     }
 };
 

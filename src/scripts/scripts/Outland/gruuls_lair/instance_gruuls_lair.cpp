@@ -36,7 +36,7 @@ EndScriptData */
 
 struct instance_gruuls_lair : public ScriptedInstance
 {
-    instance_gruuls_lair(Map *map) : ScriptedInstance(map) {Initialize();};
+    instance_gruuls_lair(Map *map) : ScriptedInstance(map), m_gbk(map) {Initialize();};
 
     uint32 Encounters[ENCOUNTERS];
 
@@ -49,6 +49,7 @@ struct instance_gruuls_lair : public ScriptedInstance
 
     uint64 MaulgarDoor;
     uint64 GruulDoor;
+    GBK_handler m_gbk;
 
     void Initialize()
     {
@@ -158,15 +159,20 @@ struct instance_gruuls_lair : public ScriptedInstance
         switch(type)
         {
             case DATA_MAULGAREVENT:
-                if(data == DONE)
+                if (data == DONE)
                     HandleGameObject(MaulgarDoor, true);
+                else if (data == IN_PROGRESS)
+                    m_gbk.StartCombat(GBK_HIGH_KING_MAULGAR);
 
                 if(Encounters[0] != DONE)
                     Encounters[0] = data;
                 break;
             case DATA_GRUULEVENT:
-                if(data == IN_PROGRESS)
+                if (data == IN_PROGRESS)
+                {
                     HandleGameObject(GruulDoor, false);
+                    m_gbk.StartCombat(GBK_GRUUL);
+                }
                 else
                     HandleGameObject(GruulDoor, true);
 
@@ -175,8 +181,15 @@ struct instance_gruuls_lair : public ScriptedInstance
                 break;
         }
 
-        if(data == DONE)
+        if (data == NOT_STARTED)
+        {
+            m_gbk.StopCombat(false);
+        }
+        else if (data == DONE)
+        {
+            m_gbk.StopCombat(true);
             SaveToDB();
+        }
     }
 
     uint32 GetData(uint32 type)
@@ -218,6 +231,17 @@ struct instance_gruuls_lair : public ScriptedInstance
                 Encounters[i] = NOT_STARTED;
         OUT_LOAD_INST_DATA_COMPLETE;
     }
+
+    void OnPlayerDealDamage(Player* plr, uint32 amount)
+    {
+        m_gbk.DamageDone(plr->GetGUIDLow(), amount);
+    }
+
+    void OnPlayerHealDamage(Player* plr, uint32 amount)
+    {
+        m_gbk.HealingDone(plr->GetGUIDLow(), amount);
+    }
+
 };
 
 InstanceData* GetInstanceData_instance_gruuls_lair(Map* map)
