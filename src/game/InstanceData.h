@@ -249,7 +249,7 @@ public:
                         {
                             RealmDataDatabase.PExecute("INSERT INTO boss_fights_detailed VALUES (%u,%u,%u,%u,%u)",
                                 kill_id, plr->GetGUIDLow(), stats[plr->GetGUIDLow()].damage,
-                                stats[plr->GetGUIDLow()].healing, stats[plr->GetGUIDLow()].damage);
+                                stats[plr->GetGUIDLow()].healing, stats[plr->GetGUIDLow()].deaths);
                         }
                     }
                 }
