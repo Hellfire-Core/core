@@ -189,7 +189,7 @@ public:
             stats[guid].deaths++;
     };
 
-    void GBK_handler::StopCombat(bool win)
+    void StopCombat(bool win)
     {
         if (m_encounter == GBK_NONE)
         {
@@ -262,7 +262,7 @@ public:
         stats.clear();
     }
 
-    void GBK_handler::StartCombat(GBK_Encounters encounter)
+    void StartCombat(GBK_Encounters encounter)
     {
         if (m_encounter != GBK_NONE)
         {
