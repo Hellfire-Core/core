@@ -193,8 +193,8 @@ public:
     {
         if (m_encounter == GBK_NONE)
         {
-            sLog.outLog(LOG_DEFAULT, "GBK_handler: StopCombat(%u) while not in combat. Map %u InstanceId %u",
-                win, m_map->GetId(), m_map->GetInstanceId());
+            //sLog.outLog(LOG_DEFAULT, "GBK_handler: StopCombat(%u) while not in combat. Map %u InstanceId %u",
+            //    win, m_map->GetId(), m_map->GetInstanceId());
             m_timer = 0;
             stats.clear();
             return;
