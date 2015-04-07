@@ -26,7 +26,7 @@
 #include "ZoneScript.h"
 //#include "GameObject.h"
 #include "Map.h"
-
+#include "Player.h"
 
 class Map;
 class Unit;
