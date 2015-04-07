@@ -398,6 +398,20 @@ struct instance_sunwell_plateau : public ScriptedInstance
 
         return 0;
     }
+    
+    GBK_Encounters EncounterForGBK(uint32 enc)
+    {
+        switch (enc)
+        {
+        case DATA_KALECGOS_EVENT:           return GBK_KALECGOS;
+        case DATA_BRUTALLUS_EVENT:          return GBK_BRUTALLUS;
+        case DATA_FELMYST_EVENT:            return GBK_FELMYST;
+        case DATA_EREDAR_TWINS_EVENT:       return GBK_HOT_EREDAR_CHICKS;
+        case DATA_MURU_EVENT:               return GBK_MURU;
+        case DATA_KILJAEDEN_EVENT:          return GBK_KILJAEDEN;
+        }
+        return GBK_NONE;
+    }
 
     void SetData(uint32 id, uint32 data)
     {
@@ -574,27 +588,15 @@ struct instance_sunwell_plateau : public ScriptedInstance
                 break;*/
         }
 
-        if (data == NOT_STARTED)
+        GBK_Encounters gbkEnc = EncounterForGBK(id);
+        if (gbkEnc != GBK_NONE)
         {
-            m_gbk.StopCombat(false);
-        }
-        else if (data == IN_PROGRESS)
-        {
-            switch (id)
-            {
-            case DATA_KALECGOS_EVENT:       m_gbk.StartCombat(GBK_KALECGOS); break;
-            case DATA_BRUTALLUS_EVENT:      m_gbk.StartCombat(GBK_BRUTALLUS); break;
-            case DATA_FELMYST_EVENT:        m_gbk.StartCombat(GBK_FELMYST); break;
-            case DATA_EREDAR_TWINS_EVENT:   m_gbk.StartCombat(GBK_HOT_EREDAR_CHICKS); break;
-            case DATA_MURU_EVENT:           m_gbk.StartCombat(GBK_MURU); break;
-            case DATA_KILJAEDEN_EVENT:      m_gbk.StartCombat(GBK_KILJAEDEN); break;
-            }
-        }
-        else if (data == DONE)
-        {
-            if (id == DATA_KALECGOS_EVENT || id == DATA_BRUTALLUS_EVENT || id == DATA_FELMYST_EVENT ||
-                id == DATA_EREDAR_TWINS_EVENT || id == DATA_MURU_EVENT || id == DATA_KILJAEDEN_EVENT)
-                m_gbk.StopCombat(true);
+            if (data == DONE)
+                m_gbk.StopCombat(gbkEnc, true);
+            else if (data == NOT_STARTED)
+                m_gbk.StopCombat(gbkEnc, false);
+            else if (data == IN_PROGRESS)
+                m_gbk.StartCombat(gbkEnc);
         }
 
         if(data == DONE || data == FAIL)

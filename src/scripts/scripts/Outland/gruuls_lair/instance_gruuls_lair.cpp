@@ -160,9 +160,14 @@ struct instance_gruuls_lair : public ScriptedInstance
         {
             case DATA_MAULGAREVENT:
                 if (data == DONE)
+                {
                     HandleGameObject(MaulgarDoor, true);
+                    m_gbk.StopCombat(GBK_HIGH_KING_MAULGAR, true);
+                }
                 else if (data == IN_PROGRESS)
                     m_gbk.StartCombat(GBK_HIGH_KING_MAULGAR);
+                else if (data == NOT_STARTED)
+                    m_gbk.StopCombat(GBK_HIGH_KING_MAULGAR, false);
 
                 if(Encounters[0] != DONE)
                     Encounters[0] = data;
@@ -173,24 +178,23 @@ struct instance_gruuls_lair : public ScriptedInstance
                     HandleGameObject(GruulDoor, false);
                     m_gbk.StartCombat(GBK_GRUUL);
                 }
-                else
+                else if (data == DONE)
+                {
                     HandleGameObject(GruulDoor, true);
-
+                    m_gbk.StopCombat(GBK_GRUUL, true);
+                }
+                else if (data == NOT_STARTED)
+                {
+                    HandleGameObject(GruulDoor, true);
+                    m_gbk.StopCombat(GBK_GRUUL, false);
+                }
                 if(Encounters[1] != DONE)
                     Encounters[1] = data;
                 break;
         }
 
-        if (data == NOT_STARTED)
-        {
-            m_gbk.StopCombat(false);
-        }
-        else if (data == DONE)
-        {
-            if (type == DATA_MAULGAREVENT || type == DATA_GRUULEVENT)
-                m_gbk.StopCombat(true);
+        if (data == DONE)
             SaveToDB();
-        }
     }
 
     uint32 GetData(uint32 type)

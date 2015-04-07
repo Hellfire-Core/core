@@ -152,11 +152,11 @@ struct instance_magtheridons_lair : public ScriptedInstance
                         break;
                     case NOT_STARTED:
                         RespawnTimer = 10000;
-                        m_gbk.StopCombat(false);
+                        m_gbk.StopCombat(GBK_MAGTHERIDON, false);
                         HandleGameObject(DoorGUID, true);
                         break;
                     default:
-                        m_gbk.StopCombat(true);
+                        m_gbk.StopCombat(GBK_MAGTHERIDON, true);
                         HandleGameObject(DoorGUID, true);
                         break;
                 }

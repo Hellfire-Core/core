@@ -210,6 +210,19 @@ struct instance_mount_hyjal : public ScriptedInstance
         return 0;
     }
 
+    GBK_Encounters EncounterForGBK(uint32 enc)
+    {
+        switch (enc)
+        {
+        case DATA_RAGEWINTERCHILLEVENT: return GBK_RAGE_WINTERCHILL;
+        case DATA_ANETHERONEVENT:      return GBK_ANETHERON;
+        case DATA_KAZROGALEVENT:       return GBK_KAZROGAL;
+        case DATA_AZGALOREVENT:        return GBK_AZGALOR;
+        case DATA_ARCHIMONDEEVENT:     return GBK_ARCHIMONDE;
+        }
+        return GBK_NONE;
+    }
+
     void SetData(uint32 type, uint32 data)
     {
         switch(type)
@@ -288,28 +301,19 @@ struct instance_mount_hyjal : public ScriptedInstance
 
         debug_log("TSCR: Instance Hyjal: Instance data updated for event %u (Data=%u)",type,data);
 
-        if (data == NOT_STARTED)
+        GBK_Encounters gbkEnc = EncounterForGBK(type);
+        if (gbkEnc != GBK_NONE)
         {
-            m_gbk.StopCombat(false);
+            if (data == DONE)
+                m_gbk.StopCombat(gbkEnc, true);
+            else if (data == NOT_STARTED)
+                m_gbk.StopCombat(gbkEnc, false);
+            else if (data == IN_PROGRESS)
+                m_gbk.StartCombat(gbkEnc);
         }
-        else if (data == IN_PROGRESS)
-        {
-            switch (type)
-            {
-            case DATA_RAGEWINTERCHILLEVENT: m_gbk.StartCombat(GBK_RAGE_WINTERCHILL); break;
-            case DATA_ANETHERONEVENT:      m_gbk.StartCombat(GBK_ANETHERON); break;
-            case DATA_KAZROGALEVENT:       m_gbk.StartCombat(GBK_KAZROGAL); break;
-            case DATA_AZGALOREVENT:        m_gbk.StartCombat(GBK_AZGALOR); break;
-            case DATA_ARCHIMONDEEVENT:     m_gbk.StartCombat(GBK_ARCHIMONDE); break;
-            }
-        }
-        else if (data == DONE)
-        {
+        
+        if (data == DONE)
             SaveToDB();
-            if (type == DATA_RAGEWINTERCHILLEVENT || type == DATA_ANETHERONEVENT || type == DATA_KAZROGALEVENT ||
-                type == DATA_AZGALOREVENT || type == DATA_ARCHIMONDEEVENT)
-                m_gbk.StopCombat(true);
-        }
     }
 
     uint32 GetData(uint32 type)

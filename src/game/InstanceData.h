@@ -189,14 +189,18 @@ public:
             stats[guid].deaths++;
     };
 
-    void StopCombat(bool win)
+    void StopCombat(GBK_Encounters encounter, bool win)
     {
-        if (m_encounter == GBK_NONE)
+        if (m_encounter == GBK_ANTISPAMINLOGSINATOR)
+            return;
+
+        if (m_encounter == GBK_NONE || m_encounter != encounter)
         {
-            //sLog.outLog(LOG_DEFAULT, "GBK_handler: StopCombat(%u) while not in combat. Map %u InstanceId %u",
-            //    win, m_map->GetId(), m_map->GetInstanceId());
+            sLog.outLog(LOG_DEFAULT, "GBK_handler: problems in StopCombat(%u,%u), m_encouter %u Map %u InstanceId %u",
+                uint32(encounter), win,uint32(m_encounter), m_map->GetId(), m_map->GetInstanceId());
             m_timer = 0;
             stats.clear();
+            m_encounter = GBK_ANTISPAMINLOGSINATOR;
             return;
         }
 
@@ -266,8 +270,13 @@ public:
     {
         if (m_encounter != GBK_NONE)
         {
-            sLog.outLog(LOG_DEFAULT, "GBK_handler: StartCombat(%u) while already in combat(%u), can cause undefined behaviour."
-                " Map %u InstanceId %u", encounter, m_encounter, m_map->GetId(), m_map->GetInstanceId());
+            if (m_encounter != GBK_ANTISPAMINLOGSINATOR)
+            {
+                sLog.outLog(LOG_DEFAULT, "GBK_handler: StartCombat(%u) while already in combat(%u) Map %u InstanceId %u",
+                    encounter, m_encounter, m_map->GetId(), m_map->GetInstanceId());
+                m_encounter = GBK_ANTISPAMINLOGSINATOR;
+            }
+            return;
         }
 
         m_encounter = encounter;

@@ -395,6 +395,23 @@ struct instance_black_temple : public ScriptedInstance
         return 0;
     }
 
+    GBK_Encounters EncounterForGBK(uint32 enc)
+    {
+        switch (enc)
+        {
+        case EVENT_HIGHWARLORDNAJENTUS: return GBK_HIGH_WARLORD_NAJENTUS;
+        case EVENT_SUPREMUS:            return GBK_SUPREMUS;
+        case EVENT_SHADEOFAKAMA:        return GBK_SHADE_OF_AKAMA;
+        case EVENT_TERONGOREFIEND:      return GBK_TERON_GOREFIEND;
+        case EVENT_GURTOGGBLOODBOIL:    return GBK_GURTOG_BLOODBOIL;
+        case EVENT_RELIQUARYOFSOULS:    return GBK_REQUILARY_OF_SOULS;
+        case EVENT_MOTHERSHAHRAZ:       return GBK_MOTHER_SHARAZ;
+        case EVENT_ILLIDARICOUNCIL:     return GBK_ILLIDARI_COUNCIL;
+        case EVENT_ILLIDANSTORMRAGE:    return GBK_ILLIDAN_STORMRAGE;
+        }
+        return GBK_NONE;
+    }
+
     void SetData(uint32 type, uint32 data)
     {
         switch (type)
@@ -533,33 +550,19 @@ struct instance_black_temple : public ScriptedInstance
             break;
         }
 
-        if (data == NOT_STARTED)
+        GBK_Encounters gbkEnc = EncounterForGBK(type);
+        if (gbkEnc != GBK_NONE)
         {
-            m_gbk.StopCombat(false);
+            if (data == DONE)
+                m_gbk.StopCombat(gbkEnc, true);
+            else if (data == NOT_STARTED)
+                m_gbk.StopCombat(gbkEnc, false);
+            else if (data == IN_PROGRESS)
+                m_gbk.StartCombat(gbkEnc);
         }
-        else if (data == IN_PROGRESS)
-        {
-            switch (type)
-            {
-            case EVENT_HIGHWARLORDNAJENTUS: m_gbk.StartCombat(GBK_HIGH_WARLORD_NAJENTUS); break;
-            case EVENT_SUPREMUS:            m_gbk.StartCombat(GBK_SUPREMUS); break;
-            case EVENT_SHADEOFAKAMA:        m_gbk.StartCombat(GBK_SHADE_OF_AKAMA); break;
-            case EVENT_TERONGOREFIEND:      m_gbk.StartCombat(GBK_TERON_GOREFIEND); break;
-            case EVENT_GURTOGGBLOODBOIL:    m_gbk.StartCombat(GBK_GURTOG_BLOODBOIL); break;
-            case EVENT_RELIQUARYOFSOULS:    m_gbk.StartCombat(GBK_REQUILARY_OF_SOULS); break;
-            case EVENT_MOTHERSHAHRAZ:       m_gbk.StartCombat(GBK_MOTHER_SHARAZ); break;
-            case EVENT_ILLIDARICOUNCIL:     m_gbk.StartCombat(GBK_ILLIDARI_COUNCIL); break;
-            case EVENT_ILLIDANSTORMRAGE:    m_gbk.StartCombat(GBK_ILLIDAN_STORMRAGE); break;
-            }
-        }
+
         if (data == DONE)
-        {
-            if (type == EVENT_HIGHWARLORDNAJENTUS || type == EVENT_SUPREMUS || type == EVENT_SHADEOFAKAMA ||
-                type == EVENT_TERONGOREFIEND || type == EVENT_GURTOGGBLOODBOIL || type == EVENT_RELIQUARYOFSOULS ||
-                type == EVENT_MOTHERSHAHRAZ || type == EVENT_ILLIDARICOUNCIL || type == EVENT_ILLIDANSTORMRAGE)
-                m_gbk.StopCombat(true);
             SaveToDB();
-        }
     }
 
 

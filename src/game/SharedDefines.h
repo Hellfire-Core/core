@@ -2584,7 +2584,9 @@ enum GBK_Encounters
     GBK_FELMYST                 = 30,
     GBK_HOT_EREDAR_CHICKS       = 31,
     GBK_MURU                    = 32,
-    GBK_KILJAEDEN               = 33
+    GBK_KILJAEDEN               = 33,
+
+    GBK_ANTISPAMINLOGSINATOR    = 50
 };
 
 #define CONTACT_DISTANCE            0.5f

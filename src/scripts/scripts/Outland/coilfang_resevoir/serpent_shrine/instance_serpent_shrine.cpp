@@ -263,6 +263,20 @@ struct instance_serpentshrine_cavern : public ScriptedInstance
         return 0;
     }
 
+    GBK_Encounters EncounterForGBK(uint32 enc)
+    {
+        switch (enc)
+        {
+        case DATA_HYDROSSTHEUNSTABLEEVENT:  return GBK_HYDROSS_THE_UNSTABLE;
+        case DATA_LEOTHERASTHEBLINDEVENT:   return GBK_LEOTHERAS_THE_BLIND;
+        case DATA_THELURKERBELOWEVENT:      return GBK_LURKER_BELOW;
+        case DATA_KARATHRESSEVENT:          return GBK_FATHOMLORD_KARATHRESS;
+        case DATA_MOROGRIMTIDEWALKEREVENT:  return GBK_MOROGRIM_TIDEWALKER;
+        case DATA_LADYVASHJEVENT:           return GBK_LADY_VASHJ;
+        }
+        return GBK_NONE;
+    }
+
     void SetData(uint32 type, uint32 data)
     {
         switch(type)
@@ -322,30 +336,19 @@ struct instance_serpentshrine_cavern : public ScriptedInstance
             case DATA_SHIELDGENERATOR4:ShieldGeneratorDeactivated[3] = (data) ? true : false;   break;
         }
 
-        if (data == NOT_STARTED)
+        GBK_Encounters gbkEnc = EncounterForGBK(type);
+        if (gbkEnc != GBK_NONE)
         {
-            m_gbk.StopCombat(false);
+            if (data == DONE)
+                m_gbk.StopCombat(gbkEnc, true);
+            else if (data == NOT_STARTED)
+                m_gbk.StopCombat(gbkEnc, false);
+            else if (data == IN_PROGRESS)
+                m_gbk.StartCombat(gbkEnc);
         }
-        else if (data == IN_PROGRESS)
-        {
-            switch (type)
-            {
-            case DATA_HYDROSSTHEUNSTABLEEVENT:  m_gbk.StartCombat(GBK_HYDROSS_THE_UNSTABLE); break;
-            case DATA_LEOTHERASTHEBLINDEVENT:   m_gbk.StartCombat(GBK_LEOTHERAS_THE_BLIND); break;
-            case DATA_THELURKERBELOWEVENT:      m_gbk.StartCombat(GBK_LURKER_BELOW); break;
-            case DATA_KARATHRESSEVENT:          m_gbk.StartCombat(GBK_FATHOMLORD_KARATHRESS); break;
-            case DATA_MOROGRIMTIDEWALKEREVENT:  m_gbk.StartCombat(GBK_MOROGRIM_TIDEWALKER); break;
-            case DATA_LADYVASHJEVENT:           m_gbk.StartCombat(GBK_LADY_VASHJ); break;
-            }
-        }
-        else if (data == DONE)
-        {
+        
+        if (data == DONE)
             SaveToDB();
-            if (type == DATA_HYDROSSTHEUNSTABLEEVENT || type == DATA_LEOTHERASTHEBLINDEVENT ||
-                type == DATA_THELURKERBELOWEVENT || type == DATA_KARATHRESSEVENT ||
-                type == DATA_MOROGRIMTIDEWALKEREVENT || type == DATA_LADYVASHJEVENT)
-                m_gbk.StopCombat(true);
-        }
     }
 
     uint32 GetData(uint32 type)

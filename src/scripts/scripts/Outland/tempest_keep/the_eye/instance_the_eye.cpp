@@ -174,6 +174,18 @@ struct instance_the_eye : public ScriptedInstance
         return 0;
     }
 
+    GBK_Encounters EncounterForGBK(uint32 enc)
+    {
+        switch (enc)
+        {
+        case DATA_ALAREVENT:                    return GBK_ALAR;
+        case DATA_HIGHASTROMANCERSOLARIANEVENT: return GBK_HIGH_ASTROMANCER_SOLARIAN;
+        case DATA_VOIDREAVEREVENT:              return GBK_VOID_REAVER;
+        case DATA_KAELTHASEVENT:                return GBK_KAELTHAS_SUNSTRIDER;
+        }
+        return GBK_NONE;
+    }
+
     void SetData(uint32 type, uint32 data)
     {
         switch(type)
@@ -235,27 +247,19 @@ struct instance_the_eye : public ScriptedInstance
                 }
         }
 
-        if (data == NOT_STARTED)
+        GBK_Encounters gbkEnc = EncounterForGBK(type);
+        if (gbkEnc != GBK_NONE)
         {
-            m_gbk.StopCombat(false);
+            if (data == DONE)
+                m_gbk.StopCombat(gbkEnc, true);
+            else if (data == NOT_STARTED)
+                m_gbk.StopCombat(gbkEnc, false);
+            else if (data == IN_PROGRESS)
+                m_gbk.StartCombat(gbkEnc);
         }
-        else if (data == IN_PROGRESS)
-        {
-            switch (type)
-            {
-            case DATA_ALAREVENT:                    m_gbk.StartCombat(GBK_ALAR); break;
-            case DATA_HIGHASTROMANCERSOLARIANEVENT: m_gbk.StartCombat(GBK_HIGH_ASTROMANCER_SOLARIAN); break;
-            case DATA_VOIDREAVEREVENT:              m_gbk.StartCombat(GBK_VOID_REAVER); break;
-            case DATA_KAELTHASEVENT:                m_gbk.StartCombat(GBK_KAELTHAS_SUNSTRIDER); break;
-            }
-        }
-        else if (data == DONE)
-        {
-            if (type == DATA_ALAREVENT || type == DATA_HIGHASTROMANCERSOLARIANEVENT ||
-                type == DATA_VOIDREAVEREVENT || type == DATA_KAELTHASEVENT)
-                m_gbk.StopCombat(true);
+
+        if (data == DONE)
             SaveToDB();
-        }
     }
 
     uint32 GetData(uint32 type)
