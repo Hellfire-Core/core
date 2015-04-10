@@ -37,6 +37,8 @@ Totem::Totem() : Creature()
 
 void Totem::Update(uint32 update_diff, uint32 diff)
 {
+    SendHeartBeat();
+    UpdateVisibilityAndView();
     Unit *owner = GetOwner();
     if (!owner || !owner->isAlive() || !this->isAlive())
     {
