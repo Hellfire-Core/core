@@ -194,18 +194,18 @@ public:
         if (m_encounter == GBK_ANTISPAMINLOGSINATOR)
             return;
 
-        if (m_encounter == GBK_NONE || m_encounter != encounter)
-        {
-            sLog.outLog(LOG_DEFAULT, "GBK_handler: problems in StopCombat(%u,%u), m_encouter %u Map %u InstanceId %u",
-                uint32(encounter), win,uint32(m_encounter), m_map->GetId(), m_map->GetInstanceId());
-            m_timer = 0;
-            stats.clear();
-            m_encounter = GBK_ANTISPAMINLOGSINATOR;
-            return;
-        }
-
         if (win)
         {
+            if (m_encounter == GBK_NONE || m_encounter != encounter)
+            {
+                sLog.outLog(LOG_DEFAULT, "GBK_handler: problems in StopCombat(%u,%u), m_encouter %u Map %u InstanceId %u",
+                    uint32(encounter), win, uint32(m_encounter), m_map->GetId(), m_map->GetInstanceId());
+                m_timer = 0;
+                stats.clear();
+                m_encounter = GBK_ANTISPAMINLOGSINATOR;
+                return;
+            }
+
             uint32 guild_id = 0;
             uint32 totalcount = 0;
             std::map<uint32, uint32> guilds;
@@ -261,9 +261,12 @@ public:
             }
         }
 
-        m_encounter = GBK_NONE;
-        m_timer = 0;
-        stats.clear();
+        if (m_encounter == encounter) //do not reset timers when some boss is just spamming not_started
+        {
+            m_encounter = GBK_NONE;
+            m_timer = 0;
+            stats.clear();
+        }
     }
 
     void StartCombat(GBK_Encounters encounter)
