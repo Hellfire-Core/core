@@ -1122,10 +1122,14 @@ uint32 Unit::DealDamage(DamageLog *damageInfo, DamageEffectType damagetype, cons
             }
         }
 
-        if (GetTypeId() == TYPEID_PLAYER && GetMap() && GetMap()->IsDungeon())
+        if (GetMap() && GetMap()->IsDungeon() && pVictim != this)
         {
-            if (InstanceData* idata = ((InstanceMap*)GetMap())->GetInstanceData())
-                idata->OnPlayerDealDamage(ToPlayer(), damageInfo->damage);
+            Player* chief = GetCharmerOrOwnerPlayerOrPlayerItself();
+            if (chief && pVictim != chief)
+            {
+                if (InstanceData* idata = ((InstanceMap*)GetMap())->GetInstanceData())
+                    idata->OnPlayerDealDamage(chief, damageInfo->damage);
+            }
         }
     }
 
