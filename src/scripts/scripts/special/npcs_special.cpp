@@ -3289,10 +3289,10 @@ struct npc_instakill_guardianAI : public Scripted_NoMovementAI
         player->GetPosition(loc);
         if( m_creature->GetExactDist(&loc) < distance)
         { 
-            if (who->isAlive())
+            if (player->isAlive())
             {
-                who->Kill(player);
-                who->ToPlayer()->BuildPlayerRepop();
+                player->Kill(player);
+                player->BuildPlayerRepop();
             }
 
             sWorld.SendGMText(LANG_INSTA_KILL_GUARDIAN,
