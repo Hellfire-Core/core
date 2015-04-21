@@ -158,7 +158,7 @@ bool OutdoorPvPTF::Update(uint32 diff)
         // lock timer is down, release lock
         if (m_LockTimer < diff)
         {
-            m_LockTimer = TF_LOCK_TIME;
+            m_LockTimer += TF_LOCK_TIME;
             m_LockTimerUpdate = 0;
             m_IsLocked = false;
             SendUpdateWorldState(TF_UI_TOWERS_CONTROLLED_DISPLAY, uint32(1));
@@ -171,7 +171,7 @@ bool OutdoorPvPTF::Update(uint32 diff)
             // worldstateui update timer is down, update ui with new time data
             if (m_LockTimerUpdate < diff)
             {
-                m_LockTimerUpdate = TF_LOCK_TIME_UPDATE;
+                m_LockTimerUpdate += TF_LOCK_TIME_UPDATE;
                 uint32 minutes_left = m_LockTimer / 60000;
                 hours_left = minutes_left / 60;
                 minutes_left -= hours_left * 60;
