@@ -270,7 +270,7 @@ struct ScriptedAI : public CreatureAI
     bool IsFleeing;
 
     //Timer for caster type movement check
-    uint32 casterTimer;
+    int32 casterTimer;
 
     //Spell list to cast
     std::list<SpellToCast> spellList;
@@ -279,8 +279,8 @@ struct ScriptedAI : public CreatureAI
     uint32 autocastId;
 
     //timer for autocast spell
-    uint32 autocastTimer;
-    uint32 autocastTimerDef;
+    int32 autocastTimer;
+    int32 autocastTimerDef;
 
     castTargetMode autocastMode;
     uint32 autocastTargetRange;

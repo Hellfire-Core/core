@@ -299,7 +299,7 @@ void ScriptedAI::CheckShooterNoMovementInRange(uint32 diff, float maxrange)
         else
             me->GetMotionMaster()->MoveIdle();
 
-        casterTimer = 3000;
+        casterTimer += 3000;
     }
     else
         casterTimer -= diff;
@@ -467,7 +467,7 @@ void ScriptedAI::CastNextSpellIfAnyAndReady(uint32 diff)
                     m_creature->CastSpell(victim, autocastId, false);
                 }
 
-                autocastTimer = autocastTimerDef;
+                autocastTimer += autocastTimerDef;
             }
         }
         else
@@ -1093,7 +1093,7 @@ void ScriptedAI::DoSpecialThings(uint32 diff, SpecialThing flags, float range, f
                 EnterEvadeMode();
         }
 
-        m_specialThingTimer = 1000;
+        m_specialThingTimer += 1000;
     }
     else
         m_specialThingTimer -= diff;
