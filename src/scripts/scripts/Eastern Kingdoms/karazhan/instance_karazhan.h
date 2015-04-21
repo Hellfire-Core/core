@@ -72,7 +72,7 @@ struct instance_karazhan : public ScriptedInstance
     uint64 MedivhGUID;
     uint64 BarnesGUID;
     uint64 BlizzardGUID;
-    uint32 CheckTimer;
+    int32 CheckTimer;
 
     std::list<uint64> forChessList;
 

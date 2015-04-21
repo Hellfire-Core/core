@@ -105,7 +105,7 @@ struct npc_calliardAI : public ScriptedAI
 {
     npc_calliardAI(Creature* c) : ScriptedAI(c) {}
 
-    uint32 Timer;
+    int32 Timer;
 
     void Reset()
     {
@@ -117,7 +117,7 @@ struct npc_calliardAI : public ScriptedAI
         if (Timer < diff)
         {
             me->Say(RAND<const char*>(CALLIARD_SAY1, CALLIARD_SAY2, CALLIARD_SAY3), 0, 0);
-            Timer = urand(60000, 180000);
+            Timer += urand(60000, 180000);
         } 
         else
             Timer -= diff;
@@ -216,10 +216,10 @@ struct npc_image_of_medivhAI : public ScriptedAI
 
     uint64 ArcanagosGUID;
 
-    uint32 YellTimer;
-    uint32 Step;
-    uint32 FireMedivhTimer;
-    uint32 FireArcanagosTimer;
+    int32 YellTimer;
+    int32 Step;
+    int32 FireMedivhTimer;
+    int32 FireArcanagosTimer;
 
     bool EventStarted;
 
@@ -355,7 +355,7 @@ struct npc_image_of_medivhAI : public ScriptedAI
         {
             if(EventStarted)
             {
-                YellTimer = NextStep(Step++);
+                YellTimer += NextStep(Step++);
             }
         }else YellTimer -= diff;
 
@@ -367,14 +367,14 @@ struct npc_image_of_medivhAI : public ScriptedAI
             {
                 if(arca)
                     arca->CastSpell(m_creature, SPELL_FIRE_BALL, false);
-                FireArcanagosTimer = 6000;
+                FireArcanagosTimer += 6000;
             }else FireArcanagosTimer -= diff;
 
             if(FireMedivhTimer < diff)
             {
                 if(arca)
                     DoCast(arca, SPELL_FIRE_BALL);
-                FireMedivhTimer = 5000;
+                FireMedivhTimer += 5000;
             }else FireMedivhTimer -= diff;
 
         }

@@ -22,7 +22,11 @@ SDName: Boss_Shade_of_Aran
 SD%Complete: 95
 SDComment: Flame wreath missing cast animation, mods won't triggere.
 SDCategory: Karazhan
-EndScriptData */
+EndScriptData 
+
+
+
+WHAT THE FUCK IS GOING ON WITH THESE TIMERS? O_o*/
 
 #include "precompiled.h"
 #include "../../special/simple_ai.h"
@@ -120,27 +124,27 @@ struct boss_aranAI : public Scripted_NoMovementAI
 
     ScriptedInstance* pInstance;
 
-    uint32 SecondarySpellTimer;
-    uint32 NormalCastTimer;
-    uint32 SuperCastTimer;
-    uint32 BerserkTimer;
+    int32 SecondarySpellTimer;
+    int32 NormalCastTimer;
+    int32 SuperCastTimer;
+    int32 BerserkTimer;
 
     uint8 LastSuperSpell;
 
-    uint32 ArcaneCooldown;
-    uint32 FireCooldown;
-    uint32 FrostCooldown;
-    uint32 CheckTimer;
-    uint32 PyroblastTimer;
+    int32 ArcaneCooldown;
+    int32 FireCooldown;
+    int32 FrostCooldown;
+    int32 CheckTimer;
+    int32 PyroblastTimer;
 
     uint64 shadeOfAranTeleportCreatures[8];
     WorldLocation wLoc;
 
-    uint32 DrinkInturruptTimer;
+    int32 DrinkInturruptTimer;
 
     bool ElementalsSpawned;
     DrinkingState Drinking;
-    uint32 DrinkingDelay;
+    int32 DrinkingDelay;
 
 
 
@@ -224,7 +228,7 @@ struct boss_aranAI : public Scripted_NoMovementAI
             else
                 DoZoneInCombat();
 
-            CheckTimer = 3000;
+            CheckTimer += 3000;
         }
         else
             CheckTimer -= diff;
@@ -370,7 +374,7 @@ struct boss_aranAI : public Scripted_NoMovementAI
                         break;
                 }
 
-                SuperCastTimer = urand(35000, 40000);
+                SuperCastTimer += urand(35000, 40000);
             }
             else
                 SuperCastTimer -= diff;
@@ -399,7 +403,7 @@ struct boss_aranAI : public Scripted_NoMovementAI
             }
             DoScriptText(SAY_TIMEOVER, m_creature);
 
-            BerserkTimer = 60000;
+            BerserkTimer += 60000;
         }
         else
             BerserkTimer -= diff;
@@ -485,7 +489,7 @@ struct water_elementalAI : public ScriptedAI
 {
     water_elementalAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 CastTimer;
+    int32 CastTimer;
 
     void Reset()
     {
@@ -508,7 +512,7 @@ struct water_elementalAI : public ScriptedAI
         {
             //AddSpellToCast(m_creature->getVictim(), SPELL_WATERBOLT);
             DoCast(m_creature->getVictim(), SPELL_WATERBOLT);
-            CastTimer = 2000 + (rand()%3000);
+            CastTimer += 2000 + (rand()%3000);
         }
         else
             CastTimer -= diff;
@@ -522,7 +526,7 @@ struct shadow_of_aranAI : public ScriptedAI
 {
     shadow_of_aranAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 CastTimer;
+    int32 CastTimer;
 
     void Reset()
     {
@@ -539,12 +543,12 @@ struct shadow_of_aranAI : public ScriptedAI
             if (rand()%3)
             {
                 m_creature->CastSpell(m_creature, SPELL_FROSTBOLT_VOLLEY, false);
-                CastTimer = 5000;
+                CastTimer += 5000;
             }
             else
             {
                 m_creature->CastSpell(m_creature, SPELL_AMISSILE_VOLLEY, false);
-                CastTimer = 20000;
+                CastTimer += 20000;
             }
         }
         else
@@ -560,7 +564,7 @@ struct circular_blizzardAI : public ScriptedAI
     }
 
     uint16 currentWaypoint;
-    uint16 waypointTimer;
+    int16 waypointTimer;
     WorldLocation wLoc;
     ScriptedInstance *pInstance;
     float blizzardWaypoints[2][8];
@@ -648,7 +652,7 @@ struct circular_blizzardAI : public ScriptedAI
             wLoc.coord_y = blizzardWaypoints[1][currentWaypoint];
 
             m_creature->GetMotionMaster()->MovePoint(currentWaypoint, wLoc.coord_x, wLoc.coord_y, wLoc.coord_z);
-            waypointTimer = 3000;
+            waypointTimer += 3000;
         }
         else
             waypointTimer -= diff;

@@ -58,8 +58,8 @@ struct boss_midnightAI : public ScriptedAI
 
     uint64 Attumen;
     uint8 Phase;
-    uint32 Mount_Timer;
-    uint32 CheckTimer;
+    int32 Mount_Timer;
+    int32 CheckTimer;
 
     ScriptedInstance *pInstance;
     WorldLocation wLoc;
@@ -107,7 +107,7 @@ struct boss_midnightAI : public ScriptedAI
             else
                 DoZoneInCombat();
 
-            CheckTimer = 3000;
+            CheckTimer += 3000;
         }
         else
             CheckTimer -= diff;
@@ -220,11 +220,11 @@ struct boss_attumenAI : public ScriptedAI
 
     uint64 Midnight;
     uint8 Phase;
-    uint32 CleaveTimer;
-    uint32 CurseTimer;
-    uint32 RandomYellTimer;
-    uint32 ChargeTimer;                                     //only when mounted
-    uint32 ResetTimer;
+    int32 CleaveTimer;
+    int32 CurseTimer;
+    int32 RandomYellTimer;
+    int32 ChargeTimer;                                     //only when mounted
+    int32 ResetTimer;
 
     void Reset()
     {
@@ -276,7 +276,7 @@ struct boss_attumenAI : public ScriptedAI
         if (CleaveTimer < diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_SHADOWCLEAVE);
-            CleaveTimer = urand(10000, 16000);
+            CleaveTimer += urand(10000, 16000);
         }
         else
             CleaveTimer -= diff;
@@ -284,7 +284,7 @@ struct boss_attumenAI : public ScriptedAI
         if (CurseTimer < diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_INTANGIBLE_PRESENCE);
-            CurseTimer = 30000;
+            CurseTimer += 30000;
         }
         else
             CurseTimer -= diff;
@@ -293,7 +293,7 @@ struct boss_attumenAI : public ScriptedAI
         {
             DoScriptText(RAND(SAY_RANDOM1, SAY_RANDOM2), m_creature);
 
-            RandomYellTimer = urand(30000, 61000);
+            RandomYellTimer += urand(30000, 61000);
         }
         else
             RandomYellTimer -= diff;
@@ -305,7 +305,7 @@ struct boss_attumenAI : public ScriptedAI
                 if (Unit * target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100.0f, true, 0, 5.0f))
                     AddSpellToCast(target, SPELL_BERSERKER_CHARGE);
 
-                ChargeTimer = 20000;
+                ChargeTimer += 20000;
             }
             else
                 ChargeTimer -= diff;

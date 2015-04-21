@@ -98,7 +98,7 @@ void move_triggerAI::MakeMove()
 #endif
     ChessPiecesStances tmpStance = pieceStance;
 
-    moveTimer = 3000;
+    moveTimer += 3000;
     pieceStance = PIECE_NONE;
     Creature * temp = m_creature->GetCreature(unitToMove);
     Creature * temp2 = m_creature->GetCreature(MedivhGUID);
@@ -542,7 +542,7 @@ void npc_chesspieceAI::UpdateAI(const uint32 diff)
                     ab1 = ((boss_MedivhAI*)medivh->AI())->GetSpellTarget(me->GetGUID(), ability1ID);
             }
             else
-                ability1Timer = urand(500, 5000);
+                ability1Timer += urand(500, 5000);
         }
         else
             ability1Timer -= diff;
@@ -561,7 +561,7 @@ void npc_chesspieceAI::UpdateAI(const uint32 diff)
                     ab2 = ((boss_MedivhAI*)medivh->AI())->GetSpellTarget(me->GetGUID(), ability2ID);
             }
             else
-                ability2Timer = urand(500, 5000);
+                ability2Timer += urand(500, 5000);
         }
         else
             ability2Timer -= diff;
@@ -586,8 +586,8 @@ void npc_chesspieceAI::UpdateAI(const uint32 diff)
                     AddSpellToCast(victim, ability1ID);
             }
 
-            ability1Timer = ability1Cooldown;
-            ability2Timer = SHARED_COOLDOWN;
+            ability1Timer += ability1Cooldown;
+            ability2Timer += SHARED_COOLDOWN;
         }
         else if (ab2)
         {
@@ -600,15 +600,15 @@ void npc_chesspieceAI::UpdateAI(const uint32 diff)
                     AddSpellToCast(victim, ability2ID);
             }
 
-            ability2Timer = ability1Cooldown;
-            ability1Timer = SHARED_COOLDOWN;
+            ability2Timer += ability1Cooldown;
+            ability1Timer += SHARED_COOLDOWN;
         }
 #endif
 
 #ifndef CHESS_EVENT_DISSABLE_FACING
         if (changeFacingTimer <= diff)
         {
-            changeFacingTimer = urand(3000, 7500);
+            changeFacingTimer += urand(3000, 7500);
 
             Creature * medivh = m_creature->GetCreature(MedivhGUID);
 
@@ -627,7 +627,7 @@ void npc_chesspieceAI::UpdateAI(const uint32 diff)
 #ifndef CHESS_EVENT_DISSABLE_MELEE
     if (attackTimer <= diff)
     {
-        attackTimer = attackCooldown;
+        attackTimer += attackCooldown;
         Creature * medivh = m_creature->GetCreature(MedivhGUID);
 
         if (!medivh)

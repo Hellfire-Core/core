@@ -38,8 +38,8 @@ struct boss_operaAI : public ScriptedAI
 
     ScriptedInstance* pInstance;
 
-    uint32 checkTimer;
-    uint32 AggroTimer;
+    int32 checkTimer;
+    int32 AggroTimer;
 
     bool evade;
     bool eventStarted;
@@ -105,7 +105,7 @@ struct boss_operaAI : public ScriptedAI
         if (checkTimer <= diff)
         {
             DoZoneInCombat();
-            checkTimer = 3000;
+            checkTimer += 3000;
         }
         else
             checkTimer -= diff;
@@ -199,9 +199,9 @@ struct boss_dorotheeAI : public boss_operaAI
 {
     boss_dorotheeAI(Creature* c) : boss_operaAI(c) {}
 
-    uint32 WaterBoltTimer;
-    uint32 FearTimer;
-    uint32 SummonTitoTimer;
+    int32 WaterBoltTimer;
+    int32 FearTimer;
+    int32 SummonTitoTimer;
 
     bool SummonedTito;
     bool TitoDied;
@@ -260,7 +260,7 @@ struct boss_dorotheeAI : public boss_operaAI
         if (WaterBoltTimer < diff)
         {
             AddSpellToCast(SelectUnit(SELECT_TARGET_RANDOM, 0), SPELL_WATERBOLT);
-            WaterBoltTimer = TitoDied ? 1500 : 5000;
+            WaterBoltTimer += TitoDied ? 1500 : 5000;
         }
         else
             WaterBoltTimer -= diff;
@@ -268,7 +268,7 @@ struct boss_dorotheeAI : public boss_operaAI
         if (FearTimer < diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_SCREAM);
-            FearTimer = 30000;
+            FearTimer += 30000;
         }
         else
             FearTimer -= diff;
@@ -291,7 +291,7 @@ struct mob_titoAI : public ScriptedAI
 
     uint64 DorotheeGUID;
 
-    uint32 YipTimer;
+    int32 YipTimer;
 
     void Reset()
     {
@@ -323,7 +323,7 @@ struct mob_titoAI : public ScriptedAI
         if (YipTimer < diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_YIPPING);
-            YipTimer = 10000;
+            YipTimer += 10000;
         }
         else
             YipTimer -= diff;
@@ -350,8 +350,8 @@ struct boss_strawmanAI : public boss_operaAI
 {
     boss_strawmanAI(Creature* c) : boss_operaAI(c){}
 
-    uint32 BrainBashTimer;
-    uint32 BrainWipeTimer;
+    int32 BrainBashTimer;
+    int32 BrainWipeTimer;
 
 
     void Reset()
@@ -412,7 +412,7 @@ struct boss_strawmanAI : public boss_operaAI
         if (BrainBashTimer < diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_BRAIN_BASH);
-            BrainBashTimer = 15000;
+            BrainBashTimer += 15000;
         }
         else
             BrainBashTimer -= diff;
@@ -420,7 +420,7 @@ struct boss_strawmanAI : public boss_operaAI
         if (BrainWipeTimer < diff)
         {
             AddSpellToCast(SelectUnit(SELECT_TARGET_RANDOM, 0), SPELL_BRAIN_WIPE);
-            BrainWipeTimer = 20000;
+            BrainWipeTimer += 20000;
         }
         else
             BrainWipeTimer -= diff;
@@ -433,8 +433,8 @@ struct boss_tinheadAI : public boss_operaAI
 {
     boss_tinheadAI(Creature* c) : boss_operaAI(c){}
 
-    uint32 CleaveTimer;
-    uint32 RustTimer;
+    int32 CleaveTimer;
+    int32 RustTimer;
 
     uint8 RustCount;
 
@@ -492,7 +492,7 @@ struct boss_tinheadAI : public boss_operaAI
         if (CleaveTimer < diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_CLEAVE);
-            CleaveTimer = 5000;
+            CleaveTimer += 5000;
         }
         else
             CleaveTimer -= diff;
@@ -503,7 +503,7 @@ struct boss_tinheadAI : public boss_operaAI
             {
                 RustCount++;
                 AddSpellToCastWithScriptText(m_creature, SPELL_RUST, EMOTE_RUST);
-                RustTimer = 6000;
+                RustTimer += 6000;
             }
             else
                 RustTimer -= diff;
@@ -517,9 +517,9 @@ struct boss_roarAI : public boss_operaAI
 {
     boss_roarAI(Creature* c) : boss_operaAI(c){}
 
-    uint32 MangleTimer;
-    uint32 ShredTimer;
-    uint32 ScreamTimer;
+    int32 MangleTimer;
+    int32 ShredTimer;
+    int32 ScreamTimer;
 
     void Reset()
     {
@@ -574,7 +574,7 @@ struct boss_roarAI : public boss_operaAI
         if (MangleTimer < diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_MANGLE);
-            MangleTimer = 5000 + rand()%3000;
+            MangleTimer += 5000 + rand()%3000;
         }
         else
             MangleTimer -= diff;
@@ -582,7 +582,7 @@ struct boss_roarAI : public boss_operaAI
         if (ShredTimer < diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_SHRED);
-            ShredTimer = 10000 + rand()%5000;
+            ShredTimer += 10000 + rand()%5000;
         }
         else
             ShredTimer -= diff;
@@ -590,7 +590,7 @@ struct boss_roarAI : public boss_operaAI
         if (ScreamTimer < diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_FRIGHTENED_SCREAM);
-            ScreamTimer = 20000 + rand()%10000;
+            ScreamTimer += 20000 + rand()%10000;
         }
         else
             ScreamTimer -= diff;
@@ -603,8 +603,8 @@ struct boss_croneAI : public boss_operaAI
 {
     boss_croneAI(Creature* c) : boss_operaAI(c){}
 
-    uint32 CycloneTimer;
-    uint32 ChainLightningTimer;
+    int32 CycloneTimer;
+    int32 ChainLightningTimer;
 
     void Reset()
     {
@@ -645,7 +645,7 @@ struct boss_croneAI : public boss_operaAI
             Creature* Cyclone = DoSpawnCreature(CREATURE_CYCLONE, rand()%10, rand()%10, 0, 0, TEMPSUMMON_TIMED_DESPAWN, 15000);
             if(Cyclone)
                 Cyclone->CastSpell(Cyclone, SPELL_CYCLONE_VISUAL, true);
-            CycloneTimer = 30000;
+            CycloneTimer += 30000;
         }
         else
             CycloneTimer -= diff;
@@ -653,7 +653,7 @@ struct boss_croneAI : public boss_operaAI
         if (ChainLightningTimer < diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_CHAIN_LIGHTNING);
-            ChainLightningTimer = 15000;
+            ChainLightningTimer += 15000;
         }
         else
             ChainLightningTimer -= diff;
@@ -666,7 +666,7 @@ struct mob_cycloneAI : public ScriptedAI
 {
     mob_cycloneAI(Creature* c) : ScriptedAI(c) {}
 
-    uint32 MoveTimer;
+    int32 MoveTimer;
 
     void Reset()
     {
@@ -689,7 +689,7 @@ struct mob_cycloneAI : public ScriptedAI
             float PosX, PosY, PosZ;
             m_creature->GetRandomPoint(x,y,z,10, PosX, PosY, PosZ);
             m_creature->GetMotionMaster()->MovePoint(0, PosX, PosY, PosZ);
-            MoveTimer = 5000 + rand()%3000;
+            MoveTimer += 5000 + rand()%3000;
         }
         else
             MoveTimer -= diff;
@@ -791,9 +791,9 @@ struct boss_bigbadwolfAI : public boss_operaAI
 {
     boss_bigbadwolfAI(Creature* c) : boss_operaAI(c) { eventStarted = true; }
 
-    uint32 ChaseTimer;
-    uint32 FearTimer;
-    uint32 SwipeTimer;
+    int32 ChaseTimer;
+    int32 FearTimer;
+    int32 SwipeTimer;
 
     uint64 HoodGUID;
     float TempThreat;
@@ -835,7 +835,7 @@ struct boss_bigbadwolfAI : public boss_operaAI
         if (checkTimer <= diff)
         {
             DoZoneInCombat();
-            checkTimer = 3000;
+            checkTimer += 3000;
         }
         else
             checkTimer -= diff;
@@ -858,7 +858,7 @@ struct boss_bigbadwolfAI : public boss_operaAI
                         DoModifyThreatPercent(target, -100);
                     HoodGUID = target->GetGUID();
                     m_creature->AddThreat(target, 1000000.0f);
-                    ChaseTimer = 20000;
+                    ChaseTimer += 20000;
                     IsChasing = true;
                 }
             }
@@ -878,7 +878,7 @@ struct boss_bigbadwolfAI : public boss_operaAI
                 m_creature->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_MOD_TAUNT, false);
                 m_creature->ApplySpellImmune(0, IMMUNITY_EFFECT,SPELL_EFFECT_ATTACK_ME, false);
 
-                ChaseTimer = 40000;
+                ChaseTimer += 40000;
             }
         }
         else
@@ -890,7 +890,7 @@ struct boss_bigbadwolfAI : public boss_operaAI
         if (FearTimer < diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_TERRIFYING_HOWL);
-            FearTimer = 25000 + rand()%10000;
+            FearTimer += 25000 + rand()%10000;
         }
         else
             FearTimer -= diff;
@@ -898,7 +898,7 @@ struct boss_bigbadwolfAI : public boss_operaAI
         if (SwipeTimer < diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_WIDE_SWIPE);
-            SwipeTimer = 25000 + rand()%5000;
+            SwipeTimer += 25000 + rand()%5000;
         }
         else
             SwipeTimer -= diff;
@@ -998,14 +998,14 @@ struct boss_julianneAI : public boss_operaAI
 
     uint32 Phase;
     uint64 RomuloGUID;
-    uint32 BlindingPassionTimer;
-    uint32 DevotionTimer;
-    uint32 EternalAffectionTimer;
-    uint32 PowerfulAttractionTimer;
-    uint32 SummonRomuloTimer;
-    uint32 ResurrectTimer;
-    uint32 DrinkPoisonTimer;
-    uint32 ResurrectSelfTimer;
+    int32 BlindingPassionTimer;
+    int32 DevotionTimer;
+    int32 EternalAffectionTimer;
+    int32 PowerfulAttractionTimer;
+    int32 SummonRomuloTimer;
+    int32 ResurrectTimer;
+    int32 DrinkPoisonTimer;
+    int32 ResurrectSelfTimer;
 
     bool IsFakingDeath;
     bool SummonedRomulo;
@@ -1080,12 +1080,12 @@ struct boss_romuloAI : public boss_operaAI
 
     uint32 Phase;
 
-    uint32 EntryYellTimer;
-    uint32 BackwardLungeTimer;
-    uint32 DaringTimer;
-    uint32 DeadlySwatheTimer;
-    uint32 PoisonThrustTimer;
-    uint32 ResurrectTimer;
+   int32 EntryYellTimer;
+   int32 BackwardLungeTimer;
+   int32 DaringTimer;
+   int32 DeadlySwatheTimer;
+   int32 PoisonThrustTimer;
+   int32 ResurrectTimer;
 
     bool JulianneDead;
     bool IsFakingDeath;
@@ -1361,7 +1361,7 @@ void boss_julianneAI::UpdateAI(const uint32 diff)
     if (BlindingPassionTimer < diff)
     {
         AddSpellToCast(SelectUnit(SELECT_TARGET_RANDOM, 0), SPELL_BLINDING_PASSION);
-        BlindingPassionTimer = 30000 + rand()%15000;
+        BlindingPassionTimer += 30000 + rand()%15000;
     }
     else
         BlindingPassionTimer -= diff;
@@ -1369,7 +1369,7 @@ void boss_julianneAI::UpdateAI(const uint32 diff)
     if (DevotionTimer < diff)
     {
         AddSpellToCast(m_creature, SPELL_DEVOTION);
-        DevotionTimer = 15000 + rand()%30000;
+        DevotionTimer += 15000 + rand()%30000;
     }
     else
         DevotionTimer -= diff;
@@ -1377,7 +1377,7 @@ void boss_julianneAI::UpdateAI(const uint32 diff)
     if (PowerfulAttractionTimer < diff)
     {
         AddSpellToCast(SelectUnit(SELECT_TARGET_RANDOM, 0), SPELL_POWERFUL_ATTRACTION);
-        PowerfulAttractionTimer = 5000 + rand()%25000;
+        PowerfulAttractionTimer += 5000 + rand()%25000;
     }
     else
         PowerfulAttractionTimer -= diff;
@@ -1394,7 +1394,7 @@ void boss_julianneAI::UpdateAI(const uint32 diff)
         else
             AddSpellToCast(m_creature, SPELL_ETERNAL_AFFECTION);
 
-        EternalAffectionTimer = 45000 + rand()%15000;
+        EternalAffectionTimer += 45000 + rand()%15000;
     }
     else
         EternalAffectionTimer -= diff;
@@ -1431,7 +1431,7 @@ void boss_romuloAI::UpdateAI(const uint32 diff)
         if (target && !m_creature->HasInArc(M_PI, target))
         {
             AddSpellToCast(target, SPELL_BACKWARD_LUNGE);
-            BackwardLungeTimer = 15000 + rand()%15000;
+            BackwardLungeTimer += 15000 + rand()%15000;
         }
     }
     else
@@ -1440,7 +1440,7 @@ void boss_romuloAI::UpdateAI(const uint32 diff)
     if (DaringTimer < diff)
     {
         AddSpellToCast(m_creature, SPELL_DARING);
-        DaringTimer = 20000 + rand()%20000;
+        DaringTimer += 20000 + rand()%20000;
     }
     else
         DaringTimer -= diff;
@@ -1448,7 +1448,7 @@ void boss_romuloAI::UpdateAI(const uint32 diff)
     if (DeadlySwatheTimer < diff)
     {
         AddSpellToCast(SelectUnit(SELECT_TARGET_RANDOM, 0), SPELL_DEADLY_SWATHE);
-        DeadlySwatheTimer = 15000 + rand()%10000;
+        DeadlySwatheTimer += 15000 + rand()%10000;
     }
     else
         DeadlySwatheTimer -= diff;
@@ -1456,7 +1456,7 @@ void boss_romuloAI::UpdateAI(const uint32 diff)
     if (PoisonThrustTimer < diff)
     {
         AddSpellToCast(m_creature->getVictim(), SPELL_POISON_THRUST);
-        PoisonThrustTimer = 10000 + rand()%10000;
+        PoisonThrustTimer += 10000 + rand()%10000;
     }
     else
         PoisonThrustTimer -= diff;
@@ -1492,7 +1492,7 @@ CreatureAI* GetAI_boss_romulo(Creature* _Creature)
 struct Dialogue
 {
     int32 textid;
-    uint32 timer;
+    int32 timer;
 };
 
 static Dialogue OzDialogue[]=
@@ -1561,9 +1561,9 @@ struct npc_barnesAI : public ScriptedAI
 
     uint64 SpotlightGUID;
 
-    uint32 TalkCount;
-    uint32 TalkTimer;
-    uint32 WipeTimer;
+    int32 TalkCount;
+    int32 TalkTimer;
+    int32 WipeTimer;
     uint32 Event;
 
     bool PerformanceReady;
@@ -1727,7 +1727,7 @@ struct npc_barnesAI : public ScriptedAI
                 if (operaAdds.isEmpty())
                     EnterEvadeMode();
 
-                WipeTimer = 2000;
+                WipeTimer += 2000;
             }
             else
                 WipeTimer -= diff;

@@ -38,13 +38,13 @@ struct boss_kruulAI : public ScriptedAI
 {
     boss_kruulAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 ShadowVolley_Timer;
-    uint32 Cleave_Timer;
-    uint32 ThunderClap_Timer;
-    uint32 TwistedReflection_Timer;
-    uint32 VoidBolt_Timer;
-    uint32 Rage_Timer;
-    uint32 Hound_Timer;
+    int32 ShadowVolley_Timer;
+    int32 Cleave_Timer;
+    int32 ThunderClap_Timer;
+    int32 TwistedReflection_Timer;
+    int32 VoidBolt_Timer;
+    int32 Rage_Timer;
+    int32 Hound_Timer;
     int Rand;
     int RandX;
     int RandY;
@@ -107,7 +107,7 @@ struct boss_kruulAI : public ScriptedAI
                 DoCast(m_creature->getVictim(),SPELL_SHADOWVOLLEY);
             }
 
-            ShadowVolley_Timer = 5000;
+            ShadowVolley_Timer += 5000;
         }else ShadowVolley_Timer -= diff;
 
         //Cleave_Timer
@@ -118,7 +118,7 @@ struct boss_kruulAI : public ScriptedAI
                 DoCast(m_creature->getVictim(),SPELL_CLEAVE);
             }
 
-            Cleave_Timer = 10000;
+            Cleave_Timer += 10000;
         }else Cleave_Timer -= diff;
 
         //ThunderClap_Timer
@@ -129,14 +129,14 @@ struct boss_kruulAI : public ScriptedAI
                 DoCast(m_creature->getVictim(),SPELL_THUNDERCLAP);
             }
 
-            ThunderClap_Timer = 12000;
+            ThunderClap_Timer += 12000;
         }else ThunderClap_Timer -= diff;
 
         //TwistedReflection_Timer
         if (TwistedReflection_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_TWISTEDREFLECTION);
-            TwistedReflection_Timer = 30000;
+            TwistedReflection_Timer += 30000;
         }else TwistedReflection_Timer -= diff;
 
         //VoidBolt_Timer
@@ -147,14 +147,14 @@ struct boss_kruulAI : public ScriptedAI
                 DoCast(m_creature->getVictim(),SPELL_VOIDBOLT);
             }
 
-            VoidBolt_Timer = 18000;
+            VoidBolt_Timer += 18000;
         }else VoidBolt_Timer -= diff;
 
         //Rage_Timer
         if (Rage_Timer < diff)
         {
             DoCast(m_creature,SPELL_RAGE);
-            Rage_Timer = 70000;
+            Rage_Timer += 70000;
         }else Rage_Timer -= diff;
 
         //Hound_Timer
@@ -164,7 +164,7 @@ struct boss_kruulAI : public ScriptedAI
             SummonHounds(m_creature->getVictim());
             SummonHounds(m_creature->getVictim());
 
-            Hound_Timer = 45000;
+            Hound_Timer += 45000;
         }else Hound_Timer -= diff;
 
         DoMeleeAttackIfReady();

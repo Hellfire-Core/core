@@ -166,7 +166,7 @@ struct mobs_scourge_archerAI : public ScriptedAI
     mobs_scourge_archerAI(Creature *c) : ScriptedAI(c) 
     {}
 
-    uint32 Shoot_Timer;
+    int32 Shoot_Timer;
 
     void MoveInLineOfSight(Unit * unit)
     {
@@ -187,7 +187,7 @@ struct mobs_scourge_archerAI : public ScriptedAI
             if(Unit * target = GetClosestCreatureWithEntry(me, RAND(NPC_INJURED_PEASANT, NPC_PLAGUED_PEASANT) , 50))
             {
                 AddSpellToCast(target, SPELL_SHOOT, true);
-                Shoot_Timer = 2000;
+                Shoot_Timer += 2000;
             }
         }
         else Shoot_Timer -= diff;
@@ -205,8 +205,8 @@ struct trigger_epic_staffAI : public TriggerAI
 {
     trigger_epic_staffAI(Creature *c) : TriggerAI(c) { }
 
-    uint32 Summon_Timer;
-    uint32 Summon_Footsoldier_Timer;
+    int32 Summon_Timer;
+    int32 Summon_Footsoldier_Timer;
     uint32 Summon_Counter;
     uint32 Counter;
     uint32 FailCounter;
@@ -232,7 +232,7 @@ struct trigger_epic_staffAI : public TriggerAI
                 me->GetNearPoint(x,y,z, 0.0f, 7.0f, frand(0, 2*M_PI));
                 me->SummonCreature(NPC_SCOURGE_FOOTSOLDIER, x,y,z, 0.0f, TEMPSUMMON_TIMED_DESPAWN, 60000);
             }
-            Summon_Footsoldier_Timer = 20000;
+            Summon_Footsoldier_Timer += 20000;
         }
         else Summon_Footsoldier_Timer -= diff;
 
@@ -250,7 +250,7 @@ struct trigger_epic_staffAI : public TriggerAI
                 me->GetNearPoint(x,y,z, 0.0f, 6.0f, frand(0, 2*M_PI));
                 me->SummonCreature(NPC_PLAGUED_PEASANT, x,y,z, 0.0f, TEMPSUMMON_TIMED_DESPAWN, 45000);
             }
-            Summon_Timer = 40000;
+            Summon_Timer += 40000;
             Summon_Counter++;
         }
         else Summon_Timer -= diff;
@@ -355,7 +355,7 @@ struct mobs_peasantsAI : public ScriptedAI
     {
     }
 
-    uint32 DeathsDoor_Timer;
+    int32 DeathsDoor_Timer;
     uint64 Summoner;
 
     void EnterEvadeMode()
@@ -374,7 +374,7 @@ struct mobs_peasantsAI : public ScriptedAI
         {
             if(!urand(0, 9))
                 AddSpellToCast(me, SPELL_DEATHS_DOOR, true);
-            DeathsDoor_Timer = 15000;
+            DeathsDoor_Timer += 15000;
         }
         else DeathsDoor_Timer -= diff;
 
@@ -404,7 +404,7 @@ struct mobs_plagued_peasantAI : public mobs_peasantsAI
 {
     mobs_plagued_peasantAI(Creature *c) : mobs_peasantsAI(c) { }
 
-    uint32 SeethingPlague_Timer;
+    int32 SeethingPlague_Timer;
 
     void UpdateAI(const uint32 diff)
     {
@@ -412,7 +412,7 @@ struct mobs_plagued_peasantAI : public mobs_peasantsAI
         {
             if(!urand(0, 2))
                 AddSpellToCast(me, SPELL_SEETHING_PLAGUE, true);
-            SeethingPlague_Timer = 10000;
+            SeethingPlague_Timer += 10000;
         }
         else SeethingPlague_Timer -= diff;
 

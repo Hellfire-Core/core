@@ -140,9 +140,9 @@ struct npc_wretched_devourerAI : public ScriptedAI
 {
     npc_wretched_devourerAI(Creature* c) : ScriptedAI(c) {}
 
-    uint32 ArcaneTorrent;
-    uint32 ManaTap;
-    uint32 NetherShock;
+    int32 ArcaneTorrent;
+    int32 ManaTap;
+    int32 NetherShock;
 
     void Reset()
     {
@@ -165,21 +165,21 @@ struct npc_wretched_devourerAI : public ScriptedAI
         if(ArcaneTorrent < diff)
         {
             AddSpellToCast(SPELL_ARCANE_TORRENT, CAST_SELF);
-            ArcaneTorrent = RAND(urand(1500, 4500),urand(6000, 11000));
+            ArcaneTorrent += RAND(urand(1500, 4500),urand(6000, 11000));
         }
         else
             ArcaneTorrent -= diff;
         if(ManaTap < diff)
         {
             AddSpellToCast(SPELL_MANA_TAP, CAST_TANK);
-            ManaTap = urand(15000, 24000);
+            ManaTap += urand(15000, 24000);
         }
         else
             ManaTap -= diff;
         if(NetherShock < diff)
         {
             AddSpellToCast(SPELL_NETHER_SHOCK, CAST_TANK);
-            NetherShock = urand(4000, 8000);
+            NetherShock += urand(4000, 8000);
         }
         else
             NetherShock -= diff;
@@ -207,8 +207,8 @@ struct npc_wretched_fiendAI : public ScriptedAI
 {
     npc_wretched_fiendAI(Creature* c) : ScriptedAI(c) {}
 
-    uint32 SunderArmor;
-    uint32 BitterWithdrawal;
+    int32 SunderArmor;
+    int32 BitterWithdrawal;
 
     void Reset()
     {
@@ -230,7 +230,7 @@ struct npc_wretched_fiendAI : public ScriptedAI
         if(SunderArmor < diff)
         {
             AddSpellToCast(SPELL_SUNDER_ARMOR, CAST_TANK);
-            SunderArmor = urand(12000, 16000);
+            SunderArmor += urand(12000, 16000);
         }
         else
             SunderArmor -= diff;
@@ -239,7 +239,7 @@ struct npc_wretched_fiendAI : public ScriptedAI
             if(BitterWithdrawal < diff)
             {
                 AddSpellToCast(SPELL_BITTER_WITHDRAWAL, CAST_TANK);
-                BitterWithdrawal = urand(10000, 15000);
+                BitterWithdrawal += urand(10000, 15000);
             }
             else
                 BitterWithdrawal -= diff;
@@ -270,10 +270,10 @@ struct npc_erratic_sentryAI : public ScriptedAI
 {
     npc_erratic_sentryAI(Creature* c) : ScriptedAI(c) {}
 
-    uint32 CapacitatorOverload;
-    uint32 Suppression;
-    uint32 ElectricalOverload;
-    uint32 CrystalStrike;
+    int32 CapacitatorOverload;
+    int32 Suppression;
+    int32 ElectricalOverload;
+    int32 CrystalStrike;
 
     void Reset()
     {
@@ -294,7 +294,7 @@ struct npc_erratic_sentryAI : public ScriptedAI
                     if(CapacitatorOverload < diff)
                     {
                         DoCast(me, CAPACITATOR_OVERLOAD, true);
-                        CapacitatorOverload = 500;
+                        CapacitatorOverload += 500;
                     }
                     else
                         CapacitatorOverload -= diff;
@@ -308,12 +308,12 @@ struct npc_erratic_sentryAI : public ScriptedAI
                     {
                         int32 dmg = 1714;
                         me->CastCustomSpell(me, CAPACITATOR_OVERLOAD, 0, 0, 0, true);
-                        CapacitatorOverload = 500;
+                        CapacitatorOverload += 500;
                         return;
                     }
                     if(HealthBelowPct(100) && roll_chance_i(15))
                         me->SetHealth(me->GetMaxHealth());
-                    CapacitatorOverload = 5000;
+                    CapacitatorOverload += 5000;
                 }
                 else
                     CapacitatorOverload -= diff;
@@ -334,7 +334,7 @@ struct npc_erratic_sentryAI : public ScriptedAI
         if(CrystalStrike < diff)
         {
             AddSpellToCast(SPELL_CRYSTAL_STRIKE, CAST_TANK);
-            CrystalStrike = 14000;
+            CrystalStrike += 14000;
         }
         else
             CrystalStrike -= diff;
@@ -346,7 +346,7 @@ struct npc_erratic_sentryAI : public ScriptedAI
                 if(roll_chance_i(20))
                     DoYell(YELL_CORE_OVERLOAD, 0, me->getVictim());
                 AddSpellToCast(SPELL_ELECTRICAL_OVERLOAD, CAST_SELF);
-                ElectricalOverload = 10000;
+                ElectricalOverload += 10000;
             }
             else
                 ElectricalOverload -= diff;
@@ -411,7 +411,7 @@ struct npc_wrath_enforcerAI : public ScriptedAI
 {
     npc_wrath_enforcerAI(Creature* c) : ScriptedAI(c) {}
 
-    uint32 FlameWave;
+    int32 FlameWave;
 
     void Reset()
     {
@@ -445,7 +445,7 @@ struct npc_wrath_enforcerAI : public ScriptedAI
         if(FlameWave < diff)
         {
             AddSpellToCast(SPELL_FLAME_WAVE, CAST_SELF);
-            FlameWave = urand(20000, 30000);
+            FlameWave += urand(20000, 30000);
         }
         else
             FlameWave -= diff;
@@ -470,7 +470,7 @@ struct npc_flame_waveAI : public ScriptedAI
 {
     npc_flame_waveAI(Creature* c) : ScriptedAI(c) {}
 
-    uint32 Burn;
+    int32 Burn;
 
     void IsSummonedBy(Unit *summoner)
     {
@@ -488,7 +488,7 @@ struct npc_flame_waveAI : public ScriptedAI
         if(Burn < diff)
         {
             DoCast(me, SPELL_BURN, true);
-            Burn = 500;
+            Burn += 500;
         }
         else
             Burn -= diff;
@@ -512,9 +512,9 @@ struct npc_pit_overlordAI : public ScriptedAI
 {
     npc_pit_overlordAI(Creature* c) : ScriptedAI(c) {}
 
-    uint32 Cleave;
-    uint32 ConeOfFire;
-    uint32 DeathCoil;
+    int32 Cleave;
+    int32 ConeOfFire;
+    int32 DeathCoil;
 
     void Reset()
     {
@@ -549,7 +549,7 @@ struct npc_pit_overlordAI : public ScriptedAI
         if(Cleave < diff)
         {
             AddSpellToCast(SPELL_CLEAVE);
-            Cleave = urand(10000, 20000);
+            Cleave += urand(10000, 20000);
         }
         else
             Cleave -= diff;
@@ -557,7 +557,7 @@ struct npc_pit_overlordAI : public ScriptedAI
         if(ConeOfFire < diff)
         {
             AddSpellToCast(SPELL_CONE_OF_FIRE, CAST_NULL);
-            ConeOfFire = urand(8000, 16000);
+            ConeOfFire += urand(8000, 16000);
         }
         else
             ConeOfFire -= diff;
@@ -565,7 +565,7 @@ struct npc_pit_overlordAI : public ScriptedAI
         if(DeathCoil < diff)
         {
             AddSpellToCast(SPELL_DEATH_COIL);
-            DeathCoil = urand(8000, 12000);
+            DeathCoil += urand(8000, 12000);
         }
         else
             DeathCoil -= diff;
@@ -647,8 +647,8 @@ struct npc_shattered_sun_bombardierAI : public ScriptedAI
     npc_shattered_sun_bombardierAI(Creature* c) : ScriptedAI(c) {}
 
     uint64 PlayerGUID;
-    uint32 yell_timer;
-    uint8 yell;
+    int32 yell_timer;
+    int8 yell;
     bool PathFly;
 
     void Reset()
@@ -675,7 +675,7 @@ struct npc_shattered_sun_bombardierAI : public ScriptedAI
             m_creature->GetMotionMaster()->MovePath(BOMBARDIER_FLY_PATH, false);
             me->SetSpeed(MOVE_WALK, 1.4*who->GetSpeed(MOVE_FLIGHT));
             me->SetVisibility(VISIBILITY_ON);
-            yell_timer = 5000;
+            yell_timer += 5000;
             PathFly = true;
         }
     }
@@ -691,13 +691,13 @@ struct npc_shattered_sun_bombardierAI : public ScriptedAI
                         me->Yell(BombardierYell[rand()%3], 0, PlayerGUID);
                     me->SetSpeed(MOVE_WALK, 1.01*me->GetSpeed(MOVE_WALK));
                     yell++;
-                    yell_timer = 7000;
+                    yell_timer += 7000;
                     break;
                 case 1:
                     if(me->GetGUIDLow() == 85370)
                         me->Yell(BombardierYell[3+rand()%3], 0, PlayerGUID);
                     yell++;
-                    yell_timer = 7000;
+                    yell_timer += 7000;
                     break;
                 case 2:
                     me->DisappearAndDie();
@@ -755,7 +755,7 @@ struct npc_greengill_slaveAI : public ScriptedAI
     npc_greengill_slaveAI(Creature* c) : ScriptedAI(c) {}
 
     uint64 PlayerGUID;
-    uint32 enrageTimer;
+    int32 enrageTimer;
 
     void Reset()
     {
@@ -816,7 +816,7 @@ struct npc_greengill_slaveAI : public ScriptedAI
                 me->GetNearPoint( x, y, z, 0, 15, frand(0,2*M_PI));
                 me->UpdateAllowedPositionZ(x, y, z);
                 me->GetMotionMaster()->MovePoint(1, x, y, z);
-                enrageTimer = 60000;
+                enrageTimer += 60000;
             }
             else
                 enrageTimer -= diff;
@@ -856,7 +856,7 @@ struct npc_ioqd_brutallusAI : public ScriptedAI
 {
     npc_ioqd_brutallusAI(Creature* c) : ScriptedAI(c) {}
 
-    uint32 RandYell_timer;
+    int32 RandYell_timer;
 
     void Reset()
     {
@@ -877,7 +877,7 @@ struct npc_ioqd_brutallusAI : public ScriptedAI
         if(RandYell_timer < diff)
         {
             DoYell(BrutalYell[urand(1, 6)], 0, 0);
-            RandYell_timer = urand(15000, 25000);
+            RandYell_timer += urand(15000, 25000);
         }
         else
             RandYell_timer -= diff;
@@ -902,7 +902,7 @@ struct npc_ioqd_madrigosaAI : public ScriptedAI
 {
     npc_ioqd_madrigosaAI(Creature* c) : ScriptedAI(c) {}
 
-    uint32 RandYell_timer;
+    int32 RandYell_timer;
 
     void Reset()
     {

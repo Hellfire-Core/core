@@ -207,7 +207,7 @@ struct npc_secondTrialAI : public ScriptedAI
 {
     npc_secondTrialAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 timer;
+    int32 timer;
     uint8  questPhase;
     uint64 summonerGuid;
 
@@ -216,10 +216,10 @@ struct npc_secondTrialAI : public ScriptedAI
     bool spellJudLight;
     bool spellCommand;
 
-    uint32 timerFlashLight;
-    uint32 timerJustice;
-    uint32 timerJudLight;
-    uint32 timerCommand;
+    int32 timerFlashLight;
+    int32 timerJustice;
+    int32 timerJudLight;
+    int32 timerCommand;
 
 
     void Reset() {
@@ -289,7 +289,7 @@ struct npc_secondTrialAI : public ScriptedAI
         if ( m_creature->GetHealth()*100 / m_creature->GetMaxHealth() < 70 ){
           if ( timerFlashLight < diff ) {
             DoCast(m_creature, SPELL_FLASH_OF_LIGHT);
-            timerFlashLight = TIMER_FLASH_OF_LIGHT +  rand()%( TIMER_FLASH_OF_LIGHT );
+            timerFlashLight += TIMER_FLASH_OF_LIGHT +  rand()%( TIMER_FLASH_OF_LIGHT );
           }
           else
             timerFlashLight -= diff;
@@ -300,7 +300,7 @@ struct npc_secondTrialAI : public ScriptedAI
           if ( timerJustice < diff )
             {
             DoCast(m_creature, SPELL_SEAL_OF_JUSTICE);
-            timerJustice = TIMER_SEAL_OF_JUSTICE +  rand()%( TIMER_SEAL_OF_JUSTICE );
+            timerJustice += TIMER_SEAL_OF_JUSTICE +  rand()%( TIMER_SEAL_OF_JUSTICE );
           }
           else
             timerJustice -= diff;
@@ -309,7 +309,7 @@ struct npc_secondTrialAI : public ScriptedAI
       if ( spellJudLight ) {
           if ( timerJudLight < diff ) {
             DoCast(m_creature,  SPELL_JUDGEMENT_OF_LIGHT);
-            timerJudLight = TIMER_JUDGEMENT_OF_LIGHT +  rand()%( TIMER_JUDGEMENT_OF_LIGHT );
+            timerJudLight += TIMER_JUDGEMENT_OF_LIGHT +  rand()%( TIMER_JUDGEMENT_OF_LIGHT );
           }
           else
             timerJudLight -= diff;
@@ -318,7 +318,7 @@ struct npc_secondTrialAI : public ScriptedAI
       if ( spellCommand ) {
           if ( timerCommand < diff ) {
             DoCast(m_creature,  TIMER_SEAL_OF_COMMAND);
-            timerCommand = TIMER_SEAL_OF_COMMAND +  rand()%( TIMER_SEAL_OF_COMMAND );
+            timerCommand += TIMER_SEAL_OF_COMMAND +  rand()%( TIMER_SEAL_OF_COMMAND );
           }
           else
             timerCommand -= diff;
@@ -343,7 +343,7 @@ struct master_kelerun_bloodmournAI : public ScriptedAI
 
     uint8  questPhase;
     uint8  paladinPhase;
-    uint32 timer;
+    int32 timer;
     uint32 resetTimer;
 
     bool toReset;
@@ -411,7 +411,7 @@ struct master_kelerun_bloodmournAI : public ScriptedAI
                     Reset();
 
                 questPhase=4;
-                timer = OFFSET_NEXT_ATTACK;
+                timer += OFFSET_NEXT_ATTACK;
             }
             else
                 timer -= diff;
@@ -439,7 +439,7 @@ struct master_kelerun_bloodmournAI : public ScriptedAI
                 }
             }
 
-            timer = OFFSET_NEXT_ATTACK;
+            timer += OFFSET_NEXT_ATTACK;
             questPhase = 2;
             paladinPhase = 0;
         }
@@ -675,8 +675,8 @@ struct npc_infused_crystalAI : public Scripted_NoMovementAI
 {
     npc_infused_crystalAI(Creature* c) : Scripted_NoMovementAI(c) {}
 
-    uint32 EndTimer;
-    uint32 WaveTimer;
+    int32 EndTimer;
+    int32 WaveTimer;
     bool Completed;
     bool Progress;
     uint64 PlayerGUID;
@@ -750,7 +750,7 @@ struct npc_infused_crystalAI : public Scripted_NoMovementAI
             m_creature->SummonCreature(MOB_ENRAGED_WRAITH, SpawnLocations[ran1].x, SpawnLocations[ran1].y, SpawnLocations[ran1].z, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 10000);
             m_creature->SummonCreature(MOB_ENRAGED_WRAITH, SpawnLocations[ran2].x, SpawnLocations[ran2].y, SpawnLocations[ran2].z, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 10000);
             m_creature->SummonCreature(MOB_ENRAGED_WRAITH, SpawnLocations[ran3].x, SpawnLocations[ran3].y, SpawnLocations[ran3].z, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 10000);
-            WaveTimer = 30000;
+            WaveTimer += 30000;
         }else WaveTimer -= diff;
     }
 };

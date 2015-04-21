@@ -51,12 +51,12 @@ struct boss_maiden_of_virtueAI : public ScriptedAI
 
     ScriptedInstance *pInstance;
 
-    uint32 Repentance_Timer;
-    uint32 Holyfire_Timer;
-    uint32 Holywrath_Timer;
-    uint32 Holyground_Timer;
-    uint32 Enrage_Timer;
-    uint32 CheckTimer;
+    int32 Repentance_Timer;
+    int32 Holyfire_Timer;
+    int32 Holywrath_Timer;
+    int32 Holyground_Timer;
+    int32 Enrage_Timer;
+    int32 CheckTimer;
 
     WorldLocation wLoc;
 
@@ -112,7 +112,7 @@ struct boss_maiden_of_virtueAI : public ScriptedAI
             else
                 DoZoneInCombat();
 
-            CheckTimer = 3000;
+            CheckTimer += 3000;
         }
         else
             CheckTimer -= diff;
@@ -128,7 +128,7 @@ struct boss_maiden_of_virtueAI : public ScriptedAI
         if(Holyground_Timer < diff)
         {
             DoCast(m_creature, SPELL_HOLYGROUND, true);     //Triggered so it doesn't interrupt her at all
-            Holyground_Timer = 3000;
+            Holyground_Timer += 3000;
         }
         else
             Holyground_Timer -= diff;
@@ -139,7 +139,7 @@ struct boss_maiden_of_virtueAI : public ScriptedAI
 
             DoScriptText(RAND(SAY_REPENTANCE1, SAY_REPENTANCE2), m_creature);
 
-            Repentance_Timer = 30000 + rand()%15000;        //A little randomness on that spell
+            Repentance_Timer += 30000 + rand()%15000;        //A little randomness on that spell
             Holyfire_Timer += 6000;
         }
         else
@@ -150,7 +150,7 @@ struct boss_maiden_of_virtueAI : public ScriptedAI
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0,GetSpellMaxRange(SPELL_HOLYFIRE), true))
                 DoCast(target,SPELL_HOLYFIRE);
 
-                Holyfire_Timer = 8000 + rand()%17000; //Anywhere from 8 to 25 seconds, good luck having several of those in a row!
+                Holyfire_Timer += 8000 + rand()%17000; //Anywhere from 8 to 25 seconds, good luck having several of those in a row!
         }
         else
             Holyfire_Timer -= diff;
@@ -160,7 +160,7 @@ struct boss_maiden_of_virtueAI : public ScriptedAI
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0,GetSpellMaxRange(SPELL_HOLYWRATH), true))
                 DoCast(target,SPELL_HOLYWRATH);
 
-            Holywrath_Timer = 20000+(rand()%10000);     //20-30 secs sounds nice
+            Holywrath_Timer += 20000+(rand()%10000);     //20-30 secs sounds nice
 
         }
         else

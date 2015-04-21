@@ -59,9 +59,9 @@ struct boss_curatorAI : public ScriptedAI
 
     ScriptedInstance* pInstance;
 
-    uint32 addTimer;
-    uint32 hatefulBoltTimer;
-    uint32 berserkTimer;
+    int32 addTimer;
+    int32 hatefulBoltTimer;
+    int32 berserkTimer;
 
     WorldLocation wLoc;
 
@@ -139,7 +139,7 @@ struct boss_curatorAI : public ScriptedAI
 
                 DoScriptText(RAND(SAY_SUMMON1, SAY_SUMMON2, 0, 0), m_creature);
 
-                addTimer = 10000;
+                addTimer += 10000;
             }
             else
                 addTimer -= diff;
@@ -147,7 +147,7 @@ struct boss_curatorAI : public ScriptedAI
             if (hatefulBoltTimer < diff)
             {
                 AddSpellToCast(SPELL_HATEFUL_BOLT, CAST_THREAT_SECOND);
-                hatefulBoltTimer = enraged ? 7000 : 15000;
+                hatefulBoltTimer += enraged ? 7000 : 15000;
             }
             else
                 hatefulBoltTimer -= diff;
@@ -162,7 +162,7 @@ struct boss_curatorAI : public ScriptedAI
         if (berserkTimer < diff)
         {
             ForceSpellCastWithScriptText(SPELL_BERSERK, CAST_SELF, SAY_ENRAGE);
-            berserkTimer = 60000;
+            berserkTimer += 60000;
         }
         else
             berserkTimer -= diff;

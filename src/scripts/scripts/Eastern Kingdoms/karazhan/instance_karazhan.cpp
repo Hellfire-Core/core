@@ -463,10 +463,10 @@ void instance_karazhan::Update(uint32 diff)
             if(Kilrek && !Kilrek->isAlive() && !needRespawn)
             {
                 needRespawn = true;
-                CheckTimer = 45000;
+                CheckTimer += 45000;
             }
             else
-                CheckTimer = 5000;
+                CheckTimer += 5000;
         }
         else
             CheckTimer -= diff;
