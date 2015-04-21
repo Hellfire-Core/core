@@ -42,11 +42,11 @@ struct boss_galvangarAI : public ScriptedAI
     }
 
 
-    uint32 CleaveTimer;
-    uint32 FrighteningShoutTimer;
-    uint32 WhirlwindTimer;
-    uint32 MortalStrikeTimer;
-    uint32 CheckTimer;
+    int32 CleaveTimer;
+    int32 FrighteningShoutTimer;
+    int32 WhirlwindTimer;
+    int32 MortalStrikeTimer;
+    int32 CheckTimer;
     WorldLocation wLoc;
 
 
@@ -73,13 +73,11 @@ struct boss_galvangarAI : public ScriptedAI
 
     void JustDied(Unit* Killer){}
 
-    void UpdateTimer(uint32 &timer, const uint32 diff)
+    void UpdateTimer(int32 &timer, const uint32 diff)
     {
         if (timer)
             if (timer > diff)
                 timer -= diff;
-            else
-                timer = 0;
     }
 
     void UpdateAI(const uint32 diff)
@@ -94,7 +92,7 @@ struct boss_galvangarAI : public ScriptedAI
                 EnterEvadeMode();
                 return;
             }
-            CheckTimer = 2000;
+            CheckTimer += 2000;
         }
         else
             CheckTimer -= diff;
@@ -108,25 +106,25 @@ struct boss_galvangarAI : public ScriptedAI
         if (CleaveTimer < diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_CLEAVE);
-            CleaveTimer =  urand(4000, 12000);
+            CleaveTimer +=  urand(4000, 12000);
         }
 
         if (FrighteningShoutTimer < diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_FRIGHTENING_SHOUT);
-            FrighteningShoutTimer = urand(14000, 24000);
+            FrighteningShoutTimer += urand(14000, 24000);
         }
 
         if (MortalStrikeTimer < diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_MORTAL_STRIKE);
-            MortalStrikeTimer = 6000;
+            MortalStrikeTimer += 6000;
         }
 
         if (WhirlwindTimer < diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_WHIRLWIND);
-            WhirlwindTimer = 10000;
+            WhirlwindTimer += 10000;
         }
 
         CastNextSpellIfAnyAndReady();

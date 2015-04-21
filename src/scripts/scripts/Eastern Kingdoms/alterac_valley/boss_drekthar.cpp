@@ -64,12 +64,12 @@ struct boss_drektharAI : public ScriptedAI
         m_creature->GetPosition(wLoc);
     }
 
-    uint32 WhirlwindTimer;
-    uint32 Whirlwind2Timer;
-    uint32 KnockdownTimer;
-    uint32 FrenzyTimer;
-    uint32 YellTimer;
-    uint32 CheckTimer;
+    int32 WhirlwindTimer;
+    int32 Whirlwind2Timer;
+    int32 KnockdownTimer;
+    int32 FrenzyTimer;
+    int32 YellTimer;
+    int32 CheckTimer;
     WorldLocation wLoc;
 
     void Reset()
@@ -138,7 +138,7 @@ struct boss_drektharAI : public ScriptedAI
             me->SetSpeed(MOVE_WALK, 2.0f, true);
             me->SetSpeed(MOVE_RUN, 2.0f, true);
 
-            CheckTimer = 2000;
+            CheckTimer += 2000;
         }
         else
             CheckTimer -= diff;
@@ -146,7 +146,7 @@ struct boss_drektharAI : public ScriptedAI
         if (WhirlwindTimer < diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_WHIRLWIND);
-            WhirlwindTimer =  urand(8000, 18000);
+            WhirlwindTimer +=  urand(8000, 18000);
         }
         else
             WhirlwindTimer -= diff;
@@ -154,7 +154,7 @@ struct boss_drektharAI : public ScriptedAI
         if (Whirlwind2Timer < diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_WHIRLWIND2);
-            Whirlwind2Timer = urand(7000, 25000);
+            Whirlwind2Timer += urand(7000, 25000);
         }
         else
             Whirlwind2Timer -= diff;
@@ -162,7 +162,7 @@ struct boss_drektharAI : public ScriptedAI
         if (KnockdownTimer < diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_KNOCKDOWN);
-            KnockdownTimer = urand(10000, 15000);
+            KnockdownTimer += urand(10000, 15000);
         }
         else
             KnockdownTimer -= diff;
@@ -170,7 +170,7 @@ struct boss_drektharAI : public ScriptedAI
         if (FrenzyTimer < diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_FRENZY);
-            FrenzyTimer = urand(20000, 25000);
+            FrenzyTimer += urand(20000, 25000);
         }
         else
             FrenzyTimer -= diff;
@@ -178,7 +178,7 @@ struct boss_drektharAI : public ScriptedAI
         if (YellTimer < diff)
         {
             DoScriptText(RAND(YELL_RANDOM1, YELL_RANDOM2, YELL_RANDOM3, YELL_RANDOM4, YELL_RANDOM5), m_creature);
-            YellTimer = urand(20000, 30000); //20 to 30 seconds
+            YellTimer += urand(20000, 30000); //20 to 30 seconds
         }
         else
             YellTimer -= diff;
@@ -204,11 +204,11 @@ struct boss_drektharOfficerAI : public ScriptedAI
         m_creature->GetPosition(wLoc);
     }
 
-    uint32 chargeTimer;
-    uint32 cleaveTimer;
-    uint32 demoShoutTimer;
-    uint32 whirlwindTimer;
-    uint32 CheckTimer;
+    int32 chargeTimer;
+    int32 cleaveTimer;
+    int32 demoShoutTimer;
+    int32 whirlwindTimer;
+    int32 CheckTimer;
     WorldLocation wLoc;
 
     void Reset()
@@ -273,7 +273,7 @@ struct boss_drektharOfficerAI : public ScriptedAI
             me->SetSpeed(MOVE_WALK, 1.5f, true);
             me->SetSpeed(MOVE_RUN, 1.5f, true);
 
-            CheckTimer = 2000;
+            CheckTimer += 2000;
         }
         else
             CheckTimer -= diff;
@@ -285,7 +285,7 @@ struct boss_drektharOfficerAI : public ScriptedAI
             if (target)
                 AddSpellToCast(target, AV_DT_CHARGE);
 
-            chargeTimer = urand(7500, 20000);
+            chargeTimer += urand(7500, 20000);
         }
         else
             chargeTimer -= diff;
@@ -293,7 +293,7 @@ struct boss_drektharOfficerAI : public ScriptedAI
         if (cleaveTimer < diff)
         {
             AddSpellToCast(AV_DT_CLEAVE, CAST_TANK);
-            cleaveTimer = urand(5000, 10000);
+            cleaveTimer += urand(5000, 10000);
         }
         else
             cleaveTimer -= diff;
@@ -301,7 +301,7 @@ struct boss_drektharOfficerAI : public ScriptedAI
         if (demoShoutTimer < diff)
         {
             AddSpellToCast(AV_DT_DEMOSHOUT, CAST_NULL);
-            demoShoutTimer = urand(14000, 25000);
+            demoShoutTimer += urand(14000, 25000);
         }
         else
             demoShoutTimer -= diff;
@@ -309,7 +309,7 @@ struct boss_drektharOfficerAI : public ScriptedAI
         if (whirlwindTimer < diff)
         {
             AddSpellToCast(AV_DT_WHIRLWIND, CAST_SELF);
-            whirlwindTimer = urand(9000, 13000);
+            whirlwindTimer += urand(9000, 13000);
         }
         else
             whirlwindTimer -= diff;

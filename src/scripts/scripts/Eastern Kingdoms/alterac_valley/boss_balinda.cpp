@@ -41,10 +41,10 @@ struct boss_balindaAI : public ScriptedAI
         m_creature->GetPosition(wLoc);
     }
 
-    uint32 CoCTimer;
-    uint32 CheckTimer;
-    uint32 WaterElementalTimer;
-    uint32 CastTimer;
+    int32 CoCTimer;
+    int32 CheckTimer;
+    int32 WaterElementalTimer;
+    int32 CastTimer;
     uint32 SpellId;
     WorldLocation wLoc;
     SummonList summons;
@@ -96,7 +96,7 @@ struct boss_balindaAI : public ScriptedAI
                 EnterEvadeMode();
                 return;
             }
-            CheckTimer = 2000;
+            CheckTimer += 2000;
         }
         else
             CheckTimer -= diff;
@@ -104,7 +104,7 @@ struct boss_balindaAI : public ScriptedAI
         if (WaterElementalTimer < diff)
         {
             ForceSpellCast(m_creature, SPELL_WATER_ELEMENTAL);
-            WaterElementalTimer = 90000; // 90s
+            WaterElementalTimer += 90000; // 90s
         }
         else
             WaterElementalTimer -= diff;
@@ -124,19 +124,19 @@ struct boss_balindaAI : public ScriptedAI
                 if (!CoCTimer)
                 {
                     ForceSpellCast(me->getVictim(), SPELL_CONE_OF_COLD);
-                    CoCTimer = urand(8000, 12000);
+                    CoCTimer += urand(8000, 12000);
                     CastTimer = 0;
                 }
                 else
                 {
                     ForceSpellCast(me->getVictim(), SPELL_ARCANE_EXPLOSION);
-                    CastTimer = 2000;
+                    CastTimer += 2000;
                 }
             }
             else
             {
                 AddSpellToCast(m_creature->getVictim(), RAND(SPELL_FROSTBOLT, SPELL_FIREBALL));
-                CastTimer = 2500;
+                CastTimer += 2500;
             }
         }
         else

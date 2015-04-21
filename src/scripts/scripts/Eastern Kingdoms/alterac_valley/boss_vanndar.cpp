@@ -62,11 +62,11 @@ struct boss_vanndarAI : public ScriptedAI
         m_creature->GetPosition(wLoc);
     }
 
-    uint32 AvatarTimer;
-    uint32 ThunderclapTimer;
-    uint32 StormboltTimer;
-    uint32 YellTimer;
-    uint32 CheckTimer;
+    int32 AvatarTimer;
+    int32 ThunderclapTimer;
+    int32 StormboltTimer;
+    int32 YellTimer;
+    int32 CheckTimer;
     WorldLocation wLoc;
 
     void Reset()
@@ -134,7 +134,7 @@ struct boss_vanndarAI : public ScriptedAI
             me->SetSpeed(MOVE_WALK, 2.0f, true);
             me->SetSpeed(MOVE_RUN, 2.0f, true);
 
-            CheckTimer = 2000;
+            CheckTimer += 2000;
         }
         else
             CheckTimer -= diff;
@@ -142,7 +142,7 @@ struct boss_vanndarAI : public ScriptedAI
         if (AvatarTimer < diff)
         {
             ForceSpellCast(m_creature->getVictim(), SPELL_AVATAR);
-            AvatarTimer = urand(15000, 20000);
+            AvatarTimer += urand(15000, 20000);
         }
         else
             AvatarTimer -= diff;
@@ -150,7 +150,7 @@ struct boss_vanndarAI : public ScriptedAI
         if (ThunderclapTimer < diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_THUNDERCLAP);
-            ThunderclapTimer = urand(5000, 15000);
+            ThunderclapTimer += urand(5000, 15000);
         }
         else
             ThunderclapTimer -= diff;
@@ -160,7 +160,7 @@ struct boss_vanndarAI : public ScriptedAI
             Unit * victim = SelectUnit(SELECT_TARGET_RANDOM, 1, 30.0f, true);
             if (victim)
                 AddSpellToCast(victim, SPELL_STORMBOLT);
-            StormboltTimer = urand(10000, 25000);
+            StormboltTimer += urand(10000, 25000);
         }
         else
             StormboltTimer -= diff;
@@ -168,7 +168,7 @@ struct boss_vanndarAI : public ScriptedAI
         if (YellTimer < diff)
         {
             DoScriptText(RAND(YELL_RANDOM1, YELL_RANDOM2, YELL_RANDOM3, YELL_RANDOM4, YELL_RANDOM5, YELL_RANDOM6, YELL_RANDOM7), m_creature);
-            YellTimer = urand(20000, 30000); //20 to 30 seconds
+            YellTimer += urand(20000, 30000); //20 to 30 seconds
         }
         else
             YellTimer -= diff;
@@ -194,11 +194,11 @@ struct boss_vanndarOfficerAI : public ScriptedAI
         m_creature->GetPosition(wLoc);
     }
 
-    uint32 chargeTimer;
-    uint32 cleaveTimer;
-    uint32 demoShoutTimer;
-    uint32 whirlwindTimer;
-    uint32 CheckTimer;
+    int32 chargeTimer;
+    int32 cleaveTimer;
+    int32 demoShoutTimer;
+    int32 whirlwindTimer;
+    int32 CheckTimer;
     WorldLocation wLoc;
 
     void Reset()
@@ -263,7 +263,7 @@ struct boss_vanndarOfficerAI : public ScriptedAI
             me->SetSpeed(MOVE_WALK, 1.5f, true);
             me->SetSpeed(MOVE_RUN, 1.5f, true);
 
-            CheckTimer = 2000;
+            CheckTimer += 2000;
         }
         else
             CheckTimer -= diff;
@@ -275,7 +275,7 @@ struct boss_vanndarOfficerAI : public ScriptedAI
             if (target)
                 AddSpellToCast(target, AV_VO_CHARGE);
 
-            chargeTimer = urand(7500, 20000);
+            chargeTimer += urand(7500, 20000);
         }
         else
             chargeTimer -= diff;
@@ -283,7 +283,7 @@ struct boss_vanndarOfficerAI : public ScriptedAI
         if (cleaveTimer < diff)
         {
             AddSpellToCast(AV_VO_CLEAVE, CAST_TANK);
-            cleaveTimer = urand(5000, 10000);
+            cleaveTimer += urand(5000, 10000);
         }
         else
             cleaveTimer -= diff;
@@ -291,7 +291,7 @@ struct boss_vanndarOfficerAI : public ScriptedAI
         if (demoShoutTimer < diff)
         {
             AddSpellToCast(AV_VO_DEMOSHOUT, CAST_NULL);
-            demoShoutTimer = urand(14000, 25000);
+            demoShoutTimer += urand(14000, 25000);
         }
         else
             demoShoutTimer -= diff;
@@ -299,7 +299,7 @@ struct boss_vanndarOfficerAI : public ScriptedAI
         if (whirlwindTimer < diff)
         {
             AddSpellToCast(AV_VO_WHIRLWIND, CAST_SELF);
-            whirlwindTimer = urand(9000, 13000);
+            whirlwindTimer += urand(9000, 13000);
         }
         else
             whirlwindTimer -= diff;
