@@ -66,11 +66,11 @@ struct boss_selin_fireheartAI : public ScriptedAI
 
     WorldLocation wLoc;
 
-    uint32 DrainLifeTimer;
-    uint32 DrainManaTimer;
-    uint32 FelExplosionTimer;
-    uint32 DrainCrystalTimer;
-    uint32 CheckTimer;
+    int32 DrainLifeTimer;
+    int32 DrainManaTimer;
+    int32 FelExplosionTimer;
+    int32 DrainCrystalTimer;
+    int32 CheckTimer;
 
     bool IsDraining;
     bool DrainingCrystal;
@@ -233,7 +233,7 @@ struct boss_selin_fireheartAI : public ScriptedAI
         {
             if(!me->IsWithinDistInMap(&wLoc, 30.0))
                 EnterEvadeMode();
-            CheckTimer = 1000;
+            CheckTimer += 1000;
         }
         else
             CheckTimer -= diff;
@@ -245,7 +245,7 @@ struct boss_selin_fireheartAI : public ScriptedAI
             {
                 if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 45, true, POWER_MANA))
                     AddSpellToCast(target, SPELL_DRAIN_MANA, false, true);
-                DrainManaTimer = urand(18000, 25000);
+                DrainManaTimer += urand(18000, 25000);
             }
             else
                 DrainManaTimer -= diff;
@@ -260,7 +260,7 @@ struct boss_selin_fireheartAI : public ScriptedAI
                 {
                     if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 20, true))
                         AddSpellToCast(target, SPELL_DRAIN_LIFE, false, true);
-                    DrainLifeTimer = urand(8000, 12000);
+                    DrainLifeTimer += urand(8000, 12000);
                 }
                 else
                     DrainLifeTimer -= diff;
@@ -270,7 +270,7 @@ struct boss_selin_fireheartAI : public ScriptedAI
                     if(me->IsNonMeleeSpellCast(false))
                         return;
                     SelectNearestCrystal();
-                    DrainCrystalTimer = HeroicMode? 13000 : 18000;
+                    DrainCrystalTimer += HeroicMode? 13000 : 18000;
                 }
                 else
                     DrainCrystalTimer -= diff;
@@ -281,7 +281,7 @@ struct boss_selin_fireheartAI : public ScriptedAI
                 {
                     AddSpellToCast(m_creature, SPELL_FEL_EXPLOSION);
                     me->RemoveSingleAuraFromStack(SPELL_MANA_RAGE_TRIGGER, 1);
-                    FelExplosionTimer = 2300;
+                    FelExplosionTimer += 2300;
                 }
                 else
                     FelExplosionTimer -= diff;
@@ -306,7 +306,7 @@ struct mob_fel_crystalAI : public ScriptedAI
     }
 
     ScriptedInstance *pInstance;
-    uint32 Check_Timer;
+    int32 Check_Timer;
 
     void Reset()
     {
@@ -326,7 +326,7 @@ struct mob_fel_crystalAI : public ScriptedAI
                 else if(data == NOT_STARTED && !me->IsNonMeleeSpellCast(true))
                     me->CastSpell((Unit*)NULL, SPELL_FEL_CRYSTAL_VISUAL, false);
             }
-            Check_Timer = 2000;
+            Check_Timer += 2000;
         }
         else
             Check_Timer -= diff;

@@ -57,10 +57,10 @@ struct boss_vexallusAI : public ScriptedAI
 
     ScriptedInstance* instance;
 
-    uint32 ChainLightningTimer;
-    uint32 ArcaneShockTimer;
-    uint32 SpawnAddInterval;
-    uint32 AlreadySpawnedAmount;
+    int32 ChainLightningTimer;
+    int32 ArcaneShockTimer;
+    int32 SpawnAddInterval;
+    int32 AlreadySpawnedAmount;
 
     TimeTrackerSmall evadeTimer;
 
@@ -182,7 +182,7 @@ struct boss_vexallusAI : public ScriptedAI
                 if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0))
                     AddSpellToCast(target, SPELL_CHAIN_LIGHTNING);
 
-                ChainLightningTimer = urand(12000, 20000);
+                ChainLightningTimer += urand(12000, 20000);
             }
             else
                 ChainLightningTimer -= diff;
@@ -191,7 +191,7 @@ struct boss_vexallusAI : public ScriptedAI
             {
                 if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0))
                     AddSpellToCast(target, SPELL_ARCANE_SHOCK);
-                ArcaneShockTimer = urand(14000, 19000);
+                ArcaneShockTimer += urand(14000, 19000);
             }
             else
                 ArcaneShockTimer -= diff;

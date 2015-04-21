@@ -89,21 +89,21 @@ struct boss_felblood_kaelthasAI : public ScriptedAI
     ScriptedInstance* pInstance;
 
     SummonList summons;
-    uint32 FireballTimer;
-    uint32 PhoenixTimer;
-    uint32 FlameStrikeTimer;
-    uint32 CheckTimer;
-    uint32 IntroTimer;
-    uint32 OutroTimer;
+    int32 FireballTimer;
+    int32 PhoenixTimer;
+    int32 FlameStrikeTimer;
+    int32 CheckTimer;
+    int32 IntroTimer;
+    int32 OutroTimer;
     bool Intro;
     bool Outro;
     std::list<uint64> trashList;
 
     //Heroic only
-    uint32 PyroblastTimer;
+    int32 PyroblastTimer;
 
-    uint32 GravityLapseTimer;
-    uint32 GravityLapsePhase;
+    int32 GravityLapseTimer;
+    int32 GravityLapsePhase;
 
     uint8 Phase;
     // 1 = Fireball; Summon Phoenix; Flamestrike
@@ -284,7 +284,7 @@ struct boss_felblood_kaelthasAI : public ScriptedAI
                         ForceSpellCast(SPELL_TELEPORT_PLAYER, CAST_TANK, INTERRUPT_AND_CAST);
                 }
             }
-            CheckTimer = 2000;
+            CheckTimer += 2000;
         }
         else
             CheckTimer -= diff;
@@ -299,7 +299,7 @@ struct boss_felblood_kaelthasAI : public ScriptedAI
                     {
                         ForceSpellCastWithScriptText(SPELL_SHOCK_BARRIER, CAST_SELF, EMOTE_HEROIC_PYROBLAST, INTERRUPT_AND_CAST);
                         AddSpellToCast(SPELL_PYROBLAST, CAST_TANK);
-                        PyroblastTimer = 60000;
+                        PyroblastTimer += 60000;
                     }
                     else
                         PyroblastTimer -= diff;
@@ -312,13 +312,13 @@ struct boss_felblood_kaelthasAI : public ScriptedAI
                     {
                         if(me->GetMotionMaster()->GetCurrentMovementGeneratorType() == IDLE_MOTION_TYPE)
                             me->GetMotionMaster()->MoveChase(me->getVictim());
-                        FireballTimer = urand(2500, 6000);
+                        FireballTimer += urand(2500, 6000);
                     }
                     else
                     {
                         if(me->GetMotionMaster()->GetCurrentMovementGeneratorType() == CHASE_MOTION_TYPE)
                             me->GetMotionMaster()->MoveIdle();
-                        FireballTimer = 2000;
+                        FireballTimer += 2000;
                     }
                 }
                 else
@@ -327,7 +327,7 @@ struct boss_felblood_kaelthasAI : public ScriptedAI
                 if(PhoenixTimer < diff)
                 {
                     AddSpellToCastWithScriptText(SPELL_PHOENIX, CAST_SELF, SAY_PHOENIX);
-                    PhoenixTimer = urand(45000, 55000);
+                    PhoenixTimer += urand(45000, 55000);
                 }
                 else
                     PhoenixTimer -= diff;
@@ -337,7 +337,7 @@ struct boss_felblood_kaelthasAI : public ScriptedAI
                     AddSpellToCast(SPELL_SUMMON_FLAMESTRIKE, CAST_RANDOM);
                     if(roll_chance_f(40))
                         DoScriptText(SAY_FLAMESTRIKE, me);
-                    FlameStrikeTimer = urand(25000, 35000);
+                    FlameStrikeTimer += urand(25000, 35000);
                 }
                 else
                     FlameStrikeTimer -= diff;
@@ -372,11 +372,11 @@ struct boss_felblood_kaelthasAI : public ScriptedAI
                         case 0:
                             DoScriptText(SAY_RECAST_GRAVITY, m_creature);
                             GravityLapsePhase++;
-                            GravityLapseTimer = 500;
+                            GravityLapseTimer += 500;
                             break;
                         case 1:
                             AddSpellToCast(m_creature, SPELL_GRAVITY_LAPSE);
-                            GravityLapseTimer = 3000;// Don't interrupt the visual spell
+                            GravityLapseTimer += 3000;// Don't interrupt the visual spell
                             GravityLapsePhase++;
                             break;
                         case 2:
@@ -385,14 +385,14 @@ struct boss_felblood_kaelthasAI : public ScriptedAI
                             {
                                 AddSpellToCast(SPELL_SUMMON_ARCANE_SPHERE, CAST_SELF);
                             }
-                            GravityLapseTimer = 29000;
+                            GravityLapseTimer += 29000;
                             GravityLapsePhase++;
                             break;
                         case 3:
                             me->InterruptNonMeleeSpells(false);
                             RemoveGravityLapse();
                             AddSpellToCastWithScriptText(SPELL_POWER_FEEDBACK, CAST_SELF, SAY_TIRED);
-                            GravityLapseTimer = 10000;
+                            GravityLapseTimer += 10000;
                             GravityLapsePhase = 0;
                             break;
                     }
@@ -410,11 +410,11 @@ struct mob_felkael_flamestrikeAI : public Scripted_NoMovementAI
 {
     mob_felkael_flamestrikeAI(Creature *c) : Scripted_NoMovementAI(c) { }
 
-    uint32 FlameStrikeTimer;
+    int32 FlameStrikeTimer;
 
     void Reset()
     {
-        FlameStrikeTimer = 5000;
+        FlameStrikeTimer += 5000;
         DoCast(m_creature, SPELL_FLAMESTRIKE_VISUAL, true);
     }
     void UpdateAI(const uint32 diff)
@@ -435,8 +435,8 @@ struct mob_felkael_phoenix_eggAI : public Scripted_NoMovementAI
     {
         pInstance = (c->GetInstanceData());
     }
-    uint32 CheckTimer;
-    uint32 HatchTimer;
+    int32 CheckTimer;
+    int32 HatchTimer;
     ScriptedInstance* pInstance;
 
     void Reset()
@@ -451,7 +451,7 @@ struct mob_felkael_phoenix_eggAI : public Scripted_NoMovementAI
         {
             if(pInstance && pInstance->GetData(DATA_KAELTHAS_EVENT) != IN_PROGRESS)
                 me->Kill(me, false);
-            CheckTimer = 2000;
+            CheckTimer += 2000;
         }
         else
             CheckTimer -= diff;
@@ -475,7 +475,7 @@ struct mob_felkael_phoenixAI : public ScriptedAI
         pInstance = (c->GetInstanceData());
     }
     uint8 phase;
-    uint32 CheckTimer;
+    int32 CheckTimer;
     uint64 EggGUID;
     ScriptedInstance* pInstance;
 
@@ -507,7 +507,7 @@ struct mob_felkael_phoenixAI : public ScriptedAI
                 if(pInstance->GetData(DATA_KAEL_PHASE) == 2)
                     phase = 2;
             }
-            CheckTimer = 1000;
+            CheckTimer += 1000;
         }
         else
             CheckTimer -= diff;
@@ -538,9 +538,9 @@ struct mob_arcane_sphereAI : public ScriptedAI
     {
         pInstance = (c->GetInstanceData());
     }
-    uint32 DespawnTimer;
-    uint32 ChangeTargetTimer;
-    uint32 CheckTimer;
+    int32 DespawnTimer;
+    int32 ChangeTargetTimer;
+    int32 CheckTimer;
 
     ScriptedInstance* pInstance;
 
@@ -569,7 +569,7 @@ struct mob_arcane_sphereAI : public ScriptedAI
             m_creature->SetSpeed(MOVE_FLIGHT, 0.6);    // to be tested
             if(pInstance && pInstance->GetData(DATA_KAELTHAS_EVENT) != IN_PROGRESS)
                 DespawnTimer = 0;
-            CheckTimer = 1000;
+            CheckTimer += 1000;
         }
         else
             CheckTimer -= diff;
@@ -586,7 +586,7 @@ struct mob_arcane_sphereAI : public ScriptedAI
             DoResetThreat();
             if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, 200, true, me->getVictimGUID()))
                 me->GetMotionMaster()->MovePoint(1, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), false, true, UNIT_ACTION_DOWAYPOINTS);
-            ChangeTargetTimer = 7000;   // to be tested
+            ChangeTargetTimer += 7000;   // to be tested
         }
         else
             ChangeTargetTimer -= diff;
