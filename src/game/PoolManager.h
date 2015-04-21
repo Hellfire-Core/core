@@ -37,9 +37,8 @@ struct PoolObject
 {
     uint32  guid;
     float   chance;
-    bool exclude;
 
-    PoolObject(uint32 _guid, float _chance): guid(_guid), chance(fabs(_chance)), exclude(false) {}
+    PoolObject(uint32 _guid, float _chance): guid(_guid), chance(fabs(_chance)) {}
 
     template<typename T>
     void CheckEventLinkAndReport(uint32 poolId, int16 event_id, std::map<uint32, int16> const& creature2event, std::map<uint32, int16> const& go2event) const;
@@ -87,7 +86,6 @@ class PoolGroup
         void DespawnObject(SpawnedPoolData& spawns, uint32 guid=0);
         void Despawn1Object(uint32 guid);
         void SpawnObject(SpawnedPoolData& spawns, uint32 limit, uint32 triggerFrom, bool instantly);
-        void SetExcludeObject(uint32 guid, bool state);
 
         void Spawn1Object(PoolObject* obj, bool instantly);
         void ReSpawn1Object(PoolObject* obj);
@@ -129,9 +127,6 @@ class PoolManager
 
         template<typename T>
         bool IsSpawnedObject(uint32 db_guid_or_pool_id) const { return mSpawnedData.IsSpawnedObject<T>(db_guid_or_pool_id); }
-
-        template<typename T>
-        void SetExcludeObject(uint16 pool_id, uint32 db_guid_or_pool_id, bool state);
 
         bool CheckPool(uint16 pool_id) const;
         void CheckEventLinkAndReport(uint16 pool_id, int16 event_id, std::map<uint32, int16> const& creature2event, std::map<uint32, int16> const& go2event) const;

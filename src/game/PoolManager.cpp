@@ -169,29 +169,6 @@ void PoolGroup<T>::CheckEventLinkAndReport(int16 event_id, std::map<uint32, int1
 }
 
 template <class T>
-void PoolGroup<T>::SetExcludeObject(uint32 guid, bool state)
-{
-    for (uint32 i=0; i < EqualChanced.size(); ++i)
-    {
-        if (EqualChanced[i].guid == guid)
-        {
-            EqualChanced[i].exclude = state;
-            return;
-        }
-    }
-
-    for (uint32 i=0; i<ExplicitlyChanced.size(); ++i)
-    {
-        if (ExplicitlyChanced[i].guid == guid)
-        {
-            ExplicitlyChanced[i].exclude = state;
-            return;
-        }
-    }
-}
-
-
-template <class T>
 PoolObject* PoolGroup<T>::RollOne(SpawnedPoolData& spawns, uint32 triggerFrom)
 {
     if (!ExplicitlyChanced.empty())
@@ -203,7 +180,7 @@ PoolObject* PoolGroup<T>::RollOne(SpawnedPoolData& spawns, uint32 triggerFrom)
             roll -= ExplicitlyChanced[i].chance;
             // Triggering object is marked as spawned at this time and can be also rolled (respawn case)
             // so this need explicit check for this case
-            if (roll < 0 && !ExplicitlyChanced[i].exclude && (ExplicitlyChanced[i].guid == triggerFrom || !spawns.IsSpawnedObject<T>(ExplicitlyChanced[i].guid)))
+            if (roll < 0 && (ExplicitlyChanced[i].guid == triggerFrom || !spawns.IsSpawnedObject<T>(ExplicitlyChanced[i].guid)))
                 return &ExplicitlyChanced[i];
         }
     }
@@ -213,7 +190,7 @@ PoolObject* PoolGroup<T>::RollOne(SpawnedPoolData& spawns, uint32 triggerFrom)
         int32 index = irand(0, EqualChanced.size()-1);
         // Triggering object is marked as spawned at this time and can be also rolled (respawn case)
         // so this need explicit check for this case
-        if (!EqualChanced[index].exclude && (EqualChanced[index].guid == triggerFrom || !spawns.IsSpawnedObject<T>(EqualChanced[index].guid)))
+        if (EqualChanced[index].guid == triggerFrom || !spawns.IsSpawnedObject<T>(EqualChanced[index].guid))
             return &EqualChanced[index];
     }
 
@@ -986,19 +963,6 @@ void PoolManager::CheckEventLinkAndReport(uint16 pool_id, int16 event_id, std::m
     mPoolGameobjectGroups[pool_id].CheckEventLinkAndReport(event_id, creature2event, go2event);
     mPoolCreatureGroups[pool_id].CheckEventLinkAndReport(event_id, creature2event, go2event);
     mPoolPoolGroups[pool_id].CheckEventLinkAndReport(event_id, creature2event, go2event);
-}
-
-// Method that exclude some elements from next spawn
-template<>
-void PoolManager::SetExcludeObject<Creature>(uint16 pool_id, uint32 db_guid_or_pool_id, bool state)
-{
-    mPoolCreatureGroups[pool_id].SetExcludeObject(db_guid_or_pool_id, state);
-}
-
-template<>
-void PoolManager::SetExcludeObject<GameObject>(uint16 pool_id, uint32 db_guid_or_pool_id, bool state)
-{
-    mPoolGameobjectGroups[pool_id].SetExcludeObject(db_guid_or_pool_id, state);
 }
 
 // Call to update the pool when a gameobject/creature part of pool [pool_id] is ready to respawn
