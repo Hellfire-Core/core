@@ -34,12 +34,12 @@ struct boss_gythAI : public ScriptedAI
 {
     boss_gythAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 Aggro_Timer;
-    uint32 Dragons_Timer;
-    uint32 Orc_Timer;
-    uint32 CorrosiveAcid_Timer;
-    uint32 Freeze_Timer;
-    uint32 Flamebreath_Timer;
+    int32 Aggro_Timer;
+    int32 Dragons_Timer;
+    int32 Orc_Timer;
+    int32 CorrosiveAcid_Timer;
+    int32 Freeze_Timer;
+    int32 Flamebreath_Timer;
     uint32 Line1Count;
     uint32 Line2Count;
 
@@ -132,7 +132,7 @@ struct boss_gythAI : public ScriptedAI
                 SummonCreatureWithRandomTarget(10442);
                 SummonCreatureWithRandomTarget(10442);
                 Line1Count = Line1Count - 1;
-                Dragons_Timer = 60000;
+                Dragons_Timer += 60000;
             } else Dragons_Timer -= diff;
         }
 
@@ -147,7 +147,7 @@ struct boss_gythAI : public ScriptedAI
                 SummonCreatureWithRandomTarget(10442);
                 SummonCreatureWithRandomTarget(10442);
                 Line2Count = Line2Count - 1;
-                Orc_Timer = 60000;
+                Orc_Timer += 60000;
             } else Orc_Timer -= diff;
         }
 
@@ -158,21 +158,21 @@ struct boss_gythAI : public ScriptedAI
             if (CorrosiveAcid_Timer < diff)
             {
                 DoCast(m_creature->getVictim(), SPELL_CORROSIVEACID);
-                CorrosiveAcid_Timer = 7000;
+                CorrosiveAcid_Timer += 7000;
             } else CorrosiveAcid_Timer -= diff;
 
             // Freeze_Timer
             if (Freeze_Timer < diff)
             {
                 DoCast(m_creature->getVictim(), SPELL_FREEZE);
-                Freeze_Timer = 16000;
+                Freeze_Timer += 16000;
             } else Freeze_Timer -= diff;
 
             // Flamebreath_Timer
             if (Flamebreath_Timer < diff)
             {
                 DoCast(m_creature->getVictim(),SPELL_FLAMEBREATH);
-                Flamebreath_Timer = 10500;
+                Flamebreath_Timer += 10500;
             } else Flamebreath_Timer -= diff;
 
             //Summon Rend

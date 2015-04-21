@@ -37,12 +37,12 @@ struct boss_warmastervooneAI : public ScriptedAI
 {
     boss_warmastervooneAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 Snapkick_Timer;
-    uint32 Cleave_Timer;
-    uint32 Uppercut_Timer;
-    uint32 MortalStrike_Timer;
-    uint32 Pummel_Timer;
-    uint32 ThrowAxe_Timer;
+    int32 Snapkick_Timer;
+    int32 Cleave_Timer;
+    int32 Uppercut_Timer;
+    int32 MortalStrike_Timer;
+    int32 Pummel_Timer;
+    int32 ThrowAxe_Timer;
 
     void Reset()
     {
@@ -68,42 +68,42 @@ struct boss_warmastervooneAI : public ScriptedAI
         if (Snapkick_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_SNAPKICK);
-            Snapkick_Timer = 6000;
+            Snapkick_Timer += 6000;
         }else Snapkick_Timer -= diff;
 
         //Cleave_Timer
         if (Cleave_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_CLEAVE);
-            Cleave_Timer = 12000;
+            Cleave_Timer += 12000;
         }else Cleave_Timer -= diff;
 
         //Uppercut_Timer
         if (Uppercut_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_UPPERCUT);
-            Uppercut_Timer = 14000;
+            Uppercut_Timer += 14000;
         }else Uppercut_Timer -= diff;
 
         //MortalStrike_Timer
         if (MortalStrike_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_MORTALSTRIKE);
-            MortalStrike_Timer = 10000;
+            MortalStrike_Timer += 10000;
         }else MortalStrike_Timer -= diff;
 
         //Pummel_Timer
         if (Pummel_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_PUMMEL);
-            Pummel_Timer = 16000;
+            Pummel_Timer += 16000;
         }else Pummel_Timer -= diff;
 
         //ThrowAxe_Timer
         if (ThrowAxe_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_THROWAXE);
-            ThrowAxe_Timer = 8000;
+            ThrowAxe_Timer += 8000;
         }else ThrowAxe_Timer -= diff;
 
         DoMeleeAttackIfReady();

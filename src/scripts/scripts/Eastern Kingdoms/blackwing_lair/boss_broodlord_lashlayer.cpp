@@ -44,11 +44,11 @@ struct boss_broodlordAI : public ScriptedAI
     }
 
     ScriptedInstance * pInstance;
-    uint32 Cleave_Timer;
-    uint32 BlastWave_Timer;
-    uint32 MortalStrike_Timer;
-    uint32 KnockBack_Timer;
-    uint32 LeashCheck_Timer;
+    int32 Cleave_Timer;
+    int32 BlastWave_Timer;
+    int32 MortalStrike_Timer;
+    int32 KnockBack_Timer;
+    int32 LeashCheck_Timer;
     WorldLocation wLoc;
 
     void Reset()
@@ -92,28 +92,28 @@ struct boss_broodlordAI : public ScriptedAI
                 EnterEvadeMode();
                 return;
             }
-            LeashCheck_Timer = 2000;
+            LeashCheck_Timer += 2000;
         }else LeashCheck_Timer -= diff;
 
         //Cleave_Timer
         if (Cleave_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_CLEAVE);
-            Cleave_Timer = 7000;
+            Cleave_Timer += 7000;
         }else Cleave_Timer -= diff;
 
         // BlastWave
         if (BlastWave_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_BLASTWAVE);
-            BlastWave_Timer = 8000 + rand()%8000;
+            BlastWave_Timer += 8000 + rand()%8000;
         }else BlastWave_Timer -= diff;
 
         //MortalStrike_Timer
         if (MortalStrike_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_MORTALSTRIKE);
-            MortalStrike_Timer = 25000 + rand()%10000;
+            MortalStrike_Timer += 25000 + rand()%10000;
         }else MortalStrike_Timer -= diff;
 
         if (KnockBack_Timer < diff)
@@ -123,7 +123,7 @@ struct boss_broodlordAI : public ScriptedAI
             if (DoGetThreat(m_creature->getVictim()))
                 DoModifyThreatPercent(m_creature->getVictim(),-50);
 
-            KnockBack_Timer = 15000 + rand()%15000;
+            KnockBack_Timer += 15000 + rand()%15000;
         }else KnockBack_Timer -= diff;
 
         DoMeleeAttackIfReady();

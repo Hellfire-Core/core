@@ -35,10 +35,10 @@ struct boss_high_interrogator_gerstahnAI : public ScriptedAI
 {
     boss_high_interrogator_gerstahnAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 ShadowWordPain_Timer;
-    uint32 ManaBurn_Timer;
-    uint32 PsychicScream_Timer;
-    uint32 ShadowShield_Timer;
+    int32 ShadowWordPain_Timer;
+    int32 ManaBurn_Timer;
+    int32 PsychicScream_Timer;
+    int32 ShadowShield_Timer;
 
     void Reset()
     {
@@ -64,7 +64,7 @@ struct boss_high_interrogator_gerstahnAI : public ScriptedAI
             Unit* target = NULL;
             target = SelectUnit(SELECT_TARGET_RANDOM,0);
             if (target)DoCast(target,SPELL_SHADOWWORDPAIN);
-            ShadowWordPain_Timer = 7000;
+            ShadowWordPain_Timer += 7000;
         }
         else
             ShadowWordPain_Timer -= diff;
@@ -75,7 +75,7 @@ struct boss_high_interrogator_gerstahnAI : public ScriptedAI
             Unit* target = NULL;
             target = SelectUnit(SELECT_TARGET_RANDOM,0);
             if (target)DoCast(target,SPELL_MANABURN);
-            ManaBurn_Timer = 10000;
+            ManaBurn_Timer += 10000;
         }
         else
             ManaBurn_Timer -= diff;
@@ -84,7 +84,7 @@ struct boss_high_interrogator_gerstahnAI : public ScriptedAI
         if (PsychicScream_Timer < diff)
         {
             DoCast(me->getVictim(),SPELL_PSYCHICSCREAM);
-            PsychicScream_Timer = 30000;
+            PsychicScream_Timer += 30000;
         }
         else
             PsychicScream_Timer -= diff;
@@ -93,7 +93,7 @@ struct boss_high_interrogator_gerstahnAI : public ScriptedAI
         if (ShadowShield_Timer < diff)
         {
             DoCast(me,SPELL_SHADOWSHIELD);
-            ShadowShield_Timer = 25000;
+            ShadowShield_Timer += 25000;
         }
         else
             ShadowShield_Timer -= diff;

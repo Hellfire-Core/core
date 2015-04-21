@@ -36,11 +36,11 @@ struct boss_anubshiahAI : public ScriptedAI
 {
     boss_anubshiahAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 ShadowBolt_Timer;
-    uint32 CurseOfTongues_Timer;
-    uint32 CurseOfWeakness_Timer;
-    uint32 DemonArmor_Timer;
-    uint32 EnvelopingWeb_Timer;
+    int32 ShadowBolt_Timer;
+    int32 CurseOfTongues_Timer;
+    int32 CurseOfWeakness_Timer;
+    int32 DemonArmor_Timer;
+    int32 EnvelopingWeb_Timer;
 
     void Reset()
     {
@@ -75,7 +75,7 @@ struct boss_anubshiahAI : public ScriptedAI
         {
             if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0, 200, true))
                 DoCast(target,SPELL_CURSEOFTONGUES);
-            CurseOfTongues_Timer = 18000;
+            CurseOfTongues_Timer += 18000;
         }
         else
             CurseOfTongues_Timer -= diff;
@@ -84,7 +84,7 @@ struct boss_anubshiahAI : public ScriptedAI
         if (CurseOfWeakness_Timer < diff)
         {
             DoCast(me->getVictim(),SPELL_CURSEOFWEAKNESS);
-            CurseOfWeakness_Timer = 45000;
+            CurseOfWeakness_Timer += 45000;
         }
         else
             CurseOfWeakness_Timer -= diff;
@@ -93,7 +93,7 @@ struct boss_anubshiahAI : public ScriptedAI
         if (DemonArmor_Timer < diff)
         {
             DoCast(me,SPELL_DEMONARMOR);
-            DemonArmor_Timer = 300000;
+            DemonArmor_Timer += 300000;
         }
         else
             DemonArmor_Timer -= diff;
@@ -104,7 +104,7 @@ struct boss_anubshiahAI : public ScriptedAI
             Unit* target = NULL;
             target = SelectUnit(SELECT_TARGET_RANDOM,0);
             if (target) DoCast(target,SPELL_ENVELOPINGWEB);
-            EnvelopingWeb_Timer = 12000;
+            EnvelopingWeb_Timer += 12000;
         }
         else
             EnvelopingWeb_Timer -= diff;

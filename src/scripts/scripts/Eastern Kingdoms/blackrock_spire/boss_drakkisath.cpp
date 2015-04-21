@@ -35,10 +35,10 @@ struct boss_drakkisathAI : public ScriptedAI
 {
     boss_drakkisathAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 FireNova_Timer;
-    uint32 Cleave_Timer;
-    uint32 Confliguration_Timer;
-    uint32 Thunderclap_Timer;
+    int32 FireNova_Timer;
+    int32 Cleave_Timer;
+    int32 Confliguration_Timer;
+    int32 Thunderclap_Timer;
 
     void Reset()
     {
@@ -62,7 +62,7 @@ struct boss_drakkisathAI : public ScriptedAI
         if (FireNova_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_FIRENOVA);
-            FireNova_Timer = 10000;
+            FireNova_Timer += 10000;
         }
         else
             FireNova_Timer -= diff;
@@ -71,7 +71,7 @@ struct boss_drakkisathAI : public ScriptedAI
         if (Cleave_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_CLEAVE);
-            Cleave_Timer = 8000;
+            Cleave_Timer += 8000;
         }
         else
             Cleave_Timer -= diff;
@@ -80,7 +80,7 @@ struct boss_drakkisathAI : public ScriptedAI
         if (Confliguration_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_CONFLIGURATION);
-            Confliguration_Timer = 18000;
+            Confliguration_Timer += 18000;
         }
         else
             Confliguration_Timer -= diff;
@@ -89,7 +89,7 @@ struct boss_drakkisathAI : public ScriptedAI
         if (Thunderclap_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_THUNDERCLAP);
-            Thunderclap_Timer = 20000;
+            Thunderclap_Timer += 20000;
         }
         else
             Thunderclap_Timer -= diff;

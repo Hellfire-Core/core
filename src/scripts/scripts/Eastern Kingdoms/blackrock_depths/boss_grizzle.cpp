@@ -33,8 +33,8 @@ struct boss_grizzleAI : public ScriptedAI
 {
     boss_grizzleAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 GroundTremor_Timer;
-    uint32 Frenzy_Timer;
+    int32 GroundTremor_Timer;
+    int32 Frenzy_Timer;
 
     void Reset()
     {
@@ -56,7 +56,7 @@ struct boss_grizzleAI : public ScriptedAI
         if (GroundTremor_Timer < diff)
         {
             DoCast(me->getVictim(),SPELL_GROUNDTREMOR);
-            GroundTremor_Timer = 8000;
+            GroundTremor_Timer += 8000;
         }
         else
             GroundTremor_Timer -= diff;
@@ -69,7 +69,7 @@ struct boss_grizzleAI : public ScriptedAI
                 DoCast(me,SPELL_FRENZY);
                 DoTextEmote("goes into a killing frenzy!",NULL);
 
-                Frenzy_Timer = 15000;
+                Frenzy_Timer += 15000;
             }
             else
                 Frenzy_Timer -= diff;

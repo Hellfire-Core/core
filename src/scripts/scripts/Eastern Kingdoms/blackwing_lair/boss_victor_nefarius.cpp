@@ -162,15 +162,15 @@ struct boss_victor_nefariusAI : public ScriptedAI
     }
 
     uint32 SpawnedAdds;
-    uint32 AddSpawnTimer;
-    uint32 ShadowBoltTimer;
-    uint32 FearTimer;
-    uint32 MindControlTimer;
-    uint32 ResetTimer;
+    int32 AddSpawnTimer;
+    int32 ShadowBoltTimer;
+    int32 FearTimer;
+    int32 MindControlTimer;
+    int32 ResetTimer;
     uint32 DrakType1;
     uint32 DrakType2;
     uint64 NefarianGUID;
-    uint32 NefCheckTime;
+    int32 NefCheckTime;
 
     void Reset()
     {
@@ -228,7 +228,7 @@ struct boss_victor_nefariusAI : public ScriptedAI
                 if (target)
                     DoCast(target,SPELL_SHADOWBOLT);
 
-                ShadowBoltTimer = 3000 + (rand()%7000);
+                ShadowBoltTimer += 3000 + (rand()%7000);
             }else ShadowBoltTimer -= diff;
 
             //FearTimer
@@ -239,7 +239,7 @@ struct boss_victor_nefariusAI : public ScriptedAI
                 if (target)
                     DoCast(target,SPELL_FEAR);
 
-                FearTimer = 10000 + (rand()%10000);
+                FearTimer += 10000 + (rand()%10000);
             }else FearTimer -= diff;
 
             //Add spawning mechanism
@@ -316,7 +316,7 @@ struct boss_victor_nefariusAI : public ScriptedAI
                     else error_log("TSCR: Blackwing Lair: Unable to spawn nefarian properly.");
                 }
 
-                AddSpawnTimer = 4000;
+                AddSpawnTimer += 4000;
             }else AddSpawnTimer -= diff;
         }
         else if (NefarianGUID)
@@ -334,7 +334,7 @@ struct boss_victor_nefariusAI : public ScriptedAI
                     m_creature->DealDamage(m_creature, m_creature->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
                 }
 
-                NefCheckTime = 2000;
+                NefCheckTime += 2000;
             }else NefCheckTime -= diff;
         }
     }

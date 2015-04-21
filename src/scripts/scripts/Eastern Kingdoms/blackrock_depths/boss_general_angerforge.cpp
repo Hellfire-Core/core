@@ -34,10 +34,10 @@ struct boss_general_angerforgeAI : public ScriptedAI
 {
     boss_general_angerforgeAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 MightyBlow_Timer;
-    uint32 HamString_Timer;
-    uint32 Cleave_Timer;
-    uint32 Adds_Timer;
+    int32 MightyBlow_Timer;
+    int32 HamString_Timer;
+    int32 Cleave_Timer;
+    int32 Adds_Timer;
     bool Medics;
     int Rand1;
     int Rand1X;
@@ -113,7 +113,7 @@ struct boss_general_angerforgeAI : public ScriptedAI
         if (MightyBlow_Timer < diff)
         {
             DoCast(me->getVictim(),SPELL_MIGHTYBLOW);
-            MightyBlow_Timer = 18000;
+            MightyBlow_Timer += 18000;
         }
         else
             MightyBlow_Timer -= diff;
@@ -122,7 +122,7 @@ struct boss_general_angerforgeAI : public ScriptedAI
         if (HamString_Timer < diff)
         {
             DoCast(me->getVictim(),SPELL_HAMSTRING);
-            HamString_Timer = 15000;
+            HamString_Timer += 15000;
         }
         else
             HamString_Timer -= diff;
@@ -131,7 +131,7 @@ struct boss_general_angerforgeAI : public ScriptedAI
         if (Cleave_Timer < diff)
         {
             DoCast(me->getVictim(),SPELL_CLEAVE);
-            Cleave_Timer = 9000;
+            Cleave_Timer += 9000;
         }
         else
             Cleave_Timer -= diff;
@@ -146,7 +146,7 @@ struct boss_general_angerforgeAI : public ScriptedAI
                 SummonAdds(me->getVictim());
                 SummonAdds(me->getVictim());
 
-                Adds_Timer = 25000;
+                Adds_Timer += 25000;
             }
             else
                 Adds_Timer -= diff;

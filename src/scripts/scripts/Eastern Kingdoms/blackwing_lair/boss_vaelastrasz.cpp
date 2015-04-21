@@ -58,14 +58,14 @@ struct boss_vaelAI : public ScriptedAI
 
     ScriptedInstance * pInstance;
     uint64 PlayerGUID;
-    uint32 SpeachTimer;
+    int32 SpeachTimer;
     uint32 SpeachNum;
-    uint32 Cleave_Timer;
-    uint32 FlameBreath_Timer;
-    uint32 FireNova_Timer;
-    uint32 BurningAdrenalineCaster_Timer;
-    uint32 BurningAdrenalineTank_Timer;
-    uint32 TailSwipe_Timer;
+    int32 Cleave_Timer;
+    int32 FlameBreath_Timer;
+    int32 FireNova_Timer;
+    int32 BurningAdrenalineCaster_Timer;
+    int32 BurningAdrenalineTank_Timer;
+    int32 TailSwipe_Timer;
     bool HasYelled;
     bool DoingSpeach;
 
@@ -139,13 +139,13 @@ struct boss_vaelAI : public ScriptedAI
                     case 0:
                         //16 seconds till next line
                         DoScriptText(SAY_LINE2, m_creature);
-                        SpeachTimer = 16000;
+                        SpeachTimer += 16000;
                         SpeachNum++;
                         break;
                     case 1:
                         //This one is actually 16 seconds but we only go to 10 seconds because he starts attacking after he says "I must fight this!"
                         DoScriptText(SAY_LINE3, m_creature);
-                        SpeachTimer = 10000;
+                        SpeachTimer += 10000;
                         SpeachNum++;
                         break;
                     case 2:
@@ -177,14 +177,14 @@ struct boss_vaelAI : public ScriptedAI
         if (Cleave_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_CLEAVE);
-            Cleave_Timer = 15000;
+            Cleave_Timer += 15000;
         }else Cleave_Timer -= diff;
 
         //FlameBreath_Timer
         if (FlameBreath_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_FLAMEBREATH);
-            FlameBreath_Timer = 4000 + rand()%4000;
+            FlameBreath_Timer += 4000 + rand()%4000;
         }else FlameBreath_Timer -= diff;
 
         //BurningAdrenalineCaster_Timer
@@ -204,7 +204,7 @@ struct boss_vaelAI : public ScriptedAI
             if (target)                                     // cast on self (see below)
                 target->CastSpell(target,SPELL_BURNINGADRENALINE,1);
 
-            BurningAdrenalineCaster_Timer = 15000;
+            BurningAdrenalineCaster_Timer += 15000;
         }else BurningAdrenalineCaster_Timer -= diff;
 
         //BurningAdrenalineTank_Timer
@@ -214,14 +214,14 @@ struct boss_vaelAI : public ScriptedAI
             // to Vael instead of the player
             m_creature->getVictim()->CastSpell(m_creature->getVictim(),SPELL_BURNINGADRENALINE,1);
 
-            BurningAdrenalineTank_Timer = 45000;
+            BurningAdrenalineTank_Timer += 45000;
         }else BurningAdrenalineTank_Timer -= diff;
 
         //FireNova_Timer
         if (FireNova_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_FIRENOVA);
-            FireNova_Timer = 5000;
+            FireNova_Timer += 5000;
         }else FireNova_Timer -= diff;
 
         //TailSwipe_Timer
@@ -233,7 +233,7 @@ struct boss_vaelAI : public ScriptedAI
             DoCast(m_creature->getVictim(),SPELL_TAILSWIPE);
             }*/
 
-            TailSwipe_Timer = 20000;
+            TailSwipe_Timer += 20000;
         }else TailSwipe_Timer -= diff;
 
         DoMeleeAttackIfReady();

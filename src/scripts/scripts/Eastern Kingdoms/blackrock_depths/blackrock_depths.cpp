@@ -110,11 +110,11 @@ struct npc_grimstoneAI : public npc_escortAI
     ScriptedInstance* pInstance;
 
     uint8 EventPhase;
-    uint32 Event_Timer;
+    int32 Event_Timer;
 
     uint8 MobSpawnId;
     uint8 MobCount;
-    uint32 MobDeath_Timer;
+    int32 MobDeath_Timer;
 
     uint64 RingMobGUID[4];
     uint64 RingBossGUID;
@@ -214,7 +214,7 @@ struct npc_grimstoneAI : public npc_escortAI
         {
             if (MobDeath_Timer <= diff)
             {
-                MobDeath_Timer = 2500;
+                MobDeath_Timer += 2500;
 
                 if (RingBossGUID)
                 {
@@ -261,49 +261,49 @@ struct npc_grimstoneAI : public npc_escortAI
                     DoGate(DATA_ARENA4,1);
                     Start(false, false);
                     CanWalk = true;
-                    Event_Timer = 0;
+                    //Event_Timer = 0;
                     break;
                 case 1:
                     CanWalk = true;
-                    Event_Timer = 0;
+                    //Event_Timer = 0;
                     break;
                 case 2:
-                    Event_Timer = 2000;
+                    Event_Timer += 2000;
                     break;
                 case 3:
                     DoGate(DATA_ARENA1,0);
-                    Event_Timer = 3000;
+                    Event_Timer += 3000;
                     break;
                 case 4:
                     CanWalk = true;
                     me->SetVisibility(VISIBILITY_OFF);
                     SummonRingMob();
-                    Event_Timer = 8000;
+                    Event_Timer += 8000;
                     break;
                 case 5:
                     SummonRingMob();
                     SummonRingMob();
-                    Event_Timer = 8000;
+                    Event_Timer += 8000;
                     break;
                 case 6:
                     SummonRingMob();
-                    Event_Timer = 0;
+                    //Event_Timer = 0;
                     break;
                 case 7:
                     me->SetVisibility(VISIBILITY_ON);
                     DoGate(DATA_ARENA1,1);
                     DoScriptText(-1000004, me);//4
                     CanWalk = true;
-                    Event_Timer = 0;
+                    //Event_Timer = 0;
                     break;
                 case 8:
                     DoGate(DATA_ARENA2,0);
-                    Event_Timer = 5000;
+                    //Event_Timer = 5000;
                     break;
                 case 9:
                     me->SetVisibility(VISIBILITY_OFF);
                     SummonRingBoss();
-                    Event_Timer = 0;
+                    //Event_Timer = 0;
                     break;
                 case 10:
                     //if quest, complete
@@ -311,7 +311,7 @@ struct npc_grimstoneAI : public npc_escortAI
                     DoGate(DATA_ARENA3,0);
                     DoGate(DATA_ARENA4,0);
                     CanWalk = true;
-                    Event_Timer = 0;
+                    //Event_Timer = 0;
                     break;
                 }
                 ++EventPhase;
@@ -348,9 +348,9 @@ struct mob_phalanxAI : public ScriptedAI
 {
     mob_phalanxAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 ThunderClap_Timer;
-    uint32 FireballVolley_Timer;
-    uint32 MightyBlow_Timer;
+    int32 ThunderClap_Timer;
+    int32 FireballVolley_Timer;
+    int32 MightyBlow_Timer;
 
     void Reset()
     {
@@ -373,7 +373,7 @@ struct mob_phalanxAI : public ScriptedAI
         if (ThunderClap_Timer < diff)
         {
             DoCast(me->getVictim(),SPELL_THUNDERCLAP);
-            ThunderClap_Timer = 10000;
+            ThunderClap_Timer += 10000;
         }
         else
             ThunderClap_Timer -= diff;
@@ -384,7 +384,7 @@ struct mob_phalanxAI : public ScriptedAI
             if (FireballVolley_Timer < diff)
             {
                 DoCast(me->getVictim(),SPELL_FIREBALLVOLLEY);
-                FireballVolley_Timer = 15000;
+                FireballVolley_Timer += 15000;
             }
             else
                 FireballVolley_Timer -= diff;
@@ -394,7 +394,7 @@ struct mob_phalanxAI : public ScriptedAI
         if (MightyBlow_Timer < diff)
         {
             DoCast(me->getVictim(),SPELL_MIGHTYBLOW);
-            MightyBlow_Timer = 10000;
+            MightyBlow_Timer += 10000;
         }
         else
             MightyBlow_Timer -= diff;

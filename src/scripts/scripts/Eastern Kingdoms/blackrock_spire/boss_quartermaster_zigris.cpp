@@ -35,8 +35,8 @@ struct boss_quatermasterzigrisAI : public ScriptedAI
 {
     boss_quatermasterzigrisAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 Shoot_Timer;
-    uint32 StunBomb_Timer;
+    int32 Shoot_Timer;
+    int32 StunBomb_Timer;
     //uint32 HelingPotion_Timer;
 
     void Reset()
@@ -60,14 +60,14 @@ struct boss_quatermasterzigrisAI : public ScriptedAI
         if (Shoot_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_SHOOT);
-            Shoot_Timer = 500;
+            Shoot_Timer += 500;
         }else Shoot_Timer -= diff;
 
         //StunBomb_Timer
         if (StunBomb_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_STUNBOMB);
-            StunBomb_Timer = 14000;
+            StunBomb_Timer += 14000;
         }else StunBomb_Timer -= diff;
 
         DoMeleeAttackIfReady();

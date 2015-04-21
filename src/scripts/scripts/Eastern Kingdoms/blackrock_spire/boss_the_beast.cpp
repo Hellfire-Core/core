@@ -40,10 +40,10 @@ struct boss_thebeastAI : public ScriptedAI
 
     ScriptedInstance* pInstance;
 
-    uint32 Flamebreak_Timer;
-    uint32 Immolate_Timer;
-    uint32 TerrifyingRoar_Timer;
-    uint32 checkTimer;
+    int32 Flamebreak_Timer;
+    int32 Immolate_Timer;
+    int32 TerrifyingRoar_Timer;
+    int32 checkTimer;
 
     void Reset()
     {
@@ -83,7 +83,7 @@ struct boss_thebeastAI : public ScriptedAI
         if (checkTimer < diff)
         {
             DoZoneInCombat();
-            checkTimer = 3000;
+            checkTimer += 3000;
         }
         else
             checkTimer -= diff;
@@ -92,7 +92,7 @@ struct boss_thebeastAI : public ScriptedAI
         if (Flamebreak_Timer < diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_FLAMEBREAK);
-            Flamebreak_Timer = 10000;
+            Flamebreak_Timer += 10000;
         }
         else
             Flamebreak_Timer -= diff;
@@ -104,7 +104,7 @@ struct boss_thebeastAI : public ScriptedAI
             target = SelectUnit(SELECT_TARGET_RANDOM,0);
             if (target)
                 AddSpellToCast(target, SPELL_IMMOLATE);
-            Immolate_Timer = 8000;
+            Immolate_Timer += 8000;
         }
         else
             Immolate_Timer -= diff;
@@ -113,7 +113,7 @@ struct boss_thebeastAI : public ScriptedAI
         if (TerrifyingRoar_Timer < diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_TERRIFYINGROAR);
-            TerrifyingRoar_Timer = 20000;
+            TerrifyingRoar_Timer += 20000;
         }
         else
             TerrifyingRoar_Timer -= diff;

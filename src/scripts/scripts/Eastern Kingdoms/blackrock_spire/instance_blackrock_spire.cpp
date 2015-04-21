@@ -36,7 +36,7 @@ struct instance_blackrock_spire : public ScriptedInstance
     uint64 emberseerOut;
     uint64 pyroguard_emberseerGUID;
 
-    uint32 runesTimer;
+    int32 runesTimer;
     std::set<uint64> emberseerInDoorsGUID;
     std::set<uint64> runesDoorGUID;
     std::set<uint64> runesEmberGUID;
@@ -133,7 +133,7 @@ struct instance_blackrock_spire : public ScriptedInstance
             {
                 SetData(DATA_RUNE_DOOR, DONE);
             }
-            runesTimer = 3000;
+            runesTimer += 3000;
         }
         else runesTimer -= diff;
     }

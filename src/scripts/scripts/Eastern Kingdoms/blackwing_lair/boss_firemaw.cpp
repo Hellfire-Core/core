@@ -39,9 +39,9 @@ struct boss_firemawAI : public ScriptedAI
     }
 
     ScriptedInstance * pInstance;
-    uint32 ShadowFlame_Timer;
-    uint32 WingBuffet_Timer;
-    uint32 FlameBuffet_Timer;
+    int32 ShadowFlame_Timer;
+    int32 WingBuffet_Timer;
+    int32 FlameBuffet_Timer;
 
     void Reset()
     {
@@ -76,7 +76,7 @@ struct boss_firemawAI : public ScriptedAI
         if (ShadowFlame_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_SHADOWFLAME);
-            ShadowFlame_Timer = 15000 + rand()%3000;
+            ShadowFlame_Timer += 15000 + rand()%3000;
         }else ShadowFlame_Timer -= diff;
 
         //WingBuffet_Timer
@@ -86,14 +86,14 @@ struct boss_firemawAI : public ScriptedAI
             if(DoGetThreat(m_creature->getVictim()))
                 DoModifyThreatPercent(m_creature->getVictim(),-75);
 
-            WingBuffet_Timer = 25000;
+            WingBuffet_Timer += 25000;
         }else WingBuffet_Timer -= diff;
 
         //FlameBuffet_Timer
         if (FlameBuffet_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_FLAMEBUFFET);
-            FlameBuffet_Timer = 5000;
+            FlameBuffet_Timer += 5000;
         }else FlameBuffet_Timer -= diff;
 
         DoMeleeAttackIfReady();

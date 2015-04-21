@@ -40,10 +40,10 @@ struct boss_ebonrocAI : public ScriptedAI
     }
 
     ScriptedInstance * pInstance;
-    uint32 ShadowFlame_Timer;
-    uint32 WingBuffet_Timer;
-    uint32 ShadowOfEbonroc_Timer;
-    uint32 Heal_Timer;
+    int32 ShadowFlame_Timer;
+    int32 WingBuffet_Timer;
+    int32 ShadowOfEbonroc_Timer;
+    int32 Heal_Timer;
 
     void Reset()
     {
@@ -79,21 +79,21 @@ struct boss_ebonrocAI : public ScriptedAI
         if (ShadowFlame_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_SHADOWFLAME);
-            ShadowFlame_Timer = 12000 + rand()%3000;
+            ShadowFlame_Timer += 12000 + rand()%3000;
         }else ShadowFlame_Timer -= diff;
 
         //Wing Buffet Timer
         if (WingBuffet_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_WINGBUFFET);
-            WingBuffet_Timer = 25000;
+            WingBuffet_Timer += 25000;
         }else WingBuffet_Timer -= diff;
 
         //Shadow of Ebonroc Timer
         if (ShadowOfEbonroc_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_SHADOWOFEBONROC);
-            ShadowOfEbonroc_Timer = 25000 + rand()%10000;
+            ShadowOfEbonroc_Timer += 25000 + rand()%10000;
         }else ShadowOfEbonroc_Timer -= diff;
 
         if (m_creature->getVictim()->HasAura(SPELL_SHADOWOFEBONROC,0))
@@ -101,7 +101,7 @@ struct boss_ebonrocAI : public ScriptedAI
             if (Heal_Timer < diff)
             {
                 DoCast(m_creature, SPELL_HEAL);
-                Heal_Timer = 1000 + rand()%2000;
+                Heal_Timer += 1000 + rand()%2000;
             }else Heal_Timer -= diff;
         }
 

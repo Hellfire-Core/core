@@ -34,9 +34,9 @@ struct boss_shadowvoshAI : public ScriptedAI
 {
     boss_shadowvoshAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 CurseOfBlood_Timer;
-    uint32 Hex_Timer;
-    uint32 Cleave_Timer;
+    int32 CurseOfBlood_Timer;
+    int32 Hex_Timer;
+    int32 Cleave_Timer;
 
     void Reset()
     {
@@ -61,7 +61,7 @@ struct boss_shadowvoshAI : public ScriptedAI
         if (CurseOfBlood_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_CURSEOFBLOOD);
-            CurseOfBlood_Timer = 45000;
+            CurseOfBlood_Timer += 45000;
         }else CurseOfBlood_Timer -= diff;
 
         //Hex_Timer
@@ -70,14 +70,14 @@ struct boss_shadowvoshAI : public ScriptedAI
             Unit* target = NULL;
             target = SelectUnit(SELECT_TARGET_RANDOM,0);
             if (target) DoCast(target,SPELL_HEX);
-            Hex_Timer = 15000;
+            Hex_Timer += 15000;
         }else Hex_Timer -= diff;
 
         //Cleave_Timer
         if (Cleave_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_CLEAVE);
-            Cleave_Timer = 7000;
+            Cleave_Timer += 7000;
         }else Cleave_Timer -= diff;
 
         DoMeleeAttackIfReady();

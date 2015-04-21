@@ -70,12 +70,12 @@ struct boss_nefarianAI : public ScriptedAI
     }
 
     ScriptedInstance * pInstance;
-    uint32 ShadowFlame_Timer;
-    uint32 BellowingRoar_Timer;
-    uint32 VeilOfShadow_Timer;
-    uint32 Cleave_Timer;
-    uint32 TailLash_Timer;
-    uint32 ClassCall_Timer;
+    int32 ShadowFlame_Timer;
+    int32 BellowingRoar_Timer;
+    int32 VeilOfShadow_Timer;
+    int32 Cleave_Timer;
+    int32 TailLash_Timer;
+    int32 ClassCall_Timer;
     bool Phase3;
 
     uint32 DespawnTimer;
@@ -145,7 +145,7 @@ struct boss_nefarianAI : public ScriptedAI
         if (ShadowFlame_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_SHADOWFLAME);
-            ShadowFlame_Timer = 12000;
+            ShadowFlame_Timer += 12000;
         }
         else
             ShadowFlame_Timer -= diff;
@@ -154,7 +154,7 @@ struct boss_nefarianAI : public ScriptedAI
         if (BellowingRoar_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_BELLOWINGROAR);
-            BellowingRoar_Timer = 30000;
+            BellowingRoar_Timer += 30000;
         }
         else
             BellowingRoar_Timer -= diff;
@@ -163,7 +163,7 @@ struct boss_nefarianAI : public ScriptedAI
         if (VeilOfShadow_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_VEILOFSHADOW);
-            VeilOfShadow_Timer = 15000;
+            VeilOfShadow_Timer += 15000;
         }
         else
             VeilOfShadow_Timer -= diff;
@@ -172,7 +172,7 @@ struct boss_nefarianAI : public ScriptedAI
         if (Cleave_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_CLEAVE);
-            Cleave_Timer = 7000;
+            Cleave_Timer += 7000;
         }
         else
             Cleave_Timer -= diff;
@@ -183,7 +183,7 @@ struct boss_nefarianAI : public ScriptedAI
             //Cast NYI since we need a better check for behind target
             //DoCast(m_creature->getVictim(),SPELL_TAILLASH);
 
-            TailLash_Timer = 10000;
+            TailLash_Timer += 10000;
         }
         else
             TailLash_Timer -= diff;
@@ -235,7 +235,7 @@ struct boss_nefarianAI : public ScriptedAI
                     break;
             }
 
-            ClassCall_Timer = 35000 + (rand() % 5000);
+            ClassCall_Timer += 35000 + (rand() % 5000);
         }
         else
             ClassCall_Timer -= diff;

@@ -36,8 +36,8 @@ struct boss_draganthaurissanAI : public ScriptedAI
 {
     boss_draganthaurissanAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 HandOfThaurissan_Timer;
-    uint32 AvatarOfFlame_Timer;
+    int32 HandOfThaurissan_Timer;
+    int32 AvatarOfFlame_Timer;
     //uint32 Counter;
 
     void Reset()
@@ -86,7 +86,7 @@ struct boss_draganthaurissanAI : public ScriptedAI
             //}
             //else
             //{
-                HandOfThaurissan_Timer = 5000;
+                HandOfThaurissan_Timer += 5000;
                 //Counter=0;
             //}
         }else HandOfThaurissan_Timer -= diff;
@@ -95,7 +95,7 @@ struct boss_draganthaurissanAI : public ScriptedAI
         if (AvatarOfFlame_Timer < diff)
         {
             DoCast(me->getVictim(),SPELL_AVATAROFFLAME);
-            AvatarOfFlame_Timer = 18000;
+            AvatarOfFlame_Timer += 18000;
         }
         else
             AvatarOfFlame_Timer -= diff;

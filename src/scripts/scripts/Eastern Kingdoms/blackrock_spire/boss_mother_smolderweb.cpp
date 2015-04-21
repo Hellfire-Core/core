@@ -34,8 +34,8 @@ struct boss_mothersmolderwebAI : public ScriptedAI
 {
     boss_mothersmolderwebAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 Crystalize_Timer;
-    uint32 MothersMilk_Timer;
+    int32 Crystalize_Timer;
+    int32 MothersMilk_Timer;
 
     void Reset()
     {
@@ -61,14 +61,14 @@ struct boss_mothersmolderwebAI : public ScriptedAI
         if( Crystalize_Timer < diff )
         {
             DoCast(m_creature,SPELL_CRYSTALIZE);
-            Crystalize_Timer = 15000;
+            Crystalize_Timer += 15000;
         }else Crystalize_Timer -= diff;
 
         //MothersMilk_Timer
         if( MothersMilk_Timer < diff )
         {
             DoCast(m_creature,SPELL_MOTHERSMILK);
-            MothersMilk_Timer = 5000+rand()%7500;
+            MothersMilk_Timer += 5000+rand()%7500;
         }else MothersMilk_Timer -= diff;
 
         DoMeleeAttackIfReady();

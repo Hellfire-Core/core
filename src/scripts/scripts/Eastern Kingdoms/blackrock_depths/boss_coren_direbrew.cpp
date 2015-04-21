@@ -41,11 +41,11 @@ struct boss_coren_direbrewAI : public ScriptedAI
 {
     boss_coren_direbrewAI(Creature *c) : ScriptedAI(c) { }
 
-    uint32 Disarm_Timer;
-    uint32 Summon_Timer;
-    uint32 Drink_Timer;
-    uint32 Ilsa_Timer;
-    uint32 Ursula_Timer;
+    int32 Disarm_Timer;
+    int32 Summon_Timer;
+    int32 Drink_Timer;
+    int32 Ilsa_Timer;
+    int32 Ursula_Timer;
 
     void Reset()
     {
@@ -99,7 +99,7 @@ struct boss_coren_direbrewAI : public ScriptedAI
             AddSpellToCast(SPELL_DISARM_GROW, CAST_SELF, true);
             AddSpellToCast(SPELL_DISARM_GROW, CAST_SELF, true);
             AddSpellToCast(SPELL_DIREBREWS_DISARM, CAST_NULL);
-            Disarm_Timer = 30000;
+            Disarm_Timer += 30000;
         }
         else Disarm_Timer -= diff;
 
@@ -112,7 +112,7 @@ struct boss_coren_direbrewAI : public ScriptedAI
                 //me->getVictim()->KnockBackFrom(me, 4, 7);
                 //AddSpellToCast(me, SPELL_SUMMON_MINION_KNOCKBACK);
                 AddSpellToCast(target, SPELL_SUMMON_MINION, true);
-                Summon_Timer = 15000;
+                Summon_Timer += 15000;
             }
         }
         else Summon_Timer -= diff;
@@ -126,7 +126,7 @@ struct boss_coren_direbrewAI : public ScriptedAI
                 {
                     me->SummonCreature(NPC_ILSA_DIREBREW, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), 0, TEMPSUMMON_CORPSE_DESPAWN, 0);
                 }
-                Ilsa_Timer = 300000;
+                Ilsa_Timer += 300000;
             }
             else Ilsa_Timer -= diff;
         }
@@ -140,7 +140,7 @@ struct boss_coren_direbrewAI : public ScriptedAI
                 {
                     me->SummonCreature(NPC_URSULA_DIREBREW, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), 0, TEMPSUMMON_CORPSE_DESPAWN, 0);
                 }
-                Ursula_Timer = 300000;
+                Ursula_Timer += 300000;
             }
             else Ursula_Timer -= diff;
         }

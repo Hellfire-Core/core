@@ -126,13 +126,13 @@ struct boss_theldrenAI : public ScriptedAI
     uint64 AddGUID[4];
     uint32 AddEntry[4];
 
-    uint32 BattleShout_Timer;
-    uint32 DemoralizingShout_Timer;
-    uint32 Disarm_Timer;
-    uint32 FrighteningShout_Timer;
-    uint32 Hamstring_Timer;
-    uint32 Intercept_Timer;
-    uint32 MortalStrike_Timer;
+    int32 BattleShout_Timer;
+    int32 DemoralizingShout_Timer;
+    int32 Disarm_Timer;
+    int32 FrighteningShout_Timer;
+    int32 Hamstring_Timer;
+    int32 Intercept_Timer;
+    int32 MortalStrike_Timer;
     bool DrinkHealingPotion_Used;
 
     void Reset()
@@ -184,7 +184,7 @@ struct boss_theldrenAI : public ScriptedAI
         if (BattleShout_Timer <= diff)
         {
             AddSpellToCast(me, SPELL_BATTLE_SHOUT);
-            BattleShout_Timer = 10000;
+            BattleShout_Timer += 10000;
         }
         else
             BattleShout_Timer -= diff;
@@ -192,7 +192,7 @@ struct boss_theldrenAI : public ScriptedAI
         if (DemoralizingShout_Timer <= diff)
         {
             AddSpellToCast(me, SPELL_DEMORALIZING_SHOUT);
-            DemoralizingShout_Timer = 120000;
+            DemoralizingShout_Timer += 120000;
         }
         else
             DemoralizingShout_Timer -= diff;
@@ -200,7 +200,7 @@ struct boss_theldrenAI : public ScriptedAI
         if (Disarm_Timer <= diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_DISARM);
-            Disarm_Timer = 60000;
+            Disarm_Timer += 60000;
         }
         else
             Disarm_Timer -= diff;
@@ -208,7 +208,7 @@ struct boss_theldrenAI : public ScriptedAI
         if (FrighteningShout_Timer <= diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_FRIGHTENING_SHOUT);
-            FrighteningShout_Timer = 30000;
+            FrighteningShout_Timer += 30000;
         }
         else
             FrighteningShout_Timer -= diff;
@@ -216,7 +216,7 @@ struct boss_theldrenAI : public ScriptedAI
         if (Hamstring_Timer <= diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_HAMSTRING);
-            Hamstring_Timer = 30000;
+            Hamstring_Timer += 30000;
         }
         else
             Hamstring_Timer -= diff;
@@ -224,7 +224,7 @@ struct boss_theldrenAI : public ScriptedAI
         if (Intercept_Timer <= diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_INTERCEPT);
-            Intercept_Timer = 25000;
+            Intercept_Timer += 25000;
         }
         else
             Intercept_Timer -= diff;
@@ -232,7 +232,7 @@ struct boss_theldrenAI : public ScriptedAI
         if (MortalStrike_Timer <= diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_MORTAL_STRIKE);
-            MortalStrike_Timer = 15000;
+            MortalStrike_Timer += 15000;
         }
         else
             MortalStrike_Timer -= diff;
@@ -301,12 +301,12 @@ struct boss_malgen_longspearAI : public ScriptedAI
     ScriptedInstance* pInstance;
     uint64 PetGUID;
 
-    uint32 FreezingTrap_Timer;
-    uint32 AimedShot_Timer;
-    uint32 ConclussiveShot_Timer;
-    uint32 MultiShot_Timer;
-    uint32 Shoot_Timer;
-    uint32 WingClip_Timer;
+    int32 FreezingTrap_Timer;
+    int32 AimedShot_Timer;
+    int32 ConclussiveShot_Timer;
+    int32 MultiShot_Timer;
+    int32 Shoot_Timer;
+    int32 WingClip_Timer;
     bool DrinkHealingPotion_Used;
 
     void Reset()
@@ -349,7 +349,7 @@ struct boss_malgen_longspearAI : public ScriptedAI
         if (FreezingTrap_Timer <= diff)
         {
             AddSpellToCast(me, SPELL_FREEZING_TRAP);
-            FreezingTrap_Timer = 60000;
+            FreezingTrap_Timer += 60000;
         }
         else
             FreezingTrap_Timer -= diff;
@@ -357,7 +357,7 @@ struct boss_malgen_longspearAI : public ScriptedAI
         if (AimedShot_Timer <= diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_AIMED_SHOT);
-            AimedShot_Timer = 10000;
+            AimedShot_Timer += 10000;
         }
         else
             AimedShot_Timer -= diff;
@@ -365,7 +365,7 @@ struct boss_malgen_longspearAI : public ScriptedAI
         if (ConclussiveShot_Timer <= diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_CONCLUSSIVE_SHOT);
-            ConclussiveShot_Timer = 8000;
+            ConclussiveShot_Timer += 8000;
         }
         else
             ConclussiveShot_Timer -= diff;
@@ -373,7 +373,7 @@ struct boss_malgen_longspearAI : public ScriptedAI
         if (MultiShot_Timer <= diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_MULTI_SHOT);
-            MultiShot_Timer = 5000;
+            MultiShot_Timer += 5000;
         }
         else
             MultiShot_Timer -= diff;
@@ -381,7 +381,7 @@ struct boss_malgen_longspearAI : public ScriptedAI
         if (Shoot_Timer <= diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_SHOOT);
-            Shoot_Timer = 1500;
+            Shoot_Timer += 1500;
         }
         else
             Shoot_Timer -= diff;
@@ -389,7 +389,7 @@ struct boss_malgen_longspearAI : public ScriptedAI
         if (WingClip_Timer <= diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_WING_CLIP, true);
-            WingClip_Timer = 20000;
+            WingClip_Timer += 20000;
         }
         else
             WingClip_Timer -= diff;
@@ -440,12 +440,12 @@ struct boss_leftyAI : public ScriptedAI
     ScriptedInstance* pInstance;
     uint64 PetGUID;
 
-    uint32 Knockdown_Timer;
-    uint32 SnapKick_Timer;
-    uint32 FFFEHT_Timer;
-    uint32 MultiShot_Timer;
-    uint32 Shoot_Timer;
-    uint32 WingClip_Timer;
+    int32 Knockdown_Timer;
+    int32 SnapKick_Timer;
+    int32 FFFEHT_Timer;
+    int32 MultiShot_Timer;
+    int32 Shoot_Timer;
+    int32 WingClip_Timer;
     bool DrinkHealingPotion_Used;
 
     void Reset()
@@ -473,7 +473,7 @@ struct boss_leftyAI : public ScriptedAI
         if (Knockdown_Timer <= diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_KNOCKDOWN);
-            Knockdown_Timer = 30000;
+            Knockdown_Timer += 30000;
         }
         else
             Knockdown_Timer -= diff;
@@ -481,7 +481,7 @@ struct boss_leftyAI : public ScriptedAI
         if (SnapKick_Timer <= diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_SNAP_KICK);
-            SnapKick_Timer = 15000;
+            SnapKick_Timer += 15000;
         }
         else
             SnapKick_Timer -= diff;
@@ -489,7 +489,7 @@ struct boss_leftyAI : public ScriptedAI
         if (FFFEHT_Timer <= diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_FFFEHT);
-            FFFEHT_Timer = 30000;
+            FFFEHT_Timer += 30000;
         }
         else
             FFFEHT_Timer -= diff;
@@ -519,13 +519,13 @@ struct boss_rotfangAI : public ScriptedAI
     {
     }
 
-    uint32 Eviscerate_Timer;
-    uint32 Gouge_Timer;
-    uint32 Kick_Timer;
-    uint32 KidneyShot_Timer;
-    uint32 SinisterStrike_Timer;
-    uint32 SlowingPoison_Timer;
-    uint32 Vanish_Timer;
+    int32 Eviscerate_Timer;
+    int32 Gouge_Timer;
+    int32 Kick_Timer;
+    int32 KidneyShot_Timer;
+    int32 SinisterStrike_Timer;
+    int32 SlowingPoison_Timer;
+    int32 Vanish_Timer;
     bool DrinkHealingPotion_Used;
 
     void Reset()
@@ -555,7 +555,7 @@ struct boss_rotfangAI : public ScriptedAI
         if (Eviscerate_Timer <= diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_EVISCERATE);
-            Eviscerate_Timer = 10000;
+            Eviscerate_Timer += 10000;
         }
         else
             Eviscerate_Timer -= diff;
@@ -563,7 +563,7 @@ struct boss_rotfangAI : public ScriptedAI
         if (Gouge_Timer <= diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_GOUGE);
-            Gouge_Timer = 120000;
+            Gouge_Timer += 120000;
         }
         else
             Gouge_Timer -= diff;
@@ -571,7 +571,7 @@ struct boss_rotfangAI : public ScriptedAI
         if (Kick_Timer <= diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_KICK);
-            Kick_Timer = 60000;
+            Kick_Timer += 60000;
         }
         else
             Kick_Timer -= diff;
@@ -579,7 +579,7 @@ struct boss_rotfangAI : public ScriptedAI
         if (KidneyShot_Timer <= diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_KIDNEY_SHOT);
-            KidneyShot_Timer = 30000;
+            KidneyShot_Timer += 30000;
         }
         else
             KidneyShot_Timer -= diff;
@@ -587,7 +587,7 @@ struct boss_rotfangAI : public ScriptedAI
         if (SinisterStrike_Timer <= diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_SINISTER_STRIKE);
-            SinisterStrike_Timer = 30000;
+            SinisterStrike_Timer += 30000;
         }
         else
             SinisterStrike_Timer -= diff;
@@ -595,7 +595,7 @@ struct boss_rotfangAI : public ScriptedAI
         if (SlowingPoison_Timer <= diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_SLOWING_POISON);
-            SlowingPoison_Timer = 25000;
+            SlowingPoison_Timer += 25000;
         }
         else
             SlowingPoison_Timer -= diff;
@@ -603,7 +603,7 @@ struct boss_rotfangAI : public ScriptedAI
         if (Vanish_Timer <= diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_VANISH);
-            Vanish_Timer = 15000;
+            Vanish_Timer += 15000;
         }
         else
             Vanish_Timer -= diff;
@@ -633,11 +633,11 @@ struct boss_vajashniAI : public ScriptedAI
     {
     }
 
-    uint32 DispelMagic_Timer;
-    uint32 FlashHeal_Timer;
-    uint32 PWShield_Timer;
-    uint32 Renew_Timer;
-    uint32 SWPain_Timer;
+    int32 DispelMagic_Timer;
+    int32 FlashHeal_Timer;
+    int32 PWShield_Timer;
+    int32 Renew_Timer;
+    int32 SWPain_Timer;
     bool DrinkHealingPotion_Used;
 
     void Reset()
@@ -675,7 +675,7 @@ struct boss_vajashniAI : public ScriptedAI
             {
                 AddSpellToCast(target, SPELL_DISPEL_MAGIC);
             }
-            DispelMagic_Timer = 6000;
+            DispelMagic_Timer += 6000;
         }
         else
             DispelMagic_Timer -= diff;
@@ -685,7 +685,7 @@ struct boss_vajashniAI : public ScriptedAI
             if(Unit* target = SelectLowestHpFriendly(50, 1000))
             {
                 AddSpellToCast(target, SPELL_FLASH_HEAL);
-                FlashHeal_Timer = 5000;
+                FlashHeal_Timer += 5000;
             }
         }
         else
@@ -696,7 +696,7 @@ struct boss_vajashniAI : public ScriptedAI
             if(Unit* target = SelectLowestHpFriendly(50, 0))
             {
                 AddSpellToCast(target, SPELL_PW_SHIELD);
-                PWShield_Timer = 20000;
+                PWShield_Timer += 20000;
             }
         }
         else
@@ -707,7 +707,7 @@ struct boss_vajashniAI : public ScriptedAI
             if(Unit* target = SelectLowestHpFriendly(50, 0))
             {
                 AddSpellToCast(target, SPELL_RENEW);
-                Renew_Timer = 10000;
+                Renew_Timer += 10000;
             }
         }
         else
@@ -718,7 +718,7 @@ struct boss_vajashniAI : public ScriptedAI
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_SW_PAIN), true))
             {
                 AddSpellToCast(target, SPELL_SW_PAIN);
-                SWPain_Timer = 7000;
+                SWPain_Timer += 7000;
             }
         }
         else
@@ -750,12 +750,12 @@ struct boss_volidaAI : public ScriptedAI
     {
     }
 
-    uint32 Blink_Timer;
-    uint32 Blizzard_Timer;
-    uint32 ConeOfCold_Timer;
-    uint32 FrostNova_Timer;
-    uint32 FrostBolt_Timer;
-    uint32 IceBlock_Timer;
+    int32 Blink_Timer;
+    int32 Blizzard_Timer;
+    int32 ConeOfCold_Timer;
+    int32 FrostNova_Timer;
+    int32 FrostBolt_Timer;
+    int32 IceBlock_Timer;
     bool DrinkHealingPotion_Used;
 
     void Reset()
@@ -786,7 +786,7 @@ struct boss_volidaAI : public ScriptedAI
         if (Blink_Timer <= diff)
         {
             AddSpellToCast(me, SPELL_BLINK);
-            Blink_Timer = 30000;
+            Blink_Timer += 30000;
         }
         else
             Blink_Timer -= diff;
@@ -796,7 +796,7 @@ struct boss_volidaAI : public ScriptedAI
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_BLIZZARD), true))
             {
                 AddSpellToCast(target, SPELL_BLIZZARD);
-                Blizzard_Timer = 20000;
+                Blizzard_Timer += 20000;
             }
         }
         else
@@ -805,7 +805,7 @@ struct boss_volidaAI : public ScriptedAI
         if (ConeOfCold_Timer <= diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_CONE_OF_COLD);
-            ConeOfCold_Timer = 15000;
+            ConeOfCold_Timer += 15000;
         }
         else
             ConeOfCold_Timer -= diff;
@@ -813,7 +813,7 @@ struct boss_volidaAI : public ScriptedAI
         if (FrostNova_Timer <= diff)
         {
             AddSpellToCast(me, SPELL_FROST_NOVA);
-            FrostNova_Timer = 25000;
+            FrostNova_Timer += 25000;
         }
         else
             FrostNova_Timer -= diff;
@@ -821,7 +821,7 @@ struct boss_volidaAI : public ScriptedAI
         if (FrostBolt_Timer <= diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_FROSTBOLT);
-            FrostBolt_Timer = 3500;
+            FrostBolt_Timer += 3500;
         }
         else
             FrostBolt_Timer -= diff;
@@ -829,7 +829,7 @@ struct boss_volidaAI : public ScriptedAI
         if (HealthBelowPct(20) && IceBlock_Timer <= diff)
         {
             AddSpellToCast(me, SPELL_ICE_BLOCK);
-            IceBlock_Timer = 30000;
+            IceBlock_Timer += 30000;
         }
         else
             IceBlock_Timer -= diff;
@@ -860,12 +860,12 @@ struct boss_snokhAI : public ScriptedAI
     {
     }
 
-    uint32 Blink_Timer;
-    uint32 FlameStrike_Timer;
-    uint32 Scorch_Timer;
-    uint32 BlastWave_Timer;
-    uint32 Pyroblast_Timer;
-    uint32 Polymorph_Timer;
+    int32 Blink_Timer;
+    int32 FlameStrike_Timer;
+    int32 Scorch_Timer;
+    int32 BlastWave_Timer;
+    int32 Pyroblast_Timer;
+    int32 Polymorph_Timer;
     bool DrinkHealingPotion_Used;
 
     void Reset()
@@ -896,7 +896,7 @@ struct boss_snokhAI : public ScriptedAI
         if (Blink_Timer <= diff)
         {
             AddSpellToCast(me, SPELL_BLINK);
-            Blink_Timer = 30000;
+            Blink_Timer += 30000;
         }
         else
             Blink_Timer -= diff;
@@ -906,7 +906,7 @@ struct boss_snokhAI : public ScriptedAI
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_FLAMESTRIKE), true))
             {
                 AddSpellToCast(target, SPELL_BLIZZARD);
-                FlameStrike_Timer = 7000;
+                FlameStrike_Timer += 7000;
             }
         }
         else
@@ -915,7 +915,7 @@ struct boss_snokhAI : public ScriptedAI
         if (Scorch_Timer <= diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_SCORCH);
-            Scorch_Timer = 5000;
+            Scorch_Timer += 5000;
         }
         else
             Scorch_Timer -= diff;
@@ -923,7 +923,7 @@ struct boss_snokhAI : public ScriptedAI
         if (BlastWave_Timer <= diff)
         {
             AddSpellToCast(me, SPELL_BLAST_WAVE);
-            BlastWave_Timer = 15000;
+            BlastWave_Timer += 15000;
         }
         else
             BlastWave_Timer -= diff;
@@ -931,7 +931,7 @@ struct boss_snokhAI : public ScriptedAI
         if (Pyroblast_Timer <= diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_PYROBLAST);
-            Pyroblast_Timer = 25000;
+            Pyroblast_Timer += 25000;
         }
         else
             Pyroblast_Timer -= diff;
@@ -939,7 +939,7 @@ struct boss_snokhAI : public ScriptedAI
         if (Polymorph_Timer <= diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_POLYMORPH);
-            Polymorph_Timer = 15000;
+            Polymorph_Timer += 15000;
         }
         else
             Polymorph_Timer -= diff;
@@ -970,12 +970,12 @@ struct boss_korvAI : public ScriptedAI
     {
     }
 
-    uint32 FrostShock_Timer;
-    uint32 WarStamp_Timer;
-    uint32 WindfuryT_Timer;
-    uint32 EarthbindT_Timer;
-    uint32 LesserHealing_Timer;
-    uint32 Purge_Timer;
+    int32 FrostShock_Timer;
+    int32 WarStamp_Timer;
+    int32 WindfuryT_Timer;
+    int32 EarthbindT_Timer;
+    int32 LesserHealing_Timer;
+    int32 Purge_Timer;
     bool DrinkHealingPotion_Used;
 
     void Reset()
@@ -1004,7 +1004,7 @@ struct boss_korvAI : public ScriptedAI
         if (FrostShock_Timer <= diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_FROST_SHOCK);
-            FrostShock_Timer = 10000;
+            FrostShock_Timer += 10000;
         }
         else
             FrostShock_Timer -= diff;
@@ -1012,7 +1012,7 @@ struct boss_korvAI : public ScriptedAI
         if (WarStamp_Timer <= diff)
         {
             AddSpellToCast(me, SPELL_WAR_STOMP);
-            WarStamp_Timer = 15000;
+            WarStamp_Timer += 15000;
         }
         else
             WarStamp_Timer -= diff;
@@ -1020,7 +1020,7 @@ struct boss_korvAI : public ScriptedAI
         if (Purge_Timer <= diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_PURGE);
-            Purge_Timer = 7000;
+            Purge_Timer += 7000;
         }
         else
             Purge_Timer -= diff;
@@ -1030,7 +1030,7 @@ struct boss_korvAI : public ScriptedAI
             if(Unit* target = SelectLowestHpFriendly(50, 1000))
             {
                 AddSpellToCast(target,SPELL_LESSER_HEALING_WAVE);
-                LesserHealing_Timer = 6500;
+                LesserHealing_Timer += 6500;
             }
         }
         else
@@ -1039,7 +1039,7 @@ struct boss_korvAI : public ScriptedAI
         if (WindfuryT_Timer <= diff)
         {
             AddSpellToCast(me, SPELL_WINDFURY_TOTEM);
-            WindfuryT_Timer = 25000;
+            WindfuryT_Timer += 25000;
         }
         else
             WindfuryT_Timer -= diff;
@@ -1047,7 +1047,7 @@ struct boss_korvAI : public ScriptedAI
         if (EarthbindT_Timer <= diff)
         {
             AddSpellToCast(me, SPELL_EARTHBIND_TOTEM);
-            EarthbindT_Timer = 25000;
+            EarthbindT_Timer += 25000;
         }
         else
             EarthbindT_Timer -= diff;
@@ -1077,11 +1077,11 @@ struct boss_rezznikAI : public ScriptedAI
     {
     }
 
-    uint32 Recombobulate_Timer;
-    uint32 DarkIronBomb_Timer;
-    uint32 GoblinGragonGun_Timer;
-    uint32 ExplosiveSheep_Timer;
-    uint32 SummonADragonling_Timer;
+    int32 Recombobulate_Timer;
+    int32 DarkIronBomb_Timer;
+    int32 GoblinGragonGun_Timer;
+    int32 ExplosiveSheep_Timer;
+    int32 SummonADragonling_Timer;
     bool DrinkHealingPotion_Used;
 
     void Reset()
@@ -1109,7 +1109,7 @@ struct boss_rezznikAI : public ScriptedAI
         if (Recombobulate_Timer <= diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_RECOMBOBULATE);
-            Recombobulate_Timer = 11000;
+            Recombobulate_Timer += 11000;
         }
         else
             Recombobulate_Timer -= diff;
@@ -1117,7 +1117,7 @@ struct boss_rezznikAI : public ScriptedAI
         if (DarkIronBomb_Timer <= diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_DARK_IRON_BOMB);
-            DarkIronBomb_Timer = 4000;
+            DarkIronBomb_Timer += 4000;
         }
         else
             DarkIronBomb_Timer -= diff;
@@ -1125,7 +1125,7 @@ struct boss_rezznikAI : public ScriptedAI
         if (GoblinGragonGun_Timer <= diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_GOBLIN_DRAGON_GUN);
-            GoblinGragonGun_Timer = 12000;
+            GoblinGragonGun_Timer += 12000;
         }
         else
             GoblinGragonGun_Timer -= diff;
@@ -1133,7 +1133,7 @@ struct boss_rezznikAI : public ScriptedAI
         if (ExplosiveSheep_Timer <= diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_EXPLOSIVE_SHEEP);
-            ExplosiveSheep_Timer = 20000;
+            ExplosiveSheep_Timer += 20000;
         }
         else
             ExplosiveSheep_Timer -= diff;
@@ -1141,7 +1141,7 @@ struct boss_rezznikAI : public ScriptedAI
         if (SummonADragonling_Timer <= diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_SUMMON_ADRAGONLING);
-            SummonADragonling_Timer = 3600000;
+            SummonADragonling_Timer += 3600000;
         }
         else
             SummonADragonling_Timer -= diff;

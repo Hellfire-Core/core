@@ -170,11 +170,11 @@ struct boss_chromaggusAI : public ScriptedAI
     uint32 Breath2_Spell;
     uint32 CurrentVurln_Spell;
 
-    uint32 Shimmer_Timer;
-    uint32 Breath1_Timer;
-    uint32 Breath2_Timer;
-    uint32 Affliction_Timer;
-    uint32 Frenzy_Timer;
+    int32 Shimmer_Timer;
+    int32 Breath1_Timer;
+    int32 Breath2_Timer;
+    int32 Affliction_Timer;
+    int32 Frenzy_Timer;
     bool Enraged;
 
     void Reset()
@@ -226,7 +226,7 @@ struct boss_chromaggusAI : public ScriptedAI
             CurrentVurln_Spell = spell;
 
             DoScriptText(EMOTE_SHIMMER, m_creature);
-            Shimmer_Timer = 45000;
+            Shimmer_Timer += 45000;
         }
         else
             Shimmer_Timer -= diff;
@@ -237,7 +237,7 @@ struct boss_chromaggusAI : public ScriptedAI
             if (Unit* target = m_creature->getVictim())
             {
                 DoCast(target,Breath1_Spell);
-                Breath1_Timer = 60000;
+                Breath1_Timer += 60000;
             }
         }
         else
@@ -249,7 +249,7 @@ struct boss_chromaggusAI : public ScriptedAI
             if (Unit* target = m_creature->getVictim())
             {
                 DoCast(m_creature->getVictim(),Breath2_Spell);
-                Breath2_Timer = 60000;
+                Breath2_Timer += 60000;
             }
         }
         else
@@ -296,7 +296,7 @@ struct boss_chromaggusAI : public ScriptedAI
                 }
             }
 
-            Affliction_Timer = 10000;
+            Affliction_Timer += 10000;
         }
         else
             Affliction_Timer -= diff;
@@ -306,7 +306,7 @@ struct boss_chromaggusAI : public ScriptedAI
         {
             DoCast(m_creature,SPELL_FRENZY);
             DoScriptText(EMOTE_FRENZY, m_creature);
-            Frenzy_Timer = 10000 + (rand() % 5000);
+            Frenzy_Timer += 10000 + (rand() % 5000);
         }
         else
             Frenzy_Timer -= diff;

@@ -45,10 +45,10 @@ struct boss_overlordwyrmthalakAI : public ScriptedAI
 {
     boss_overlordwyrmthalakAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 BlastWave_Timer;
-    uint32 Shout_Timer;
-    uint32 Cleave_Timer;
-    uint32 Knockaway_Timer;
+    int32 BlastWave_Timer;
+    int32 Shout_Timer;
+    int32 Cleave_Timer;
+    int32 Knockaway_Timer;
     bool Summoned;
     Creature *SummonedCreature;
 
@@ -75,28 +75,28 @@ struct boss_overlordwyrmthalakAI : public ScriptedAI
         if (BlastWave_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_BLASTWAVE);
-            BlastWave_Timer = 20000;
+            BlastWave_Timer += 20000;
         }else BlastWave_Timer -= diff;
 
         //Shout_Timer
         if (Shout_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_SHOUT);
-            Shout_Timer = 10000;
+            Shout_Timer += 10000;
         }else Shout_Timer -= diff;
 
         //Cleave_Timer
         if (Cleave_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_CLEAVE);
-            Cleave_Timer = 7000;
+            Cleave_Timer += 7000;
         }else Cleave_Timer -= diff;
 
         //Knockaway_Timer
         if (Knockaway_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_KNOCKAWAY);
-            Knockaway_Timer = 14000;
+            Knockaway_Timer += 14000;
         }else Knockaway_Timer -= diff;
 
         //Summon two Beserks

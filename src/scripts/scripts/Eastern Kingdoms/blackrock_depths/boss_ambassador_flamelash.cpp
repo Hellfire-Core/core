@@ -32,8 +32,8 @@ struct boss_ambassador_flamelashAI : public ScriptedAI
 {
     boss_ambassador_flamelashAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 FireBlast_Timer;
-    uint32 Spirit_Timer;
+    int32 FireBlast_Timer;
+    int32 Spirit_Timer;
     int Rand;
     int RandX;
     int RandY;
@@ -77,7 +77,7 @@ struct boss_ambassador_flamelashAI : public ScriptedAI
         if (FireBlast_Timer < diff)
         {
             DoCast(me->getVictim(),SPELL_FIREBLAST);
-            FireBlast_Timer = 7000;
+            FireBlast_Timer += 7000;
         }
         else
             FireBlast_Timer -= diff;
@@ -90,7 +90,7 @@ struct boss_ambassador_flamelashAI : public ScriptedAI
             SummonSpirits(me->getVictim());
             SummonSpirits(me->getVictim());
 
-            Spirit_Timer = 30000;
+            Spirit_Timer += 30000;
         }
         else
             Spirit_Timer -= diff;

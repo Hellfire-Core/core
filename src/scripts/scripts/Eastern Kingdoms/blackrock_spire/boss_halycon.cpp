@@ -38,8 +38,8 @@ struct boss_halyconAI : public ScriptedAI
 {
     boss_halyconAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 CrowdPummel_Timer;
-    uint32 MightyBlow_Timer;
+    int32 CrowdPummel_Timer;
+    int32 MightyBlow_Timer;
     bool Summoned;
 
     void Reset()
@@ -63,7 +63,7 @@ struct boss_halyconAI : public ScriptedAI
         if (CrowdPummel_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_CROWDPUMMEL);
-            CrowdPummel_Timer = 14000;
+            CrowdPummel_Timer += 14000;
         }
         else
             CrowdPummel_Timer -= diff;
@@ -72,7 +72,7 @@ struct boss_halyconAI : public ScriptedAI
         if (MightyBlow_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_MIGHTYBLOW);
-            MightyBlow_Timer = 10000;
+            MightyBlow_Timer += 10000;
         }else MightyBlow_Timer -= diff;
 
         //Summon Gizrul
