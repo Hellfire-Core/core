@@ -4097,6 +4097,7 @@ void AddSC_guards()
     newscript->Name="guard_silvermoon";
     newscript->pGossipHello          = &GossipHello_guard_silvermoon;
     newscript->pGossipSelect         = &GossipSelect_guard_silvermoon;
+    newscript->pReceiveEmote         = &ReciveEmote_npc_silvermoon_guard;
     newscript->GetAI = &GetAI_guard_silvermoon;
     newscript->RegisterSelf();
 
@@ -4127,12 +4128,6 @@ void AddSC_guards()
     newscript->pGossipHello          = &GossipHello_guard_undercity;
     newscript->pGossipSelect         = &GossipSelect_guard_undercity;
     newscript->GetAI = &GetAI_guard_undercity;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name = "npc_silvermoon_guard";
-    newscript->GetAI = &GetAI_npc_silvermoon_guard;
-    newscript->pReceiveEmote = &ReciveEmote_npc_silvermoon_guard;
     newscript->RegisterSelf();
 }
 
