@@ -41,14 +41,14 @@ struct boss_ysondreAI : public ScriptedAI
 {
     boss_ysondreAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 Sleep_Timer;
-    uint32 NoxiousBreath_Timer;
-    uint32 TailSweep_Timer;
-    //uint32 MarkOfNature_Timer;
-    uint32 LightningWave_Timer;
-    uint32 SummonDruids1_Timer;
-    uint32 SummonDruids2_Timer;
-    uint32 SummonDruids3_Timer;
+    int32 Sleep_Timer;
+    int32 NoxiousBreath_Timer;
+    int32 TailSweep_Timer;
+    //int32 MarkOfNature_Timer;
+    int32 LightningWave_Timer;
+    int32 SummonDruids1_Timer;
+    int32 SummonDruids2_Timer;
+    int32 SummonDruids3_Timer;
     int Rand;
     int RandX;
     int RandY;
@@ -105,7 +105,7 @@ struct boss_ysondreAI : public ScriptedAI
             if( Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0) )
                 DoCast(target,SPELL_SLEEP);
 
-            Sleep_Timer = 8000 + rand()%7000;
+            Sleep_Timer += 8000 + rand()%7000;
         }
         else
             Sleep_Timer -= diff;
@@ -114,7 +114,7 @@ struct boss_ysondreAI : public ScriptedAI
         if (NoxiousBreath_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_NOXIOUSBREATH);
-            NoxiousBreath_Timer = 14000 + rand()%6000;
+            NoxiousBreath_Timer += 14000 + rand()%6000;
         }
         else
             NoxiousBreath_Timer -= diff;
@@ -125,7 +125,7 @@ struct boss_ysondreAI : public ScriptedAI
             if( Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0) )
                 DoCast(target,SPELL_TAILSWEEP);
 
-            TailSweep_Timer = 2000;
+            TailSweep_Timer += 2000;
         }
         else
             TailSweep_Timer -= diff;
@@ -134,7 +134,7 @@ struct boss_ysondreAI : public ScriptedAI
         //if (MarkOfNature_Timer < diff)
         //{
         //    DoCast(m_creature->getVictim(),SPELL_MARKOFNATURE);
-        //    MarkOfNature_Timer = 45000;
+        //    MarkOfNature_Timer += 45000;
         //}else MarkOfNature_Timer -= diff;
 
         //LightningWave_Timer
@@ -144,7 +144,7 @@ struct boss_ysondreAI : public ScriptedAI
             if( Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0) )
                 DoCast(target,SPELL_LIGHTNINGWAVE);
 
-            LightningWave_Timer = 7000 + rand()%5000;
+            LightningWave_Timer += 7000 + rand()%5000;
         }
         else
             LightningWave_Timer -= diff;
@@ -162,7 +162,7 @@ struct boss_ysondreAI : public ScriptedAI
                     SummonDruids(target);
                 }
 
-                SummonDruids1_Timer = 60000;
+                SummonDruids1_Timer += 60000;
             }
             else
                 SummonDruids1_Timer -= diff;
@@ -181,7 +181,7 @@ struct boss_ysondreAI : public ScriptedAI
                     SummonDruids(target);
                 }
 
-                SummonDruids2_Timer = 60000;
+                SummonDruids2_Timer += 60000;
             }
             else
                 SummonDruids2_Timer -= diff;
@@ -200,7 +200,7 @@ struct boss_ysondreAI : public ScriptedAI
                     SummonDruids(target);
                 }
 
-                SummonDruids3_Timer = 60000;
+                SummonDruids3_Timer += 60000;
             }
             else
                 SummonDruids3_Timer -= diff;
@@ -213,7 +213,7 @@ struct mob_dementeddruidsAI : public ScriptedAI
 {
     mob_dementeddruidsAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 MoonFire_Timer;
+    int32 MoonFire_Timer;
 
     void Reset()
     {
@@ -233,7 +233,7 @@ struct mob_dementeddruidsAI : public ScriptedAI
         if (MoonFire_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_MOONFIRE);
-            MoonFire_Timer = 5000;
+            MoonFire_Timer += 5000;
         }
         else
             MoonFire_Timer -= diff;
