@@ -47,8 +47,8 @@ struct boss_herodAI : public ScriptedAI
 
     bool Enrage;
 
-    uint32 Cleave_Timer;
-    uint32 Whirlwind_Timer;
+    int32 Cleave_Timer;
+    int32 Whirlwind_Timer;
 
 
     void Reset()
@@ -93,7 +93,7 @@ struct boss_herodAI : public ScriptedAI
         if (Cleave_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_CLEAVE);
-            Cleave_Timer = 12000;
+            Cleave_Timer += 12000;
         }else Cleave_Timer -= diff;
 
         // Whirlwind_Timer
@@ -101,7 +101,7 @@ struct boss_herodAI : public ScriptedAI
         {
             DoScriptText(SAY_WHIRLWIND, m_creature);
             DoCast(m_creature->getVictim(),SPELL_WHIRLWIND);
-            Whirlwind_Timer = 30000;
+            Whirlwind_Timer += 30000;
         }else Whirlwind_Timer -= diff;
 
         DoMeleeAttackIfReady();

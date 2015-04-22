@@ -37,13 +37,13 @@ struct boss_instructormaliciaAI : public ScriptedAI
 {
     boss_instructormaliciaAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 CallOfGraves_Timer;
-    uint32 Corruption_Timer;
-    uint32 FlashHeal_Timer;
-    uint32 Renew_Timer;
-    uint32 HealingTouch_Timer;
-    uint32 FlashCounter;
-    uint32 TouchCounter;
+    int32 CallOfGraves_Timer;
+    int32 Corruption_Timer;
+    int32 FlashHeal_Timer;
+    int32 Renew_Timer;
+    int32 HealingTouch_Timer;
+    int32 FlashCounter;
+    int32 TouchCounter;
 
     void Reset()
     {
@@ -81,7 +81,7 @@ struct boss_instructormaliciaAI : public ScriptedAI
         if (CallOfGraves_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_CALLOFGRAVES);
-            CallOfGraves_Timer = 65000;
+            CallOfGraves_Timer += 65000;
         }else CallOfGraves_Timer -= diff;
 
         //Corruption_Timer
@@ -91,14 +91,14 @@ struct boss_instructormaliciaAI : public ScriptedAI
             target = SelectUnit(SELECT_TARGET_RANDOM,0);
             if (target) DoCast(target,SPELL_CORRUPTION);
 
-            Corruption_Timer = 24000;
+            Corruption_Timer += 24000;
         }else Corruption_Timer -= diff;
 
         //Renew_Timer
         if (Renew_Timer < diff)
         {
             DoCast(m_creature, SPELL_RENEW);
-            Renew_Timer = 10000;
+            Renew_Timer += 10000;
         }else Renew_Timer -= diff;
 
         //FlashHeal_Timer
@@ -109,13 +109,13 @@ struct boss_instructormaliciaAI : public ScriptedAI
             //5 Flashheals will be cast
             if (FlashCounter < 2)
             {
-                FlashHeal_Timer = 5000;
+                FlashHeal_Timer += 5000;
                 FlashCounter++;
             }
             else
             {
                 FlashCounter=0;
-                FlashHeal_Timer = 30000;
+                FlashHeal_Timer += 30000;
             }
         }else FlashHeal_Timer -= diff;
 
@@ -127,13 +127,13 @@ struct boss_instructormaliciaAI : public ScriptedAI
             //3 Healingtouchs will be cast
             if (HealingTouch_Timer < 2)
             {
-                HealingTouch_Timer = 5500;
+                HealingTouch_Timer += 5500;
                 TouchCounter++;
             }
             else
             {
                 TouchCounter=0;
-                HealingTouch_Timer = 30000;
+                HealingTouch_Timer += 30000;
             }
         }else HealingTouch_Timer -= diff;
 

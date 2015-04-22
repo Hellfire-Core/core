@@ -47,10 +47,10 @@ struct boss_golemaggAI : public ScriptedAI
     }
     ScriptedInstance *pInstance;
 
-    uint32 Pyroblast_Timer;
-    uint32 EarthQuake_Timer;
-    uint32 Enrage_Timer;
-    uint32 Buff_Timer;
+    int32 Pyroblast_Timer;
+    int32 EarthQuake_Timer;
+    int32 Enrage_Timer;
+    int32 Buff_Timer;
 
     void Reset()
     {
@@ -88,7 +88,7 @@ struct boss_golemaggAI : public ScriptedAI
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0))
                 DoCast(target,SPELL_PYROBLAST);
 
-            Pyroblast_Timer = 7000;
+            Pyroblast_Timer += 7000;
         }else Pyroblast_Timer -= diff;
 
         //Enrage_Timer
@@ -97,7 +97,7 @@ struct boss_golemaggAI : public ScriptedAI
             if (Enrage_Timer < diff)
             {
                 DoCast(m_creature,SPELL_ENRAGE);
-                Enrage_Timer = 62000;
+                Enrage_Timer += 62000;
             }else Enrage_Timer -= diff;
         }
 
@@ -107,7 +107,7 @@ struct boss_golemaggAI : public ScriptedAI
             if (EarthQuake_Timer < diff)
             {
                 DoCast(m_creature->getVictim(),SPELL_EARTHQUAKE);
-                EarthQuake_Timer = 3000;
+                EarthQuake_Timer += 3000;
             }else EarthQuake_Timer -= diff;
         }
 
@@ -115,7 +115,7 @@ struct boss_golemaggAI : public ScriptedAI
         //        if(Buff_Timer < diff)
         //        {
         //            DoCast(m_creature, SPELL_BUFF);
-        //            Buff_Timer = 2500;
+        //            Buff_Timer += 2500;
         //        }else Buff_Timer -= diff;
 
         DoMeleeAttackIfReady();
@@ -129,8 +129,8 @@ struct mob_core_ragerAI : public ScriptedAI
         pInstance = (c->GetInstanceData());
     }
 
-    uint32 Mangle_Timer;
-    uint32 Check_Timer;
+    int32 Mangle_Timer;
+    int32 Check_Timer;
     ScriptedInstance *pInstance;
 
     void Reset()
@@ -152,7 +152,7 @@ struct mob_core_ragerAI : public ScriptedAI
         if (Mangle_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_MANGLE);
-            Mangle_Timer = 10000;
+            Mangle_Timer += 10000;
         }else Mangle_Timer -= diff;
 
         //Cast AEGIS
@@ -174,7 +174,7 @@ struct mob_core_ragerAI : public ScriptedAI
                 }
             }
 
-            Check_Timer = 1000;
+            Check_Timer += 1000;
         }else Check_Timer -= diff;
 
         DoMeleeAttackIfReady();

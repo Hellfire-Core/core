@@ -83,13 +83,13 @@ struct boss_majordomoAI : public BossAI
 
     ScriptedInstance* pInstance;
 
-    uint32 MagicReflection_Timer;
-    uint32 DamageReflection_Timer;
-    uint32 Blastwave_Timer;
-    uint32 TeleportVisual_Timer;
-    uint32 Teleport_Timer;
+    int32 MagicReflection_Timer;
+    int32 DamageReflection_Timer;
+    int32 Blastwave_Timer;
+    int32 TeleportVisual_Timer;
+    int32 Teleport_Timer;
     bool Teleport_Use;
-    uint32 SummonRag_Timer;
+    int32 SummonRag_Timer;
     uint64 AddGUID[8];
 
     void Reset()
@@ -221,7 +221,7 @@ struct boss_majordomoAI : public BossAI
             if (TeleportVisual_Timer <= diff)
             {
                 DoAction(4);
-                TeleportVisual_Timer = 1000000;
+                TeleportVisual_Timer += 1000000;
             }
             else
                 TeleportVisual_Timer -= diff;
@@ -233,7 +233,7 @@ struct boss_majordomoAI : public BossAI
             if (SummonRag_Timer <= diff)
             {
                 DoAction(5);
-                SummonRag_Timer = 1000000;
+                SummonRag_Timer += 1000000;
             }
             else
                 SummonRag_Timer -= diff;
@@ -267,7 +267,7 @@ struct boss_majordomoAI : public BossAI
                 ForceSpellCast(target, SPELL_TELEPORT, DONT_INTERRUPT, false, true);
                 target->SetPosition(736.767456, -1176.591797, -118.948753, 0, true);
                 ((Player*)target)->TeleportTo(me->GetMapId(), 736.767456, -1176.591797, -118.948753, 0);
-                Teleport_Timer = 20000;
+                Teleport_Timer += 20000;
             }
         }
         else Teleport_Timer -= diff;
@@ -276,21 +276,21 @@ struct boss_majordomoAI : public BossAI
         if (MagicReflection_Timer <= diff)
         {
             AddSpellToCast(m_creature, SPELL_MAGIC_REFLECTION, false);
-            MagicReflection_Timer = 30000;
+            MagicReflection_Timer += 30000;
         }else MagicReflection_Timer -= diff;
 
         //DamageReflection_Timer
         if (DamageReflection_Timer <= diff)
         {
             AddSpellToCast(m_creature, SPELL_DAMAGE_REFLECTION, false);
-            DamageReflection_Timer = 30000;
+            DamageReflection_Timer += 30000;
         }else DamageReflection_Timer -= diff;
 
         //Blastwave_Timer
         if (Blastwave_Timer <= diff)
         {
             AddSpellToCast(m_creature, SPELL_BLASTWAVE, false);
-            Blastwave_Timer = 10000;
+            Blastwave_Timer += 10000;
         }
         else Blastwave_Timer -= diff;
 
@@ -385,8 +385,8 @@ struct flamewaker_healerAI : public MCflamewakerAI
     flamewaker_healerAI(Creature *c) : MCflamewakerAI(c)
     {}
 
-    uint32 ShadownBolt_Timer;
-    uint32 ShadownShock_Timer;
+    int32 ShadownBolt_Timer;
+    int32 ShadownShock_Timer;
 
     void Reset()
     {
@@ -405,7 +405,7 @@ struct flamewaker_healerAI : public MCflamewakerAI
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_SHADOW_BOLT), true))
             {
                 AddSpellToCast(target, SPELL_SHADOW_BOLT, false);
-                ShadownBolt_Timer = 2000;
+                ShadownBolt_Timer += 2000;
             }
         }
         else ShadownBolt_Timer -= diff;
@@ -413,7 +413,7 @@ struct flamewaker_healerAI : public MCflamewakerAI
         if (ShadownShock_Timer <= diff)
         {
             AddSpellToCast(m_creature, SPELL_SHADOW_SHOCK, false);
-            ShadownShock_Timer = 9000;
+            ShadownShock_Timer += 9000;
         }
         else ShadownShock_Timer -= diff;
 
@@ -433,9 +433,9 @@ struct flamewaker_eliteAI : public MCflamewakerAI
     flamewaker_eliteAI(Creature *c) : MCflamewakerAI(c)
     {}
 
-    uint32 BlastWave_Timer;
-    uint32 FireBlast_Timer;
-    uint32 Fireball_Timer;
+    int32 BlastWave_Timer;
+    int32 FireBlast_Timer;
+    int32 Fireball_Timer;
 
     void Reset()
     {
@@ -453,21 +453,21 @@ struct flamewaker_eliteAI : public MCflamewakerAI
         if (BlastWave_Timer <= diff)
         {
             AddSpellToCast(m_creature, SPELL_BLASTWAVE, false);
-            BlastWave_Timer = 12000;
+            BlastWave_Timer += 12000;
         }
         else BlastWave_Timer -= diff;
 
         if (FireBlast_Timer <= diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_FIRE_BLAST, false);
-            FireBlast_Timer = 15000;
+            FireBlast_Timer += 15000;
         }
         else FireBlast_Timer -= diff;
 
         if (Fireball_Timer <= diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_FIREBALL, false);
-            Fireball_Timer = 8000;
+            Fireball_Timer += 8000;
         }
         else Fireball_Timer -= diff;
 

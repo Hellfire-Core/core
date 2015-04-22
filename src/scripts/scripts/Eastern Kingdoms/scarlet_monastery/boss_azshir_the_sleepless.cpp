@@ -34,9 +34,9 @@ struct boss_azshir_the_sleeplessAI : public ScriptedAI
 {
     boss_azshir_the_sleeplessAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 SoulSiphon_Timer;
-    uint32 CallOftheGrave_Timer;
-    uint32 Terrify_Timer;
+    int32 SoulSiphon_Timer;
+    int32 CallOftheGrave_Timer;
+    int32 Terrify_Timer;
 
     void Reset()
     {
@@ -63,7 +63,7 @@ struct boss_azshir_the_sleeplessAI : public ScriptedAI
                 DoCast(m_creature->getVictim(),SPELL_SOULSIPHON);
                 return;
 
-                SoulSiphon_Timer = 20000;
+                SoulSiphon_Timer += 20000;
             }else SoulSiphon_Timer -= diff;
         }
 
@@ -71,14 +71,14 @@ struct boss_azshir_the_sleeplessAI : public ScriptedAI
         if (CallOftheGrave_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_CALLOFTHEGRAVE);
-            CallOftheGrave_Timer = 30000;
+            CallOftheGrave_Timer += 30000;
         }else CallOftheGrave_Timer -= diff;
 
         //Terrify_Timer
         if (Terrify_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_TERRIFY);
-            Terrify_Timer = 20000;
+            Terrify_Timer += 20000;
         }else Terrify_Timer -= diff;
 
         DoMeleeAttackIfReady();

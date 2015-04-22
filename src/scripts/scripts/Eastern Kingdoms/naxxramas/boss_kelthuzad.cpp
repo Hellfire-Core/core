@@ -169,15 +169,15 @@ struct boss_kelthuzadAI : public ScriptedAI
     ScriptedInstance * pInstance;
     uint64 GuardiansOfIcecrown[5];
     uint32 GuardiansOfIcecrown_Count;
-    uint32 GuardiansOfIcecrown_Timer;
-    uint32 FrostBolt_Timer;
-    uint32 FrostBoltNova_Timer;
-    uint32 ChainsOfKelthuzad_Timer;
-    uint32 ManaDetonation_Timer;
-    uint32 ShadowFisure_Timer;
-    uint32 FrostBlast_Timer;
-    uint32 ChainsOfKelthuzad_Targets;
-    uint32 Phase1_Timer;
+    int32 GuardiansOfIcecrown_Timer;
+    int32 FrostBolt_Timer;
+    int32 FrostBoltNova_Timer;
+    int32 ChainsOfKelthuzad_Timer;
+    int32 ManaDetonation_Timer;
+    int32 ShadowFisure_Timer;
+    int32 FrostBlast_Timer;
+    int32 ChainsOfKelthuzad_Targets;
+    int32 Phase1_Timer;
     bool Phase2;
     bool Phase3;
 
@@ -292,14 +292,14 @@ struct boss_kelthuzadAI : public ScriptedAI
             {
                 DoCast(m_creature->getVictim(),SPELL_FROST_BOLT);
                 //Cast again on time
-                FrostBolt_Timer = (rand()%60)*1000;
+                FrostBolt_Timer += (rand()%60)*1000;
             }else FrostBolt_Timer -= diff;
 
             //Check for Frost Bolt Nova
             if(FrostBoltNova_Timer < diff)
             {
                 DoCast(m_creature->getVictim(),SPELL_FROST_BOLT_NOVA);
-                FrostBoltNova_Timer = 15000;
+                FrostBoltNova_Timer += 15000;
             }else FrostBoltNova_Timer -= diff;
 
             //Check for Chains Of Kelthuzad
@@ -311,7 +311,7 @@ struct boss_kelthuzadAI : public ScriptedAI
                    //DoScriptText(SAY_CHAIN1, m_creature);
                 //else
                     //DoScriptText(SAY_CHAIN2, m_creature);
-                ChainsOfKelthuzad_Timer = (rand()%30+30)*1000;
+                ChainsOfKelthuzad_Timer += (rand()%30+30)*1000;
             }else ChainsOfKelthuzad_Timer -= diff;
 
             //Check for Mana Detonation
@@ -322,7 +322,7 @@ struct boss_kelthuzadAI : public ScriptedAI
 
                  if (rand()%2)
                      DoScriptText(SAY_SPECIAL1_MANA_DET, m_creature);
-                ManaDetonation_Timer = 20000;
+                ManaDetonation_Timer += 20000;
             }else ManaDetonation_Timer -= diff;
 
             //Check for Shadow Fissure
@@ -332,7 +332,7 @@ struct boss_kelthuzadAI : public ScriptedAI
 
                if (rand()%2)
                    DoScriptText(SAY_SPECIAL3_MANA_DET, m_creature);
-                ShadowFisure_Timer = 25000;
+                ShadowFisure_Timer += 25000;
             }else ShadowFisure_Timer -= diff;
 
             //Check for Frost Blast
@@ -343,7 +343,7 @@ struct boss_kelthuzadAI : public ScriptedAI
 
                 if(rand()%2 == 0)
                     DoScriptText(SAY_FROST_BLAST, m_creature);
-                FrostBlast_Timer = (rand()%30+30)*1000;
+                FrostBlast_Timer += (rand()%30+30)*1000;
             }else FrostBlast_Timer -= diff;
 
             //start phase 3 when we are 40% health
@@ -426,7 +426,7 @@ struct boss_kelthuzadAI : public ScriptedAI
 
                 }
                 //5 seconds until summoning next guardian
-                GuardiansOfIcecrown_Timer = 5000;
+                GuardiansOfIcecrown_Timer += 5000;
             }
             else GuardiansOfIcecrown_Timer -= diff;
 

@@ -98,14 +98,14 @@ struct boss_ragnarosAI : public Scripted_NoMovementAI
     }
 
     ScriptedInstance * pInstance;
-    uint32 WrathOfRagnaros_Timer;
-    uint32 HandOfRagnaros_Timer;
-    uint32 LavaBurst_Timer;
-    uint32 MagmaBurst_Timer;
-    uint32 ElementalFire_Timer;
-    uint32 Erruption_Timer;
-    uint32 Submerge_Timer;
-    uint32 Attack_Timer;
+    int32 WrathOfRagnaros_Timer;
+    int32 HandOfRagnaros_Timer;
+    int32 LavaBurst_Timer;
+    int32 MagmaBurst_Timer;
+    int32 ElementalFire_Timer;
+    int32 Erruption_Timer;
+    int32 Submerge_Timer;
+    int32 Attack_Timer;
     uint32 Summon_Timer;
     Creature *Summoned;
     bool HasYelledMagmaBurst;
@@ -206,7 +206,7 @@ struct boss_ragnarosAI : public Scripted_NoMovementAI
                 DoScriptText(SAY_WRATH, m_creature);
             }
 
-            WrathOfRagnaros_Timer = 30000;
+            WrathOfRagnaros_Timer += 30000;
         }else WrathOfRagnaros_Timer -= diff;
 
         //HandOfRagnaros_Timer
@@ -219,7 +219,7 @@ struct boss_ragnarosAI : public Scripted_NoMovementAI
                 DoScriptText(SAY_HAND, m_creature);
             }
 
-            HandOfRagnaros_Timer = 25000;
+            HandOfRagnaros_Timer += 25000;
         }else HandOfRagnaros_Timer -= diff;
 
         //LavaBurst_Timer
@@ -233,14 +233,14 @@ struct boss_ragnarosAI : public Scripted_NoMovementAI
         if (LavaBurst_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_ERRUPTION);
-            Erruption_Timer = 20000 + rand()%25000;
+            Erruption_Timer += 20000 + rand()%25000;
         }else Erruption_Timer -= diff;
 
         //ElementalFire_Timer
         if (ElementalFire_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_ELEMENTALFIRE);
-            ElementalFire_Timer = 10000 + rand()%4000;
+            ElementalFire_Timer += 10000 + rand()%4000;
         }else ElementalFire_Timer -= diff;
 
         //Submerge_Timer
@@ -280,7 +280,7 @@ struct boss_ragnarosAI : public Scripted_NoMovementAI
                 HasSubmergedOnce = true;
                 WasBanished = true;
                 DoCast(m_creature,SPELL_RAGSUBMERGE);
-                Attack_Timer = 90000;
+                Attack_Timer += 90000;
 
             }else
             {
@@ -300,10 +300,10 @@ struct boss_ragnarosAI : public Scripted_NoMovementAI
 
                 WasBanished = true;
                 DoCast(m_creature,SPELL_RAGSUBMERGE);
-                Attack_Timer = 90000;
+                Attack_Timer += 90000;
             }
 
-            Submerge_Timer = 180000;
+            Submerge_Timer += 180000;
         }else Submerge_Timer -= diff;
 
         //If we are within range melee the target
@@ -329,7 +329,7 @@ struct boss_ragnarosAI : public Scripted_NoMovementAI
                     HasYelledMagmaBurst = true;
                 }
 
-                MagmaBurst_Timer = 2500;
+                MagmaBurst_Timer += 2500;
             }else MagmaBurst_Timer -= diff;
         }
     }

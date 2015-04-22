@@ -54,13 +54,13 @@ struct boss_scarlet_commander_mograineAI : public ScriptedAI
 
     ScriptedInstance* pInstance;
 
-    uint32 Heal_Timer;
-    uint32 DivineShield2_Timer;
-    uint32 CrusaderStrike5_Timer;
-    uint32 HammerOfJustice3_Timer;
-    uint32 Consecration3_Timer;
-    uint32 BlessingOfWisdom_Timer;
-    uint32 BlessingOfProtection3_Timer;
+    int32 Heal_Timer;
+    int32 DivineShield2_Timer;
+    int32 CrusaderStrike5_Timer;
+    int32 HammerOfJustice3_Timer;
+    int32 Consecration3_Timer;
+    int32 BlessingOfWisdom_Timer;
+    int32 BlessingOfProtection3_Timer;
 
     void Reset()
     {
@@ -110,7 +110,7 @@ struct boss_scarlet_commander_mograineAI : public ScriptedAI
                 DoCast(m_creature, RAND(SPELL_HOLYLIGHT6, SPELL_FLASHHEAL6));
 
                 //60 seconds until we should cast this agian
-                Heal_Timer = 60000;
+                Heal_Timer += 60000;
             }
             else
                 Heal_Timer -= diff;
@@ -120,7 +120,7 @@ struct boss_scarlet_commander_mograineAI : public ScriptedAI
         if (DivineShield2_Timer < diff)
         {
             DoCast(m_creature,SPELL_DIVINESHIELD2);
-            DivineShield2_Timer = 60000;
+            DivineShield2_Timer += 60000;
         }
         else
             DivineShield2_Timer -= diff;
@@ -129,7 +129,7 @@ struct boss_scarlet_commander_mograineAI : public ScriptedAI
         if (CrusaderStrike5_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_CRUSADERSTRIKE5);
-            CrusaderStrike5_Timer = 20000;
+            CrusaderStrike5_Timer += 20000;
         }
         else
             CrusaderStrike5_Timer -= diff;
@@ -138,7 +138,7 @@ struct boss_scarlet_commander_mograineAI : public ScriptedAI
         if (HammerOfJustice3_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_HAMMEROFJUSTICE3);
-            HammerOfJustice3_Timer = 30000;
+            HammerOfJustice3_Timer += 30000;
         }
         else
             HammerOfJustice3_Timer -= diff;
@@ -147,7 +147,7 @@ struct boss_scarlet_commander_mograineAI : public ScriptedAI
         if (Consecration3_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_CONSECRATION3);
-            Consecration3_Timer = 20000;
+            Consecration3_Timer += 20000;
         }
         else
             Consecration3_Timer -= diff;
@@ -156,7 +156,7 @@ struct boss_scarlet_commander_mograineAI : public ScriptedAI
         if (BlessingOfWisdom_Timer < diff)
         {
             DoCast(m_creature,SPELL_BLESSINGOFWISDOM);
-            BlessingOfWisdom_Timer = 45000;
+            BlessingOfWisdom_Timer += 45000;
         }
         else
             BlessingOfWisdom_Timer -= diff;
@@ -165,7 +165,7 @@ struct boss_scarlet_commander_mograineAI : public ScriptedAI
         if (BlessingOfProtection3_Timer < diff)
         {
             DoCast(m_creature,SPELL_BLESSINGOFPROTECTION3);
-            BlessingOfProtection3_Timer = 50000;
+            BlessingOfProtection3_Timer += 50000;
         }
         else
             BlessingOfProtection3_Timer -= diff;
@@ -197,14 +197,14 @@ struct boss_high_inquisitor_whitemaneAI : public ScriptedAI
 
     ScriptedInstance* pInstance;
 
-    uint32 Healing_Timer;
-    uint32 Renew_Timer;
-    uint32 PowerWordShield_Timer;
-    uint32 CrusaderStrike_Timer;
-    uint32 HammerOfJustice_Timer;
-    uint32 HolySmite6_Timer;
-    uint32 HolyFire5_Timer;
-    uint32 MindBlast6_Timer;
+    int32 Healing_Timer;
+    int32 Renew_Timer;
+    int32 PowerWordShield_Timer;
+    int32 CrusaderStrike_Timer;
+    int32 HammerOfJustice_Timer;
+    int32 HolySmite6_Timer;
+    int32 HolyFire5_Timer;
+    int32 MindBlast6_Timer;
 
     void Reset()
     {
@@ -255,7 +255,7 @@ struct boss_high_inquisitor_whitemaneAI : public ScriptedAI
                 return;
 
                 //22-32 seconds until we should cast this agian
-                Healing_Timer = 22000 + rand()%10000;
+                Healing_Timer += 22000 + rand()%10000;
             }
             else
                 Healing_Timer -= diff;
@@ -266,7 +266,7 @@ struct boss_high_inquisitor_whitemaneAI : public ScriptedAI
             if (Renew_Timer < diff)
             {
                 DoCast(m_creature,SPELL_RENEW);
-                Renew_Timer = 30000;
+                Renew_Timer += 30000;
             }
             else
                 Renew_Timer -= diff;
@@ -276,7 +276,7 @@ struct boss_high_inquisitor_whitemaneAI : public ScriptedAI
         if (PowerWordShield_Timer < diff)
         {
             DoCast(m_creature,SPELL_POWERWORDSHIELD);
-            PowerWordShield_Timer = 25000;
+            PowerWordShield_Timer += 25000;
         }
         else
             PowerWordShield_Timer -= diff;
@@ -285,7 +285,7 @@ struct boss_high_inquisitor_whitemaneAI : public ScriptedAI
         if (CrusaderStrike_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_CRUSADERSTRIKE);
-            CrusaderStrike_Timer = 15000;
+            CrusaderStrike_Timer += 15000;
         }
         else
             CrusaderStrike_Timer -= diff;
@@ -294,7 +294,7 @@ struct boss_high_inquisitor_whitemaneAI : public ScriptedAI
         if (HammerOfJustice_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_HAMMEROFJUSTICE);
-            HammerOfJustice_Timer = 12000;
+            HammerOfJustice_Timer += 12000;
         }
         else
             HammerOfJustice_Timer -= diff;
@@ -303,7 +303,7 @@ struct boss_high_inquisitor_whitemaneAI : public ScriptedAI
         if (HolySmite6_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_HOLYSMITE6);
-            HolySmite6_Timer = 10000;
+            HolySmite6_Timer += 10000;
         }
         else
             HolySmite6_Timer -= diff;
@@ -312,7 +312,7 @@ struct boss_high_inquisitor_whitemaneAI : public ScriptedAI
         if (HolyFire5_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_HOLYFIRE5);
-            HolyFire5_Timer = 15000;
+            HolyFire5_Timer += 15000;
         }
         else
             HolyFire5_Timer -= diff;
@@ -321,7 +321,7 @@ struct boss_high_inquisitor_whitemaneAI : public ScriptedAI
         if (MindBlast6_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_MINDBLAST6);
-            MindBlast6_Timer = 8000;
+            MindBlast6_Timer += 8000;
         }
         else
             MindBlast6_Timer -= diff;

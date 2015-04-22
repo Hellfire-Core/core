@@ -53,7 +53,7 @@ struct instance_molten_core : public ScriptedInstance
 
     uint32 Encounter[ENCOUNTERS];
     uint32 Runes, SummonRagnaros;
-    uint32 Runes_timer;
+    int32 Runes_timer;
 
     void Initialize()
     {
@@ -125,7 +125,7 @@ struct instance_molten_core : public ScriptedInstance
 
 //            if(GetData(DATA_RUNES) != runes)
                 SetData(DATA_RUNES, Runes);
-            Runes_timer = 10000;
+            Runes_timer += 10000;
         }
         else Runes_timer -= diff;
 

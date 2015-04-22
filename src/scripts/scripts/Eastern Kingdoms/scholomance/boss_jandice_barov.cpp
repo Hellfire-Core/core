@@ -35,10 +35,10 @@ struct boss_jandicebarovAI : public ScriptedAI
 {
     boss_jandicebarovAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 CurseOfBlood_Timer;
-    uint32 Illusion_Timer;
-    //uint32 Illusioncounter;
-    uint32 Invisible_Timer;
+    int32 CurseOfBlood_Timer;
+    int32 Illusion_Timer;
+    //int32 Illusioncounter;
+    int32 Invisible_Timer;
     bool Invisible;
     int Rand;
     int RandX;
@@ -105,7 +105,7 @@ struct boss_jandicebarovAI : public ScriptedAI
             DoCast(m_creature->getVictim(),SPELL_CURSEOFBLOOD);
 
             //45 seconds
-            CurseOfBlood_Timer = 30000;
+            CurseOfBlood_Timer += 30000;
         }else CurseOfBlood_Timer -= diff;
 
         //Illusion_Timer
@@ -128,10 +128,10 @@ struct boss_jandicebarovAI : public ScriptedAI
                     SummonIllusions(target);
             }
             Invisible = true;
-            Invisible_Timer = 3000;
+            Invisible_Timer += 3000;
 
             //25 seconds until we should cast this agian
-            Illusion_Timer = 25000;
+            Illusion_Timer += 25000;
         }else Illusion_Timer -= diff;
 
 
@@ -144,12 +144,12 @@ struct boss_jandicebarovAI : public ScriptedAI
         //                  //3 Illusion will be summoned
         //                  if (Illusioncounter < 3)
         //                  {
-        //                    Illusion_Timer = 500;
+        //                    Illusion_Timer += 500;
         //                    Illusioncounter++;
         //                  }
         //                  else {
         //                      //15 seconds until we should cast this again
-        //                      Illusion_Timer = 15000;
+        //                      Illusion_Timer += 15000;
         //                      Illusioncounter=0;
         //                  }
         //

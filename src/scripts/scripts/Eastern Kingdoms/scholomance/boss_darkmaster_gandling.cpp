@@ -54,10 +54,10 @@ struct boss_darkmaster_gandlingAI : public ScriptedAI
 {
     boss_darkmaster_gandlingAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 ArcaneMissiles_Timer;
-    uint32 ShadowShield_Timer;
-    uint32 Curse_Timer;
-    uint32 Teleport_Timer;
+    int32 ArcaneMissiles_Timer;
+    int32 ShadowShield_Timer;
+    int32 Curse_Timer;
+    int32 Teleport_Timer;
     Creature *Summoned;
 
     void Reset()
@@ -81,21 +81,21 @@ struct boss_darkmaster_gandlingAI : public ScriptedAI
         if (ArcaneMissiles_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_ARCANEMISSILES);
-            ArcaneMissiles_Timer = 8000;
+            ArcaneMissiles_Timer += 8000;
         }else ArcaneMissiles_Timer -= diff;
 
         //ShadowShield_Timer
         if (ShadowShield_Timer < diff)
         {
             DoCast(m_creature,SPELL_SHADOWSHIELD);
-            ShadowShield_Timer = 14000 + rand()%14000;
+            ShadowShield_Timer += 14000 + rand()%14000;
         }else ShadowShield_Timer -= diff;
 
         //Curse_Timer
         if (Curse_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_CURSE);
-            Curse_Timer = 15000 + rand()%12000;
+            Curse_Timer += 15000 + rand()%12000;
         }else Curse_Timer -= diff;
 
         //Teleporting Random Target to one of the six pre boss rooms and spawn 3-4 skeletons near the gamer.
@@ -193,7 +193,7 @@ struct boss_darkmaster_gandlingAI : public ScriptedAI
                             break;
                     }
                 }
-                Teleport_Timer = 20000 + rand()%15000;
+                Teleport_Timer += 20000 + rand()%15000;
             }else Teleport_Timer -= diff;
         }
 

@@ -185,7 +185,7 @@ struct mob_wisp_invisAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(delay)
+        if(delay)    // delay = 51, diff = 51, delay - diff = 0, spell will be not cast, aura will be not removed, gratz
         {
             if (delay <= diff)
             {
@@ -209,8 +209,8 @@ struct mob_headAI : public ScriptedAI
     ScriptedInstance *pInstance;
 
     uint32 Phase;
-    uint32 laugh;
-    uint32 wait;
+    int32 laugh;
+    int32 wait;
 
     bool withbody;
     bool die;
@@ -301,7 +301,7 @@ struct mob_headAI : public ScriptedAI
         {
             if(wait < diff)
             {
-                wait = 1000;
+                wait += 1000;
                 if(!m_creature->getVictim())
                     return;
 
@@ -313,7 +313,7 @@ struct mob_headAI : public ScriptedAI
 
             if(laugh < diff)
             {
-                laugh = 15000 + (rand()%16)*1000;
+                laugh += 15000 + (rand()%16)*1000;
                 DoPlaySoundToSet(m_creature, RandomLaugh[rand()%3]);
                 //DoCast(m_creature,SPELL_HEAD_SPEAKS,true); //this spell remove buff "head"
                 Creature *speaker = DoSpawnCreature(HELPER,0,0,0,0,TEMPSUMMON_TIMED_DESPAWN,1000);
@@ -377,15 +377,15 @@ struct boss_headless_horsemanAI : public ScriptedAI
     uint32 Phase;
     uint32 id;
     uint32 count;
-    uint32 say_timer;
+    int32 say_timer;
 
-    uint32 conflagrate;
-    uint32 summonadds;
-    uint32 cleave;
-    uint32 regen;
-    uint32 whirlwind;
-    uint32 laugh;
-    uint32 burn;
+    int32 conflagrate;
+    int32 summonadds;
+    int32 cleave;
+    int32 regen;
+    int32 whirlwind;
+    int32 laugh;
+    int32 burn;
 
     bool withhead;
     bool returned;
@@ -636,7 +636,7 @@ struct boss_headless_horsemanAI : public ScriptedAI
                     if (!IsFlying)
                     {
                         if (say_timer < diff) {
-                            say_timer = 3000;
+                            say_timer += 3000;
                             Player *plr = SelectRandomPlayer(100.0f,false);
                             if (count < 3)
                             {
@@ -695,7 +695,7 @@ struct boss_headless_horsemanAI : public ScriptedAI
 
                     if (plr)
                         m_creature->CastSpell(plr,SPELL_CONFLAGRATION,false);
-                    conflagrate = 10000 + rand()%7 * 1000;
+                    conflagrate += 10000 + rand()%7 * 1000;
                 }
                 else
                     conflagrate -= diff;
@@ -706,7 +706,7 @@ struct boss_headless_horsemanAI : public ScriptedAI
                     m_creature->InterruptNonMeleeSpells(false);
                     DoCast(m_creature,SPELL_SUMMON_PUMPKIN);
                     SaySound(SAY_SPROUTING_PUMPKINS);
-                    summonadds = 25000 + rand()%11 *1000;
+                    summonadds += 25000 + rand()%11 *1000;
                 }
                 else
                     summonadds -= diff;
@@ -715,7 +715,7 @@ struct boss_headless_horsemanAI : public ScriptedAI
 
             if(laugh < diff)
             {
-                laugh = 11000 + rand()%12 * 1000;
+                laugh += 11000 + rand()%12 * 1000;
                 DoTextEmote("laughs",NULL);
                 DoPlaySoundToSet(m_creature, RandomLaugh[rand()%3]);
             }
@@ -728,7 +728,7 @@ struct boss_headless_horsemanAI : public ScriptedAI
                 if(cleave < diff)
                 {
                     DoCast(m_creature->getVictim(),SPELL_CLEAVE);
-                    cleave = 2000 +rand()%4000;       //1 cleave per 2.0-6.0sec
+                    cleave += 2000 +rand()%4000;       //1 cleave per 2.0-6.0sec
                 }
                 else
                     cleave -= diff;
@@ -739,7 +739,7 @@ struct boss_headless_horsemanAI : public ScriptedAI
         {
             if (regen < diff)
             {
-                regen = 1000;                   //"body calls head"
+                regen += 1000;                   //"body calls head"
                 if (m_creature->GetHealth()/m_creature->GetMaxHealth() == 1 && !returned)
                 {
                     if (Phase > 1)
@@ -760,7 +760,7 @@ struct boss_headless_horsemanAI : public ScriptedAI
 
             if (whirlwind < diff)
             {
-                whirlwind = 4000 + rand()%5 * 1000;
+                whirlwind += 4000 + rand()%5 * 1000;
                 if (rand()%2)
                 {
                     m_creature->RemoveAurasDueToSpell(SPELL_CONFUSE);

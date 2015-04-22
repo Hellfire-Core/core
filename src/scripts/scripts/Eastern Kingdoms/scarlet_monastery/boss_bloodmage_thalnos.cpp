@@ -44,12 +44,12 @@ struct boss_bloodmage_thalnosAI : public ScriptedAI
 {
     boss_bloodmage_thalnosAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 FrostNova2_Timer;
-    uint32 FlameShock3_Timer;
-    uint32 ShadowBolt5_Timer;
-    uint32 FlameSpike_Timer;
-    uint32 FireNova_Timer;
-    uint32 Yell_Timer;
+    int32 FrostNova2_Timer;
+    int32 FlameShock3_Timer;
+    int32 ShadowBolt5_Timer;
+    int32 FlameSpike_Timer;
+    int32 FireNova_Timer;
+    int32 Yell_Timer;
 
     void Reset()
     {
@@ -81,7 +81,7 @@ struct boss_bloodmage_thalnosAI : public ScriptedAI
             {
                 DoYell(SAY_HEALTH,LANG_UNIVERSAL,NULL);
                 DoPlaySoundToSet(m_creature,SOUND_HEALTH);
-                Yell_Timer = 900000;
+                Yell_Timer += 900000;
             }
         }
 
@@ -89,35 +89,35 @@ struct boss_bloodmage_thalnosAI : public ScriptedAI
         if (FrostNova2_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_FROSTNOVA2);
-            FrostNova2_Timer = 10000;
+            FrostNova2_Timer += 10000;
         }else FrostNova2_Timer -= diff;
 
         //FlameShock3_Timer
         if (FlameShock3_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_FLAMESHOCK3);
-            FlameShock3_Timer = 15000;
+            FlameShock3_Timer += 15000;
         }else FlameShock3_Timer -= diff;
 
         //ShadowBolt5_Timer
         if (ShadowBolt5_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_SHADOWBOLT5);
-            ShadowBolt5_Timer = 20000;
+            ShadowBolt5_Timer += 20000;
         }else ShadowBolt5_Timer -= diff;
 
         //FlameSpike_Timer
         if (FlameSpike_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_FLAMESPIKE);
-            FlameSpike_Timer = 30000;
+            FlameSpike_Timer += 30000;
         }else FlameSpike_Timer -= diff;
 
         //FireNova_Timer
         if (FireNova_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_FIRENOVA);
-            FireNova_Timer = 20000;
+            FireNova_Timer += 20000;
         }else FireNova_Timer -= diff;
 
         DoMeleeAttackIfReady();

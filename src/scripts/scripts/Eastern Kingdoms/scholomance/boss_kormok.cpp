@@ -33,10 +33,10 @@ struct boss_kormokAI : public ScriptedAI
 {
     boss_kormokAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 ShadowVolley_Timer;
-    uint32 BoneShield_Timer;
-    uint32 Minion_Timer;
-    uint32 Mage_Timer;
+    int32 ShadowVolley_Timer;
+    int32 BoneShield_Timer;
+    int32 Minion_Timer;
+    int32 Mage_Timer;
     bool Mages;
     int Rand1;
     int Rand1X;
@@ -111,14 +111,14 @@ struct boss_kormokAI : public ScriptedAI
         if (ShadowVolley_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_SHADOWBOLTVOLLEY);
-            ShadowVolley_Timer = 15000;
+            ShadowVolley_Timer += 15000;
         }else ShadowVolley_Timer -= diff;
 
         //BoneShield_Timer
         if (BoneShield_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_BONESHIELD);
-            BoneShield_Timer = 45000;
+            BoneShield_Timer += 45000;
         }else BoneShield_Timer -= diff;
 
         //Minion_Timer
@@ -130,7 +130,7 @@ struct boss_kormokAI : public ScriptedAI
             SummonMinion(m_creature->getVictim());
             SummonMinion(m_creature->getVictim());
 
-            Minion_Timer = 12000;
+            Minion_Timer += 12000;
         }else Minion_Timer -= diff;
 
         //Summon 2 Bone Mages

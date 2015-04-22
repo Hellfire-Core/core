@@ -36,10 +36,10 @@ struct boss_illuciabarovAI : public ScriptedAI
 {
     boss_illuciabarovAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 CurseOfAgony_Timer;
-    uint32 ShadowShock_Timer;
-    uint32 Silence_Timer;
-    uint32 Fear_Timer;
+    int32 CurseOfAgony_Timer;
+    int32 ShadowShock_Timer;
+    int32 Silence_Timer;
+    int32 Fear_Timer;
 
     void Reset()
     {
@@ -74,7 +74,7 @@ struct boss_illuciabarovAI : public ScriptedAI
         if (CurseOfAgony_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_CURSEOFAGONY);
-            CurseOfAgony_Timer = 30000;
+            CurseOfAgony_Timer += 30000;
         }else CurseOfAgony_Timer -= diff;
 
         //ShadowShock_Timer
@@ -84,21 +84,21 @@ struct boss_illuciabarovAI : public ScriptedAI
             target = SelectUnit(SELECT_TARGET_RANDOM,0);
             if (target) DoCast(target,SPELL_SHADOWSHOCK);
 
-            ShadowShock_Timer = 12000;
+            ShadowShock_Timer += 12000;
         }else ShadowShock_Timer -= diff;
 
         //Silence_Timer
         if (Silence_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_SILENCE);
-            Silence_Timer = 14000;
+            Silence_Timer += 14000;
         }else Silence_Timer -= diff;
 
         //Fear_Timer
         if (Fear_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_FEAR);
-            Fear_Timer = 30000;
+            Fear_Timer += 30000;
         }else Fear_Timer -= diff;
 
         DoMeleeAttackIfReady();

@@ -37,12 +37,12 @@ struct boss_rasfrostAI : public ScriptedAI
 {
     boss_rasfrostAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 IceArmor_Timer;
-    uint32 Frostbolt_Timer;
-    uint32 Freeze_Timer;
-    uint32 Fear_Timer;
-    uint32 ChillNova_Timer;
-    uint32 FrostVolley_Timer;
+    int32 IceArmor_Timer;
+    int32 Frostbolt_Timer;
+    int32 Freeze_Timer;
+    int32 Fear_Timer;
+    int32 ChillNova_Timer;
+    int32 FrostVolley_Timer;
 
     void Reset()
     {
@@ -69,7 +69,7 @@ struct boss_rasfrostAI : public ScriptedAI
         if (IceArmor_Timer < diff)
         {
             DoCast(m_creature, SPELL_ICEARMOR);
-            IceArmor_Timer = 180000;
+            IceArmor_Timer += 180000;
         }else IceArmor_Timer -= diff;
 
         //Frostbolt_Timer
@@ -80,35 +80,35 @@ struct boss_rasfrostAI : public ScriptedAI
             if (target)
                 DoCast(target,SPELL_FROSTBOLT);
 
-            Frostbolt_Timer = 8000;
+            Frostbolt_Timer += 8000;
         }else Frostbolt_Timer -= diff;
 
         //Freeze_Timer
         if (Freeze_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_FREEZE);
-            Freeze_Timer = 24000;
+            Freeze_Timer += 24000;
         }else Freeze_Timer -= diff;
 
         //Fear_Timer
         if (Fear_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_FEAR);
-            Fear_Timer = 30000;
+            Fear_Timer += 30000;
         }else Fear_Timer -= diff;
 
         //ChillNova_Timer
         if (ChillNova_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_CHILLNOVA);
-            ChillNova_Timer = 14000;
+            ChillNova_Timer += 14000;
         }else ChillNova_Timer -= diff;
 
         //FrostVolley_Timer
         if (FrostVolley_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_FROSTVOLLEY);
-            FrostVolley_Timer = 15000;
+            FrostVolley_Timer += 15000;
         }else FrostVolley_Timer -= diff;
 
         DoMeleeAttackIfReady();

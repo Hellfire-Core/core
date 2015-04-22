@@ -44,9 +44,9 @@ struct boss_garrAI : public ScriptedAI
     }
 
     ScriptedInstance* pInstance;
-    uint32 AntiMagicPulse_Timer;
-    uint32 MagmaShackles_Timer;
-    uint32 CheckAdds_Timer;
+    int32 AntiMagicPulse_Timer;
+    int32 MagmaShackles_Timer;
+    int32 CheckAdds_Timer;
     uint64 Add[8];
     bool Enraged[8];
 
@@ -81,14 +81,14 @@ struct boss_garrAI : public ScriptedAI
         if (AntiMagicPulse_Timer < diff)
         {
             DoCast(m_creature,SPELL_ANTIMAGICPULSE);
-            AntiMagicPulse_Timer = 10000 + rand()%5000;
+            AntiMagicPulse_Timer += 10000 + rand()%5000;
         }else AntiMagicPulse_Timer -= diff;
 
         //MagmaShackles_Timer
         if (MagmaShackles_Timer < diff)
         {
             DoCast(m_creature,SPELL_MAGMASHACKLES);
-            MagmaShackles_Timer = 8000 + rand()%4000;
+            MagmaShackles_Timer += 8000 + rand()%4000;
         }else MagmaShackles_Timer -= diff;
 
         DoMeleeAttackIfReady();
@@ -99,7 +99,7 @@ struct mob_fireswornAI : public ScriptedAI
 {
     mob_fireswornAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 Immolate_Timer;
+    int32 Immolate_Timer;
 
     void Reset()
     {
@@ -121,7 +121,7 @@ struct mob_fireswornAI : public ScriptedAI
              if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0))
                 DoCast(target,SPELL_IMMOLATE);
 
-            Immolate_Timer = 5000 + rand()%5000;
+            Immolate_Timer += 5000 + rand()%5000;
         }else Immolate_Timer -= diff;
 
         //Cast Erruption and let them die

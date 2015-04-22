@@ -36,10 +36,10 @@ struct boss_lorekeeperpolkeltAI : public ScriptedAI
 {
     boss_lorekeeperpolkeltAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 VolatileInfection_Timer;
-    uint32 Darkplague_Timer;
-    uint32 CorrosiveAcid_Timer;
-    uint32 NoxiousCatalyst_Timer;
+    int32 VolatileInfection_Timer;
+    int32 Darkplague_Timer;
+    int32 CorrosiveAcid_Timer;
+    int32 NoxiousCatalyst_Timer;
 
     void Reset()
     {
@@ -74,28 +74,28 @@ struct boss_lorekeeperpolkeltAI : public ScriptedAI
         if (VolatileInfection_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_VOLATILEINFECTION);
-            VolatileInfection_Timer = 32000;
+            VolatileInfection_Timer += 32000;
         }else VolatileInfection_Timer -= diff;
 
         //Darkplague_Timer
         if (Darkplague_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_DARKPLAGUE);
-            Darkplague_Timer = 8000;
+            Darkplague_Timer += 8000;
         }else Darkplague_Timer -= diff;
 
         //CorrosiveAcid_Timer
         if (CorrosiveAcid_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_CORROSIVEACID);
-            CorrosiveAcid_Timer = 25000;
+            CorrosiveAcid_Timer += 25000;
         }else CorrosiveAcid_Timer -= diff;
 
         //NoxiousCatalyst_Timer
         if (NoxiousCatalyst_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_NOXIOUSCATALYST);
-            NoxiousCatalyst_Timer = 38000;
+            NoxiousCatalyst_Timer += 38000;
         }else NoxiousCatalyst_Timer -= diff;
 
         DoMeleeAttackIfReady();

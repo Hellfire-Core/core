@@ -36,7 +36,7 @@ struct boss_houndmaster_lokseyAI : public ScriptedAI
 {
     boss_houndmaster_lokseyAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 Enrage_Timer;
+    int32 Enrage_Timer;
 
     void Reset()
     {
@@ -60,7 +60,7 @@ struct boss_houndmaster_lokseyAI : public ScriptedAI
         if ( m_creature->GetHealth()*100 / m_creature->GetMaxHealth() <= 10 && !m_creature->IsNonMeleeSpellCast(false) && Enrage_Timer < diff)
         {
             DoCast(m_creature,SPELL_ENRAGE);
-            Enrage_Timer = 900000;
+            Enrage_Timer += 900000;
         }else Enrage_Timer -= diff;
 
         DoMeleeAttackIfReady();

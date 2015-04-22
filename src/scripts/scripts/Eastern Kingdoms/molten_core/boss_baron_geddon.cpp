@@ -43,10 +43,10 @@ struct boss_baron_geddonAI : public ScriptedAI
     }
 
     ScriptedInstance* pInstance;
-    uint32 Inferno_Timer;
-    uint32 IgniteMana_Timer;
-    uint32 LivingBomb_Timer;
-    uint32 Armageddon_Timer;
+    int32 Inferno_Timer;
+    int32 IgniteMana_Timer;
+    int32 LivingBomb_Timer;
+    int32 Armageddon_Timer;
 
     void Reset()
     {
@@ -96,7 +96,7 @@ struct boss_baron_geddonAI : public ScriptedAI
         if (Inferno_Timer < diff)
         {
             AddSpellToCast(m_creature, SPELL_INFERNO, false);
-            Inferno_Timer = 22000;
+            Inferno_Timer += 22000;
         }else Inferno_Timer -= diff;
 
         //IgniteMana_Timer
@@ -105,7 +105,7 @@ struct boss_baron_geddonAI : public ScriptedAI
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0))
                 DoCast(target,SPELL_IGNITEMANA);
 
-            IgniteMana_Timer = 30000;
+            IgniteMana_Timer += 30000;
         }else IgniteMana_Timer -= diff;
 
         //LivingBomb_Timer
@@ -114,7 +114,7 @@ struct boss_baron_geddonAI : public ScriptedAI
            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0))
                DoCast(target,SPELL_LIVINGBOMB);
 
-            LivingBomb_Timer = 35000;
+            LivingBomb_Timer += 35000;
         }else LivingBomb_Timer -= diff;
 
         CastNextSpellIfAnyAndReady();

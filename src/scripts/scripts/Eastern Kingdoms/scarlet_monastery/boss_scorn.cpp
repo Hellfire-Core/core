@@ -61,28 +61,28 @@ struct boss_scornAI : public ScriptedAI
         if (LichSlap_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_LICHSLAP);
-            LichSlap_Timer = 45000;
+            LichSlap_Timer += 45000;
         }else LichSlap_Timer -= diff;
 
         //FrostboltVolley_Timer
         if (FrostboltVolley_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_FROSTBOLTVOLLEY);
-            FrostboltVolley_Timer = 20000;
+            FrostboltVolley_Timer += 20000;
         }else FrostboltVolley_Timer -= diff;
 
         //MindFlay_Timer
         if (MindFlay_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_MINDFLAY);
-            MindFlay_Timer = 20000;
+            MindFlay_Timer += 20000;
         }else MindFlay_Timer -= diff;
 
         //FrostNova_Timer
         if (FrostNova_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_FROSTNOVA);
-            FrostNova_Timer = 15000;
+            FrostNova_Timer += 15000;
         }else FrostNova_Timer -= diff;
 
         DoMeleeAttackIfReady();

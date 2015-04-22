@@ -39,9 +39,9 @@ struct boss_gehennasAI : public ScriptedAI
     }
 
     ScriptedInstance * pInstance;
-    uint32 ShadowBolt_Timer;
-    uint32 RainOfFire_Timer;
-    uint32 GehennasCurse_Timer;
+    int32 ShadowBolt_Timer;
+    int32 RainOfFire_Timer;
+    int32 GehennasCurse_Timer;
 
     void Reset()
     {
@@ -75,7 +75,7 @@ struct boss_gehennasAI : public ScriptedAI
         {
             if( Unit* bTarget = SelectUnit(SELECT_TARGET_RANDOM,1) )
                 DoCast(bTarget,SPELL_SHADOWBOLT);
-            ShadowBolt_Timer = 7000;
+            ShadowBolt_Timer += 7000;
         }else ShadowBolt_Timer -= diff;
 
         //RainOfFire_Timer
@@ -84,14 +84,14 @@ struct boss_gehennasAI : public ScriptedAI
             if( Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0) )
                 DoCast(target,SPELL_RAINOFFIRE);
 
-            RainOfFire_Timer = 4000 + rand()%8000;
+            RainOfFire_Timer += 4000 + rand()%8000;
         }else RainOfFire_Timer -= diff;
 
         //GehennasCurse_Timer
         if (GehennasCurse_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_GEHENNASCURSE);
-            GehennasCurse_Timer = 22000 + rand()%8000;
+            GehennasCurse_Timer += 22000 + rand()%8000;
         }else GehennasCurse_Timer -= diff;
 
         DoMeleeAttackIfReady();

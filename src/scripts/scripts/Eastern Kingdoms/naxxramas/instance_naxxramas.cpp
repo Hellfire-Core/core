@@ -52,7 +52,7 @@ struct instance_naxxramas : public ScriptedInstance
     uint64 m_sir_zeliekGUID;
     uint64 m_highlord_mograineGUID;
 
-    uint64 screemTimer;
+    int32 screemTimer;
 
     void Initialize()
     {
@@ -376,7 +376,7 @@ struct instance_naxxramas : public ScriptedInstance
                         player->SendPlaySound(sound, true);
             }
 
-            screemTimer = urand(3*MINUTE*IN_MILISECONDS, 5*MINUTE*IN_MILISECONDS);
+            screemTimer += urand(3*MINUTE*IN_MILISECONDS, 5*MINUTE*IN_MILISECONDS);
         }
         else
             screemTimer -= diff;

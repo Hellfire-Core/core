@@ -42,8 +42,8 @@ struct boss_interrogator_vishasAI : public ScriptedAI
 {
     boss_interrogator_vishasAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 Yell_Timer;
-    uint32 PowerWordShield_Timer;
+    int32 Yell_Timer;
+    int32 PowerWordShield_Timer;
 
     void Reset()
     {
@@ -73,7 +73,7 @@ struct boss_interrogator_vishasAI : public ScriptedAI
                 return;
 
                 //60 seconds until we should cast this agian
-                Yell_Timer = 60000;
+                Yell_Timer += 60000;
             }else Yell_Timer -= diff;
         }
 
@@ -87,7 +87,7 @@ struct boss_interrogator_vishasAI : public ScriptedAI
                 return;
 
                 //60 seconds until we should cast this agian
-                Yell_Timer = 6000000;
+                Yell_Timer += 6000000;
             }else Yell_Timer -= diff;
         }
 
@@ -95,7 +95,7 @@ struct boss_interrogator_vishasAI : public ScriptedAI
         if (PowerWordShield_Timer < diff)
         {
             DoCast(m_creature,SPELL_POWERWORDSHIELD);
-            PowerWordShield_Timer = 60000;
+            PowerWordShield_Timer += 60000;
         }else PowerWordShield_Timer -= diff;
 
         DoMeleeAttackIfReady();
