@@ -624,7 +624,8 @@ struct mob_shadow_imageAI : public ScriptedAI
                 AddSpellToCast(SPELL_SHADOW_FURY, CAST_NULL);
                 ShadowfuryTimer = 5000;
             }
-            ShadowfuryTimer = 1500;
+            else
+                ShadowfuryTimer += 1500;
         }
         else
             ShadowfuryTimer -= diff;
