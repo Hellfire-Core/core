@@ -93,16 +93,16 @@ struct boss_brutallusAI : public ScriptedAI
 
     ScriptedInstance* pInstance;
 
-    uint32 SlashTimer;
-    uint32 BurnTimer;
-    uint32 StompTimer;
-    uint32 BerserkTimer;
-    uint32 CheckTimer;
-    uint32 CheckGroundTimer;
+    int32 SlashTimer;
+    int32 BurnTimer;
+    int32 StompTimer;
+    int32 BerserkTimer;
+    int32 CheckTimer;
+    int32 CheckGroundTimer;
 
     uint32 IntroPhase;
-    uint32 IntroPhaseTimer;
-    uint32 IntroFrostBoltTimer;
+    int32 IntroPhaseTimer;
+    int32 IntroFrostBoltTimer;
     bool Enraged;
 
     void Reset()
@@ -359,7 +359,7 @@ struct boss_brutallusAI : public ScriptedAI
                     float ground_z = me->GetTerrain()->GetHeight(x, y, MAX_HEIGHT, true);
                     if(z > ground_z)
                     me->GetMap()->CreatureRelocation(me, x, y, z, me->GetOrientation());
-                    CheckGroundTimer = 500;
+                    CheckGroundTimer += 500;
                 }
                 else
                     CheckGroundTimer -= diff;
@@ -377,7 +377,7 @@ struct boss_brutallusAI : public ScriptedAI
                     if(Unit *pMadrigosa = me->GetUnit(pInstance->GetData64(DATA_MADRIGOSA)))
                     {
                         pMadrigosa->CastSpell(me, SPELL_INTRO_FROSTBOLT, false);
-                        IntroFrostBoltTimer = 2000;
+                        IntroFrostBoltTimer += 2000;
                     }
                 }
                 else
@@ -397,7 +397,7 @@ struct boss_brutallusAI : public ScriptedAI
             DoZoneInCombat();
 
             me->SetSpeed(MOVE_RUN, 2.0f);
-            CheckTimer = 1000;
+            CheckTimer += 1000;
         }
         else
             CheckTimer -= diff;
@@ -405,7 +405,7 @@ struct boss_brutallusAI : public ScriptedAI
         if (SlashTimer < diff)
         {
             AddSpellToCast(me, SPELL_METEOR_SLASH);
-            SlashTimer = 11000;
+            SlashTimer += 11000;
         }
         else
             SlashTimer -= diff;
@@ -413,7 +413,7 @@ struct boss_brutallusAI : public ScriptedAI
         if (StompTimer < diff)
         {
             AddSpellToCastWithScriptText(me->getVictim(), SPELL_STOMP, RAND(YELL_LOVE1, YELL_LOVE2, YELL_LOVE3));
-            StompTimer = 30000;
+            StompTimer += 30000;
         }
         else
             StompTimer -= diff;
@@ -422,7 +422,7 @@ struct boss_brutallusAI : public ScriptedAI
         {
             if(Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0, 300.0f, true))
                 AddSpellToCast(pTarget, SPELL_BURN);
-            BurnTimer = 20000;
+            BurnTimer += 20000;
         }
         else
             BurnTimer -= diff;
@@ -449,9 +449,9 @@ struct npc_death_cloudAI : public ScriptedAI
 
     ScriptedInstance* pInstance;
     uint8 Phase;
-    uint32 Timer;
-    uint32 SummonTimer;
-    uint32 DespawnTimer;    //Madrigosa in Felmyst's model despawn timer
+    int32 Timer;
+    int32 SummonTimer;
+    int32 DespawnTimer;    //Madrigosa in Felmyst's model despawn timer
     bool summon;
 
     void Reset()
@@ -494,7 +494,7 @@ struct npc_death_cloudAI : public ScriptedAI
                     {
                         pMadrigosa->CastSpell(pMadrigosa, SPELL_TRANSFORM_FELMYST, false);
                         Phase = 2;
-                        DespawnTimer = 1000;
+                        DespawnTimer += 1000;
                         return;
                     }
                     else if (!me->IsWithinDist(pMadrigosa, 10.0f))
@@ -515,7 +515,7 @@ struct npc_death_cloudAI : public ScriptedAI
                         if(Trigger)
                             Trigger->CastSpell(Trigger, SPELL_DEATH_CLOUD, true);
                         pMadrigosa->CastSpell(pMadrigosa, SPELL_FELMYST_PRE_VISUAL, true);
-                        Timer = 10000;
+                        Timer += 10000;
                         summon = true;
                     }
                 }

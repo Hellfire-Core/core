@@ -112,11 +112,11 @@ struct boss_sacrolashAI : public ScriptedAI
 
     InstanceData *pInstance;
 
-    uint32 ShadowbladesTimer;
-    uint32 SpecialTimer;
-    uint32 ConfoundingblowTimer;
-    uint32 ShadowimageTimer;
-    uint32 EnrageTimer;
+    int32 ShadowbladesTimer;
+    int32 SpecialTimer;
+    int32 ConfoundingblowTimer;
+    int32 ShadowimageTimer;
+    int32 EnrageTimer;
 
     void Reset()
     {
@@ -243,14 +243,14 @@ struct boss_sacrolashAI : public ScriptedAI
             if (pInstance->GetData(DATA_ALYTHESS) == DONE)
             {
                 AddSpellToCastWithScriptText(SPELL_CONFLAGRATION, CAST_RANDOM_WITHOUT_TANK, EMOTE_CONFLAGRATION, false, true);
-                SpecialTimer = urand(14000, 16000);
+                SpecialTimer += urand(14000, 16000);
             }
             else
             {
                 if(Unit* target = GetNovaTarget())
                     AddSpellToCastWithScriptText(target, SPELL_SHADOW_NOVA, EMOTE_SHADOW_NOVA, false, true);
                 DoScriptText(YELL_SHADOW_NOVA, me);
-                SpecialTimer = urand(30000,35000);
+                SpecialTimer += urand(30000,35000);
             }
         }
         else
@@ -259,7 +259,7 @@ struct boss_sacrolashAI : public ScriptedAI
         if (ConfoundingblowTimer < diff)
         {
             AddSpellToCast(SPELL_CONFOUNDING_BLOW, CAST_TANK);
-            ConfoundingblowTimer = urand(20000, 25000);
+            ConfoundingblowTimer += urand(20000, 25000);
         }
         else
             ConfoundingblowTimer -= diff;
@@ -268,7 +268,7 @@ struct boss_sacrolashAI : public ScriptedAI
         {
             for (int i = 0; i < 3; i++)
                 DoSpawnCreature(MOB_SHADOW_IMAGE, 0, 0 , 0, frand(0, 2*M_PI), TEMPSUMMON_TIMED_DESPAWN, 15000);
-            ShadowimageTimer = 20000;
+            ShadowimageTimer += 20000;
         }
         else
             ShadowimageTimer -= diff;
@@ -276,7 +276,7 @@ struct boss_sacrolashAI : public ScriptedAI
         if (ShadowbladesTimer < diff)
         {
             AddSpellToCast(SPELL_SHADOW_BLADES, CAST_SELF);
-            ShadowbladesTimer = 10000;
+            ShadowbladesTimer += 10000;
         }
         else
             ShadowbladesTimer -= diff;
@@ -284,7 +284,7 @@ struct boss_sacrolashAI : public ScriptedAI
         if (EnrageTimer < diff)
         {
             AddSpellToCastWithScriptText(SPELL_ENRAGE, CAST_SELF, YELL_ENRAGE);
-            EnrageTimer = 360000;
+            EnrageTimer += 360000;
         }
         else
             EnrageTimer -= diff;
@@ -312,12 +312,12 @@ struct boss_alythessAI : public Scripted_NoMovementAI
     bool IntroDone, TrashWaveDone;
 
     uint32 IntroStepCounter;
-    uint32 IntroYellTimer;
+    int32 IntroYellTimer;
 
-    uint32 SpecialTimer;
-    uint32 PyrogenicsTimer;
-    uint32 FlamesearTimer;
-    uint32 EnrageTimer;
+    int32 SpecialTimer;
+    int32 PyrogenicsTimer;
+    int32 FlamesearTimer;
+    int32 EnrageTimer;
 
     void Reset()
     {
@@ -497,7 +497,7 @@ struct boss_alythessAI : public Scripted_NoMovementAI
         {
             if (IntroYellTimer < diff)
             {
-                IntroYellTimer = IntroStep(++IntroStepCounter);
+                IntroYellTimer += IntroStep(++IntroStepCounter);
             }
             else 
                 IntroYellTimer -= diff;
@@ -511,14 +511,14 @@ struct boss_alythessAI : public Scripted_NoMovementAI
             if (pInstance->GetData(DATA_SACROLASH) == DONE)
             {
                 AddSpellToCastWithScriptText(SPELL_SHADOW_NOVA, CAST_RANDOM_WITHOUT_TANK, EMOTE_SHADOW_NOVA, false, true);
-                SpecialTimer = urand(14000, 16000);
+                SpecialTimer += urand(14000, 16000);
             }
             else
             {
                 if(Unit* target = GetConflagTarget())
                     AddSpellToCastWithScriptText(target , SPELL_CONFLAGRATION, EMOTE_CONFLAGRATION, false, true);
                 DoScriptText(YELL_CANFLAGRATION, me);
-                SpecialTimer = urand(30000,35000);
+                SpecialTimer += urand(30000,35000);
             }
         }
         else
@@ -527,7 +527,7 @@ struct boss_alythessAI : public Scripted_NoMovementAI
         if (FlamesearTimer < diff)
         {
             AddSpellToCast(SPELL_FLAME_SEAR, CAST_SELF);
-            FlamesearTimer = 10000;
+            FlamesearTimer += 10000;
         }
         else
             FlamesearTimer -=diff;
@@ -535,7 +535,7 @@ struct boss_alythessAI : public Scripted_NoMovementAI
         if (PyrogenicsTimer < diff)
         {
             AddSpellToCast(SPELL_PYROGENICS, CAST_SELF);
-            PyrogenicsTimer = 15000;
+            PyrogenicsTimer += 15000;
         }
         else
             PyrogenicsTimer -= diff;
@@ -543,7 +543,7 @@ struct boss_alythessAI : public Scripted_NoMovementAI
         if (EnrageTimer < diff)
         {
             AddSpellToCastWithScriptText(SPELL_ENRAGE, CAST_SELF, YELL_BERSERK);
-            EnrageTimer = 360000;
+            EnrageTimer += 360000;
         }
         else
             EnrageTimer -= diff;
@@ -562,8 +562,8 @@ struct mob_shadow_imageAI : public ScriptedAI
 {
     mob_shadow_imageAI(Creature *c) : ScriptedAI(c) { pInstance = c->GetInstanceData(); }
 
-    uint32 ShadowfuryTimer;
-    uint32 DarkstrikeTimer;
+    int32 ShadowfuryTimer;
+    int32 DarkstrikeTimer;
     InstanceData *pInstance;
 
     void Reset()
@@ -622,7 +622,7 @@ struct mob_shadow_imageAI : public ScriptedAI
             if (me->IsWithinMeleeRange(me->getVictim()) && roll_chance_f(15))
             {
                 AddSpellToCast(SPELL_SHADOW_FURY, CAST_NULL);
-                ShadowfuryTimer = 5000;
+                ShadowfuryTimer += 5000;
             }
             else
                 ShadowfuryTimer += 1500;
@@ -638,7 +638,7 @@ struct mob_shadow_imageAI : public ScriptedAI
                 if (me->IsWithinMeleeRange(me->getVictim()))
                     AddSpellToCast(SPELL_DARK_STRIKE, CAST_TANK);
             }
-            DarkstrikeTimer = 1000;
+            DarkstrikeTimer += 1000;
         }
         else
             DarkstrikeTimer -= diff;

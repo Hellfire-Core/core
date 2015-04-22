@@ -131,15 +131,15 @@ struct boss_kalecgosAI : public ScriptedAI
 
     ScriptedInstance *instance;
 
-    uint32 ArcaneBuffetTimer;
-    uint32 FrostBreathTimer;
-    uint32 WildMagicTimer;
-    uint32 SpectralBlastTimer;
-    uint32 TailLashTimer;
-    uint32 CheckTimer;
-    uint32 TalkTimer;
-    uint32 TalkSequence;
-    uint32 ResetTimer;
+    int32 ArcaneBuffetTimer;
+    int32 FrostBreathTimer;
+    int32 WildMagicTimer;
+    int32 SpectralBlastTimer;
+    int32 TailLashTimer;
+    int32 CheckTimer;
+    int32 TalkTimer;
+    int32 TalkSequence;
+    int32 ResetTimer;
     WorldLocation wLoc;
 
     bool isFriendly;
@@ -424,7 +424,7 @@ struct boss_kalecgosAI : public ScriptedAI
                     isFriendly = true;
                     return;
                 }
-                CheckTimer = 1000;
+                CheckTimer += 1000;
 
                 if (me->isInCombat())
                     DoZoneInCombat();
@@ -444,7 +444,7 @@ struct boss_kalecgosAI : public ScriptedAI
                 if (roll_chance_f(20.0))
                     DoScriptText(RAND(SAY_EVIL_SPELL1, SAY_EVIL_SPELL2), me);
 
-                ArcaneBuffetTimer = 8000;
+                ArcaneBuffetTimer += 8000;
             }
             else
                 ArcaneBuffetTimer -= diff;
@@ -455,7 +455,7 @@ struct boss_kalecgosAI : public ScriptedAI
                     DoScriptText(RAND(SAY_EVIL_SPELL1, SAY_EVIL_SPELL2), me);
 
                 AddSpellToCast(SPELL_FROST_BREATH, CAST_SELF);
-                FrostBreathTimer = 15000;
+                FrostBreathTimer += 15000;
             }
             else
                 FrostBreathTimer -= diff;
@@ -466,7 +466,7 @@ struct boss_kalecgosAI : public ScriptedAI
                     DoScriptText(RAND(SAY_EVIL_SPELL1, SAY_EVIL_SPELL2), me);
 
                 AddSpellToCast(SPELL_TAIL_LASH, CAST_SELF);
-                TailLashTimer = 15000;
+                TailLashTimer += 15000;
             }
             else
                 TailLashTimer -= diff;
@@ -474,7 +474,7 @@ struct boss_kalecgosAI : public ScriptedAI
             if (WildMagicTimer < diff)
             {
                 AddSpellToCast(WildMagic[rand()%6], CAST_SELF);
-                WildMagicTimer = 20000;
+                WildMagicTimer += 20000;
             }
             else
                 WildMagicTimer -= diff;
@@ -482,7 +482,7 @@ struct boss_kalecgosAI : public ScriptedAI
             if (SpectralBlastTimer < diff)
             {
                 AddSpellToCast(SPELL_SPECTRAL_BLAST, CAST_SELF);
-                SpectralBlastTimer = 20000+(rand()%5000);
+                SpectralBlastTimer += 20000+(rand()%5000);
             }
             else
                 SpectralBlastTimer -= diff;
@@ -503,10 +503,10 @@ struct boss_sathrovarrAI : public ScriptedAI
 
     ScriptedInstance *instance;
 
-    uint32 CorruptionStrikeTimer;
-    uint32 AgonyCurseTimer;
-    uint32 ShadowBoltTimer;
-    uint32 CheckTimer;
+    int32 CorruptionStrikeTimer;
+    int32 AgonyCurseTimer;
+    int32 ShadowBoltTimer;
+    int32 CheckTimer;
 
     uint64 KalecGUID;
     bool isEnraged;
@@ -661,7 +661,7 @@ struct boss_sathrovarrAI : public ScriptedAI
             if (me->isInCombat())
                 DoZoneInCombat();
 
-            CheckTimer = 1000;
+            CheckTimer += 1000;
         }
         else
             CheckTimer -= diff;
@@ -692,7 +692,7 @@ struct boss_sathrovarrAI : public ScriptedAI
             if (roll_chance_f(10.0))
                 DoScriptText(SAY_SATH_SPELL1, me);
 
-            ShadowBoltTimer = 7000+(rand()%3000);
+            ShadowBoltTimer += 7000+(rand()%3000);
         }
         else
             ShadowBoltTimer -= diff;
@@ -700,7 +700,7 @@ struct boss_sathrovarrAI : public ScriptedAI
         if (AgonyCurseTimer < diff)
         {
             AddSpellToCast(SPELL_AGONY_CURSE, CAST_SELF);
-            AgonyCurseTimer = 35000;
+            AgonyCurseTimer += 35000;
         }
         else
             AgonyCurseTimer -= diff;
@@ -711,7 +711,7 @@ struct boss_sathrovarrAI : public ScriptedAI
             if (roll_chance_f(10.0))
                 DoScriptText(SAY_SATH_SPELL2, me);
 
-            CorruptionStrikeTimer = 13000;
+            CorruptionStrikeTimer += 13000;
         }
         else
             CorruptionStrikeTimer -= diff;
@@ -725,11 +725,11 @@ struct boss_kalecAI : public ScriptedAI
 {
     ScriptedInstance *instance;
 
-    uint32 RevitalizeTimer;
-    uint32 HeroicStrikeTimer;
-    uint32 CheckTimer;
-    uint32 YellTimer;
-    uint32 YellSequence;
+    int32 RevitalizeTimer;
+    int32 HeroicStrikeTimer;
+    int32 CheckTimer;
+    int32 YellTimer;
+    int32 YellSequence;
 
     bool isEnraged;
 
@@ -818,7 +818,7 @@ struct boss_kalecAI : public ScriptedAI
             default:
                 break;
             }
-            YellTimer = 5000;
+            YellTimer += 5000;
         }
         else
             YellTimer -= diff;
@@ -832,7 +832,7 @@ struct boss_kalecAI : public ScriptedAI
             if (me->GetPositionZ() > -60)
                 me->GetMap()->CreatureRelocation(me, me->GetPositionX(), me->GetPositionY(), DEMON_REALM_Z, me->GetOrientation());
 
-            CheckTimer = 1000;
+            CheckTimer += 1000;
         }
         else
             CheckTimer -= diff;
@@ -841,7 +841,7 @@ struct boss_kalecAI : public ScriptedAI
         {
             if (Unit* target = SelectUnitToRevitalize())
                 AddSpellToCast(target, SPELL_REVITALIZE, false, true);
-            RevitalizeTimer = 7000;
+            RevitalizeTimer += 7000;
         }
         else
             RevitalizeTimer -= diff;
@@ -849,7 +849,7 @@ struct boss_kalecAI : public ScriptedAI
         if (HeroicStrikeTimer < diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_HEROIC_STRIKE);
-            HeroicStrikeTimer = 2000;
+            HeroicStrikeTimer += 2000;
         }
         else
             HeroicStrikeTimer -= diff;

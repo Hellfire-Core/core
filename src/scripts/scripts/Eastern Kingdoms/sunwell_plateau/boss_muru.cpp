@@ -104,7 +104,7 @@ enum Creatures
     BOSS_ENTROPIUS              = 25840
 };
 
-uint32 EnrageTimer = 600000;
+int32 EnrageTimer = 600000;
 
 struct boss_muruAI : public Scripted_NoMovementAI
 {
@@ -117,9 +117,9 @@ struct boss_muruAI : public Scripted_NoMovementAI
     ScriptedInstance* pInstance;
     SummonList Summons;
 
-    uint32 ResetTimer;
-    uint32 HumanoidStart;
-    uint32 TransitionTimer;
+    int32 ResetTimer;
+    int32 HumanoidStart;
+    int32 TransitionTimer;
 
     void Reset()
     {
@@ -218,7 +218,7 @@ struct boss_muruAI : public Scripted_NoMovementAI
         if (EnrageTimer < diff)
         {
             DoCast(me, SPELL_ENRAGE, true);
-            EnrageTimer = 60000;
+            EnrageTimer += 60000;
         }
         else
             EnrageTimer -= diff;
@@ -271,9 +271,9 @@ struct boss_entropiusAI : public ScriptedAI
     ScriptedInstance* pInstance;
     SummonList Summons;
 
-    uint32 TransitionTimer;
-    uint32 DarknessTimer;
-    uint32 BlackHole;
+    int32 TransitionTimer;
+    int32 DarknessTimer;
+    int32 BlackHole;
 
     void Reset()
     {
@@ -342,7 +342,7 @@ struct boss_entropiusAI : public ScriptedAI
         if (EnrageTimer < diff)
         {
             AddSpellToCast(me, SPELL_ENRAGE);
-            EnrageTimer = 60000;
+            EnrageTimer += 60000;
         }
         else
             EnrageTimer -= diff;
@@ -351,7 +351,7 @@ struct boss_entropiusAI : public ScriptedAI
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true))
                 AddSpellToCast(target, SPELL_DARKNESS);
-            DarknessTimer = 15000;
+            DarknessTimer += 15000;
         }
         else
             DarknessTimer -= diff;
@@ -360,7 +360,7 @@ struct boss_entropiusAI : public ScriptedAI
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true, me->getVictimGUID(), 10.0))
                 AddSpellToCast(target, SPELL_BLACK_HOLE);
-            BlackHole = urand(15000, 18000);
+            BlackHole += urand(15000, 18000);
         }
         else
             BlackHole -= diff;
@@ -385,9 +385,9 @@ struct npc_muru_portalAI : public Scripted_NoMovementAI
 
     ScriptedInstance* pInstance;
     Creature* Muru;
-    uint32 SummonTimer;
-    uint32 TransformTimer;
-    uint32 CheckTimer;
+    int32 SummonTimer;
+    int32 TransformTimer;
+    int32 CheckTimer;
 
     void Reset()
     {
@@ -430,7 +430,7 @@ struct npc_muru_portalAI : public Scripted_NoMovementAI
             {
                 if (pInstance->GetData(DATA_MURU_EVENT) == DONE || pInstance->GetData(DATA_MURU_EVENT) == NOT_STARTED)
                     EnterEvadeMode();
-                CheckTimer = 1000;
+                CheckTimer += 1000;
             }
             else
                 CheckTimer -= diff;
@@ -472,7 +472,7 @@ struct npc_void_summonerAI : public Scripted_NoMovementAI
         pInstance = c->GetInstanceData();
     }
 
-    uint32 SummonTimer;
+    int32 SummonTimer;
     ScriptedInstance* pInstance;
 
     void Reset()
@@ -491,7 +491,7 @@ struct npc_void_summonerAI : public Scripted_NoMovementAI
         if (SummonTimer < diff)
         {
             DoCast(me, SPELL_SUMMON_VOID_SENTINEL);
-            SummonTimer = 10000;
+            SummonTimer += 10000;
         }
         else
             SummonTimer -= diff;
@@ -511,9 +511,9 @@ struct npc_dark_fiendAI : public ScriptedAI
     }
 
     ScriptedInstance* pInstance;
-    uint32 ActivationTimer;
-    uint32 CheckTimer;
-    uint32 DespawnTimer;
+    int32 ActivationTimer;
+    int32 CheckTimer;
+    int32 DespawnTimer;
 
     void Reset()
     {
@@ -600,9 +600,9 @@ struct npc_dark_fiendAI : public ScriptedAI
                 DoCast(((Unit*)NULL), SPELL_DARKFIEND_AOE);
                 me->SetRooted(true);
                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                DespawnTimer = 500;
+                DespawnTimer += 500;
             }
-            CheckTimer = 500;
+            CheckTimer += 500;
         }
         else
             CheckTimer -= diff;
@@ -622,8 +622,8 @@ struct npc_void_sentinelAI : public ScriptedAI
     }
 
     ScriptedInstance* pInstance;
-    uint32 VoidBlastTimer;
-    uint32 ActivationTimer;
+    int32 VoidBlastTimer;
+    int32 ActivationTimer;
 
     void Reset()
     {
@@ -675,7 +675,7 @@ struct npc_void_sentinelAI : public ScriptedAI
         if (VoidBlastTimer < diff)
         {
             DoCast(me->getVictim(), SPELL_VOID_BLAST, false);
-            VoidBlastTimer = 30000;
+            VoidBlastTimer += 30000;
         }
         else
             VoidBlastTimer -= diff;
@@ -697,8 +697,8 @@ struct mob_void_spawnAI : public ScriptedAI
     }
 
     ScriptedInstance* pInstance;
-    uint32 Volley;
-    uint32 ActivationTimer;
+    int32 Volley;
+    int32 ActivationTimer;
 
     void EnterEvadeMode()
     {
@@ -742,7 +742,7 @@ struct mob_void_spawnAI : public ScriptedAI
         if (Volley < diff)
         {
             DoCast(me, SPELL_SHADOW_BOLT_VOLLEY);
-            Volley = urand(5000, 10000);
+            Volley += urand(5000, 10000);
         }
         else
             Volley -= diff;
@@ -764,10 +764,10 @@ struct npc_blackholeAI : public ScriptedAI
     }
 
     ScriptedInstance* pInstance;
-    uint32 DespawnTimer;
-    uint32 VisualTimer;
-    uint32 ActivationTimer;
-    uint32 ChasingTimer;
+    int32 DespawnTimer;
+    int32 VisualTimer;
+    int32 ActivationTimer;
+    int32 ChasingTimer;
     uint64 victimGUID;
 
     void Reset()
@@ -830,7 +830,7 @@ struct npc_blackholeAI : public ScriptedAI
                     victimGUID = victim->GetGUID();
                     me->GetMotionMaster()->MovePoint(0, victim->GetPositionX(), victim->GetPositionY(), 72.0, false);
                 }
-                ChasingTimer = 1000;
+                ChasingTimer += 1000;
             }
             else
                 ActivationTimer -= diff;
@@ -853,7 +853,7 @@ struct npc_blackholeAI : public ScriptedAI
                     else
                         me->GetMotionMaster()->MovePoint(0, victim->GetPositionX(), victim->GetPositionY(), 72.0, false);
                 }
-                ChasingTimer = 2000;
+                ChasingTimer += 2000;
             }
             else
                 ChasingTimer -= diff;
@@ -882,8 +882,8 @@ struct npc_darknessAI : public Scripted_NoMovementAI
     }
 
     ScriptedInstance* pInstance;
-    uint32 VoidZoneTimer;
-    uint32 CheckTimer;
+    int32 VoidZoneTimer;
+    int32 CheckTimer;
 
     void Reset()
     {
@@ -910,7 +910,7 @@ struct npc_darknessAI : public Scripted_NoMovementAI
         {
             if (pInstance->GetData(DATA_MURU_EVENT) == DONE || pInstance->GetData(DATA_MURU_EVENT) == NOT_STARTED)
                 me->DisappearAndDie();
-            CheckTimer = 1000;
+            CheckTimer += 1000;
         }
         else
             CheckTimer -= diff;
@@ -940,8 +940,8 @@ struct mob_shadowsword_fury_mageAI : public ScriptedAI
     }
 
     ScriptedInstance* pInstance;
-    uint32 SpellFury;
-    uint32 ActivationTimer;
+    int32 SpellFury;
+    int32 ActivationTimer;
     WorldLocation wLoc;
 
     void Reset()
@@ -955,7 +955,7 @@ struct mob_shadowsword_fury_mageAI : public ScriptedAI
         }
         else
             DoZoneInCombat(400.0f);
-        SpellFury = urand(25000, 35000);
+        SpellFury += urand(25000, 35000);
     }
 
     void OnAuraApply(Aura* aur, Unit* caster, bool stackApply)
@@ -982,7 +982,7 @@ struct mob_shadowsword_fury_mageAI : public ScriptedAI
         {
             me->GetMotionMaster()->Clear();
             me->SetRooted(true);
-            ActivationTimer = 1000;
+            ActivationTimer += 1000;
         }
     }
 
@@ -1018,7 +1018,7 @@ struct mob_shadowsword_fury_mageAI : public ScriptedAI
         {
             ClearCastQueue();
             AddSpellToCast(SPELL_SPELL_FURY, CAST_SELF);
-            SpellFury = 60000;
+            SpellFury += 60000;
         }
         else
             SpellFury -= diff;
@@ -1052,8 +1052,8 @@ struct mob_shadowsword_berserkerAI : public ScriptedAI
 
     ScriptedInstance* pInstance;
     WorldLocation wLoc;
-    uint32 Flurry;
-    uint32 ActivationTimer;
+    int32 Flurry;
+   uint32 ActivationTimer;
 
     void Reset()
     {
@@ -1110,7 +1110,7 @@ struct mob_shadowsword_berserkerAI : public ScriptedAI
         if(Flurry < diff)
         {
             DoCast(me, SPELL_FLURRY);
-            Flurry = urand(15000, 20000);
+            Flurry += urand(15000, 20000);
         }
         else
             Flurry -= diff;
