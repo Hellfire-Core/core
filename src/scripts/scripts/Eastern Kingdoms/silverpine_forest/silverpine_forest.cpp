@@ -242,7 +242,7 @@ struct pyrewood_ambushAI : public ScriptedAI
 
     uint32 Phase;
     int KillCount;
-    uint32 WaitTimer;
+    int32 WaitTimer;
     uint64 PlayerGUID;
     SummonList Summons;
 
@@ -331,11 +331,11 @@ struct pyrewood_ambushAI : public ScriptedAI
                 if(WaitTimer == WAIT_SECS)
                     m_creature->Say(NPCSAY_INIT, LANG_UNIVERSAL, 0); //no blizzlike
 
-                if(WaitTimer <= diff)
-                {
-                    WaitTimer -= diff;
-                    return;
-                }
+              //  if(WaitTimer <= diff)
+              //  {
+              //      WaitTimer -= diff;   what was that supposed to do? O_o
+              //      return;
+              //  }
                 break;
             case 1:
                 SummonCreatureWithRandomTarget(2060, 1);

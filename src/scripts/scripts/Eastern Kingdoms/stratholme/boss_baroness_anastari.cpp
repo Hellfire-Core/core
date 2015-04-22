@@ -41,10 +41,10 @@ struct boss_baroness_anastariAI : public ScriptedAI
 
     ScriptedInstance* pInstance;
 
-    uint32 BansheeWail_Timer;
-    uint32 BansheeCurse_Timer;
-    uint32 Silence_Timer;
-    //uint32 Possess_Timer;
+    int32 BansheeWail_Timer;
+    int32 BansheeCurse_Timer;
+    int32 Silence_Timer;
+    //int32 Possess_Timer;
 
     void Reset()
     {
@@ -77,7 +77,7 @@ struct boss_baroness_anastariAI : public ScriptedAI
             if (rand()%100 < 95)
                 DoCast(m_creature->getVictim(),SPELL_BANSHEEWAIL);
             //4 seconds until we should cast this again
-            BansheeWail_Timer = 4000;
+            BansheeWail_Timer += 4000;
         }else BansheeWail_Timer -= diff;
 
         //BansheeCurse
@@ -86,7 +86,7 @@ struct boss_baroness_anastariAI : public ScriptedAI
             if (rand()%100 < 75)
                 DoCast(m_creature->getVictim(),SPELL_BANSHEECURSE);
             //18 seconds until we should cast this again
-            BansheeCurse_Timer = 18000;
+            BansheeCurse_Timer += 18000;
         }else BansheeCurse_Timer -= diff;
 
         //Silence
@@ -95,7 +95,7 @@ struct boss_baroness_anastariAI : public ScriptedAI
             if (rand()%100 < 80)
                 DoCast(m_creature->getVictim(),SPELL_SILENCE);
             //13 seconds until we should cast this again
-            Silence_Timer = 13000;
+            Silence_Timer += 13000;
         }else Silence_Timer -= diff;
 
         //Possess
@@ -109,7 +109,7 @@ struct boss_baroness_anastariAI : public ScriptedAI
         if (target)DoCast(target,SPELL_POSSESS);
         }
         //50 seconds until we should cast this again
-        Possess_Timer = 50000;
+        Possess_Timer += 50000;
         }else Possess_Timer -= diff;
         */
 

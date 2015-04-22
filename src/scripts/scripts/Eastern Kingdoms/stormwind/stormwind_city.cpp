@@ -250,7 +250,7 @@ struct npc_highlord_bolvar_fordragonAI : public ScriptedAI
 {
     npc_highlord_bolvar_fordragonAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 speechTimer;
+    int32 speechTimer;
     uint8 step;
 
     void Reset()
@@ -303,7 +303,7 @@ struct npc_highlord_bolvar_fordragonAI : public ScriptedAI
         {
             if(speechTimer <= diff)
             {
-                speechTimer = DoSpeech(step);
+                speechTimer += DoSpeech(step);
                 step++;
             }
             else speechTimer -= diff;
@@ -759,7 +759,7 @@ struct npc_squire_roweAI : public npc_escortAI
 
     WorldLocation wLoc;
     uint8 event;
-    uint32 eventTimer;
+    int32 eventTimer;
     uint32 resetTimer;
 
     void WaypointReached(uint32 i)
@@ -841,7 +841,7 @@ struct npc_squire_roweAI : public npc_escortAI
                 }
                 break;
             }
-            eventTimer = 4000;
+            eventTimer += 4000;
             event++;
         }
         else
@@ -1049,11 +1049,11 @@ struct npc_reginald_windsorAI : public npc_escortAI
 
     uint8 event;
     uint8 eventPhase;
-    uint32 phaseTimer;
+    int32 phaseTimer;
     uint8 onyxiaDespawnEvent;
     bool onyxia;
     bool marcusEventEnd;
-    uint32 onyxiaDespawnTimer;
+    int32 onyxiaDespawnTimer;
     uint64 npcLeft[3];
     uint64 npcRight[3];
     std::list<uint64> npcSay;
@@ -1262,7 +1262,7 @@ struct npc_reginald_windsorAI : public npc_escortAI
                             else
                                 me->Say("Onyxia sie ulotnila", LANG_UNIVERSAL, 0);
 
-                            onyxiaDespawnTimer = 1500;
+                            onyxiaDespawnTimer += 1500;
                             onyxiaDespawnEvent = 2;
                             break;
 
@@ -1301,7 +1301,7 @@ struct npc_reginald_windsorAI : public npc_escortAI
                             m_creature->SetSpeed(MOVE_RUN, 1.0);
                             m_creature->SetSpeed(MOVE_WALK, 1.0);
                             SetRun(false);
-                            phaseTimer = 2000;
+                            phaseTimer += 2000;
                             break;
                         case 1:
                             if(Creature * horse = m_creature->SummonCreature(305, HORSE_COORDS, me->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN, 10000))
@@ -1309,12 +1309,12 @@ struct npc_reginald_windsorAI : public npc_escortAI
 
                             m_creature->Say(SAY_REGINALD_1_1, LANG_UNIVERSAL, player->GetGUID());
                             m_creature->HandleEmoteCommand(EMOTE_ONESHOT_ATTACKOFF);
-                            phaseTimer = 1500;
+                            phaseTimer += 1500;
                             break;
                         case 2:
                             m_creature->SetUInt64Value(UNIT_FIELD_TARGET, player->GetGUID());
                             m_creature->Say(SAY_REGINALD_1_2, LANG_UNIVERSAL, player->GetGUID());
-                            phaseTimer = 45000;
+                            phaseTimer += 45000;
                             m_creature->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
                             m_creature->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER);
                             break;
@@ -1345,35 +1345,35 @@ struct npc_reginald_windsorAI : public npc_escortAI
                     {
                         case 0:
                             marcus->Say(SAY_GENERAL_MARCUS_1, LANG_UNIVERSAL, 0);
-                            phaseTimer = 6000;
+                            phaseTimer += 6000;
                             break;
                         case 1:
                             m_creature->Say(SAY_REGINALD_2_1, LANG_UNIVERSAL, 0);
-                            phaseTimer = 6000;
+                            phaseTimer += 6000;
                             break;
                         case 2:
                             m_creature->Say(SAY_REGINALD_2_2, LANG_UNIVERSAL, 0);
-                            phaseTimer = 1000;
+                            phaseTimer += 1000;
                             break;
                         case 3:
                             marcus->TextEmote(MARCUS_EMOTE, 0);
-                            phaseTimer = 6000;
+                            phaseTimer += 6000;
                             break;
                         case 4:
                             marcus->Say(SAY_GENERAL_MARCUS_2, LANG_UNIVERSAL, 0);
-                            phaseTimer = 6000;
+                            phaseTimer += 6000;
                             break;
                         case 5:
                             marcus->Say(SAY_GENERAL_MARCUS_3, LANG_UNIVERSAL, 0);
-                            phaseTimer = 10000;
+                            phaseTimer += 10000;
                             break;
                         case 6:
                             m_creature->Say(SAY_REGINALD_2_3, LANG_UNIVERSAL, 0);
-                            phaseTimer = 9000;
+                            phaseTimer += 9000;
                             break;
                         case 7:
                             m_creature->Say(SAY_REGINALD_2_4, LANG_UNIVERSAL, 0);
-                            phaseTimer = 4000;
+                            phaseTimer += 4000;
                             break;
                         case 8:
                             marcus->SetUInt64Value(UNIT_FIELD_TARGET, npcLeft[0]);
@@ -1389,7 +1389,7 @@ struct npc_reginald_windsorAI : public npc_escortAI
 
                             marcus->Say(SAY_GENERAL_MARCUS_4, LANG_UNIVERSAL, 0);
                             marcus->HandleEmoteCommand(EMOTE_ONESHOT_EXCLAMATION);
-                            phaseTimer = 5000;
+                            phaseTimer += 5000;
                             break;
                         case 9:
                             marcus->SetUInt64Value(UNIT_FIELD_TARGET, npcRight[0]);
@@ -1405,36 +1405,36 @@ struct npc_reginald_windsorAI : public npc_escortAI
 
                             marcus->Say(SAY_GENERAL_MARCUS_5, LANG_UNIVERSAL, 0);
                             marcus->HandleEmoteCommand(EMOTE_ONESHOT_EXCLAMATION);
-                            phaseTimer = 5000;
+                            phaseTimer += 5000;
                             break;
                         case 10:
                             marcus->SetUInt64Value(UNIT_FIELD_TARGET, m_creature->GetGUID());
                             marcus->Yell(SAY_GENERAL_MARCUS_6, LANG_UNIVERSAL, 0);
                             marcus->HandleEmoteCommand(EMOTE_ONESHOT_SHOUT);
-                            phaseTimer = 5000;
+                            phaseTimer += 5000;
                             break;
                         case 11:
                             marcus->HandleEmoteCommand(EMOTE_ONESHOT_SALUTE);
-                            phaseTimer = 3000;
+                            phaseTimer += 3000;
                             break;
                         case 12:
                             marcus->Say(SAY_GENERAL_MARCUS_7, LANG_UNIVERSAL, 0);
-                            phaseTimer = 4000;
+                            phaseTimer += 4000;
                             break;
                         case 13:
                             marcus->SetUInt64Value(UNIT_FIELD_TARGET, 0);
                             marcus->GetMotionMaster()->MovePoint(0, -8977.6, 514.2, 96.6);
-                            phaseTimer = 3000;
+                            phaseTimer += 3000;
                             break;
                         case 14:
                             marcus->GetMotionMaster()->MovePoint(0, -8976.7, 514.0, 96.6);
                             m_creature->Say(SAY_REGINALD_2_5, LANG_UNIVERSAL, 0);
-                            phaseTimer = 3000;
+                            phaseTimer += 3000;
                             break;
                         case 15:
                             m_creature->Say(SAY_REGINALD_2_6, LANG_UNIVERSAL, 0);
                             m_creature->HandleEmoteCommand(EMOTE_ONESHOT_EXCLAMATION);
-                            phaseTimer = 4000;
+                            phaseTimer += 4000;
                             break;
                         case 16:
                             //marcus->SetUInt64Value(UNIT_FIELD_TARGET, 0);
@@ -1462,11 +1462,11 @@ struct npc_reginald_windsorAI : public npc_escortAI
                         case 0:
                             m_creature->Say(SAY_REGINALD_3_1, LANG_UNIVERSAL, 0);
                             m_creature->HandleEmoteCommand(EMOTE_ONESHOT_POINT);
-                            phaseTimer = 4000;
+                            phaseTimer += 4000;
                             break;
                         case 1:
                             m_creature->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
-                            phaseTimer = 45000;
+                            phaseTimer += 45000;
                             break;
                         case 2:
                             m_creature->SetVisibility(VISIBILITY_OFF);
@@ -1518,7 +1518,7 @@ struct npc_reginald_windsorAI : public npc_escortAI
                     {
                         case 0:
                             m_creature->Say(SAY_REGINALD_4_1, LANG_UNIVERSAL, 0);
-                            phaseTimer = 2000;
+                            phaseTimer += 2000;
                             break;
                         case 1:
                         {
@@ -1533,7 +1533,7 @@ struct npc_reginald_windsorAI : public npc_escortAI
                                 majesty->TextEmote(ANDUIN_WRYN_EMOTE, 0);
                             }
 
-                            phaseTimer = 4000;
+                            phaseTimer += 4000;
                             break;
                         }
                         case 2:
@@ -1549,52 +1549,52 @@ struct npc_reginald_windsorAI : public npc_escortAI
                             }
 
                             m_creature->Say(SAY_REGINALD_4_2, LANG_UNIVERSAL, 0);
-                            phaseTimer = 4000;
+                            phaseTimer += 4000;
                             break;
                         }
                         case 3:
                             ladyOnyxia->HandleEmoteCommand(EMOTE_ONESHOT_LAUGH);
-                            phaseTimer = 3000;
+                            phaseTimer += 3000;
                             break;
                         case 4:
                             ladyOnyxia->Say(SAY_LADY_KATRANA_1, LANG_UNIVERSAL, 0);
-                            phaseTimer = 8000;
+                            phaseTimer += 8000;
                             break;
                         case 5:
                             ladyOnyxia->Say(SAY_LADY_KATRANA_2, LANG_UNIVERSAL, 0);
-                            phaseTimer = 8000;
+                            phaseTimer += 8000;
                             break;
                         case 6:
                             m_creature->Say(SAY_REGINALD_4_3, LANG_UNIVERSAL, 0);
-                            phaseTimer = 5000;
+                            phaseTimer += 5000;
                             break;
                         case 7:
                             m_creature->Say(SAY_REGINALD_4_4, LANG_UNIVERSAL, 0);
-                            phaseTimer = 5000;
+                            phaseTimer += 5000;
                             break;
                         case 8:
                             m_creature->Say(SAY_REGINALD_4_5, LANG_UNIVERSAL, 0);
-                            phaseTimer = 5000;
+                            phaseTimer += 5000;
                             break;
                         case 9:
                             m_creature->TextEmote(REGINALD_EMOTE, 0);
                             m_creature->CastSpell(ladyOnyxia, SPELL_WINDSOR_READING_TABLETS, false);
-                            phaseTimer = 13000;
+                            phaseTimer += 13000;
                             break;
                         case 10:
                             fordragon->SetSpeed(MOVE_RUN, 2.0);
                             fordragon->SetWalk(false);
                             fordragon->GetMotionMaster()->MovePoint(0, FORDRAGON_MOVE_COORDS);
-                            phaseTimer = 1000;
+                            phaseTimer += 1000;
                             break;
                         case 11:
                             fordragon->SetUInt64Value(UNIT_FIELD_TARGET, ladyOnyxia->GetGUID());
                             ladyOnyxia->Say(SAY_LADY_KATRANA_3, LANG_UNIVERSAL, 0);
-                            phaseTimer = 1000;
+                            phaseTimer += 1000;
                             break;
                         case 12:
                             fordragon->Say(SAY_HIGHLORD_FORDRAGON_2, LANG_UNIVERSAL, 0);
-                            phaseTimer = 1500;
+                            phaseTimer += 1500;
                             break;
                         case 13:
                         {
@@ -1622,7 +1622,7 @@ struct npc_reginald_windsorAI : public npc_escortAI
                                 }
                             }
 
-                            phaseTimer = 2000;
+                            phaseTimer += 2000;
                             break;
                         }
                         case 14:
@@ -1663,29 +1663,29 @@ struct npc_reginald_windsorAI : public npc_escortAI
                             ladyOnyxia->CastSpell((Unit*)NULL, SPELL_WINDSOR_DEATH, false);
                             fordragon->SetUInt64Value(UNIT_FIELD_TARGET, 0);
                             m_creature->Say(SAY_REGINALD_4_6, LANG_UNIVERSAL, 0);
-                            phaseTimer = 2000;
+                            phaseTimer += 2000;
                             break;
                         }
                         case 15:
                             if (player->isInCombat() || fordragon->isInCombat())
                                 eventPhase--;
-                            phaseTimer = 2000;
+                            phaseTimer += 2000;
                             break;
                         case 16:
                             fordragon->SetSpeed(MOVE_RUN, 2.0);
                             fordragon->SetWalk(false);
                             fordragon->GetMotionMaster()->MovePoint(0, FORDRAGON_MOVE_COORDS);
-                            phaseTimer = 1500;
+                            phaseTimer += 1500;
                             break;
                         case 17:
                             fordragon->SetUInt64Value(UNIT_FIELD_TARGET, me->GetGUID());
                             fordragon->SetStandState(PLAYER_STATE_KNEEL);
                             fordragon->Say(SAY_HIGHLORD_FORDRAGON_3, LANG_UNIVERSAL, 0);
-                            phaseTimer = 2000;
+                            phaseTimer += 2000;
                             break;
                         case 18:
                             m_creature->Say(SAY_REGINALD_4_7, LANG_UNIVERSAL, 0);
-                            phaseTimer = 2000;
+                            phaseTimer += 2000;
                             break;
                         case 19:
                         {
@@ -1698,7 +1698,7 @@ struct npc_reginald_windsorAI : public npc_escortAI
                                 majesty->SetVisibility(VISIBILITY_ON);
 
                             player->CompleteQuest(QUEST_THE_GREAT_THE_MASQUERADE);
-                            phaseTimer = 2000;
+                            phaseTimer += 2000;
                             break;
                         }
                         case 20:

@@ -41,11 +41,11 @@ struct boss_postmaster_malownAI : public ScriptedAI
 {
     boss_postmaster_malownAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 WailingDead_Timer;
-    uint32 Backhand_Timer;
-    uint32 CurseOfWeakness_Timer;
-    uint32 CurseOfTongues_Timer;
-    uint32 CallOfTheGrave_Timer;
+    int32 WailingDead_Timer;
+    int32 Backhand_Timer;
+    int32 CurseOfWeakness_Timer;
+    int32 CurseOfTongues_Timer;
+    int32 CallOfTheGrave_Timer;
     bool HasYelled;
 
     void Reset()
@@ -77,7 +77,7 @@ struct boss_postmaster_malownAI : public ScriptedAI
                 DoCast(m_creature->getVictim(),SPELL_WAILINGDEAD);
             }
             //19 seconds until we should cast this again
-            WailingDead_Timer = 19000;
+            WailingDead_Timer += 19000;
         }else WailingDead_Timer -= diff;
 
         //Backhand
@@ -89,7 +89,7 @@ struct boss_postmaster_malownAI : public ScriptedAI
                 DoCast(m_creature->getVictim(),SPELL_BACKHAND);
             }
             //8 seconds until we should cast this again
-            Backhand_Timer = 8000;
+            Backhand_Timer += 8000;
         }else Backhand_Timer -= diff;
 
         //CurseOfWeakness
@@ -101,7 +101,7 @@ struct boss_postmaster_malownAI : public ScriptedAI
                 DoCast(m_creature->getVictim(),SPELL_CURSEOFWEAKNESS);
             }
             //20 seconds until we should cast this again
-            CurseOfWeakness_Timer = 20000;
+            CurseOfWeakness_Timer += 20000;
         }else CurseOfWeakness_Timer -= diff;
 
         //CurseOfTongues
@@ -113,7 +113,7 @@ struct boss_postmaster_malownAI : public ScriptedAI
                 DoCast(m_creature->getVictim(),SPELL_CURSEOFTONGUES);
             }
             //22 seconds until we should cast this again
-            CurseOfTongues_Timer = 22000;
+            CurseOfTongues_Timer += 22000;
         }else CurseOfTongues_Timer -= diff;
 
         //CallOfTheGrave
@@ -125,7 +125,7 @@ struct boss_postmaster_malownAI : public ScriptedAI
                 DoCast(m_creature->getVictim(),SPELL_CALLOFTHEGRAVE);
             }
             //25 seconds until we should cast this again
-            CallOfTheGrave_Timer = 25000;
+            CallOfTheGrave_Timer += 25000;
         }else CallOfTheGrave_Timer -= diff;
 
         DoMeleeAttackIfReady();

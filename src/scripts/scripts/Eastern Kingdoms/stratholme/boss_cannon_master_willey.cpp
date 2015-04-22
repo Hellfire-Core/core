@@ -81,10 +81,10 @@ struct boss_cannon_master_willeyAI : public ScriptedAI
 {
     boss_cannon_master_willeyAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 KnockAway_Timer;
-    uint32 Pummel_Timer;
-    uint32 Shoot_Timer;
-    uint32 SummonRifleman_Timer;
+    int32 KnockAway_Timer;
+    int32 Pummel_Timer;
+    int32 Shoot_Timer;
+    int32 SummonRifleman_Timer;
 
     void Reset()
     {
@@ -125,7 +125,7 @@ struct boss_cannon_master_willeyAI : public ScriptedAI
                 DoCast(m_creature->getVictim(),SPELL_PUMMEL);
             }
             //12 seconds until we should cast this again
-            Pummel_Timer = 12000;
+            Pummel_Timer += 12000;
         }else Pummel_Timer -= diff;
 
         //KnockAway
@@ -137,7 +137,7 @@ struct boss_cannon_master_willeyAI : public ScriptedAI
                 DoCast(m_creature->getVictim(),SPELL_KNOCKAWAY);
             }
             //14 seconds until we should cast this again
-            KnockAway_Timer = 14000;
+            KnockAway_Timer += 14000;
         }else KnockAway_Timer -= diff;
 
         //Shoot
@@ -146,7 +146,7 @@ struct boss_cannon_master_willeyAI : public ScriptedAI
             //Cast
             DoCast(m_creature->getVictim(),SPELL_SHOOT);
             //1 seconds until we should cast this again
-            Shoot_Timer = 1000;
+            Shoot_Timer += 1000;
         }else Shoot_Timer -= diff;
 
         //SummonRifleman
@@ -202,7 +202,7 @@ struct boss_cannon_master_willeyAI : public ScriptedAI
                 break;
             }
             //30 seconds until we should cast this again
-            SummonRifleman_Timer = 30000;
+            SummonRifleman_Timer += 30000;
         }else SummonRifleman_Timer -= diff;
 
         DoMeleeAttackIfReady();

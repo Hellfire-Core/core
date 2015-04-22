@@ -53,8 +53,8 @@ struct boss_silver_hand_bossesAI : public ScriptedAI
 
     ScriptedInstance *pInstance;
 
-    uint32 HolyLight_Timer;
-    uint32 DivineShield_Timer;
+    int32 HolyLight_Timer;
+    int32 DivineShield_Timer;
 
     void Reset()
     {
@@ -122,7 +122,7 @@ struct boss_silver_hand_bossesAI : public ScriptedAI
             if (m_creature->GetHealth()*5 < m_creature->GetMaxHealth())
             {
                 DoCast(m_creature, SPELL_HOLY_LIGHT);
-                HolyLight_Timer = 20000;
+                HolyLight_Timer += 20000;
             }
         }else HolyLight_Timer -= diff;
 
@@ -131,7 +131,7 @@ struct boss_silver_hand_bossesAI : public ScriptedAI
             if (m_creature->GetHealth()*20 < m_creature->GetMaxHealth())
             {
                 DoCast(m_creature, SPELL_DIVINE_SHIELD);
-                DivineShield_Timer = 40000;
+                DivineShield_Timer += 40000;
             }
         }else DivineShield_Timer -= diff;
 

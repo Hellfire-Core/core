@@ -41,8 +41,8 @@ struct boss_ramstein_the_gorgerAI : public ScriptedAI
 
     ScriptedInstance* pInstance;
 
-    uint32 Trample_Timer;
-    uint32 Knockout_Timer;
+    int32 Trample_Timer;
+    int32 Knockout_Timer;
     std::list<uint64> summons;
 
     void Reset()
@@ -87,14 +87,14 @@ struct boss_ramstein_the_gorgerAI : public ScriptedAI
         if (Trample_Timer < diff)
         {
             DoCast(m_creature,SPELL_TRAMPLE);
-            Trample_Timer = 7000;
+            Trample_Timer += 7000;
         }else Trample_Timer -= diff;
 
         //Knockout
         if (Knockout_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_KNOCKOUT);
-            Knockout_Timer = 10000;
+            Knockout_Timer += 10000;
         }else Knockout_Timer -= diff;
 
         DoMeleeAttackIfReady();

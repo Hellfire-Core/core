@@ -87,11 +87,11 @@ struct boss_baron_rivendareAI : public ScriptedAI
 
     ScriptedInstance* pInstance;
 
-    uint32 ShadowBolt_Timer;
-    uint32 Cleave_Timer;
-    uint32 MortalStrike_Timer;
-    //    uint32 RaiseDead_Timer;
-    uint32 SummonSkeletons_Timer;
+    int32 ShadowBolt_Timer;
+    int32 Cleave_Timer;
+    int32 MortalStrike_Timer;
+    //    int32 RaiseDead_Timer;
+    int32 SummonSkeletons_Timer;
     Creature *Summoned;
 
     void Reset()
@@ -134,7 +134,7 @@ struct boss_baron_rivendareAI : public ScriptedAI
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0))
                 DoCast(m_creature->getVictim(),SPELL_SHADOWBOLT);
 
-            ShadowBolt_Timer = 10000;
+            ShadowBolt_Timer += 10000;
         }else ShadowBolt_Timer -= diff;
 
         //Cleave
@@ -142,21 +142,21 @@ struct boss_baron_rivendareAI : public ScriptedAI
         {
             DoCast(m_creature->getVictim(),SPELL_CLEAVE);
             //13 seconds until we should cast this again
-            Cleave_Timer = 7000 + (rand()%10000);
+            Cleave_Timer += 7000 + (rand()%10000);
         }else Cleave_Timer -= diff;
 
         //MortalStrike
         if (MortalStrike_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_MORTALSTRIKE);
-            MortalStrike_Timer = 10000 + (rand()%15000);
+            MortalStrike_Timer += 10000 + (rand()%15000);
         }else MortalStrike_Timer -= diff;
 
         //RaiseDead
         //            if (RaiseDead_Timer < diff)
         //          {
         //      DoCast(m_creature,SPELL_RAISEDEAD);
-        //                RaiseDead_Timer = 45000;
+        //                RaiseDead_Timer += 45000;
         //            }else RaiseDead_Timer -= diff;
 
         //SummonSkeletons
@@ -170,7 +170,7 @@ struct boss_baron_rivendareAI : public ScriptedAI
             m_creature->SummonCreature(11197,ADD_6X,ADD_6Y,ADD_6Z,ADD_6O,TEMPSUMMON_TIMED_DESPAWN,29000);
 
             //34 seconds until we should cast this again
-            SummonSkeletons_Timer = 40000;
+            SummonSkeletons_Timer += 40000;
         }else SummonSkeletons_Timer -= diff;
 
         DoMeleeAttackIfReady();

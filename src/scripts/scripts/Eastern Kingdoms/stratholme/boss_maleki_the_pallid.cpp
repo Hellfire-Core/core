@@ -41,9 +41,9 @@ struct boss_maleki_the_pallidAI : public ScriptedAI
 
     ScriptedInstance* pInstance;
 
-    uint32 Frostbolt_Timer;
-    uint32 IceTomb_Timer;
-    uint32 DrainLife_Timer;
+    int32 Frostbolt_Timer;
+    int32 IceTomb_Timer;
+    int32 DrainLife_Timer;
 
     void Reset()
     {
@@ -75,7 +75,7 @@ struct boss_maleki_the_pallidAI : public ScriptedAI
         {
              if (rand()%100 < 90)
                 DoCast(m_creature->getVictim(),SPELL_FROSTBOLT);
-            Frostbolt_Timer = 3500;
+            Frostbolt_Timer += 3500;
         }else Frostbolt_Timer -= diff;
 
         //IceTomb
@@ -83,7 +83,7 @@ struct boss_maleki_the_pallidAI : public ScriptedAI
         {
             if (rand()%100 < 65)
                 DoCast(m_creature->getVictim(),SPELL_ICETOMB);
-            IceTomb_Timer = 28000;
+            IceTomb_Timer += 28000;
         }else IceTomb_Timer -= diff;
 
         //DrainLife
@@ -91,7 +91,7 @@ struct boss_maleki_the_pallidAI : public ScriptedAI
         {
               if (rand()%100 < 55)
                 DoCast(m_creature->getVictim(),SPELL_DRAINLIFE);
-            DrainLife_Timer = 31000;
+            DrainLife_Timer += 31000;
         }else DrainLife_Timer -= diff;
 
         DoMeleeAttackIfReady();

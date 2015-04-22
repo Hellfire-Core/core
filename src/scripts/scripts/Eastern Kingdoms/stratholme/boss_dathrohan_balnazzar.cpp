@@ -89,16 +89,16 @@ struct boss_dathrohan_balnazzarAI : public ScriptedAI
 {
     boss_dathrohan_balnazzarAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 CrusadersHammer_Timer;
-    uint32 CrusaderStrike_Timer;
-    uint32 MindBlast_Timer;
-    uint32 HolyStrike_Timer;
-    uint32 Dazed_Timer;
-    uint32 ShadowShock_Timer;
-    uint32 PsychicScream_Timer;
-    uint32 DeepSleep_Timer;
-    uint32 ShadowBoltVolley_Timer;
-    //    uint32 MindControl_Timer;
+    int32 CrusadersHammer_Timer;
+    int32 CrusaderStrike_Timer;
+    int32 MindBlast_Timer;
+    int32 HolyStrike_Timer;
+    int32 Dazed_Timer;
+    int32 ShadowShock_Timer;
+    int32 PsychicScream_Timer;
+    int32 DeepSleep_Timer;
+    int32 ShadowBoltVolley_Timer;
+    //    int32 MindControl_Timer;
     bool Transformed;
 
     void Reset()
@@ -154,7 +154,7 @@ struct boss_dathrohan_balnazzarAI : public ScriptedAI
                     DoCast(m_creature->getVictim(),SPELL_CRUSADERSHAMMER);
                 }
                 //15 seconds until we should cast this again
-                CrusadersHammer_Timer = 12000;
+                CrusadersHammer_Timer += 12000;
             }else CrusadersHammer_Timer -= diff;
 
             //CrusaderStrike
@@ -166,7 +166,7 @@ struct boss_dathrohan_balnazzarAI : public ScriptedAI
                     DoCast(m_creature->getVictim(),SPELL_CRUSADERSTRIKE);
                 }
                 //15 seconds until we should cast this again
-                CrusaderStrike_Timer = 15000;
+                CrusaderStrike_Timer += 15000;
             }else CrusaderStrike_Timer -= diff;
 
             //MindBlast
@@ -178,7 +178,7 @@ struct boss_dathrohan_balnazzarAI : public ScriptedAI
                     DoCast(m_creature->getVictim(),SPELL_MINDBLAST);
                 }
                 //15 seconds until we should cast this again
-                MindBlast_Timer = 10000;
+                MindBlast_Timer += 10000;
             }else MindBlast_Timer -= diff;
 
             //HolyStrike
@@ -190,7 +190,7 @@ struct boss_dathrohan_balnazzarAI : public ScriptedAI
                     DoCast(m_creature->getVictim(),SPELL_HOLYSTRIKE);
                 }
                 //15 seconds until we should cast this again
-                HolyStrike_Timer = 15000;
+                HolyStrike_Timer += 15000;
             }else HolyStrike_Timer -= diff;
 
             //Dazed
@@ -202,7 +202,7 @@ struct boss_dathrohan_balnazzarAI : public ScriptedAI
                     DoCast(m_creature->getVictim(),SPELL_DAZED);
                 }
                 //15 seconds until we should cast this again
-                Dazed_Timer = 15000;
+                Dazed_Timer += 15000;
             }else Dazed_Timer -= diff;
 
             //BalnazzarTransform
@@ -228,7 +228,7 @@ struct boss_dathrohan_balnazzarAI : public ScriptedAI
                     DoCast(m_creature->getVictim(),SPELL_MINDBLAST);
                 }
                 //15 seconds until we should cast this again
-                MindBlast_Timer = 10000;
+                MindBlast_Timer += 10000;
             }else MindBlast_Timer -= diff;
 
             //ShadowShock
@@ -240,7 +240,7 @@ struct boss_dathrohan_balnazzarAI : public ScriptedAI
                     DoCast(m_creature->getVictim(),SPELL_SHADOWSHOCK);
                 }
                 //15 seconds until we should cast this again
-                ShadowShock_Timer = 11000;
+                ShadowShock_Timer += 11000;
             }else ShadowShock_Timer -= diff;
 
             //PsychicScream
@@ -254,7 +254,7 @@ struct boss_dathrohan_balnazzarAI : public ScriptedAI
                         DoModifyThreatPercent(m_creature->getVictim(),-50);
                 }
                 //15 seconds until we should cast this again
-                PsychicScream_Timer = 20000;
+                PsychicScream_Timer += 20000;
             }else PsychicScream_Timer -= diff;
 
             //DeepSleep
@@ -271,7 +271,7 @@ struct boss_dathrohan_balnazzarAI : public ScriptedAI
                     DoCast(target,SPELL_DEEPSLEEP);
                 }
                 //15 seconds until we should cast this again
-                DeepSleep_Timer = 15000;
+                DeepSleep_Timer += 15000;
             }else DeepSleep_Timer -= diff;
 
             //ShadowBoltVolley
@@ -283,7 +283,7 @@ struct boss_dathrohan_balnazzarAI : public ScriptedAI
                     DoCast(m_creature->getVictim(),SPELL_SHADOWBOLTVOLLEY);
                 }
                 //15 seconds until we should cast this again
-                ShadowBoltVolley_Timer = 13000;
+                ShadowBoltVolley_Timer += 13000;
             }else ShadowBoltVolley_Timer -= diff;
 
             //MindControl
@@ -295,7 +295,7 @@ struct boss_dathrohan_balnazzarAI : public ScriptedAI
             //                DoCast(m_creature->getVictim(),SPELL_MINDCONTROL);
             //                }
             //15 seconds until we should cast this again
-            //                MindControl_Timer = 15000;
+            //                MindControl_Timer += 15000;
             //            }else MindControl_Timer -= diff;
 
             //END ELSE TRANSFORMED
