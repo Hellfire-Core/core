@@ -64,15 +64,15 @@ struct boss_jeklikAI : public ScriptedAI
 
     ScriptedInstance *pInstance;
 
-    uint32 Charge_Timer;
-    uint32 SonicBurst_Timer;
-    uint32 Screech_Timer;
-    uint32 SpawnBats_Timer;
-    uint32 ShadowWordPain_Timer;
-    uint32 MindFlay_Timer;
-    uint32 ChainMindFlay_Timer;
-    uint32 GreaterHeal_Timer;
-    uint32 SpawnFlyingBats_Timer;
+    int32 Charge_Timer;
+    int32 SonicBurst_Timer;
+    int32 Screech_Timer;
+    int32 SpawnBats_Timer;
+    int32 ShadowWordPain_Timer;
+    int32 MindFlay_Timer;
+    int32 ChainMindFlay_Timer;
+    int32 GreaterHeal_Timer;
+    int32 SpawnFlyingBats_Timer;
 
     bool PhaseTwo;
 
@@ -124,7 +124,7 @@ struct boss_jeklikAI : public ScriptedAI
                         AttackStart(target);
                     }
 
-                    Charge_Timer = 15000 + rand()%15000;
+                    Charge_Timer += 15000 + rand()%15000;
                 }
                 else
                     Charge_Timer -= diff;
@@ -132,7 +132,7 @@ struct boss_jeklikAI : public ScriptedAI
                 if (SonicBurst_Timer < diff)
                 {
                     DoCast(m_creature->getVictim(),SPELL_SONICBURST);
-                    SonicBurst_Timer = 8000 + rand()%5000;
+                    SonicBurst_Timer += 8000 + rand()%5000;
                 }
                 else
                     SonicBurst_Timer -= diff;
@@ -140,7 +140,7 @@ struct boss_jeklikAI : public ScriptedAI
                 if (Screech_Timer < diff)
                 {
                     DoCast(m_creature->getVictim(),SPELL_SCREECH);
-                    Screech_Timer = 18000 + rand()%8000;
+                    Screech_Timer += 18000 + rand()%8000;
                 }
                 else
                     Screech_Timer -= diff;
@@ -160,7 +160,7 @@ struct boss_jeklikAI : public ScriptedAI
                         }
                     }
 
-                    SpawnBats_Timer = 60000;
+                    SpawnBats_Timer += 60000;
                 }
                 else
                     SpawnBats_Timer -= diff;
@@ -174,7 +174,7 @@ struct boss_jeklikAI : public ScriptedAI
                         if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0,GetSpellMaxRange(SPELL_SHADOW_WORD_PAIN), true))
                         {
                             DoCast(target, SPELL_SHADOW_WORD_PAIN);
-                            ShadowWordPain_Timer = 12000 + rand()%6000;
+                            ShadowWordPain_Timer += 12000 + rand()%6000;
                         }
                     }
                     else
@@ -183,7 +183,7 @@ struct boss_jeklikAI : public ScriptedAI
                     if (MindFlay_Timer < diff)
                     {
                         DoCast(m_creature->getVictim(), SPELL_MIND_FLAY);
-                        MindFlay_Timer = 16000;
+                        MindFlay_Timer += 16000;
                     }
                     else
                         MindFlay_Timer -= diff;
@@ -192,7 +192,7 @@ struct boss_jeklikAI : public ScriptedAI
                     {
                         m_creature->InterruptNonMeleeSpells(false);
                         DoCast(m_creature->getVictim(), SPELL_CHAIN_MIND_FLAY);
-                        ChainMindFlay_Timer = 15000 + rand()%15000;
+                        ChainMindFlay_Timer += 15000 + rand()%15000;
                     }
                     else
                         ChainMindFlay_Timer -= diff;
@@ -201,7 +201,7 @@ struct boss_jeklikAI : public ScriptedAI
                     {
                         m_creature->InterruptNonMeleeSpells(false);
                         DoCast(m_creature,SPELL_GREATERHEAL);
-                        GreaterHeal_Timer = 25000 + rand()%10000;
+                        GreaterHeal_Timer += 25000 + rand()%10000;
                     }
                     else
                         GreaterHeal_Timer -= diff;
@@ -216,7 +216,7 @@ struct boss_jeklikAI : public ScriptedAI
                         if (FlyingBat)
                             FlyingBat->AI()->AttackStart(target);
 
-                        SpawnFlyingBats_Timer = 10000 + rand()%5000;
+                        SpawnFlyingBats_Timer += 10000 + rand()%5000;
                     }
                     else
                         SpawnFlyingBats_Timer -=diff;
@@ -244,8 +244,8 @@ struct mob_batriderAI : public ScriptedAI
 
     ScriptedInstance *pInstance;
 
-    uint32 Bomb_Timer;
-    uint32 Check_Timer;
+    int32 Bomb_Timer;
+    int32 Check_Timer;
 
     void Reset()
     {
@@ -268,7 +268,7 @@ struct mob_batriderAI : public ScriptedAI
             if (Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_BOMB), true))
             {
                 DoCast(target, SPELL_BOMB);
-                Bomb_Timer = 5000;
+                Bomb_Timer += 5000;
             }
         }
         else
@@ -286,7 +286,7 @@ struct mob_batriderAI : public ScriptedAI
                 }
             }
 
-            Check_Timer = 1000;
+            Check_Timer += 1000;
         }
         else
             Check_Timer -= diff;

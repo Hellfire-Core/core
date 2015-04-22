@@ -247,7 +247,7 @@ struct npc_lady_sylvanas_windrunnerAI : public ScriptedAI
 {
     npc_lady_sylvanas_windrunnerAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 LamentEvent_Timer;
+    int32 LamentEvent_Timer;
     bool LamentEvent;
     uint64 targetGUID;
 
@@ -296,7 +296,7 @@ struct npc_lady_sylvanas_windrunnerAI : public ScriptedAI
                 m_creature->GetRandomPoint(myX, myY, myZ, 20.0, raX, raY, raZ);
                 m_creature->SummonCreature(ENTRY_HIGHBORNE_BUNNY, raX, raY, myZ, 0, TEMPSUMMON_TIMED_DESPAWN, 3000);
 
-                LamentEvent_Timer = 2000;
+                LamentEvent_Timer += 2000;
                 if( !m_creature->HasAura(SPELL_SYLVANAS_CAST, 0))
                 {
                     DoScriptText(SAY_LAMENT_END, m_creature);

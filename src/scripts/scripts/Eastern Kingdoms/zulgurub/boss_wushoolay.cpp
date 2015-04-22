@@ -37,8 +37,8 @@ struct boss_wushoolayAI : public ScriptedAI
         pInstance = c->GetInstanceData();
     }
 
-    uint32 LightningCloud_Timer;
-    uint32 LightningWave_Timer;
+    int32 LightningCloud_Timer;
+    int32 LightningWave_Timer;
     ScriptedInstance * pInstance;
 
     void Reset()
@@ -67,7 +67,7 @@ struct boss_wushoolayAI : public ScriptedAI
         if (LightningCloud_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_LIGHTNINGCLOUD);
-            LightningCloud_Timer = 15000 + rand()%5000;
+            LightningCloud_Timer += 15000 + rand()%5000;
         }
         else
             LightningCloud_Timer -= diff;
@@ -78,7 +78,7 @@ struct boss_wushoolayAI : public ScriptedAI
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0, GetSpellMaxRange(SPELL_LIGHTNINGWAVE), true))
                 DoCast(target,SPELL_LIGHTNINGWAVE);
 
-            LightningWave_Timer = 12000 + rand()%4000;
+            LightningWave_Timer += 12000 + rand()%4000;
         }
         else
             LightningWave_Timer -= diff;

@@ -48,7 +48,7 @@ struct mob_jadespine_basiliskAI : public ScriptedAI
 {
     mob_jadespine_basiliskAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 Cslumber_Timer;
+    int32 Cslumber_Timer;
 
     void Reset()
     {
@@ -73,7 +73,7 @@ struct mob_jadespine_basiliskAI : public ScriptedAI
             m_creature->CastSpell(m_creature->getVictim(),SPELL_CSLUMBER, true);
 
             //Stop attacking target thast asleep and pick new target
-            Cslumber_Timer = 28000;
+            Cslumber_Timer += 28000;
 
             Unit* Target = SelectUnit(SELECT_TARGET_TOPAGGRO, 0);
 

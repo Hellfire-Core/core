@@ -37,9 +37,9 @@ struct boss_hazzarahAI : public ScriptedAI
         pInstance = c->GetInstanceData();
     }
 
-    uint32 ManaBurn_Timer;
-    uint32 Sleep_Timer;
-    uint32 Illusions_Timer;
+    int32 ManaBurn_Timer;
+    int32 Sleep_Timer;
+    int32 Illusions_Timer;
     Creature* Illusion;
     ScriptedInstance * pInstance;
 
@@ -70,7 +70,7 @@ struct boss_hazzarahAI : public ScriptedAI
         if (ManaBurn_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_MANABURN);
-            ManaBurn_Timer = 8000 + rand()%8000;
+            ManaBurn_Timer += 8000 + rand()%8000;
         }
         else
             ManaBurn_Timer -= diff;
@@ -79,7 +79,7 @@ struct boss_hazzarahAI : public ScriptedAI
         if (Sleep_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_SLEEP);
-            Sleep_Timer = 12000 + rand()%8000;
+            Sleep_Timer += 12000 + rand()%8000;
         }
         else
             Sleep_Timer -= diff;
@@ -101,7 +101,7 @@ struct boss_hazzarahAI : public ScriptedAI
                     ((CreatureAI*)Illusion->AI())->AttackStart(target);
             }
 
-            Illusions_Timer = 15000 + rand()%10000;
+            Illusions_Timer += 15000 + rand()%10000;
         }
         else
             Illusions_Timer -= diff;

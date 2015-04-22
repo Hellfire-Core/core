@@ -101,24 +101,24 @@ struct boss_nalorakkAI : public ScriptedAI
 
     ScriptedInstance *pInstance;
 
-    uint32 BrutalSwipe_Timer;
-    uint32 Mangle_Timer;
-    uint32 Surge_Timer;
+    int32 BrutalSwipe_Timer;
+    int32 Mangle_Timer;
+    int32 Surge_Timer;
 
-    uint32 LaceratingSlash_Timer;
-    uint32 RendFlesh_Timer;
-    uint32 DeafeningRoar_Timer;
+    int32 LaceratingSlash_Timer;
+    int32 RendFlesh_Timer;
+    int32 DeafeningRoar_Timer;
 
-    uint32 ShapeShift_Timer;
-    uint32 Berserk_Timer;
+    int32 ShapeShift_Timer;
+    int32 Berserk_Timer;
 
     bool inBearForm;
     bool MoveEvent;
     bool inMove;
     uint32 MovePhase;
-    uint32 waitTimer;
+    int32 waitTimer;
 
-    uint32 checkTimer;
+    int32 checkTimer;
     WorldLocation wLoc;
 
     void Reset()
@@ -367,7 +367,7 @@ struct boss_nalorakkAI : public ScriptedAI
             else
                 DoZoneInCombat();
             m_creature->SetSpeed(MOVE_RUN,2);
-            checkTimer = 3000;
+            checkTimer += 3000;
         }
         else
             checkTimer -= diff;
@@ -375,7 +375,7 @@ struct boss_nalorakkAI : public ScriptedAI
         if(Berserk_Timer < diff)
         {
             AddSpellToCastWithScriptText(m_creature, SPELL_BERSERK, YELL_BERSERK, true);
-            Berserk_Timer = 600000;
+            Berserk_Timer += 600000;
         }else 
             Berserk_Timer -= diff;
 
@@ -384,7 +384,7 @@ struct boss_nalorakkAI : public ScriptedAI
             if(BrutalSwipe_Timer < diff)
             {
                 AddSpellToCast(m_creature->getVictim(), SPELL_BRUTALSWIPE);
-                BrutalSwipe_Timer = 7000 + rand()%5000;
+                BrutalSwipe_Timer += 7000 + rand()%5000;
             }else 
                 BrutalSwipe_Timer -= diff;
 
@@ -393,10 +393,10 @@ struct boss_nalorakkAI : public ScriptedAI
                 if(m_creature->getVictim() && !m_creature->getVictim()->HasAura(SPELL_MANGLEEFFECT, 0))
                 {
                     AddSpellToCast(m_creature->getVictim(), SPELL_MANGLE);
-                    Mangle_Timer = 1000;
+                    Mangle_Timer += 1000;
                 }
                 else 
-                    Mangle_Timer = 10000 + rand()%5000;
+                    Mangle_Timer += 10000 + rand()%5000;
             }else 
                 Mangle_Timer -= diff;
 
@@ -404,7 +404,7 @@ struct boss_nalorakkAI : public ScriptedAI
             {
                 if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 1, GetSpellMaxRange(SPELL_SURGE), true, m_creature->getVictimGUID()))
                     AddSpellToCastWithScriptText(target, SPELL_SURGE, YELL_SURGE);
-                Surge_Timer = 15000 + rand()%5000;
+                Surge_Timer += 15000 + rand()%5000;
             }else 
                 Surge_Timer -= diff;
 
@@ -413,7 +413,7 @@ struct boss_nalorakkAI : public ScriptedAI
                 if(ShapeShift_Timer <= diff)
                 {
                     AddSpellToCastWithScriptText(m_creature, SPELL_BEARFORM, YELL_SHIFTEDTOBEAR, true);
-                    ShapeShift_Timer = 0;
+                    ShapeShift_Timer += 0;
                 }else 
                     ShapeShift_Timer -= diff;
             }
@@ -423,21 +423,21 @@ struct boss_nalorakkAI : public ScriptedAI
             if(LaceratingSlash_Timer < diff)
             {
                 AddSpellToCast(m_creature->getVictim(), SPELL_LACERATINGSLASH);
-                LaceratingSlash_Timer = 18000 + rand()%5000;
+                LaceratingSlash_Timer += 18000 + rand()%5000;
             }else
                 LaceratingSlash_Timer -= diff;
 
             if(RendFlesh_Timer < diff)
             {
                 AddSpellToCast(m_creature->getVictim(), SPELL_RENDFLESH);
-                RendFlesh_Timer = 5000 + rand()%5000;
+                RendFlesh_Timer += 5000 + rand()%5000;
             }else
                 RendFlesh_Timer -= diff;
 
             if(DeafeningRoar_Timer < diff)
             {
                 AddSpellToCast(m_creature->getVictim(), SPELL_DEAFENINGROAR);
-                DeafeningRoar_Timer = 15000 + rand()%5000;
+                DeafeningRoar_Timer += 15000 + rand()%5000;
             }else
                 DeafeningRoar_Timer -= diff;
         }

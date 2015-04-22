@@ -57,9 +57,9 @@ struct boss_archaedasAI : public ScriptedAI
         pInstance = (m_creature->GetInstanceData());
     }
 
-    uint32 Tremor_Timer;
+    int32 Tremor_Timer;
     int32  Awaken_Timer;
-    uint32 WallMinionTimer;
+    int32 WallMinionTimer;
     bool wakingUp;
 
     bool InCombat;
@@ -138,7 +138,7 @@ struct boss_archaedasAI : public ScriptedAI
         if (WallMinionTimer < diff) {
             pInstance->SetData (DATA_MINIONS, IN_PROGRESS);
 
-            WallMinionTimer = 10000;
+            WallMinionTimer += 10000;
         } else WallMinionTimer -= diff;
 
         //If we are <66 summon the guardians
@@ -172,7 +172,7 @@ struct boss_archaedasAI : public ScriptedAI
             DoCast(m_creature->getVictim(),SPELL_GROUND_TREMOR);
 
             //45 seconds until we should cast this agian
-            Tremor_Timer  = 45000;
+            Tremor_Timer  += 45000;
         }else Tremor_Timer  -= diff;
 
         DoMeleeAttackIfReady();
@@ -210,7 +210,7 @@ struct mob_archaedas_minionsAI : public ScriptedAI
         pInstance = (m_creature->GetInstanceData());
     }
 
-    uint32 Arcing_Timer;
+    int32 Arcing_Timer;
     int32 Awaken_Timer;
     bool wakingUp;
 
@@ -243,7 +243,7 @@ struct mob_archaedas_minionsAI : public ScriptedAI
     void SpellHit (Unit* caster, const SpellEntry *spell) {
         // time to wake up, start animation
         if (spell == GetSpellStore()->LookupEntry(SPELL_ARCHAEDAS_AWAKEN)){
-            Awaken_Timer = 5000;
+            Awaken_Timer += 5000;
             wakingUp = true;
         }
     }

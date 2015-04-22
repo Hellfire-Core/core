@@ -53,13 +53,13 @@ struct boss_mandokirAI : public ScriptedAI
     }
 
     uint32 KillCount;
-    uint32 Watch_Timer;
-    uint32 TargetInRange;
-    uint32 Cleave_Timer;
-    uint32 Whirlwind_Timer;
-    uint32 Fear_Timer;
-    uint32 MortalStrike_Timer;
-    uint32 Check_Timer;
+    int32 Watch_Timer;
+    int32 TargetInRange;
+    int32 Cleave_Timer;
+    int32 Whirlwind_Timer;
+    int32 Fear_Timer;
+    int32 MortalStrike_Timer;
+    int32 Check_Timer;
     float targetX;
     float targetY;
     float targetZ;
@@ -176,7 +176,7 @@ struct boss_mandokirAI : public ScriptedAI
                     }
                 }
                 someWatched = false;
-                Watch_Timer = 20000;
+                Watch_Timer += 20000;
             }
             else
                 Watch_Timer -= diff;
@@ -211,7 +211,7 @@ struct boss_mandokirAI : public ScriptedAI
                 if (Cleave_Timer < diff)
                 {
                     DoCast(m_creature->getVictim(),SPELL_CLEAVE);
-                    Cleave_Timer = 7000;
+                    Cleave_Timer += 7000;
                 }
                 else
                     Cleave_Timer -= diff;
@@ -220,7 +220,7 @@ struct boss_mandokirAI : public ScriptedAI
                 if (Whirlwind_Timer < diff)
                 {
                     DoCast(m_creature,SPELL_WHIRLWIND);
-                    Whirlwind_Timer = 18000;
+                    Whirlwind_Timer += 18000;
                 }
                 else
                     Whirlwind_Timer -= diff;
@@ -241,7 +241,7 @@ struct boss_mandokirAI : public ScriptedAI
                     if(TargetInRange > 3)
                         DoCast(m_creature->getVictim(),SPELL_FEAR);
 
-                    Fear_Timer = 4000;
+                    Fear_Timer += 4000;
                 }
                 else
                     Fear_Timer -=diff;
@@ -252,7 +252,7 @@ struct boss_mandokirAI : public ScriptedAI
                     if (MortalStrike_Timer < diff)
                     {
                         DoCast(m_creature->getVictim(),SPELL_MORTAL_STRIKE);
-                        MortalStrike_Timer = 15000;
+                        MortalStrike_Timer += 15000;
                     }
                     else
                         MortalStrike_Timer -= diff;
@@ -274,7 +274,7 @@ struct boss_mandokirAI : public ScriptedAI
                     }
                 }
 
-                Check_Timer = 1000;
+                Check_Timer += 1000;
             }
             else
                 Check_Timer -= diff;
@@ -289,7 +289,7 @@ struct mob_ohganAI : public ScriptedAI
 {
     mob_ohganAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 SunderArmor_Timer;
+    int32 SunderArmor_Timer;
 
     void Reset()
     {
@@ -310,7 +310,7 @@ struct mob_ohganAI : public ScriptedAI
         if(SunderArmor_Timer < diff)
         {
             DoCast(m_creature->getVictim(), SPELL_SUNDERARMOR);
-            SunderArmor_Timer = 10000 + rand()%5000;
+            SunderArmor_Timer += 10000 + rand()%5000;
         }
         else
             SunderArmor_Timer -= diff;

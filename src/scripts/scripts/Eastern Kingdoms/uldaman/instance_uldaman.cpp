@@ -79,7 +79,7 @@ struct instance_uldaman : public ScriptedInstance
     
     uint64 keystoneGUID;
     
-    uint32 ironayaSealDoorTimer;
+    int32 ironayaSealDoorTimer;
     bool keystoneCheck;
 
     std::vector<uint64> stoneKeeper;

@@ -37,11 +37,11 @@ struct boss_renatakiAI : public ScriptedAI
         pInstance = c->GetInstanceData();
     }
 
-    uint32 Invisible_Timer;
-    uint32 Ambush_Timer;
-    uint32 Visible_Timer;
-    uint32 Aggro_Timer;
-    uint32 ThousandBlades_Timer;
+    int32 Invisible_Timer;
+    int32 Ambush_Timer;
+    int32 Visible_Timer;
+    int32 Aggro_Timer;
+    int32 ThousandBlades_Timer;
 
     bool Invisible;
     bool Ambushed;
@@ -88,7 +88,7 @@ struct boss_renatakiAI : public ScriptedAI
             m_creature->SetUInt32Value(UNIT_FIELD_DISPLAYID,11686);
             Invisible = true;
 
-            Invisible_Timer = 15000 + rand()%15000;
+            Invisible_Timer += 15000 + rand()%15000;
         }
         else
             Invisible_Timer -= diff;
@@ -104,7 +104,7 @@ struct boss_renatakiAI : public ScriptedAI
                 }
 
                 Ambushed = true;
-                Ambush_Timer = 3000;
+                Ambush_Timer += 3000;
             }
             else
                 Ambush_Timer -= diff;
@@ -123,7 +123,7 @@ struct boss_renatakiAI : public ScriptedAI
                 m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                 Invisible = false;
 
-                Visible_Timer = 4000;
+                Visible_Timer += 4000;
             }
             else
                 Visible_Timer -= diff;
@@ -141,7 +141,7 @@ struct boss_renatakiAI : public ScriptedAI
                 if(target)
                     AttackStart(target);
 
-                Aggro_Timer = 7000 + rand()%13000;
+                Aggro_Timer += 7000 + rand()%13000;
             }
             else
                 Aggro_Timer -= diff;
@@ -149,7 +149,7 @@ struct boss_renatakiAI : public ScriptedAI
             if(ThousandBlades_Timer < diff)
             {
                 DoCast(m_creature->getVictim(), SPELL_THOUSANDBLADES);
-                ThousandBlades_Timer = 7000 + rand()%5000;
+                ThousandBlades_Timer += 7000 + rand()%5000;
             }
             else
                 ThousandBlades_Timer -= diff;

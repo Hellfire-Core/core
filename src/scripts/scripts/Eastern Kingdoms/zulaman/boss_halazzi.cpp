@@ -83,12 +83,12 @@ struct boss_halazziAI : public ScriptedAI
 
     ScriptedInstance *pInstance;
 
-    uint32 FrenzyTimer;
-    uint32 SaberlashTimer;
-    uint32 ShockTimer;
-    uint32 TotemTimer;
-    uint32 CheckTimer;
-    uint32 BerserkTimer;
+    int32 FrenzyTimer;
+    int32 SaberlashTimer;
+    int32 ShockTimer;
+    int32 TotemTimer;
+    int32 CheckTimer;
+    int32 BerserkTimer;
 
     uint32 TransformCount;
 
@@ -96,7 +96,7 @@ struct boss_halazziAI : public ScriptedAI
 
     uint64 LynxGUID;
 
-    uint32 checkTimer2;
+    int32 checkTimer2;
     WorldLocation wLoc;
     bool Intro;
 
@@ -227,7 +227,7 @@ struct boss_halazziAI : public ScriptedAI
                 EnterEvadeMode();
             else
                 DoZoneInCombat();
-            checkTimer2 = 3000;
+            checkTimer2 += 3000;
         }
         else
             checkTimer2 -= diff;
@@ -235,7 +235,7 @@ struct boss_halazziAI : public ScriptedAI
         if(BerserkTimer < diff)
         {
             AddSpellToCastWithScriptText(m_creature, SPELL_BERSERK, YELL_BERSERK);
-            BerserkTimer = 60000;
+            BerserkTimer += 60000;
         }else BerserkTimer -= diff;
 
         if(Phase == PHASE_LYNX || Phase == PHASE_ENRAGE)
@@ -243,13 +243,13 @@ struct boss_halazziAI : public ScriptedAI
             if(SaberlashTimer < diff)
             {
                 AddSpellToCastWithScriptText(m_creature->getVictim(), SPELL_SABER_LASH, RAND(YELL_SABER_ONE, YELL_SABER_TWO));
-                SaberlashTimer = 5000 + rand() % 10000;
+                SaberlashTimer += 5000 + rand() % 10000;
             }else SaberlashTimer -= diff;
 
             if(FrenzyTimer < diff)
             {
                 AddSpellToCast(m_creature, SPELL_FRENZY);
-                FrenzyTimer = (10+rand()%5)*1000;
+                FrenzyTimer += (10+rand()%5)*1000;
             }else FrenzyTimer -= diff;
 
             if(Phase == PHASE_LYNX)
@@ -257,7 +257,7 @@ struct boss_halazziAI : public ScriptedAI
                 {
                     if(m_creature->GetHealth() * 4 < m_creature->GetMaxHealth() * (3 - TransformCount))
                         EnterPhase(PHASE_SPLIT);
-                    CheckTimer = 1000;
+                    CheckTimer += 1000;
                 }else CheckTimer -= diff;
         }
 
@@ -266,7 +266,7 @@ struct boss_halazziAI : public ScriptedAI
             if(TotemTimer < diff)
             {
                 AddSpellToCast(m_creature, SPELL_SUMMON_TOTEM);
-                TotemTimer = 20000;
+                TotemTimer += 20000;
             }else TotemTimer -= diff;
 
             if(ShockTimer < diff)
@@ -277,7 +277,7 @@ struct boss_halazziAI : public ScriptedAI
                         AddSpellToCast(target,SPELL_EARTHSHOCK);
                     else
                         AddSpellToCast(target,SPELL_FLAMESHOCK);
-                    ShockTimer = 10000 + rand()%5000;
+                    ShockTimer += 10000 + rand()%5000;
                 }
             }else ShockTimer -= diff;
 
@@ -292,7 +292,7 @@ struct boss_halazziAI : public ScriptedAI
                         if(Lynx && ((Lynx->GetHealth()*100) / Lynx->GetMaxHealth() <= 20)/*Lynx->GetHealth() * 10 < Lynx->GetMaxHealth()*/)
                             EnterPhase(PHASE_MERGE);
                     }
-                    CheckTimer = 1000;
+                    CheckTimer += 1000;
                 }else CheckTimer -= diff;
         }
 
@@ -313,7 +313,7 @@ struct boss_halazziAI : public ScriptedAI
                             EnterPhase(PHASE_ENRAGE);
                     }
                 }
-                CheckTimer = 1000;
+                CheckTimer += 1000;
             }else CheckTimer -= diff;
         }
 
@@ -341,8 +341,8 @@ struct boss_spiritlynxAI : public ScriptedAI
 {
     boss_spiritlynxAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 FrenzyTimer;
-    uint32 shredder_timer;
+    int32 FrenzyTimer;
+    int32 shredder_timer;
 
     void Reset()
     {
@@ -372,13 +372,13 @@ struct boss_spiritlynxAI : public ScriptedAI
         if(FrenzyTimer < diff)
         {
             DoCast(m_creature, SPELL_LYNX_FRENZY);
-            FrenzyTimer = (30+rand()%20)*1000;
+            FrenzyTimer += (30+rand()%20)*1000;
         }else FrenzyTimer -= diff;
 
         if(shredder_timer < diff)
         {
             DoCast(m_creature->getVictim(), SPELL_SHRED_ARMOR);
-            shredder_timer = 4000;
+            shredder_timer += 4000;
         }else shredder_timer -= diff;
 
         DoMeleeAttackIfReady();

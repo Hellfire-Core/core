@@ -59,9 +59,9 @@ struct instance_zulaman : public ScriptedInstance
     uint64 AkilzonGUID;
     uint64 HexLordGUID;
 
-    uint32 QuestTimer;
-    uint16 BossKilled;
-    uint16 QuestMinute;
+    int32 QuestTimer;
+    int16 BossKilled;
+    int16 QuestMinute;
     uint16 ChestLooted;
     uint32 AkilzonGauntlet;
 

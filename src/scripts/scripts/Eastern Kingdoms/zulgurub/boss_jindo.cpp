@@ -47,11 +47,11 @@ struct boss_jindoAI : public ScriptedAI
 
     ScriptedInstance *pInstance;
 
-    uint32 BrainWashTotem_Timer;
-    uint32 HealingWard_Timer;
-    uint32 Hex_Timer;
-    uint32 Delusions_Timer;
-    uint32 Teleport_Timer;
+    int32 BrainWashTotem_Timer;
+    int32 HealingWard_Timer;
+    int32 Hex_Timer;
+    int32 Delusions_Timer;
+    int32 Teleport_Timer;
 
     Creature *Shade;
     Creature *Skeletons;
@@ -87,7 +87,7 @@ struct boss_jindoAI : public ScriptedAI
         if (BrainWashTotem_Timer < diff)
         {
             DoCast(m_creature, SPELL_BRAINWASHTOTEM);
-            BrainWashTotem_Timer = 18000 + rand()%8000;
+            BrainWashTotem_Timer += 18000 + rand()%8000;
         }
         else
             BrainWashTotem_Timer -= diff;
@@ -96,7 +96,7 @@ struct boss_jindoAI : public ScriptedAI
         if (HealingWard_Timer < diff)
         {
             DoCast(m_creature, SPELL_POWERFULLHEALINGWARD);
-            HealingWard_Timer = 14000 + rand()%6000;
+            HealingWard_Timer += 14000 + rand()%6000;
         }
         else
             HealingWard_Timer -= diff;
@@ -109,7 +109,7 @@ struct boss_jindoAI : public ScriptedAI
             if(DoGetThreat(m_creature->getVictim()))
                 DoModifyThreatPercent(m_creature->getVictim(),-80);
 
-            Hex_Timer = 12000 + rand()%8000;
+            Hex_Timer += 12000 + rand()%8000;
         }
         else
             Hex_Timer -= diff;
@@ -125,7 +125,7 @@ struct boss_jindoAI : public ScriptedAI
                 if(Shade)
                     Shade->AI()->AttackStart(target);
             }
-            Delusions_Timer = 4000 + rand()%8000;
+            Delusions_Timer += 4000 + rand()%8000;
         }
         else
             Delusions_Timer -= diff;
@@ -169,7 +169,7 @@ struct boss_jindoAI : public ScriptedAI
                     Skeletons->AI()->AttackStart(target);
             }
 
-            Teleport_Timer = 15000 + rand()%8000;
+            Teleport_Timer += 15000 + rand()%8000;
         }
         else
             Teleport_Timer -= diff;
@@ -187,7 +187,7 @@ struct mob_shade_of_jindoAI : public ScriptedAI
         pInstance = (c->GetInstanceData());
     }
 
-    uint32 ShadowShock_Timer;
+    int32 ShadowShock_Timer;
 
     ScriptedInstance *pInstance;
 
@@ -210,7 +210,7 @@ struct mob_shade_of_jindoAI : public ScriptedAI
         if(ShadowShock_Timer < diff)
         {
             DoCast(m_creature->getVictim(), SPELL_SHADOWSHOCK);
-            ShadowShock_Timer = 2000;
+            ShadowShock_Timer += 2000;
         }
         else
             ShadowShock_Timer -= diff;

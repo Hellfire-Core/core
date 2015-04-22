@@ -37,8 +37,8 @@ struct boss_grilekAI : public ScriptedAI
         pInstance = (ScriptedInstance*)c->GetInstanceData();
     }
 
-    uint32 Avartar_Timer;
-    uint32 GroundTremor_Timer;
+    int32 Avartar_Timer;
+    int32 GroundTremor_Timer;
     ScriptedInstance * pInstance;
 
     void Reset()
@@ -78,7 +78,7 @@ struct boss_grilekAI : public ScriptedAI
             if (target)
                 AttackStart(target);
 
-            Avartar_Timer = 25000 + rand()%10000;
+            Avartar_Timer += 25000 + rand()%10000;
         }
         else
             Avartar_Timer -= diff;
@@ -87,7 +87,7 @@ struct boss_grilekAI : public ScriptedAI
         if (GroundTremor_Timer < diff)
         {
             DoCast(m_creature->getVictim(), SPELL_GROUNDTREMOR);
-            GroundTremor_Timer = 12000 + rand()%4000;
+            GroundTremor_Timer += 12000 + rand()%4000;
         }
         else
             GroundTremor_Timer -= diff;

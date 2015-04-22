@@ -46,13 +46,13 @@ struct boss_arlokkAI : public ScriptedAI
 
     ScriptedInstance *pInstance;
 
-    uint32 ShadowWordPain_Timer;
-    uint32 Gouge_Timer;
-    uint32 Mark_Timer;
-    uint32 Cleave_Timer;
-    uint32 Vanish_Timer;
-    uint32 Summon_Timer;
-    uint32 Visible_Timer;
+    int32 ShadowWordPain_Timer;
+    int32 Gouge_Timer;
+    int32 Mark_Timer;
+    int32 Cleave_Timer;
+    int32 Vanish_Timer;
+    int32 Summon_Timer;
+    int32 Visible_Timer;
 
     Unit* markedTarget;
     Creature *Panther;
@@ -106,7 +106,7 @@ struct boss_arlokkAI : public ScriptedAI
         if (!PhaseTwo && ShadowWordPain_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_SHADOWWORDPAIN);
-            ShadowWordPain_Timer = 15000;
+            ShadowWordPain_Timer += 15000;
         }
         else
             ShadowWordPain_Timer -= diff;
@@ -116,7 +116,7 @@ struct boss_arlokkAI : public ScriptedAI
             markedTarget = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_MARK), true);
 
             DoCast(markedTarget,SPELL_MARK);
-            Mark_Timer = 15000;
+            Mark_Timer += 15000;
         }
         else
             Mark_Timer -= diff;
@@ -146,7 +146,7 @@ struct boss_arlokkAI : public ScriptedAI
                     Panther->AI()->AttackStart(target);
 
             Counter++;
-            Summon_Timer = 5000;
+            Summon_Timer += 5000;
         }
         else
             Summon_Timer -= diff;
@@ -159,7 +159,7 @@ struct boss_arlokkAI : public ScriptedAI
             //m_creature->CombatStop();
             DoResetThreat();
             VanishedOnce = true;
-            Vanish_Timer = 45000;
+            Vanish_Timer += 45000;
             Visible_Timer = 6000;
         }
         else
@@ -194,7 +194,7 @@ struct boss_arlokkAI : public ScriptedAI
         if (PhaseTwo && Cleave_Timer < diff)
         {
             DoCast(m_creature->getVictim(), SPELL_CLEAVE);
-            Cleave_Timer = 16000;
+            Cleave_Timer += 16000;
         }
         else
             Cleave_Timer -=diff;
@@ -206,7 +206,7 @@ struct boss_arlokkAI : public ScriptedAI
             if (DoGetThreat(m_creature->getVictim()))
                 DoModifyThreatPercent(m_creature->getVictim(),-80);
 
-            Gouge_Timer = 17000+rand()%10000;
+            Gouge_Timer += 17000+rand()%10000;
         }
         else
             Gouge_Timer -= diff;
