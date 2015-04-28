@@ -1179,9 +1179,12 @@ void CreatureEventAI::UpdateAI(const uint32 diff)
     if (!bEmptyList)
     {
         //Events are only updated once every EVENT_UPDATE_TIME ms to prevent lag with large amount of events
+        EventDiff += diff;
+        EventUpdateTime -= diff;
+
         if (EventUpdateTime < diff)
         {
-            EventDiff += diff;
+
 
             //Check for time based events
             for (std::list<CreatureEventAIHolder>::iterator i = CreatureEventAIList.begin(); i != CreatureEventAIList.end(); ++i)
@@ -1232,11 +1235,7 @@ void CreatureEventAI::UpdateAI(const uint32 diff)
             EventDiff = 0;
             EventUpdateTime = EVENT_UPDATE_TIME;
         }
-        else
-        {
-            EventDiff += diff;
-            EventUpdateTime -= diff;
-        }
+        
     }
 
     //Melee Auto-Attack

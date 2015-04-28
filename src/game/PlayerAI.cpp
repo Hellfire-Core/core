@@ -64,6 +64,7 @@ void WarriorAI::UpdateAI(const uint32 diff)
     if (!UpdateVictim())
         return;
 
+    TC_Timer -= diff;
     if (TC_Timer < diff)
     {
         if (CanCast(me->getVictim(), TCSpell, false))
@@ -72,9 +73,8 @@ void WarriorAI::UpdateAI(const uint32 diff)
             TC_Timer += TCSpell->RecoveryTime ? TCSpell->RecoveryTime +diff : 10000;
         }
     }
-    else
-        TC_Timer -= diff;
-
+    
+    Bloodrage_Timer -= diff;
     if (Bloodrage_Timer < diff)
     {
         if (CanCast(me, BloodrageSpell, false))
@@ -83,9 +83,9 @@ void WarriorAI::UpdateAI(const uint32 diff)
             Bloodrage_Timer += 60000;
         }
     }
-    else
-        Bloodrage_Timer -= diff;
+    
 
+    Demo_Timer -= diff;
     if (Demo_Timer < diff)
     {
         if (CanCast(me->getVictim(), DemoSpell, false))
@@ -94,8 +94,7 @@ void WarriorAI::UpdateAI(const uint32 diff)
             Demo_Timer += DemoSpell->RecoveryTime ? DemoSpell->RecoveryTime +diff : 12000;
         }
     }
-    else
-        Demo_Timer -= diff;
+    
 }
 
 void HunterAI::UpdateAI(const uint32 diff)
@@ -103,6 +102,7 @@ void HunterAI::UpdateAI(const uint32 diff)
     if (!UpdateVictim())
         return;
 
+    Steady_Timer -= diff;
     if (Steady_Timer < diff)
     {
         if (CanCast(me->getVictim(), SteadySpell, false))
@@ -111,9 +111,8 @@ void HunterAI::UpdateAI(const uint32 diff)
             Steady_Timer += 2000 + urand(0, 4000);
         }
     }
-    else
-        Steady_Timer -= diff;
-
+    
+    Arcane_Timer -= diff;
     if (Arcane_Timer < diff)
     {
         if (CanCast(me->getVictim(), ArcaneSpell, false))
@@ -122,9 +121,9 @@ void HunterAI::UpdateAI(const uint32 diff)
             Arcane_Timer += 6000+urand(0, 6000);
         }
     }
-    else
-        Arcane_Timer -= diff;
 
+
+    Multi_Timer -= diff;
     if (Multi_Timer < diff)
     {
         if (CanCast(me->getVictim(), MultiSpell, false))
@@ -133,9 +132,9 @@ void HunterAI::UpdateAI(const uint32 diff)
             Multi_Timer += MultiSpell->RecoveryTime ? MultiSpell->RecoveryTime +diff : 12000;
         }
     }
-    else
-        Multi_Timer -= diff;
+    
 
+    Volley_Timer -= diff;
     if (Volley_Timer < diff)
     {
         if (CanCast(me->getVictim(), VolleySpell, false))
@@ -144,9 +143,9 @@ void HunterAI::UpdateAI(const uint32 diff)
             Volley_Timer += VolleySpell->RecoveryTime ? VolleySpell->RecoveryTime +diff : 10000;
         }
     }
-    else
-        Volley_Timer -= diff;
+    
 
+    Rapid_Timer -= diff;
     if (Rapid_Timer < diff)
     {
         if (CanCast(me, RapidSpell, false))
@@ -155,9 +154,8 @@ void HunterAI::UpdateAI(const uint32 diff)
             Rapid_Timer += 60000;
         }
     }
-    else
-        Rapid_Timer -= diff;
-
+    
+    Bestial_Timer -= diff;
     if (Bestial_Timer < diff)
     {
         if (CanCast(me, BestialSpell, false))
@@ -166,9 +164,9 @@ void HunterAI::UpdateAI(const uint32 diff)
             Bestial_Timer += 120000;
         }
     }
-    else
-        Bestial_Timer -= diff;
+    
 
+    Auto_Timer -= diff;
     if (Auto_Timer < diff)
     {
         if (CanCast(me->getVictim(), AutoSpell, false))
@@ -177,8 +175,7 @@ void HunterAI::UpdateAI(const uint32 diff)
             Auto_Timer += 4000;
         }
     }
-    else
-        Auto_Timer -= diff;
+    
 }
 
 void PaladinAI::UpdateAI(const uint32 diff)
@@ -186,6 +183,7 @@ void PaladinAI::UpdateAI(const uint32 diff)
     if (!UpdateVictim())
         return;
 
+    Avenging_Timer -= diff;
     if (Avenging_Timer < diff)
     {
         if (CanCast(me, AvengingSpell, false))
@@ -194,9 +192,9 @@ void PaladinAI::UpdateAI(const uint32 diff)
             Avenging_Timer += 300000;
         }
     }
-    else
-        Avenging_Timer -= diff;
+    
 
+    Crusader_Timer -= diff;
     if (crusader!=false && Crusader_Timer < diff)
     {
         if (CanCast(me->getVictim(), CrusaderSpell, false))
@@ -205,9 +203,9 @@ void PaladinAI::UpdateAI(const uint32 diff)
             Crusader_Timer += 6000+urand(0, 6000);
         }
     }
-    else
-        Crusader_Timer -= diff;
+    
 
+    Consecration_Timer -= diff;
     if (Consecration_Timer < diff)
     {
         if (CanCast(me, ConsecrationSpell, false))
@@ -216,9 +214,9 @@ void PaladinAI::UpdateAI(const uint32 diff)
             Consecration_Timer += ConsecrationSpell->RecoveryTime ? ConsecrationSpell->RecoveryTime +diff : 12000;
         }
     }
-    else
-        Consecration_Timer -= diff;
+    
 
+    Judgement_Timer -= diff;
     if (Judgement_Timer < diff)
     {
         if (CanCast(me->getVictim(), JudgementSpell, false))
@@ -227,9 +225,9 @@ void PaladinAI::UpdateAI(const uint32 diff)
             Judgement_Timer += JudgementSpell->RecoveryTime ? JudgementSpell->RecoveryTime +diff : 30000;
         }
     }
-    else
-        Judgement_Timer -= diff;
+    
 
+    Shock_Timer -= diff;
     if (shock!=false && Shock_Timer < diff)
     {
         if (CanCast(me->GetCharmer(), ShockSpell, false))
@@ -238,9 +236,9 @@ void PaladinAI::UpdateAI(const uint32 diff)
             Shock_Timer += 10000+urand(0, 10000);
         }
     }
-    else
-        Shock_Timer -= diff;
+    
 
+    Flash_Timer -= diff;
     if (Flash_Timer < diff)
     {
         if (CanCast(me->GetCharmer(), FlashSpell, false))
@@ -249,8 +247,7 @@ void PaladinAI::UpdateAI(const uint32 diff)
             Flash_Timer += urand(4000, 10000);
         }
     }
-    else
-        Flash_Timer -= diff;
+    
 }
 
 void WarlockAI::UpdateAI(const uint32 diff)
@@ -259,17 +256,18 @@ void WarlockAI::UpdateAI(const uint32 diff)
         return;
 
 
+    Fear_Timer -= diff;
     if (Fear_Timer < diff)
     {
         if (CanCast(me, FearSpell, false))
         {
             me->CastSpell(me, FearSpell, false);
-            Fear_Timer = FearSpell->RecoveryTime ? FearSpell->RecoveryTime +diff : 15000;
+            Fear_Timer += FearSpell->RecoveryTime ? FearSpell->RecoveryTime +diff : 15000;
         }
     }
-    else
-        Fear_Timer -= diff;
+    
 
+    DOT_Timer -= diff;
     if (DOT_Timer < diff)
     {
         if (CanCast(me->getVictim(), DOTSpell, false))
@@ -278,9 +276,8 @@ void WarlockAI::UpdateAI(const uint32 diff)
             DOT_Timer += 15000;
         }
     }
-    else
-        DOT_Timer -= diff;
-
+    
+    AOE_Timer -= diff;
     if (AOE_Timer < diff)
     {
         if (CanCast(me->getVictim(), AOESpell, false))
@@ -289,9 +286,8 @@ void WarlockAI::UpdateAI(const uint32 diff)
             AOE_Timer += AOESpell->RecoveryTime ? AOESpell->RecoveryTime +diff : 10000;
         }
     }
-    else
-        AOE_Timer -= diff;
-
+    
+    NormalSpell_Timer -= diff;
     if (NormalSpell_Timer < diff)
     {
         if (CanCast(me->getVictim(), NormalSpell, false))
@@ -300,8 +296,7 @@ void WarlockAI::UpdateAI(const uint32 diff)
             NormalSpell_Timer += NormalSpell->RecoveryTime + diff;
         }
     }
-    else
-        NormalSpell_Timer -= diff;
+    
 }
 
 void DruidAI::UpdateAI(const uint32 diff)
@@ -309,6 +304,7 @@ void DruidAI::UpdateAI(const uint32 diff)
     if (!UpdateVictim())
         return;
 
+    Heal_Timer -= diff;
     if (Heal_Timer < diff && me->HasAura(TREE, 0))
     {
         int heal=urand(0, 2);
@@ -328,9 +324,9 @@ void DruidAI::UpdateAI(const uint32 diff)
             Heal_Timer += 12000;
         }
     }
-    else
-        Heal_Timer -= diff;
+    
 
+    Dmg_Timer -= diff;
     if (Dmg_Timer < diff && me->HasAura(MOONKIN, 0))
     {
         int dmg=urand(0, 2);
@@ -350,9 +346,8 @@ void DruidAI::UpdateAI(const uint32 diff)
             Dmg_Timer += 3000 + urand(0, 2000);
         }
     }
-    else
-        Dmg_Timer -= diff;
-
+    
+    MangleB_Timer -= diff;
     if (feral!=false && MangleB_Timer < diff && me->HasAura(DIREBEAR, 0))
     {
         if (CanCast(me->getVictim(), MangleBSpell, false))
@@ -361,9 +356,9 @@ void DruidAI::UpdateAI(const uint32 diff)
                 MangleB_Timer += 7000;
             }
     }
-    else 
-        MangleB_Timer -= diff;
+    
 
+    Demo_Timer -= diff;
     if (feral!=false && Demo_Timer < diff && me->HasAura(DIREBEAR, 0))
     {
         if (CanCast(me, DemoSpell, false))
@@ -372,9 +367,9 @@ void DruidAI::UpdateAI(const uint32 diff)
                 Demo_Timer += 9000;
             }
     }
-    else 
-        Demo_Timer -= diff;
+    
 
+    MangleC_Timer -= diff;
     if (feral!=false && MangleC_Timer < diff && me->HasAura(CAT, 0))
     {
         if (CanCast(me->getVictim(), MangleCSpell, false))
@@ -383,8 +378,7 @@ void DruidAI::UpdateAI(const uint32 diff)
                 MangleC_Timer += 6000;
             }
     }
-    else
-        MangleC_Timer -= diff;
+    
 
 }
 
@@ -393,6 +387,7 @@ void RogueAI::UpdateAI(const uint32 diff)
     if (!UpdateVictim())
         return;
 
+    Flurry_Timer -= diff;
     if (blade!=false && Flurry_Timer < diff)
     {
         if (CanCast(me, FlurrySpell, false))
@@ -401,9 +396,9 @@ void RogueAI::UpdateAI(const uint32 diff)
             Flurry_Timer += 120000;
         }
     }
-    else
-        Flurry_Timer -= diff;
+    
 
+    Gouge_Timer -= diff;
     if (Gouge_Timer < diff)
     {
         if (CanCast(me->getVictim(), GougeSpell, false))
@@ -412,9 +407,9 @@ void RogueAI::UpdateAI(const uint32 diff)
             Gouge_Timer += urand(10000, 30000);
         }
     }
-    else
-        Gouge_Timer -= diff;
+    
 
+    Sinister_Timer -= diff;
     if (Sinister_Timer < diff)
     {
         if (CanCast(me->getVictim(), SinisterSpell, false))
@@ -423,8 +418,7 @@ void RogueAI::UpdateAI(const uint32 diff)
             Sinister_Timer += urand(2000, 4500);
         }
     }
-    else
-        Sinister_Timer -= diff;
+    
 }
 
 void ShamanAI::UpdateAI(const uint32 diff)
@@ -432,6 +426,7 @@ void ShamanAI::UpdateAI(const uint32 diff)
     if (!UpdateVictim())
         return;
 
+    BL_Timer -= diff;
     if (BL_Timer < diff && BL_Timer>0)
     {
         if (CanCast(me, BLSpell, false))
@@ -440,9 +435,9 @@ void ShamanAI::UpdateAI(const uint32 diff)
             BL_Timer += BLSpell->RecoveryTime + diff;
         }
     }
-    else
-        BL_Timer -= diff;
+    
 
+    Shield_Timer -= diff;
     if (Shield_Timer < diff)
     {
         if (!heal && (CanCast(me, ShieldSpell, false)))
@@ -456,9 +451,9 @@ void ShamanAI::UpdateAI(const uint32 diff)
             Shield_Timer += 30000;
         }
     }
-    else
-        Shield_Timer -= diff;
+    
 
+    Heal_Timer -= diff;
     if (Heal_Timer < diff)
     {
         if (CanCast(me->GetCharmer(), HealSpell, false))
@@ -467,9 +462,9 @@ void ShamanAI::UpdateAI(const uint32 diff)
             Heal_Timer += 10000;
         }
     }
-    else
-        Heal_Timer -= diff;
+    
 
+    Lightning_Timer -= diff;
     if (Lightning_Timer < diff)
     {
         if (CanCast(me->getVictim(), LightningSpell, false))
@@ -478,8 +473,7 @@ void ShamanAI::UpdateAI(const uint32 diff)
             Lightning_Timer += LightningSpell->RecoveryTime + diff;
         }
     }
-    else
-        Lightning_Timer -= diff;
+    
 }
 
 void PriestAI::UpdateAI(const uint32 diff)
@@ -487,6 +481,7 @@ void PriestAI::UpdateAI(const uint32 diff)
     if (!UpdateVictim())
         return;
 
+    Vampiric_Timer -= diff;
     if ((vampiric==true) && Vampiric_Timer < diff)
     {
         if (CanCast(me->getVictim(), VampiricSpell, false))
@@ -495,9 +490,9 @@ void PriestAI::UpdateAI(const uint32 diff)
             Vampiric_Timer += 30000;
         }
     }
-    else
-        Vampiric_Timer -= diff;
+    
 
+    DmgSpell_Timer -= diff;
     if (DmgSpell_Timer < diff)
     {
         if (CanCast(me->getVictim(), DmgSpell, false))
@@ -507,9 +502,9 @@ void PriestAI::UpdateAI(const uint32 diff)
             if (vampiric == true) DmgSpell_Timer +=3500;
         }
     }
-    else
-        DmgSpell_Timer -= diff;
     
+    
+    Flash_Timer -= diff;
     if (Flash_Timer < diff)
     {
         if (CanCast(me->GetCharmer(), FlashSpell, false))
@@ -522,9 +517,9 @@ void PriestAI::UpdateAI(const uint32 diff)
                 Flash_Timer += 10000;
         }
     }
-    else
-        Flash_Timer -= diff;
+    
 
+    Nova_Timer -= diff;
     if (holynova && Nova_Timer < diff)
     {
         if (CanCast(me, NovaSpell, false))
@@ -533,9 +528,9 @@ void PriestAI::UpdateAI(const uint32 diff)
             Nova_Timer += 5000;
         }
     }
-    else
-        Nova_Timer -= diff;
+    
 
+    DOTSpell_Timer -= diff;
     if (DOTSpell_Timer < diff)
     {
         if (CanCast(me->getVictim(), DOTSpell, false))
@@ -545,9 +540,9 @@ void PriestAI::UpdateAI(const uint32 diff)
             if (vampiric == true) DOTSpell_Timer/=5;
         }
     }
-    else
-        DOTSpell_Timer -= diff;
+    
 
+    PWShield_Timer -= diff;
     if (PWShield_Timer < diff)
     {
         if (CanCast(me->GetCharmer(), PWShieldSpell, false))
@@ -556,8 +551,7 @@ void PriestAI::UpdateAI(const uint32 diff)
             PWShield_Timer += 16000;
         }
     }
-    else
-        PWShield_Timer -= diff;
+    
 }
 
 void MageAI::UpdateAI(const uint32 diff)
@@ -574,6 +568,7 @@ void MageAI::UpdateAI(const uint32 diff)
         }
     }
 
+    MassiveAOE_Timer -= diff;
     if (MassiveAOE_Timer < diff)
     {
         if (Unit *target = me->SelectNearbyTarget(25.0))
@@ -583,9 +578,9 @@ void MageAI::UpdateAI(const uint32 diff)
             MassiveAOE_Timer += 20000 +rand()%7000;
         }
     }
-    else
-        MassiveAOE_Timer -= diff;
+    
 
+    ConeSpell_Timer -= diff;
     if (ConeSpell_Timer < diff)
     {
         if (CanCast(me, ConeSpell, false))
@@ -594,9 +589,9 @@ void MageAI::UpdateAI(const uint32 diff)
             ConeSpell_Timer += ConeSpell->RecoveryTime +diff;
         }
     }
-    else
-        ConeSpell_Timer -= diff;
+    
 
+    AOESpell_Timer -= diff;
     if (AOESpell_Timer < diff)
     {
         if (CanCast(me, AOESpell, false))
@@ -605,9 +600,9 @@ void MageAI::UpdateAI(const uint32 diff)
             AOESpell_Timer += AOESpell->RecoveryTime ? AOESpell->RecoveryTime +diff : 6000;
         }
     }
-    else
-        AOESpell_Timer -= diff;
+    
 
+    NormalSpell_Timer -= diff;
     if (NormalSpell_Timer < diff)
     {
         if (CanCast(me->getVictim(), NormalSpell, false))
@@ -616,6 +611,5 @@ void MageAI::UpdateAI(const uint32 diff)
             NormalSpell_Timer += NormalSpell->RecoveryTime +diff;
         }
     }
-    else
-        NormalSpell_Timer -= diff;
+    
 }
