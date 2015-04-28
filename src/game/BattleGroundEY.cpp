@@ -172,6 +172,7 @@ void BattleGroundEY::Update(uint32 diff)
         }
 
         //checking for players walking on the bottom of the map (yup, it's possible)
+        uCheckDelayer -= diff;
         if (uCheckDelayer <= diff)
         {
             for (BattleGroundPlayerMap::const_iterator itr = GetPlayers().begin(); itr != GetPlayers().end(); ++itr)
@@ -180,23 +181,26 @@ void BattleGroundEY::Update(uint32 diff)
                     if (plr->GetPositionZ() < 850.0f)
                         Exploiter = plr;
 
-                uCheckDelayer = 5000;
+                uCheckDelayer += 5000;
             }
         }
-        else {uCheckDelayer -=diff;}
+
 
         if (Exploiter && Exploiter->isAlive())
         {
+            uWalkingDead -= diff;
             if (uWalkingDead <= diff)
             {
                 Exploiter->Kill(Exploiter, false);
                 Exploiter = NULL;
                 uWalkingDead = 5000;
             }
-            else {uWalkingDead -= diff;}
+
         }
         else if (Exploiter && !Exploiter->isAlive())
         {
+            Exploiter->RepopAtGraveyard();
+
             Exploiter = NULL;
             uWalkingDead = 5000;
         }       

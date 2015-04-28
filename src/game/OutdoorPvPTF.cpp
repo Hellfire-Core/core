@@ -155,8 +155,9 @@ bool OutdoorPvPTF::Update(uint32 diff)
     }
     if (m_IsLocked)
     {
+        m_LockTimer -= diff;
         // lock timer is down, release lock
-        if (m_LockTimer < diff)
+        if (m_LockTimer =< diff)
         {
             m_LockTimer += TF_LOCK_TIME;
             m_LockTimerUpdate = 0;
@@ -168,8 +169,9 @@ bool OutdoorPvPTF::Update(uint32 diff)
         }
         else
         {
+            m_LockTimerUpdate -= diff;
             // worldstateui update timer is down, update ui with new time data
-            if (m_LockTimerUpdate < diff)
+            if (m_LockTimerUpdate =< diff)
             {
                 m_LockTimerUpdate += TF_LOCK_TIME_UPDATE;
                 uint32 minutes_left = m_LockTimer / 60000;
@@ -181,8 +183,8 @@ bool OutdoorPvPTF::Update(uint32 diff)
                 SendUpdateWorldState(TF_UI_LOCKED_TIME_MINUTES_FIRST_DIGIT,first_digit);
                 SendUpdateWorldState(TF_UI_LOCKED_TIME_MINUTES_SECOND_DIGIT,second_digit);
                 SendUpdateWorldState(TF_UI_LOCKED_TIME_HOURS,hours_left);
-            } else m_LockTimerUpdate -= diff;
-            m_LockTimer -= diff;
+            }
+
         }
     }
     return changed;

@@ -546,6 +546,7 @@ bool OPvPCapturePointNA::Update(uint32 diff)
     else if (m_ControllingFaction == HORDE && m_activePlayers[0].size() < m_activePlayers[1].size())
         capturable = true;
 
+    m_GuardCheckTimer -= diff;
     if (m_GuardCheckTimer < diff)
     {
         m_GuardCheckTimer += NA_GUARD_CHECK_TIME;
@@ -558,10 +559,11 @@ bool OPvPCapturePointNA::Update(uint32 diff)
             // update the guard count for the players in zone
             m_PvP->SendUpdateWorldState(NA_UI_GUARDS_LEFT,m_GuardsAlive);
         }
-    } else m_GuardCheckTimer -= diff;
+    }
 
     if (m_capturable || capturable)
     {
+        m_RespawnTimer -= diff;
         if (m_RespawnTimer < diff)
         {
             // if the guards have been killed, then the challenger has one hour to take over halaa.
@@ -569,7 +571,7 @@ bool OPvPCapturePointNA::Update(uint32 diff)
             if (m_ControllingFaction)
                 FactionTakeOver(m_ControllingFaction);
             m_RespawnTimer += NA_RESPAWN_TIME;
-        } else m_RespawnTimer -= diff;
+        } 
 
         return OPvPCapturePoint::Update(diff);
     }

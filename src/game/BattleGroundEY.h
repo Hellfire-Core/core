@@ -370,7 +370,7 @@ class BattleGroundEY : public BattleGround
         uint8 m_CurrentPointPlayersCount[2*EY_POINTS_MAX];
 
         int32 m_PointAddingTimer;
-        uint16 uCheckDelayer;
+        int16 uCheckDelayer;
         uint16 uWalkingDead;
         Player *Exploiter;
 };

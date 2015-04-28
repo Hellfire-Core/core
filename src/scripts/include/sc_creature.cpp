@@ -214,11 +214,12 @@ void ScriptedAI::CheckCasterNoMovementInRange(uint32 diff, float maxrange)
     if (casterTimer > 2000)  // just in case
         casterTimer = 2000;
 
+    casterTimer -= diff;
     if (casterTimer < diff)
     {
         if (me->GetMotionMaster()->GetCurrentMovementGeneratorType() == CONFUSED_MOTION_TYPE)
         {
-            casterTimer = 1000;
+            casterTimer = 1000 - diff;
             return;
         }
 
@@ -236,15 +237,13 @@ void ScriptedAI::CheckCasterNoMovementInRange(uint32 diff, float maxrange)
             me->UpdateAllowedPositionZ(x, y, z);
             me->SetSpeed(MOVE_RUN, 1.5);
             me->GetMotionMaster()->MovePoint(40, x, y, z);  //to not possibly collide with any Movement Inform check
-            casterTimer = 200;
+            casterTimer += 200;
         }
         else
             me->GetMotionMaster()->MoveIdle();
 
-        casterTimer = 2000;
+        casterTimer += 2000;
     }
-    else
-        casterTimer -= diff;
 }
 
 void ScriptedAI::CheckShooterNoMovementInRange(uint32 diff, float maxrange)
@@ -258,11 +257,12 @@ void ScriptedAI::CheckShooterNoMovementInRange(uint32 diff, float maxrange)
     if (casterTimer > 3000)  // just in case
         casterTimer = 3000;
 
+    casterTimer -= diff;
     if (casterTimer < diff)
     {
         if (me->GetMotionMaster()->GetCurrentMovementGeneratorType() == CONFUSED_MOTION_TYPE)
         {
-            casterTimer = 1000;
+            casterTimer += 1000;
             return;
         }
 
@@ -273,7 +273,7 @@ void ScriptedAI::CheckShooterNoMovementInRange(uint32 diff, float maxrange)
                 DoStartMovement(me->getVictim());
             else
             {
-                casterTimer = 3000;
+                casterTimer += 3000;
                 return;
             }
         }
@@ -294,15 +294,14 @@ void ScriptedAI::CheckShooterNoMovementInRange(uint32 diff, float maxrange)
             me->UpdateAllowedPositionZ(x, y, z);
             me->SetSpeed(MOVE_RUN, 1.5);
             me->GetMotionMaster()->MovePoint(41, x, y, z);  //to not possibly collide with any Movement Inform check
-            casterTimer = 200;
+            casterTimer += 200;
         }
         else
             me->GetMotionMaster()->MoveIdle();
 
         casterTimer += 3000;
     }
-    else
-        casterTimer -= diff;
+    
 }
 
 void ScriptedAI::DoStopAttack()
@@ -416,6 +415,7 @@ void ScriptedAI::CastNextSpellIfAnyAndReady(uint32 diff)
 
     if (autocast)
     {
+        autocastTimer -= diff;
         if (autocastTimer < diff)
         {
             if (!cast)
@@ -470,8 +470,6 @@ void ScriptedAI::CastNextSpellIfAnyAndReady(uint32 diff)
                 autocastTimer += autocastTimerDef;
             }
         }
-        else
-            autocastTimer -= diff;
     }
 }
 
@@ -1074,6 +1072,7 @@ void Scripted_NoMovementAI::AttackStart(Unit* pWho)
 
 void ScriptedAI::DoSpecialThings(uint32 diff, SpecialThing flags, float range, float speedRate)
 {
+    m_specialThingTimer -= diff;
     if (m_specialThingTimer < diff)
     {
         if (flags & DO_PULSE_COMBAT)
@@ -1095,8 +1094,6 @@ void ScriptedAI::DoSpecialThings(uint32 diff, SpecialThing flags, float range, f
 
         m_specialThingTimer += 1000;
     }
-    else
-        m_specialThingTimer -= diff;
 }
 
 BossAI::BossAI(Creature *c, uint32 id) : ScriptedAI(c),

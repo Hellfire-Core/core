@@ -148,13 +148,13 @@ void WardenBase::Update()
         }
         else if (m_WardenCheckTimer > 0)
         {
-            if (diff >= m_WardenCheckTimer)
+            m_WardenCheckTimer -= diff;
+            if (m_WardenCheckTimer >= diff)
             {
                 RequestData();
-                m_WardenCheckTimer = urand(m_checkIntervalMin, m_checkIntervalMax);
+                m_WardenCheckTimer += urand(m_checkIntervalMin, m_checkIntervalMax);
             }
-            else
-                m_WardenCheckTimer -= diff;
+
         }
     }
 }
