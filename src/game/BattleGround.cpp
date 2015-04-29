@@ -481,6 +481,7 @@ void BattleGround::YellToAll(Creature* creature, const char* text, uint32 langua
 
 void BattleGround::RewardHonorToTeam(uint32 Honor, uint32 TeamID)
 {
+    Honor *= sWorld.getConfig(RATE_HONOR);
     for (BattleGroundPlayerMap::iterator itr = m_Players.begin(); itr != m_Players.end(); ++itr)
     {
         Player *plr = sObjectMgr.GetPlayer(itr->first);
