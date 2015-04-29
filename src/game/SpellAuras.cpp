@@ -5765,7 +5765,7 @@ void Aura::HandleModTotalPercentStat(bool apply, bool Real)
     {
         // newHP = (curHP / maxHP) * newMaxHP = (newMaxHP * curHP) / maxHP -> which is better because no int -> double -> int conversion is needed
         uint32 newHPValue = (m_target->GetMaxHealth() * curHPValue) / maxHPValue;
-        m_target->SetHealth(newHPValue);
+        m_target->SetHealth(newHPValue > 0 ? newHPValue : 1);
     }
 }
 
