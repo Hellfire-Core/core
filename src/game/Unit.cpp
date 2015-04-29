@@ -959,7 +959,7 @@ uint32 Unit::DealDamage(DamageLog *damageInfo, DamageEffectType damagetype, cons
         if (pVictim->GetTypeId() == TYPEID_PLAYER && ((Player*)pVictim)->duel && damageInfo->damage >= (health-1))
         {
             // prevent kill only if killed in duel and killed by opponent or opponent controlled creature
-            if (((Player*)pVictim)->duel->opponent == this || ((Player*)pVictim)->duel->opponent->GetGUID() == GetOwnerGUID())
+            if (((Player*)pVictim)->duel->opponent == this || ((Player*)pVictim)->duel->opponent->GetGUID() == GetOwnerGUID()|| pVictim == this/*this shall prevent spell reflection/ shadow word death kill*/)
                 damageInfo->damage = health-1;
 
             duel_hasEnded = true;
