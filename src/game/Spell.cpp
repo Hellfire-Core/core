@@ -2963,7 +2963,7 @@ void Spell::update(uint32 difftime)
     }
 
     // check if caster has moved before the spell finished
-    if (m_timer != 0 && m_caster->hasUnitState(UNIT_STAT_CASTING_NOT_MOVE) && !m_caster->HasUnitMovementFlag(MOVEFLAG_FALLINGFAR))
+    if (m_timer != 0 && m_caster->hasUnitState(UNIT_STAT_CASTING_NOT_MOVE)/* && !m_caster->HasUnitMovementFlag(MOVEFLAG_FALLINGFAR)*/)
     {
         // Check for movin' by(rotation keys ft. mouse button)
         //         if ((m_caster->GetTypeId() == TYPEID_PLAYER && ((Player*)m_caster)->isMoving() && m_casttime &&
@@ -3859,7 +3859,7 @@ SpellCastResult Spell::CheckCast(bool strict)
         //         if (ct && m_spellInfo->SpellFamilyFlags != SPELLFAMILY_GENERIC)
         //             return SPELL_FAILED_MOVING;
 
-        if (!m_caster->HasUnitMovementFlag(MOVEFLAG_FALLINGFAR) && IsAutoRepeat())
+        if (/*!m_caster->HasUnitMovementFlag(MOVEFLAG_FALLINGFAR) && */IsAutoRepeat())
             return SPELL_FAILED_MOVING;
     }
 
