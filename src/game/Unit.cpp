@@ -3365,7 +3365,7 @@ void Unit::SetCurrentCastSpell(Spell* spell)
                     InterruptSpell(CURRENT_AUTOREPEAT_SPELL);
             }
 
-            if (spell->GetCastTime())
+            if (spell->GetCastTime() || SpellMgr::GetSpellDuration(spell->GetSpellEntry()))
                 addUnitState(UNIT_STAT_CASTING);
 
             break;
