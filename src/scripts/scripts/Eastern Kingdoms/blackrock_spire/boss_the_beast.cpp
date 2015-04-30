@@ -80,25 +80,24 @@ struct boss_thebeastAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (checkTimer < diff)
+        checkTimer -= diff;
+        if (checkTimer <= diff)
         {
             DoZoneInCombat();
             checkTimer += 3000;
         }
-        else
-            checkTimer -= diff;
+        
 
-        //Flamebreak_Timer
-        if (Flamebreak_Timer < diff)
+        Flamebreak_Timer -= diff;
+        if (Flamebreak_Timer <= diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_FLAMEBREAK);
             Flamebreak_Timer += 10000;
         }
-        else
-            Flamebreak_Timer -= diff;
+        
 
-        //Immolate_Timer
-        if (Immolate_Timer < diff)
+        Immolate_Timer -= diff;
+        if (Immolate_Timer <= diff)
         {
             Unit* target = NULL;
             target = SelectUnit(SELECT_TARGET_RANDOM,0);
@@ -106,17 +105,15 @@ struct boss_thebeastAI : public ScriptedAI
                 AddSpellToCast(target, SPELL_IMMOLATE);
             Immolate_Timer += 8000;
         }
-        else
-            Immolate_Timer -= diff;
+        
 
-        //TerrifyingRoar_Timer
-        if (TerrifyingRoar_Timer < diff)
+        TerrifyingRoar_Timer -= diff;
+        if (TerrifyingRoar_Timer <= diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_TERRIFYINGROAR);
             TerrifyingRoar_Timer += 20000;
         }
-        else
-            TerrifyingRoar_Timer -= diff;
+        
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();

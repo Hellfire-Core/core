@@ -126,7 +126,8 @@ struct boss_vanndarAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (CheckTimer < diff)
+        CheckTimer -= diff;
+        if (CheckTimer <= diff)
         {
             if (!m_creature->IsWithinDistInMap(&wLoc, 20.0f))
                 EnterEvadeMode();
@@ -136,42 +137,38 @@ struct boss_vanndarAI : public ScriptedAI
 
             CheckTimer += 2000;
         }
-        else
-            CheckTimer -= diff;
-
-        if (AvatarTimer < diff)
+        
+        AvatarTimer -= diff;
+        if (AvatarTimer <= diff)
         {
             ForceSpellCast(m_creature->getVictim(), SPELL_AVATAR);
             AvatarTimer += urand(15000, 20000);
         }
-        else
-            AvatarTimer -= diff;
-
-        if (ThunderclapTimer < diff)
+        
+          
+            ThunderclapTimer -= diff;
+        if (ThunderclapTimer <= diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_THUNDERCLAP);
             ThunderclapTimer += urand(5000, 15000);
         }
-        else
-            ThunderclapTimer -= diff;
-
-        if (StormboltTimer < diff)
+            
+        StormboltTimer -= diff;
+        if (StormboltTimer <= diff)
         {
             Unit * victim = SelectUnit(SELECT_TARGET_RANDOM, 1, 30.0f, true);
             if (victim)
                 AddSpellToCast(victim, SPELL_STORMBOLT);
             StormboltTimer += urand(10000, 25000);
         }
-        else
-            StormboltTimer -= diff;
-
-        if (YellTimer < diff)
+        
+        YellTimer -= diff;
+        if (YellTimer <= diff)
         {
             DoScriptText(RAND(YELL_RANDOM1, YELL_RANDOM2, YELL_RANDOM3, YELL_RANDOM4, YELL_RANDOM5, YELL_RANDOM6, YELL_RANDOM7), m_creature);
             YellTimer += urand(20000, 30000); //20 to 30 seconds
         }
-        else
-            YellTimer -= diff;
+          
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -255,7 +252,8 @@ struct boss_vanndarOfficerAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (CheckTimer < diff)
+        CheckTimer -= diff;
+        if (CheckTimer <= diff)
         {
             if (!m_creature->IsWithinDistInMap(&wLoc, 20.0f))
                 EnterEvadeMode();
@@ -265,10 +263,9 @@ struct boss_vanndarOfficerAI : public ScriptedAI
 
             CheckTimer += 2000;
         }
-        else
-            CheckTimer -= diff;
-
-        if (chargeTimer < diff)
+        
+        chargeTimer -= diff;
+        if (chargeTimer <= diff)
         {
             Unit * target = SelectUnit(SELECT_TARGET_RANDOM, 0, 25.0f, true, 0, 8.0f);
 
@@ -277,32 +274,31 @@ struct boss_vanndarOfficerAI : public ScriptedAI
 
             chargeTimer += urand(7500, 20000);
         }
-        else
-            chargeTimer -= diff;
-
-        if (cleaveTimer < diff)
+        
+            
+        cleaveTimer -= diff;
+        if (cleaveTimer <= diff)
         {
             AddSpellToCast(AV_VO_CLEAVE, CAST_TANK);
             cleaveTimer += urand(5000, 10000);
         }
-        else
-            cleaveTimer -= diff;
-
-        if (demoShoutTimer < diff)
+        
+           
+        demoShoutTimer -= diff;
+        if (demoShoutTimer <= diff)
         {
             AddSpellToCast(AV_VO_DEMOSHOUT, CAST_NULL);
             demoShoutTimer += urand(14000, 25000);
         }
-        else
-            demoShoutTimer -= diff;
-
-        if (whirlwindTimer < diff)
+        
+        
+        whirlwindTimer -= diff;
+        if (whirlwindTimer <= diff)
         {
             AddSpellToCast(AV_VO_WHIRLWIND, CAST_SELF);
             whirlwindTimer += urand(9000, 13000);
         }
-        else
-            whirlwindTimer -= diff;
+        
 
 
         CastNextSpellIfAnyAndReady();

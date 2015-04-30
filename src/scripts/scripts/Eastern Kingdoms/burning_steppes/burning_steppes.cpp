@@ -206,14 +206,14 @@ struct mob_broodlingessenceAI : public ScriptedAI
         if (!UpdateVictim() )
             return;
 
-        //Fireball_Timer
-        if (Fireball_Timer < diff)
+        Fireball_Timer -= diff;
+        if (Fireball_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_FIREBALL);
             Fireball_Timer += 10000;
         }
-        else
-            Fireball_Timer -= diff;
+        
+            
 
         DoMeleeAttackIfReady();
     }

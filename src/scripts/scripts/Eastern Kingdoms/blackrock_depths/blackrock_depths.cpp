@@ -212,6 +212,7 @@ struct npc_grimstoneAI : public npc_escortAI
 
         if (MobDeath_Timer)
         {
+            MobDeath_Timer -= diff;
             if (MobDeath_Timer <= diff)
             {
                 MobDeath_Timer += 2500;
@@ -246,12 +247,11 @@ struct npc_grimstoneAI : public npc_escortAI
                     }
                 }
             }
-            else
-                MobDeath_Timer -= diff;
         }
 
         if (Event_Timer)
         {
+            Event_Timer -= diff;
             if (Event_Timer <= diff)
             {
                 switch(EventPhase)
@@ -316,8 +316,6 @@ struct npc_grimstoneAI : public npc_escortAI
                 }
                 ++EventPhase;
             }
-            else
-                Event_Timer -= diff;
         }
 
         if (CanWalk)
@@ -369,35 +367,33 @@ struct mob_phalanxAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        //ThunderClap_Timer
-        if (ThunderClap_Timer < diff)
+        ThunderClap_Timer -= diff;
+        if (ThunderClap_Timer <= diff)
         {
             DoCast(me->getVictim(),SPELL_THUNDERCLAP);
             ThunderClap_Timer += 10000;
         }
-        else
-            ThunderClap_Timer -= diff;
+        
+            
 
-        //FireballVolley_Timer
-        if (me->GetHealth()*100 / me->GetMaxHealth() < 51)
+        FireballVolley_Timer -= diff;
+        if (me->GetHealth() * 100 / me->GetMaxHealth() < 51)
         {
-            if (FireballVolley_Timer < diff)
+            if (FireballVolley_Timer <= diff)
             {
                 DoCast(me->getVictim(),SPELL_FIREBALLVOLLEY);
                 FireballVolley_Timer += 15000;
             }
-            else
-                FireballVolley_Timer -= diff;
         }
 
-        //MightyBlow_Timer
-        if (MightyBlow_Timer < diff)
+        MightyBlow_Timer -= diff;
+        if (MightyBlow_Timer <= diff)
         {
             DoCast(me->getVictim(),SPELL_MIGHTYBLOW);
             MightyBlow_Timer += 10000;
         }
-        else
-            MightyBlow_Timer -= diff;
+        
+         
 
         DoMeleeAttackIfReady();
     }
@@ -635,18 +631,18 @@ struct npc_rocknotAI : public npc_escortAI
 
         if (BreakKeg_Timer)
         {
+            BreakKeg_Timer -= diff;
             if (BreakKeg_Timer <= diff)
             {
                 DoGo(DATA_GO_BAR_KEG,0);
                 BreakKeg_Timer = 0;
                 BreakDoor_Timer = 1000;
             }
-            else
-                BreakKeg_Timer -= diff;
         }
 
         if (BreakDoor_Timer)
         {
+            BreakDoor_Timer -= diff;
             if (BreakDoor_Timer <= diff)
             {
                 DoGo(DATA_GO_BAR_DOOR,2);
@@ -662,8 +658,6 @@ struct npc_rocknotAI : public npc_escortAI
 
                 BreakDoor_Timer = 0;
             }
-            else
-                BreakDoor_Timer -= diff;
         }
 
         npc_escortAI::UpdateAI(diff);

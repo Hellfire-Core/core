@@ -88,6 +88,7 @@ struct boss_balindaAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
+        CheckTimer -= diff;
         if (CheckTimer < diff)
         {
             if (!m_creature->IsWithinDistInMap(&wLoc, 20))
@@ -98,16 +99,16 @@ struct boss_balindaAI : public ScriptedAI
             }
             CheckTimer += 2000;
         }
-        else
-            CheckTimer -= diff;
+        
 
+        WaterElementalTimer -= diff;
         if (WaterElementalTimer < diff)
         {
             ForceSpellCast(m_creature, SPELL_WATER_ELEMENTAL);
             WaterElementalTimer += 90000; // 90s
         }
-        else
-            WaterElementalTimer -= diff;
+        
+          
 
         // update CoC timer
         if (CoCTimer > diff)
@@ -116,6 +117,7 @@ struct boss_balindaAI : public ScriptedAI
             CoCTimer = 0;
 
         // select spell
+        CastTimer -= diff;
         if (CastTimer < diff)
         {
             // if victim is in range of 6.5 yards and there are 3 attackers cast explosion or CoC if ready
@@ -139,8 +141,7 @@ struct boss_balindaAI : public ScriptedAI
                 CastTimer += 2500;
             }
         }
-        else
-            CastTimer -= diff;
+        
 
         CastNextSpellIfAnyAndReady();
         //DoMeleeAttackIfReady();

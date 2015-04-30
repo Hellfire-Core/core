@@ -75,8 +75,6 @@ struct boss_galvangarAI : public ScriptedAI
 
     void UpdateTimer(int32 &timer, const uint32 diff)
     {
-        if (timer)
-            if (timer > diff)
                 timer -= diff;
     }
 
@@ -85,6 +83,7 @@ struct boss_galvangarAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
+        CheckTimer -= diff;
         if (CheckTimer < diff)
         {
             if (!m_creature->IsWithinDistInMap(&wLoc, 20.0f))
@@ -94,8 +93,7 @@ struct boss_galvangarAI : public ScriptedAI
             }
             CheckTimer += 2000;
         }
-        else
-            CheckTimer -= diff;
+        
 
 
         UpdateTimer(CleaveTimer, diff);

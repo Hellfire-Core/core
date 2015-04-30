@@ -210,8 +210,8 @@ struct boss_chromaggusAI : public ScriptedAI
         if (!UpdateVictim() )
             return;
 
-        //Shimmer_Timer Timer
-        if (Shimmer_Timer < diff)
+        Shimmer_Timer -= diff;
+        if (Shimmer_Timer <= diff)
         {
             //Remove old vurlnability spell
             if (CurrentVurln_Spell)
@@ -228,11 +228,10 @@ struct boss_chromaggusAI : public ScriptedAI
             DoScriptText(EMOTE_SHIMMER, m_creature);
             Shimmer_Timer += 45000;
         }
-        else
-            Shimmer_Timer -= diff;
+        
 
-        //Breath1_Timer
-        if (Breath1_Timer < diff)
+        Breath1_Timer -= diff;
+        if (Breath1_Timer <= diff)
         {
             if (Unit* target = m_creature->getVictim())
             {
@@ -240,11 +239,10 @@ struct boss_chromaggusAI : public ScriptedAI
                 Breath1_Timer += 60000;
             }
         }
-        else
-            Breath1_Timer -= diff;
+        
 
-        //Breath2_Timer
-        if (Breath2_Timer < diff)
+        Breath2_Timer -= diff;
+        if (Breath2_Timer <= diff)
         {
             if (Unit* target = m_creature->getVictim())
             {
@@ -252,11 +250,10 @@ struct boss_chromaggusAI : public ScriptedAI
                 Breath2_Timer += 60000;
             }
         }
-        else
-            Breath2_Timer -= diff;
+        
 
-        //Affliction_Timer
-        if (Affliction_Timer < diff)
+        Affliction_Timer -= diff;
+        if (Affliction_Timer <= diff)
         {
             uint32 SpellAfflict = 0;
 
@@ -298,18 +295,17 @@ struct boss_chromaggusAI : public ScriptedAI
 
             Affliction_Timer += 10000;
         }
-        else
-            Affliction_Timer -= diff;
+        
 
-        //Frenzy_Timer
-        if (Frenzy_Timer < diff)
+        Frenzy_Timer -= diff;
+        if (Frenzy_Timer <= diff)
         {
             DoCast(m_creature,SPELL_FRENZY);
             DoScriptText(EMOTE_FRENZY, m_creature);
             Frenzy_Timer += 10000 + (rand() % 5000);
         }
-        else
-            Frenzy_Timer -= diff;
+        
+           
 
         //Enrage if not already enraged and below 20%
         if (!Enraged && (m_creature->GetHealth()*100 / m_creature->GetMaxHealth()) < 20)

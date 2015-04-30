@@ -56,19 +56,19 @@ struct boss_quatermasterzigrisAI : public ScriptedAI
         if (!UpdateVictim() )
             return;
 
-        //Shoot_Timer
-        if (Shoot_Timer < diff)
+        Shoot_Timer -= diff;
+        if (Shoot_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_SHOOT);
             Shoot_Timer += 500;
-        }else Shoot_Timer -= diff;
+        }
 
-        //StunBomb_Timer
-        if (StunBomb_Timer < diff)
+        StunBomb_Timer -= diff;
+        if (StunBomb_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_STUNBOMB);
             StunBomb_Timer += 14000;
-        }else StunBomb_Timer -= diff;
+        }
 
         DoMeleeAttackIfReady();
     }

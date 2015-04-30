@@ -78,7 +78,7 @@ struct boss_nefarianAI : public ScriptedAI
     int32 ClassCall_Timer;
     bool Phase3;
 
-    uint32 DespawnTimer;
+    int32 DespawnTimer;
 
     void Reset()
     {
@@ -125,7 +125,8 @@ struct boss_nefarianAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(DespawnTimer < diff)
+        DespawnTimer -= diff;
+        if(DespawnTimer <= diff)
         {
             if(!UpdateVictim())
             {
@@ -133,63 +134,57 @@ struct boss_nefarianAI : public ScriptedAI
                 m_creature->setDeathState(JUST_DIED);
                 m_creature->RemoveCorpse();
             }
-            DespawnTimer = 5000;
+            DespawnTimer += 5000;
         }
-        else
-            DespawnTimer -= diff;
+        
 
         if (!UpdateVictim() )
             return;
 
-        //ShadowFlame_Timer
-        if (ShadowFlame_Timer < diff)
+        ShadowFlame_Timer -= diff;
+        if (ShadowFlame_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_SHADOWFLAME);
             ShadowFlame_Timer += 12000;
         }
-        else
-            ShadowFlame_Timer -= diff;
+        
 
-        //BellowingRoar_Timer
-        if (BellowingRoar_Timer < diff)
+        BellowingRoar_Timer -= diff;
+        if (BellowingRoar_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_BELLOWINGROAR);
+            DoCast(m_creature->getVictim(), SPELL_BELLOWINGROAR);
             BellowingRoar_Timer += 30000;
         }
-        else
-            BellowingRoar_Timer -= diff;
+           
 
-        //VeilOfShadow_Timer
-        if (VeilOfShadow_Timer < diff)
+            VeilOfShadow_Timer -= diff;
+        if (VeilOfShadow_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_VEILOFSHADOW);
             VeilOfShadow_Timer += 15000;
         }
-        else
-            VeilOfShadow_Timer -= diff;
+        
 
-        //Cleave_Timer
-        if (Cleave_Timer < diff)
+        Cleave_Timer -= diff;
+        if (Cleave_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_CLEAVE);
             Cleave_Timer += 7000;
         }
-        else
-            Cleave_Timer -= diff;
+        
 
-        //TailLash_Timer
-        if (TailLash_Timer < diff)
+        TailLash_Timer -= diff;
+        if (TailLash_Timer <= diff)
         {
             //Cast NYI since we need a better check for behind target
             //DoCast(m_creature->getVictim(),SPELL_TAILLASH);
 
             TailLash_Timer += 10000;
         }
-        else
-            TailLash_Timer -= diff;
+        
 
-        //ClassCall_Timer
-        if (ClassCall_Timer < diff)
+        ClassCall_Timer -= diff;
+        if (ClassCall_Timer <= diff)
         {
             //Cast a random class call
             //On official it is based on what classes are currently on the hostil list
@@ -237,8 +232,7 @@ struct boss_nefarianAI : public ScriptedAI
 
             ClassCall_Timer += 35000 + (rand() % 5000);
         }
-        else
-            ClassCall_Timer -= diff;
+
 
         //Phase3 begins when we are below X health
         if (!Phase3 && (m_creature->GetHealth()*100 / m_creature->GetMaxHealth()) < 20)

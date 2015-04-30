@@ -55,26 +55,26 @@ struct boss_rend_blackhandAI : public ScriptedAI
         if (!UpdateVictim() )
             return;
 
-        //WhirlWind_Timer
-        if (WhirlWind_Timer < diff)
+        WhirlWind_Timer -= diff;
+        if (WhirlWind_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_WHIRLWIND);
             WhirlWind_Timer += 18000;
-        }else WhirlWind_Timer -= diff;
+        }
 
-        //Cleave_Timer
-        if (Cleave_Timer < diff)
+        Cleave_Timer -= diff;
+        if (Cleave_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_CLEAVE);
             Cleave_Timer += 10000;
-        }else Cleave_Timer -= diff;
+        }
 
-        //Thunderclap_Timer
-        if (Thunderclap_Timer < diff)
+        Thunderclap_Timer -= diff;
+        if (Thunderclap_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_THUNDERCLAP);
             Thunderclap_Timer += 16000;
-        }else Thunderclap_Timer -= diff;
+        }
 
         DoMeleeAttackIfReady();
     }

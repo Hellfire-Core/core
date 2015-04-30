@@ -117,6 +117,7 @@ struct instance_blackrock_spire : public ScriptedInstance
 
     void Update(uint32 diff)
     {
+        runesTimer -= diff;
         if(runesTimer <= diff && GetData(DATA_RUNE_DOOR) == NOT_STARTED)
         {
             bool runesUsed = false;
@@ -135,7 +136,7 @@ struct instance_blackrock_spire : public ScriptedInstance
             }
             runesTimer += 3000;
         }
-        else runesTimer -= diff;
+        
     }
 
     uint32 GetData(uint32 type)

@@ -66,7 +66,7 @@ struct boss_emerissAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        //Sleep_Timer
+        Sleep_Timer -= diff;
         if (Sleep_Timer < diff)
         {
             if( Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0) )
@@ -74,19 +74,16 @@ struct boss_emerissAI : public ScriptedAI
 
             Sleep_Timer += 8000 + rand()%8000;
         }
-        else
-            Sleep_Timer -= diff;
+        
 
-        //NoxiousBreath_Timer
+        NoxiousBreath_Timer -= diff;
         if (NoxiousBreath_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_NOXIOUSBREATH);
             NoxiousBreath_Timer += 14000 + rand()%6000;
         }
-        else
-            NoxiousBreath_Timer -= diff;
 
-        //Tailsweep every 2 seconds
+        TailSweep_Timer -= diff;
         if (TailSweep_Timer < diff)
         {
             if( Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0) )
@@ -94,28 +91,28 @@ struct boss_emerissAI : public ScriptedAI
 
             TailSweep_Timer += 2000;
         }
-        else
-            TailSweep_Timer -= diff;
+        
 
-        //MarkOfNature_Timer
+        //MarkOfNature_Timer -= diff;
         //if (MarkOfNature_Timer < diff)
         //{
         //    DoCast(m_creature->getVictim(),SPELL_MARKOFNATURE);
         //    MarkOfNature_Timer += 45000;
-        //}else MarkOfNature_Timer -= diff;
+        //}
 
-        //VolatileInfection_Timer
+        VolatileInfection_Timer -= diff;
         if (VolatileInfection_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_VOLATILEINFECTION);
             VolatileInfection_Timer += 7000 + rand()%5000;
         }
-        else
-            VolatileInfection_Timer -= diff;
+        
+
 
         //CorruptionofEarth_Timer
         if ( (int) (m_creature->GetHealth()*100 / m_creature->GetMaxHealth() +0.5) == 75)
         {
+            CorruptionofEarth1_Timer -= diff;
             if (CorruptionofEarth1_Timer < diff)
             {
                 DoCast(m_creature->getVictim(),SPELL_CORRUPTIONOFEARTH);
@@ -123,13 +120,14 @@ struct boss_emerissAI : public ScriptedAI
                 //1 minutes for next one. Means not again with this health value
                 CorruptionofEarth1_Timer += 60000;
             }
-            else
-                CorruptionofEarth1_Timer -= diff;
+
+
         }
 
         //CorruptionofEarth_Timer
         if ( (int) (m_creature->GetHealth()*100 / m_creature->GetMaxHealth() +0.5) == 50)
         {
+            CorruptionofEarth2_Timer -= diff;
             if (CorruptionofEarth2_Timer < diff)
             {
                 DoCast(m_creature->getVictim(),SPELL_CORRUPTIONOFEARTH);
@@ -137,13 +135,12 @@ struct boss_emerissAI : public ScriptedAI
                 //1 minutes for next one. Means not again with this health value
                 CorruptionofEarth2_Timer += 60000;
             }
-            else
-                CorruptionofEarth2_Timer -= diff;
         }
 
         //CorruptionofEarth_Timer
         if ( (int) (m_creature->GetHealth()*100 / m_creature->GetMaxHealth() +0.5) == 25)
         {
+            CorruptionofEarth3_Timer -= diff;
             if (CorruptionofEarth3_Timer < diff)
             {
                 DoCast(m_creature->getVictim(),SPELL_CORRUPTIONOFEARTH);
@@ -151,8 +148,7 @@ struct boss_emerissAI : public ScriptedAI
                 //1 minutes for next one. Means not again with this health value
                 CorruptionofEarth3_Timer += 60000;
             }
-            else
-                CorruptionofEarth3_Timer -= diff;
+            
         }
 
         DoMeleeAttackIfReady();

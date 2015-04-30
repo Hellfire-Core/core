@@ -93,6 +93,7 @@ struct boss_coren_direbrewAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
+        Disarm_Timer -= diff;
         if(Disarm_Timer < diff)
         {
             AddSpellToCast(SPELL_DISARM_GROW, CAST_SELF, true);
@@ -101,8 +102,8 @@ struct boss_coren_direbrewAI : public ScriptedAI
             AddSpellToCast(SPELL_DIREBREWS_DISARM, CAST_NULL);
             Disarm_Timer += 30000;
         }
-        else Disarm_Timer -= diff;
-
+      
+        Summon_Timer -= diff;
         if(Summon_Timer < diff)
         {
             if(Unit * target = SelectUnit(SELECT_TARGET_RANDOM, 0, 45, true))
@@ -115,11 +116,12 @@ struct boss_coren_direbrewAI : public ScriptedAI
                 Summon_Timer += 15000;
             }
         }
-        else Summon_Timer -= diff;
+
 
         if(float(me->GetHealth())/float(me->GetMaxHealth()) < 0.66f)
         {
-            if(Ilsa_Timer < diff)
+            Ilsa_Timer -= diff;
+            if (Ilsa_Timer < diff)
             {
                 Creature * Ilsa = GetClosestCreatureWithEntry(me, NPC_ILSA_DIREBREW, 100);
                 if (!Ilsa)
@@ -128,11 +130,11 @@ struct boss_coren_direbrewAI : public ScriptedAI
                 }
                 Ilsa_Timer += 300000;
             }
-            else Ilsa_Timer -= diff;
         }
 
         if(float(me->GetHealth())/float(me->GetMaxHealth()) < 0.33f)
         {
+            Ursula_Timer -= diff;
             if(Ursula_Timer < diff)
             {
                 Creature * Ursula = GetClosestCreatureWithEntry(me, NPC_URSULA_DIREBREW, 100);
@@ -142,7 +144,6 @@ struct boss_coren_direbrewAI : public ScriptedAI
                 }
                 Ursula_Timer += 300000;
             }
-            else Ursula_Timer -= diff;
         }
 
         CastNextSpellIfAnyAndReady();
@@ -173,6 +174,7 @@ struct direbrew_starter_triggerAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
+        Start_Timer -= diff;
         if(Start_Timer < diff)
         {
             Creature * Coren = GetClosestCreatureWithEntry(me, BOSS_COREN_DIREBREW, 20);
@@ -198,7 +200,6 @@ struct direbrew_starter_triggerAI : public ScriptedAI
                 me->ForcedDespawn(0);
             }
         }
-        else Start_Timer -= diff;
     }
 };
 

@@ -99,7 +99,7 @@ struct boss_ysondreAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        //Sleep_Timer
+        Sleep_Timer -= diff;
         if (Sleep_Timer < diff)
         {
             if( Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0) )
@@ -107,19 +107,18 @@ struct boss_ysondreAI : public ScriptedAI
 
             Sleep_Timer += 8000 + rand()%7000;
         }
-        else
-            Sleep_Timer -= diff;
+        
 
-        //NoxiousBreath_Timer
+        NoxiousBreath_Timer -= diff;
         if (NoxiousBreath_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_NOXIOUSBREATH);
             NoxiousBreath_Timer += 14000 + rand()%6000;
         }
-        else
-            NoxiousBreath_Timer -= diff;
+        
+           
 
-        //Tailsweep every 2 seconds
+        TailSweep_Timer -= diff;
         if (TailSweep_Timer < diff)
         {
             if( Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0) )
@@ -127,17 +126,17 @@ struct boss_ysondreAI : public ScriptedAI
 
             TailSweep_Timer += 2000;
         }
-        else
-            TailSweep_Timer -= diff;
+        
+          
 
-        //MarkOfNature_Timer
+        //MarkOfNature_Timer -= diff;
         //if (MarkOfNature_Timer < diff)
         //{
         //    DoCast(m_creature->getVictim(),SPELL_MARKOFNATURE);
         //    MarkOfNature_Timer += 45000;
-        //}else MarkOfNature_Timer -= diff;
+        //}
 
-        //LightningWave_Timer
+        LightningWave_Timer -= diff;
         if (LightningWave_Timer < diff)
         {
             //Cast LIGHTNINGWAVE on a Random target
@@ -146,12 +145,11 @@ struct boss_ysondreAI : public ScriptedAI
 
             LightningWave_Timer += 7000 + rand()%5000;
         }
-        else
-            LightningWave_Timer -= diff;
 
         //Summon Druids
         if ( (int) (m_creature->GetHealth()*100 / m_creature->GetMaxHealth() +0.5) == 75)
         {
+            SummonDruids1_Timer -= diff;
             if (SummonDruids1_Timer < diff)
             {
                 // summon 10 druids
@@ -164,13 +162,12 @@ struct boss_ysondreAI : public ScriptedAI
 
                 SummonDruids1_Timer += 60000;
             }
-            else
-                SummonDruids1_Timer -= diff;
         }
 
         //Summon Druids
         if ( (int) (m_creature->GetHealth()*100 / m_creature->GetMaxHealth() +0.5) == 50)
         {
+            SummonDruids2_Timer -= diff;
             if (SummonDruids2_Timer < diff)
             {
                 // summon 10 druids
@@ -183,13 +180,12 @@ struct boss_ysondreAI : public ScriptedAI
 
                 SummonDruids2_Timer += 60000;
             }
-            else
-                SummonDruids2_Timer -= diff;
         }
 
         //Summon Druids
         if ( (int) (m_creature->GetHealth()*100 / m_creature->GetMaxHealth() +0.5) == 25)
         {
+            SummonDruids3_Timer -= diff;
             if (SummonDruids3_Timer < diff)
             {
                 // summon 10 druids
@@ -202,8 +198,6 @@ struct boss_ysondreAI : public ScriptedAI
 
                 SummonDruids3_Timer += 60000;
             }
-            else
-                SummonDruids3_Timer -= diff;
         }
         DoMeleeAttackIfReady();
     }
@@ -229,14 +223,13 @@ struct mob_dementeddruidsAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        //MoonFire_Timer
+        MoonFire_Timer -= diff;
         if (MoonFire_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_MOONFIRE);
             MoonFire_Timer += 5000;
         }
-        else
-            MoonFire_Timer -= diff;
+        
 
         DoMeleeAttackIfReady();
     }

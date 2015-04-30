@@ -124,7 +124,7 @@ struct boss_taerarAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        //Sleep_Timer
+        Sleep_Timer -= diff;
         if (Sleep_Timer < diff)
         {
             Unit* target = NULL;
@@ -133,19 +133,17 @@ struct boss_taerarAI : public ScriptedAI
 
             Sleep_Timer += 8000 + rand()%7000;
         }
-        else
-            Sleep_Timer -= diff;
+        
 
-        //NoxiousBreath_Timer
+        NoxiousBreath_Timer -= diff;
         if (NoxiousBreath_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_NOXIOUSBREATH);
             NoxiousBreath_Timer += 14000 + rand()%6000;
         }
-        else
-            NoxiousBreath_Timer -= diff;
+        
 
-        //Tailsweep every 2 seconds
+        TailSweep_Timer -= diff;
         if (TailSweep_Timer < diff)
         {
             if( Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0) )
@@ -153,37 +151,35 @@ struct boss_taerarAI : public ScriptedAI
 
             TailSweep_Timer += 2000;
         }
-        else
-            TailSweep_Timer -= diff;
+        
 
-        //MarkOfNature_Timer
+        //MarkOfNature_Timer -= diff;
         //if (MarkOfNature_Timer < diff)
         //{
         //    DoCast(m_creature->getVictim(),SPELL_MARKOFNATURE);
         //    MarkOfNature_Timer += 45000;
-        //}else MarkOfNature_Timer -= diff;
+        //}
 
-        //ArcaneBlast_Timer
+        ArcaneBlast_Timer -= diff;
         if (ArcaneBlast_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_ARCANEBLAST);
             ArcaneBlast_Timer += 7000 + rand()%5000;
         }
-        else
-            ArcaneBlast_Timer -= diff;
+      
 
-        //BellowingRoar_Timer
+        BellowingRoar_Timer -= diff;
         if (BellowingRoar_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_BELLOWINGROAR);
             BellowingRoar_Timer += 20000 + rand()%10000;
         }
-        else
-            BellowingRoar_Timer -= diff;
+           
 
         //Summon 3 Shades
         if ( !Shades  && (int) (m_creature->GetHealth()*100 / m_creature->GetMaxHealth() +0.5) == 75)
         {
+            Summon1_Timer -= diff;
             if (Summon1_Timer < diff)
             {
                 //Inturrupt any spell casting
@@ -202,13 +198,13 @@ struct boss_taerarAI : public ScriptedAI
                 Shades = true;
                 Shades_Timer += 60000;
             }
-            else
-                Summon1_Timer -= diff;
+            
         }
 
         //Summon 3 Shades
         if ( !Shades  && (int) (m_creature->GetHealth()*100 / m_creature->GetMaxHealth() +0.5) == 50)
         {
+            Summon2_Timer -= diff;
             if (Summon2_Timer < diff)
             {
                 //Inturrupt any spell casting
@@ -227,13 +223,12 @@ struct boss_taerarAI : public ScriptedAI
                 Shades = true;
                 Shades_Timer += 60000;
             }
-            else
-                Summon2_Timer -= diff;
         }
 
         //Summon 3 Shades
         if ( !Shades  && (int) (m_creature->GetHealth()*100 / m_creature->GetMaxHealth() +0.5) == 25)
         {
+            Summon3_Timer -= diff;
             if (Summon3_Timer < diff)
             {
                 //Inturrupt any spell casting
@@ -252,8 +247,6 @@ struct boss_taerarAI : public ScriptedAI
                 Shades = true;
                 Shades_Timer += 60000;
             }
-            else
-                Summon3_Timer -= diff;
         }
 
         DoMeleeAttackIfReady();
@@ -284,23 +277,20 @@ struct boss_shadeoftaerarAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        //PoisonCloud_Timer
+        PoisonCloud_Timer -= diff;
         if (PoisonCloud_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_POSIONCLOUD);
             PoisonCloud_Timer += 30000;
         }
-        else
-            PoisonCloud_Timer -= diff;
 
-        //PosionBreath_Timer
+
+        PosionBreath_Timer -= diff;
         if (PosionBreath_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_POSIONBREATH);
             PosionBreath_Timer += 12000;
         }
-        else
-            PosionBreath_Timer -= diff;
 
         DoMeleeAttackIfReady();
     }

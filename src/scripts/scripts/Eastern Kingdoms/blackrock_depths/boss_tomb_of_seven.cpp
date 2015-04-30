@@ -1,7 +1,7 @@
-/* 
+/*
  * Copyright (C) 2006-2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -62,7 +62,7 @@ struct boss_angerrelAI : public ScriptedAI
 
     void EnterEvadeMode()
     {
-        if(pInstance)
+        if (pInstance)
             pInstance->SetData(TYPE_TOMB_OF_SEVEN, FAIL);
 
         ScriptedAI::EnterEvadeMode();
@@ -70,7 +70,7 @@ struct boss_angerrelAI : public ScriptedAI
 
     void JustDied(Unit *slayer)
     {
-        if(pInstance)
+        if (pInstance)
             pInstance->SetData(TYPE_TOMB_OF_SEVEN, SPECIAL);
     }
 
@@ -79,32 +79,29 @@ struct boss_angerrelAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        //SunderArmor_Timer
-        if (SunderArmor_Timer < diff)
+        SunderArmor_Timer -= diff;
+        if (SunderArmor_Timer <= diff)
         {
-            DoCast(me->getVictim(),SPELL_SUNDERARMOR);
+            DoCast(me->getVictim(), SPELL_SUNDERARMOR);
             SunderArmor_Timer += 28000;
         }
-        else
-            SunderArmor_Timer -= diff;
 
-        //ShieldBlock_Timer
-        if (ShieldBlock_Timer < diff)
+
+        ShieldBlock_Timer -= diff;
+        if (ShieldBlock_Timer <= diff)
         {
-            DoCast(me,SPELL_SHIELDBLOCK);
+            DoCast(me, SPELL_SHIELDBLOCK);
             ShieldBlock_Timer += 25000;
         }
-        else
-            ShieldBlock_Timer -= diff;
 
-        //Strike_Timer
-        if (Strike_Timer < diff)
+
+        Strike_Timer -= diff;
+        if (Strike_Timer <= diff)
         {
-            DoCast(me->getVictim(),SPELL_STRIKE);
+            DoCast(me->getVictim(), SPELL_STRIKE);
             Strike_Timer += 10000;
         }
-        else
-            Strike_Timer -= diff;
+
 
         DoMeleeAttackIfReady();
     }
@@ -112,7 +109,7 @@ struct boss_angerrelAI : public ScriptedAI
 
 CreatureAI* GetAI_boss_angerrel(Creature *creature)
 {
-    return new boss_angerrelAI (creature);
+    return new boss_angerrelAI(creature);
 }
 
 #define SPELL_SINISTERSTRIKE        15581
@@ -147,7 +144,7 @@ struct boss_doperelAI : public ScriptedAI
 
     void EnterEvadeMode()
     {
-        if(pInstance)
+        if (pInstance)
             pInstance->SetData(TYPE_TOMB_OF_SEVEN, FAIL);
 
         ScriptedAI::EnterEvadeMode();
@@ -155,7 +152,7 @@ struct boss_doperelAI : public ScriptedAI
 
     void JustDied(Unit *slayer)
     {
-        if(pInstance)
+        if (pInstance)
             pInstance->SetData(TYPE_TOMB_OF_SEVEN, SPECIAL);
     }
 
@@ -164,32 +161,31 @@ struct boss_doperelAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        //SinisterStrike_Timer
-        if (SinisterStrike_Timer < diff)
+        SinisterStrike_Timer -= diff;
+        if (SinisterStrike_Timer <= diff)
         {
-            DoCast(me->getVictim(),SPELL_SINISTERSTRIKE);
+            DoCast(me->getVictim(), SPELL_SINISTERSTRIKE);
             SinisterStrike_Timer += 7000;
         }
-        else
-            SinisterStrike_Timer -= diff;
 
-        //BackStab_Timer
-        if (BackStab_Timer < diff)
+
+
+        BackStab_Timer -= diff;
+        if (BackStab_Timer <= diff)
         {
-            DoCast(me->getVictim(),SPELL_BACKSTAB);
+            DoCast(me->getVictim(), SPELL_BACKSTAB);
             BackStab_Timer += 6000;
         }
-        else
-            BackStab_Timer -= diff;
 
-        //Gouge_Timer
-        if (Gouge_Timer < diff)
+
+
+        Gouge_Timer -= diff;
+        if (Gouge_Timer <= diff)
         {
-            DoCast(me->getVictim(),SPELL_GOUGE);
+            DoCast(me->getVictim(), SPELL_GOUGE);
             Gouge_Timer += 8000;
         }
-        else
-            Gouge_Timer -= diff;
+        
 
         DoMeleeAttackIfReady();
     }
@@ -197,7 +193,7 @@ struct boss_doperelAI : public ScriptedAI
 
 CreatureAI* GetAI_boss_doperel(Creature *creature)
 {
-    return new boss_doperelAI (creature);
+    return new boss_doperelAI(creature);
 }
 
 #define SPELL_SHADOWBOLT        17483                       //Not sure if right ID
@@ -234,7 +230,7 @@ struct boss_haterelAI : public ScriptedAI
 
     void EnterEvadeMode()
     {
-        if(pInstance)
+        if (pInstance)
             pInstance->SetData(TYPE_TOMB_OF_SEVEN, FAIL);
 
         ScriptedAI::EnterEvadeMode();
@@ -242,7 +238,7 @@ struct boss_haterelAI : public ScriptedAI
 
     void JustDied(Unit *slayer)
     {
-        if(pInstance)
+        if (pInstance)
             pInstance->SetData(TYPE_TOMB_OF_SEVEN, SPECIAL);
     }
 
@@ -251,45 +247,41 @@ struct boss_haterelAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        //ShadowBolt_Timer
-        if (ShadowBolt_Timer < diff)
+        ShadowBolt_Timer -= diff;
+        if (ShadowBolt_Timer <= diff)
         {
             Unit* target = NULL;
-            target = SelectUnit(SELECT_TARGET_RANDOM,0);
-            if (target) DoCast(target,SPELL_SHADOWBOLT);
+            target = SelectUnit(SELECT_TARGET_RANDOM, 0);
+            if (target) DoCast(target, SPELL_SHADOWBOLT);
             ShadowBolt_Timer += 7000;
         }
-        else
-            ShadowBolt_Timer -= diff;
+        
 
-        //ManaBurn_Timer
-        if (ManaBurn_Timer < diff)
+        ManaBurn_Timer -= diff;
+        if (ManaBurn_Timer <= diff)
         {
-            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0))
-                DoCast(target,SPELL_MANABURN);
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0))
+                DoCast(target, SPELL_MANABURN);
 
             ManaBurn_Timer += 13000;
         }
-        else
-            ManaBurn_Timer -= diff;
+        
 
-        //ShadowShield_Timer
-        if (ShadowShield_Timer < diff)
+        ShadowShield_Timer -= diff;
+        if (ShadowShield_Timer <= diff)
         {
-            DoCast(me,SPELL_SHADOWSHIELD);
+            DoCast(me, SPELL_SHADOWSHIELD);
             ShadowShield_Timer += 25000;
         }
-        else
-            ShadowShield_Timer -= diff;
+        
 
-        //Strike_Timer
-        if (Strike_Timer < diff)
+        Strike_Timer -= diff;
+        if (Strike_Timer <= diff)
         {
-            DoCast(me->getVictim(),SPELL_STRIKE);
+            DoCast(me->getVictim(), SPELL_STRIKE);
             Strike_Timer += 10000;
         }
-        else
-            Strike_Timer -= diff;
+        
 
         DoMeleeAttackIfReady();
     }
@@ -297,7 +289,7 @@ struct boss_haterelAI : public ScriptedAI
 
 CreatureAI* GetAI_boss_haterel(Creature *creature)
 {
-    return new boss_haterelAI (creature);
+    return new boss_haterelAI(creature);
 }
 
 #define SPELL_MINDBLAST             15587
@@ -335,7 +327,7 @@ struct boss_vilerelAI : public ScriptedAI
 
     void EnterEvadeMode()
     {
-        if(pInstance)
+        if (pInstance)
             pInstance->SetData(TYPE_TOMB_OF_SEVEN, FAIL);
 
         ScriptedAI::EnterEvadeMode();
@@ -343,7 +335,7 @@ struct boss_vilerelAI : public ScriptedAI
 
     void JustDied(Unit *slayer)
     {
-        if(pInstance)
+        if (pInstance)
             pInstance->SetData(TYPE_TOMB_OF_SEVEN, SPECIAL);
     }
 
@@ -352,41 +344,37 @@ struct boss_vilerelAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        //MindBlast_Timer
-        if (MindBlast_Timer < diff)
+        MindBlast_Timer -= diff;
+        if (MindBlast_Timer <= diff)
         {
-            DoCast(me->getVictim(),SPELL_MINDBLAST);
+            DoCast(me->getVictim(), SPELL_MINDBLAST);
             MindBlast_Timer += 7000;
         }
-        else
-            MindBlast_Timer -= diff;
+        
 
-        //Heal_Timer
-        if (Heal_Timer < diff)
+        Heal_Timer -= diff;
+        if (Heal_Timer <= diff)
         {
-            DoCast(me,SPELL_HEAL);
+            DoCast(me, SPELL_HEAL);
             Heal_Timer += 20000;
         }
-        else
-            Heal_Timer -= diff;
+        
 
-        //PrayerOfHealing_Timer
-        if (PrayerOfHealing_Timer < diff)
+        PrayerOfHealing_Timer -= diff;
+        if (PrayerOfHealing_Timer <= diff)
         {
-            DoCast(me,SPELL_PRAYEROFHEALING);
+            DoCast(me, SPELL_PRAYEROFHEALING);
             PrayerOfHealing_Timer += 30000;
         }
-        else
-            PrayerOfHealing_Timer -= diff;
+        
 
-        //Shield_Timer
-        if (Shield_Timer < diff)
+        Shield_Timer -= diff;
+        if (Shield_Timer <= diff)
         {
-            DoCast(me,SPELL_SHIELD);
+            DoCast(me, SPELL_SHIELD);
             Shield_Timer += 30000;
         }
-        else
-            Shield_Timer -= diff;
+        
 
         DoMeleeAttackIfReady();
     }
@@ -394,7 +382,7 @@ struct boss_vilerelAI : public ScriptedAI
 
 CreatureAI* GetAI_boss_vilerel(Creature *creature)
 {
-    return new boss_vilerelAI (creature);
+    return new boss_vilerelAI(creature);
 }
 
 #define SPELL_FROSTBOLT         16799
@@ -426,7 +414,7 @@ struct boss_seethrelAI : public ScriptedAI
         FrostNova_Timer = 12000;
         FrostWard_Timer = 25000;
 
-        me->CastSpell(me,SPELL_FROSTARMOR,true);
+        me->CastSpell(me, SPELL_FROSTARMOR, true);
         me->setFaction(FACTION_NEUTRAL);
     }
 
@@ -436,7 +424,7 @@ struct boss_seethrelAI : public ScriptedAI
 
     void EnterEvadeMode()
     {
-        if(pInstance)
+        if (pInstance)
             pInstance->SetData(TYPE_TOMB_OF_SEVEN, FAIL);
 
         ScriptedAI::EnterEvadeMode();
@@ -444,7 +432,7 @@ struct boss_seethrelAI : public ScriptedAI
 
     void JustDied(Unit *slayer)
     {
-        if(pInstance)
+        if (pInstance)
             pInstance->SetData(TYPE_TOMB_OF_SEVEN, SPECIAL);
     }
 
@@ -453,52 +441,48 @@ struct boss_seethrelAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        //FrostArmor_Timer
-        if (FrostArmor_Timer < diff)
+        FrostArmor_Timer -= diff;
+        if (FrostArmor_Timer <= diff)
         {
             DoCast(me, SPELL_FROSTARMOR);
             FrostArmor_Timer += 180000;
         }
-        else
-            FrostArmor_Timer -= diff;
+        
 
-        //Frostbolt_Timer
-        if (Frostbolt_Timer < diff)
+        Frostbolt_Timer -= diff;
+        if (Frostbolt_Timer <= diff)
         {
-            DoCast(me->getVictim(),SPELL_FROSTBOLT);
+            DoCast(me->getVictim(), SPELL_FROSTBOLT);
             Frostbolt_Timer += 15000;
         }
-        else
-            Frostbolt_Timer -= diff;
+        
 
-        //Blizzard_Timer
-        if (Blizzard_Timer < diff)
+        Blizzard_Timer -= diff;
+        if (Blizzard_Timer <= diff)
         {
-            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0))
-                DoCast(target,SPELL_BLIZZARD);
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0))
+                DoCast(target, SPELL_BLIZZARD);
 
             Blizzard_Timer += 22000;
         }
-        else
-            Blizzard_Timer -= diff;
+        
+           
 
-        //FrostNova_Timer
-        if (FrostNova_Timer < diff)
+        FrostNova_Timer -= diff;
+        if (FrostNova_Timer <= diff)
         {
-            DoCast(me->getVictim(),SPELL_FROSTNOVA);
+            DoCast(me->getVictim(), SPELL_FROSTNOVA);
             FrostNova_Timer += 14000;
         }
-        else
-            FrostNova_Timer -= diff;
+        
 
-        //FrostWard_Timer
-        if (FrostWard_Timer < diff)
+        FrostWard_Timer -= diff;
+        if (FrostWard_Timer <= diff)
         {
-            DoCast(me,SPELL_FROSTWARD);
+            DoCast(me, SPELL_FROSTWARD);
             FrostWard_Timer += 68000;
         }
-        else
-            FrostWard_Timer -= diff;
+        
 
         DoMeleeAttackIfReady();
     }
@@ -506,7 +490,7 @@ struct boss_seethrelAI : public ScriptedAI
 
 CreatureAI* GetAI_boss_seethrel(Creature *creature)
 {
-    return new boss_seethrelAI (creature);
+    return new boss_seethrelAI(creature);
 }
 
 #define SPELL_HAMSTRING             9080
@@ -541,7 +525,7 @@ struct boss_gloomrelAI : public ScriptedAI
 
     void EnterEvadeMode()
     {
-        if(pInstance)
+        if (pInstance)
             pInstance->SetData(TYPE_TOMB_OF_SEVEN, FAIL);
 
         ScriptedAI::EnterEvadeMode();
@@ -549,41 +533,40 @@ struct boss_gloomrelAI : public ScriptedAI
 
     void JustDied(Unit *slayer)
     {
-        if(pInstance)
+        if (pInstance)
             pInstance->SetData(TYPE_TOMB_OF_SEVEN, SPECIAL);
     }
 
     void UpdateAI(const uint32 diff)
     {
-        if (!UpdateVictim() )
+        if (!UpdateVictim())
             return;
 
-        //Hamstring_Timer
-        if (Hamstring_Timer < diff)
+        Hamstring_Timer -= diff;
+        if (Hamstring_Timer <= diff)
         {
-            DoCast(me->getVictim(),SPELL_HAMSTRING);
+            DoCast(me->getVictim(), SPELL_HAMSTRING);
             Hamstring_Timer += 14000;
         }
-        else
-            Hamstring_Timer -= diff;
+        
+          
 
-        //Cleave_Timer
-        if (Cleave_Timer < diff)
+        Cleave_Timer -= diff;
+        if (Cleave_Timer <= diff)
         {
-            DoCast(me->getVictim(),SPELL_CLEAVE);
+            DoCast(me->getVictim(), SPELL_CLEAVE);
             Cleave_Timer += 8000;
         }
-        else
-            Cleave_Timer -= diff;
+        
+          
 
-        //MortalStrike_Timer
-        if (MortalStrike_Timer < diff)
+        MortalStrike_Timer -= diff;
+        if (MortalStrike_Timer <= diff)
         {
-            DoCast(me->getVictim(),SPELL_MORTALSTRIKE);
+            DoCast(me->getVictim(), SPELL_MORTALSTRIKE);
             MortalStrike_Timer += 12000;
         }
-        else
-            MortalStrike_Timer -= diff;
+        
 
         DoMeleeAttackIfReady();
     }
@@ -591,7 +574,7 @@ struct boss_gloomrelAI : public ScriptedAI
 
 CreatureAI* GetAI_boss_gloomrel(Creature *creature)
 {
-    return new boss_gloomrelAI (creature);
+    return new boss_gloomrelAI(creature);
 }
 
 #define GOSSIP_ITEM_TEACH_1 "Teach me the art of smelting dark iron"
@@ -600,7 +583,7 @@ CreatureAI* GetAI_boss_gloomrel(Creature *creature)
 
 bool GossipHello_boss_gloomrel(Player *player, Creature *creature)
 {
-    if (player->GetQuestRewardStatus(4083) == 1 && player->GetSkillValue(SKILL_MINING) >= 230 && !player->HasSpell(14891) )
+    if (player->GetQuestRewardStatus(4083) == 1 && player->GetSkillValue(SKILL_MINING) >= 230 && !player->HasSpell(14891))
         player->ADD_GOSSIP_ITEM(0, GOSSIP_ITEM_TEACH_1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
 
     if (player->GetQuestRewardStatus(4083) == 0 && player->GetSkillValue(SKILL_MINING) >= 230)
@@ -609,29 +592,29 @@ bool GossipHello_boss_gloomrel(Player *player, Creature *creature)
     return true;
 }
 
-bool GossipSelect_boss_gloomrel(Player *player, Creature *creature, uint32 sender, uint32 action )
+bool GossipSelect_boss_gloomrel(Player *player, Creature *creature, uint32 sender, uint32 action)
 {
     static uint64 SpectralChaliceGUID = 0;
     switch (action)
     {
-        case GOSSIP_ACTION_INFO_DEF+1:
+        case GOSSIP_ACTION_INFO_DEF + 1:
             player->ADD_GOSSIP_ITEM(0, GOSSIP_ITEM_TEACH_2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 11);
             player->SEND_GOSSIP_MENU(2606, creature->GetGUID());
             break;
-        case GOSSIP_ACTION_INFO_DEF+11:
+        case GOSSIP_ACTION_INFO_DEF + 11:
             player->CLOSE_GOSSIP_MENU();
             creature->CastSpell(player, 14894, false);
             break;
-        case GOSSIP_ACTION_INFO_DEF+2:
+        case GOSSIP_ACTION_INFO_DEF + 2:
             player->ADD_GOSSIP_ITEM(0, "[PH] Continue...", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 22);
             player->SEND_GOSSIP_MENU(2604, creature->GetGUID());
             break;
-        case GOSSIP_ACTION_INFO_DEF+22:
+        case GOSSIP_ACTION_INFO_DEF + 22:
             player->CLOSE_GOSSIP_MENU();
-            if(!creature->GetMap()->GetGameObject(SpectralChaliceGUID))
+            if (!creature->GetMap()->GetGameObject(SpectralChaliceGUID))
             {
                 GameObject *spectralChalice = creature->SummonGameObject(164869, 1232, -239, -85, 4.05, 0, 0, 0, 0, 0);
-                if(spectralChalice)
+                if (spectralChalice)
                     SpectralChaliceGUID = spectralChalice->GetGUID();
             }
             break;
@@ -648,7 +631,7 @@ bool GossipSelect_boss_gloomrel(Player *player, Creature *creature, uint32 sende
 
 struct boss_doomrelAI : public ScriptedAI
 {
-    boss_doomrelAI(Creature *c) : ScriptedAI(c), voids(me) 
+    boss_doomrelAI(Creature *c) : ScriptedAI(c), voids(me)
     {
         pInstance = (c->GetInstanceData());
     }
@@ -691,7 +674,7 @@ struct boss_doomrelAI : public ScriptedAI
     {
         voids.DespawnAll();
 
-        if(pInstance)
+        if (pInstance)
             pInstance->SetData(TYPE_TOMB_OF_SEVEN, FAIL);
 
         ScriptedAI::EnterEvadeMode();
@@ -699,7 +682,7 @@ struct boss_doomrelAI : public ScriptedAI
 
     void JustDied(Unit *slayer)
     {
-        if(pInstance)
+        if (pInstance)
             pInstance->SetData(TYPE_TOMB_OF_SEVEN, DONE);
 
         slayer->SummonGameObject(GO_CHEST_SEVEN, 1265.96f, -284.121f, -78.2191, 3.8531f, 0, 0, 0, 0, 0);
@@ -745,46 +728,42 @@ struct boss_doomrelAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        //ShadowVolley_Timer
-        if (ShadowVolley_Timer < diff)
+        ShadowVolley_Timer -= diff;
+        if (ShadowVolley_Timer <= diff)
         {
-            DoCast(me->getVictim(),SPELL_SHADOWBOLTVOLLEY);
+            DoCast(me->getVictim(), SPELL_SHADOWBOLTVOLLEY);
             ShadowVolley_Timer += 12000;
         }
-        else
-            ShadowVolley_Timer -= diff;
+        
 
-        //Immolate_Timer
-        if (Immolate_Timer < diff)
+        Immolate_Timer -= diff;
+        if (Immolate_Timer <= diff)
         {
-            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0))
-                DoCast(target,SPELL_IMMOLATE);
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0))
+                DoCast(target, SPELL_IMMOLATE);
 
             Immolate_Timer += 25000;
         }
-        else
-            Immolate_Timer -= diff;
+        
 
-        //CurseOfWeakness_Timer
-        if (CurseOfWeakness_Timer < diff)
+        CurseOfWeakness_Timer -= diff;
+        if (CurseOfWeakness_Timer <= diff)
         {
-            DoCast(me->getVictim(),SPELL_CURSEOFWEAKNESS);
+            DoCast(me->getVictim(), SPELL_CURSEOFWEAKNESS);
             CurseOfWeakness_Timer += 45000;
         }
-        else
-            CurseOfWeakness_Timer -= diff;
+        
 
-        //DemonArmor_Timer
-        if (DemonArmor_Timer < diff)
+        DemonArmor_Timer -= diff;
+        if (DemonArmor_Timer <= diff)
         {
-            DoCast(me,SPELL_DEMONARMOR);
+            DoCast(me, SPELL_DEMONARMOR);
             DemonArmor_Timer += 300000;
         }
-        else
-            DemonArmor_Timer -= diff;
+        
 
         //Summon Voidwalkers
-        if (!Voidwalkers && me->GetHealth()*100 / me->GetMaxHealth() < 51 )
+        if (!Voidwalkers && me->GetHealth() * 100 / me->GetMaxHealth() < 51)
         {
             DoCast(me->getVictim(), SPELL_SUMMON_VOIDS);
             Voidwalkers = true;
@@ -796,7 +775,7 @@ struct boss_doomrelAI : public ScriptedAI
 
 CreatureAI* GetAI_boss_doomrel(Creature *creature)
 {
-    return new boss_doomrelAI (creature);
+    return new boss_doomrelAI(creature);
 }
 
 #define GOSSIP_ITEM_CHALLENGE   "Your bondage is at an end, Doom'rel. I challenge you!"
@@ -815,7 +794,7 @@ bool GossipHello_boss_doomrel(Player *player, Creature *creature)
     return true;
 }
 
-bool GossipSelect_boss_doomrel(Player *player, Creature *creature, uint32 sender, uint32 action )
+bool GossipSelect_boss_doomrel(Player *player, Creature *creature, uint32 sender, uint32 action)
 {
     ScriptedInstance *pInstance = (creature->GetInstanceData());
 

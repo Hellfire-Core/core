@@ -57,28 +57,28 @@ struct boss_shadowvoshAI : public ScriptedAI
         if (!UpdateVictim() )
             return;
 
-        //CurseOfBlood_Timer
-        if (CurseOfBlood_Timer < diff)
+        CurseOfBlood_Timer -= diff;
+        if (CurseOfBlood_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_CURSEOFBLOOD);
             CurseOfBlood_Timer += 45000;
-        }else CurseOfBlood_Timer -= diff;
+        }
 
-        //Hex_Timer
-        if (Hex_Timer < diff)
+        Hex_Timer -= diff;
+        if (Hex_Timer <= diff)
         {
             Unit* target = NULL;
             target = SelectUnit(SELECT_TARGET_RANDOM,0);
             if (target) DoCast(target,SPELL_HEX);
             Hex_Timer += 15000;
-        }else Hex_Timer -= diff;
+        }
 
-        //Cleave_Timer
-        if (Cleave_Timer < diff)
+        Cleave_Timer -= diff;
+        if (Cleave_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_CLEAVE);
             Cleave_Timer += 7000;
-        }else Cleave_Timer -= diff;
+        }
 
         DoMeleeAttackIfReady();
     }

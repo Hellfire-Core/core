@@ -220,8 +220,8 @@ struct boss_victor_nefariusAI : public ScriptedAI
         //Only do this if we haven't spawned nef yet
         if (SpawnedAdds < 42)
         {
-            //ShadowBoltTimer
-            if (ShadowBoltTimer < diff)
+            ShadowBoltTimer -= diff;
+            if (ShadowBoltTimer <= diff)
             {
                 Unit* target = NULL;
                 target = SelectUnit(SELECT_TARGET_RANDOM,0);
@@ -229,10 +229,10 @@ struct boss_victor_nefariusAI : public ScriptedAI
                     DoCast(target,SPELL_SHADOWBOLT);
 
                 ShadowBoltTimer += 3000 + (rand()%7000);
-            }else ShadowBoltTimer -= diff;
+            }
 
-            //FearTimer
-            if (FearTimer < diff)
+            FearTimer -= diff;
+            if (FearTimer <= diff)
             {
                 Unit* target = NULL;
                 target = SelectUnit(SELECT_TARGET_RANDOM,0);
@@ -240,10 +240,10 @@ struct boss_victor_nefariusAI : public ScriptedAI
                     DoCast(target,SPELL_FEAR);
 
                 FearTimer += 10000 + (rand()%10000);
-            }else FearTimer -= diff;
+            }
 
-            //Add spawning mechanism
-            if (AddSpawnTimer < diff)
+            AddSpawnTimer -= diff;
+            if (AddSpawnTimer <= diff)
             {
                 //Spawn 2 random types of creatures at the 2 locations
                 uint32 CreatureID;
@@ -317,14 +317,15 @@ struct boss_victor_nefariusAI : public ScriptedAI
                 }
 
                 AddSpawnTimer += 4000;
-            }else AddSpawnTimer -= diff;
+            } 
         }
         else if (NefarianGUID)
         {
-            if (NefCheckTime < diff)
+            NefCheckTime -= diff;
+            if (NefCheckTime <= diff)
             {
                 Unit* Nefarian = NULL;
-                Nefarian = Unit::GetUnit((*m_creature),NefarianGUID);
+                Nefarian = Unit::GetUnit((*m_creature), NefarianGUID);
 
                 //If nef is dead then we die to so the players get out of combat
                 //and cannot repeat the event
@@ -335,7 +336,7 @@ struct boss_victor_nefariusAI : public ScriptedAI
                 }
 
                 NefCheckTime += 2000;
-            }else NefCheckTime -= diff;
+            }
         }
     }
 };

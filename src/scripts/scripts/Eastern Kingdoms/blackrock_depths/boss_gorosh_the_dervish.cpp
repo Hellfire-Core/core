@@ -52,23 +52,22 @@ struct boss_gorosh_the_dervishAI : public ScriptedAI
         if (!UpdateVictim() )
             return;
 
-        //WhirlWind_Timer
-        if (WhirlWind_Timer < diff)
+        WhirlWind_Timer -= diff;
+        if (WhirlWind_Timer <= diff)
         {
             DoCast(me,SPELL_WHIRLWIND);
             WhirlWind_Timer = 15000;
         }
-        else
-            WhirlWind_Timer -= diff;
+        
 
-        //MortalStrike_Timer
+        MortalStrike_Timer -= diff;
         if (MortalStrike_Timer < diff)
         {
             DoCast(me->getVictim(),SPELL_MORTALSTRIKE);
             MortalStrike_Timer = 15000;
         }
-        else
-            MortalStrike_Timer -= diff;
+
+          
 
         DoMeleeAttackIfReady();
     }

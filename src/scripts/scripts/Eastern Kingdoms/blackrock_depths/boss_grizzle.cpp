@@ -52,27 +52,25 @@ struct boss_grizzleAI : public ScriptedAI
         if (!UpdateVictim() )
             return;
 
-        //GroundTremor_Timer
-        if (GroundTremor_Timer < diff)
+        GroundTremor_Timer -= diff;
+        if (GroundTremor_Timer <= diff)
         {
             DoCast(me->getVictim(),SPELL_GROUNDTREMOR);
             GroundTremor_Timer += 8000;
         }
-        else
-            GroundTremor_Timer -= diff;
+
 
         //Frenzy_Timer
         if ( me->GetHealth()*100 / me->GetMaxHealth() < 51 )
         {
-            if (Frenzy_Timer < diff)
+            Frenzy_Timer -= diff;
+            if (Frenzy_Timer <= diff)
             {
                 DoCast(me,SPELL_FRENZY);
                 DoTextEmote("goes into a killing frenzy!",NULL);
 
                 Frenzy_Timer += 15000;
             }
-            else
-                Frenzy_Timer -= diff;
         }
 
         DoMeleeAttackIfReady();

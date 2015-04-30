@@ -72,6 +72,7 @@ struct boss_draganthaurissanAI : public ScriptedAI
         if (!UpdateVictim() )
             return;
 
+        HandOfThaurissan_Timer -= diff;
         if (HandOfThaurissan_Timer < diff)
         {
             Unit* target = NULL;
@@ -89,16 +90,15 @@ struct boss_draganthaurissanAI : public ScriptedAI
                 HandOfThaurissan_Timer += 5000;
                 //Counter=0;
             //}
-        }else HandOfThaurissan_Timer -= diff;
+        }
 
-        //AvatarOfFlame_Timer
+        AvatarOfFlame_Timer -= diff;
         if (AvatarOfFlame_Timer < diff)
         {
             DoCast(me->getVictim(),SPELL_AVATAROFFLAME);
             AvatarOfFlame_Timer += 18000;
         }
-        else
-            AvatarOfFlame_Timer -= diff;
+        
 
         DoMeleeAttackIfReady();
     }

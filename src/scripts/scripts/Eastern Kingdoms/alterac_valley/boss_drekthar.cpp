@@ -130,6 +130,7 @@ struct boss_drektharAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
+        CheckTimer -= diff;
         if (CheckTimer < diff)
         {
             if(!m_creature->IsWithinDistInMap(&wLoc, 20.0f))
@@ -140,48 +141,43 @@ struct boss_drektharAI : public ScriptedAI
 
             CheckTimer += 2000;
         }
-        else
-            CheckTimer -= diff;
+        
 
+        WhirlwindTimer -= diff;
         if (WhirlwindTimer < diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_WHIRLWIND);
             WhirlwindTimer +=  urand(8000, 18000);
         }
-        else
-            WhirlwindTimer -= diff;
-
+        
+        Whirlwind2Timer -= diff;
         if (Whirlwind2Timer < diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_WHIRLWIND2);
             Whirlwind2Timer += urand(7000, 25000);
         }
-        else
-            Whirlwind2Timer -= diff;
-
+        
+        KnockdownTimer -= diff;
         if (KnockdownTimer < diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_KNOCKDOWN);
             KnockdownTimer += urand(10000, 15000);
         }
-        else
-            KnockdownTimer -= diff;
-
+        
+        FrenzyTimer -= diff;
         if (FrenzyTimer < diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_FRENZY);
             FrenzyTimer += urand(20000, 25000);
         }
-        else
-            FrenzyTimer -= diff;
-
+        
+        YellTimer -= diff;
         if (YellTimer < diff)
         {
             DoScriptText(RAND(YELL_RANDOM1, YELL_RANDOM2, YELL_RANDOM3, YELL_RANDOM4, YELL_RANDOM5), m_creature);
             YellTimer += urand(20000, 30000); //20 to 30 seconds
         }
-        else
-            YellTimer -= diff;
+        
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -265,6 +261,7 @@ struct boss_drektharOfficerAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
+        CheckTimer -= diff;
         if (CheckTimer < diff)
         {
             if (!m_creature->IsWithinDistInMap(&wLoc, 20.0f))
@@ -275,9 +272,8 @@ struct boss_drektharOfficerAI : public ScriptedAI
 
             CheckTimer += 2000;
         }
-        else
-            CheckTimer -= diff;
-
+        
+        chargeTimer -= diff;
         if (chargeTimer < diff)
         {
             Unit * target = SelectUnit(SELECT_TARGET_RANDOM, 0, 25.0f, true, 0, 8.0f);
@@ -287,32 +283,29 @@ struct boss_drektharOfficerAI : public ScriptedAI
 
             chargeTimer += urand(7500, 20000);
         }
-        else
-            chargeTimer -= diff;
-
+        
+        cleaveTimer -= diff;
         if (cleaveTimer < diff)
         {
             AddSpellToCast(AV_DT_CLEAVE, CAST_TANK);
             cleaveTimer += urand(5000, 10000);
         }
-        else
-            cleaveTimer -= diff;
-
+        
+        demoShoutTimer -= diff;
         if (demoShoutTimer < diff)
         {
             AddSpellToCast(AV_DT_DEMOSHOUT, CAST_NULL);
             demoShoutTimer += urand(14000, 25000);
         }
-        else
-            demoShoutTimer -= diff;
-
+        
+        whirlwindTimer -= diff;
         if (whirlwindTimer < diff)
         {
             AddSpellToCast(AV_DT_WHIRLWIND, CAST_SELF);
             whirlwindTimer += urand(9000, 13000);
         }
-        else
-            whirlwindTimer -= diff;
+        
+           
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
