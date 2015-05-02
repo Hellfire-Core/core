@@ -492,7 +492,7 @@ class HELLGROUND_IMPORT_EXPORT BattleGround
         void SetDeleteThis(){ m_SetDeleteThis = true; }
 
         bool SetPlayerReady(uint64 guid);
-
+        void RestorePet(Player* plr);
     protected:
         //this method is called, when BG cannot spawn its own spirit guide, or something is wrong, It correctly ends BattleGround
         void EndNow();
