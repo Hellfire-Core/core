@@ -223,11 +223,6 @@ enum BattleGroundJoinError
     BG_JOIN_ERR_GROUP_NOT_ENOUGH = 9
 };
 
-enum ArenaSharedNPC
-{
-    ARENA_NPC_SPECTATOR = 0
-};
-
 class BattleGroundScore
 {
     public:
@@ -480,7 +475,6 @@ class HELLGROUND_IMPORT_EXPORT BattleGround
         bool DelCreature(uint32 type);
         bool DelObject(uint32 type, bool setGoState = true);
         bool AddSpiritGuide(uint32 type, float x, float y, float z, float o, uint32 team);
-        void AddSpectatorNPC(float x, float y, float z, float o);
         int32 GetObjectType(uint64 guid);
 
         void DoorOpen(uint32 type);
