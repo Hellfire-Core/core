@@ -3018,6 +3018,8 @@ void SpellMgr::LoadSpellCustomAttr()
                     spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_AREA_ENEMY_DST;
                 else if (spellInfo->Id == 34026) // kill command, all handled by first dummy effect
                     spellInfo->Effect[1] = 0;
+                else if (spellInfo->Id == 13810) // frost trap effect ignore los
+                    spellInfo->AttributesEx2 |= SPELL_ATTR_EX2_IGNORE_LOS;
 
                 spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
                 break;
