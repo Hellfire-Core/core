@@ -19,8 +19,9 @@
 
 /* ScriptData
 SDName: Boss_Shade_of_Aran
-SD%Complete: 95
-SDComment: Flame wreath missing cast animation, mods won't triggere.
+SD%Complete: 65
+SDComment: Flame wreath missing cast animation, mods won't triggere. Timers have to be rewritten.
+It will be nice to do it with our [Timer]s. 
 SDCategory: Karazhan
 EndScriptData 
 
@@ -220,8 +221,8 @@ struct boss_aranAI : public Scripted_NoMovementAI
         if (!UpdateVictim())
             return;
 
-        //Check_Timer
-        if (CheckTimer < diff)
+        CheckTimer -= diff;
+        if (CheckTimer <= diff)
         {
             if (!m_creature->IsWithinDistInMap(&wLoc, 35.0f))
                 EnterEvadeMode();
@@ -230,9 +231,9 @@ struct boss_aranAI : public Scripted_NoMovementAI
 
             CheckTimer += 3000;
         }
-        else
-            CheckTimer -= diff;
+        
 
+        //whoever wrote that cooldowns shall be crucified. upside down. underwater. salt water.
         //Cooldowns for casts
         if (ArcaneCooldown)
         {
@@ -297,7 +298,7 @@ struct boss_aranAI : public Scripted_NoMovementAI
         if(Drinking == DRINKING_NO_DRINKING)
         {
             //Normal casts
-            if (NormalCastTimer < diff)
+            if (NormalCastTimer <= diff)
             {
                 if (!m_creature->IsNonMeleeSpellCast(false))
                 {
@@ -322,7 +323,7 @@ struct boss_aranAI : public Scripted_NoMovementAI
             else
                 NormalCastTimer -= diff;
 
-            if (SecondarySpellTimer < diff)
+            if (SecondarySpellTimer <= diff)
             {
                 AddSpellToCast(SPELL_AOE_CS, CAST_SELF);
                 SecondarySpellTimer = urand(10000, 40000);
@@ -330,7 +331,8 @@ struct boss_aranAI : public Scripted_NoMovementAI
             else
                 SecondarySpellTimer -= diff;
 
-            if (SuperCastTimer < diff)
+            SuperCastTimer -= diff;
+            if (SuperCastTimer <= diff)
             {
                 uint8 Available[2];
                 ClearCastQueue();
@@ -376,8 +378,7 @@ struct boss_aranAI : public Scripted_NoMovementAI
 
                 SuperCastTimer += urand(35000, 40000);
             }
-            else
-                SuperCastTimer -= diff;
+            
 
             if (!ElementalsSpawned && HealthBelowPct(40))
             {
@@ -390,7 +391,8 @@ struct boss_aranAI : public Scripted_NoMovementAI
             }
         }
 
-        if (BerserkTimer < diff)
+        BerserkTimer -= diff;
+        if (BerserkTimer <= diff)
         {
             for (uint32 i = 0; i < 8; i++)
             {
@@ -405,8 +407,7 @@ struct boss_aranAI : public Scripted_NoMovementAI
 
             BerserkTimer += 60000;
         }
-        else
-            BerserkTimer -= diff;
+        
 
         CastNextSpellIfAnyAndReady();
         if(Drinking == DRINKING_NO_DRINKING)
@@ -508,14 +509,14 @@ struct water_elementalAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (CastTimer < diff)
+        CastTimer -= diff;
+        if (CastTimer <= diff)
         {
             //AddSpellToCast(m_creature->getVictim(), SPELL_WATERBOLT);
             DoCast(m_creature->getVictim(), SPELL_WATERBOLT);
             CastTimer += 2000 + (rand()%3000);
         }
-        else
-            CastTimer -= diff;
+        
 
         CheckCasterNoMovementInRange(diff, 45.0);
         CastNextSpellIfAnyAndReady();
@@ -538,7 +539,8 @@ struct shadow_of_aranAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (CastTimer < diff)
+        CastTimer -= diff;
+        if (CastTimer <= diff)
         {
             if (rand()%3)
             {
@@ -551,8 +553,7 @@ struct shadow_of_aranAI : public ScriptedAI
                 CastTimer += 20000;
             }
         }
-        else
-            CastTimer -= diff;
+        
     }
 };
 
@@ -638,7 +639,8 @@ struct circular_blizzardAI : public ScriptedAI
         if (!move)
             return;
 
-        if (waypointTimer < diff)
+        waypointTimer -= diff;
+        if (waypointTimer <= diff)
         {
             if (currentWaypoint < 7)
                 ++currentWaypoint;
@@ -654,8 +656,6 @@ struct circular_blizzardAI : public ScriptedAI
             m_creature->GetMotionMaster()->MovePoint(currentWaypoint, wLoc.coord_x, wLoc.coord_y, wLoc.coord_z);
             waypointTimer += 3000;
         }
-        else
-            waypointTimer -= diff;
     }
 };
 

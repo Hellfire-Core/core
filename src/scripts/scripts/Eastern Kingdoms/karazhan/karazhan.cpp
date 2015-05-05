@@ -114,13 +114,13 @@ struct npc_calliardAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (Timer < diff)
+        Timer -= diff;
+        if (Timer <= diff)
         {
             me->Say(RAND<const char*>(CALLIARD_SAY1, CALLIARD_SAY2, CALLIARD_SAY3), 0, 0);
             Timer += urand(60000, 180000);
         } 
-        else
-            Timer -= diff;
+        
 
     }    
 };
@@ -350,32 +350,34 @@ struct npc_image_of_medivhAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-
-        if(YellTimer < diff)
+        YellTimer -= diff;
+        if(YellTimer <= diff)
         {
             if(EventStarted)
             {
                 YellTimer += NextStep(Step++);
             }
-        }else YellTimer -= diff;
+        }
 
         if(Step >= 7 && Step <= 12 )
         {
             Unit* arca = Unit::GetUnit((*m_creature),ArcanagosGUID);
 
-            if(FireArcanagosTimer < diff)
+            FireArcanagosTimer -= diff;
+            if(FireArcanagosTimer <= diff)
             {
                 if(arca)
                     arca->CastSpell(m_creature, SPELL_FIRE_BALL, false);
                 FireArcanagosTimer += 6000;
-            }else FireArcanagosTimer -= diff;
+            }
 
-            if(FireMedivhTimer < diff)
+            FireMedivhTimer -= diff;
+            if(FireMedivhTimer <= diff)
             {
                 if(arca)
                     DoCast(arca, SPELL_FIRE_BALL);
                 FireMedivhTimer += 5000;
-            }else FireMedivhTimer -= diff;
+            }
 
         }
     }

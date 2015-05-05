@@ -100,7 +100,8 @@ struct boss_midnightAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (CheckTimer < diff)
+        CheckTimer -= diff;
+        if (CheckTimer <= diff)
         {
             if (!m_creature->IsWithinDistInMap(&wLoc, 50.0f))
                 EnterEvadeMode();
@@ -109,8 +110,7 @@ struct boss_midnightAI : public ScriptedAI
 
             CheckTimer += 3000;
         }
-        else
-            CheckTimer -= diff;
+        
 
         switch (Phase)
         {
@@ -142,6 +142,7 @@ struct boss_midnightAI : public ScriptedAI
             {
                 if (Mount_Timer)
                 {
+                    Mount_Timer -= diff;
                     if (Mount_Timer <= diff)
                     {
                         Mount_Timer = 0;
@@ -159,8 +160,7 @@ struct boss_midnightAI : public ScriptedAI
                             pAttumen->SetFloatValue(OBJECT_FIELD_SCALE_X,1);
                         }
                     }
-                    else
-                        Mount_Timer -= diff;
+                    
                 }
                 return;
             }
@@ -249,6 +249,7 @@ struct boss_attumenAI : public ScriptedAI
     {
         if (ResetTimer)
         {
+            ResetTimer -= diff;
             if (ResetTimer <= diff)
             {
                 ResetTimer = 0;
@@ -263,8 +264,7 @@ struct boss_attumenAI : public ScriptedAI
                 m_creature->DealDamage(m_creature, m_creature->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
             }
         }
-        else
-            ResetTimer -= diff;
+        
 
         //Return since we have no target
         if (!UpdateVictim())
@@ -273,42 +273,42 @@ struct boss_attumenAI : public ScriptedAI
         if (m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE ))
             return;
 
-        if (CleaveTimer < diff)
+        CleaveTimer -= diff;
+        if (CleaveTimer <= diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_SHADOWCLEAVE);
             CleaveTimer += urand(10000, 16000);
         }
-        else
-            CleaveTimer -= diff;
+        
 
-        if (CurseTimer < diff)
+        CurseTimer -= diff;
+        if (CurseTimer <= diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_INTANGIBLE_PRESENCE);
             CurseTimer += 30000;
         }
-        else
-            CurseTimer -= diff;
+        
 
-        if (RandomYellTimer < diff)
+        RandomYellTimer -= diff;
+        if (RandomYellTimer <= diff)
         {
             DoScriptText(RAND(SAY_RANDOM1, SAY_RANDOM2), m_creature);
 
             RandomYellTimer += urand(30000, 61000);
         }
-        else
-            RandomYellTimer -= diff;
+        
 
         if (m_creature->GetUInt32Value(UNIT_FIELD_DISPLAYID) == MOUNTED_DISPLAYID)
         {
-            if (ChargeTimer < diff)
+            ChargeTimer -= diff;
+            if (ChargeTimer <= diff)
             {
                 if (Unit * target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100.0f, true, 0, 5.0f))
                     AddSpellToCast(target, SPELL_BERSERKER_CHARGE);
 
                 ChargeTimer += 20000;
             }
-            else
-                ChargeTimer -= diff;
+            
         }
         else
         {

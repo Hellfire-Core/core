@@ -285,49 +285,46 @@ struct boss_netherspiteAI : public ScriptedAI
 
         DoSpecialThings(diff, DO_EVERYTHING, 125.0f, 1.5f);
 
-        // Void Zone
-        if(VoidZoneTimer < diff)
+        VoidZoneTimer -= diff;
+        if(VoidZoneTimer <= diff)
         {
             if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM,1,GetSpellMaxRange(SPELL_VOIDZONE),true, m_creature->getVictimGUID()))
                 AddSpellToCast(target,SPELL_VOIDZONE,true);
 
             VoidZoneTimer += 15000;
         }
-        else
-            VoidZoneTimer -= diff;
+        
 
-        // NetherInfusion Berserk
-        if(!Berserk && NetherInfusionTimer < diff)
+        NetherInfusionTimer -= diff;
+        if (!Berserk && NetherInfusionTimer <= diff)
         {
             m_creature->AddAura(SPELL_NETHER_INFUSION, m_creature);
             ForceSpellCast(m_creature, SPELL_NETHERSPITE_ROAR, INTERRUPT_AND_CAST_INSTANTLY);
             Berserk = true;
         }
-        else
-            NetherInfusionTimer -= diff;
+        
 
         if(PortalPhase) // PORTAL PHASE
         {
-            // Distribute beams and buffs
-            if(PortalTimer < diff)
+            PortalTimer -= diff;
+            if(PortalTimer <= diff)
             {
                 UpdatePortals();
                 PortalTimer += 1000;
             }
-            else
-                PortalTimer -= diff;
+            
 
-            // Empowerment & Nether Burn
-            if(EmpowermentTimer < diff)
+            EmpowermentTimer -= diff;
+            if(EmpowermentTimer <= diff)
             {
                 ForceSpellCast(m_creature, SPELL_EMPOWERMENT);
                 m_creature->AddAura(SPELL_NETHERBURN_AURA, m_creature);
                 EmpowermentTimer += 90000;
             }
-            else
-                EmpowermentTimer -= diff;
+            
 
-            if(PhaseTimer < diff)
+            PhaseTimer -= diff;
+            if(PhaseTimer <= diff)
             {
                 if(!m_creature->IsNonMeleeSpellCast(false))
                 {
@@ -335,8 +332,7 @@ struct boss_netherspiteAI : public ScriptedAI
                     return;
                 }
             }
-            else
-                PhaseTimer -= diff;
+            
 
             DoMeleeAttackIfReady();
         }
@@ -348,17 +344,16 @@ struct boss_netherspiteAI : public ScriptedAI
                 m_creature->GetMotionMaster()->MoveIdle();
             }
 
-            // Netherbreath
-            if(NetherbreathTimer < diff)
+            NetherbreathTimer -= diff;
+            if(NetherbreathTimer <= diff)
             {
                 if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0,GetSpellMaxRange(SPELL_NETHERBREATH),true))
                     AddSpellToCast(target,SPELL_NETHERBREATH);
 
                 NetherbreathTimer += 5000+rand()%2000;
             }
-            else
-                NetherbreathTimer -= diff;
-
+            
+            PhaseTimer -= diff;
             if(PhaseTimer < diff)
             {
                 if(!m_creature->IsNonMeleeSpellCast(false))
@@ -367,8 +362,6 @@ struct boss_netherspiteAI : public ScriptedAI
                     return;
                 }
             }
-            else
-                PhaseTimer -= diff;
         }
         CastNextSpellIfAnyAndReady();
     }
@@ -403,7 +396,8 @@ struct mob_void_zoneAI : public Scripted_NoMovementAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(checkTimer < diff)
+        checkTimer -= diff;
+        if(checkTimer <= diff)
         {
             if (pInstance && pInstance->GetData(DATA_NETHERSPITE_EVENT) == DONE)
             {
@@ -414,17 +408,16 @@ struct mob_void_zoneAI : public Scripted_NoMovementAI
             m_creature->CastCustomSpell(NULL, SPELL_VOID_ZONE_EFFECT, &dmg, NULL, NULL, false);
             checkTimer += 2000;
         }
-        else
-            checkTimer -= diff;
+        
 
-        if(dieTimer < diff)
+        dieTimer -= diff;
+        if(dieTimer <= diff)
         {
             m_creature->Kill(m_creature, false);
             m_creature->RemoveCorpse();
             dieTimer += 25000;
         }
-        else
-            dieTimer -= diff;
+        
     }
 };
 CreatureAI* GetAI_mob_void_zone(Creature *_Creature)

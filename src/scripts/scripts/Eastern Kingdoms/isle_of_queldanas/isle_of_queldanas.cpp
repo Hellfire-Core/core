@@ -162,27 +162,27 @@ struct npc_wretched_devourerAI : public ScriptedAI
     {
         if(!UpdateVictim())
             return;
-        if(ArcaneTorrent < diff)
+        ArcaneTorrent -= diff;
+        if(ArcaneTorrent <= diff)
         {
             AddSpellToCast(SPELL_ARCANE_TORRENT, CAST_SELF);
             ArcaneTorrent += RAND(urand(1500, 4500),urand(6000, 11000));
         }
-        else
-            ArcaneTorrent -= diff;
-        if(ManaTap < diff)
+
+        ManaTap -= diff;
+        if(ManaTap <= diff)
         {
             AddSpellToCast(SPELL_MANA_TAP, CAST_TANK);
             ManaTap += urand(15000, 24000);
         }
-        else
-            ManaTap -= diff;
-        if(NetherShock < diff)
+        
+        NetherShock -= diff;
+        if(NetherShock <= diff)
         {
             AddSpellToCast(SPELL_NETHER_SHOCK, CAST_TANK);
             NetherShock += urand(4000, 8000);
         }
-        else
-            NetherShock -= diff;
+        
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
     }
@@ -227,22 +227,22 @@ struct npc_wretched_fiendAI : public ScriptedAI
     {
         if(!UpdateVictim())
             return;
-        if(SunderArmor < diff)
+        SunderArmor -= diff;
+        if(SunderArmor <= diff)
         {
             AddSpellToCast(SPELL_SUNDER_ARMOR, CAST_TANK);
             SunderArmor += urand(12000, 16000);
         }
-        else
-            SunderArmor -= diff;
+        
         if(HealthBelowPct(85))
         {
-            if(BitterWithdrawal < diff)
+            BitterWithdrawal -= diff;
+            if(BitterWithdrawal <= diff)
             {
                 AddSpellToCast(SPELL_BITTER_WITHDRAWAL, CAST_TANK);
                 BitterWithdrawal += urand(10000, 15000);
             }
-            else
-                BitterWithdrawal -= diff;
+            
         }
 
         CastNextSpellIfAnyAndReady();
@@ -291,18 +291,19 @@ struct npc_erratic_sentryAI : public ScriptedAI
             {
                 if(!me->HasAura(44994))
                 {
-                    if(CapacitatorOverload < diff)
+                    CapacitatorOverload -= diff;
+                    if(CapacitatorOverload <= diff)
                     {
                         DoCast(me, CAPACITATOR_OVERLOAD, true);
                         CapacitatorOverload += 500;
                     }
-                    else
-                        CapacitatorOverload -= diff;
+                    
                 }
             }
             else
             {
-                if(CapacitatorOverload < diff)
+                CapacitatorOverload -= diff;
+                if(CapacitatorOverload <= diff)
                 {
                     if(roll_chance_i(5))
                     {
@@ -315,41 +316,40 @@ struct npc_erratic_sentryAI : public ScriptedAI
                         me->SetHealth(me->GetMaxHealth());
                     CapacitatorOverload += 5000;
                 }
-                else
-                    CapacitatorOverload -= diff;
+                
             }
         }
 
         if(!UpdateVictim())
             return;
 
-        if(Suppression < diff)
+        Suppression -= diff;
+        if(Suppression <= diff)
         {
             AddSpellToCast(SPELL_SUPPRESSION, CAST_NULL);
             Suppression = urand(15000, 25000);
         }
-        else
-            Suppression -= diff;
+        
 
-        if(CrystalStrike < diff)
+        CrystalStrike -= diff;
+        if(CrystalStrike <= diff)
         {
             AddSpellToCast(SPELL_CRYSTAL_STRIKE, CAST_TANK);
             CrystalStrike += 14000;
         }
-        else
-            CrystalStrike -= diff;
+        
 
         if(HealthBelowPct(80) && !HealthBelowPct(50))
         {
-            if(ElectricalOverload < diff)
+            ElectricalOverload -= diff;
+            if(ElectricalOverload <= diff)
             {
                 if(roll_chance_i(20))
                     DoYell(YELL_CORE_OVERLOAD, 0, me->getVictim());
                 AddSpellToCast(SPELL_ELECTRICAL_OVERLOAD, CAST_SELF);
                 ElectricalOverload += 10000;
             }
-            else
-                ElectricalOverload -= diff;
+            
         }
 
         CastNextSpellIfAnyAndReady();
@@ -442,13 +442,13 @@ struct npc_wrath_enforcerAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if(FlameWave < diff)
+        FlameWave -= diff;
+        if(FlameWave <= diff)
         {
             AddSpellToCast(SPELL_FLAME_WAVE, CAST_SELF);
             FlameWave += urand(20000, 30000);
         }
-        else
-            FlameWave -= diff;
+        
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -485,13 +485,13 @@ struct npc_flame_waveAI : public ScriptedAI
     }
     void UpdateAI(const uint32 diff)
     {
-        if(Burn < diff)
+        Burn -= diff;
+        if(Burn <= diff)
         {
             DoCast(me, SPELL_BURN, true);
             Burn += 500;
         }
-        else
-            Burn -= diff;
+        
     }
 };
 
@@ -546,29 +546,28 @@ struct npc_pit_overlordAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if(Cleave < diff)
+        Cleave -= diff;
+        if(Cleave <= diff)
         {
             AddSpellToCast(SPELL_CLEAVE);
             Cleave += urand(10000, 20000);
         }
-        else
-            Cleave -= diff;
-
-        if(ConeOfFire < diff)
+        
+        ConeOfFire -= diff;
+        if(ConeOfFire <= diff)
         {
             AddSpellToCast(SPELL_CONE_OF_FIRE, CAST_NULL);
             ConeOfFire += urand(8000, 16000);
         }
-        else
-            ConeOfFire -= diff;
+        
 
-        if(DeathCoil < diff)
+        DeathCoil -= diff;
+        if(DeathCoil <= diff)
         {
             AddSpellToCast(SPELL_DEATH_COIL);
             DeathCoil += urand(8000, 12000);
         }
-        else
-            DeathCoil -= diff;
+        
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -682,7 +681,8 @@ struct npc_shattered_sun_bombardierAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (yell_timer < diff)
+        yell_timer -= diff;
+        if (yell_timer <= diff)
         {
             switch(yell)
             {
@@ -707,8 +707,7 @@ struct npc_shattered_sun_bombardierAI : public ScriptedAI
                     break;
             }
         }
-        else
-            yell_timer -= diff;
+        
     }
 };
 
@@ -809,7 +808,8 @@ struct npc_greengill_slaveAI : public ScriptedAI
     {
         if(me->HasAura(ENRAGE))
         {
-            if(enrageTimer < diff)
+            enrageTimer -= diff;
+            if(enrageTimer <= diff)
             {
                 me->CombatStop();
                 float x, y, z;
@@ -818,8 +818,7 @@ struct npc_greengill_slaveAI : public ScriptedAI
                 me->GetMotionMaster()->MovePoint(1, x, y, z);
                 enrageTimer += 60000;
             }
-            else
-                enrageTimer -= diff;
+            
         }
         DoMeleeAttackIfReady();
     }
@@ -874,13 +873,13 @@ struct npc_ioqd_brutallusAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(RandYell_timer < diff)
+        RandYell_timer -= diff;
+        if(RandYell_timer <= diff)
         {
             DoYell(BrutalYell[urand(1, 6)], 0, 0);
             RandYell_timer += urand(15000, 25000);
         }
-        else
-            RandYell_timer -= diff;
+        
 
         // TODO-> answers to taunting
     }

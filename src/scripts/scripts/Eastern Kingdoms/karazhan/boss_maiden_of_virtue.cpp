@@ -105,7 +105,8 @@ struct boss_maiden_of_virtueAI : public ScriptedAI
         if (!UpdateVictim() )
             return;
 
-        if(CheckTimer < diff)
+        CheckTimer -= diff;
+        if(CheckTimer <= diff)
         {
             if(!m_creature->IsWithinDistInMap(&wLoc, 30.0f))
                 EnterEvadeMode();
@@ -114,26 +115,23 @@ struct boss_maiden_of_virtueAI : public ScriptedAI
 
             CheckTimer += 3000;
         }
-        else
-            CheckTimer -= diff;
-
-        if(Enrage_Timer < diff && !Enraged)
+        
+        Enrage_Timer -= diff;
+        if(Enrage_Timer <= diff && !Enraged)
         {
             DoCast(m_creature, SPELL_BERSERK,true);
             Enraged = true;
         }
-        else
-            Enrage_Timer -=diff;
-
-        if(Holyground_Timer < diff)
+        
+        Holyground_Timer -= diff;
+        if(Holyground_Timer <= diff)
         {
             DoCast(m_creature, SPELL_HOLYGROUND, true);     //Triggered so it doesn't interrupt her at all
             Holyground_Timer += 3000;
         }
-        else
-            Holyground_Timer -= diff;
-
-        if (Repentance_Timer < diff)
+        
+        Repentance_Timer -= diff;
+        if (Repentance_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_REPENTANCE);
 
@@ -142,20 +140,20 @@ struct boss_maiden_of_virtueAI : public ScriptedAI
             Repentance_Timer += 30000 + rand()%15000;        //A little randomness on that spell
             Holyfire_Timer += 6000;
         }
-        else
-            Repentance_Timer -= diff;
-
-        if(Holyfire_Timer < diff)
+        
+          
+        Holyfire_Timer -= diff;
+        if(Holyfire_Timer <= diff)
         {
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0,GetSpellMaxRange(SPELL_HOLYFIRE), true))
                 DoCast(target,SPELL_HOLYFIRE);
 
                 Holyfire_Timer += 8000 + rand()%17000; //Anywhere from 8 to 25 seconds, good luck having several of those in a row!
         }
-        else
-            Holyfire_Timer -= diff;
-
-        if(Holywrath_Timer < diff)
+        
+           
+        Holywrath_Timer -= diff;
+        if(Holywrath_Timer <= diff)
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0,GetSpellMaxRange(SPELL_HOLYWRATH), true))
                 DoCast(target,SPELL_HOLYWRATH);
@@ -163,8 +161,7 @@ struct boss_maiden_of_virtueAI : public ScriptedAI
             Holywrath_Timer += 20000+(rand()%10000);     //20-30 secs sounds nice
 
         }
-        else
-            Holywrath_Timer -= diff;
+        
 
         DoMeleeAttackIfReady();
     }

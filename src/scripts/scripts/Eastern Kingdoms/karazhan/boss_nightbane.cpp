@@ -332,51 +332,56 @@ struct boss_nightbaneAI : public ScriptedAI
                     Movement = false;
                 }
 
-                if (BellowingRoarTimer < diff)
+                BellowingRoarTimer -= diff;
+                if (BellowingRoarTimer <= diff)
                 {
                     DoCast(m_creature->getVictim(), SPELL_BELLOWING_ROAR);
                     BellowingRoarTimer += 30000 + rand() % 10000; //Timer
                 }
-                else BellowingRoarTimer -= diff;
+                
 
-                if (SmolderingBreathTimer < diff)
+                SmolderingBreathTimer -= diff;
+                if (SmolderingBreathTimer <= diff)
                 {
                     DoCast(m_creature->getVictim(), SPELL_SMOLDERING_BREATH);
                     SmolderingBreathTimer += 20000;//timer
                 }
-                else SmolderingBreathTimer -= diff;
+                
 
-                if (Cleave_Timer < diff)
+                Cleave_Timer -= diff;
+                if (Cleave_Timer <= diff)
                 {
                     DoCast(m_creature->getVictim(), SPELL_CLEAVE);
                     Cleave_Timer += 6000 + rand() % 6000;
                 }
-                else Cleave_Timer -= diff;
+                
 
-                if (CharredEarthTimer < diff)
+                CharredEarthTimer -= diff;
+                if (CharredEarthTimer <= diff)
                 {
                     if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_CHARRED_EARTH), true))
                         DoCast(target, SPELL_CHARRED_EARTH);
                     CharredEarthTimer += 20000; //timer
                 }
-                else CharredEarthTimer -= diff;
+                
 
-                if (TailSweepTimer < diff)
+                TailSweepTimer -= diff;
+                if (TailSweepTimer <= diff)
                 {
                     if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_TAIL_SWEEP), true))
                         if (!m_creature->HasInArc(M_PI, target))
                             DoCast(target, SPELL_TAIL_SWEEP);
                     TailSweepTimer += 15000;//timer
                 }
-                else TailSweepTimer -= diff;
-
-                if (SearingCindersTimer < diff)
+                
+                SearingCindersTimer -= diff;
+                if (SearingCindersTimer <= diff)
                 {
                     if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_SEARING_CINDERS), true))
                         DoCast(target, SPELL_SEARING_CINDERS);
                     SearingCindersTimer += 10000; //timer
                 }
-                else SearingCindersTimer -= diff;
+                
 
                 uint32 Prozent;
                 Prozent = (m_creature->GetHealth() * 100) / m_creature->GetMaxHealth();
@@ -407,45 +412,48 @@ struct boss_nightbaneAI : public ScriptedAI
                         }
                     }
 
-                    if (RainofBonesTimer < diff && !RainBones) // only once at the beginning of phase 2
+                    RainofBonesTimer -= diff;
+                    if (RainofBonesTimer <= diff && !RainBones) // only once at the beginning of phase 2
                     {
                         DoCast(m_creature->getVictim(), SPELL_RAIN_OF_BONES);
                         RainBones = true;
                         SmokingBlastTimer += 20000;
                     }
-                    else RainofBonesTimer -= diff;
+                    
 
-                    if (DistractingAshTimer < diff)
+                    DistractingAshTimer -= diff;
+                    if (DistractingAshTimer <= diff)
                     {
                         if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_DISTRACTING_ASH), true))
                             m_creature->AddAura(SPELL_DISTRACTING_ASH, target);
 
                         DistractingAshTimer += 2000;//timer wrong
                     }
-                    else
-                        DistractingAshTimer -= diff;
+                    
                 }
 
                 if (RainBones)
                 {
-                    if (SmokingBlastTimer < diff)
+                    SmokingBlastTimer -= diff;
+                    if (SmokingBlastTimer <= diff)
                     {
                         DoCast(m_creature->getVictim(), SPELL_SMOKING_BLAST);
                         SmokingBlastTimer += 1500; //timer wrong
                     }
-                    else SmokingBlastTimer -= diff;
+                    
                 }
 
-                if (FireballBarrageTimer < diff)
+                FireballBarrageTimer -= diff;
+                if (FireballBarrageTimer <= diff)
                 {
                     if (Unit* target = SelectUnit(SELECT_TARGET_FARTHEST, 0, GetSpellMaxRange(SPELL_FIREBALL_BARRAGE), true, uint64(0), 40.0f))
                         DoCast(target, SPELL_FIREBALL_BARRAGE);
                     FireballBarrageTimer += 20000; //Timer
                 }
-                else
-                    FireballBarrageTimer -= diff;
+                
 
-                if (FlyTimer < diff) //landing
+                FlyTimer -= diff;
+                if (FlyTimer <= diff) //landing
                 {
                     if (rand() % 2 == 0)
                         DoYell(YELL_LAND_PHASE_1, LANG_UNIVERSAL, NULL);
@@ -457,7 +465,7 @@ struct boss_nightbaneAI : public ScriptedAI
 
                     Flying = true;
                 }
-                else FlyTimer -= diff;
+                
             }
     }
 };

@@ -152,10 +152,10 @@ void move_triggerAI::UpdateAI(const uint32 diff)
 
     if (pieceStance)
     {
-        if (moveTimer < diff)
+        moveTimer -= diff;
+        if (moveTimer <= diff)
             MakeMove();
-        else
-            moveTimer -= diff;
+        
     }
 }
 
@@ -528,6 +528,7 @@ void npc_chesspieceAI::UpdateAI(const uint32 diff)
         uint64 ab2 = 0;
         bool ab2Self = false;
 
+        ability1Timer -= diff;
         if (ability1Timer <= diff)
         {
             Creature * medivh = m_creature->GetCreature(MedivhGUID);
@@ -544,9 +545,9 @@ void npc_chesspieceAI::UpdateAI(const uint32 diff)
             else
                 ability1Timer += urand(500, 5000);
         }
-        else
-            ability1Timer -= diff;
+        
 
+        ability2Timer -= diff;
         if (ability2Timer <= diff)
         {
             Creature * medivh = m_creature->GetCreature(MedivhGUID);
@@ -563,8 +564,7 @@ void npc_chesspieceAI::UpdateAI(const uint32 diff)
             else
                 ability2Timer += urand(500, 5000);
         }
-        else
-            ability2Timer -= diff;
+        
 
 
         if (ab1 && ab2)
@@ -606,6 +606,7 @@ void npc_chesspieceAI::UpdateAI(const uint32 diff)
 #endif
 
 #ifndef CHESS_EVENT_DISSABLE_FACING
+        changeFacingTimer -= diff;
         if (changeFacingTimer <= diff)
         {
             changeFacingTimer += urand(3000, 7500);
@@ -617,14 +618,14 @@ void npc_chesspieceAI::UpdateAI(const uint32 diff)
 
             ((boss_MedivhAI*)medivh->AI())->CheckChangeFacing(me->GetGUID());
         }
-        else
-            changeFacingTimer -= diff;
+        
 #endif
     }
 
     CastNextSpellIfAnyAndReady();
 
 #ifndef CHESS_EVENT_DISSABLE_MELEE
+    attackTimer -= diff;
     if (attackTimer <= diff)
     {
         attackTimer += attackCooldown;
@@ -644,8 +645,6 @@ void npc_chesspieceAI::UpdateAI(const uint32 diff)
 #endif
         }
     }
-    else
-        attackTimer -= diff;
 #endif
 }
 
@@ -2792,9 +2791,10 @@ void boss_MedivhAI::UpdateAI(const uint32 diff)
 {
     if (miniEventState)
     {
-        if (miniEventTimer < diff)
+        miniEventTimer -= diff;
+        if (miniEventTimer <= diff)
         {
-            switch(miniEventState)
+            switch (miniEventState)
             {
                 case MINI_EVENT_KING:
                     PrepareBoardForEvent();
@@ -2845,17 +2845,17 @@ void boss_MedivhAI::UpdateAI(const uint32 diff)
                     break;
             }
         }
-        else
-            miniEventTimer -= diff;
+
         return;
     }
 
     if (endGameEventState)
     {
-        if (endEventTimer < diff)
+        endEventTimer -= diff;
+        if (endEventTimer <= diff)
         {
             Creature * tmpC;
-            endEventTimer = 2500;
+            endEventTimer += 2500;
             switch (endGameEventState)
             {
                 case GAMEEND_MEDIVH_WIN:
@@ -2896,21 +2896,21 @@ void boss_MedivhAI::UpdateAI(const uint32 diff)
             }
             endEventCount++;
         }
-        else
-            endEventTimer -= diff;
 
-        /*if (endEventLightningTimer < diff)
-        {
-            Creature * tmpC;
-            int count = rand()%5;
 
-            for (int i = 0; i < count; ++i)
-                if (tmpC = me->GetCreature(chessBoard[rand()%8][rand()%8].trigger))
-                    me->CastSpell(tmpC, SPELL_GAME_OVER, true);
-            endEventLightningTimer = urand(100, 1000);
-        }
-        else
-            endEventLightningTimer -= diff;*/
+        /*
+         endEventLightningTimer -= diff;
+         if (endEventLightningTimer <= diff)
+         {
+         Creature * tmpC;
+         int count = rand()%5;
+
+         for (int i = 0; i < count; ++i)
+         if (tmpC = me->GetCreature(chessBoard[rand()%8][rand()%8].trigger))
+         me->CastSpell(tmpC, SPELL_GAME_OVER, true);
+         endEventLightningTimer = urand(100, 1000);
+         }
+         */
 
         return;
     }
@@ -2918,6 +2918,7 @@ void boss_MedivhAI::UpdateAI(const uint32 diff)
     if (!eventStarted)
         return;
 
+    addPieceToMoveCheckTimer -= diff;
     if (addPieceToMoveCheckTimer <= diff)
     {
         if (urand(0, 100) < chanceToSelfMove)
@@ -2925,9 +2926,8 @@ void boss_MedivhAI::UpdateAI(const uint32 diff)
 
         addPieceToMoveCheckTimer = ADD_PIECE_TO_MOVE_TIMER;
     }
-    else
-        addPieceToMoveCheckTimer -= diff;
 
+    firstCheatTimer -= diff;
     if (firstCheatTimer <= diff)
     {
         if (firstCheatDamageReq < pInstance->GetData(DATA_CHESS_DAMAGE))
@@ -2946,7 +2946,7 @@ void boss_MedivhAI::UpdateAI(const uint32 diff)
             for (int i = 0; i < tmp; ++i)
             {
                 std::list<ChessTile>::iterator itr = tmpList.begin();
-                advance(itr, urand(0, tmpList.size()-1));
+                advance(itr, urand(0, tmpList.size() - 1));
 
                 if (Creature * tmpC = me->GetCreature((*itr).trigger))
                     tmpC->CastSpell(tmpC, SPELL_FURY_OF_MEDIVH, false);
@@ -2956,14 +2956,14 @@ void boss_MedivhAI::UpdateAI(const uint32 diff)
                 tmpList.erase(itr);
             }
 
-            firstCheatTimer = urand(FIRST_CHEAT_TIMER_MIN, FIRST_CHEAT_TIMER_MAX)/2;
+            firstCheatTimer = urand(FIRST_CHEAT_TIMER_MIN, FIRST_CHEAT_TIMER_MAX) / 2;
         }
         else
-            firstCheatTimer = 5000; // next check in 5 seconds
+            firstCheatTimer += 5000; // next check in 5 seconds
     }
-    else
-        firstCheatTimer -= diff;
 
+
+    secondCheatTimer -= diff;
     if (secondCheatTimer <= diff)
     {
         if (secondCheatDamageReq < pInstance->GetData(DATA_CHESS_DAMAGE))
@@ -2982,7 +2982,7 @@ void boss_MedivhAI::UpdateAI(const uint32 diff)
             for (int i = 0; i < tmp; ++i)
             {
                 std::list<ChessTile>::iterator itr = tmpList.begin();
-                advance(itr, urand(0, tmpList.size()-1));
+                advance(itr, urand(0, tmpList.size() - 1));
 
                 if (Creature * tmpC = me->GetCreature((*itr).trigger))
                     tmpC->CastSpell(tmpC, SPELL_HAND_OF_MEDIVH, false);
@@ -2992,14 +2992,14 @@ void boss_MedivhAI::UpdateAI(const uint32 diff)
                 tmpList.erase(itr);
             }
 
-            secondCheatTimer = urand(SECOND_CHEAT_TIMER_MIN, SECOND_CHEAT_TIMER_MAX)/2;
+            secondCheatTimer = urand(SECOND_CHEAT_TIMER_MIN, SECOND_CHEAT_TIMER_MAX) / 2;
         }
         else
-            secondCheatTimer = 5000; // next check in 5 seconds
+            secondCheatTimer += 5000; // next check in 5 seconds
     }
-    else
-        secondCheatTimer -= diff;
 
+
+    thirdCheatTimer -= diff;
     if (thirdCheatTimer <= diff)
     {
         if (thirdCheatDamagereq < pInstance->GetData(DATA_CHESS_DAMAGE))
@@ -3010,14 +3010,13 @@ void boss_MedivhAI::UpdateAI(const uint32 diff)
 
             DoScriptText(SCRIPTTEXT_MEDIVH_CHEAT_3, m_creature);
 
-            thirdCheatTimer = urand(THIRD_CHEAT_TIMER_MIN, THIRD_CHEAT_TIMER_MAX)/2;
+            thirdCheatTimer = urand(THIRD_CHEAT_TIMER_MIN, THIRD_CHEAT_TIMER_MAX) / 2;
         }
         else
-            thirdCheatTimer = 5000; // next check in 5 seconds
+            thirdCheatTimer += 5000; // next check in 5 seconds
     }
-    else
-        thirdCheatTimer -= diff;
 }
+    
 
 void boss_MedivhAI::SetOrientation(uint64 piece, ChessOrientation ori)
 {

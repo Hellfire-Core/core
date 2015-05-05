@@ -267,7 +267,8 @@ struct boss_moroesAI : public ScriptedAI
             Enrage = true;
         }
 
-        if (CheckAdds_Timer < diff)
+        CheckAdds_Timer -= diff;
+        if (CheckAdds_Timer <= diff)
         {
             for (uint8 i = 0; i < 4; ++i)
             {
@@ -282,13 +283,13 @@ struct boss_moroesAI : public ScriptedAI
             }
             CheckAdds_Timer += 5000;
         }
-        else
-            CheckAdds_Timer -= diff;
+        
 
         if (!Enrage)
         {
+            Vanish_Timer -= diff;
             //Cast Vanish, then Garrote random victim
-            if (Vanish_Timer < diff)
+            if (Vanish_Timer <= diff)
             {
                 DoCast(m_creature, SPELL_VANISH);
                 InVanish = true;
@@ -298,31 +299,30 @@ struct boss_moroesAI : public ScriptedAI
                 Vanish_Timer += 30000;
                 Wait_Timer += 5000;
             }
-            else
-                Vanish_Timer -= diff;
+            
 
-            if(Gouge_Timer < diff)
+            Gouge_Timer -= diff;
+            if(Gouge_Timer <= diff)
             {
                 DoCast(m_creature->getVictim(), SPELL_GOUGE);
                 Gouge_Timer += 40000;
             }
-            else
-                Gouge_Timer -= diff;
-
-            if(Blind_Timer < diff)
+            
+            Blind_Timer -= diff;
+            if(Blind_Timer <= diff)
             {
                 if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_BLIND), true))
                     DoCast(target, SPELL_BLIND);
 
                 Blind_Timer += 40000;
             }
-            else
-                Blind_Timer -= diff;
+            
         }
 
         if(InVanish)
         {
-            if(Wait_Timer < diff)
+            Wait_Timer -= diff;
+            if(Wait_Timer <= diff)
             {
                 DoScriptText(RAND(SAY_SPECIAL_1, SAY_SPECIAL_2), m_creature);
 
@@ -330,9 +330,7 @@ struct boss_moroesAI : public ScriptedAI
                    target->CastSpell(target, SPELL_GARROTE,true);
 
                 InVanish = false;
-            }
-            else
-                Wait_Timer -= diff;
+            } 
         }
 
         if(!InVanish)
@@ -340,11 +338,12 @@ struct boss_moroesAI : public ScriptedAI
 
         if(NonAttackable)
         {
-            if(NonAttackable_Timer < diff)
+            NonAttackable_Timer -= diff;
+            if(NonAttackable_Timer <= diff)
             {
                 m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                 NonAttackable = false;
-            } else NonAttackable_Timer -= diff;
+            } 
         }
     }
 };
@@ -441,21 +440,24 @@ struct boss_baroness_dorothea_millstipeAI : public boss_moroes_guestAI
 
         boss_moroes_guestAI::UpdateAI(diff);
 
-        if(MindFlay_Timer < diff)
+        MindFlay_Timer -= diff;
+        if(MindFlay_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_MINDFLY);
             MindFlay_Timer += 12000;                         //3sec channeled
-        }else MindFlay_Timer -= diff;
+        }
 
-        if(ManaBurn_Timer < diff)
+        ManaBurn_Timer -= diff;
+        if(ManaBurn_Timer <= diff)
         {
             Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0);
             if(target && (target->getPowerType() == POWER_MANA))
                 DoCast(target,SPELL_MANABURN);
             ManaBurn_Timer += 5000;                          //3 sec cast
-        }else ManaBurn_Timer -= diff;
+        }
 
-        if(ShadowWordPain_Timer < diff)
+        ShadowWordPain_Timer -= diff;
+        if(ShadowWordPain_Timer <= diff)
         {
             Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0);
             if(target)
@@ -463,7 +465,7 @@ struct boss_baroness_dorothea_millstipeAI : public boss_moroes_guestAI
                 DoCast(target,SPELL_SWPAIN);
                 ShadowWordPain_Timer += 7000;
             }
-        }else ShadowWordPain_Timer -= diff;
+        }
     }
 };
 
@@ -496,24 +498,27 @@ struct boss_baron_rafe_dreugerAI : public boss_moroes_guestAI
 
         boss_moroes_guestAI::UpdateAI(diff);
 
-        if(SealOfCommand_Timer < diff)
+        SealOfCommand_Timer -= diff;
+        if(SealOfCommand_Timer <= diff)
         {
             DoCast(m_creature,SPELL_SEALOFCOMMAND);
             SealOfCommand_Timer += 32000;
             JudgementOfCommand_Timer += 29000;
-        }else SealOfCommand_Timer -= diff;
+        }
 
-        if(JudgementOfCommand_Timer < diff)
+        JudgementOfCommand_Timer -= diff;
+        if(JudgementOfCommand_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_JUDGEMENTOFCOMMAND);
             JudgementOfCommand_Timer += SealOfCommand_Timer + 29000;
-        }else JudgementOfCommand_Timer -= diff;
+        }
 
-        if(HammerOfJustice_Timer < diff)
+        HammerOfJustice_Timer -= diff;
+        if(HammerOfJustice_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_HAMMEROFJUSTICE);
             HammerOfJustice_Timer += 12000;
-        }else HammerOfJustice_Timer -= diff;
+        }
     }
 };
 
@@ -551,27 +556,31 @@ struct boss_lady_catriona_von_indiAI : public boss_moroes_guestAI
 
         boss_moroes_guestAI::UpdateAI(diff);
 
-        if(PowerWordShield_Timer < diff)
+        PowerWordShield_Timer -= diff;
+        if(PowerWordShield_Timer <= diff)
         {
             DoCast(m_creature,SPELL_PWSHIELD);
             PowerWordShield_Timer += 15000;
-        }else PowerWordShield_Timer -= diff;
+        }
 
-        if(GreaterHeal_Timer < diff)
+        GreaterHeal_Timer -= diff;
+        if(GreaterHeal_Timer <= diff)
         {
             Unit* target = SelectTarget();
 
             DoCast(target, SPELL_GREATERHEAL);
             GreaterHeal_Timer += 17000;
-        }else GreaterHeal_Timer -= diff;
+        }
 
-        if(HolyFire_Timer < diff)
+        HolyFire_Timer -= diff;
+        if(HolyFire_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_HOLYFIRE);
             HolyFire_Timer += 22000;
-        }else HolyFire_Timer -= diff;
+        }
 
-        if(DispelMagic_Timer < diff)
+        DispelMagic_Timer -= diff;
+        if(DispelMagic_Timer <= diff)
         {
             if(rand()%2)
             {
@@ -583,7 +592,7 @@ struct boss_lady_catriona_von_indiAI : public boss_moroes_guestAI
                 DoCast(SelectUnit(SELECT_TARGET_RANDOM, 0), SPELL_DISPELMAGIC);
 
             DispelMagic_Timer += 25000;
-        }else DispelMagic_Timer -= diff;
+        }
     }
 };
 
@@ -621,37 +630,41 @@ struct boss_lady_keira_berrybuckAI : public boss_moroes_guestAI
 
         boss_moroes_guestAI::UpdateAI(diff);
 
-        if(DivineShield_Timer < diff)
+        DivineShield_Timer -= diff;
+        if(DivineShield_Timer <= diff)
         {
             DoCast(m_creature,SPELL_DIVINESHIELD);
             DivineShield_Timer += 31000;
-        }else DivineShield_Timer -= diff;
+        }
 
-        if(HolyLight_Timer < diff)
+        HolyLight_Timer -= diff;
+        if(HolyLight_Timer <= diff)
         {
             Unit* target = SelectTarget();
 
             DoCast(target, SPELL_HOLYLIGHT);
             HolyLight_Timer += 10000;
-        }else HolyLight_Timer -= diff;
+        }
 
-        if(GreaterBless_Timer < diff)
+        GreaterBless_Timer -= diff;
+        if(GreaterBless_Timer <= diff)
         {
             Unit* target = SelectTarget();
 
             DoCast(target, SPELL_GREATERBLESSOFMIGHT);
 
             GreaterBless_Timer += 50000;
-        }else GreaterBless_Timer -= diff;
+        }
 
-        if(Cleanse_Timer < diff)
+        Cleanse_Timer -= diff;
+        if(Cleanse_Timer <= diff)
         {
             Unit* target = SelectTarget();
 
             DoCast(target, SPELL_CLEANSE);
 
             Cleanse_Timer += 10000;
-        }else Cleanse_Timer -= diff;
+        }
     }
 };
 
@@ -684,23 +697,26 @@ struct boss_lord_robin_darisAI : public boss_moroes_guestAI
 
         boss_moroes_guestAI::UpdateAI(diff);
 
-        if(Hamstring_Timer < diff)
+        Hamstring_Timer -= diff;
+        if(Hamstring_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_HAMSTRING);
             Hamstring_Timer += 12000;
-        }else Hamstring_Timer -= diff;
+        }
 
-        if(MortalStrike_Timer < diff)
+        MortalStrike_Timer -= diff;
+        if(MortalStrike_Timer <= diff)
         {
             DoCast(m_creature->getVictim(), SPELL_MORTALSTRIKE);
             MortalStrike_Timer += 18000;
-        }else MortalStrike_Timer -= diff;
+        }
 
-        if(WhirlWind_Timer < diff)
+        WhirlWind_Timer -= diff;
+        if(WhirlWind_Timer <= diff)
         {
             DoCast(m_creature,SPELL_WHIRLWIND);
             WhirlWind_Timer += 21000;
-        }else WhirlWind_Timer -= diff;
+        }
     }
 };
 
@@ -736,29 +752,33 @@ struct boss_lord_crispin_ferenceAI : public boss_moroes_guestAI
 
         boss_moroes_guestAI::UpdateAI(diff);
 
-        if(Disarm_Timer < diff)
+        Disarm_Timer -= diff;
+        if(Disarm_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_DISARM);
             Disarm_Timer += 12000;
-        }else Disarm_Timer -= diff;
+        }
 
-        if(HeroicStrike_Timer < diff)
+        HeroicStrike_Timer -= diff;
+        if(HeroicStrike_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_HEROICSTRIKE);
             HeroicStrike_Timer += 10000;
-        }else HeroicStrike_Timer -= diff;
+        }
 
-        if(ShieldBash_Timer < diff)
+        ShieldBash_Timer -= diff;
+        if(ShieldBash_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_SHIELDBASH);
             ShieldBash_Timer += 13000;
-        }else ShieldBash_Timer -= diff;
+        }
 
-        if(ShieldWall_Timer < diff)
+        ShieldWall_Timer -= diff;
+        if(ShieldWall_Timer <= diff)
         {
             DoCast(m_creature,SPELL_SHIELDWALL);
             ShieldWall_Timer += 21000;
-        }else ShieldWall_Timer -= diff;
+        }
     }
 };
 

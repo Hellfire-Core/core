@@ -120,7 +120,8 @@ struct boss_curatorAI : public ScriptedAI
 
         if (!enraged && !evocating)
         {
-            if (addTimer < diff)
+            addTimer -= diff;
+            if (addTimer <= diff)
             {
                 //Summon Astral Flare
                 Creature* astralFlare = DoSpawnCreature(17096, rand()%37, rand()%37, 0, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 5000);
@@ -141,16 +142,15 @@ struct boss_curatorAI : public ScriptedAI
 
                 addTimer += 10000;
             }
-            else
-                addTimer -= diff;
+            
 
-            if (hatefulBoltTimer < diff)
+            hatefulBoltTimer -= diff;
+            if (hatefulBoltTimer <= diff)
             {
                 AddSpellToCast(SPELL_HATEFUL_BOLT, CAST_THREAT_SECOND);
                 hatefulBoltTimer += enraged ? 7000 : 15000;
             }
-            else
-                hatefulBoltTimer -= diff;
+            
 
             if (!enraged && HealthBelowPct(15))
             {
@@ -159,13 +159,13 @@ struct boss_curatorAI : public ScriptedAI
             }
         }
 
-        if (berserkTimer < diff)
+        berserkTimer -= diff;
+        if (berserkTimer <= diff)
         {
             ForceSpellCastWithScriptText(SPELL_BERSERK, CAST_SELF, SAY_ENRAGE);
             berserkTimer += 60000;
         }
-        else
-            berserkTimer -= diff;
+        
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();

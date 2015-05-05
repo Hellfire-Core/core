@@ -266,7 +266,8 @@ struct npc_secondTrialAI : public ScriptedAI
     {
       if ( questPhase == 1 ) {
 
-        if ( timer < diff ) {
+          timer -= diff;
+        if ( timer <= diff ) {
               m_creature->SetUInt32Value(UNIT_FIELD_BYTES_1, PLAYER_STATE_NONE);
               m_creature->setFaction(FACTION_HOSTILE);
               questPhase = 0;
@@ -278,7 +279,7 @@ struct npc_secondTrialAI : public ScriptedAI
                 AttackStart(target);
               }
          }
-         else timer -= diff;
+         
       }
 
       if (!UpdateVictim())
@@ -287,41 +288,41 @@ struct npc_secondTrialAI : public ScriptedAI
       // healer
       if ( spellFlashLight ) {
         if ( m_creature->GetHealth()*100 / m_creature->GetMaxHealth() < 70 ){
-          if ( timerFlashLight < diff ) {
+            timerFlashLight -= diff;
+          if ( timerFlashLight <= diff ) {
             DoCast(m_creature, SPELL_FLASH_OF_LIGHT);
             timerFlashLight += TIMER_FLASH_OF_LIGHT +  rand()%( TIMER_FLASH_OF_LIGHT );
           }
-          else
-            timerFlashLight -= diff;
+          
         }
       }
 
       if ( spellJustice ) {
-          if ( timerJustice < diff )
+          timerJustice -= diff;
+          if ( timerJustice <= diff )
             {
             DoCast(m_creature, SPELL_SEAL_OF_JUSTICE);
             timerJustice += TIMER_SEAL_OF_JUSTICE +  rand()%( TIMER_SEAL_OF_JUSTICE );
           }
-          else
-            timerJustice -= diff;
+          
       }
 
       if ( spellJudLight ) {
-          if ( timerJudLight < diff ) {
+          timerJudLight -= diff;
+          if ( timerJudLight <= diff ) {
             DoCast(m_creature,  SPELL_JUDGEMENT_OF_LIGHT);
             timerJudLight += TIMER_JUDGEMENT_OF_LIGHT +  rand()%( TIMER_JUDGEMENT_OF_LIGHT );
           }
-          else
-            timerJudLight -= diff;
+          
       }
 
       if ( spellCommand ) {
-          if ( timerCommand < diff ) {
+          timerCommand -= diff;
+          if ( timerCommand <= diff ) {
             DoCast(m_creature,  TIMER_SEAL_OF_COMMAND);
             timerCommand += TIMER_SEAL_OF_COMMAND +  rand()%( TIMER_SEAL_OF_COMMAND );
           }
-          else
-            timerCommand -= diff;
+          
       }
 
       DoMeleeAttackIfReady();
@@ -366,24 +367,25 @@ struct master_kelerun_bloodmournAI : public ScriptedAI
     {
         if (toReset)
         {
-            if (resetTimer < diff)
+            resetTimer -= diff;
+            if (resetTimer <= diff)
                 Reset();
-            else
-                resetTimer -= diff;
+            
         }
 
         // Quest accepted but object not activated, object despawned (if in sync 1 minute! )
         if ( questPhase == 1 )
         {
-            if ( timer < diff )
+            timer -= diff;
+            if ( timer <= diff )
                 Reset();
-            else
-                timer -= diff;
+            
         }
         // fight the 4 paladin mobs phase
         else if ( questPhase == 2 )
         {
-            if ( timer < diff )
+            timer -= diff;
+            if ( timer <= diff )
             {
                 Creature* paladinSpawn;
                 paladinSpawn = (Unit::GetCreature((*m_creature), paladinGuid[paladinPhase]));
@@ -413,8 +415,7 @@ struct master_kelerun_bloodmournAI : public ScriptedAI
                 questPhase=4;
                 timer += OFFSET_NEXT_ATTACK;
             }
-            else
-                timer -= diff;
+            
         }
 
         if (!UpdateVictim())
@@ -725,7 +726,8 @@ struct npc_infused_crystalAI : public Scripted_NoMovementAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(EndTimer < diff && Progress)
+        EndTimer -= diff;
+        if(EndTimer <= diff && Progress)
         {
             Completed = true;
             if (PlayerGUID)
@@ -739,10 +741,10 @@ struct npc_infused_crystalAI : public Scripted_NoMovementAI
             }
             m_creature->DisappearAndDie();
         }
-        else
-            EndTimer -= diff;
+        
 
-        if(WaveTimer < diff && !Completed && Progress)
+        WaveTimer -= diff;
+        if(WaveTimer <= diff && !Completed && Progress)
         {
             uint32 ran1 = rand()%8;
             uint32 ran2 = rand()%8;
@@ -751,7 +753,7 @@ struct npc_infused_crystalAI : public Scripted_NoMovementAI
             m_creature->SummonCreature(MOB_ENRAGED_WRAITH, SpawnLocations[ran2].x, SpawnLocations[ran2].y, SpawnLocations[ran2].z, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 10000);
             m_creature->SummonCreature(MOB_ENRAGED_WRAITH, SpawnLocations[ran3].x, SpawnLocations[ran3].y, SpawnLocations[ran3].z, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 10000);
             WaveTimer += 30000;
-        }else WaveTimer -= diff;
+        }
     }
 };
 

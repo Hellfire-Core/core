@@ -182,6 +182,7 @@ struct mobs_scourge_archerAI : public ScriptedAI
         if(!me->getVictim())
             return;
 
+        Shoot_Timer -= diff;
         if (Shoot_Timer <= diff)
         {
             if(Unit * target = GetClosestCreatureWithEntry(me, RAND(NPC_INJURED_PEASANT, NPC_PLAGUED_PEASANT) , 50))
@@ -190,7 +191,7 @@ struct mobs_scourge_archerAI : public ScriptedAI
                 Shoot_Timer += 2000;
             }
         }
-        else Shoot_Timer -= diff;
+         
 
         CastNextSpellIfAnyAndReady();    
     }
@@ -224,6 +225,7 @@ struct trigger_epic_staffAI : public TriggerAI
 
     void UpdateAI(const uint32 diff)
     {
+        Summon_Footsoldier_Timer -= diff;
         if (Summon_Footsoldier_Timer < diff)
         {
             for(int i = 0; i<3; i++)
@@ -234,8 +236,8 @@ struct trigger_epic_staffAI : public TriggerAI
             }
             Summon_Footsoldier_Timer += 20000;
         }
-        else Summon_Footsoldier_Timer -= diff;
-
+        
+        Summon_Timer -= diff;
         if (Summon_Timer <= diff && Summon_Counter < 6)
         {
             for(int i = 0; i < 9; i++)
@@ -253,7 +255,7 @@ struct trigger_epic_staffAI : public TriggerAI
             Summon_Timer += 40000;
             Summon_Counter++;
         }
-        else Summon_Timer -= diff;
+        
 
         if ((Counter >= 50 || FailCounter >= 15) && Summon_Counter < 7)
         {
@@ -370,13 +372,14 @@ struct mobs_peasantsAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
+        DeathsDoor_Timer -= diff;
         if (DeathsDoor_Timer <= diff)
         {
             if(!urand(0, 9))
                 AddSpellToCast(me, SPELL_DEATHS_DOOR, true);
             DeathsDoor_Timer += 15000;
         }
-        else DeathsDoor_Timer -= diff;
+        
 
         CastNextSpellIfAnyAndReady();    
     }
@@ -408,13 +411,14 @@ struct mobs_plagued_peasantAI : public mobs_peasantsAI
 
     void UpdateAI(const uint32 diff)
     {
+        SeethingPlague_Timer -= diff;
         if (SeethingPlague_Timer <= diff)
         {
             if(!urand(0, 2))
                 AddSpellToCast(me, SPELL_SEETHING_PLAGUE, true);
             SeethingPlague_Timer += 10000;
         }
-        else SeethingPlague_Timer -= diff;
+        
 
         mobs_peasantsAI::UpdateAI(diff);
     }

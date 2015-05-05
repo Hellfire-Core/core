@@ -69,7 +69,8 @@ struct mob_phantom_guestAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if(MainTimer < diff)
+        MainTimer -= diff;
+        if(MainTimer <= diff)
         {
             switch(Type)
             {
@@ -95,10 +96,9 @@ struct mob_phantom_guestAI : public ScriptedAI
                 break;
             }
         } 
-        else
-            MainTimer -= diff;
-
-        if(SecondaryTimer < diff)
+        
+        SecondaryTimer -= diff;
+        if(SecondaryTimer <= diff)
         {
             switch(Type)
             {
@@ -124,8 +124,7 @@ struct mob_phantom_guestAI : public ScriptedAI
                 break;
             }
         }
-        else
-            SecondaryTimer -= diff;
+        
 
         if(Type == 0)
             CheckCasterNoMovementInRange(diff, 30.0);
@@ -189,32 +188,31 @@ struct mob_spectral_sentryAI : public ScriptedAI
     {
         if(!UpdateVictim())
         {
-            if (RandomSayTimer < diff)
+            RandomSayTimer -= diff;
+            if (RandomSayTimer <= diff)
             {
                 if(roll_chance_i(30))
                     me->Say(SENTRY_SAY_RANDOM, 0, 0);
                 RandomSayTimer += urand(40000, 80000);
             }
-            else 
-                RandomSayTimer -= diff;
+            
             return;
         }
 
-        if(ShotTimer < diff)
+        ShotTimer -= diff;
+        if(ShotTimer <= diff)
         {
             AddSpellToCast(SPELL_SHOT, CAST_TANK);
             ShotTimer += 2000;
         } 
-        else
-            ShotTimer -= diff;
-
-        if(MultiShotTimer < diff)
+        
+        MultiShotTimer -= diff;
+        if(MultiShotTimer <= diff)
         {
             AddSpellToCast(SPELL_MULTI_SHOT, CAST_RANDOM);
             MultiShotTimer += 8000;
         }
-        else
-            MultiShotTimer -= diff;
+        
 
         CheckShooterNoMovementInRange(diff, 20.0);
         CastNextSpellIfAnyAndReady(diff);
@@ -293,7 +291,8 @@ struct mob_arcane_protectorAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if(SkillTimer < diff)
+        SkillTimer -= diff;
+        if(SkillTimer <= diff)
         {
             if(roll_chance_i(50))
                 me->SummonCreature(NPC_ASTRAL_SPARK, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation(),
@@ -302,8 +301,7 @@ struct mob_arcane_protectorAI : public ScriptedAI
                 me->CastSpell(me, SPELL_FIST_OF_STONE, false);
             SkillTimer += urand(15000, 30000);
         }
-        else
-            SkillTimer -= diff;
+        
 
         CastNextSpellIfAnyAndReady(diff);
         DoMeleeAttackIfReady();
@@ -392,13 +390,13 @@ struct mob_shadow_pillagerAI : public ScriptedAI
         if(!UpdateVictim())
             return;
         
-        if(DotTimer < diff)
+        DotTimer -= diff;
+        if(DotTimer <= diff)
         {
             AddSpellToCast(roll_chance_i(50) ? SPELL_IMMOLATE : SPELL_CURSE_OF_AGONY, CAST_RANDOM);
             DotTimer += urand(2000, 8000);
         } 
-        else
-            DotTimer -= diff;
+        
 
         CheckCasterNoMovementInRange(diff, 40.0);
         CastNextSpellIfAnyAndReady(diff);

@@ -122,13 +122,14 @@ struct mob_kilrekAI : public ScriptedAI
         if (!UpdateVictim() )
             return;
 
-        if (AmplifyTimer < diff)
+        AmplifyTimer -= diff;
+        if (AmplifyTimer <= diff)
         {
             m_creature->InterruptNonMeleeSpells(false);
             DoCast(m_creature->getVictim(),SPELL_AMPLIFY_FLAMES);
 
             AmplifyTimer += 10000 + rand()%10000;
-        }else AmplifyTimer -= diff;
+        }
 
         //Chain cast
         if (!m_creature->IsNonMeleeSpellCast(false) && m_creature->IsWithinDistInMap(m_creature->getVictim(), 30))
@@ -272,8 +273,8 @@ struct boss_terestianAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        //Check_Timer
-        if(CheckTimer < diff)
+        CheckTimer -= diff;
+        if(CheckTimer <= diff)
         {
             if(!m_creature->IsWithinDistInMap(&wLoc, 35.0f))
                 EnterEvadeMode();
@@ -282,10 +283,9 @@ struct boss_terestianAI : public ScriptedAI
 
             CheckTimer += 3000;
         }
-        else
-            CheckTimer -= diff;
-
-        if(SacrificeTimer < diff)
+        
+        SacrificeTimer -= diff;
+        if(SacrificeTimer <= diff)
         {
             Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 1, GetSpellMaxRange(SPELL_SACRIFICE), true, m_creature->getVictimGUID());
             if(target && target->isAlive() && target->GetTypeId() == TYPEID_PLAYER)
@@ -303,20 +303,20 @@ struct boss_terestianAI : public ScriptedAI
                 }
             }
         }
-        else
-            SacrificeTimer -= diff;
+        
 
-        if(ShadowboltTimer < diff)
+        ShadowboltTimer -= diff;
+        if(ShadowboltTimer <= diff)
         {
             if(Unit *target = SelectUnit(SELECT_TARGET_TOPAGGRO,0, GetSpellMaxRange(SPELL_SHADOW_BOLT), true))
                 DoCast(target, SPELL_SHADOW_BOLT);
 
             ShadowboltTimer += 10000;
         }
-        else
-            ShadowboltTimer -= diff;
+        
 
-        if(SummonTimer < diff)
+        SummonTimer -= diff;
+        if(SummonTimer <= diff)
         {
             if(!SummonedPortals)
             {
@@ -342,18 +342,17 @@ struct boss_terestianAI : public ScriptedAI
             }
             SummonTimer += 5000;
         }
-        else
-            SummonTimer -= diff;
+        
 
         if(!Berserk)
         {
-            if(BerserkTimer < diff)
+            BerserkTimer -= diff;
+            if(BerserkTimer <= diff)
             {
                 DoCast(m_creature, SPELL_BERSERK);
                 Berserk = true;
             }
-            else
-                BerserkTimer -= diff;
+            
         }
 
         DoMeleeAttackIfReady();
@@ -379,13 +378,13 @@ struct mob_fiendish_impAI : public ScriptedAI
         if (!UpdateVictim() )
             return;
 
-        if(FireboltTimer < diff)
+        FireboltTimer -= diff;
+        if(FireboltTimer <= diff)
         {
             DoCast(m_creature->getVictim(), SPELL_FIREBOLT);
             FireboltTimer += 2200;
         }
-        else
-            FireboltTimer -= diff;
+        
 
         DoMeleeAttackIfReady();
     }
