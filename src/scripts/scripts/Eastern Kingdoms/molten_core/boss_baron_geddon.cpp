@@ -80,7 +80,7 @@ struct boss_baron_geddonAI : public ScriptedAI
             return;
 
         //If we are <2% hp cast Armageddom
-        if (m_creature->GetHealth()*100 / m_creature->GetMaxHealth() <= 2 && Armageddon_Timer < diff)
+        if (m_creature->GetHealth()*100 / m_creature->GetMaxHealth() <= 2 && Armageddon_Timer <= diff)
         {
             Armageddon_Timer = 9000;    //We don't want him to cast while being under Armageddon effect
             Inferno_Timer = 9000;
@@ -92,30 +92,30 @@ struct boss_baron_geddonAI : public ScriptedAI
             return;
         }
 
-        //Inferno_Timer
-        if (Inferno_Timer < diff)
+        Inferno_Timer -= diff;
+        if (Inferno_Timer <= diff)
         {
             AddSpellToCast(m_creature, SPELL_INFERNO, false);
             Inferno_Timer += 22000;
-        }else Inferno_Timer -= diff;
+        }
 
-        //IgniteMana_Timer
-        if (IgniteMana_Timer < diff)
+        IgniteMana_Timer -= diff;
+        if (IgniteMana_Timer <= diff)
         {
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0))
                 DoCast(target,SPELL_IGNITEMANA);
 
             IgniteMana_Timer += 30000;
-        }else IgniteMana_Timer -= diff;
+        }
 
-        //LivingBomb_Timer
-        if (LivingBomb_Timer < diff)
+        LivingBomb_Timer -= diff;
+        if (LivingBomb_Timer <= diff)
         {
            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0))
                DoCast(target,SPELL_LIVINGBOMB);
 
             LivingBomb_Timer += 35000;
-        }else LivingBomb_Timer -= diff;
+        }
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();

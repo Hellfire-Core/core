@@ -173,13 +173,12 @@ struct boss_sapphironAI : public BossAI
         
         if (enrageTimer)
         {
+            enrageTimer -= diff;
             if (enrageTimer <= diff)
             {
                 ForceSpellCastWithScriptText(SPELL_BERSERK, CAST_SELF, EMOTE_ENRAGE);
                 enrageTimer = 0;
             }
-            else
-                enrageTimer -= diff;
         }
 
         CastNextSpellIfAnyAndReady();

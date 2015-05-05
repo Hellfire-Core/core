@@ -70,26 +70,26 @@ struct boss_lucifronAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        //Impending doom timer
-        if (ImpendingDoom_Timer < diff)
+        ImpendingDoom_Timer -= diff; 
+        if (ImpendingDoom_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_IMPENDINGDOOM);
             ImpendingDoom_Timer += 20000;
-        }else ImpendingDoom_Timer -= diff;
+        }
 
-        //Lucifron's curse timer
-        if (LucifronCurse_Timer < diff)
+        LucifronCurse_Timer -= diff;
+        if (LucifronCurse_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_LUCIFRONCURSE);
             LucifronCurse_Timer += 15000;
-        }else LucifronCurse_Timer -= diff;
+        }
 
-        //Shadowshock
-        if (ShadowShock_Timer < diff)
+        ShadowShock_Timer -= diff;
+        if (ShadowShock_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_SHADOWSHOCK);
             ShadowShock_Timer += 6000;
-        }else ShadowShock_Timer -= diff;
+        }
 
         DoMeleeAttackIfReady();
     }

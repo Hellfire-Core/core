@@ -82,41 +82,44 @@ struct boss_golemaggAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        //Pyroblast_Timer
-        if (Pyroblast_Timer < diff)
+        Pyroblast_Timer -= diff;
+        if (Pyroblast_Timer <= diff)
         {
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0))
                 DoCast(target,SPELL_PYROBLAST);
 
             Pyroblast_Timer += 7000;
-        }else Pyroblast_Timer -= diff;
+        }
 
         //Enrage_Timer
         if ( m_creature->GetHealth()*100 / m_creature->GetMaxHealth() < 11 )
         {
-            if (Enrage_Timer < diff)
+            Enrage_Timer -= diff;
+            if (Enrage_Timer <= diff)
             {
                 DoCast(m_creature,SPELL_ENRAGE);
                 Enrage_Timer += 62000;
-            }else Enrage_Timer -= diff;
+            }
         }
 
         //EarthQuake_Timer
         if ( m_creature->GetHealth()*100 / m_creature->GetMaxHealth() < 11 )
         {
-            if (EarthQuake_Timer < diff)
+            EarthQuake_Timer -= diff;
+            if (EarthQuake_Timer <= diff)
             {
                 DoCast(m_creature->getVictim(),SPELL_EARTHQUAKE);
                 EarthQuake_Timer += 3000;
-            }else EarthQuake_Timer -= diff;
+            }
         }
 
         //Casting Buff for Coreragers. Spell is not working right. Players get the buff...
-        //        if(Buff_Timer < diff)
+        //        Buff_Timer -= diff;
+        //        if(Buff_Timer <= diff)
         //        {
         //            DoCast(m_creature, SPELL_BUFF);
         //            Buff_Timer += 2500;
-        //        }else Buff_Timer -= diff;
+        //        }
 
         DoMeleeAttackIfReady();
     }
@@ -148,12 +151,12 @@ struct mob_core_ragerAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        //Mangle_Timer
-        if (Mangle_Timer < diff)
+        Mangle_Timer -= diff;
+        if (Mangle_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_MANGLE);
             Mangle_Timer += 10000;
-        }else Mangle_Timer -= diff;
+        }
 
         //Cast AEGIS
         if ( m_creature->GetHealth()*100 / m_creature->GetMaxHealth() < 50 )
@@ -162,8 +165,8 @@ struct mob_core_ragerAI : public ScriptedAI
             DoScriptText(EMOTE_AEGIS, m_creature);
         }
 
-        //Check_Timer
-        if(Check_Timer < diff)
+        Check_Timer -= diff;
+        if(Check_Timer <= diff)
         {
             if(pInstance)
             {
@@ -175,7 +178,7 @@ struct mob_core_ragerAI : public ScriptedAI
             }
 
             Check_Timer += 1000;
-        }else Check_Timer -= diff;
+        }
 
         DoMeleeAttackIfReady();
     }

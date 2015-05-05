@@ -77,19 +77,19 @@ struct boss_garrAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        //AntiMagicPulse_Timer
-        if (AntiMagicPulse_Timer < diff)
+        AntiMagicPulse_Timer -= diff;
+        if (AntiMagicPulse_Timer <= diff)
         {
             DoCast(m_creature,SPELL_ANTIMAGICPULSE);
             AntiMagicPulse_Timer += 10000 + rand()%5000;
-        }else AntiMagicPulse_Timer -= diff;
+        }
 
-        //MagmaShackles_Timer
-        if (MagmaShackles_Timer < diff)
+        MagmaShackles_Timer -= diff;
+        if (MagmaShackles_Timer <= diff)
         {
             DoCast(m_creature,SPELL_MAGMASHACKLES);
             MagmaShackles_Timer += 8000 + rand()%4000;
-        }else MagmaShackles_Timer -= diff;
+        }
 
         DoMeleeAttackIfReady();
     }
@@ -115,14 +115,14 @@ struct mob_fireswornAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        //Immolate_Timer
-        if (Immolate_Timer < diff)
+        Immolate_Timer -= diff;
+        if (Immolate_Timer <= diff)
         {
              if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0))
                 DoCast(target,SPELL_IMMOLATE);
 
             Immolate_Timer += 5000 + rand()%5000;
-        }else Immolate_Timer -= diff;
+        }
 
         //Cast Erruption and let them die
         if (m_creature->GetHealth() <= m_creature->GetMaxHealth() * 0.10)

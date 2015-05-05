@@ -75,39 +75,39 @@ struct boss_shazzrahAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        //ArcaneExplosion_Timer
-        if (ArcaneExplosion_Timer < diff)
+        ArcaneExplosion_Timer -= diff;
+        if (ArcaneExplosion_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_ARCANEEXPLOSION);
             ArcaneExplosion_Timer += 5000 + rand()%4000;
-        }else ArcaneExplosion_Timer -= diff;
+        }
 
-        //ShazzrahCurse_Timer
-        if (ShazzrahCurse_Timer < diff)
+        ShazzrahCurse_Timer -= diff;
+        if (ShazzrahCurse_Timer <= diff)
         {
             Unit* target = NULL;
             target = SelectUnit(SELECT_TARGET_RANDOM,0);
             if (target) DoCast(target,SPELL_SHAZZRAHCURSE);
 
             ShazzrahCurse_Timer += 25000 + rand()%5000;
-        }else ShazzrahCurse_Timer -= diff;
+        }
 
-        //DeadenMagic_Timer
-        if (DeadenMagic_Timer < diff)
+        DeadenMagic_Timer -= diff;
+        if (DeadenMagic_Timer <= diff)
         {
             DoCast(m_creature,SPELL_DEADENMAGIC);
             DeadenMagic_Timer += 35000;
-        }else DeadenMagic_Timer -= diff;
+        }
 
-        //Countspell_Timer
+        Countspell_Timer -= diff;
         if (Countspell_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_COUNTERSPELL);
             Countspell_Timer += 16000 + rand()%4000;
-        }else Countspell_Timer -= diff;
+        }
 
-        //Blink_Timer
-        if (Blink_Timer < diff)
+        Blink_Timer -= diff;
+        if (Blink_Timer <= diff)
         {
             // Teleporting him to a random gamer and casting Arcane Explosion after that.
             // Blink is not working cause of LoS System we need to do this hardcoded.
@@ -122,7 +122,7 @@ struct boss_shazzrahAI : public ScriptedAI
             }
 
             Blink_Timer += 45000;
-        }else Blink_Timer -= diff;
+        }
 
         DoMeleeAttackIfReady();
     }

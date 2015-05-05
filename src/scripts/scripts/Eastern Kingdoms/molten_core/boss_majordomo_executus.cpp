@@ -218,25 +218,23 @@ struct boss_majordomoAI : public BossAI
 
         if(pInstance->GetData(DATA_MAJORDOMO_EXECUTUS_EVENT) == DONE && pInstance->GetData(DATA_SUMMON_RAGNAROS) == NOT_STARTED)
         {
+            TeleportVisual_Timer -= diff;
             if (TeleportVisual_Timer <= diff)
             {
                 DoAction(4);
                 TeleportVisual_Timer += 1000000;
             }
-            else
-                TeleportVisual_Timer -= diff;
             return;
         }
 
         if(pInstance->GetData(DATA_MAJORDOMO_EXECUTUS_EVENT) == DONE && pInstance->GetData(DATA_SUMMON_RAGNAROS) == IN_PROGRESS)
         {
+            SummonRag_Timer -= diff;
             if (SummonRag_Timer <= diff)
             {
                 DoAction(5);
                 SummonRag_Timer += 1000000;
             }
-            else
-                SummonRag_Timer -= diff;
             return;
         }
 
@@ -259,7 +257,7 @@ struct boss_majordomoAI : public BossAI
             DoCast(m_creature,SPELL_AEGIS);
         }
 
-        //Teleport
+        Teleport_Timer -= diff;
         if (Teleport_Timer <= diff)
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_TELEPORT), true))
@@ -270,29 +268,29 @@ struct boss_majordomoAI : public BossAI
                 Teleport_Timer += 20000;
             }
         }
-        else Teleport_Timer -= diff;
+        
 
-        //MagicReflection_Timer
+        MagicReflection_Timer -= diff;
         if (MagicReflection_Timer <= diff)
         {
             AddSpellToCast(m_creature, SPELL_MAGIC_REFLECTION, false);
             MagicReflection_Timer += 30000;
-        }else MagicReflection_Timer -= diff;
+        }
 
-        //DamageReflection_Timer
+        DamageReflection_Timer -= diff;
         if (DamageReflection_Timer <= diff)
         {
             AddSpellToCast(m_creature, SPELL_DAMAGE_REFLECTION, false);
             DamageReflection_Timer += 30000;
-        }else DamageReflection_Timer -= diff;
+        }
 
-        //Blastwave_Timer
+        Blastwave_Timer -= diff;
         if (Blastwave_Timer <= diff)
         {
             AddSpellToCast(m_creature, SPELL_BLASTWAVE, false);
             Blastwave_Timer += 10000;
         }
-        else Blastwave_Timer -= diff;
+        
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -400,6 +398,7 @@ struct flamewaker_healerAI : public MCflamewakerAI
         if(!me->getVictim())
             return;
 
+        ShadownBolt_Timer -= diff;
         if (ShadownBolt_Timer <= diff)
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_SHADOW_BOLT), true))
@@ -408,14 +407,15 @@ struct flamewaker_healerAI : public MCflamewakerAI
                 ShadownBolt_Timer += 2000;
             }
         }
-        else ShadownBolt_Timer -= diff;
+        
 
+        ShadownShock_Timer -= diff;
         if (ShadownShock_Timer <= diff)
         {
             AddSpellToCast(m_creature, SPELL_SHADOW_SHOCK, false);
             ShadownShock_Timer += 9000;
         }
-        else ShadownShock_Timer -= diff;
+        
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -450,26 +450,28 @@ struct flamewaker_eliteAI : public MCflamewakerAI
         if(!me->getVictim())
             return;
 
+        BlastWave_Timer -= diff;
         if (BlastWave_Timer <= diff)
         {
             AddSpellToCast(m_creature, SPELL_BLASTWAVE, false);
             BlastWave_Timer += 12000;
         }
-        else BlastWave_Timer -= diff;
+        
 
+        FireBlast_Timer -= diff;
         if (FireBlast_Timer <= diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_FIRE_BLAST, false);
             FireBlast_Timer += 15000;
         }
-        else FireBlast_Timer -= diff;
-
+        
+        Fireball_Timer -= diff;
         if (Fireball_Timer <= diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_FIREBALL, false);
             Fireball_Timer += 8000;
         }
-        else Fireball_Timer -= diff;
+        
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();

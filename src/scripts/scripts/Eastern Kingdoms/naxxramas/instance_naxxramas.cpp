@@ -364,6 +364,7 @@ struct instance_naxxramas : public ScriptedInstance
 
     void Update(uint32 diff)
     {
+        screemTimer -= diff;
         if (screemTimer <= diff)
         {
             if (GetData(DATA_THADDIUS) != DONE)
@@ -378,8 +379,6 @@ struct instance_naxxramas : public ScriptedInstance
 
             screemTimer += urand(3*MINUTE*IN_MILISECONDS, 5*MINUTE*IN_MILISECONDS);
         }
-        else
-            screemTimer -= diff;
     }
 };
 

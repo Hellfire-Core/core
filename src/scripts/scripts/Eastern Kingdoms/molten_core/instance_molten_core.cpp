@@ -97,6 +97,7 @@ struct instance_molten_core : public ScriptedInstance
 
     void Update(uint32 diff)
     {
+        Runes_timer -= diff;
         if(Runes_timer <= diff && GetData(DATA_RUNES) != RUNES_COMPLETE)
         {
 //            uint32 runes = 0;
@@ -127,7 +128,7 @@ struct instance_molten_core : public ScriptedInstance
                 SetData(DATA_RUNES, Runes);
             Runes_timer += 10000;
         }
-        else Runes_timer -= diff;
+        
 
     }
 
