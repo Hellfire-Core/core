@@ -196,6 +196,7 @@ struct boss_muruAI : public Scripted_NoMovementAI
     {
         if(ResetTimer)
         {
+            ResetTimer -= diff;
             if(ResetTimer <= diff)
             {
                 me->SetVisibility(VISIBILITY_ON);
@@ -203,8 +204,6 @@ struct boss_muruAI : public Scripted_NoMovementAI
                 me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                 ResetTimer = 0;
             }
-            else
-                ResetTimer -= diff;
         }
 
         if (!UpdateVictim())
@@ -215,16 +214,17 @@ struct boss_muruAI : public Scripted_NoMovementAI
         if (me->GetSelection())
             me->SetSelection(0);
 
-        if (EnrageTimer < diff)
+        EnrageTimer -= diff;
+        if (EnrageTimer <= diff)
         {
             DoCast(me, SPELL_ENRAGE, true);
             EnrageTimer += 60000;
         }
-        else
-            EnrageTimer -= diff;
+        
 
         if(HumanoidStart)
         {
+            HumanoidStart -= diff;
             if(HumanoidStart <= diff)
             {
                 pInstance->SetData(DATA_MURU_EVENT, IN_PROGRESS);
@@ -237,12 +237,13 @@ struct boss_muruAI : public Scripted_NoMovementAI
                 DoCast(me, SPELL_SUMMON_BLOOD_ELVES_PERIODIC, true);
                 HumanoidStart = 0;
             }
-            else
-                HumanoidStart -= diff;
         }
 
         if(TransitionTimer)
-        {                                  // SOMEHOW we had 2x entropius spawned, so better check it
+        {   
+            TransitionTimer -= diff;
+            // SOMEHOW we had 2x entropius spawned, so better check it
+            // it happend before timers overhaul, may be useless now? :P
             if(TransitionTimer <= diff && !GetClosestCreatureWithEntry(me, BOSS_ENTROPIUS, 400.0f))
             {
                 DoCast(me, SPELL_ENTROPIUS_COSMETIC_SPAWN);
@@ -250,8 +251,6 @@ struct boss_muruAI : public Scripted_NoMovementAI
                 me->RemoveAllAuras();
                 TransitionTimer = 0;
             }
-            else
-                TransitionTimer -= diff;
         }
     }
 };
@@ -317,6 +316,7 @@ struct boss_entropiusAI : public ScriptedAI
     {
         if (TransitionTimer)
         {
+            TransitionTimer -= diff;
             if (TransitionTimer <= diff)
             {
                 if(Unit* Muru = me->GetUnit(pInstance->GetData64(DATA_MURU)))
@@ -329,8 +329,6 @@ struct boss_entropiusAI : public ScriptedAI
                 DoCast(me, SPELL_NEGATIVE_ENERGY_PERIODIC_E);
                 TransitionTimer = 0;
             }
-            else
-                TransitionTimer -= diff;
             return;
         }
 
@@ -339,31 +337,29 @@ struct boss_entropiusAI : public ScriptedAI
 
         DoSpecialThings(diff, DO_COMBAT_N_EVADE, 100.0f);
 
-        if (EnrageTimer < diff)
+        EnrageTimer -= diff;
+        if (EnrageTimer <= diff)
         {
             AddSpellToCast(me, SPELL_ENRAGE);
             EnrageTimer += 60000;
         }
-        else
-            EnrageTimer -= diff;
-
-        if (DarknessTimer < diff)
+        
+        DarknessTimer -= diff;
+        if (DarknessTimer <= diff)
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true))
                 AddSpellToCast(target, SPELL_DARKNESS);
             DarknessTimer += 15000;
         }
-        else
-            DarknessTimer -= diff;
-
-        if (BlackHole < diff)
+        
+        BlackHole -= diff;
+        if (BlackHole <= diff)
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true, me->getVictimGUID(), 10.0))
                 AddSpellToCast(target, SPELL_BLACK_HOLE);
             BlackHole += urand(15000, 18000);
         }
-        else
-            BlackHole -= diff;
+        
 
         DoMeleeAttackIfReady();
         CastNextSpellIfAnyAndReady();
@@ -426,36 +422,34 @@ struct npc_muru_portalAI : public Scripted_NoMovementAI
     {
         if(me->isInCombat())
         {
-            if (CheckTimer < diff)
+            CheckTimer -= diff;
+            if (CheckTimer <= diff)
             {
                 if (pInstance->GetData(DATA_MURU_EVENT) == DONE || pInstance->GetData(DATA_MURU_EVENT) == NOT_STARTED)
                     EnterEvadeMode();
                 CheckTimer += 1000;
             }
-            else
-                CheckTimer -= diff;
         }
 
         if(SummonTimer)
         {
+            SummonTimer -= diff;
             if(SummonTimer <= diff)
             {
                 DoCast(me, SPELL_SUMMON_VOID_SENTINEL_SUMMONER);
                 SummonTimer = 0;
             }
-            else
-                SummonTimer -= diff;
         }
+
 
         if (TransformTimer)
         {
+            TransformTimer -= diff;
             if(TransformTimer <= diff)
             {
                 DoCast(me, SPELL_TRANSFORM_VISUAL_MISSILE_PERIODIC);
                 TransformTimer = 0;
             }
-            else
-                TransformTimer -= diff;
         }
     }
 };
@@ -488,13 +482,12 @@ struct npc_void_summonerAI : public Scripted_NoMovementAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (SummonTimer < diff)
+        SummonTimer -= diff;
+        if (SummonTimer <= diff)
         {
             DoCast(me, SPELL_SUMMON_VOID_SENTINEL);
             SummonTimer += 10000;
         }
-        else
-            SummonTimer -= diff;
     }
 };
 
@@ -564,6 +557,7 @@ struct npc_dark_fiendAI : public ScriptedAI
 
         if(ActivationTimer)
         {
+            ActivationTimer -= diff;
             if(ActivationTimer <= diff)
             {
                 if(Unit* target = SelectUnit(SELECT_TARGET_NEAREST, 0, 100, true))
@@ -574,26 +568,24 @@ struct npc_dark_fiendAI : public ScriptedAI
                 }
                 ActivationTimer = 0;
             }
-            else
-                ActivationTimer -= diff;
             return;
         }
 
         if(DespawnTimer)
         {
+            DespawnTimer -= diff;
             if(DespawnTimer <= diff)
             {
                 me->DisappearAndDie();
                 DespawnTimer = 0;
             }
-            else
-                DespawnTimer -= diff;
         }
 
         if (!UpdateVictim() || DespawnTimer)
             return;
 
-        if(CheckTimer < diff)
+        CheckTimer -= diff;
+        if(CheckTimer <= diff)
         {
             if(me->IsWithinDistInMap(me->getVictim(), 1.0))
             {
@@ -604,8 +596,6 @@ struct npc_dark_fiendAI : public ScriptedAI
             }
             CheckTimer += 500;
         }
-        else
-            CheckTimer -= diff;
     }
 };
 
@@ -658,27 +648,25 @@ struct npc_void_sentinelAI : public ScriptedAI
     {
         if(ActivationTimer)
         {
+            ActivationTimer -= diff;
             if(ActivationTimer <= diff)
             {
                 ActivationTimer = 0;
                 DoZoneInCombat(100);
                 me->SetRooted(false);
             }
-            else
-                ActivationTimer -= diff;
             return;
         }
 
         if (!UpdateVictim())
             return;
 
-        if (VoidBlastTimer < diff)
+        VoidBlastTimer -= diff;
+        if (VoidBlastTimer <= diff)
         {
             DoCast(me->getVictim(), SPELL_VOID_BLAST, false);
             VoidBlastTimer += 30000;
         }
-        else
-            VoidBlastTimer -= diff;
 
         DoMeleeAttackIfReady();
     }
@@ -725,27 +713,25 @@ struct mob_void_spawnAI : public ScriptedAI
     {
         if(ActivationTimer)
         {
+            ActivationTimer -= diff;
             if(ActivationTimer <= diff)
             {
                 ActivationTimer = 0;
                 DoZoneInCombat(100);
                 me->SetRooted(false);
             }
-            else
-                ActivationTimer -= diff;
             return;
         }
 
         if (!UpdateVictim())
             return;
 
-        if (Volley < diff)
+        Volley -= diff;
+        if (Volley <= diff)
         {
             DoCast(me, SPELL_SHADOW_BOLT_VOLLEY);
             Volley += urand(5000, 10000);
         }
-        else
-            Volley -= diff;
 
         DoMeleeAttackIfReady();
     }
@@ -807,19 +793,19 @@ struct npc_blackholeAI : public ScriptedAI
     {
         if(VisualTimer)
         {
+            VisualTimer -= diff;
             if(VisualTimer <= diff)
             {
                 DoCast(me, SPELL_BLACK_HOLE_SUMMON_VISUAL, true);
                 DoCast(me, SPELL_BLACK_HOLE_SUMMON_VISUAL_2, true);
                 VisualTimer = 0;
             }
-            else
-                VisualTimer -= diff;
             return;
         }
 
         if(ActivationTimer)
         {
+            ActivationTimer -= diff;
             if(ActivationTimer <= diff)
             {
                 DoCast(me, SPELL_BLACK_HOLE_VISUAL_2, true);
@@ -832,12 +818,11 @@ struct npc_blackholeAI : public ScriptedAI
                 }
                 ChasingTimer += 1000;
             }
-            else
-                ActivationTimer -= diff;
         }
 
         if(victimGUID && ChasingTimer)
         {
+            ChasingTimer -= diff;
             if(ChasingTimer <= diff)
             {
                 if (Unit* victim = me->GetUnit(victimGUID))
@@ -855,17 +840,15 @@ struct npc_blackholeAI : public ScriptedAI
                 }
                 ChasingTimer += 2000;
             }
-            else
-                ChasingTimer -= diff;
         }
 
-        if (DespawnTimer < diff)
+        DespawnTimer -= diff;
+        if (DespawnTimer <= diff)
         {
             me->Kill(me, false);
             me->RemoveCorpse();
         }
-        else
-            DespawnTimer -= diff;
+        
     }
 };
 
@@ -896,6 +879,7 @@ struct npc_darknessAI : public Scripted_NoMovementAI
     {
         if(VoidZoneTimer)
         {
+            VoidZoneTimer -= diff;
             if(VoidZoneTimer <= diff)
             {
                 DoCast(me, SPELL_VOID_ZONE_PERIODIC);
@@ -903,17 +887,14 @@ struct npc_darknessAI : public Scripted_NoMovementAI
                 me->RemoveAurasDueToSpell(SPELL_VOID_ZONE_PRE_EFFECT_VISUAL);
                 VoidZoneTimer = 0;
             }
-            else
-                VoidZoneTimer -= diff;
         }
         if (CheckTimer)
         {
+            CheckTimer -= diff;
             if (pInstance->GetData(DATA_MURU_EVENT) == DONE || pInstance->GetData(DATA_MURU_EVENT) == NOT_STARTED)
                 me->DisappearAndDie();
             CheckTimer += 1000;
         }
-        else
-            CheckTimer -= diff;
     }
 };
 
@@ -997,6 +978,7 @@ struct mob_shadowsword_fury_mageAI : public ScriptedAI
 
         if(ActivationTimer)
         {
+            ActivationTimer -= diff;
             if(ActivationTimer <= diff)
             {
                 ActivationTimer = 0;
@@ -1006,22 +988,19 @@ struct mob_shadowsword_fury_mageAI : public ScriptedAI
                     DoStartMovement(me->getVictim());
                 SetAutocast(SPELL_FEL_FIREBALL, RAND(6300, 8300), true);
             }
-            else
-                ActivationTimer -= diff;
             return;
         }
 
         if(!UpdateVictim())
             return;
 
-        if(SpellFury < diff)
+        SpellFury -= diff;
+        if(SpellFury <= diff)
         {
             ClearCastQueue();
             AddSpellToCast(SPELL_SPELL_FURY, CAST_SELF);
             SpellFury += 60000;
         }
-        else
-            SpellFury -= diff;
 
         CastNextSpellIfAnyAndReady(diff);
         DoMeleeAttackIfReady();
@@ -1053,7 +1032,7 @@ struct mob_shadowsword_berserkerAI : public ScriptedAI
     ScriptedInstance* pInstance;
     WorldLocation wLoc;
     int32 Flurry;
-   uint32 ActivationTimer;
+   int32 ActivationTimer;
 
     void Reset()
     {
@@ -1091,6 +1070,7 @@ struct mob_shadowsword_berserkerAI : public ScriptedAI
 
         if(ActivationTimer)
         {
+            ActivationTimer -= diff;
             if(ActivationTimer <= diff)
             {
                 ActivationTimer = 0;
@@ -1099,21 +1079,19 @@ struct mob_shadowsword_berserkerAI : public ScriptedAI
                 if(me->getVictim())
                     DoStartMovement(me->getVictim());
             }
-            else
-                ActivationTimer -= diff;
             return;
         }
 
         if(!UpdateVictim())
             return;
 
-        if(Flurry < diff)
+        Flurry -= diff;
+        if(Flurry <= diff)
         {
             DoCast(me, SPELL_FLURRY);
             Flurry += urand(15000, 20000);
         }
-        else
-            Flurry -= diff;
+        
 
         DoMeleeAttackIfReady();
     }

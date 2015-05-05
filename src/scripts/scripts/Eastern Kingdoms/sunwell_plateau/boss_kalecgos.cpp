@@ -316,14 +316,14 @@ struct boss_kalecgosAI : public ScriptedAI
 
         if (ResetTimer)
         {
+            ResetTimer -= diff;
             if (ResetTimer <= diff)
             {
                 ResetTimer = 0;
                 me->setFaction(16);     //aggresive
                 me->SetVisibility(VISIBILITY_ON);
             }
-            else
-                ResetTimer -= diff;
+            
             return;
         }
         else if (TalkTimer)
@@ -339,6 +339,7 @@ struct boss_kalecgosAI : public ScriptedAI
                 TalkSequence++;
             }
 
+            TalkTimer -= diff;
             if (TalkTimer <= diff)
             {
                 if (isFriendly)
@@ -348,8 +349,7 @@ struct boss_kalecgosAI : public ScriptedAI
 
                 TalkSequence++;
             }
-            else
-                TalkTimer -= diff;
+            
         }
         else
         {
@@ -374,8 +374,9 @@ struct boss_kalecgosAI : public ScriptedAI
             if (me->getVictim() && me->getVictim()->HasAura(AURA_SPECTRAL_REALM, 0))
                 me->getThreatManager().modifyThreatPercent(me->getVictim(), -10);
 
+            CheckTimer -= diff;
             // various checks + interaction with sathrovarr
-            if (CheckTimer < diff)
+            if (CheckTimer <= diff)
             {
                 if (!me->IsWithinDistInMap(&wLoc, 30))
                     EnterEvadeMode();
@@ -429,16 +430,16 @@ struct boss_kalecgosAI : public ScriptedAI
                 if (me->isInCombat())
                     DoZoneInCombat();
             }
-            else
-                CheckTimer -= diff;
+            
 
 
 
             if (!UpdateVictim())
-                
                 return;
+
+            ArcaneBuffetTimer -= diff;
             // cast spells
-            if (ArcaneBuffetTimer < diff)
+            if (ArcaneBuffetTimer <= diff)
             {
                 AddSpellToCast(SPELL_ARCANE_BUFFET, CAST_SELF);
                 if (roll_chance_f(20.0))
@@ -446,10 +447,10 @@ struct boss_kalecgosAI : public ScriptedAI
 
                 ArcaneBuffetTimer += 8000;
             }
-            else
-                ArcaneBuffetTimer -= diff;
+            
 
-            if (FrostBreathTimer < diff)
+            FrostBreathTimer -= diff;
+            if (FrostBreathTimer <= diff)
             {
                 if (roll_chance_f(20.0))
                     DoScriptText(RAND(SAY_EVIL_SPELL1, SAY_EVIL_SPELL2), me);
@@ -457,10 +458,10 @@ struct boss_kalecgosAI : public ScriptedAI
                 AddSpellToCast(SPELL_FROST_BREATH, CAST_SELF);
                 FrostBreathTimer += 15000;
             }
-            else
-                FrostBreathTimer -= diff;
+            
 
-            if (TailLashTimer < diff)
+            TailLashTimer -= diff;
+            if (TailLashTimer <= diff)
             {
                 if (roll_chance_f(20.0))
                     DoScriptText(RAND(SAY_EVIL_SPELL1, SAY_EVIL_SPELL2), me);
@@ -468,24 +469,23 @@ struct boss_kalecgosAI : public ScriptedAI
                 AddSpellToCast(SPELL_TAIL_LASH, CAST_SELF);
                 TailLashTimer += 15000;
             }
-            else
-                TailLashTimer -= diff;
+            
 
-            if (WildMagicTimer < diff)
+            WildMagicTimer -= diff;
+            if (WildMagicTimer <= diff)
             {
                 AddSpellToCast(WildMagic[rand()%6], CAST_SELF);
                 WildMagicTimer += 20000;
             }
-            else
-                WildMagicTimer -= diff;
+            
 
-            if (SpectralBlastTimer < diff)
+            SpectralBlastTimer -= diff;
+            if (SpectralBlastTimer <= diff)
             {
                 AddSpellToCast(SPELL_SPECTRAL_BLAST, CAST_SELF);
                 SpectralBlastTimer += 20000+(rand()%5000);
             }
-            else
-                SpectralBlastTimer -= diff;
+            
 
             CastNextSpellIfAnyAndReady();
             DoMeleeAttackIfReady();
@@ -608,8 +608,9 @@ struct boss_sathrovarrAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
+        CheckTimer -= diff;
         // interaction with kalecgos
-        if (CheckTimer < diff)
+        if (CheckTimer <= diff)
         {
 
             // should not leave Inner Veil
@@ -663,8 +664,7 @@ struct boss_sathrovarrAI : public ScriptedAI
 
             CheckTimer += 1000;
         }
-        else
-            CheckTimer -= diff;
+        
 
         // to be tested
         if (me->getVictim() && (!me->getVictim()->HasAura(AURA_SPECTRAL_REALM)  || me->getVictim()->GetPositionZ() > -50)  && !(me->getVictim()->GetEntry() == MOB_KALEC))
@@ -682,8 +682,9 @@ struct boss_sathrovarrAI : public ScriptedAI
             return;
 
 
+        ShadowBoltTimer -= diff;
         // cast spells
-        if (ShadowBoltTimer < diff)
+        if (ShadowBoltTimer <= diff)
         {
             Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 40.0f, true);
             if (target)
@@ -694,18 +695,18 @@ struct boss_sathrovarrAI : public ScriptedAI
 
             ShadowBoltTimer += 7000+(rand()%3000);
         }
-        else
-            ShadowBoltTimer -= diff;
+        
 
-        if (AgonyCurseTimer < diff)
+        AgonyCurseTimer -= diff;
+        if (AgonyCurseTimer <= diff)
         {
             AddSpellToCast(SPELL_AGONY_CURSE, CAST_SELF);
             AgonyCurseTimer += 35000;
         }
-        else
-            AgonyCurseTimer -= diff;
+        
 
-        if (CorruptionStrikeTimer < diff)
+        CorruptionStrikeTimer -= diff;
+        if (CorruptionStrikeTimer <= diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_CORRUPTION_STRIKE);
             if (roll_chance_f(10.0))
@@ -713,8 +714,7 @@ struct boss_sathrovarrAI : public ScriptedAI
 
             CorruptionStrikeTimer += 13000;
         }
-        else
-            CorruptionStrikeTimer -= diff;
+        
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -793,7 +793,8 @@ struct boss_kalecAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (YellTimer < diff)
+        YellTimer -= diff;
+        if (YellTimer <= diff)
         {
             switch(YellSequence)
             {
@@ -820,10 +821,10 @@ struct boss_kalecAI : public ScriptedAI
             }
             YellTimer += 5000;
         }
-        else
-            YellTimer -= diff;
+        
 
-        if (CheckTimer < diff)
+        CheckTimer -= diff;
+        if (CheckTimer <= diff)
         {
             if (instance && instance->GetData(DATA_KALECGOS_PHASE) == PHASE_ENRAGE)
                 isEnraged = true;
@@ -834,25 +835,24 @@ struct boss_kalecAI : public ScriptedAI
 
             CheckTimer += 1000;
         }
-        else
-            CheckTimer -= diff;
+        
 
-        if (RevitalizeTimer < diff)
+        RevitalizeTimer -= diff;
+        if (RevitalizeTimer <= diff)
         {
             if (Unit* target = SelectUnitToRevitalize())
                 AddSpellToCast(target, SPELL_REVITALIZE, false, true);
             RevitalizeTimer += 7000;
         }
-        else
-            RevitalizeTimer -= diff;
+        
 
-        if (HeroicStrikeTimer < diff)
+        HeroicStrikeTimer -= diff;
+        if (HeroicStrikeTimer <= diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_HEROIC_STRIKE);
             HeroicStrikeTimer += 2000;
         }
-        else
-            HeroicStrikeTimer -= diff;
+        
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();

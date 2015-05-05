@@ -182,8 +182,8 @@ struct boss_felmystAI : public ScriptedAI
     ScriptedInstance *pInstance;
     PhaseFelmyst Phase;
     EventFelmyst Event;
-    uint32 Timer[10];
-    uint32 PulseCombat;
+    int32 Timer[10];
+    int32 PulseCombat;
 
     SummonList summons;
 
@@ -193,7 +193,7 @@ struct boss_felmystAI : public ScriptedAI
     uint32 FlightCount;
     uint32 BreathCount;
     uint32 IntroPhase;
-    uint32 IntroTimer;
+    int32 IntroTimer;
 
     void Reset()
     {
@@ -636,10 +636,9 @@ struct boss_felmystAI : public ScriptedAI
     {
         if(IntroTimer)
         {
+            IntroTimer -= diff;
             if(IntroTimer <= diff)
                 DoIntro();
-            else
-                IntroTimer -= diff;
         }
 
         if (!UpdateVictim())
@@ -653,11 +652,11 @@ struct boss_felmystAI : public ScriptedAI
         else
             PulseCombat -= diff;
 
+        Timer[EVENT_BERSERK] -= diff;
         // use enrage timer both phases
         if(Timer[EVENT_BERSERK] <= diff)
             ProcessEvent(EVENT_BERSERK);
-        else
-            Timer[EVENT_BERSERK] -= diff;
+        
 
         if(Phase == PHASE_GROUND || Phase == PHASE_NULL)
         {
@@ -665,10 +664,9 @@ struct boss_felmystAI : public ScriptedAI
             {
                 if(Timer[i])
                 {
+                    Timer[i] -= diff;
                     if(Timer[i] <= diff)
                         ProcessEvent((EventFelmyst)i);
-                    else
-                        Timer[i] -= diff;
                 }
             }
             CastNextSpellIfAnyAndReady();
@@ -682,10 +680,9 @@ struct boss_felmystAI : public ScriptedAI
             {
                 if(Timer[i])
                 {
+                    Timer[i] -= diff;
                     if(Timer[i] <= diff)
-                        ProcessEvent((EventFelmyst)i);
-                    else
-                        Timer[i] -= diff;
+                        ProcessEvent((EventFelmyst)i)
                 }
             }
             CastNextSpellIfAnyAndReady();
@@ -732,8 +729,8 @@ struct mob_felmyst_trailAI : public Scripted_NoMovementAI
         Despawn = 20000;
     }
     ScriptedInstance* pInstance;
-    uint32 Delay;   // timer for Unyielding Dead summoning
-    uint32 Despawn; // for despawning
+    int32 Delay;   // timer for Unyielding Dead summoning
+    int32 Despawn; // for despawning
 
     void SpellHitTarget(Unit* target, const SpellEntry *entry)
     {
@@ -751,18 +748,18 @@ struct mob_felmyst_trailAI : public Scripted_NoMovementAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(Delay < diff)
+        Delay -= diff;
+        if(Delay <= diff)
         {
             DoCast(me, SPELL_DEAD_SUMMON);
-            Delay = 30000;  // will despawn sooner
+            Delay += 30000;  // will despawn sooner
         }
-        else
-            Delay -= diff;
+        
 
-        if(Despawn < diff)
+        Despawn -= diff;
+        if(Despawn <= diff)
             me->ForcedDespawn();
-        else
-            Despawn -= diff;
+        
     }
 };
 

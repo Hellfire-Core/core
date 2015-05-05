@@ -352,7 +352,8 @@ struct boss_brutallusAI : public ScriptedAI
         {
             if(IntroPhase < 12 && IntroPhase > 14)
             {
-                if (CheckGroundTimer < diff)
+                CheckGroundTimer -= diff;
+                if (CheckGroundTimer <= diff)
                 {
                     float x, y, z;
                     me->GetPosition(x, y, z);
@@ -361,27 +362,24 @@ struct boss_brutallusAI : public ScriptedAI
                     me->GetMap()->CreatureRelocation(me, x, y, z, me->GetOrientation());
                     CheckGroundTimer += 500;
                 }
-                else
-                    CheckGroundTimer -= diff;
             }
 
-            if (IntroPhaseTimer < diff)
+            IntroPhaseTimer -= diff;
+            if (IntroPhaseTimer <= diff)
                 DoIntro();
-            else
-                IntroPhaseTimer -= diff;
+            
 
             if (IntroPhase >= 7 && IntroPhase <= 9)
             {
-                if (IntroFrostBoltTimer < diff)
+                IntroFrostBoltTimer -= diff;
+                if (IntroFrostBoltTimer <= diff)
                 {
                     if(Unit *pMadrigosa = me->GetUnit(pInstance->GetData64(DATA_MADRIGOSA)))
                     {
                         pMadrigosa->CastSpell(me, SPELL_INTRO_FROSTBOLT, false);
                         IntroFrostBoltTimer += 2000;
                     }
-                }
-                else
-                    IntroFrostBoltTimer -= diff;
+                }    
             }
 
             DoMeleeAttackIfReady();
@@ -392,48 +390,46 @@ struct boss_brutallusAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (CheckTimer < diff)
+        CheckTimer -= diff;
+        if (CheckTimer <= diff)
         {
             DoZoneInCombat();
 
             me->SetSpeed(MOVE_RUN, 2.0f);
             CheckTimer += 1000;
         }
-        else
-            CheckTimer -= diff;
+        
 
-        if (SlashTimer < diff)
+        SlashTimer -= diff;
+        if (SlashTimer <= diff)
         {
             AddSpellToCast(me, SPELL_METEOR_SLASH);
             SlashTimer += 11000;
         }
-        else
-            SlashTimer -= diff;
+        
 
-        if (StompTimer < diff)
+        StompTimer -= diff;
+        if (StompTimer <= diff)
         {
             AddSpellToCastWithScriptText(me->getVictim(), SPELL_STOMP, RAND(YELL_LOVE1, YELL_LOVE2, YELL_LOVE3));
             StompTimer += 30000;
         }
-        else
-            StompTimer -= diff;
-
-        if (BurnTimer < diff)
+        
+        BurnTimer -= diff;
+        if (BurnTimer <= diff)
         {
             if(Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0, 300.0f, true))
                 AddSpellToCast(pTarget, SPELL_BURN);
             BurnTimer += 20000;
         }
-        else
-            BurnTimer -= diff;
-
-        if (BerserkTimer < diff && !Enraged)
+        
+        BerserkTimer -= diff;
+        if (BerserkTimer <= diff && !Enraged)
         {
             AddSpellToCastWithScriptText(me, SPELL_BERSERK, YELL_BERSERK);
             Enraged = true;
         }
-        else
-            BerserkTimer -= diff;
+        
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -485,7 +481,8 @@ struct npc_death_cloudAI : public ScriptedAI
     {
         if(Phase == 1)
         {
-            if (Timer < diff)
+            Timer -= diff;
+            if (Timer <= diff)
             {
                 float x, y, z;
                 if (Unit* pMadrigosa= me->GetUnit(pInstance->GetData64(DATA_MADRIGOSA)))
@@ -520,13 +517,12 @@ struct npc_death_cloudAI : public ScriptedAI
                     }
                 }
             }
-            else
-                Timer -= diff;
         }
 
         if(Phase == 2)
         {
-            if(DespawnTimer < diff)
+            DespawnTimer -= diff;
+            if(DespawnTimer <= diff)
             {
                 if (Unit* pMadrigosa= me->GetUnit(pInstance->GetData64(DATA_MADRIGOSA)))
                 {
@@ -539,8 +535,6 @@ struct npc_death_cloudAI : public ScriptedAI
                     Phase++;
                 }
             }
-            else
-                DespawnTimer -= diff;
         }
     }
 };

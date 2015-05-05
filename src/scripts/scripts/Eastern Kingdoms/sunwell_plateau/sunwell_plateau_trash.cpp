@@ -86,29 +86,29 @@ struct mob_sunblade_arch_mageAI : public ScriptedAI
         if(Blink > 1000 && (me->isFrozen() || me->HasAuraType(SPELL_AURA_MOD_ROOT)))
             Blink = 1000;
 
-        if(ArcaneExplosion < diff)
+        ArcaneExplosion -= diff;
+        if(ArcaneExplosion <= diff)
         {
             AddSpellToCast(SPELL_ARCANE_EXPLOSION, CAST_SELF);
             ArcaneExplosion += urand(4000, 8000);
         }
-        else
-            ArcaneExplosion -= diff;
+        
 
-        if(FrostNova < diff)
+        FrostNova -= diff;
+        if(FrostNova <= diff)
         {
             AddSpellToCast(SPELL_FROST_NOVA, CAST_SELF);
             FrostNova += urand(6000, 16000);
         }
-        else
-            FrostNova -= diff;
+        
 
-        if(Blink < diff)
+        Blink -= diff;
+        if(Blink <= diff)
         {
             AddSpellToCast(SPELL_BLINK, CAST_SELF);
             Blink += urand(15000, 30000);
         }
-        else
-            Blink -= diff;
+        
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -172,30 +172,30 @@ struct mob_sunblade_cabalistAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if(IgniteMana < diff)
+        IgniteMana -= diff;
+        if(IgniteMana <= diff)
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 50, true, POWER_MANA))
                 AddSpellToCast(target, SPELL_IGNITE_MANA, false, true);
             IgniteMana += urand(8000, 16000);
         }
-        else
-            IgniteMana -= diff;
+        
 
-        if(ShadowBolt < diff)
+        ShadowBolt -= diff;
+        if(ShadowBolt <= diff)
         {
             AddSpellToCast(SPELL_SHADOW_BOLT, CAST_TANK);
             ShadowBolt += urand(2100, 2500);
         }
-        else
-            ShadowBolt -= diff;
+        
 
-        if(SummonImp < diff)
+         SummonImp -= diff;
+        if(SummonImp <= diff)
         {
             AddSpellToCast(SPELL_SUMMON_IMP, CAST_NULL);
             SummonImp += urand(15000, 20000);
         }
-        else
-            SummonImp -= diff;
+        
 
         CheckCasterNoMovementInRange(diff, 48.0);
         CastNextSpellIfAnyAndReady();
@@ -270,26 +270,25 @@ struct mob_sunblade_dawn_priestAI : public ScriptedAI
 
         if(!canRenew)
         {
-            if(Renew < diff)
+            Renew -= diff;
+            if(Renew <= diff)
                 canRenew = true;
-            else
-                Renew -= diff;
+            
         }
         if(!canSelfRenew)
         {
-            if(SelfRenew < diff)
+            SelfRenew -= diff;
+            if(SelfRenew <= diff)
                 canSelfRenew = true;
-            else
-                SelfRenew -= diff;
         }
 
-        if(HolyNova < diff)
+        HolyNova -= diff;
+        if(HolyNova <= diff)
         {
             AddSpellToCast(SPELL_HOLY_NOVA, CAST_NULL);
             HolyNova += urand(5000, 10000);
         }
-        else
-            HolyNova -= diff;
+        
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -319,9 +318,9 @@ struct mob_sunblade_dusk_priestAI : public ScriptedAI
 {
     mob_sunblade_dusk_priestAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-   uint32 Fear;
-   uint32 WordPain;
-   uint32 MindFlay;
+   int32 Fear;
+   int32 WordPain;
+   int32 MindFlay;
 
     void Reset()
     {
@@ -338,32 +337,30 @@ struct mob_sunblade_dusk_priestAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if(Fear < diff)
+        Fear -= diff;
+        if(Fear <= diff)
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 25, true, me->getVictim()->GetGUID()))
                 AddSpellToCast(target, SPELL_FEAR);
             Fear += urand(6000, 18000);
         }
-        else
-            Fear -= diff;
-
-        if(WordPain < diff)
+        
+        WordPain -= diff;
+        if(WordPain <= diff)
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 60, true))
                 AddSpellToCast(target, SPELL_SHADOW_WORD_PAIN);
             WordPain += urand(12000, 30000);
         }
-        else
-            WordPain -= diff;
-
-        if(MindFlay < diff)
+        
+        MindFlay -= diff;
+        if(MindFlay <= diff)
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 50, true))
                 AddSpellToCast(target, SPELL_MIND_FLAY, false, true);
             MindFlay += urand(9000, 12000);
         }
-        else
-            MindFlay -= diff;
+        
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -438,15 +435,14 @@ struct mob_sunblade_protectorAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if(FelLightning < diff)
+        FelLightning -= diff;
+        if(FelLightning <= diff)
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 60, true))
                 AddSpellToCast(target, SPELL_FEL_LIGHTNING);
             FelLightning += 6000;
         }
-        else
-            FelLightning -= diff;
-
+        
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
     }
@@ -544,13 +540,13 @@ struct mob_sunblade_scoutAI : public ScriptedAI
         if(!UpdateVictim() || activating_protector)
             return;
 
-        if(SinisterStrike < diff)
+        SinisterStrike -= diff;
+        if(SinisterStrike <= diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_SINISTER_STRIKE);
             SinisterStrike += urand(4000, 8000);
         }
-        else
-            SinisterStrike -= diff;
+        
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -606,29 +602,29 @@ struct mob_sunblade_slayerAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if(ScatterShot < diff)
+        ScatterShot -= diff;
+        if(ScatterShot <= diff)
         {
             AddSpellToCast(SPELL_SCATTER_SHOT, CAST_TANK);
             ScatterShot += urand(6000, 12000);
         }
-        else
-            ScatterShot -= diff;
+        
 
-        if(Shoot < diff)
+        Shoot -= diff;
+        if(Shoot <= diff)
         {
             AddSpellToCast(SPELL_SHOOT, CAST_TANK);
             Shoot += urand(2500, 4000);
         }
-        else
-            Shoot -= diff;
+        
 
-        if(SlayingShot < diff)
+        SlayingShot -= diff;
+        if(SlayingShot <= diff)
         {
             AddSpellToCast(SPELL_SLAYING_SHOT, CAST_TANK);
             SlayingShot += urand(8000, 15000);
         }
-        else
-            SlayingShot -= diff;
+        
 
         CheckShooterNoMovementInRange(diff, 40.0);
         CastNextSpellIfAnyAndReady();
@@ -675,21 +671,21 @@ struct mob_sunblade_vindicatorAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if(Cleave < diff)
+        Cleave -= diff;
+        if(Cleave <= diff)
         {
             AddSpellToCast(SPELL_CLEAVE, CAST_TANK);
             Cleave += urand(4000, 9000);
         }
-        else
-            Cleave -= diff;
+        
 
-        if(MortalStrike < diff)
+        MortalStrike -= diff;
+        if(MortalStrike <= diff)
         {
             AddSpellToCast(SPELL_MORTAL_STRIKE, CAST_TANK);
             MortalStrike += urand(8000, 15000);
         }
-        else
-            MortalStrike -= diff;
+        
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -739,8 +735,8 @@ struct mob_shadowsword_assassinAI : public ScriptedAI
 {
     mob_shadowsword_assassinAI(Creature *c) : ScriptedAI(c) { pInstance = c->GetInstanceData(); }
 
-    uint32 Shadowstep;
-    uint32 CheckTimer;
+    int32 Shadowstep;
+    int32 CheckTimer;
     ScriptedInstance* pInstance;
 
     void Reset()
@@ -809,22 +805,22 @@ struct mob_shadowsword_assassinAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if(CheckTimer < diff)
+        CheckTimer -= diff;
+        if(CheckTimer <= diff)
         {
             if(me->isInRoots())
                 DoCast(me->getVictim(), SPELL_SHADOWSTEP);
             CheckTimer += 2000;
         }
-        else
-            CheckTimer -= diff;
+        
 
-        if(Shadowstep < diff)
+        Shadowstep -= diff;
+        if(Shadowstep <= diff)
         {
             AddSpellToCast(SPELL_SHADOWSTEP, CAST_TANK);
             Shadowstep += urand(10000, 20000);
         }
-        else
-            Shadowstep -= diff;
+        
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -919,34 +915,32 @@ struct mob_shadowsword_commanderAI : public ScriptedAI
             }
             if(Yell_timer && TriggerGUID)
             {
+                Yell_timer -= diff;
                 if(Yell_timer <= diff)
                 {
                     me->YellToZone(YELL_GAUNTLET_START, 0, me->GetGUID());
                     Yell_timer = 0;
                 }
-                else
-                    Yell_timer -= diff;
             }
         }
 
         if(!UpdateVictim())
             return;
 
-        if(ShieldSlam < diff)
+        ShieldSlam -= diff;
+        if(ShieldSlam <= diff)
         {
             AddSpellToCast(SPELL_SHIELD_SLAM, CAST_TANK);
             ShieldSlam += urand(8000, 12000);
         }
-        else
-            ShieldSlam -= diff;
-
-        if(ShoutTimer < diff)
+        
+        ShoutTimer -= diff;
+        if(ShoutTimer <= diff)
         {
             DoCast(me, SPELL_BATTLE_SHOUT);
             ShoutTimer += 30000;
         }
-        else
-            ShoutTimer -= diff;
+        
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -1013,31 +1007,30 @@ struct mob_shadowsword_deathbringerAI : public ScriptedAI
     {
         if (me->GetMotionMaster()->GetCurrentMovementGeneratorType() == IDLE_MOTION_TYPE && !me->isInCombat())
         {
-            if (DespawnTimer < diff)
+            DespawnTimer -= diff;
+            if (DespawnTimer <= diff)
                 me->ForcedDespawn();
-            else
-                DespawnTimer -= diff;
         }
 
         if(!UpdateVictim())
             return;
 
-        if(DiseaseBuffet < diff)
+        DiseaseBuffet -= diff;
+        if(DiseaseBuffet <= diff)
         {
             AddSpellToCast(SPELL_DISEASE_BUFFET);
             DiseaseBuffet += urand(10000, 14000);
         }
-        else
-            DiseaseBuffet -= diff;
+        
 
-        if(VolatileDisease < diff)
+        VolatileDisease -= diff;
+        if(VolatileDisease <= diff)
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 8.0f, true))
                 AddSpellToCast(target, SPELL_VOLATILE_DISEASE);
             VolatileDisease += urand(10000, 16000);
         }
-        else
-            VolatileDisease -= diff;
+        
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -1121,10 +1114,9 @@ struct mob_shadowsword_lifeshaperAI : public ScriptedAI
 
         if(!canFunnelHP)
         {
-            if(HealthFunnel < diff)
+            HealthFunnel -= diff;
+            if(HealthFunnel <= diff)
                 canFunnelHP = true;
-            else
-                HealthFunnel -= diff;
         }
 
         if(Unit* healTarget = SelectLowestHpFriendly(25, 50000))
@@ -1137,14 +1129,14 @@ struct mob_shadowsword_lifeshaperAI : public ScriptedAI
             }
         }
 
-        if(DrainLife < diff)
+        DrainLife -= diff;
+        if(DrainLife <= diff)
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 50, true))
                 AddSpellToCast(target, SPELL_DRAIN_LIFE);
             DrainLife += urand(10000,15000);
         }
-        else
-            DrainLife -= diff;
+        
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -1227,22 +1219,21 @@ struct mob_shadowsword_manafiendAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if(CheckTimer < diff)
+        CheckTimer -= diff;
+        if(CheckTimer <= diff)
         {
             if(me->IsWithinDistInMap(me->getVictim(), 15))
                 AddSpellToCast(SPELL_ARCANE_EXPLOSION_2, CAST_SELF);
             CheckTimer += urand(4000, 8000);
         }
-        else
-            CheckTimer -= diff;
-
-        if(DrainMana < diff)
+        
+        DrainMana -= diff;
+        if(DrainMana <= diff)
         {
             AddSpellToCast(SPELL_DRAIN_MANA, CAST_NULL);
             DrainMana += urand(10000, 20000);
         }
-        else
-            DrainMana -= diff;
+        
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -1323,29 +1314,28 @@ struct mob_shadowsword_soulbinderAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if(CurseOfExhaustion < diff)
+        CurseOfExhaustion -= diff;
+        if(CurseOfExhaustion <= diff)
         {
             AddSpellToCast(SPELL_CURSE_OF_EXHAUSTION, CAST_RANDOM);
             CurseOfExhaustion += urand(5000,10000);
         }
-        else
-            CurseOfExhaustion -= diff;
-
-        if(Domination < diff)
+        
+        Domination -= diff;
+        if(Domination <= diff)
         {
             AddSpellToCast(SPELL_DOMINATION, CAST_TANK);
             Domination += urand(14000, 24000);
         }
-        else
-            Domination -= diff;
+        
 
-        if(FlashOfDarkness < diff)
+        FlashOfDarkness -= diff;
+        if(FlashOfDarkness <= diff)
         {
             AddSpellToCast(SPELL_FLASH_OF_DARKNESS, CAST_NULL);
             FlashOfDarkness += urand(10000, 15000);
         }
-        else
-            FlashOfDarkness -= diff;
+        
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -1437,21 +1427,21 @@ struct mob_shadowsword_vanquisherAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if(MeltArmor < diff)
+        MeltArmor -= diff;
+        if(MeltArmor <= diff)
         {
             AddSpellToCast(SPELL_MELT_AROMOR, CAST_TANK);
             MeltArmor += urand(8000, 16000);
         }
-        else
-            MeltArmor -= diff;
+        
 
-        if(Cleave < diff)
+        Cleave -= diff;
+        if(Cleave <= diff)
         {
             AddSpellToCast(SPELL_CLEAVE_2, CAST_TANK);
             Cleave += urand(4000, 9000);
         }
-        else
-            Cleave -= diff;
+        
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -1540,13 +1530,13 @@ struct mob_volatile_fiendAI : public ScriptedAI
 
         if(exploding)
         {
-            if(explosion_timer < diff)
+            explosion_timer -= diff;
+            if (explosion_timer <= diff)
             {
-                me->Kill(me,false);
+                me->Kill(me, false);
                 exploding = false;
                 explosion_timer += 2000;
             }
-            explosion_timer -= diff;
         }
 
         if(!UpdateVictim())
@@ -1637,30 +1627,28 @@ struct mob_apocalypse_guardAI : public ScriptedAI
             InfernalDefense = true;
         }
 
-        if(Cleave < diff)
+        Cleave -= diff;
+        if(Cleave <= diff)
         {
             AddSpellToCast(SPELL_CLEAVE_3, CAST_TANK);
             Cleave += urand(4000, 8000);
         }
-        else
-            Cleave -= diff;
-
-        if(CorruptingStrike < diff)
+        
+        CorruptingStrike -= diff;
+        if(CorruptingStrike <= diff)
         {
             AddSpellToCast(SPELL_CORRUPTING_STRIKE, CAST_TANK);
             CorruptingStrike += urand(6000, 12000);
         }
-        else
-            CorruptingStrike -= diff;
-
-        if(DeathCoil < diff)
+        
+        DeathCoil -= diff;
+        if(DeathCoil <= diff)
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30.0, true, me->getVictimGUID(), 5.0))
                 AddSpellToCast(target, SPELL_DEATH_COIL, false, true);
             DeathCoil += urand(7000, 12000);
         }
-        else
-            DeathCoil -= diff;
+        
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -1719,15 +1707,16 @@ struct mob_cataclysm_houndAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if(Enrage < diff)
+        Enrage -= diff;
+        if(Enrage <= diff)
         {
             AddSpellToCast(SPELL_ENRAGE, CAST_SELF);
             Enrage += urand(10000, 12000);
         }
-        else
-            Enrage -= diff;
+        
 
-        if(CataclysmBreath < diff)
+        CataclysmBreath -= diff;
+        if(CataclysmBreath <= diff)
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 20, true))
             {
@@ -1737,8 +1726,7 @@ struct mob_cataclysm_houndAI : public ScriptedAI
             }
             CataclysmBreath += 8000;
         }
-        else
-            CataclysmBreath -= diff;
+        
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -1827,27 +1815,26 @@ struct mob_chaos_gazerAI : public ScriptedAI
 
         if(!canDrainLife)
         {
+            DrainLifeCD -= diff;
             if(DrainLifeCD <= diff)
                 canDrainLife = true;
-            else
-                DrainLifeCD -= diff;
         }
 
-        if(Petrify < diff)
+        Petrify -= diff;
+        if(Petrify <= diff)
         {
             AddSpellToCast(SPELL_PETRIFY, CAST_TANK);
             Petrify += urand(9000, 12000);
         }
-        else
-            Petrify -= diff;
+        
 
-        if(TentacleSweep < diff)
+        TentacleSweep -= diff;
+        if(TentacleSweep <= diff)
         {
             AddSpellToCast(SPELL_TENTACLE_SWEEP, CAST_TANK);
             TentacleSweep += urand(7000, 12000);
         }
-        else
-            TentacleSweep -= diff;
+        
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -1921,13 +1908,13 @@ struct mob_doomfire_destroyerAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if(SummonTimer < diff)
+        SummonTimer -= diff;
+        if(SummonTimer <= diff)
         {
             AddSpellToCast(SPELL_CREATE_DOMMFIRE_SHARD, CAST_NULL);
             SummonTimer += urand(5500, 7000);
         }
-        else
-            SummonTimer -= diff;
+        
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -2055,14 +2042,13 @@ struct mob_oblivion_mageAI : public ScriptedAI
     {
         if (!me->isInCombat() && !channeling)
         {
+            EvadeTimer -= diff;
             if(EvadeTimer <= diff)
             {
                 if (Unit* Destroyer = FindCreature(NPC_DOOMFIRE_DESTROYER, 20, me))
                     DoCast(me, SPELL_FIRE_CHANNELING);
                 channeling = true;
             }
-            else
-                EvadeTimer -= diff;
         }
 
         if(!UpdateVictim())
@@ -2074,14 +2060,13 @@ struct mob_oblivion_mageAI : public ScriptedAI
                 AttackStart(target, false);
         }
 
-        if(Polymorph < diff)
+        Polymorph -= diff;
+        if(Polymorph <= diff)
         {
             ClearCastQueue();
             AddSpellToCast(SPELL_POLYMORPH, CAST_RANDOM_WITHOUT_TANK, false, true);
             Polymorph += urand(5000, 8000);
         }
-        else
-            Polymorph -= diff;
 
         CastNextSpellIfAnyAndReady(diff);
     }
@@ -2202,7 +2187,8 @@ struct mob_priestess_of_tormentAI : public ScriptedAI
 
         if (moving)
         {
-            if(MoveTimer < diff)
+            MoveTimer -= diff;
+            if(MoveTimer <= diff)
             {
                 float x, y, z = 0;
                 if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 40.0f, true))
@@ -2214,18 +2200,16 @@ struct mob_priestess_of_tormentAI : public ScriptedAI
                 }
                 MoveTimer += urand(1000, 2500);
             }
-            else
-                MoveTimer -= diff;
         }
 
-        if(Whirlwind < diff)
+        Whirlwind -= diff;
+        if(Whirlwind <= diff)
         {
             DoCast(me, SPELL_WHIRLWIND);
             moving = true;
             Whirlwind += urand(13000, 16000);
         }
-        else
-            Whirlwind -= diff;
+        
 
         DoMeleeAttackIfReady();
     }
@@ -2300,14 +2284,14 @@ struct mob_shadowsword_guardianAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if(BearDown < diff)
+        BearDown -= diff;
+        if(BearDown <= diff)
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 50.0f, true, me->getVictimGUID(), 7.0f))
                 AddSpellToCast(target, SPELL_BEAR_DOWN, false, true);
             BearDown += urand(7000, 14000);
         }
-        else
-            BearDown -= diff;
+        
 
         DoMeleeAttackIfReady();
         CastNextSpellIfAnyAndReady();
@@ -2376,20 +2360,19 @@ struct npc_gauntlet_imp_triggerAI : public Scripted_NoMovementAI
             if(!me->HasAura(SPELL_SUMMON_VISUAL))
                 DoCast(me, SPELL_SUMMON_VISUAL, true);
 
-            if(Imp_timer < diff)
+            Imp_timer -= diff;
+            if(Imp_timer <= diff)
             {
                 me->SummonCreature(MOB_VOLATILE_FIEND, wLoc.coord_x, wLoc.coord_y, wLoc.coord_z, wLoc.orientation, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 60000);
                 Imp_timer += 12000;
             }
-            else
-                Imp_timer -= diff;
-
-            if(Deathbringer_timer < diff)
+            
+            Deathbringer_timer -= diff;
+            if(Deathbringer_timer <= diff)
             {
                 me->SummonCreature(MOB_SHADOWSWORD_DEATHBRINGER, wLoc.coord_x, wLoc.coord_y, wLoc.coord_z, wLoc.orientation, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 60000);
                 Deathbringer_timer += 45000;
             }
-            Deathbringer_timer -= diff;
         }
 
         if(pInstance->GetData(DATA_TRASH_GAUNTLET_EVENT) == FAIL)

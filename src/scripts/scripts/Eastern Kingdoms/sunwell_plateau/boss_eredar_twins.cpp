@@ -238,7 +238,8 @@ struct boss_sacrolashAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (SpecialTimer < diff)
+        SpecialTimer -= diff;
+        if (SpecialTimer <= diff)
         {
             if (pInstance->GetData(DATA_ALYTHESS) == DONE)
             {
@@ -253,41 +254,40 @@ struct boss_sacrolashAI : public ScriptedAI
                 SpecialTimer += urand(30000,35000);
             }
         }
-        else
-            SpecialTimer -= diff;
 
-        if (ConfoundingblowTimer < diff)
+
+        ConfoundingblowTimer -= diff;
+        if (ConfoundingblowTimer <= diff)
         {
             AddSpellToCast(SPELL_CONFOUNDING_BLOW, CAST_TANK);
             ConfoundingblowTimer += urand(20000, 25000);
         }
-        else
-            ConfoundingblowTimer -= diff;
+        
 
-        if (ShadowimageTimer < diff)
+        ShadowimageTimer -= diff;
+        if (ShadowimageTimer <= diff)
         {
             for (int i = 0; i < 3; i++)
                 DoSpawnCreature(MOB_SHADOW_IMAGE, 0, 0 , 0, frand(0, 2*M_PI), TEMPSUMMON_TIMED_DESPAWN, 15000);
             ShadowimageTimer += 20000;
         }
-        else
-            ShadowimageTimer -= diff;
+        
 
-        if (ShadowbladesTimer < diff)
+        ShadowbladesTimer -= diff;
+        if (ShadowbladesTimer <= diff)
         {
             AddSpellToCast(SPELL_SHADOW_BLADES, CAST_SELF);
             ShadowbladesTimer += 10000;
         }
-        else
-            ShadowbladesTimer -= diff;
+        
 
-        if (EnrageTimer < diff)
+        EnrageTimer -= diff;
+        if (EnrageTimer <= diff)
         {
             AddSpellToCastWithScriptText(SPELL_ENRAGE, CAST_SELF, YELL_ENRAGE);
             EnrageTimer += 360000;
         }
-        else
-            EnrageTimer -= diff;
+        
 
         DoMeleeAttackIfReady();
         CastNextSpellIfAnyAndReady();
@@ -495,18 +495,18 @@ struct boss_alythessAI : public Scripted_NoMovementAI
     {
         if (IntroStepCounter < 10)
         {
-            if (IntroYellTimer < diff)
+            IntroYellTimer -= diff;
+            if (IntroYellTimer <= diff)
             {
                 IntroYellTimer += IntroStep(++IntroStepCounter);
             }
-            else 
-                IntroYellTimer -= diff;
         }
 
         if (!UpdateVictim())
             return;
 
-        if (SpecialTimer < diff)
+        SpecialTimer -= diff;
+        if (SpecialTimer <= diff)
         {
             if (pInstance->GetData(DATA_SACROLASH) == DONE)
             {
@@ -521,32 +521,30 @@ struct boss_alythessAI : public Scripted_NoMovementAI
                 SpecialTimer += urand(30000,35000);
             }
         }
-        else
-            SpecialTimer -= diff;
-
-        if (FlamesearTimer < diff)
+        
+        FlamesearTimer -= diff;
+        if (FlamesearTimer <= diff)
         {
             AddSpellToCast(SPELL_FLAME_SEAR, CAST_SELF);
             FlamesearTimer += 10000;
         }
-        else
-            FlamesearTimer -=diff;
+        
 
-        if (PyrogenicsTimer < diff)
+        PyrogenicsTimer -= diff;
+        if (PyrogenicsTimer <= diff)
         {
             AddSpellToCast(SPELL_PYROGENICS, CAST_SELF);
             PyrogenicsTimer += 15000;
         }
-        else
-            PyrogenicsTimer -= diff;
+        
 
-        if (EnrageTimer < diff)
+        EnrageTimer -= diff;
+        if (EnrageTimer <= diff)
         {
             AddSpellToCastWithScriptText(SPELL_ENRAGE, CAST_SELF, YELL_BERSERK);
             EnrageTimer += 360000;
         }
-        else
-            EnrageTimer -= diff;
+        
 
         CastNextSpellIfAnyAndReady(diff);
         DoMeleeAttackIfReady();
@@ -617,7 +615,8 @@ struct mob_shadow_imageAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (ShadowfuryTimer < diff)
+        ShadowfuryTimer -= diff;
+        if (ShadowfuryTimer <= diff)
         {
             if (me->IsWithinMeleeRange(me->getVictim()) && roll_chance_f(15))
             {
@@ -627,10 +626,10 @@ struct mob_shadow_imageAI : public ScriptedAI
             else
                 ShadowfuryTimer += 1500;
         }
-        else
-            ShadowfuryTimer -= diff;
+        
 
-        if (DarkstrikeTimer < diff)
+        DarkstrikeTimer -= diff;
+        if (DarkstrikeTimer <= diff)
         {
             if (!me->IsNonMeleeSpellCast(false))
             {
@@ -640,8 +639,7 @@ struct mob_shadow_imageAI : public ScriptedAI
             }
             DarkstrikeTimer += 1000;
         }
-        else
-            DarkstrikeTimer -= diff;
+        
 
         CastNextSpellIfAnyAndReady();
     }
