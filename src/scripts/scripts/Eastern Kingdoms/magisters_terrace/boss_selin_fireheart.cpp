@@ -229,26 +229,26 @@ struct boss_selin_fireheartAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if(CheckTimer < diff)
+        CheckTimer -= diff;
+        if(CheckTimer <= diff)
         {
             if(!me->IsWithinDistInMap(&wLoc, 30.0))
                 EnterEvadeMode();
             CheckTimer += 1000;
         }
-        else
-            CheckTimer -= diff;
+        
 
         // Heroic only
         if(HeroicMode)
         {
-            if( DrainManaTimer < diff )
+            DrainManaTimer -= diff;
+
+            if( DrainManaTimer <= diff )
             {
                 if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 45, true, POWER_MANA))
                     AddSpellToCast(target, SPELL_DRAIN_MANA, false, true);
                 DrainManaTimer += urand(18000, 25000);
             }
-            else
-                DrainManaTimer -= diff;
         }
 
         if(!DrainingCrystal)
@@ -256,35 +256,34 @@ struct boss_selin_fireheartAI : public ScriptedAI
             uint32 maxPowerMana = m_creature->GetMaxPower(POWER_MANA);
             if( maxPowerMana && ((m_creature->GetPower(POWER_MANA)*100 / maxPowerMana) < 10) )
             {
-                if(DrainLifeTimer < diff)
+                DrainLifeTimer -= diff;
+                if(DrainLifeTimer <= diff)
                 {
                     if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 20, true))
                         AddSpellToCast(target, SPELL_DRAIN_LIFE, false, true);
                     DrainLifeTimer += urand(8000, 12000);
                 }
-                else
-                    DrainLifeTimer -= diff;
-
-                if(DrainCrystalTimer < diff)
+                
+                DrainCrystalTimer -= diff;
+                if(DrainCrystalTimer <= diff)
                 {
                     if(me->IsNonMeleeSpellCast(false))
                         return;
                     SelectNearestCrystal();
                     DrainCrystalTimer += HeroicMode? 13000 : 18000;
                 }
-                else
-                    DrainCrystalTimer -= diff;
+                
             }
             else
             {
-                if(FelExplosionTimer < diff)
+                FelExplosionTimer -= diff;
+                if(FelExplosionTimer <= diff)
                 {
                     AddSpellToCast(m_creature, SPELL_FEL_EXPLOSION);
                     me->RemoveSingleAuraFromStack(SPELL_MANA_RAGE_TRIGGER, 1);
                     FelExplosionTimer += 2300;
                 }
-                else
-                    FelExplosionTimer -= diff;
+                
             }
 
             CastNextSpellIfAnyAndReady();
@@ -316,7 +315,8 @@ struct mob_fel_crystalAI : public ScriptedAI
     void MoveInLineOfSight(Unit* who) {}
     void UpdateAI(const uint32 diff)
     {
-        if(Check_Timer < diff)
+        Check_Timer -= diff;
+        if(Check_Timer <= diff)
         {
             if(pInstance)
             {
@@ -328,8 +328,7 @@ struct mob_fel_crystalAI : public ScriptedAI
             }
             Check_Timer += 2000;
         }
-        else
-            Check_Timer -= diff;
+        
     }
 };
 

@@ -177,24 +177,24 @@ struct boss_vexallusAI : public ScriptedAI
                 ++AlreadySpawnedAmount;
             };
 
-            if (ChainLightningTimer < diff)
+            ChainLightningTimer -= diff;
+            if (ChainLightningTimer <= diff)
             {
                 if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0))
                     AddSpellToCast(target, SPELL_CHAIN_LIGHTNING);
 
                 ChainLightningTimer += urand(12000, 20000);
             }
-            else
-                ChainLightningTimer -= diff;
+            
 
-            if (ArcaneShockTimer < diff)
+            ArcaneShockTimer -= diff;
+            if (ArcaneShockTimer <= diff)
             {
                 if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0))
                     AddSpellToCast(target, SPELL_ARCANE_SHOCK);
                 ArcaneShockTimer += urand(14000, 19000);
             }
-            else
-                ArcaneShockTimer -= diff;
+            
         }
         else
         {

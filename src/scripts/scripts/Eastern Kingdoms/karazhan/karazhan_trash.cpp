@@ -116,7 +116,7 @@ struct mob_phantom_guestAI : public ScriptedAI
                 break;
             case 3:
                 AddSpellToCast(SPELL_CURSE_OF_AGONY, CAST_RANDOM);
-                SecondaryTimer+ = urand(10000, 30000);
+                SecondaryTimer += urand(10000, 30000);
                 break;
             case 4:
                 AddSpellToCast(SPELL_HOLY_NOVA, CAST_SELF);

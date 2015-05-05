@@ -69,59 +69,59 @@ struct mob_sunwell_mage_guardAI : public ScriptedAI
 
     void Reset()
     {
-        Glaive_Timer = (HeroicMode?urand(3000, 6000):urand(5000,10000));
+        Glaive_Timer = (HeroicMode ? urand(3000, 6000) : urand(5000, 10000));
         Magic_Field_Timer = (10000, 20000);
         OOCTimer = 5000;
     }
 
     void HandleOffCombatEffects()
     {
-        if(Unit* sentinel = FindCreature(NPC_BROKEN_SENTINEL, 10.0f, me))
+        if (Unit* sentinel = FindCreature(NPC_BROKEN_SENTINEL, 10.0f, me))
             DoCast(sentinel, SPELL_FEL_ENERGY_COSMETIC);
     }
 
     void EnterCombat(Unit* who)
     {
-        if(me->IsNonMeleeSpellCast(false))
+        if (me->IsNonMeleeSpellCast(false))
             me->InterruptNonMeleeSpells(false);
     }
 
     void UpdateAI(const uint32 diff)
     {
-      if(!me->IsNonMeleeSpellCast(false) && !me->isInCombat())
-      {
-          if(OOCTimer < diff)
-          {
-              HandleOffCombatEffects();
-              OOCTimer += 10000;
-          }
-          else
-              OOCTimer -= diff;
-      }
+        if (!me->IsNonMeleeSpellCast(false) && !me->isInCombat())
+        {
+            OOCTimer -= diff;
+            if (OOCTimer <= diff)
+            {
+                HandleOffCombatEffects();
+                OOCTimer += 10000;
+            }
 
-      if(!UpdateVictim())
-          return;
+        }
 
-      if(Glaive_Timer < diff)
-      {
-          if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 60.0, true))
-              AddSpellToCast(target, SPELL_GLAIVE_THROW);
-          Glaive_Timer += urand(14000,20000);
-      }
-      else
-          Glaive_Timer -= diff;
+        if (!UpdateVictim())
+            return;
 
-       if(Magic_Field_Timer < diff)
-       {
-           if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 60.0, true))
-               AddSpellToCast(target, SPELL_MAGIC_DAMPENING_FIELD);
-           Magic_Field_Timer += urand(50000,65000);
-       }
-       else
-            Magic_Field_Timer -= diff;
+        Glaive_Timer -= diff;
+        if (Glaive_Timer <= diff)
+        {
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 60.0, true))
+                AddSpellToCast(target, SPELL_GLAIVE_THROW);
+            Glaive_Timer += urand(14000, 20000);
+        }
 
-       CastNextSpellIfAnyAndReady();
-       DoMeleeAttackIfReady();
+
+        Magic_Field_Timer -= diff;
+        if (Magic_Field_Timer <= diff)
+        {
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 60.0, true))
+                AddSpellToCast(target, SPELL_MAGIC_DAMPENING_FIELD);
+            Magic_Field_Timer += urand(50000, 65000);
+        }
+
+
+        CastNextSpellIfAnyAndReady();
+        DoMeleeAttackIfReady();
     }
 };
 
@@ -146,19 +146,19 @@ struct mob_sunblade_magisterAI : public ScriptedAI
     void Reset()
     {
         Frostbolt_Timer = 0;
-        Arcane_Nova_Timer = urand (12000, 20000);
+        Arcane_Nova_Timer = urand(12000, 20000);
         OOCTimer = 5000;
     }
 
     void HandleOffCombatEffects()
     {
-        if(Unit* sentinel = FindCreature(NPC_BROKEN_SENTINEL, 10.0f, me))
+        if (Unit* sentinel = FindCreature(NPC_BROKEN_SENTINEL, 10.0f, me))
             DoCast(sentinel, SPELL_FEL_ENERGY_COSMETIC);
     }
 
     void EnterCombat(Unit* who)
     {
-        if(me->IsNonMeleeSpellCast(false))
+        if (me->IsNonMeleeSpellCast(false))
             me->InterruptNonMeleeSpells(false);
     }
 
@@ -169,40 +169,40 @@ struct mob_sunblade_magisterAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-      if(!me->IsNonMeleeSpellCast(false) && !me->isInCombat())
-      {
-          if(OOCTimer < diff)
-          {
-              HandleOffCombatEffects();
-              OOCTimer += 10000;
-          }
-          else
-              OOCTimer -= diff;
-      }
+        if (!me->IsNonMeleeSpellCast(false) && !me->isInCombat())
+        {
+            OOCTimer -= diff;
+            if (OOCTimer <= diff)
+            {
+                HandleOffCombatEffects();
+                OOCTimer += 10000;
+            }
 
-      if(!UpdateVictim())
-          return;
+        }
 
-      if(Frostbolt_Timer < diff)
-      {
-          AddSpellToCast(me->getVictim(), SPELL_FROSTBOLT);
-          Frostbolt_Timer += SpellMgr::GetSpellCastTime(GetSpellStore()->LookupEntry(SPELL_FROSTBOLT))-(diff+100);    // ??????????????????
-      }
-      else
-          Frostbolt_Timer -= diff;
+        if (!UpdateVictim())
+            return;
 
-      if(Arcane_Nova_Timer < diff)
-      {
-          ClearCastQueue();
-          AddSpellToCast(SPELL_ARCANE_NOVA, CAST_SELF);
-          Arcane_Nova_Timer += urand(16000, 20000);
-      }
-      else
-          Arcane_Nova_Timer -= diff;
+        Frostbolt_Timer -= diff;
+        if (Frostbolt_Timer <= diff)
+        {
+            AddSpellToCast(me->getVictim(), SPELL_FROSTBOLT);
+            Frostbolt_Timer += SpellMgr::GetSpellCastTime(GetSpellStore()->LookupEntry(SPELL_FROSTBOLT)) - (diff + 100);    // ??????????????????
+        }
 
-      CheckCasterNoMovementInRange(diff, 35.0);
-      CastNextSpellIfAnyAndReady();
-      DoMeleeAttackIfReady();
+
+        Arcane_Nova_Timer -= diff;
+        if (Arcane_Nova_Timer <= diff)
+        {
+            ClearCastQueue();
+            AddSpellToCast(SPELL_ARCANE_NOVA, CAST_SELF);
+            Arcane_Nova_Timer += urand(16000, 20000);
+        }
+
+
+        CheckCasterNoMovementInRange(diff, 35.0);
+        CastNextSpellIfAnyAndReady();
+        DoMeleeAttackIfReady();
     }
 };
 
@@ -245,13 +245,13 @@ struct mob_sunblade_warlockAI : public ScriptedAI
 
     void HandleOffCombatEffects()
     {
-        if(Unit* sentinel = FindCreature(NPC_BROKEN_SENTINEL, 10.0f, me))
+        if (Unit* sentinel = FindCreature(NPC_BROKEN_SENTINEL, 10.0f, me))
             DoCast(sentinel, SPELL_FEL_ENERGY_COSMETIC);
     }
 
     void EnterCombat(Unit* who)
     {
-        if(me->IsNonMeleeSpellCast(false))
+        if (me->IsNonMeleeSpellCast(false))
             me->InterruptNonMeleeSpells(false);
     }
 
@@ -264,63 +264,62 @@ struct mob_sunblade_warlockAI : public ScriptedAI
     void AttackStart(Unit* who)
     {
         ScriptedAI::AttackStartNoMove(who, CHECK_TYPE_CASTER);
-        if(Creature* Imp = me->GetMap()->GetCreature(SummonGUID))
+        if (Creature* Imp = me->GetMap()->GetCreature(SummonGUID))
             Imp->AI()->AttackStart(who);
     }
 
     void UpdateAI(const uint32 diff)
     {
-      if(!me->isInCombat())
-      {
-          if(SummonImp_Timer < diff)
-          {
-              // check if still having pet ;]
-              if(!me->GetMap()->GetCreature(SummonGUID))
-                  SummonGUID = 0;
+        if (!me->isInCombat())
+        {
+            SummonImp_Timer -= diff;
+            if (SummonImp_Timer <= diff)
+            {
+                // check if still having pet ;]
+                if (!me->GetMap()->GetCreature(SummonGUID))
+                    SummonGUID = 0;
 
-              if(!SummonGUID)
-                  DoCast(m_creature, SPELL_SUMMON_SUNBLADE_IMP, false);
-              SummonImp_Timer += 15000;
-          }
-          else
-              SummonImp_Timer -= diff;
-      }
+                if (!SummonGUID)
+                    DoCast(m_creature, SPELL_SUMMON_SUNBLADE_IMP, false);
+                SummonImp_Timer += 15000;
+            }
 
-      if(!me->IsNonMeleeSpellCast(false) && !me->isInCombat())
-      {
-          if(OOCTimer < diff)
-          {
-              HandleOffCombatEffects();
-              OOCTimer += 10000;
-          }
-          else
-              OOCTimer -= diff;
-      }
 
-      if(!UpdateVictim())
-      return;
+            if (!me->IsNonMeleeSpellCast(false) && !me->isInCombat())
+            {
+                OOCTimer -= diff;
+                if (OOCTimer <= diff)
+                {
+                    HandleOffCombatEffects();
+                    OOCTimer += 10000;
+                }
+            }
 
-      if(FelArmor_Timer < diff)
-      {
-          if(!me->HasAura(SPELL_FEL_ARMOR, 0))
-              DoCast(me, SPELL_FEL_ARMOR, true);
-          FelArmor_Timer += 120000;
-      }
-      else
-          FelArmor_Timer -= diff;
+            if (!UpdateVictim())
+            return;
 
-      if(Immolate_Timer < diff)
-      {
-          ClearCastQueue();
-          AddSpellToCast(m_creature->getVictim(), SPELL_IMMOLATE);
-          Immolate_Timer += urand(16000, 25000);
-      }
-      else
-          Immolate_Timer -= diff;
+            FelArmor_Timer -= diff;
+            if (FelArmor_Timer <= diff)
+            {
+                if (!me->HasAura(SPELL_FEL_ARMOR, 0))
+                    DoCast(me, SPELL_FEL_ARMOR, true);
+                FelArmor_Timer += 120000;
+            }
 
-      CheckCasterNoMovementInRange(diff);
-      CastNextSpellIfAnyAndReady(diff);
-      DoMeleeAttackIfReady();
+
+            Immolate_Timer -= diff;
+            if (Immolate_Timer <= diff)
+            {
+                ClearCastQueue();
+                AddSpellToCast(m_creature->getVictim(), SPELL_IMMOLATE);
+                Immolate_Timer += urand(16000, 25000);
+            }
+
+
+            CheckCasterNoMovementInRange(diff);
+            CastNextSpellIfAnyAndReady(diff);
+            DoMeleeAttackIfReady();
+        }
     }
 };
 
@@ -328,9 +327,9 @@ struct mob_sunblade_warlockAI : public ScriptedAI
 
 struct mob_sunblade_impAI : public ScriptedAI
 {
-    mob_sunblade_impAI(Creature *c) : ScriptedAI(c) { }
+    mob_sunblade_impAI(Creature *c) : ScriptedAI(c) {}
 
-    void Reset() { }
+    void Reset() {}
 
     void AttackStart(Unit* who)
     {
@@ -340,11 +339,11 @@ struct mob_sunblade_impAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-      CheckCasterNoMovementInRange(diff);
-      CastNextSpellIfAnyAndReady(diff);
+        CheckCasterNoMovementInRange(diff);
+        CastNextSpellIfAnyAndReady(diff);
     }
 };
 
@@ -373,25 +372,25 @@ struct mob_sunblade_physicianAI : public ScriptedAI
 
     void HandleOffCombatEffects()
     {
-        if(Unit* sentinel = FindCreature(NPC_BROKEN_SENTINEL, 10.0f, me))
+        if (Unit* sentinel = FindCreature(NPC_BROKEN_SENTINEL, 10.0f, me))
             DoCast(sentinel, SPELL_FEL_ENERGY_COSMETIC);
     }
 
     void EnterCombat(Unit* who)
     {
-        if(me->IsNonMeleeSpellCast(false))
+        if (me->IsNonMeleeSpellCast(false))
             me->InterruptNonMeleeSpells(false);
     }
 
     bool CanCastPoM()
     {
         std::list<Creature*> FriendList = FindAllFriendlyInGrid(40);
-        if(FriendList.empty())
+        if (FriendList.empty())
             return false;
 
-        for(std::list<Creature*>::iterator i = FriendList.begin(); i !=  FriendList.end(); ++i)
+        for (std::list<Creature*>::iterator i = FriendList.begin(); i != FriendList.end(); ++i)
         {
-            if((*i)->HasAura(44586, 0))
+            if ((*i)->HasAura(44586, 0))
                 return false;
         }
         return true;
@@ -399,42 +398,40 @@ struct mob_sunblade_physicianAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-      if(!me->IsNonMeleeSpellCast(false) && !me->isInCombat())
-      {
-          if(OOCTimer < diff)
-          {
-             HandleOffCombatEffects();
-             OOCTimer += 10000;
-          }
-          else
-              OOCTimer -= diff;
-      }
+        if (!me->IsNonMeleeSpellCast(false) && !me->isInCombat())
+        {
+            OOCTimer -= diff;
+            if (OOCTimer <= diff)
+            {
+                HandleOffCombatEffects();
+                OOCTimer += 10000;
+            }
+        }
 
-      if(!UpdateVictim())
-          return;
+        if (!UpdateVictim())
+            return;
 
-      if(Poison_Timer < diff)
-      {
-          AddSpellToCast(SPELL_INJECT_POISON, CAST_SELF);
-          Poison_Timer += urand(16000, 20000);
-      }
-      else
-          Poison_Timer -= diff;
+        Poison_Timer -= diff;
+        if (Poison_Timer <= diff)
+        {
+            AddSpellToCast(SPELL_INJECT_POISON, CAST_SELF);
+            Poison_Timer += urand(16000, 20000);
+        }
 
-      if(Prayer_of_Mending_Timer < diff)
-      {
-          if(CanCastPoM())  // only one PoM active at a time
-          {
-              if(Unit* healTarget = SelectLowestHpFriendly(40))
-                  AddSpellToCast(healTarget, SPELL_PRAYER_OF_MENDING);
-          }
-          Prayer_of_Mending_Timer += urand(7000, 12000);
-      }
-      else
-          Prayer_of_Mending_Timer -= diff;
+        Prayer_of_Mending_Timer -= diff;
+        if (Prayer_of_Mending_Timer <= diff)
+        {
+            if (CanCastPoM())  // only one PoM active at a time
+            {
+                if (Unit* healTarget = SelectLowestHpFriendly(40))
+                    AddSpellToCast(healTarget, SPELL_PRAYER_OF_MENDING);
+            }
+            Prayer_of_Mending_Timer += urand(7000, 12000);
+        }
 
-      CastNextSpellIfAnyAndReady();
-      DoMeleeAttackIfReady();
+
+        CastNextSpellIfAnyAndReady();
+        DoMeleeAttackIfReady();
     }
 };
 
@@ -466,43 +463,43 @@ struct mob_sunblade_blood_knightAI : public ScriptedAI
 
     void HandleOffCombatEffects()
     {
-        if(Unit* sentinel = FindCreature(NPC_BROKEN_SENTINEL, 10.0f, me))
+        if (Unit* sentinel = FindCreature(NPC_BROKEN_SENTINEL, 10.0f, me))
             DoCast(sentinel, SPELL_FEL_ENERGY_COSMETIC);
     }
 
     void EnterCombat(Unit* who)
     {
-        if(me->IsNonMeleeSpellCast(false))
+        if (me->IsNonMeleeSpellCast(false))
             me->InterruptNonMeleeSpells(false);
     }
 
     void UpdateAI(const uint32 diff)
     {
-        if(!me->IsNonMeleeSpellCast(false) && !me->isInCombat())
+        if (!me->IsNonMeleeSpellCast(false) && !me->isInCombat())
         {
-            if(OOCTimer < diff)
+            OOCTimer -= diff;
+            if (OOCTimer <= diff)
             {
-               HandleOffCombatEffects();
-               OOCTimer += 10000;
+                HandleOffCombatEffects();
+                OOCTimer += 10000;
             }
-            else
-                OOCTimer -= diff;
         }
 
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(Seal_Timer < diff)
+        Seal_Timer -= diff;
+        if (Seal_Timer <= diff)
         {
             AddSpellToCast(SPELL_SEAL_OF_WRATH, CAST_SELF);
             Seal_Timer += urand(20000, 30000);
         }
-        else
-            Seal_Timer -= diff;
 
-        if(Judgement_Timer < diff)
+
+        Judgement_Timer -= diff;
+        if (Judgement_Timer <= diff)
         {
-            if(me->HasAura(SPELL_SEAL_OF_WRATH, 0))
+            if (me->HasAura(SPELL_SEAL_OF_WRATH, 0))
             {
                 AddSpellToCast(me->getVictim(), SPELL_JUDGEMENT_OF_WRATH);
                 me->RemoveAurasDueToSpell(SPELL_SEAL_OF_WRATH);
@@ -510,10 +507,10 @@ struct mob_sunblade_blood_knightAI : public ScriptedAI
                 Judgement_Timer += urand(13000, 20000);
             }
         }
-        else
-            Judgement_Timer -= diff;
 
-        if(Holy_Light_Timer < diff)
+
+        Holy_Light_Timer -= diff;
+        if (Holy_Light_Timer <= diff)
         {
             Unit* healTarget = SelectLowestHpFriendly(40.0f, 10000);
             if (healTarget)
@@ -522,8 +519,7 @@ struct mob_sunblade_blood_knightAI : public ScriptedAI
                 AddSpellToCast(me, SPELL_HOLY_LIGHT);
             Holy_Light_Timer += urand(7000, 10000);
         }
-        else
-            Holy_Light_Timer -= diff;
+
 
         CastNextSpellIfAnyAndReady(diff);
         DoMeleeAttackIfReady();
@@ -538,11 +534,11 @@ uint32 DrainingList[8] =
     96835, 96831
 };
 
-const char* SAY_OOC1     = "The power! More, more, more!";
-const char* SAY_OOC2     = "It seethes and burns...";
-const char* SAY_AGGRO1   = "Get away from my crystals!";
-const char* SAY_AGGRO2   = "It's MINE!";
-const char* SAY_AGGRO3   = "You wish to steal the power! Die!";
+const char* SAY_OOC1 = "The power! More, more, more!";
+const char* SAY_OOC2 = "It seethes and burns...";
+const char* SAY_AGGRO1 = "Get away from my crystals!";
+const char* SAY_AGGRO2 = "It's MINE!";
+const char* SAY_AGGRO3 = "You wish to steal the power! Die!";
 
 #define SPELL_DRINK_FEL_INFUSION            44505
 #define SPELL_WRETCHED_STAB                 44533
@@ -561,15 +557,15 @@ struct mob_wretched_skulkerAI : public ScriptedAI
         me->SetStandState(PLAYER_STATE_SIT);
         DoCast(me, SPELL_DUAL_WIELD);
         OOCTimer = 10000;
-        Drink_Timer = HeroicMode?urand(5000, 18000):urand(10000, 25000);
+        Drink_Timer = HeroicMode ? urand(5000, 18000) : urand(10000, 25000);
         Wretched_Stab_Timer = urand(4000, 7000);
     }
 
     void EnterCombat(Unit* who)
     {
-        if(me->IsNonMeleeSpellCast(false))
+        if (me->IsNonMeleeSpellCast(false))
             me->InterruptNonMeleeSpells(false);
-        if(roll_chance_f(10.0))
+        if (roll_chance_f(10.0))
             DoSay(RAND(SAY_AGGRO1, SAY_AGGRO2, SAY_AGGRO3), 0, me->getVictim());
     }
 
@@ -577,47 +573,47 @@ struct mob_wretched_skulkerAI : public ScriptedAI
     {
         for (uint8 i = 0; i < 8; ++i)
         {
-            if(me->GetDBTableGUIDLow() == DrainingList[i]) // draining fel crystal
+            if (me->GetDBTableGUIDLow() == DrainingList[i]) // draining fel crystal
                 me->CastSpell((Unit*)NULL, SPELL_FEL_CRYSTAL_COSMETIC, false);
-            if(roll_chance_f(2.0f))
+            if (roll_chance_f(2.0f))
                     DoSay(RAND(SAY_OOC1, SAY_OOC2), 0, me);
         }
     }
 
     void UpdateAI(const uint32 diff)
     {
-        if(!me->IsNonMeleeSpellCast(false) && !me->isInCombat())
+        if (!me->IsNonMeleeSpellCast(false) && !me->isInCombat())
         {
-            if(OOCTimer < diff)
+            OOCTimer -= diff;
+            if (OOCTimer <= diff)
             {
                 HandleOffCombatEffects();
                 OOCTimer += 10000;
             }
-            else
-                OOCTimer -= diff;
+
         }
 
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(Drink_Timer < diff)
+        Drink_Timer -= diff;
+        if (Drink_Timer <= diff)
         {
             AddSpellToCast(SPELL_DRINK_FEL_INFUSION, CAST_SELF);
-            Drink_Timer += HeroicMode?urand(10000, 18000):urand(15000, 25000);
+            Drink_Timer += HeroicMode ? urand(10000, 18000) : urand(15000, 25000);
         }
-        else
-            Drink_Timer -= diff;
 
-       if(Wretched_Stab_Timer < diff)
-       {
-           AddSpellToCast(m_creature->getVictim(), SPELL_WRETCHED_STAB);
-           Wretched_Stab_Timer += urand(3000, 7000);
-       }
-       else
-           Wretched_Stab_Timer -= diff;
 
-       CastNextSpellIfAnyAndReady(diff);
-       DoMeleeAttackIfReady();
+        Wretched_Stab_Timer -= diff;
+        if (Wretched_Stab_Timer <= diff)
+        {
+            AddSpellToCast(m_creature->getVictim(), SPELL_WRETCHED_STAB);
+            Wretched_Stab_Timer += urand(3000, 7000);
+        }
+
+
+        CastNextSpellIfAnyAndReady(diff);
+        DoMeleeAttackIfReady();
     }
 };
 
@@ -635,15 +631,15 @@ struct mob_wretched_bruiserAI : public ScriptedAI
     {
         me->SetStandState(PLAYER_STATE_SIT);
         OOCTimer = 10000;
-        Drink_Timer = HeroicMode?urand(5000, 18000):urand(10000, 25000);
+        Drink_Timer = HeroicMode ? urand(5000, 18000) : urand(10000, 25000);
         Wretched_Strike_Timer = urand(6000, 10000);
     }
 
     void EnterCombat(Unit* who)
     {
-        if(me->IsNonMeleeSpellCast(false))
+        if (me->IsNonMeleeSpellCast(false))
             me->InterruptNonMeleeSpells(false);
-        if(roll_chance_f(10.0))
+        if (roll_chance_f(10.0))
             DoSay(RAND(SAY_AGGRO1, SAY_AGGRO2, SAY_AGGRO3), 0, me->getVictim());
     }
 
@@ -651,44 +647,44 @@ struct mob_wretched_bruiserAI : public ScriptedAI
     {
         for (uint8 i = 0; i < 8; ++i)
         {
-            if(me->GetDBTableGUIDLow() == DrainingList[i]) // draining fel crystal
+            if (me->GetDBTableGUIDLow() == DrainingList[i]) // draining fel crystal
                 me->CastSpell((Unit*)NULL, SPELL_FEL_CRYSTAL_COSMETIC, false);
-            if(roll_chance_f(2.0f))
+            if (roll_chance_f(2.0f))
                     DoSay(RAND(SAY_OOC1, SAY_OOC2), 0, me);
         }
     }
 
     void UpdateAI(const uint32 diff)
     {
-        if(!me->IsNonMeleeSpellCast(false) && !me->isInCombat())
+        if (!me->IsNonMeleeSpellCast(false) && !me->isInCombat())
         {
-            if(OOCTimer < diff)
+            OOCTimer -= diff;
+            if (OOCTimer <= diff)
             {
                 HandleOffCombatEffects();
                 OOCTimer += 10000;
             }
-            else
-                OOCTimer -= diff;
+
         }
 
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(Drink_Timer < diff)
+        Drink_Timer -= diff;
+        if (Drink_Timer <= diff)
         {
             AddSpellToCast(SPELL_DRINK_FEL_INFUSION, CAST_SELF);
-            Drink_Timer += HeroicMode?urand(10000, 18000):urand(15000, 25000);
+            Drink_Timer += HeroicMode ? urand(10000, 18000) : urand(15000, 25000);
         }
-        else
-            Drink_Timer -= diff;
 
-        if(Wretched_Strike_Timer < diff)
+
+        Wretched_Strike_Timer -= diff;
+        if (Wretched_Strike_Timer <= diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_WRETCHED_STRIKE);
             Wretched_Strike_Timer += urand(7000, 16000);
         }
-        else
-            Wretched_Strike_Timer -= diff;
+
 
         CastNextSpellIfAnyAndReady(diff);
         DoMeleeAttackIfReady();
@@ -710,7 +706,7 @@ struct mob_wretched_huskAI : public ScriptedAI
     {
         me->SetStandState(PLAYER_STATE_SIT);
         OOCTimer = 5000;
-        Drink_Timer = HeroicMode?urand(5000, 18000):urand(15000, 25000);
+        Drink_Timer = HeroicMode ? urand(5000, 18000) : urand(15000, 25000);
         Wretched_Cast_Timer = 0;
     }
 
@@ -721,9 +717,9 @@ struct mob_wretched_huskAI : public ScriptedAI
 
     void EnterCombat(Unit* who)
     {
-        if(me->IsNonMeleeSpellCast(false))
+        if (me->IsNonMeleeSpellCast(false))
             me->InterruptNonMeleeSpells(false);
-        if(roll_chance_f(10.0))
+        if (roll_chance_f(10.0))
             DoSay(RAND(SAY_AGGRO1, SAY_AGGRO2, SAY_AGGRO3), 0, me->getVictim());
     }
 
@@ -731,10 +727,10 @@ struct mob_wretched_huskAI : public ScriptedAI
     {
         for (uint8 i = 0; i < 8; ++i)
         {
-            if(me->GetDBTableGUIDLow() == DrainingList[i]) // draining fel crystal
+            if (me->GetDBTableGUIDLow() == DrainingList[i]) // draining fel crystal
             {
                 me->CastSpell((Unit*)NULL, SPELL_FEL_CRYSTAL_COSMETIC, false);
-                if(roll_chance_f(2.0f))
+                if (roll_chance_f(2.0f))
                     DoSay(RAND(SAY_OOC1, SAY_OOC2), 0, me);
             }
         }
@@ -742,40 +738,39 @@ struct mob_wretched_huskAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!me->IsNonMeleeSpellCast(false) && !me->isInCombat())
+        if (!me->IsNonMeleeSpellCast(false) && !me->isInCombat())
         {
-            if(OOCTimer < diff)
+            OOCTimer -= diff;
+            if (OOCTimer <= diff)
             {
                 HandleOffCombatEffects();
                 OOCTimer += 10000;
             }
-            else
-                OOCTimer -= diff;
         }
 
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(Drink_Timer < diff)
+        Drink_Timer -= diff;
+        if (Drink_Timer <= diff)
         {
             ClearCastQueue();
             AddSpellToCast(SPELL_DRINK_FEL_INFUSION, CAST_SELF);
-            Drink_Timer += HeroicMode?urand(10000, 18000):urand(15000, 25000);
+            Drink_Timer += HeroicMode ? urand(10000, 18000) : urand(15000, 25000);
         }
-        else
-            Drink_Timer -= diff;
 
-       if(Wretched_Cast_Timer < diff)
-       {
-           AddSpellToCast(m_creature->getVictim(), RAND(SPELL_WRETCHED_FIREBALL, SPELL_WRETCHED_FROSTBOLT));
-           Wretched_Cast_Timer += me->HasAura(SPELL_DRINK_FEL_INFUSION, 1) ? 1400 : 2900;
-       }
-       else
-           Wretched_Cast_Timer -= diff;
 
-       CheckCasterNoMovementInRange(diff, 35.0);
-       CastNextSpellIfAnyAndReady(diff);
-       DoMeleeAttackIfReady();
+        Wretched_Cast_Timer -= diff;
+        if (Wretched_Cast_Timer <= diff)
+        {
+            AddSpellToCast(m_creature->getVictim(), RAND(SPELL_WRETCHED_FIREBALL, SPELL_WRETCHED_FROSTBOLT));
+            Wretched_Cast_Timer += me->HasAura(SPELL_DRINK_FEL_INFUSION, 1) ? 1400 : 2900;
+        }
+
+
+        CheckCasterNoMovementInRange(diff, 35.0);
+        CastNextSpellIfAnyAndReady(diff);
+        DoMeleeAttackIfReady();
     }
 };
 
@@ -792,13 +787,13 @@ struct mob_brightscale_wyrmAI : public ScriptedAI
 
     void DamageTaken(Unit* done_by, uint32& damage)
     {
-        if(damage && damage >= me->GetHealth())
+        if (damage && damage >= me->GetHealth())
             DoCast((Unit*)NULL, SPELL_ENERGY_INFUSION);
     }
 
     void UpdateAI(const uint32 diff)
     {
-       DoMeleeAttackIfReady();
+        DoMeleeAttackIfReady();
     }
 };
 
@@ -820,58 +815,58 @@ struct mob_sister_of_tormentAI : public ScriptedAI
 
     void Reset()
     {
-        LashOfPain_Timer = urand(8000,14000);
+        LashOfPain_Timer = urand(8000, 14000);
         DeadlyEmbrace_Timer = (17000, 23000);
         OOCTimer = 5000;
     }
 
     void HandleOffCombatEffects()
     {
-        if(Unit* sentinel = FindCreature(NPC_BROKEN_SENTINEL, 10.0f, me))
+        if (Unit* sentinel = FindCreature(NPC_BROKEN_SENTINEL, 10.0f, me))
             DoCast(sentinel, SPELL_FEL_ENERGY_COSMETIC);
     }
 
     void EnterCombat(Unit* who)
     {
-        if(me->IsNonMeleeSpellCast(false))
+        if (me->IsNonMeleeSpellCast(false))
             me->InterruptNonMeleeSpells(false);
     }
 
     void UpdateAI(const uint32 diff)
     {
-      if(!me->IsNonMeleeSpellCast(false) && !me->isInCombat())
-      {
-          if(OOCTimer < diff)
-          {
-             HandleOffCombatEffects();
-             OOCTimer += 10000;
-          }
-          else
-              OOCTimer -= diff;
-      }
+        if (!me->IsNonMeleeSpellCast(false) && !me->isInCombat())
+        {
+            OOCTimer -= diff;
+            if (OOCTimer <= diff)
+            {
+                HandleOffCombatEffects();
+                OOCTimer += 10000;
+            }
 
-      if(!UpdateVictim())
-          return;
+        }
 
-      if(LashOfPain_Timer < diff)
-      {
-          AddSpellToCast(SPELL_LASH_OF_PAIN, CAST_TANK);
-          LashOfPain_Timer += urand(8000,14000);
-      }
-      else
-          LashOfPain_Timer -= diff;
+        if (!UpdateVictim())
+            return;
 
-       if(DeadlyEmbrace_Timer < diff)
-       {
-           if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 20.0, true))
-               AddSpellToCast(target, SPELL_DEADLY_EMRACE);
-           DeadlyEmbrace_Timer += (17000, 23000);
-       }
-       else
-            DeadlyEmbrace_Timer -= diff;
+        LashOfPain_Timer -= diff;
+        if (LashOfPain_Timer <= diff)
+        {
+            AddSpellToCast(SPELL_LASH_OF_PAIN, CAST_TANK);
+            LashOfPain_Timer += urand(8000, 14000);
+        }
 
-       CastNextSpellIfAnyAndReady();
-       DoMeleeAttackIfReady();
+
+        DeadlyEmbrace_Timer -= diff;
+        if (DeadlyEmbrace_Timer <= diff)
+        {
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 20.0, true))
+                AddSpellToCast(target, SPELL_DEADLY_EMRACE);
+            DeadlyEmbrace_Timer += (17000, 23000);
+        }
+
+
+        CastNextSpellIfAnyAndReady();
+        DoMeleeAttackIfReady();
     }
 };
 
@@ -881,16 +876,16 @@ struct mob_sunblade_sentinelAI : public ScriptedAI
 {
     mob_sunblade_sentinelAI(Creature *c) : ScriptedAI(c) {}
 
-    void EnterCombat(Unit* )
+    void EnterCombat(Unit*)
     {
         DoCast(me, SPELL_FEL_LIGHTNING_AURA);
     }
 
     void UpdateAI(const uint32 diff)
     {
-      if(!UpdateVictim())
-          return;
-       DoMeleeAttackIfReady();
+        if (!UpdateVictim())
+            return;
+        DoMeleeAttackIfReady();
     }
 };
 
@@ -927,13 +922,13 @@ struct mob_coilskar_witchAI : public ScriptedAI
 
     void HandleOffCombatEffects()
     {
-        if(Unit* sentinel = FindCreature(NPC_BROKEN_SENTINEL, 10.0f, me))
+        if (Unit* sentinel = FindCreature(NPC_BROKEN_SENTINEL, 10.0f, me))
             DoCast(sentinel, SPELL_FEL_ENERGY_COSMETIC);
     }
 
     void EnterCombat(Unit* who)
     {
-        if(me->IsNonMeleeSpellCast(false))
+        if (me->IsNonMeleeSpellCast(false))
             me->InterruptNonMeleeSpells(false);
     }
 
@@ -944,64 +939,62 @@ struct mob_coilskar_witchAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-      if(!me->IsNonMeleeSpellCast(false) && !me->isInCombat())
-      {
-          if(OOCTimer < diff)
-          {
-             HandleOffCombatEffects();
-             OOCTimer += 10000;
-          }
-          else
-              OOCTimer -= diff;
-      }
+        if (!me->IsNonMeleeSpellCast(false) && !me->isInCombat())
+        {
+            OOCTimer -= diff;
+            if (OOCTimer <= diff)
+            {
+                HandleOffCombatEffects();
+                OOCTimer += 10000;
+            }
+        }
 
-      if(!UpdateVictim())
-          return;
+        if (!UpdateVictim())
+            return;
 
-      if(Check_Timer < diff)
-      {
-          if(HealthBelowPct(51) && canShield)
-          {
-              canShield = false;
-              ForceSpellCast(SPELL_MANA_SHIELD, CAST_SELF);
-          }
-          Check_Timer += 1500;
-      }
-      else
-          Check_Timer -= diff;
+        Check_Timer -= diff;
+        if (Check_Timer <= diff)
+        {
+            if (HealthBelowPct(51) && canShield)
+            {
+                canShield = false;
+                ForceSpellCast(SPELL_MANA_SHIELD, CAST_SELF);
+            }
+            Check_Timer += 1500;
+        }
 
-      if(Shoot_Timer < diff)
-      {
-          if(me->GetMotionMaster()->GetCurrentMovementGeneratorType() == IDLE_MOTION_TYPE)
-          {
-              if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30.0f, true, 5.0f))
-                  AddSpellToCast(target, SPELL_SHOOT);
-          }
-          Shoot_Timer += 3000;
-      }
-      else
-          Shoot_Timer -= diff;
+        Shoot_Timer -= diff;
+        if (Shoot_Timer <= diff)
+        {
+            if (me->GetMotionMaster()->GetCurrentMovementGeneratorType() == IDLE_MOTION_TYPE)
+            {
+                if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30.0f, true, 5.0f))
+                    AddSpellToCast(target, SPELL_SHOOT);
+            }
+            Shoot_Timer += 3000;
+        }
 
-      if(FrostArrow_Timer < diff)
-      {
-          if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 50.0f, true))
-              AddSpellToCast(target, SPELL_FROST_ARROW);
-          FrostArrow_Timer += urand(9000, 12000);
-      }
-      else
-          FrostArrow_Timer -= diff;
 
-      if(ForkedLightning_Timer < diff)
-      {
-          AddSpellToCast(SPELL_FORKED_LIGHTNING, CAST_NULL);
-          ForkedLightning_Timer += urand(12000, 18000);
-      }
-      else
-          ForkedLightning_Timer -= diff;
+        FrostArrow_Timer -= diff;
+        if (FrostArrow_Timer <= diff)
+        {
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 50.0f, true))
+                AddSpellToCast(target, SPELL_FROST_ARROW);
+            FrostArrow_Timer += urand(9000, 12000);
+        }
 
-      CheckShooterNoMovementInRange(diff);
-      CastNextSpellIfAnyAndReady();
-      DoMeleeAttackIfReady();
+
+        ForkedLightning_Timer -= diff;
+        if (ForkedLightning_Timer <= diff)
+        {
+            AddSpellToCast(SPELL_FORKED_LIGHTNING, CAST_NULL);
+            ForkedLightning_Timer += urand(12000, 18000);
+        }
+
+
+        CheckShooterNoMovementInRange(diff);
+        CastNextSpellIfAnyAndReady();
+        DoMeleeAttackIfReady();
     }
 };
 
@@ -1029,65 +1022,65 @@ struct mob_ethereum_smugglerAI : public ScriptedAI
 
     void HandleOffCombatEffects()
     {
-        if(Unit* sentinel = FindCreature(NPC_BROKEN_SENTINEL, 10.0f, me))
+        if (Unit* sentinel = FindCreature(NPC_BROKEN_SENTINEL, 10.0f, me))
             DoCast(sentinel, SPELL_FEL_ENERGY_COSMETIC);
     }
 
     void EnterCombat(Unit* who)
     {
-        if(me->IsNonMeleeSpellCast(false))
+        if (me->IsNonMeleeSpellCast(false))
             me->InterruptNonMeleeSpells(false);
     }
 
     void UpdateAI(const uint32 diff)
     {
-      if(!me->IsNonMeleeSpellCast(false) && !me->isInCombat())
-      {
-          if(OOCTimer < diff)
-          {
-             HandleOffCombatEffects();
-             OOCTimer += 10000;
-          }
-          else
-              OOCTimer -= diff;
-      }
+        if (!me->IsNonMeleeSpellCast(false) && !me->isInCombat())
+        {
+            OOCTimer -= diff;
+            if (OOCTimer <= diff)
+            {
+                HandleOffCombatEffects();
+                OOCTimer += 10000;
+            }
 
-      if(!UpdateVictim())
-          return;
+        }
 
-      if(Check_Timer)
-      {
-          // when not casting AE, chase victim
-          if(Check_Timer <= diff)
-          {
-              me->setHover(false);
-              DoStartMovement(me->getVictim());
-              Check_Timer = 0;
-          }
-          else
-              Check_Timer -= diff;
-      }
+        if (!UpdateVictim())
+            return;
 
-      if(ExplosionCombo_Timer < diff)
-      {
-          if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100.0f, true))
-          {
-              float x, y, z;
-              target->GetPosition(x, y, z);
-              DoTeleportTo(x, y, z);
-              me->setHover(true);
-              me->GetMotionMaster()->MoveIdle();
-              for(uint8 i = 0; i < 3; ++i)
-                AddSpellToCast(SPELL_ARCANE_EXPLOSION, CAST_NULL);
-              Check_Timer += 2500;
-          }
-          ExplosionCombo_Timer += 30000;
-      }
-      else
-          ExplosionCombo_Timer -= diff;
+        if (Check_Timer)
+        {
+            Check_Timer -= diff;
+            // when not casting AE, chase victim
+            if (Check_Timer <= diff)
+            {
+                me->setHover(false);
+                DoStartMovement(me->getVictim());
+                Check_Timer = 0;
+            }
 
-      CastNextSpellIfAnyAndReady();
-      DoMeleeAttackIfReady();
+        }
+
+        ExplosionCombo_Timer -= diff;
+        if (ExplosionCombo_Timer <= diff)
+        {
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100.0f, true))
+            {
+                float x, y, z;
+                target->GetPosition(x, y, z);
+                DoTeleportTo(x, y, z);
+                me->setHover(true);
+                me->GetMotionMaster()->MoveIdle();
+                for (uint8 i = 0; i < 3; ++i)
+                  AddSpellToCast(SPELL_ARCANE_EXPLOSION, CAST_NULL);
+                Check_Timer += 2500;
+            }
+            ExplosionCombo_Timer += 30000;
+        }
+
+
+        CastNextSpellIfAnyAndReady();
+        DoMeleeAttackIfReady();
     }
 };
 
@@ -1097,7 +1090,7 @@ struct mob_ethereum_smugglerAI : public ScriptedAI
 
 struct mob_mgt_kalecgosAI : public ScriptedAI
 {
-    mob_mgt_kalecgosAI(Creature *c) : ScriptedAI(c) { }
+    mob_mgt_kalecgosAI(Creature *c) : ScriptedAI(c) {}
 
     int32 Timer;
     uint32 step;
@@ -1113,9 +1106,9 @@ struct mob_mgt_kalecgosAI : public ScriptedAI
 
     void MovementInform(uint32 Type, uint32 Id)
     {
-        if(Type == POINT_MOTION_TYPE)
+        if (Type == POINT_MOTION_TYPE)
         {
-            switch(Id)
+            switch (Id)
             {
                 case 1:
                     me->GetMap()->CreatureRelocation(me, 198.4, -273.3, -8.72, me->GetOrientation());
@@ -1129,7 +1122,7 @@ struct mob_mgt_kalecgosAI : public ScriptedAI
 
     void DoFlight(uint32 step)
     {
-        switch(step)
+        switch (step)
         {
             case 0:
                 me->GetMotionMaster()->MovePoint(1, 198.4, -273.3, -8.72);
@@ -1144,13 +1137,13 @@ struct mob_mgt_kalecgosAI : public ScriptedAI
                 Timer += 1000;
                 break;
             case 3:
-                {
+            {
                 float x, y, z;
                 me->GetPosition(x, y, z);
-                me->GetMap()->CreatureRelocation(me, x, y, z, 2*M_PI);
+                me->GetMap()->CreatureRelocation(me, x, y, z, 2 * M_PI);
                 Timer += 1500;
                 break;
-                }
+            }
             case 4:
                 DoCast(me, SPELL_TRANSFORM_INTO_KALEC);
                 Timer += 1000;
@@ -1170,13 +1163,12 @@ struct mob_mgt_kalecgosAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(Timer < diff)
+        Timer -= diff;
+        if (Timer <= diff)
         {
             DoFlight(step);
             ++step;
         }
-        else
-            Timer -= diff;
     }
 };
 
@@ -1191,8 +1183,8 @@ bool GossipHello_npc_kalec(Player *player, Creature *_Creature)
     if (_Creature->isQuestGiver())
         player->PrepareQuestMenu(_Creature->GetGUID());
 
-    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, KALEC_WELCOME1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
-    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, KALEC_WELCOME2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+3);
+    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, KALEC_WELCOME1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, KALEC_WELCOME2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
 
     player->SEND_GOSSIP_MENU(12498, _Creature->GetGUID());
 
@@ -1201,24 +1193,24 @@ bool GossipHello_npc_kalec(Player *player, Creature *_Creature)
 
 bool GossipSelect_npc_kalec(Player *player, Creature *_Creature, uint32 sender, uint32 action)
 {
-    switch(action)
+    switch (action)
     {
-        case GOSSIP_ACTION_INFO_DEF+1:
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, KALEC_CONTINUE1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
+        case GOSSIP_ACTION_INFO_DEF + 1:
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, KALEC_CONTINUE1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
             player->SEND_GOSSIP_MENU(12500, _Creature->GetGUID());
             break;
-        case GOSSIP_ACTION_INFO_DEF+2:
+        case GOSSIP_ACTION_INFO_DEF + 2:
             player->SEND_GOSSIP_MENU(12502, _Creature->GetGUID());
             break;
-        case GOSSIP_ACTION_INFO_DEF+3:
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, KALEC_CONTINUE2A, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+4);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, KALEC_CONTINUE2B, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+5);
+        case GOSSIP_ACTION_INFO_DEF + 3:
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, KALEC_CONTINUE2A, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 4);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, KALEC_CONTINUE2B, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 5);
             player->SEND_GOSSIP_MENU(12606, _Creature->GetGUID());
             break;
-        case GOSSIP_ACTION_INFO_DEF+4:
+        case GOSSIP_ACTION_INFO_DEF + 4:
             player->SEND_GOSSIP_MENU(12607, _Creature->GetGUID());
             break;
-        case GOSSIP_ACTION_INFO_DEF+5:
+        case GOSSIP_ACTION_INFO_DEF + 5:
             player->SEND_GOSSIP_MENU(12608, _Creature->GetGUID());
             break;
     }
@@ -1243,7 +1235,7 @@ bool CompletedCinematic_scrying_orb_cinematic(Player* player, CinematicSequences
     if (player)
     {
         ScriptedInstance* pInstance = player->GetInstanceData();
-        if(pInstance && pInstance->GetData(DATA_KALEC) != DONE)
+        if (pInstance && pInstance->GetData(DATA_KALEC) != DONE)
         {
             pInstance->SetData(DATA_KALEC, DONE);
             player->SummonCreature(NPC_MGT_KALECGOS, 133.3, -384.3, 13.0, 0, TEMPSUMMON_CORPSE_DESPAWN, 0);
@@ -1254,63 +1246,63 @@ bool CompletedCinematic_scrying_orb_cinematic(Player* player, CinematicSequences
 
 CreatureAI* GetAI_mob_sunwell_mage_guard(Creature *_Creature)
 {
-    return new mob_sunwell_mage_guardAI (_Creature);
+    return new mob_sunwell_mage_guardAI(_Creature);
 }
 CreatureAI* GetAI_mob_sunblade_magister(Creature *_Creature)
 {
-    return new mob_sunblade_magisterAI (_Creature);
+    return new mob_sunblade_magisterAI(_Creature);
 }
 CreatureAI* GetAI_mob_sunblade_warlock(Creature *_Creature)
 {
-    return new mob_sunblade_warlockAI (_Creature);
+    return new mob_sunblade_warlockAI(_Creature);
 }
 CreatureAI* GetAI_mob_sunblade_imp(Creature *_Creature)
 {
-    return new mob_sunblade_impAI (_Creature);
+    return new mob_sunblade_impAI(_Creature);
 }
 CreatureAI* GetAI_mob_sunblade_physician(Creature *_Creature)
 {
-    return new mob_sunblade_physicianAI (_Creature);
+    return new mob_sunblade_physicianAI(_Creature);
 }
 CreatureAI* GetAI_mob_sunblade_blood_knight(Creature *_Creature)
 {
-    return new mob_sunblade_blood_knightAI (_Creature);
+    return new mob_sunblade_blood_knightAI(_Creature);
 }
 CreatureAI* GetAI_mob_wretched_skulker(Creature *_Creature)
 {
-    return new mob_wretched_skulkerAI (_Creature);
+    return new mob_wretched_skulkerAI(_Creature);
 }
 CreatureAI* GetAI_mob_wretched_bruiser(Creature *_Creature)
 {
-    return new mob_wretched_bruiserAI (_Creature);
+    return new mob_wretched_bruiserAI(_Creature);
 }
 CreatureAI* GetAI_mob_wretched_husk(Creature *_Creature)
 {
-    return new mob_wretched_huskAI (_Creature);
+    return new mob_wretched_huskAI(_Creature);
 }
 CreatureAI* GetAI_mob_brightscale_wyrm(Creature *_Creature)
 {
-    return new mob_brightscale_wyrmAI (_Creature);
+    return new mob_brightscale_wyrmAI(_Creature);
 }
 CreatureAI* GetAI_mob_sister_of_torment(Creature *_Creature)
 {
-    return new mob_sister_of_tormentAI (_Creature);
+    return new mob_sister_of_tormentAI(_Creature);
 }
 CreatureAI* GetAI_mob_sunblade_sentinel(Creature *_Creature)
 {
-    return new mob_sunblade_sentinelAI (_Creature);
+    return new mob_sunblade_sentinelAI(_Creature);
 }
 CreatureAI* GetAI_mob_coilskar_witch(Creature *_Creature)
 {
-    return new mob_coilskar_witchAI (_Creature);
+    return new mob_coilskar_witchAI(_Creature);
 }
 CreatureAI* GetAI_mob_ethereum_smuggler(Creature *_Creature)
 {
-    return new mob_ethereum_smugglerAI (_Creature);
+    return new mob_ethereum_smugglerAI(_Creature);
 }
 CreatureAI* GetAI_mob_mgt_kalecgos(Creature *_Creature)
 {
-    return new mob_mgt_kalecgosAI (_Creature);
+    return new mob_mgt_kalecgosAI(_Creature);
 }
 
 void AddSC_magisters_terrace_trash()
@@ -1399,12 +1391,12 @@ void AddSC_magisters_terrace_trash()
     newscript->RegisterSelf();
 
     newscript = new Script;
-    newscript->Name="go_movie_orb";
+    newscript->Name = "go_movie_orb";
     newscript->pGOUse = &GOUse_go_movie_orb;
     newscript->RegisterSelf();
 
     newscript = new Script;
-    newscript->Name="scrying_orb_cinematic";
+    newscript->Name = "scrying_orb_cinematic";
     newscript->pCompletedCinematic = &CompletedCinematic_scrying_orb_cinematic;
     newscript->RegisterSelf();
 }

@@ -250,29 +250,30 @@ struct boss_felblood_kaelthasAI : public ScriptedAI
 
         if(Intro)
         {
-            if(IntroTimer < diff)
+            IntroTimer -= diff;
+            if(IntroTimer <= diff)
             {
                 me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                 Intro = false;
             }
-            IntroTimer -= diff;
         }
 
         if(Outro)
         {
-            if(OutroTimer < diff)
+            OutroTimer -= diff;
+            if (OutroTimer <= diff)
             {
                 me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NON_ATTACKABLE);
                 me->DealDamage(me, me->GetHealth());
             }
-            OutroTimer -= diff;
             return;
         }
 
         if(!UpdateVictim() && Phase != 2)
             return;
 
-        if(CheckTimer < diff)
+        CheckTimer -= diff;
+        if(CheckTimer <= diff)
         {
             if(pInstance)
             {
@@ -286,8 +287,7 @@ struct boss_felblood_kaelthasAI : public ScriptedAI
             }
             CheckTimer += 2000;
         }
-        else
-            CheckTimer -= diff;
+        
 
         switch(Phase)
         {
@@ -295,17 +295,17 @@ struct boss_felblood_kaelthasAI : public ScriptedAI
             {
                 if(HeroicMode)
                 {
-                    if(PyroblastTimer < diff)
+                    PyroblastTimer -= diff;
+                    if(PyroblastTimer <= diff)
                     {
                         ForceSpellCastWithScriptText(SPELL_SHOCK_BARRIER, CAST_SELF, EMOTE_HEROIC_PYROBLAST, INTERRUPT_AND_CAST);
                         AddSpellToCast(SPELL_PYROBLAST, CAST_TANK);
                         PyroblastTimer += 60000;
                     }
-                    else
-                        PyroblastTimer -= diff;
                 }
 
-                if(FireballTimer < diff)
+                FireballTimer -= diff;
+                if(FireballTimer <= diff)
                 {
                     AddSpellToCast(SPELL_FIREBALL, CAST_TANK);
                     if(me->IsWithinMeleeRange(me->getVictim()))
@@ -321,26 +321,24 @@ struct boss_felblood_kaelthasAI : public ScriptedAI
                         FireballTimer += 2000;
                     }
                 }
-                else
-                    FireballTimer -= diff;
 
-                if(PhoenixTimer < diff)
+                PhoenixTimer -= diff;
+                if(PhoenixTimer <= diff)
                 {
                     AddSpellToCastWithScriptText(SPELL_PHOENIX, CAST_SELF, SAY_PHOENIX);
                     PhoenixTimer += urand(45000, 55000);
                 }
-                else
-                    PhoenixTimer -= diff;
+                
 
-                if(FlameStrikeTimer < diff)
+                FlameStrikeTimer -= diff;
+                if(FlameStrikeTimer <= diff)
                 {
                     AddSpellToCast(SPELL_SUMMON_FLAMESTRIKE, CAST_RANDOM);
                     if(roll_chance_f(40))
                         DoScriptText(SAY_FLAMESTRIKE, me);
                     FlameStrikeTimer += urand(25000, 35000);
                 }
-                else
-                    FlameStrikeTimer -= diff;
+                
 
                 // Below 50%
                 if(HealthBelowPct(50))
@@ -365,7 +363,8 @@ struct boss_felblood_kaelthasAI : public ScriptedAI
 
             case 2:
             {
-                if(GravityLapseTimer < diff)
+                GravityLapseTimer -= diff;
+                if(GravityLapseTimer <= diff)
                 {
                     switch(GravityLapsePhase)
                     {
@@ -397,8 +396,6 @@ struct boss_felblood_kaelthasAI : public ScriptedAI
                             break;
                     }
                 }
-                else
-                    GravityLapseTimer -= diff;
             }
             break;
         }
@@ -419,13 +416,13 @@ struct mob_felkael_flamestrikeAI : public Scripted_NoMovementAI
     }
     void UpdateAI(const uint32 diff)
     {
-        if(FlameStrikeTimer < diff)
+        FlameStrikeTimer -= diff;
+        if(FlameStrikeTimer <= diff)
         {
             DoCast(me, SPELL_FLAMESTRIKE, true);
             me->Kill(me, false);
         }
-        else
-            FlameStrikeTimer -= diff;
+        
     }
 };
 
@@ -447,24 +444,24 @@ struct mob_felkael_phoenix_eggAI : public Scripted_NoMovementAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(CheckTimer < diff)
+        CheckTimer -= diff;
+        if(CheckTimer <= diff)
         {
             if(pInstance && pInstance->GetData(DATA_KAELTHAS_EVENT) != IN_PROGRESS)
                 me->Kill(me, false);
             CheckTimer += 2000;
         }
-        else
-            CheckTimer -= diff;
+        
 
-        if(HatchTimer < diff)
+        HatchTimer -= diff;
+        if(HatchTimer <= diff)
         {
             Creature* phoenix = DoSpawnCreature(CREATURE_PHOENIX, 0, 0, 0, 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 5000);
             if(phoenix)
                 phoenix->CastSpell((Unit*)NULL, SPELL_REBIRTH_EGG, true);
             me->Kill(me, false);
         }
-        else
-            HatchTimer -= diff;
+        
     }
 };
 
@@ -498,7 +495,8 @@ struct mob_felkael_phoenixAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(CheckTimer < diff)
+        CheckTimer -= diff;
+        if(CheckTimer <= diff)
         {
             if (pInstance)
             {
@@ -509,8 +507,7 @@ struct mob_felkael_phoenixAI : public ScriptedAI
             }
             CheckTimer += 1000;
         }
-        else
-            CheckTimer -= diff;
+        
 
         if(!UpdateVictim())
         {
@@ -564,32 +561,32 @@ struct mob_arcane_sphereAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(CheckTimer < diff)
+        CheckTimer -= diff;
+        if(CheckTimer <= diff)
         {
             m_creature->SetSpeed(MOVE_FLIGHT, 0.6);    // to be tested
             if(pInstance && pInstance->GetData(DATA_KAELTHAS_EVENT) != IN_PROGRESS)
                 DespawnTimer = 0;
             CheckTimer += 1000;
         }
-        else
-            CheckTimer -= diff;
+        
 
-        if(DespawnTimer < diff)
+        DespawnTimer -= diff;
+        if(DespawnTimer <= diff)
         {
             me->DisappearAndDie();
         }
-        else
-            DespawnTimer -= diff;
+        
 
-        if(ChangeTargetTimer < diff)
+        ChangeTargetTimer -= diff;
+        if(ChangeTargetTimer <= diff)
         {
             DoResetThreat();
             if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, 200, true, me->getVictimGUID()))
                 me->GetMotionMaster()->MovePoint(1, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), false, true, UNIT_ACTION_DOWAYPOINTS);
             ChangeTargetTimer += 7000;   // to be tested
         }
-        else
-            ChangeTargetTimer -= diff;
+        
     }
 };
 
