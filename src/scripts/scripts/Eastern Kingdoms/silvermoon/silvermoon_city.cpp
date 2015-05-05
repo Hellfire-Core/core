@@ -45,7 +45,7 @@ struct npc_blood_knight_stillbladeAI : public ScriptedAI
 {
     npc_blood_knight_stillbladeAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 lifeTimer;
+    int32 lifeTimer;
     bool spellHit;
 
     void Reset()
@@ -69,10 +69,10 @@ struct npc_blood_knight_stillbladeAI : public ScriptedAI
     {
         if (!m_creature->GetUInt32Value(UNIT_FIELD_BYTES_1))
         {
-            if(lifeTimer < diff)
+            lifeTimer -= diff;
+            if(lifeTimer <= diff)
                 m_creature->AI()->EnterEvadeMode();
-            else
-                lifeTimer -= diff;
+            
         }
     }
 

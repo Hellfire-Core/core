@@ -66,22 +66,22 @@ struct boss_lordalexeibarovAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        //Immolate_Timer
-        if (Immolate_Timer < diff)
+        Immolate_Timer -= diff;
+        if (Immolate_Timer <= diff)
         {
             Unit* target = NULL;
             target = SelectUnit(SELECT_TARGET_RANDOM,0);
             if (target) DoCast(target,SPELL_IMMOLATE);
 
             Immolate_Timer += 12000;
-        }else Immolate_Timer -= diff;
+        }
 
-        //VeilofShadow_Timer
-        if (VeilofShadow_Timer < diff)
+        VeilofShadow_Timer -= diff;
+        if (VeilofShadow_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_VEILOFSHADOW);
             VeilofShadow_Timer += 20000;
-        }else VeilofShadow_Timer -= diff;
+        }
 
         DoMeleeAttackIfReady();
     }

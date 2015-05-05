@@ -80,36 +80,38 @@ struct boss_jandicebarovAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (Invisible && Invisible_Timer < diff)
-        {
-            //Become visible again
-            m_creature->setFaction(14);
-            m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-            m_creature->SetUInt32Value(UNIT_FIELD_DISPLAYID,11073);     //Jandice Model
-            Invisible = false;
-        } else if (Invisible)
+        if (Invisible)
         {
             Invisible_Timer -= diff;
-            //Do nothing while invisible
-            return;
+            if (Invisible_Timer <= diff)
+            {
+                //Become visible again
+                m_creature->setFaction(14);
+                m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                m_creature->SetUInt32Value(UNIT_FIELD_DISPLAYID, 11073);     //Jandice Model
+                Invisible = false;
+            }
+                //Do nothing while invisible
+                return;
+            
         }
 
         //Return since we have no target
         if (!UpdateVictim())
             return;
 
-        //CurseOfBlood_Timer
-        if (CurseOfBlood_Timer < diff)
+        CurseOfBlood_Timer -= diff;
+        if (CurseOfBlood_Timer <= diff)
         {
             //Cast
             DoCast(m_creature->getVictim(),SPELL_CURSEOFBLOOD);
 
             //45 seconds
             CurseOfBlood_Timer += 30000;
-        }else CurseOfBlood_Timer -= diff;
+        }
 
-        //Illusion_Timer
-        if (!Invisible && Illusion_Timer < diff)
+        Illusion_Timer -= diff;
+        if (Illusion_Timer <= diff)
         {
 
             //Inturrupt any spell casting
@@ -132,10 +134,10 @@ struct boss_jandicebarovAI : public ScriptedAI
 
             //25 seconds until we should cast this agian
             Illusion_Timer += 25000;
-        }else Illusion_Timer -= diff;
+        }
 
 
-        //            //Illusion_Timer
+        //            Illusion_Timer -= diff;
         //            if (Illusion_Timer < diff)
         //            {
         //                  //Cast
@@ -152,8 +154,7 @@ struct boss_jandicebarovAI : public ScriptedAI
         //                      Illusion_Timer += 15000;
         //                      Illusioncounter=0;
         //                  }
-        //
-        //            }else Illusion_Timer -= diff;
+        //            }
 
         DoMeleeAttackIfReady();
     }

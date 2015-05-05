@@ -60,8 +60,8 @@ struct instance_stratholme : public ScriptedInstance
 
     bool IsSilverHandDead[5];
 
-    uint32 BaronRun_Timer;
-    uint32 SlaugtherSquare_Timer;
+    int32 BaronRun_Timer;
+    int32 SlaugtherSquare_Timer;
 
     uint64 serviceEntranceGUID;
     uint64 gauntletGate1GUID;
@@ -444,17 +444,19 @@ struct instance_stratholme : public ScriptedInstance
     {
         if (BaronRun_Timer)
         {
+            BaronRun_Timer -= diff;
             if (BaronRun_Timer <= diff)
             {
                 if (GetData(TYPE_BARON_RUN) != DONE)
                     SetData(TYPE_BARON_RUN, FAIL);
                 BaronRun_Timer = 0;
                 debug_log("TSCR: Instance Stratholme: Baron run event reached end. Event has state %u.",GetData(TYPE_BARON_RUN));
-            }else BaronRun_Timer -= diff;
+            }
         }
 
         if (SlaugtherSquare_Timer)
         {
+            SlaugtherSquare_Timer -= diff;
             if (SlaugtherSquare_Timer <= diff)
             {
                 if (Player *p = GetPlayerInMap())
@@ -467,7 +469,7 @@ struct instance_stratholme : public ScriptedInstance
                     debug_log("TSCR: Instance Stratholme: Black guard sentries spawned. Opening gates to baron.");
                 }
                 SlaugtherSquare_Timer = 0;
-            }else SlaugtherSquare_Timer -= diff;
+            }
         }
     }
 

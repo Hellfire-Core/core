@@ -67,29 +67,31 @@ struct boss_theolenkrastinovAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        //Rend_Timer
-        if (Rend_Timer < diff)
+        Rend_Timer -= diff;
+        if (Rend_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_REND);
             Rend_Timer += 10000;
-        }else Rend_Timer -= diff;
+        }
 
-        if (Blackhand_Timer < diff)
+        Blackhand_Timer -= diff;
+        if (Blackhand_Timer <= diff)
         {
             DoCast(m_creature->getVictim(), SPELL_BLACKHAND);
             Blackhand_Timer += 10000;
-        }else Blackhand_Timer -= diff;
+        }
 
         //Frenzy_Timer
         if ( m_creature->GetHealth()*100 / m_creature->GetMaxHealth() < 26 )
         {
-            if (Frenzy_Timer < diff)
+            Frenzy_Timer -= diff;
+            if (Frenzy_Timer <= diff)
             {
                 DoCast(m_creature,SPELL_FRENZY);
                 DoTextEmote("goes into a killing frenzy!",NULL);
 
                 Frenzy_Timer += 8000;
-            }else Frenzy_Timer -= diff;
+            }
         }
 
         DoMeleeAttackIfReady();

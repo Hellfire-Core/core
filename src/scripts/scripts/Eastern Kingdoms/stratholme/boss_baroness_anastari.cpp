@@ -71,35 +71,35 @@ struct boss_baroness_anastariAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        //BansheeWail
-        if (BansheeWail_Timer < diff)
+        BansheeWail_Timer -= diff;
+        if (BansheeWail_Timer <= diff)
         {
             if (rand()%100 < 95)
                 DoCast(m_creature->getVictim(),SPELL_BANSHEEWAIL);
             //4 seconds until we should cast this again
             BansheeWail_Timer += 4000;
-        }else BansheeWail_Timer -= diff;
+        }
 
-        //BansheeCurse
-        if (BansheeCurse_Timer < diff)
+        BansheeCurse_Timer -= diff;
+        if (BansheeCurse_Timer <= diff)
         {
             if (rand()%100 < 75)
                 DoCast(m_creature->getVictim(),SPELL_BANSHEECURSE);
             //18 seconds until we should cast this again
             BansheeCurse_Timer += 18000;
-        }else BansheeCurse_Timer -= diff;
+        }
 
-        //Silence
-        if (Silence_Timer < diff)
+        Silence_Timer -= diff;
+        if (Silence_Timer <= diff)
         {
             if (rand()%100 < 80)
                 DoCast(m_creature->getVictim(),SPELL_SILENCE);
             //13 seconds until we should cast this again
             Silence_Timer += 13000;
-        }else Silence_Timer -= diff;
+        }
 
-        //Possess
-        /*            if (Possess_Timer < diff)
+        /*  Possess_Timer -= diff;
+                    if (Possess_Timer < diff)
         {
         //Cast
           if (rand()%100 < 65)
@@ -110,7 +110,7 @@ struct boss_baroness_anastariAI : public ScriptedAI
         }
         //50 seconds until we should cast this again
         Possess_Timer += 50000;
-        }else Possess_Timer -= diff;
+        }
         */
 
         DoMeleeAttackIfReady();

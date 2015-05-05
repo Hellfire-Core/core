@@ -301,12 +301,12 @@ struct npc_highlord_bolvar_fordragonAI : public ScriptedAI
     {
         if(speechTimer)
         {
+            speechTimer -= diff;
             if(speechTimer <= diff)
             {
                 speechTimer += DoSpeech(step);
                 step++;
-            }
-            else speechTimer -= diff;
+            }          
         }
 
         if(!UpdateVictim())
@@ -367,7 +367,7 @@ struct npc_lord_gregor_lescovarAI : public npc_escortAI
         pCreature->RestoreFaction();
     }
 
-    uint32 uiTimer;
+    int32 uiTimer;
     uint32 uiPhase;
 
     uint64 MarzonGUID;
@@ -447,6 +447,7 @@ struct npc_lord_gregor_lescovarAI : public npc_escortAI
     {
         if (uiPhase)
         {
+            uiTimer -= uiDiff;
             if (uiTimer <= uiDiff)
             {
                 switch(uiPhase)
@@ -497,7 +498,7 @@ struct npc_lord_gregor_lescovarAI : public npc_escortAI
                         uiPhase = 0;
                         break;
                 }
-            } else uiTimer -= uiDiff;
+            } 
         }
         npc_escortAI::UpdateAI(uiDiff);
 
@@ -804,16 +805,16 @@ struct npc_squire_roweAI : public npc_escortAI
 
         if (resetTimer)
         {
+            resetTimer -= diff;
             if (resetTimer <= diff)
             {
                 resetTimer = 0;
                 SetEscortPaused(false);
             }
-            else
-                resetTimer -= diff;
             return;
         }
 
+        eventTimer -= diff;
         if (eventTimer <= diff)
         {
             switch(event)
@@ -844,8 +845,6 @@ struct npc_squire_roweAI : public npc_escortAI
             eventTimer += 4000;
             event++;
         }
-        else
-            eventTimer -= diff;
     }
 };
 
@@ -1242,6 +1241,7 @@ struct npc_reginald_windsorAI : public npc_escortAI
 
         if (onyxiaDespawnEvent)
         {
+            onyxiaDespawnTimer -= diff;
             if (onyxiaDespawnTimer <= diff)
             {
                 tmpMap = me->GetMap();
@@ -1284,17 +1284,16 @@ struct npc_reginald_windsorAI : public npc_escortAI
                 else
                     me->Say("Jakas dziwna ta mapa oO bo nima jej :P", LANG_UNIVERSAL, 0);
             }
-            else
-                onyxiaDespawnTimer -= diff;
         }
 
         switch(event)
         {
             case EVENT_STORMWIND:
             {
+                phaseTimer -= diff;
                 if (phaseTimer <= diff)
                 {
-                    switch(eventPhase)
+                    switch (eventPhase)
                     {
                         case 0:
                             m_creature->Unmount();
@@ -1304,7 +1303,7 @@ struct npc_reginald_windsorAI : public npc_escortAI
                             phaseTimer += 2000;
                             break;
                         case 1:
-                            if(Creature * horse = m_creature->SummonCreature(305, HORSE_COORDS, me->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN, 10000))
+                            if (Creature * horse = m_creature->SummonCreature(305, HORSE_COORDS, me->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN, 10000))
                                 horse->GetMotionMaster()->MovePoint(0, REGINALD_SPAWN_COORDS);
 
                             m_creature->Say(SAY_REGINALD_1_1, LANG_UNIVERSAL, player->GetGUID());
@@ -1326,12 +1325,11 @@ struct npc_reginald_windsorAI : public npc_escortAI
                     }
                     eventPhase++;
                 }
-                else
-                    phaseTimer -= diff;
             }
             break;
             case EVENT_GENERAL_MARCUS:
             {
+                phaseTimer -= diff;
                 if (phaseTimer <= diff)
                 {
                     Creature * marcus = NULL;
@@ -1449,8 +1447,6 @@ struct npc_reginald_windsorAI : public npc_escortAI
                     }
                     eventPhase++;
                 }
-                else
-                    phaseTimer -= diff;
             }
             break;
             case EVENT_STORMWIND_KEEP:
@@ -1485,6 +1481,7 @@ struct npc_reginald_windsorAI : public npc_escortAI
                 Creature * ladyOnyxia = NULL;
                 Creature * fordragon = NULL;
 
+                phaseTimer -= diff;
                 if (phaseTimer <= diff)
                 {
                     if (!(tmpMap = m_creature->GetMap()))
@@ -1711,8 +1708,6 @@ struct npc_reginald_windsorAI : public npc_escortAI
                     }
                     eventPhase++;
                 }
-                else
-                    phaseTimer -= diff;
             }
             break;
         }

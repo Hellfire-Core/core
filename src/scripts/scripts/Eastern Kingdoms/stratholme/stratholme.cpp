@@ -116,7 +116,7 @@ struct mob_restless_soulAI : public ScriptedAI
     mob_restless_soulAI(Creature *c) : ScriptedAI(c) {}
 
     uint64 Tagger;
-    uint32 Die_Timer;
+    int32 Die_Timer;
     bool Tagged;
 
     void Reset()
@@ -153,11 +153,12 @@ struct mob_restless_soulAI : public ScriptedAI
     {
         if (Tagged)
         {
-            if (Die_Timer < diff)
+            Die_Timer -= diff;
+            if (Die_Timer <= diff)
             {
                 if (Unit* temp = Unit::GetUnit(*m_creature,Tagger))
                     temp->DealDamage(m_creature, m_creature->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
-            }else Die_Timer -= diff;
+            }
         }
     }
 };
@@ -213,10 +214,11 @@ struct mobs_spectral_ghostly_citizenAI : public ScriptedAI
     {
         if (Tagged)
         {
-            if (Die_Timer < diff)
+            Die_Timer -= diff;
+            if (Die_Timer <= diff)
             {
                 m_creature->DealDamage(m_creature, m_creature->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
-            }else Die_Timer -= diff;
+            }
         }
 
         if (!UpdateVictim())

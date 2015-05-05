@@ -65,8 +65,8 @@ struct boss_interrogator_vishasAI : public ScriptedAI
         //If we are low on hp Do sayings
         if ( m_creature->GetHealth()*100 / m_creature->GetMaxHealth() <= 60 && !m_creature->IsNonMeleeSpellCast(false))
         {
-            //Yell_Timer
-            if (Yell_Timer < diff)
+            Yell_Timer -= diff;
+            if (Yell_Timer <= diff)
             {
                 DoYell(SAY_HEALTH1,LANG_UNIVERSAL,NULL);
                 DoPlaySoundToSet(m_creature,SOUND_HEALTH1);
@@ -74,13 +74,13 @@ struct boss_interrogator_vishasAI : public ScriptedAI
 
                 //60 seconds until we should cast this agian
                 Yell_Timer += 60000;
-            }else Yell_Timer -= diff;
+            }
         }
 
         if ( m_creature->GetHealth()*100 / m_creature->GetMaxHealth() <= 30 && !m_creature->IsNonMeleeSpellCast(false))
         {
-            //Yell_Timer
-            if (Yell_Timer < diff)
+            Yell_Timer -= diff;
+            if (Yell_Timer <= diff)
             {
                 DoYell(SAY_HEALTH2,LANG_UNIVERSAL,NULL);
                 DoPlaySoundToSet(m_creature,SOUND_HEALTH2);
@@ -88,15 +88,15 @@ struct boss_interrogator_vishasAI : public ScriptedAI
 
                 //60 seconds until we should cast this agian
                 Yell_Timer += 6000000;
-            }else Yell_Timer -= diff;
+            }
         }
 
-        //PowerWordShield_Timer
-        if (PowerWordShield_Timer < diff)
+        PowerWordShield_Timer -= diff;
+        if (PowerWordShield_Timer <= diff)
         {
             DoCast(m_creature,SPELL_POWERWORDSHIELD);
             PowerWordShield_Timer += 60000;
-        }else PowerWordShield_Timer -= diff;
+        }
 
         DoMeleeAttackIfReady();
     }

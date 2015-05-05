@@ -35,10 +35,10 @@ struct boss_scornAI : public ScriptedAI
 {
     boss_scornAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 LichSlap_Timer;
-    uint32 FrostboltVolley_Timer;
-    uint32 MindFlay_Timer;
-    uint32 FrostNova_Timer;
+    int32 LichSlap_Timer;
+    int32 FrostboltVolley_Timer;
+    int32 MindFlay_Timer;
+    int32 FrostNova_Timer;
 
     void Reset()
     {
@@ -57,33 +57,33 @@ struct boss_scornAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        //LichSlap_Timer
-        if (LichSlap_Timer < diff)
+        LichSlap_Timer -= diff;
+        if (LichSlap_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_LICHSLAP);
             LichSlap_Timer += 45000;
-        }else LichSlap_Timer -= diff;
+        }
 
-        //FrostboltVolley_Timer
-        if (FrostboltVolley_Timer < diff)
+        FrostboltVolley_Timer -= diff;
+        if (FrostboltVolley_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_FROSTBOLTVOLLEY);
             FrostboltVolley_Timer += 20000;
-        }else FrostboltVolley_Timer -= diff;
+        }
 
-        //MindFlay_Timer
-        if (MindFlay_Timer < diff)
+        MindFlay_Timer -= diff;
+        if (MindFlay_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_MINDFLAY);
             MindFlay_Timer += 20000;
-        }else MindFlay_Timer -= diff;
+        }
 
-        //FrostNova_Timer
-        if (FrostNova_Timer < diff)
+        FrostNova_Timer -= diff;
+        if (FrostNova_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_FROSTNOVA);
             FrostNova_Timer += 15000;
-        }else FrostNova_Timer -= diff;
+        }
 
         DoMeleeAttackIfReady();
     }

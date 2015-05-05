@@ -187,13 +187,14 @@ struct mob_wisp_invisAI : public ScriptedAI
     {
         if(delay)    // delay = 51, diff = 51, delay - diff = 0, spell will be not cast, aura will be not removed, gratz
         {
+            delay -= diff;
             if (delay <= diff)
             {
                 m_creature->RemoveAurasDueToSpell(SPELL_SMOKE);
                 if(spell2)
                     DoCast(m_creature,spell2);
                 delay = 0;
-            }else delay -= diff;
+            }
         }
     }
 };
@@ -299,7 +300,8 @@ struct mob_headAI : public ScriptedAI
     {
         if (!withbody)
         {
-            if(wait < diff)
+            wait -= diff;
+            if(wait <= diff)
             {
                 wait += 1000;
                 if(!m_creature->getVictim())
@@ -308,10 +310,10 @@ struct mob_headAI : public ScriptedAI
                 m_creature->GetMotionMaster()->Clear(false);
                 m_creature->GetMotionMaster()->MoveFleeing(m_creature->getVictim());
             }
-            else
-                wait -= diff;
+            
 
-            if(laugh < diff)
+            laugh -= diff;
+            if(laugh <= diff)
             {
                 laugh += 15000 + (rand()%16)*1000;
                 DoPlaySoundToSet(m_creature, RandomLaugh[rand()%3]);
@@ -321,15 +323,15 @@ struct mob_headAI : public ScriptedAI
                     speaker->CastSpell(speaker,SPELL_HEAD_SPEAKS,false);
                 DoTextEmote("laughs",NULL);
             }
-            else
-                laugh -= diff;
+            
 
         }
         else
         {
             if(die)
             {
-                if(wait < diff)
+                wait -= diff;
+                if(wait <= diff)
                 {
                     die = false;
                     Unit *body = Unit::GetUnit((*m_creature),bodyGUID);
@@ -337,8 +339,6 @@ struct mob_headAI : public ScriptedAI
                         body->DealDamage(body, body->GetMaxHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
                     m_creature->setDeathState(JUST_DIED);
                 }
-                else
-                    wait -= diff;
             }
         }
     }
@@ -635,7 +635,9 @@ struct boss_headless_horsemanAI : public ScriptedAI
             case 0: {
                     if (!IsFlying)
                     {
-                        if (say_timer < diff) {
+                        say_timer -= diff;
+                        if (say_timer <= diff)
+                        {
                             say_timer += 3000;
                             Player *plr = SelectRandomPlayer(100.0f,false);
                             if (count < 3)
@@ -658,8 +660,6 @@ struct boss_headless_horsemanAI : public ScriptedAI
                             }
                             ++count;
                         }
-                        else
-                            say_timer -= diff;
                     }
                     else
                     {
@@ -676,18 +676,19 @@ struct boss_headless_horsemanAI : public ScriptedAI
                 if(burned)
                     break;
 
-                if(burn < diff)
+                burn -= diff;
+                if(burn <= diff)
                 {
                     Creature *flame = m_creature->SummonCreature(HELPER,Spawn[0].x,Spawn[0].y,Spawn[0].z,0,TEMPSUMMON_TIMED_DESPAWN,17000);
                     if(flame)
                         ((mob_wisp_invisAI*)flame->AI())->SetType(2);
                     burned = true;
                 }
-                else
-                    burn -= diff;
+                
                 break;
             case 2:
-                if(conflagrate < diff)
+                conflagrate -= diff;
+                if(conflagrate <= diff)
                 {
                     Unit *plr = SelectUnit(SELECT_TARGET_RANDOM, 1,30,true, m_creature->getVictimGUID());
                     if(!plr)
@@ -697,47 +698,47 @@ struct boss_headless_horsemanAI : public ScriptedAI
                         m_creature->CastSpell(plr,SPELL_CONFLAGRATION,false);
                     conflagrate += 10000 + rand()%7 * 1000;
                 }
-                else
-                    conflagrate -= diff;
+                
                 break;
             case 3:
-                if(summonadds < diff)
+                summonadds -= diff;
+                if(summonadds <= diff)
                 {
                     m_creature->InterruptNonMeleeSpells(false);
                     DoCast(m_creature,SPELL_SUMMON_PUMPKIN);
                     SaySound(SAY_SPROUTING_PUMPKINS);
                     summonadds += 25000 + rand()%11 *1000;
                 }
-                else
-                    summonadds -= diff;
+                
                 break;
             }
 
-            if(laugh < diff)
+            laugh -= diff;
+            if(laugh <= diff)
             {
                 laugh += 11000 + rand()%12 * 1000;
                 DoTextEmote("laughs",NULL);
                 DoPlaySoundToSet(m_creature, RandomLaugh[rand()%3]);
             }
-            else
-                laugh -= diff;
+            
 
             if(UpdateVictim())
             {
                 DoMeleeAttackIfReady();
-                if(cleave < diff)
+                cleave -= diff;
+                if(cleave <= diff)
                 {
                     DoCast(m_creature->getVictim(),SPELL_CLEAVE);
                     cleave += 2000 +rand()%4000;       //1 cleave per 2.0-6.0sec
                 }
-                else
-                    cleave -= diff;
+                
             }
 
         }
         else
         {
-            if (regen < diff)
+            regen -= diff;
+            if (regen <= diff)
             {
                 regen += 1000;                   //"body calls head"
                 if (m_creature->GetHealth()/m_creature->GetMaxHealth() == 1 && !returned)
@@ -755,10 +756,10 @@ struct boss_headless_horsemanAI : public ScriptedAI
                     return;
                 }
             }
-            else
-                regen -= diff;
+            
 
-            if (whirlwind < diff)
+            whirlwind -= diff;
+            if (whirlwind <= diff)
             {
                 whirlwind += 4000 + rand()%5 * 1000;
                 if (rand()%2)
@@ -770,8 +771,7 @@ struct boss_headless_horsemanAI : public ScriptedAI
                 else
                     m_creature->RemoveAurasDueToSpell(SPELL_WHIRLWIND);
             }
-            else
-                whirlwind -= diff;
+            
         }
     }
 };

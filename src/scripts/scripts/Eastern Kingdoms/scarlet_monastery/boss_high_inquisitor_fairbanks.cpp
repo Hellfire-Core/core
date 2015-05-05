@@ -67,54 +67,56 @@ struct boss_high_inquisitor_fairbanksAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
+        Healing_Timer -= diff;
         //If we are <45% hp cast Renew rank 6 or Flash heal rank 4
-        if ( m_creature->GetHealth()*100 / m_creature->GetMaxHealth() <= 45 && !m_creature->IsNonMeleeSpellCast(false) && Healing_Timer < diff)
+        if ( m_creature->GetHealth()*100 / m_creature->GetMaxHealth() <= 45 && !m_creature->IsNonMeleeSpellCast(false) 
+            && Healing_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_RENEW6 || SPELL_FLASHHEAL4);
             Healing_Timer += 30000;
-        }else Healing_Timer -= diff;
+        }
 
-        //Sleep2_Timer
-        if (Sleep2_Timer < diff)
+        Sleep2_Timer -= diff;
+        if (Sleep2_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_SLEEP2);
             Sleep2_Timer += 45000;
-        }else Sleep2_Timer -= diff;
+        }
 
-        //Smite_Timer
-        if (Smite_Timer < diff)
+        Smite_Timer -= diff;
+        if (Smite_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_SMITE);
             Smite_Timer += 20000;
-        }else Smite_Timer -= diff;
+        }
 
-        //ShadowWordPain_Timer
-        if (ShadowWordPain_Timer < diff)
+        ShadowWordPain_Timer -= diff;
+        if (ShadowWordPain_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_SHADOWWORDPAIN);
             ShadowWordPain_Timer += 30000;
-        }else ShadowWordPain_Timer -= diff;
+        }
 
-        //CurseOfBlood_Timer
-        if (CurseOfBlood_Timer < diff)
+        CurseOfBlood_Timer -= diff;
+        if (CurseOfBlood_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_CURSEOFBLOOD);
             CurseOfBlood_Timer += 25000;
-        }else CurseOfBlood_Timer -= diff;
+        }
 
-        //DevouringPlague3_Timer
-        if (DevouringPlague3_Timer < diff)
+        DevouringPlague3_Timer -= diff;
+        if (DevouringPlague3_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_DEVOURINGPLAGUE3);
             DevouringPlague3_Timer += 35000;
-        }else DevouringPlague3_Timer -= diff;
+        }
 
-        //MindBlast5_Timer
-        if (MindBlast5_Timer < diff)
+        MindBlast5_Timer -= diff;
+        if (MindBlast5_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_MINDBLAST5);
             MindBlast5_Timer += 30000;
-        }else MindBlast5_Timer -= diff;
+        }
 
         DoMeleeAttackIfReady();
     }

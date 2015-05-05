@@ -41,7 +41,7 @@ struct mob_yennikuAI : public ScriptedAI
         bReset = false;
     }
 
-    uint32 Reset_Timer;
+    int32 Reset_Timer;
     bool bReset;
 
     void Reset()
@@ -76,14 +76,15 @@ struct mob_yennikuAI : public ScriptedAI
     {
         if (bReset)
         {
-            if(Reset_Timer < diff)
+            Reset_Timer -= diff;
+            if(Reset_Timer <= diff)
             {
                 EnterEvadeMode();
                 bReset = false;
                 m_creature->setFaction(28);                     //troll, bloodscalp
                 return;
             }
-            else Reset_Timer -= diff;
+            
 
             if(m_creature->isInCombat() && m_creature->getVictim())
             {

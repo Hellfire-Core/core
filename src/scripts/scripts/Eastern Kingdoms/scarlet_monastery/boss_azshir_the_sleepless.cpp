@@ -57,29 +57,29 @@ struct boss_azshir_the_sleeplessAI : public ScriptedAI
         //If we are <50% hp cast Soul Siphon rank 1
         if ( m_creature->GetHealth()*100 / m_creature->GetMaxHealth() <= 50 && !m_creature->IsNonMeleeSpellCast(false))
         {
-            //SoulSiphon_Timer
-            if (SoulSiphon_Timer < diff)
+            SoulSiphon_Timer -= diff;
+            if (SoulSiphon_Timer <= diff)
             {
                 DoCast(m_creature->getVictim(),SPELL_SOULSIPHON);
                 return;
 
                 SoulSiphon_Timer += 20000;
-            }else SoulSiphon_Timer -= diff;
+            }
         }
 
-        //CallOfTheGrave_Timer
-        if (CallOftheGrave_Timer < diff)
+        CallOftheGrave_Timer -= diff;
+        if (CallOftheGrave_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_CALLOFTHEGRAVE);
             CallOftheGrave_Timer += 30000;
-        }else CallOftheGrave_Timer -= diff;
+        }
 
-        //Terrify_Timer
-        if (Terrify_Timer < diff)
+        Terrify_Timer -= diff;
+        if (Terrify_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_TERRIFY);
             Terrify_Timer += 20000;
-        }else Terrify_Timer -= diff;
+        }
 
         DoMeleeAttackIfReady();
     }
