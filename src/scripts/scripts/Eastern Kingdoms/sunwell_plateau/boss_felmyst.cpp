@@ -702,8 +702,10 @@ struct mob_felmyst_vaporAI : public ScriptedAI
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         me->SetSpeed(MOVE_RUN, 1.0);
         me->SetFloatValue(UNIT_FIELD_COMBATREACH, 0.01);
+        me->SetReactState(REACT_PASSIVE);
     }
     void Reset() {}
+    void MoveInLineOfSight(Unit*) {}
     void JustRespawned()
     {
         DoZoneInCombat();
@@ -715,7 +717,7 @@ struct mob_felmyst_vaporAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!me->getVictim() || !me->getVictim()->isTargetableForAttack())
+        if(!me->getVictim() || !me->getVictim()->isTargetableForAttack() || me->getVictim()->GetTypeId() != TYPEID_PLAYER)
             AttackStart(SelectUnit(SELECT_TARGET_NEAREST, 0, 100.0, true));
     }
 };
