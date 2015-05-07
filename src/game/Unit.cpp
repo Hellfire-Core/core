@@ -517,7 +517,7 @@ void Unit::UpdateSplineMovement(uint32 t_diff)
         POSITION_UPDATE_DELAY = 400,
     };
 
-    if (IsStopped())
+    if (IsStopped() || isInRoots())
         return;
 
     movespline->updateState(t_diff);
