@@ -320,46 +320,50 @@ void BattleGround::Update(uint32 diff)
 
 void BattleGround::RestorePet(Player* plr)
 {
-    Pet* ThePet = plr->GetPet();
-    if (!ThePet || !plr->isAlive() || ThePet->GetMap() != plr->GetMap())
+    if (plr->getClass() != CLASS_HUNTER || plr->getClass() != CLASS_WARLOCK || !plr->isAlive())
         return;
 
-    // restore only for hunts and locks
-    if ((ThePet->getPetType() != HUNTER_PET || plr->getClass() != CLASS_HUNTER) &&
-        (ThePet->getPetType() != SUMMON_PET || ThePet->GetCreatureInfo()->type != CREATURE_TYPE_DEMON || plr->getClass() != CLASS_WARLOCK))
-        return;
-
-    float px, py, pz;
-    plr->GetNearPoint(px, py, pz, ThePet->GetObjectSize());
-    ThePet->NearTeleportTo(px, py, pz,ThePet->GetOrientation());
-
-    if (ThePet->isDead())
-    {
-        ThePet->SetUInt32Value(UNIT_DYNAMIC_FLAGS, 0);
-        ThePet->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE);
-        ThePet->setDeathState(ALIVE);
-        ThePet->clearUnitState(UNIT_STAT_ALL_STATE);
-    }
-
-    ThePet->SetHealth(ThePet->GetMaxHealth());
+    Pet* ThePet;
     if (plr->getClass() == CLASS_HUNTER)
     {
+        ThePet = plr->GetPet();
+        if (!ThePet || ThePet->GetMap() != plr->GetMap() || ThePet->getPetType() != HUNTER_PET)
+            return;
+
+        float px, py, pz;
+        plr->GetNearPoint(px, py, pz, ThePet->GetObjectSize());
+        ThePet->NearTeleportTo(px, py, pz, ThePet->GetOrientation());
+
+        if (ThePet->isDead())
+        {
+            ThePet->SetUInt32Value(UNIT_DYNAMIC_FLAGS, 0);
+            ThePet->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE);
+            ThePet->setDeathState(ALIVE);
+            ThePet->clearUnitState(UNIT_STAT_ALL_STATE);
+        }
+
         ThePet->SetHealth(ThePet->GetMaxHealth());
         ThePet->SetPower(POWER_HAPPINESS, ThePet->GetMaxPower(POWER_HAPPINESS));
+        ThePet->RemoveAllAurasButPermanent();
+        ThePet->m_CreatureSpellCooldowns.clear();
+        ThePet->m_CreatureCategoryCooldowns.clear();
+        plr->PetSpellInitialize();
     }
-    else if (plr->getClass() == CLASS_WARLOCK)
+    else if (plr->GetLastPetNumber()) // we're sure it is warlock
     {
-        // nerf doomguard/infernal
-        if (ThePet->GetEntry() == 11859 || ThePet->GetEntry() == 89)
-            ThePet->SetEntry(416);
+        ThePet = new Pet();
+        if (!ThePet->LoadPetFromDB(plr, 0, plr->GetLastPetNumber(), true))
+            delete ThePet;
+        else
+        {
+            // nerf doomguard/infernal
+            if (ThePet->GetEntry() == 11859 || ThePet->GetEntry() == 89)
+                ThePet->SetEntry(416);
 
-        ThePet->SetPower(POWER_MANA, ThePet->GetMaxPower(POWER_MANA));
+            ThePet->SetHealth(ThePet->GetMaxHealth());
+            ThePet->SetPower(POWER_MANA, ThePet->GetMaxPower(POWER_MANA));
+        }
     }
-
-    ThePet->RemoveAllAurasButPermanent();
-    ThePet->m_CreatureSpellCooldowns.clear();
-    ThePet->m_CreatureCategoryCooldowns.clear();
-    plr->PetSpellInitialize();
 }
 
 Map* BattleGround::GetMap()
