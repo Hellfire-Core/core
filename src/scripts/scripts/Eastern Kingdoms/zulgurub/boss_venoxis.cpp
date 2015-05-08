@@ -96,31 +96,32 @@ struct boss_venoxisAI : public ScriptedAI
 
             if ((m_creature->GetHealth()*100 / m_creature->GetMaxHealth() > 50))
             {
-                if (Dispell_Timer < diff)
+                Dispell_Timer -= diff;
+                if (Dispell_Timer <= diff)
                 {
                     DoCast(m_creature, SPELL_DISPELL);
                     Dispell_Timer += 15000 + rand()%15000;
                 }
-                else
-                    Dispell_Timer -= diff;
+                
 
-                if (Renew_Timer < diff)
+                Renew_Timer -= diff;
+                if (Renew_Timer <= diff)
                 {
                     DoCast(m_creature, SPELL_RENEW);
                     Renew_Timer += 20000 + rand()%10000;
                 }
-                else
-                    Renew_Timer -= diff;
+                
 
-                if(HolyWrath_Timer < diff)
+                HolyWrath_Timer -= diff;
+                if(HolyWrath_Timer <= diff)
                 {
                     DoCast(m_creature->getVictim(), SPELL_HOLY_WRATH);
                     HolyWrath_Timer += 15000 + rand()%10000;
                 }
-                else
-                    HolyWrath_Timer -= diff;
+                
 
-                if(HolyNova_Timer < diff)
+                HolyNova_Timer -= diff;
+                if(HolyNova_Timer <= diff)
                 {
                     if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0, 5, true))
                     {
@@ -130,18 +131,17 @@ struct boss_venoxisAI : public ScriptedAI
                     else
                         HolyNova_Timer += 2000;
                 }
-                else
-                    HolyNova_Timer -= diff;
+                
 
-                if (HolyFire_Timer < diff && TargetInRange < 3)
+                HolyFire_Timer -= diff;
+                if (HolyFire_Timer <= diff && TargetInRange < 3)
                 {
                     if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0, GetSpellMaxRange(SPELL_HOLY_FIRE), true))
                         DoCast(target, SPELL_HOLY_FIRE);
 
                     HolyFire_Timer += 8000;
                 }
-                else
-                    HolyFire_Timer -= diff;
+                
             }
             else
             {
@@ -159,23 +159,23 @@ struct boss_venoxisAI : public ScriptedAI
                     PhaseTwo = true;
                 }
 
-                if(PhaseTwo && PoisonCloud_Timer < diff)
+                PoisonCloud_Timer -= diff;
+                if(PhaseTwo && PoisonCloud_Timer <= diff)
                 {
                     DoCast(m_creature->getVictim(), SPELL_POISON_CLOUD);
                     PoisonCloud_Timer += 15000;
                 }
-                else
-                    PoisonCloud_Timer -=diff;
+                
 
-                if(PhaseTwo && VenomSpit_Timer < diff)
+                VenomSpit_Timer -= diff;
+                if(PhaseTwo && VenomSpit_Timer <= diff)
                 {
                     if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_VENOMSPIT), true))
                         DoCast(target, SPELL_VENOMSPIT);
 
                     VenomSpit_Timer += 15000 + rand()%5000;
                 }
-                else
-                    VenomSpit_Timer -= diff;
+                
 
                 if(PhaseTwo && (m_creature->GetHealth()*100 / m_creature->GetMaxHealth() < 11))
                 {

@@ -78,12 +78,12 @@ struct boss_ironayaAI : public ScriptedAI
             hasCastKnockaway = true;
         }
 
-        //Arcing_Timer
-        if (Arcing_Timer < diff)
+        Arcing_Timer -= diff;
+        if (Arcing_Timer <= diff)
         {
             DoCast(m_creature,SPELL_ARCINGSMASH);
             Arcing_Timer += 13000;
-        }else Arcing_Timer -= diff;
+        }
 
         if (!hasCastWstomp && m_creature->GetHealth()*4 < m_creature->GetMaxHealth())
         {

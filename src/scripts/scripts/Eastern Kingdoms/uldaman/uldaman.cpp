@@ -1,7 +1,7 @@
-/* 
+/*
  * Copyright (C) 2006-2008 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -56,8 +56,7 @@ struct mob_jadespine_basiliskAI : public ScriptedAI
     }
 
     void EnterCombat(Unit *who)
-    {
-    }
+    {}
 
     void UpdateAI(const uint32 diff)
     {
@@ -65,12 +64,12 @@ struct mob_jadespine_basiliskAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        //Cslumber_Timer
-        if (Cslumber_Timer < diff)
+        Cslumber_Timer -= diff;
+        if (Cslumber_Timer <= diff)
         {
             //Cast
             // DoCast(m_creature->getVictim(),SPELL_CSLUMBER);
-            m_creature->CastSpell(m_creature->getVictim(),SPELL_CSLUMBER, true);
+            m_creature->CastSpell(m_creature->getVictim(), SPELL_CSLUMBER, true);
 
             //Stop attacking target thast asleep and pick new target
             Cslumber_Timer += 28000;
@@ -83,7 +82,7 @@ struct mob_jadespine_basiliskAI : public ScriptedAI
             if (Target)
                 m_creature->TauntApply(Target);
 
-        }else Cslumber_Timer -= diff;
+        }
 
         DoMeleeAttackIfReady();
     }
@@ -91,7 +90,7 @@ struct mob_jadespine_basiliskAI : public ScriptedAI
 
 CreatureAI* GetAI_mob_jadespine_basilisk(Creature *_Creature)
 {
-    return new mob_jadespine_basiliskAI (_Creature);
+    return new mob_jadespine_basiliskAI(_Creature);
 }
 
 /*######
@@ -101,7 +100,7 @@ CreatureAI* GetAI_mob_jadespine_basilisk(Creature *_Creature)
 bool GossipHello_npc_lore_keeper_of_norgannon(Player *player, Creature *_Creature)
 {
     if (player->GetQuestStatus(2278) == QUEST_STATUS_INCOMPLETE)
-        player->ADD_GOSSIP_ITEM( 0, "Who are the Earthen?", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+        player->ADD_GOSSIP_ITEM(0, "Who are the Earthen?", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
 
     player->SEND_GOSSIP_MENU(1079, _Creature->GetGUID());
 
@@ -112,67 +111,67 @@ bool GossipSelect_npc_lore_keeper_of_norgannon(Player *player, Creature *_Creatu
 {
     switch (action)
     {
-        case GOSSIP_ACTION_INFO_DEF+1:
-            player->ADD_GOSSIP_ITEM( 0, "What is a \"subterranean being matrix\"?", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
+        case GOSSIP_ACTION_INFO_DEF + 1:
+            player->ADD_GOSSIP_ITEM(0, "What is a \"subterranean being matrix\"?", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
             player->SEND_GOSSIP_MENU(1080, _Creature->GetGUID());
             break;
-        case GOSSIP_ACTION_INFO_DEF+2:
-            player->ADD_GOSSIP_ITEM( 0, "What are the anomalies you speak of?", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+3);
+        case GOSSIP_ACTION_INFO_DEF + 2:
+            player->ADD_GOSSIP_ITEM(0, "What are the anomalies you speak of?", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
             player->SEND_GOSSIP_MENU(1081, _Creature->GetGUID());
             break;
-        case GOSSIP_ACTION_INFO_DEF+3:
-            player->ADD_GOSSIP_ITEM( 0, "What is a resilient foundation of construction?", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+4);
+        case GOSSIP_ACTION_INFO_DEF + 3:
+            player->ADD_GOSSIP_ITEM(0, "What is a resilient foundation of construction?", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 4);
             player->SEND_GOSSIP_MENU(1082, _Creature->GetGUID());
             break;
-        case GOSSIP_ACTION_INFO_DEF+4:
-            player->ADD_GOSSIP_ITEM( 0, "So... the Earthen were made out of stone?", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+5);
+        case GOSSIP_ACTION_INFO_DEF + 4:
+            player->ADD_GOSSIP_ITEM(0, "So... the Earthen were made out of stone?", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 5);
             player->SEND_GOSSIP_MENU(1083, _Creature->GetGUID());
             break;
-        case GOSSIP_ACTION_INFO_DEF+5:
-            player->ADD_GOSSIP_ITEM( 0, "Anything else I should know about the Earthen?", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+6);
+        case GOSSIP_ACTION_INFO_DEF + 5:
+            player->ADD_GOSSIP_ITEM(0, "Anything else I should know about the Earthen?", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 6);
             player->SEND_GOSSIP_MENU(1084, _Creature->GetGUID());
             break;
-        case GOSSIP_ACTION_INFO_DEF+6:
-            player->ADD_GOSSIP_ITEM( 0, "I think I understand the Creators' design intent for the Earthen now. What are the Earthen's anomalies that you spoke of earlier?", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+7);
+        case GOSSIP_ACTION_INFO_DEF + 6:
+            player->ADD_GOSSIP_ITEM(0, "I think I understand the Creators' design intent for the Earthen now. What are the Earthen's anomalies that you spoke of earlier?", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 7);
             player->SEND_GOSSIP_MENU(1085, _Creature->GetGUID());
             break;
-        case GOSSIP_ACTION_INFO_DEF+7:
-            player->ADD_GOSSIP_ITEM( 0, "What high-stress environments would cause the Earthen to destabilize?", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+8);
+        case GOSSIP_ACTION_INFO_DEF + 7:
+            player->ADD_GOSSIP_ITEM(0, "What high-stress environments would cause the Earthen to destabilize?", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 8);
             player->SEND_GOSSIP_MENU(1086, _Creature->GetGUID());
             break;
-        case GOSSIP_ACTION_INFO_DEF+8:
-            player->ADD_GOSSIP_ITEM( 0, "What happens when the Earthen destabilize?", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+9);
+        case GOSSIP_ACTION_INFO_DEF + 8:
+            player->ADD_GOSSIP_ITEM(0, "What happens when the Earthen destabilize?", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9);
             player->SEND_GOSSIP_MENU(1087, _Creature->GetGUID());
             break;
-        case GOSSIP_ACTION_INFO_DEF+9:
-            player->ADD_GOSSIP_ITEM( 0, "Troggs?! Are the troggs you mention the same as the ones in the world today?", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+10);
+        case GOSSIP_ACTION_INFO_DEF + 9:
+            player->ADD_GOSSIP_ITEM(0, "Troggs?! Are the troggs you mention the same as the ones in the world today?", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 10);
             player->SEND_GOSSIP_MENU(1088, _Creature->GetGUID());
             break;
-        case GOSSIP_ACTION_INFO_DEF+10:
-            player->ADD_GOSSIP_ITEM( 0, "You mentioned two results when the Earthen destabilize. What is the second?", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+11);
+        case GOSSIP_ACTION_INFO_DEF + 10:
+            player->ADD_GOSSIP_ITEM(0, "You mentioned two results when the Earthen destabilize. What is the second?", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 11);
             player->SEND_GOSSIP_MENU(1089, _Creature->GetGUID());
             break;
-        case GOSSIP_ACTION_INFO_DEF+11:
-            player->ADD_GOSSIP_ITEM( 0, "Dwarves!!! Now you're telling me that dwarves originally came from the Earthen?!", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+12);
+        case GOSSIP_ACTION_INFO_DEF + 11:
+            player->ADD_GOSSIP_ITEM(0, "Dwarves!!! Now you're telling me that dwarves originally came from the Earthen?!", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 12);
             player->SEND_GOSSIP_MENU(1090, _Creature->GetGUID());
             break;
-        case GOSSIP_ACTION_INFO_DEF+12:
-            player->ADD_GOSSIP_ITEM( 0, "These dwarves are the same ones today, yes? Do the dwarves maintain any other links to the Earthen?", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+13);
+        case GOSSIP_ACTION_INFO_DEF + 12:
+            player->ADD_GOSSIP_ITEM(0, "These dwarves are the same ones today, yes? Do the dwarves maintain any other links to the Earthen?", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 13);
             player->SEND_GOSSIP_MENU(1091, _Creature->GetGUID());
             break;
-        case GOSSIP_ACTION_INFO_DEF+13:
-            player->ADD_GOSSIP_ITEM( 0, "Who are the Creators?", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+14);
+        case GOSSIP_ACTION_INFO_DEF + 13:
+            player->ADD_GOSSIP_ITEM(0, "Who are the Creators?", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 14);
             player->SEND_GOSSIP_MENU(1092, _Creature->GetGUID());
             break;
-        case GOSSIP_ACTION_INFO_DEF+14:
-            player->ADD_GOSSIP_ITEM( 0, "This is a lot to think about.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+15);
+        case GOSSIP_ACTION_INFO_DEF + 14:
+            player->ADD_GOSSIP_ITEM(0, "This is a lot to think about.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 15);
             player->SEND_GOSSIP_MENU(1093, _Creature->GetGUID());
             break;
-        case GOSSIP_ACTION_INFO_DEF+15:
-            player->ADD_GOSSIP_ITEM( 0, "I will access the discs now.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+16);
+        case GOSSIP_ACTION_INFO_DEF + 15:
+            player->ADD_GOSSIP_ITEM(0, "I will access the discs now.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 16);
             player->SEND_GOSSIP_MENU(1094, _Creature->GetGUID());
             break;
-        case GOSSIP_ACTION_INFO_DEF+16:
+        case GOSSIP_ACTION_INFO_DEF + 16:
             player->CLOSE_GOSSIP_MENU();
             player->AreaExploredOrEventHappens(2278);
             break;
@@ -189,7 +188,7 @@ bool GOUse_go_keystone_chamber(Player *player, GameObject* go)
 {
     ScriptedInstance* pInstance = (ScriptedInstance*)go->GetInstanceData();
 
-    if(!pInstance)
+    if (!pInstance)
         return false;
 
     if (pInstance)
@@ -218,23 +217,23 @@ void AddSC_uldaman()
     Script *newscript;
 
     newscript = new Script;
-    newscript->Name="mob_jadespine_basilisk";
+    newscript->Name = "mob_jadespine_basilisk";
     newscript->GetAI = &GetAI_mob_jadespine_basilisk;
     newscript->RegisterSelf();
 
     newscript = new Script;
-    newscript->Name="npc_lore_keeper_of_norgannon";
+    newscript->Name = "npc_lore_keeper_of_norgannon";
     newscript->pGossipHello = &GossipHello_npc_lore_keeper_of_norgannon;
     newscript->pGossipSelect = &GossipSelect_npc_lore_keeper_of_norgannon;
     newscript->RegisterSelf();
-    
+
     newscript = new Script;
-    newscript->Name="go_keystone_chamber";
+    newscript->Name = "go_keystone_chamber";
     newscript->pGOUse = &GOUse_go_keystone_chamber;
     newscript->RegisterSelf();
 
     newscript = new Script;
-    newscript->Name="at_map_chamber";
+    newscript->Name = "at_map_chamber";
     newscript->pAreaTrigger = &AT_map_chamber;
     newscript->RegisterSelf();
 }

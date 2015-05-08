@@ -103,25 +103,25 @@ struct boss_arlokkAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (!PhaseTwo && ShadowWordPain_Timer < diff)
+        ShadowWordPain_Timer -= diff;
+        if (!PhaseTwo && ShadowWordPain_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_SHADOWWORDPAIN);
             ShadowWordPain_Timer += 15000;
         }
-        else
-            ShadowWordPain_Timer -= diff;
-
-        if (!PhaseTwo && Mark_Timer < diff)
+        
+        Mark_Timer -= diff;
+        if (!PhaseTwo && Mark_Timer <= diff)
         {
             markedTarget = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_MARK), true);
 
             DoCast(markedTarget,SPELL_MARK);
             Mark_Timer += 15000;
         }
-        else
-            Mark_Timer -= diff;
+        
 
-        if (Summon_Timer < diff && Counter < 31)
+        Summon_Timer -= diff;
+        if (Summon_Timer <= diff && Counter < 31)
         {
             Unit* target = NULL;
             target = SelectUnit(SELECT_TARGET_RANDOM,0);
@@ -148,10 +148,10 @@ struct boss_arlokkAI : public ScriptedAI
             Counter++;
             Summon_Timer += 5000;
         }
-        else
-            Summon_Timer -= diff;
+        
 
-        if (Vanish_Timer < diff)
+        Vanish_Timer -= diff;
+        if (Vanish_Timer <= diff)
         {
             //Invisble Model
             m_creature->SetUInt32Value(UNIT_FIELD_DISPLAYID,11686);
@@ -162,12 +162,12 @@ struct boss_arlokkAI : public ScriptedAI
             Vanish_Timer += 45000;
             Visible_Timer = 6000;
         }
-        else
-            Vanish_Timer -= diff;
+        
 
         if (VanishedOnce)
         {
-            if (Visible_Timer < diff)
+            Visible_Timer -= diff;
+            if (Visible_Timer <= diff)
             {
                 Unit* target = NULL;
                 target = SelectUnit(SELECT_TARGET_RANDOM,0);
@@ -186,21 +186,20 @@ struct boss_arlokkAI : public ScriptedAI
                 m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                 PhaseTwo = true;
             }
-            else
-                Visible_Timer -= diff;
+            
         }
 
-        //Cleave_Timer
-        if (PhaseTwo && Cleave_Timer < diff)
+        Cleave_Timer -= diff;
+        if (PhaseTwo && Cleave_Timer <= diff)
         {
             DoCast(m_creature->getVictim(), SPELL_CLEAVE);
             Cleave_Timer += 16000;
         }
-        else
-            Cleave_Timer -=diff;
+        
+            
 
-        //Gouge_Timer
-        if (PhaseTwo && Gouge_Timer < diff)
+        Gouge_Timer -= diff;
+        if (PhaseTwo && Gouge_Timer <= diff)
         {
             DoCast(m_creature->getVictim(), SPELL_GOUGE);
             if (DoGetThreat(m_creature->getVictim()))
@@ -208,8 +207,7 @@ struct boss_arlokkAI : public ScriptedAI
 
             Gouge_Timer += 17000+rand()%10000;
         }
-        else
-            Gouge_Timer -= diff;
+        
 
         DoMeleeAttackIfReady();
     }

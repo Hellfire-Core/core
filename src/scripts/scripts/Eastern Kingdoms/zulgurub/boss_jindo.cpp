@@ -83,26 +83,24 @@ struct boss_jindoAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        //BrainWashTotem_Timer
-        if (BrainWashTotem_Timer < diff)
+        BrainWashTotem_Timer -= diff;
+        if (BrainWashTotem_Timer <= diff)
         {
             DoCast(m_creature, SPELL_BRAINWASHTOTEM);
             BrainWashTotem_Timer += 18000 + rand()%8000;
         }
-        else
-            BrainWashTotem_Timer -= diff;
 
-        //HealingWard_Timer
-        if (HealingWard_Timer < diff)
+
+        HealingWard_Timer -= diff;
+        if (HealingWard_Timer <= diff)
         {
             DoCast(m_creature, SPELL_POWERFULLHEALINGWARD);
             HealingWard_Timer += 14000 + rand()%6000;
         }
-        else
-            HealingWard_Timer -= diff;
+        
 
-        //Hex_Timer
-        if (Hex_Timer < diff)
+        Hex_Timer -= diff;
+        if (Hex_Timer <= diff)
         {
             DoCast(m_creature->getVictim(), SPELL_HEX);
 
@@ -111,11 +109,11 @@ struct boss_jindoAI : public ScriptedAI
 
             Hex_Timer += 12000 + rand()%8000;
         }
-        else
-            Hex_Timer -= diff;
+        
 
+        Delusions_Timer -= diff;
         //Casting the delusion curse with a shade. So shade will attack the same target with the curse.
-        if(Delusions_Timer < diff)
+        if(Delusions_Timer <= diff)
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0, GetSpellMaxRange(SPELL_DELUSIONSOFJINDO), true))
             {
@@ -127,9 +125,8 @@ struct boss_jindoAI : public ScriptedAI
             }
             Delusions_Timer += 4000 + rand()%8000;
         }
-        else
-            Delusions_Timer -= diff;
-
+        
+        Teleport_Timer -= diff;
         //Teleporting a random gamer and spawning 9 skeletons that will attack this gamer
         if(Teleport_Timer < diff)
         {
@@ -171,8 +168,7 @@ struct boss_jindoAI : public ScriptedAI
 
             Teleport_Timer += 15000 + rand()%8000;
         }
-        else
-            Teleport_Timer -= diff;
+        
 
         DoMeleeAttackIfReady();
     }
@@ -206,14 +202,13 @@ struct mob_shade_of_jindoAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        //ShadowShock_Timer
-        if(ShadowShock_Timer < diff)
+        ShadowShock_Timer -= diff;
+        if(ShadowShock_Timer <= diff)
         {
             DoCast(m_creature->getVictim(), SPELL_SHADOWSHOCK);
             ShadowShock_Timer += 2000;
         }
-        else
-            ShadowShock_Timer -= diff;
+        
 
         DoMeleeAttackIfReady();
     }

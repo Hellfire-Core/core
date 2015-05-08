@@ -536,7 +536,8 @@ struct instance_zulaman : public ScriptedInstance
     {
         if(QuestMinute)
         {
-            if(QuestTimer < diff)
+            QuestTimer -= diff;
+            if(QuestTimer <= diff)
             {
                 QuestMinute--;
                 SaveToDB();
@@ -579,7 +580,6 @@ struct instance_zulaman : public ScriptedInstance
                     UpdateWorldState(3104, 0);
                 }
             }
-            QuestTimer -= diff;
         }
     }
 };

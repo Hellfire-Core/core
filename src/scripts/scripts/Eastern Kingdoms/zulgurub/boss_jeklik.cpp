@@ -116,7 +116,8 @@ struct boss_jeklikAI : public ScriptedAI
         {
             if ((m_creature->GetHealth()*100 / m_creature->GetMaxHealth() > 50))
             {
-                if (Charge_Timer < diff)
+                Charge_Timer -= diff;
+                if (Charge_Timer <= diff)
                 {
                     if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_CHARGE), true))
                     {
@@ -126,26 +127,26 @@ struct boss_jeklikAI : public ScriptedAI
 
                     Charge_Timer += 15000 + rand()%15000;
                 }
-                else
-                    Charge_Timer -= diff;
+                
 
-                if (SonicBurst_Timer < diff)
+                SonicBurst_Timer -= diff;
+                if (SonicBurst_Timer <= diff)
                 {
                     DoCast(m_creature->getVictim(),SPELL_SONICBURST);
                     SonicBurst_Timer += 8000 + rand()%5000;
                 }
-                else
-                    SonicBurst_Timer -= diff;
+                
 
-                if (Screech_Timer < diff)
+                Screech_Timer -= diff;
+                if (Screech_Timer <= diff)
                 {
                     DoCast(m_creature->getVictim(),SPELL_SCREECH);
                     Screech_Timer += 18000 + rand()%8000;
                 }
-                else
-                    Screech_Timer -= diff;
+                
 
-                if (SpawnBats_Timer < diff)
+                SpawnBats_Timer -= diff;
+                if (SpawnBats_Timer <= diff)
                 {
                     Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0);
 
@@ -162,14 +163,13 @@ struct boss_jeklikAI : public ScriptedAI
 
                     SpawnBats_Timer += 60000;
                 }
-                else
-                    SpawnBats_Timer -= diff;
             }
             else
             {
                 if (PhaseTwo)
                 {
-                    if (PhaseTwo && ShadowWordPain_Timer < diff)
+                    ShadowWordPain_Timer -= diff;
+                    if (PhaseTwo && ShadowWordPain_Timer <= diff)
                     {
                         if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0,GetSpellMaxRange(SPELL_SHADOW_WORD_PAIN), true))
                         {
@@ -177,36 +177,35 @@ struct boss_jeklikAI : public ScriptedAI
                             ShadowWordPain_Timer += 12000 + rand()%6000;
                         }
                     }
-                    else
-                        ShadowWordPain_Timer -=diff;
+                    
 
-                    if (MindFlay_Timer < diff)
+                    MindFlay_Timer -= diff;
+                    if (MindFlay_Timer <= diff)
                     {
                         DoCast(m_creature->getVictim(), SPELL_MIND_FLAY);
                         MindFlay_Timer += 16000;
                     }
-                    else
-                        MindFlay_Timer -= diff;
+                    
 
-                    if (ChainMindFlay_Timer < diff)
+                    ChainMindFlay_Timer -= diff;
+                    if (ChainMindFlay_Timer <= diff)
                     {
                         m_creature->InterruptNonMeleeSpells(false);
                         DoCast(m_creature->getVictim(), SPELL_CHAIN_MIND_FLAY);
                         ChainMindFlay_Timer += 15000 + rand()%15000;
                     }
-                    else
-                        ChainMindFlay_Timer -= diff;
+                    
 
-                    if (GreaterHeal_Timer < diff)
+                    GreaterHeal_Timer -= diff;
+                    if (GreaterHeal_Timer <= diff)
                     {
                         m_creature->InterruptNonMeleeSpells(false);
                         DoCast(m_creature,SPELL_GREATERHEAL);
                         GreaterHeal_Timer += 25000 + rand()%10000;
                     }
-                    else
-                        GreaterHeal_Timer -= diff;
-
-                    if (SpawnFlyingBats_Timer < diff)
+                    
+                    SpawnFlyingBats_Timer -= diff;
+                    if (SpawnFlyingBats_Timer <= diff)
                     {
                         Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0);
                         if (!target)
@@ -218,8 +217,6 @@ struct boss_jeklikAI : public ScriptedAI
 
                         SpawnFlyingBats_Timer += 10000 + rand()%5000;
                     }
-                    else
-                        SpawnFlyingBats_Timer -=diff;
                 }
                 else
                 {
@@ -262,8 +259,8 @@ struct mob_batriderAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        //Bomb_Timer
-        if (Bomb_Timer < diff)
+        Bomb_Timer -= diff;
+        if (Bomb_Timer <= diff)
         {
             if (Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_BOMB), true))
             {
@@ -271,11 +268,10 @@ struct mob_batriderAI : public ScriptedAI
                 Bomb_Timer += 5000;
             }
         }
-        else
-            Bomb_Timer -= diff;
+        
 
-        //Check_Timer
-        if (Check_Timer < diff)
+        Check_Timer -= diff;
+        if (Check_Timer <= diff)
         {
             if (pInstance)
             {
@@ -288,8 +284,6 @@ struct mob_batriderAI : public ScriptedAI
 
             Check_Timer += 1000;
         }
-        else
-            Check_Timer -= diff;
 
         DoMeleeAttackIfReady();
     }

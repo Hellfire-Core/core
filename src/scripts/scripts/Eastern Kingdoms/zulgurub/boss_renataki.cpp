@@ -77,7 +77,7 @@ struct boss_renatakiAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        //Invisible_Timer
+        Invisible_Timer -= diff;
         if(Invisible_Timer < diff)
         {
             m_creature->InterruptSpell(CURRENT_GENERIC_SPELL);
@@ -90,12 +90,12 @@ struct boss_renatakiAI : public ScriptedAI
 
             Invisible_Timer += 15000 + rand()%15000;
         }
-        else
-            Invisible_Timer -= diff;
+        
 
         if(Invisible)
         {
-            if(Ambush_Timer < diff)
+            Ambush_Timer -= diff;
+            if(Ambush_Timer <= diff)
             {
                 if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0))
                 {
@@ -106,13 +106,12 @@ struct boss_renatakiAI : public ScriptedAI
                 Ambushed = true;
                 Ambush_Timer += 3000;
             }
-            else
-                Ambush_Timer -= diff;
         }
 
         if (Ambushed)
         {
-            if (Visible_Timer < diff)
+            Visible_Timer -= diff;
+            if (Visible_Timer <= diff)
             {
                 m_creature->InterruptSpell(CURRENT_GENERIC_SPELL);
                 m_creature->SetUInt32Value(UNIT_FIELD_DISPLAYID,15268);
@@ -125,14 +124,13 @@ struct boss_renatakiAI : public ScriptedAI
 
                 Visible_Timer += 4000;
             }
-            else
-                Visible_Timer -= diff;
         }
 
         //Resetting some aggro so he attacks other gamers
         if(!Invisible)
         {
-            if(Aggro_Timer < diff)
+            Aggro_Timer -= diff;
+            if(Aggro_Timer <= diff)
             {
                 Unit* target = SelectUnit(SELECT_TARGET_RANDOM,1, 200, true, m_creature->getVictimGUID());
                 if(DoGetThreat(m_creature->getVictim()))
@@ -143,16 +141,14 @@ struct boss_renatakiAI : public ScriptedAI
 
                 Aggro_Timer += 7000 + rand()%13000;
             }
-            else
-                Aggro_Timer -= diff;
+            
 
-            if(ThousandBlades_Timer < diff)
+            ThousandBlades_Timer -= diff;
+            if(ThousandBlades_Timer <= diff)
             {
                 DoCast(m_creature->getVictim(), SPELL_THOUSANDBLADES);
                 ThousandBlades_Timer += 7000 + rand()%5000;
             }
-            else
-                ThousandBlades_Timer -= diff;
         }
 
         DoMeleeAttackIfReady();

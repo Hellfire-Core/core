@@ -150,21 +150,21 @@ struct boss_thekalAI : public ScriptedAI
             else
                 Check_Timer -= diff;
 
-            if (!PhaseTwo && MortalCleave_Timer < diff)
+            MortalCleave_Timer -= diff;
+            if (!PhaseTwo && MortalCleave_Timer <= diff)
             {
                 DoCast(m_creature->getVictim(),SPELL_MORTALCLEAVE);
                 MortalCleave_Timer += 15000 + rand()%5000;
             }
-            else
-                MortalCleave_Timer -= diff;
+            
 
+            Silence_Timer -= diff;
             if(!PhaseTwo && Silence_Timer < diff)
             {
                 DoCast(m_creature->getVictim(),SPELL_SILENCE);
                 Silence_Timer += 20000 + rand()%5000;
             }
-            else
-                Silence_Timer -= diff;
+            
 
             if(!PhaseTwo && !WasDead && m_creature->GetHealth() <= m_creature->GetMaxHealth() * 0.05)
             {
@@ -181,7 +181,8 @@ struct boss_thekalAI : public ScriptedAI
             //Thekal will transform to Tiger if he died and was not resurrected after 10 seconds.
             if(!PhaseTwo && WasDead)
             {
-                if(Resurrect_Timer < diff)
+                Resurrect_Timer -= diff;
+                if(Resurrect_Timer <= diff)
                 {
                     DoCast(m_creature,SPELL_TIGER_FORM);
                     m_creature->SetFloatValue(OBJECT_FIELD_SCALE_X, 2.00f);
@@ -195,8 +196,6 @@ struct boss_thekalAI : public ScriptedAI
                     DoResetThreat();
                     PhaseTwo = true;
                 }
-                else
-                    Resurrect_Timer -= diff;
             }
 
             if ((m_creature->GetHealth()*100 / m_creature->GetMaxHealth() == 100) && WasDead)
@@ -206,7 +205,8 @@ struct boss_thekalAI : public ScriptedAI
 
             if(PhaseTwo)
             {
-                if(Charge_Timer < diff)
+                Charge_Timer -= diff;
+                if(Charge_Timer <= diff)
                 {
                     if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0, GetSpellMaxRange(SPELL_CHARGE), true))
                     {
@@ -216,32 +216,31 @@ struct boss_thekalAI : public ScriptedAI
                     }
                     Charge_Timer += 15000 + rand()%7000;
                 }
-                else
-                    Charge_Timer -= diff;
+                
 
+                Frenzy_Timer -= diff;
                 if(Frenzy_Timer < diff)
                 {
                     DoCast(m_creature,SPELL_FRENZY);
                     Frenzy_Timer += 30000;
                 }
-                else
-                    Frenzy_Timer -= diff;
+                
 
-                if(ForcePunch_Timer < diff)
+                ForcePunch_Timer -= diff;
+                if(ForcePunch_Timer <= diff)
                 {
                     DoCast(m_creature->getVictim(),SPELL_SILENCE);
                     ForcePunch_Timer += 16000 + rand()%5000;
                 }
-                else
-                    ForcePunch_Timer -= diff;
+                
 
-                if(SummonTigers_Timer < diff)
+                SummonTigers_Timer -= diff;
+                if(SummonTigers_Timer <= diff)
                 {
                     DoCast(m_creature->getVictim(),SPELL_SUMMONTIGERS);
                     SummonTigers_Timer += 10000 + rand()%4000;
                 }
-                else
-                    SummonTigers_Timer -= diff;
+                
 
                 if((m_creature->GetHealth()*100 / m_creature->GetMaxHealth() < 11) && !Enraged)
                 {
@@ -299,22 +298,23 @@ struct mob_zealot_lorkhanAI : public ScriptedAI
         if (!UpdateVictim() )
             return;
 
-        //Shield_Timer
+        Shield_Timer -= diff;
         if(Shield_Timer < diff)
         {
             DoCast(m_creature,SPELL_SHIELD);
             Shield_Timer += 61000;
-        }else Shield_Timer -= diff;
+        }
 
-        //BloodLust_Timer
-        if(BloodLust_Timer < diff)
+        BloodLust_Timer -= diff;
+        if(BloodLust_Timer <= diff)
         {
             DoCast(m_creature,SPELL_BLOODLUST);
             BloodLust_Timer += 20000+rand()%8000;
-        }else BloodLust_Timer -= diff;
+        }
 
+        GreaterHeal_Timer -= diff;
         //Casting Greaterheal to Thekal or Zath if they are in meele range.
-        if(GreaterHeal_Timer < diff)
+        if(GreaterHeal_Timer <= diff)
         {
             if(pInstance)
             {
@@ -338,7 +338,7 @@ struct mob_zealot_lorkhanAI : public ScriptedAI
             }
 
             GreaterHeal_Timer += 15000+rand()%5000;
-        }else GreaterHeal_Timer -= diff;
+        }
 
         //Disarm_Timer
         if(Disarm_Timer < diff)
@@ -347,8 +347,9 @@ struct mob_zealot_lorkhanAI : public ScriptedAI
             Disarm_Timer += 15000+rand()%10000;
         }else Disarm_Timer -= diff;
 
+        Check_Timer -= diff;
         //Check_Timer for the death of LorKhan and Zath.
-        if(!FakeDeath && Check_Timer < diff)
+        if(!FakeDeath && Check_Timer <= diff)
         {
             if(pInstance)
             {
@@ -380,7 +381,7 @@ struct mob_zealot_lorkhanAI : public ScriptedAI
             }
 
             Check_Timer += 5000;
-        }else Check_Timer -= diff;
+        }
 
         if (m_creature->GetHealth() <= m_creature->GetMaxHealth() * 0.05)
         {
@@ -445,22 +446,22 @@ struct mob_zealot_zathAI : public ScriptedAI
         if (!UpdateVictim() )
             return;
 
-        //SweepingStrikes_Timer
-        if(SweepingStrikes_Timer < diff)
+        SweepingStrikes_Timer -= diff;
+        if(SweepingStrikes_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_SWEEPINGSTRIKES);
             SweepingStrikes_Timer += 22000+rand()%4000;
-        }else SweepingStrikes_Timer -= diff;
+        }
 
-        //SinisterStrike_Timer
-        if(SinisterStrike_Timer < diff)
+        SinisterStrike_Timer -= diff;
+        if(SinisterStrike_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_SINISTERSTRIKE);
             SinisterStrike_Timer += 8000+rand()%8000;
-        }else SinisterStrike_Timer -= diff;
+        }
 
-        //Gouge_Timer
-        if(Gouge_Timer < diff)
+        Gouge_Timer -= diff;
+        if(Gouge_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_GOUGE);
 
@@ -468,22 +469,23 @@ struct mob_zealot_zathAI : public ScriptedAI
                 DoModifyThreatPercent(m_creature->getVictim(),-100);
 
             Gouge_Timer += 17000+rand()%10000;
-        }else Gouge_Timer -= diff;
+        }
 
-        //Kick_Timer
-        if(Kick_Timer < diff)
+        Kick_Timer -= diff;
+        if(Kick_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_KICK);
             Kick_Timer += 15000+rand()%10000;
-        }else Kick_Timer -= diff;
+        }
 
-        //Blind_Timer
-        if(Blind_Timer < diff)
+        Blind_Timer -= diff;
+        if(Blind_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_BLIND);
             Blind_Timer += 10000+rand()%10000;
-        }else Blind_Timer -= diff;
+        }
 
+        Check_Timer -= diff;
         //Check_Timer for the death of LorKhan and Zath.
         if(!FakeDeath && Check_Timer < diff)
         {
@@ -517,7 +519,7 @@ struct mob_zealot_zathAI : public ScriptedAI
             }
 
             Check_Timer += 5000;
-        }else Check_Timer -= diff;
+        }
 
         if (m_creature->GetHealth() <= m_creature->GetMaxHealth() * 0.05)
         {

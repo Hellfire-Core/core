@@ -1,7 +1,7 @@
-/* 
+/*
  * Copyright (C) 2006-2008 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -45,7 +45,7 @@ EndScriptData */
 
 struct instance_uldaman : public ScriptedInstance
 {
-    instance_uldaman(Map *map) : ScriptedInstance(map){};
+    instance_uldaman(Map *map) : ScriptedInstance(map) {};
 
     void Initialize()
     {
@@ -63,22 +63,22 @@ struct instance_uldaman : public ScriptedInstance
         ironayaSealDoorTimer = 26000;
         keystoneCheck = false;
 
-        for(uint8 i=0; i < ENCOUNTERS; ++i)
+        for (uint8 i = 0; i < ENCOUNTERS; ++i)
             Encounters[i] = NOT_STARTED;
 
     }
 
     uint64 archaedasGUID;
     uint64 ironayaGUID;
-    
+
     uint64 altarOfTheKeeperTempleDoor;
     uint64 altarOfArcheadas;
     uint64 archaedasTempleDoor;
     uint64 ancientVaultDoor;
     uint64 ironayaSealDoor;
-    
+
     uint64 keystoneGUID;
-    
+
     int32 ironayaSealDoorTimer;
     bool keystoneCheck;
 
@@ -90,27 +90,27 @@ struct instance_uldaman : public ScriptedInstance
 
     uint32 Encounters[ENCOUNTERS];
 
-    void OnObjectCreate (GameObject* go)
+    void OnObjectCreate(GameObject* go)
     {
         switch (go->GetEntry())
         {
             case ALTAR_OF_THE_KEEPER_TEMPLE_DOOR:         // lock the door
                 altarOfTheKeeperTempleDoor = go->GetGUID();
 
-                if (Encounters[0] == DONE) 
+                if (Encounters[0] == DONE)
                     HandleGameObject(0, true, go);
                 break;
 
             case ALTAR_OF_ARCHAEDAS:         // lock the door
                 altarOfArcheadas = go->GetGUID();
-                if (Encounters[2] == DONE) 
+                if (Encounters[2] == DONE)
                     go->SetUInt32Value(GAMEOBJECT_FLAGS, GO_FLAG_IN_USE);
                 break;
 
             case ARCHAEDAS_TEMPLE_DOOR:
                 archaedasTempleDoor = go->GetGUID();
 
-                if (Encounters[0] == DONE) 
+                if (Encounters[0] == DONE)
                     HandleGameObject(0, true, go);
                 break;
 
@@ -118,18 +118,18 @@ struct instance_uldaman : public ScriptedInstance
                 go->SetUInt32Value(GAMEOBJECT_STATE, 1);
                 go->SetUInt32Value(GAMEOBJECT_FLAGS, 33);
                 ancientVaultDoor = go->GetGUID();
-                
-                if (Encounters[1] == DONE) 
+
+                if (Encounters[1] == DONE)
                     HandleGameObject(0, true, go);
                 break;
-        
+
             case IRONAYA_SEAL_DOOR:
                 ironayaSealDoor = go->GetGUID();
 
-                if (Encounters[2] == DONE) 
+                if (Encounters[2] == DONE)
                     HandleGameObject(0, true, go);
                 break;
-        
+
             case KEYSTONE_GO:
                 keystoneGUID = go->GetGUID();
 
@@ -154,16 +154,16 @@ struct instance_uldaman : public ScriptedInstance
     void SetDoor(uint64 guid, bool open)
     {
         GameObject *go = instance->GetGameObject(guid);
-        if(!go)
+        if (!go)
             return;
 
-        HandleGameObject(0,open,go);
+        HandleGameObject(0, open, go);
     }
-    
+
     void BlockGO(uint64 guid)
     {
         GameObject *go = instance->GetGameObject(guid);
-        if(!go)
+        if (!go)
             return;
         go->SetUInt32Value(GAMEOBJECT_FLAGS, GO_FLAG_INTERACT_COND);
 
@@ -171,34 +171,34 @@ struct instance_uldaman : public ScriptedInstance
 
     void ActivateStoneKeepers()
     {
-        for(std::vector<uint64>::iterator i = stoneKeeper.begin(); i != stoneKeeper.end(); ++i)
+        for (std::vector<uint64>::iterator i = stoneKeeper.begin(); i != stoneKeeper.end(); ++i)
         {
             Creature *target = instance->GetCreature(*i);
-            if (!target || !target->isAlive() || target->getFaction()==14)
+            if (!target || !target->isAlive() || target->getFaction() == 14)
                 continue;
-            target->RemoveFlag(UNIT_FIELD_FLAGS,UNIT_FLAG_DISABLE_MOVE);
+            target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_MOVE);
             target->setFaction(14);
             target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             return;        // only want the first one we find
         }
         // if we get this far than all four are dead so open the door
-        SetData (DATA_ALTAR_DOORS, DONE);
-        SetDoor (archaedasTempleDoor, true); //open next the door too
+        SetData(DATA_ALTAR_DOORS, DONE);
+        SetDoor(archaedasTempleDoor, true); //open next the door too
     }
 
     void ActivateWallMinions()
     {
         Creature *archaedas = instance->GetCreature(archaedasGUID);
-        if(!archaedas)
+        if (!archaedas)
             return;
 
-        for(std::vector<uint64>::iterator i = archaedasWallMinions.begin(); i != archaedasWallMinions.end(); ++i)
+        for (std::vector<uint64>::iterator i = archaedasWallMinions.begin(); i != archaedasWallMinions.end(); ++i)
         {
             Creature *target = instance->GetCreature(*i);
-            if (!target || !target->isAlive() || target->getFaction()==14)
+            if (!target || !target->isAlive() || target->getFaction() == 14)
                 continue;
             archaedas->CastSpell(target, SPELL_AWAKEN_VAULT_WALKER, true);
-            target->CastSpell(target, SPELL_ARCHAEDAS_AWAKEN,true);
+            target->CastSpell(target, SPELL_ARCHAEDAS_AWAKEN, true);
             return;        // only want the first one we find
         }
     }
@@ -207,30 +207,30 @@ struct instance_uldaman : public ScriptedInstance
     void DeActivateMinions()
     {
         // first despawn any aggroed wall minions
-        for(std::vector<uint64>::iterator i = archaedasWallMinions.begin(); i != archaedasWallMinions.end(); ++i)
+        for (std::vector<uint64>::iterator i = archaedasWallMinions.begin(); i != archaedasWallMinions.end(); ++i)
         {
             Creature *target = instance->GetCreature(*i);
-            if (!target || target->isDead() || target->getFaction()!=14)
+            if (!target || target->isDead() || target->getFaction() != 14)
                 continue;
             target->setDeathState(JUST_DIED);
             target->RemoveCorpse();
         }
 
         // Vault Walkers
-        for(std::vector<uint64>::iterator i = vaultWalker.begin(); i != vaultWalker.end(); ++i)
+        for (std::vector<uint64>::iterator i = vaultWalker.begin(); i != vaultWalker.end(); ++i)
         {
             Creature *target = instance->GetCreature(*i);
-            if (!target || target->isDead() || target->getFaction()!=14)
+            if (!target || target->isDead() || target->getFaction() != 14)
                 continue;
             target->setDeathState(JUST_DIED);
             target->RemoveCorpse();
         }
 
         // Earthen Guardians
-        for(std::vector<uint64>::iterator i = earthenGuardian.begin(); i != earthenGuardian.end(); ++i)
+        for (std::vector<uint64>::iterator i = earthenGuardian.begin(); i != earthenGuardian.end(); ++i)
         {
             Creature *target = instance->GetCreature(*i);
-            if (!target || target->isDead() || target->getFaction()!=14)
+            if (!target || target->isDead() || target->getFaction() != 14)
                 continue;
             target->setDeathState(JUST_DIED);
             target->RemoveCorpse();
@@ -240,27 +240,27 @@ struct instance_uldaman : public ScriptedInstance
     void ActivateArchaedas()
     {
         Creature *archaedas = instance->GetCreature(archaedasGUID);
-        if(!archaedas)
+        if (!archaedas)
             return;
 
-        archaedas->CastSpell(archaedas, SPELL_ARCHAEDAS_AWAKEN,false);
+        archaedas->CastSpell(archaedas, SPELL_ARCHAEDAS_AWAKEN, false);
     }
-    
+
     void ActivateIronaya()
     {
         Creature *ironaya = instance->GetCreature(ironayaGUID);
-        if(!ironaya)
+        if (!ironaya)
             return;
 
         ironaya->setFaction(415);
-        ironaya->RemoveFlag(UNIT_FIELD_FLAGS,UNIT_FLAG_DISABLE_MOVE);
+        ironaya->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_MOVE);
         ironaya->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
     }
 
     void RespawnMinions()
     {
         // first respawn any aggroed wall minions
-        for(std::vector<uint64>::iterator i = archaedasWallMinions.begin(); i != archaedasWallMinions.end(); ++i)
+        for (std::vector<uint64>::iterator i = archaedasWallMinions.begin(); i != archaedasWallMinions.end(); ++i)
         {
             Creature *target = instance->GetCreature(*i);
             if (target && target->isDead())
@@ -272,7 +272,7 @@ struct instance_uldaman : public ScriptedInstance
         }
 
         // Vault Walkers
-        for(std::vector<uint64>::iterator i = vaultWalker.begin(); i != vaultWalker.end(); ++i)
+        for (std::vector<uint64>::iterator i = vaultWalker.begin(); i != vaultWalker.end(); ++i)
         {
             Creature *target = instance->GetCreature(*i);
             if (target && target->isDead())
@@ -284,7 +284,7 @@ struct instance_uldaman : public ScriptedInstance
         }
 
         // Earthen Guardians
-        for(std::vector<uint64>::iterator i = earthenGuardian.begin(); i != earthenGuardian.end(); ++i)
+        for (std::vector<uint64>::iterator i = earthenGuardian.begin(); i != earthenGuardian.end(); ++i)
         {
             Creature *target = instance->GetCreature(*i);
             if (target && target->isDead())
@@ -300,71 +300,70 @@ struct instance_uldaman : public ScriptedInstance
     {
         if (!keystoneCheck)
         return;
-        
-    if(ironayaSealDoorTimer <= diff)
-        {
-        ActivateIronaya();
-        
-        SetDoor(ironayaSealDoor, true);
-        BlockGO(keystoneGUID);
-        
-            SetData(DATA_IRONAYA_DOOR, DONE); //save state
-        keystoneCheck = false;
-        }
-    else
-            ironayaSealDoorTimer -= diff;
-    }     
 
-    void SetData (uint32 type, uint32 data)
+        ironayaSealDoorTimer -= diff;
+        if (ironayaSealDoorTimer <= diff)
+        {
+            ActivateIronaya();
+
+            SetDoor(ironayaSealDoor, true);
+            BlockGO(keystoneGUID);
+
+            SetData(DATA_IRONAYA_DOOR, DONE); //save state
+            keystoneCheck = false;
+        }
+    }
+
+    void SetData(uint32 type, uint32 data)
     {
-        switch(type)
+        switch (type)
         {
             case DATA_ALTAR_DOORS:
-            Encounters[0] = data;
-                if(data == DONE)
-                    SetDoor (altarOfTheKeeperTempleDoor, true);
+                Encounters[0] = data;
+                if (data == DONE)
+                    SetDoor(altarOfTheKeeperTempleDoor, true);
                 break;
-        
-        case DATA_ANCIENT_DOOR:
-            if(Encounters[1] == DONE)
-                return;
 
-            Encounters[1] = data;
-            if(data == NOT_STARTED)
-            {
-                instance->GetGameObject(altarOfArcheadas)->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_IN_USE);
-            }
-            if(data == IN_PROGRESS)
-            {
-                ActivateArchaedas();
-            }
-            if(data == DONE) //archeadas defeat
-            {
-                SetDoor (archaedasTempleDoor, true); //re open enter door
-                SetDoor (ancientVaultDoor, true);
-            }
-            break;
-        
-        case DATA_IRONAYA_DOOR:
-            Encounters[2] = data;
+            case DATA_ANCIENT_DOOR:
+                if (Encounters[1] == DONE)
+                    return;
+
+                Encounters[1] = data;
+                if (data == NOT_STARTED)
+                {
+                    instance->GetGameObject(altarOfArcheadas)->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_IN_USE);
+                }
+                if (data == IN_PROGRESS)
+                {
+                    ActivateArchaedas();
+                }
+                if (data == DONE) //archeadas defeat
+                {
+                    SetDoor(archaedasTempleDoor, true); //re open enter door
+                    SetDoor(ancientVaultDoor, true);
+                }
                 break;
-    
-        case DATA_STONE_KEEPERS:
-            ActivateStoneKeepers();
+
+            case DATA_IRONAYA_DOOR:
+                Encounters[2] = data;
                 break;
-    
-        case DATA_MINIONS:
-                switch(data)
+
+            case DATA_STONE_KEEPERS:
+                ActivateStoneKeepers();
+                break;
+
+            case DATA_MINIONS:
+                switch (data)
                 {
                     case NOT_STARTED:
-                    if (Encounters[0] == DONE) //if players opened the doors 
-                            SetDoor (archaedasTempleDoor, true);
+                        if (Encounters[0] == DONE) //if players opened the doors 
+                                SetDoor(archaedasTempleDoor, true);
 
                         RespawnMinions();
                         break;
                     case IN_PROGRESS:
                         ActivateWallMinions();
-                    break;
+                        break;
                     case SPECIAL:
                         DeActivateMinions();
                         break;
@@ -380,11 +379,12 @@ struct instance_uldaman : public ScriptedInstance
             SaveToDB();
     }
 
-    void OnCreatureCreate (Creature *creature, uint32 creature_entry)
+    void OnCreatureCreate(Creature *creature, uint32 creature_entry)
     {
-        switch (creature_entry) {
+        switch (creature_entry)
+        {
             case 4857:    // Stone Keeper
-                SetFrozenState (creature);
+                SetFrozenState(creature);
                 stoneKeeper.push_back(creature->GetGUID());
                 break;
 
@@ -399,12 +399,12 @@ struct instance_uldaman : public ScriptedInstance
             case 7076:    // Earthen Guardian
                 earthenGuardian.push_back(creature->GetGUID());
                 break;
-        
+
             case 7228:   // Ironaya
                 ironayaGUID = creature->GetGUID();
-                
-                if(Encounters[2] != DONE)
-                    SetFrozenState (creature);
+
+                if (Encounters[2] != DONE)
+                    SetFrozenState(creature);
                 break;
 
             case 10120:    // Vault Walker
@@ -417,9 +417,9 @@ struct instance_uldaman : public ScriptedInstance
 
         } // end switch
     } // end OnCreatureCreate
-    
 
-    uint64 GetData64 (uint32 identifier)
+
+    uint64 GetData64(uint32 identifier)
     {
         if (identifier == 0) return archaedasGUID;
         if (identifier == 1) return vaultWalker[0];    // VaultWalker1
@@ -464,7 +464,7 @@ struct instance_uldaman : public ScriptedInstance
         std::istringstream loadStream(in);
         loadStream >> Encounters[0] >> Encounters[1] >> Encounters[2];
 
-        for(uint8 i = 0; i < ENCOUNTERS; ++i)
+        for (uint8 i = 0; i < ENCOUNTERS; ++i)
             if (Encounters[i] == IN_PROGRESS)
                 Encounters[i] = NOT_STARTED;
 

@@ -221,7 +221,8 @@ struct boss_halazziAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if (checkTimer2 < diff)
+        checkTimer2 -= diff;
+        if (checkTimer2 <= diff)
         {
             if (!m_creature->IsWithinDistInMap(&wLoc, 50))
                 EnterEvadeMode();
@@ -229,47 +230,53 @@ struct boss_halazziAI : public ScriptedAI
                 DoZoneInCombat();
             checkTimer2 += 3000;
         }
-        else
-            checkTimer2 -= diff;
+        
 
-        if(BerserkTimer < diff)
+        BerserkTimer -= diff;
+        if(BerserkTimer <= diff)
         {
             AddSpellToCastWithScriptText(m_creature, SPELL_BERSERK, YELL_BERSERK);
             BerserkTimer += 60000;
-        }else BerserkTimer -= diff;
+        }
 
         if(Phase == PHASE_LYNX || Phase == PHASE_ENRAGE)
         {
-            if(SaberlashTimer < diff)
+            SaberlashTimer -= diff;
+            if(SaberlashTimer <= diff)
             {
                 AddSpellToCastWithScriptText(m_creature->getVictim(), SPELL_SABER_LASH, RAND(YELL_SABER_ONE, YELL_SABER_TWO));
                 SaberlashTimer += 5000 + rand() % 10000;
-            }else SaberlashTimer -= diff;
+            }
 
-            if(FrenzyTimer < diff)
+            FrenzyTimer -= diff;
+            if(FrenzyTimer <= diff)
             {
                 AddSpellToCast(m_creature, SPELL_FRENZY);
                 FrenzyTimer += (10+rand()%5)*1000;
-            }else FrenzyTimer -= diff;
+            }
+
 
             if(Phase == PHASE_LYNX)
-                if(CheckTimer < diff)
+                CheckTimer -= diff;
+                if(CheckTimer <= diff)
                 {
                     if(m_creature->GetHealth() * 4 < m_creature->GetMaxHealth() * (3 - TransformCount))
                         EnterPhase(PHASE_SPLIT);
                     CheckTimer += 1000;
-                }else CheckTimer -= diff;
+                }
         }
 
         if(Phase == PHASE_HUMAN || Phase == PHASE_ENRAGE)
         {
-            if(TotemTimer < diff)
+            TotemTimer -= diff;
+            if(TotemTimer <= diff)
             {
                 AddSpellToCast(m_creature, SPELL_SUMMON_TOTEM);
                 TotemTimer += 20000;
-            }else TotemTimer -= diff;
+            }
 
-            if(ShockTimer < diff)
+            ShockTimer -= diff;
+            if(ShockTimer <= diff)
             {
                 if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0,GetSpellMaxRange(SPELL_EARTHSHOCK), true))
                 {
@@ -279,26 +286,30 @@ struct boss_halazziAI : public ScriptedAI
                         AddSpellToCast(target,SPELL_FLAMESHOCK);
                     ShockTimer += 10000 + rand()%5000;
                 }
-            }else ShockTimer -= diff;
+            }
 
-            if(Phase == PHASE_HUMAN)
-                if(CheckTimer < diff)
+            if (Phase == PHASE_HUMAN)
+            {
+                CheckTimer -= diff;
+                if (CheckTimer <= diff)
                 {
-                    if( ((m_creature->GetHealth()*100) / m_creature->GetMaxHealth() <= 20)/*m_creature->GetHealth() * 10 < m_creature->GetMaxHealth()*/)
+                    if (((m_creature->GetHealth() * 100) / m_creature->GetMaxHealth() <= 20)/*m_creature->GetHealth() * 10 < m_creature->GetMaxHealth()*/)
                         EnterPhase(PHASE_MERGE);
                     else
                     {
                         Unit *Lynx = Unit::GetUnit(*m_creature, LynxGUID);
-                        if(Lynx && ((Lynx->GetHealth()*100) / Lynx->GetMaxHealth() <= 20)/*Lynx->GetHealth() * 10 < Lynx->GetMaxHealth()*/)
+                        if (Lynx && ((Lynx->GetHealth() * 100) / Lynx->GetMaxHealth() <= 20)/*Lynx->GetHealth() * 10 < Lynx->GetMaxHealth()*/)
                             EnterPhase(PHASE_MERGE);
                     }
                     CheckTimer += 1000;
-                }else CheckTimer -= diff;
+                }
+            }
         }
 
         if(Phase == PHASE_MERGE)
         {
-            if(CheckTimer < diff)
+            CheckTimer -= diff;
+            if(CheckTimer <= diff)
             {
                 Unit *Lynx = Unit::GetUnit(*m_creature, LynxGUID);
                 if(Lynx)
@@ -314,7 +325,7 @@ struct boss_halazziAI : public ScriptedAI
                     }
                 }
                 CheckTimer += 1000;
-            }else CheckTimer -= diff;
+            }
         }
 
         CastNextSpellIfAnyAndReady();
@@ -369,17 +380,19 @@ struct boss_spiritlynxAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if(FrenzyTimer < diff)
+        FrenzyTimer -= diff;
+        if(FrenzyTimer <= diff)
         {
             DoCast(m_creature, SPELL_LYNX_FRENZY);
             FrenzyTimer += (30+rand()%20)*1000;
-        }else FrenzyTimer -= diff;
+        }
 
-        if(shredder_timer < diff)
+        shredder_timer -= diff;
+        if(shredder_timer <= diff)
         {
             DoCast(m_creature->getVictim(), SPELL_SHRED_ARMOR);
             shredder_timer += 4000;
-        }else shredder_timer -= diff;
+        }
 
         DoMeleeAttackIfReady();
     }

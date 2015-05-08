@@ -326,11 +326,11 @@ struct boss_janalaiAI : public ScriptedAI
                 isFlameBreathing = false;
             }else 
             {
-                if(EnrageTimer > diff)
+                if(EnrageTimer >= diff)
                     EnrageTimer -= diff;
                 else
                     EnrageTimer = 0;
-                if(HatcherTimer > diff)
+                if(HatcherTimer >= diff)
                     HatcherTimer -= diff;
                 else
                     HatcherTimer = 0;
@@ -340,17 +340,16 @@ struct boss_janalaiAI : public ScriptedAI
 
         if(isBombing)
         {
-            if(BombSequenceTimer < diff)
-            {
+            BombSequenceTimer -= diff;
+            if(BombSequenceTimer <= diff)
                 HandleBombSequence();
-            }else 
-                BombSequenceTimer -= diff;
+
     
-            if(EnrageTimer > diff)
+            if(EnrageTimer >= diff)
                 EnrageTimer -= diff;
             else
                 EnrageTimer = 0;
-            if(HatcherTimer > diff)
+            if(HatcherTimer >= diff)
                 HatcherTimer -= diff;
             else
                 HatcherTimer = 0;
@@ -360,7 +359,8 @@ struct boss_janalaiAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if (checkTimer < diff)
+        checkTimer -= diff;
+        if (checkTimer <= diff)
         {
             if (!m_creature->IsWithinDistInMap(&wLoc, 23))
                 EnterEvadeMode();
@@ -368,14 +368,14 @@ struct boss_janalaiAI : public ScriptedAI
                 DoZoneInCombat();
             checkTimer += 3000;
         }
-        else
-            checkTimer -= diff;
+        
 
         //enrage if under 25% hp before 5 min.
         if(!enraged && m_creature->GetHealth() * 4 < m_creature->GetMaxHealth())
             EnrageTimer = 0;
 
-        if(EnrageTimer < diff)
+        EnrageTimer -= diff;
+        if(EnrageTimer <= diff)
         {
             if(!enraged)
             {
@@ -389,9 +389,10 @@ struct boss_janalaiAI : public ScriptedAI
                 m_creature->CastSpell(m_creature, SPELL_BERSERK, true);
                 EnrageTimer += 300000;
             }
-        }else EnrageTimer -= diff;
+        }
 
-        if(BombTimer < diff)
+        BombTimer -= diff;
+        if(BombTimer <= diff)
         {
             DoScriptText(SAY_FIRE_BOMBS, m_creature);
 
@@ -420,10 +421,11 @@ struct boss_janalaiAI : public ScriptedAI
             }
             //m_creature->CastSpell(Temp, SPELL_SUMMON_PLAYERS, true); // core bug, spell does not work if too far
             return;
-        }else BombTimer -= diff;
+        }
 
         if(!noeggs)
         {
+            HatcherTimer -= diff;
             if(100 * m_creature->GetHealth() < 35 * m_creature->GetMaxHealth())
             {
                 DoScriptText(SAY_ALL_EGGS, m_creature);
@@ -436,21 +438,26 @@ struct boss_janalaiAI : public ScriptedAI
                 HatchAllEggs(2);
                 noeggs = true;
             }
-            else if(HatcherTimer < diff)
+            else
             {
-                if(HatchAllEggs(0))
+                HatcherTimer -= diff;
+                if (HatcherTimer <= diff)
                 {
-                    DoScriptText(SAY_SUMMON_HATCHER, m_creature);
-                    m_creature->SummonCreature(MOB_AMANI_HATCHER,hatcherway[0][0][0],hatcherway[0][0][1],hatcherway[0][0][2],0,TEMPSUMMON_CORPSE_TIMED_DESPAWN,10000);
-                    m_creature->SummonCreature(MOB_AMANI_HATCHER,hatcherway[1][0][0],hatcherway[1][0][1],hatcherway[1][0][2],0,TEMPSUMMON_CORPSE_TIMED_DESPAWN,10000);
-                    HatcherTimer += 90000;
+                    if (HatchAllEggs(0))
+                    {
+                        DoScriptText(SAY_SUMMON_HATCHER, m_creature);
+                        m_creature->SummonCreature(MOB_AMANI_HATCHER, hatcherway[0][0][0], hatcherway[0][0][1], hatcherway[0][0][2], 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 10000);
+                        m_creature->SummonCreature(MOB_AMANI_HATCHER, hatcherway[1][0][0], hatcherway[1][0][1], hatcherway[1][0][2], 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 10000);
+                        HatcherTimer += 90000;
+                    }
+                    else
+                        noeggs = true;
                 }
-                else
-                    noeggs = true;
-            }else HatcherTimer -= diff;
+            }
         }
 
-        if(ResetTimer < diff)
+        ResetTimer -= diff;
+        if(ResetTimer <= diff)
         {
             float x, y, z, o;
             m_creature->GetHomePosition(x, y, z, o);
@@ -460,11 +467,12 @@ struct boss_janalaiAI : public ScriptedAI
                 return;
             }
             ResetTimer += 5000;
-        }else ResetTimer -= diff;
+        }
 
         DoMeleeAttackIfReady();
 
-        if(FireBreathTimer < diff)
+        FireBreathTimer -= diff;
+        if(FireBreathTimer <= diff)
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0, GetSpellMaxRange(SPELL_FLAME_BREATH), true))
             {
@@ -475,7 +483,7 @@ struct boss_janalaiAI : public ScriptedAI
                 isFlameBreathing = true;
             }
             FireBreathTimer += 8000;
-        }else FireBreathTimer -= diff;
+        }
     }
 };
 
@@ -603,7 +611,8 @@ struct mob_amanishi_hatcherAI : public ScriptedAI
         }
         else
         {
-            if(WaitTimer < diff)
+            WaitTimer -= diff;
+            if(WaitTimer <= diff)
             {
                 if(HatchEggs(HatchNum))
                 {
@@ -623,7 +632,7 @@ struct mob_amanishi_hatcherAI : public ScriptedAI
                     m_creature->SetVisibility(VISIBILITY_OFF);
                     m_creature->setDeathState(JUST_DIED);
                 }
-            }else WaitTimer -= diff;
+            }
         }
     }
 };
@@ -668,11 +677,12 @@ struct mob_hatchlingAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if(BuffetTimer < diff)
+        BuffetTimer -= diff;
+        if(BuffetTimer <= diff)
         {
             m_creature->CastSpell(m_creature->getVictim(), SPELL_FLAMEBUFFET, false);
             BuffetTimer += 10000;
-        }else BuffetTimer -= diff;
+        }
 
         DoMeleeAttackIfReady();
     }

@@ -368,7 +368,8 @@ struct boss_zuljinAI : public ScriptedAI
                 EnterPhase(Phase + 1);
         }
 
-        if (checkTimer < diff)
+        checkTimer -= diff;
+        if (checkTimer <= diff)
         {
             if (!m_creature->IsWithinDistInMap(&wLoc, 100))
                 EnterEvadeMode();
@@ -376,45 +377,49 @@ struct boss_zuljinAI : public ScriptedAI
                 DoZoneInCombat();
             checkTimer += 3000;
         }
-        else
-            checkTimer -= diff;
+        
 
-        if(Berserk_Timer < diff)
+        Berserk_Timer -= diff;
+        if(Berserk_Timer <= diff)
         {
             m_creature->CastSpell(m_creature, SPELL_BERSERK, true);
             DoScriptText(YELL_BERSERK, m_creature);
             Berserk_Timer += 60000;
-        }else Berserk_Timer -= diff;
+        }
 
         switch (Phase)
         {
         case 0:
-            if(Whirlwind_Timer < diff)
+            Whirlwind_Timer -= diff;
+            if(Whirlwind_Timer <= diff)
             {
                 DoCast(m_creature, SPELL_WHIRLWIND);
                 Whirlwind_Timer += 15000 + rand()%5000;
-            }else Whirlwind_Timer -= diff;
+            }
 
-            if(Grievous_Throw_Timer < diff)
+            Grievous_Throw_Timer -= diff;
+            if(Grievous_Throw_Timer <= diff)
             {
                 if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_GRIEVOUS_THROW), true))
                     m_creature->CastSpell(target, SPELL_GRIEVOUS_THROW, false);
                 Grievous_Throw_Timer += 10000;
-            }else Grievous_Throw_Timer -= diff;
+            }
             break;
 
         case 1:
-            if(Creeping_Paralysis_Timer < diff)
+            Creeping_Paralysis_Timer -= diff;
+            if(Creeping_Paralysis_Timer <= diff)
             {
                 DoCast(m_creature, SPELL_CREEPING_PARALYSIS);
                 Creeping_Paralysis_Timer += 20000;
-            }else Creeping_Paralysis_Timer -= diff;
+            }
 
-            if(Overpower_Timer < diff)
+            Overpower_Timer -= diff;
+            if(Overpower_Timer <= diff)
             {
                 // implemented in DoMeleeAttackIfReady()
                 Overpower_Timer = 0;
-            }else Overpower_Timer -= diff;
+            }
             break;
 
         case 2:
@@ -437,7 +442,8 @@ struct boss_zuljinAI : public ScriptedAI
                 }
                 else if(!Claw_Rage_Timer) // do not do this when Lynx_Rush
                 {
-                    if(Claw_Loop_Timer < diff)
+                    Claw_Loop_Timer -= diff;
+                    if(Claw_Loop_Timer <= diff)
                     {
                         Unit* target = m_creature->getVictim();
                         if(!target || !target->isTargetableForAttack())
@@ -471,10 +477,11 @@ struct boss_zuljinAI : public ScriptedAI
                             EnterEvadeMode(); // if(target)
                             return;
                         }
-                    }else Claw_Loop_Timer -= diff;
+                    }
                 } //if(TankGUID)
             }else Claw_Rage_Timer -= diff;
 
+            Lynx_Rush_Timer -= diff;
             if(Lynx_Rush_Timer <= diff)
             {
                 if(!TankGUID)
@@ -524,31 +531,34 @@ struct boss_zuljinAI : public ScriptedAI
                         return;
                     }
                 } //if(TankGUID)
-            }else Lynx_Rush_Timer -= diff;
+            }
 
             break;
         case 4:
-            if(Flame_Whirl_Timer < diff)
+            Flame_Whirl_Timer -= diff;
+            if(Flame_Whirl_Timer <= diff)
             {
                 DoCast(m_creature, SPELL_FLAME_WHIRL);
                 Flame_Whirl_Timer += 12000;
-            }Flame_Whirl_Timer -= diff;
+            }
 
-            if(Pillar_Of_Fire_Timer < diff)
+            Pillar_Of_Fire_Timer -= diff;
+            if(Pillar_Of_Fire_Timer <= diff)
             {
                 if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_SUMMON_PILLAR), true))
                     DoCast(target, SPELL_SUMMON_PILLAR);
                 Pillar_Of_Fire_Timer += 10000;
-            }else Pillar_Of_Fire_Timer -= diff;
+            }
 
-            if(Flame_Breath_Timer < diff)
+            Flame_Breath_Timer -= diff;
+            if(Flame_Breath_Timer <= diff)
             {
                 if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0))
                     m_creature->SetInFront(target);
                 DoCast(m_creature, SPELL_FLAME_BREATH);
                 DoScriptText(YELL_FIRE_BREATH, m_creature);
                 Flame_Breath_Timer += 10000;
-            }else Flame_Breath_Timer -= diff;
+            } 
             break;
 
         default:

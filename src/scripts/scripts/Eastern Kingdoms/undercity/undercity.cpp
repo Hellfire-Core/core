@@ -1,7 +1,7 @@
-/* 
+/*
  * Copyright (C) 2006-2008 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -43,23 +43,23 @@ EndContentData */
 
 enum RiftSpawn
 {
-    MOB_RIFT_SPAWN                          = 6492,
-    SPELL_SELF_STUN_30SEC                   = 9032,
-    SPELL_RIFT_SPAWN_INVISIBILITY           = 9093,
-    SPELL_CANTATION_OF_MANIFESTATION        = 9095,
-    SPELL_RIFT_SPAWN_MANIFESTATION          = 9096,
-    SPELL_CREATE_FILLED_CONTAINMENT_COFFER  = 9010,
-    GO_CONTAINMENT_COFFER                 = 122088,
+    MOB_RIFT_SPAWN = 6492,
+    SPELL_SELF_STUN_30SEC = 9032,
+    SPELL_RIFT_SPAWN_INVISIBILITY = 9093,
+    SPELL_CANTATION_OF_MANIFESTATION = 9095,
+    SPELL_RIFT_SPAWN_MANIFESTATION = 9096,
+    SPELL_CREATE_FILLED_CONTAINMENT_COFFER = 9010,
+    GO_CONTAINMENT_COFFER = 122088,
 
-    BEING_SUCKED                            =    1
+    BEING_SUCKED = 1
 };
 
 struct mob_rift_spawnAI : public ScriptedAI
 {
     mob_rift_spawnAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 delay_timer;
-    uint32 manifestation_timer;
+    int32 delay_timer;
+    int32 manifestation_timer;
     uint64 casterGUID;
     bool Sucked;
 
@@ -76,7 +76,7 @@ struct mob_rift_spawnAI : public ScriptedAI
 
     void AttackStart(Unit* who)
     {
-        if(manifestation_timer)
+        if (manifestation_timer)
             return;
         ScriptedAI::AttackStart(who);
     }
@@ -88,20 +88,20 @@ struct mob_rift_spawnAI : public ScriptedAI
 
     void EnterCombat(Unit *who)
     {
-        if(!manifestation_timer)
+        if (!manifestation_timer)
             me->MonsterTextEmote(RIFT_EMOTE_AGGRO, who->GetGUID());
     }
 
     void DamageTaken(Unit* pDone_by, uint32& damage)
     {
         // temporary workaround not to let UC guards to kill spawns instead of players
-        if(damage && !pDone_by->GetCharmerOrOwnerPlayerOrPlayerItself())
+        if (damage && !pDone_by->GetCharmerOrOwnerPlayerOrPlayerItself())
         {
             damage = 0;
-            if(pDone_by->ToCreature())
+            if (pDone_by->ToCreature())
                 pDone_by->ToCreature()->AI()->EnterEvadeMode();
         }
-        if(damage && damage > me->GetHealth())
+        if (damage && damage > me->GetHealth())
         {
             damage = 0;
             me->CombatStop();
@@ -116,9 +116,9 @@ struct mob_rift_spawnAI : public ScriptedAI
 
     void OnAuraApply(Aura* aur, Unit* caster, bool /*stackApply*/)
     {
-        if(aur->GetId() == SPELL_CANTATION_OF_MANIFESTATION)
+        if (aur->GetId() == SPELL_CANTATION_OF_MANIFESTATION)
         {
-            if(caster->GetTypeId() == TYPEID_PLAYER)
+            if (caster->GetTypeId() == TYPEID_PLAYER)
                 casterGUID = caster->GetGUID();
             manifestation_timer = 2500;
         }
@@ -126,22 +126,22 @@ struct mob_rift_spawnAI : public ScriptedAI
 
     void OnAuraRemove(Aura* aur, bool)
     {
-        if(aur->GetId() == SPELL_SELF_STUN_30SEC && !Sucked)
+        if (aur->GetId() == SPELL_SELF_STUN_30SEC && !Sucked)
             EscapeIntoVoid(false);
     }
 
     void EscapeIntoVoid(bool sucked)
     {
-        if(sucked)
+        if (sucked)
         {
-            
-                Creature *trigger = me->SummonTrigger(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), 0, 60000);
-                if (trigger)
-                {
-                    trigger->SetVisibility(VISIBILITY_OFF);
-                    trigger->CastSpell(trigger, SPELL_CREATE_FILLED_CONTAINMENT_COFFER, false);
-                }
-            
+
+            Creature *trigger = me->SummonTrigger(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), 0, 60000);
+            if (trigger)
+            {
+                trigger->SetVisibility(VISIBILITY_OFF);
+                trigger->CastSpell(trigger, SPELL_CREATE_FILLED_CONTAINMENT_COFFER, false);
+            }
+
             me->CastSpell(me, SPELL_RIFT_SPAWN_INVISIBILITY, true);
             me->Kill(me, false);
             return;
@@ -155,7 +155,7 @@ struct mob_rift_spawnAI : public ScriptedAI
 
     void SetData(uint32 type, uint32 /*data*/)
     {
-        if(type == BEING_SUCKED)
+        if (type == BEING_SUCKED)
         {
             Sucked = true;
             delay_timer = 6000;
@@ -164,32 +164,30 @@ struct mob_rift_spawnAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(delay_timer)
+        if (delay_timer)
         {
-            if(delay_timer <= diff)
+            delay_timer -= diff;
+            if (delay_timer <= diff)
             {
                 EscapeIntoVoid(Sucked);
                 delay_timer = 0;
             }
-            else
-                delay_timer -= diff;
         }
 
-        if(manifestation_timer)
+        if (manifestation_timer)
         {
-            if(manifestation_timer <= diff)
+            manifestation_timer -= diff;
+            if (manifestation_timer <= diff)
             {
                 manifestation_timer = 0;
                 me->CastSpell(me, SPELL_RIFT_SPAWN_MANIFESTATION, false);
-                if(roll_chance_i(20))
+                if (roll_chance_i(20))
                     me->MonsterTextEmote(RIFT_EMOTE_AGGRO, 0);
-                if(casterGUID && me->GetPlayer(casterGUID))
+                if (casterGUID && me->GetPlayer(casterGUID))
                     AttackStart(me->GetPlayer(casterGUID));
                 else
                     EscapeIntoVoid(Sucked);
             }
-            else
-                manifestation_timer -= diff;
         }
 
         if (!UpdateVictim())
@@ -201,13 +199,13 @@ struct mob_rift_spawnAI : public ScriptedAI
 
 CreatureAI* GetAI_mob_rift_spawn(Creature *_Creature)
 {
-    return new mob_rift_spawnAI (_Creature);
+    return new mob_rift_spawnAI(_Creature);
 }
 
 bool GossipHello_go_containment_coffer(Player *player, GameObject* go)
 {
     Creature* spawn = GetClosestCreatureWithEntry(go, MOB_RIFT_SPAWN, 5.0, true);
-    if(spawn && spawn->HasAura(SPELL_SELF_STUN_30SEC))
+    if (spawn && spawn->HasAura(SPELL_SELF_STUN_30SEC))
     {
         spawn->AI()->SetData(BEING_SUCKED, 0);
         go->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_IN_USE);
@@ -232,12 +230,12 @@ bool GossipHello_go_containment_coffer(Player *player, GameObject* go)
 #define SPELL_SYLVANAS_CAST         36568
 #define SPELL_RIBBON_OF_SOULS       34432                   //the real one to use might be 37099
 
-float HighborneLoc[4][3]=
+float HighborneLoc[4][3] =
 {
-    {1285.41, 312.47, 0.51},
-    {1286.96, 310.40, 1.00},
-    {1289.66, 309.66, 1.52},
-    {1292.51, 310.50, 1.99},
+    { 1285.41, 312.47, 0.51 },
+    { 1286.96, 310.40, 1.00 },
+    { 1289.66, 309.66, 1.52 },
+    { 1292.51, 310.50, 1.99 },
 };
 
 #define HIGHBORNE_LOC_Y             -61.00
@@ -270,11 +268,11 @@ struct npc_lady_sylvanas_windrunnerAI : public ScriptedAI
 
     void JustSummoned(Creature *summoned)
     {
-        if( summoned->GetEntry() == ENTRY_HIGHBORNE_BUNNY )
+        if (summoned->GetEntry() == ENTRY_HIGHBORNE_BUNNY)
         {
-            if( Unit* target = Unit::GetUnit(*summoned,targetGUID) )
+            if (Unit* target = Unit::GetUnit(*summoned, targetGUID))
             {
-                target->NearTeleportTo(target->GetPositionX(), target->GetPositionY(), myZ+15.0,0);
+                target->NearTeleportTo(target->GetPositionX(), target->GetPositionY(), myZ + 15.0, 0);
                 summoned->CastSpell(target, SPELL_RIBBON_OF_SOULS, false);
             }
 
@@ -285,9 +283,10 @@ struct npc_lady_sylvanas_windrunnerAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if( LamentEvent )
+        if (LamentEvent)
         {
-            if( LamentEvent_Timer < diff )
+            LamentEvent_Timer -= diff;
+            if (LamentEvent_Timer <= diff)
             {
                 float raX = myX;
                 float raY = myY;
@@ -297,13 +296,13 @@ struct npc_lady_sylvanas_windrunnerAI : public ScriptedAI
                 m_creature->SummonCreature(ENTRY_HIGHBORNE_BUNNY, raX, raY, myZ, 0, TEMPSUMMON_TIMED_DESPAWN, 3000);
 
                 LamentEvent_Timer += 2000;
-                if( !m_creature->HasAura(SPELL_SYLVANAS_CAST, 0))
+                if (!m_creature->HasAura(SPELL_SYLVANAS_CAST, 0))
                 {
                     DoScriptText(SAY_LAMENT_END, m_creature);
                     DoScriptText(EMOTE_LAMENT_END, m_creature);
                     LamentEvent = false;
                 }
-            }else LamentEvent_Timer -= diff;
+            }
         }
 
         if (!UpdateVictim())
@@ -314,18 +313,18 @@ struct npc_lady_sylvanas_windrunnerAI : public ScriptedAI
 };
 CreatureAI* GetAI_npc_lady_sylvanas_windrunner(Creature *_Creature)
 {
-    return new npc_lady_sylvanas_windrunnerAI (_Creature);
+    return new npc_lady_sylvanas_windrunnerAI(_Creature);
 }
 
 bool ChooseReward_npc_lady_sylvanas_windrunner(Player *player, Creature *_Creature, const Quest *_Quest)
 {
-    if( _Quest->GetQuestId() == 9180 )
+    if (_Quest->GetQuestId() == 9180)
     {
         ((npc_lady_sylvanas_windrunnerAI*)_Creature->AI())->LamentEvent = true;
-        ((npc_lady_sylvanas_windrunnerAI*)_Creature->AI())->DoPlaySoundToSet(_Creature,SOUND_CREDIT);
-        _Creature->CastSpell(_Creature,SPELL_SYLVANAS_CAST,false);
+        ((npc_lady_sylvanas_windrunnerAI*)_Creature->AI())->DoPlaySoundToSet(_Creature, SOUND_CREDIT);
+        _Creature->CastSpell(_Creature, SPELL_SYLVANAS_CAST, false);
 
-        for( uint8 i = 0; i < 4; ++i)
+        for (uint8 i = 0; i < 4; ++i)
             _Creature->SummonCreature(ENTRY_HIGHBORNE_LAMENTER, HighborneLoc[i][0], HighborneLoc[i][1], HIGHBORNE_LOC_Y, HighborneLoc[i][2], TEMPSUMMON_TIMED_DESPAWN, 160000);
     }
 
@@ -340,8 +339,8 @@ struct npc_highborne_lamenterAI : public ScriptedAI
 {
     npc_highborne_lamenterAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 EventMove_Timer;
-    uint32 EventCast_Timer;
+    int32 EventMove_Timer;
+    int32 EventCast_Timer;
     bool EventMove;
     bool EventCast;
 
@@ -357,28 +356,30 @@ struct npc_highborne_lamenterAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if( EventMove )
+        if (EventMove)
         {
-            if( EventMove_Timer < diff )
+            EventMove_Timer -= diff;
+            if (EventMove_Timer <= diff)
             {
                 m_creature->SetLevitate(true);
-                m_creature->MonsterMoveWithSpeed(m_creature->GetPositionX(),m_creature->GetPositionY(),HIGHBORNE_LOC_Y_NEW,5000,true);
+                m_creature->MonsterMoveWithSpeed(m_creature->GetPositionX(), m_creature->GetPositionY(), HIGHBORNE_LOC_Y_NEW, 5000, true);
                 EventMove = false;
-            }else EventMove_Timer -= diff;
+            }
         }
-        if( EventCast )
+        if (EventCast)
         {
-            if( EventCast_Timer < diff )
+            EventCast_Timer -= diff;
+            if (EventCast_Timer <= diff)
             {
-                DoCast(m_creature,SPELL_HIGHBORNE_AURA);
+                DoCast(m_creature, SPELL_HIGHBORNE_AURA);
                 EventCast = false;
-            }else EventCast_Timer -= diff;
+            }
         }
     }
 };
 CreatureAI* GetAI_npc_highborne_lamenter(Creature *_Creature)
 {
-    return new npc_highborne_lamenterAI (_Creature);
+    return new npc_highborne_lamenterAI(_Creature);
 }
 
 /*######
@@ -394,13 +395,13 @@ CreatureAI* GetAI_npc_highborne_lamenter(Creature *_Creature)
 bool GossipHello_npc_parqual_fintallas(Player *player, Creature *_Creature)
 {
     if (_Creature->isQuestGiver())
-        player->PrepareQuestMenu( _Creature->GetGUID() );
+        player->PrepareQuestMenu(_Creature->GetGUID());
 
-    if (player->GetQuestStatus(6628) == QUEST_STATUS_INCOMPLETE && !player->HasAura(SPELL_MARK_OF_SHAME,0) )
+    if (player->GetQuestStatus(6628) == QUEST_STATUS_INCOMPLETE && !player->HasAura(SPELL_MARK_OF_SHAME, 0))
     {
-        player->ADD_GOSSIP_ITEM( 0, GOSSIP_HPF1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
-        player->ADD_GOSSIP_ITEM( 0, GOSSIP_HPF2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
-        player->ADD_GOSSIP_ITEM( 0, GOSSIP_HPF3, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
+        player->ADD_GOSSIP_ITEM(0, GOSSIP_HPF1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+        player->ADD_GOSSIP_ITEM(0, GOSSIP_HPF2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+        player->ADD_GOSSIP_ITEM(0, GOSSIP_HPF3, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
         player->SEND_GOSSIP_MENU(5822, _Creature->GetGUID());
     }
     else
@@ -411,12 +412,12 @@ bool GossipHello_npc_parqual_fintallas(Player *player, Creature *_Creature)
 
 bool GossipSelect_npc_parqual_fintallas(Player *player, Creature *_Creature, uint32 sender, uint32 action)
 {
-    if (action == GOSSIP_ACTION_INFO_DEF+1)
+    if (action == GOSSIP_ACTION_INFO_DEF + 1)
     {
         player->CLOSE_GOSSIP_MENU();
-        _Creature->CastSpell(player,SPELL_MARK_OF_SHAME,false);
+        _Creature->CastSpell(player, SPELL_MARK_OF_SHAME, false);
     }
-    if (action == GOSSIP_ACTION_INFO_DEF+2)
+    if (action == GOSSIP_ACTION_INFO_DEF + 2)
     {
         player->CLOSE_GOSSIP_MENU();
         player->AreaExploredOrEventHappens(6628);
@@ -434,28 +435,28 @@ void AddSC_undercity()
 
 
     newscript = new Script;
-    newscript->Name="mob_rift_spawn";
+    newscript->Name = "mob_rift_spawn";
     newscript->GetAI = &GetAI_mob_rift_spawn;
     newscript->RegisterSelf();
 
     newscript = new Script;
-    newscript->Name="go_containment_coffer";
-    newscript->pGOUse  = &GossipHello_go_containment_coffer;
+    newscript->Name = "go_containment_coffer";
+    newscript->pGOUse = &GossipHello_go_containment_coffer;
     newscript->RegisterSelf();
 
     newscript = new Script;
-    newscript->Name="npc_lady_sylvanas_windrunner";
+    newscript->Name = "npc_lady_sylvanas_windrunner";
     newscript->GetAI = &GetAI_npc_lady_sylvanas_windrunner;
     newscript->pQuestRewardedNPC = &ChooseReward_npc_lady_sylvanas_windrunner;
     newscript->RegisterSelf();
 
     newscript = new Script;
-    newscript->Name="npc_highborne_lamenter";
+    newscript->Name = "npc_highborne_lamenter";
     newscript->GetAI = &GetAI_npc_highborne_lamenter;
     newscript->RegisterSelf();
 
     newscript = new Script;
-    newscript->Name="npc_parqual_fintallas";
+    newscript->Name = "npc_parqual_fintallas";
     newscript->pGossipHello = &GossipHello_npc_parqual_fintallas;
     newscript->pGossipSelect = &GossipSelect_npc_parqual_fintallas;
     newscript->RegisterSelf();

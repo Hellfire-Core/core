@@ -158,7 +158,8 @@ struct boss_akilzonAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (checkTimer < diff)
+        checkTimer -= diff;
+        if (checkTimer <= diff)
         {
             if (!m_creature->IsWithinDistInMap(&wLoc, 110.0f))
                 EnterEvadeMode();
@@ -169,19 +170,21 @@ struct boss_akilzonAI : public ScriptedAI
             }
             checkTimer += 1000;
         }
-        else
-            checkTimer -= diff;
 
-        if (Enrage_Timer < diff)
+         
+
+        Enrage_Timer -= diff;
+        if (Enrage_Timer <= diff)
         {
             DoScriptText(SAY_ENRAGE, m_creature);
             m_creature->CastSpell(m_creature, SPELL_BERSERK, true);
             Enrage_Timer += 600000;
         }
-        else
-            Enrage_Timer -= diff;
+        
+            
 
-        if (StaticDisruption_Timer < diff)
+        StaticDisruption_Timer -= diff;
+        if (StaticDisruption_Timer <= diff)
         {
             if(ElectricalStorm_Timer < 3000)
                 StaticDisruption_Timer += 6000;
@@ -192,10 +195,10 @@ struct boss_akilzonAI : public ScriptedAI
             AddSpellToCast(target, SPELL_STATIC_DISRUPTION, false, true);
             StaticDisruption_Timer += urand(7000, 14000);
         }
-        else
-            StaticDisruption_Timer -= diff;
+        
 
-        if (GustOfWind_Timer < diff)
+        GustOfWind_Timer -= diff;
+        if (GustOfWind_Timer <= diff)
         {
             //we dont want to start a storm with player in the air
             if(ElectricalStorm_Timer < 8000)
@@ -207,16 +210,15 @@ struct boss_akilzonAI : public ScriptedAI
                 GustOfWind_Timer += urand(8000, 14000);
             }
         }
-        else
-            GustOfWind_Timer -= diff;
+        
 
-        if (CallLighting_Timer < diff)
+        CallLighting_Timer -= diff;
+        if (CallLighting_Timer <= diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_CALL_LIGHTNING);
             CallLighting_Timer += RAND(urand(10000, 15000), urand(30000, 45000));
         }
-        else
-            CallLighting_Timer -= diff;
+        
 
         if (!isRaining && ElectricalStorm_Timer < urand(8000, 12000))
         {
@@ -231,7 +233,8 @@ struct boss_akilzonAI : public ScriptedAI
             isRaining = false;
         }
 
-        if (ElectricalStorm_Timer < diff)
+        ElectricalStorm_Timer -= diff;
+        if (ElectricalStorm_Timer <= diff)
         {
             Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_ELECTRICAL_STORM), true);
 
@@ -249,17 +252,16 @@ struct boss_akilzonAI : public ScriptedAI
             ElectricalStorm_Timer += 60000;
             StaticDisruption_Timer += 10000;
         }
-        else
-            ElectricalStorm_Timer -= diff;
+        
 
-        if (SummonEagles_Timer < diff)
+        SummonEagles_Timer -= diff;
+        if (SummonEagles_Timer <= diff)
         {
             DoScriptText(urand(0,1) ? SAY_SUMMON : SAY_SUMMON_ALT, m_creature);
             DoSummonEagles();
             SummonEagles_Timer += 999999;
         }
-        else
-            SummonEagles_Timer -= diff;
+        
 
         DoMeleeAttackIfReady();
         CastNextSpellIfAnyAndReady();
@@ -328,19 +330,19 @@ struct mob_soaring_eagleAI : public ScriptedAI
 
         if (canMoveRandom)
         {
-            if (Return_Timer < diff)
+            Return_Timer -= diff;
+            if (Return_Timer <= diff)
             {
                 DoMoveToRandom();
                 Return_Timer += 800;
             }
-            else
-                Return_Timer -= diff;
         }
 
         if (!canCast)
             return;
 
-        if (EagleSwoop_Timer < diff)
+        EagleSwoop_Timer -= diff;
+        if (EagleSwoop_Timer <= diff)
         {
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true))
             {
@@ -351,8 +353,6 @@ struct mob_soaring_eagleAI : public ScriptedAI
             }
             EagleSwoop_Timer += urand(4000, 6000);
         }
-        else
-            EagleSwoop_Timer -= diff;
     }
 };
 

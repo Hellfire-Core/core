@@ -64,8 +64,8 @@ struct boss_grilekAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        //Avartar_Timer
-        if (Avartar_Timer < diff)
+        Avartar_Timer -= diff;
+        if (Avartar_Timer <= diff)
         {
 
             DoCast(m_creature, SPELL_AVARTAR);
@@ -80,17 +80,15 @@ struct boss_grilekAI : public ScriptedAI
 
             Avartar_Timer += 25000 + rand()%10000;
         }
-        else
-            Avartar_Timer -= diff;
+        
 
-        //GroundTremor_Timer
-        if (GroundTremor_Timer < diff)
+        GroundTremor_Timer -= diff;
+        if (GroundTremor_Timer <= diff)
         {
             DoCast(m_creature->getVictim(), SPELL_GROUNDTREMOR);
             GroundTremor_Timer += 12000 + rand()%4000;
         }
-        else
-            GroundTremor_Timer -= diff;
+        
 
         DoMeleeAttackIfReady();
     }
