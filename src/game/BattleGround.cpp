@@ -212,7 +212,7 @@ void BattleGround::Update(uint32 diff)
                     plr->CastSpell(plr, SPELL_RESURRECTION_VISUAL, true);   // Resurrection visual
 
                     RestorePet(plr);
-                    }
+                    
                     m_ResurrectQueue.push_back(*itr2);
                 }
                 (itr->second).clear();
