@@ -16530,7 +16530,7 @@ void Player::_SaveInventory()
     for (uint8 i = BUYBACK_SLOT_START; i < BUYBACK_SLOT_END; i++)
     {
         Item *item = m_items[i];
-        if (!item || item->GetState() == ITEM_NEW || item->GetProto()->Quality >= ITEM_QUALITY_RARE)
+        if (!item || item->GetState() == ITEM_NEW)
             continue;
 
         SqlStatement stmt = RealmDataDatabase.CreateStatement(deleteCharInvByItem, "DELETE FROM character_inventory WHERE item = ?");
