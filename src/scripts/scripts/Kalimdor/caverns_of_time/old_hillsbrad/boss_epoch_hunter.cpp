@@ -291,7 +291,7 @@ struct boss_epoch_hunterAI : public ScriptedAI
     {
         if (Intro)
         {
-            if (IntroTimer < diff)
+            if (IntroTimer <= diff)
             {
                 if (attackers.empty())
                     NextWave();
@@ -349,7 +349,7 @@ struct boss_epoch_hunterAI : public ScriptedAI
             return;
 
         //Sand Breath
-        if (SandBreath_Timer < diff)
+        if (SandBreath_Timer <= diff)
         {
             if (me->IsNonMeleeSpellCast(false))
                 me->InterruptNonMeleeSpells(false);
@@ -363,7 +363,7 @@ struct boss_epoch_hunterAI : public ScriptedAI
         else
             SandBreath_Timer -= diff;
 
-        if(ImpendingDeath_Timer < diff)
+        if(ImpendingDeath_Timer <= diff)
         {
             if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0 , GetSpellMaxRange(SPELL_IMPENDING_DEATH), true))
                 DoCast(target,SPELL_IMPENDING_DEATH);
@@ -372,7 +372,7 @@ struct boss_epoch_hunterAI : public ScriptedAI
         else
             ImpendingDeath_Timer -= diff;
 
-        if(WingBuffet_Timer < diff)
+        if(WingBuffet_Timer <= diff)
         {
             DoCast(me,SPELL_WING_BUFFET);
             WingBuffet_Timer = 25000+rand()%10000;
@@ -380,7 +380,7 @@ struct boss_epoch_hunterAI : public ScriptedAI
         else
             WingBuffet_Timer -= diff;
 
-        if(Mda_Timer < diff)
+        if(Mda_Timer <= diff)
         {
             DoCast(me,SPELL_MAGIC_DISRUPTION_AURA);
             Mda_Timer = 15000;

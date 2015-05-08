@@ -103,7 +103,7 @@ struct boss_doomwalkerAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if(Check_Timer < diff)
+        if(Check_Timer <= diff)
         {
             if(!m_creature->IsWithinDistInMap(&wLoc, 80.0f))
                 EnterEvadeMode();
@@ -114,7 +114,7 @@ struct boss_doomwalkerAI : public ScriptedAI
         //Spell Enrage, when hp <= 20% gain enrage
         if (((m_creature->GetHealth()*100)/ m_creature->GetMaxHealth()) <= 20)
         {
-            if(Enrage_Timer < diff)
+            if(Enrage_Timer <= diff)
             {
                 m_creature->RemoveAurasDueToSpell(SPELL_ENRAGE);
                 DoCast(m_creature,SPELL_ENRAGE);
@@ -124,7 +124,7 @@ struct boss_doomwalkerAI : public ScriptedAI
         }
 
         //Spell Overrun
-        if (Overrun_Timer < diff)
+        if (Overrun_Timer <= diff)
         {
             DoScriptText(RAND(SAY_OVERRUN_1, SAY_OVERRUN_2), m_creature);
 
@@ -136,7 +136,7 @@ struct boss_doomwalkerAI : public ScriptedAI
         }else Overrun_Timer -= diff;
 
         //Spell Earthquake
-        if (Quake_Timer < diff)
+        if (Quake_Timer <= diff)
         {
             if (rand()%2)
                 return;
@@ -153,7 +153,7 @@ struct boss_doomwalkerAI : public ScriptedAI
         }else Quake_Timer -= diff;
 
         //Spell Chain Lightning
-        if (Chain_Timer < diff)
+        if (Chain_Timer <= diff)
         {
             Unit* target = NULL;
             target = SelectUnit(SELECT_TARGET_RANDOM,1, GetSpellMaxRange(SPELL_CHAIN_LIGHTNING), true, m_creature->getVictimGUID());
@@ -168,7 +168,7 @@ struct boss_doomwalkerAI : public ScriptedAI
         }else Chain_Timer -= diff;
 
         //Spell Sunder Armor
-        if (Armor_Timer < diff)
+        if (Armor_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_SUNDER_ARMOR);
             Armor_Timer = 10000 + rand()%15000;

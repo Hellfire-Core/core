@@ -955,7 +955,7 @@ struct boss_illidan_stormrageAI : public BossAI
 
         DoSpecialThings(diff, DO_EVERYTHING, 200.0f, 2.5f);
 
-        if (m_enrageTimer < diff)
+        if (m_enrageTimer <= diff)
         {
             ForceSpellCastWithScriptText(me, SPELL_ILLIDAN_HARD_ENRAGE, YELL_ILLIDAN_HARD_ENRAGE, INTERRUPT_AND_CAST_INSTANTLY);
             m_enrageTimer = 25000;
@@ -1760,7 +1760,7 @@ struct boss_illidan_flameofazzinothAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if(check_timer < diff)
+        if(check_timer <= diff)
         {
             me->SetWalk(false);
             me->SetSpeed(MOVE_RUN, 2.5f);
@@ -1879,7 +1879,7 @@ struct boss_illidan_shadowdemonAI : public ScriptedAI
     {
         if (m_targetGUID)
         {
-            if (m_checkTimer < diff)
+            if (m_checkTimer <= diff)
             {
                 Unit *pUnit = me->GetUnit(m_targetGUID);
                 if (!pUnit || pUnit->isDead() || pUnit->HasAuraType(SPELL_AURA_SPIRIT_OF_REDEMPTION))

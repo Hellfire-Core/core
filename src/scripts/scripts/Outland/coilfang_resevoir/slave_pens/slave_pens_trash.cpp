@@ -84,7 +84,7 @@ struct mob_coilfang_slavehandlerAI : public ScriptedAI
     void UpdateAI(const uint32 diff)
     {
         if(!me->isInCombat())
-            if(yelltimer < diff)
+            if(yelltimer <= diff)
             {
                 me->Yell(RAND(YELL_OOC1,YELL_OOC2,YELL_OOC3,YELL_OOC4,YELL_OOC5,YELL_OOC6),0,0);
                 yelltimer = urand(60000,120000);
@@ -95,7 +95,7 @@ struct mob_coilfang_slavehandlerAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if(hamstringtimer < diff)
+        if(hamstringtimer <= diff)
         {
             AddSpellToCast(SPELL_HAMSTRING);
             hamstringtimer = 9000;
@@ -103,7 +103,7 @@ struct mob_coilfang_slavehandlerAI : public ScriptedAI
         else
             hamstringtimer -= diff;
 
-        if(headcracktimer < diff)
+        if(headcracktimer <= diff)
         {
             AddSpellToCast(SPELL_HEAD_CRACK,CAST_RANDOM);
             headcracktimer = urand(20000,25000);
@@ -176,7 +176,7 @@ struct npc_coilfang_slavemasterAI : public ScriptedAI
     void UpdateAI(const uint32 diff)
     {
         if(!me->isInCombat())
-            if(yelltimer < diff)
+            if(yelltimer <= diff)
             {
                 me->Yell(RAND(YELL_OOC1,YELL_OOC2,YELL_OOC3,YELL_OOC4,YELL_OOC5,YELL_OOC6),0,0);
                 yelltimer = urand(60000,120000);
@@ -187,7 +187,7 @@ struct npc_coilfang_slavemasterAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if(hamstringtimer < diff)
+        if(hamstringtimer <= diff)
         {
             AddSpellToCast(SPELL_DISARM);
             hamstringtimer = 9000;
@@ -195,7 +195,7 @@ struct npc_coilfang_slavemasterAI : public ScriptedAI
         else
             hamstringtimer -= diff;
 
-        if(headcracktimer < diff)
+        if(headcracktimer <= diff)
         {
             AddSpellToCast(SPELL_GEYSER);
             headcracktimer = urand(20000,25000);

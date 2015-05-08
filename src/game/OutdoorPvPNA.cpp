@@ -547,7 +547,7 @@ bool OPvPCapturePointNA::Update(uint32 diff)
         capturable = true;
 
     m_GuardCheckTimer -= diff;
-    if (m_GuardCheckTimer < diff)
+    if (m_GuardCheckTimer <= diff)
     {
         m_GuardCheckTimer += NA_GUARD_CHECK_TIME;
         uint32 cnt = GetAliveGuardsCount();
@@ -564,7 +564,7 @@ bool OPvPCapturePointNA::Update(uint32 diff)
     if (m_capturable || capturable)
     {
         m_RespawnTimer -= diff;
-        if (m_RespawnTimer < diff)
+        if (m_RespawnTimer <= diff)
         {
             // if the guards have been killed, then the challenger has one hour to take over halaa.
             // in case they fail to do it, the guards are respawned, and they have to start again.

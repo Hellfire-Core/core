@@ -354,7 +354,7 @@ struct boss_netherspiteAI : public ScriptedAI
             }
             
             PhaseTimer -= diff;
-            if(PhaseTimer < diff)
+            if(PhaseTimer <= diff)
             {
                 if(!m_creature->IsNonMeleeSpellCast(false))
                 {

@@ -222,7 +222,7 @@ struct boss_hydross_the_unstableAI : public ScriptedAI
         if (!UpdateVictim() )
             return;
 
-        if(PulseCombat_Timer < diff)
+        if(PulseCombat_Timer <= diff)
         {
             if(m_creature->GetDistance2d(wLoc.coord_x, wLoc.coord_y) < 100.0)
                 DoZoneInCombat();
@@ -239,7 +239,7 @@ struct boss_hydross_the_unstableAI : public ScriptedAI
         if (CorruptedForm)
         {
             //MarkOfCorruption_Timer
-            if (MarkOfCorruption_Timer < diff)
+            if (MarkOfCorruption_Timer <= diff)
             {
                 if (MarkOfCorruption_Count <= 5)
                 {
@@ -267,7 +267,7 @@ struct boss_hydross_the_unstableAI : public ScriptedAI
                 MarkOfCorruption_Timer -= diff;
 
             //VileSludge_Timer
-            if (VileSludge_Timer < diff)
+            if (VileSludge_Timer <= diff)
             {
                 if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_VILE_SLUDGE), true))
                     DoCast(target, SPELL_VILE_SLUDGE);
@@ -278,7 +278,7 @@ struct boss_hydross_the_unstableAI : public ScriptedAI
                 VileSludge_Timer -= diff;
 
             //PosCheck_Timer
-            if (PosCheck_Timer < diff)
+            if (PosCheck_Timer <= diff)
             {
                 if (m_creature->GetDistance2d(HYDROSS_X, HYDROSS_Y) < SWITCH_RADIUS)
                 {
@@ -311,7 +311,7 @@ struct boss_hydross_the_unstableAI : public ScriptedAI
         else
         {
             //MarkOfHydross_Timer
-            if (MarkOfHydross_Timer < diff)
+            if (MarkOfHydross_Timer <= diff)
             {
                 if (MarkOfHydross_Count <= 5)
                 {
@@ -339,7 +339,7 @@ struct boss_hydross_the_unstableAI : public ScriptedAI
                 MarkOfHydross_Timer -= diff;
 
             //WaterTomb_Timer
-            if(WaterTomb_Timer < diff)
+            if(WaterTomb_Timer <= diff)
             {
                 if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0,GetSpellMaxRange(SPELL_WATER_TOMB), true))
                     DoCast(target, SPELL_WATER_TOMB);
@@ -350,7 +350,7 @@ struct boss_hydross_the_unstableAI : public ScriptedAI
                 WaterTomb_Timer -= diff;
 
             //PosCheck_Timer
-            if (PosCheck_Timer < diff)
+            if (PosCheck_Timer <= diff)
             {
                 if (m_creature->GetDistance2d(HYDROSS_X, HYDROSS_Y) >= SWITCH_RADIUS)
                 {
@@ -379,7 +379,7 @@ struct boss_hydross_the_unstableAI : public ScriptedAI
         }
 
         //EnrageTimer
-        if (EnrageTimer < diff)
+        if (EnrageTimer <= diff)
         {
             DoCast(m_creature, SPELL_ENRAGE);
             EnrageTimer = 60000;

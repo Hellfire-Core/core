@@ -177,7 +177,7 @@ struct boss_najentusAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (CheckTimer < diff)
+        if (CheckTimer <= diff)
         {
             if (!m_creature->IsWithinDistInMap(&wLoc, 105))
                 EnterEvadeMode();
@@ -196,7 +196,7 @@ struct boss_najentusAI : public ScriptedAI
                 checkAura = false;
         }
 
-        if(TidalShieldTimer < diff)
+        if(TidalShieldTimer <= diff)
         {
             m_creature->CastSpell(m_creature, SPELL_TIDAL_SHIELD, true);
 
@@ -208,7 +208,7 @@ struct boss_najentusAI : public ScriptedAI
         else
             TidalShieldTimer -= diff;
 
-        if(EnrageTimer < diff)
+        if(EnrageTimer <= diff)
         {
             DoScriptText(SAY_ENRAGE2, m_creature);
             m_creature->CastSpell(m_creature, SPELL_BERSERK, true);
@@ -217,7 +217,7 @@ struct boss_najentusAI : public ScriptedAI
         else
             EnrageTimer -= diff;
 
-        if(NeedleSpineTimer < diff)
+        if(NeedleSpineTimer <= diff)
         {
             m_creature->CastSpell(m_creature, 39992u, true);
             NeedleSpineTimer = 2000 + rand()%2000;
@@ -225,7 +225,7 @@ struct boss_najentusAI : public ScriptedAI
         else
             NeedleSpineTimer -= diff;
 
-        if(SpecialYellTimer < diff)
+        if(SpecialYellTimer <= diff)
         {
             DoScriptText(RAND(SAY_SPECIAL1, SAY_SPECIAL2), m_creature);
 
@@ -234,7 +234,7 @@ struct boss_najentusAI : public ScriptedAI
         else
             SpecialYellTimer -= diff;
 
-        if(ImpalingSpineTimer < diff)
+        if(ImpalingSpineTimer <= diff)
         {
             Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, 150, true, m_creature->getVictimGUID());
 

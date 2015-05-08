@@ -114,7 +114,7 @@ struct boss_thekalAI : public ScriptedAI
             return;
 
             //Check_Timer for the death of LorKhan and Zath.
-            if(!WasDead && Check_Timer < diff)
+            if(!WasDead && Check_Timer <= diff)
             {
                 if(pInstance)
                 {
@@ -159,7 +159,7 @@ struct boss_thekalAI : public ScriptedAI
             
 
             Silence_Timer -= diff;
-            if(!PhaseTwo && Silence_Timer < diff)
+            if(!PhaseTwo && Silence_Timer <= diff)
             {
                 DoCast(m_creature->getVictim(),SPELL_SILENCE);
                 Silence_Timer += 20000 + rand()%5000;
@@ -219,7 +219,7 @@ struct boss_thekalAI : public ScriptedAI
                 
 
                 Frenzy_Timer -= diff;
-                if(Frenzy_Timer < diff)
+                if(Frenzy_Timer <= diff)
                 {
                     DoCast(m_creature,SPELL_FRENZY);
                     Frenzy_Timer += 30000;
@@ -299,7 +299,7 @@ struct mob_zealot_lorkhanAI : public ScriptedAI
             return;
 
         Shield_Timer -= diff;
-        if(Shield_Timer < diff)
+        if(Shield_Timer <= diff)
         {
             DoCast(m_creature,SPELL_SHIELD);
             Shield_Timer += 61000;
@@ -341,7 +341,7 @@ struct mob_zealot_lorkhanAI : public ScriptedAI
         }
 
         //Disarm_Timer
-        if(Disarm_Timer < diff)
+        if(Disarm_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_DISARM);
             Disarm_Timer += 15000+rand()%10000;
@@ -487,7 +487,7 @@ struct mob_zealot_zathAI : public ScriptedAI
 
         Check_Timer -= diff;
         //Check_Timer for the death of LorKhan and Zath.
-        if(!FakeDeath && Check_Timer < diff)
+        if(!FakeDeath && Check_Timer <= diff)
         {
             if(pInstance)
             {

@@ -116,7 +116,7 @@ struct boss_omor_the_unscarredAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (Summon_Timer < diff)
+        if (Summon_Timer <= diff)
         {
             AddSpellToCast(me, SPELL_SUMMON_FIENDISH_HOUND);
             Summon_Timer = 18000;
@@ -126,7 +126,7 @@ struct boss_omor_the_unscarredAI : public ScriptedAI
 
         if (CanPullBack)
         {
-            if (ShadowWhip_Timer < diff)
+            if (ShadowWhip_Timer <= diff)
             {
                 if (Unit* temp = Unit::GetUnit(*me,playerGUID))
                 {
@@ -149,7 +149,7 @@ struct boss_omor_the_unscarredAI : public ScriptedAI
             else
                 ShadowWhip_Timer -= diff;
         }
-        else if (OrbitalStrike_Timer < diff)
+        else if (OrbitalStrike_Timer <= diff)
         {
             Unit *temp = SelectUnit(SELECT_TARGET_NEAREST, 0, 100, true);
 
@@ -172,7 +172,7 @@ struct boss_omor_the_unscarredAI : public ScriptedAI
 
         if ((me->GetHealth()*100) / me->GetMaxHealth() < 20)
         {
-            if (DemonicShield_Timer < diff)
+            if (DemonicShield_Timer <= diff)
             {
                 AddSpellToCast(me, SPELL_DEMONIC_SHIELD);
                 DemonicShield_Timer = 15000;
@@ -181,7 +181,7 @@ struct boss_omor_the_unscarredAI : public ScriptedAI
                 DemonicShield_Timer -= diff;
         }
 
-        if (Aura_Timer < diff)
+        if (Aura_Timer <= diff)
         {
             DoScriptText(SAY_CURSE, me);
 
@@ -194,7 +194,7 @@ struct boss_omor_the_unscarredAI : public ScriptedAI
         else
             Aura_Timer -= diff;
 
-        if (Shadowbolt_Timer < diff)
+        if (Shadowbolt_Timer <= diff)
         {
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0))
             {

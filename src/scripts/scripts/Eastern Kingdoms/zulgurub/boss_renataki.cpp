@@ -78,7 +78,7 @@ struct boss_renatakiAI : public ScriptedAI
             return;
 
         Invisible_Timer -= diff;
-        if(Invisible_Timer < diff)
+        if(Invisible_Timer <= diff)
         {
             m_creature->InterruptSpell(CURRENT_GENERIC_SPELL);
             m_creature->SetUInt32Value( UNIT_VIRTUAL_ITEM_SLOT_DISPLAY, 0);

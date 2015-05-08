@@ -78,7 +78,7 @@ struct boss_moira_bronzebeardAI : public ScriptedAI
         
 
         Smite_Timer -= diff;
-        if (Smite_Timer < diff)
+        if (Smite_Timer <= diff)
         {
             DoCast(me->getVictim(),SPELL_SMITE);
             Smite_Timer += 10000;

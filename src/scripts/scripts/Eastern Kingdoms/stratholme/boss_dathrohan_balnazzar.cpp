@@ -146,7 +146,7 @@ struct boss_dathrohan_balnazzarAI : public ScriptedAI
         if (!Transformed)
         {
             CrusadersHammer_Timer -= diff;
-            if (CrusadersHammer_Timer < diff && !m_creature->IsNonMeleeSpellCast(false))
+            if (CrusadersHammer_Timer <= diff && !m_creature->IsNonMeleeSpellCast(false))
             {
                 //Cast
                 if (rand()%100 < 75) //50% chance to cast
@@ -287,7 +287,7 @@ struct boss_dathrohan_balnazzarAI : public ScriptedAI
             }
 
               //          MindControl_Timer -= diff;
-            //            if (MindControl_Timer < diff)
+            //            if (MindControl_Timer <= diff)
             //            {
             //Cast
             //                if (rand()%100 < 50) //50% chance to cast

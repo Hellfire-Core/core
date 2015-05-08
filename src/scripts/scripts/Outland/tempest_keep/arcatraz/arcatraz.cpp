@@ -132,7 +132,7 @@ struct npc_millhouse_manastormAI : public ScriptedAI
     {
         if( !Init )
         {
-            if( EventProgress_Timer < diff )
+            if( EventProgress_Timer <= diff )
             {
                 if( Phase < 8 )
                 {
@@ -185,7 +185,7 @@ struct npc_millhouse_manastormAI : public ScriptedAI
             LowHp = true;
         }
 
-        if( Pyroblast_Timer < diff )
+        if( Pyroblast_Timer <= diff )
         {
             if( me->IsNonMeleeSpellCast(false) )
                 return;
@@ -196,7 +196,7 @@ struct npc_millhouse_manastormAI : public ScriptedAI
             Pyroblast_Timer = 40000;
         }else Pyroblast_Timer -=diff;
 
-        if( Fireball_Timer < diff )
+        if( Fireball_Timer <= diff )
         {
             DoCast(me->getVictim(),SPELL_FIREBALL);
             Fireball_Timer = 4000;
@@ -373,7 +373,7 @@ struct npc_warden_mellicharAI : public ScriptedAI
         if( !IsRunning )
             return;
 
-        if( EventProgress_Timer < diff )
+        if( EventProgress_Timer <= diff )
         {
             if( pInstance )
             {
@@ -508,7 +508,7 @@ struct npc_felfire_waveAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(Burn < diff)
+        if(Burn <= diff)
         {
             DoCast(me, SPELL_FELFIRE, true);
             Burn = 450;
@@ -565,7 +565,7 @@ struct npc_arcatraz_sentinelAI : public ScriptedAI
 
         if (!Suicide_Timer)
         {
-            if (ThreatWipe_Timer < diff)
+            if (ThreatWipe_Timer <= diff)
             {
                 DoResetThreat();
                 ThreatWipe_Timer = urand(10000, 15000);
@@ -584,7 +584,7 @@ struct npc_arcatraz_sentinelAI : public ScriptedAI
         }
         else
         {
-            if (Suicide_Timer < diff)
+            if (Suicide_Timer <= diff)
                 me->Kill(me, false);
             else
                 Suicide_Timer -= diff;

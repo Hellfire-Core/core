@@ -161,7 +161,7 @@ struct npc_draenei_survivorAI : public ScriptedAI
             return;
         }
 
-        if (SayHelpTimer < diff)
+        if (SayHelpTimer <= diff)
         {
             CanSayHelp = true;
             SayHelpTimer = 20000;
@@ -291,7 +291,7 @@ struct npc_engineer_spark_overgrindAI : public ScriptedAI
     {
         if( !me->isInCombat() )
         {
-            if (Emote_Timer < diff)
+            if (Emote_Timer <= diff)
             {
                 DoScriptText(SAY_TEXT, me);
                 DoScriptText(SAY_EMOTE, me);
@@ -304,7 +304,7 @@ struct npc_engineer_spark_overgrindAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if (Dynamite_Timer < diff)
+        if (Dynamite_Timer <= diff)
         {
             DoCast(me->getVictim(), SPELL_DYNAMITE);
             Dynamite_Timer = 8000;
@@ -632,7 +632,7 @@ struct npc_geezleAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(SayTimer < diff)
+        if(SayTimer <= diff)
         {
             if(EventStarted)
             {
@@ -687,7 +687,7 @@ struct mob_nestlewood_owlkinAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(ChannelTimer < diff && !Channeled && Hitted)
+        if(ChannelTimer <= diff && !Channeled && Hitted)
         {
             me->DealDamage(me, me->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
             me->RemoveCorpse();

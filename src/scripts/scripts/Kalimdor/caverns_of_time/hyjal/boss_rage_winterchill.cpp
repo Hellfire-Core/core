@@ -165,7 +165,7 @@ struct boss_rage_winterchillAI : public hyjal_trashAI
         if (!UpdateVictim() )
             return;
 
-        if(CheckTimer < diff)
+        if(CheckTimer <= diff)
         {
             DoZoneInCombat();
             m_creature->SetSpeed(MOVE_RUN, 3.0);
@@ -174,7 +174,7 @@ struct boss_rage_winterchillAI : public hyjal_trashAI
         else
             CheckTimer -= diff;
 
-        if(FrostArmorTimer < diff)
+        if(FrostArmorTimer <= diff)
         {
             //AddSpellToCast(m_creature, SPELL_FROST_ARMOR, true);
             DoCast(m_creature, SPELL_FROST_ARMOR,true);
@@ -183,7 +183,7 @@ struct boss_rage_winterchillAI : public hyjal_trashAI
         else
             FrostArmorTimer -= diff;
 
-        if(DecayTimer < diff)
+        if(DecayTimer <= diff)
         {
             if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, 70, true))
                 //AddSpellToCast(target, SPELL_DEATH_AND_DECAY);
@@ -208,7 +208,7 @@ struct boss_rage_winterchillAI : public hyjal_trashAI
         else
             DecayTimer -= diff;
 
-        if(NovaTimer < diff)
+        if(NovaTimer <= diff)
         {
             if(Unit *target = m_creature->getVictim())
                 //AddSpellToCast(target, SPELL_FROST_NOVA, true);
@@ -234,7 +234,7 @@ struct boss_rage_winterchillAI : public hyjal_trashAI
         else
             NovaTimer -= diff;
 
-        if(IceboltTimer < diff)
+        if(IceboltTimer <= diff)
         {
             if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, 40, true))
                 //AddSpellToCast(target, SPELL_ICEBOLT, true);
@@ -245,7 +245,7 @@ struct boss_rage_winterchillAI : public hyjal_trashAI
         else
             IceboltTimer -= diff;
 
-        if(Enrage_Timer < diff)
+        if(Enrage_Timer <= diff)
         {
             //AddSpellToCast(m_creature, SPELL_BERSERK);
             DoCast(m_creature, SPELL_BERSERK);

@@ -200,13 +200,13 @@ struct boss_supremusAI : public ScriptedAI
 
         if(!m_creature->HasAura(SPELL_BERSERK, 0))
         {
-            if(BerserkTimer < diff)
+            if(BerserkTimer <= diff)
                 DoCast(m_creature, SPELL_BERSERK);
             else
                 BerserkTimer -= diff;
         }
 
-        if(SummonFlameTimer < diff)
+        if(SummonFlameTimer <= diff)
         {
             AddSpellToCast(m_creature, SPELL_MOLTEN_PUNCH);
             SummonFlameTimer = 20000;
@@ -222,7 +222,7 @@ struct boss_supremusAI : public ScriptedAI
 
         if(Phase1)
         {
-            if(CheckTimer < diff)
+            if(CheckTimer <= diff)
             {
                 DoZoneInCombat();
                 m_creature->SetSpeed(MOVE_RUN, 2.5f);
@@ -231,7 +231,7 @@ struct boss_supremusAI : public ScriptedAI
             else
                 CheckTimer -= diff;
 
-            if(HatefulStrikeTimer < diff)
+            if(HatefulStrikeTimer <= diff)
             {
                 if(Unit* target = CalculateHatefulStrikeTarget())
                 {
@@ -244,7 +244,7 @@ struct boss_supremusAI : public ScriptedAI
         }
         else
         {
-            if(CheckTimer < diff)
+            if(CheckTimer <= diff)
             {
                 DoZoneInCombat();
                 m_creature->SetSpeed(MOVE_RUN, 0.90f);
@@ -253,7 +253,7 @@ struct boss_supremusAI : public ScriptedAI
             else
                 CheckTimer -= diff;
 
-            if(SwitchTargetTimer < diff)
+            if(SwitchTargetTimer <= diff)
             {
                 if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true, m_creature->getVictimGUID()))
                 {
@@ -268,7 +268,7 @@ struct boss_supremusAI : public ScriptedAI
             else
                 SwitchTargetTimer -= diff;
 
-            if(MoltenPunch_Timer < diff)
+            if(MoltenPunch_Timer <= diff)
             {
                 Unit *target = m_creature->getVictim();
                 if(target)
@@ -288,7 +288,7 @@ struct boss_supremusAI : public ScriptedAI
             else
                 MoltenPunch_Timer -= diff;
 
-            if(SummonVolcanoTimer < diff)
+            if(SummonVolcanoTimer <= diff)
             {
                 if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 999, true))
                 {
@@ -300,7 +300,7 @@ struct boss_supremusAI : public ScriptedAI
                 SummonVolcanoTimer -= diff;
         }
 
-        if(PhaseSwitchTimer < diff)
+        if(PhaseSwitchTimer <= diff)
         {
             if(!Phase1)
             {
@@ -353,7 +353,7 @@ struct npc_volcanoAI : public Scripted_NoMovementAI
         if(!CastTimer)
             return;
 
-        if(CastTimer < diff)
+        if(CastTimer <= diff)
         {
             m_creature->CastSpell(m_creature, SPELL_VOLCANIC_ERUPTION, false);
             CastTimer = 0;

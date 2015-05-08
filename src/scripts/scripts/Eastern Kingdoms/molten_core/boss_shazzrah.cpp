@@ -100,7 +100,7 @@ struct boss_shazzrahAI : public ScriptedAI
         }
 
         Countspell_Timer -= diff;
-        if (Countspell_Timer < diff)
+        if (Countspell_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_COUNTERSPELL);
             Countspell_Timer += 16000 + rand()%4000;

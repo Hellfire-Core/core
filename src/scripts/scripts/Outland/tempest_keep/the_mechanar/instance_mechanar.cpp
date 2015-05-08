@@ -299,7 +299,7 @@ struct instance_mechanar : public ScriptedInstance
     {
         if(Heroic && GetData(DATA_MECHANO_LORD_EVENT) == IN_PROGRESS)
         {
-            if(CheckTimer < diff)
+            if(CheckTimer <= diff)
             {
                 const Map::PlayerList& players = instance->GetPlayers();
                 for(Map::PlayerList::const_iterator i = players.begin(); i != players.end(); ++i)

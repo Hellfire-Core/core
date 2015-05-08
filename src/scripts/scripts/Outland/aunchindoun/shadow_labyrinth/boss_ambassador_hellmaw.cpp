@@ -135,7 +135,7 @@ struct boss_ambassador_hellmawAI : public ScriptedAI
 
         if(IsBanished)
         {
-             if(Banish_Timer < diff)
+             if(Banish_Timer <= diff)
              {
                  DoCast(me,SPELL_BANISH, true);
                  Banish_Timer = 40000;
@@ -146,7 +146,7 @@ struct boss_ambassador_hellmawAI : public ScriptedAI
 
         if (!Intro)
         {
-            if (EventCheck_Timer < diff)
+            if (EventCheck_Timer <= diff)
             {
                 if(pInstance->GetData(TYPE_RITUALIST) == DONE)
                 {
@@ -166,7 +166,7 @@ struct boss_ambassador_hellmawAI : public ScriptedAI
             patrol = false;
         }
 
-        if (!me->isInCombat() && !patrol && OnPath_Delay < diff)
+        if (!me->isInCombat() && !patrol && OnPath_Delay <= diff)
         {
             me->GetMotionMaster()->MovePath(PATH_FINAL, true);
             patrol = true;
@@ -177,7 +177,7 @@ struct boss_ambassador_hellmawAI : public ScriptedAI
         if (!UpdateVictim() )
             return;
 
-        if (CorrosiveAcid_Timer < diff)
+        if (CorrosiveAcid_Timer <= diff)
         {
             DoCast(me->getVictim(),SPELL_CORROSIVE_ACID);
             CorrosiveAcid_Timer = 25000;
@@ -185,7 +185,7 @@ struct boss_ambassador_hellmawAI : public ScriptedAI
         else
             CorrosiveAcid_Timer -= diff;
 
-        if (Fear_Timer < diff)
+        if (Fear_Timer <= diff)
         {
             DoCast(me,SPELL_FEAR);
             Fear_Timer = 25000;
@@ -195,7 +195,7 @@ struct boss_ambassador_hellmawAI : public ScriptedAI
 
         if (HeroicMode)
         {
-            if (Enrage_Timer < diff)
+            if (Enrage_Timer <= diff)
             {
                 DoCast(me,SPELL_ENRAGE);
                 Enrage_Timer = 5*MINUTE*1000;

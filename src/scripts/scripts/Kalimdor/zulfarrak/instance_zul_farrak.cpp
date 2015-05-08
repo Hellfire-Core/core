@@ -216,7 +216,7 @@ struct instance_zul_farrak : public ScriptedInstance
         
         if (waves == 4)
         {
-            if (wavecounter < diff)
+            if (wavecounter <= diff)
                 wavecounter = 0;
             else
                 wavecounter -= diff;

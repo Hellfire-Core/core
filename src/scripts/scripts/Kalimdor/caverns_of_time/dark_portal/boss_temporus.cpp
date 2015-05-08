@@ -124,7 +124,7 @@ struct boss_temporusAI : public ScriptedAI
             return;
 
         //Attack Haste
-        if (Haste_Timer < diff)
+        if (Haste_Timer <= diff)
         {
             AddSpellToCast(SPELL_HASTE, CAST_SELF);
             Haste_Timer = urand(20000, 25000);
@@ -133,7 +133,7 @@ struct boss_temporusAI : public ScriptedAI
             Haste_Timer -= diff;
 
         //Wing Buffet
-        if (WingBuffet_Timer < diff)
+        if (WingBuffet_Timer <= diff)
         {
             AddSpellToCast(m_creature, HeroicMode ? H_SPELL_WING_BUFFET : SPELL_WING_BUFFET);
             WingBuffet_Timer = urand(15000, 25000);
@@ -142,7 +142,7 @@ struct boss_temporusAI : public ScriptedAI
             WingBuffet_Timer -= diff;
 
         //Mortal Wound
-        if (MortalWound_Timer < diff)
+        if (MortalWound_Timer <= diff)
         {
             canApplyWound = true;
 
@@ -155,7 +155,7 @@ struct boss_temporusAI : public ScriptedAI
             MortalWound_Timer -= diff;
 
         //Spell Reflection
-        if (HeroicMode && SpellReflection_Timer < diff)
+        if (HeroicMode && SpellReflection_Timer <= diff)
         {
             AddSpellToCast(m_creature, SPELL_REFLECT);
             SpellReflection_Timer = urand(40000, 50000);

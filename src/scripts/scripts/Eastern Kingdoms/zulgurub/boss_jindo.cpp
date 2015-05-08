@@ -128,7 +128,7 @@ struct boss_jindoAI : public ScriptedAI
         
         Teleport_Timer -= diff;
         //Teleporting a random gamer and spawning 9 skeletons that will attack this gamer
-        if(Teleport_Timer < diff)
+        if(Teleport_Timer <= diff)
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0, 200, true))
             {

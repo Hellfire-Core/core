@@ -343,7 +343,7 @@ struct npc_disciple_of_naralexAI : public npc_escortAI
 
             if(potCooldown)     // 2 mins cooldown on healing potion
             {
-                if(potionTimer < diff)
+                if(potionTimer <= diff)
                     potCooldown = false;
                 else
                     potionTimer -= diff;
@@ -352,7 +352,7 @@ struct npc_disciple_of_naralexAI : public npc_escortAI
             if(!UpdateVictim())
                 return;
 
-            if(sleepTimer < diff)
+            if(sleepTimer <= diff)
             {
                 if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30.0, false))
                     AddSpellToCast(target, SPELL_SLEEP);

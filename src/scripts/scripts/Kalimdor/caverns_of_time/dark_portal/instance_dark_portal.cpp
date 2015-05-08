@@ -503,7 +503,7 @@ struct instance_dark_portal : public ScriptedInstance
             return;
 
         if (Encounter[0] == FAIL)
-            if (DespawnDelay && DespawnDelay < diff)
+            if (DespawnDelay && DespawnDelay <= diff)
             {
                 if (Unit* medivh = Unit::GetUnit(*player, MedivhGUID))
                     ((Creature*)medivh)->RemoveCorpse();

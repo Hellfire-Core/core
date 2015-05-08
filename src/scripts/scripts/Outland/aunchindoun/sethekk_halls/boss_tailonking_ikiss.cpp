@@ -147,7 +147,7 @@ struct boss_talon_king_ikissAI : public ScriptedAI
             Blink = false;
         }
 
-        if (ArcaneVolley_Timer < diff)
+        if (ArcaneVolley_Timer <= diff)
         {
             DoCast(m_creature,HeroicMode ? H_SPELL_ARCANE_VOLLEY : SPELL_ARCANE_VOLLEY);
             ArcaneVolley_Timer = 10000+rand()%5000;
@@ -155,7 +155,7 @@ struct boss_talon_king_ikissAI : public ScriptedAI
         else
             ArcaneVolley_Timer -= diff;
 
-        if (Sheep_Timer < diff)
+        if (Sheep_Timer <= diff)
         {
             Unit *target = NULL;
             target = SelectUnit(SELECT_TARGET_RANDOM,0, 60, true, m_creature->getVictimGUID());
@@ -176,7 +176,7 @@ struct boss_talon_king_ikissAI : public ScriptedAI
 
         if (HeroicMode)
         {
-            if (Slow_Timer < diff)
+            if (Slow_Timer <= diff)
             {
                 DoCast(m_creature,H_SPELL_SLOW);
                 Slow_Timer = 15000+rand()%25000;
@@ -185,7 +185,7 @@ struct boss_talon_king_ikissAI : public ScriptedAI
                 Slow_Timer -= diff;
         }
 
-        if (Blink_Timer < diff)
+        if (Blink_Timer <= diff)
         {
             DoScriptText(EMOTE_ARCANE_EXP, m_creature);
 

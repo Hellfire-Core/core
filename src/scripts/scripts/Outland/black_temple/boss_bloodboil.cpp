@@ -233,7 +233,7 @@ struct boss_gurtogg_bloodboilAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (CheckTimer < diff)
+        if (CheckTimer <= diff)
         {
             DoZoneInCombat();
             CheckTimer = 1000;
@@ -253,7 +253,7 @@ struct boss_gurtogg_bloodboilAI : public ScriptedAI
                 EnrageTimer -= diff;
         }
 
-        if (ArcingSmashTimer < diff)
+        if (ArcingSmashTimer <= diff)
         {
             ForceSpellCast(m_creature->getVictim(), SPELL_ARCING_SMASH, DONT_INTERRUPT, false, true);
             ArcingSmashTimer = 10000;
@@ -261,7 +261,7 @@ struct boss_gurtogg_bloodboilAI : public ScriptedAI
         else
             ArcingSmashTimer -= diff;
 
-        if (FelAcidTimer < diff)
+        if (FelAcidTimer <= diff)
         {
             if (Phase1)
             {
@@ -282,7 +282,7 @@ struct boss_gurtogg_bloodboilAI : public ScriptedAI
 
         if (Phase1)
         {
-            if (AcidicWoundTimer < diff)
+            if (AcidicWoundTimer <= diff)
             {
                 AddSpellToCast(m_creature->getVictim(), SPELL_ACIDIC_WOUND);
                 AcidicWoundTimer = 2000;
@@ -290,7 +290,7 @@ struct boss_gurtogg_bloodboilAI : public ScriptedAI
             else
                 AcidicWoundTimer -= diff;
 
-            if (BewilderingStrikeTimer < diff)
+            if (BewilderingStrikeTimer <= diff)
             {
                 AddSpellToCast(m_creature->getVictim(), SPELL_BEWILDERING_STRIKE);
                 BewilderingStrikeTimer = urand(5000, 65000);
@@ -298,7 +298,7 @@ struct boss_gurtogg_bloodboilAI : public ScriptedAI
             else
                 BewilderingStrikeTimer -= diff;
 
-            if (BloodboilTimer < diff)
+            if (BloodboilTimer <= diff)
             {
                 CastBloodboil();
                 BloodboilTimer = 10000;
@@ -307,7 +307,7 @@ struct boss_gurtogg_bloodboilAI : public ScriptedAI
                 BloodboilTimer -= diff;
 
 
-            if (EjectTimer < diff)
+            if (EjectTimer <= diff)
             {
                 AddSpellToCast(m_creature->getVictim(), SPELL_EJECT);
                 EjectTimer = 15000;
@@ -331,7 +331,7 @@ struct boss_gurtogg_bloodboilAI : public ScriptedAI
                 ChargeTimer -= diff;
         }
 
-        if (PhaseChangeTimer < diff)
+        if (PhaseChangeTimer <= diff)
         {
             if (Phase1)
             {

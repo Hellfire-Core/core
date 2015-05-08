@@ -316,7 +316,7 @@ struct boss_vazruden_the_heraldAI : public ScriptedAI
                  if ((me->GetHealth())*100 / me->GetMaxHealth() < 20)
                      DoMoveToCombat();
 
-                 if (checktimer < diff && me->isAlive())
+                 if (checktimer <= diff && me->isAlive())
                  {
                      if (Creature* Vazruden = me->GetMap()->GetCreature(VazrudenGUID))
                      {
@@ -471,7 +471,7 @@ struct boss_vazrudenAI : public ScriptedAI
             return;
         DoSpecialThings(diff, DO_PULSE_COMBAT);
 
-        if (RevengeTimer < diff)
+        if (RevengeTimer <= diff)
         {
             DoCast(me->getVictim(), SPELL_REVENGE);
             RevengeTimer = 10000+rand()%3000;

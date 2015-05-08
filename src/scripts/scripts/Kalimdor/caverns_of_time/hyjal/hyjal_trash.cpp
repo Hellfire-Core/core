@@ -448,7 +448,7 @@ struct mob_giant_infernalAI : public hyjal_trashAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(Delay < diff)
+        if(Delay <= diff)
             Delay=0;
         else
         {
@@ -526,7 +526,7 @@ struct mob_giant_infernalAI : public hyjal_trashAI
             imol=true;
         }
 
-        if(FlameBuffetTimer < diff)
+        if(FlameBuffetTimer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_FLAME_BUFFET,true);
             FlameBuffetTimer = 7000;
@@ -1400,7 +1400,7 @@ struct mob_frost_wyrmAI : public hyjal_trashAI
 
         if(!m_creature->IsWithinDistInMap(m_creature->getVictim(), 25))
         {
-            if(MoveTimer < diff)
+            if(MoveTimer <= diff)
             {
                 m_creature->GetMotionMaster()->MoveChase(m_creature->getVictim(),20);
                 MoveTimer = 2000;
@@ -1636,7 +1636,7 @@ struct alliance_riflemanAI : public Scripted_NoMovementAI
         if (!UpdateVictim())
             return;
 
-        if(ExplodeTimer < diff)
+        if(ExplodeTimer <= diff)
         {
             if (!m_creature->IsWithinDistInMap(m_creature->getVictim(), 30))
             {
@@ -1652,7 +1652,7 @@ struct alliance_riflemanAI : public Scripted_NoMovementAI
         else
             ExplodeTimer -= diff;
 
-        if(ShootTimer < diff)
+        if(ShootTimer <= diff)
         {
             DoCast(m_creature->getVictim(), SPELL_SHOOT,true);
             ShootTimer = 2000;

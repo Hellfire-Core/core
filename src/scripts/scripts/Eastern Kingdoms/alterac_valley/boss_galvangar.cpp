@@ -84,7 +84,7 @@ struct boss_galvangarAI : public ScriptedAI
             return;
 
         CheckTimer -= diff;
-        if (CheckTimer < diff)
+        if (CheckTimer <= diff)
         {
             if (!m_creature->IsWithinDistInMap(&wLoc, 20.0f))
             {
@@ -101,25 +101,25 @@ struct boss_galvangarAI : public ScriptedAI
         UpdateTimer(FrighteningShoutTimer, diff);
         UpdateTimer(MortalStrikeTimer, diff);
 
-        if (CleaveTimer < diff)
+        if (CleaveTimer <= diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_CLEAVE);
             CleaveTimer +=  urand(4000, 12000);
         }
 
-        if (FrighteningShoutTimer < diff)
+        if (FrighteningShoutTimer <= diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_FRIGHTENING_SHOUT);
             FrighteningShoutTimer += urand(14000, 24000);
         }
 
-        if (MortalStrikeTimer < diff)
+        if (MortalStrikeTimer <= diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_MORTAL_STRIKE);
             MortalStrikeTimer += 6000;
         }
 
-        if (WhirlwindTimer < diff)
+        if (WhirlwindTimer <= diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_WHIRLWIND);
             WhirlwindTimer += 10000;

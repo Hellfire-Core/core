@@ -114,14 +114,14 @@ struct boss_rajaxxAI : public ScriptedAI
             return;
 
         //Thundercrash_Timer
-        if (Thundercrash_Timer < diff)
+        if (Thundercrash_Timer <= diff)
         {
             DoCast(m_creature, SPELL_THUNDERCRASH);
             Thundercrash_Timer = 30000;
         }
         else Thundercrash_Timer -= diff;
 
-        if (Disarm_Timer < diff)
+        if (Disarm_Timer <= diff)
         {
             DoCast(m_creature->getVictim(), SPELL_DISARM);
             Disarm_Timer = 20000;
@@ -195,14 +195,14 @@ struct rajaxx_officerAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (SunderTimer < diff)
+        if (SunderTimer <= diff)
         {
             DoCast(m_creature->getVictim(), SPELL_SUNDER_ARMOR);
             SunderTimer = 5000 + urand(0, 5000);
         }
         else SunderTimer -= diff;
 
-        if (CleaveTimer < diff)
+        if (CleaveTimer <= diff)
         {
             DoCast(m_creature->getVictim(), SPELL_CLEAVE);
             CleaveTimer = 7500 + urand (0, 5000);
@@ -210,7 +210,7 @@ struct rajaxx_officerAI : public ScriptedAI
         else CleaveTimer -= diff;
 
         //TODO Cast buffs on mobs, not only officers
-        if (SpecialTimer < diff)
+        if (SpecialTimer <= diff)
         {
             switch (GUID)
             {

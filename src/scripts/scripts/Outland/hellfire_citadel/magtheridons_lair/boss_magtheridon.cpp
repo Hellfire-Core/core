@@ -126,7 +126,7 @@ struct mob_abyssalAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (FireBlast_Timer < diff)
+        if (FireBlast_Timer <= diff)
         {
             AddSpellToCast(SPELL_FIRE_BLAST, CAST_TANK);
             FireBlast_Timer = urand(5000, 15000);
@@ -240,7 +240,7 @@ struct boss_magtheridonAI : public BossAI
     {
         if (!UpdateVictim())
         {
-            if (RandChat_Timer < diff)
+            if (RandChat_Timer <= diff)
             {
                 DoScriptText(RAND(MAGT_RANDOM_YELL_1, MAGT_RANDOM_YELL_2, MAGT_RANDOM_YELL_3, MAGT_RANDOM_YELL_4, MAGT_RANDOM_YELL_5, MAGT_RANDOM_YELL_6), m_creature);
                 RandChat_Timer = 90000;
@@ -374,7 +374,7 @@ struct mob_hellfire_channelerAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (ShadowBoltVolley_Timer < diff)
+        if (ShadowBoltVolley_Timer <= diff)
         {
             AddSpellToCast(SPELL_SHADOW_BOLT_VOLLEY, CAST_SELF);
             ShadowBoltVolley_Timer = urand(10000, 20000);
@@ -382,7 +382,7 @@ struct mob_hellfire_channelerAI : public ScriptedAI
         else
             ShadowBoltVolley_Timer -= diff;
 
-        if (DarkMending_Timer < diff)
+        if (DarkMending_Timer <= diff)
         {
             Unit * target = SelectLowestHpFriendly(30.0f);
             if (!target && HealthBelowPct(50))
@@ -396,7 +396,7 @@ struct mob_hellfire_channelerAI : public ScriptedAI
         else
             DarkMending_Timer -= diff;
 
-        if (Fear_Timer < diff)
+        if (Fear_Timer <= diff)
         {
             AddSpellToCast(SPELL_FEAR, CAST_RANDOM_WITHOUT_TANK);
             Fear_Timer = urand(25000, 40000);

@@ -125,7 +125,7 @@ struct npc_kyle_frenziedAI : public ScriptedAI
     {
         if (!STATE || STATE == 4)
             return;
-        if(wait < diff)
+        if(wait <= diff)
         {
             switch(STATE)
             {

@@ -97,7 +97,7 @@ struct boss_theravenianAI : public ScriptedAI
         }
 
         KnockAway_Timer -= diff;
-        if (KnockAway_Timer < diff)
+        if (KnockAway_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_KNOCKAWAY);
             KnockAway_Timer += 12000;

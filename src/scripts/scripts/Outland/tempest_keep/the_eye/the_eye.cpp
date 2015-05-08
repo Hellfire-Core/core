@@ -59,7 +59,7 @@ struct mob_crystalcore_devastatorAI : public ScriptedAI
 
         //Check if we have a current target
         //Knockaway_Timer
-        if (Knockaway_Timer < diff)
+        if (Knockaway_Timer <= diff)
         {
             m_creature->CastSpell(m_creature->getVictim(), SPELL_KNOCKAWAY, true);
 
@@ -75,7 +75,7 @@ struct mob_crystalcore_devastatorAI : public ScriptedAI
             Knockaway_Timer -= diff;
 
         //Countercharge_Timer
-        if (Countercharge_Timer < diff)
+        if (Countercharge_Timer <= diff)
         {
             DoCast(m_creature, SPELL_COUNTERCHARGE);
             Countercharge_Timer = 45000;
@@ -120,7 +120,7 @@ struct mob_crystalcore_mechanicAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (Recharge_Timer < diff)
+        if (Recharge_Timer <= diff)
         {
             if(Unit* target = FindCreature(20040, 100, m_creature))
             {
@@ -136,7 +136,7 @@ struct mob_crystalcore_mechanicAI : public ScriptedAI
         else
             Recharge_Timer -= diff;
 
-        if(Sawblade_Timer < diff)
+        if(Sawblade_Timer <= diff)
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30, true, 0))
                 DoCast(target,SPELL_SAWBLADE);
@@ -192,7 +192,7 @@ struct mob_phoenixhawk_hatchlingAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if(Silence_Timer < diff)
+        if(Silence_Timer <= diff)
         {
             DoCast(m_creature,SPELL_SILENCE);
             Silence_Timer = 6000+rand()%4000;
@@ -200,7 +200,7 @@ struct mob_phoenixhawk_hatchlingAI : public ScriptedAI
         else
             Silence_Timer -= diff;
 
-        if(WingBuffet_Timer < diff)
+        if(WingBuffet_Timer <= diff)
         {
             DoCast(m_creature,SPELL_WINGBUFFET);
             WingBuffet_Timer = 16000+rand()%14000;
@@ -245,7 +245,7 @@ struct mob_phoenix_hawkAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if(ManaBurn_Timer < diff)
+        if(ManaBurn_Timer <= diff)
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30, true, 0))
                 DoCast(target,SPELL_MANABURNE);
@@ -255,7 +255,7 @@ struct mob_phoenix_hawkAI : public ScriptedAI
         else
             ManaBurn_Timer -= diff;
 
-        if(Dive_Timer < diff)
+        if(Dive_Timer <= diff)
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30, true, 0))
                 DoCast(target,SPELL_DIVE);
@@ -308,7 +308,7 @@ struct mob_tempest_falconerAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if(FireShield_Timer < diff)
+        if(FireShield_Timer <= diff)
         {
             DoCast(m_creature,SPELL_FIRESHIELD);
             FireShield_Timer = 60000;
@@ -316,7 +316,7 @@ struct mob_tempest_falconerAI : public ScriptedAI
         else
             FireShield_Timer -= diff;
 
-        if(ImmolationArrow_Timer < diff)
+        if(ImmolationArrow_Timer <= diff)
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30, true, 0))
                 DoCast(target,SPELL_IMMOLATIONARROW);
@@ -326,7 +326,7 @@ struct mob_tempest_falconerAI : public ScriptedAI
         else
             ImmolationArrow_Timer -= diff;
 
-        if(Knockback_Timer < diff)
+        if(Knockback_Timer <= diff)
         {
             DoCast(m_creature,SPELL_KNOCKBACK);
             Knockback_Timer = 8000;
@@ -334,7 +334,7 @@ struct mob_tempest_falconerAI : public ScriptedAI
         else
             Knockback_Timer -= diff;
 
-        if(Shoot_Timer < diff)
+        if(Shoot_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_SHOOT);
             Shoot_Timer = 3000+rand()%2000;
@@ -388,7 +388,7 @@ struct mob_crimson_hand_blood_knightAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (Cleanse_Timer < diff )
+        if (Cleanse_Timer <= diff )
         {
             std::list<Creature*> pList = FindFriendlyCC(30);
             if(!pList.empty())
@@ -401,7 +401,7 @@ struct mob_crimson_hand_blood_knightAI : public ScriptedAI
         else
             Cleanse_Timer -= diff;
 
-        if(FlashofLight_Timer < diff)
+        if(FlashofLight_Timer <= diff)
         {
             Unit* target = SelectLowestHpFriendly(50, 1000);
             if(target)
@@ -417,7 +417,7 @@ struct mob_crimson_hand_blood_knightAI : public ScriptedAI
         else
             FlashofLight_Timer -= diff;
 
-        if(HammerofJustice_Timer < diff)
+        if(HammerofJustice_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_HAMMEROFJUSTICE);
             HammerofJustice_Timer = 18000;
@@ -425,7 +425,7 @@ struct mob_crimson_hand_blood_knightAI : public ScriptedAI
         else
             HammerofJustice_Timer -= diff;
 
-        if(HammerofWrath_Timer < diff)
+        if(HammerofWrath_Timer <= diff)
         {
             Map* pMap = m_creature->GetMap();
             Map::PlayerList const &PlayerList = pMap->GetPlayers();
@@ -446,7 +446,7 @@ struct mob_crimson_hand_blood_knightAI : public ScriptedAI
         else
             HammerofWrath_Timer -= diff;
 
-        if(Renew_Timer < diff)
+        if(Renew_Timer <= diff)
         {
             Unit* target = SelectLowestHpFriendly(50, 1000);
             if(target)
@@ -500,7 +500,7 @@ struct mob_Bloodwarder_SquireAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (Cleanse_Timer < diff )
+        if (Cleanse_Timer <= diff )
         {
             std::list<Creature*> pList = FindFriendlyCC(30);
             if (!pList.empty())
@@ -513,7 +513,7 @@ struct mob_Bloodwarder_SquireAI : public ScriptedAI
         else
             Cleanse_Timer -= diff;
 
-        if(FlashofLight_Timer < diff)
+        if(FlashofLight_Timer <= diff)
         {
             Unit* target = SelectLowestHpFriendly(50, 1000);
             if(target)
@@ -530,7 +530,7 @@ struct mob_Bloodwarder_SquireAI : public ScriptedAI
         else
             FlashofLight_Timer -= diff;
 
-        if(HammerofJustice_Timer < diff)
+        if(HammerofJustice_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_HAMMEROFJUSTICE_BW_SQUIRE);
             HammerofJustice_Timer = 18000;
@@ -538,7 +538,7 @@ struct mob_Bloodwarder_SquireAI : public ScriptedAI
         else
             HammerofJustice_Timer -= diff;
 
-        if(HammerofWrath_Timer < diff)
+        if(HammerofWrath_Timer <= diff)
         {
             Map* pMap = m_creature->GetMap();
             Map::PlayerList const &PlayerList = pMap->GetPlayers();
@@ -602,7 +602,7 @@ struct mob_Bloodwarder_VindicatorAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if(Cleanse_Timer < diff )
+        if(Cleanse_Timer <= diff )
         {
             std::list<Creature*> pList = FindFriendlyCC(30);
             if (!pList.empty())
@@ -615,7 +615,7 @@ struct mob_Bloodwarder_VindicatorAI : public ScriptedAI
         else
             Cleanse_Timer -= diff;
 
-        if(FlashofLight_Timer < diff)
+        if(FlashofLight_Timer <= diff)
         {
             Unit* target = SelectLowestHpFriendly(50, 1000);
             if(target)
@@ -631,7 +631,7 @@ struct mob_Bloodwarder_VindicatorAI : public ScriptedAI
         else
             FlashofLight_Timer -= diff;
 
-        if(HammerofJustice_Timer < diff)
+        if(HammerofJustice_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_HAMMEROFJUSTICE_BW_VINDICATOR);
             HammerofJustice_Timer = 18000;
@@ -639,7 +639,7 @@ struct mob_Bloodwarder_VindicatorAI : public ScriptedAI
         else
             HammerofJustice_Timer -= diff;
 
-        if(HammerofWrath_Timer < diff)
+        if(HammerofWrath_Timer <= diff)
         {
             Map* pMap = m_creature->GetMap();
             Map::PlayerList const &PlayerList = pMap->GetPlayers();
@@ -703,7 +703,7 @@ struct mob_tempest_smithAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if(Fragmentation_Bomb_Timer < diff )
+        if(Fragmentation_Bomb_Timer <= diff )
         {
             Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30, true, 0);
             if(target)
@@ -714,7 +714,7 @@ struct mob_tempest_smithAI : public ScriptedAI
         else
             Fragmentation_Bomb_Timer -= diff;
 
-        if(Golem_Repair_Timer < diff)
+        if(Golem_Repair_Timer <= diff)
         {
             if(Unit* target = FindCreature(20040, 25, m_creature))
             {
@@ -730,7 +730,7 @@ struct mob_tempest_smithAI : public ScriptedAI
         else
             Golem_Repair_Timer -= diff;
 
-        if(Power_Up_Timer < diff)
+        if(Power_Up_Timer <= diff)
         {
             if(Unit* target = FindCreature(20040, 25, m_creature))
             {
@@ -746,7 +746,7 @@ struct mob_tempest_smithAI : public ScriptedAI
         else
             Power_Up_Timer -= diff;
 
-        if(Shell_Shock_Timer < diff)
+        if(Shell_Shock_Timer <= diff)
         {
             Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30, true, 0);
             if(target)
@@ -800,7 +800,7 @@ struct mob_novice_astromancerAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if(Fire_Nova_Timer < diff )
+        if(Fire_Nova_Timer <= diff )
         {
             Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30, true, 0);
             if(target)
@@ -811,7 +811,7 @@ struct mob_novice_astromancerAI : public ScriptedAI
         else
             Fire_Nova_Timer -= diff;
 
-        if(Fire_Shield_Timer < diff)
+        if(Fire_Shield_Timer <= diff)
         {
             DoCast(m_creature,SPELL_FIRESHIELD_NOVICE_ASTROMANCER);
             Fire_Shield_Timer = 60000;
@@ -819,7 +819,7 @@ struct mob_novice_astromancerAI : public ScriptedAI
         else
             Fire_Shield_Timer -= diff;
 
-        if(Fireball_Timer < diff)
+        if(Fireball_Timer <= diff)
         {
             Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 50, true, 0);
             if(target)
@@ -830,7 +830,7 @@ struct mob_novice_astromancerAI : public ScriptedAI
         else
             Fireball_Timer -= diff;
 
-        if(Rain_of_Fire_Timer < diff)
+        if(Rain_of_Fire_Timer <= diff)
         {
             Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30, true, 0);
             if(target)

@@ -55,7 +55,7 @@ struct mob_treantAI  : public ScriptedAI
     {
         if (!UpdateVictim() )
         {
-            if(WarpGuid && check_Timer < diff)
+            if(WarpGuid && check_Timer <= diff)
             {
                 if(Unit *Warp = (Unit*)Unit::GetUnit(*m_creature, WarpGuid))
                 {
@@ -174,14 +174,14 @@ struct boss_warp_splinterAI : public ScriptedAI
             return;
 
         //Check for War Stomp
-        if(War_Stomp_Timer < diff)
+        if(War_Stomp_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),WAR_STOMP);
             War_Stomp_Timer = 25000 + rand()%15000;
         }else War_Stomp_Timer -= diff;
 
         //Check_Timer
-        if(Check_Timer < diff)
+        if(Check_Timer <= diff)
         {
             if(!m_creature->IsWithinDistInMap(&wLoc, 30.0f))
                 EnterEvadeMode();
@@ -194,14 +194,14 @@ struct boss_warp_splinterAI : public ScriptedAI
             Check_Timer -= diff;
 
         //Check for Arcane Volley
-        if(Arcane_Volley_Timer < diff)
+        if(Arcane_Volley_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),ARCANE_VOLLEY);
             Arcane_Volley_Timer = 20000 + rand()%15000;
         }else Arcane_Volley_Timer -= diff;
 
         //Check for Summon Treants
-        if(Summon_Treants_Timer < diff)
+        if(Summon_Treants_Timer <= diff)
         {
             SummonTreants();
             Summon_Treants_Timer = 45000;

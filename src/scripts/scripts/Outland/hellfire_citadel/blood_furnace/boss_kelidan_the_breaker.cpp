@@ -216,7 +216,7 @@ struct boss_kelidan_the_breakerAI : public ScriptedAI
 
         if (Firenova)
         {
-            if (Firenova_Timer < diff)
+            if (Firenova_Timer <= diff)
             {
                 ForceSpellCast(me, SPELL_FIRE_NOVA, INTERRUPT_AND_CAST_INSTANTLY);
                 Firenova = false;
@@ -228,7 +228,7 @@ struct boss_kelidan_the_breakerAI : public ScriptedAI
             return;
         }
 
-        if (ShadowVolley_Timer < diff)
+        if (ShadowVolley_Timer <= diff)
         {
             AddSpellToCast(m_creature, SPELL_SHADOW_BOLT_VOLLEY);
             ShadowVolley_Timer = urand(5000, 13000);
@@ -236,7 +236,7 @@ struct boss_kelidan_the_breakerAI : public ScriptedAI
         else
             ShadowVolley_Timer -=diff;
 
-        if (Corruption_Timer < diff)
+        if (Corruption_Timer <= diff)
         {
             AddSpellToCast(me,SPELL_CORRUPTION);
             Corruption_Timer = urand(30000, 50000);
@@ -244,7 +244,7 @@ struct boss_kelidan_the_breakerAI : public ScriptedAI
         else
             Corruption_Timer -=diff;
 
-        if (BurningNova_Timer < diff)
+        if (BurningNova_Timer <= diff)
         {
             if (m_creature->IsNonMeleeSpellCast(false))
                 m_creature->InterruptNonMeleeSpells(true);
@@ -337,7 +337,7 @@ struct mob_shadowmoon_channelerAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (MarkOfShadow_Timer < diff)
+        if (MarkOfShadow_Timer <= diff)
         {
             if (Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0))
                 AddSpellToCast(target,SPELL_MARK_OF_SHADOW);
@@ -347,7 +347,7 @@ struct mob_shadowmoon_channelerAI : public ScriptedAI
         else
             MarkOfShadow_Timer -=diff;
 
-        if (ShadowBolt_Timer < diff)
+        if (ShadowBolt_Timer <= diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_SHADOW_BOLT);
             ShadowBolt_Timer = urand(5000, 6000);

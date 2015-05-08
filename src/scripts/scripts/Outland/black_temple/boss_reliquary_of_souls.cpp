@@ -284,7 +284,7 @@ struct boss_reliquary_of_soulsAI : public Scripted_NoMovementAI
         if(!Phase)
             return;
 
-        if(CheckTimer < diff)
+        if(CheckTimer <= diff)
         {
             if(FindPlayers())
                 DoZoneInCombat();
@@ -322,7 +322,7 @@ struct boss_reliquary_of_soulsAI : public Scripted_NoMovementAI
             }
         }
 
-        if(Timer < diff)
+        if(Timer <= diff)
         {
             switch(Counter)
             {
@@ -592,7 +592,7 @@ struct boss_essence_of_sufferingAI : public ScriptedAI
         if(me->isInCombat())
         {
             //Supposed to be cast on nearest target
-            if(FixateTimer < diff)
+            if(FixateTimer <= diff)
             {
                 CastFixate();
                 if (urand(0,16) == 0)
@@ -616,7 +616,7 @@ struct boss_essence_of_sufferingAI : public ScriptedAI
         else
             checkTimer -= diff;
 
-        if(EnrageTimer < diff)
+        if(EnrageTimer <= diff)
         {
             ForceSpellCastWithScriptText(SPELL_ENRAGE, CAST_SELF, SUFF_EMOTE_ENRAGE);
             EnrageTimer = 44000 +rand()%3000;
@@ -624,7 +624,7 @@ struct boss_essence_of_sufferingAI : public ScriptedAI
         else
             EnrageTimer -= diff;
 
-        if(SoulDrainTimer < diff)
+        if(SoulDrainTimer <= diff)
         {
             ForceSpellCast(SPELL_SOUL_DRAIN, CAST_SELF);
             SoulDrainTimer = 20000 +rand()%5000;
@@ -734,7 +734,7 @@ struct boss_essence_of_desireAI : public ScriptedAI
         else
             checkTimer -= diff;
 
-        if(RuneShieldTimer < diff)
+        if(RuneShieldTimer <= diff)
         {
             ForceSpellCast(SPELL_RUNE_SHIELD, CAST_SELF);
             RuneShieldTimer = 15000;
@@ -742,7 +742,7 @@ struct boss_essence_of_desireAI : public ScriptedAI
         else
             RuneShieldTimer -= diff;
 
-        if(SoulShockTimer < diff)
+        if(SoulShockTimer <= diff)
         {
             AddSpellToCast(SPELL_SOUL_SHOCK);
             SoulShockTimer = 5000;
@@ -750,7 +750,7 @@ struct boss_essence_of_desireAI : public ScriptedAI
         else
             SoulShockTimer -= diff;
 
-        if(DeadenTimer < diff)
+        if(DeadenTimer <= diff)
         {
             if(urand(0,1))
                 AddSpellToCastWithScriptText(SPELL_DEADEN, CAST_TANK, DESI_SAY_SPEC);
@@ -827,7 +827,7 @@ struct boss_essence_of_angerAI : public ScriptedAI
             CheckedAggro = true;
         }
 
-        if(CheckTankTimer < diff)
+        if(CheckTankTimer <= diff)
         {
             if(me->getVictimGUID() != AggroTargetGUID)
             {
@@ -843,7 +843,7 @@ struct boss_essence_of_angerAI : public ScriptedAI
         else
             CheckTankTimer -= diff;
 
-        if(SoulScreamTimer < diff)
+        if(SoulScreamTimer <= diff)
         {
             AddSpellToCast(SPELL_SOUL_SCREAM, CAST_NULL);
 
@@ -855,7 +855,7 @@ struct boss_essence_of_angerAI : public ScriptedAI
         else
             SoulScreamTimer -= diff;
 
-        if(SpiteTimer < diff)
+        if(SpiteTimer <= diff)
         {
             AddSpellToCast(SPELL_SPITE_TARGET, CAST_NULL);
             DoScriptText(ANGER_SAY_SPEC, me);

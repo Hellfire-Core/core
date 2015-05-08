@@ -119,7 +119,7 @@ struct mob_omrogg_headsAI : public ScriptedAI
         if (!DeathYell)
             return;
 
-        if (Death_Timer < diff)
+        if (Death_Timer <= diff)
         {
             DoScriptText(YELL_DIE_R, me);
             DeathYell = false;
@@ -284,7 +284,7 @@ struct boss_warbringer_omroggAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (Delay_Timer < diff)
+        if (Delay_Timer <= diff)
         {
             Delay_Timer = 3500;
 
@@ -342,7 +342,7 @@ struct boss_warbringer_omroggAI : public ScriptedAI
                 BlastCount = 0;
         }else BlastWave_Timer -= diff;
 
-        if (BurningMaul_Timer < diff)
+        if (BurningMaul_Timer <= diff)
         {
             DoScriptText(EMOTE_ENRAGE, me);
             DoCast(me,HeroicMode ? H_SPELL_BURNING_MAUL : SPELL_BURNING_MAUL);
@@ -351,7 +351,7 @@ struct boss_warbringer_omroggAI : public ScriptedAI
             BlastCount = 1;
         }else BurningMaul_Timer -= diff;
 
-        if (ResetThreat_Timer < diff)
+        if (ResetThreat_Timer <= diff)
         {
             if (Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0))
             {
@@ -362,13 +362,13 @@ struct boss_warbringer_omroggAI : public ScriptedAI
             ResetThreat_Timer = 35000+rand()%10000;
         }else ResetThreat_Timer -= diff;
 
-        if (Fear_Timer < diff)
+        if (Fear_Timer <= diff)
         {
             DoCast(me,SPELL_FEAR);
             Fear_Timer = 15000+rand()%25000;
         }else Fear_Timer -= diff;
 
-        if (ThunderClap_Timer < diff)
+        if (ThunderClap_Timer <= diff)
         {
             DoCast(me,SPELL_THUNDERCLAP);
             ThunderClap_Timer = 25000+rand()%15000;

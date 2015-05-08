@@ -63,7 +63,7 @@ struct boss_yorAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (DoubleBreath_Timer < diff)
+        if (DoubleBreath_Timer <= diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_DOUBLE_BREATH);
             DoubleBreath_Timer = 7500 + rand()%5000;
@@ -71,7 +71,7 @@ struct boss_yorAI : public ScriptedAI
         else
             DoubleBreath_Timer -= diff;
 
-        if (Stomp_Timer < diff)
+        if (Stomp_Timer <= diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_STOMP);
             Stomp_Timer = 15000+rand()%5000;

@@ -99,7 +99,7 @@ struct boss_baroness_anastariAI : public ScriptedAI
         }
 
         /*  Possess_Timer -= diff;
-                    if (Possess_Timer < diff)
+                    if (Possess_Timer <= diff)
         {
         //Cast
           if (rand()%100 < 65)

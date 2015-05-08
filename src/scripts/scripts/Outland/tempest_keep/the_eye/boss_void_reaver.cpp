@@ -111,7 +111,7 @@ struct boss_void_reaverAI : public ScriptedAI
             return;
 
         //Check_Timer
-        if (Check_Timer < diff)
+        if (Check_Timer <= diff)
         {
             if (!m_creature->IsWithinDistInMap(&wLoc, 135.0f))
                 EnterEvadeMode();
@@ -124,7 +124,7 @@ struct boss_void_reaverAI : public ScriptedAI
             Check_Timer -= diff;
 
         // Pounding
-        if (Pounding_Timer < diff)
+        if (Pounding_Timer <= diff)
         {
             AddSpellToCastWithScriptText(m_creature, SPELL_POUNDING, RAND(SAY_POUNDING1, SAY_POUNDING2));
 
@@ -137,7 +137,7 @@ struct boss_void_reaverAI : public ScriptedAI
             Pounding_Timer -= diff;
 
         // Arcane Orb
-        if (ArcaneOrb_Timer < diff)
+        if (ArcaneOrb_Timer <= diff)
         {
             Unit * target = SelectUnit(SELECT_TARGET_RANDOM, 0, 200.0f, true, 0, 18.0f);
 
@@ -154,7 +154,7 @@ struct boss_void_reaverAI : public ScriptedAI
             ArcaneOrb_Timer -= diff;
 
         // Single Target knock back, reduces aggro
-        if (KnockAway_Timer < diff)
+        if (KnockAway_Timer <= diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_KNOCK_AWAY);
             KnockAway_Timer = 30000;
@@ -163,7 +163,7 @@ struct boss_void_reaverAI : public ScriptedAI
             KnockAway_Timer -= diff;
 
         //Berserk
-        if (Berserk_Timer < diff)
+        if (Berserk_Timer <= diff)
         {
             ForceSpellCast(m_creature, SPELL_BERSERK);
             Berserk_Timer = 600000;

@@ -303,7 +303,7 @@ struct boss_kelthuzadAI : public ScriptedAI
             }
 
             ChainsOfKelthuzad_Timer -= diff;
-            if(ChainsOfKelthuzad_Timer < diff)
+            if(ChainsOfKelthuzad_Timer <= diff)
             {
                 //DoCast(m_creature->getVictim(),SPELL_CHAINS_OF_KELTHUZAD);
 

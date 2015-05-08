@@ -104,12 +104,12 @@ struct boss_twilight_corrupterAI : public ScriptedAI
     {
         if(!UpdateVictim())
             return;
-        if(SoulCorruption_Timer < diff)
+        if(SoulCorruption_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_SOUL_CORRUPTION);
             SoulCorruption_Timer = rand()%4000+15000;
         } else SoulCorruption_Timer-=diff;
-        if(CreatureOfNightmare_Timer < diff)
+        if(CreatureOfNightmare_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_CREATURE_OF_NIGHTMARE);
             CreatureOfNightmare_Timer = 45000;

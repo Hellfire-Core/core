@@ -170,7 +170,7 @@ struct boss_anetheronAI : public hyjal_trashAI
         if (!UpdateVictim())
             return;
 
-        if(CheckTimer < diff)
+        if(CheckTimer <= diff)
         {
             DoZoneInCombat();
             if(!m_creature->IsNonMeleeSpellCast(true))
@@ -184,7 +184,7 @@ struct boss_anetheronAI : public hyjal_trashAI
         else
             CheckTimer -= diff;
 
-        if(SwarmTimer < diff)
+        if(SwarmTimer <= diff)
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0,65,true))
             {
@@ -207,7 +207,7 @@ struct boss_anetheronAI : public hyjal_trashAI
         else
             SwarmTimer -= diff;
 
-        if(SleepTimer < diff)
+        if(SleepTimer <= diff)
         {
             DoCast(m_creature, SPELL_SLEEP, true);
 
@@ -228,7 +228,7 @@ struct boss_anetheronAI : public hyjal_trashAI
         else
             SleepTimer -= diff;
 
-        if(InfernoTimer < diff)
+        if(InfernoTimer <= diff)
         {
             if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0,200,true))
             {
@@ -301,7 +301,7 @@ struct mob_towering_infernalAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(CheckTimer < diff)
+        if(CheckTimer <= diff)
         {
             if(pInstance)
             {

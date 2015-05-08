@@ -95,7 +95,7 @@ struct boss_kurinnaxxAI : public ScriptedAI
         }
 
         //MORTALWOUND_Timer
-        if (MORTALWOUND_Timer < diff)
+        if (MORTALWOUND_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_MORTALWOUND);
             MORTALWOUND_Timer = 9000;
@@ -103,7 +103,7 @@ struct boss_kurinnaxxAI : public ScriptedAI
         else MORTALWOUND_Timer -= diff;
 
         //SANDTRAP_Timer
-        if (SANDTRAP_Timer < diff)
+        if (SANDTRAP_Timer <= diff)
         {
             if (trap)
                 {
@@ -120,7 +120,7 @@ struct boss_kurinnaxxAI : public ScriptedAI
         else SANDTRAP_Timer -= diff;
 
         //CLEAVE_Timer
-        if(CLEAVE_Timer < diff)
+        if(CLEAVE_Timer <= diff)
             {
                 DoCast(m_creature->getVictim(), SPELL_CLEAVE);
                 CLEAVE_Timer = 6000 + rand()%6000;

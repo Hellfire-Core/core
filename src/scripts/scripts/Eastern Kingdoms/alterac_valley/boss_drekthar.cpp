@@ -131,7 +131,7 @@ struct boss_drektharAI : public ScriptedAI
             return;
 
         CheckTimer -= diff;
-        if (CheckTimer < diff)
+        if (CheckTimer <= diff)
         {
             if(!m_creature->IsWithinDistInMap(&wLoc, 20.0f))
                 EnterEvadeMode();
@@ -144,35 +144,35 @@ struct boss_drektharAI : public ScriptedAI
         
 
         WhirlwindTimer -= diff;
-        if (WhirlwindTimer < diff)
+        if (WhirlwindTimer <= diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_WHIRLWIND);
             WhirlwindTimer +=  urand(8000, 18000);
         }
         
         Whirlwind2Timer -= diff;
-        if (Whirlwind2Timer < diff)
+        if (Whirlwind2Timer <= diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_WHIRLWIND2);
             Whirlwind2Timer += urand(7000, 25000);
         }
         
         KnockdownTimer -= diff;
-        if (KnockdownTimer < diff)
+        if (KnockdownTimer <= diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_KNOCKDOWN);
             KnockdownTimer += urand(10000, 15000);
         }
         
         FrenzyTimer -= diff;
-        if (FrenzyTimer < diff)
+        if (FrenzyTimer <= diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_FRENZY);
             FrenzyTimer += urand(20000, 25000);
         }
         
         YellTimer -= diff;
-        if (YellTimer < diff)
+        if (YellTimer <= diff)
         {
             DoScriptText(RAND(YELL_RANDOM1, YELL_RANDOM2, YELL_RANDOM3, YELL_RANDOM4, YELL_RANDOM5), m_creature);
             YellTimer += urand(20000, 30000); //20 to 30 seconds
@@ -262,7 +262,7 @@ struct boss_drektharOfficerAI : public ScriptedAI
             return;
 
         CheckTimer -= diff;
-        if (CheckTimer < diff)
+        if (CheckTimer <= diff)
         {
             if (!m_creature->IsWithinDistInMap(&wLoc, 20.0f))
                 EnterEvadeMode();
@@ -274,7 +274,7 @@ struct boss_drektharOfficerAI : public ScriptedAI
         }
         
         chargeTimer -= diff;
-        if (chargeTimer < diff)
+        if (chargeTimer <= diff)
         {
             Unit * target = SelectUnit(SELECT_TARGET_RANDOM, 0, 25.0f, true, 0, 8.0f);
 
@@ -285,21 +285,21 @@ struct boss_drektharOfficerAI : public ScriptedAI
         }
         
         cleaveTimer -= diff;
-        if (cleaveTimer < diff)
+        if (cleaveTimer <= diff)
         {
             AddSpellToCast(AV_DT_CLEAVE, CAST_TANK);
             cleaveTimer += urand(5000, 10000);
         }
         
         demoShoutTimer -= diff;
-        if (demoShoutTimer < diff)
+        if (demoShoutTimer <= diff)
         {
             AddSpellToCast(AV_DT_DEMOSHOUT, CAST_NULL);
             demoShoutTimer += urand(14000, 25000);
         }
         
         whirlwindTimer -= diff;
-        if (whirlwindTimer < diff)
+        if (whirlwindTimer <= diff)
         {
             AddSpellToCast(AV_DT_WHIRLWIND, CAST_SELF);
             whirlwindTimer += urand(9000, 13000);

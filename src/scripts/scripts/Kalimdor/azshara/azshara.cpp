@@ -288,7 +288,7 @@ struct mob_rizzle_sprysprocketAI : public ScriptedAI
     void UpdateAI(const uint32 diff)
     {
         if(Must_Die)
-            if(Must_Die_Timer < diff)
+            if(Must_Die_Timer <= diff)
             {
                 Despawn();
                 return;
@@ -299,13 +299,13 @@ struct mob_rizzle_sprysprocketAI : public ScriptedAI
             if(!PlayerGUID)
                 return;
 
-            if(spellEscape_Timer < diff)
+            if(spellEscape_Timer <= diff)
             {
                 DoCast(m_creature, SPELL_RIZZLE_ESCAPE, false);
                 spellEscape_Timer = 10000;
             } else spellEscape_Timer -= diff;
 
-            if(Teleport_Timer < diff)
+            if(Teleport_Timer <= diff)
             {
                 DoTeleportTo(3706.39, -3969.15, 35.9118, 0);
 
@@ -329,7 +329,7 @@ struct mob_rizzle_sprysprocketAI : public ScriptedAI
             ContinueWP = false;
         }
 
-        if(Grenade_Timer < diff)
+        if(Grenade_Timer <= diff)
         {
             Player *player = (Player *)Unit::GetUnit((*m_creature), PlayerGUID);
             if(player && Reached == false)
@@ -340,7 +340,7 @@ struct mob_rizzle_sprysprocketAI : public ScriptedAI
             Grenade_Timer = 30000;
         } else Grenade_Timer -= diff;
 
-        if(Check_Timer < diff)
+        if(Check_Timer <= diff)
         {
             Unit *player = m_creature->GetUnit(PlayerGUID);
             if(!player)
@@ -450,7 +450,7 @@ struct mob_depth_chargeAI : public ScriptedAI
     void UpdateAI(const uint32 diff)
     {
         if(we_must_die)
-            if(must_die_timer < diff)
+            if(must_die_timer <= diff)
             {
                 m_creature->DealDamage(m_creature, m_creature->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
                 m_creature->RemoveCorpse();

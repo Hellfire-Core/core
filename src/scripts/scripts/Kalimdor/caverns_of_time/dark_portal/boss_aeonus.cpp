@@ -122,7 +122,7 @@ struct boss_aeonusAI : public ScriptedAI
             Say_Timer -= diff;
 
         //Cleave
-        if (Cleave_Timer < diff)
+        if (Cleave_Timer <= diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_CLEAVE);
             Cleave_Timer = 6000+rand()%4000;
@@ -131,7 +131,7 @@ struct boss_aeonusAI : public ScriptedAI
             Cleave_Timer -= diff;
 
         //Sand Breath
-        if (SandBreath_Timer < diff)
+        if (SandBreath_Timer <= diff)
         {
             AddSpellToCast(m_creature->getVictim(), HeroicMode ? H_SPELL_SAND_BREATH : SPELL_SAND_BREATH);
             SandBreath_Timer = 30000;
@@ -140,7 +140,7 @@ struct boss_aeonusAI : public ScriptedAI
             SandBreath_Timer -= diff;
 
         //Time Stop
-        if (TimeStop_Timer < diff)
+        if (TimeStop_Timer <= diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_TIME_STOP);
             TimeStop_Timer = 40000;
@@ -149,7 +149,7 @@ struct boss_aeonusAI : public ScriptedAI
             TimeStop_Timer -= diff;
 
         //Frenzy
-        if (Frenzy_Timer < diff)
+        if (Frenzy_Timer <= diff)
         {
             AddSpellToCastWithScriptText(m_creature, SPELL_ENRAGE, EMOTE_FRENZY);
             Frenzy_Timer = 120000;

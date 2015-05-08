@@ -690,7 +690,7 @@ struct npc_anachronosAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (checkTimer < diff)
+        if (checkTimer <= diff)
         {
             if (HealthBelowPct(20))
             {

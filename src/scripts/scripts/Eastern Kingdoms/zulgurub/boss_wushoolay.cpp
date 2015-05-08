@@ -72,7 +72,7 @@ struct boss_wushoolayAI : public ScriptedAI
         
 
         LightningWave_Timer -= diff;
-        if (LightningWave_Timer < diff)
+        if (LightningWave_Timer <= diff)
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0, GetSpellMaxRange(SPELL_LIGHTNINGWAVE), true))
                 DoCast(target,SPELL_LIGHTNINGWAVE);

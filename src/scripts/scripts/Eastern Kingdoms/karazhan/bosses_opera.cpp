@@ -839,7 +839,7 @@ struct boss_bigbadwolfAI : public boss_operaAI
         DoMeleeAttackIfReady();
 
         ChaseTimer -= diff;
-        if (ChaseTimer < diff)
+        if (ChaseTimer <= diff)
         {
             if (!IsChasing)
             {
@@ -1418,7 +1418,7 @@ void boss_romuloAI::UpdateAI(const uint32 diff)
 
 
     BackwardLungeTimer -= diff;
-    if (BackwardLungeTimer < diff)
+    if (BackwardLungeTimer <= diff)
     {
         Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 1, 200, true, m_creature->getVictimGUID());
         if (target && !m_creature->HasInArc(M_PI, target))
@@ -1437,7 +1437,7 @@ void boss_romuloAI::UpdateAI(const uint32 diff)
     }
    
     DeadlySwatheTimer -= diff;
-    if (DeadlySwatheTimer < diff)
+    if (DeadlySwatheTimer <= diff)
     {
         AddSpellToCast(SelectUnit(SELECT_TARGET_RANDOM, 0), SPELL_DEADLY_SWATHE);
         DeadlySwatheTimer += 15000 + rand()%10000;

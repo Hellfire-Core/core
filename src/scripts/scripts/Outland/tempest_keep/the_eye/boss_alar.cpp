@@ -266,7 +266,7 @@ struct boss_alarAI : public ScriptedAI
         if(!m_creature->isInCombat()) // sometimes isincombat but !incombat, faction bug?
             return;
 
-        if (checkTimer < diff)
+        if (checkTimer <= diff)
         {
             if (!m_creature->IsWithinDistInMap(&wLoc, 135) || !CheckPlayersInInstance())
             {
@@ -281,7 +281,7 @@ struct boss_alarAI : public ScriptedAI
         else
             checkTimer -= diff;
 
-        if(Berserk_Timer < diff)
+        if(Berserk_Timer <= diff)
         {
             m_creature->CastSpell(m_creature, SPELL_BERSERK, true);
             Berserk_Timer = 60000;
@@ -291,7 +291,7 @@ struct boss_alarAI : public ScriptedAI
 
         if(ForceMove)
         {
-            if(ForceTimer < diff)
+            if(ForceTimer <= diff)
             {
                 m_creature->GetMotionMaster()->MovePoint(0, waypoint[cur_wp][0], waypoint[cur_wp][1], waypoint[cur_wp][2]);
                 ForceTimer = 5000;
@@ -415,7 +415,7 @@ struct boss_alarAI : public ScriptedAI
                 return;
             }
 
-            if(Platforms_Move_Timer < diff)
+            if(Platforms_Move_Timer <= diff)
             {
                 if(cur_wp == 4)
                 {
@@ -451,7 +451,7 @@ struct boss_alarAI : public ScriptedAI
         }
         else
         {
-            if(Charge_Timer < diff)
+            if(Charge_Timer <= diff)
             {
                 Unit *temp = m_creature->getVictim();
                 if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 1, GetSpellMaxRange(SPELL_CHARGE), true, m_creature->getVictimGUID()))
@@ -463,7 +463,7 @@ struct boss_alarAI : public ScriptedAI
             else
                 Charge_Timer -= diff;
 
-            if(MeltArmor_Timer < diff)
+            if(MeltArmor_Timer <= diff)
             {
                 DoCast(m_creature->getVictim(), SPELL_MELT_ARMOR);
                 MeltArmor_Timer = 60000;
@@ -471,7 +471,7 @@ struct boss_alarAI : public ScriptedAI
             else
                 MeltArmor_Timer -= diff;
 
-            if(DiveBomb_Timer < diff)
+            if(DiveBomb_Timer <= diff)
             {
                 m_creature->SetReactState(REACT_PASSIVE);
                 m_creature->AttackStop();
@@ -487,7 +487,7 @@ struct boss_alarAI : public ScriptedAI
             else
                 DiveBomb_Timer -= diff;
 
-            if(FlamePatch_Timer < diff)
+            if(FlamePatch_Timer <= diff)
             {
                 if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true))
                     m_creature->SummonCreature(CREATURE_FLAME_PATCH_ALAR, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN, 120000);

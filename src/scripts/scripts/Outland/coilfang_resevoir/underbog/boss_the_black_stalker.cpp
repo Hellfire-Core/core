@@ -100,7 +100,7 @@ struct boss_the_black_stalkerAI : public ScriptedAI
             return;
 
         // Evade if too far
-        if(check_Timer < diff)
+        if(check_Timer <= diff)
         {
             if(!me->IsWithinDistInMap(&wLoc, 60))
             {
@@ -111,7 +111,7 @@ struct boss_the_black_stalkerAI : public ScriptedAI
         }else check_Timer -= diff;
 
         // Spore Striders
-        if(HeroicMode && SporeStriders_Timer < diff)
+        if(HeroicMode && SporeStriders_Timer <= diff)
         {
             DoCast(me,SPELL_SUMMON_SPORE_STRIDER);
             SporeStriders_Timer = 10000+rand()%5000;
@@ -120,7 +120,7 @@ struct boss_the_black_stalkerAI : public ScriptedAI
         // Levitate
         if(LevitatedTarget)
         {
-            if(LevitatedTarget_Timer < diff)
+            if(LevitatedTarget_Timer <= diff)
             {
                 if(Unit* target = (Unit*)Unit::GetUnit(*me, LevitatedTarget))
                 {
@@ -145,7 +145,7 @@ struct boss_the_black_stalkerAI : public ScriptedAI
                     LevitatedTarget = 0;
             }else LevitatedTarget_Timer -= diff;
         }
-        if(Levitate_Timer < diff)
+        if(Levitate_Timer <= diff)
         {
             if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, 200, true, me->getVictimGUID()))
             {
@@ -158,7 +158,7 @@ struct boss_the_black_stalkerAI : public ScriptedAI
         }else Levitate_Timer -= diff;
 
         // Chain Lightning
-        if(ChainLightning_Timer < diff)
+        if(ChainLightning_Timer <= diff)
         {
             if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0))
                 DoCast(target, SPELL_CHAIN_LIGHTNING);
@@ -166,7 +166,7 @@ struct boss_the_black_stalkerAI : public ScriptedAI
         }else ChainLightning_Timer -= diff;
 
         // Static Charge
-        if(StaticCharge_Timer < diff)
+        if(StaticCharge_Timer <= diff)
         {
             if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0,30,true))
                 DoCast(target, SPELL_STATIC_CHARGE);

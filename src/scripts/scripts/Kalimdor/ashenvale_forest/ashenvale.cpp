@@ -113,7 +113,7 @@ struct npc_torekAI : public npc_escortAI
         if (!UpdateVictim())
             return;
 
-        if (Rend_Timer < diff)
+        if (Rend_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_REND);
             Rend_Timer = 20000;
@@ -121,7 +121,7 @@ struct npc_torekAI : public npc_escortAI
         else
             Rend_Timer -= diff;
 
-        if (Thunderclap_Timer < diff)
+        if (Thunderclap_Timer <= diff)
         {
             DoCast(m_creature,SPELL_THUNDERCLAP);
             Thunderclap_Timer = 30000;
@@ -583,7 +583,7 @@ struct npc_Heretic_EmisaryAI : public ScriptedAI
         {
             if (EventStarted)
             {
-                if (TalkTimer < diff)
+                if (TalkTimer <= diff)
                 {
                     Player * Player_;
                     Creature * Briatha = GetClosestCreatureWithEntry(me, NPC_ICECALLERBRIATHA, 20);

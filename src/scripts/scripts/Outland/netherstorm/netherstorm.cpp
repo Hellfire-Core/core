@@ -250,7 +250,7 @@ struct npc_manaforge_control_consoleAI : public ScriptedAI
         if (!someplayer)
             return;
 
-        if( Event_Timer < diff )
+        if( Event_Timer <= diff )
         {
             switch(Phase)
             {
@@ -301,7 +301,7 @@ struct npc_manaforge_control_consoleAI : public ScriptedAI
 
         if (Wave)
         {
-            if (Wave_Timer < diff)
+            if (Wave_Timer <= diff)
             {
                 DoWaveSpawnForCreature(me);
             }
@@ -855,7 +855,7 @@ struct mob_phase_hunterAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (ManaBurnTimer < diff) // cast Mana Burn
+        if (ManaBurnTimer <= diff) // cast Mana Burn
         {
             if (me->getVictim()->GetCreateMana() > 0)
             {
@@ -1027,7 +1027,7 @@ struct mob_talbukAI : public ScriptedAI
 
         if (me->HasAura(SPELL_SLEEP_VISUAL,0)) // Sleep Visual
         {
-            if (Tagged_Timer < diff) // Remove every effect caused by aura and reset creature.
+            if (Tagged_Timer <= diff) // Remove every effect caused by aura and reset creature.
             {
                 me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                 me->clearUnitState(UNIT_STAT_STUNNED);
@@ -1926,7 +1926,7 @@ struct npc_captured_vanguardAI : public npc_escortAI
         if (!me->getVictim())
             return;
         
-        if (GlaiveTimer < diff)
+        if (GlaiveTimer <= diff)
         {
             DoCast(me->getVictim(), SPELL_GLAIVE);
             GlaiveTimer = urand(5000, 9000);
@@ -1934,7 +1934,7 @@ struct npc_captured_vanguardAI : public npc_escortAI
         else
             GlaiveTimer -= diff;
 
-        if (HamstringTimer < diff)
+        if (HamstringTimer <= diff)
         {
             DoCast(me->getVictim(), SPELL_HAMSTRING);
             HamstringTimer = urand(10000, 16000);

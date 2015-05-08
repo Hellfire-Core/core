@@ -226,7 +226,7 @@ struct trigger_epic_staffAI : public TriggerAI
     void UpdateAI(const uint32 diff)
     {
         Summon_Footsoldier_Timer -= diff;
-        if (Summon_Footsoldier_Timer < diff)
+        if (Summon_Footsoldier_Timer <= diff)
         {
             for(int i = 0; i<3; i++)
             {

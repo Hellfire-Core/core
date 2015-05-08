@@ -268,7 +268,7 @@ struct boss_fathomlord_karathressAI : public ScriptedAI
         }
 
         //Aura Check
-        if(AuraCheck_Timer < diff)
+        if(AuraCheck_Timer <= diff)
         {
             if(!m_creature->IsWithinDistInMap(&wLoc, 135.0f))
                 EnterEvadeMode();
@@ -289,7 +289,7 @@ struct boss_fathomlord_karathressAI : public ScriptedAI
         //TidalSurge_Timer
         if(ExtraAbility[2])
         {
-            if (TidalSurge_Timer < diff)
+            if (TidalSurge_Timer <= diff)
             {
                 Unit *who = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_TIDAL_SURGE), true, m_creature->getVictimGUID());
 
@@ -306,7 +306,7 @@ struct boss_fathomlord_karathressAI : public ScriptedAI
         }
 
         //CataclysmicBolt_Timer
-        if(CataclysmicBolt_Timer < diff)
+        if(CataclysmicBolt_Timer <= diff)
         {
             //if there aren't other units, cast on the tank
             if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_CATACLYSMIC_BOLT), true, m_creature->getVictimGUID()))
@@ -320,7 +320,7 @@ struct boss_fathomlord_karathressAI : public ScriptedAI
             CataclysmicBolt_Timer -= diff;
 
         //SearNova_Timer
-        if(SearNova_Timer < diff)
+        if(SearNova_Timer <= diff)
         {
             DoCast(m_creature->getVictim(), SPELL_SEAR_NOVA);
             SearNova_Timer = 20000+rand()%40000;
@@ -329,7 +329,7 @@ struct boss_fathomlord_karathressAI : public ScriptedAI
             SearNova_Timer -= diff;
 
         //Enrage_Timer
-        if(Enrage_Timer < diff)
+        if(Enrage_Timer <= diff)
         {
             DoCast(m_creature, SPELL_ENRAGE);
             Enrage_Timer = 600000;
@@ -451,7 +451,7 @@ struct boss_fathomguard_sharkkisAI : public ScriptedAI
         }
 
         //LeechingThrow_Timer
-        if(LeechingThrow_Timer < diff)
+        if(LeechingThrow_Timer <= diff)
         {
             if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0,GetSpellMaxRange(SPELL_LEECHING_THROW),true))
                 DoCast(target, SPELL_LEECHING_THROW);
@@ -462,7 +462,7 @@ struct boss_fathomguard_sharkkisAI : public ScriptedAI
             LeechingThrow_Timer -= diff;
 
         //Multishot_Timer
-        if(Multishot_Timer < diff)
+        if(Multishot_Timer <= diff)
         {
             DoCast(m_creature->getVictim(), SPELL_MULTISHOT);
             Multishot_Timer = 10000;
@@ -471,7 +471,7 @@ struct boss_fathomguard_sharkkisAI : public ScriptedAI
             Multishot_Timer -= diff;
 
         //TheBeastWithin_Timer
-        if(TheBeastWithin_Timer < diff)
+        if(TheBeastWithin_Timer <= diff)
         {
             DoCast(m_creature, SPELL_THE_BEAST_WITHIN);
             Creature *pet = Unit::GetCreature(*m_creature, pInstance->GetData64(DATA_SHARKKIS_PET));
@@ -485,7 +485,7 @@ struct boss_fathomguard_sharkkisAI : public ScriptedAI
 
         if(!pet)
         {
-            if(Pet_Timer < diff)
+            if(Pet_Timer <= diff)
             {
                 pet = true;
 //                me->Say("Summoning pet", 0, 0);
@@ -565,7 +565,7 @@ struct boss_fathomguard_tidalvessAI : public ScriptedAI
             DoCast(m_creature, SPELL_WINDFURY_WEAPON);
 
         //FrostShock_Timer
-        if (FrostShock_Timer < diff)
+        if (FrostShock_Timer <= diff)
         {
             DoCast(m_creature->getVictim(), SPELL_FROST_SHOCK);
             FrostShock_Timer = 25000+rand()%5000;
@@ -574,7 +574,7 @@ struct boss_fathomguard_tidalvessAI : public ScriptedAI
             FrostShock_Timer -= diff;
 
         //Spitfire_Timer
-        if(Spitfire_Timer < diff)
+        if(Spitfire_Timer <= diff)
         {
             DoCast(m_creature, SPELL_SPITFIRE_TOTEM);
             Unit *SpitfireTotem = Unit::GetUnit( *m_creature, CREATURE_SPITFIRE_TOTEM );
@@ -587,7 +587,7 @@ struct boss_fathomguard_tidalvessAI : public ScriptedAI
             Spitfire_Timer -= diff;
 
         //PoisonCleansing_Timer
-        if(PoisonCleansing_Timer < diff)
+        if(PoisonCleansing_Timer <= diff)
         {
             DoCast(m_creature, SPELL_POISON_CLEANSING_TOTEM);
             PoisonCleansing_Timer = 30000;
@@ -596,7 +596,7 @@ struct boss_fathomguard_tidalvessAI : public ScriptedAI
             PoisonCleansing_Timer -= diff;
 
         //Earthbind_Timer
-        if(Earthbind_Timer < diff)
+        if(Earthbind_Timer <= diff)
         {
             DoCast(m_creature, SPELL_EARTHBIND_TOTEM);
             Earthbind_Timer = 45000;
@@ -685,7 +685,7 @@ struct boss_fathomguard_caribdisAI : public ScriptedAI
         }
 
         //WaterBoltVolley_Timer
-        if (WaterBoltVolley_Timer < diff)
+        if (WaterBoltVolley_Timer <= diff)
         {
             DoCast(m_creature->getVictim(), SPELL_WATER_BOLT_VOLLEY);
             WaterBoltVolley_Timer = 30000;
@@ -694,7 +694,7 @@ struct boss_fathomguard_caribdisAI : public ScriptedAI
             WaterBoltVolley_Timer -= diff;
 
         //TidalSurge_Timer
-        if(TidalSurge_Timer < diff)
+        if(TidalSurge_Timer <= diff)
         {
             if(Unit *target = m_creature->getVictim())
             {
@@ -707,7 +707,7 @@ struct boss_fathomguard_caribdisAI : public ScriptedAI
             TidalSurge_Timer -= diff;
 
         //Cyclone_Timer
-        if(Cyclone_Timer < diff)
+        if(Cyclone_Timer <= diff)
         {
             //DoCast(m_creature, SPELL_SUMMON_CYCLONE); // Doesn't work
             Cyclone_Timer = 30000+rand()%10000;
@@ -724,7 +724,7 @@ struct boss_fathomguard_caribdisAI : public ScriptedAI
             Cyclone_Timer -= diff;
 
         //Heal_Timer
-        if(Heal_Timer < diff)
+        if(Heal_Timer <= diff)
         {
             // It can be cast on any of the mobs
             Unit *pUnit = NULL;
@@ -768,7 +768,7 @@ struct mob_caribdis_cycloneAI : public ScriptedAI
         if (!UpdateVictim() )
             return;
 
-        if(Swap_Timer < diff)
+        if(Swap_Timer <= diff)
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_FARTHEST, 0, 100, true))
             {
@@ -784,7 +784,7 @@ struct mob_caribdis_cycloneAI : public ScriptedAI
         else
             Swap_Timer -= diff;
 
-        if(Check_Timer < diff)
+        if(Check_Timer <= diff)
         {
             Map* pMap = m_creature->GetMap();
             Map::PlayerList const &PlayerList = pMap->GetPlayers();

@@ -94,7 +94,7 @@ struct npc_aeranasAI : public ScriptedAI
     {
         if (Faction_Timer)
         {
-            if (Faction_Timer < diff)
+            if (Faction_Timer <= diff)
             {
                 me->setFaction(FACTION_HOSTILE);
                 Faction_Timer = 0;
@@ -115,13 +115,13 @@ struct npc_aeranasAI : public ScriptedAI
             return;
         }
 
-        if (Shock_Timer < diff)
+        if (Shock_Timer <= diff)
         {
             DoCast(me->getVictim(),SPELL_SHOCK);
             Shock_Timer = 10000;
         }else Shock_Timer -= diff;
 
-        if (EnvelopingWinds_Timer < diff)
+        if (EnvelopingWinds_Timer <= diff)
         {
             DoCast(me->getVictim(),SPELL_ENVELOPING_WINDS);
             EnvelopingWinds_Timer = 25000;
@@ -934,7 +934,7 @@ struct npc_felblood_initiateAI : public ScriptedAI
     {
       if(!me->isInCombat())
       {
-          if(OOCTimer < diff)
+          if(OOCTimer <= diff)
           {
               if(!me->IsNonMeleeSpellCast(false))
                   HandleOffCombatEffects();
@@ -964,7 +964,7 @@ struct npc_felblood_initiateAI : public ScriptedAI
 
       if(me->GetEntry() == MOB_EMACIATED_FELBLOOD)
       {
-          if(BitterWithdrawal < diff)
+          if(BitterWithdrawal <= diff)
           {
               AddSpellToCast(SPELL_BITTER_WITHDRAWAL);
               BitterWithdrawal = urand(12000, 18000);
@@ -972,7 +972,7 @@ struct npc_felblood_initiateAI : public ScriptedAI
           else
               BitterWithdrawal -= diff;
 
-           if(SinisterStrike < diff)
+           if(SinisterStrike <= diff)
            {
                AddSpellToCast(SPELL_SINISTER_STRIKE);
                SinisterStrike = urand(10000, 15000);
@@ -982,7 +982,7 @@ struct npc_felblood_initiateAI : public ScriptedAI
       }
       else
       {
-          if(Spellbreaker < diff)
+          if(Spellbreaker <= diff)
           {
               AddSpellToCast(SPELL_SPELLBREAKER);
               Spellbreaker = urand(8000, 12000);

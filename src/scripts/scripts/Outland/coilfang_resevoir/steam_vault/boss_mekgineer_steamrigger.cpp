@@ -134,13 +134,13 @@ struct boss_mekgineer_steamriggerAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (Shrink_Timer < diff)
+        if (Shrink_Timer <= diff)
         {
             DoCast(me->getVictim(),SPELL_SUPER_SHRINK_RAY);
             Shrink_Timer = 20000;
         }else Shrink_Timer -= diff;
 
-        if (Saw_Blade_Timer < diff)
+        if (Saw_Blade_Timer <= diff)
         {
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 200, true, me->getVictimGUID()))
                 DoCast(target,SPELL_SAW_BLADE);
@@ -150,14 +150,14 @@ struct boss_mekgineer_steamriggerAI : public ScriptedAI
             Saw_Blade_Timer = 15000;
         } else Saw_Blade_Timer -= diff;
 
-        if (Electrified_Net_Timer < diff)
+        if (Electrified_Net_Timer <= diff)
         {
             DoCast(me->getVictim(),SPELL_ELECTRIFIED_NET);
             Electrified_Net_Timer = 10000;
         }
         else Electrified_Net_Timer -= diff;
 
-        if (Berserk_timer < diff)
+        if (Berserk_timer <= diff)
         {
             if (HeroicMode)
                 DoCast(me, H_SPELL_ENRAGE);
@@ -247,7 +247,7 @@ struct mob_steamrigger_mechanicAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (Repair_Timer < diff)
+        if (Repair_Timer <= diff)
         {
             if (pInstance && pInstance->GetData64(DATA_MEKGINEERSTEAMRIGGER) && pInstance->GetData(TYPE_MEKGINEER_STEAMRIGGER) == IN_PROGRESS)
             {

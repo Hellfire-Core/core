@@ -228,7 +228,7 @@ struct npc_taskmaster_fizzuleAI : public ScriptedAI
     {
         if (me->getFaction() == FACTION_FRIENDLY_F)
         {
-            if (Reset_Timer < diff)
+            if (Reset_Timer <= diff)
             {
                 EnterEvadeMode();
                 return;
@@ -416,7 +416,7 @@ struct npc_twiggy_flatheadAI : public ScriptedAI
             }
             else if (EventInProgress)
             {
-                if (Challenger_checker < diff)
+                if (Challenger_checker <= diff)
                 {
                     for(uint8 i = 0; i < 6; ++i)
                     {
@@ -435,7 +435,7 @@ struct npc_twiggy_flatheadAI : public ScriptedAI
                 else
                     Challenger_checker -= diff;
 
-                if(Wave_Timer < diff)
+                if(Wave_Timer <= diff)
                 {
                     if (AffrayChallenger[Wave] && Wave < 6 && !EventBigWill)
                     {

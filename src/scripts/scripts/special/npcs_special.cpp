@@ -87,7 +87,7 @@ struct npc_chicken_cluckAI : public ScriptedAI
         // Reset flags after a certain time has passed so that the next player has to start the 'event' again
         if(me->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER))
         {
-            if(ResetFlagTimer < diff)
+            if(ResetFlagTimer <= diff)
             {
                 EnterEvadeMode();
                 return;
@@ -608,7 +608,7 @@ void npc_doctorAI::UpdateAI(const uint32 diff)
         Reset();
 
     if(Event)
-        if(SummonPatient_Timer < diff)
+        if(SummonPatient_Timer <= diff)
         {
             Creature* Patient = NULL;
             Location* Point = NULL;
@@ -1003,7 +1003,7 @@ struct npc_tonk_mineAI : public ScriptedAI
         }
         else
         {
-            if (CheckTimer < diff)
+            if (CheckTimer <= diff)
             {
                 if(GetClosestCreatureWithEntry(me, NPC_STEAM_TONK, 2))
                 {
@@ -2134,7 +2134,7 @@ struct npc_crashin_trashin_robotAI : public ScriptedAI
         if (!me->isAlive())
             return;
 
-        if (despawnTimer < diff)
+        if (despawnTimer <= diff)
         {
             me->Kill(me, false);
             return;
@@ -2160,7 +2160,7 @@ struct npc_crashin_trashin_robotAI : public ScriptedAI
         std::list<Creature*> otherCrashinTrashinRobots;
         std::list<Creature*>::iterator itr;
 
-        if (moveTimer < diff)
+        if (moveTimer <= diff)
         {
             if (!me->HasAura(SPELL_NET, 0))
                 otherCrashinTrashinRobots = FindCrashinTrashinRobots();
@@ -2187,7 +2187,7 @@ struct npc_crashin_trashin_robotAI : public ScriptedAI
         else
             moveTimer -= diff;
 
-        if (machineGunTimer < diff)
+        if (machineGunTimer <= diff)
         {
             if (otherCrashinTrashinRobots.empty())
                 otherCrashinTrashinRobots = FindCrashinTrashinRobots();
@@ -2209,7 +2209,7 @@ struct npc_crashin_trashin_robotAI : public ScriptedAI
         else
             machineGunTimer -= diff;
 
-        if (netTimer < diff)
+        if (netTimer <= diff)
         {
             if (otherCrashinTrashinRobots.empty())
                 otherCrashinTrashinRobots = FindCrashinTrashinRobots();
@@ -2231,7 +2231,7 @@ struct npc_crashin_trashin_robotAI : public ScriptedAI
         else
             netTimer -= diff;
 
-        if (electricalTimer < diff)
+        if (electricalTimer <= diff)
         {
             if (otherCrashinTrashinRobots.empty())
                 otherCrashinTrashinRobots = FindCrashinTrashinRobots();
@@ -2298,7 +2298,7 @@ struct pet_AleMugDrinkerAI : public ScriptedAI
         if (!aleMug_drink)
             return;
 
-        if (wait < diff)
+        if (wait <= diff)
         {
             if (GameObject* mug = FindGameObject(GO_DARK_IRON_ALE_MUG, 20.0, me))
                 mug->Delete();
@@ -3248,7 +3248,7 @@ struct npc_nearly_dead_combat_dummyAI : public Scripted_NoMovementAI
         if (!UpdateVictim())
             return;
 
-        if (attacker && Check_Timer < diff)
+        if (attacker && Check_Timer <= diff)
         {
             if(m_creature->GetDistance(attacker) > 5.0f)
                 EnterEvadeMode();

@@ -138,7 +138,7 @@ struct mob_unkor_the_ruthlessAI : public ScriptedAI
             }
             else
             {
-                if( UnkorUnfriendly_Timer < diff )
+                if( UnkorUnfriendly_Timer <= diff )
                 {
                     EnterEvadeMode();
                     return;
@@ -149,7 +149,7 @@ struct mob_unkor_the_ruthlessAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if( Pulverize_Timer < diff )
+        if( Pulverize_Timer <= diff )
         {
             DoCast(me,SPELL_PULVERIZE);
             Pulverize_Timer = 9000;
@@ -297,19 +297,19 @@ struct npc_floonAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if( Silence_Timer < diff )
+        if( Silence_Timer <= diff )
         {
             DoCast(me->getVictim(),SPELL_SILENCE);
             Silence_Timer = 30000;
         }else Silence_Timer -= diff;
 
-        if( FrostNova_Timer < diff )
+        if( FrostNova_Timer <= diff )
         {
             DoCast(me,SPELL_FROST_NOVA);
             FrostNova_Timer = 20000;
         }else FrostNova_Timer -= diff;
 
-        if( Frostbolt_Timer < diff )
+        if( Frostbolt_Timer <= diff )
         {
             DoCast(me->getVictim(),SPELL_FROSTBOLT);
             Frostbolt_Timer = 5000;
@@ -678,7 +678,7 @@ struct mob_terokkAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if( ShadowBoltVolley_Timer < diff )
+        if( ShadowBoltVolley_Timer <= diff )
         {
             DoCast(me, SPELL_SHADOW_BOLT_VOLLEY);
             ShadowBoltVolley_Timer = 10000 + rand()%5000;
@@ -686,7 +686,7 @@ struct mob_terokkAI : public ScriptedAI
         else
             ShadowBoltVolley_Timer -= diff;
 
-        if( Cleave_Timer < diff )
+        if( Cleave_Timer <= diff )
         {
             DoCast(me->getVictim(), SPELL_CLEAVE);
             Cleave_Timer = 7000 + rand() % 2000;
@@ -696,7 +696,7 @@ struct mob_terokkAI : public ScriptedAI
 
         if( ChosenOneTarget )
         {
-            if( ChosenOneActive_Timer < diff )
+            if( ChosenOneActive_Timer <= diff )
             {
                 if(me->getVictimGUID() == ChosenOneTarget)
                     me->AddThreat(me->getVictim(), -500000.0f);
@@ -710,7 +710,7 @@ struct mob_terokkAI : public ScriptedAI
 
         if(phase == 0)
         {
-            if( ChosenOne_Timer < diff )
+            if( ChosenOne_Timer <= diff )
             {
                 if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0))
                 {
@@ -745,7 +745,7 @@ struct mob_terokkAI : public ScriptedAI
 
         if(phase > 0)
         {
-            if(CheckTimer < diff)
+            if(CheckTimer <= diff)
             {
                 std::list<Creature*> skyguardTargets = FindAllCreaturesWithEntry(23277, 5);
                 if(phase == 1)
@@ -771,7 +771,7 @@ struct mob_terokkAI : public ScriptedAI
             else
                 CheckTimer -= diff;
 
-            if(SkyguardFlare_Timer < diff)
+            if(SkyguardFlare_Timer <= diff)
             {
                 if(Creature *skyguard = Creature::GetCreature(*me, SkyguardGUIDs[skyguardTurn++])){
                     uint32 i = rand() % SKYGUARD_WP_MIDDLE_MAX;
@@ -868,7 +868,7 @@ struct npc_skyguard_aceAI : public ScriptedAI
     {
         if(TargetGUID)
         {
-            if(TargetLifetime < diff)
+            if(TargetLifetime <= diff)
             {
                 if(Unit* unit = me->GetMap()->GetCreature(TargetGUID))
                 {
@@ -883,7 +883,7 @@ struct npc_skyguard_aceAI : public ScriptedAI
 
         if(Move_Timer >= 0)
         {
-            if(Move_Timer < diff)
+            if(Move_Timer <= diff)
             {
                 if (me->GetMotionMaster()->empty())
                     me->GetMotionMaster()->MovePoint(NextWP, skyguardWPs[NextWP][0], skyguardWPs[NextWP][1], skyguardAltitude);
@@ -1214,7 +1214,7 @@ struct npc_letollAI : public npc_escortAI
         {
             if (HasEscortState(STATE_ESCORT_PAUSED))
             {
-                if (EventTimer < diff)
+                if (EventTimer <= diff)
                 {
                     EventTimer = 7000;
 
@@ -1485,7 +1485,7 @@ struct npc_sarthisAI : public npc_escortAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(speech && CastTimer < diff)
+        if(speech && CastTimer <= diff)
         {
             DoCast(me, SPELL_SUMMON_ARCANE_ELEMENTAL);
             CastTimer = 120000; //not let cast again;
@@ -1493,7 +1493,7 @@ struct npc_sarthisAI : public npc_escortAI
         else
             CastTimer -= diff;
 
-        if(speech && SpeechTimer < diff)
+        if(speech && SpeechTimer <= diff)
         {
             if(Unit* ArcaneAcolyte = FindCreature(NPC_ARCANE_ELEMENTAL, 30, me))
             {
@@ -1506,7 +1506,7 @@ struct npc_sarthisAI : public npc_escortAI
         else
             SpeechTimer -= diff;
 
-        if(speech && SpeechTimer2 < diff)
+        if(speech && SpeechTimer2 <= diff)
         {
             if(Unit* ArcaneAcolyte = FindCreature(NPC_ARCANE_ELEMENTAL, 30, me))
             {
@@ -1521,7 +1521,7 @@ struct npc_sarthisAI : public npc_escortAI
 
         if(HasEscortState(STATE_ESCORT_PAUSED))
         {
-            if(ResetTimer < diff)
+            if(ResetTimer <= diff)
             {
                 me->Kill(me, false);
                 me->Respawn();
@@ -1724,7 +1724,7 @@ struct npc_razorthorn_ravagerAI : public ScriptedAI
             }
 
             // remove charm when not in Razorthorn Rise
-            if(CheckTimer < diff)
+            if(CheckTimer <= diff)
             {
                 Unit* charmer = me->GetCharmer();
                 if(charmer->GetAreaId() != 4078)
@@ -1766,7 +1766,7 @@ struct npc_razorthorn_ravagerAI : public ScriptedAI
 
         if(digging)
         {
-            if(DiggingTimer < diff)
+            if(DiggingTimer <= diff)
             {
                 digging = false;
                 DoCast((Unit*)NULL, SPELL_SUMMON_RAZORTHORN_ROOT);
@@ -1789,7 +1789,7 @@ struct npc_razorthorn_ravagerAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if(RavageTimer < diff)
+        if(RavageTimer <= diff)
         {
             if(urand(0,3))
                 AddSpellToCast(me->getVictim(), SPELL_RAVAGE);
@@ -1798,7 +1798,7 @@ struct npc_razorthorn_ravagerAI : public ScriptedAI
         else
             RavageTimer -= diff;
 
-        if(RendTimer < diff)
+        if(RendTimer <= diff)
         {
             if(urand(0,3))
                 AddSpellToCast(me->getVictim(), SPELL_REND);
@@ -1807,7 +1807,7 @@ struct npc_razorthorn_ravagerAI : public ScriptedAI
         else
             RendTimer -= diff;
 
-        if(RavageTauntTimer < diff)
+        if(RavageTauntTimer <= diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_RAVAGER_TAUNT);
             RavageTauntTimer = urand(10000, 35000);
@@ -1939,7 +1939,7 @@ struct quest_the_vengeful_harbringerAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (visual_1_timer < diff)
+        if (visual_1_timer <= diff)
         {
             if (Creature * visual_energy = GetClosestCreatureWithEntry(me, 21429, 30.0f))
             {
@@ -2268,7 +2268,7 @@ struct npc_empoorAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if( ShockTimer < diff )
+        if( ShockTimer <= diff )
         {
             DoCast(me->getVictim(),SPELL_FROST_SHOCK);
             ShockTimer = 15000;

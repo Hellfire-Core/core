@@ -174,7 +174,7 @@ struct boss_darkweaver_sythAI : public ScriptedAI
             summon10 = true;
         }
 
-        if (flameshock_timer < diff)
+        if (flameshock_timer <= diff)
         {
             if (Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, 60, true))
                 DoCast(target,SPELL_FLAME_SHOCK);
@@ -182,7 +182,7 @@ struct boss_darkweaver_sythAI : public ScriptedAI
             flameshock_timer = 10000 + rand()%5000;
         } else flameshock_timer -= diff;
 
-        if (arcaneshock_timer < diff)
+        if (arcaneshock_timer <= diff)
         {
             if (Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, 60, true))
                 DoCast(target,SPELL_ARCANE_SHOCK);
@@ -190,7 +190,7 @@ struct boss_darkweaver_sythAI : public ScriptedAI
             arcaneshock_timer = 10000 + rand()%5000;
         } else arcaneshock_timer -= diff;
 
-        if (frostshock_timer < diff)
+        if (frostshock_timer <= diff)
         {
             if (Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0, 60, true))
                 DoCast(target,SPELL_FROST_SHOCK);
@@ -198,7 +198,7 @@ struct boss_darkweaver_sythAI : public ScriptedAI
             frostshock_timer = 10000 + rand()%5000;
         } else frostshock_timer -= diff;
 
-        if (shadowshock_timer < diff)
+        if (shadowshock_timer <= diff)
         {
             if (Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0, 60, true))
                 DoCast(target,SPELL_SHADOW_SHOCK);
@@ -206,7 +206,7 @@ struct boss_darkweaver_sythAI : public ScriptedAI
             shadowshock_timer = 10000 + rand()%5000;
         } else shadowshock_timer -= diff;
 
-        if (chainlightning_timer < diff)
+        if (chainlightning_timer <= diff)
         {
             if (Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0, 60, true))
                 DoCast(target,SPELL_CHAIN_LIGHTNING);
@@ -251,7 +251,7 @@ struct mob_syth_fireAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if(flameshock_timer < diff)
+        if(flameshock_timer <= diff)
         {
             if( Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0, 60, true) )
                 DoCast(target,SPELL_FLAME_SHOCK);
@@ -261,7 +261,7 @@ struct mob_syth_fireAI : public ScriptedAI
         else
             flameshock_timer -= diff;
 
-        if(flamebuffet_timer < diff)
+        if(flamebuffet_timer <= diff)
         {
             if( Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0, 60, true) )
                 DoCast(target,SPELL_FLAME_BUFFET);
@@ -306,7 +306,7 @@ struct mob_syth_arcaneAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if(arcaneshock_timer < diff)
+        if(arcaneshock_timer <= diff)
         {
             if( Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0, 60, true) )
                 DoCast(target,SPELL_ARCANE_SHOCK);
@@ -316,7 +316,7 @@ struct mob_syth_arcaneAI : public ScriptedAI
         else
             arcaneshock_timer -= diff;
 
-        if(arcanebuffet_timer < diff)
+        if(arcanebuffet_timer <= diff)
         {
             if( Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0, 60, true) )
                 DoCast(target,SPELL_ARCANE_BUFFET);
@@ -361,7 +361,7 @@ struct mob_syth_frostAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if(frostshock_timer < diff)
+        if(frostshock_timer <= diff)
         {
             if( Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0, 60, true) )
                 DoCast(target,SPELL_FROST_SHOCK);
@@ -371,7 +371,7 @@ struct mob_syth_frostAI : public ScriptedAI
         else
             frostshock_timer -= diff;
 
-        if(frostbuffet_timer < diff)
+        if(frostbuffet_timer <= diff)
         {
             if( Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0, 60, true) )
                 DoCast(target,SPELL_FROST_BUFFET);
@@ -416,7 +416,7 @@ struct mob_syth_shadowAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if(shadowshock_timer < diff)
+        if(shadowshock_timer <= diff)
         {
             if( Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0, 60, true) )
                 DoCast(target,SPELL_SHADOW_SHOCK);
@@ -426,7 +426,7 @@ struct mob_syth_shadowAI : public ScriptedAI
         else
             shadowshock_timer -= diff;
 
-        if(shadowbuffet_timer < diff)
+        if(shadowbuffet_timer <= diff)
         {
             if( Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0, 60, true) )
                 DoCast(target,SPELL_SHADOW_BUFFET);

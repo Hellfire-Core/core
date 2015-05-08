@@ -2525,7 +2525,7 @@ struct guard_shattrath_aldorAI : public guardAI
 
         if( CanTeleport )
         {
-            if( Exile_Timer < diff )
+            if( Exile_Timer <= diff )
             {
                 if( Unit* temp = Unit::GetUnit(*m_creature,playerGUID) )
                 {
@@ -2540,7 +2540,7 @@ struct guard_shattrath_aldorAI : public guardAI
                 Exile_Timer -= diff;
         }
         else
-            if( Banish_Timer < diff )
+            if( Banish_Timer <= diff )
             {
                 Unit* temp = m_creature->getVictim();
                 if( temp && temp->GetTypeId() == TYPEID_PLAYER )
@@ -2726,7 +2726,7 @@ struct guard_shattrath_scryerAI : public guardAI
 
         if( CanTeleport )
         {
-            if( Exile_Timer < diff )
+            if( Exile_Timer <= diff )
             {
                 if( Unit* temp = Unit::GetUnit(*m_creature,playerGUID) )
                 {
@@ -2741,7 +2741,7 @@ struct guard_shattrath_scryerAI : public guardAI
                 Exile_Timer -= diff;
         }
         else
-            if( Banish_Timer < diff )
+            if( Banish_Timer <= diff )
             {
                 Unit* temp = m_creature->getVictim();
                 if( temp && temp->GetTypeId() == TYPEID_PLAYER )

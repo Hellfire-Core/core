@@ -97,14 +97,14 @@ struct boss_gatewatcher_gyro_killAI : public ScriptedAI
             return;
 
         //Shadow Power
-        if(Shadow_Power_Timer < diff)
+        if(Shadow_Power_Timer <= diff)
         {
             DoCast(me,HeroicMode ? H_SPELL_SHADOW_POWER : SPELL_SHADOW_POWER);
             Shadow_Power_Timer = 20000 + rand()%8000;
         }else Shadow_Power_Timer -= diff;
 
         //Saw Blade
-        if(Saw_Blade_Timer < diff)
+        if(Saw_Blade_Timer <= diff)
         {
             DoCast(me->getVictim(),HeroicMode ? H_SPELL_SAW_BLADE : SPELL_SAW_BLADE);
             DoScriptText(RAND(SAY_SAW_ATTACK1, SAY_SAW_ATTACK2), me);
@@ -113,7 +113,7 @@ struct boss_gatewatcher_gyro_killAI : public ScriptedAI
         }else Saw_Blade_Timer -= diff;
 
         //Stream of Machine Fluid
-        if(Stream_of_Machine_Fluid_Timer < diff)
+        if(Stream_of_Machine_Fluid_Timer <= diff)
         {
             DoCast(me->getVictim(),SPELL_STREAM_OF_MACHINE_FLUID);
             Stream_of_Machine_Fluid_Timer = 35000 + rand()%15000;

@@ -96,7 +96,7 @@ struct boss_lord_ahune_coreAI : public Scripted_NoMovementAI
     {
         if(NeedToHideGhost)
         {
-            if(AhuneGhostHide_Timer < diff)
+            if(AhuneGhostHide_Timer <= diff)
             {
                 SetAhuneVisibility(false);
                 NeedToHideGhost = false;
@@ -106,7 +106,7 @@ struct boss_lord_ahune_coreAI : public Scripted_NoMovementAI
 
         if(DamageRecentlyTaken && !NeedToHideGhost)
         {
-            if(AhuneGhostShow_Timer < diff)
+            if(AhuneGhostShow_Timer <= diff)
             {
                 SetAhuneVisibility(true);
                 DamageRecentlyTaken = false;
@@ -230,7 +230,7 @@ struct boss_lord_ahuneAI : public Scripted_NoMovementAI
         if(me->GetHealth() == 1)            // to ensure nice death animation
         {
             me->SetVisibility(VISIBILITY_ON);
-            if(Death_Timer < diff)
+            if(Death_Timer <= diff)
             {
                 me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                 me->DealDamage(me, 1);
@@ -239,7 +239,7 @@ struct boss_lord_ahuneAI : public Scripted_NoMovementAI
             return;
         }
 
-        if(Phase_Timer < diff)
+        if(Phase_Timer <= diff)
         {
 
             if(Phase == 1)
@@ -284,14 +284,14 @@ struct boss_lord_ahuneAI : public Scripted_NoMovementAI
             if(me->GetVisibility() != VISIBILITY_ON)
                 me->SetVisibility(VISIBILITY_ON);
 
-            if(Hailstone_Timer < diff)
+            if(Hailstone_Timer <= diff)
             {
                 me->SummonCreature(CREATURE_HAILSTONE, x, y, z, 0, TEMPSUMMON_DEAD_DESPAWN, 0);
                 Hailstone_Timer = 60000;
             } else
                 Hailstone_Timer -= diff;
 
-            if(Elementals_Timer < diff)
+            if(Elementals_Timer <= diff)
             {
                 me->SummonCreature(CREATURE_COLDWAVE, x, y, z, 0, TEMPSUMMON_DEAD_DESPAWN, 0);
                 me->SummonCreature(CREATURE_COLDWAVE, x, y, z, 0, TEMPSUMMON_DEAD_DESPAWN, 0);
@@ -301,7 +301,7 @@ struct boss_lord_ahuneAI : public Scripted_NoMovementAI
             } else
                 Elementals_Timer -= diff;
 
-            if(IceSpear_Timer < diff)
+            if(IceSpear_Timer <= diff)
             {
                 if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0))
                     DoCast(target, SPELL_SUMMON_ICE_SPEAR_BUNNY, true);

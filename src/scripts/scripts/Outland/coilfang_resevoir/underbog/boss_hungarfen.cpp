@@ -66,7 +66,7 @@ struct boss_hungarfenAI : public ScriptedAI
             }
         }
 
-        if( Mushroom_Timer < diff )
+        if( Mushroom_Timer <= diff )
         {
             if( Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0) )
                 me->SummonCreature(17990, target->GetPositionX()+(rand()%8), target->GetPositionY()+(rand()%8), target->GetPositionZ(), (rand()%5), TEMPSUMMON_TIMED_DESPAWN, 22000);
@@ -76,7 +76,7 @@ struct boss_hungarfenAI : public ScriptedAI
             Mushroom_Timer = 10000;
         }else Mushroom_Timer -= diff;
 
-        if( AcidGeyser_Timer < diff )
+        if( AcidGeyser_Timer <= diff )
         {
             if( Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0) )
                 DoCast(target,SPELL_ACID_GEYSER);

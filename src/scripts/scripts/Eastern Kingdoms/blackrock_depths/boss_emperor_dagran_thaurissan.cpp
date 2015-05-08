@@ -73,7 +73,7 @@ struct boss_draganthaurissanAI : public ScriptedAI
             return;
 
         HandOfThaurissan_Timer -= diff;
-        if (HandOfThaurissan_Timer < diff)
+        if (HandOfThaurissan_Timer <= diff)
         {
             Unit* target = NULL;
             target = SelectUnit(SELECT_TARGET_RANDOM,0);
@@ -93,7 +93,7 @@ struct boss_draganthaurissanAI : public ScriptedAI
         }
 
         AvatarOfFlame_Timer -= diff;
-        if (AvatarOfFlame_Timer < diff)
+        if (AvatarOfFlame_Timer <= diff)
         {
             DoCast(me->getVictim(),SPELL_AVATAROFFLAME);
             AvatarOfFlame_Timer += 18000;

@@ -1182,7 +1182,7 @@ void CreatureEventAI::UpdateAI(const uint32 diff)
         EventDiff += diff;
         EventUpdateTime -= diff;
 
-        if (EventUpdateTime < diff)
+        if (EventUpdateTime <= diff)
         {
 
 

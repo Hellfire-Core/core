@@ -60,7 +60,7 @@ struct mob_vashjir_honor_guardAI : public ScriptedAI
             return;
         }
 
-        if(Shout_Timer < diff)
+        if(Shout_Timer <= diff)
         {
             AddSpellToCast(SPELL_FRIGHTENING_SHOUT, CAST_TANK);
             Shout_Timer = urand(30000, 40000);
@@ -68,7 +68,7 @@ struct mob_vashjir_honor_guardAI : public ScriptedAI
         else
             Shout_Timer -= diff;
 
-        if(Knockback_Timer < diff)
+        if(Knockback_Timer <= diff)
         {
             AddSpellToCast(SPELL_KNOCKBACK, CAST_TANK);
             Knockback_Timer = urand(10000, 15000);
@@ -76,7 +76,7 @@ struct mob_vashjir_honor_guardAI : public ScriptedAI
         else
             Knockback_Timer -= diff;
 
-        if(Execute_Timer < diff)
+        if(Execute_Timer <= diff)
         {
             if(me->getVictim()->GetHealth() * 5 <= me->getVictim()->GetMaxHealth()) // below 20%
             {
@@ -87,7 +87,7 @@ struct mob_vashjir_honor_guardAI : public ScriptedAI
         else
             Execute_Timer -= diff;
 
-        if(Cleave_Timer < diff)
+        if(Cleave_Timer <= diff)
         {
             AddSpellToCast(SPELL_MORTAL_CLEAVE, CAST_TANK);
             Cleave_Timer = urand(3000, 6000);
@@ -110,9 +110,9 @@ struct mob_vashjir_honor_guardAI : public ScriptedAI
         // need some tweaking
         if(!Talking)
         {
-            if(Talk_Timer < diff)
+            if(Talk_Timer <= diff)
             {
-                if(Check_Timer < diff)
+                if(Check_Timer <= diff)
                 {
                     std::list<Creature*> friends = FindAllFriendlyInGrid(3);
                     if(!friends.empty())
@@ -160,7 +160,7 @@ struct mob_vashjir_honor_guardAI : public ScriptedAI
                     Check_Timer -= diff;
             }
 
-            if(Talk_Timer < diff)
+            if(Talk_Timer <= diff)
             {
                 //me->Say("Check3", 0, 0);
                 Talking = false;
@@ -276,7 +276,7 @@ struct mob_underbog_colossusAI : public ScriptedAI
         switch(type)
         {
         case 0:
-            if (Infection_Timer < diff)
+            if (Infection_Timer <= diff)
             {
                 AddSpellToCast(SPELL_INITIAL_INFECTION, CAST_RANDOM);
                 Infection_Timer = urand(25000, 35000);
@@ -284,7 +284,7 @@ struct mob_underbog_colossusAI : public ScriptedAI
             else
                 Infection_Timer -= diff;
 
-            if (Quake_Timer < diff)
+            if (Quake_Timer <= diff)
             {
                 AddSpellToCast(SPELL_SPORE_QUAKE, CAST_SELF);
                 Quake_Timer = urand(30000, 60000);
@@ -293,7 +293,7 @@ struct mob_underbog_colossusAI : public ScriptedAI
                 Quake_Timer -= diff;
             break;
         case 1:
-            if (Geyser_Timer < diff)
+            if (Geyser_Timer <= diff)
             {
                 AddSpellToCast(SPELL_ACID_GEYSER, CAST_RANDOM_WITHOUT_TANK);
                 Geyser_Timer = urand(30000, 60000);
@@ -301,7 +301,7 @@ struct mob_underbog_colossusAI : public ScriptedAI
             else
                Geyser_Timer -= diff;
 
-            if (Parasite_Timer < diff)
+            if (Parasite_Timer <= diff)
             {
                 AddSpellToCast(SPELL_SUMMON_SERPENTSHRINE_PARASITE, CAST_RANDOM);
                 Parasite_Timer = urand(10000, 20000);
@@ -310,7 +310,7 @@ struct mob_underbog_colossusAI : public ScriptedAI
                 Parasite_Timer -= diff;
             break;
         case 2:
-            if (Enrage_Timer < diff)
+            if (Enrage_Timer <= diff)
             {
                 AddSpellToCast(SPELL_ENRAGE, CAST_SELF);
                 Enrage_Timer = urand(30000, 50000);
@@ -320,7 +320,7 @@ struct mob_underbog_colossusAI : public ScriptedAI
 
             if (me->HasAura(SPELL_FRENZY, 0))
             {
-                if (Blow_Timer < diff)
+                if (Blow_Timer <= diff)
                 {
                     AddSpellToCast(SPELL_ATHROPIC_BLOW, CAST_TANK);
                     Blow_Timer = 1500;
@@ -359,7 +359,7 @@ struct mob_serpentshrine_parasiteAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (Check_Timer < diff)
+        if (Check_Timer <= diff)
         {
             Unit *target = me->GetUnit(TargetGUID);
             if(!target || !target->isAlive())

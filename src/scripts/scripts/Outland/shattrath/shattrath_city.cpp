@@ -68,7 +68,7 @@ struct npc_raliq_the_drunkAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if( Uppercut_Timer < diff )
+        if( Uppercut_Timer <= diff )
         {
             DoCast(me->getVictim(),SPELL_UPPERCUT);
             Uppercut_Timer = 15000;
@@ -142,7 +142,7 @@ struct npc_salsalabimAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if( MagneticPull_Timer < diff )
+        if( MagneticPull_Timer <= diff )
         {
             DoCast(me->getVictim(),SPELL_MAGNETIC_PULL);
             MagneticPull_Timer = 15000;
@@ -620,7 +620,7 @@ struct npc_dirty_larryAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(SayTimer < diff)
+        if(SayTimer <= diff)
         {
             if(Event)
                 SayTimer = NextStep(++Step);
@@ -694,7 +694,7 @@ struct npc_dirty_larryAI : public ScriptedAI
                 player->GroupEventHappens(QUEST_WBI, me);
             Reset();
         }
-        if(EvadeTimer < diff)
+        if(EvadeTimer <= diff)
         {
                 if(me->GetDistance2d(wLoc.coord_x, wLoc.coord_y) >= 50)
                 EnterEvadeMode();
@@ -914,7 +914,7 @@ struct npc_kaelthas_imageAI : public ScriptedAI
             Init = true;
         }
 
-        if(NextStep_Timer < diff)
+        if(NextStep_Timer <= diff)
         {
             NextStep_Timer = 13000;
             Creature* adal = NULL;

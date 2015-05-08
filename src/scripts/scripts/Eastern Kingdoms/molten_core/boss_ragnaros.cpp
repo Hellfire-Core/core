@@ -319,7 +319,7 @@ struct boss_ragnarosAI : public Scripted_NoMovementAI
         }else
         {
             MagmaBurst_Timer -= diff;
-            if (MagmaBurst_Timer < diff)
+            if (MagmaBurst_Timer <= diff)
             {
                 DoCast(m_creature->getVictim(),SPELL_MAGMABURST);
 

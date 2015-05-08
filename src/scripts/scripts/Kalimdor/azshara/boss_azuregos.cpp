@@ -71,7 +71,7 @@ struct boss_azuregosAI : public ScriptedAI
         if (!UpdateVictim() )
             return;
 
-        if(Teleport_Timer < diff)
+        if(Teleport_Timer <= diff)
         {
             DoScriptText(SAY_TELEPORT, m_creature);
             std::list<HostileReference*>& m_threatlist = m_creature->getThreatManager().getThreatList();
@@ -92,14 +92,14 @@ struct boss_azuregosAI : public ScriptedAI
             Teleport_Timer -= diff;
 
         //        //MarkOfFrost_Timer
-        //        if (MarkOfFrost_Timer < diff)
+        //        if (MarkOfFrost_Timer <= diff)
         //        {
         //            DoCast(m_creature->getVictim(),SPELL_MARKOFFROST);
         //            MarkOfFrost_Timer = 25000;
         //        }else MarkOfFrost_Timer -= diff;
 
         //Chill_Timer
-        if (Chill_Timer < diff)
+        if (Chill_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_CHILL);
             Chill_Timer = 13000 + rand()%12000;
@@ -108,7 +108,7 @@ struct boss_azuregosAI : public ScriptedAI
             Chill_Timer -= diff;
 
         //Breath_Timer
-        if (Breath_Timer < diff)
+        if (Breath_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_FROSTBREATH);
             Breath_Timer = 10000 + rand()%5000;
@@ -117,7 +117,7 @@ struct boss_azuregosAI : public ScriptedAI
             Breath_Timer -= diff;
 
         //ManaStorm_Timer
-        if (ManaStorm_Timer < diff)
+        if (ManaStorm_Timer <= diff)
         {
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0, 60, true))
                 DoCast(target,SPELL_MANASTORM);
@@ -127,7 +127,7 @@ struct boss_azuregosAI : public ScriptedAI
             ManaStorm_Timer -= diff;
 
         //Reflect_Timer
-        if (Reflect_Timer < diff)
+        if (Reflect_Timer <= diff)
         {
             DoCast(m_creature,SPELL_REFLECT);
             Reflect_Timer = 20000 + rand()%15000;
@@ -136,7 +136,7 @@ struct boss_azuregosAI : public ScriptedAI
             Reflect_Timer -= diff;
 
         //Cleave_Timer
-        if (Cleave_Timer < diff)
+        if (Cleave_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_CLEAVE);
             Cleave_Timer = 7000;

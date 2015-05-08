@@ -165,7 +165,7 @@ struct boss_kazrogalAI : public hyjal_trashAI
         if (!UpdateVictim() )
             return;
 
-        if(CheckTimer < diff)
+        if(CheckTimer <= diff)
         {
             DoZoneInCombat();
             m_creature->SetSpeed(MOVE_RUN, 3.0);
@@ -174,7 +174,7 @@ struct boss_kazrogalAI : public hyjal_trashAI
         else
             CheckTimer -= diff;
 
-        if(CleaveTimer < diff)
+        if(CleaveTimer <= diff)
         {
             DoCast(m_creature->getVictim(), SPELL_CLEAVE);
             CleaveTimer = 6000+rand()%15000;
@@ -182,7 +182,7 @@ struct boss_kazrogalAI : public hyjal_trashAI
         else
             CleaveTimer -= diff;
 
-        if(WarStompTimer < diff)
+        if(WarStompTimer <= diff)
         {
             DoCast(m_creature, SPELL_WARSTOMP);
             WarStompTimer = 60000;
@@ -190,7 +190,7 @@ struct boss_kazrogalAI : public hyjal_trashAI
         else
             WarStompTimer -= diff;
 
-        if(CrippleTimer < diff)
+        if(CrippleTimer <= diff)
         {
             if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 1, 20, true))
                 DoCast(target, SPELL_CRIPPLE);
@@ -200,7 +200,7 @@ struct boss_kazrogalAI : public hyjal_trashAI
         else
             CrippleTimer -= diff;
 
-        if(MarkTimer < diff)
+        if(MarkTimer <= diff)
         {
             m_creature->CastSpell(m_creature, SPELL_MARK, false);
 

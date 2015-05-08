@@ -138,7 +138,7 @@ struct boss_jandicebarovAI : public ScriptedAI
 
 
         //            Illusion_Timer -= diff;
-        //            if (Illusion_Timer < diff)
+        //            if (Illusion_Timer <= diff)
         //            {
         //                  //Cast
         //                DoCast(m_creature->getVictim(),SPELL_ILLUSION);

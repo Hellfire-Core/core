@@ -55,14 +55,14 @@ struct boss_landslideAI : public ScriptedAI
             return;
 
         //KnockAway_Timer
-        if (KnockAway_Timer < diff)
+        if (KnockAway_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_KNOCKAWAY);
             KnockAway_Timer = 15000;
         }else KnockAway_Timer -= diff;
 
         //Trample_Timer
-        if (Trample_Timer < diff)
+        if (Trample_Timer <= diff)
         {
             DoCast(m_creature,SPELL_TRAMPLE);
             Trample_Timer = 8000;
@@ -71,7 +71,7 @@ struct boss_landslideAI : public ScriptedAI
         //Landslide
         if ( m_creature->GetHealth()*100 / m_creature->GetMaxHealth() < 50 )
         {
-            if (Landslide_Timer < diff)
+            if (Landslide_Timer <= diff)
             {
                 m_creature->InterruptNonMeleeSpells(false);
                 DoCast(m_creature,SPELL_LANDSLIDE);

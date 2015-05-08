@@ -113,7 +113,7 @@ struct boss_nethermancer_sepethreaAI : public ScriptedAI
             return;
 
         //Arcane Blast with knockback, reducing threat by 50%
-        if (arcane_blast_Timer < diff)
+        if (arcane_blast_Timer <= diff)
         {
             AddSpellToCast(SPELL_ARCANE_BLAST, CAST_TANK);
             arcane_blast_Timer = urand(25000, 35000);
@@ -123,7 +123,7 @@ struct boss_nethermancer_sepethreaAI : public ScriptedAI
             arcane_blast_Timer -= diff;
 
         //Dragons Breath
-        if (dragons_breath_Timer < diff)
+        if (dragons_breath_Timer <= diff)
         {
             AddSpellToCastWithScriptText(SPELL_DRAGONS_BREATH, CAST_TANK, RAND(SAY_DRAGONS_BREATH_1, SAY_DRAGONS_BREATH_2, 0, 0));
             dragons_breath_Timer = urand(30000, 35000);
@@ -228,7 +228,7 @@ struct mob_ragin_flamesAI : public ScriptedAI
 
         DoSpecialThings(diff, DO_COMBAT_N_SPEED, 200.0f, HeroicMode ? 0.8f : 0.5f);
 
-        if (infernoTimer < diff)
+        if (infernoTimer <= diff)
         {
             AddSpellToCast(SPELL_INFERNO, CAST_SELF);
             infernoTimer = urand(16000,21000);

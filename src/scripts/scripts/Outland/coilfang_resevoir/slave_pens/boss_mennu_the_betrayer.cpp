@@ -105,7 +105,7 @@ struct boss_mennu_the_betrayerAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if(HealingWard_Timer < diff)
+        if(HealingWard_Timer <= diff)
         {
             AddSpellToCast(m_creature, SPELL_HEALING_TOTEM);
             HealingWard_Timer = 30000;
@@ -113,7 +113,7 @@ struct boss_mennu_the_betrayerAI : public ScriptedAI
         else
             HealingWard_Timer -= diff;
 
-        if(NovaTotem_Timer < diff)
+        if(NovaTotem_Timer <= diff)
         {
             AddSpellToCast(m_creature, SPELL_CORRUPTED_NOVA_TOTEM);
             NovaTotem_Timer = 45000;
@@ -121,7 +121,7 @@ struct boss_mennu_the_betrayerAI : public ScriptedAI
         else
             NovaTotem_Timer -= diff;
 
-        if(LightningBolt_Timer < diff)
+        if(LightningBolt_Timer <= diff)
         {
             if (HeroicMode)
                 AddCustomSpellToCast(m_creature->getVictim(), SPELL_LIGHTNING_BOLT,142,0,0);
@@ -132,7 +132,7 @@ struct boss_mennu_the_betrayerAI : public ScriptedAI
         else
             LightningBolt_Timer -= diff;
 
-        if(EarthGrab_Timer < diff)
+        if(EarthGrab_Timer <= diff)
         {
             AddSpellToCast(m_creature, SPELL_EARTHGRAB_TOTEM);
             EarthGrab_Timer = 30000;
@@ -140,7 +140,7 @@ struct boss_mennu_the_betrayerAI : public ScriptedAI
         else
             EarthGrab_Timer -= diff;
 
-        if(StoneSkin_Timer < diff)
+        if(StoneSkin_Timer <= diff)
         {
             AddSpellToCast(m_creature, SPELL_STONESKIN_TOTEM);
             StoneSkin_Timer = 60000;
@@ -200,7 +200,7 @@ struct npc_corrupted_nova_totemAI : public Scripted_NoMovementAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(Life_Timer < diff)
+        if(Life_Timer <= diff)
         {
             if(Phase == 1)
                 Phase = 2;
@@ -238,7 +238,7 @@ struct npc_earthgrab_totemAI : public Scripted_NoMovementAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(Earthgrab_Timer < diff)
+        if(Earthgrab_Timer <= diff)
         {
             DoCast(m_creature, SPELL_ENTANGLING_ROOTS);
             Earthgrab_Timer = 18000 + rand()%4000;

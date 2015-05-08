@@ -89,7 +89,7 @@ struct boss_balindaAI : public ScriptedAI
             return;
 
         CheckTimer -= diff;
-        if (CheckTimer < diff)
+        if (CheckTimer <= diff)
         {
             if (!m_creature->IsWithinDistInMap(&wLoc, 20))
             {
@@ -102,7 +102,7 @@ struct boss_balindaAI : public ScriptedAI
         
 
         WaterElementalTimer -= diff;
-        if (WaterElementalTimer < diff)
+        if (WaterElementalTimer <= diff)
         {
             ForceSpellCast(m_creature, SPELL_WATER_ELEMENTAL);
             WaterElementalTimer += 90000; // 90s
@@ -118,7 +118,7 @@ struct boss_balindaAI : public ScriptedAI
 
         // select spell
         CastTimer -= diff;
-        if (CastTimer < diff)
+        if (CastTimer <= diff)
         {
             // if victim is in range of 6.5 yards and there are 3 attackers cast explosion or CoC if ready
             if (m_creature->getAttackers().size() >= 3 && m_creature->IsWithinDistInMap(m_creature->getVictim(), 6.5f, false))

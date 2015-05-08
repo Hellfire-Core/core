@@ -67,7 +67,7 @@ struct boss_emerissAI : public ScriptedAI
             return;
 
         Sleep_Timer -= diff;
-        if (Sleep_Timer < diff)
+        if (Sleep_Timer <= diff)
         {
             if( Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0) )
                 DoCast(target,SPELL_SLEEP);
@@ -77,14 +77,14 @@ struct boss_emerissAI : public ScriptedAI
         
 
         NoxiousBreath_Timer -= diff;
-        if (NoxiousBreath_Timer < diff)
+        if (NoxiousBreath_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_NOXIOUSBREATH);
             NoxiousBreath_Timer += 14000 + rand()%6000;
         }
 
         TailSweep_Timer -= diff;
-        if (TailSweep_Timer < diff)
+        if (TailSweep_Timer <= diff)
         {
             if( Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0) )
                 DoCast(target,SPELL_TAILSWEEP);
@@ -94,14 +94,14 @@ struct boss_emerissAI : public ScriptedAI
         
 
         //MarkOfNature_Timer -= diff;
-        //if (MarkOfNature_Timer < diff)
+        //if (MarkOfNature_Timer <= diff)
         //{
         //    DoCast(m_creature->getVictim(),SPELL_MARKOFNATURE);
         //    MarkOfNature_Timer += 45000;
         //}
 
         VolatileInfection_Timer -= diff;
-        if (VolatileInfection_Timer < diff)
+        if (VolatileInfection_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_VOLATILEINFECTION);
             VolatileInfection_Timer += 7000 + rand()%5000;
@@ -113,7 +113,7 @@ struct boss_emerissAI : public ScriptedAI
         if ( (int) (m_creature->GetHealth()*100 / m_creature->GetMaxHealth() +0.5) == 75)
         {
             CorruptionofEarth1_Timer -= diff;
-            if (CorruptionofEarth1_Timer < diff)
+            if (CorruptionofEarth1_Timer <= diff)
             {
                 DoCast(m_creature->getVictim(),SPELL_CORRUPTIONOFEARTH);
 
@@ -128,7 +128,7 @@ struct boss_emerissAI : public ScriptedAI
         if ( (int) (m_creature->GetHealth()*100 / m_creature->GetMaxHealth() +0.5) == 50)
         {
             CorruptionofEarth2_Timer -= diff;
-            if (CorruptionofEarth2_Timer < diff)
+            if (CorruptionofEarth2_Timer <= diff)
             {
                 DoCast(m_creature->getVictim(),SPELL_CORRUPTIONOFEARTH);
 
@@ -141,7 +141,7 @@ struct boss_emerissAI : public ScriptedAI
         if ( (int) (m_creature->GetHealth()*100 / m_creature->GetMaxHealth() +0.5) == 25)
         {
             CorruptionofEarth3_Timer -= diff;
-            if (CorruptionofEarth3_Timer < diff)
+            if (CorruptionofEarth3_Timer <= diff)
             {
                 DoCast(m_creature->getVictim(),SPELL_CORRUPTIONOFEARTH);
 

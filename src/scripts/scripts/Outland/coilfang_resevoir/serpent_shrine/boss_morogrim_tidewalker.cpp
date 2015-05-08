@@ -138,7 +138,7 @@ struct boss_morogrim_tidewalkerAI : public ScriptedAI
         DoSpecialThings(diff, DO_EVERYTHING, 135.0f);
 
         //Earthquake_Timer
-        if (Earthquake_Timer < diff)
+        if (Earthquake_Timer <= diff)
         {
             if (!Earthquake)
             {
@@ -170,7 +170,7 @@ struct boss_morogrim_tidewalkerAI : public ScriptedAI
             Earthquake_Timer -= diff;
 
         //TidalWave_Timer
-        if (TidalWave_Timer < diff)
+        if (TidalWave_Timer <= diff)
         {
             AddSpellToCast(SPELL_TIDAL_WAVE, CAST_NULL);
             TidalWave_Timer = 20000;
@@ -181,7 +181,7 @@ struct boss_morogrim_tidewalkerAI : public ScriptedAI
         if (!Phase2)
         {
             //WateryGrave_Timer
-            if (WateryGrave_Timer < diff)
+            if (WateryGrave_Timer <= diff)
             {
                 //Teleport 4 players under the waterfalls
                 std::list<Unit*> tmpList;
@@ -205,7 +205,7 @@ struct boss_morogrim_tidewalkerAI : public ScriptedAI
         else
         {
             //WateryGlobules_Timer
-            if (WateryGlobules_Timer < diff)
+            if (WateryGlobules_Timer <= diff)
             {
                 std::list<Unit*> tmpList;
                 SelectUnitList(tmpList, 4, SELECT_TARGET_RANDOM, 200.0f, true, me->getVictimGUID());
@@ -269,7 +269,7 @@ struct mob_water_globuleAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (Check_Timer < diff)
+        if (Check_Timer <= diff)
         {
             if (!m_creature->IsWithinDistInMap(&wLoc, 85.0f))
             {

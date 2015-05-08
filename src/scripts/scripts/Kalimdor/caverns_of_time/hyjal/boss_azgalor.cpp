@@ -167,7 +167,7 @@ struct boss_azgalorAI : public hyjal_trashAI
         if (!UpdateVictim() )
             return;
 
-        if(CheckTimer < diff)
+        if(CheckTimer <= diff)
         {
             DoZoneInCombat();
             m_creature->SetSpeed(MOVE_RUN, 3.0);
@@ -176,7 +176,7 @@ struct boss_azgalorAI : public hyjal_trashAI
         else
             CheckTimer -= diff;
 
-        if(RainTimer < diff)
+        if(RainTimer <= diff)
         {
             if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, 40, true))
             {
@@ -188,7 +188,7 @@ struct boss_azgalorAI : public hyjal_trashAI
             RainTimer -= diff;
 
         //only set timer when target exist, cause with exclude defined we return NULL that now can be acceptable spell target
-        if(DoomTimer < diff)
+        if(DoomTimer <= diff)
         {
             if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true, m_creature->getVictimGUID()))
             {
@@ -199,7 +199,7 @@ struct boss_azgalorAI : public hyjal_trashAI
         else
             DoomTimer -= diff;
 
-        if(HowlTimer < diff)
+        if(HowlTimer <= diff)
         {
             DoCast(m_creature, SPELL_HOWL_OF_AZGALOR);
             HowlTimer = 30000;
@@ -207,7 +207,7 @@ struct boss_azgalorAI : public hyjal_trashAI
         else
             HowlTimer -= diff;
 
-        if(CleaveTimer < diff)
+        if(CleaveTimer <= diff)
         {
             if(Unit *target = m_creature->getVictim())
             {
@@ -218,7 +218,7 @@ struct boss_azgalorAI : public hyjal_trashAI
         else
             CleaveTimer -= diff;
 
-        if(EnrageTimer < diff && !enraged)
+        if(EnrageTimer <= diff && !enraged)
         {
             m_creature->InterruptNonMeleeSpells(false);
             DoCast(m_creature, SPELL_BERSERK, true);
@@ -279,7 +279,7 @@ struct mob_lesser_doomguardAI : public hyjal_trashAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(CheckTimer < diff)
+        if(CheckTimer <= diff)
         {
             if(pInstance)
             {
@@ -300,7 +300,7 @@ struct mob_lesser_doomguardAI : public hyjal_trashAI
         if (!UpdateVictim() )
             return;
 
-        if(WarstompTimer < diff)
+        if(WarstompTimer <= diff)
         {
             DoCast(m_creature, SPELL_WARSTOMP);
             WarstompTimer = urand(10000, 25000);
@@ -308,7 +308,7 @@ struct mob_lesser_doomguardAI : public hyjal_trashAI
         else
             WarstompTimer -= diff;
 
-        if(CrippleTimer < diff)
+        if(CrippleTimer <= diff)
         {
             if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0,100,true))
             {

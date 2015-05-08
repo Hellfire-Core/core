@@ -430,7 +430,7 @@ void BattleGroundQueue::FillPlayersToBG(BattleGround* bg, BattleGroundBracketId 
     while( abs(diffAli - diffHorde) > 1 && (m_SelectionPools[BG_TEAM_HORDE].GetPlayerCount() > 0 || m_SelectionPools[BG_TEAM_ALLIANCE].GetPlayerCount() > 0) )
     {
         //each cycle execution we need to kick at least 1 group
-        if (diffAli < diffHorde)
+        if (diffAli <= diffHorde)
         {
             //kick alliance group, add to pool new group if needed
             if (m_SelectionPools[BG_TEAM_ALLIANCE].KickGroup(diffHorde - diffAli))
@@ -1144,7 +1144,7 @@ void BattleGroundMgr::Update(uint32 diff)
     if (sWorld.getConfig(CONFIG_ARENA_MAX_RATING_DIFFERENCE) && sWorld.getConfig(CONFIG_ARENA_RATING_DISCARD_TIMER))
     {
         // it's time to force update
-        if (m_NextRatingDiscardUpdate < diff)
+        if (m_NextRatingDiscardUpdate <= diff)
         {
             // forced update for level 70 rated arenas
             m_BattleGroundQueues[BATTLEGROUND_QUEUE_2v2].Update(BATTLEGROUND_AA,BG_BRACKET_ID_LAST,ARENA_TYPE_2v2,true,0,0);
@@ -1158,7 +1158,7 @@ void BattleGroundMgr::Update(uint32 diff)
 
     if (sWorld.getConfig(CONFIG_ARENA_AUTO_DISTRIBUTE_POINTS))
     {
-        if (m_AutoDistributionTimeChecker < diff)
+        if (m_AutoDistributionTimeChecker <= diff)
         {
             if (time(NULL) > m_NextAutoDistributionTime)
             {

@@ -607,7 +607,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
             return;
 
         if(IsWaiting){
-            if(WaitTimer < diff){
+            if(WaitTimer <= diff){
                 IsWaiting = false;
                 ChangeTimers(false, 0);
             }
@@ -615,7 +615,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
         }
 
         for(uint8 t = 0; t < ActiveTimers; ++t){
-            if(Timer[t] < diff && !TimerIsDeactiveted[t]){
+            if(Timer[t] <= diff && !TimerIsDeactiveted[t]){
                 switch(t){
                     case TIMER_KALEC_JOIN:
                         if(Kalec){
@@ -837,7 +837,7 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
         if (!pInstance)
             return;
 
-        if(RandomSayTimer < diff && pInstance->GetData(DATA_MURU_EVENT) != DONE && pInstance->GetData(DATA_KILJAEDEN_EVENT) == NOT_STARTED)
+        if(RandomSayTimer <= diff && pInstance->GetData(DATA_MURU_EVENT) != DONE && pInstance->GetData(DATA_KILJAEDEN_EVENT) == NOT_STARTED)
         {
             RandomSayTimer = 60000;
             for(uint32 i = 0; i < 6; ++i)   // do not yell when any encounter in progress
@@ -864,7 +864,7 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
         }
         if (Phase == PHASE_DECEIVERS && DeceiversStatus != 3)
         {
-            if (DeceiverDeathTimer < diff)
+            if (DeceiverDeathTimer <= diff)
             {
                 std::for_each(deceivers.begin(), deceivers.end(),
                     [this](uint64& guid)
@@ -974,7 +974,7 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
             DoCast(m_creature, SPELL_SHADOW_INFUSION, true);
 
         // Shadow Bolt Volley - Shoots Shadow Bolts at all enemies within 30 yards, for ~2k Shadow damage.
-        if(ShadowBoltVolleyTimer < diff)
+        if(ShadowBoltVolleyTimer <= diff)
         {
             DoCast(m_creature->getVictim(), SPELL_SHADOW_BOLT_VOLLEY);
             ShadowBoltVolleyTimer = 12000;
@@ -983,7 +983,7 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
             ShadowBoltVolleyTimer -= diff;
 
         // Felfire Portal - Creatres a portal, that spawns Volatile Felfire Fiends, which do suicide bombing.
-        if(FelfirePortalTimer < diff)
+        if(FelfirePortalTimer <= diff)
         {
             Creature* Portal = DoSpawnCreature(CREATURE_FELFIRE_PORTAL, 0, 0,0, 0, TEMPSUMMON_TIMED_DESPAWN, 20000);
             if(Portal)
@@ -1039,7 +1039,7 @@ struct mob_felfire_portalAI : public Scripted_NoMovementAI
         if(!UpdateVictim())
             return;
 
-        if(SpawnFiendTimer < diff)
+        if(SpawnFiendTimer <= diff)
         {
             Creature* Fiend = DoSpawnCreature(CREATURE_VOLATILE_FELFIRE_FIEND, 0, 0, 0, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 20000);
             if(Fiend)
@@ -1088,7 +1088,7 @@ struct mob_volatile_felfire_fiendAI : public ScriptedAI
         }
 
         if(ExplodeTimer){
-            if(ExplodeTimer < diff)
+            if(ExplodeTimer <= diff)
                 ExplodeTimer = 0;
             else ExplodeTimer -= diff;
         }
@@ -1120,7 +1120,7 @@ struct mob_armageddonAI : public Scripted_NoMovementAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(Timer < diff){
+        if(Timer <= diff){
             switch(Spell){
                 case 0:
                     DoCast(m_creature, SPELL_ARMAGEDDON_VISUAL, true);
@@ -1195,14 +1195,14 @@ struct mob_shield_orbAI : public ScriptedAI
             c += 3.1415926535/32;
             if(c > 2*3.1415926535) c = 0;
         }else{
-            if (CheckTimer < diff){
+            if (CheckTimer <= diff){
                 DoTeleportTo(x,y,SHIELD_ORB_Z);
                 PointReached = true;
             }else CheckTimer -= diff;
 
         }
 
-        if (Timer < diff){
+        if (Timer <= diff){
             Unit* random = (Unit::GetUnit((*m_creature), pInstance->GetData64(DATA_PLAYER_GUID)));
             if (random)DoCast(random, SPELL_SHADOW_BOLT, false);
             Timer = 500+ rand()%500;
@@ -1270,7 +1270,7 @@ struct mob_sinster_reflectionAI : public ScriptedAI
         switch(Class)
         {
             case CLASS_DRUID:
-                if(Timer[1] < diff)
+                if(Timer[1] <= diff)
                 {
                     DoCast(m_creature->getVictim(), SPELL_SR_MOONFIRE, false);
                     Timer[1] = 3000;
@@ -1278,19 +1278,19 @@ struct mob_sinster_reflectionAI : public ScriptedAI
                 DoMeleeAttackIfReady();
                 break;
             case CLASS_HUNTER:
-                if(Timer[1] < diff)
+                if(Timer[1] <= diff)
                 {
                     DoCast(m_creature->getVictim(), SPELL_SR_MULTI_SHOT, false);
                     Timer[1] = 9000;
                 }
-                if(Timer[2] < diff)
+                if(Timer[2] <= diff)
                 {
                     DoCast(m_creature->getVictim(), SPELL_SR_SHOOT, false);
                     Timer[2] = 5000;
                 }
                 if(m_creature->IsWithinMeleeRange(m_creature->getVictim(), 6))
                 {
-                    if(Timer[3] < diff)
+                    if(Timer[3] <= diff)
                     {
                         DoCast(m_creature->getVictim(), SPELL_SR_MULTI_SHOT, false);
                         Timer[3] = 7000;
@@ -1299,7 +1299,7 @@ struct mob_sinster_reflectionAI : public ScriptedAI
                 }
                 break;
             case CLASS_MAGE:
-                if(Timer[1] < diff)
+                if(Timer[1] <= diff)
                 {
                     DoCast(m_creature->getVictim(), SPELL_SR_FIREBALL, false);
                     Timer[1] = 3000;
@@ -1307,12 +1307,12 @@ struct mob_sinster_reflectionAI : public ScriptedAI
                 DoMeleeAttackIfReady();
                 break;
             case CLASS_WARLOCK:
-                if(Timer[1] < diff)
+                if(Timer[1] <= diff)
                 {
                     DoCast(m_creature->getVictim(), SPELL_SR_SHADOW_BOLT, false);
                     Timer[1] = 4000;
                 }
-                if(Timer[2] < diff)
+                if(Timer[2] <= diff)
                 {
                     DoCast(SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true), SPELL_SR_CURSE_OF_AGONY, true);
                     Timer[2] = 3000;
@@ -1320,7 +1320,7 @@ struct mob_sinster_reflectionAI : public ScriptedAI
                 DoMeleeAttackIfReady();
                 break;
             case CLASS_WARRIOR:
-                if(Timer[1] < diff)
+                if(Timer[1] <= diff)
                 {
                     DoCast(m_creature->getVictim(), SPELL_SR_WHIRLWIND, false);
                     Timer[1] = 10000;
@@ -1328,12 +1328,12 @@ struct mob_sinster_reflectionAI : public ScriptedAI
                 DoMeleeAttackIfReady();
                 break;
             case CLASS_PALADIN:
-                if(Timer[1] < diff)
+                if(Timer[1] <= diff)
                 {
                     DoCast(m_creature->getVictim(), SPELL_SR_HAMMER_OF_JUSTICE, false);
                     Timer[1] = 7000;
                 }
-                if(Timer[2] < diff)
+                if(Timer[2] <= diff)
                 {
                     DoCast(m_creature->getVictim(), SPELL_SR_HOLY_SHOCK, false);
                     Timer[2] = 3000;
@@ -1341,12 +1341,12 @@ struct mob_sinster_reflectionAI : public ScriptedAI
                 DoMeleeAttackIfReady();
                 break;
             case CLASS_PRIEST:
-                if(Timer[1] < diff)
+                if(Timer[1] <= diff)
                 {
                     DoCast(m_creature->getVictim(), SPELL_SR_HOLY_SMITE, false);
                     Timer[1] = 5000;
                 }
-                if(Timer[2] < diff)
+                if(Timer[2] <= diff)
                 {
                     DoCast(m_creature,  SPELL_SR_RENEW, false);
                     Timer[2] = 7000;
@@ -1354,7 +1354,7 @@ struct mob_sinster_reflectionAI : public ScriptedAI
                 DoMeleeAttackIfReady();
                 break;
             case CLASS_SHAMAN:
-                if(Timer[1] < diff)
+                if(Timer[1] <= diff)
                 {
                     DoCast(m_creature->getVictim(), SPELL_SR_EARTH_SHOCK, false);
                     Timer[1] = 5000;
@@ -1362,7 +1362,7 @@ struct mob_sinster_reflectionAI : public ScriptedAI
                 DoMeleeAttackIfReady();
                 break;
             case CLASS_ROGUE:
-                if(Timer[1] < diff)
+                if(Timer[1] <= diff)
                 {
                     DoCast(m_creature->getVictim(), SPELL_SR_HEMORRHAGE, true);
                     Timer[1] = 5000;

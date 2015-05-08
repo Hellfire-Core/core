@@ -126,7 +126,7 @@ struct boss_chrono_lord_dejaAI : public ScriptedAI
         //Arcane Blast && Attraction on heroic mode
         if (!HeroicMode)
         {
-            if (ArcaneBlast_Timer < diff)
+            if (ArcaneBlast_Timer <= diff)
             {
                 AddSpellToCast(m_creature->getVictim(), SPELL_ARCANE_BLAST, true);
                 ArcaneBlast_Timer = urand(20000, 25000);
@@ -136,7 +136,7 @@ struct boss_chrono_lord_dejaAI : public ScriptedAI
         }
         else
         {
-            if (Attraction_Timer < diff)
+            if (Attraction_Timer <= diff)
             {
                 if (Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_ATTRACTION), true))
                     if (!arcane)
@@ -145,7 +145,7 @@ struct boss_chrono_lord_dejaAI : public ScriptedAI
                         arcane = true;
                     }
 
-                if (ArcaneBlast_Timer < diff)
+                if (ArcaneBlast_Timer <= diff)
                 {
                     AddSpellToCast(m_creature->getVictim(), H_SPELL_ARCANE_BLAST, true);
 
@@ -161,7 +161,7 @@ struct boss_chrono_lord_dejaAI : public ScriptedAI
         }
 
         //Arcane Discharge
-        if (ArcaneDischarge_Timer < diff)
+        if (ArcaneDischarge_Timer <= diff)
         {
             AddSpellToCast(m_creature, HeroicMode ? H_SPELL_ARCANE_DISCHARGE : SPELL_ARCANE_DISCHARGE);
             ArcaneDischarge_Timer = urand(15000, 25000);
@@ -170,7 +170,7 @@ struct boss_chrono_lord_dejaAI : public ScriptedAI
             ArcaneDischarge_Timer -= diff;
 
         //Time Lapse
-        if (TimeLapse_Timer < diff)
+        if (TimeLapse_Timer <= diff)
         {
             AddSpellToCastWithScriptText(m_creature, SPELL_TIME_LAPSE, SAY_BANISH);
             TimeLapse_Timer = urand(15000, 25000);

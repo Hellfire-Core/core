@@ -121,7 +121,7 @@ struct boss_pathaleon_the_calculatorAI : public ScriptedAI
         if (!UpdateVictim() )
             return;
 
-        if(Summon_Timer < diff)
+        if(Summon_Timer <= diff)
         {
             for(int i = 0; i < 3;i++)
             {
@@ -134,7 +134,7 @@ struct boss_pathaleon_the_calculatorAI : public ScriptedAI
             Summon_Timer = 30000 + rand()%15000;
         }else Summon_Timer -= diff;
 
-        if(Check_Timer < diff)
+        if(Check_Timer <= diff)
         {
             if(!me->IsWithinDistInMap(&wLoc, 30.0f))
                 EnterEvadeMode();
@@ -145,19 +145,19 @@ struct boss_pathaleon_the_calculatorAI : public ScriptedAI
             else
                 Check_Timer -= diff;
 
-        if(ManaTap_Timer < diff)
+        if(ManaTap_Timer <= diff)
         {
             DoCast(me->getVictim(),SPELL_MANA_TAP);
             ManaTap_Timer = 14000 + rand()%8000;
         }else ManaTap_Timer -= diff;
 
-        if(ArcaneTorrent_Timer < diff)
+        if(ArcaneTorrent_Timer <= diff)
         {
             DoCast(me->getVictim(),SPELL_ARCANE_TORRENT);
             ArcaneTorrent_Timer = 12000 + rand()%6000;
         }else ArcaneTorrent_Timer -= diff;
 
-        if(Domination_Timer < diff)
+        if(Domination_Timer <= diff)
         {
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 200, true, me->getVictimGUID()))
             {
@@ -171,7 +171,7 @@ struct boss_pathaleon_the_calculatorAI : public ScriptedAI
         //Only casting if Heroic Mode is used
         if (HeroicMode)
         {
-            if(ArcaneExplosion_Timer < diff)
+            if(ArcaneExplosion_Timer <= diff)
             {
                 DoCast(me->getVictim(),H_SPELL_ARCANE_EXPLOSION);
                 ArcaneExplosion_Timer = 10000 + rand()%4000;
@@ -223,7 +223,7 @@ struct mob_nether_wraithAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if(ArcaneMissiles_Timer < diff)
+        if(ArcaneMissiles_Timer <= diff)
         {
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 200, true, me->getVictimGUID()))
                 DoCast(target,SPELL_ARCANE_MISSILES);
@@ -235,7 +235,7 @@ struct mob_nether_wraithAI : public ScriptedAI
 
         if (!Detonation)
         {
-            if(Detonation_Timer < diff)
+            if(Detonation_Timer <= diff)
             {
                 DoCast(me,SPELL_DETONATION);
                 Detonation = true;
@@ -244,7 +244,7 @@ struct mob_nether_wraithAI : public ScriptedAI
 
         if (Detonation)
         {
-            if (Die_Timer < diff)
+            if (Die_Timer <= diff)
             {
                 me->setDeathState(JUST_DIED);
                 me->RemoveCorpse();

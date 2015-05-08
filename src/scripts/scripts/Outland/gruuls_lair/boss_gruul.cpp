@@ -131,7 +131,7 @@ struct boss_gruulAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (Check_Timer < diff)
+        if (Check_Timer <= diff)
         {
             if (!me->IsWithinDistInMap(&wLoc, 74.0f))
             {
@@ -148,7 +148,7 @@ struct boss_gruulAI : public ScriptedAI
 
         // Growth
         // Gruul can cast this spell up to 30 times
-        if (Growth_Timer < diff)
+        if (Growth_Timer <= diff)
         {
             AddSpellToCast(me, SPELL_GROWTH);
             DoScriptText(EMOTE_GROW, me);
@@ -158,7 +158,7 @@ struct boss_gruulAI : public ScriptedAI
             Growth_Timer -= diff;
 
         // Reverberation - timer should expiring even if in ground slam mode
-        if (Reverberation_Timer < diff)
+        if (Reverberation_Timer <= diff)
         {
             AddSpellToCast(SPELL_REVERBERATION, CAST_NULL);
             Reverberation_Timer = 30000;
@@ -194,7 +194,7 @@ struct boss_gruulAI : public ScriptedAI
         else
         {
             // Hurtful Strike
-            if (HurtfulStrike_Timer < diff)
+            if (HurtfulStrike_Timer <= diff)
             {
                 Unit* target = SelectUnit(SELECT_TARGET_TOPAGGRO, 0, me->GetMeleeReach(), true, me->getVictimGUID());
                 if (!target)
@@ -207,7 +207,7 @@ struct boss_gruulAI : public ScriptedAI
                 HurtfulStrike_Timer -= diff;
 
             // Cave In
-            if (CaveIn_Timer < diff)
+            if (CaveIn_Timer <= diff)
             {
                 if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100.0f, true))
                     AddSpellToCast(target, SPELL_CAVE_IN);
@@ -218,7 +218,7 @@ struct boss_gruulAI : public ScriptedAI
                 CaveIn_Timer -= diff;
 
             // Ground Slam, Gronn Lord's Grasp, Stoned, Shatter
-            if (GroundSlamTimer < diff)
+            if (GroundSlamTimer <= diff)
             {
                 me->GetMotionMaster()->Clear();
                 me->GetMotionMaster()->MoveIdle();

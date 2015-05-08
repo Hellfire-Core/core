@@ -219,7 +219,7 @@ struct mob_ashtongue_defenderAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (m_debilStrikeTimer < diff)
+        if (m_debilStrikeTimer <= diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_DEBILITATIG_STRIKE);
             m_debilStrikeTimer = 20000;
@@ -227,7 +227,7 @@ struct mob_ashtongue_defenderAI : public ScriptedAI
         else
             m_debilStrikeTimer -= diff;
 
-        if (m_shieldBashTimer < diff)
+        if (m_shieldBashTimer <= diff)
         {
             if (me->getVictim() && me->getVictim()->hasUnitState(UNIT_STAT_CASTING))
             {
@@ -238,7 +238,7 @@ struct mob_ashtongue_defenderAI : public ScriptedAI
         else
             m_shieldBashTimer -= diff;
 
-        if (m_checkTimer < diff)
+        if (m_checkTimer <= diff)
         {
             if(!instance)
                 return;
@@ -361,7 +361,7 @@ struct mob_ashtongue_spiritbinderAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (m_chainHealTimer < diff)
+        if (m_chainHealTimer <= diff)
         {
             AddSpellToCast(me, SPELL_CHAIN_HEAL, false);
             m_chainHealTimer = 20000;
@@ -369,7 +369,7 @@ struct mob_ashtongue_spiritbinderAI : public ScriptedAI
         else
             m_chainHealTimer -= diff;
 
-        if (m_spiritMendTimer < diff)
+        if (m_spiritMendTimer <= diff)
         {
             AddSpellToCast(me, SPELL_SPIRIT_MEND, false);
             m_spiritMendTimer = 20000;
@@ -377,7 +377,7 @@ struct mob_ashtongue_spiritbinderAI : public ScriptedAI
         else
             m_spiritMendTimer -= diff;
 
-        if (m_spiritHealTimer < diff)
+        if (m_spiritHealTimer <= diff)
         {
             //if(Unit *pFriend = FindSpiritHealTarget())
             //{
@@ -390,7 +390,7 @@ struct mob_ashtongue_spiritbinderAI : public ScriptedAI
         else
             m_spiritHealTimer -= diff;
 
-        if (m_checkTimer < diff)
+        if (m_checkTimer <= diff)
         {
             if(!instance)
                 return;
@@ -468,7 +468,7 @@ struct mob_ashtongue_elementalistAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (m_lightningBoltTimer < diff)
+        if (m_lightningBoltTimer <= diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_LIGHTNING_BOLT, false);
             m_lightningBoltTimer = 10000;
@@ -476,7 +476,7 @@ struct mob_ashtongue_elementalistAI : public ScriptedAI
         else
             m_lightningBoltTimer -= diff;
 
-        if (m_rainofFireTimer < diff)
+        if (m_rainofFireTimer <= diff)
         {
             DoZoneInCombat();
             if(Unit *pEnemy = SelectUnit(SELECT_TARGET_RANDOM, 0, 40.0f, true))
@@ -488,7 +488,7 @@ struct mob_ashtongue_elementalistAI : public ScriptedAI
         else
             m_rainofFireTimer -= diff;
 
-        if (m_checkTimer < diff)
+        if (m_checkTimer <= diff)
         {
             if (!instance)
                 return;
@@ -569,7 +569,7 @@ struct mob_ashtongue_rogueAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (m_debilPoisonTimer < diff)
+        if (m_debilPoisonTimer <= diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_DEBILITATING_POISON, false);
             m_debilPoisonTimer = 15000;
@@ -577,7 +577,7 @@ struct mob_ashtongue_rogueAI : public ScriptedAI
         else
             m_debilPoisonTimer -= diff;
 
-        if (m_eviscerateTimer < diff)
+        if (m_eviscerateTimer <= diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_EVISCERATE, false);
             m_eviscerateTimer = 10000;
@@ -585,7 +585,7 @@ struct mob_ashtongue_rogueAI : public ScriptedAI
         else
             m_eviscerateTimer -= diff;
 
-        if (m_checkTimer < diff)
+        if (m_checkTimer <= diff)
         {
             if (!instance)
                 return;
@@ -661,7 +661,7 @@ struct mob_ashtongue_sorcererAI : public ScriptedAI
         if (!m_channeling)
             return;
 
-        if (m_checkTimer < diff)
+        if (m_checkTimer <= diff)
         {
             if (!me->IsNonMeleeSpellCast(true, false, true)) // that shouldn't happen
             {
@@ -778,7 +778,7 @@ struct boss_shade_of_akamaAI : public ScriptedAI
 
     void ProcessSpawning(const uint32 diff)
     {
-        if (m_waveTimer < diff)
+        if (m_waveTimer <= diff)
         {
             Creature *akama = me->GetCreature(*me, AkamaGUID);
             for (int i = 0; i < 2; ++i)
@@ -797,7 +797,7 @@ struct boss_shade_of_akamaAI : public ScriptedAI
         else
             m_waveTimer -= diff;
 
-        if (m_guardTimer < diff)
+        if (m_guardTimer <= diff)
         {
             if (Creature *pDefender = me->SummonCreature(CREATURE_DEFENDER, SpawnLocations[0][0], SpawnLocations[0][1], SPAWN_Z, 0.0f, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 15000))
             {
@@ -813,7 +813,7 @@ struct boss_shade_of_akamaAI : public ScriptedAI
         else
             m_guardTimer -= diff;
 
-        if (m_sorcTimer < diff)
+        if (m_sorcTimer <= diff)
         {
             if (!m_freeSlot)
             {
@@ -1078,7 +1078,7 @@ struct boss_shade_of_akamaAI : public ScriptedAI
                 if(me->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE))
                     ProcessSpawning(diff);
 
-                if (m_checkTimer < diff)
+                if (m_checkTimer <= diff)
                 {
                     if (!me->IsWithinDistInMap(&wLoc, 100))
                         EnterEvadeMode();
@@ -1092,7 +1092,7 @@ struct boss_shade_of_akamaAI : public ScriptedAI
 
                 if (event_phase >= AKAMA_FIGHT)
                 {
-                    if (m_damageTimer < diff)
+                    if (m_damageTimer <= diff)
                     {
                         if (AkamaGUID)
                         {
@@ -1364,7 +1364,7 @@ struct npc_akamaAI : public Scripted_NoMovementAI
         if (me->m_currentSpells[CURRENT_CHANNELED_SPELL])
             return;
 
-        if (m_destructiveTimer < diff)
+        if (m_destructiveTimer <= diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_DESTRUCTIVE_POISON, true);
             m_destructiveTimer = 5000;
@@ -1372,7 +1372,7 @@ struct npc_akamaAI : public Scripted_NoMovementAI
         else
             m_destructiveTimer -= diff;
 
-        if (m_lightningBoltTimer < diff)
+        if (m_lightningBoltTimer <= diff)
         {
             AddSpellToCast(me->getVictim(), SPELL_CHAIN_LIGHTNING);
             m_lightningBoltTimer = 8000;

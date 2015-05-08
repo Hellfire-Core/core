@@ -215,7 +215,7 @@ void ScriptedAI::CheckCasterNoMovementInRange(uint32 diff, float maxrange)
         casterTimer = 2000;
 
     casterTimer -= diff;
-    if (casterTimer < diff)
+    if (casterTimer <= diff)
     {
         if (me->GetMotionMaster()->GetCurrentMovementGeneratorType() == CONFUSED_MOTION_TYPE)
         {
@@ -258,7 +258,7 @@ void ScriptedAI::CheckShooterNoMovementInRange(uint32 diff, float maxrange)
         casterTimer = 3000;
 
     casterTimer -= diff;
-    if (casterTimer < diff)
+    if (casterTimer <= diff)
     {
         if (me->GetMotionMaster()->GetCurrentMovementGeneratorType() == CONFUSED_MOTION_TYPE)
         {
@@ -416,7 +416,7 @@ void ScriptedAI::CastNextSpellIfAnyAndReady(uint32 diff)
     if (autocast)
     {
         autocastTimer -= diff;
-        if (autocastTimer < diff)
+        if (autocastTimer <= diff)
         {
             if (!cast)
             {
@@ -1073,7 +1073,7 @@ void Scripted_NoMovementAI::AttackStart(Unit* pWho)
 void ScriptedAI::DoSpecialThings(uint32 diff, SpecialThing flags, float range, float speedRate)
 {
     m_specialThingTimer -= diff;
-    if (m_specialThingTimer < diff)
+    if (m_specialThingTimer <= diff)
     {
         if (flags & DO_PULSE_COMBAT)
             DoZoneInCombat(range);

@@ -61,7 +61,7 @@ struct boss_gorosh_the_dervishAI : public ScriptedAI
         
 
         MortalStrike_Timer -= diff;
-        if (MortalStrike_Timer < diff)
+        if (MortalStrike_Timer <= diff)
         {
             DoCast(me->getVictim(),SPELL_MORTALSTRIKE);
             MortalStrike_Timer = 15000;

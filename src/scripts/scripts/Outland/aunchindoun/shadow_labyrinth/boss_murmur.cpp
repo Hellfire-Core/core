@@ -96,7 +96,7 @@ struct boss_murmurAI : public Scripted_NoMovementAI
             return;
 
         // Murmur's Touch
-        if (MurmursTouch_Timer < diff)
+        if (MurmursTouch_Timer <= diff)
         {
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true))
                 AddSpellToCast(target, SPELL_MURMURS_TOUCH);
@@ -107,7 +107,7 @@ struct boss_murmurAI : public Scripted_NoMovementAI
             MurmursTouch_Timer -= diff;
 
         // Resonance
-        if (Resonance_Timer < diff)
+        if (Resonance_Timer <= diff)
         {
             Unit *target = SelectUnit(SELECT_TARGET_NEAREST, 0, 100, true);
 
@@ -122,7 +122,7 @@ struct boss_murmurAI : public Scripted_NoMovementAI
         if (HeroicMode)
         {
             // Thundering Storm cast to all which are too far away
-            if (ThunderingStorm_Timer < diff)
+            if (ThunderingStorm_Timer <= diff)
             {
                 std::list<HostileReference*>& m_threatlist = me->getThreatManager().getThreatList();
                 for(std::list<HostileReference*>::iterator i = m_threatlist.begin(); i != m_threatlist.end(); ++i)
@@ -140,7 +140,7 @@ struct boss_murmurAI : public Scripted_NoMovementAI
                 ThunderingStorm_Timer -= diff;
 
             // Sonic Shock cast to tank if someone is too far away
-            if (SonicShock_Timer < diff)
+            if (SonicShock_Timer <= diff)
             {
                 std::list<HostileReference*>& m_threatlist = me->getThreatManager().getThreatList();
                 for(std::list<HostileReference*>::iterator i = m_threatlist.begin(); i != m_threatlist.end(); ++i)
@@ -164,7 +164,7 @@ struct boss_murmurAI : public Scripted_NoMovementAI
         if (!HeroicMode)
         {
             // Magnetic Pull normal only
-            if (MagneticPull_Timer < diff)
+            if (MagneticPull_Timer <= diff)
             {
                 if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true))
                     ForceSpellCast(target, SPELL_MAGNETIC_PULL);
@@ -176,7 +176,7 @@ struct boss_murmurAI : public Scripted_NoMovementAI
         }
 
         // Sonic Boom
-        if (SonicBoom_Timer < diff)
+        if (SonicBoom_Timer <= diff)
         {
             ForceSpellCast(me, SPELL_SONIC_BOOM, DONT_INTERRUPT, true);
             ForceSpellCastWithScriptText(me, SPELL_SONIC_BOOM_CAST, EMOTE_SONIC_BOOM);

@@ -91,14 +91,14 @@ struct boss_kriAI : public ScriptedAI
             return;
 
         //Cleave_Timer
-        if (Cleave_Timer < diff)
+        if (Cleave_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_CLEAVE);
             Cleave_Timer = 5000 + rand()%7000;
         }else Cleave_Timer -= diff;
 
         //ToxicVolley_Timer
-        if (ToxicVolley_Timer < diff)
+        if (ToxicVolley_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_TOXIC_VOLLEY);
             ToxicVolley_Timer = 10000 + rand()%5000;
@@ -113,7 +113,7 @@ struct boss_kriAI : public ScriptedAI
         if(!VemDead)
         {
             //Checking if Vem is dead. If yes we will enrage.
-            if(Check_Timer < diff)
+            if(Check_Timer <= diff)
             {
                 if(pInstance && pInstance->GetData(DATA_VEM))
                 {
@@ -181,7 +181,7 @@ struct boss_vemAI : public ScriptedAI
             return;
 
         //Charge_Timer
-        if (Charge_Timer < diff)
+        if (Charge_Timer <= diff)
         {
             Unit* target = NULL;
             target = SelectUnit(SELECT_TARGET_RANDOM,0);
@@ -196,7 +196,7 @@ struct boss_vemAI : public ScriptedAI
         }else Charge_Timer -= diff;
 
         //KnockBack_Timer
-        if (KnockBack_Timer < diff)
+        if (KnockBack_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_KNOCKBACK);
             if(DoGetThreat(m_creature->getVictim()))
@@ -205,7 +205,7 @@ struct boss_vemAI : public ScriptedAI
         }else KnockBack_Timer -= diff;
 
         //Enrage_Timer
-        if (!Enraged && Enrage_Timer < diff)
+        if (!Enraged && Enrage_Timer <= diff)
         {
             DoCast(m_creature,SPELL_ENRAGE);
             Enraged = true;
@@ -275,7 +275,7 @@ struct boss_yaujAI : public ScriptedAI
             return;
 
         //Fear_Timer
-        if (Fear_Timer < diff)
+        if (Fear_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_FEAR);
             DoResetThreat();
@@ -283,7 +283,7 @@ struct boss_yaujAI : public ScriptedAI
         }else Fear_Timer -= diff;
 
         //Casting Heal to other twins or herself.
-        if(Heal_Timer < diff)
+        if(Heal_Timer <= diff)
         {
             if(pInstance)
             {
@@ -310,7 +310,7 @@ struct boss_yaujAI : public ScriptedAI
         }else Heal_Timer -= diff;
 
         //Checking if Vem is dead. If yes we will enrage.
-        if(Check_Timer < diff)
+        if(Check_Timer <= diff)
         {
             if (!VemDead)
             {

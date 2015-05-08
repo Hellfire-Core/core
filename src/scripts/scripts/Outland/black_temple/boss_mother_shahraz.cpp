@@ -219,7 +219,7 @@ struct boss_shahrazAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (m_checkTimer < diff)
+        if (m_checkTimer <= diff)
         {
             if(me->GetDistance(wLoc.coord_x, wLoc.coord_y, wLoc.coord_z) > 110)
             {
@@ -245,7 +245,7 @@ struct boss_shahrazAI : public ScriptedAI
 
         if (b_canEnrage)
         {
-            if (m_enragePeriodic < diff)
+            if (m_enragePeriodic <= diff)
             {
                 DoScriptText(SAY_ENRAGE, m_creature);
                 ForceSpellCast(me, SPELL_ENRAGE);
@@ -256,7 +256,7 @@ struct boss_shahrazAI : public ScriptedAI
         }
 
         // Select 3 random targets (can select same target more than once), teleport to a random location then make them cast explosions until they get away from each other.
-        if (m_attractionTimer < diff)
+        if (m_attractionTimer <= diff)
         {
             m_position = urand(0, 33);
             ForceSpellCastWithScriptText(me, SPELL_FATAL_ATTRACTION, RAND(SAY_SPELL2, SAY_SPELL3));
@@ -266,7 +266,7 @@ struct boss_shahrazAI : public ScriptedAI
         else
             m_attractionTimer -= diff;
 
-        if (m_shriekTimer < diff)
+        if (m_shriekTimer <= diff)
         {
             if(!urand(0, 2))
                 DoScriptText(SAY_SPELL1, m_creature);
@@ -292,7 +292,7 @@ struct boss_shahrazAI : public ScriptedAI
         }
 
         //Random taunts
-        if (m_yellTimer < diff)
+        if (m_yellTimer <= diff)
         {
             DoScriptText(RAND(SAY_TAUNT1, SAY_TAUNT2, SAY_TAUNT3), me);
             m_yellTimer = urand(15000, 35000);

@@ -94,7 +94,7 @@ struct boss_pandemoniusAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if( VoidBlast_Timer < diff )
+        if( VoidBlast_Timer <= diff )
         {
             if( Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 60, true) )
             {
@@ -114,7 +114,7 @@ struct boss_pandemoniusAI : public ScriptedAI
 
         if( !VoidBlast_Counter )
         {
-            if( DarkShell_Timer < diff )
+            if( DarkShell_Timer <= diff )
             {
                 if( m_creature->IsNonMeleeSpellCast(false) )
                     m_creature->InterruptNonMeleeSpells(true);

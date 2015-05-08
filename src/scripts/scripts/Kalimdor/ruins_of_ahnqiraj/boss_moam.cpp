@@ -118,7 +118,7 @@ struct boss_moamAI : public ScriptedAI
         }
 
         //SUMMONMANA_Timer
-        if (SUMMONMANA_Timer < diff)
+        if (SUMMONMANA_Timer <= diff)
         {
             if (stoned)
             {
@@ -142,7 +142,7 @@ struct boss_moamAI : public ScriptedAI
         else SUMMONMANA_Timer -= diff;
 
         //TRAMPLE_Timer
-        if (TRAMPLE_Timer < diff)
+        if (TRAMPLE_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_TRAMPLE);
             TRAMPLE_Timer = 30000;
@@ -150,7 +150,7 @@ struct boss_moamAI : public ScriptedAI
         else TRAMPLE_Timer -= diff;
 
         //DRAINMANA_Timer
-        if (DRAINMANA_Timer < diff)
+        if (DRAINMANA_Timer <= diff)
         {
             DrainTargets = m_creature->getThreatManager().getThreatList().size();
                             for (uint32 i = 0; i < DrainTargets && i < 6; i++)
@@ -196,7 +196,7 @@ struct mana_fiendAI : public ScriptedAI
     {
         if (!UpdateVictim())
             return;
-        if (Arcane_Timer < diff)
+        if (Arcane_Timer <= diff)
         {
             DoCast(m_creature->getVictim(), SPELL_ARCANEEXPLOSION);
             Arcane_Timer = 3000;

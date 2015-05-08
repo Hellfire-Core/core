@@ -140,7 +140,7 @@ struct boss_anzuAI : public ScriptedAI
 
         if(Banished)
         {
-            if(BroodCount == 0 || Banish_Timer < diff)
+            if(BroodCount == 0 || Banish_Timer <= diff)
             {
                 Banished = false;
                 me->RemoveAurasDueToSpell(SPELL_BANISH);
@@ -148,14 +148,14 @@ struct boss_anzuAI : public ScriptedAI
                 Banish_Timer -= diff;
         } else {
 
-            if(ParalyzingScreech_Timer < diff)
+            if(ParalyzingScreech_Timer <= diff)
             {
                 AddSpellToCast(me, SPELL_PARALYZING_SCREECH);
                 ParalyzingScreech_Timer = 26000;
             } else 
                 ParalyzingScreech_Timer -= diff;
 
-            if(SpellBomb_Timer < diff)
+            if(SpellBomb_Timer <= diff)
             {
                 if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0))
                     AddSpellToCast(target, SPELL_SPELL_BOMB);
@@ -163,7 +163,7 @@ struct boss_anzuAI : public ScriptedAI
             } else
                 SpellBomb_Timer -= diff;
 
-            if(CycloneOfFeathers_Timer < diff)
+            if(CycloneOfFeathers_Timer <= diff)
             {
                 if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 1, 45.0f, true))
                     AddSpellToCast(target, SPELL_CYCLONE_OF_FEATHERS);
@@ -223,7 +223,7 @@ struct npc_anzu_spiritAI : public Scripted_NoMovementAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(Timer < diff)
+        if(Timer <= diff)
         {
             const Unit::AuraList& auras = me->GetAurasByType(SPELL_AURA_PERIODIC_HEAL);
             for(Unit::AuraList::const_iterator i = auras.begin(); i != auras.end(); ++i)

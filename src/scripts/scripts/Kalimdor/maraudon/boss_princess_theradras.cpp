@@ -63,14 +63,14 @@ struct boss_ptheradrasAI : public ScriptedAI
             return;
 
         //Dustfield_Timer
-        if (Dustfield_Timer < diff)
+        if (Dustfield_Timer <= diff)
         {
             DoCast(m_creature,SPELL_DUSTFIELD);
             Dustfield_Timer = 14000;
         }else Dustfield_Timer -= diff;
 
         //Boulder_Timer
-        if (Boulder_Timer < diff)
+        if (Boulder_Timer <= diff)
         {
             Unit* target = NULL;
             target = SelectUnit(SELECT_TARGET_RANDOM,0);
@@ -80,14 +80,14 @@ struct boss_ptheradrasAI : public ScriptedAI
         }else Boulder_Timer -= diff;
 
         //RepulsiveGaze_Timer
-        if (RepulsiveGaze_Timer < diff)
+        if (RepulsiveGaze_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_REPULSIVEGAZE);
             RepulsiveGaze_Timer = 20000;
         }else RepulsiveGaze_Timer -= diff;
 
         //Thrash_Timer
-        if (Thrash_Timer < diff)
+        if (Thrash_Timer <= diff)
         {
             DoCast(m_creature,SPELL_THRASH);
             Thrash_Timer = 18000;

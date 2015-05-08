@@ -94,7 +94,7 @@ struct boss_shirrak_the_dead_watcherAI : public ScriptedAI
     void UpdateAI(const uint32 diff)
     {
         //Inhibitmagic_Timer
-        if(Inhibitmagic_Timer < diff)
+        if(Inhibitmagic_Timer <= diff)
         {
             float dist;
             Map *map = m_creature->GetMap();
@@ -129,7 +129,7 @@ struct boss_shirrak_the_dead_watcherAI : public ScriptedAI
             return;
 
         //Attractmagic_Timer
-        if (Attractmagic_Timer < diff)
+        if (Attractmagic_Timer <= diff)
         {
             DoCast(m_creature,SPELL_ATTRACTMAGIC);
             Attractmagic_Timer = 30000;
@@ -139,7 +139,7 @@ struct boss_shirrak_the_dead_watcherAI : public ScriptedAI
             Attractmagic_Timer -= diff;
 
         //Carnivorousbite_Timer
-        if (Carnivorousbite_Timer < diff)
+        if (Carnivorousbite_Timer <= diff)
         {
             DoCast(m_creature,SPELL_CARNIVOROUSBITE);
             Carnivorousbite_Timer = 10000;
@@ -148,7 +148,7 @@ struct boss_shirrak_the_dead_watcherAI : public ScriptedAI
             Carnivorousbite_Timer -= diff;
 
         //FocusFire_Timer
-        if (FocusFire_Timer < diff)
+        if (FocusFire_Timer <= diff)
         {
             // Summon Focus Fire & Emote
             Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0,60, true, m_creature->getVictimGUID());
@@ -205,7 +205,7 @@ struct mob_focus_fireAI : public ScriptedAI
             return;
 
         //FieryBlast_Timer
-        if (fiery2 && FieryBlast_Timer < diff)
+        if (fiery2 && FieryBlast_Timer <= diff)
         {
             DoCast(m_creature,SPELL_FIERY_BLAST);
 

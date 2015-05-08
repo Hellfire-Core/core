@@ -126,13 +126,13 @@ struct boss_watchkeeper_gargolmarAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (MortalWound_Timer < diff)
+        if (MortalWound_Timer <= diff)
         {
             DoCast(me->getVictim(),HeroicMode ? H_SPELL_MORTAL_WOUND : SPELL_MORTAL_WOUND);
             MortalWound_Timer = 5000+rand()%8000;
         }else MortalWound_Timer -= diff;
 
-        if (Surge_Timer < diff)
+        if (Surge_Timer <= diff)
         {
             DoScriptText(SAY_SURGE, me);
 
@@ -144,7 +144,7 @@ struct boss_watchkeeper_gargolmarAI : public ScriptedAI
 
         if ((me->GetHealth()*100) / me->GetMaxHealth() < 20)
         {
-            if (Retaliation_Timer < diff)
+            if (Retaliation_Timer <= diff)
             {
                 DoCast(me,SPELL_RETALIATION);
                 Retaliation_Timer = 30000;

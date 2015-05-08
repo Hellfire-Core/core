@@ -215,7 +215,7 @@ struct boss_warchief_kargath_bladefistAI : public ScriptedAI
 
         if (Assassins_Timer)
         {
-            if (Assassins_Timer < diff)
+            if (Assassins_Timer <= diff)
             {
                 SpawnAssassin();
                 Assassins_Timer = 0;
@@ -226,7 +226,7 @@ struct boss_warchief_kargath_bladefistAI : public ScriptedAI
 
         if (Assistant_Timer)
         {
-            if (Assistant_Timer < diff)
+            if (Assistant_Timer <= diff)
             {
                 Assistant = true;
                 Assistant_Timer = 0;
@@ -238,7 +238,7 @@ struct boss_warchief_kargath_bladefistAI : public ScriptedAI
         if (InBlade)
         {
             if (Wait_Timer)
-                if (Wait_Timer < diff)
+                if (Wait_Timer <= diff)
                 {
                     if (target_num <= 0)
                     {
@@ -270,7 +270,7 @@ struct boss_warchief_kargath_bladefistAI : public ScriptedAI
         {
             if (Blade_Dance_Timer)
             {
-                if (Blade_Dance_Timer < diff)
+                if (Blade_Dance_Timer <= diff)
                 {
                     target_num = TARGET_NUM;
                     Wait_Timer = 1;
@@ -285,7 +285,7 @@ struct boss_warchief_kargath_bladefistAI : public ScriptedAI
 
             if (Charge_timer)
             {
-                if (Charge_timer < diff)
+                if (Charge_timer <= diff)
                 {
                     DoCast(SelectUnit(SELECT_TARGET_RANDOM,0), H_SPELL_CHARGE);
                     Charge_timer = 0;
@@ -294,7 +294,7 @@ struct boss_warchief_kargath_bladefistAI : public ScriptedAI
                     Charge_timer -= diff;
             }
 
-            if (Summon_Assistant_Timer < diff)
+            if (Summon_Assistant_Timer <= diff)
             {
                 Unit* target = NULL;
                 Creature* Summoned;
@@ -316,7 +316,7 @@ struct boss_warchief_kargath_bladefistAI : public ScriptedAI
             DoMeleeAttackIfReady();
         }
 
-        if (resetcheck_timer < diff)
+        if (resetcheck_timer <= diff)
         {
             uint32 tempx,tempy;
             tempx = me->GetPositionX();

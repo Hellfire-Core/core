@@ -191,7 +191,7 @@ struct mob_lumpAI : public ScriptedAI
         //check if we waiting for a reset
         if (bReset)
         {
-            if (Reset_Timer < diff)
+            if (Reset_Timer <= diff)
             {
                 EnterEvadeMode();
                 bReset = false;
@@ -206,7 +206,7 @@ struct mob_lumpAI : public ScriptedAI
             return;
 
         //Spear_Throw_Timer
-        if (Spear_Throw_Timer < diff)
+        if (Spear_Throw_Timer <= diff)
         {
             DoCast(me->getVictim(), SPELL_SPEAR_THROW);
             Spear_Throw_Timer = 20000;
@@ -608,7 +608,7 @@ struct mob_sparrowhawkAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(Check_Timer < diff)
+        if(Check_Timer <= diff)
         {
             if(PlayerGUID)
             {

@@ -194,7 +194,7 @@ struct boss_nexusprince_shaffarAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if( FrostNova_Timer < diff )
+        if( FrostNova_Timer <= diff )
         {
             if( m_creature->IsNonMeleeSpellCast(false) )
                 m_creature->InterruptNonMeleeSpells(true);
@@ -206,7 +206,7 @@ struct boss_nexusprince_shaffarAI : public ScriptedAI
         else
             FrostNova_Timer -= diff;
 
-        if( Frostbolt_Timer < diff )
+        if( Frostbolt_Timer <= diff )
         {
             DoCast(m_creature->getVictim(),SPELL_FROSTBOLT);
             Frostbolt_Timer = 4500 + rand()%1500;
@@ -214,7 +214,7 @@ struct boss_nexusprince_shaffarAI : public ScriptedAI
         else
             Frostbolt_Timer -= diff;
 
-        if( FireBall_Timer < diff )
+        if( FireBall_Timer <= diff )
         {
             DoCast(m_creature->getVictim(),SPELL_FIREBALL);
             FireBall_Timer = 4500 + rand()%1500;
@@ -224,7 +224,7 @@ struct boss_nexusprince_shaffarAI : public ScriptedAI
 
         if( CanBlink )
         {
-            if( Blink_Timer < diff )
+            if( Blink_Timer <= diff )
             {
                 if( m_creature->IsNonMeleeSpellCast(false) )
                     m_creature->InterruptNonMeleeSpells(true);
@@ -237,7 +237,7 @@ struct boss_nexusprince_shaffarAI : public ScriptedAI
                 Blink_Timer -= diff;
         }
 
-        if( Beacon_Timer < diff)
+        if( Beacon_Timer <= diff)
         {
             if( m_creature->IsNonMeleeSpellCast(false) )
                 m_creature->InterruptNonMeleeSpells(true);
@@ -319,7 +319,7 @@ struct mob_ethereal_beaconAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if(Check_Timer < diff)
+        if(Check_Timer <= diff)
         {
             Unit *Shaffar = FindCreature(ENTRY_SHAFFAR, 100, m_creature);
             if(!Shaffar || Shaffar->isDead() || !Shaffar->isInCombat())
@@ -332,7 +332,7 @@ struct mob_ethereal_beaconAI : public ScriptedAI
         else
             Check_Timer -= diff;
 
-        if( ArcaneBolt_Timer < diff )
+        if( ArcaneBolt_Timer <= diff )
         {
             DoCast(m_creature->getVictim(),SPELL_ARCANE_BOLT);
             ArcaneBolt_Timer = 2000 + rand()%2500;
@@ -340,7 +340,7 @@ struct mob_ethereal_beaconAI : public ScriptedAI
         else
             ArcaneBolt_Timer -= diff;
 
-        if( Apprentice_Timer < diff )
+        if( Apprentice_Timer <= diff )
         {
             if( m_creature->IsNonMeleeSpellCast(false) )
                 m_creature->InterruptNonMeleeSpells(true);
@@ -383,7 +383,7 @@ struct mob_ethereal_apprenticeAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if(Cast_Timer < diff)
+        if(Cast_Timer <= diff)
         {
             if(isFireboltTurn)
             {

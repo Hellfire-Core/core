@@ -101,7 +101,7 @@ struct mob_voidtravelerAI : public ScriptedAI
         }
         */
 
-        if(move < diff)
+        if(move <= diff)
         {
             Unit *Vorpil = Unit::GetUnit(*me, VorpilGUID);
             if(!Vorpil)
@@ -268,7 +268,7 @@ struct boss_grandmaster_vorpilAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (ShadowBoltVolley_Timer < diff)
+        if (ShadowBoltVolley_Timer <= diff)
         {
             DoCast(me,SPELL_SHADOWBOLT_VOLLEY);
             ShadowBoltVolley_Timer = 15000;
@@ -276,7 +276,7 @@ struct boss_grandmaster_vorpilAI : public ScriptedAI
         else
             ShadowBoltVolley_Timer -= diff;
 
-        if (HeroicMode && banish_Timer < diff)
+        if (HeroicMode && banish_Timer <= diff)
         {
             Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0,30,false);
             if (target)
@@ -288,7 +288,7 @@ struct boss_grandmaster_vorpilAI : public ScriptedAI
         else
             banish_Timer -= diff;
 
-        if ( DrawShadows_Timer < diff)
+        if ( DrawShadows_Timer <= diff)
         {
             Map *map = me->GetMap();
             Map::PlayerList const &PlayerList = map->GetPlayers();
@@ -308,7 +308,7 @@ struct boss_grandmaster_vorpilAI : public ScriptedAI
         else
             DrawShadows_Timer -= diff;
 
-        if ( summonTraveler_Timer < diff)
+        if ( summonTraveler_Timer <= diff)
         {
             spawnVoidTraveler();
             summonTraveler_Timer = 10000;

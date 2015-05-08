@@ -79,7 +79,7 @@ struct boss_noxxionAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (Invisible && Invisible_Timer < diff)
+        if (Invisible && Invisible_Timer <= diff)
         {
             //Become visible again
             m_creature->setFaction(14);
@@ -100,21 +100,21 @@ struct boss_noxxionAI : public ScriptedAI
             return;
 
         //ToxicVolley_Timer
-        if (ToxicVolley_Timer < diff)
+        if (ToxicVolley_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_TOXICVOLLEY);
             ToxicVolley_Timer = 9000;
         }else ToxicVolley_Timer -= diff;
 
         //Uppercut_Timer
-        if (Uppercut_Timer < diff)
+        if (Uppercut_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_UPPERCUT);
             Uppercut_Timer = 12000;
         }else Uppercut_Timer -= diff;
 
         //Adds_Timer
-        if (!Invisible && Adds_Timer < diff)
+        if (!Invisible && Adds_Timer <= diff)
         {
             //Inturrupt any spell casting
             //m_creature->m_canMove = true;

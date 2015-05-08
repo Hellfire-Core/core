@@ -96,7 +96,7 @@ struct mob_azalothAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (banish_timer < diff)
+        if (banish_timer <= diff)
         {
             DoCast(m_creature,SPELL_BANISH);
             banish_timer  = TIME_TO_BANISH;
@@ -245,7 +245,7 @@ struct mob_mature_netherwing_drakeAI : public npc_escortAI
         if (!UpdateVictim())
             return;
 
-        if (CastTimer < diff)
+        if (CastTimer <= diff)
         {
             DoCast(me->getVictim(), SPELL_NETHER_BREATH);
             CastTimer = 5000;
@@ -350,7 +350,7 @@ struct mob_enslaved_netherwing_drakeAI : public ScriptedAI
         if(!UpdateVictim())
         {
             if(Tapped)
-                if(FlyTimer < diff)
+                if(FlyTimer <= diff)
             {
                 Tapped = false;
                 if(PlayerGUID)
@@ -1332,7 +1332,7 @@ struct mob_illidari_spawnAI : public ScriptedAI
         //Illidari Soldier
         if(m_creature->GetEntry() == 22075)
         {
-            if(SpellTimer1 < diff)
+            if(SpellTimer1 <= diff)
             {
                 DoCast(m_creature->getVictim(), SpawnCast[0].SpellId);//Spellbreaker
                 SpellTimer1 = SpawnCast[0].Timer2 + (rand()%5 * 1000);
@@ -1341,7 +1341,7 @@ struct mob_illidari_spawnAI : public ScriptedAI
         //Illidari Mind Breaker
         if(m_creature->GetEntry() == 22074)
         {
-            if(SpellTimer1 < diff)
+            if(SpellTimer1 <= diff)
             {
                 if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0))
                 {
@@ -1353,13 +1353,13 @@ struct mob_illidari_spawnAI : public ScriptedAI
                 }
             }else SpellTimer1 -= diff;
 
-            if(SpellTimer2 < diff)
+            if(SpellTimer2 <= diff)
             {
                 DoCast(m_creature->getVictim(), SpawnCast[2].SpellId);//Psychic Scream
                 SpellTimer2 = SpawnCast[2].Timer2 + (rand()%13 * 1000);
             }else SpellTimer2 -= diff;
 
-            if(SpellTimer3 < diff)
+            if(SpellTimer3 <= diff)
             {
                 DoCast(m_creature->getVictim(), SpawnCast[3].SpellId);//Mind Blast
                 SpellTimer3 = SpawnCast[3].Timer2 + (rand()%8 * 1000);
@@ -1368,13 +1368,13 @@ struct mob_illidari_spawnAI : public ScriptedAI
         //Illidari Highlord
         if(m_creature->GetEntry() == 19797)
         {
-            if(SpellTimer1 < diff)
+            if(SpellTimer1 <= diff)
             {
                 DoCast(m_creature->getVictim(), SpawnCast[4].SpellId);//Curse Of Flames
                 SpellTimer1 = SpawnCast[4].Timer2 + (rand()%10 * 1000);
             }else SpellTimer1 -= diff;
 
-            if(SpellTimer2 < diff)
+            if(SpellTimer2 <= diff)
             {
                 DoCast(m_creature->getVictim(), SpawnCast[5].SpellId);//Flamestrike
                 SpellTimer2 = SpawnCast[5].Timer2 + (rand()%7 * 13000);
@@ -1487,19 +1487,19 @@ struct mob_torloth_the_magnificentAI : public ScriptedAI
 
         if(Timers)
         {
-            if(SpellTimer1 < diff)
+            if(SpellTimer1 <= diff)
             {
                 DoCast(m_creature->getVictim(), SpawnCast[6].SpellId);//Cleave
                 SpellTimer1 = SpawnCast[6].Timer2 + (rand()%10 * 1000);
             }else SpellTimer1 -= diff;
 
-            if(SpellTimer2 < diff)
+            if(SpellTimer2 <= diff)
             {
                 DoCast(m_creature->getVictim(), SpawnCast[7].SpellId);//Shadowfury
                 SpellTimer2 = SpawnCast[7].Timer2 + (rand()%5 * 1000);
             }else SpellTimer2 -= diff;
 
-            if(SpellTimer3 < diff)
+            if(SpellTimer3 <= diff)
             {
                 DoCast(m_creature, SpawnCast[8].SpellId);
                 SpellTimer3 = SpawnCast[8].Timer2 + (rand()%7 * 1000);//Spell Reflection
@@ -1720,13 +1720,13 @@ struct npc_lord_illidan_stormrageAI : public ScriptedAI
 
         if(!LiveCount && WaveCount < 4)
         {
-            if(!Announced && AnnounceTimer < diff)
+            if(!Announced && AnnounceTimer <= diff)
             {
                 DoScriptText(WavesInfo[WaveCount].WaveTextId, m_creature);
                 Announced = true;
             }else AnnounceTimer -= diff;
 
-            if(WaveTimer < diff)
+            if(WaveTimer <= diff)
             {
                 SummonNextWave();
             }else WaveTimer -= diff;
@@ -2281,7 +2281,7 @@ struct npc_AkamaAI : public ScriptedAI
     {
         if (EventStarted && VagathGUID)
         {
-            if (TalkTimer < diff)
+            if (TalkTimer <= diff)
             {
                 TalkTimer = NextStep(Step++);
             }
@@ -2291,7 +2291,7 @@ struct npc_AkamaAI : public ScriptedAI
 
         if(PreludeEventStarted && OlumGUID)
         {
-            if (Step == 16 && !IllidanGUID && TalkTimer < diff)
+            if (Step == 16 && !IllidanGUID && TalkTimer <= diff)
             {
                 Creature* Illidan = m_creature->SummonCreature(ILLIDAN,OlumNewPos[0]-3.0f,OlumNewPos[1]+0.5f,OlumNewPos[2],OlumNewPos[3],TEMPSUMMON_CORPSE_DESPAWN,0);
                 Illidan->SetFloatValue(OBJECT_FIELD_SCALE_X,0.65f);
@@ -2299,7 +2299,7 @@ struct npc_AkamaAI : public ScriptedAI
                 Illidan->SetFlag(UNIT_FIELD_FLAGS,UNIT_FLAG_NOT_SELECTABLE);
                 IllidanGUID = Illidan->GetGUID();
             }
-            if (TalkTimer < diff)
+            if (TalkTimer <= diff)
             {
                 TalkTimer = PreludeNextStep(Step++);
             }
@@ -2393,7 +2393,7 @@ struct npc_shadowlord_triggerAI : public Scripted_NoMovementAI
         if(!m_creature->isInCombat())
             return;
 
-        if(Check_Timer < diff)
+        if(Check_Timer <= diff)
         {
             SoulstealerList.clear();
             counter = 0;
@@ -2423,7 +2423,7 @@ struct npc_shadowlord_triggerAI : public Scripted_NoMovementAI
 
         if(counter)
         {
-            if(Wave_Timer < diff)
+            if(Wave_Timer <= diff)
             {
                 float x,y,z;
                 for(uint8 i = 0; i < 3; ++i)
@@ -2454,7 +2454,7 @@ struct npc_shadowlord_triggerAI : public Scripted_NoMovementAI
 
         if(Reset_Timer)
         {
-            if(Reset_Timer < diff)
+            if(Reset_Timer <= diff)
             {
                 EnterEvadeMode();
                 Reset_Timer = 0;
@@ -2540,7 +2540,7 @@ struct mob_shadowlord_deathwailAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(Check_Timer < diff)
+        if(Check_Timer <= diff)
         {
             Unit* trigger = FindCreature(22096, 100, m_creature);
 
@@ -2577,7 +2577,7 @@ struct mob_shadowlord_deathwailAI : public ScriptedAI
         if(!landed || !UpdateVictim())
             return;
 
-        if(Shadowbolt_Timer < diff)
+        if(Shadowbolt_Timer <= diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_SHADOWBOLT);
             Shadowbolt_Timer = 12000+rand()%6000;
@@ -2585,7 +2585,7 @@ struct mob_shadowlord_deathwailAI : public ScriptedAI
         else
             Shadowbolt_Timer -= diff;
 
-        if(ShadowboltVoley_Timer < diff)
+        if(ShadowboltVoley_Timer <= diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_SHADOWBOLT);
             ShadowboltVoley_Timer = 25000+rand()%15000;
@@ -2593,7 +2593,7 @@ struct mob_shadowlord_deathwailAI : public ScriptedAI
         else
             ShadowboltVoley_Timer -= diff;
 
-        if(Fear_Timer < diff)
+        if(Fear_Timer <= diff)
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30.0, true))
                 AddSpellToCast(target, SPELL_FEAR);
@@ -2602,7 +2602,7 @@ struct mob_shadowlord_deathwailAI : public ScriptedAI
         else
             Fear_Timer -= diff;
 
-        if(Deathcoil_Timer < diff)
+        if(Deathcoil_Timer <= diff)
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30.0, true, m_creature->getVictimGUID()))
                 AddSpellToCast(target, SPELL_DEATHCOIL);
@@ -2871,7 +2871,7 @@ struct npc_maiev_BT_attuAI : public npc_escortAI
 
         if(UpdateVictim())
         {
-            if(FanOfBlades < diff)
+            if(FanOfBlades <= diff)
             {
                 DoCast(m_creature->getVictim(), SPELL_FAN_OF_BLADES);
                 FanOfBlades = urand(8000, 16000);
@@ -2944,7 +2944,7 @@ struct npc_akama_BT_attuAI : public npc_escortAI
     {
         npc_escortAI::UpdateAI(diff);
 
-        if(yell && YellCounter < diff)
+        if(yell && YellCounter <= diff)
         {
             DoYell(AKAMA_YELL, 0, 0);
             yell = false;
@@ -2952,7 +2952,7 @@ struct npc_akama_BT_attuAI : public npc_escortAI
         else
             YellCounter -= diff;
 
-        if(say && KillSayTimer < diff)
+        if(say && KillSayTimer <= diff)
         {
             DoSay(AKAMA_KILL, 0, 0);
             say = false;
@@ -2969,7 +2969,7 @@ struct npc_akama_BT_attuAI : public npc_escortAI
 
         if(UpdateVictim())
         {
-            if(ChainLightning < diff)
+            if(ChainLightning <= diff)
             {
                 DoCast(m_creature->getVictim(), CHAIN_LIGHTNING);
                 ChainLightning = urand(5000, 10000);
@@ -3032,7 +3032,7 @@ struct npc_ashtongue_deathswornAI : public npc_escortAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!intro && AttackTimer < diff)
+        if(!intro && AttackTimer <= diff)
         {
             intro = true;
             if(!HasEscortState(STATE_ESCORT_ESCORTING))
@@ -3114,7 +3114,7 @@ struct mob_illidari_shadowlordAI : public ScriptedAI
     {
         if(UpdateVictim())
         {
-            if(CarrionSwarm < diff)
+            if(CarrionSwarm <= diff)
             {
                 DoCast(m_creature->getVictim(), SPELL_CARRION_SWARM);
                 CarrionSwarm = urand(8000, 16000);
@@ -3122,7 +3122,7 @@ struct mob_illidari_shadowlordAI : public ScriptedAI
             else
                 CarrionSwarm -= diff;
 
-            if(Inferno < diff)
+            if(Inferno <= diff)
             {
                 DoCast(m_creature->getVictim(), SPELL_INFERNO);
                 Inferno = urand(35000, 50000);
@@ -3130,7 +3130,7 @@ struct mob_illidari_shadowlordAI : public ScriptedAI
             else
                 Inferno -= diff;
 
-            if(Sleep < diff)
+            if(Sleep <= diff)
             {
                 if(!urand(0, 3))
                     DoCast(m_creature->getVictim(), SPELL_SLEEP);
@@ -3209,7 +3209,7 @@ struct npc_xiriAI : public Scripted_NoMovementAI
     {
         if(EventStarted)
         {
-            if(QuestTimer < diff)
+            if(QuestTimer <= diff)
             {
                 Player* pl = m_creature->GetPlayer(PlayerGUID);
                 if(pl && pl->GetQuestStatus(10985) == QUEST_STATUS_INCOMPLETE)
@@ -3389,7 +3389,7 @@ struct mob_deathbringer_joovanAI : public ScriptedAI
 
         if(EventStarted)
         {
-            if(EventTimer < diff)
+            if(EventTimer <= diff)
             {
                 switch(EventCounter)
                 {

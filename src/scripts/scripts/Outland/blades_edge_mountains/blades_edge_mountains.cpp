@@ -469,7 +469,7 @@ struct npc_vim_bunnyAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (CheckTimer < diff)
+        if (CheckTimer <= diff)
         {
             if (me->GetDistance2d(3279.80f, 4639.76f) < 5.0)
             {

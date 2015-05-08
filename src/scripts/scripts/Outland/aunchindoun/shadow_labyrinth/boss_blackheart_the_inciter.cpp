@@ -143,7 +143,7 @@ struct boss_blackheart_the_inciterAI : public ScriptedAI
     {
         if(InciteChaos)
         {
-            if(InciteChaosWait_Timer < diff)
+            if(InciteChaosWait_Timer <= diff)
             {
                 InciteChaos = false;
                 DoZoneInCombat();
@@ -164,7 +164,7 @@ struct boss_blackheart_the_inciterAI : public ScriptedAI
         else
             TrashAggro();
 
-        if(InciteChaos_Timer < diff)
+        if(InciteChaos_Timer <= diff)
         {
             DoCast(me, SPELL_INCITE_CHAOS);
 
@@ -193,7 +193,7 @@ struct boss_blackheart_the_inciterAI : public ScriptedAI
             InciteChaos_Timer -= diff;
 
         //Charge_Timer
-        if (Charge_Timer < diff)
+        if (Charge_Timer <= diff)
         {
             if (Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, 50, true))
                 DoCast(target, SPELL_CHARGE);
@@ -203,7 +203,7 @@ struct boss_blackheart_the_inciterAI : public ScriptedAI
             Charge_Timer -= diff;
 
         //Knockback_Timer
-        if (Knockback_Timer < diff)
+        if (Knockback_Timer <= diff)
         {
             DoCast(me, SPELL_WAR_STOMP);
             Knockback_Timer = 20000;

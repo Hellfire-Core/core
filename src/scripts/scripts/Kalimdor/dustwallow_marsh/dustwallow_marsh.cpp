@@ -102,14 +102,14 @@ struct mobs_risen_husk_spiritAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if( ConsumeFlesh_Timer < diff )
+        if( ConsumeFlesh_Timer <= diff )
         {
             if( m_creature->GetEntry() == 23555 )
                 DoCast(m_creature,SPELL_CONSUME_FLESH);
             ConsumeFlesh_Timer = 15000;
         } else ConsumeFlesh_Timer -= diff;
 
-        if( IntangiblePresence_Timer < diff )
+        if( IntangiblePresence_Timer <= diff )
         {
             if( m_creature->GetEntry() == 23554 )
                 DoCast(m_creature,SPELL_INTANGIBLE_PRESENCE);
@@ -330,7 +330,7 @@ struct npc_theramore_combat_dummyAI : public Scripted_NoMovementAI
         if (!UpdateVictim())
             return;
 
-        if (attacker && Check_Timer < diff)
+        if (attacker && Check_Timer <= diff)
         {
             if(m_creature->GetDistance2d(attacker) > 12.0f)
                 EnterEvadeMode();

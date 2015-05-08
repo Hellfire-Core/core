@@ -357,7 +357,7 @@ struct mob_coilfang_guardianAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (m_harmstringTimer < diff)
+        if (m_harmstringTimer <= diff)
         {
             AddSpellToCast(SPELL_HARMSTRING);
             m_harmstringTimer = 10500;
@@ -365,7 +365,7 @@ struct mob_coilfang_guardianAI : public ScriptedAI
         else
             m_harmstringTimer -= diff;
 
-        if (m_arcingTimer < diff)
+        if (m_arcingTimer <= diff)
         {
             AddSpellToCast(SPELL_ARCING_SMASH);
             m_arcingTimer = urand(10000, 20000);
@@ -409,7 +409,7 @@ struct mob_coilfang_ambusherAI : public Scripted_NoMovementAI
         if (!UpdateVictim())
             return;
 
-        if (m_spreadTimer < diff)
+        if (m_spreadTimer <= diff)
         {
             AddSpellToCast(SPELL_SPREAD_SHOT, CAST_RANDOM);
             m_spreadTimer = urand(10000, 20000);
@@ -417,7 +417,7 @@ struct mob_coilfang_ambusherAI : public Scripted_NoMovementAI
         else
             m_spreadTimer -= diff;
 
-        if (m_shootTimer < diff)
+        if (m_shootTimer <= diff)
         {
             AddSpellToCast(SPELL_NORMAL_SHOT, CAST_RANDOM);
             m_shootTimer = 2000;

@@ -100,7 +100,7 @@ struct boss_ysondreAI : public ScriptedAI
             return;
 
         Sleep_Timer -= diff;
-        if (Sleep_Timer < diff)
+        if (Sleep_Timer <= diff)
         {
             if( Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0) )
                 DoCast(target,SPELL_SLEEP);
@@ -110,7 +110,7 @@ struct boss_ysondreAI : public ScriptedAI
         
 
         NoxiousBreath_Timer -= diff;
-        if (NoxiousBreath_Timer < diff)
+        if (NoxiousBreath_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_NOXIOUSBREATH);
             NoxiousBreath_Timer += 14000 + rand()%6000;
@@ -119,7 +119,7 @@ struct boss_ysondreAI : public ScriptedAI
            
 
         TailSweep_Timer -= diff;
-        if (TailSweep_Timer < diff)
+        if (TailSweep_Timer <= diff)
         {
             if( Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0) )
                 DoCast(target,SPELL_TAILSWEEP);
@@ -130,14 +130,14 @@ struct boss_ysondreAI : public ScriptedAI
           
 
         //MarkOfNature_Timer -= diff;
-        //if (MarkOfNature_Timer < diff)
+        //if (MarkOfNature_Timer <= diff)
         //{
         //    DoCast(m_creature->getVictim(),SPELL_MARKOFNATURE);
         //    MarkOfNature_Timer += 45000;
         //}
 
         LightningWave_Timer -= diff;
-        if (LightningWave_Timer < diff)
+        if (LightningWave_Timer <= diff)
         {
             //Cast LIGHTNINGWAVE on a Random target
             if( Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0) )
@@ -150,7 +150,7 @@ struct boss_ysondreAI : public ScriptedAI
         if ( (int) (m_creature->GetHealth()*100 / m_creature->GetMaxHealth() +0.5) == 75)
         {
             SummonDruids1_Timer -= diff;
-            if (SummonDruids1_Timer < diff)
+            if (SummonDruids1_Timer <= diff)
             {
                 // summon 10 druids
                 Unit* target = NULL;
@@ -168,7 +168,7 @@ struct boss_ysondreAI : public ScriptedAI
         if ( (int) (m_creature->GetHealth()*100 / m_creature->GetMaxHealth() +0.5) == 50)
         {
             SummonDruids2_Timer -= diff;
-            if (SummonDruids2_Timer < diff)
+            if (SummonDruids2_Timer <= diff)
             {
                 // summon 10 druids
                 Unit* target = NULL;
@@ -186,7 +186,7 @@ struct boss_ysondreAI : public ScriptedAI
         if ( (int) (m_creature->GetHealth()*100 / m_creature->GetMaxHealth() +0.5) == 25)
         {
             SummonDruids3_Timer -= diff;
-            if (SummonDruids3_Timer < diff)
+            if (SummonDruids3_Timer <= diff)
             {
                 // summon 10 druids
                 Unit* target = NULL;
@@ -224,7 +224,7 @@ struct mob_dementeddruidsAI : public ScriptedAI
             return;
 
         MoonFire_Timer -= diff;
-        if (MoonFire_Timer < diff)
+        if (MoonFire_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_MOONFIRE);
             MoonFire_Timer += 5000;

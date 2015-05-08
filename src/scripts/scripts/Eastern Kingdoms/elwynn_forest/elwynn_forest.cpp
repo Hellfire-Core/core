@@ -64,7 +64,7 @@ struct npc_henze_faulkAI : public ScriptedAI
     {
         if (!m_creature->GetUInt32Value(UNIT_FIELD_BYTES_1))
         {
-            if(lifeTimer < diff)
+            if(lifeTimer <= diff)
             {
                 EnterEvadeMode();
                 return;

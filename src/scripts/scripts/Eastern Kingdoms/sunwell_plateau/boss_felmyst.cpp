@@ -644,7 +644,7 @@ struct boss_felmystAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if(PulseCombat < diff)
+        if(PulseCombat <= diff)
         {
             DoZoneInCombat();
             PulseCombat = 2000;

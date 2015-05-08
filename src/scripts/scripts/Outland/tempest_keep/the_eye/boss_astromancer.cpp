@@ -200,7 +200,7 @@ struct boss_high_astromancer_solarianAI : public ScriptedAI
             return;
 
         //Check_Timer
-        if(Check_Timer < diff)
+        if(Check_Timer <= diff)
         {
             if(!m_creature->IsWithinDistInMap(&wLoc, 135.0f))
                 EnterEvadeMode();
@@ -217,7 +217,7 @@ struct boss_high_astromancer_solarianAI : public ScriptedAI
             m_creature->StopMoving();
             m_creature->AttackStop();
 
-            if(AppearDelay_Timer < diff)
+            if(AppearDelay_Timer <= diff)
             {
                 AppearDelay = false;
 
@@ -235,7 +235,7 @@ struct boss_high_astromancer_solarianAI : public ScriptedAI
 
         if(Phase == 1)
         {
-            if(BlindingLight_Timer < diff)
+            if(BlindingLight_Timer <= diff)
             {
                 BlindingLight = true;
                 BlindingLight_Timer = 45000;
@@ -243,7 +243,7 @@ struct boss_high_astromancer_solarianAI : public ScriptedAI
             else
                 BlindingLight_Timer -= diff;
 
-            if(Wrath_Timer < diff)
+            if(Wrath_Timer <= diff)
             {
                 m_creature->InterruptNonMeleeSpells(false);
 
@@ -255,7 +255,7 @@ struct boss_high_astromancer_solarianAI : public ScriptedAI
             else
                 Wrath_Timer -= diff;
 
-            if(ArcaneMissiles_Timer < diff)
+            if(ArcaneMissiles_Timer <= diff)
             {
                 if(BlindingLight)
                 {
@@ -280,7 +280,7 @@ struct boss_high_astromancer_solarianAI : public ScriptedAI
             else
                 ArcaneMissiles_Timer -= diff;
 
-            if(MarkOfTheSolarian_Timer < diff)
+            if(MarkOfTheSolarian_Timer <= diff)
             {
                 DoCast(m_creature->getVictim(), MARK_OF_SOLARIAN);
                 MarkOfTheSolarian_Timer = 45000;
@@ -288,7 +288,7 @@ struct boss_high_astromancer_solarianAI : public ScriptedAI
             else
                 MarkOfTheSolarian_Timer -= diff;
 
-            if(MarkOfTheAstromancer_Timer < diff) //A debuff that lasts for 5 seconds, cast several times each phase on a random raid member, but not the main tank
+            if(MarkOfTheAstromancer_Timer <= diff) //A debuff that lasts for 5 seconds, cast several times each phase on a random raid member, but not the main tank
             {
                 Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 1, GetSpellMaxRange(SPELL_MARK_OF_THE_ASTROMANCER), true, m_creature->getVictimGUID());
 
@@ -303,7 +303,7 @@ struct boss_high_astromancer_solarianAI : public ScriptedAI
                 MarkOfTheAstromancer_Timer -= diff;
 
             //Phase1_Timer
-            if(Phase1_Timer < diff)
+            if(Phase1_Timer <= diff)
             {
                 Phase = 2;
                 Phase1_Timer = 50000;
@@ -356,7 +356,7 @@ struct boss_high_astromancer_solarianAI : public ScriptedAI
             m_creature->AttackStop();
             m_creature->StopMoving();
 
-            if (Phase2_Timer < diff)
+            if (Phase2_Timer <= diff)
             {
                 Phase = 3;
                 for (int i=0; i<=2; i++)
@@ -375,7 +375,7 @@ struct boss_high_astromancer_solarianAI : public ScriptedAI
             m_creature->StopMoving();
 
             //Check Phase3_Timer
-            if(Phase3_Timer < diff)
+            if(Phase3_Timer <= diff)
             {
                 Phase = 1;
 
@@ -401,7 +401,7 @@ struct boss_high_astromancer_solarianAI : public ScriptedAI
         else if(Phase == 4)
         {
             //Fear_Timer
-            if (Fear_Timer < diff)
+            if (Fear_Timer <= diff)
             {
                 DoCast(m_creature->getVictim(), SPELL_FEAR);
                 Fear_Timer = 20000;
@@ -410,7 +410,7 @@ struct boss_high_astromancer_solarianAI : public ScriptedAI
                 Fear_Timer -= diff;
 
             //VoidBolt_Timer
-            if (VoidBolt_Timer < diff)
+            if (VoidBolt_Timer <= diff)
             {
                 DoCast(m_creature->getVictim(), SPELL_VOID_BOLT);
                 VoidBolt_Timer = 10000;
@@ -467,7 +467,7 @@ struct mob_solarium_priestAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (healTimer < diff)
+        if (healTimer <= diff)
         {
             Unit* target = NULL;
 
@@ -480,13 +480,13 @@ struct mob_solarium_priestAI : public ScriptedAI
             }
         } else healTimer -= diff;
 
-        if(holysmiteTimer < diff)
+        if(holysmiteTimer <= diff)
         {
             DoCast(m_creature->getVictim(), SOLARIUM_SMITE);
             holysmiteTimer = 4000;
         } else holysmiteTimer -= diff;
 
-        if (aoesilenceTimer < diff)
+        if (aoesilenceTimer <= diff)
         {
             DoCast(m_creature->getVictim(), SOLARIUM_SILENCE);
             aoesilenceTimer = 13000;

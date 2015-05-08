@@ -297,7 +297,7 @@ void BattleGround::Update(uint32 diff)
             else
                 SendMessageToAll(LANG_BATTLEGROUND_PREMATURE_FINISH_WARNING);
         }
-        else if (m_PrematureCountDownTimer < diff)
+        else if (m_PrematureCountDownTimer <= diff)
         {
             // time's up!
             EndBattleGround(0); // noone wins

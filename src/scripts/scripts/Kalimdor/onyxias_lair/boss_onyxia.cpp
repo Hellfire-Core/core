@@ -294,7 +294,7 @@ struct boss_onyxiaAI : public ScriptedAI
 
         UpdatePhase();
 
-        if (m_rangeCheckTimer < diff)
+        if (m_rangeCheckTimer <= diff)
         {
             Map::PlayerList const &PlayerList = me->GetMap()->GetPlayers();
 
@@ -311,7 +311,7 @@ struct boss_onyxiaAI : public ScriptedAI
 
         if (m_phaseMask & PHASE_1)
         {
-            if (m_flameBreathTimer < diff)
+            if (m_flameBreathTimer <= diff)
             {
                 DoCast(m_creature->getVictim(), SPELL_FLAMEBREATH);
                 m_flameBreathTimer = irand(16, 28) * 1000;
@@ -319,7 +319,7 @@ struct boss_onyxiaAI : public ScriptedAI
             else
                 m_flameBreathTimer -= diff;
 
-            if (m_cleaveTimer < diff)
+            if (m_cleaveTimer <= diff)
             {
                 DoCast(m_creature->getVictim(), SPELL_CLEAVE);
                 m_cleaveTimer = irand(4, 10) * 1000;
@@ -327,7 +327,7 @@ struct boss_onyxiaAI : public ScriptedAI
             else
                 m_cleaveTimer -= diff;
 
-            if (m_tailSweepTimer < diff)
+            if (m_tailSweepTimer <= diff)
             {
                 DoCast(m_creature->getVictim(), SPELL_TAILSWEEP);
                 m_tailSweepTimer = irand(6, 14) * 1000;
@@ -335,7 +335,7 @@ struct boss_onyxiaAI : public ScriptedAI
             else
                 m_tailSweepTimer -= diff;
 
-            if (m_knockBackTimer < diff)
+            if (m_knockBackTimer <= diff)
             {
                 DoCast(m_creature->getVictim(), SPELL_KNOCK_AWAY);
                 m_knockBackTimer = irand(22, 32) * 1000;
@@ -343,7 +343,7 @@ struct boss_onyxiaAI : public ScriptedAI
             else
                 m_knockBackTimer -= diff;
 
-            if (m_wingBuffetTimer < diff)
+            if (m_wingBuffetTimer <= diff)
             {
                 DoCast(m_creature->getVictim(), SPELL_WINGBUFFET);
                 m_wingBuffetTimer = irand(24, 36) * 1000;
@@ -354,7 +354,7 @@ struct boss_onyxiaAI : public ScriptedAI
 
         if (m_phaseMask & PHASE_3)
         {
-            if (m_eruptionTimer < diff)
+            if (m_eruptionTimer <= diff)
             {
                 if (pInstance)
                     pInstance->SetData(DATA_ERUPT, 0);
@@ -365,7 +365,7 @@ struct boss_onyxiaAI : public ScriptedAI
             else
                 m_eruptionTimer -= diff;
 
-            if (m_fearTimer < diff)
+            if (m_fearTimer <= diff)
             {
                 m_fearTimer = irand(10, 30) * 1000;
                 DoCast(m_creature->getVictim(), SPELL_BELLOWINGROAR);
@@ -378,7 +378,7 @@ struct boss_onyxiaAI : public ScriptedAI
         {
             if (m_nextWay)
             {
-                if (m_nextMoveTimer < diff)
+                if (m_nextMoveTimer <= diff)
                 {
                     m_creature->InterruptNonMeleeSpells(false);
                     m_creature->GetMotionMaster()->MovePoint(m_nextWay, flyLocations[m_nextWay-2].x, flyLocations[m_nextWay-2].y, flyLocations[m_nextWay-2].z);
@@ -391,7 +391,7 @@ struct boss_onyxiaAI : public ScriptedAI
 
         if (m_phaseMask & (PHASE_3 | PHASE_2))
         {
-            if (m_summonWhelpsTimer < diff)
+            if (m_summonWhelpsTimer <= diff)
             {
                 if (pInstance)
                     pInstance->SetData(DATA_HATCH_EGGS, 2);
@@ -457,7 +457,7 @@ struct mob_onyxiawhelpAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if (m_pyroblastTimer < diff)
+        if (m_pyroblastTimer <= diff)
         {
             DoCast(m_creature->getVictim(), SPELL_PYROBLAST);
             m_pyroblastTimer = 6000 + irand(0, 6)*1000;

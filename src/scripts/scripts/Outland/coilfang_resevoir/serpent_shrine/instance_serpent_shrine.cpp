@@ -415,7 +415,7 @@ struct instance_serpentshrine_cavern : public ScriptedInstance
         //Lurker Fishing event
         if (LurkerSubEvent == LURKER_FISHING)
         {
-            if (FishingTimer < diff)
+            if (FishingTimer <= diff)
             {
                 LurkerSubEvent = LURKER_HOOKED;
                 SetData(DATA_STRANGE_POOL, IN_PROGRESS);//just fished, signal Lurker script to emerge and start fight, we use IN_PROGRESS so it won't get saved and lurker will be alway invis at start if server restarted
@@ -424,7 +424,7 @@ struct instance_serpentshrine_cavern : public ScriptedInstance
                 FishingTimer -= diff;
         }
 
-        if (trashCheckTimer < diff)
+        if (trashCheckTimer <= diff)
         {
             if (Encounters[2] == NOT_STARTED)   // check and change water state only if lurker event is not started
             {
@@ -445,7 +445,7 @@ struct instance_serpentshrine_cavern : public ScriptedInstance
             trashCheckTimer -= diff;
 
         //Water checks
-        if (WaterCheckTimer < diff)
+        if (WaterCheckTimer <= diff)
         {
             Map::PlayerList const &PlayerList = instance->GetPlayers();
             if (PlayerList.isEmpty())
@@ -463,7 +463,7 @@ struct instance_serpentshrine_cavern : public ScriptedInstance
                         {
                             if (!pPlayer->HasAura(SPELL_SCALDINGWATER))
                             {
-                               if (ScaldingWaterDelayer < diff) // this timer (delayer) prevents multiple application of this buff when player jumps in water (sometimes >3k damage)
+                               if (ScaldingWaterDelayer <= diff) // this timer (delayer) prevents multiple application of this buff when player jumps in water (sometimes >3k damage)
                                {
                                   pPlayer->CastSpell(pPlayer, SPELL_SCALDINGWATER, true);
                                   ScaldingWaterDelayer = 500;
@@ -511,7 +511,7 @@ struct instance_serpentshrine_cavern : public ScriptedInstance
         else
             WaterCheckTimer -= diff;
 
-        if (FrenzySpawnTimer < diff)
+        if (FrenzySpawnTimer <= diff)
         {
             DoSpawnFrenzy = true;
             FrenzySpawnTimer = 500;

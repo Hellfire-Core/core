@@ -95,7 +95,7 @@ struct mob_ancient_wispAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(CheckTimer < diff)
+        if(CheckTimer <= diff)
         {
             if (Unit* pArchimonde = Unit::GetUnit((*me), pInstance->GetData64(DATA_ARCHIMONDE)))
             {
@@ -210,7 +210,7 @@ struct mob_doomfire_targettingAI : public NullCreatureAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (SummonTimer < diff)
+        if (SummonTimer <= diff)
         {
             Unit* pArchimonde = pInstance->GetCreature(pInstance->GetData64(DATA_ARCHIMONDE));
             if (pArchimonde && pArchimonde->isAlive())
@@ -458,7 +458,7 @@ struct boss_archimondeAI : public hyjal_trashAI
                 }
             }
 
-            if (DrainNordrassilTimer < diff)
+            if (DrainNordrassilTimer <= diff)
             {
                 if (!IsChanneling)
                 {
@@ -488,7 +488,7 @@ struct boss_archimondeAI : public hyjal_trashAI
         if (!UpdateVictim() && !HealthBelowPct(10.0f))
             return;
 
-        if (CheckTimer < diff)
+        if (CheckTimer <= diff)
         {
             if (!me->IsWithinDistInMap(&wLoc, 125))
             {
@@ -506,7 +506,7 @@ struct boss_archimondeAI : public hyjal_trashAI
 
         if (!Enraged)
         {
-            if (EnrageTimer < diff)
+            if (EnrageTimer <= diff)
             {
                 if (!HealthBelowPct(10.0f))
                 {
@@ -519,7 +519,7 @@ struct boss_archimondeAI : public hyjal_trashAI
             else
                 EnrageTimer -= diff;
 
-            if(CheckDistanceTimer < diff)
+            if(CheckDistanceTimer <= diff)
             {
                 if(me->GetDistance2d(wLoc.coord_x, wLoc.coord_y) > 80.0)
                 {
@@ -547,7 +547,7 @@ struct boss_archimondeAI : public hyjal_trashAI
                 Enraged = true;
             }
 
-            if (SummonWispTimer < diff)
+            if (SummonWispTimer <= diff)
             {
                 if (Creature* pWisp = DoSpawnCreature(CREATURE_ANCIENT_WISP, rand()%40, rand()%40, 0, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 15000))
                     pWisp->AI()->AttackStart(me);
@@ -569,7 +569,7 @@ struct boss_archimondeAI : public hyjal_trashAI
 
         if (Enraged)
         {
-            if (HandOfDeathTimer < diff)
+            if (HandOfDeathTimer <= diff)
             {
                 ForceSpellCast(me, SPELL_HAND_OF_DEATH, INTERRUPT_AND_CAST_INSTANTLY);
                 HandOfDeathTimer = 2000;
@@ -579,7 +579,7 @@ struct boss_archimondeAI : public hyjal_trashAI
             return;                                         // Don't do anything after this point.
         }
 
-        if (SoulChargeTimer < diff)
+        if (SoulChargeTimer <= diff)
         {
             if (!SoulChargeUnleash)
             {
@@ -612,7 +612,7 @@ struct boss_archimondeAI : public hyjal_trashAI
 
         if (SoulChargeUnleash)
         {
-            if (SoulChargeUnleashTimer < diff)
+            if (SoulChargeUnleashTimer <= diff)
             {
                 while (me->HasAura(chargeSpell, 0))
                 {
@@ -636,7 +636,7 @@ struct boss_archimondeAI : public hyjal_trashAI
                 SoulChargeUnleashTimer -= diff;
         }
 
-        if (GripOfTheLegionTimer < diff)
+        if (GripOfTheLegionTimer <= diff)
         {
             if (Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true))
             {
@@ -651,7 +651,7 @@ struct boss_archimondeAI : public hyjal_trashAI
         else
             GripOfTheLegionTimer -= diff;
 
-        if (AirBurstTimer < diff)
+        if (AirBurstTimer <= diff)
         {
             if (Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true, me->getVictimGUID()))
             {
@@ -666,7 +666,7 @@ struct boss_archimondeAI : public hyjal_trashAI
         else
             AirBurstTimer -= diff;
 
-        if (FearTimer < diff)
+        if (FearTimer <= diff)
         {
             AddSpellToCast(me, SPELL_FEAR);
             FearTimer = 42000;
@@ -674,7 +674,7 @@ struct boss_archimondeAI : public hyjal_trashAI
         else
             FearTimer -= diff;
 
-        if (DoomfireTimer < diff)
+        if (DoomfireTimer <= diff)
         {
             //SummonDoomfire();
             if (roll_chance_f(20.0f)) //20% chance on yell
@@ -685,7 +685,7 @@ struct boss_archimondeAI : public hyjal_trashAI
         else
             DoomfireTimer -= diff;
 
-        if (MeleeRangeCheckTimer < diff)
+        if (MeleeRangeCheckTimer <= diff)
         {
             if (CanUseFingerOfDeath())
             {

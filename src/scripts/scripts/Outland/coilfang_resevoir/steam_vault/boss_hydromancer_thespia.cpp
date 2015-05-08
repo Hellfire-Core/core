@@ -108,7 +108,7 @@ struct boss_thespiaAI : public ScriptedAI
             return;
 
         //LightningCloud_Timer
-        if (LightningCloud_Timer < diff)
+        if (LightningCloud_Timer <= diff)
         {
             //cast twice in Heroic mode
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0))
@@ -120,7 +120,7 @@ struct boss_thespiaAI : public ScriptedAI
         }else LightningCloud_Timer -=diff;
 
         //LungBurst_Timer
-        if (LungBurst_Timer < diff)
+        if (LungBurst_Timer <= diff)
         {
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0))
                 DoCast(target, SPELL_LUNG_BURST);
@@ -128,7 +128,7 @@ struct boss_thespiaAI : public ScriptedAI
         }else LungBurst_Timer -=diff;
 
         //EnvelopingWinds_Timer
-        if (EnvelopingWinds_Timer < diff)
+        if (EnvelopingWinds_Timer <= diff)
         {
             //cast twice in Heroic mode
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0))
@@ -166,7 +166,7 @@ struct mob_coilfang_waterelementalAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (WaterBoltVolley_Timer < diff)
+        if (WaterBoltVolley_Timer <= diff)
         {
             DoCast(me, HeroicMode ? H_SPELL_WATER_BOLT_VOLLEY : SPELL_WATER_BOLT_VOLLEY);
             WaterBoltVolley_Timer = 7000+rand()%5000;

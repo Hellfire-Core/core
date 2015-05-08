@@ -107,7 +107,7 @@ struct custom_exampleAI : public ScriptedAI
         if (!m_creature->getVictim())
         {
             //Random Say timer
-            if (Say_Timer < diff)
+            if (Say_Timer <= diff)
             {
                 //Random switch between 5 outcomes
                 switch (rand()%5)
@@ -144,7 +144,7 @@ struct custom_exampleAI : public ScriptedAI
                 Say_Timer -= diff;
 
             //Rebuff timer
-            if (Rebuff_Timer < diff)
+            if (Rebuff_Timer <= diff)
             {
                 DoCast(m_creature,SPELL_BUFF);
                 Rebuff_Timer = 900000;                      //Rebuff agian in 15 minutes
@@ -158,7 +158,7 @@ struct custom_exampleAI : public ScriptedAI
             return;
 
         //Spell 1 timer
-        if (Spell_1_Timer < diff)
+        if (Spell_1_Timer <= diff)
         {
             //Cast spell one on our current target.
             if (rand()%50 > 10)
@@ -173,7 +173,7 @@ struct custom_exampleAI : public ScriptedAI
             Spell_1_Timer -= diff;
 
         //Spell 2 timer
-        if (Spell_2_Timer < diff)
+        if (Spell_2_Timer <= diff)
         {
             //Cast spell one on our current target.
             DoCast(m_creature->getVictim(),SPELL_TWO);
@@ -185,7 +185,7 @@ struct custom_exampleAI : public ScriptedAI
 
         //Spell 3 timer
         if (Phase > 1)
-            if (Spell_3_Timer < diff)
+            if (Spell_3_Timer <= diff)
         {
             //Cast spell one on our current target.
             DoCast(m_creature->getVictim(),SPELL_THREE);
@@ -197,7 +197,7 @@ struct custom_exampleAI : public ScriptedAI
 
         //Beserk timer
         if (Phase > 1)
-            if (Beserk_Timer < diff)
+            if (Beserk_Timer <= diff)
         {
             //Say our line then cast uber death spell
             DoPlaySoundToSet(m_creature,8588);
@@ -212,7 +212,7 @@ struct custom_exampleAI : public ScriptedAI
 
         //Phase timer
         if (Phase == 1)
-            if (Phase_Timer < diff)
+            if (Phase_Timer <= diff)
             {
                 //Go to next phase
                 Phase++;

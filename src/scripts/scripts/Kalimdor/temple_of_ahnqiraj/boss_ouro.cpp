@@ -90,21 +90,21 @@ struct boss_ouroAI : public ScriptedAI
             return;
 
         //Sweep_Timer
-        if (!Submerged && Sweep_Timer < diff)
+        if (!Submerged && Sweep_Timer <= diff)
         {
             DoCast(m_creature->getVictim(), SPELL_SWEEP);
             Sweep_Timer = 15000 + rand()%15000;
         }else Sweep_Timer -= diff;
 
         //SandBlast_Timer
-        if (!Submerged && SandBlast_Timer < diff)
+        if (!Submerged && SandBlast_Timer <= diff)
         {
             DoCast(m_creature->getVictim(), SPELL_SANDBLAST);
             SandBlast_Timer = 20000 + rand()%15000;
         }else SandBlast_Timer -= diff;
 
         //Submerge_Timer
-        if (!Submerged && Submerge_Timer < diff)
+        if (!Submerged && Submerge_Timer <= diff)
         {
             //Cast
             m_creature->HandleEmoteCommand(EMOTE_ONESHOT_SUBMERGE);
@@ -117,7 +117,7 @@ struct boss_ouroAI : public ScriptedAI
         }else Submerge_Timer -= diff;
 
         //ChangeTarget_Timer
-        if (Submerged && ChangeTarget_Timer < diff)
+        if (Submerged && ChangeTarget_Timer <= diff)
         {
             Unit* target = NULL;
             target = SelectUnit(SELECT_TARGET_RANDOM,0);
@@ -129,7 +129,7 @@ struct boss_ouroAI : public ScriptedAI
         }else ChangeTarget_Timer -= diff;
 
         //Back_Timer
-        if (Submerged && Back_Timer < diff)
+        if (Submerged && Back_Timer <= diff)
         {
             m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             m_creature->setFaction(14);
