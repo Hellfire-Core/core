@@ -326,13 +326,9 @@ void BattleGround::RestorePet(Player* plr)
     Pet* ThePet;
     if (plr->getClass() == CLASS_HUNTER)
     {
-        ThePet = plr->GetPet();
-        if (!ThePet || ThePet->GetMap() != plr->GetMap() || ThePet->getPetType() != HUNTER_PET)
+        ThePet = new Pet();
+        if (!ThePet->LoadPetFromDB(plr,0,0,false))
             return;
-
-        float px, py, pz;
-        plr->GetNearPoint(px, py, pz, ThePet->GetObjectSize());
-        ThePet->NearTeleportTo(px, py, pz, ThePet->GetOrientation());
 
         if (ThePet->isDead())
         {
