@@ -67,6 +67,7 @@ class DynamicObject : public WorldObject
         void YellToZone(int32 textId, uint32 language, uint64 TargetGuid) { MonsterYellToZone(textId,language,TargetGuid); }
 
         GridReference<DynamicObject> &GetGridRef() { return m_gridRef; }
+        bool m_ignore_los;
     protected:
         uint64 m_casterGuid;
         uint32 m_spellId;
