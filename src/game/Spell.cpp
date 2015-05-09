@@ -990,7 +990,7 @@ void Spell::DoAllEffectOnTarget(TargetInfo *target)
         {
             if (BattleGround *bg = ((Player*)caster)->GetBattleGround())
                 bg->UpdatePlayerScore(((Player*)caster), SCORE_HEALING_DONE, gain);
-            
+
             if (caster->GetMap() && caster->GetMap()->IsDungeon() && ((InstanceMap*)caster->GetMap())->GetInstanceData())
                 ((InstanceMap*)caster->GetMap())->GetInstanceData()->OnPlayerHealDamage(caster->ToPlayer(),gain);
         }
@@ -2535,7 +2535,7 @@ void Spell::cast(bool skipCheck)
         return;
     }
 
-    if (m_caster->GetTypeId() != TYPEID_PLAYER && m_targets.getUnitTarget() && m_targets.getUnitTarget() != m_caster && m_targets.getUnitTargetGUID() != NULL)
+    if (m_caster->GetTypeId() != TYPEID_PLAYER && m_targets.getUnitTarget() && m_targets.getUnitTarget() != m_caster && m_targets.getUnitTargetGUID() != 0)
         m_caster->SetInFront(m_targets.getUnitTarget());
 
     if (!IsTriggeredSpell() || IsAutoShootSpell())

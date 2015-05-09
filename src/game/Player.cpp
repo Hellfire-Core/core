@@ -518,7 +518,7 @@ Player::~Player ()
 
     delete m_declinedname;
 
-    DeleteCharmAI();    
+    DeleteCharmAI();
 }
 
 void Player::CleanupsBeforeDelete()
@@ -2467,7 +2467,7 @@ void Player::GiveXP(uint32 xp, Unit* victim)
             }
         }
     }
-    
+
     // XP resting bonus for kill
     uint32 bonus_xp = 0;
     bool ReferAFriend = false;
@@ -4790,7 +4790,7 @@ void Player::UpdateLocalChannels(uint32 newZone)
 
         if (ch->flags & CHANNEL_DBC_FLAG_GLOBAL)//Global channels
             continue;
-        
+
         if ((ch->flags & CHANNEL_DBC_FLAG_TRADE) && sWorld.getConfig(CONFIG_GLOBAL_TRADE_CHANNEL))//trade channel
             continue;
 
@@ -6367,7 +6367,7 @@ bool Player::RewardHonor(Unit *uVictim, uint32 groupsize, float honor, bool pvpt
                 {
                     std::stringstream stream;
                     stream << "Possible HK / Honor farming exploit (killer: " << GetName() << ", victim: " << pVictim->GetName() << ") kills count: " << killsCount;
-        
+
                     sWorld.SendGMText(LANG_POSSIBLE_CHEAT, stream.str().c_str(), GetName(), GetName());
                     sLog.outLog(LOG_EXPLOITS_CHEATS, "%s", stream.str().c_str());
                 }
@@ -14965,7 +14965,7 @@ bool Player::LoadFromDB(uint32 guid, SqlQueryHolder *holder)
         m_deathState = DEAD;
 
     _LoadSpells(holder->GetResult(PLAYER_LOGIN_QUERY_LOADSPELLS));
-    
+
     //Ugly hacky one - give summon friend spell to players created before RAF implement
     if (GetAccountLinkedState() != STATE_NOT_LINKED)
         learnSpell(45927);
@@ -15079,7 +15079,7 @@ bool Player::LoadFromDB(uint32 guid, SqlQueryHolder *holder)
             break;
         }
     }
-    
+
     if (GetSession()->HasPermissions(PERM_GMT_HDEV))
     {
         switch (sWorld.getConfig(CONFIG_GM_WISPERING_TO))
@@ -15458,8 +15458,8 @@ void Player::_LoadInventory(QueryResultAutoPtr result, uint32 timediff)
                         sLog.outLog(LOG_DEFAULT, "ERROR: Player::_LoadInventory: Player %s is loading item (GUID: %u Entry: %u) bun in its place there was (GUID: %u Entry: %u), will send old by mail",
                             GetName(), item_guid, item_id, oldItem->GetGUIDLow(), oldItem->GetEntry());
                         // other cleaning stuff will be done by StoreItem
-                        oldItem->SetContainer(NULL); 
-                        oldItem->SetSlot(NULL);
+                        oldItem->SetContainer(NULL);
+                        oldItem->SetSlot(0);
                         // player is not in game yet, no update needed
                         RealmDataDatabase.PExecute("DELETE FROM character_inventory WHERE item = '%u'", oldItem->GetGUIDLow());
                         problematicItems.push_back(oldItem);
@@ -15889,11 +15889,11 @@ void Player::UnbindInstance(BoundInstancesMap::iterator &itr, uint8 difficulty, 
     {
         if (!unload)
             RealmDataDatabase.PExecute("DELETE FROM character_instance WHERE guid = '%u' AND instance = '%u'", GetGUIDLow(), itr->second.save->GetInstanceId());
-        
+
         InstanceSave* save = itr->second.save;
         if (save != nullptr)
             save->RemovePlayer(GetGUID());
-        
+
         m_boundInstances[difficulty].erase(itr++);
     }
 }
@@ -19731,7 +19731,7 @@ bool Player::CanBeSummonedBy(const Unit * summoner)
                     return false;
             }
             // no else, might creature/GO/item be a summoner?
-        }            
+        }
     }
 
     return true;
@@ -21507,7 +21507,7 @@ void Player::buyFreeRespec()
         ChatHandler(this).SendSysMessage(LANG_FREE_RESPEC_NOT_ENOUGH_MONEY);
         return;
     }
-    
+
     ModifyMoney((-1)*((int32)required));
     m_freeTalentRespecTime = sWorld.GetGameTime() + sWorld.getConfig(CONFIG_FREE_RESPEC_DURATION);
     RealmDataDatabase.PExecute("DELETE FROM character_freerespecs WHERE guid = %u;",GetGUIDLow());

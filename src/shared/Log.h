@@ -83,6 +83,7 @@ class Log
                                                             // any log level
         void outString();
         void outString(const char * str, ...)       ATTR_PRINTF(2, 3);
+        void outLog(LogNames log);
         void outLog(LogNames log, const char * str, ...) ATTR_PRINTF(3, 4);
                                                             // log level >= 1
         void outBasic(const char * str, ...)        ATTR_PRINTF(2, 3);
@@ -140,6 +141,7 @@ class Log
 #endif
 
 // primary for script library
+void outstring_log();
 void outstring_log(const char * str, ...) ATTR_PRINTF(1,2);
 void detail_log(const char * str, ...) ATTR_PRINTF(1,2);
 void debug_log(const char * str, ...) ATTR_PRINTF(1,2);

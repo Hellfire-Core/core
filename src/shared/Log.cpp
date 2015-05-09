@@ -404,6 +404,28 @@ void Log::outWhisp(uint32 account, const char * str, ...)
     }
 }
 
+void Log::outLog(LogNames log)
+{
+    if (logFile[log])
+    {
+        // check for errors
+        if (log == LOG_STATUS)
+        {
+            // we need to reopen file
+            logFile[log] = freopen(logFileNames[log].c_str(), logToStr[log][1], logFile[log]);
+        }
+        else if (!outTimestamp(logFile[log]))
+        {
+            // if error reopen file
+            logFile[log] = freopen(logFileNames[log].c_str(), logToStr[log][1], logFile[log]);
+            outTimestamp(logFile[log]);
+        }
+
+        fprintf(logFile[log], "\n" );
+        fflush(logFile[log]);
+    }
+}
+
 void Log::outLog(LogNames log, const char * str, ...)
 {
     if (!str)
@@ -432,6 +454,11 @@ void Log::outLog(LogNames log, const char * str, ...)
         fprintf(logFile[log], "\n" );
         fflush(logFile[log]);
     }
+}
+
+void outstring_log()
+{
+    sLog.outString();
 }
 
 void outstring_log(const char * str, ...)
