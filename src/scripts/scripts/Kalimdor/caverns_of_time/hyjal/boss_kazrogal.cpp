@@ -57,12 +57,12 @@ struct boss_kazrogalAI : public hyjal_trashAI
         }
     }
 
-    uint32 CleaveTimer;
-    uint32 WarStompTimer;
-    uint32 MarkTimer;
-    uint32 MarkTimerBase;
-    uint32 CheckTimer;
-    uint32 CrippleTimer;
+    int32 CleaveTimer;
+    int32 WarStompTimer;
+    int32 MarkTimer;
+    int32 MarkTimerBase;
+    int32 CheckTimer;
+    int32 CrippleTimer;
 
     bool go;
     uint32 pos;
@@ -165,41 +165,42 @@ struct boss_kazrogalAI : public hyjal_trashAI
         if (!UpdateVictim() )
             return;
 
+        CheckTimer -= diff;
         if(CheckTimer <= diff)
         {
             DoZoneInCombat();
             m_creature->SetSpeed(MOVE_RUN, 3.0);
-            CheckTimer = 3000;
+            CheckTimer += 3000;
         }
-        else
-            CheckTimer -= diff;
+        
 
+        CleaveTimer -= diff;
         if(CleaveTimer <= diff)
         {
             DoCast(m_creature->getVictim(), SPELL_CLEAVE);
-            CleaveTimer = 6000+rand()%15000;
+            CleaveTimer += 6000+rand()%15000;
         }
-        else
-            CleaveTimer -= diff;
+        
 
+        WarStompTimer -= diff;
         if(WarStompTimer <= diff)
         {
             DoCast(m_creature, SPELL_WARSTOMP);
-            WarStompTimer = 60000;
+            WarStompTimer += 60000;
         }
-        else
-            WarStompTimer -= diff;
+        
 
+        CrippleTimer -= diff;
         if(CrippleTimer <= diff)
         {
             if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 1, 20, true))
                 DoCast(target, SPELL_CRIPPLE);
 
-            CrippleTimer = 20000+rand()%10000;
+            CrippleTimer += 20000+rand()%10000;
         }
-        else
-            CrippleTimer -= diff;
+        
 
+        MarkTimer -= diff;
         if(MarkTimer <= diff)
         {
             m_creature->CastSpell(m_creature, SPELL_MARK, false);
@@ -209,7 +210,7 @@ struct boss_kazrogalAI : public hyjal_trashAI
             if(MarkTimerBase <= 5500)
                 MarkTimerBase = 10500;
 
-            MarkTimer = MarkTimerBase;
+            MarkTimer += MarkTimerBase;
             switch(rand()%3)
             {
                 case 0:
@@ -222,8 +223,7 @@ struct boss_kazrogalAI : public hyjal_trashAI
                     break;
             }
         }
-        else
-            MarkTimer -= diff;
+        
 
         DoMeleeAttackIfReady();
     }

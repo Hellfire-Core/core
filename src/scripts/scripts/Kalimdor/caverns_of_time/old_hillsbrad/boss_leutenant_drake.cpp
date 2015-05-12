@@ -1,7 +1,7 @@
-/* 
+/*
  * Copyright (C) 2006-2008 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -73,25 +73,25 @@ struct Location
     float z;
 };
 
-static Location DrakeWP[]=
+static Location DrakeWP[] =
 {
-    {0, 2125.84, 88.2535, 54.8830},
-    {1, 2111.01, 93.8022, 52.6356},
-    {2, 2106.70, 114.753, 53.1965},
-    {3, 2107.76, 138.746, 52.5109},
-    {4, 2114.83, 160.142, 52.4738},
-    {5, 2125.24, 178.909, 52.7283},
-    {6, 2151.02, 208.901, 53.1551},
-    {7, 2177.00, 233.069, 52.4409},
-    {8, 2190.71, 227.831, 53.2742},
-    {9, 2178.14, 214.219, 53.0779},
-    {10, 2154.99, 202.795, 52.6446},
-    {11, 2132.00, 191.834, 52.5709},
-    {12, 2117.59, 166.708, 52.7686},
-    {13, 2093.61, 139.441, 52.7616},
-    {14, 2086.29, 104.950, 52.9246},
-    {15, 2094.23, 81.2788, 52.6946},
-    {16, 2108.70, 85.3075, 53.3294}
+    { 0, 2125.84, 88.2535, 54.8830 },
+    { 1, 2111.01, 93.8022, 52.6356 },
+    { 2, 2106.70, 114.753, 53.1965 },
+    { 3, 2107.76, 138.746, 52.5109 },
+    { 4, 2114.83, 160.142, 52.4738 },
+    { 5, 2125.24, 178.909, 52.7283 },
+    { 6, 2151.02, 208.901, 53.1551 },
+    { 7, 2177.00, 233.069, 52.4409 },
+    { 8, 2190.71, 227.831, 53.2742 },
+    { 9, 2178.14, 214.219, 53.0779 },
+    { 10, 2154.99, 202.795, 52.6446 },
+    { 11, 2132.00, 191.834, 52.5709 },
+    { 12, 2117.59, 166.708, 52.7686 },
+    { 13, 2093.61, 139.441, 52.7616 },
+    { 14, 2086.29, 104.950, 52.9246 },
+    { 15, 2094.23, 81.2788, 52.6946 },
+    { 16, 2108.70, 85.3075, 53.3294 }
 };
 
 struct boss_lieutenant_drakeAI : public ScriptedAI
@@ -106,10 +106,10 @@ struct boss_lieutenant_drakeAI : public ScriptedAI
     bool WaypointReached;
     uint32 wpId;
 
-    uint32 Whirlwind_Timer;
-    uint32 Fear_Timer;
-    uint32 MortalStrike_Timer;
-    uint32 ExplodingShout_Timer;
+    int32 Whirlwind_Timer;
+    int32 Fear_Timer;
+    int32 MortalStrike_Timer;
+    int32 ExplodingShout_Timer;
 
     void Reset()
     {
@@ -131,7 +131,7 @@ struct boss_lieutenant_drakeAI : public ScriptedAI
             {
                 ++wpId;
                 WaypointReached = true;
-            
+
                 if (wpId == 16)
                     wpId = 2;
             }
@@ -152,7 +152,7 @@ struct boss_lieutenant_drakeAI : public ScriptedAI
         me->DeleteThreatList();
         me->CombatStop(true);
         me->SetWalk(true);
-        me->GetMotionMaster()->MovePoint(0, me->GetPositionX()-1.0f, me->GetPositionY()+1.0f, me->GetPositionZ());
+        me->GetMotionMaster()->MovePoint(0, me->GetPositionX() - 1.0f, me->GetPositionY() + 1.0f, me->GetPositionZ());
     }
 
     void KilledUnit(Unit *victim)
@@ -184,28 +184,31 @@ struct boss_lieutenant_drakeAI : public ScriptedAI
             return;
         }
 
-        //Whirlwind
+        Whirlwind_Timer -= diff;
         if (Whirlwind_Timer <= diff)
         {
             DoCast(me->getVictim(), SPELL_WHIRLWIND);
-            Whirlwind_Timer = 20000+rand()%5000;
-        }else Whirlwind_Timer -= diff;
+            Whirlwind_Timer += 20000 + rand() % 5000;
+        }
 
-        //Fear
+
+        Fear_Timer -= diff;
         if (Fear_Timer <= diff)
         {
             DoScriptText(SAY_SHOUT, me);
             DoCast(me->getVictim(), SPELL_FRIGHTENING_SHOUT);
-            Fear_Timer = 30000+rand()%10000;
-        }else Fear_Timer -= diff;
+            Fear_Timer += 30000 + rand() % 10000;
+        }
 
-        //Mortal Strike
+
+        MortalStrike_Timer -= diff;
         if (MortalStrike_Timer <= diff)
         {
             DoScriptText(SAY_MORTAL, me);
             DoCast(me->getVictim(), SPELL_MORTAL_STRIKE);
-            MortalStrike_Timer = 45000+rand()%5000;
-        }else MortalStrike_Timer -= diff;
+            MortalStrike_Timer += 45000 + rand() % 5000;
+        }
+
 
         DoMeleeAttackIfReady();
     }
@@ -213,7 +216,7 @@ struct boss_lieutenant_drakeAI : public ScriptedAI
 
 CreatureAI* GetAI_boss_lieutenant_drake(Creature *creature)
 {
-    return new boss_lieutenant_drakeAI (creature);
+    return new boss_lieutenant_drakeAI(creature);
 }
 
 void AddSC_boss_lieutenant_drake()
@@ -221,12 +224,12 @@ void AddSC_boss_lieutenant_drake()
     Script *newscript;
 
     newscript = new Script;
-    newscript->Name="go_barrel_old_hillsbrad";
+    newscript->Name = "go_barrel_old_hillsbrad";
     newscript->pGOUse = &GOUse_go_barrel_old_hillsbrad;
     newscript->RegisterSelf();
 
     newscript = new Script;
-    newscript->Name="boss_lieutenant_drake";
+    newscript->Name = "boss_lieutenant_drake";
     newscript->GetAI = &GetAI_boss_lieutenant_drake;
     newscript->RegisterSelf();
 }

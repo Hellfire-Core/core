@@ -52,11 +52,11 @@ struct boss_aeonusAI : public ScriptedAI
     ScriptedInstance *pInstance;
     bool HeroicMode;
 
-    uint32 Say_Timer;
-    uint32 Cleave_Timer;
-    uint32 SandBreath_Timer;
-    uint32 TimeStop_Timer;
-    uint32 Frenzy_Timer;
+    int32 Say_Timer;
+    int32 Cleave_Timer;
+    int32 SandBreath_Timer;
+    int32 TimeStop_Timer;
+    int32 Frenzy_Timer;
 
     void Reset()
     {
@@ -112,50 +112,45 @@ struct boss_aeonusAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        //Say Aggro
+        Say_Timer -= diff;
         if (Say_Timer && Say_Timer <= diff)
         {
             DoScriptText(SAY_AGGRO, m_creature);
             Say_Timer = 0;
         }
-        else
-            Say_Timer -= diff;
+        
 
-        //Cleave
+        Cleave_Timer -= diff;
         if (Cleave_Timer <= diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_CLEAVE);
-            Cleave_Timer = 6000+rand()%4000;
+            Cleave_Timer += 6000+rand()%4000;
         }
-        else
-            Cleave_Timer -= diff;
+        
 
-        //Sand Breath
+        SandBreath_Timer -= diff;
         if (SandBreath_Timer <= diff)
         {
             AddSpellToCast(m_creature->getVictim(), HeroicMode ? H_SPELL_SAND_BREATH : SPELL_SAND_BREATH);
-            SandBreath_Timer = 30000;
+            SandBreath_Timer += 30000;
         }
-        else
-            SandBreath_Timer -= diff;
+        
 
-        //Time Stop
+        TimeStop_Timer -= diff;
         if (TimeStop_Timer <= diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_TIME_STOP);
-            TimeStop_Timer = 40000;
+            TimeStop_Timer += 40000;
         }
-        else
-            TimeStop_Timer -= diff;
+        
 
-        //Frenzy
+        Frenzy_Timer -= diff;
         if (Frenzy_Timer <= diff)
         {
             AddSpellToCastWithScriptText(m_creature, SPELL_ENRAGE, EMOTE_FRENZY);
-            Frenzy_Timer = 120000;
+            Frenzy_Timer += 120000;
         }
-        else
-            Frenzy_Timer -= diff;
+        
 
         //if event failed, remove boss from instance
         if (pInstance->GetData(TYPE_MEDIVH) == FAIL)

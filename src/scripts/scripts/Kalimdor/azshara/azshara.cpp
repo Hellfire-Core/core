@@ -244,11 +244,11 @@ struct mob_rizzle_sprysprocketAI : public ScriptedAI
 {
     mob_rizzle_sprysprocketAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 spellEscape_Timer;
-    uint32 Teleport_Timer;
-    uint32 Check_Timer;
-    uint32 Grenade_Timer;
-    uint32 Must_Die_Timer;
+    int32 spellEscape_Timer;
+    int32 Teleport_Timer;
+    int32 Check_Timer;
+    int32 Grenade_Timer;
+    int32 Must_Die_Timer;
     uint32 CurrWP;
 
     uint64 PlayerGUID;
@@ -287,24 +287,28 @@ struct mob_rizzle_sprysprocketAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(Must_Die)
-            if(Must_Die_Timer <= diff)
+        if (Must_Die)
+        {
+            Must_Die_Timer -= diff;
+            if (Must_Die_Timer <= diff)
             {
                 Despawn();
                 return;
-            } else Must_Die_Timer -= diff;
-
+            }
+        }
         if(!Escape)
         {
             if(!PlayerGUID)
                 return;
 
+            spellEscape_Timer -= diff;
             if(spellEscape_Timer <= diff)
             {
                 DoCast(m_creature, SPELL_RIZZLE_ESCAPE, false);
-                spellEscape_Timer = 10000;
-            } else spellEscape_Timer -= diff;
+                spellEscape_Timer += 10000;
+            } 
 
+            Teleport_Timer -= diff;
             if(Teleport_Timer <= diff)
             {
                 DoTeleportTo(3706.39, -3969.15, 35.9118, 0);
@@ -318,7 +322,7 @@ struct mob_rizzle_sprysprocketAI : public ScriptedAI
                 m_creature->GetMotionMaster()->MovementExpired();
                 m_creature->GetMotionMaster()->MovePoint(CurrWP, WPs[CurrWP][0], WPs[CurrWP][1], WPs[CurrWP][2]);
                 Escape = true;
-            } else Teleport_Timer -= diff;
+            } 
 
             return;
         }
@@ -329,6 +333,7 @@ struct mob_rizzle_sprysprocketAI : public ScriptedAI
             ContinueWP = false;
         }
 
+        Grenade_Timer -= diff;
         if(Grenade_Timer <= diff)
         {
             Player *player = (Player *)Unit::GetUnit((*m_creature), PlayerGUID);
@@ -337,9 +342,10 @@ struct mob_rizzle_sprysprocketAI : public ScriptedAI
                DoScriptText(SAY_RIZZLE_GRENADE, m_creature, player);
                DoCast(player, SPELL_RIZZLE_FROST_GRENADE, true);
             }
-            Grenade_Timer = 30000;
-        } else Grenade_Timer -= diff;
+            Grenade_Timer += 30000;
+        } 
 
+        Check_Timer -= diff;
         if(Check_Timer <= diff)
         {
             Unit *player = m_creature->GetUnit(PlayerGUID);
@@ -358,8 +364,8 @@ struct mob_rizzle_sprysprocketAI : public ScriptedAI
                 Reached = true;
             }
 
-            Check_Timer = 1000;
-        } else Check_Timer -= diff;
+            Check_Timer += 1000;
+        } 
 
     }
 
@@ -437,7 +443,7 @@ struct mob_depth_chargeAI : public ScriptedAI
     mob_depth_chargeAI(Creature *c) : ScriptedAI(c) {}
 
     bool we_must_die;
-    uint32 must_die_timer;
+    int32 must_die_timer;
 
     void Reset()
     {
@@ -449,13 +455,16 @@ struct mob_depth_chargeAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(we_must_die)
-            if(must_die_timer <= diff)
+        if (we_must_die)
+        {
+            must_die_timer -= diff;
+            if (must_die_timer <= diff)
             {
                 m_creature->DealDamage(m_creature, m_creature->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
                 m_creature->RemoveCorpse();
-            } else must_die_timer -= diff;
-        return;
+            }
+            return;
+        }
     }
 
     void MoveInLineOfSight(Unit *who)

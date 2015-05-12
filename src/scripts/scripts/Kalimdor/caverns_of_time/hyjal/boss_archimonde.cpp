@@ -81,7 +81,7 @@ struct mob_ancient_wispAI : public ScriptedAI
     }
 
     InstanceData* pInstance;
-    uint32 CheckTimer;
+    int32 CheckTimer;
 
     void Reset()
     {
@@ -95,6 +95,7 @@ struct mob_ancient_wispAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
+        CheckTimer -= diff;
         if(CheckTimer <= diff)
         {
             if (Unit* pArchimonde = Unit::GetUnit((*me), pInstance->GetData64(DATA_ARCHIMONDE)))
@@ -104,10 +105,8 @@ struct mob_ancient_wispAI : public ScriptedAI
                 else
                     EnterEvadeMode();
             }
-            CheckTimer = 1000;
+            CheckTimer += 1000;
         }
-        else
-            CheckTimer -= diff;
     }
 };
 
@@ -121,8 +120,8 @@ struct mob_doomfire_targettingAI : public NullCreatureAI
 
     InstanceData * pInstance;
 
-    uint32 ChangeTargetTimer;
-    uint32 SummonTimer;     // This timer will serve to check on Archionde
+    int32 ChangeTargetTimer;
+    int32 SummonTimer;     // This timer will serve to check on Archionde
 
     void Reset()
     {
@@ -210,6 +209,7 @@ struct mob_doomfire_targettingAI : public NullCreatureAI
 
     void UpdateAI(const uint32 diff)
     {
+        SummonTimer -= diff;
         if (SummonTimer <= diff)
         {
             Unit* pArchimonde = pInstance->GetCreature(pInstance->GetData64(DATA_ARCHIMONDE));
@@ -222,13 +222,11 @@ struct mob_doomfire_targettingAI : public NullCreatureAI
                     me->GetMotionMaster()->MovePoint(2, dest.x, dest.y, dest.z);
                     ChangeTargetTimer = 2200;
                 }
-                SummonTimer = 1000;
+                SummonTimer += 1000;
             }
             else
                 me->Kill(me, false);
         }
-        else
-            SummonTimer -= diff;
 
         if (ChangeTargetTimer)
         {
@@ -276,10 +274,8 @@ struct mob_doomfire_targettingAI : public NullCreatureAI
                     me->GetValidPointInAngle(dest, 40, angle, false);
                     //me->GetValidPointInAngle(dest, 5.0f, angle, false);     //find point on the ground 5 yd from first destination location
                     me->GetMotionMaster()->MovePoint(0, dest.x, dest.y, dest.z);*/
-                    ChangeTargetTimer = ChangeWaypointAndTimer();
+                    ChangeTargetTimer += ChangeWaypointAndTimer();
             }
-            else
-                ChangeTargetTimer -= diff;
         }
     }
 };
@@ -303,21 +299,21 @@ struct boss_archimondeAI : public hyjal_trashAI
     InstanceData* pInstance;
     WorldLocation wLoc;
 
-    uint32 DrainNordrassilTimer;
-    uint32 FearTimer;
-    uint32 AirBurstTimer;
-    uint32 GripOfTheLegionTimer;
-    uint32 DoomfireTimer;
-    uint32 SoulChargeTimer;
-    uint32 SoulChargeCount;
-    uint32 SoulChargeUnleashTimer;
-    uint32 MeleeRangeCheckTimer;
-    uint32 HandOfDeathTimer;
-    uint32 SummonWispTimer;
-    uint32 WispCount;
-    uint32 EnrageTimer;
-    uint32 CheckDistanceTimer;
-    uint32 CheckTimer;
+    int32 DrainNordrassilTimer;
+    int32 FearTimer;
+    int32 AirBurstTimer;
+    int32 GripOfTheLegionTimer;
+    int32 DoomfireTimer;
+    int32 SoulChargeTimer;
+    int32 SoulChargeCount;
+    int32 SoulChargeUnleashTimer;
+    int32 MeleeRangeCheckTimer;
+    int32 HandOfDeathTimer;
+    int32 SummonWispTimer;
+    int32 WispCount;
+    int32 EnrageTimer;
+    int32 CheckDistanceTimer;
+    int32 CheckTimer;
 
     uint32 chargeSpell;
     uint32 unleashSpell;
@@ -458,6 +454,7 @@ struct boss_archimondeAI : public hyjal_trashAI
                 }
             }
 
+            DrainNordrassilTimer -= diff;
             if (DrainNordrassilTimer <= diff)
             {
                 if (!IsChanneling)
@@ -478,16 +475,15 @@ struct boss_archimondeAI : public hyjal_trashAI
                     pNordrassil->SetUInt32Value(UNIT_FIELD_DISPLAYID, 11686);
                     pNordrassil->CastSpell(me, SPELL_DRAIN_WORLD_TREE_2, true);
 
-                    DrainNordrassilTimer = 5000;
+                    DrainNordrassilTimer += 5000;
                 }
             }
-            else
-                DrainNordrassilTimer -= diff;
         }
 
         if (!UpdateVictim() && !HealthBelowPct(10.0f))
             return;
 
+        CheckTimer -= diff;
         if (CheckTimer <= diff)
         {
             if (!me->IsWithinDistInMap(&wLoc, 125))
@@ -499,13 +495,13 @@ struct boss_archimondeAI : public hyjal_trashAI
             DoZoneInCombat();
             me->SetSpeed(MOVE_RUN, 3.0);
 
-            CheckTimer = 1000;
+            CheckTimer += 1000;
         }
-        else
-            CheckTimer -= diff;
+        
 
         if (!Enraged)
         {
+            EnrageTimer -= diff;
             if (EnrageTimer <= diff)
             {
                 if (!HealthBelowPct(10.0f))
@@ -516,9 +512,9 @@ struct boss_archimondeAI : public hyjal_trashAI
                     DoScriptText(SAY_ENRAGE, me);
                 }
             }
-            else
-                EnrageTimer -= diff;
+            
 
+            CheckDistanceTimer -= diff;
             if(CheckDistanceTimer <= diff)
             {
                 if(me->GetDistance2d(wLoc.coord_x, wLoc.coord_y) > 80.0)
@@ -529,10 +525,8 @@ struct boss_archimondeAI : public hyjal_trashAI
                     if(me->GetPositionX() < 5580.0f)    // if near to the tree, do say enrage yell
                         DoScriptText(SAY_ENRAGE, me);
                 }
-                CheckDistanceTimer = 5000;
+                CheckDistanceTimer += 5000;
             }
-            else
-                CheckDistanceTimer -= diff;
         }
 
         if (HealthBelowPct(10.0f))
@@ -547,16 +541,16 @@ struct boss_archimondeAI : public hyjal_trashAI
                 Enraged = true;
             }
 
+            SummonWispTimer -= diff;
             if (SummonWispTimer <= diff)
             {
                 if (Creature* pWisp = DoSpawnCreature(CREATURE_ANCIENT_WISP, rand()%40, rand()%40, 0, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 15000))
                     pWisp->AI()->AttackStart(me);
 
-                SummonWispTimer = 1500;
+                SummonWispTimer += 1500;
                 ++WispCount;
             }
-            else
-                SummonWispTimer -= diff;
+            
 
             if (WispCount >= 30)
             {
@@ -569,16 +563,16 @@ struct boss_archimondeAI : public hyjal_trashAI
 
         if (Enraged)
         {
+            HandOfDeathTimer -= diff;
             if (HandOfDeathTimer <= diff)
             {
                 ForceSpellCast(me, SPELL_HAND_OF_DEATH, INTERRUPT_AND_CAST_INSTANTLY);
-                HandOfDeathTimer = 2000;
+                HandOfDeathTimer += 2000;
             }
-            else
-                HandOfDeathTimer -= diff;
             return;                                         // Don't do anything after this point.
         }
 
+        SoulChargeTimer -= diff;
         if (SoulChargeTimer <= diff)
         {
             if (!SoulChargeUnleash)
@@ -604,14 +598,14 @@ struct boss_archimondeAI : public hyjal_trashAI
                     unleashSpell = SPELL_UNLEASH_SOUL_GREEN;
                     SoulChargeUnleashTimer = urand(5000, 10000);
                 }
-                SoulChargeTimer = 3000;
+                SoulChargeTimer += 3000;
             }
         }
-        else
-            SoulChargeTimer -= diff;
+        
 
         if (SoulChargeUnleash)
         {
+            SoulChargeUnleashTimer -= diff;
             if (SoulChargeUnleashTimer <= diff)
             {
                 while (me->HasAura(chargeSpell, 0))
@@ -624,7 +618,7 @@ struct boss_archimondeAI : public hyjal_trashAI
                     SoulChargeCount--;
                     AddSpellToCast(me, unleashSpell);
                     SoulChargeTimer = 1000;
-                    SoulChargeUnleashTimer = 1500;
+                    SoulChargeUnleashTimer += 1500;
                 }
                 else
                 {
@@ -632,10 +626,9 @@ struct boss_archimondeAI : public hyjal_trashAI
                     SoulChargeTimer = 4000;
                 }
             }
-            else
-                SoulChargeUnleashTimer -= diff;
         }
 
+        GripOfTheLegionTimer -= diff;
         if (GripOfTheLegionTimer <= diff)
         {
             if (Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true))
@@ -645,12 +638,12 @@ struct boss_archimondeAI : public hyjal_trashAI
                 if (AirBurstTimer < 3000)
                     AirBurstTimer = 3000;
 
-                GripOfTheLegionTimer = urand(5000, 25000);
+                GripOfTheLegionTimer += urand(5000, 25000);
             }
         }
-        else
-            GripOfTheLegionTimer -= diff;
+        
 
+        AirBurstTimer -= diff;
         if (AirBurstTimer <= diff)
         {
             if (Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true, me->getVictimGUID()))
@@ -660,31 +653,30 @@ struct boss_archimondeAI : public hyjal_trashAI
                 if (FearTimer < 10000)
                     FearTimer = 10000;
 
-                AirBurstTimer = urand(25000, 35000);
+                AirBurstTimer += urand(25000, 35000);
             }
         }
-        else
-            AirBurstTimer -= diff;
+        
 
+        FearTimer -= diff;
         if (FearTimer <= diff)
         {
             AddSpellToCast(me, SPELL_FEAR);
-            FearTimer = 42000;
+            FearTimer += 42000;
         }
-        else
-            FearTimer -= diff;
+        
 
+        DoomfireTimer -= diff;
         if (DoomfireTimer <= diff)
         {
             //SummonDoomfire();
             if (roll_chance_f(20.0f)) //20% chance on yell
                 DoScriptText(RAND(SAY_DOOMFIRE1, SAY_DOOMFIRE2), me);
             AddSpellToCast(SPELL_DOOMFIRE_STRIKE, CAST_SELF);
-            DoomfireTimer = urand(9000, 12000);
+            DoomfireTimer += urand(9000, 12000);
         }
-        else
-            DoomfireTimer -= diff;
-
+        
+        MeleeRangeCheckTimer -= diff;
         if (MeleeRangeCheckTimer <= diff)
         {
             if (CanUseFingerOfDeath())
@@ -692,13 +684,12 @@ struct boss_archimondeAI : public hyjal_trashAI
                 if (Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, 150, true))
                     AddSpellToCast(target, SPELL_FINGER_OF_DEATH);
 
-                MeleeRangeCheckTimer = 1000;
+                MeleeRangeCheckTimer += 1000;
             }
             else
-                MeleeRangeCheckTimer = 5000;
+                MeleeRangeCheckTimer += 5000;
         }
-        else
-            MeleeRangeCheckTimer -= diff;
+        
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();

@@ -77,10 +77,10 @@ struct npc_medivh_bmAI : public ScriptedAI
 
     ScriptedInstance *pInstance;
 
-    uint32 SpellCorrupt_Timer;
-    uint32 DamageMelee_Timer;
-    uint32 Check_Timer;
-    uint32 Delay_Timer;
+    int32 SpellCorrupt_Timer;
+    int32 DamageMelee_Timer;
+    int32 Check_Timer;
+    int32 Delay_Timer;
 
     bool Life75;
     bool Life50;
@@ -192,42 +192,40 @@ struct npc_medivh_bmAI : public ScriptedAI
     {
         if (Delay_Timer)
         {
+            Delay_Timer -= diff;
             if (Delay_Timer <= diff)
             {
                 if (Delay)
                     DoScriptText(SAY_INTRO, m_creature);
                 Delay_Timer = 0;
             }
-            else
-                Delay_Timer -= diff;
+            
         }
 
         if (SpellCorrupt_Timer)
         {
+            SpellCorrupt_Timer -= diff;
             if (SpellCorrupt_Timer <= diff)
             {
                 pInstance->SetData(TYPE_MEDIVH,SPECIAL);
 
                 if (m_creature->HasAura(SPELL_CORRUPT_AEONUS,0))
-                    SpellCorrupt_Timer = 1000;
+                    SpellCorrupt_Timer += 1000;
                 else if (m_creature->HasAura(SPELL_CORRUPT,0))
-                    SpellCorrupt_Timer = 3000;
+                    SpellCorrupt_Timer += 3000;
                 else
                     SpellCorrupt_Timer = 0;
             }
-            else
-                SpellCorrupt_Timer -= diff;
         }
 
         if (DamageMelee_Timer)
         {
+            DamageMelee_Timer -= diff;
             if (DamageMelee_Timer <= diff)
             {
                 pInstance->SetData(TYPE_MEDIVH,SPECIAL);
                 DamageMelee_Timer = 0;
             }
-            else
-                DamageMelee_Timer -= diff;
         }
 
         if (Check_Timer)
@@ -271,8 +269,6 @@ struct npc_medivh_bmAI : public ScriptedAI
                     //TODO: start the post-event here
                 }
             }
-            else
-                Check_Timer -= diff;
         }
     }
 };
@@ -300,7 +296,7 @@ struct npc_time_riftAI : public ScriptedAI
 
     bool HeroicMode;
 
-    uint32 TimeRiftWave_Timer;
+    int32 TimeRiftWave_Timer;
     uint8 mRiftWaveCount;
     uint8 mPortalCount;
     uint8 mWaveId;
@@ -385,19 +381,19 @@ struct npc_time_riftAI : public ScriptedAI
 
         if (TimeRiftWave_Timer)
         {
+            TimeRiftWave_Timer -= diff;
             if (TimeRiftWave_Timer <= diff)
             {
                 DoSelectSummon();
 
                 if (mPortalCount > 0 && mPortalCount < 13)
-                    TimeRiftWave_Timer = urand(12000, 17000);
+                    TimeRiftWave_Timer += urand(12000, 17000);
                 else if (mPortalCount > 12 && mPortalCount < 18)
-                    TimeRiftWave_Timer = urand(7000, 12000);
+                    TimeRiftWave_Timer += urand(7000, 12000);
                 else
                     TimeRiftWave_Timer = 0;
 
             }
-            else TimeRiftWave_Timer -= diff;
         }
 
         if (m_creature->IsNonMeleeSpellCast(false))
@@ -429,10 +425,10 @@ struct rift_summonAI : public ScriptedAI
 
     bool HeroicMode;
 
-    uint32 Spell_Timer1;
-    uint32 Spell_Timer2;
-    uint32 Spell_Timer3;
-    uint32 Spell_Timer4;
+    int32 Spell_Timer1;
+    int32 Spell_Timer2;
+    int32 Spell_Timer3;
+    int32 Spell_Timer4;
 
     uint8 Type;
     bool aggro;
@@ -578,14 +574,15 @@ struct rift_summonAI : public ScriptedAI
                 {
                     if (Type)    //mage
                     {
+                        Spell_Timer1 -= diff;
                         if (Spell_Timer1 <= diff)   //frostbolt
                         {
                             AddSpellToCast(m_creature->getVictim(), HeroicMode?38534:36279);
-                            Spell_Timer1 = urand(8000, HeroicMode ? 10000 : 16000);
+                            Spell_Timer1 += urand(8000, HeroicMode ? 10000 : 16000);
                         }
-                        else
-                            Spell_Timer1 -= diff;
+                        
 
+                        Spell_Timer2 -= diff;
                         if (Spell_Timer2 <= diff)    //pyroblast
                         {
                             Spell_Timer1 = 8000;
@@ -597,58 +594,57 @@ struct rift_summonAI : public ScriptedAI
                             if (target)
                                 AddSpellToCast(target, HeroicMode?38535:36277);
 
-                            Spell_Timer2 = HeroicMode ? urand(14000, 24000) : urand(12000, 17000);
+                            Spell_Timer2 += HeroicMode ? urand(14000, 24000) : urand(12000, 17000);
                         }
-                        else
-                            Spell_Timer2 -= diff;
+                        
 
+                        Spell_Timer3 -= diff;
                         if (Spell_Timer3 <= diff)    //blast wave
                         {
                             ForceSpellCast(m_creature, HeroicMode?38536:36278, DONT_INTERRUPT, true);
-                            Spell_Timer3 = HeroicMode ? urand(15000, 25000) : 13000;
+                            Spell_Timer3 += HeroicMode ? urand(15000, 25000) : 13000;
                         }
-                        else
-                            Spell_Timer3 -= diff;
+                        
 
+                        Spell_Timer4 -= diff;
                         if (HeroicMode && Spell_Timer4 <= diff)    //polymorph
                         {
                             Unit* target = SelectUnit(SELECT_TARGET_NEAREST, 0, 70, true, m_creature->getVictimGUID());
                             if (target)
                                 AddSpellToCast(target, 13323);
-                            Spell_Timer4 = 30000;
+                            Spell_Timer4 += 30000;
                         }
-                        else
-                            Spell_Timer4 -= diff;
+                        
                     }
                     else       //warlock
                     {
+                        Spell_Timer1 -= diff;
                         if (Spell_Timer1 <= diff)   //shadow bolt volley
                         {
                             AddSpellToCast(m_creature->getVictim(), HeroicMode?38533:36275);
-                            Spell_Timer1 = HeroicMode ? Spell_Timer2+1500 : urand(10000, 25000);
+                            Spell_Timer1 += HeroicMode ? Spell_Timer2+1500 : urand(10000, 25000);
                         }
-                        else
-                            Spell_Timer1 -= diff;
+                        
 
+                        Spell_Timer2 -= diff;
                         if (Spell_Timer2 <= diff)    //curse of vulnerability
                         {
                             Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0,70,true);
                             if (target)
                                 AddSpellToCast(target, 36276, true);
-                            Spell_Timer2 = HeroicMode ? urand(9000, 14000) : Spell_Timer1+2000;
+                            Spell_Timer2 += HeroicMode ? urand(9000, 14000) : Spell_Timer1+2000;
                         }
-                        else
-                            Spell_Timer2 -= diff;
+                        
 
+                        Spell_Timer3 -= diff;
                         if (Spell_Timer3 <= diff)    //fear
                         {
                             Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 70, true);
                             if (target)
                                 AddSpellToCast(target, 12542);
-                            Spell_Timer3 = urand(15000, 25000);
+                            Spell_Timer3 += urand(15000, 25000);
                         }
-                        else
-                            Spell_Timer3 -= diff;
+                        
 
                         if (!frenzy && m_creature->GetHealth()*100 / m_creature->GetMaxHealth() < 30)
                         {
@@ -662,47 +658,46 @@ struct rift_summonAI : public ScriptedAI
                 {
                     if(Type)    //protection type
                     {
+                        Spell_Timer1 -= diff;
                         if (Spell_Timer1 <= diff)   //sunder armor
                         {
                             AddSpellToCast(m_creature->getVictim(), 16145, true);
-                            Spell_Timer1 = urand(6000, 9000);
+                            Spell_Timer1 += urand(6000, 9000);
                         }
-                        else
-                            Spell_Timer1 -= diff;
+                        
 
+                        Spell_Timer2 -= diff;
                         if (Spell_Timer2 <= diff)    //thunderclap
                         {
                             AddSpellToCast(m_creature, HeroicMode?38537:36214, true);
-                            Spell_Timer2 = HeroicMode ? urand(12000, 17000) : urand(10000, 25000);
+                            Spell_Timer2 += HeroicMode ? urand(12000, 17000) : urand(10000, 25000);
                         }
-                        else
-                            Spell_Timer2 -= diff;
+                        
                     }
                     else    //fury-arms
                     {
+                        Spell_Timer1 -= diff;
                         if (Spell_Timer1 <= diff)   //knockback
                         {
                             AddSpellToCast(m_creature->getVictim(), 11428, true);
-                            Spell_Timer1 = HeroicMode ? urand(13300, 19100) : urand(18100, 38500);
+                            Spell_Timer1 += HeroicMode ? urand(13300, 19100) : urand(18100, 38500);
                         }
-                        else
-                            Spell_Timer1 -= diff;
+                        
 
+                        Spell_Timer2 -= diff;
                         if (Spell_Timer2 <= diff)    //mortal strike
                         {
                             AddSpellToCast(m_creature->getVictim(), HeroicMode?35054:15708, true);
-                            Spell_Timer2 = HeroicMode ? urand(10300, 14500) : urand(10800, 15800);
+                            Spell_Timer2 += HeroicMode ? urand(10300, 14500) : urand(10800, 15800);
                         }
-                        else
-                            Spell_Timer2 -= diff;
+                        
 
+                        Spell_Timer3 -= diff;
                         if (Spell_Timer3 <= diff)    //harmstring
                         {
                             AddSpellToCast(m_creature->getVictim(), 9080, true);
-                            Spell_Timer3 = HeroicMode ? urand(11600, 18100) : urand(15500, 26500);
+                            Spell_Timer3 += HeroicMode ? urand(11600, 18100) : urand(15500, 26500);
                         }
-                        else
-                            Spell_Timer3 -= diff;
                     }
 
                     if (!frenzy && m_creature->GetHealth()*100 / m_creature->GetMaxHealth() < 30)
@@ -716,55 +711,54 @@ struct rift_summonAI : public ScriptedAI
                 {
                     if (Type)    //combat
                     {
+                        Spell_Timer1 -= diff;
                         if (Spell_Timer1 <= diff)   //sinister strike
                         {
                             AddSpellToCast(m_creature->getVictim(), HeroicMode?15667:14873, true);
-                            Spell_Timer1 = HeroicMode ? urand(3500, 14500) : urand(4500, 15300);
+                            Spell_Timer1 += HeroicMode ? urand(3500, 14500) : urand(4500, 15300);
                         }
-                        else
-                            Spell_Timer1 -= diff;
-
+                        
+                        Spell_Timer2 -= diff;
                         if (Spell_Timer2 <= diff)    //rupture
                         {
                             AddSpellToCast(m_creature->getVictim(), HeroicMode?15583:14874, true);
-                            Spell_Timer2 = HeroicMode ? urand(10100, 20500) : urand(10400, 21600);
+                            Spell_Timer2 += HeroicMode ? urand(10100, 20500) : urand(10400, 21600);
                         }
-                        else
-                            Spell_Timer2 -= diff;
+                        
 
+                        Spell_Timer3 -= diff;
                         if (Spell_Timer3 && Spell_Timer3 <= diff)    //crippling poison
                         {
                             AddSpellToCast(m_creature->getVictim(), 9080, true);
-                            Spell_Timer3 = HeroicMode ? urand(12200, 62800) : 0;
+                            Spell_Timer3 += HeroicMode ? urand(12200, 62800) : 0;
                         }
-                        else
-                            Spell_Timer3 -= diff;
+                        
                     }
                     else        //assasin
                     {
+                        Spell_Timer1 -= diff;
                         if (Spell_Timer1 <= diff)   //kidney shot
                         {
                             AddSpellToCast(m_creature->getVictim(), 30832, true);
-                            Spell_Timer1 = urand(20100, 24900);
+                            Spell_Timer1 += urand(20100, 24900);
                         }
                         else
-                            Spell_Timer1 -= diff;
 
+
+                            Spell_Timer2 -= diff;
                         if (Spell_Timer2 && Spell_Timer2 <= diff)    //deadly poison
                         {
                             AddSpellToCast(m_creature->getVictim(), 38520, true);
-                            Spell_Timer2 = HeroicMode ? urand(12300, 24200) : 0;
+                            Spell_Timer2 += HeroicMode ? urand(12300, 24200) : 0;
                         }
-                        else
-                            Spell_Timer2 -= diff;
+                        
 
+                        Spell_Timer3 -= diff;
                         if (Spell_Timer3 <= diff)    //backstab
                         {
                             AddSpellToCast(m_creature->getVictim(), HeroicMode?15657:7159, true);
-                            Spell_Timer3 = urand(4800, 7200);
+                            Spell_Timer3 += urand(4800, 7200);
                         }
-                        else
-                            Spell_Timer3 -= diff;
                     }
                     break;
                 }
@@ -776,68 +770,67 @@ struct rift_summonAI : public ScriptedAI
                     {
                         if (Type)    //frost
                         {
+                            Spell_Timer1 -= diff;
                             if (Spell_Timer1 <= diff)   //frostbolt
                             {
                                 AddSpellToCast(m_creature->getVictim(), HeroicMode?12675:15497);
-                                Spell_Timer1 = urand(2900, 5400);
+                                Spell_Timer1 += urand(2900, 5400);
                             }
-                            else
-                                Spell_Timer1 -= diff;
+                            
 
+                            Spell_Timer2 -= diff;
                             if (Spell_Timer2 <= diff && m_creature->IsWithinCombatRange(m_creature->getVictim(), 10))    //frost nova
                             {
                                 AddSpellToCast(m_creature, HeroicMode?15531:15063, true);
-                                Spell_Timer2 = HeroicMode ? urand(22200, 25700) : urand(33800, 39800);
+                                Spell_Timer2 += HeroicMode ? urand(22200, 25700) : urand(33800, 39800);
                             }
-                            else
-                                Spell_Timer2 -= diff;
+                            
                         }
                         else    //arcane
                         {
+                            Spell_Timer1 -= diff;
                             if (Spell_Timer1 <= diff)   //arcane bolt
                             {
                                 AddSpellToCast(m_creature->getVictim(), HeroicMode?15230:15124);
-                                Spell_Timer1 = HeroicMode ? urand(1200, 3400) : urand(2900, 5400);
+                                Spell_Timer1 += HeroicMode ? urand(1200, 3400) : urand(2900, 5400);
                             }
-                            else
-                                Spell_Timer1 -= diff;
+                            
 
+                            Spell_Timer2 -= diff;
                             if (Spell_Timer2 <= diff && m_creature->IsWithinCombatRange(m_creature->getVictim(), 10))    //arcane explosion
                             {
                                 AddSpellToCast(m_creature, HeroicMode?33623:33860, true);
-                                Spell_Timer2 = HeroicMode ? urand(8000, 10100) : urand(9500, 10100);
+                                Spell_Timer2 += HeroicMode ? urand(8000, 10100) : urand(9500, 10100);
                             }
-                            else
-                                Spell_Timer2 -= diff;
                         }
                     }
                     break;
                 }
                 case C_EXECU:
                 {
+                    Spell_Timer1 -= diff;
                     if (Spell_Timer1 <= diff)   //cleave
                     {
                         AddSpellToCast(m_creature->getVictim(), 15496, true);
-                        Spell_Timer1 = HeroicMode ? urand(6000, 11700) : urand(7300, 14000);
+                        Spell_Timer1 += HeroicMode ? urand(6000, 11700) : urand(7300, 14000);
                     }
-                    else
-                        Spell_Timer1 -= diff;
+                    
 
+                    Spell_Timer2 -= diff;
                     if (Spell_Timer2 <= diff)    //strike
                     {
                         AddSpellToCast(m_creature->getVictim(), HeroicMode?34920:15580, true);
-                        Spell_Timer2 = HeroicMode ? urand(3900, 9700) : urand(9700, 20300);
+                        Spell_Timer2 += HeroicMode ? urand(3900, 9700) : urand(9700, 20300);
                     }
-                    else
-                        Spell_Timer2 -= diff;
+                    
 
+                    Spell_Timer3 -= diff;
                     if (Spell_Timer3 && Spell_Timer3 <= diff)    //harmstring
                     {
                         AddSpellToCast(m_creature->getVictim(), 9080, true);
-                        Spell_Timer3 = HeroicMode ? urand(10800, 15800) : 0;
+                        Spell_Timer3 += HeroicMode ? urand(10800, 15800) : 0;
                     }
-                    else
-                        Spell_Timer3 -= diff;
+                    
 
                     break;
                 }
@@ -845,6 +838,7 @@ struct rift_summonAI : public ScriptedAI
                 {
                     if (m_creature->GetPower(POWER_MANA)*100/m_creature->GetMaxPower(POWER_MANA) > 15)
                     {
+                        Spell_Timer1 -= diff;
                         if (Spell_Timer1 <= diff)   //scorch + shadow bolt
                         {
                             bool fire = urand(0,1);
@@ -852,18 +846,16 @@ struct rift_summonAI : public ScriptedAI
                                 AddSpellToCast(m_creature->getVictim(), HeroicMode?36807:15241);
                             else
                                 AddSpellToCast(m_creature->getVictim(), HeroicMode?15472:12739);
-                            Spell_Timer1 = urand(3500, 4500);
+                            Spell_Timer1 += urand(3500, 4500);
                         }
-                        else
-                            Spell_Timer1 -= diff;
+                        
 
+                        Spell_Timer2 -= diff;
                         if (Spell_Timer2 <= diff)    //fire blast
                         {
                             AddSpellToCast(m_creature->getVictim(), HeroicMode?38526:13341, true);
-                            Spell_Timer2 = urand(5900, 6000);
+                            Spell_Timer2 += urand(5900, 6000);
                         }
-                        else
-                            Spell_Timer2 -= diff;
                     }
                     break;
                 }

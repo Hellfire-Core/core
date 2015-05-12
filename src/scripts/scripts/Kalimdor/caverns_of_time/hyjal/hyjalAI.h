@@ -227,12 +227,12 @@ struct hyjalAI : public npc_escortAI
         uint64 BossGUID[2];
         uint64 VeinGUID[14];
 
-        uint32 NextWaveTimer;
+        int32 NextWaveTimer;
         uint32 WaveCount;
-        uint32 CheckTimer;
+        int32 CheckTimer;
         uint32 Faction;
         uint32 EnemyCount;
-        uint32 RetreatTimer;
+        int32 RetreatTimer;
 
         bool EventBegun;
         bool FirstBossDead;
@@ -247,15 +247,15 @@ struct hyjalAI : public npc_escortAI
         bool Overrun;
         bool Teleported;
         bool WaitForTeleport;
-        uint32 TeleportTimer;
+        int32 TeleportTimer;
         uint32 OverrunCounter;
         uint32 OverrunCounter2;
         uint32 InfernalPoint;
-        uint32 RespawnTimer;
+        int32 RespawnTimer;
         bool DoRespawn;
         bool DoHide;
         bool IsDummy;
-        uint32 MassTeleportTimer;
+        int32 MassTeleportTimer;
         bool DoMassTeleport;
         uint64 DummyGuid;
 

@@ -57,12 +57,12 @@ struct boss_rage_winterchillAI : public hyjal_trashAI
         pos = 0;
     }
 
-    uint32 FrostArmorTimer;
-    uint32 DecayTimer;
-    uint32 NovaTimer;
-    uint32 IceboltTimer;
-    uint32 CheckTimer;
-    uint32 Enrage_Timer;
+    int32 FrostArmorTimer;
+    int32 DecayTimer;
+    int32 NovaTimer;
+    int32 IceboltTimer;
+    int32 CheckTimer;
+    int32 Enrage_Timer;
 
     bool go;
     uint32 pos;
@@ -165,24 +165,25 @@ struct boss_rage_winterchillAI : public hyjal_trashAI
         if (!UpdateVictim() )
             return;
 
+        CheckTimer -= diff;
         if(CheckTimer <= diff)
         {
             DoZoneInCombat();
             m_creature->SetSpeed(MOVE_RUN, 3.0);
-            CheckTimer = 3000;
+            CheckTimer += 3000;
         }
-        else
-            CheckTimer -= diff;
+        
 
+        FrostArmorTimer -= diff;
         if(FrostArmorTimer <= diff)
         {
             //AddSpellToCast(m_creature, SPELL_FROST_ARMOR, true);
             DoCast(m_creature, SPELL_FROST_ARMOR,true);
-            FrostArmorTimer = 11000+rand()%20000;
+            FrostArmorTimer += 11000+rand()%20000;
         }
-        else
-            FrostArmorTimer -= diff;
+        
 
+        DecayTimer -= diff;
         if(DecayTimer <= diff)
         {
             if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, 70, true))
@@ -192,7 +193,7 @@ struct boss_rage_winterchillAI : public hyjal_trashAI
             if(NovaTimer < 20000)
                 NovaTimer = 20000 +diff;
 
-            DecayTimer = 60000+rand()%20000;
+            DecayTimer += 60000+rand()%20000;
             switch(rand()%2)
             {
                 case 0:
@@ -205,16 +206,16 @@ struct boss_rage_winterchillAI : public hyjal_trashAI
                     break;
             }
         }
-        else
-            DecayTimer -= diff;
+        
 
+        NovaTimer -= diff;
         if(NovaTimer <= diff)
         {
             if(Unit *target = m_creature->getVictim())
                 //AddSpellToCast(target, SPELL_FROST_NOVA, true);
                 DoCast(target, SPELL_FROST_NOVA, true);
 
-            NovaTimer = 30000+rand()%15000;
+            NovaTimer += 30000+rand()%15000;
 
             if(DecayTimer < 10000)
                 DecayTimer = 10000 +diff;
@@ -231,28 +232,27 @@ struct boss_rage_winterchillAI : public hyjal_trashAI
                     break;
             }
         }
-        else
-            NovaTimer -= diff;
+        
 
+        IceboltTimer -= diff;
         if(IceboltTimer <= diff)
         {
             if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, 40, true))
                 //AddSpellToCast(target, SPELL_ICEBOLT, true);
                 DoCast(target,SPELL_ICEBOLT,true);
 
-            IceboltTimer = 11000+rand()%20000;
+            IceboltTimer += 11000+rand()%20000;
         }
-        else
-            IceboltTimer -= diff;
+        
 
+        Enrage_Timer -= diff;
         if(Enrage_Timer <= diff)
         {
             //AddSpellToCast(m_creature, SPELL_BERSERK);
             DoCast(m_creature, SPELL_BERSERK);
-            Enrage_Timer = 300000;
+            Enrage_Timer += 300000;
         }
-        else
-            Enrage_Timer -= diff;
+        
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();

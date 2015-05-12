@@ -69,12 +69,12 @@ struct boss_epoch_hunterAI : public ScriptedAI
     std::list<uint64> attackers;
 
     uint8 Wave;
-    uint32 IntroTimer;
-    uint32 NextTimer;
-    uint32 SandBreath_Timer;
-    uint32 ImpendingDeath_Timer;
-    uint32 WingBuffet_Timer;
-    uint32 Mda_Timer;
+    int32 IntroTimer;
+    int32 NextTimer;
+    int32 SandBreath_Timer;
+    int32 ImpendingDeath_Timer;
+    int32 WingBuffet_Timer;
+    int32 Mda_Timer;
     uint64 ThrallGUID;
 
     void Reset()
@@ -291,6 +291,7 @@ struct boss_epoch_hunterAI : public ScriptedAI
     {
         if (Intro)
         {
+            IntroTimer -= diff;
             if (IntroTimer <= diff)
             {
                 if (attackers.empty())
@@ -329,18 +330,17 @@ struct boss_epoch_hunterAI : public ScriptedAI
                         me->ForcedDespawn();
                 }
 
-                IntroTimer = 5000;
+                IntroTimer += 5000;
             }
-            else
-                IntroTimer -= diff;
+            
 
             if (Next)
             {
+                NextTimer -= diff;
                 if (NextTimer <= diff) 
                 {
                     NextWave();
                 }
-                else NextTimer -= diff;
             }
         }
 
@@ -348,7 +348,7 @@ struct boss_epoch_hunterAI : public ScriptedAI
         if (!UpdateVictim() )
             return;
 
-        //Sand Breath
+        SandBreath_Timer -= diff;
         if (SandBreath_Timer <= diff)
         {
             if (me->IsNonMeleeSpellCast(false))
@@ -358,35 +358,33 @@ struct boss_epoch_hunterAI : public ScriptedAI
 
             DoScriptText(RAND(SAY_BREATH1, SAY_BREATH2), me);
 
-            SandBreath_Timer = 25000+rand()%5000;
+            SandBreath_Timer += 25000+rand()%5000;
         }
-        else
-            SandBreath_Timer -= diff;
-
+        
+        ImpendingDeath_Timer -= diff;
         if(ImpendingDeath_Timer <= diff)
         {
             if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0 , GetSpellMaxRange(SPELL_IMPENDING_DEATH), true))
                 DoCast(target,SPELL_IMPENDING_DEATH);
-            ImpendingDeath_Timer = 30000+rand()%5000;
+            ImpendingDeath_Timer += 30000+rand()%5000;
         }
-        else
-            ImpendingDeath_Timer -= diff;
+        
 
+        WingBuffet_Timer -= diff;
         if(WingBuffet_Timer <= diff)
         {
             DoCast(me,SPELL_WING_BUFFET);
-            WingBuffet_Timer = 25000+rand()%10000;
+            WingBuffet_Timer += 25000+rand()%10000;
         }
-        else
-            WingBuffet_Timer -= diff;
+        
 
+        Mda_Timer -= diff;
         if(Mda_Timer <= diff)
         {
             DoCast(me,SPELL_MAGIC_DISRUPTION_AURA);
-            Mda_Timer = 15000;
+            Mda_Timer += 15000;
         }
-        else
-            Mda_Timer -= diff;
+        
 
         DoMeleeAttackIfReady();
     }

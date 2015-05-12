@@ -37,7 +37,7 @@ struct hyjal_trashAI : public npc_escortAI
     public:
         ScriptedInstance* pInstance;
         bool IsEvent;
-        uint32 Delay;
+        int32 Delay;
         uint32 LastOverronPos;
         bool IsOverrun;
         bool SetupOverrun;

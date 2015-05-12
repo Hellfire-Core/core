@@ -271,10 +271,10 @@ struct npc_thrall_old_hillsbradAI : public npc_escortAI
     uint64 EpochGUID;
     uint8 Part;
     uint32 Steps;
-    uint32 StepsTimer;
-    uint32 StrikeTimer;
-    uint32 ShieldBlockTimer;
-    uint32 EmoteTimer;
+    int32 StepsTimer;
+    int32 StrikeTimer;
+    int32 ShieldBlockTimer;
+    int32 EmoteTimer;
 
     bool LowHp;
     bool HadMount;
@@ -875,42 +875,45 @@ struct npc_thrall_old_hillsbradAI : public npc_escortAI
     {
         npc_escortAI::UpdateAI(diff);
 
+        StepsTimer -= diff;
         if (StepsTimer <= diff)
         {
             if (Event)
-                StepsTimer = NextStep(++Steps);
+                StepsTimer += NextStep(++Steps);
         }
-        else StepsTimer -= diff;
+        
 
         if (HadMount && !me->isInCombat())
             DoMount();
 
         if (EmoteTimer)
         {
+            EmoteTimer -= diff;
             if (EmoteTimer <= diff)
             {
                 me->SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_ONESHOT_NONE);
                 EmoteTimer = 0;
             }
-            else EmoteTimer -= diff;
         }
 
         if (!UpdateVictim())
             return;
 
+        StrikeTimer -= diff;
         if (StrikeTimer <= diff)
         {
             DoCast(me->getVictim(), SPELL_STRIKE);
-            StrikeTimer = urand(4000, 7000);
+            StrikeTimer += urand(4000, 7000);
         }
-        else StrikeTimer -= diff;
+        
 
+        ShieldBlockTimer -= diff;
         if (ShieldBlockTimer <= diff)
         {
             DoCast(me, SPELL_SHIELD_BLOCK);
-            ShieldBlockTimer = urand(8000, 15000);
+            ShieldBlockTimer += urand(8000, 15000);
         }
-        else ShieldBlockTimer -= diff;
+        
 
         if (!LowHp && ((me->GetHealth()*100 / me->GetMaxHealth()) < 20))
         {

@@ -56,8 +56,8 @@ struct npc_torekAI : public npc_escortAI
 {
     npc_torekAI(Creature *c) : npc_escortAI(c) {}
 
-    uint32 Rend_Timer;
-    uint32 Thunderclap_Timer;
+    int32 Rend_Timer;
+    int32 Thunderclap_Timer;
     bool Completed;
 
     void WaypointReached(uint32 i)
@@ -113,21 +113,21 @@ struct npc_torekAI : public npc_escortAI
         if (!UpdateVictim())
             return;
 
+        Rend_Timer -= diff;
         if (Rend_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_REND);
-            Rend_Timer = 20000;
+            Rend_Timer += 20000;
         }
-        else
-            Rend_Timer -= diff;
+        
 
+        Thunderclap_Timer -= diff;
         if (Thunderclap_Timer <= diff)
         {
             DoCast(m_creature,SPELL_THUNDERCLAP);
-            Thunderclap_Timer = 30000;
+            Thunderclap_Timer += 30000;
         }
-        else 
-            Thunderclap_Timer -= diff;
+        
     }
 };
 
@@ -326,8 +326,8 @@ struct npc_muglashAI : public npc_escortAI
     npc_muglashAI(Creature* pCreature) : npc_escortAI(pCreature) { }
 
     uint32 m_uiWaveId;
-    uint32 m_uiEventTimer;
-    uint32 m_uiPausedCheckTimer;
+    int32 m_uiEventTimer;
+    int32 m_uiPausedCheckTimer;
     uint64 m_uiBrazierGUID;
     bool m_bIsBrazierExtinguished;
 
@@ -470,28 +470,27 @@ struct npc_muglashAI : public npc_escortAI
         {
             if (HasEscortState(STATE_ESCORT_PAUSED))
             {
-                if(m_uiPausedCheckTimer < uiDiff)
+                m_uiPausedCheckTimer -= uiDiff;
+                if(m_uiPausedCheckTimer <= uiDiff)
                 {
                     SetEscortPaused(false);
                     m_creature->Kill(m_creature, false);
                     m_creature->RemoveCorpse();
                 }
-                else
-                    m_uiPausedCheckTimer -= uiDiff;
+                
 
                 if(m_bIsBrazierExtinguished)
                 {
-                    if (m_uiEventTimer < uiDiff)
+                    m_uiEventTimer -= uiDiff;
+                    if (m_uiEventTimer <= uiDiff)
                     {
                         ++m_uiWaveId;
                         DoWaveSummon();
                         if(m_uiWaveId == 3)
-                            m_uiEventTimer = 2000;
+                            m_uiEventTimer += 2000;
                         else
-                            m_uiEventTimer = 10000;
+                            m_uiEventTimer += 10000;
                     }
-                    else
-                        m_uiEventTimer -= uiDiff;
                 }
             }
             return;
@@ -550,9 +549,9 @@ struct npc_Heretic_EmisaryAI : public ScriptedAI
 {
     npc_Heretic_EmisaryAI(Creature* c) : ScriptedAI(c) {}
 
-    uint32 TalkTimer;
+    int32 TalkTimer;
     uint32 Phase;
-    uint32 Check;
+    int32 Check;
     uint64 player;
     bool EventStarted;
 
@@ -583,6 +582,7 @@ struct npc_Heretic_EmisaryAI : public ScriptedAI
         {
             if (EventStarted)
             {
+                TalkTimer -= diff;
                 if (TalkTimer <= diff)
                 {
                     Player * Player_;
@@ -617,13 +617,11 @@ struct npc_Heretic_EmisaryAI : public ScriptedAI
                             EventStarted = false;
                             break;
                         }
-                        TalkTimer = 5000;
+                        TalkTimer += 5000;
                     }
                     else
                         EventStarted = false;
                 }
-            else
-                TalkTimer -= diff;
             }
 
             return;

@@ -56,12 +56,12 @@ struct boss_azgalorAI : public hyjal_trashAI
             TempSpell->EffectRadiusIndex[0] = 12;//100yards instead of 50000?!
     }
 
-    uint32 RainTimer;
-    uint32 DoomTimer;
-    uint32 HowlTimer;
-    uint32 CleaveTimer;
-    uint32 EnrageTimer;
-    uint32 CheckTimer;
+    int32 RainTimer;
+    int32 DoomTimer;
+    int32 HowlTimer;
+    int32 CleaveTimer;
+    int32 EnrageTimer;
+    int32 CheckTimer;
     bool enraged;
 
     bool go;
@@ -167,66 +167,66 @@ struct boss_azgalorAI : public hyjal_trashAI
         if (!UpdateVictim() )
             return;
 
+        CheckTimer -= diff;
         if(CheckTimer <= diff)
         {
             DoZoneInCombat();
             m_creature->SetSpeed(MOVE_RUN, 3.0);
-            CheckTimer = 3000;
+            CheckTimer += 3000;
         }
-        else
-            CheckTimer -= diff;
+        
 
+        RainTimer -= diff;
         if(RainTimer <= diff)
         {
             if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, 40, true))
             {
                 DoCast(target, SPELL_RAIN_OF_FIRE);
-                RainTimer = urand(20000, 35000);
+                RainTimer += urand(20000, 35000);
             }
         }
-        else
-            RainTimer -= diff;
+        
 
+        DoomTimer -= diff;
         //only set timer when target exist, cause with exclude defined we return NULL that now can be acceptable spell target
         if(DoomTimer <= diff)
         {
             if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true, m_creature->getVictimGUID()))
             {
                 DoCast(target, SPELL_DOOM);//never on tank
-                DoomTimer = urand(45000, 50000);
+                DoomTimer += urand(45000, 50000);
             }
         }
-        else
-            DoomTimer -= diff;
+        
 
+        HowlTimer -= diff;
         if(HowlTimer <= diff)
         {
             DoCast(m_creature, SPELL_HOWL_OF_AZGALOR);
-            HowlTimer = 30000;
+            HowlTimer += 30000;
         }
-        else
-            HowlTimer -= diff;
+        
 
+        CleaveTimer -= diff;
         if(CleaveTimer <= diff)
         {
             if(Unit *target = m_creature->getVictim())
             {
                 DoCast(target, SPELL_CLEAVE);
-                CleaveTimer = urand(10000, 15000);
+                CleaveTimer += urand(10000, 15000);
             }
         }
-        else
-            CleaveTimer -= diff;
+        
 
+        EnrageTimer -= diff;
         if(EnrageTimer <= diff && !enraged)
         {
             m_creature->InterruptNonMeleeSpells(false);
             DoCast(m_creature, SPELL_BERSERK, true);
             enraged = true;
-            EnrageTimer = 600000;
+            EnrageTimer += 600000;
         }
-        else
-            EnrageTimer -= diff;
+        
 
         DoMeleeAttackIfReady();
     }
@@ -248,9 +248,9 @@ struct mob_lesser_doomguardAI : public hyjal_trashAI
         pInstance = (c->GetInstanceData());
     }
 
-    uint32 CrippleTimer;
-    uint32 WarstompTimer;
-    uint32 CheckTimer;
+    int32 CrippleTimer;
+    int32 WarstompTimer;
+    int32 CheckTimer;
 
     ScriptedInstance* pInstance;
 
@@ -279,6 +279,7 @@ struct mob_lesser_doomguardAI : public hyjal_trashAI
 
     void UpdateAI(const uint32 diff)
     {
+        CheckTimer -= diff;
         if(CheckTimer <= diff)
         {
             if(pInstance)
@@ -291,33 +292,32 @@ struct mob_lesser_doomguardAI : public hyjal_trashAI
                     return;
                 }
             }
-            CheckTimer = 2000;
+            CheckTimer += 2000;
         }
-        else
-            CheckTimer -= diff;
+        
 
         //Return since we have no target
         if (!UpdateVictim() )
             return;
 
+        WarstompTimer -= diff;
         if(WarstompTimer <= diff)
         {
             DoCast(m_creature, SPELL_WARSTOMP);
-            WarstompTimer = urand(10000, 25000);
+            WarstompTimer += urand(10000, 25000);
         }
-        else
-            WarstompTimer -= diff;
+        
 
+        CrippleTimer -= diff;
         if(CrippleTimer <= diff)
         {
             if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0,100,true))
             {
                 DoCast(target, SPELL_CRIPPLE);
-                CrippleTimer = urand(25000, 30000);
+                CrippleTimer += urand(25000, 30000);
             }
         }
-        else
-            CrippleTimer -= diff;
+        
 
         DoMeleeAttackIfReady();
     }

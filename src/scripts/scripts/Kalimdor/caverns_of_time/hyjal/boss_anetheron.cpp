@@ -62,10 +62,10 @@ struct boss_anetheronAI : public hyjal_trashAI
         pos = 0;
     }
 
-    uint32 SwarmTimer;
-    uint32 SleepTimer;
-    uint32 CheckTimer;
-    uint32 InfernoTimer;
+    int32 SwarmTimer;
+    int32 SleepTimer;
+    int32 CheckTimer;
+    int32 InfernoTimer;
     bool go;
     uint32 pos;
 
@@ -170,6 +170,7 @@ struct boss_anetheronAI : public hyjal_trashAI
         if (!UpdateVictim())
             return;
 
+        CheckTimer -= diff;
         if(CheckTimer <= diff)
         {
             DoZoneInCombat();
@@ -179,17 +180,17 @@ struct boss_anetheronAI : public hyjal_trashAI
                     m_creature->SetSelection(m_creature->getVictimGUID());
             }
             m_creature->SetSpeed(MOVE_RUN, 3.0);
-            CheckTimer = 2000;
+            CheckTimer += 2000;
         }
-        else
-            CheckTimer -= diff;
+        
 
+        SwarmTimer -= diff;
         if(SwarmTimer <= diff)
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0,65,true))
             {
                 AddSpellToCast(target, SPELL_CARRION_SWARM, false, true);
-                SwarmTimer = 12000+rand()%6000;
+                SwarmTimer += 12000+rand()%6000;
 
                 switch(rand()%2)
                 {
@@ -204,14 +205,14 @@ struct boss_anetheronAI : public hyjal_trashAI
                 }
             }
         }
-        else
-            SwarmTimer -= diff;
+        
 
+        SleepTimer -= diff;
         if(SleepTimer <= diff)
         {
             DoCast(m_creature, SPELL_SLEEP, true);
 
-            SleepTimer = 60000;
+            SleepTimer += 60000;
 
             switch(rand()%2)
             {
@@ -225,9 +226,8 @@ struct boss_anetheronAI : public hyjal_trashAI
                     break;
             }
         }
-        else
-            SleepTimer -= diff;
-
+        
+        InfernoTimer -= diff;
         if(InfernoTimer <= diff)
         {
             if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0,200,true))
@@ -246,11 +246,10 @@ struct boss_anetheronAI : public hyjal_trashAI
                         DoYell(SAY_INFERNO2, LANG_UNIVERSAL, NULL);
                     break;
                 }
-                InfernoTimer = 60000;
+                InfernoTimer += 60000;
             }
         }
-        else
-            InfernoTimer -= diff;
+        
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -272,8 +271,8 @@ struct mob_towering_infernalAI : public ScriptedAI
         pInstance = (c->GetInstanceData());
     }
 
-    uint32 CheckTimer;
-    uint32 WaitTimer;
+    int32 CheckTimer;
+    int32 WaitTimer;
     ScriptedInstance* pInstance;
 
     void Reset()
@@ -301,6 +300,7 @@ struct mob_towering_infernalAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
+        CheckTimer -= diff;
         if(CheckTimer <= diff)
         {
             if(pInstance)
@@ -313,10 +313,9 @@ struct mob_towering_infernalAI : public ScriptedAI
                     return;
                 }
             }
-            CheckTimer = 2000;
+            CheckTimer += 2000;
         }
-        else
-            CheckTimer -= diff;
+        
 
         //Return since we have no target
         if (!UpdateVictim())

@@ -172,7 +172,7 @@ struct npc_princess_stillpineAI : public ScriptedAI
 {
         npc_princess_stillpineAI(Creature *c) : ScriptedAI(c){}
 
-        uint32 FleeTimer;
+        int32 FleeTimer;
 
         void Reset()
         {
@@ -183,9 +183,9 @@ struct npc_princess_stillpineAI : public ScriptedAI
         {
             if(FleeTimer)
             {
+                FleeTimer -= diff;
                 if(FleeTimer <= diff)
-                    m_creature->ForcedDespawn();
-                else FleeTimer -= diff;
+                    m_creature->ForcedDespawn();  
             }
         }
 };

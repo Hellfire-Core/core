@@ -52,10 +52,10 @@ struct boss_temporusAI : public ScriptedAI
     bool HeroicMode;
     bool canApplyWound;
 
-    uint32 MortalWound_Timer;
-    uint32 WingBuffet_Timer;
-    uint32 Haste_Timer;
-    uint32 SpellReflection_Timer;
+    int32 MortalWound_Timer;
+    int32 WingBuffet_Timer;
+    int32 Haste_Timer;
+    int32 SpellReflection_Timer;
 
     void Reset()
     {
@@ -123,45 +123,41 @@ struct boss_temporusAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        //Attack Haste
+        Haste_Timer -= diff;
         if (Haste_Timer <= diff)
         {
             AddSpellToCast(SPELL_HASTE, CAST_SELF);
-            Haste_Timer = urand(20000, 25000);
+            Haste_Timer += urand(20000, 25000);
         }
-        else
-            Haste_Timer -= diff;
+        
 
-        //Wing Buffet
+        WingBuffet_Timer -= diff;
         if (WingBuffet_Timer <= diff)
         {
             AddSpellToCast(m_creature, HeroicMode ? H_SPELL_WING_BUFFET : SPELL_WING_BUFFET);
-            WingBuffet_Timer = urand(15000, 25000);
+            WingBuffet_Timer += urand(15000, 25000);
         }
-        else
-            WingBuffet_Timer -= diff;
+        
 
-        //Mortal Wound
+        MortalWound_Timer -= diff;
         if (MortalWound_Timer <= diff)
         {
             canApplyWound = true;
 
             if (m_creature->HasAura(SPELL_HASTE, 0))
-                MortalWound_Timer = urand(2000, 3000);
+                MortalWound_Timer += urand(2000, 3000);
             else
-                MortalWound_Timer = urand(6000, 9000);
+                MortalWound_Timer += urand(6000, 9000);
         }
-        else
-            MortalWound_Timer -= diff;
+        
 
-        //Spell Reflection
+        SpellReflection_Timer -= diff;
         if (HeroicMode && SpellReflection_Timer <= diff)
         {
             AddSpellToCast(m_creature, SPELL_REFLECT);
-            SpellReflection_Timer = urand(40000, 50000);
+            SpellReflection_Timer += urand(40000, 50000);
         }
-        else
-            SpellReflection_Timer -= diff;
+        
 
         //if event failed, remove boss from instance
         if (pInstance->GetData(TYPE_MEDIVH) == FAIL)

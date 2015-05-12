@@ -87,9 +87,9 @@ struct instance_dark_portal : public ScriptedInstance
     uint8 mRiftWaveCount;
     uint8 mRiftWaveId;
 
-    uint32 NextPortal_Timer;
-    uint32 DespawnDelay;
-    uint32 Check_Timer;
+    int32 NextPortal_Timer;
+    int32 DespawnDelay;
+    int32 Check_Timer;
 
     uint64 MedivhGUID;
     uint8 CurrentRiftId;
@@ -503,14 +503,18 @@ struct instance_dark_portal : public ScriptedInstance
             return;
 
         if (Encounter[0] == FAIL)
-            if (DespawnDelay && DespawnDelay <= diff)
+        {
+            if (DespawnDelay)
             {
-                if (Unit* medivh = Unit::GetUnit(*player, MedivhGUID))
-                    ((Creature*)medivh)->RemoveCorpse();
-                DespawnDelay = 0;
-            }
-            else
                 DespawnDelay -= diff;
+                if (DespawnDelay <= diff)
+                {
+                    if (Unit* medivh = Unit::GetUnit(*player, MedivhGUID))
+                        ((Creature*)medivh)->RemoveCorpse();
+                    DespawnDelay = 0;
+                }
+            }
+        }
 
         if (Encounter[1] != IN_PROGRESS)
             return;
@@ -523,26 +527,32 @@ struct instance_dark_portal : public ScriptedInstance
             return;
         }
 
-        if (Check_Timer && Check_Timer <= diff)
+        if (Check_Timer)
         {
-            if (!IsAnyPortalOpened())
-                NextPortal_Timer = 13000;
-
-            Check_Timer = 0;
-        }
-        else
             Check_Timer -= diff;
+            if (Check_Timer <= diff)
+            {
+                if (!IsAnyPortalOpened())
+                    NextPortal_Timer = 13000;
 
-        if (NextPortal_Timer && NextPortal_Timer <= diff)
-        {
-            ++mRiftPortalCount;
-            UpdateBMWorldState(WORLD_STATE_BM_RIFT,mRiftPortalCount);
-
-            DoSpawnPortal();
-            NextPortal_Timer = GetTimer(mRiftPortalCount);
+                Check_Timer = 0;
+            }
         }
-        else
+        
+
+        if (NextPortal_Timer)
+        {
             NextPortal_Timer -= diff;
+            if (NextPortal_Timer <= diff)
+            {
+                ++mRiftPortalCount;
+                UpdateBMWorldState(WORLD_STATE_BM_RIFT, mRiftPortalCount);
+
+                DoSpawnPortal();
+                NextPortal_Timer = GetTimer(mRiftPortalCount);
+            }
+        }
+        
     }
 
     std::string GetSaveData()

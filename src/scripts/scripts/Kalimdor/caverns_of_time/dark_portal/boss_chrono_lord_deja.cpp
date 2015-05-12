@@ -52,10 +52,10 @@ struct boss_chrono_lord_dejaAI : public ScriptedAI
     ScriptedInstance *pInstance;
     bool HeroicMode;
 
-    uint32 ArcaneBlast_Timer;
-    uint32 ArcaneDischarge_Timer;
-    uint32 Attraction_Timer;
-    uint32 TimeLapse_Timer;
+    int32 ArcaneBlast_Timer;
+    int32 ArcaneDischarge_Timer;
+    int32 Attraction_Timer;
+    int32 TimeLapse_Timer;
 
     bool arcane;
 
@@ -126,16 +126,16 @@ struct boss_chrono_lord_dejaAI : public ScriptedAI
         //Arcane Blast && Attraction on heroic mode
         if (!HeroicMode)
         {
+            ArcaneBlast_Timer -= diff;
             if (ArcaneBlast_Timer <= diff)
             {
                 AddSpellToCast(m_creature->getVictim(), SPELL_ARCANE_BLAST, true);
-                ArcaneBlast_Timer = urand(20000, 25000);
+                ArcaneBlast_Timer += urand(20000, 25000);
             }
-            else
-                ArcaneBlast_Timer -= diff;
         }
         else
         {
+            Attraction_Timer -= diff;
             if (Attraction_Timer <= diff)
             {
                 if (Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_ATTRACTION), true))
@@ -145,38 +145,33 @@ struct boss_chrono_lord_dejaAI : public ScriptedAI
                         arcane = true;
                     }
 
+                ArcaneBlast_Timer -= diff;
                 if (ArcaneBlast_Timer <= diff)
                 {
                     AddSpellToCast(m_creature->getVictim(), H_SPELL_ARCANE_BLAST, true);
 
                     arcane = false;
                     Attraction_Timer = urand(18000, 23000);
-                    ArcaneBlast_Timer = 2000;
+                    ArcaneBlast_Timer += 2000;
                 }
-                else
-                    ArcaneBlast_Timer -= diff;
             }
-            else
-                Attraction_Timer -= diff;
         }
 
-        //Arcane Discharge
+        ArcaneDischarge_Timer -= diff;
         if (ArcaneDischarge_Timer <= diff)
         {
             AddSpellToCast(m_creature, HeroicMode ? H_SPELL_ARCANE_DISCHARGE : SPELL_ARCANE_DISCHARGE);
-            ArcaneDischarge_Timer = urand(15000, 25000);
+            ArcaneDischarge_Timer += urand(15000, 25000);
         }
-        else
-            ArcaneDischarge_Timer -= diff;
+        
 
-        //Time Lapse
+        TimeLapse_Timer -= diff;
         if (TimeLapse_Timer <= diff)
         {
             AddSpellToCastWithScriptText(m_creature, SPELL_TIME_LAPSE, SAY_BANISH);
-            TimeLapse_Timer = urand(15000, 25000);
+            TimeLapse_Timer += urand(15000, 25000);
         }
-        else
-            TimeLapse_Timer -= diff;
+        
 
         //if event failed, remove boss from instance
         if (pInstance->GetData(TYPE_MEDIVH) == FAIL)

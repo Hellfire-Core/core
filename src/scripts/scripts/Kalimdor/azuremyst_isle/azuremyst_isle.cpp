@@ -65,9 +65,9 @@ struct npc_draenei_survivorAI : public ScriptedAI
     npc_draenei_survivorAI(Creature *c) : ScriptedAI(c) {}
 
     uint64 pCaster;
-    uint32 SayThanksTimer;
-    uint32 RunAwayTimer;
-    uint32 SayHelpTimer;
+    int32 SayThanksTimer;
+    int32 RunAwayTimer;
+    int32 SayHelpTimer;
 
     bool CanSayHelp;
 
@@ -116,6 +116,7 @@ struct npc_draenei_survivorAI : public ScriptedAI
     {
         if (SayThanksTimer)
         {
+            SayThanksTimer -= diff;
             if(SayThanksTimer <= diff)
             {
                 me->RemoveAurasDueToSpell(SPELL_IRRIDATION);
@@ -136,14 +137,14 @@ struct npc_draenei_survivorAI : public ScriptedAI
                 SayThanksTimer = 0;
 
             }
-            else
-                SayThanksTimer -= diff;
+            
 
             return;
         }
 
         if(RunAwayTimer)
         {
+            RunAwayTimer -= diff;
             if(RunAwayTimer <= diff)
             {
                 me->RemoveAllAuras();
@@ -155,19 +156,18 @@ struct npc_draenei_survivorAI : public ScriptedAI
                 me->DeleteThreatList();
                 me->RemoveCorpse();
             }
-            else
-                RunAwayTimer -= diff;
+            
 
             return;
         }
 
+        SayHelpTimer -= diff;
         if (SayHelpTimer <= diff)
         {
             CanSayHelp = true;
-            SayHelpTimer = 20000;
+            SayHelpTimer += 20000;
         }
-        else
-            SayHelpTimer -= diff;
+        
     }
 };
 
@@ -186,8 +186,8 @@ struct npc_sethir_the_ancientAI : public ScriptedAI
 {
     npc_sethir_the_ancientAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 Timer;       // Do not spawn all mobs immediately
-    uint32 temp;
+    int32 Timer;       // Do not spawn all mobs immediately
+    int32 temp;
     bool pause_say;     // wait some time until say sentence again
 
     void Reset()
@@ -223,22 +223,23 @@ struct npc_sethir_the_ancientAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
+        temp -= diff;
         if(temp <= diff)      // after 1 minute he can say it again
         {
             pause_say = false;
-            temp = 60000;
+            temp += 60000;
         }
-        else
-            temp -= diff;
+        
 
         if (Timer)
         {
+            Timer -= diff;
             if (Timer <= diff)
             {
                 Position pos;
                 me->GetPosition(pos);
 
-                for (int i=1; i<=6; i++)
+                for (int i = 1; i <= 6; i++)
                 {
                     Creature * tmpC = me->SummonCreature(6911, pos.x, pos.y, pos.z, pos.o, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 3000);
                     tmpC->AI()->AttackStart(me->getVictim());
@@ -246,8 +247,6 @@ struct npc_sethir_the_ancientAI : public ScriptedAI
 
                 Timer = 0;
             }
-            else
-                Timer -= diff;
         }
 
         DoMeleeAttackIfReady();
@@ -275,8 +274,8 @@ struct npc_engineer_spark_overgrindAI : public ScriptedAI
 {
     npc_engineer_spark_overgrindAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 Dynamite_Timer;
-    uint32 Emote_Timer;
+    int32 Dynamite_Timer;
+    int32 Emote_Timer;
 
     void Reset()
     {
@@ -291,26 +290,24 @@ struct npc_engineer_spark_overgrindAI : public ScriptedAI
     {
         if( !me->isInCombat() )
         {
+            Emote_Timer -= diff;
             if (Emote_Timer <= diff)
             {
                 DoScriptText(SAY_TEXT, me);
                 DoScriptText(SAY_EMOTE, me);
-                Emote_Timer = 120000 + rand()%30000;
+                Emote_Timer += 120000 + rand()%30000;
             }
-            else
-                Emote_Timer -= diff;
         }
 
         if(!UpdateVictim())
             return;
 
+        Dynamite_Timer -= diff;
         if (Dynamite_Timer <= diff)
         {
             DoCast(me->getVictim(), SPELL_DYNAMITE);
-            Dynamite_Timer = 8000;
+            Dynamite_Timer += 8000;
         }
-        else
-            Dynamite_Timer -= diff;
 
         DoMeleeAttackIfReady();
     }
@@ -542,7 +539,7 @@ struct npc_geezleAI : public ScriptedAI
     uint64 SparkGUID;
 
     uint32 Step;
-    uint32 SayTimer;
+    int32 SayTimer;
 
     bool EventStarted;
 
@@ -632,15 +629,14 @@ struct npc_geezleAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
+        SayTimer -= diff;
         if(SayTimer <= diff)
         {
             if(EventStarted)
             {
-                SayTimer = NextStep(++Step);
+                SayTimer += NextStep(++Step);
             }
         }
-        else
-            SayTimer -= diff;
     }
 };
 
@@ -660,7 +656,7 @@ struct mob_nestlewood_owlkinAI : public ScriptedAI
 {
     mob_nestlewood_owlkinAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 ChannelTimer;
+    int32 ChannelTimer;
     bool Channeled;
     bool Hitted;
 
@@ -687,6 +683,7 @@ struct mob_nestlewood_owlkinAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
+        ChannelTimer -= diff;
         if(ChannelTimer <= diff && !Channeled && Hitted)
         {
             me->DealDamage(me, me->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
@@ -694,8 +691,6 @@ struct mob_nestlewood_owlkinAI : public ScriptedAI
             me->SummonCreature(INOCULATED_OWLKIN, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), 0.0f, TEMPSUMMON_TIMED_DESPAWN, 180000);
             Channeled = true;
         }
-        else
-            ChannelTimer -= diff;
 
         DoMeleeAttackIfReady();
     }
@@ -770,8 +765,8 @@ struct npc_death_ravagerAI : public ScriptedAI
 {
     npc_death_ravagerAI(Creature *c) : ScriptedAI(c){}
 
-    uint32 RendTimer;
-    uint32 EnragingBiteTimer;
+    int32 RendTimer;
+    int32 EnragingBiteTimer;
 
     void Reset()
     {
@@ -787,19 +782,21 @@ struct npc_death_ravagerAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
+        RendTimer -= diff;
         if (RendTimer <= diff)
         {
             DoCast(me->getVictim(), SPELL_REND);
-            RendTimer = 30000;
+            RendTimer += 30000;
         }
-        else RendTimer -= diff;
 
+
+        EnragingBiteTimer -= diff;
         if (EnragingBiteTimer <= diff)
         {
             DoCast(me->getVictim(), SPELL_ENRAGING_BITE);
-            EnragingBiteTimer = 15000;
+            EnragingBiteTimer += 15000;
         }
-        else EnragingBiteTimer -= diff;
+       
 
         DoMeleeAttackIfReady();
     }

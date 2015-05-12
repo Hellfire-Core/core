@@ -81,8 +81,8 @@ struct mobs_risen_husk_spiritAI : public ScriptedAI
 {
     mobs_risen_husk_spiritAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 ConsumeFlesh_Timer;
-    uint32 IntangiblePresence_Timer;
+    int32 ConsumeFlesh_Timer;
+    int32 IntangiblePresence_Timer;
 
     void Reset()
     {
@@ -102,19 +102,21 @@ struct mobs_risen_husk_spiritAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
+        ConsumeFlesh_Timer -= diff;
         if( ConsumeFlesh_Timer <= diff )
         {
             if( m_creature->GetEntry() == 23555 )
                 DoCast(m_creature,SPELL_CONSUME_FLESH);
-            ConsumeFlesh_Timer = 15000;
-        } else ConsumeFlesh_Timer -= diff;
+            ConsumeFlesh_Timer += 15000;
+        } 
 
+        IntangiblePresence_Timer -= diff;
         if( IntangiblePresence_Timer <= diff )
         {
             if( m_creature->GetEntry() == 23554 )
                 DoCast(m_creature,SPELL_INTANGIBLE_PRESENCE);
-            IntangiblePresence_Timer = 20000;
-        } else IntangiblePresence_Timer -= diff;
+            IntangiblePresence_Timer += 20000;
+        } 
 
         DoMeleeAttackIfReady();
     }
@@ -146,7 +148,7 @@ struct npc_deserter_agitatorAI : public ScriptedAI
 {
     npc_deserter_agitatorAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 reset_timer;
+    int32 reset_timer;
     
     void Reset()
     {
@@ -164,10 +166,9 @@ struct npc_deserter_agitatorAI : public ScriptedAI
 
         if (reset_timer)
         {
+            reset_timer -= diff;
             if (reset_timer <= diff)
                 Reset();
-            else
-                reset_timer -= diff;
         }
     }
 
@@ -303,7 +304,7 @@ struct npc_theramore_combat_dummyAI : public Scripted_NoMovementAI
     }
 
     uint64 AttackerGUID;
-    uint32 Check_Timer;
+    int32 Check_Timer;
 
     void Reset()
     {
@@ -330,15 +331,14 @@ struct npc_theramore_combat_dummyAI : public Scripted_NoMovementAI
         if (!UpdateVictim())
             return;
 
+        Check_Timer -= diff;
         if (attacker && Check_Timer <= diff)
         {
             if(m_creature->GetDistance2d(attacker) > 12.0f)
                 EnterEvadeMode();
 
-            Check_Timer = 3000;
+            Check_Timer += 3000;
         }
-        else
-            Check_Timer -= diff;
     }
 };
 
@@ -579,7 +579,7 @@ struct npc_ogronAI : public npc_escortAI
 
     uint32 m_uiPhase;
     uint32 m_uiPhaseCounter;
-    uint32 m_uiGlobalTimer;
+    int32 m_uiGlobalTimer;
 
     void Reset()
     {
@@ -664,9 +664,10 @@ struct npc_ogronAI : public npc_escortAI
         {
             if (HasEscortState(STATE_ESCORT_PAUSED))
             {
-                if (m_uiGlobalTimer < uiDiff)
+                m_uiGlobalTimer -= uiDiff;
+                if (m_uiGlobalTimer <= uiDiff)
                 {
-                    m_uiGlobalTimer = 5000;
+                    m_uiGlobalTimer =+ 5000;
 
                     switch(m_uiPhase)
                     {
@@ -779,8 +780,6 @@ struct npc_ogronAI : public npc_escortAI
                     }
                         ++m_uiPhaseCounter;
                 }
-                else
-                    m_uiGlobalTimer -= uiDiff;
             }
 
             return;
@@ -852,7 +851,7 @@ struct npc_private_hendelAI : public ScriptedAI
     std::list<Creature*> lCreatureList;
 
     uint32 m_uiPhaseCounter;
-    uint32 m_uiEventTimer;
+    int32 m_uiEventTimer;
     uint32 m_uiPhase;
     uint64 PlayerGUID;
 
@@ -928,9 +927,10 @@ struct npc_private_hendelAI : public ScriptedAI
                 break;
 
             case PHASE_COMPLETE:
+                m_uiEventTimer -= uiDiff;
                 if (m_uiEventTimer <= uiDiff)
                 {
-                    m_uiEventTimer = 5000;
+                    m_uiEventTimer += 5000;
 
                     switch (m_uiPhaseCounter)
                     {
@@ -958,8 +958,6 @@ struct npc_private_hendelAI : public ScriptedAI
                     }
                     ++m_uiPhaseCounter;
                 }
-                else
-                    m_uiEventTimer -= uiDiff;
             }
         }
         return;
