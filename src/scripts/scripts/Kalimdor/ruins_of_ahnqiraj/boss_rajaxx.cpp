@@ -80,8 +80,8 @@ struct boss_rajaxxAI : public ScriptedAI
 
     ScriptedInstance * pInstance;
 
-    uint32 Disarm_Timer;
-    uint32 Thundercrash_Timer;
+    int32 Disarm_Timer;
+    int32 Thundercrash_Timer;
     bool frenzied;
 
     void Reset()
@@ -113,20 +113,21 @@ struct boss_rajaxxAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        //Thundercrash_Timer
+        Thundercrash_Timer -= diff;
         if (Thundercrash_Timer <= diff)
         {
             DoCast(m_creature, SPELL_THUNDERCRASH);
-            Thundercrash_Timer = 30000;
+            Thundercrash_Timer += 30000;
         }
-        else Thundercrash_Timer -= diff;
+        
 
+        Disarm_Timer -= diff;
         if (Disarm_Timer <= diff)
         {
             DoCast(m_creature->getVictim(), SPELL_DISARM);
-            Disarm_Timer = 20000;
+            Disarm_Timer += 20000;
         }
-        else Disarm_Timer -= diff;
+        
 
         //keep being frenzied if hp<30%
         if (/*!frenzied*/ !m_creature->GetAura(SPELL_FRENZY, 0) && m_creature->GetHealth()*100 / m_creature->GetMaxHealth() < 30)
@@ -172,9 +173,9 @@ struct rajaxx_officerAI : public ScriptedAI
 {
     rajaxx_officerAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 SunderTimer;
-    uint32 CleaveTimer;
-    uint32 SpecialTimer;
+    int32 SunderTimer;
+    int32 CleaveTimer;
+    int32 SpecialTimer;
     uint32 GUID;
     Unit *tempTarget;
 
@@ -195,20 +196,22 @@ struct rajaxx_officerAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
+        SunderTimer -= diff;
         if (SunderTimer <= diff)
         {
             DoCast(m_creature->getVictim(), SPELL_SUNDER_ARMOR);
-            SunderTimer = 5000 + urand(0, 5000);
+            SunderTimer += 5000 + urand(0, 5000);
         }
-        else SunderTimer -= diff;
+        
 
+        CleaveTimer -= diff;
         if (CleaveTimer <= diff)
         {
             DoCast(m_creature->getVictim(), SPELL_CLEAVE);
             CleaveTimer = 7500 + urand (0, 5000);
         }
-        else CleaveTimer -= diff;
-
+        
+        SpecialTimer -= diff;
         //TODO Cast buffs on mobs, not only officers
         if (SpecialTimer <= diff)
         {
@@ -216,37 +219,37 @@ struct rajaxx_officerAI : public ScriptedAI
             {
             case 15391:
                 DoCast(m_creature->getVictim(), SPELL_FRIGHTENING_SHOUT);
-                SpecialTimer = 30000 + urand (0, 10000);
+                SpecialTimer += 30000 + urand (0, 10000);
                 break;
             case 15392:
                 tempTarget = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true);
                 DoCast(tempTarget, SPELL_ATTACK_ORDER);
-                SpecialTimer = 30000;
+                SpecialTimer += 30000;
                 break;
             case 15389:
                 DoCast(m_creature->getVictim(), SPELL_LIGHTNING_CLOUD);
-                SpecialTimer = 30000;
+                SpecialTimer += 30000;
                 break;
             case 15390:
                 DoCast(m_creature->getVictim(), SPELL_SHOCKWAVE);
-                SpecialTimer = 30000;
+                SpecialTimer += 30000;
                 break;
             case 15386:
                 DoCast(m_creature, SPELL_SHIELD_OF_RAJAXX);
-                SpecialTimer = 15000;
+                SpecialTimer += 15000;
                 break;
             case 15388:
                 DoCast(m_creature->getVictim(), SPELL_SWEEPING_SLAM);
-                SpecialTimer = 30000;
+                SpecialTimer += 30000;
                 break;
             case 15385:
                 DoCast(m_creature, SPELL_ENLARGE);
-                SpecialTimer = 60000;
+                SpecialTimer += 60000;
                 break;
             }
 
         }
-        else SpecialTimer -=diff;
+        
 
         DoMeleeAttackIfReady();
     }

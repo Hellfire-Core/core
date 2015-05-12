@@ -58,9 +58,9 @@ struct boss_ayamissAI : public ScriptedAI
 
     ScriptedInstance * pInstance;
     Unit *pTarget;
-    uint32 STINGERSPRAY_Timer;
-    uint32 POISONSTINGER_Timer;
-    uint32 SUMMONSWARMER_Timer;
+    int32 STINGERSPRAY_Timer;
+    int32 POISONSTINGER_Timer;
+    int32 SUMMONSWARMER_Timer;
     uint32 phase;
 
     void Reset()
@@ -111,29 +111,29 @@ struct boss_ayamissAI : public ScriptedAI
             phase=2;
         }
 
-        //STINGERSPRAY_Timer
+        STINGERSPRAY_Timer -= diff;
         if (STINGERSPRAY_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_STINGERSPRAY);
-            STINGERSPRAY_Timer = 30000;
+            STINGERSPRAY_Timer += 30000;
         }
-        else STINGERSPRAY_Timer -= diff;
+        
 
-        //POISONSTINGER_Timer (only in phase1)
+        POISONSTINGER_Timer -= diff;
         if (phase==1 && POISONSTINGER_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_POISONSTINGER);
-            POISONSTINGER_Timer = 3500;
+            POISONSTINGER_Timer += 3500;
         }
-        else POISONSTINGER_Timer -= diff;
+        
 
-        //SUMMONSWARMER_Timer
+        SUMMONSWARMER_Timer -= diff;
         if (SUMMONSWARMER_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_SUMMONSWARMER);
-            SUMMONSWARMER_Timer = 60000;
+            SUMMONSWARMER_Timer += 60000;
         }
-        else SUMMONSWARMER_Timer -= diff;
+
 
         //melee in phase 2 only
         if (phase!=1)

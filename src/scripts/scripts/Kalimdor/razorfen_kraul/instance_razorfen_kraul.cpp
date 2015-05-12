@@ -35,7 +35,7 @@ struct instance_razorfen_kraul : public ScriptedInstance
     instance_razorfen_kraul(Map *map) : ScriptedInstance(map) {Initialize();};
 
     uint64 DoorWardGUID;
-    uint32 WardCheck_Timer;
+    int32 WardCheck_Timer;
     int WardKeeperAlive;
 
     void Initialize()
@@ -85,13 +85,13 @@ struct instance_razorfen_kraul : public ScriptedInstance
 
     void Update(uint32 diff)
     {
+        WardCheck_Timer -= diff;
         if (WardCheck_Timer <= diff)
         {
             HandleGameObject(DoorWardGUID, WardKeeperAlive);
             WardKeeperAlive = 0;
-            WardCheck_Timer = 4000;
-        }else
-            WardCheck_Timer -= diff;
+            WardCheck_Timer += 4000;
+        }
     }     
 
     void SetData(uint32 type, uint32 data)

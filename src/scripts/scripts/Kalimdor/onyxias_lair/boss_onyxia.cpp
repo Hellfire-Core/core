@@ -92,21 +92,21 @@ struct boss_onyxiaAI : public ScriptedAI
 
     uint32 m_phaseMask;
 
-    uint32 m_rangeCheckTimer;
-    uint32 m_flameBreathTimer;
-    uint32 m_cleaveTimer;
-    uint32 m_tailSweepTimer;
-    uint32 m_knockBackTimer;
-    uint32 m_wingBuffetTimer;
+    int32 m_rangeCheckTimer;
+    int32 m_flameBreathTimer;
+    int32 m_cleaveTimer;
+    int32 m_tailSweepTimer;
+    int32 m_knockBackTimer;
+    int32 m_wingBuffetTimer;
 
-    uint32 m_summonWhelpsTimer;
+    int32 m_summonWhelpsTimer;
 
-    uint32 m_eruptionTimer;
-    uint32 m_eruption;
-    uint32 m_fearTimer;
+    int32 m_eruptionTimer;
+    int32 m_eruption;
+    int32 m_fearTimer;
 
     uint32 m_nextWay;
-    uint32 m_nextMoveTimer;
+    int32 m_nextMoveTimer;
 
     void Fly()
     {
@@ -294,6 +294,7 @@ struct boss_onyxiaAI : public ScriptedAI
 
         UpdatePhase();
 
+        m_rangeCheckTimer -= diff;
         if (m_rangeCheckTimer <= diff)
         {
             Map::PlayerList const &PlayerList = me->GetMap()->GetPlayers();
@@ -304,103 +305,98 @@ struct boss_onyxiaAI : public ScriptedAI
                         plr->TeleportTo(me->GetMapId(), me->GetPositionX(), me->GetPositionY(),
                             me->GetPositionZ(), plr->GetOrientation(), TELE_TO_NOT_LEAVE_COMBAT);
 
-            m_rangeCheckTimer = 3000;
+            m_rangeCheckTimer += 3000;
         }
-        else
-            m_rangeCheckTimer -= diff;
+        
 
         if (m_phaseMask & PHASE_1)
         {
+            m_flameBreathTimer -= diff;
             if (m_flameBreathTimer <= diff)
             {
                 DoCast(m_creature->getVictim(), SPELL_FLAMEBREATH);
-                m_flameBreathTimer = irand(16, 28) * 1000;
+                m_flameBreathTimer += irand(16, 28) * 1000;
             }
-            else
-                m_flameBreathTimer -= diff;
+            
 
+            m_cleaveTimer -= diff;
             if (m_cleaveTimer <= diff)
             {
                 DoCast(m_creature->getVictim(), SPELL_CLEAVE);
-                m_cleaveTimer = irand(4, 10) * 1000;
+                m_cleaveTimer += irand(4, 10) * 1000;
             }
-            else
-                m_cleaveTimer -= diff;
 
+
+            m_tailSweepTimer -= diff;
             if (m_tailSweepTimer <= diff)
             {
                 DoCast(m_creature->getVictim(), SPELL_TAILSWEEP);
-                m_tailSweepTimer = irand(6, 14) * 1000;
+                m_tailSweepTimer += irand(6, 14) * 1000;
             }
-            else
-                m_tailSweepTimer -= diff;
+            
 
+            m_knockBackTimer -= diff;
             if (m_knockBackTimer <= diff)
             {
                 DoCast(m_creature->getVictim(), SPELL_KNOCK_AWAY);
-                m_knockBackTimer = irand(22, 32) * 1000;
+                m_knockBackTimer += irand(22, 32) * 1000;
             }
-            else
-                m_knockBackTimer -= diff;
+            
 
+            m_wingBuffetTimer -= diff;
             if (m_wingBuffetTimer <= diff)
             {
                 DoCast(m_creature->getVictim(), SPELL_WINGBUFFET);
-                m_wingBuffetTimer = irand(24, 36) * 1000;
+                m_wingBuffetTimer += irand(24, 36) * 1000;
             }
-            else
-                m_wingBuffetTimer -= diff;
         }
 
         if (m_phaseMask & PHASE_3)
         {
+            m_eruptionTimer -= diff;
             if (m_eruptionTimer <= diff)
             {
                 if (pInstance)
                     pInstance->SetData(DATA_ERUPT, 0);
                 if ((m_eruption -= 3) == 2)
                     m_eruption = 20;
-                m_eruptionTimer = m_eruption * 500;
+                m_eruptionTimer += m_eruption * 500;
             }
-            else
-                m_eruptionTimer -= diff;
+            
 
+            m_fearTimer -= diff;
             if (m_fearTimer <= diff)
             {
-                m_fearTimer = irand(10, 30) * 1000;
+                m_fearTimer += irand(10, 30) * 1000;
                 DoCast(m_creature->getVictim(), SPELL_BELLOWINGROAR);
             }
-            else
-                m_fearTimer -= diff;
         }
 
         if (m_phaseMask & PHASE_2)
         {
             if (m_nextWay)
             {
+                m_nextMoveTimer -= diff;
                 if (m_nextMoveTimer <= diff)
                 {
                     m_creature->InterruptNonMeleeSpells(false);
                     m_creature->GetMotionMaster()->MovePoint(m_nextWay, flyLocations[m_nextWay-2].x, flyLocations[m_nextWay-2].y, flyLocations[m_nextWay-2].z);
                     m_nextWay = 0;
                 }
-                else
-                    m_nextMoveTimer -= diff;
             }
         }
 
         if (m_phaseMask & (PHASE_3 | PHASE_2))
         {
+            m_summonWhelpsTimer -= diff;
             if (m_summonWhelpsTimer <= diff)
             {
                 if (pInstance)
                     pInstance->SetData(DATA_HATCH_EGGS, 2);
-                m_summonWhelpsTimer = irand(18, 24) * 1000;
+                m_summonWhelpsTimer += irand(18, 24) * 1000;
                 if (m_phaseMask & PHASE_3)
                     m_summonWhelpsTimer *= 2.0;
             }
-            else
-                m_summonWhelpsTimer -= diff;
         }
         DoMeleeAttackIfReady();
     }
@@ -415,7 +411,7 @@ struct mob_onyxiawhelpAI : public ScriptedAI
 {
     mob_onyxiawhelpAI(Creature* c) : ScriptedAI(c) {}
 
-    uint32 m_pyroblastTimer;
+    int32 m_pyroblastTimer;
 
     void Reset()
     {
@@ -457,13 +453,13 @@ struct mob_onyxiawhelpAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
+        m_pyroblastTimer -= diff;
         if (m_pyroblastTimer <= diff)
         {
             DoCast(m_creature->getVictim(), SPELL_PYROBLAST);
-            m_pyroblastTimer = 6000 + irand(0, 6)*1000;
+            m_pyroblastTimer += 6000 + irand(0, 6)*1000;
         }
-        else
-            m_pyroblastTimer -= diff;
+        
         DoMeleeAttackIfReady();
     }
 };

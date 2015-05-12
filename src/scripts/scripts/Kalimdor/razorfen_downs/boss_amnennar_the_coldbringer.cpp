@@ -40,8 +40,8 @@ struct boss_amnennar_the_coldbringerAI : public ScriptedAI
 {
     boss_amnennar_the_coldbringerAI(Creature *c) : ScriptedAI(c), summons(m_creature) {}
 
-    uint32 AmnenarsWrath_Timer;
-    uint32 FrostBolt_Timer;
+    int32 AmnenarsWrath_Timer;
+    int32 FrostBolt_Timer;
     bool Spectrals;
     int Rand;
     int RandX;
@@ -106,16 +106,14 @@ struct boss_amnennar_the_coldbringerAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        //AmnenarsWrath_Timer
+        AmnenarsWrath_Timer -= diff;
         if (AmnenarsWrath_Timer <= diff)
         {
             AddSpellToCast(me->getVictim(),SPELL_AMNENNARSWRATH);
-            AmnenarsWrath_Timer = 12000;
+            AmnenarsWrath_Timer += 12000;
         }
-        else
-            AmnenarsWrath_Timer -= diff;
 
-        //FrostBolt_Timer
+        FrostBolt_Timer -= diff;
         if (FrostBolt_Timer <= diff)
         {
             Unit *pTarget = NULL;
@@ -123,10 +121,9 @@ struct boss_amnennar_the_coldbringerAI : public ScriptedAI
             if (pTarget)
                 AddSpellToCast(pTarget,SPELL_FROSTBOLT);
 
-            FrostBolt_Timer = 8000;
+            FrostBolt_Timer += 8000;
         }
-        else
-            FrostBolt_Timer -= diff;
+        
 
         if (!Spectrals && me->GetHealth()*100 / me->GetMaxHealth() < 50)
         {

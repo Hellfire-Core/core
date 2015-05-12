@@ -34,9 +34,9 @@ struct celebras_the_cursedAI : public ScriptedAI
 {
     celebras_the_cursedAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 Wrath_Timer;
-    uint32 EntanglingRoots_Timer;
-    uint32 CorruptForces_Timer;
+    int32 Wrath_Timer;
+    int32 EntanglingRoots_Timer;
+    int32 CorruptForces_Timer;
 
     void Reset()
     {
@@ -57,30 +57,30 @@ struct celebras_the_cursedAI : public ScriptedAI
         if (!UpdateVictim() )
             return;
 
-        //Wrath
+        Wrath_Timer -= diff;
         if (Wrath_Timer <= diff)
         {
             Unit* target = NULL;
             target = SelectUnit(SELECT_TARGET_RANDOM,0);
             if( target )
                 DoCast(target,SPELL_WRATH);
-            Wrath_Timer = 8000;
-        }else Wrath_Timer -= diff;
+            Wrath_Timer += 8000;
+        }
 
-        //EntanglingRoots
+        EntanglingRoots_Timer -= diff;
         if (EntanglingRoots_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_ENTANGLINGROOTS);
-            EntanglingRoots_Timer = 20000;
-        }else EntanglingRoots_Timer -= diff;
+            EntanglingRoots_Timer += 20000;
+        }
 
-        //CorruptForces
+        CorruptForces_Timer -= diff;
         if (CorruptForces_Timer <= diff)
         {
             m_creature->InterruptNonMeleeSpells(false);
             DoCast(m_creature,SPELL_CORRUPT_FORCES);
-            CorruptForces_Timer = 20000;
-        }else CorruptForces_Timer -= diff;
+            CorruptForces_Timer += 20000;
+        }
 
         DoMeleeAttackIfReady();
     }

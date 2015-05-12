@@ -68,7 +68,7 @@ struct npc_kyle_frenziedAI : public ScriptedAI
     npc_kyle_frenziedAI(Creature *c) : ScriptedAI(c) {}
 
     int STATE;
-    uint32 wait;
+    int32 wait;
     uint64 player;
 
     void Reset()
@@ -125,6 +125,8 @@ struct npc_kyle_frenziedAI : public ScriptedAI
     {
         if (!STATE || STATE == 4)
             return;
+
+        wait -= diff;
         if(wait <= diff)
         {
             switch(STATE)
@@ -149,7 +151,7 @@ struct npc_kyle_frenziedAI : public ScriptedAI
                 m_creature->GetMotionMaster()->MovePoint(0,x,y,z);
                 break;
             }
-        }else wait -= diff;
+        }
     }
 };
 

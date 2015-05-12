@@ -34,9 +34,9 @@ struct boss_landslideAI : public ScriptedAI
 {
     boss_landslideAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 KnockAway_Timer;
-    uint32 Trample_Timer;
-    uint32 Landslide_Timer;
+    int32 KnockAway_Timer;
+    int32 Trample_Timer;
+    int32 Landslide_Timer;
 
     void Reset()
     {
@@ -54,29 +54,30 @@ struct boss_landslideAI : public ScriptedAI
         if (!UpdateVictim() )
             return;
 
-        //KnockAway_Timer
+        KnockAway_Timer -= diff;
         if (KnockAway_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_KNOCKAWAY);
-            KnockAway_Timer = 15000;
-        }else KnockAway_Timer -= diff;
+            KnockAway_Timer += 15000;
+        }
 
-        //Trample_Timer
+        Trample_Timer -= diff;
         if (Trample_Timer <= diff)
         {
             DoCast(m_creature,SPELL_TRAMPLE);
-            Trample_Timer = 8000;
-        }else Trample_Timer -= diff;
+            Trample_Timer += 8000;
+        }
 
         //Landslide
         if ( m_creature->GetHealth()*100 / m_creature->GetMaxHealth() < 50 )
         {
+            Landslide_Timer -= diff;
             if (Landslide_Timer <= diff)
             {
                 m_creature->InterruptNonMeleeSpells(false);
                 DoCast(m_creature,SPELL_LANDSLIDE);
-                Landslide_Timer = 60000;
-            } else Landslide_Timer -= diff;
+                Landslide_Timer += 60000;
+            } 
         }
 
         DoMeleeAttackIfReady();

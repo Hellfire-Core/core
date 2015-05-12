@@ -35,10 +35,10 @@ struct boss_ptheradrasAI : public ScriptedAI
 {
     boss_ptheradrasAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 Dustfield_Timer;
-    uint32 Boulder_Timer;
-    uint32 Thrash_Timer;
-    uint32 RepulsiveGaze_Timer;
+    int32 Dustfield_Timer;
+    int32 Boulder_Timer;
+    int32 Thrash_Timer;
+    int32 RepulsiveGaze_Timer;
 
     void Reset()
     {
@@ -62,36 +62,36 @@ struct boss_ptheradrasAI : public ScriptedAI
         if (!UpdateVictim() )
             return;
 
-        //Dustfield_Timer
+        Dustfield_Timer -= diff;
         if (Dustfield_Timer <= diff)
         {
             DoCast(m_creature,SPELL_DUSTFIELD);
-            Dustfield_Timer = 14000;
-        }else Dustfield_Timer -= diff;
+            Dustfield_Timer += 14000;
+        }
 
-        //Boulder_Timer
+        Boulder_Timer -= diff;
         if (Boulder_Timer <= diff)
         {
             Unit* target = NULL;
             target = SelectUnit(SELECT_TARGET_RANDOM,0);
             if( target )
                 DoCast(target,SPELL_BOULDER);
-            Boulder_Timer = 10000;
-        }else Boulder_Timer -= diff;
+            Boulder_Timer += 10000;
+        }
 
-        //RepulsiveGaze_Timer
+        RepulsiveGaze_Timer -= diff;
         if (RepulsiveGaze_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_REPULSIVEGAZE);
-            RepulsiveGaze_Timer = 20000;
-        }else RepulsiveGaze_Timer -= diff;
+            RepulsiveGaze_Timer += 20000;
+        }
 
-        //Thrash_Timer
+        Thrash_Timer -= diff;
         if (Thrash_Timer <= diff)
         {
             DoCast(m_creature,SPELL_THRASH);
-            Thrash_Timer = 18000;
-        }else Thrash_Timer -= diff;
+            Thrash_Timer += 18000;
+        }
 
         DoMeleeAttackIfReady();
     }

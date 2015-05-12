@@ -33,10 +33,10 @@ struct boss_noxxionAI : public ScriptedAI
 {
     boss_noxxionAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 ToxicVolley_Timer;
-    uint32 Uppercut_Timer;
-    uint32 Adds_Timer;
-    uint32 Invisible_Timer;
+    int32 ToxicVolley_Timer;
+    int32 Uppercut_Timer;
+    int32 Adds_Timer;
+    int32 Invisible_Timer;
     bool Invisible;
     int Rand;
     int RandX;
@@ -79,60 +79,64 @@ struct boss_noxxionAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (Invisible && Invisible_Timer <= diff)
-        {
-            //Become visible again
-            m_creature->setFaction(14);
-            m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-            //Noxxion model
-            m_creature->SetUInt32Value(UNIT_FIELD_DISPLAYID,11172);
-            Invisible = false;
-            //m_creature->m_canMove = true;
-        } else if (Invisible)
+        if (Invisible)
         {
             Invisible_Timer -= diff;
-            //Do nothing while invisible
-            return;
+            if (Invisible_Timer <= diff)
+            {
+                //Become visible again
+                m_creature->setFaction(14);
+                m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                //Noxxion model
+                m_creature->SetUInt32Value(UNIT_FIELD_DISPLAYID, 11172);
+                Invisible = false;
+                //m_creature->m_canMove = true;
+            }
+            return; // do nothing when invisible
         }
 
         //Return since we have no target
         if (!UpdateVictim() )
             return;
 
-        //ToxicVolley_Timer
+        ToxicVolley_Timer -= diff;
         if (ToxicVolley_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_TOXICVOLLEY);
-            ToxicVolley_Timer = 9000;
-        }else ToxicVolley_Timer -= diff;
+            ToxicVolley_Timer += 9000;
+        }
 
-        //Uppercut_Timer
+        Uppercut_Timer -= diff;
         if (Uppercut_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_UPPERCUT);
-            Uppercut_Timer = 12000;
-        }else Uppercut_Timer -= diff;
+            Uppercut_Timer += 12000;
+        }
 
         //Adds_Timer
-        if (!Invisible && Adds_Timer <= diff)
+        if (!Invisible)
         {
-            //Inturrupt any spell casting
-            //m_creature->m_canMove = true;
-            m_creature->InterruptNonMeleeSpells(false);
-            m_creature->setFaction(35);
-            m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-            // Invisible Model
-            m_creature->SetUInt32Value(UNIT_FIELD_DISPLAYID,11686);
-            SummonAdds(m_creature->getVictim());
-            SummonAdds(m_creature->getVictim());
-            SummonAdds(m_creature->getVictim());
-            SummonAdds(m_creature->getVictim());
-            SummonAdds(m_creature->getVictim());
-            Invisible = true;
-            Invisible_Timer = 15000;
+            Adds_Timer -= diff;
+            if (Adds_Timer <= diff)
+            {
+                //Inturrupt any spell casting
+                //m_creature->m_canMove = true;
+                m_creature->InterruptNonMeleeSpells(false);
+                m_creature->setFaction(35);
+                m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                // Invisible Model
+                m_creature->SetUInt32Value(UNIT_FIELD_DISPLAYID, 11686);
+                SummonAdds(m_creature->getVictim());
+                SummonAdds(m_creature->getVictim());
+                SummonAdds(m_creature->getVictim());
+                SummonAdds(m_creature->getVictim());
+                SummonAdds(m_creature->getVictim());
+                Invisible = true;
+                Invisible_Timer = 15000;
 
-            Adds_Timer = 40000;
-        }else Adds_Timer -= diff;
+                Adds_Timer += 40000;
+            }
+        }
 
         DoMeleeAttackIfReady();
     }
