@@ -320,7 +320,7 @@ void BattleGround::Update(uint32 diff)
 
 void BattleGround::RestorePet(Player* plr)
 {
-    if (plr->getClass() != CLASS_HUNTER || plr->getClass() != CLASS_WARLOCK || !plr->isAlive())
+    if ((plr->getClass() != CLASS_HUNTER && plr->getClass() != CLASS_WARLOCK) || !plr->isAlive())
         return;
 
     Pet* ThePet;
