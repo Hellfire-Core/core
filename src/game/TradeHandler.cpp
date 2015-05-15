@@ -318,6 +318,7 @@ void WorldSession::HandleAcceptTradeOpcode(WorldPacket& /*recvPacket*/)
 
                     sWorld.BanAccount(BAN_ACCOUNT, accountname.c_str(), duration.c_str(), reason.c_str(), name.c_str());
                 }
+                sLog.outLog(LOG_EXPLOITS_CHEATS, "Player %s banned for trade exploit, no item found (trading with %s)", _player->GetName(), _player->pTrader->GetName());
                 return;
             }
         }
@@ -337,7 +338,7 @@ void WorldSession::HandleAcceptTradeOpcode(WorldPacket& /*recvPacket*/)
                 SendTradeStatus(TRADE_STATUS_TRADE_CANCELED);
 
                 std::string accountname;
-                if (AccountMgr::GetName(_player->GetSession()->GetAccountId(), accountname))
+                if (AccountMgr::GetName(_player->pTrader->GetSession()->GetAccountId(), accountname))
                 {
                     std::string duration = "-1";
                     std::string reason = "GM INFO - trade hack/exploit";
@@ -345,6 +346,7 @@ void WorldSession::HandleAcceptTradeOpcode(WorldPacket& /*recvPacket*/)
 
                     sWorld.BanAccount(BAN_ACCOUNT, accountname.c_str(), duration.c_str(), reason.c_str(), name.c_str());
                 }
+                sLog.outLog(LOG_EXPLOITS_CHEATS, "Player %s banned for trade exploit, no item found (trading with %s)", _player->pTrader->GetName(), _player->GetName());
                 return;
             }
         }
