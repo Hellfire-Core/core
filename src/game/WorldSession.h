@@ -440,7 +440,7 @@ class HELLGROUND_IMPORT_EXPORT WorldSession
         void HandleMoveWorldportAckOpcode();                // for server-side calls
 
         void HandleMovementOpcodes(WorldPacket& recvPacket);
-        bool HandleMoverRelocation(MovementInfo&);
+        void HandleMoverRelocation(MovementInfo&);
 
         void HandleSetActiveMoverOpcode(WorldPacket &recv_data);
         void HandleMoveNotActiveMoverOpcode(WorldPacket &recv_data);

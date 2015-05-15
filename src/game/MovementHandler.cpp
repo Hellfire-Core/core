@@ -239,7 +239,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
         movementInfo.RemoveMovementFlag(MOVEFLAG_WALK_MODE);
 
     /* process position-change */
-    bool success = HandleMoverRelocation(movementInfo);
+    HandleMoverRelocation(movementInfo);
 
     if (plMover)
         plMover->UpdateFallInformationIfNeed(movementInfo, opcode);
@@ -247,13 +247,10 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
     WorldPacket data(opcode, recv_data.size());
     data << mover->GetPackGUID();                 // write guid
     movementInfo.Write(data);                     // write data
-    if (success)
-        mover->BroadcastPacketExcept(&data, _player);
-    else
-        mover->BroadcastPacket(&data, true);
+    mover->BroadcastPacketExcept(&data, _player);
 }
 
-bool WorldSession::HandleMoverRelocation(MovementInfo& movementInfo)
+void WorldSession::HandleMoverRelocation(MovementInfo& movementInfo)
 {
     uint32 mstime = WorldTimer::getMSTime();
     if ( m_clientTimeDelay == 0 )
@@ -265,11 +262,6 @@ bool WorldSession::HandleMoverRelocation(MovementInfo& movementInfo)
 
     if (Player *plMover = mover->ToPlayer())
     {
-        if (mover->hasUnitState(UNIT_STAT_NOT_MOVE | UNIT_STAT_LOST_CONTROL)) //we cannot move so we dont move
-        {
-            movementInfo = plMover->m_movementInfo;
-            return false;
-        }
         if (sWorld.getConfig(CONFIG_ENABLE_PASSIVE_ANTICHEAT) && !plMover->hasUnitState(UNIT_STAT_LOST_CONTROL | UNIT_STAT_NOT_MOVE) && !plMover->GetSession()->HasPermissions(PERM_GMT_DEV) && plMover->m_AC_timer == 0)
             sWorld.m_ac.execute(new ACRequest(plMover, plMover->m_movementInfo, movementInfo));
 
@@ -308,7 +300,6 @@ bool WorldSession::HandleMoverRelocation(MovementInfo& movementInfo)
 
     if (mover->GetObjectGuid().IsPlayer())
         mover->ToPlayer()->HandleFallUnderMap(movementInfo.GetPos()->z);
-    return true;
 }
 
 void WorldSession::HandleForceSpeedChangeAck(WorldPacket &recv_data)
