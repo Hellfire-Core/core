@@ -641,6 +641,7 @@ CreatureAI* GetAI_npc_warder_corpse(Creature *_Creature)
 struct npc_negaton_screamerAI : public ScriptedAI
 {
     enum spells {
+        // common
         SPELL_PSYCHIC_SCREAM        = 13704,
 
         SPELL_REDUCTION_ARCANE      = 34331,
@@ -650,12 +651,21 @@ struct npc_negaton_screamerAI : public ScriptedAI
         SPELL_REDUCTION_HOLY        = 34336,
         SPELL_REDUCTION_SHADOW      = 34338,
 
+        // normal
         SPELL_SHADOW_BOLT_VOLLEY    = 36736,
         SPELL_ARCANE_VOLLEY         = 36738,
         SPELL_LIGHTNING_BOLT_VOLLEY = 36740,
         SPELL_FROSTBOLT_VOLLEY      = 36741,
         SPELL_FIREBALL_VOLLEY       = 36742,
         SPELL_HOLY_BOLT_VOLLEY      = 36743,
+
+        // heroic
+        SPELL_SHADOW_BOLT_VOLLEY_HERO    = 38840,
+        SPELL_ARCANE_VOLLEY_HERO         = 38835,
+        SPELL_LIGHTNING_BOLT_VOLLEY_HERO = 36740,
+        SPELL_FROSTBOLT_VOLLEY_HERO      = 38837,
+        SPELL_FIREBALL_VOLLEY_HERO       = 38836,
+        SPELL_HOLY_BOLT_VOLLEY_HERO      = 38838,
     };
 
     npc_negaton_screamerAI(Creature* c) : ScriptedAI(c) {}
@@ -666,7 +676,7 @@ struct npc_negaton_screamerAI : public ScriptedAI
 
     void Reset()
     {
-        fearTimer = urand(1000, 3000);
+        fearTimer = urand(1000, 7000);
         volleyTimer = 0;
         school = SPELL_SCHOOL_NORMAL;
         me->RemoveSpellsCausingAura(SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN);
@@ -674,15 +684,31 @@ struct npc_negaton_screamerAI : public ScriptedAI
 
     uint32 GetVolleySpell()
     {
-        switch (school)
+        if (me->GetMap()->IsHeroic())
         {
-            case SPELL_SCHOOL_HOLY:     return SPELL_HOLY_BOLT_VOLLEY;
-            case SPELL_SCHOOL_FIRE:     return SPELL_FIREBALL_VOLLEY;
-            case SPELL_SCHOOL_NATURE:   return SPELL_LIGHTNING_BOLT_VOLLEY;
-            case SPELL_SCHOOL_FROST:    return SPELL_FROSTBOLT_VOLLEY;
-            case SPELL_SCHOOL_SHADOW:   return SPELL_SHADOW_BOLT_VOLLEY;
-            default:
-            case SPELL_SCHOOL_ARCANE:   return SPELL_ARCANE_VOLLEY;
+            switch (school)
+            {
+                case SPELL_SCHOOL_HOLY:     return SPELL_HOLY_BOLT_VOLLEY_HERO;
+                case SPELL_SCHOOL_FIRE:     return SPELL_FIREBALL_VOLLEY_HERO;
+                case SPELL_SCHOOL_NATURE:   return SPELL_LIGHTNING_BOLT_VOLLEY_HERO;
+                case SPELL_SCHOOL_FROST:    return SPELL_FROSTBOLT_VOLLEY_HERO;
+                case SPELL_SCHOOL_SHADOW:   return SPELL_SHADOW_BOLT_VOLLEY_HERO;
+                default:
+                case SPELL_SCHOOL_ARCANE:   return SPELL_ARCANE_VOLLEY_HERO;
+            }
+        }
+        else
+        {
+            switch (school)
+            {
+                case SPELL_SCHOOL_HOLY:     return SPELL_HOLY_BOLT_VOLLEY;
+                case SPELL_SCHOOL_FIRE:     return SPELL_FIREBALL_VOLLEY;
+                case SPELL_SCHOOL_NATURE:   return SPELL_LIGHTNING_BOLT_VOLLEY;
+                case SPELL_SCHOOL_FROST:    return SPELL_FROSTBOLT_VOLLEY;
+                case SPELL_SCHOOL_SHADOW:   return SPELL_SHADOW_BOLT_VOLLEY;
+                default:
+                case SPELL_SCHOOL_ARCANE:   return SPELL_ARCANE_VOLLEY;
+            }
         }
     }
 
@@ -696,7 +722,7 @@ struct npc_negaton_screamerAI : public ScriptedAI
             if (volleyTimer <= diff)
             {
                 DoCast(me->getVictim(), GetVolleySpell());
-                volleyTimer = 0;
+                volleyTimer += urand(6000, 9000); // will be reset in SpellHitTarget
             }
             else
                 volleyTimer -= diff;
@@ -715,8 +741,8 @@ struct npc_negaton_screamerAI : public ScriptedAI
 
     void SpellHit(Unit*, const SpellEntry* spell)
     {
-        if (volleyTimer || school != SPELL_SCHOOL_NORMAL ||
-            spell->SchoolMask == SPELL_SCHOOL_MASK_NORMAL)
+        if (school != SPELL_SCHOOL_NORMAL ||
+            spell->SchoolMask & SPELL_SCHOOL_MASK_NORMAL)
             return;
 
         if (spell->SchoolMask & SPELL_SCHOOL_MASK_HOLY)
@@ -759,6 +785,7 @@ struct npc_negaton_screamerAI : public ScriptedAI
         {
             me->RemoveSpellsCausingAura(SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN);
             school = SPELL_SCHOOL_NORMAL;
+            volleyTimer = 0; // disable volleys
         }
     }
 };
