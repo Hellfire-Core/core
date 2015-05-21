@@ -314,13 +314,17 @@ struct boss_nightbaneAI : public ScriptedAI
             }
             else WaitTimer -= diff;
 
-            DoSpecialThings(diff, DO_PULSE_COMBAT);
+
             if (Flying)
+            {
+                DoSpecialThings(diff, DO_PULSE_COMBAT);
                 return;
+            }
 
             if (!UpdateVictim())
                 return;
 
+            DoSpecialThings(diff, DO_PULSE_COMBAT);
 
             //  Phase 1 "GROUND FIGHT"
             if (Phase == 1)
