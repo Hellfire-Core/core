@@ -173,7 +173,7 @@ struct boss_netherspiteAI : public ScriptedAI
                     for(Map::PlayerList::const_iterator i = players.begin(); i!=players.end(); ++i)
                     {
                         Player* p = i->getSource();
-                        if(p && p->isAlive() // alive
+                        if(p && p->isAlive() && !p->HasAura(PlayerDebuff[j]) // alive
                             && (!target || target->GetExactDistance2d(portal->GetPositionX(), portal->GetPositionY()) > p->GetExactDistance2d(portal->GetPositionX(), portal->GetPositionY())) // closer than current best
                             && !p->HasAura(PlayerDebuff[j],0) // not exhausted
                             && !p->HasAura(PlayerBuff[(j+1)%3],0) // not on another beam
@@ -195,7 +195,8 @@ struct boss_netherspiteAI : public ScriptedAI
                 {
                     if (Creature *beamer = Unit::GetCreature(*portal, BeamerGUID[j]))
                     {
-                        beamer->CastStop();
+                        //beamer->CastStop(); // does shit.
+                        beamer->AI()->EnterEvadeMode();
 
                         if (current->GetTypeId() == TYPEID_PLAYER)
                             beamer->CastSpell(current, PlayerDebuff[j], false);
