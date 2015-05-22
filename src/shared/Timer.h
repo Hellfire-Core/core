@@ -98,9 +98,11 @@ class IntervalTimer
         time_t _current;
 };
 
-class ShortIntervalTimer
+struct ShortIntervalTimer
 {
-public:
+    uint32 _interval;
+    uint32 _current;
+
     ShortIntervalTimer() : _interval(0), _current(0) {}
 
     void Update(uint32 diff)
@@ -137,11 +139,9 @@ public:
 
         return interval;
     }
-
-private:
-    uint32 _interval;
-    uint32 _current;
 };
+
+typedef ShortIntervalTimer Timer;
 
 struct TimeTracker
 {
