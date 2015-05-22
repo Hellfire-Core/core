@@ -42,11 +42,11 @@ struct npc_cairne_bloodhoofAI : public ScriptedAI
 {
     npc_cairne_bloodhoofAI(Creature* c) : ScriptedAI(c) {}
 
-    uint32 BerserkerCharge_Timer;
-    uint32 Cleave_Timer;
-    uint32 MortalStrike_Timer;
-    uint32 Thunderclap_Timer;
-    uint32 Uppercut_Timer;
+    Timer BerserkerCharge_Timer;
+    Timer Cleave_Timer;
+    Timer MortalStrike_Timer;
+    Timer Thunderclap_Timer;
+    Timer Uppercut_Timer;
 
     void Reset()
     {
@@ -64,37 +64,37 @@ struct npc_cairne_bloodhoofAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if( BerserkerCharge_Timer <= diff )
+        if (BerserkerCharge_Timer.Expired(diff))
         {
             Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0,GetSpellMaxRange(SPELL_BERSERKER_CHARGE), true);
             if( target )
                 DoCast(target,SPELL_BERSERKER_CHARGE);
             BerserkerCharge_Timer = 25000;
-        }else BerserkerCharge_Timer -= diff;
+        }
 
-        if( Uppercut_Timer <= diff )
+        if (Uppercut_Timer.Expired(diff))
         {
             DoCast(m_creature->getVictim(),SPELL_UPPERCUT);
             Uppercut_Timer = 20000;
-        }else Uppercut_Timer -= diff;
+        }
 
-        if( Thunderclap_Timer <= diff )
+        if (Thunderclap_Timer.Expired(diff))
         {
             DoCast(m_creature->getVictim(),SPELL_THUNDERCLAP);
             Thunderclap_Timer = 15000;
-        }else Thunderclap_Timer -= diff;
+        }
 
-        if( MortalStrike_Timer <= diff )
+        if (MortalStrike_Timer.Expired(diff))
         {
             DoCast(m_creature->getVictim(),SPELL_MORTAL_STRIKE);
             MortalStrike_Timer = 15000;
-        }else MortalStrike_Timer -= diff;
+        }
 
-        if( Cleave_Timer <= diff )
+        if (Cleave_Timer.Expired(diff))
         {
             DoCast(m_creature->getVictim(),SPELL_CLEAVE);
             Cleave_Timer = 7000;
-        }else Cleave_Timer -= diff;
+        }
 
         DoMeleeAttackIfReady();
     }

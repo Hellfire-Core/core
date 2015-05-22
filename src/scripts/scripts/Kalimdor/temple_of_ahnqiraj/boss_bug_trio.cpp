@@ -47,9 +47,9 @@ struct boss_kriAI : public ScriptedAI
 
     ScriptedInstance *pInstance;
 
-    uint32 Cleave_Timer;
-    uint32 ToxicVolley_Timer;
-    uint32 Check_Timer;
+    Timer Cleave_Timer;
+    Timer ToxicVolley_Timer;
+    Timer Check_Timer;
 
     bool VemDead;
     bool Death;
@@ -91,18 +91,18 @@ struct boss_kriAI : public ScriptedAI
             return;
 
         //Cleave_Timer
-        if (Cleave_Timer <= diff)
+        if (Cleave_Timer.Expired(diff))
         {
             DoCast(m_creature->getVictim(),SPELL_CLEAVE);
             Cleave_Timer = 5000 + rand()%7000;
-        }else Cleave_Timer -= diff;
+        }
 
         //ToxicVolley_Timer
-        if (ToxicVolley_Timer <= diff)
+        if (ToxicVolley_Timer.Expired(diff))
         {
             DoCast(m_creature->getVictim(),SPELL_TOXIC_VOLLEY);
             ToxicVolley_Timer = 10000 + rand()%5000;
-        }else ToxicVolley_Timer -= diff;
+        }
 
         if (m_creature->GetHealth() <= m_creature->GetMaxHealth() * 0.05 && !Death)
         {
@@ -113,15 +113,15 @@ struct boss_kriAI : public ScriptedAI
         if(!VemDead)
         {
             //Checking if Vem is dead. If yes we will enrage.
-            if(Check_Timer <= diff)
+            if (Check_Timer.Expired(diff))
             {
                 if(pInstance && pInstance->GetData(DATA_VEM))
                 {
                     DoCast(m_creature, SPELL_ENRAGE);
                     VemDead = true;
                 }
-                Check_Timer = 2000;
-            }else Check_Timer -=diff;
+                Check_Timer = 1000;
+            }
         }
 
         DoMeleeAttackIfReady();
@@ -137,9 +137,9 @@ struct boss_vemAI : public ScriptedAI
 
     ScriptedInstance *pInstance;
 
-    uint32 Charge_Timer;
-    uint32 KnockBack_Timer;
-    uint32 Enrage_Timer;
+    Timer Charge_Timer;
+    Timer KnockBack_Timer;
+    Timer Enrage_Timer;
 
     bool Enraged;
 
@@ -181,7 +181,7 @@ struct boss_vemAI : public ScriptedAI
             return;
 
         //Charge_Timer
-        if (Charge_Timer <= diff)
+        if (Charge_Timer.Expired(diff))
         {
             Unit* target = NULL;
             target = SelectUnit(SELECT_TARGET_RANDOM,0);
@@ -193,23 +193,23 @@ struct boss_vemAI : public ScriptedAI
             }
 
             Charge_Timer = 8000 + rand()%8000;
-        }else Charge_Timer -= diff;
+        }
 
         //KnockBack_Timer
-        if (KnockBack_Timer <= diff)
+        if (KnockBack_Timer.Expired(diff))
         {
             DoCast(m_creature->getVictim(),SPELL_KNOCKBACK);
             if(DoGetThreat(m_creature->getVictim()))
                 DoModifyThreatPercent(m_creature->getVictim(),-80);
             KnockBack_Timer = 15000 + rand()%10000;
-        }else KnockBack_Timer -= diff;
+        }
 
         //Enrage_Timer
-        if (!Enraged && Enrage_Timer <= diff)
+        if (!Enraged && Enrage_Timer.Expired(diff))
         {
             DoCast(m_creature,SPELL_ENRAGE);
             Enraged = true;
-        }else Charge_Timer -= diff;
+        }
 
         DoMeleeAttackIfReady();
     }
@@ -224,9 +224,9 @@ struct boss_yaujAI : public ScriptedAI
 
     ScriptedInstance *pInstance;
 
-    uint32 Heal_Timer;
-    uint32 Fear_Timer;
-    uint32 Check_Timer;
+    Timer Heal_Timer;
+    Timer Fear_Timer;
+    Timer Check_Timer;
 
     bool VemDead;
 
@@ -275,15 +275,15 @@ struct boss_yaujAI : public ScriptedAI
             return;
 
         //Fear_Timer
-        if (Fear_Timer <= diff)
+        if (Fear_Timer.Expired(diff))
         {
             DoCast(m_creature->getVictim(),SPELL_FEAR);
             DoResetThreat();
             Fear_Timer = 20000;
-        }else Fear_Timer -= diff;
+        }
 
         //Casting Heal to other twins or herself.
-        if(Heal_Timer <= diff)
+        if (Heal_Timer.Expired(diff))
         {
             if(pInstance)
             {
@@ -307,10 +307,10 @@ struct boss_yaujAI : public ScriptedAI
             }
 
             Heal_Timer = 15000+rand()%15000;
-        }else Heal_Timer -= diff;
+        }
 
         //Checking if Vem is dead. If yes we will enrage.
-        if(Check_Timer <= diff)
+        if (Check_Timer.Expired(diff))
         {
             if (!VemDead)
             {
@@ -323,8 +323,8 @@ struct boss_yaujAI : public ScriptedAI
                     }
                 }
             }
-            Check_Timer = 2000;
-        }else Check_Timer -= diff;
+            Check_Timer = 1000;
+        }
 
         DoMeleeAttackIfReady();
     }

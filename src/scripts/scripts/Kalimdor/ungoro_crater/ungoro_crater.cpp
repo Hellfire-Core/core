@@ -53,7 +53,7 @@ struct npc_ameAI : public npc_escortAI
 {
     npc_ameAI(Creature *c) : npc_escortAI(c) {}
 
-    uint32 DEMORALIZINGSHOUT_Timer;
+    Timer DEMORALIZINGSHOUT_Timer;
 
     void WaypointReached(uint32 i)
     {
@@ -111,11 +111,11 @@ struct npc_ameAI : public npc_escortAI
         if (!UpdateVictim())
             return;
 
-        if (DEMORALIZINGSHOUT_Timer <= diff)
+        if (DEMORALIZINGSHOUT_Timer.Expired(diff))
         {
             DoCast(me->getVictim(),SPELL_DEMORALIZINGSHOUT);
             DEMORALIZINGSHOUT_Timer = 70000;
-        } else DEMORALIZINGSHOUT_Timer -= diff;
+        } 
 
     }
 };
@@ -235,9 +235,9 @@ struct npc_ringoAI : public FollowerAI
 {
     npc_ringoAI(Creature* pCreature) : FollowerAI(pCreature) { }
 
-    uint32 m_uiFaintTimer;
+    Timer m_uiFaintTimer;
     uint32 m_uiEndEventProgress;
-    uint32 m_uiEndEventTimer;
+    Timer m_uiEndEventTimer;
 
     uint64 SpraggleGUID;
 
@@ -306,7 +306,7 @@ struct npc_ringoAI : public FollowerAI
         {
             if (HasFollowState(STATE_FOLLOW_POSTEVENT))
             {
-                if (m_uiEndEventTimer <= uiDiff)
+                if (m_uiEndEventTimer.Expired(uiDiff))
                 {
                     Unit *pSpraggle = Unit::GetUnit(*me, SpraggleGUID);
                     if (!pSpraggle || !pSpraggle->isAlive())
@@ -358,20 +358,16 @@ struct npc_ringoAI : public FollowerAI
 
                     ++m_uiEndEventProgress;
                 }
-                else
-                    m_uiEndEventTimer -= uiDiff;
             }
             else if (HasFollowState(STATE_FOLLOW_INPROGRESS))
             {
                 if (!HasFollowState(STATE_FOLLOW_PAUSED))
                 {
-                    if (m_uiFaintTimer <= uiDiff)
+                    if (m_uiFaintTimer.Expired(uiDiff))
                     {
                         SetFaint();
                         m_uiFaintTimer = urand(60000, 120000);
                     }
-                    else
-                        m_uiFaintTimer -= uiDiff;
                 }
             }
 

@@ -47,9 +47,9 @@ struct boss_fankrissAI : public ScriptedAI
     }
 
     ScriptedInstance *pInstance;
-    uint32 MortalWound_Timer;
-    uint32 SpawnHatchlings_Timer;
-    uint32 SpawnSpawns_Timer;
+    Timer MortalWound_Timer;
+    Timer SpawnHatchlings_Timer;
+    Timer SpawnSpawns_Timer;
     int Rand;
     int RandX;
     int RandY;
@@ -110,14 +110,14 @@ struct boss_fankrissAI : public ScriptedAI
             return;
 
         //MortalWound_Timer
-        if (MortalWound_Timer <= diff)
+        if (MortalWound_Timer.Expired(diff))
         {
             DoCast(m_creature->getVictim(),SPELL_MORTAL_WOUND);
             MortalWound_Timer = 10000 + rand()%10000;
-        }else MortalWound_Timer -= diff;
+        }
 
         //Summon 1-3 Spawns of Fankriss at random time.
-        if (SpawnSpawns_Timer <= diff)
+        if (SpawnSpawns_Timer.Expired(diff))
         {
             switch(rand()%3)
             {
@@ -135,13 +135,13 @@ struct boss_fankrissAI : public ScriptedAI
                     break;
             }
             SpawnSpawns_Timer = 30000 + rand()%30000;
-        }else SpawnSpawns_Timer -= diff;
+        }
 
         // Teleporting Random Target to one of the three tunnels and spawn 4 hatchlings near the gamer.
         //We will only telport if fankriss has more than 3% of hp so teleported gamers can always loot.
         if ( m_creature->GetHealth()*100 / m_creature->GetMaxHealth() > 3 )
         {
-            if(SpawnHatchlings_Timer<= diff)
+            if (SpawnHatchlings_Timer.Expired(diff))
             {
                 Unit* target = NULL;
                 target = SelectUnit(SELECT_TARGET_RANDOM,0);
@@ -202,7 +202,7 @@ struct boss_fankrissAI : public ScriptedAI
                     }
                 }
                 SpawnHatchlings_Timer = 45000 + rand()%15000;
-            }else SpawnHatchlings_Timer -= diff;
+            }
         }
 
         DoMeleeAttackIfReady();

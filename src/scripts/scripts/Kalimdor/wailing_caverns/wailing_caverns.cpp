@@ -89,11 +89,11 @@ struct npc_disciple_of_naralexAI : public npc_escortAI
         me->setActive(true);
     }
 
-    uint32 eventTimer;
+    Timer eventTimer;
     uint32 currentEvent;
     uint32 eventProgress;
-    uint32 sleepTimer;
-    uint32 potionTimer;
+    Timer sleepTimer;
+    Timer potionTimer;
     uint32 Point;
     bool potCooldown;
     ScriptedInstance *pInstance;
@@ -180,7 +180,7 @@ struct npc_disciple_of_naralexAI : public npc_escortAI
 
         if (!pInstance)
             return;
-        if (eventTimer <= diff)
+        if (eventTimer.Expired(diff))
         {
             eventTimer = 0;
             if (pInstance->GetData(currentEvent) == IN_PROGRESS)
@@ -338,28 +338,23 @@ struct npc_disciple_of_naralexAI : public npc_escortAI
                 }
             }
         }
-        else
-            eventTimer -= diff;
 
             if(potCooldown)     // 2 mins cooldown on healing potion
             {
-                if(potionTimer <= diff)
+                if (potionTimer.Expired(diff))
                     potCooldown = false;
-                else
-                    potionTimer -= diff;
             }
 
             if(!UpdateVictim())
                 return;
 
-            if(sleepTimer <= diff)
+            if (sleepTimer.Expired(diff))
             {
                 if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30.0, false))
                     AddSpellToCast(target, SPELL_SLEEP);
                 sleepTimer = urand(32000, 40000);
             }
-            else
-                sleepTimer -= diff;
+           
 
             if(m_creature->GetHealth()*100 / m_creature->GetMaxHealth() < 30 && !potCooldown)
             {

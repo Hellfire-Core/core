@@ -18,10 +18,14 @@
 
 /* ScriptData
 SDName: instance_zul_farrak
-SD%Complete: 70
+SD%Complete: 0!
 SDComment: basicaly pyramid event, TODO: make captives fight together against mobs and players; proper implementation of end door
 SDCategory: Zul'Farrak
-EndScriptData */
+EndScriptData 
+
+BLAH BLAH. CODE TO REWRITE. WTF IS GOING ON WITH wavecounter ??
+
+*/
 
 #include "precompiled.h"
 #include "def_zul_farrak.h"

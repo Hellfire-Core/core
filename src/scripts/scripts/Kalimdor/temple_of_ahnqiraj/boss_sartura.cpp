@@ -49,12 +49,12 @@ struct boss_sarturaAI : public ScriptedAI
 
     ScriptedInstance *pInstance;
 
-    uint32 WhirlWind_Timer;
-    uint32 WhirlWindRandom_Timer;
-    uint32 WhirlWindEnd_Timer;
-    uint32 AggroReset_Timer;
-    uint32 AggroResetEnd_Timer;
-    uint32 EnrageHard_Timer;
+    Timer WhirlWind_Timer;
+    Timer WhirlWindRandom_Timer;
+    Timer WhirlWindEnd_Timer;
+    Timer AggroReset_Timer;
+    Timer AggroResetEnd_Timer;
+    Timer EnrageHard_Timer;
 
     bool Enraged;
     bool EnragedHard;
@@ -107,32 +107,32 @@ struct boss_sarturaAI : public ScriptedAI
 
         if (WhirlWind)
         {
-            if (WhirlWindRandom_Timer <= diff)
+            if (WhirlWindRandom_Timer.Expired(diff))
             {
                 //Attack random Gamers
-                if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,1, 200, true, m_creature->getVictimGUID()))
+                if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 1, 200, true, m_creature->getVictimGUID()))
                     AttackStart(target);
 
-                WhirlWindRandom_Timer = 3000 + rand()%4000;
-            }else WhirlWindRandom_Timer -= diff;
+                WhirlWindRandom_Timer = 3000 + rand() % 4000;
+            }
 
-            if (WhirlWindEnd_Timer <= diff)
+            if (WhirlWindEnd_Timer.Expired(diff))
             {
                 WhirlWind = false;
                 WhirlWind_Timer = 25000 + rand()%15000;
-            }else WhirlWindEnd_Timer -= diff;
+            }
         }
 
         if (!WhirlWind)
         {
-            if (WhirlWind_Timer <= diff)
+            if (WhirlWind_Timer.Expired(diff))
             {
                 DoCast(m_creature, SPELL_WHIRLWIND);
                 WhirlWind = true;
                 WhirlWindEnd_Timer = 15000;
-            }else WhirlWind_Timer -= diff;
+            }
 
-            if (AggroReset_Timer <= diff)
+            if (AggroReset_Timer.Expired(diff))
             {
                 //Attack random Gamers
                 if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,1, 200, true, m_creature->getVictimGUID()))
@@ -140,16 +140,16 @@ struct boss_sarturaAI : public ScriptedAI
 
                     AggroReset = true;
                     AggroReset_Timer = 2000 + rand()%3000;
-            }else AggroReset_Timer -= diff;
+            }
 
             if (AggroReset)
             {
-                if (AggroResetEnd_Timer <diff)
+                if (AggroResetEnd_Timer.Expired(diff))
                 {
                     AggroReset = false;
                     AggroResetEnd_Timer = 5000;
                     AggroReset_Timer = 35000 + rand()%10000;
-                } else AggroResetEnd_Timer -= diff;
+                } 
             }
 
             //If she is 20% enrage
@@ -165,11 +165,11 @@ struct boss_sarturaAI : public ScriptedAI
             //After 10 minutes hard enrage
             if (!EnragedHard)
             {
-                if (EnrageHard_Timer <= diff)
+                if (EnrageHard_Timer.Expired(diff))
                 {
                     DoCast(m_creature, SPELL_ENRAGEHARD);
                     EnragedHard = true;
-                } else EnrageHard_Timer -= diff;
+                } 
             }
 
             DoMeleeAttackIfReady();
@@ -181,12 +181,12 @@ struct mob_sartura_royal_guardAI : public ScriptedAI
 {
     mob_sartura_royal_guardAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 WhirlWind_Timer;
-    uint32 WhirlWindRandom_Timer;
-    uint32 WhirlWindEnd_Timer;
-    uint32 AggroReset_Timer;
-    uint32 AggroResetEnd_Timer;
-    uint32 KnockBack_Timer;
+    Timer WhirlWind_Timer;
+    Timer WhirlWindRandom_Timer;
+    Timer WhirlWindEnd_Timer;
+    Timer AggroReset_Timer;
+    Timer AggroResetEnd_Timer;
+    Timer KnockBack_Timer;
 
     bool WhirlWind;
     bool AggroReset;
@@ -214,34 +214,34 @@ struct mob_sartura_royal_guardAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (!WhirlWind && WhirlWind_Timer <= diff)
+        if (!WhirlWind && WhirlWind_Timer.Expired(diff))
         {
             DoCast(m_creature, SPELL_WHIRLWINDADD);
             WhirlWind = true;
             WhirlWind_Timer = 25000 + rand()%15000;
             WhirlWindEnd_Timer = 15000;
-        }else WhirlWind_Timer -= diff;
+        }
 
         if (WhirlWind)
         {
-            if (WhirlWindRandom_Timer <= diff)
+            if (WhirlWindRandom_Timer.Expired(diff))
             {
                 //Attack random Gamers
                 if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,1, 200, true, m_creature->getVictimGUID()))
                     m_creature->TauntApply(target);
 
                 WhirlWindRandom_Timer = 3000 + rand()%4000;
-            }else WhirlWindRandom_Timer -= diff;
+            }
 
-            if (WhirlWindEnd_Timer <= diff)
+            if (WhirlWindEnd_Timer.Expired(diff))
             {
                 WhirlWind = false;
-            }else WhirlWindEnd_Timer -= diff;
+            }
         }
 
         if (!WhirlWind)
         {
-            if (AggroReset_Timer <= diff)
+            if (AggroReset_Timer.Expired(diff))
             {
                 //Attack random Gamers
                 if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,1, 200, true, m_creature->getVictimGUID()))
@@ -249,23 +249,23 @@ struct mob_sartura_royal_guardAI : public ScriptedAI
 
                 AggroReset = true;
                 AggroReset_Timer = 2000 + rand()%3000;
-            }else AggroReset_Timer -= diff;
+            }
 
-            if (KnockBack_Timer <= diff)
+            if (KnockBack_Timer.Expired(diff))
             {
                 DoCast(m_creature, SPELL_WHIRLWINDADD);
                 KnockBack_Timer = 10000 + rand()%10000;
-            }else KnockBack_Timer -= diff;
+            }
         }
 
         if (AggroReset)
         {
-            if (AggroResetEnd_Timer <diff)
+            if (AggroResetEnd_Timer.Expired(diff))
             {
                 AggroReset = false;
                 AggroResetEnd_Timer = 5000;
                 AggroReset_Timer = 30000 + rand()%10000;
-            } else AggroResetEnd_Timer -= diff;
+            } 
         }
 
         DoMeleeAttackIfReady();

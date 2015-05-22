@@ -63,14 +63,15 @@ EndScriptData */
 struct boss_twinemperorsAI : public ScriptedAI
 {
     ScriptedInstance *pInstance;
-    uint32 Heal_Timer;
-    uint32 Teleport_Timer;
+    Timer Heal_Timer;
+    Timer Teleport_Timer;
+    Timer AfterTeleportTimer;
+    Timer Abuse_Bug_Timer, BugsTimer;
+    Timer EnrageTimer;
     bool AfterTeleport;
-    uint32 AfterTeleportTimer;
     bool DontYellWhenDead;
-    uint32 Abuse_Bug_Timer, BugsTimer;
     bool tspellCast;
-    uint32 EnrageTimer;
+
 
     virtual bool IAmVeklor() = 0;
     virtual void Reset() = 0;
@@ -206,7 +207,7 @@ struct boss_twinemperorsAI : public ScriptedAI
         if (IAmVeklor())                                    // this spell heals caster and the other brother so let VN cast it
             return;
 
-        if (Heal_Timer <= diff)
+        if (Heal_Timer.Expired(diff))
         {
             Unit *pOtherBoss = GetOtherBoss();
             if (pOtherBoss && (pOtherBoss->IsWithinDistInMap(m_creature, 60)))
@@ -214,7 +215,7 @@ struct boss_twinemperorsAI : public ScriptedAI
                 DoCast(pOtherBoss, SPELL_HEAL_BROTHER);
                 Heal_Timer = 1000;
             }
-        } else Heal_Timer -= diff;
+        } 
     }
 
     void TeleportToMyBrother()
@@ -271,7 +272,7 @@ struct boss_twinemperorsAI : public ScriptedAI
 
             tspellCast = true;
 
-            if (AfterTeleportTimer <= diff)
+            if (AfterTeleportTimer.Expired(diff))
             {
                 AfterTeleport = false;
                 m_creature->clearUnitState(UNIT_STAT_STUNNED);
@@ -286,15 +287,10 @@ struct boss_twinemperorsAI : public ScriptedAI
             }
             else
             {
-                AfterTeleportTimer -= diff;
                 // update important timers which would otherwise get skipped
-                if (EnrageTimer > diff)
-                    EnrageTimer -= diff;
-                else
+                if (EnrageTimer.Expired(diff))
                     EnrageTimer = 0;
-                if (Teleport_Timer > diff)
-                    Teleport_Timer -= diff;
-                else
+                if (Teleport_Timer.Expired(diff))
                     Teleport_Timer = 0;
                 return false;
             }
@@ -370,10 +366,10 @@ struct boss_twinemperorsAI : public ScriptedAI
 
     void HandleBugs(uint32 diff)
     {
-        if (BugsTimer <= diff || Abuse_Bug_Timer <= diff)
+        if (BugsTimer.Expired(diff) || Abuse_Bug_Timer.Expired(diff))
         {
             Creature *c = RespawnNearbyBugsAndGetOne();
-            if (Abuse_Bug_Timer <= diff)
+            if (Abuse_Bug_Timer.Passed())
             {
                 if (c)
                 {
@@ -381,33 +377,23 @@ struct boss_twinemperorsAI : public ScriptedAI
                     Abuse_Bug_Timer = 10000 + rand()%7000;
                 }
                 else
-                {
                     Abuse_Bug_Timer = 1000;
-                }
-            }
-            else
-            {
-                Abuse_Bug_Timer -= diff;
             }
             BugsTimer = 2000;
-        }
-        else
-        {
-            BugsTimer -= diff;
-            Abuse_Bug_Timer -= diff;
         }
     }
 
     void CheckEnrage(uint32 diff)
     {
-        if (EnrageTimer <= diff)
+        if (EnrageTimer.Expired(diff))
         {
             if (!m_creature->IsNonMeleeSpellCast(true))
             {
                 DoCast(m_creature, SPELL_BERSERK);
                 EnrageTimer = 60*60000;
-            } else EnrageTimer = 0;
-        } else EnrageTimer-=diff;
+            }
+            else EnrageTimer = 0;
+        } 
     }
 };
 
@@ -423,9 +409,9 @@ struct boss_veknilashAI : public boss_twinemperorsAI
     bool IAmVeklor() {return false;}
     boss_veknilashAI(Creature *c) : boss_twinemperorsAI(c) {}
 
-    uint32 UpperCut_Timer;
-    uint32 UnbalancingStrike_Timer;
-    uint32 Scarabs_Timer;
+    Timer UpperCut_Timer;
+    Timer UnbalancingStrike_Timer;
+    Timer Scarabs_Timer;
     int Rand;
     int RandX;
     int RandY;
@@ -467,19 +453,19 @@ struct boss_veknilashAI : public boss_twinemperorsAI
             return;
 
         //UnbalancingStrike_Timer
-        if (UnbalancingStrike_Timer <= diff)
+        if (UnbalancingStrike_Timer.Expired(diff))
         {
             DoCast(m_creature->getVictim(),SPELL_UNBALANCING_STRIKE);
             UnbalancingStrike_Timer = 8000+rand()%12000;
-        }else UnbalancingStrike_Timer -= diff;
+        }
 
-        if (UpperCut_Timer <= diff)
+        if (UpperCut_Timer.Expired(diff))
         {
             Unit* randomMelee = SelectUnit(SELECT_TARGET_RANDOM, 0, NOMINAL_MELEE_RANGE, true);
             if (randomMelee)
                 DoCast(randomMelee,SPELL_UPPERCUT);
             UpperCut_Timer = 15000+rand()%15000;
-        }else UpperCut_Timer -= diff;
+        }
 
         HandleBugs(diff);
 
@@ -487,10 +473,10 @@ struct boss_veknilashAI : public boss_twinemperorsAI
         TryHealBrother(diff);
 
         //Teleporting to brother
-        if(Teleport_Timer <= diff)
+        if (Teleport_Timer.Expired(diff))
         {
             TeleportToMyBrother();
-        }else Teleport_Timer -= diff;
+        }
 
         CheckEnrage(diff);
 
@@ -503,10 +489,10 @@ struct boss_veklorAI : public boss_twinemperorsAI
     bool IAmVeklor() {return true;}
     boss_veklorAI(Creature *c) : boss_twinemperorsAI(c) {}
 
-    uint32 ShadowBolt_Timer;
-    uint32 Blizzard_Timer;
-    uint32 ArcaneBurst_Timer;
-    uint32 Scorpions_Timer;
+    Timer ShadowBolt_Timer;
+    Timer Blizzard_Timer;
+    Timer ArcaneBurst_Timer;
+    Timer Scorpions_Timer;
     int Rand;
     int RandX;
     int RandY;
@@ -555,26 +541,26 @@ struct boss_veklorAI : public boss_twinemperorsAI
             return;
 
         //ShadowBolt_Timer
-        if (ShadowBolt_Timer <= diff)
+        if (ShadowBolt_Timer.Expired(diff))
         {
             if (m_creature->IsWithinDistInMap(m_creature, 45))
                 m_creature->GetMotionMaster()->MoveChase(m_creature->getVictim(), VEKLOR_DIST, 0);
             else
                 DoCast(m_creature->getVictim(),SPELL_SHADOWBOLT);
             ShadowBolt_Timer = 2000;
-        }else ShadowBolt_Timer -= diff;
+        }
 
         //Blizzard_Timer
-        if (Blizzard_Timer <= diff)
+        if (Blizzard_Timer.Expired(diff))
         {
             Unit* target = NULL;
             target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_BLIZZARD), true);
             if (target)
                 DoCast(target,SPELL_BLIZZARD);
             Blizzard_Timer = 15000+rand()%15000;
-        }else Blizzard_Timer -= diff;
+        }
 
-        if (ArcaneBurst_Timer <= diff)
+        if (ArcaneBurst_Timer.Expired(diff))
         {
             Unit *mvic;
             if ((mvic=SelectUnit(SELECT_TARGET_NEAREST, 0, NOMINAL_MELEE_RANGE, true))!=NULL)
@@ -582,7 +568,7 @@ struct boss_veklorAI : public boss_twinemperorsAI
                 DoCast(mvic,SPELL_ARCANEBURST);
                 ArcaneBurst_Timer = 5000;
             }
-        }else ArcaneBurst_Timer -= diff;
+        }
 
         HandleBugs(diff);
 
@@ -590,10 +576,10 @@ struct boss_veklorAI : public boss_twinemperorsAI
         TryHealBrother(diff);
 
         //Teleporting to brother
-        if(Teleport_Timer <= diff)
+        if (Teleport_Timer.Expired(diff))
         {
             TeleportToMyBrother();
-        }else Teleport_Timer -= diff;
+        }
 
         CheckEnrage(diff);
 

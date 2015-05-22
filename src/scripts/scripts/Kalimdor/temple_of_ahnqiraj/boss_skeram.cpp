@@ -1,7 +1,7 @@
-/* 
+/*
  * Copyright (C) 2006-2008 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -48,12 +48,12 @@ EndScriptData */
 
 class ov_mycoordinates
 {
-    public:
-        float x,y,z,r;
-        ov_mycoordinates(float cx, float cy, float cz, float cr)
-        {
-            x = cx; y = cy; z = cz; r = cr;
-        }
+public:
+    float x, y, z, r;
+    ov_mycoordinates(float cx, float cy, float cz, float cr)
+    {
+        x = cx; y = cy; z = cz; r = cr;
+    }
 };
 
 struct boss_skeramAI : public ScriptedAI
@@ -66,11 +66,11 @@ struct boss_skeramAI : public ScriptedAI
 
     ScriptedInstance *pInstance;
 
-    uint32 ArcaneExplosion_Timer;
-    uint32 EarthShock_Timer;
-    uint32 FullFillment_Timer;
-    uint32 Blink_Timer;
-    uint32 Invisible_Timer;
+    Timer ArcaneExplosion_Timer;
+    Timer EarthShock_Timer;
+    Timer FullFillment_Timer;
+    Timer Blink_Timer;
+    Timer Invisible_Timer;
 
     Creature *Image1, *Image2;
 
@@ -82,10 +82,10 @@ struct boss_skeramAI : public ScriptedAI
 
     void Reset()
     {
-        ArcaneExplosion_Timer = 6000 + rand()%6000;
+        ArcaneExplosion_Timer = 6000 + rand() % 6000;
         EarthShock_Timer = 2000;
         FullFillment_Timer = 15000;
-        Blink_Timer = 8000 + rand()%12000;
+        Blink_Timer = 8000 + rand() % 12000;
         Invisible_Timer = 500;
 
         Images75 = false;
@@ -135,74 +135,76 @@ struct boss_skeramAI : public ScriptedAI
             return;
 
         //ArcaneExplosion_Timer
-        if (ArcaneExplosion_Timer <= diff)
+        if (ArcaneExplosion_Timer.Expired(diff))
         {
             DoCast(m_creature->getVictim(), SPELL_ARCANE_EXPLOSION);
-            ArcaneExplosion_Timer = 8000 + rand()%10000;
-        }else ArcaneExplosion_Timer -= diff;
+            ArcaneExplosion_Timer = 8000 + rand() % 10000;
+        }
 
         //If we are within range melee the target
-        if( m_creature->IsWithinMeleeRange(m_creature->getVictim()))
+        if (m_creature->IsWithinMeleeRange(m_creature->getVictim()))
         {
             //Make sure our attack is ready and we arn't currently casting
-            if( m_creature->isAttackReady() && !m_creature->IsNonMeleeSpellCast(false))
+            if (m_creature->isAttackReady() && !m_creature->IsNonMeleeSpellCast(false))
             {
                 m_creature->AttackerStateUpdate(m_creature->getVictim());
                 m_creature->resetAttackTimer();
             }
-        }else
+        }
+        else
         {
             //EarthShock_Timer
-            if (EarthShock_Timer <= diff)
+            if (EarthShock_Timer.Expired(diff))
             {
-                DoCast(m_creature->getVictim(),SPELL_EARTH_SHOCK);
+                DoCast(m_creature->getVictim(), SPELL_EARTH_SHOCK);
                 EarthShock_Timer = 1000;
-            }else EarthShock_Timer -= diff;
+            }
         }
 
         //Blink_Timer
-        if (Blink_Timer <= diff)
+        if (Blink_Timer.Expired(diff))
         {
             //DoCast(m_creature, SPELL_BLINK);
-            switch(rand()%3)
+            switch (rand() % 3)
             {
                 case 0:
-                    m_creature->Relocate(-8340.782227,2083.814453,125.648788,0);
+                    m_creature->Relocate(-8340.782227, 2083.814453, 125.648788, 0);
                     DoResetThreat();
                     break;
                 case 1:
-                    m_creature->Relocate(-8341.546875,2118.504639,133.058151,0);
+                    m_creature->Relocate(-8341.546875, 2118.504639, 133.058151, 0);
                     DoResetThreat();
                     break;
                 case 2:
-                    m_creature->Relocate(-8318.822266,2058.231201,133.058151,0);
+                    m_creature->Relocate(-8318.822266, 2058.231201, 133.058151, 0);
                     DoResetThreat();
                     break;
             }
             DoStopAttack();
 
-            Blink_Timer= 20000 + rand()%20000;
-        }else Blink_Timer -= diff;
+            Blink_Timer = 20000 + rand() % 20000;
+        }
+        
 
-        int procent = (int) (m_creature->GetHealth()*100 / m_creature->GetMaxHealth() +0.5);
+        int procent = (int)(m_creature->GetHealth() * 100 / m_creature->GetMaxHealth() + 0.5);
 
         //Summoning 2 Images and teleporting to a random position on 75% health
-        if ( (!Images75 && !IsImage) && (procent <= 75 && procent > 70) )
+        if ((!Images75 && !IsImage) && (procent <= 75 && procent > 70))
             DoSplit(75);
 
         //Summoning 2 Images and teleporting to a random position on 50% health
-        if ( (!Images50 && !IsImage) &&
-            (procent <= 50 && procent > 45) )
+        if ((!Images50 && !IsImage) &&
+            (procent <= 50 && procent > 45))
             DoSplit(50);
 
         //Summoning 2 Images and teleporting to a random position on 25% health
-        if ( (!Images25 && !IsImage) && (procent <= 25 && procent > 20) )
+        if ((!Images25 && !IsImage) && (procent <= 25 && procent > 20))
             DoSplit(25);
 
         //Invisible_Timer
         if (Invisible)
         {
-            if (Invisible_Timer <= diff)
+            if (Invisible_Timer.Expired(diff))
             {
                 //Making Skeram visible after telporting
                 m_creature->SetVisibility(VISIBILITY_ON);
@@ -210,7 +212,7 @@ struct boss_skeramAI : public ScriptedAI
 
                 Invisible_Timer = 2500;
                 Invisible = false;
-            }else Invisible_Timer -= diff;
+            }
         }
 
         DoMeleeAttackIfReady();
@@ -220,32 +222,32 @@ struct boss_skeramAI : public ScriptedAI
     {
         DoScriptText(SAY_SPLIT, m_creature);
 
-        ov_mycoordinates *place1 = new ov_mycoordinates(-8340.782227,2083.814453,125.648788,0);
-        ov_mycoordinates *place2 = new ov_mycoordinates(-8341.546875,2118.504639,133.058151,0);
-        ov_mycoordinates *place3 = new ov_mycoordinates(-8318.822266,2058.231201,133.058151,0);
+        ov_mycoordinates *place1 = new ov_mycoordinates(-8340.782227, 2083.814453, 125.648788, 0);
+        ov_mycoordinates *place2 = new ov_mycoordinates(-8341.546875, 2118.504639, 133.058151, 0);
+        ov_mycoordinates *place3 = new ov_mycoordinates(-8318.822266, 2058.231201, 133.058151, 0);
 
-        ov_mycoordinates *bossc=place1, *i1=place2, *i2=place3;
+        ov_mycoordinates *bossc = place1, *i1 = place2, *i2 = place3;
 
-        switch(rand()%3)
+        switch (rand() % 3)
         {
             case 0:
-                bossc=place1;
-                i1=place2;
-                i2=place3;
+                bossc = place1;
+                i1 = place2;
+                i2 = place3;
                 break;
             case 1:
-                bossc=place2;
-                i1=place1;
-                i2=place3;
+                bossc = place2;
+                i1 = place1;
+                i2 = place3;
                 break;
             case 2:
-                bossc=place3;
-                i1=place1;
-                i2=place2;
+                bossc = place3;
+                i1 = place1;
+                i2 = place2;
                 break;
         }
 
-        for (int tryi = 0; tryi < 41; tryi ++)
+        for (int tryi = 0; tryi < 41; tryi++)
         {
             Unit *targetpl = SelectUnit(SELECT_TARGET_RANDOM, 0);
             if (targetpl->GetTypeId() == TYPEID_PLAYER)
@@ -278,24 +280,24 @@ struct boss_skeramAI : public ScriptedAI
             case 25: Images25 = true; break;
         }
 
-        Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0);
+        Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0);
 
         Image1 = m_creature->SummonCreature(15263, i1->x, i1->y, i1->z, i1->r, TEMPSUMMON_CORPSE_DESPAWN, 30000);
-        if(!Image1)
+        if (!Image1)
         {
-          PLACES_CLEANUP
-          return;
+            PLACES_CLEANUP
+                return;
         }
         Image1->SetMaxHealth(m_creature->GetMaxHealth() / 5);
         Image1->SetHealth(m_creature->GetHealth() / 5);
         if (target)
             Image1->AI()->AttackStart(target);
 
-        Image2 = m_creature->SummonCreature(15263,i2->x, i2->y, i2->z, i2->r, TEMPSUMMON_CORPSE_DESPAWN, 30000);
-        if(!Image2)
+        Image2 = m_creature->SummonCreature(15263, i2->x, i2->y, i2->z, i2->r, TEMPSUMMON_CORPSE_DESPAWN, 30000);
+        if (!Image2)
         {
-          PLACES_CLEANUP
-          return;
+            PLACES_CLEANUP
+                return;
         }
         Image2->SetMaxHealth(m_creature->GetMaxHealth() / 5);
         Image2->SetHealth(m_creature->GetHealth() / 5);
@@ -306,21 +308,21 @@ struct boss_skeramAI : public ScriptedAI
         ((boss_skeramAI*)Image2->AI())->IsImage = true;
 
         Invisible = true;
-    PLACES_CLEANUP
+        PLACES_CLEANUP
     }
 
 };
 
 CreatureAI* GetAI_boss_skeram(Creature *_Creature)
 {
-    return new boss_skeramAI (_Creature);
+    return new boss_skeramAI(_Creature);
 }
 
 void AddSC_boss_skeram()
 {
     Script *newscript;
     newscript = new Script;
-    newscript->Name="boss_skeram";
+    newscript->Name = "boss_skeram";
     newscript->GetAI = &GetAI_boss_skeram;
     newscript->RegisterSelf();
 }

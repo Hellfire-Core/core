@@ -53,12 +53,12 @@ struct mob_aquementasAI : public ScriptedAI
 {
     mob_aquementasAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 SendItem_Timer;
-    uint32 SwitchFaction_Timer;
+    Timer SendItem_Timer;
+    Timer SwitchFaction_Timer;
     bool isFriendly;
 
-    uint32 FrostShock_Timer;
-    uint32 AquaJet_Timer;
+    Timer FrostShock_Timer;
+    Timer AquaJet_Timer;
 
     void Reset()
     {
@@ -94,11 +94,11 @@ struct mob_aquementasAI : public ScriptedAI
     {
         if (isFriendly)
         {
-            if (SwitchFaction_Timer <= diff)
+            if (SwitchFaction_Timer.Expired(diff))
             {
                 me->setFaction(91);
                 isFriendly = false;
-            } else SwitchFaction_Timer -= diff;
+            }
         }
 
         if (!UpdateVictim())
@@ -106,25 +106,25 @@ struct mob_aquementasAI : public ScriptedAI
 
         if (!isFriendly)
         {
-            if (SendItem_Timer <= diff)
+            if (SendItem_Timer.Expired(diff))
             {
                 if (me->getVictim()->GetTypeId() == TYPEID_PLAYER)
                     SendItem(me->getVictim());
                 SendItem_Timer = 5000;
-            } else SendItem_Timer -= diff;
+            }
         }
 
-        if (FrostShock_Timer <= diff)
+        if (FrostShock_Timer.Expired(diff))
         {
             DoCast(me->getVictim(), SPELL_FROST_SHOCK);
             FrostShock_Timer = 15000;
-        } else FrostShock_Timer -= diff;
+        }
 
-        if (AquaJet_Timer <= diff)
+        if (AquaJet_Timer.Expired(diff))
         {
             DoCast(me, SPELL_AQUA_JET);
             AquaJet_Timer = 15000;
-        } else AquaJet_Timer -= diff;
+        } 
 
         DoMeleeAttackIfReady();
     }
@@ -677,12 +677,12 @@ struct npc_anachronosAI : public ScriptedAI
 {
     npc_anachronosAI(Creature* pCreature) : ScriptedAI(pCreature) { }
 
-    uint32 checkTimer;
+    Timer checkTimer;
 
     void Reset()
     {
         me->SetVisibility(VISIBILITY_ON);
-        checkTimer = 3000;
+        checkTimer = 1000;
     }
 
     void UpdateAI(const uint32 diff)
@@ -690,7 +690,7 @@ struct npc_anachronosAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (checkTimer <= diff)
+        if (checkTimer.Expired(diff))
         {
             if (HealthBelowPct(20))
             {
@@ -701,10 +701,9 @@ struct npc_anachronosAI : public ScriptedAI
                 return;
             }
 
-            checkTimer = 3000;
+            checkTimer = 1000;
         }
-        else
-            checkTimer -= diff;
+        
 
         DoMeleeAttackIfReady();
     }
