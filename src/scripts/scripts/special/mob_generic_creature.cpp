@@ -1,7 +1,7 @@
-/* 
+/*
  * Copyright (C) 2006-2008 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -33,7 +33,7 @@ struct generic_creatureAI : public ScriptedAI
     generic_creatureAI(Creature *c) : ScriptedAI(c) {}
 
     uint32 GlobalCooldown;      //This variable acts like the global cooldown that players have (1.5 seconds)
-    uint32 BuffTimer;           //This variable keeps track of buffs
+    Timer BuffTimer;           //This variable keeps track of buffs
     bool IsSelfRooted;
 
     void Reset()
@@ -60,7 +60,7 @@ struct generic_creatureAI : public ScriptedAI
 
         //Buff timer (only buff when we are alive and not in combat
         if (!m_creature->isInCombat() && m_creature->isAlive())
-            if (BuffTimer <= diff )
+            if (BuffTimer.Expired(diff))
             {
                 //Find a spell that targets friendly and applies an aura (these are generally buffs)
                 SpellEntry const *info = SelectSpell(m_creature, -1, -1, SELECT_TARGET_ANY_FRIEND, 0, 0, 0, 0, SELECT_EFFECT_AURA);
@@ -79,11 +79,9 @@ struct generic_creatureAI : public ScriptedAI
                 else
                     BuffTimer = 30000;
             }
-            else
-                BuffTimer -= diff;
 
         //Return since we have no target
-        if (!UpdateVictim() )
+        if (!UpdateVictim())
             return;
 
         //If we are within range melee the target

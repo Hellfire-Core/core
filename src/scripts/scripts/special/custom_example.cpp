@@ -1,7 +1,7 @@
-/* 
+/*
  * Copyright (C) 2006-2008 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -69,14 +69,14 @@ struct custom_exampleAI : public ScriptedAI
     //These variables are for use only by this individual script.
     //Nothing else will ever call them but us.
 
-    uint32 Say_Timer;                                       //Timer for random chat
-    uint32 Rebuff_Timer;                                    //Timer for rebuffing
-    uint32 Spell_1_Timer;                                   //Timer for spell 1 when in combat
-    uint32 Spell_2_Timer;                                   //Timer for spell 1 when in combat
-    uint32 Spell_3_Timer;                                   //Timer for spell 1 when in combat
-    uint32 Beserk_Timer;                                    //Timer until we go into Beserk (enraged) mode
-    uint32 Phase;                                           //The current battle phase we are in
-    uint32 Phase_Timer;                                     //Timer until phase transition
+    Timer Say_Timer;                                       //Timer for random chat
+    Timer Rebuff_Timer;                                    //Timer for rebuffing
+    Timer Spell_1_Timer;                                   //Timer for spell 1 when in combat
+    Timer Spell_2_Timer;                                   //Timer for spell 1 when in combat
+    Timer Spell_3_Timer;                                   //Timer for spell 1 when in combat
+    Timer Beserk_Timer;                                    //Timer until we go into Beserk (enraged) mode
+    uint32 Phase;                                          //The current battle phase we are in
+    Timer Phase_Timer;                                     //Timer until phase transition
 
     //*** HANDLED FUNCTION ***
     //This is called whenever the core decides we need to evade
@@ -107,7 +107,7 @@ struct custom_exampleAI : public ScriptedAI
         if (!m_creature->getVictim())
         {
             //Random Say timer
-            if (Say_Timer <= diff)
+            if (Say_Timer.Expired(diff))
             {
                 //Random switch between 5 outcomes
                 switch (rand()%5)
@@ -140,17 +140,13 @@ struct custom_exampleAI : public ScriptedAI
 
                 Say_Timer = 45000;                          //Say something agian in 45 seconds
             }
-            else
-                Say_Timer -= diff;
 
             //Rebuff timer
-            if (Rebuff_Timer <= diff)
+            if (Rebuff_Timer.Expired(diff))
             {
                 DoCast(m_creature,SPELL_BUFF);
                 Rebuff_Timer = 900000;                      //Rebuff agian in 15 minutes
             }
-            else
-                Rebuff_Timer -= diff;
         }
 
         //Return since we have no target
@@ -158,7 +154,7 @@ struct custom_exampleAI : public ScriptedAI
             return;
 
         //Spell 1 timer
-        if (Spell_1_Timer <= diff)
+        if (Spell_1_Timer.Expired(diff))
         {
             //Cast spell one on our current target.
             if (rand()%50 > 10)
@@ -169,35 +165,29 @@ struct custom_exampleAI : public ScriptedAI
 
             Spell_1_Timer = 5000;
         }
-        else
-            Spell_1_Timer -= diff;
 
         //Spell 2 timer
-        if (Spell_2_Timer <= diff)
+        if (Spell_2_Timer.Expired(diff))
         {
             //Cast spell one on our current target.
             DoCast(m_creature->getVictim(),SPELL_TWO);
 
             Spell_2_Timer = 37000;
         }
-        else
-            Spell_2_Timer -= diff;
 
         //Spell 3 timer
         if (Phase > 1)
-            if (Spell_3_Timer <= diff)
+            if (Spell_3_Timer.Expired(diff))
         {
             //Cast spell one on our current target.
             DoCast(m_creature->getVictim(),SPELL_THREE);
 
             Spell_3_Timer = 19000;
         }
-        else
-            Spell_3_Timer -= diff;
 
         //Beserk timer
         if (Phase > 1)
-            if (Beserk_Timer <= diff)
+            if (Beserk_Timer.Expired(diff))
         {
             //Say our line then cast uber death spell
             DoPlaySoundToSet(m_creature,8588);
@@ -207,20 +197,16 @@ struct custom_exampleAI : public ScriptedAI
             //Cast our beserk spell agian in 12 seconds if we didn't kill everyone
             Beserk_Timer = 12000;
         }
-        else
-            Beserk_Timer -= diff;
 
         //Phase timer
         if (Phase == 1)
-            if (Phase_Timer <= diff)
+            if (Phase_Timer.Expired(diff))
             {
                 //Go to next phase
                 Phase++;
                 DoYell(SAY_PHASE,LANG_UNIVERSAL,NULL);
                 DoCast(m_creature,SPELL_ENRAGE);
             }
-            else
-                Phase_Timer -= diff;
 
         DoMeleeAttackIfReady();
     }

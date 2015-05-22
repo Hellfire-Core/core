@@ -1,7 +1,7 @@
-/* 
+/*
  * Copyright (C) 2006-2008 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -2503,8 +2503,8 @@ struct guard_shattrath_aldorAI : public guardAI
 {
     guard_shattrath_aldorAI(Creature *c) : guardAI(c) {}
 
-    uint32 Exile_Timer;
-    uint32 Banish_Timer;
+    Timer Exile_Timer;
+    Timer Banish_Timer;
     uint64 playerGUID;
     bool CanTeleport;
 
@@ -2525,7 +2525,7 @@ struct guard_shattrath_aldorAI : public guardAI
 
         if( CanTeleport )
         {
-            if( Exile_Timer <= diff )
+            if (Exile_Timer.Expired(diff))
             {
                 if( Unit* temp = Unit::GetUnit(*m_creature,playerGUID) )
                 {
@@ -2536,11 +2536,9 @@ struct guard_shattrath_aldorAI : public guardAI
                 Exile_Timer = 8500;
                 CanTeleport = false;
             }
-            else
-                Exile_Timer -= diff;
         }
         else
-            if( Banish_Timer <= diff )
+            if (Banish_Timer.Expired(diff))
             {
                 Unit* temp = m_creature->getVictim();
                 if( temp && temp->GetTypeId() == TYPEID_PLAYER )
@@ -2552,8 +2550,6 @@ struct guard_shattrath_aldorAI : public guardAI
                         CanTeleport = true;
                 }
             }
-            else
-                Banish_Timer -= diff;
 
         DoMeleeAttackIfReady();
     }
@@ -2704,8 +2700,8 @@ struct guard_shattrath_scryerAI : public guardAI
 {
     guard_shattrath_scryerAI(Creature *c) : guardAI(c) {}
 
-    uint32 Exile_Timer;
-    uint32 Banish_Timer;
+    Timer Exile_Timer;
+    Timer Banish_Timer;
     uint64 playerGUID;
     bool CanTeleport;
 
@@ -2726,7 +2722,7 @@ struct guard_shattrath_scryerAI : public guardAI
 
         if( CanTeleport )
         {
-            if( Exile_Timer <= diff )
+            if (Exile_Timer.Expired(diff))
             {
                 if( Unit* temp = Unit::GetUnit(*m_creature,playerGUID) )
                 {
@@ -2737,11 +2733,9 @@ struct guard_shattrath_scryerAI : public guardAI
                 Exile_Timer = 8500;
                 CanTeleport = false;
             }
-            else
-                Exile_Timer -= diff;
         }
         else
-            if( Banish_Timer <= diff )
+            if (Banish_Timer.Expired(diff))
             {
                 Unit* temp = m_creature->getVictim();
                 if( temp && temp->GetTypeId() == TYPEID_PLAYER )
@@ -2753,8 +2747,6 @@ struct guard_shattrath_scryerAI : public guardAI
                         CanTeleport = true;
                 }
             }
-            else
-                Banish_Timer -= diff;
 
         DoMeleeAttackIfReady();
     }
