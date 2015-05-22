@@ -107,12 +107,13 @@ struct ShortIntervalTimer
 
     void Update(uint32 diff)
     {
-        _current += diff;
+        if (_interval != 0)
+            _current += diff;
     }
 
     bool Passed() const
     {
-        return _current >= _interval;
+        return _interval != 0 ? _current >= _interval : false;
     }
 
     void Reset()
