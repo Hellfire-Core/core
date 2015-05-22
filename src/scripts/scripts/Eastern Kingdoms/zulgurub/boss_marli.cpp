@@ -1,7 +1,7 @@
-/* 
+/*
  * Copyright (C) 2006-2008 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -103,7 +103,7 @@ struct boss_marliAI : public ScriptedAI
                 DoCast(m_creature->getVictim(),SPELL_POISONVOLLEY);
                 PoisonVolley_Timer += 10000 + rand()%10000;
             }
-            
+
 
             Aspect_Timer -= diff;
             if(!PhaseTwo && Aspect_Timer <= diff)
@@ -111,8 +111,8 @@ struct boss_marliAI : public ScriptedAI
                 DoCast(m_creature->getVictim(),SPELL_ASPECT_OF_MARLI);
                 Aspect_Timer += 13000 + rand()%5000;
             }
-            
-                
+
+
 
             SpawnStartSpiders_Timer -= diff;
             if(!Spawned && SpawnStartSpiders_Timer <= diff)
@@ -138,8 +138,8 @@ struct boss_marliAI : public ScriptedAI
 
                 Spawned = true;
             }
-            
-            SpawnSpider_Timer -= diff
+
+            SpawnSpider_Timer -= diff;
             if(SpawnSpider_Timer <= diff)
             {
                 Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0);
@@ -151,7 +151,7 @@ struct boss_marliAI : public ScriptedAI
                     Spider->AI()->AttackStart(target);
                 SpawnSpider_Timer += 12000 + rand()%5000;
             }
-            
+
             Transform_Timer -= diff;
             if(!PhaseTwo && Transform_Timer <= diff)
             {
@@ -169,7 +169,7 @@ struct boss_marliAI : public ScriptedAI
                 PhaseTwo = true;
                 Transform_Timer += 35000 + rand()%25000;
             }
-            
+
 
             if(PhaseTwo)
             {
@@ -197,7 +197,7 @@ struct boss_marliAI : public ScriptedAI
 
                     Charge_Timer += 8000;
                 }
-                
+
 
                 TransformBack_Timer -= diff;
                 if(TransformBack_Timer <= diff)

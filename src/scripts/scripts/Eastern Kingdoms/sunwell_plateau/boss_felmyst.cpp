@@ -1,7 +1,7 @@
-/* 
+/*
  * Copyright (C) 2009 TrinityCore <http://www.trinitycore.org/>
  * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -120,7 +120,7 @@ enum Side
     RIGHT_SIDE = 1
 };
 
-float FlightMarker[3][2][3] = 
+float FlightMarker[3][2][3] =
 {
    //left                     //right
     {{1446.56, 702.57, 50.08}, {1441.64, 502.52, 50.08}},
@@ -128,13 +128,13 @@ float FlightMarker[3][2][3] =
     {{1494.76, 705.00, 50.08}, {1492.82, 515.67, 50.08}}
 };
 
-float FlightSide[2][3] = 
+float FlightSide[2][3] =
 {
     {1468.38, 730.27, 60.08},   // left
     {1458.17, 501.3, 60.08}     // right
 };
 
-float FallCoord[2][3] = 
+float FallCoord[2][3] =
 {
     {1476.30, 649, 21.5},     // left
     {1472.55, 580, 22.5}     // right
@@ -409,7 +409,7 @@ struct boss_felmystAI : public ScriptedAI
         }
         IntroPhase++;
     }
-    
+
     void JustReachedHome()
     {
         me->SetLevitate(true);
@@ -656,7 +656,7 @@ struct boss_felmystAI : public ScriptedAI
         // use enrage timer both phases
         if(Timer[EVENT_BERSERK] <= diff)
             ProcessEvent(EVENT_BERSERK);
-        
+
 
         if(Phase == PHASE_GROUND || Phase == PHASE_NULL)
         {
@@ -682,7 +682,7 @@ struct boss_felmystAI : public ScriptedAI
                 {
                     Timer[i] -= diff;
                     if(Timer[i] <= diff)
-                        ProcessEvent((EventFelmyst)i)
+                        ProcessEvent((EventFelmyst)i);
                 }
             }
             CastNextSpellIfAnyAndReady();
@@ -754,12 +754,12 @@ struct mob_felmyst_trailAI : public Scripted_NoMovementAI
             DoCast(me, SPELL_DEAD_SUMMON);
             Delay += 30000;  // will despawn sooner
         }
-        
+
 
         Despawn -= diff;
         if(Despawn <= diff)
             me->ForcedDespawn();
-        
+
     }
 };
 
