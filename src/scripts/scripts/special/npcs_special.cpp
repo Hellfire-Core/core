@@ -1,7 +1,7 @@
-/* 
+/*
  * Copyright (C) 2006-2008 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -1034,7 +1034,7 @@ bool ReceiveEmote_npc_winter_reveler( Player *player, Creature *_Creature, uint3
         _Creature->CastSpell(player, 26218, false);
         return true;
     }
-    
+
     return false;
 }
 
@@ -1064,7 +1064,7 @@ struct npc_snake_trap_serpentsAI : public ScriptedAI
 {
     npc_snake_trap_serpentsAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(15.0f); }
 
-    Timer checkTimer;
+    TimeTrackerSmall checkTimer;
 
     void EnterCombat(Unit*)
     {
@@ -1700,7 +1700,7 @@ struct npc_fire_elemental_guardianAI : public ScriptedAI
           if (!me->IsWithinDistInMap(pTotem, 30.0f) || (!victim || !attacker))
           {
              if (!me->getVictim()|| !me->IsWithinDistInMap(pTotem, 30.0f))
-                if (!me->hasUnitState(UNIT_STAT_FOLLOW)) 
+                if (!me->hasUnitState(UNIT_STAT_FOLLOW))
                 {
                    victim = NULL;
                    attacker = NULL;
@@ -1813,7 +1813,7 @@ struct npc_earth_elemental_guardianAI : public ScriptedAI
           if (!me->IsWithinDistInMap(pTotem, 30.0f) || (!victim || !attacker))
           {
              if (!me->getVictim() || !me->IsWithinDistInMap(pTotem, 30.0f))
-                if (!me->hasUnitState(UNIT_STAT_FOLLOW)) 
+                if (!me->hasUnitState(UNIT_STAT_FOLLOW))
                 {
                    victim = NULL;
                    attacker = NULL;
@@ -2734,21 +2734,21 @@ CreatureAI* GetAI_npc_small_pet_handler(Creature* pCreature)
     return new npc_small_pet_handlerAI(pCreature);
 }
 
-bool GossipHello_npc_combatstop(Player* player, Creature* _Creature) 
-{ 
-    player->ADD_GOSSIP_ITEM(0, "Clear in combat state.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1); 
+bool GossipHello_npc_combatstop(Player* player, Creature* _Creature)
+{
+    player->ADD_GOSSIP_ITEM(0, "Clear in combat state.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
 
     // Hey there, $N. How can I help you?
-    player->SEND_GOSSIP_MENU(2, _Creature->GetGUID()); 
-    return true; 
-} 
+    player->SEND_GOSSIP_MENU(2, _Creature->GetGUID());
+    return true;
+}
 
-bool GossipSelect_npc_combatstop(Player* player, Creature* _Creature, uint32 sender, uint32 action) 
-{ 
+bool GossipSelect_npc_combatstop(Player* player, Creature* _Creature, uint32 sender, uint32 action)
+{
     if (action == GOSSIP_ACTION_INFO_DEF + 1)
-        player->CombatStop(true); 
+        player->CombatStop(true);
 
-    return true; 
+    return true;
 }
 
 struct npc_resurrectAI : public Scripted_NoMovementAI
@@ -2977,9 +2977,9 @@ struct npc_gnomish_flame_turret : public Scripted_NoMovementAI
     {
         me->SetAggroRange(10.0f); // radius of spell
     }
-    Timer CheckTimer;
+    TimeTrackerSmall CheckTimer;
 
-    void Reset() 
+    void Reset()
     {
         SetAutocast(SPELL_GNOMISH_FLAME_TURRET, 1000);
         StartAutocast();
@@ -3098,16 +3098,16 @@ struct npc_bad_santaAI : public ScriptedAI
             if (!who->HasAura(SPELL_FROST_MIST))
                 if (Unit* uglyhack = me->SummonTrigger(who->GetPositionX(), who->GetPositionY(), who->GetPositionZ(), 0, 5.0))   //so ugly it hurts
                     uglyhack->CastSpell(who, SPELL_FROST_MIST, true, 0, 0, me->GetGUID());
-        
-            
-            
+
+
+
     }
 
     void KilledUnit(Unit* who)
     {
         if (who->GetObjectGuid().IsPlayer())
             me->MonsterSay("HA! You can't handle true winter temperatures!", 0, 0);
-        if (Unit* uglyhack = me->SummonTrigger(who->GetPositionX(), who->GetPositionY(), who->GetPositionZ(), 0, 5.0)) 
+        if (Unit* uglyhack = me->SummonTrigger(who->GetPositionX(), who->GetPositionY(), who->GetPositionZ(), 0, 5.0))
         {
             uglyhack->CastSpell(who, SPELL_FROST_MIST, true, 0, 0, me->GetGUID());
             uglyhack->CastSpell(who, SPELL_FROST_NOVA, true, 0, 0, me->GetGUID());
@@ -3142,7 +3142,7 @@ struct npc_bad_santaAI : public ScriptedAI
 
           }
           else
-              Frost_Buffet_Timer -= diff;          
+              Frost_Buffet_Timer -= diff;
 
           if (Blizzard_Timer <= diff)
           {
@@ -3151,7 +3151,7 @@ struct npc_bad_santaAI : public ScriptedAI
           }
           else
           Blizzard_Timer -= diff;
-        
+
 
           if (Volley_Timer <= diff)
           {
@@ -3193,7 +3193,7 @@ struct npc_bad_santaAI : public ScriptedAI
                   if (target->GetAura(SPELL_FROST_BUFFET, 1) && target->GetAura(SPELL_FROST_BUFFET, 1)->GetStackAmount() == 20)
                   {
                       me->MonsterSay("TASTE THE TRUE MEANINGNESS OF COLD!",0,0);
-                      me->AddAura(SPELL_FROST_WEAKNESS, target);                      
+                      me->AddAura(SPELL_FROST_WEAKNESS, target);
                       me->CastSpell(target, SPELL_BLIZZARD, true);
                       me->CastSpell(target, SPELL_ICEBOLT, true);
                       Weakness_Timer = 10000;
@@ -3273,7 +3273,7 @@ struct npc_instakill_guardianAI : public Scripted_NoMovementAI
     }
 
     float distance;
-    
+
     void Reset()
     {
         distance = 0.1f * m_creature->GetRespawnDelay();
@@ -3288,7 +3288,7 @@ struct npc_instakill_guardianAI : public Scripted_NoMovementAI
         WorldLocation loc;
         player->GetPosition(loc);
         if( m_creature->GetExactDist(&loc) < distance)
-        { 
+        {
             if (player->isAlive())
             {
                 player->Kill(player);
@@ -3348,7 +3348,7 @@ struct npc_voodoo_servantAI : public ScriptedAI
             if (!me->IsWithinDistInMap(pOwner, 30.0f) || (!victim || !attacker))
             {
                 if (!me->getVictim()|| !me->IsWithinDistInMap(pOwner, 30.0f))
-                    if (!me->hasUnitState(UNIT_STAT_FOLLOW)) 
+                    if (!me->hasUnitState(UNIT_STAT_FOLLOW))
                     {
                     victim = NULL;
                     attacker = NULL;
@@ -3366,7 +3366,7 @@ struct npc_voodoo_servantAI : public ScriptedAI
                 Reset();
                 return;
             }
-    
+
             if (victim || attacker)
             {
                 if (attacker)
@@ -3381,8 +3381,8 @@ struct npc_voodoo_servantAI : public ScriptedAI
                 }
                 if (me->hasUnitState(UNIT_STAT_CASTING))
                     return;
-    
-    
+
+
                 if (LightingBlast_Timer <= diff)
                 {
                     DoCast(me->getVictim(), SPELL_LIGHTING_BLAST);
@@ -3390,7 +3390,7 @@ struct npc_voodoo_servantAI : public ScriptedAI
                 }
                 else
                     LightingBlast_Timer -= diff;
-    
+
                 DoMeleeAttackIfReady();
             }
        }
