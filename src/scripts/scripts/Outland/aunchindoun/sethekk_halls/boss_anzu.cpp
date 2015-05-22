@@ -1,6 +1,6 @@
-/* 
+/*
  * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -37,7 +37,7 @@
 
 #define GO_RAVENS_CLAW                   185554
 
-uint32 AnzuSpirits[] = {NPC_HAWK_SPIRIT, NPC_EAGLE_SPIRIT, NPC_FALCON_SPIRIT};
+uint32 AnzuSpirits[] = { NPC_HAWK_SPIRIT, NPC_EAGLE_SPIRIT, NPC_FALCON_SPIRIT };
 
 float AnzuSpiritLoc[][3] = {
     { -113, 293, 27 },
@@ -56,10 +56,10 @@ struct boss_anzuAI : public ScriptedAI
     ScriptedInstance* pInstance;
 
     bool Banished;
-    uint32 Banish_Timer;
-    uint32 SpellBomb_Timer;
-    uint32 CycloneOfFeathers_Timer;
-    uint32 ParalyzingScreech_Timer;
+    Timer Banish_Timer;
+    Timer SpellBomb_Timer;
+    Timer CycloneOfFeathers_Timer;
+    Timer ParalyzingScreech_Timer;
     uint8 BanishedTimes;
     uint8 BroodCount;
 
@@ -70,19 +70,19 @@ struct boss_anzuAI : public ScriptedAI
 
         Banished = false;
         Banish_Timer = 0;
-        SpellBomb_Timer = 22000; 
+        SpellBomb_Timer = 22000;
         CycloneOfFeathers_Timer = 5000;
         ParalyzingScreech_Timer = 14000;
         BanishedTimes = 2;
 
-        if(pInstance)
+        if (pInstance)
             pInstance->SetData(DATA_ANZUEVENT, NOT_STARTED);
     }
 
-    void IsSummonedBy(Unit *summoner) 
+    void IsSummonedBy(Unit *summoner)
     {
         GameObject* go = FindGameObject(GO_RAVENS_CLAW, 20, me);
-        if(go)
+        if (go)
         {
             go->Delete();
         }
@@ -91,7 +91,7 @@ struct boss_anzuAI : public ScriptedAI
 
     void JustSummoned(Creature *summon)
     {
-        if(summon->GetEntry() == NPC_BROOD_OF_ANZU)
+        if (summon->GetEntry() == NPC_BROOD_OF_ANZU)
         {
             summon->AI()->AttackStart(me->getVictim());
             BroodCount++;
@@ -101,7 +101,7 @@ struct boss_anzuAI : public ScriptedAI
 
     void SummonedCreatureDespawn(Creature *summon)
     {
-        if(summon->GetEntry() == NPC_BROOD_OF_ANZU)
+        if (summon->GetEntry() == NPC_BROOD_OF_ANZU)
             BroodCount--;
         summons.Despawn(summon);
     }
@@ -109,20 +109,20 @@ struct boss_anzuAI : public ScriptedAI
 
     void SummonSpirits()
     {
-        for(uint8 i = 0; i < 3; i++)
+        for (uint8 i = 0; i < 3; i++)
             me->SummonCreature(AnzuSpirits[i], AnzuSpiritLoc[i][0], AnzuSpiritLoc[i][1], AnzuSpiritLoc[i][2], 0, TEMPSUMMON_MANUAL_DESPAWN, 0);
     }
 
     void SummonBrood()
     {
-        for(uint8 i = 0; i < 5; i++)
+        for (uint8 i = 0; i < 5; i++)
             DoSummon(NPC_BROOD_OF_ANZU, me, 5, 0, TEMPSUMMON_CORPSE_DESPAWN);
     }
 
     void EnterCombat(Unit *who)
     {
-        if(pInstance)
-            pInstance->SetData(DATA_ANZUEVENT, IN_PROGRESS);  
+        if (pInstance)
+            pInstance->SetData(DATA_ANZUEVENT, IN_PROGRESS);
         SummonSpirits();
     }
 
@@ -138,58 +138,58 @@ struct boss_anzuAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if(Banished)
+        if (Banished)
         {
-            if(BroodCount == 0 || Banish_Timer <= diff)
+            if (BroodCount == 0 || Banish_Timer.Expired(diff))
             {
                 Banished = false;
                 me->RemoveAurasDueToSpell(SPELL_BANISH);
-            } else 
-                Banish_Timer -= diff;
-        } else {
+            }
+        }
+        else {
 
-            if(ParalyzingScreech_Timer <= diff)
+            if (ParalyzingScreech_Timer.Expired(diff))
             {
                 AddSpellToCast(me, SPELL_PARALYZING_SCREECH);
                 ParalyzingScreech_Timer = 26000;
-            } else 
-                ParalyzingScreech_Timer -= diff;
+            }
 
-            if(SpellBomb_Timer <= diff)
+
+            if (SpellBomb_Timer.Expired(diff))
             {
-                if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0))
+                if (Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0))
                     AddSpellToCast(target, SPELL_SPELL_BOMB);
                 SpellBomb_Timer = 30000;
-            } else
-                SpellBomb_Timer -= diff;
+            }
 
-            if(CycloneOfFeathers_Timer <= diff)
+
+            if (CycloneOfFeathers_Timer.Expired(diff))
             {
-                if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 1, 45.0f, true))
+                if (Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 1, 45.0f, true))
                     AddSpellToCast(target, SPELL_CYCLONE_OF_FEATHERS);
                 CycloneOfFeathers_Timer = 21000;
-            } else
-                CycloneOfFeathers_Timer -= diff;
+            }
+            
 
-            if(HealthBelowPct(33*BanishedTimes))
+            if (HealthBelowPct(33 * BanishedTimes))
             {
                 BanishedTimes--;
                 Banished = true;
                 Banish_Timer = 45000;
                 ForceSpellCast(me, SPELL_BANISH, INTERRUPT_AND_CAST_INSTANTLY, true);
                 SummonBrood();
-            }          
+            }
         }
-        
+
         CastNextSpellIfAnyAndReady();
-        if(!Banished)
+        if (!Banished)
             DoMeleeAttackIfReady();
     }
 };
 
 CreatureAI* GetAI_boss_anzu(Creature *_Creature)
 {
-    return new boss_anzuAI (_Creature);
+    return new boss_anzuAI(_Creature);
 }
 
 struct npc_anzu_spiritAI : public Scripted_NoMovementAI
@@ -200,7 +200,7 @@ struct npc_anzu_spiritAI : public Scripted_NoMovementAI
     }
 
     uint32 Spell;
-    uint32 Timer;
+    Timer Timer;
 
     void Reset() {
         Timer = 5000;
@@ -214,7 +214,7 @@ struct npc_anzu_spiritAI : public Scripted_NoMovementAI
 
     void OnAuraApply(Aura *aur, Unit *caster, bool stackApply)
     {
-        if(isDruidHotSpell(aur->GetSpellProto()))
+        if (isDruidHotSpell(aur->GetSpellProto()))
         {
             DoCast(me, Spell);
             Timer = 5000;
@@ -223,36 +223,35 @@ struct npc_anzu_spiritAI : public Scripted_NoMovementAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(Timer <= diff)
+        if (Timer.Expired(diff))
         {
             const Unit::AuraList& auras = me->GetAurasByType(SPELL_AURA_PERIODIC_HEAL);
-            for(Unit::AuraList::const_iterator i = auras.begin(); i != auras.end(); ++i)
+            for (Unit::AuraList::const_iterator i = auras.begin(); i != auras.end(); ++i)
             {
-                if(isDruidHotSpell((*i)->GetSpellProto()))
+                if (isDruidHotSpell((*i)->GetSpellProto()))
                 {
                     DoCast(me, Spell);
                     break;
                 }
             }
             Timer = 5000;
-        } else
-            Timer -= diff;
+        }
     }
 };
 
 CreatureAI* GetAI_npc_eagle_spirit(Creature *_Creature)
 {
-    return new npc_anzu_spiritAI (_Creature, SPELL_SPITE_OF_THE_EAGLE);
+    return new npc_anzu_spiritAI(_Creature, SPELL_SPITE_OF_THE_EAGLE);
 }
 
 CreatureAI* GetAI_npc_hawk_spirit(Creature *_Creature)
 {
-    return new npc_anzu_spiritAI (_Creature, SPELL_PROTECTION_OF_THE_HAWK);
+    return new npc_anzu_spiritAI(_Creature, SPELL_PROTECTION_OF_THE_HAWK);
 }
 
 CreatureAI* GetAI_npc_falcon_spirit(Creature *_Creature)
 {
-    return new npc_anzu_spiritAI (_Creature, SPELL_SPEED_OF_THE_FALCON);
+    return new npc_anzu_spiritAI(_Creature, SPELL_SPEED_OF_THE_FALCON);
 }
 
 void AddSC_boss_anzu()
@@ -260,22 +259,22 @@ void AddSC_boss_anzu()
     Script *newscript;
 
     newscript = new Script;
-    newscript->Name="boss_anzu";
+    newscript->Name = "boss_anzu";
     newscript->GetAI = &GetAI_boss_anzu;
     newscript->RegisterSelf();
 
     newscript = new Script;
-    newscript->Name="npc_eagle_spirit";
+    newscript->Name = "npc_eagle_spirit";
     newscript->GetAI = &GetAI_npc_eagle_spirit;
     newscript->RegisterSelf();
 
     newscript = new Script;
-    newscript->Name="npc_falcon_spirit";
+    newscript->Name = "npc_falcon_spirit";
     newscript->GetAI = &GetAI_npc_falcon_spirit;
     newscript->RegisterSelf();
 
     newscript = new Script;
-    newscript->Name="npc_hawk_spirit";
+    newscript->Name = "npc_hawk_spirit";
     newscript->GetAI = &GetAI_npc_hawk_spirit;
     newscript->RegisterSelf();
 }

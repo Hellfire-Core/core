@@ -68,11 +68,11 @@ struct boss_darkweaver_sythAI : public ScriptedAI
 
     SummonList summons;
 
-    uint32 flameshock_timer;
-    uint32 arcaneshock_timer;
-    uint32 frostshock_timer;
-    uint32 shadowshock_timer;
-    uint32 chainlightning_timer;
+    Timer flameshock_timer;
+    Timer arcaneshock_timer;
+    Timer frostshock_timer;
+    Timer shadowshock_timer;
+    Timer chainlightning_timer;
 
     bool summon90;
     bool summon50;
@@ -174,45 +174,45 @@ struct boss_darkweaver_sythAI : public ScriptedAI
             summon10 = true;
         }
 
-        if (flameshock_timer <= diff)
+        if (flameshock_timer.Expired(diff))
         {
             if (Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, 60, true))
-                DoCast(target,SPELL_FLAME_SHOCK);
+                DoCast(target, SPELL_FLAME_SHOCK);
 
-            flameshock_timer = 10000 + rand()%5000;
-        } else flameshock_timer -= diff;
+            flameshock_timer = 10000 + rand() % 5000;
+        }
 
-        if (arcaneshock_timer <= diff)
+        if (arcaneshock_timer.Expired(diff))
         {
             if (Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, 60, true))
                 DoCast(target,SPELL_ARCANE_SHOCK);
 
             arcaneshock_timer = 10000 + rand()%5000;
-        } else arcaneshock_timer -= diff;
+        } 
 
-        if (frostshock_timer <= diff)
+        if (frostshock_timer.Expired(diff))
         {
-            if (Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0, 60, true))
-                DoCast(target,SPELL_FROST_SHOCK);
+            if (Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, 60, true))
+                DoCast(target, SPELL_FROST_SHOCK);
 
-            frostshock_timer = 10000 + rand()%5000;
-        } else frostshock_timer -= diff;
+            frostshock_timer = 10000 + rand() % 5000;
+        }
 
-        if (shadowshock_timer <= diff)
+        if (shadowshock_timer.Expired(diff))
         {
             if (Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0, 60, true))
                 DoCast(target,SPELL_SHADOW_SHOCK);
 
             shadowshock_timer = 10000 + rand()%5000;
-        } else shadowshock_timer -= diff;
+        } 
 
-        if (chainlightning_timer <= diff)
+        if (chainlightning_timer.Expired(diff))
         {
             if (Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0, 60, true))
                 DoCast(target,SPELL_CHAIN_LIGHTNING);
 
             chainlightning_timer = 25000;
-        } else chainlightning_timer -= diff;
+        } 
 
         DoMeleeAttackIfReady();
     }
@@ -233,8 +233,8 @@ struct mob_syth_fireAI : public ScriptedAI
         HeroicMode = m_creature->GetMap()->IsHeroic();
     }
 
-    uint32 flameshock_timer;
-    uint32 flamebuffet_timer;
+    Timer flameshock_timer;
+    Timer flamebuffet_timer;
     bool HeroicMode;
 
     void Reset()
@@ -251,25 +251,23 @@ struct mob_syth_fireAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if(flameshock_timer <= diff)
+        if (flameshock_timer.Expired(diff))
         {
             if( Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0, 60, true) )
                 DoCast(target,SPELL_FLAME_SHOCK);
 
             flameshock_timer = 5000;
         }
-        else
-            flameshock_timer -= diff;
+        
 
-        if(flamebuffet_timer <= diff)
+        if (flamebuffet_timer.Expired(diff))
         {
             if( Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0, 60, true) )
                 DoCast(target,SPELL_FLAME_BUFFET);
 
             flamebuffet_timer = 5000;
         }
-        else
-            flamebuffet_timer -= diff;
+
 
         DoMeleeAttackIfReady();
     }
@@ -288,8 +286,8 @@ struct mob_syth_arcaneAI : public ScriptedAI
         HeroicMode = m_creature->GetMap()->IsHeroic();
     }
 
-    uint32 arcaneshock_timer;
-    uint32 arcanebuffet_timer;
+    Timer arcaneshock_timer;
+    Timer arcanebuffet_timer;
     bool HeroicMode;
 
     void Reset()
@@ -306,25 +304,22 @@ struct mob_syth_arcaneAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if(arcaneshock_timer <= diff)
+        if (arcaneshock_timer.Expired(diff))
         {
             if( Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0, 60, true) )
                 DoCast(target,SPELL_ARCANE_SHOCK);
 
             arcaneshock_timer = 5000;
         }
-        else
-            arcaneshock_timer -= diff;
 
-        if(arcanebuffet_timer <= diff)
+
+        if (arcanebuffet_timer.Expired(diff))
         {
-            if( Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0, 60, true) )
-                DoCast(target,SPELL_ARCANE_BUFFET);
+            if (Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, 60, true))
+                DoCast(target, SPELL_ARCANE_BUFFET);
 
             arcanebuffet_timer = 5000;
         }
-        else
-            arcanebuffet_timer -= diff;
 
         DoMeleeAttackIfReady();
     }
@@ -343,8 +338,8 @@ struct mob_syth_frostAI : public ScriptedAI
         HeroicMode = m_creature->GetMap()->IsHeroic();
     }
 
-    uint32 frostshock_timer;
-    uint32 frostbuffet_timer;
+    Timer frostshock_timer;
+    Timer frostbuffet_timer;
     bool HeroicMode;
 
     void Reset()
@@ -361,25 +356,23 @@ struct mob_syth_frostAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if(frostshock_timer <= diff)
+        if (frostshock_timer.Expired(diff))
         {
             if( Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0, 60, true) )
                 DoCast(target,SPELL_FROST_SHOCK);
 
             frostshock_timer = 5000;
         }
-        else
-            frostshock_timer -= diff;
+        
 
-        if(frostbuffet_timer <= diff)
+        if (frostbuffet_timer.Expired(diff))
         {
             if( Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0, 60, true) )
                 DoCast(target,SPELL_FROST_BUFFET);
 
             frostbuffet_timer = 5000;
         }
-        else
-            frostbuffet_timer -= diff;
+        
 
         DoMeleeAttackIfReady();
     }
@@ -398,8 +391,8 @@ struct mob_syth_shadowAI : public ScriptedAI
         HeroicMode = m_creature->GetMap()->IsHeroic();
     }
 
-    uint32 shadowshock_timer;
-    uint32 shadowbuffet_timer;
+    Timer shadowshock_timer;
+    Timer shadowbuffet_timer;
     bool HeroicMode;
 
     void Reset()
@@ -416,25 +409,23 @@ struct mob_syth_shadowAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if(shadowshock_timer <= diff)
+        if (shadowshock_timer.Expired(diff))
         {
             if( Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0, 60, true) )
                 DoCast(target,SPELL_SHADOW_SHOCK);
 
             shadowshock_timer = 5000;
         }
-        else
-            shadowshock_timer -= diff;
+        
 
-        if(shadowbuffet_timer <= diff)
+        if (shadowbuffet_timer.Expired(diff))
         {
             if( Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0, 60, true) )
                 DoCast(target,SPELL_SHADOW_BUFFET);
 
             shadowbuffet_timer = 5000;
         }
-        else
-            shadowbuffet_timer -= diff;
+
 
         DoMeleeAttackIfReady();
     }

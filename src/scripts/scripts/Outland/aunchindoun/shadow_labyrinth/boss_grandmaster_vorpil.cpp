@@ -78,7 +78,7 @@ struct mob_voidtravelerAI : public ScriptedAI
 
     bool HeroicMode;
     uint64 VorpilGUID;
-    uint32 move;
+    Timer move;
     bool sacrificed;
 
     void Reset()
@@ -101,7 +101,7 @@ struct mob_voidtravelerAI : public ScriptedAI
         }
         */
 
-        if(move <= diff)
+        if (move.Expired(diff))
         {
             Unit *Vorpil = Unit::GetUnit(*me, VorpilGUID);
             if(!Vorpil)
@@ -135,8 +135,6 @@ struct mob_voidtravelerAI : public ScriptedAI
             }
             move = 1000;
         }
-        else
-            move -= diff;
     }
 };
 CreatureAI* GetAI_mob_voidtraveler(Creature *_Creature)
@@ -158,10 +156,10 @@ struct boss_grandmaster_vorpilAI : public ScriptedAI
     bool sumportals;
     bool HeroicMode;
 
-    uint32 ShadowBoltVolley_Timer;
-    uint32 DrawShadows_Timer;
-    uint32 summonTraveler_Timer;
-    uint32 banish_Timer;
+    Timer ShadowBoltVolley_Timer;
+    Timer DrawShadows_Timer;
+    Timer summonTraveler_Timer;
+    Timer banish_Timer;
     uint64 PortalsGuid[5];
 
     void Reset()
@@ -268,15 +266,14 @@ struct boss_grandmaster_vorpilAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (ShadowBoltVolley_Timer <= diff)
+        if (ShadowBoltVolley_Timer.Expired(diff))
         {
             DoCast(me,SPELL_SHADOWBOLT_VOLLEY);
             ShadowBoltVolley_Timer = 15000;
         }
-        else
-            ShadowBoltVolley_Timer -= diff;
+        
 
-        if (HeroicMode && banish_Timer <= diff)
+        if (HeroicMode && banish_Timer.Expired(diff))
         {
             Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0,30,false);
             if (target)
@@ -285,10 +282,8 @@ struct boss_grandmaster_vorpilAI : public ScriptedAI
                 banish_Timer = 16000;
             }
         }
-        else
-            banish_Timer -= diff;
 
-        if ( DrawShadows_Timer <= diff)
+        if (DrawShadows_Timer.Expired(diff))
         {
             Map *map = me->GetMap();
             Map::PlayerList const &PlayerList = map->GetPlayers();
@@ -305,10 +300,9 @@ struct boss_grandmaster_vorpilAI : public ScriptedAI
             ShadowBoltVolley_Timer = 6000;
             DrawShadows_Timer = 30000;
         }
-        else
-            DrawShadows_Timer -= diff;
+        
 
-        if ( summonTraveler_Timer <= diff)
+        if (summonTraveler_Timer.Expired(diff))
         {
             spawnVoidTraveler();
             summonTraveler_Timer = 10000;
@@ -316,8 +310,6 @@ struct boss_grandmaster_vorpilAI : public ScriptedAI
             if((me->GetHealth()*5) < me->GetMaxHealth())
                 summonTraveler_Timer = 5000;
         }
-        else
-            summonTraveler_Timer -=diff;
 
         DoMeleeAttackIfReady();
     }

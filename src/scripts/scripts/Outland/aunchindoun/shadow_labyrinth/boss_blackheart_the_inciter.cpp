@@ -75,10 +75,10 @@ struct boss_blackheart_the_inciterAI : public ScriptedAI
     ScriptedInstance *pInstance;
 
     bool InciteChaos;
-    uint32 InciteChaos_Timer;
-    uint32 InciteChaosWait_Timer;
-    uint32 Charge_Timer;
-    uint32 Knockback_Timer;
+    Timer InciteChaos_Timer;
+    Timer InciteChaosWait_Timer;
+    Timer Charge_Timer;
+    Timer Knockback_Timer;
 
     void Reset()
     {
@@ -143,7 +143,7 @@ struct boss_blackheart_the_inciterAI : public ScriptedAI
     {
         if(InciteChaos)
         {
-            if(InciteChaosWait_Timer <= diff)
+            if (InciteChaosWait_Timer.Expired(diff))
             {
                 InciteChaos = false;
                 DoZoneInCombat();
@@ -153,9 +153,6 @@ struct boss_blackheart_the_inciterAI : public ScriptedAI
                 if(target)
                     AttackStart(target);
             }
-            else
-                InciteChaosWait_Timer -= diff;
-
             return;
         }
 
@@ -164,7 +161,7 @@ struct boss_blackheart_the_inciterAI : public ScriptedAI
         else
             TrashAggro();
 
-        if(InciteChaos_Timer <= diff)
+        if (InciteChaos_Timer.Expired(diff))
         {
             DoCast(me, SPELL_INCITE_CHAOS);
 
@@ -189,27 +186,23 @@ struct boss_blackheart_the_inciterAI : public ScriptedAI
             InciteChaosWait_Timer = 16000;
             return;
         }
-        else
-            InciteChaos_Timer -= diff;
 
         //Charge_Timer
-        if (Charge_Timer <= diff)
+        if (Charge_Timer.Expired(diff))
         {
             if (Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, 50, true))
                 DoCast(target, SPELL_CHARGE);
             Charge_Timer = 25000;
         }
-        else
-            Charge_Timer -= diff;
+
 
         //Knockback_Timer
-        if (Knockback_Timer <= diff)
+        if (Knockback_Timer.Expired(diff))
         {
             DoCast(me, SPELL_WAR_STOMP);
             Knockback_Timer = 20000;
         }
-        else
-            Knockback_Timer -= diff;
+        
 
         DoMeleeAttackIfReady();
     }

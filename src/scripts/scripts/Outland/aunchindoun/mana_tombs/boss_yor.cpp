@@ -32,8 +32,8 @@ struct boss_yorAI : public ScriptedAI
     }
 
     ScriptedInstance *pInstance;
-    uint32 DoubleBreath_Timer;
-    uint32 Stomp_Timer;
+    Timer DoubleBreath_Timer;
+    Timer Stomp_Timer;
 
     void Reset()
     {
@@ -63,21 +63,18 @@ struct boss_yorAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (DoubleBreath_Timer <= diff)
+        if (DoubleBreath_Timer.Expired(diff))
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_DOUBLE_BREATH);
-            DoubleBreath_Timer = 7500 + rand()%5000;
+            DoubleBreath_Timer = 7500 + rand() % 5000;
         }
-        else
-            DoubleBreath_Timer -= diff;
 
-        if (Stomp_Timer <= diff)
+        if (Stomp_Timer.Expired(diff))
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_STOMP);
             Stomp_Timer = 15000+rand()%5000;
         }
-        else
-            Stomp_Timer -= diff;
+
 
         CastNextSpellIfAnyAndReady(diff);
         DoMeleeAttackIfReady();

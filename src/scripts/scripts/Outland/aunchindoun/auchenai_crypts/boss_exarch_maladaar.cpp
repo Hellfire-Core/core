@@ -47,7 +47,7 @@ struct mob_stolen_soulAI : public ScriptedAI
     mob_stolen_soulAI(Creature *c) : ScriptedAI(c) {}
 
     uint8 myClass;
-    uint32 Class_Timer;
+    Timer Class_Timer;
 
     void Reset()
     {
@@ -67,7 +67,7 @@ struct mob_stolen_soulAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (Class_Timer <= diff)
+        if (Class_Timer.Expired(diff))
         {
             switch (myClass)
             {
@@ -108,7 +108,7 @@ struct mob_stolen_soulAI : public ScriptedAI
                     Class_Timer = 10000;
                     break;
             }
-        } else Class_Timer -= diff;
+        } 
 
         DoMeleeAttackIfReady();
     }
@@ -155,9 +155,9 @@ struct boss_exarch_maladaarAI : public ScriptedAI
     uint64 soulholder;
     uint8 soulclass;
 
-    uint32 Fear_timer;
-    uint32 Ribbon_of_Souls_timer;
-    uint32 StolenSoul_Timer;
+    Timer Fear_timer;
+    Timer Ribbon_of_Souls_timer;
+    Timer StolenSoul_Timer;
 
     bool HasTaunted;
     bool Avatar_summoned;
@@ -242,7 +242,7 @@ struct boss_exarch_maladaarAI : public ScriptedAI
             StolenSoul_Timer = 15000 + rand()% 15000;
         }
 
-        if (StolenSoul_Timer <= diff)
+        if (StolenSoul_Timer.Expired(diff))
         {
             if (Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0, 100, true))
             {
@@ -265,29 +265,26 @@ struct boss_exarch_maladaarAI : public ScriptedAI
                     DoSpawnCreature(ENTRY_STOLEN_SOUL,0,0,0,0,TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT,10000);
 
                     StolenSoul_Timer = 20000 + rand()% 10000;
-                } else StolenSoul_Timer = 1000;
+                } 
             }
         }
-        else
-            StolenSoul_Timer -= diff;
+        
 
-        if (Ribbon_of_Souls_timer <= diff)
+        if (Ribbon_of_Souls_timer.Expired(diff))
         {
             if (Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0, 100, true))
                 DoCast(target,SPELL_RIBBON_OF_SOULS);
 
             Ribbon_of_Souls_timer = 5000 + (rand()%20 * 1000);
         }
-        else
-            Ribbon_of_Souls_timer -= diff;
 
-        if (Fear_timer <= diff)
+
+        if (Fear_timer.Expired(diff))
         {
             DoCast(m_creature,SPELL_SOUL_SCREAM);
             Fear_timer = 15000 + rand()% 15000;
         }
-        else
-            Fear_timer -= diff;
+
 
         DoMeleeAttackIfReady();
     }
@@ -305,7 +302,7 @@ struct mob_avatar_of_martyredAI : public ScriptedAI
 {
     mob_avatar_of_martyredAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 Mortal_Strike_timer;
+    Timer Mortal_Strike_timer;
 
     void Reset()
     {
@@ -321,13 +318,12 @@ struct mob_avatar_of_martyredAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (Mortal_Strike_timer <= diff)
+        if (Mortal_Strike_timer.Expired(diff))
         {
             DoCast(m_creature->getVictim(), SPELL_AV_MORTAL_STRIKE);
             Mortal_Strike_timer = 10000 + rand()%20 * 1000;
         }
-        else
-            Mortal_Strike_timer -= diff;
+        
 
         DoMeleeAttackIfReady();
     }

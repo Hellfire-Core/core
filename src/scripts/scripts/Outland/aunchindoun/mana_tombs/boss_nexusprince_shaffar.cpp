@@ -68,11 +68,11 @@ struct boss_nexusprince_shaffarAI : public ScriptedAI
 
     ScriptedInstance *pInstance;
 
-    uint32 Blink_Timer;
-    uint32 Beacon_Timer;
-    uint32 FireBall_Timer;
-    uint32 Frostbolt_Timer;
-    uint32 FrostNova_Timer;
+    Timer Blink_Timer;
+    Timer Beacon_Timer;
+    Timer FireBall_Timer;
+    Timer Frostbolt_Timer;
+    Timer FrostNova_Timer;
 
     Creature* Beacon[NR_INITIAL_BEACONS];
 
@@ -194,7 +194,7 @@ struct boss_nexusprince_shaffarAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if( FrostNova_Timer <= diff )
+        if (FrostNova_Timer.Expired(diff))
         {
             if( m_creature->IsNonMeleeSpellCast(false) )
                 m_creature->InterruptNonMeleeSpells(true);
@@ -203,28 +203,25 @@ struct boss_nexusprince_shaffarAI : public ScriptedAI
             FrostNova_Timer  = 17500 + rand()%7500;
             CanBlink = true;
         }
-        else
-            FrostNova_Timer -= diff;
+        
 
-        if( Frostbolt_Timer <= diff )
+        if (Frostbolt_Timer.Expired(diff))
         {
             DoCast(m_creature->getVictim(),SPELL_FROSTBOLT);
             Frostbolt_Timer = 4500 + rand()%1500;
         }
-        else
-            Frostbolt_Timer -= diff;
+        
 
-        if( FireBall_Timer <= diff )
+        if (FireBall_Timer.Expired(diff))
         {
             DoCast(m_creature->getVictim(),SPELL_FIREBALL);
             FireBall_Timer = 4500 + rand()%1500;
         }
-        else
-            FireBall_Timer -= diff;
+        
 
         if( CanBlink )
         {
-            if( Blink_Timer <= diff )
+            if (Blink_Timer.Expired(diff))
             {
                 if( m_creature->IsNonMeleeSpellCast(false) )
                     m_creature->InterruptNonMeleeSpells(true);
@@ -233,11 +230,10 @@ struct boss_nexusprince_shaffarAI : public ScriptedAI
                 Blink_Timer = 1000 + rand()%1500;
                 CanBlink = false;
             }
-            else
-                Blink_Timer -= diff;
+            
         }
 
-        if( Beacon_Timer <= diff)
+        if (Beacon_Timer.Expired(diff))
         {
             if( m_creature->IsNonMeleeSpellCast(false) )
                 m_creature->InterruptNonMeleeSpells(true);
@@ -249,8 +245,7 @@ struct boss_nexusprince_shaffarAI : public ScriptedAI
 
             Beacon_Timer = 10000;
         }
-        else
-            Beacon_Timer -= diff;
+        
 
         DoMeleeAttackIfReady();
     }
@@ -272,9 +267,9 @@ struct mob_ethereal_beaconAI : public ScriptedAI
     }
 
     bool HeroicMode;
-    uint32 Apprentice_Timer;
-    uint32 ArcaneBolt_Timer;
-    uint32 Check_Timer;
+    Timer Apprentice_Timer;
+    Timer ArcaneBolt_Timer;
+    Timer Check_Timer;
 
     void KillSelf()
     {
@@ -319,7 +314,7 @@ struct mob_ethereal_beaconAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if(Check_Timer <= diff)
+        if (Check_Timer.Expired(diff))
         {
             Unit *Shaffar = FindCreature(ENTRY_SHAFFAR, 100, m_creature);
             if(!Shaffar || Shaffar->isDead() || !Shaffar->isInCombat())
@@ -329,18 +324,16 @@ struct mob_ethereal_beaconAI : public ScriptedAI
             }
             Check_Timer = 1000;
         }
-        else
-            Check_Timer -= diff;
+        
 
-        if( ArcaneBolt_Timer <= diff )
+        if (ArcaneBolt_Timer.Expired(diff))
         {
             DoCast(m_creature->getVictim(),SPELL_ARCANE_BOLT);
             ArcaneBolt_Timer = 2000 + rand()%2500;
         }
-        else
-            ArcaneBolt_Timer -= diff;
+        
 
-        if( Apprentice_Timer <= diff )
+        if (Apprentice_Timer.Expired(diff))
         {
             if( m_creature->IsNonMeleeSpellCast(false) )
                 m_creature->InterruptNonMeleeSpells(true);
@@ -351,8 +344,6 @@ struct mob_ethereal_beaconAI : public ScriptedAI
             KillSelf();
             return;
         }
-        else
-            Apprentice_Timer -= diff;
     }
 };
 
@@ -368,7 +359,7 @@ struct mob_ethereal_apprenticeAI : public ScriptedAI
 {
     mob_ethereal_apprenticeAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 Cast_Timer;
+    Timer Cast_Timer;
 
     bool isFireboltTurn;
 
@@ -383,7 +374,7 @@ struct mob_ethereal_apprenticeAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if(Cast_Timer <= diff)
+        if (Cast_Timer.Expired(diff))
         {
             if(isFireboltTurn)
             {
@@ -397,8 +388,6 @@ struct mob_ethereal_apprenticeAI : public ScriptedAI
             }
             Cast_Timer = 3000;
         }
-        else
-            Cast_Timer -= diff;
     }
 };
 

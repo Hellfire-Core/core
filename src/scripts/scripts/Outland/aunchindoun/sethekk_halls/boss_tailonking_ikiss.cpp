@@ -65,10 +65,10 @@ struct boss_talon_king_ikissAI : public ScriptedAI
 
     bool HeroicMode;
 
-    uint32 ArcaneVolley_Timer;
-    uint32 Sheep_Timer;
-    uint32 Blink_Timer;
-    uint32 Slow_Timer;
+    Timer ArcaneVolley_Timer;
+    Timer Sheep_Timer;
+    Timer Blink_Timer;
+    Timer Slow_Timer;
 
     WorldLocation wLoc;
 
@@ -147,15 +147,14 @@ struct boss_talon_king_ikissAI : public ScriptedAI
             Blink = false;
         }
 
-        if (ArcaneVolley_Timer <= diff)
+        if (ArcaneVolley_Timer.Expired(diff))
         {
             DoCast(m_creature,HeroicMode ? H_SPELL_ARCANE_VOLLEY : SPELL_ARCANE_VOLLEY);
             ArcaneVolley_Timer = 10000+rand()%5000;
         }
-        else
-            ArcaneVolley_Timer -= diff;
+        
 
-        if (Sheep_Timer <= diff)
+        if (Sheep_Timer.Expired(diff))
         {
             Unit *target = NULL;
             target = SelectUnit(SELECT_TARGET_RANDOM,0, 60, true, m_creature->getVictimGUID());
@@ -164,8 +163,7 @@ struct boss_talon_king_ikissAI : public ScriptedAI
                 DoCast(target,HeroicMode ? H_SPELL_POLYMORPH : SPELL_POLYMORPH); //don't see any difference between them
             Sheep_Timer = 15000+rand()%2500;
         }
-        else
-            Sheep_Timer -= diff;
+
 
         //may not be correct time to cast
         if (!ManaShield && ((m_creature->GetHealth()*100) / m_creature->GetMaxHealth() < 20))
@@ -176,16 +174,14 @@ struct boss_talon_king_ikissAI : public ScriptedAI
 
         if (HeroicMode)
         {
-            if (Slow_Timer <= diff)
+            if (Slow_Timer.Expired(diff))
             {
-                DoCast(m_creature,H_SPELL_SLOW);
-                Slow_Timer = 15000+rand()%25000;
+                DoCast(m_creature, H_SPELL_SLOW);
+                Slow_Timer = 15000 + rand() % 25000;
             }
-            else
-                Slow_Timer -= diff;
         }
 
-        if (Blink_Timer <= diff)
+        if (Blink_Timer.Expired(diff))
         {
             DoScriptText(EMOTE_ARCANE_EXP, m_creature);
 
@@ -204,8 +200,7 @@ struct boss_talon_king_ikissAI : public ScriptedAI
             }
             Blink_Timer = 35000+rand()%5000;
         }
-        else
-            Blink_Timer -= diff;
+        
 
         if (!Blink)
             DoMeleeAttackIfReady();

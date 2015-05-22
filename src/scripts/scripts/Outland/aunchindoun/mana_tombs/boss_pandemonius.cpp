@@ -54,8 +54,8 @@ struct boss_pandemoniusAI : public ScriptedAI
     ScriptedInstance *pInstance;
 
     bool HeroicMode;
-    uint32 VoidBlast_Timer;
-    uint32 DarkShell_Timer;
+    Timer VoidBlast_Timer;
+    Timer DarkShell_Timer;
     uint32 VoidBlast_Counter;
 
     void Reset()
@@ -94,7 +94,7 @@ struct boss_pandemoniusAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if( VoidBlast_Timer <= diff )
+        if (VoidBlast_Timer.Expired(diff))
         {
             if( Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 60, true) )
             {
@@ -109,12 +109,11 @@ struct boss_pandemoniusAI : public ScriptedAI
                 VoidBlast_Counter = 0;
             }
         }
-        else
-            VoidBlast_Timer -= diff;
+        
 
         if( !VoidBlast_Counter )
         {
-            if( DarkShell_Timer <= diff )
+            if (DarkShell_Timer.Expired(diff))
             {
                 if( m_creature->IsNonMeleeSpellCast(false) )
                     m_creature->InterruptNonMeleeSpells(true);
@@ -124,8 +123,6 @@ struct boss_pandemoniusAI : public ScriptedAI
                 DoCast(m_creature,HeroicMode ? H_SPELL_DARK_SHELL : SPELL_DARK_SHELL);
                 DarkShell_Timer = 20000;
             }
-            else
-                DarkShell_Timer -= diff;
         }
 
         DoMeleeAttackIfReady();
