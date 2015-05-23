@@ -407,6 +407,14 @@ void WorldSession::HandleCharDeleteOpcode(WorldPacket & recv_data)
     if (sObjectMgr.GetPlayer(guid))
         return;
 
+    if (IsAccountFlagged(ACC_LOCKED_CHAR_DELETING))
+    {
+        WorldPacket data(SMSG_CHAR_DELETE, 1);
+        data << (uint8)CHAR_DELETE_FAILED;
+        SendPacket(&data);
+        return;
+    }
+
     uint32 accountId = 0;
     std::string name;
 

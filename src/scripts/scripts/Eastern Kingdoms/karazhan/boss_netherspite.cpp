@@ -122,6 +122,7 @@ struct boss_netherspiteAI : public ScriptedAI
             if(Creature *portal = m_creature->SummonCreature(PortalID[i],PortalCoord[pos[i]][0],PortalCoord[pos[i]][1],PortalCoord[pos[i]][2],0,TEMPSUMMON_TIMED_DESPAWN,60000))
             {
                 PortalGUID[i] = portal->GetGUID();
+                BeamTarget[i] = me->GetGUID();
                 portal->AddAura(PortalVisual[i], portal);
                 portal->AddAura(42176,portal);
                 portal->CastSpell(me, PortalBeam[i], true);
@@ -172,7 +173,7 @@ struct boss_netherspiteAI : public ScriptedAI
                     for(Map::PlayerList::const_iterator i = players.begin(); i!=players.end(); ++i)
                     {
                         Player* p = i->getSource();
-                        if(p && p->isAlive() // alive
+                        if(p && p->isAlive() && !p->HasAura(PlayerDebuff[j]) // alive
                             && (!target || target->GetExactDistance2d(portal->GetPositionX(), portal->GetPositionY()) > p->GetExactDistance2d(portal->GetPositionX(), portal->GetPositionY())) // closer than current best
                             && !p->HasAura(PlayerDebuff[j],0) // not exhausted
                             && !p->HasAura(PlayerBuff[(j+1)%3],0) // not on another beam
@@ -190,23 +191,18 @@ struct boss_netherspiteAI : public ScriptedAI
 
                 // cast visual beam on the chosen target if switched
                 // simple target switching isn't working -> using BeamerGUID to cast (workaround)
-                if(!current || target != current)
+                if(target != current)
                 {
-                    BeamTarget[j] = target->GetGUID();
-                    // remove currently beaming portal
-                    if(Creature *beamer = Unit::GetCreature(*portal, BeamerGUID[j]))
+                    if (Creature *beamer = Unit::GetCreature(*portal, BeamerGUID[j]))
                     {
-                        beamer->CastSpell(target, PortalBeam[j], false);
-                        beamer->SetVisibility(VISIBILITY_OFF);
-                        beamer->DealDamage(beamer, beamer->GetMaxHealth());
-                        beamer->RemoveFromWorld();
-                        BeamerGUID[j] = 0;
-                    }
+                        //beamer->CastStop(); // does shit.
+                        beamer->AI()->EnterEvadeMode();
 
-                    // create new one and start beaming on the target
-                    if(Creature *beamer = portal->SummonCreature(PortalID[j],portal->GetPositionX(),portal->GetPositionY(),portal->GetPositionZ(),portal->GetOrientation(),TEMPSUMMON_TIMED_DESPAWN,60000))
-                    {
+                        if (current->GetTypeId() == TYPEID_PLAYER)
+                            beamer->CastSpell(current, PlayerDebuff[j], false);
+
                         beamer->CastSpell(target, PortalBeam[j], false);
+                        BeamTarget[j] = target->GetGUID();
                         BeamerGUID[j] = beamer->GetGUID();
                     }
                 }

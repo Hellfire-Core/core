@@ -257,6 +257,8 @@ struct boss_nightbaneAI : public ScriptedAI
     {
         DoYell(YELL_FLY_PHASE, LANG_UNIVERSAL, NULL);
 
+        me->SetReactState(REACT_PASSIVE);
+        DoResetThreat();
         m_creature->InterruptSpell(CURRENT_GENERIC_SPELL);
         m_creature->HandleEmoteCommand(EMOTE_ONESHOT_LIFTOFF);
         m_creature->SetLevitate(true);
@@ -312,15 +314,17 @@ struct boss_nightbaneAI : public ScriptedAI
             }
             else WaitTimer -= diff;
 
+
             if (Flying)
+            {
+                DoSpecialThings(diff, DO_PULSE_COMBAT);
                 return;
+            }
 
             if (!UpdateVictim())
                 return;
 
             DoSpecialThings(diff, DO_PULSE_COMBAT);
-
-
 
             //  Phase 1 "GROUND FIGHT"
             if (Phase == 1)
@@ -328,7 +332,7 @@ struct boss_nightbaneAI : public ScriptedAI
                 if (Movement)
                 {
                     DoStartMovement(m_creature->getVictim());
-                    DoResetThreat();
+                    me->SetReactState(REACT_AGGRESSIVE);
                     Movement = false;
                 }
 

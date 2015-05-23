@@ -94,6 +94,7 @@ bool DynamicObject::Create(uint32 guidlow, Unit *caster, uint32 spellId, uint32 
     m_spellId = spellId;
     m_casterGuid = caster->GetGUID();
     m_updateTimer = 0;
+    m_ignore_los = SpellMgr::SpellIgnoreLOS(sSpellStore.LookupEntry(spellId), effIndex);
     return true;
 }
 

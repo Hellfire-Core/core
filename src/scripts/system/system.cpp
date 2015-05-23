@@ -50,12 +50,12 @@ void SystemMgr::LoadVersion()
         Field* pFields = pResult->Fetch();
 
         outstring_log("TSCR: Database version is: %s", pFields[0].GetString());
-        outstring_log("");
+        outstring_log();
     }
     else
     {
         error_log("TSCR: Missing `version`.`script_version` information.");
-        outstring_log("");
+        outstring_log();
     }
 }
 
@@ -113,14 +113,14 @@ void SystemMgr::LoadScriptTexts()
             ++uiCount;
         } while (pResult->NextRow());
 
-        outstring_log("");
+        outstring_log();
         outstring_log(">> Loaded %u additional Script Texts data.", uiCount);
     }
     else
     {
         BarGoLink bar(1);
         bar.step();
-        outstring_log("");
+        outstring_log();
         outstring_log(">> Loaded 0 additional Script Texts data. DB table `script_texts` is empty.");
     }
 }
@@ -179,14 +179,14 @@ void SystemMgr::LoadScriptTextsCustom()
             ++uiCount;
         } while (pResult->NextRow());
 
-        outstring_log("");
+        outstring_log();
         outstring_log(">> Loaded %u additional Custom Texts data.", uiCount);
     }
     else
     {
         BarGoLink bar(1);
         bar.step();
-        outstring_log("");
+        outstring_log();
         outstring_log(">> Loaded 0 additional Custom Texts data. DB table `custom_texts` is empty.");
     }
 }
@@ -243,14 +243,14 @@ void SystemMgr::LoadScriptWaypoints()
             ++uiNodeCount;
         } while (pResult->NextRow());
 
-        outstring_log("");
+        outstring_log();
         outstring_log(">> Loaded %u Script Waypoint nodes.", uiNodeCount);
     }
     else
     {
         BarGoLink bar(1);
         bar.step();
-        outstring_log("");
+        outstring_log();
         outstring_log(">> Loaded 0 Script Waypoints. DB table `script_waypoint` is empty.");
     }
 }

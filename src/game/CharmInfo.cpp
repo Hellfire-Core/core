@@ -21,7 +21,7 @@
 #include "WorldPacket.h"
 #include "Player.h"
 #include "Creature.h"
-#include "CreatureAI.h"
+#include "PetAI.h"
 #include "Spell.h"
 #include "SpellMgr.h"
 
@@ -354,7 +354,12 @@ void CharmInfo::HandleAttackCommand(uint64 targetGUID)
 
     if (Creature* pCharm = m_unit->ToCreature())
     {
-        pCharm->AI()->AttackStart(pTarget);
+        if (PetAI* petai = dynamic_cast<PetAI*>(pCharm->AI()))
+        {
+            petai->ForcedAttackStart(pTarget);
+        }
+        else
+            pCharm->AI()->AttackStart(pTarget);
 
         Pet *pPet = m_unit->ToPet();
         if (pPet && pPet->getPetType() == SUMMON_PET && roll_chance_i(10))

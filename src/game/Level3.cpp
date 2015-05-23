@@ -3586,8 +3586,10 @@ bool ChatHandler::HandleAuraCommand(const char* args)
         SetSentErrorMessage(true);
         return false;
     }
-
-    uint32 spellID = extractSpellIdFromLink((char*)args);
+    char* spellname = strtok((char*)args, " ");
+    char* duration = strtok(NULL, " ");
+    uint32 spellID = extractSpellIdFromLink((char*)spellname);
+    
     SpellEntry const *spellInfo = sSpellStore.LookupEntry(spellID);
     if (spellInfo)
     {
@@ -3602,6 +3604,12 @@ bool ChatHandler::HandleAuraCommand(const char* args)
             {
                 Aura *Aur = CreateAura(spellInfo, i, NULL, target);
                 target->AddAura(Aur);
+                if (duration != NULL)
+                {
+                    uint32 num_duration = atoi(duration);
+                    Aur->SetAuraDuration(num_duration);
+                    Aur->UpdateAuraDuration();
+                }
             }
         }
     }

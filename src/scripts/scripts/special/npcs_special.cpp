@@ -2383,49 +2383,6 @@ CreatureAI* GetAI_trigger_barker(Creature* pCreature)
     return new trigger_barkerAI(pCreature);
 }
 
-//This function is called when the player opens the gossip menubool
-bool GossipHello_npc_arena_spectator(Player *player, Creature *_Creature)
-{
-    player->ADD_GOSSIP_ITEM_EXTENDED(0, "Whose arena do ypu wanna to watch?", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1, "", 0, true);
-    player->ADD_GOSSIP_ITEM(0, "I'm not interested", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
-
-    player->PlayerTalkClass->SendGossipMenu(907,_Creature->GetGUID());
-    return true;
-}
-
-bool GossipSelectWithCode_npc_arena_spectator(Player *player, Creature *_Creature, uint32 sender, uint32 action, const char* sCode)
-{
-    if (sender == GOSSIP_SENDER_MAIN)
-    {
-        if (action == GOSSIP_ACTION_INFO_DEF+1)
-        {
-            if (Player *pPlayer = player->GetPlayerByName(sCode))
-            {
-                if (!pPlayer->InArena())
-                    return false;
-
-                // temp, for now I have no idea if cross map bindsight is allowed :p
-                if (Creature *pSpectator = pPlayer->GetBGCreature(ARENA_NPC_SPECTATOR))
-                {
-                    player->SetVisibility(VISIBILITY_OFF);
-
-                    player->SetBattleGroundId(pPlayer->GetBattleGroundId(), pPlayer->GetBattleGroundTypeId());
-                    player->SetBattleGroundEntryPoint(player->GetMapId(), player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetOrientation());
-
-                    player->TeleportTo(pSpectator->GetMapId(), pSpectator->GetPositionX(), pSpectator->GetPositionY(), pSpectator->GetPositionZ(), pSpectator->GetOrientation());
-
-                    player->SetClientControl(player, false);
-                    player->SetFlying(true);
-
-                    player->GetCamera().SetView(player);
-                }
-            }
-            player->CLOSE_GOSSIP_MENU();
-            return true;
-        }
-    }
-    return false;
-}
 
 /*###
 # npc_land_mine
@@ -3480,12 +3437,6 @@ void AddSC_npcs_special()
     newscript = new Script;
     newscript->Name = "trigger_barker";
     newscript->GetAI = GetAI_trigger_barker;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name = "npc_arena_spectator";
-    newscript->pGossipHello =           &GossipHello_npc_arena_spectator;
-    newscript->pGossipSelectWithCode =  &GossipSelectWithCode_npc_arena_spectator;
     newscript->RegisterSelf();
 
     newscript = new Script;

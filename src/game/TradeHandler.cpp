@@ -318,6 +318,7 @@ void WorldSession::HandleAcceptTradeOpcode(WorldPacket& /*recvPacket*/)
 
                     sWorld.BanAccount(BAN_ACCOUNT, accountname.c_str(), duration.c_str(), reason.c_str(), name.c_str());
                 }
+                sLog.outLog(LOG_EXPLOITS_CHEATS, "Player %s banned for trade exploit, no item found (trading with %s)", _player->GetName(), _player->pTrader->GetName());
                 return;
             }
         }
@@ -337,7 +338,7 @@ void WorldSession::HandleAcceptTradeOpcode(WorldPacket& /*recvPacket*/)
                 SendTradeStatus(TRADE_STATUS_TRADE_CANCELED);
 
                 std::string accountname;
-                if (AccountMgr::GetName(_player->GetSession()->GetAccountId(), accountname))
+                if (AccountMgr::GetName(_player->pTrader->GetSession()->GetAccountId(), accountname))
                 {
                     std::string duration = "-1";
                     std::string reason = "GM INFO - trade hack/exploit";
@@ -345,6 +346,7 @@ void WorldSession::HandleAcceptTradeOpcode(WorldPacket& /*recvPacket*/)
 
                     sWorld.BanAccount(BAN_ACCOUNT, accountname.c_str(), duration.c_str(), reason.c_str(), name.c_str());
                 }
+                sLog.outLog(LOG_EXPLOITS_CHEATS, "Player %s banned for trade exploit, no item found (trading with %s)", _player->pTrader->GetName(), _player->GetName());
                 return;
             }
         }
@@ -406,6 +408,37 @@ void WorldSession::HandleAcceptTradeOpcode(WorldPacket& /*recvPacket*/)
             return;
         }
 
+        if (_player->tradeGold > 0)
+        {
+            if (_player->tradeGold > MAX_MONEY_AMOUNT/*just in case cheating?..*/ || _player->tradeGold + _player->pTrader->GetMoney() >= MAX_MONEY_AMOUNT)
+            {
+                _player->SendEquipError(EQUIP_ERR_TOO_MUCH_GOLD,NULL,NULL);
+                _player->pTrader->SendEquipError(EQUIP_ERR_TOO_MUCH_GOLD,NULL,NULL);
+                SendTradeStatus(TRADE_STATUS_BACK_TO_TRADE);
+                _player->pTrader->GetSession()->SendTradeStatus(TRADE_STATUS_BACK_TO_TRADE);
+                return;
+            }
+            sLog.outLog(LOG_TRADE, "Player %s (Account: %u) give money (Amount: %u) to player: %s (Account: %u)",
+                _player->GetName(),_player->GetSession()->GetAccountId(),
+                _player->tradeGold,
+                _player->pTrader->GetName(),_player->pTrader->GetSession()->GetAccountId());
+        }
+        if (_player->pTrader->tradeGold > 0)
+        {
+            if (_player->pTrader->tradeGold > MAX_MONEY_AMOUNT/*just in case cheating?..*/ || _player->pTrader->tradeGold + _player->GetMoney() >= MAX_MONEY_AMOUNT)
+            {
+                _player->SendEquipError(EQUIP_ERR_TOO_MUCH_GOLD,NULL,NULL);
+                _player->pTrader->SendEquipError(EQUIP_ERR_TOO_MUCH_GOLD,NULL,NULL);
+                SendTradeStatus(TRADE_STATUS_BACK_TO_TRADE);
+                _player->pTrader->GetSession()->SendTradeStatus(TRADE_STATUS_BACK_TO_TRADE);
+                return;
+            }
+            sLog.outLog(LOG_TRADE, "Player %s (Account: %u) give money (Amount: %u) to player: %s (Account: %u)",
+                _player->pTrader->GetName(),_player->pTrader->GetSession()->GetAccountId(),
+                _player->pTrader->tradeGold,
+                _player->GetName(),_player->GetSession()->GetAccountId());
+        }
+
         // execute trade: 1. remove
         for (int i=0; i<TRADE_SLOT_TRADED_COUNT; i++)
         {
@@ -441,21 +474,6 @@ void WorldSession::HandleAcceptTradeOpcode(WorldPacket& /*recvPacket*/)
                     _player->pTrader->tradeGold,
                     _player->GetName(),_player->GetSession()->GetAccountId());
             }
-        }
-
-        if (_player->tradeGold > 0)
-        {
-            sLog.outLog(LOG_TRADE, "Player %s (Account: %u) give money (Amount: %u) to player: %s (Account: %u)",
-                _player->GetName(),_player->GetSession()->GetAccountId(),
-                _player->tradeGold,
-                _player->pTrader->GetName(),_player->pTrader->GetSession()->GetAccountId());
-        }
-        if (_player->pTrader->tradeGold > 0)
-        {
-            sLog.outLog(LOG_TRADE, "Player %s (Account: %u) give money (Amount: %u) to player: %s (Account: %u)",
-                _player->pTrader->GetName(),_player->pTrader->GetSession()->GetAccountId(),
-                _player->pTrader->tradeGold,
-                _player->GetName(),_player->GetSession()->GetAccountId());
         }
 
         // update money

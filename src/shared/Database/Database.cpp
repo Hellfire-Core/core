@@ -514,11 +514,11 @@ bool Database::CheckRequiredField( char const* table_name, char const* required_
         if(!reqName.empty())
         {
             sLog.outLog(LOG_DB_ERR, "The table `%s` in your [%s] database indicates that this database is out of date!",table_name,db_name);
-            sLog.outLog(LOG_DB_ERR, "");
+            sLog.outLog(LOG_DB_ERR);
             sLog.outLog(LOG_DB_ERR, "  [A] You have: --> `%s.sql`",cur_sql_update_name.c_str());
-            sLog.outLog(LOG_DB_ERR, "");
+            sLog.outLog(LOG_DB_ERR);
             sLog.outLog(LOG_DB_ERR, "  [B] You need: --> `%s.sql`",req_sql_update_name);
-            sLog.outLog(LOG_DB_ERR, "");
+            sLog.outLog(LOG_DB_ERR);
             sLog.outLog(LOG_DB_ERR, "You must apply all updates after [A] to [B] to use mangos with this database.");
             sLog.outLog(LOG_DB_ERR, "These updates are included in the sql/updates folder.");
             sLog.outLog(LOG_DB_ERR, "Please read the included [README] in sql/updates for instructions on updating.");
@@ -527,10 +527,10 @@ bool Database::CheckRequiredField( char const* table_name, char const* required_
         {
             sLog.outLog(LOG_DB_ERR, "The table `%s` in your [%s] database is missing its version info.",table_name,db_name);
             sLog.outLog(LOG_DB_ERR, "MaNGOS cannot find the version info needed to check that the db is up to date.");
-            sLog.outLog(LOG_DB_ERR, "");
+            sLog.outLog(LOG_DB_ERR);
             sLog.outLog(LOG_DB_ERR, "This revision of MaNGOS requires a database updated to:");
             sLog.outLog(LOG_DB_ERR, "`%s.sql`",req_sql_update_name);
-            sLog.outLog(LOG_DB_ERR, "");
+            sLog.outLog(LOG_DB_ERR);
 
             if(!strcmp(db_name, "WORLD"))
                 sLog.outLog(LOG_DB_ERR, "Post this error to your database provider forum or find a solution there.");
@@ -542,10 +542,10 @@ bool Database::CheckRequiredField( char const* table_name, char const* required_
     {
         sLog.outLog(LOG_DB_ERR, "The table `%s` in your [%s] database is missing or corrupt.",table_name,db_name);
         sLog.outLog(LOG_DB_ERR, "MaNGOS cannot find the version info needed to check that the db is up to date.");
-        sLog.outLog(LOG_DB_ERR, "");
+        sLog.outLog(LOG_DB_ERR);
         sLog.outLog(LOG_DB_ERR, "This revision of mangos requires a database updated to:");
         sLog.outLog(LOG_DB_ERR, "`%s.sql`",req_sql_update_name);
-        sLog.outLog(LOG_DB_ERR, "");
+        sLog.outLog(LOG_DB_ERR);
 
         if(!strcmp(db_name, "WORLD"))
             sLog.outLog(LOG_DB_ERR, "Post this error to your database provider forum or find a solution there.");

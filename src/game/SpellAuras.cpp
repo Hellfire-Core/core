@@ -869,7 +869,7 @@ void PersistentAreaAura::Update(uint32 diff)
 
         if (dynObj)
         {
-            if (!m_target->IsWithinDistInMap(dynObj, dynObj->GetRadius()) || !m_target->IsWithinLOSInMap(dynObj))
+            if (!m_target->IsWithinDistInMap(dynObj, dynObj->GetRadius()) || (!dynObj->m_ignore_los && !m_target->IsWithinLOSInMap(dynObj)))
                 remove = true;
         }
         else
@@ -5765,7 +5765,7 @@ void Aura::HandleModTotalPercentStat(bool apply, bool Real)
     {
         // newHP = (curHP / maxHP) * newMaxHP = (newMaxHP * curHP) / maxHP -> which is better because no int -> double -> int conversion is needed
         uint32 newHPValue = (m_target->GetMaxHealth() * curHPValue) / maxHPValue;
-        m_target->SetHealth(newHPValue);
+        m_target->SetHealth(newHPValue > 0 ? newHPValue : 1);
     }
 }
 

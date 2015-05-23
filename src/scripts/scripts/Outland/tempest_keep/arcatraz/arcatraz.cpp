@@ -1,7 +1,7 @@
-/* 
+/*
  * Copyright (C) 2006-2008 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -629,6 +629,163 @@ CreatureAI* GetAI_npc_warder_corpse(Creature *_Creature)
     return new npc_warder_corpseAI (_Creature);
 }
 
+struct npc_negaton_screamerAI : public ScriptedAI
+{
+    enum spells {
+        // common
+        SPELL_PSYCHIC_SCREAM        = 13704,
+
+        SPELL_REDUCTION_ARCANE      = 34331,
+        SPELL_REDUCTION_FIRE        = 34333,
+        SPELL_REDUCTION_FROST       = 34334,
+        SPELL_REDUCTION_NATURE      = 34335,
+        SPELL_REDUCTION_HOLY        = 34336,
+        SPELL_REDUCTION_SHADOW      = 34338,
+
+        // normal
+        SPELL_SHADOW_BOLT_VOLLEY    = 36736,
+        SPELL_ARCANE_VOLLEY         = 36738,
+        SPELL_LIGHTNING_BOLT_VOLLEY = 36740,
+        SPELL_FROSTBOLT_VOLLEY      = 36741,
+        SPELL_FIREBALL_VOLLEY       = 36742,
+        SPELL_HOLY_BOLT_VOLLEY      = 36743,
+
+        // heroic
+        SPELL_SHADOW_BOLT_VOLLEY_HERO    = 38840,
+        SPELL_ARCANE_VOLLEY_HERO         = 38835,
+        SPELL_LIGHTNING_BOLT_VOLLEY_HERO = 36740,
+        SPELL_FROSTBOLT_VOLLEY_HERO      = 38837,
+        SPELL_FIREBALL_VOLLEY_HERO       = 38836,
+        SPELL_HOLY_BOLT_VOLLEY_HERO      = 38838,
+    };
+
+    npc_negaton_screamerAI(Creature* c) : ScriptedAI(c) {}
+
+    uint32 fearTimer;
+    uint32 volleyTimer;
+    SpellSchools school;
+
+    void Reset()
+    {
+        fearTimer = urand(1000, 7000);
+        volleyTimer = 0;
+        school = SPELL_SCHOOL_NORMAL;
+        me->RemoveSpellsCausingAura(SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN);
+    }
+
+    uint32 GetVolleySpell()
+    {
+        if (me->GetMap()->IsHeroic())
+        {
+            switch (school)
+            {
+                case SPELL_SCHOOL_HOLY:     return SPELL_HOLY_BOLT_VOLLEY_HERO;
+                case SPELL_SCHOOL_FIRE:     return SPELL_FIREBALL_VOLLEY_HERO;
+                case SPELL_SCHOOL_NATURE:   return SPELL_LIGHTNING_BOLT_VOLLEY_HERO;
+                case SPELL_SCHOOL_FROST:    return SPELL_FROSTBOLT_VOLLEY_HERO;
+                case SPELL_SCHOOL_SHADOW:   return SPELL_SHADOW_BOLT_VOLLEY_HERO;
+                default:
+                case SPELL_SCHOOL_ARCANE:   return SPELL_ARCANE_VOLLEY_HERO;
+            }
+        }
+        else
+        {
+            switch (school)
+            {
+                case SPELL_SCHOOL_HOLY:     return SPELL_HOLY_BOLT_VOLLEY;
+                case SPELL_SCHOOL_FIRE:     return SPELL_FIREBALL_VOLLEY;
+                case SPELL_SCHOOL_NATURE:   return SPELL_LIGHTNING_BOLT_VOLLEY;
+                case SPELL_SCHOOL_FROST:    return SPELL_FROSTBOLT_VOLLEY;
+                case SPELL_SCHOOL_SHADOW:   return SPELL_SHADOW_BOLT_VOLLEY;
+                default:
+                case SPELL_SCHOOL_ARCANE:   return SPELL_ARCANE_VOLLEY;
+            }
+        }
+    }
+
+    void UpdateAI(const uint32 diff)
+    {
+        if (!UpdateVictim())
+            return;
+
+        if (volleyTimer)
+        {
+            if (volleyTimer <= diff)
+            {
+                DoCast(me->getVictim(), GetVolleySpell());
+                volleyTimer += urand(6000, 9000); // will be reset in SpellHitTarget
+            }
+            else
+                volleyTimer -= diff;
+        }
+
+        if (fearTimer <= diff)
+        {
+            DoCast(me->getVictim(), SPELL_PSYCHIC_SCREAM);
+            fearTimer = urand(15000, 30000);
+        }
+        else
+            fearTimer -= diff;
+
+        DoMeleeAttackIfReady();
+    }
+
+    void SpellHit(Unit*, const SpellEntry* spell)
+    {
+        if (school != SPELL_SCHOOL_NORMAL ||
+            spell->SchoolMask & SPELL_SCHOOL_MASK_NORMAL)
+            return;
+
+        if (spell->SchoolMask & SPELL_SCHOOL_MASK_HOLY)
+        {
+            me->CastSpell(me, SPELL_REDUCTION_HOLY, true);
+            school = SPELL_SCHOOL_HOLY;
+        }
+        else if (spell->SchoolMask & SPELL_SCHOOL_MASK_FIRE)
+        {
+            me->CastSpell(me, SPELL_REDUCTION_FIRE, true);
+            school = SPELL_SCHOOL_FIRE;
+        }
+        else if (spell->SchoolMask & SPELL_SCHOOL_MASK_NATURE)
+        {
+            me->CastSpell(me, SPELL_REDUCTION_NATURE, true);
+            school = SPELL_SCHOOL_NATURE;
+        }
+        else if (spell->SchoolMask & SPELL_SCHOOL_MASK_FROST)
+        {
+            me->CastSpell(me, SPELL_REDUCTION_FROST, true);
+            school = SPELL_SCHOOL_FROST;
+        }
+        else if (spell->SchoolMask & SPELL_SCHOOL_MASK_SHADOW)
+        {
+            me->CastSpell(me, SPELL_REDUCTION_SHADOW, true);
+            school = SPELL_SCHOOL_SHADOW;
+        }
+        else if (spell->SchoolMask & SPELL_SCHOOL_MASK_ARCANE)
+        {
+            me->CastSpell(me, SPELL_REDUCTION_ARCANE, true);
+            school = SPELL_SCHOOL_ARCANE;
+        }
+
+        volleyTimer = urand(3000, 5000);
+    }
+
+    void SpellHitTarget(Unit*, const SpellEntry* spell)
+    {
+        if (school != SPELL_SCHOOL_NORMAL)
+        {
+            me->RemoveSpellsCausingAura(SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN);
+            school = SPELL_SCHOOL_NORMAL;
+            volleyTimer = 0; // disable volleys
+        }
+    }
+};
+
+CreatureAI* GetAI_npc_negaton_screamer(Creature* _Creature)
+{
+    return new npc_negaton_screamerAI(_Creature);
+}
+
 void AddSC_arcatraz()
 {
     Script *newscript;
@@ -657,5 +814,9 @@ void AddSC_arcatraz()
     newscript->Name="warder_corpse";
     newscript->GetAI = &GetAI_npc_warder_corpse;
     newscript->RegisterSelf();
-}
 
+    newscript = new Script;
+    newscript->Name = "npc_negaton_screamer";
+    newscript->GetAI = &GetAI_npc_negaton_screamer;
+    newscript->RegisterSelf();
+}

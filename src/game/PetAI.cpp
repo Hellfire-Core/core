@@ -43,7 +43,7 @@ int PetAI::Permissible(const Creature *creature)
     return PERMIT_BASE_NO;
 }
 
-PetAI::PetAI(Creature *c) : CreatureAI(c), i_tracker(TIME_INTERVAL_LOOK)
+PetAI::PetAI(Creature *c) : CreatureAI(c), i_tracker(TIME_INTERVAL_LOOK), forced_attack(false) 
 {
     m_AllySet.clear();
     m_owner = me->GetCharmerOrOwner();
@@ -75,15 +75,25 @@ bool PetAI::targetHasInterruptableAura(Unit *target) const
     return false;
 }
 
-bool PetAI::_needToStop() const
+bool PetAI::_needToStop()
 {
     // This is needed for charmed creatures, as once their target was reset other effects can trigger threat
-    // also pet should stop attacking if his target of his owner is in sanctuary (applies only to player and player-pets targets)
-    if ((me->isCharmed() && me->getVictim() == me->GetCharmer()) ||
-        (me->GetOwner() && me->GetOwner()->isInSanctuary() &&  me->getVictim()->GetCharmerOrOwnerPlayerOrPlayerItself()))
+    if (me->isCharmed() && me->getVictim() == me->GetCharmer())
         return true;
 
-    return targetHasInterruptableAura(me->getVictim()) || !me->canAttack(me->getVictim());
+    // also pet should stop attacking if his target of his owner is in sanctuary (applies only to player and player-pets targets)
+    if (me->GetOwner() && me->GetOwner()->isInSanctuary() && me->getVictim()->GetCharmerOrOwnerPlayerOrPlayerItself())
+        return true;
+
+    // also should stop if cannot attack
+    if (!me->canAttack(me->getVictim()))
+        return true;
+
+    if (targetHasInterruptableAura(me->getVictim()))
+        return !forced_attack; // if owner explicitly told us to attack him then we do
+
+    forced_attack = false; // if target even for a moment does not have interruptable aura stop forced state
+    return false;
 }
 
 void PetAI::_stopAttack()

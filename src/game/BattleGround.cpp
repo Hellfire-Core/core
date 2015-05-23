@@ -211,29 +211,8 @@ void BattleGround::Update(uint32 diff)
 
                     plr->CastSpell(plr, SPELL_RESURRECTION_VISUAL, true);   // Resurrection visual
 
-                    if (plr->GetLastPetNumber() && plr->isAlive())
-                    {
-                        Pet* NewPet = new Pet();
-
-                        if (!NewPet->LoadPetFromDB(plr, 0, plr->GetLastPetNumber(), true))
-                            delete NewPet;
-                        //restore pet's Health and Mana
-                        else if (plr->getClass() == CLASS_HUNTER)
-                        {
-                            NewPet->SetHealth(NewPet->GetMaxHealth());
-                            //NewPet->SetPower(POWER_MANA,NewPet->GetMaxPower(POWER_MANA));
-                            NewPet->SetPower(POWER_HAPPINESS, NewPet->GetMaxPower(POWER_HAPPINESS));
-                        }
-                        else if (plr->getClass() == CLASS_WARLOCK)
-                        {
-                            NewPet->SetHealth(NewPet->GetMaxHealth());
-                            NewPet->SetPower(POWER_MANA, NewPet->GetMaxPower(POWER_MANA));
-
-                            if (NewPet->GetEntry() == 11859 || NewPet->GetEntry() == 89)
-                                NewPet->SetEntry(416);
-                        }
-
-                    }
+                    RestorePet(plr);
+                    
                     m_ResurrectQueue.push_back(*itr2);
                 }
                 (itr->second).clear();
@@ -255,30 +234,7 @@ void BattleGround::Update(uint32 diff)
                 continue;
             plr->ResurrectPlayer(1.0f);
 
-            //restore player's pet
-            if (plr->GetLastPetNumber() && plr->isAlive())
-            {
-                Pet* NewPet = new Pet();
-
-               if (!NewPet->LoadPetFromDB(plr, 0, plr->GetLastPetNumber(), true))
-                    delete NewPet;
-               //restore pet's Health and Mana
-               else if (plr->getClass() == CLASS_HUNTER)
-               {
-                   NewPet->SetHealth(NewPet->GetMaxHealth());
-                   //NewPet->SetPower(POWER_MANA,NewPet->GetMaxPower(POWER_MANA));
-                    NewPet->SetPower(POWER_HAPPINESS ,NewPet->GetMaxPower(POWER_HAPPINESS));
-               }else if (plr->getClass() == CLASS_WARLOCK)
-               {
-                   NewPet->SetHealth(NewPet->GetMaxHealth());
-                   NewPet->SetPower(POWER_MANA, NewPet->GetMaxPower(POWER_MANA));
-
-                   if (NewPet->GetEntry() == 11859 || NewPet->GetEntry() == 89)
-                       NewPet->SetEntry(416);
-               }
-
-            }
-
+            RestorePet(plr);
             plr->CastSpell(plr, SPELL_SPIRIT_HEAL_MANA, true);
             sObjectAccessor.ConvertCorpseForPlayer(*itr);
         }
@@ -359,6 +315,50 @@ void BattleGround::Update(uint32 diff)
 
         EndBattleGround(0);
         return;
+    }
+}
+
+void BattleGround::RestorePet(Player* plr)
+{
+    if ((plr->getClass() != CLASS_HUNTER && plr->getClass() != CLASS_WARLOCK) || !plr->isAlive())
+        return;
+
+    Pet* ThePet;
+    if (plr->getClass() == CLASS_HUNTER)
+    {
+        ThePet = new Pet();
+        if (!ThePet->LoadPetFromDB(plr,0,0,false))
+            return;
+
+        if (ThePet->isDead())
+        {
+            ThePet->SetUInt32Value(UNIT_DYNAMIC_FLAGS, 0);
+            ThePet->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE);
+            ThePet->setDeathState(ALIVE);
+            ThePet->clearUnitState(UNIT_STAT_ALL_STATE);
+        }
+
+        ThePet->SetHealth(ThePet->GetMaxHealth());
+        ThePet->SetPower(POWER_HAPPINESS, ThePet->GetMaxPower(POWER_HAPPINESS));
+        ThePet->RemoveAllAurasButPermanent();
+        ThePet->m_CreatureSpellCooldowns.clear();
+        ThePet->m_CreatureCategoryCooldowns.clear();
+        plr->PetSpellInitialize();
+    }
+    else if (plr->GetLastPetNumber()) // we're sure it is warlock
+    {
+        ThePet = new Pet();
+        if (!ThePet->LoadPetFromDB(plr, 0, plr->GetLastPetNumber(), true))
+            delete ThePet;
+        else
+        {
+            // nerf doomguard/infernal
+            if (ThePet->GetEntry() == 11859 || ThePet->GetEntry() == 89)
+                ThePet->SetEntry(416);
+
+            ThePet->SetHealth(ThePet->GetMaxHealth());
+            ThePet->SetPower(POWER_MANA, ThePet->GetMaxPower(POWER_MANA));
+        }
     }
 }
 
@@ -481,6 +481,7 @@ void BattleGround::YellToAll(Creature* creature, const char* text, uint32 langua
 
 void BattleGround::RewardHonorToTeam(uint32 Honor, uint32 TeamID)
 {
+    Honor *= sWorld.getConfig(RATE_HONOR);
     for (BattleGroundPlayerMap::iterator itr = m_Players.begin(); itr != m_Players.end(); ++itr)
     {
         Player *plr = sObjectMgr.GetPlayer(itr->first);
@@ -1674,17 +1675,6 @@ bool BattleGround::AddSpiritGuide(uint32 type, float x, float y, float z, float 
     //pCreature->CastSpell(pCreature, SPELL_SPIRIT_HEAL_CHANNEL, true);
 
     return true;
-}
-
-void BattleGround::AddSpectatorNPC(float x, float y, float z, float o)
-{
-    Creature* pCreature = AddCreature(WORLD_TRIGGER, ARENA_NPC_SPECTATOR, 0, x, y, z, o);
-    if (!pCreature)
-        sLog.outLog(LOG_DEFAULT, "ERROR: Can't create Arena Spectator!");
-
-    pCreature->SetLevitate(true);
-    pCreature->SetReactState(REACT_PASSIVE);
-    pCreature->SetVisibility(VISIBILITY_OFF);
 }
 
 void BattleGround::SendMessageToAll(char const* text)

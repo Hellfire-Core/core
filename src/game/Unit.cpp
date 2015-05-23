@@ -517,7 +517,7 @@ void Unit::UpdateSplineMovement(uint32 t_diff)
         POSITION_UPDATE_DELAY = 400,
     };
 
-    if (IsStopped())
+    if (IsStopped() || isInRoots())
         return;
 
     movespline->updateState(t_diff);
@@ -959,7 +959,7 @@ uint32 Unit::DealDamage(DamageLog *damageInfo, DamageEffectType damagetype, cons
         if (pVictim->GetTypeId() == TYPEID_PLAYER && ((Player*)pVictim)->duel && damageInfo->damage >= (health-1))
         {
             // prevent kill only if killed in duel and killed by opponent or opponent controlled creature
-            if (((Player*)pVictim)->duel->opponent == this || ((Player*)pVictim)->duel->opponent->GetGUID() == GetOwnerGUID())
+            if (((Player*)pVictim)->duel->opponent == this || ((Player*)pVictim)->duel->opponent->GetGUID() == GetOwnerGUID()|| pVictim == this/*this shall prevent spell reflection/ shadow word death kill*/)
                 damageInfo->damage = health-1;
 
             duel_hasEnded = true;
@@ -1854,13 +1854,13 @@ void Unit::CalcAbsorbResist(Unit *pVictim, SpellSchoolMask schoolMask, DamageEff
             victimResistance = 0.0f;
         if (victimResistance > 0.75f)
             victimResistance = 0.75f;
-        uint32 ran = urand(0, 10000);
+        uint32 ran = urand(0, 100);
         uint32 faq[4] = {24,6,4,6};
         uint8 m = 0;
         float Binom = 0.0f;
         for (uint8 i = 0; i < 4; i++)
         {
-            Binom += 240000 *(powf(victimResistance, i) * powf((1-victimResistance), (4-i)))/faq[i];
+            Binom += 2400 *(powf(victimResistance, i) * powf((1-victimResistance), (4-i)))/faq[i];
             if (ran > Binom)
                 ++m;
             else
@@ -2721,7 +2721,7 @@ SpellMissInfo Unit::MeleeSpellHitResult(Unit *pVictim, SpellEntry const *spell, 
 
     // bonus from skills is 0.04% per skill Diff
     int32 attackerWeaponSkill = (!((spell->DmgClass == SPELL_DAMAGE_CLASS_RANGED && !(spell->Attributes & SPELL_ATTR_RANGED)) /*example: avenger's shield or hammer of wrath*/ ||
-        (spell->Attributes & SPELL_ATTR_ABILITY && spell->DmgClass == SPELL_DAMAGE_CLASS_MAGIC))) /* example: taunt, demoralizing roar*/
+        spell->DmgClass == SPELL_DAMAGE_CLASS_MAGIC)) /* example: taunt, demoralizing roar*/
         ? int32(GetWeaponSkillValue(attType,pVictim))
         : int32(GetMaxSkillValueForLevel());
 
@@ -2773,7 +2773,7 @@ SpellMissInfo Unit::MeleeSpellHitResult(Unit *pVictim, SpellEntry const *spell, 
         return SPELL_MISS_RESIST;
 
     // Some spells cannot be parried, dodged nor blocked
-    if (spell->Attributes & SPELL_ATTR_IMPOSSIBLE_DODGE_PARRY_BLOCK || (spell->Attributes & SPELL_ATTR_ABILITY && spell->DmgClass == SPELL_DAMAGE_CLASS_MAGIC))
+    if (spell->Attributes & SPELL_ATTR_IMPOSSIBLE_DODGE_PARRY_BLOCK || spell->DmgClass == SPELL_DAMAGE_CLASS_MAGIC)
         return SPELL_MISS_NONE;
 
     // Handle ranged attacks
@@ -3006,7 +3006,7 @@ SpellMissInfo Unit::SpellHitResult(Unit *pVictim, SpellEntry const *spell, bool 
             return SPELL_MISS_NONE;
         case SPELL_DAMAGE_CLASS_MAGIC:
         {
-            if (spell->Attributes & SPELL_ATTR_ABILITY)
+            if (spell->Attributes & SPELL_ATTR_ABILITY && spell->SchoolMask == SPELL_SCHOOL_MASK_NORMAL)
                 return MeleeSpellHitResult(pVictim, spell, canMiss); // depend on hit rating, not spell hit rating, and also cannot be dodged/parried/blocked
             else
                 return MagicSpellHitResult(pVictim, spell);
@@ -3365,7 +3365,7 @@ void Unit::SetCurrentCastSpell(Spell* spell)
                     InterruptSpell(CURRENT_AUTOREPEAT_SPELL);
             }
 
-            if (spell->GetCastTime())
+            if (spell->GetCastTime() || SpellMgr::GetSpellDuration(spell->GetSpellEntry()))
                 addUnitState(UNIT_STAT_CASTING);
 
             break;
