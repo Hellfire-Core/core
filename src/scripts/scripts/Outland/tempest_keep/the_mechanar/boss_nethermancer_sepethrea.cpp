@@ -55,9 +55,9 @@ struct boss_nethermancer_sepethreaAI : public ScriptedAI
 
     bool HeroicMode;
 
-    uint32 arcane_blast_Timer;
-    uint32 dragons_breath_Timer;
-    uint32 yell_timer;
+    Timer arcane_blast_Timer;
+    Timer dragons_breath_Timer;
+    Timer yell_timer;
 
     SummonList summons;
 
@@ -113,33 +113,24 @@ struct boss_nethermancer_sepethreaAI : public ScriptedAI
             return;
 
         //Arcane Blast with knockback, reducing threat by 50%
-        if (arcane_blast_Timer <= diff)
+        if (arcane_blast_Timer.Expired(diff))
         {
             AddSpellToCast(SPELL_ARCANE_BLAST, CAST_TANK);
             arcane_blast_Timer = urand(25000, 35000);
             me->getThreatManager().modifyThreatPercent(me->getVictim(), -50.0f);
         }
-        else
-            arcane_blast_Timer -= diff;
 
         //Dragons Breath
-        if (dragons_breath_Timer <= diff)
+        if (dragons_breath_Timer.Expired(diff))
         {
             AddSpellToCastWithScriptText(SPELL_DRAGONS_BREATH, CAST_TANK, RAND(SAY_DRAGONS_BREATH_1, SAY_DRAGONS_BREATH_2, 0, 0));
             dragons_breath_Timer = urand(30000, 35000);
         }
-        else
-            dragons_breath_Timer -= diff;
 
-        if(yell_timer)
+        if (yell_timer.Expired(diff))
         {
-            if (yell_timer <= diff)
-            {
-                DoScriptText(SAY_SUMMON, me);
-                yell_timer = 0;
-            }
-            else
-                yell_timer -= diff;
+            DoScriptText(SAY_SUMMON, me);
+            yell_timer = 0;
         }
 
         CastNextSpellIfAnyAndReady();
@@ -167,7 +158,7 @@ struct mob_ragin_flamesAI : public ScriptedAI
 
     bool HeroicMode;
     bool canMelee;
-    uint32 infernoTimer;
+    Timer infernoTimer;
     uint64 currentTarget;
 
     void Reset()
@@ -228,15 +219,14 @@ struct mob_ragin_flamesAI : public ScriptedAI
 
         DoSpecialThings(diff, DO_COMBAT_N_SPEED, 200.0f, HeroicMode ? 0.8f : 0.5f);
 
-        if (infernoTimer <= diff)
+        if (infernoTimer.Expired(diff))
         {
             AddSpellToCast(SPELL_INFERNO, CAST_SELF);
             infernoTimer = urand(16000,21000);
         }
-        else
-            infernoTimer -= diff;
 
         CastNextSpellIfAnyAndReady(diff);
+
         if(canMelee)
             DoMeleeAttackIfReady();
     }

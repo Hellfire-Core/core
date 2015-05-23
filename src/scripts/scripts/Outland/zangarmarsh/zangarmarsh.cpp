@@ -1,7 +1,7 @@
-/* 
+/*
  * Copyright (C) 2006-2008 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -133,7 +133,7 @@ struct npc_cooshcooshAI : public ScriptedAI
 {
     npc_cooshcooshAI(Creature* creature) : ScriptedAI(creature) {}
 
-    uint32 LightningBolt_Timer;
+    Timer LightningBolt_Timer;
 
     void Reset()
     {
@@ -148,11 +148,11 @@ struct npc_cooshcooshAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if( LightningBolt_Timer <= diff )
+        if (LightningBolt_Timer.Expired(diff))
         {
             DoCast(me->getVictim(),SPELL_LIGHTNING_BOLT);
             LightningBolt_Timer = 5000;
-        }else LightningBolt_Timer -= diff;
+        }
 
         DoMeleeAttackIfReady();
     }
@@ -367,8 +367,8 @@ struct npc_baby_murlocAI : public ScriptedAI
     npc_baby_murlocAI(Creature* creature) : ScriptedAI(creature) {}
 
     ObjectGuid PlayerGUID;
-    uint32 CheckTimer;
-    uint32 EndTimer;
+    Timer CheckTimer;
+    Timer EndTimer;
 
     void Reset()
     {
@@ -439,7 +439,7 @@ struct npc_baby_murlocAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (CheckTimer <= diff)
+        if (CheckTimer.Expired(diff))
         {
             if (Player* player = me->GetPlayer(PlayerGUID))
             {
@@ -455,16 +455,10 @@ struct npc_baby_murlocAI : public ScriptedAI
 
             CheckTimer = 15000;
         }
-        else CheckTimer -= diff;
 
-        if (EndTimer <= diff)
-        {
+        if (EndTimer.Expired(diff))
             if (Player* player = me->GetPlayer(PlayerGUID))
-            {
                 player->AreaExploredOrEventHappens(9816);
-            }
-        }
-        else EndTimer -= diff;
     }
 };
 

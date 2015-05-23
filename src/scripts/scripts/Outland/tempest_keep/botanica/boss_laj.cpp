@@ -51,10 +51,10 @@ struct boss_lajAI : public ScriptedAI
     boss_lajAI(Creature *c) : ScriptedAI(c) {}
 
     bool CanSummon;
-    uint32 Teleport_Timer;
-    uint32 Summon_Timer;
-    uint32 Transform_Timer;
-    uint32 Allergic_Timer;
+    Timer Teleport_Timer;
+    Timer Summon_Timer;
+    Timer Transform_Timer;
+    Timer Allergic_Timer;
 
     void Reset()
     {
@@ -163,32 +163,32 @@ struct boss_lajAI : public ScriptedAI
 
         if( CanSummon )
         {
-            if( Summon_Timer <= diff )
+            if (Summon_Timer.Expired(diff))
             {
                 DoScriptText(EMOTE_SUMMON, m_creature);
                 DoSummons();
                 Summon_Timer = 2500;
-            }else Summon_Timer -= diff;
+            }
         }
 
-        if( Allergic_Timer <= diff )
+        if (Allergic_Timer.Expired(diff))
         {
             DoCast(m_creature->getVictim(),SPELL_ALLERGIC_REACTION);
             Allergic_Timer = 25000+rand()%15000;
-        }else Allergic_Timer -= diff;
+        }
 
-        if( Teleport_Timer <= diff )
+        if (Teleport_Timer.Expired(diff))
         {
             DoCast(m_creature,SPELL_TELEPORT_SELF);
             Teleport_Timer = 30000+rand()%10000;
             CanSummon = true;
-        }else Teleport_Timer -= diff;
+        }
 
-        if( Transform_Timer <= diff )
+        if (Transform_Timer.Expired(diff))
         {
             DoTransform();
             Transform_Timer = 25000+rand()%15000;
-        }else Transform_Timer -= diff;
+        }
 
         DoMeleeAttackIfReady();
     }

@@ -63,13 +63,13 @@ struct boss_pathaleon_the_calculatorAI : public ScriptedAI
 
     ScriptedInstance *pInstance;
 
-    uint32 Summon_Timer;
+    Timer Summon_Timer;
     SummonList summons;
-    uint32 ManaTap_Timer;
-    uint32 ArcaneTorrent_Timer;
-    uint32 Domination_Timer;
-    uint32 ArcaneExplosion_Timer;
-    uint32 Check_Timer;
+    Timer ManaTap_Timer;
+    Timer ArcaneTorrent_Timer;
+    Timer Domination_Timer;
+    Timer ArcaneExplosion_Timer;
+    Timer Check_Timer;
     WorldLocation wLoc;
     bool HeroicMode;
     bool Enraged;
@@ -121,7 +121,7 @@ struct boss_pathaleon_the_calculatorAI : public ScriptedAI
         if (!UpdateVictim() )
             return;
 
-        if(Summon_Timer <= diff)
+        if (Summon_Timer.Expired(diff))
         {
             for(int i = 0; i < 3;i++)
             {
@@ -130,34 +130,33 @@ struct boss_pathaleon_the_calculatorAI : public ScriptedAI
                 if (target && Wraith)
                     Wraith->AI()->AttackStart(target);
             }
+
             DoScriptText(SAY_SUMMON, me);
             Summon_Timer = 30000 + rand()%15000;
-        }else Summon_Timer -= diff;
+        }
 
-        if(Check_Timer <= diff)
+        if (Check_Timer.Expired(diff))
         {
             if(!me->IsWithinDistInMap(&wLoc, 30.0f))
                 EnterEvadeMode();
             else
                 DoZoneInCombat();
                 Check_Timer = 3000;
-            }
-            else
-                Check_Timer -= diff;
+        }
 
-        if(ManaTap_Timer <= diff)
+        if (ManaTap_Timer.Expired(diff))
         {
             DoCast(me->getVictim(),SPELL_MANA_TAP);
             ManaTap_Timer = 14000 + rand()%8000;
-        }else ManaTap_Timer -= diff;
+        }
 
-        if(ArcaneTorrent_Timer <= diff)
+        if (ArcaneTorrent_Timer.Expired(diff))
         {
             DoCast(me->getVictim(),SPELL_ARCANE_TORRENT);
             ArcaneTorrent_Timer = 12000 + rand()%6000;
-        }else ArcaneTorrent_Timer -= diff;
+        }
 
-        if(Domination_Timer <= diff)
+        if (Domination_Timer.Expired(diff))
         {
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 200, true, me->getVictimGUID()))
             {
@@ -166,16 +165,16 @@ struct boss_pathaleon_the_calculatorAI : public ScriptedAI
                 DoCast(target,SPELL_DOMINATION);
             }
             Domination_Timer = 25000 + rand()%5000;
-        }else Domination_Timer -= diff;
+        }
 
         //Only casting if Heroic Mode is used
         if (HeroicMode)
         {
-            if(ArcaneExplosion_Timer <= diff)
+            if(ArcaneExplosion_Timer.Expired(diff))
             {
                 DoCast(me->getVictim(),H_SPELL_ARCANE_EXPLOSION);
                 ArcaneExplosion_Timer = 10000 + rand()%4000;
-            }else ArcaneExplosion_Timer -= diff;
+            }
         }
 
         if (!Enraged && me->GetHealth()*100 / me->GetMaxHealth() < 21)
@@ -200,9 +199,9 @@ struct mob_nether_wraithAI : public ScriptedAI
 
     ScriptedInstance *pInstance;
 
-    uint32 ArcaneMissiles_Timer;
-    uint32 Detonation_Timer;
-    uint32 Die_Timer;
+    Timer ArcaneMissiles_Timer;
+    Timer Detonation_Timer;
+    Timer Die_Timer;
     bool Detonation;
 
     void Reset()
@@ -223,7 +222,7 @@ struct mob_nether_wraithAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if(ArcaneMissiles_Timer <= diff)
+        if(ArcaneMissiles_Timer.Expired(diff))
         {
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 200, true, me->getVictimGUID()))
                 DoCast(target,SPELL_ARCANE_MISSILES);
@@ -231,24 +230,18 @@ struct mob_nether_wraithAI : public ScriptedAI
                 DoCast(me->getVictim(),SPELL_ARCANE_MISSILES);
 
             ArcaneMissiles_Timer = 5000 + rand()%5000;
-        }else ArcaneMissiles_Timer -=diff;
-
-        if (!Detonation)
-        {
-            if(Detonation_Timer <= diff)
-            {
-                DoCast(me,SPELL_DETONATION);
-                Detonation = true;
-            }else Detonation_Timer -= diff;
         }
 
-        if (Detonation)
+        if (!Detonation && Detonation_Timer.Expired(diff))
         {
-            if (Die_Timer <= diff)
-            {
-                me->setDeathState(JUST_DIED);
-                me->RemoveCorpse();
-            }else Die_Timer -= diff;
+            DoCast(me,SPELL_DETONATION);
+            Detonation = true;
+        }
+
+        if (Detonation && Die_Timer.Expired(diff))
+        {
+            me->setDeathState(JUST_DIED);
+            me->RemoveCorpse();
         }
 
         DoMeleeAttackIfReady();

@@ -71,13 +71,13 @@ struct npc_millhouse_manastormAI : public ScriptedAI
 
     ScriptedInstance* pInstance;
 
-    uint32 EventProgress_Timer;
+    Timer EventProgress_Timer;
     uint32 Phase;
     bool Init;
     bool LowHp;
 
-    uint32 Pyroblast_Timer;
-    uint32 Fireball_Timer;
+    Timer Pyroblast_Timer;
+    Timer Fireball_Timer;
 
     void Reset()
     {
@@ -132,7 +132,7 @@ struct npc_millhouse_manastormAI : public ScriptedAI
     {
         if( !Init )
         {
-            if( EventProgress_Timer <= diff )
+            if (EventProgress_Timer.Expired(diff))
             {
                 if( Phase < 8 )
                 {
@@ -173,7 +173,7 @@ struct npc_millhouse_manastormAI : public ScriptedAI
                     }
                     ++Phase;
                 }
-            } else EventProgress_Timer -= diff;
+            }
         }
 
         if( !UpdateVictim() )
@@ -185,7 +185,7 @@ struct npc_millhouse_manastormAI : public ScriptedAI
             LowHp = true;
         }
 
-        if( Pyroblast_Timer <= diff )
+        if (Pyroblast_Timer.Expired(diff))
         {
             if( me->IsNonMeleeSpellCast(false) )
                 return;
@@ -194,13 +194,13 @@ struct npc_millhouse_manastormAI : public ScriptedAI
 
             DoCast(me->getVictim(),SPELL_PYROBLAST);
             Pyroblast_Timer = 40000;
-        }else Pyroblast_Timer -=diff;
+        }
 
-        if( Fireball_Timer <= diff )
+        if (Fireball_Timer.Expired(diff))
         {
             DoCast(me->getVictim(),SPELL_FIREBALL);
             Fireball_Timer = 4000;
-        }else Fireball_Timer -=diff;
+        }
 
         //DoMeleeAttackIfReady();
     }
@@ -260,7 +260,7 @@ struct npc_warden_mellicharAI : public ScriptedAI
     bool IsRunning;
     bool CanSpawn;
 
-    uint32 EventProgress_Timer;
+    Timer EventProgress_Timer;
     uint32 Phase;
 
     void Reset()
@@ -373,7 +373,7 @@ struct npc_warden_mellicharAI : public ScriptedAI
         if( !IsRunning )
             return;
 
-        if( EventProgress_Timer <= diff )
+        if (EventProgress_Timer.Expired(diff))
         {
             if( pInstance )
             {
@@ -465,7 +465,7 @@ struct npc_warden_mellicharAI : public ScriptedAI
                         break;
                 }
             }
-        } else EventProgress_Timer -= diff;
+        }
     }
 };
 
@@ -484,11 +484,11 @@ struct npc_felfire_waveAI : public ScriptedAI
 {
     npc_felfire_waveAI(Creature* c) : ScriptedAI(c) {}
 
-    uint32 Burn;
+    Timer BurnTimer;
 
     void IsSummonedBy(Unit *summoner)
     {
-        Burn = 0;
+        BurnTimer = 0;
         float x, y, z;
         me->SetSpeed(MOVE_RUN, 1.1);
         me->GetNearPoint(x, y, z, 0, 20, summoner->GetAngle(me));
@@ -508,13 +508,11 @@ struct npc_felfire_waveAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(Burn <= diff)
+        if (BurnTimer.Expired(diff))
         {
             DoCast(me, SPELL_FELFIRE, true);
-            Burn = 450;
+            BurnTimer = 450;
         }
-        else
-            Burn -= diff;
     }
 };
 
@@ -534,8 +532,8 @@ struct npc_arcatraz_sentinelAI : public ScriptedAI
         HeroicMode = me->GetMap()->IsHeroic();
     }
 
-    uint32 ThreatWipe_Timer;
-    uint32 Suicide_Timer;
+    Timer ThreatWipe_Timer;
+    Timer Suicide_Timer;
 
     ScriptedInstance *pInstance;
     bool HeroicMode;
@@ -563,15 +561,13 @@ struct npc_arcatraz_sentinelAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (!Suicide_Timer)
+        if (!Suicide_Timer.GetInterval())
         {
-            if (ThreatWipe_Timer <= diff)
+            if (ThreatWipe_Timer.Expired(diff))
             {
                 DoResetThreat();
                 ThreatWipe_Timer = urand(10000, 15000);
             }
-            else
-                ThreatWipe_Timer -= diff;
 
             if (me->GetHealth()*100/me->GetMaxHealth() <= 12)
             {
@@ -582,13 +578,8 @@ struct npc_arcatraz_sentinelAI : public ScriptedAI
                 Suicide_Timer = 10000;
             }
         }
-        else
-        {
-            if (Suicide_Timer <= diff)
-                me->Kill(me, false);
-            else
-                Suicide_Timer -= diff;
-        }
+        else if (Suicide_Timer.Expired(diff))
+            me->Kill(me, false);
 
         DoMeleeAttackIfReady();
     }

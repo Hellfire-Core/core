@@ -89,23 +89,23 @@ struct boss_alarAI : public ScriptedAI
     ScriptedInstance *pInstance;
 
     WaitEventType WaitEvent;
-    uint32 WaitTimer;
+    Timer WaitTimer;
 
     bool AfterMoving;
 
-    uint32 Platforms_Move_Timer;
-    uint32 DiveBomb_Timer;
-    uint32 MeltArmor_Timer;
-    uint32 Charge_Timer;
-    uint32 FlamePatch_Timer;
-    uint32 Berserk_Timer;
+    Timer Platforms_Move_Timer;
+    Timer DiveBomb_Timer;
+    Timer MeltArmor_Timer;
+    Timer Charge_Timer;
+    Timer FlamePatch_Timer;
+    Timer Berserk_Timer;
 
     float DefaultMoveSpeedRate;
 
     bool Phase1;
     bool ForceMove;
-    uint32 ForceTimer;
-    uint32 checkTimer;
+    Timer ForceTimer;
+    Timer checkTimer;
 
     WorldLocation wLoc;
 
@@ -266,7 +266,7 @@ struct boss_alarAI : public ScriptedAI
         if(!m_creature->isInCombat()) // sometimes isincombat but !incombat, faction bug?
             return;
 
-        if (checkTimer <= diff)
+        if (checkTimer.Expired(diff))
         {
             if (!m_creature->IsWithinDistInMap(&wLoc, 135) || !CheckPlayersInInstance())
             {
@@ -278,33 +278,24 @@ struct boss_alarAI : public ScriptedAI
 
             checkTimer = 2000;
         }
-        else
-            checkTimer -= diff;
 
-        if(Berserk_Timer <= diff)
+        if (Berserk_Timer.Expired(diff))
         {
             m_creature->CastSpell(m_creature, SPELL_BERSERK, true);
             Berserk_Timer = 60000;
         }
-        else
-            Berserk_Timer -= diff;
 
-        if(ForceMove)
+        if(ForceMove && ForceTimer.Expired(diff))
         {
-            if(ForceTimer <= diff)
-            {
-                m_creature->GetMotionMaster()->MovePoint(0, waypoint[cur_wp][0], waypoint[cur_wp][1], waypoint[cur_wp][2]);
-                ForceTimer = 5000;
-            }
-            else
-                ForceTimer -= diff;
+            m_creature->GetMotionMaster()->MovePoint(0, waypoint[cur_wp][0], waypoint[cur_wp][1], waypoint[cur_wp][2]);
+            ForceTimer = 5000;
         }
 
         if(WaitEvent)
         {
-            if(WaitTimer)
+            if(WaitTimer.GetInterval())
             {
-                if(WaitTimer <= diff)
+                if(WaitTimer.Expired(diff))
                 {
                     if(AfterMoving)
                     {
@@ -401,8 +392,6 @@ struct boss_alarAI : public ScriptedAI
                     WaitEvent = WE_NONE;
                     WaitTimer = 0;
                 }
-                else
-                    WaitTimer -= diff;
             }
             return;
         }
@@ -415,7 +404,7 @@ struct boss_alarAI : public ScriptedAI
                 return;
             }
 
-            if(Platforms_Move_Timer <= diff)
+            if(Platforms_Move_Timer.Expired(diff))
             {
                 if(cur_wp == 4)
                 {
@@ -446,12 +435,10 @@ struct boss_alarAI : public ScriptedAI
                 WaitTimer = 0;
                 return;
             }
-            else
-                Platforms_Move_Timer -= diff;
         }
         else
         {
-            if(Charge_Timer <= diff)
+            if(Charge_Timer.Expired(diff))
             {
                 Unit *temp = m_creature->getVictim();
                 if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 1, GetSpellMaxRange(SPELL_CHARGE), true, m_creature->getVictimGUID()))
@@ -460,18 +447,14 @@ struct boss_alarAI : public ScriptedAI
                 DoStartMovement(temp);
                 Charge_Timer = 30000;
             }
-            else
-                Charge_Timer -= diff;
 
-            if(MeltArmor_Timer <= diff)
+            if(MeltArmor_Timer.Expired(diff))
             {
                 DoCast(m_creature->getVictim(), SPELL_MELT_ARMOR);
                 MeltArmor_Timer = 60000;
             }
-            else
-                MeltArmor_Timer -= diff;
 
-            if(DiveBomb_Timer <= diff)
+            if(DiveBomb_Timer.Expired(diff))
             {
                 m_creature->SetReactState(REACT_PASSIVE);
                 m_creature->AttackStop();
@@ -484,18 +467,14 @@ struct boss_alarAI : public ScriptedAI
                 DiveBomb_Timer = 40000+rand()%5000;
                 return;
             }
-            else
-                DiveBomb_Timer -= diff;
 
-            if(FlamePatch_Timer <= diff)
+            if(FlamePatch_Timer.Expired(diff))
             {
                 if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true))
                     m_creature->SummonCreature(CREATURE_FLAME_PATCH_ALAR, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN, 120000);
 
                 FlamePatch_Timer = 30000;
             }
-            else
-                FlamePatch_Timer -= diff;
         }
 
         DoMeleeAttackIfReady();
@@ -558,7 +537,7 @@ struct mob_ember_of_alarAI : public ScriptedAI
 
     ScriptedInstance *pInstance;
 
-    uint32 CheckTimer;
+    Timer CheckTimer;
 
     void Reset()
     {
@@ -590,7 +569,7 @@ struct mob_ember_of_alarAI : public ScriptedAI
     {
         UpdateVictim();
 
-        if(CheckTimer <= diff)
+        if(CheckTimer.Expired(diff))
         {
             if(pInstance && (pInstance->GetData(DATA_ALAREVENT) == DONE || pInstance->GetData(DATA_ALAREVENT) == NOT_STARTED))
             {
@@ -599,8 +578,7 @@ struct mob_ember_of_alarAI : public ScriptedAI
             }
             CheckTimer = 2000;
         }
-        else
-            CheckTimer -= diff;
+
         DoMeleeAttackIfReady();
     }
 };
@@ -618,7 +596,7 @@ struct mob_flame_patch_alarAI : public ScriptedAI
     }
 
     ScriptedInstance *pInstance;
-    uint32 CheckTimer;
+    Timer CheckTimer;
 
     bool needCast;
 
@@ -637,7 +615,7 @@ struct mob_flame_patch_alarAI : public ScriptedAI
     void MoveInLineOfSight(Unit* who) {}
     void UpdateAI(const uint32 diff)
     {
-        if(CheckTimer <= diff)
+        if(CheckTimer.Expired(diff))
         {
             if(needCast)
             {
@@ -650,8 +628,6 @@ struct mob_flame_patch_alarAI : public ScriptedAI
 
             CheckTimer = 2000;
         }
-        else
-            CheckTimer -= diff;
     }
 };
 

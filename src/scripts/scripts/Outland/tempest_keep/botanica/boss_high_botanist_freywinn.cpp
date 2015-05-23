@@ -50,9 +50,9 @@ struct boss_high_botanist_freywinnAI : public ScriptedAI
 
     std::list<uint64> Adds_List;
 
-    uint32 SummonSeedling_Timer;
-    uint32 TreeForm_Timer;
-    uint32 MoveCheck_Timer;
+    Timer SummonSeedling_Timer;
+    uint32 TreeForm_Timer; //TODO: Switch to timer struct
+    Timer MoveCheck_Timer;
     uint32 DeadAddsCount;
     bool MoveFree;
 
@@ -114,7 +114,7 @@ struct boss_high_botanist_freywinnAI : public ScriptedAI
 
         if( !MoveFree )
         {
-            if( MoveCheck_Timer <= diff )
+            if (MoveCheck_Timer.Expired(diff))
             {
                 if( !Adds_List.empty() )
                 {
@@ -147,7 +147,6 @@ struct boss_high_botanist_freywinnAI : public ScriptedAI
                 }
                 MoveCheck_Timer = 500;
             }
-            else MoveCheck_Timer -= diff;
 
             return;
         }
@@ -156,11 +155,11 @@ struct boss_high_botanist_freywinnAI : public ScriptedAI
             return;*/
 
         //one random seedling every 5 secs, but not in tree form
-        if( SummonSeedling_Timer <= diff )
+        if (SummonSeedling_Timer.Expired(diff))
         {
             DoCast(m_creature, RAND(SPELL_PLANT_WHITE, SPELL_PLANT_GREEN, SPELL_PLANT_BLUE, SPELL_PLANT_RED));
             SummonSeedling_Timer = 6000;
-        }else SummonSeedling_Timer -= diff;
+        }
 
         DoMeleeAttackIfReady();
     }

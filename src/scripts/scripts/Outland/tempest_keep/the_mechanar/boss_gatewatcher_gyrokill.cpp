@@ -52,9 +52,9 @@ struct boss_gatewatcher_gyro_killAI : public ScriptedAI
 
     bool HeroicMode;
 
-    uint32 Shadow_Power_Timer;
-    uint32 Saw_Blade_Timer;
-    uint32 Stream_of_Machine_Fluid_Timer;
+    Timer Shadow_Power_Timer;
+    Timer Saw_Blade_Timer;
+    Timer Stream_of_Machine_Fluid_Timer;
 
     void Reset()
     {
@@ -97,27 +97,27 @@ struct boss_gatewatcher_gyro_killAI : public ScriptedAI
             return;
 
         //Shadow Power
-        if(Shadow_Power_Timer <= diff)
+        if(Shadow_Power_Timer.Expired(diff))
         {
             DoCast(me,HeroicMode ? H_SPELL_SHADOW_POWER : SPELL_SHADOW_POWER);
             Shadow_Power_Timer = 20000 + rand()%8000;
-        }else Shadow_Power_Timer -= diff;
+        }
 
         //Saw Blade
-        if(Saw_Blade_Timer <= diff)
+        if(Saw_Blade_Timer.Expired(diff))
         {
             DoCast(me->getVictim(),HeroicMode ? H_SPELL_SAW_BLADE : SPELL_SAW_BLADE);
             DoScriptText(RAND(SAY_SAW_ATTACK1, SAY_SAW_ATTACK2), me);
 
             Saw_Blade_Timer = 30000;
-        }else Saw_Blade_Timer -= diff;
+        }
 
         //Stream of Machine Fluid
-        if(Stream_of_Machine_Fluid_Timer <= diff)
+        if(Stream_of_Machine_Fluid_Timer.Expired(diff))
         {
             DoCast(me->getVictim(),SPELL_STREAM_OF_MACHINE_FLUID);
             Stream_of_Machine_Fluid_Timer = 35000 + rand()%15000;
-        }else Stream_of_Machine_Fluid_Timer -= diff;
+        }
 
         DoMeleeAttackIfReady();
     }

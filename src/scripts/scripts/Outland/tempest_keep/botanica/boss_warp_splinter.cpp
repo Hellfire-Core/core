@@ -40,7 +40,7 @@ struct mob_treantAI  : public ScriptedAI
     }
 
     uint64 WarpGuid;
-    uint32 check_Timer;
+    Timer check_Timer;
 
     void Reset()
     {
@@ -55,7 +55,7 @@ struct mob_treantAI  : public ScriptedAI
     {
         if (!UpdateVictim() )
         {
-            if(WarpGuid && check_Timer <= diff)
+            if(check_Timer.Expired(diff) && WarpGuid)
             {
                 if(Unit *Warp = (Unit*)Unit::GetUnit(*m_creature, WarpGuid))
                 {
@@ -69,7 +69,7 @@ struct mob_treantAI  : public ScriptedAI
                     m_creature->GetMotionMaster()->MoveFollow(Warp,0,0);
                 }
                 check_Timer = 1000;
-            }else check_Timer -= diff;
+            }
             return;
         }
 
@@ -117,10 +117,10 @@ struct boss_warp_splinterAI : public ScriptedAI
         m_creature->GetPosition(wLoc);
     }
 
-    uint32 War_Stomp_Timer;
-    uint32 Summon_Treants_Timer;
-    uint32 Arcane_Volley_Timer;
-    uint32 Check_Timer;
+    Timer War_Stomp_Timer;
+    Timer Summon_Treants_Timer;
+    Timer Arcane_Volley_Timer;
+    Timer Check_Timer;
     WorldLocation wLoc;
     bool HeroicMode;
 
@@ -174,14 +174,14 @@ struct boss_warp_splinterAI : public ScriptedAI
             return;
 
         //Check for War Stomp
-        if(War_Stomp_Timer <= diff)
+        if(War_Stomp_Timer.Expired(diff))
         {
             DoCast(m_creature->getVictim(),WAR_STOMP);
             War_Stomp_Timer = 25000 + rand()%15000;
-        }else War_Stomp_Timer -= diff;
+        }
 
         //Check_Timer
-        if(Check_Timer <= diff)
+        if(Check_Timer.Expired(diff))
         {
             if(!m_creature->IsWithinDistInMap(&wLoc, 30.0f))
                 EnterEvadeMode();
@@ -190,22 +190,20 @@ struct boss_warp_splinterAI : public ScriptedAI
 
             Check_Timer = 3000;
         }
-        else
-            Check_Timer -= diff;
 
         //Check for Arcane Volley
-        if(Arcane_Volley_Timer <= diff)
+        if(Arcane_Volley_Timer.Expired(diff))
         {
             DoCast(m_creature->getVictim(),ARCANE_VOLLEY);
             Arcane_Volley_Timer = 20000 + rand()%15000;
-        }else Arcane_Volley_Timer -= diff;
+        }
 
         //Check for Summon Treants
-        if(Summon_Treants_Timer <= diff)
+        if(Summon_Treants_Timer.Expired(diff))
         {
             SummonTreants();
             Summon_Treants_Timer = 45000;
-        }else Summon_Treants_Timer -= diff;
+        }
 
         DoMeleeAttackIfReady();
     }
