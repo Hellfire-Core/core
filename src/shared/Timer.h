@@ -105,10 +105,15 @@ struct ShortIntervalTimer
 
     ShortIntervalTimer() : _interval(0), _current(0) {}
 
-    void Update(uint32 diff)
+    void Update(const uint32 diff)
     {
         if (_interval != 0)
             _current += diff;
+    }
+
+    void Delay(const uint32 diff)
+    {
+        _interval += diff;
     }
 
     bool Passed() const
@@ -132,6 +137,7 @@ struct ShortIntervalTimer
     void SetInterval(uint32 interval) { _interval = interval; }
     uint32 GetInterval() const { return _interval; }
     uint32 GetCurrent() const { return _current; }
+    uint32 GetTimeLeft() const { return _interval > _current ? _interval - _current : 0; }
 
     uint32 operator=(uint32 interval)
     {
