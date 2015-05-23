@@ -661,8 +661,8 @@ struct npc_negaton_screamerAI : public ScriptedAI
 
     npc_negaton_screamerAI(Creature* c) : ScriptedAI(c) {}
 
-    uint32 fearTimer;
-    uint32 volleyTimer;
+    Timer fearTimer;
+    Timer volleyTimer;
     SpellSchools school;
 
     void Reset()
@@ -708,24 +708,17 @@ struct npc_negaton_screamerAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (volleyTimer)
+        if (volleyTimer.Expired(diff))
         {
-            if (volleyTimer <= diff)
-            {
-                DoCast(me->getVictim(), GetVolleySpell());
-                volleyTimer += urand(6000, 9000); // will be reset in SpellHitTarget
-            }
-            else
-                volleyTimer -= diff;
+            DoCast(me->getVictim(), GetVolleySpell());
+            volleyTimer = urand(6000, 9000); // will be reset in SpellHitTarget
         }
 
-        if (fearTimer <= diff)
+        if (fearTimer.Expired(diff))
         {
             DoCast(me->getVictim(), SPELL_PSYCHIC_SCREAM);
             fearTimer = urand(15000, 30000);
         }
-        else
-            fearTimer -= diff;
 
         DoMeleeAttackIfReady();
     }
