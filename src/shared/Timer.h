@@ -104,16 +104,17 @@ struct ShortIntervalTimer
     uint32 _current;
 
     ShortIntervalTimer() : _interval(0), _current(0) {}
-
-    void Update(const uint32 diff)
-    {
-        if (_interval != 0)
-            _current += diff;
-    }
+    ShortIntervalTimer(const uint32 interval) : _interval(interval), _current(0) {}
 
     void Delay(const uint32 diff)
     {
         _interval += diff;
+    }
+
+    bool Expired(const uint32 diff)
+    {
+        Update(diff);
+        return Passed();
     }
 
     bool Passed() const
@@ -121,29 +122,36 @@ struct ShortIntervalTimer
         return _interval != 0 ? _current >= _interval : false;
     }
 
-    void Reset()
+    void Reset(const uint32 interval)
+    {
+        SetCurrent(0);
+        SetInterval(interval);
+    }
+
+    void Reschedule(const uint32 interval)
     {
         if (_current >= _interval)
             _current -= _interval;
+
+        SetInterval(interval);
     }
 
-    bool Expired(uint32 diff)
+    void Update(const uint32 diff)
     {
-        Update(diff);
-        return Passed();
+        if (_interval != 0)
+            _current += diff;
     }
 
-    void SetCurrent(uint32 current) { _current = current; }
-    void SetInterval(uint32 interval) { _interval = interval; }
     uint32 GetInterval() const { return _interval; }
     uint32 GetCurrent() const { return _current; }
     uint32 GetTimeLeft() const { return _interval > _current ? _interval - _current : 0; }
 
-    uint32 operator=(uint32 interval)
-    {
-        Reset();
-        SetInterval(interval);
+    void SetCurrent(const uint32 current) { _current = current; }
+    void SetInterval(const uint32 interval) { _interval = interval; }
 
+    const uint32 operator=(const uint32 interval)
+    {
+        Reschedule(interval);
         return interval;
     }
 };
