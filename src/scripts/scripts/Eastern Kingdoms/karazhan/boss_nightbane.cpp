@@ -78,25 +78,25 @@ struct boss_nightbaneAI : public ScriptedAI
     bool RainBones;
     bool Skeletons;
 
-    int32 BellowingRoarTimer;
-    int32 CharredEarthTimer;
-    int32 DistractingAshTimer;
-    int32 SmolderingBreathTimer;
-    int32 TailSweepTimer;
-    int32 RainofBonesTimer;
-    int32 SmokingBlastTimer;
-    int32 FireballBarrageTimer;
-    int32 SearingCindersTimer;
-    int32 Cleave_Timer;
+    Timer BellowingRoarTimer;
+    Timer CharredEarthTimer;
+    Timer DistractingAshTimer;
+    Timer SmolderingBreathTimer;
+    Timer TailSweepTimer;
+    Timer RainofBonesTimer;
+    Timer SmokingBlastTimer;
+    Timer FireballBarrageTimer;
+    Timer SearingCindersTimer;
+    Timer Cleave_Timer;
 
     uint32 FlyCount;
-    int32 FlyTimer;
+    Timer FlyTimer;
 
     bool Intro;
     bool Flying;
     bool Movement;
 
-    int32 WaitTimer;
+    Timer WaitTimer;
     int32 MovePhase;
 
     void Reset()
@@ -277,42 +277,42 @@ struct boss_nightbaneAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (WaitTimer)
-            if (WaitTimer <= diff)
+        
+        if (WaitTimer.Expired(diff))
+        {
+            if (Intro)
             {
-                if (Intro)
+                if (MovePhase >= 7)
                 {
-                    if (MovePhase >= 7)
-                    {
-                        m_creature->SetLevitate(false);
-                        m_creature->HandleEmoteCommand(EMOTE_ONESHOT_LAND);
-                        m_creature->GetMotionMaster()->MovePoint(8, IntroWay[7][0], IntroWay[7][1], IntroWay[7][2]);
-                    }
-                    else
-                    {
-                        m_creature->GetMotionMaster()->MovePoint(MovePhase, IntroWay[MovePhase][0], IntroWay[MovePhase][1], IntroWay[MovePhase][2]);
-                        ++MovePhase;
-                    }
+                    m_creature->SetLevitate(false);
+                    m_creature->HandleEmoteCommand(EMOTE_ONESHOT_LAND);
+                    m_creature->GetMotionMaster()->MovePoint(8, IntroWay[7][0], IntroWay[7][1], IntroWay[7][2]);
                 }
-
-                if (Flying)
+                else
                 {
-                    if (MovePhase >= 7)
-                    {
-                        m_creature->SetLevitate(false);
-                        m_creature->HandleEmoteCommand(EMOTE_ONESHOT_LAND);
-                        m_creature->GetMotionMaster()->MovePoint(8, IntroWay[7][0], IntroWay[7][1], IntroWay[7][2]);
-                    }
-                    else
-                    {
-                        m_creature->GetMotionMaster()->MovePoint(MovePhase, IntroWay[MovePhase][0], IntroWay[MovePhase][1], IntroWay[MovePhase][2]);
-                        ++MovePhase;
-                    }
+                    m_creature->GetMotionMaster()->MovePoint(MovePhase, IntroWay[MovePhase][0], IntroWay[MovePhase][1], IntroWay[MovePhase][2]);
+                    ++MovePhase;
                 }
-
-                WaitTimer = 0;
             }
-            else WaitTimer -= diff;
+
+            if (Flying)
+            {
+                if (MovePhase >= 7)
+                {
+                    m_creature->SetLevitate(false);
+                    m_creature->HandleEmoteCommand(EMOTE_ONESHOT_LAND);
+                    m_creature->GetMotionMaster()->MovePoint(8, IntroWay[7][0], IntroWay[7][1], IntroWay[7][2]);
+                }
+                else
+                {
+                    m_creature->GetMotionMaster()->MovePoint(MovePhase, IntroWay[MovePhase][0], IntroWay[MovePhase][1], IntroWay[MovePhase][2]);
+                    ++MovePhase;
+                }
+            }
+
+            WaitTimer = 0;
+        }
+          
 
 
             if (Flying)
@@ -336,54 +336,54 @@ struct boss_nightbaneAI : public ScriptedAI
                     Movement = false;
                 }
 
-                BellowingRoarTimer -= diff;
-                if (BellowingRoarTimer <= diff)
+                
+                if (BellowingRoarTimer.Expired(diff))
                 {
                     DoCast(m_creature->getVictim(), SPELL_BELLOWING_ROAR);
-                    BellowingRoarTimer += 30000 + rand() % 10000; //Timer
+                    BellowingRoarTimer = 30000 + rand() % 10000; //Timer
                 }
                 
 
-                SmolderingBreathTimer -= diff;
-                if (SmolderingBreathTimer <= diff)
+                
+                if (SmolderingBreathTimer.Expired(diff))
                 {
                     DoCast(m_creature->getVictim(), SPELL_SMOLDERING_BREATH);
-                    SmolderingBreathTimer += 20000;//timer
+                    SmolderingBreathTimer = 20000;//timer
                 }
                 
 
-                Cleave_Timer -= diff;
-                if (Cleave_Timer <= diff)
+                
+                if (Cleave_Timer.Expired(diff))
                 {
                     DoCast(m_creature->getVictim(), SPELL_CLEAVE);
-                    Cleave_Timer += 6000 + rand() % 6000;
+                    Cleave_Timer = 6000 + rand() % 6000;
                 }
                 
 
-                CharredEarthTimer -= diff;
-                if (CharredEarthTimer <= diff)
+                
+                if (CharredEarthTimer.Expired(diff))
                 {
                     if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_CHARRED_EARTH), true))
                         DoCast(target, SPELL_CHARRED_EARTH);
-                    CharredEarthTimer += 20000; //timer
+                    CharredEarthTimer = 20000; //timer
                 }
                 
 
-                TailSweepTimer -= diff;
-                if (TailSweepTimer <= diff)
+                
+                if (TailSweepTimer.Expired(diff))
                 {
                     if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_TAIL_SWEEP), true))
                         if (!m_creature->HasInArc(M_PI, target))
                             DoCast(target, SPELL_TAIL_SWEEP);
-                    TailSweepTimer += 15000;//timer
+                    TailSweepTimer = 15000;//timer
                 }
                 
-                SearingCindersTimer -= diff;
-                if (SearingCindersTimer <= diff)
+                
+                if (SearingCindersTimer.Expired(diff))
                 {
                     if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_SEARING_CINDERS), true))
                         DoCast(target, SPELL_SEARING_CINDERS);
-                    SearingCindersTimer += 10000; //timer
+                    SearingCindersTimer = 10000; //timer
                 }
                 
 
@@ -416,39 +416,39 @@ struct boss_nightbaneAI : public ScriptedAI
                         }
                     }
 
-                    RainofBonesTimer -= diff;
-                    if (RainofBonesTimer <= diff && !RainBones) // only once at the beginning of phase 2
+                    
+                    if (RainofBonesTimer.Expired(diff) && !RainBones) // only once at the beginning of phase 2
                     {
                         DoCast(m_creature->getVictim(), SPELL_RAIN_OF_BONES);
                         RainBones = true;
-                        SmokingBlastTimer += 20000;
+                        SmokingBlastTimer = 20000;
                     }
                     
 
-                    DistractingAshTimer -= diff;
-                    if (DistractingAshTimer <= diff)
+                    
+                    if (DistractingAshTimer.Expired(diff))
                     {
                         if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_DISTRACTING_ASH), true))
                             m_creature->AddAura(SPELL_DISTRACTING_ASH, target);
 
-                        DistractingAshTimer += 2000;//timer wrong
+                        DistractingAshTimer = 2000;//timer wrong
                     }
                     
                 }
 
                 if (RainBones)
                 {
-                    SmokingBlastTimer -= diff;
-                    if (SmokingBlastTimer <= diff)
+                   
+                    if (SmokingBlastTimer.Expired(diff))
                     {
                         DoCast(m_creature->getVictim(), SPELL_SMOKING_BLAST);
-                        SmokingBlastTimer += 1500; //timer wrong
+                        SmokingBlastTimer = 1500; //timer wrong
                     }
                     
                 }
 
-                FireballBarrageTimer -= diff;
-                if (FireballBarrageTimer <= diff)
+                
+                if (FireballBarrageTimer.Expired(diff))
                 {
                     if (Unit* target = SelectUnit(SELECT_TARGET_FARTHEST, 0, GetSpellMaxRange(SPELL_FIREBALL_BARRAGE), true, uint64(0), 40.0f))
                         DoCast(target, SPELL_FIREBALL_BARRAGE);
@@ -456,8 +456,8 @@ struct boss_nightbaneAI : public ScriptedAI
                 }
                 
 
-                FlyTimer -= diff;
-                if (FlyTimer <= diff) //landing
+                
+                if (FlyTimer.Expired(diff)) //landing
                 {
                     if (rand() % 2 == 0)
                         DoYell(YELL_LAND_PHASE_1, LANG_UNIVERSAL, NULL);

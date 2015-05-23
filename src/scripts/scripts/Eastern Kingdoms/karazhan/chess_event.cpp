@@ -152,8 +152,8 @@ void move_triggerAI::UpdateAI(const uint32 diff)
 
     if (pieceStance)
     {
-        moveTimer -= diff;
-        if (moveTimer <= diff)
+        
+        if (moveTimer.Expired(diff))
             MakeMove();
         
     }
@@ -528,8 +528,8 @@ void npc_chesspieceAI::UpdateAI(const uint32 diff)
         uint64 ab2 = 0;
         bool ab2Self = false;
 
-        ability1Timer -= diff;
-        if (ability1Timer <= diff)
+        
+        if (ability1Timer.Expired(diff))
         {
             Creature * medivh = m_creature->GetCreature(MedivhGUID);
             if (medivh && urand(0, ABILITY_CHANCE_MAX) < ability1Chance)
@@ -543,12 +543,12 @@ void npc_chesspieceAI::UpdateAI(const uint32 diff)
                     ab1 = ((boss_MedivhAI*)medivh->AI())->GetSpellTarget(me->GetGUID(), ability1ID);
             }
             else
-                ability1Timer += urand(500, 5000);
+                ability1Timer = urand(500, 5000);
         }
         
 
-        ability2Timer -= diff;
-        if (ability2Timer <= diff)
+        
+        if (ability2Timer.Expired(diff))
         {
             Creature * medivh = m_creature->GetCreature(MedivhGUID);
             if (medivh && urand(0, ABILITY_CHANCE_MAX) < ability2Chance)
@@ -586,8 +586,8 @@ void npc_chesspieceAI::UpdateAI(const uint32 diff)
                     AddSpellToCast(victim, ability1ID);
             }
 
-            ability1Timer += ability1Cooldown;
-            ability2Timer += SHARED_COOLDOWN;
+            ability1Timer = ability1Cooldown;
+            ability2Timer = SHARED_COOLDOWN;
         }
         else if (ab2)
         {
@@ -600,16 +600,16 @@ void npc_chesspieceAI::UpdateAI(const uint32 diff)
                     AddSpellToCast(victim, ability2ID);
             }
 
-            ability2Timer += ability1Cooldown;
-            ability1Timer += SHARED_COOLDOWN;
+            ability2Timer = ability1Cooldown;
+            ability1Timer = SHARED_COOLDOWN;
         }
 #endif
 
 #ifndef CHESS_EVENT_DISSABLE_FACING
-        changeFacingTimer -= diff;
-        if (changeFacingTimer <= diff)
+        
+        if (changeFacingTimer.Expired(diff))
         {
-            changeFacingTimer += urand(3000, 7500);
+            changeFacingTimer = urand(3000, 7500);
 
             Creature * medivh = m_creature->GetCreature(MedivhGUID);
 
@@ -625,10 +625,10 @@ void npc_chesspieceAI::UpdateAI(const uint32 diff)
     CastNextSpellIfAnyAndReady();
 
 #ifndef CHESS_EVENT_DISSABLE_MELEE
-    attackTimer -= diff;
-    if (attackTimer <= diff)
+   
+    if (attackTimer.Expired(diff))
     {
-        attackTimer += attackCooldown;
+        attackTimer = attackCooldown;
         Creature * medivh = m_creature->GetCreature(MedivhGUID);
 
         if (!medivh)
@@ -2791,8 +2791,7 @@ void boss_MedivhAI::UpdateAI(const uint32 diff)
 {
     if (miniEventState)
     {
-        miniEventTimer -= diff;
-        if (miniEventTimer <= diff)
+        if (miniEventTimer.Expired(diff))
         {
             switch (miniEventState)
             {
@@ -2851,11 +2850,11 @@ void boss_MedivhAI::UpdateAI(const uint32 diff)
 
     if (endGameEventState)
     {
-        endEventTimer -= diff;
-        if (endEventTimer <= diff)
+        
+        if (endEventTimer.Expired(diff))
         {
             Creature * tmpC;
-            endEventTimer += 2500;
+            endEventTimer = 2500;
             switch (endGameEventState)
             {
                 case GAMEEND_MEDIVH_WIN:
@@ -2899,8 +2898,8 @@ void boss_MedivhAI::UpdateAI(const uint32 diff)
 
 
         /*
-         endEventLightningTimer -= diff;
-         if (endEventLightningTimer <= diff)
+         
+         if (endEventLightningTimer .Expired(diff))
          {
          Creature * tmpC;
          int count = rand()%5;
@@ -2918,8 +2917,8 @@ void boss_MedivhAI::UpdateAI(const uint32 diff)
     if (!eventStarted)
         return;
 
-    addPieceToMoveCheckTimer -= diff;
-    if (addPieceToMoveCheckTimer <= diff)
+    
+    if (addPieceToMoveCheckTimer.Expired(diff))
     {
         if (urand(0, 100) < chanceToSelfMove)
             ChoosePieceToMove();
@@ -2927,8 +2926,8 @@ void boss_MedivhAI::UpdateAI(const uint32 diff)
         addPieceToMoveCheckTimer = ADD_PIECE_TO_MOVE_TIMER;
     }
 
-    firstCheatTimer -= diff;
-    if (firstCheatTimer <= diff)
+    
+    if (firstCheatTimer.Expired(diff))
     {
         if (firstCheatDamageReq < pInstance->GetData(DATA_CHESS_DAMAGE))
         {
@@ -2959,12 +2958,12 @@ void boss_MedivhAI::UpdateAI(const uint32 diff)
             firstCheatTimer = urand(FIRST_CHEAT_TIMER_MIN, FIRST_CHEAT_TIMER_MAX) / 2;
         }
         else
-            firstCheatTimer += 5000; // next check in 5 seconds
+            firstCheatTimer = 5000; // next check in 5 seconds
     }
 
 
-    secondCheatTimer -= diff;
-    if (secondCheatTimer <= diff)
+    
+    if (secondCheatTimer.Expired(diff))
     {
         if (secondCheatDamageReq < pInstance->GetData(DATA_CHESS_DAMAGE))
         {
@@ -2995,12 +2994,12 @@ void boss_MedivhAI::UpdateAI(const uint32 diff)
             secondCheatTimer = urand(SECOND_CHEAT_TIMER_MIN, SECOND_CHEAT_TIMER_MAX) / 2;
         }
         else
-            secondCheatTimer += 5000; // next check in 5 seconds
+            secondCheatTimer = 5000; // next check in 5 seconds
     }
 
 
-    thirdCheatTimer -= diff;
-    if (thirdCheatTimer <= diff)
+ 
+    if (thirdCheatTimer.Expired(diff))
     {
         if (thirdCheatDamagereq < pInstance->GetData(DATA_CHESS_DAMAGE))
         {
@@ -3013,7 +3012,7 @@ void boss_MedivhAI::UpdateAI(const uint32 diff)
             thirdCheatTimer = urand(THIRD_CHEAT_TIMER_MIN, THIRD_CHEAT_TIMER_MAX) / 2;
         }
         else
-            thirdCheatTimer += 5000; // next check in 5 seconds
+            thirdCheatTimer = 5000; // next check in 5 seconds
     }
 }
     

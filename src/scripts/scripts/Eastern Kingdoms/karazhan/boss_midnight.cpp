@@ -58,8 +58,8 @@ struct boss_midnightAI : public ScriptedAI
 
     uint64 Attumen;
     uint8 Phase;
-    int32 Mount_Timer;
-    int32 CheckTimer;
+    Timer Mount_Timer;
+    Timer CheckTimer;
 
     ScriptedInstance *pInstance;
     WorldLocation wLoc;
@@ -100,15 +100,15 @@ struct boss_midnightAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        CheckTimer -= diff;
-        if (CheckTimer <= diff)
+        
+        if (CheckTimer.Expired(diff))
         {
             if (!m_creature->IsWithinDistInMap(&wLoc, 50.0f))
                 EnterEvadeMode();
             else
                 DoZoneInCombat();
 
-            CheckTimer += 3000;
+            CheckTimer = 3000;
         }
         
 
@@ -140,28 +140,26 @@ struct boss_midnightAI : public ScriptedAI
             }
             case 3:
             {
-                if (Mount_Timer)
+
+                if (Mount_Timer.Expired(diff))
                 {
-                    Mount_Timer -= diff;
-                    if (Mount_Timer <= diff)
+                    Mount_Timer = 0;
+                    m_creature->SetVisibility(VISIBILITY_OFF);
+                    m_creature->GetMotionMaster()->MoveIdle();
+                    if (Creature *pAttumen = Unit::GetCreature(*m_creature, Attumen))
                     {
-                        Mount_Timer = 0;
-                        m_creature->SetVisibility(VISIBILITY_OFF);
-                        m_creature->GetMotionMaster()->MoveIdle();
-                        if (Creature *pAttumen = Unit::GetCreature(*m_creature, Attumen))
+                        pAttumen->SetUInt32Value(UNIT_FIELD_DISPLAYID, MOUNTED_DISPLAYID);
+                        pAttumen->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                        if (pAttumen->getVictim())
                         {
-                            pAttumen->SetUInt32Value(UNIT_FIELD_DISPLAYID, MOUNTED_DISPLAYID);
-                            pAttumen->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                            if (pAttumen->getVictim())
-                            {
-                                pAttumen->GetMotionMaster()->MoveChase(pAttumen->getVictim());
-                                pAttumen->SetSelection(pAttumen->getVictimGUID());
-                            }
-                            pAttumen->SetFloatValue(OBJECT_FIELD_SCALE_X,1);
+                            pAttumen->GetMotionMaster()->MoveChase(pAttumen->getVictim());
+                            pAttumen->SetSelection(pAttumen->getVictimGUID());
                         }
+                        pAttumen->SetFloatValue(OBJECT_FIELD_SCALE_X, 1);
                     }
-                    
                 }
+
+                
                 return;
             }
         }
@@ -220,11 +218,11 @@ struct boss_attumenAI : public ScriptedAI
 
     uint64 Midnight;
     uint8 Phase;
-    int32 CleaveTimer;
-    int32 CurseTimer;
-    int32 RandomYellTimer;
-    int32 ChargeTimer;                                     //only when mounted
-    int32 ResetTimer;
+    Timer CleaveTimer;
+    Timer CurseTimer;
+    Timer RandomYellTimer;
+    Timer ChargeTimer;                                     //only when mounted
+    Timer ResetTimer;
 
     void Reset()
     {
@@ -247,23 +245,21 @@ struct boss_attumenAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (ResetTimer)
+
+        if (ResetTimer.Expired(diff))
         {
-            ResetTimer -= diff;
-            if (ResetTimer <= diff)
+            ResetTimer = 0;
+            Unit *pMidnight = Unit::GetUnit(*m_creature, Midnight);
+            if (pMidnight)
             {
-                ResetTimer = 0;
-                Unit *pMidnight = Unit::GetUnit(*m_creature, Midnight);
-                if (pMidnight)
-                {
-                    pMidnight->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                    pMidnight->SetVisibility(VISIBILITY_ON);
-                }
-                Midnight = 0;
-                m_creature->SetVisibility(VISIBILITY_OFF);
-                m_creature->DealDamage(m_creature, m_creature->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+                pMidnight->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                pMidnight->SetVisibility(VISIBILITY_ON);
             }
+            Midnight = 0;
+            m_creature->SetVisibility(VISIBILITY_OFF);
+            m_creature->DealDamage(m_creature, m_creature->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
         }
+
         
 
         //Return since we have no target
@@ -273,40 +269,40 @@ struct boss_attumenAI : public ScriptedAI
         if (m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE ))
             return;
 
-        CleaveTimer -= diff;
-        if (CleaveTimer <= diff)
+
+        if (CleaveTimer.Expired(diff))
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_SHADOWCLEAVE);
-            CleaveTimer += urand(10000, 16000);
+            CleaveTimer = urand(10000, 16000);
         }
         
 
-        CurseTimer -= diff;
-        if (CurseTimer <= diff)
+
+        if (CurseTimer.Expired(diff))
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_INTANGIBLE_PRESENCE);
-            CurseTimer += 30000;
+            CurseTimer = 30000;
         }
         
 
-        RandomYellTimer -= diff;
-        if (RandomYellTimer <= diff)
+
+        if (RandomYellTimer.Expired(diff))
         {
             DoScriptText(RAND(SAY_RANDOM1, SAY_RANDOM2), m_creature);
 
-            RandomYellTimer += urand(30000, 61000);
+            RandomYellTimer = urand(30000, 61000);
         }
         
 
         if (m_creature->GetUInt32Value(UNIT_FIELD_DISPLAYID) == MOUNTED_DISPLAYID)
         {
-            ChargeTimer -= diff;
-            if (ChargeTimer <= diff)
+            
+            if (ChargeTimer.Expired(diff))
             {
                 if (Unit * target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100.0f, true, 0, 5.0f))
                     AddSpellToCast(target, SPELL_BERSERKER_CHARGE);
 
-                ChargeTimer += 20000;
+                ChargeTimer = 20000;
             }
             
         }

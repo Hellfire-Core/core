@@ -80,7 +80,7 @@ struct mob_kilrekAI : public ScriptedAI
 
     uint64 TerestianGUID;
 
-    int32 AmplifyTimer;
+    Timer AmplifyTimer;
 
     void Reset()
     {
@@ -122,13 +122,13 @@ struct mob_kilrekAI : public ScriptedAI
         if (!UpdateVictim() )
             return;
 
-        AmplifyTimer -= diff;
-        if (AmplifyTimer <= diff)
+        
+        if (AmplifyTimer.Expired(diff))
         {
             m_creature->InterruptNonMeleeSpells(false);
             DoCast(m_creature->getVictim(),SPELL_AMPLIFY_FLAMES);
 
-            AmplifyTimer += 10000 + rand()%10000;
+            AmplifyTimer = 10000 + rand()%10000;
         }
 
         //Chain cast
@@ -175,11 +175,11 @@ struct boss_terestianAI : public ScriptedAI
 
     uint64 PortalGUID[2];
 
-    int32 SacrificeTimer;
-    int32 ShadowboltTimer;
-    int32 SummonTimer;
-    int32 BerserkTimer;
-    int32 CheckTimer;
+    Timer SacrificeTimer;
+    Timer ShadowboltTimer;
+    Timer SummonTimer;
+    Timer BerserkTimer;
+    Timer CheckTimer;
 
     WorldLocation wLoc;
 
@@ -273,19 +273,19 @@ struct boss_terestianAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        CheckTimer -= diff;
-        if(CheckTimer <= diff)
+        
+        if (CheckTimer.Expired(diff))
         {
             if(!m_creature->IsWithinDistInMap(&wLoc, 35.0f))
                 EnterEvadeMode();
             else
                 DoZoneInCombat();
 
-            CheckTimer += 3000;
+            CheckTimer = 1000;
         }
         
-        SacrificeTimer -= diff;
-        if(SacrificeTimer <= diff)
+        ;
+        if (SacrificeTimer.Expired(diff))
         {
             Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 1, GetSpellMaxRange(SPELL_SACRIFICE), true, m_creature->getVictimGUID());
             if(target && target->isAlive() && target->GetTypeId() == TYPEID_PLAYER)
@@ -299,24 +299,24 @@ struct boss_terestianAI : public ScriptedAI
 
                     DoScriptText(RAND(SAY_SACRIFICE1, SAY_SACRIFICE2), m_creature);
 
-                    SacrificeTimer += 30000;
+                    SacrificeTimer = 30000;
                 }
             }
         }
         
 
-        ShadowboltTimer -= diff;
-        if(ShadowboltTimer <= diff)
+        
+        if (ShadowboltTimer.Expired(diff))
         {
             if(Unit *target = SelectUnit(SELECT_TARGET_TOPAGGRO,0, GetSpellMaxRange(SPELL_SHADOW_BOLT), true))
                 DoCast(target, SPELL_SHADOW_BOLT);
 
-            ShadowboltTimer += 10000;
+            ShadowboltTimer = 10000;
         }
         
 
-        SummonTimer -= diff;
-        if(SummonTimer <= diff)
+        
+        if (SummonTimer.Expired(diff))
         {
             if(!SummonedPortals)
             {
@@ -340,14 +340,14 @@ struct boss_terestianAI : public ScriptedAI
                 if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 1, 200, true, m_creature->getVictimGUID()))
                     Imp->AI()->AttackStart(target);
             }
-            SummonTimer += 5000;
+            SummonTimer = 5000;
         }
         
 
         if(!Berserk)
         {
-            BerserkTimer -= diff;
-            if(BerserkTimer <= diff)
+            
+            if (BerserkTimer.Expired(diff))
             {
                 DoCast(m_creature, SPELL_BERSERK);
                 Berserk = true;
@@ -363,7 +363,7 @@ struct mob_fiendish_impAI : public ScriptedAI
 {
     mob_fiendish_impAI(Creature *c) : ScriptedAI(c) {}
 
-    int32 FireboltTimer;
+    Timer FireboltTimer;
 
     void Reset()
     {
@@ -378,11 +378,10 @@ struct mob_fiendish_impAI : public ScriptedAI
         if (!UpdateVictim() )
             return;
 
-        FireboltTimer -= diff;
-        if(FireboltTimer <= diff)
+        if (FireboltTimer.Expired(diff))
         {
             DoCast(m_creature->getVictim(), SPELL_FIREBOLT);
-            FireboltTimer += 2200;
+            FireboltTimer = 2200;
         }
         
 

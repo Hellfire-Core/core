@@ -447,8 +447,8 @@ void instance_karazhan::Update(uint32 diff)
 {
     if(GetData(DATA_TERESTIAN_EVENT) == IN_PROGRESS)
     {
-        CheckTimer -= diff;
-        if(CheckTimer <= diff)
+     
+        if (CheckTimer.Expired(diff))
         {
             Creature *Kilrek = instance->GetCreature(KilrekGUID);
             if(Kilrek && needRespawn)
@@ -464,10 +464,10 @@ void instance_karazhan::Update(uint32 diff)
             if(Kilrek && !Kilrek->isAlive() && !needRespawn)
             {
                 needRespawn = true;
-                CheckTimer += 45000;
+                CheckTimer = 45000;
             }
             else
-                CheckTimer += 5000;
+                CheckTimer = 5000;
         }
     }
 }

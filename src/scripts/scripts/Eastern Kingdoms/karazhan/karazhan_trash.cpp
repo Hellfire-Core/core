@@ -42,8 +42,8 @@ struct mob_phantom_guestAI : public ScriptedAI
     }
 
     uint32 Type;
-    int32 MainTimer;
-    int32 SecondaryTimer;
+    Timer MainTimer;
+    Timer SecondaryTimer;
 
     void Reset()
     {
@@ -69,58 +69,58 @@ struct mob_phantom_guestAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        MainTimer -= diff;
-        if(MainTimer <= diff)
+        
+        if (MainTimer.Expired(diff))
         {
             switch(Type)
             {
             case 0:
                 AddSpellToCast(SPELL_SEARING_PAIN, CAST_TANK);
-                MainTimer += 3500;
+                MainTimer = 3500;
                 break;
             case 1:
                 AddSpellToCast(SPELL_THROW, CAST_TANK);
-                MainTimer += 2000;
+                MainTimer = 2000;
                 break;
             case 2:
                 AddSpellToCast(SPELL_GOBLIN_DRAGON_GUN, CAST_SELF);
-                MainTimer += 20000;
+                MainTimer = 20000;
                 break;
             case 3:
                 AddSpellToCast(SPELL_PUNCH, CAST_TANK);
-                MainTimer += urand(10000, 30000);
+                MainTimer = urand(10000, 30000);
                 break;
             case 4:
                 AddSpellToCast(SPELL_HEAL, CAST_LOWEST_HP_FRIENDLY);
-                MainTimer += urand(5000, 20000);
+                MainTimer = urand(5000, 20000);
                 break;
             }
         } 
         
-        SecondaryTimer -= diff;
-        if(SecondaryTimer <= diff)
+        
+        if (SecondaryTimer.Expired(diff))
         {
             switch(Type)
             {
             case 0:
                 AddSpellToCast(SPELL_IMMOLATE, CAST_RANDOM);
-                SecondaryTimer += urand(7000, 30000);
+                SecondaryTimer = urand(7000, 30000);
                 break;
             case 1:
                 AddSpellToCast(SPELL_IMPALE, CAST_RANDOM);
-                SecondaryTimer += urand(5000, 30000);
+                SecondaryTimer = urand(5000, 30000);
                 break;
             case 2:
                 AddSpellToCast(SPELL_THROW_DYNAMITE, CAST_RANDOM);
-                SecondaryTimer += urand(15000, 40000);
+                SecondaryTimer = urand(15000, 40000);
                 break;
             case 3:
                 AddSpellToCast(SPELL_CURSE_OF_AGONY, CAST_RANDOM);
-                SecondaryTimer += urand(10000, 30000);
+                SecondaryTimer = urand(10000, 30000);
                 break;
             case 4:
                 AddSpellToCast(SPELL_HOLY_NOVA, CAST_SELF);
-                SecondaryTimer += urand(10000, 30000);
+                SecondaryTimer = urand(10000, 30000);
                 break;
             }
         }
@@ -154,9 +154,9 @@ struct mob_spectral_sentryAI : public ScriptedAI
 {
     mob_spectral_sentryAI(Creature* c) : ScriptedAI(c) {}
 
-    int32 ShotTimer;
-    int32 MultiShotTimer;
-    int32 RandomSayTimer;
+    Timer ShotTimer;
+    Timer MultiShotTimer;
+    Timer RandomSayTimer;
 
     void Reset()
     {
@@ -188,29 +188,27 @@ struct mob_spectral_sentryAI : public ScriptedAI
     {
         if(!UpdateVictim())
         {
-            RandomSayTimer -= diff;
-            if (RandomSayTimer <= diff)
+            if (RandomSayTimer.Expired(diff))
             {
                 if(roll_chance_i(30))
                     me->Say(SENTRY_SAY_RANDOM, 0, 0);
-                RandomSayTimer += urand(40000, 80000);
+                RandomSayTimer = urand(40000, 80000);
             }
             
             return;
         }
 
-        ShotTimer -= diff;
-        if(ShotTimer <= diff)
+        
+        if (ShotTimer.Expired(diff))
         {
             AddSpellToCast(SPELL_SHOT, CAST_TANK);
-            ShotTimer += 2000;
+            ShotTimer = 2000;
         } 
         
-        MultiShotTimer -= diff;
-        if(MultiShotTimer <= diff)
+        if (MultiShotTimer.Expired(diff))
         {
             AddSpellToCast(SPELL_MULTI_SHOT, CAST_RANDOM);
-            MultiShotTimer += 8000;
+            MultiShotTimer = 8000;
         }
         
 
@@ -238,7 +236,7 @@ struct mob_arcane_protectorAI : public ScriptedAI
 {
     mob_arcane_protectorAI(Creature* c) : ScriptedAI(c) {}
 
-    int32 SkillTimer;
+    Timer SkillTimer;
 
     void Reset()
     {
@@ -291,15 +289,15 @@ struct mob_arcane_protectorAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        SkillTimer -= diff;
-        if(SkillTimer <= diff)
+        
+        if (SkillTimer.Expired(diff))
         {
             if(roll_chance_i(50))
                 me->SummonCreature(NPC_ASTRAL_SPARK, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation(),
                         TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 10000);
             else
                 me->CastSpell(me, SPELL_FIST_OF_STONE, false);
-            SkillTimer += urand(15000, 30000);
+            SkillTimer = urand(15000, 30000);
         }
         
 
@@ -372,7 +370,7 @@ struct mob_shadow_pillagerAI : public ScriptedAI
 {
     mob_shadow_pillagerAI(Creature* c) : ScriptedAI(c) {}
 
-    int32 DotTimer;
+    Timer DotTimer;
 
     void Reset()
     {
@@ -390,11 +388,11 @@ struct mob_shadow_pillagerAI : public ScriptedAI
         if(!UpdateVictim())
             return;
         
-        DotTimer -= diff;
-        if(DotTimer <= diff)
+        
+        if (DotTimer.Expired(diff))
         {
             AddSpellToCast(roll_chance_i(50) ? SPELL_IMMOLATE : SPELL_CURSE_OF_AGONY, CAST_RANDOM);
-            DotTimer += urand(2000, 8000);
+            DotTimer = urand(2000, 8000);
         } 
         
 

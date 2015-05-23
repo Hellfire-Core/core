@@ -59,9 +59,9 @@ struct boss_curatorAI : public ScriptedAI
 
     ScriptedInstance* pInstance;
 
-    int32 addTimer;
-    int32 hatefulBoltTimer;
-    int32 berserkTimer;
+    Timer addTimer;
+    Timer hatefulBoltTimer;
+    Timer berserkTimer;
 
     WorldLocation wLoc;
 
@@ -120,8 +120,7 @@ struct boss_curatorAI : public ScriptedAI
 
         if (!enraged && !evocating)
         {
-            addTimer -= diff;
-            if (addTimer <= diff)
+            if (addTimer.Expired(diff))
             {
                 //Summon Astral Flare
                 Creature* astralFlare = DoSpawnCreature(17096, rand()%37, rand()%37, 0, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 5000);
@@ -140,15 +139,13 @@ struct boss_curatorAI : public ScriptedAI
 
                 DoScriptText(RAND(SAY_SUMMON1, SAY_SUMMON2, 0, 0), m_creature);
 
-                addTimer += 10000;
+                addTimer = 10000;
             }
-            
 
-            hatefulBoltTimer -= diff;
-            if (hatefulBoltTimer <= diff)
+            if (hatefulBoltTimer.Expired(diff))
             {
                 AddSpellToCast(SPELL_HATEFUL_BOLT, CAST_THREAT_SECOND);
-                hatefulBoltTimer += enraged ? 7000 : 15000;
+                hatefulBoltTimer = enraged ? 7000 : 15000;
             }
             
 
@@ -159,11 +156,11 @@ struct boss_curatorAI : public ScriptedAI
             }
         }
 
-        berserkTimer -= diff;
-        if (berserkTimer <= diff)
+
+        if (berserkTimer.Expired(diff)
         {
             ForceSpellCastWithScriptText(SPELL_BERSERK, CAST_SELF, SAY_ENRAGE);
-            berserkTimer += 60000;
+            berserkTimer = 60000;
         }
         
 

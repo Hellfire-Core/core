@@ -105,7 +105,7 @@ struct npc_calliardAI : public ScriptedAI
 {
     npc_calliardAI(Creature* c) : ScriptedAI(c) {}
 
-    int32 Timer;
+    Timer Timer;
 
     void Reset()
     {
@@ -114,11 +114,11 @@ struct npc_calliardAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        Timer -= diff;
-        if (Timer <= diff)
+        
+        if (Timer.Expired(diff))
         {
             me->Say(RAND<const char*>(CALLIARD_SAY1, CALLIARD_SAY2, CALLIARD_SAY3), 0, 0);
-            Timer += urand(60000, 180000);
+            Timer = urand(60000, 180000);
         } 
         
 
@@ -216,10 +216,10 @@ struct npc_image_of_medivhAI : public ScriptedAI
 
     uint64 ArcanagosGUID;
 
-    int32 YellTimer;
+    Timer YellTimer;
     int32 Step;
-    int32 FireMedivhTimer;
-    int32 FireArcanagosTimer;
+    Timer FireMedivhTimer;
+    Timer FireArcanagosTimer;
 
     bool EventStarted;
 
@@ -350,12 +350,12 @@ struct npc_image_of_medivhAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        YellTimer -= diff;
-        if(YellTimer <= diff)
+        
+        if (YellTimer.Expired(diff))
         {
             if(EventStarted)
             {
-                YellTimer += NextStep(Step++);
+                YellTimer = NextStep(Step++);
             }
         }
 
@@ -363,20 +363,19 @@ struct npc_image_of_medivhAI : public ScriptedAI
         {
             Unit* arca = Unit::GetUnit((*m_creature),ArcanagosGUID);
 
-            FireArcanagosTimer -= diff;
-            if(FireArcanagosTimer <= diff)
+     
+            if (FireArcanagosTimer.Expired(diff))
             {
                 if(arca)
                     arca->CastSpell(m_creature, SPELL_FIRE_BALL, false);
-                FireArcanagosTimer += 6000;
+                FireArcanagosTimer = 6000;
             }
 
-            FireMedivhTimer -= diff;
-            if(FireMedivhTimer <= diff)
+            if (FireMedivhTimer.Expired(diff))
             {
                 if(arca)
                     DoCast(arca, SPELL_FIRE_BALL);
-                FireMedivhTimer += 5000;
+                FireMedivhTimer = 5000;
             }
 
         }

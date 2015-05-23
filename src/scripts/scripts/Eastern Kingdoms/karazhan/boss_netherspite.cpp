@@ -73,13 +73,13 @@ struct boss_netherspiteAI : public ScriptedAI
 
     bool PortalPhase;
     bool Berserk;
-    int32 PhaseTimer; // timer for phase switching
-    int32 VoidZoneTimer;
-    int32 NetherInfusionTimer; // berserking timer
-    int32 NetherbreathTimer;
-    int32 EmpowermentTimer;
-    int32 ExhaustCheckTimer;
-    int32 PortalTimer; // timer for beam checking
+    Timer PhaseTimer; // timer for phase switching
+    Timer VoidZoneTimer;
+    Timer NetherInfusionTimer; // berserking timer
+    Timer NetherbreathTimer;
+    Timer EmpowermentTimer;
+    Timer ExhaustCheckTimer;
+    Timer PortalTimer; // timer for beam checking
     uint64 PortalGUID[3]; // guid's of portals
     uint64 BeamerGUID[3]; // guid's of auxiliary beaming portals
     uint64 BeamTarget[3]; // guid's of portals' current targets
@@ -281,18 +281,17 @@ struct boss_netherspiteAI : public ScriptedAI
 
         DoSpecialThings(diff, DO_EVERYTHING, 125.0f, 1.5f);
 
-        VoidZoneTimer -= diff;
-        if(VoidZoneTimer <= diff)
+        if (VoidZoneTimer.Expired(diff))
         {
             if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM,1,GetSpellMaxRange(SPELL_VOIDZONE),true, m_creature->getVictimGUID()))
                 AddSpellToCast(target,SPELL_VOIDZONE,true);
 
-            VoidZoneTimer += 15000;
+            VoidZoneTimer = 15000;
         }
         
 
-        NetherInfusionTimer -= diff;
-        if (!Berserk && NetherInfusionTimer <= diff)
+        
+        if (!Berserk && NetherInfusionTimer.Expired(diff))
         {
             m_creature->AddAura(SPELL_NETHER_INFUSION, m_creature);
             ForceSpellCast(m_creature, SPELL_NETHERSPITE_ROAR, INTERRUPT_AND_CAST_INSTANTLY);
@@ -302,25 +301,25 @@ struct boss_netherspiteAI : public ScriptedAI
 
         if(PortalPhase) // PORTAL PHASE
         {
-            PortalTimer -= diff;
-            if(PortalTimer <= diff)
+            
+            if (PortalTimer.Expired(diff))
             {
                 UpdatePortals();
-                PortalTimer += 1000;
+                PortalTimer = 1000;
             }
             
 
-            EmpowermentTimer -= diff;
-            if(EmpowermentTimer <= diff)
+            
+            if (EmpowermentTimer.Expired(diff))
             {
                 ForceSpellCast(m_creature, SPELL_EMPOWERMENT);
                 m_creature->AddAura(SPELL_NETHERBURN_AURA, m_creature);
-                EmpowermentTimer += 90000;
+                EmpowermentTimer = 90000;
             }
             
 
-            PhaseTimer -= diff;
-            if(PhaseTimer <= diff)
+            
+            if (PhaseTimer.Expired(diff))
             {
                 if(!m_creature->IsNonMeleeSpellCast(false))
                 {
@@ -340,17 +339,17 @@ struct boss_netherspiteAI : public ScriptedAI
                 m_creature->GetMotionMaster()->MoveIdle();
             }
 
-            NetherbreathTimer -= diff;
-            if(NetherbreathTimer <= diff)
+           
+            if (NetherbreathTimer.Expired(diff))
             {
                 if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0,GetSpellMaxRange(SPELL_NETHERBREATH),true))
                     AddSpellToCast(target,SPELL_NETHERBREATH);
 
-                NetherbreathTimer += 5000+rand()%2000;
+                NetherbreathTimer = 5000+rand()%2000;
             }
             
-            PhaseTimer -= diff;
-            if(PhaseTimer <= diff)
+            
+            if (PhaseTimer.Expired(diff))
             {
                 if(!m_creature->IsNonMeleeSpellCast(false))
                 {
@@ -380,8 +379,8 @@ struct mob_void_zoneAI : public Scripted_NoMovementAI
     }
 
     ScriptedInstance* pInstance;
-    int32 checkTimer;
-    int32 dieTimer;
+    Timer checkTimer;
+    Timer dieTimer;
 
     void Reset()
     {
@@ -392,8 +391,8 @@ struct mob_void_zoneAI : public Scripted_NoMovementAI
 
     void UpdateAI(const uint32 diff)
     {
-        checkTimer -= diff;
-        if(checkTimer <= diff)
+        
+        if (checkTimer.Expired(diff))
         {
             if (pInstance && pInstance->GetData(DATA_NETHERSPITE_EVENT) == DONE)
             {
@@ -402,16 +401,15 @@ struct mob_void_zoneAI : public Scripted_NoMovementAI
             }
             const int32 dmg = frand(1000, 1500);    //workaround here, no proper spell known
             m_creature->CastCustomSpell(NULL, SPELL_VOID_ZONE_EFFECT, &dmg, NULL, NULL, false);
-            checkTimer += 2000;
+            checkTimer = 2000;
         }
         
 
-        dieTimer -= diff;
-        if(dieTimer <= diff)
+        if (dieTimer.Expired(diff))
         {
             m_creature->Kill(m_creature, false);
             m_creature->RemoveCorpse();
-            dieTimer += 25000;
+            dieTimer = 25000;
         }
         
     }

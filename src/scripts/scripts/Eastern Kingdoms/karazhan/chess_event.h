@@ -418,7 +418,7 @@ private:
 
     uint64 MedivhGUID;
 
-    int32 moveTimer;
+    Timer moveTimer;
     uint64 unitToMove;
     ChessPiecesStances pieceStance;
 
@@ -453,15 +453,15 @@ private:
     int ability2Chance;
     int attackDamage;
 
-    int32 ability1Timer;
-    int32 ability1Cooldown;
-    int32 ability2Timer;
-    int32 ability2Cooldown;
-    int32 attackTimer;
+    Timer ability1Timer;
+    Timer ability1Cooldown;
+    Timer ability2Timer;
+    Timer ability2Cooldown;
+    Timer attackTimer;
 
-    int32 nextTryTimer;     //try to cast spell after some time
+    Timer nextTryTimer;     //try to cast spell after some time
 
-    uint32 changeFacingTimer;
+    Timer changeFacingTimer;
 
     uint32 ability1ID;
     uint32 ability2ID;
@@ -529,13 +529,13 @@ private:
 
     int endEventCount;
 
-    int32 miniEventTimer;
-    uint32 endEventTimer;
-    uint32 endEventLightningTimer;
+    Timer miniEventTimer;
+    Timer endEventTimer;
+    Timer endEventLightningTimer;
 
-    uint32 firstCheatTimer;
-    uint32 secondCheatTimer;
-    uint32 thirdCheatTimer;
+    Timer firstCheatTimer;
+    Timer secondCheatTimer;
+    Timer thirdCheatTimer;
     double firstCheatDamageReq;
     double secondCheatDamageReq;
     double thirdCheatDamagereq;
@@ -546,8 +546,8 @@ private:
     std::list<uint64> tpList;
     std::list<ChessTile> moveList; //list of triggers to make move
 
-    uint32 moveTimer;
-    uint32 addPieceToMoveCheckTimer;
+    Timer moveTimer;
+    Timer addPieceToMoveCheckTimer;
 
     uint64 chestGUID;
 

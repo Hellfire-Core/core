@@ -38,8 +38,8 @@ struct boss_operaAI : public ScriptedAI
 
     ScriptedInstance* pInstance;
 
-    int32 checkTimer;
-    int32 AggroTimer;
+    Timer checkTimer;
+    Timer AggroTimer;
 
     bool evade;
     bool eventStarted;
@@ -102,11 +102,10 @@ struct boss_operaAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        checkTimer -= diff;
-        if (checkTimer <= diff)
+        if (checkTimer.Expired(diff))
         {
             DoZoneInCombat();
-            checkTimer += 1000;
+            checkTimer = 1000;
         }
         
 
@@ -199,9 +198,9 @@ struct boss_dorotheeAI : public boss_operaAI
 {
     boss_dorotheeAI(Creature* c) : boss_operaAI(c) {}
 
-    int32 WaterBoltTimer;
-    int32 FearTimer;
-    int32 SummonTitoTimer;
+    Timer WaterBoltTimer;
+    Timer FearTimer;
+    Timer SummonTitoTimer;
 
     bool SummonedTito;
     bool TitoDied;
@@ -242,40 +241,38 @@ struct boss_dorotheeAI : public boss_operaAI
         if (!eventStarted)
             return;
 
-        if (AggroTimer)
+        
+            
+        if (AggroTimer.Expired(diff))
         {
-            AggroTimer -= diff;
-            if (AggroTimer <= diff)
-            {
-                m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                DoZoneInCombat();
-                AggroTimer = 0;
-            }
+            m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            DoZoneInCombat();
+            AggroTimer = 0;
         }
+        
 
         if (!UpdateVictim())
             return;
 
-        WaterBoltTimer -= diff;
-        if (WaterBoltTimer <= diff)
+        
+        if (WaterBoltTimer.Expired(diff))
         {
             AddSpellToCast(SelectUnit(SELECT_TARGET_RANDOM, 0), SPELL_WATERBOLT);
             WaterBoltTimer = TitoDied ? 1500 : WaterBoltTimer + 5000;
         }
         
 
-        FearTimer -= diff;
-        if (FearTimer <= diff)
+        
+        if (FearTimer.Expired(diff))
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_SCREAM);
-            FearTimer += 30000;
+            FearTimer = 30000;
         }
         
 
         if (!SummonedTito)
         {
-            SummonTitoTimer -= diff;
-            if (SummonTitoTimer <= diff)
+            if (SummonTitoTimer.Expired(diff))
                 SummonTito();
             
         }
@@ -290,7 +287,7 @@ struct mob_titoAI : public ScriptedAI
 
     uint64 DorotheeGUID;
 
-    int32 YipTimer;
+    Timer YipTimer;
 
     void Reset()
     {
@@ -319,11 +316,11 @@ struct mob_titoAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        YipTimer -= diff;
-        if (YipTimer <= diff)
+        
+        if (YipTimer.Expired(diff))
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_YIPPING);
-            YipTimer += 10000;
+            YipTimer = 10000;
         }
         
 
@@ -349,8 +346,8 @@ struct boss_strawmanAI : public boss_operaAI
 {
     boss_strawmanAI(Creature* c) : boss_operaAI(c){}
 
-    int32 BrainBashTimer;
-    int32 BrainWipeTimer;
+    Timer BrainBashTimer;
+    Timer BrainWipeTimer;
 
 
     void Reset()
@@ -393,34 +390,33 @@ struct boss_strawmanAI : public boss_operaAI
         if (!eventStarted)
             return;
 
-        if (AggroTimer)
-        {
-            AggroTimer -= diff;
-            if (AggroTimer <= diff)
-            {
-                m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                DoZoneInCombat();
-                AggroTimer = 0;
-            }
+     
             
+        if (AggroTimer.Expired(diff))
+        {
+            m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            DoZoneInCombat();
+            AggroTimer = 0;
         }
+            
+       
 
         if (!UpdateVictim())
             return;
 
-        BrainBashTimer -= diff;
-        if (BrainBashTimer <= diff)
+        
+        if (BrainBashTimer.Expired(diff))
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_BRAIN_BASH);
-            BrainBashTimer += 15000;
+            BrainBashTimer = 15000;
         }
         
 
-        BrainWipeTimer -= diff;
-        if (BrainWipeTimer <= diff)
+        
+        if (BrainWipeTimer.Expired(diff))
         {
             AddSpellToCast(SelectUnit(SELECT_TARGET_RANDOM, 0), SPELL_BRAIN_WIPE);
-            BrainWipeTimer += 20000;
+            BrainWipeTimer = 20000;
         }
         
 
@@ -432,8 +428,8 @@ struct boss_tinheadAI : public boss_operaAI
 {
     boss_tinheadAI(Creature* c) : boss_operaAI(c){}
 
-    int32 CleaveTimer;
-    int32 RustTimer;
+    Timer CleaveTimer;
+    Timer RustTimer;
 
     uint8 RustCount;
 
@@ -473,37 +469,35 @@ struct boss_tinheadAI : public boss_operaAI
         if (!eventStarted)
             return;
 
-        if (AggroTimer)
+   
+        if (AggroTimer.Expired(diff))
         {
-            AggroTimer -= diff;
-            if (AggroTimer <= diff)
-            {
-                m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                DoZoneInCombat();
-                AggroTimer = 0;
-            }
-            
+            m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            DoZoneInCombat();
+            AggroTimer = 0;
         }
+            
+        
 
         if (!UpdateVictim())
             return;
 
-        CleaveTimer -= diff;
-        if (CleaveTimer <= diff)
+        
+        if (CleaveTimer.Expired(diff))
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_CLEAVE);
-            CleaveTimer += 5000;
+            CleaveTimer = 5000;
         }
         
 
         if (RustCount < 8)
         {
-            RustTimer -= diff;
-            if (RustTimer <= diff)
+            
+            if (RustTimer.Expired(diff))
             {
                 RustCount++;
                 AddSpellToCastWithScriptText(m_creature, SPELL_RUST, EMOTE_RUST);
-                RustTimer += 6000;
+                RustTimer = 6000;
             }
         }
 
@@ -515,9 +509,9 @@ struct boss_roarAI : public boss_operaAI
 {
     boss_roarAI(Creature* c) : boss_operaAI(c){}
 
-    int32 MangleTimer;
-    int32 ShredTimer;
-    int32 ScreamTimer;
+    Timer MangleTimer;
+    Timer ShredTimer;
+    Timer ScreamTimer;
 
     void Reset()
     {
@@ -554,40 +548,38 @@ struct boss_roarAI : public boss_operaAI
         if (!eventStarted)
             return;
 
-        if (AggroTimer)
+     
+        if (AggroTimer.Expired(diff))
         {
-            AggroTimer -= diff;
-            if (AggroTimer <= diff)
-            {
-                m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                DoZoneInCombat();
-                AggroTimer = 0;
-            }
+            m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            DoZoneInCombat();
+            AggroTimer = 0;
         }
+      
 
         if (!UpdateVictim())
             return;
 
-        MangleTimer -= diff;
-        if (MangleTimer <= diff)
+        
+        if (MangleTimer.Expired(diff))
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_MANGLE);
-            MangleTimer += 5000 + rand()%3000;
+            MangleTimer = 5000 + rand()%3000;
         }
         
 
-        ShredTimer -= diff;
-        if (ShredTimer <= diff)
+        
+        if (ShredTimer.Expired(diff))
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_SHRED);
-            ShredTimer += 10000 + rand()%5000;
+            ShredTimer = 10000 + rand()%5000;
         }
         
-        ScreamTimer -= diff;
-        if (ScreamTimer <= diff)
+        
+        if (ScreamTimer.Expired(diff))
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_FRIGHTENED_SCREAM);
-            ScreamTimer += 20000 + rand()%10000;
+            ScreamTimer = 20000 + rand()%10000;
         }
         
 
@@ -599,8 +591,8 @@ struct boss_croneAI : public boss_operaAI
 {
     boss_croneAI(Creature* c) : boss_operaAI(c){}
 
-    int32 CycloneTimer;
-    int32 ChainLightningTimer;
+    Timer CycloneTimer;
+    Timer ChainLightningTimer;
 
     void Reset()
     {
@@ -636,21 +628,21 @@ struct boss_croneAI : public boss_operaAI
         if (m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
             m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
 
-        CycloneTimer -= diff;
-        if (CycloneTimer <= diff)
+        
+        if (CycloneTimer.Expired(diff))
         {
             Creature* Cyclone = DoSpawnCreature(CREATURE_CYCLONE, rand()%10, rand()%10, 0, 0, TEMPSUMMON_TIMED_DESPAWN, 15000);
             if(Cyclone)
                 Cyclone->CastSpell(Cyclone, SPELL_CYCLONE_VISUAL, true);
-            CycloneTimer += 30000;
+            CycloneTimer = 30000;
         }
         
 
-        ChainLightningTimer -= diff;
-        if (ChainLightningTimer <= diff)
+        
+        if (ChainLightningTimer.Expired(diff))
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_CHAIN_LIGHTNING);
-            ChainLightningTimer += 15000;
+            ChainLightningTimer = 15000;
         }
         
 
@@ -662,7 +654,7 @@ struct mob_cycloneAI : public ScriptedAI
 {
     mob_cycloneAI(Creature* c) : ScriptedAI(c) {}
 
-    int32 MoveTimer;
+    Timer MoveTimer;
 
     void Reset()
     {
@@ -678,15 +670,15 @@ struct mob_cycloneAI : public ScriptedAI
         if (!m_creature->HasAura(SPELL_KNOCKBACK, 0))
             DoCast(m_creature, SPELL_KNOCKBACK, true);
 
-        MoveTimer -= diff;
-        if (MoveTimer <= diff)
+        
+        if (MoveTimer.Expired(diff))
         {
             float x,y,z;
             m_creature->GetPosition(x,y,z);
             float PosX, PosY, PosZ;
             m_creature->GetRandomPoint(x,y,z,10, PosX, PosY, PosZ);
             m_creature->GetMotionMaster()->MovePoint(0, PosX, PosY, PosZ);
-            MoveTimer += 5000 + rand()%3000;
+            MoveTimer = 5000 + rand()%3000;
         }
         
     }
@@ -787,9 +779,9 @@ struct boss_bigbadwolfAI : public boss_operaAI
 {
     boss_bigbadwolfAI(Creature* c) : boss_operaAI(c) { eventStarted = true; }
 
-    int32 ChaseTimer;
-    int32 FearTimer;
-    int32 SwipeTimer;
+    Timer ChaseTimer;
+    Timer FearTimer;
+    Timer SwipeTimer;
 
     uint64 HoodGUID;
     float TempThreat;
@@ -828,18 +820,18 @@ struct boss_bigbadwolfAI : public boss_operaAI
         if (!UpdateVictim())
             return;
 
-        checkTimer -= diff;
-        if (checkTimer <= diff)
+       
+        if (checkTimer.Expired(diff))
         {
             DoZoneInCombat();
-            checkTimer += 1000;
+            checkTimer = 1000;
         }
         
 
         DoMeleeAttackIfReady();
 
-        ChaseTimer -= diff;
-        if (ChaseTimer <= diff)
+;
+        if (ChaseTimer.Expired(diff))
         {
             if (!IsChasing)
             {
@@ -855,7 +847,7 @@ struct boss_bigbadwolfAI : public boss_operaAI
                         DoModifyThreatPercent(target, -100);
                     HoodGUID = target->GetGUID();
                     m_creature->AddThreat(target, 1000000.0f);
-                    ChaseTimer += 20000;
+                    ChaseTimer = 20000;
                     IsChasing = true;
                 }
             }
@@ -875,7 +867,7 @@ struct boss_bigbadwolfAI : public boss_operaAI
                 m_creature->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_MOD_TAUNT, false);
                 m_creature->ApplySpellImmune(0, IMMUNITY_EFFECT,SPELL_EFFECT_ATTACK_ME, false);
 
-                ChaseTimer += 40000;
+                ChaseTimer = 40000;
             }
         }
         
@@ -883,19 +875,19 @@ struct boss_bigbadwolfAI : public boss_operaAI
         if (IsChasing)
             return;
 
-        FearTimer -= diff;
-        if (FearTimer <= diff)
+        
+        if (FearTimer.Expired(diff))
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_TERRIFYING_HOWL);
-            FearTimer += 25000 + rand()%10000;
+            FearTimer = 25000 + rand()%10000;
         }
         
 
-        SwipeTimer -= diff;
-        if (SwipeTimer <= diff)
+        .Expired(diff)
+        if (SwipeTimer.Expired(diff))
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_WIDE_SWIPE);
-            SwipeTimer += 25000 + rand()%5000;
+            SwipeTimer = 25000 + rand()%5000;
         }
         
 
@@ -994,14 +986,14 @@ struct boss_julianneAI : public boss_operaAI
 
     uint32 Phase;
     uint64 RomuloGUID;
-    int32 BlindingPassionTimer;
-    int32 DevotionTimer;
-    int32 EternalAffectionTimer;
-    int32 PowerfulAttractionTimer;
-    int32 SummonRomuloTimer;
-    int32 ResurrectTimer;
-    int32 DrinkPoisonTimer;
-    int32 ResurrectSelfTimer;
+    Timer BlindingPassionTimer;
+    Timer DevotionTimer;
+    Timer EternalAffectionTimer;
+    Timer PowerfulAttractionTimer;
+    Timer SummonRomuloTimer;
+    Timer ResurrectTimer;
+    Timer DrinkPoisonTimer;
+    Timer ResurrectSelfTimer;
 
     bool IsFakingDeath;
     bool SummonedRomulo;
@@ -1076,12 +1068,12 @@ struct boss_romuloAI : public boss_operaAI
 
     uint32 Phase;
 
-   int32 EntryYellTimer;
-   int32 BackwardLungeTimer;
-   int32 DaringTimer;
-   int32 DeadlySwatheTimer;
-   int32 PoisonThrustTimer;
-   int32 ResurrectTimer;
+    Timer EntryYellTimer;
+    Timer BackwardLungeTimer;
+    Timer DaringTimer;
+    Timer DeadlySwatheTimer;
+    Timer PoisonThrustTimer;
+    Timer ResurrectTimer;
 
     bool JulianneDead;
     bool IsFakingDeath;
@@ -1260,39 +1252,36 @@ void boss_julianneAI::UpdateAI(const uint32 diff)
         }
     }
 
-    if (AggroTimer)
-    {
-        AggroTimer -= diff;
-        if (AggroTimer <= diff)
-        {
-            DoScriptText(SAY_JULIANNE_AGGRO, m_creature);
-            m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-            m_creature->setFaction(16);
-            AggroTimer = 0;
-            DoZoneInCombat();
-            return;
-        }
-        
-    }
 
-    if (DrinkPoisonTimer)
-    {
-        DrinkPoisonTimer -= diff;
-        //will do this 2secs after spell hit. this is time to display visual as expected
-        if (DrinkPoisonTimer <= diff)
-        {
-            PretendToDie(m_creature);
-            Phase = PHASE_ROMULO;
-            SummonRomuloTimer = 10000;
-            DrinkPoisonTimer = 0;
-        }
         
+    if (AggroTimer.Expired(diff))
+    {
+        DoScriptText(SAY_JULIANNE_AGGRO, m_creature);
+        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        m_creature->setFaction(16);
+        AggroTimer = 0;
+        DoZoneInCombat();
+        return;
     }
+        
+    
+
+     
+        //will do this 2secs after spell hit. this is time to display visual as expected
+    if (DrinkPoisonTimer.Expired(diff))
+    {
+        PretendToDie(m_creature);
+        Phase = PHASE_ROMULO;
+        SummonRomuloTimer = 10000;
+        DrinkPoisonTimer = 0;
+    }
+        
+
 
     if (Phase == PHASE_ROMULO && !SummonedRomulo)
     {
-        SummonRomuloTimer -= diff;
-        if (SummonRomuloTimer <= diff)
+      
+        if (SummonRomuloTimer.Expired(diff))
         {
             Creature* Romulo = m_creature->SummonCreature(CREATURE_ROMULO, ROMULO_X, ROMULO_Y, m_creature->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 300000);
             if (Romulo)
@@ -1313,30 +1302,28 @@ void boss_julianneAI::UpdateAI(const uint32 diff)
         }
     }
 
-    if (ResurrectSelfTimer)
+   
+        
+    if (ResurrectSelfTimer.Expired(diff))
     {
-        ResurrectSelfTimer -= diff;
-        if (ResurrectSelfTimer <= diff)
-        {
-            Resurrect(m_creature);
-            Phase = PHASE_BOTH;
-            IsFakingDeath = false;
+        Resurrect(m_creature);
+        Phase = PHASE_BOTH;
+        IsFakingDeath = false;
 
-            if (m_creature->getVictim())
-                AttackStart(m_creature->getVictim());
+        if (m_creature->getVictim())
+            AttackStart(m_creature->getVictim());
 
-            ResurrectSelfTimer = 0;
-            ResurrectTimer = 1000;
+        ResurrectSelfTimer = 0;
+        ResurrectTimer = 1000;
         }
-    }
+    
 
     if (!UpdateVictim() || IsFakingDeath)
         return;
 
     if (RomuloDead)
-    {
-        ResurrectTimer -= diff;
-        if (ResurrectTimer <= diff)
+    {   
+        if (ResurrectTimer.Expired(diff))
         {
             Creature* Romulo = (Unit::GetCreature((*m_creature), RomuloGUID));
             if (Romulo && ((boss_romuloAI*)Romulo->AI())->IsFakingDeath)
@@ -1351,31 +1338,31 @@ void boss_julianneAI::UpdateAI(const uint32 diff)
         
     }
 
-    BlindingPassionTimer -= diff;
-    if (BlindingPassionTimer <= diff)
+    
+    if (BlindingPassionTimer.Expired(diff))
     {
         AddSpellToCast(SelectUnit(SELECT_TARGET_RANDOM, 0), SPELL_BLINDING_PASSION);
-        BlindingPassionTimer += 30000 + rand()%15000;
+        BlindingPassionTimer = 30000 + rand()%15000;
     }
     
 
-    DevotionTimer -= diff;
-    if (DevotionTimer <= diff)
+    
+    if (DevotionTimer.Expired(diff))
     {
         AddSpellToCast(m_creature, SPELL_DEVOTION);
-        DevotionTimer += 15000 + rand()%30000;
+        DevotionTimer = 15000 + rand()%30000;
     }
     
-    PowerfulAttractionTimer -= diff;
-    if (PowerfulAttractionTimer <= diff)
+    
+    if (PowerfulAttractionTimer.Expired(diff))
     {
         AddSpellToCast(SelectUnit(SELECT_TARGET_RANDOM, 0), SPELL_POWERFUL_ATTRACTION);
-        PowerfulAttractionTimer += 5000 + rand()%25000;
+        PowerfulAttractionTimer = 5000 + rand()%25000;
     }
     
 
-    EternalAffectionTimer -= diff;
-    if (EternalAffectionTimer <= diff)
+    
+    if (EternalAffectionTimer.Expired(diff))
     {
         if (rand()%2 == 1 && SummonedRomulo)
         {
@@ -1387,7 +1374,7 @@ void boss_julianneAI::UpdateAI(const uint32 diff)
         else
             AddSpellToCast(m_creature, SPELL_ETERNAL_AFFECTION);
 
-        EternalAffectionTimer += 45000 + rand()%15000;
+        EternalAffectionTimer = 45000 + rand()%15000;
     }
     
 
@@ -1401,8 +1388,7 @@ void boss_romuloAI::UpdateAI(const uint32 diff)
 
     if (JulianneDead)
     {
-        ResurrectTimer -= diff;
-        if (ResurrectTimer <= diff)
+        if (ResurrectTimer.Expired(diff))
         {
             Creature* Julianne = (Unit::GetCreature((*m_creature), JulianneGUID));
             if (Julianne && ((boss_julianneAI*)Julianne->AI())->IsFakingDeath)
@@ -1417,38 +1403,38 @@ void boss_romuloAI::UpdateAI(const uint32 diff)
     }
 
 
-    BackwardLungeTimer -= diff;
-    if (BackwardLungeTimer <= diff)
+    
+    if (BackwardLungeTimer.Expired(diff))
     {
         Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 1, 200, true, m_creature->getVictimGUID());
         if (target && !m_creature->HasInArc(M_PI, target))
         {
             AddSpellToCast(target, SPELL_BACKWARD_LUNGE);
-            BackwardLungeTimer += 15000 + rand()%15000;
+            BackwardLungeTimer = 15000 + rand()%15000;
         }
     }
     
 
-    DaringTimer -= diff;
-    if (DaringTimer <= diff)
+    
+    if (DaringTimer.Expired(diff))
     {
         AddSpellToCast(m_creature, SPELL_DARING);
-        DaringTimer += 20000 + rand()%20000;
+        DaringTimer = 20000 + rand()%20000;
     }
    
-    DeadlySwatheTimer -= diff;
-    if (DeadlySwatheTimer <= diff)
+    
+    if (DeadlySwatheTimer.Expired(diff))
     {
         AddSpellToCast(SelectUnit(SELECT_TARGET_RANDOM, 0), SPELL_DEADLY_SWATHE);
-        DeadlySwatheTimer += 15000 + rand()%10000;
+        DeadlySwatheTimer = 15000 + rand()%10000;
     }
    
 
-    PoisonThrustTimer -= diff;
-    if (PoisonThrustTimer <= diff)
+    
+    if (PoisonThrustTimer.Expired(diff))
     {
         AddSpellToCast(m_creature->getVictim(), SPELL_POISON_THRUST);
-        PoisonThrustTimer += 10000 + rand()%10000;
+        PoisonThrustTimer = 10000 + rand()%10000;
     }
 
     boss_operaAI::UpdateAI(diff);
@@ -1482,7 +1468,7 @@ CreatureAI* GetAI_boss_romulo(Creature* _Creature)
 struct Dialogue
 {
     int32 textid;
-    int32 timer;
+    Timer timer;
 };
 
 static Dialogue OzDialogue[]=
@@ -1552,8 +1538,8 @@ struct npc_barnesAI : public ScriptedAI
     uint64 SpotlightGUID;
 
     int32 TalkCount;
-    int32 TalkTimer;
-    int32 WipeTimer;
+    Timer TalkTimer;
+    Timer WipeTimer;
     uint32 Event;
 
     bool PerformanceReady;
@@ -1687,8 +1673,7 @@ struct npc_barnesAI : public ScriptedAI
     {
         if(IsTalking)
         {
-            TalkTimer -= diff;
-            if(TalkTimer <= diff)
+            if (TalkTimer.Expired(diff))
             {
                 if(TalkCount > 3)
                 {
@@ -1711,13 +1696,12 @@ struct npc_barnesAI : public ScriptedAI
 
         if (PerformanceReady)
         {
-            WipeTimer -= diff;
-            if (WipeTimer <= diff)
+            if (WipeTimer.Expired(diff))
             {
                 if (operaAdds.isEmpty())
                     EnterEvadeMode();
 
-                WipeTimer += 2000;
+                WipeTimer = 2000;
             }
         }
     }
