@@ -32,7 +32,7 @@ struct generic_creatureAI : public ScriptedAI
 {
     generic_creatureAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 GlobalCooldown;      //This variable acts like the global cooldown that players have (1.5 seconds)
+    Timer GlobalCooldown;      //This variable acts like the global cooldown that players have (1.5 seconds)
     Timer BuffTimer;           //This variable keeps track of buffs
     bool IsSelfRooted;
 
@@ -54,9 +54,8 @@ struct generic_creatureAI : public ScriptedAI
     void UpdateAI(const uint32 diff)
     {
         //Always decrease our global cooldown first
-        if (GlobalCooldown > diff)
-            GlobalCooldown -= diff;
-        else GlobalCooldown = 0;
+        if (GlobalCooldown.Expired(diff))
+            GlobalCooldown = 0;
 
         //Buff timer (only buff when we are alive and not in combat
         if (!m_creature->isInCombat() && m_creature->isAlive())
@@ -65,7 +64,7 @@ struct generic_creatureAI : public ScriptedAI
                 //Find a spell that targets friendly and applies an aura (these are generally buffs)
                 SpellEntry const *info = SelectSpell(m_creature, -1, -1, SELECT_TARGET_ANY_FRIEND, 0, 0, 0, 0, SELECT_EFFECT_AURA);
 
-                if (info && !GlobalCooldown)
+                if (info && !GlobalCooldown.GetInterval())
                 {
                     //Cast the buff spell
                     DoCastSpell(m_creature, info);
@@ -102,7 +101,7 @@ struct generic_creatureAI : public ScriptedAI
                 else info = SelectSpell(m_creature->getVictim(), -1, -1, SELECT_TARGET_ANY_ENEMY, 0, 0, 0, 0, SELECT_EFFECT_DONTCARE);
 
                 //50% chance if elite or higher, 20% chance if not, to replace our white hit with a spell
-                if (info && (rand() % (m_creature->GetCreatureInfo()->rank > 1 ? 2 : 5) == 0) && !GlobalCooldown)
+                if (info && (rand() % (m_creature->GetCreatureInfo()->rank > 1 ? 2 : 5) == 0) && !GlobalCooldown.GetInterval())
                 {
                     //Cast the spell
                     if (Healing)DoCastSpell(m_creature, info);
@@ -133,7 +132,7 @@ struct generic_creatureAI : public ScriptedAI
                 else info = SelectSpell(m_creature->getVictim(), -1, -1, SELECT_TARGET_ANY_ENEMY, 0, 0, NOMINAL_MELEE_RANGE, 0, SELECT_EFFECT_DONTCARE);
 
                 //Found a spell, check if we arn't on cooldown
-                if (info && !GlobalCooldown)
+                if (info && !GlobalCooldown.GetInterval())
                 {
                     //If we are currently moving stop us and set the movement generator
                     if (!IsSelfRooted)

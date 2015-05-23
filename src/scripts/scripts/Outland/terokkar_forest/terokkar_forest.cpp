@@ -793,16 +793,16 @@ struct npc_skyguard_aceAI : public ScriptedAI
 
     uint64 TargetGUID;
     Timer TargetLifetime;
-    int32 AncientFlame_Timer;
-    int32 Move_Timer;
+    Timer AncientFlame_Timer;
+    Timer Move_Timer;
     int NextWP;
 
     void Reset()
     {
         TargetGUID = 0;
         TargetLifetime = 0;
-        Move_Timer = -1;
-        AncientFlame_Timer = -1;
+        Move_Timer = 0;
+        AncientFlame_Timer = 0;
     }
 
     void EnterCombat(Unit *who) {}
@@ -864,34 +864,28 @@ struct npc_skyguard_aceAI : public ScriptedAI
             TargetGUID = 0;
         }
 
-        if(Move_Timer >= 0)
+        
+        if (Move_Timer.Expired(diff))
         {
-            if(Move_Timer <= diff)
-            {
-                if (me->GetMotionMaster()->empty())
-                    me->GetMotionMaster()->MovePoint(NextWP, skyguardWPs[NextWP][0], skyguardWPs[NextWP][1], skyguardAltitude);
-                Move_Timer = -1;
-            }
-            else{
-                Move_Timer -= diff;
-                Move_Timer = Move_Timer < 0 ? 0 : Move_Timer;
-            }
+            if (me->GetMotionMaster()->empty())
+                me->GetMotionMaster()->MovePoint(NextWP, skyguardWPs[NextWP][0], skyguardWPs[NextWP][1], skyguardAltitude);
+            Move_Timer = 0;
         }
 
-        if(AncientFlame_Timer >= 0)
+
+
+        if (AncientFlame_Timer.Expired(diff))
         {
-            if(AncientFlame_Timer <= diff)
+            if (Unit* target = me->GetMap()->GetCreature(TargetGUID))
             {
-                if(Unit* target = me->GetMap()->GetCreature(TargetGUID))
-                {
-                    target->CastStop();
-                    target->RemoveAurasDueToSpell(SPELL_SKYGUARD_FLARE_TARGET);
-                    // HACK: cast ancient flames so players can be damaged by it, we keep cast ancient flames by skyguard ace only for animation
-                    target->CastSpell(target, SPELL_ANCIENT_FLAMES, true);
-                }
-                AncientFlame_Timer = -1;
-            } else
-                AncientFlame_Timer -= diff;
+                target->CastStop();
+                target->RemoveAurasDueToSpell(SPELL_SKYGUARD_FLARE_TARGET);
+                // HACK: cast ancient flames so players can be damaged by it, we keep cast ancient flames by skyguard ace only for animation
+                target->CastSpell(target, SPELL_ANCIENT_FLAMES, true);
+            }
+            AncientFlame_Timer = 0;
+        }
+
         }
     }
 };

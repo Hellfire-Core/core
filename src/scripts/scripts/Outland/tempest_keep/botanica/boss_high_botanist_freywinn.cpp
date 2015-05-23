@@ -51,7 +51,7 @@ struct boss_high_botanist_freywinnAI : public ScriptedAI
     std::list<uint64> Adds_List;
 
     Timer SummonSeedling_Timer;
-    uint32 TreeForm_Timer; //TODO: Switch to timer struct
+    Timer TreeForm_Timer; 
     Timer MoveCheck_Timer;
     uint32 DeadAddsCount;
     bool MoveFree;
@@ -93,7 +93,7 @@ struct boss_high_botanist_freywinnAI : public ScriptedAI
         if( !UpdateVictim() )
             return;
 
-        if( TreeForm_Timer <= diff )
+        if (TreeForm_Timer.Expired(diff))
         {
             DoScriptText(RAND(SAY_TREE_1, SAY_TREE_2), m_creature);
 
@@ -110,7 +110,7 @@ struct boss_high_botanist_freywinnAI : public ScriptedAI
             MoveFree = false;
 
             TreeForm_Timer = 75000;
-        }else TreeForm_Timer -= diff;
+        }
 
         if( !MoveFree )
         {
@@ -132,7 +132,7 @@ struct boss_high_botanist_freywinnAI : public ScriptedAI
                     }
                 }
 
-                if( DeadAddsCount < 3 && TreeForm_Timer-30000 <= diff )
+                if( DeadAddsCount < 3 && TreeForm_Timer.GetCurrent()+30000 <= TreeForm_Timer.GetInterval() )
                     DeadAddsCount = 3;
 
                 if( DeadAddsCount >= 3 )

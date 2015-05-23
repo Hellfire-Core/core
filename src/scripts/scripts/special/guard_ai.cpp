@@ -69,33 +69,30 @@ void guardAI::JustDied(Unit *Killer)
 void guardAI::UpdateAI(const uint32 diff)
 {
     //Always decrease our global cooldown first
-    if (GlobalCooldown > diff)
-        GlobalCooldown -= diff;
-    else GlobalCooldown = 0;
+    if (GlobalCooldown.Expired(diff))
+        GlobalCooldown = 0;
 
     //Buff timer (only buff when we are alive and not in combat
     if (m_creature->isAlive() && !m_creature->isInCombat())
-        if (BuffTimer <= diff )
-    {
-        //Find a spell that targets friendly and applies an aura (these are generally buffs)
-        SpellEntry const *info = SelectSpell(m_creature, -1, -1, SELECT_TARGET_ANY_FRIEND, 0, 0, 0, 0, SELECT_EFFECT_AURA);
-
-        if (info && !GlobalCooldown)
+        if (BuffTimer.Expired(diff))
         {
-            //Cast the buff spell
-            DoCastSpell(m_creature, info);
+            //Find a spell that targets friendly and applies an aura (these are generally buffs)
+            SpellEntry const *info = SelectSpell(m_creature, -1, -1, SELECT_TARGET_ANY_FRIEND, 0, 0, 0, 0, SELECT_EFFECT_AURA);
 
-            //Set our global cooldown
-            GlobalCooldown = GENERIC_CREATURE_COOLDOWN;
+            if (info && !GlobalCooldown.GetInterval())
+            {
+                //Cast the buff spell
+                DoCastSpell(m_creature, info);
 
-            //Set our timer to 10 minutes before rebuff
-            BuffTimer = 600000;
-        }                                                   //Try agian in 30 seconds
-        else
-            BuffTimer = 30000;
-    }
-    else
-        BuffTimer -= diff;
+                //Set our global cooldown
+                GlobalCooldown = GENERIC_CREATURE_COOLDOWN;
+
+                //Set our timer to 10 minutes before rebuff
+                BuffTimer = 600000;
+            }                                                   //Try agian in 30 seconds
+            else
+                BuffTimer = 30000;
+        }
 
     //Return since we have no target
     if (!UpdateVictim())
@@ -119,7 +116,7 @@ void guardAI::UpdateAI(const uint32 diff)
             else info = SelectSpell(m_creature->getVictim(), -1, -1, SELECT_TARGET_ANY_ENEMY, 0, 0, 0, 0, SELECT_EFFECT_DONTCARE);
 
             //20% chance to replace our white hit with a spell
-            if (info && rand() % 5 == 0 && !GlobalCooldown)
+            if (info && rand() % 5 == 0 && !GlobalCooldown.GetInterval())
             {
                 //Cast the spell
                 if (Healing)DoCastSpell(m_creature, info);
@@ -150,7 +147,7 @@ void guardAI::UpdateAI(const uint32 diff)
             else info = SelectSpell(m_creature->getVictim(), -1, -1, SELECT_TARGET_ANY_ENEMY, 0, 0, NOMINAL_MELEE_RANGE, 0, SELECT_EFFECT_DONTCARE);
 
             //Found a spell, check if we aren't on cooldown
-            if (info && !GlobalCooldown)
+            if (info && !GlobalCooldown.GetInterval())
             {
                 //If we are currently moving stop us and set the movement generator
                 if ((*m_creature).GetMotionMaster()->GetCurrentMovementGeneratorType()!=IDLE_MOTION_TYPE)
