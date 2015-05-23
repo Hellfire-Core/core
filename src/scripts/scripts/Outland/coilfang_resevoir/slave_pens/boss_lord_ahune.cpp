@@ -52,9 +52,9 @@ struct boss_lord_ahune_coreAI : public Scripted_NoMovementAI
 
 
     bool DamageRecentlyTaken;
-    uint32 AhuneGhostShow_Timer;
+    Timer AhuneGhostShow_Timer;
     bool NeedToHideGhost;
-    uint32 AhuneGhostHide_Timer;
+    Timer AhuneGhostHide_Timer;
     uint64 Ahune;
 
     void Reset()
@@ -96,25 +96,23 @@ struct boss_lord_ahune_coreAI : public Scripted_NoMovementAI
     {
         if(NeedToHideGhost)
         {
-            if(AhuneGhostHide_Timer <= diff)
+            if (AhuneGhostHide_Timer.Expired(diff))
             {
                 SetAhuneVisibility(false);
                 NeedToHideGhost = false;
-            } else
-                AhuneGhostHide_Timer -= diff;
+            } 
         }
 
         if(DamageRecentlyTaken && !NeedToHideGhost)
         {
-            if(AhuneGhostShow_Timer <= diff)
+            if (AhuneGhostShow_Timer.Expired(diff))
             {
                 SetAhuneVisibility(true);
                 DamageRecentlyTaken = false;
                 NeedToHideGhost = true;
                 AhuneGhostHide_Timer = 3000;
                 AhuneGhostShow_Timer = 3000;
-            } else
-                AhuneGhostShow_Timer -= diff;
+            } 
         }
     }
 };
@@ -133,14 +131,14 @@ struct boss_lord_ahuneAI : public Scripted_NoMovementAI
     uint8 Phase;            // 1, 2
     uint64 Core;            // GUID of core creature
 
-    uint32 Phase_Timer;
+    Timer Phase_Timer;
     uint8 PhaseCounter;
     bool HeroicMode;
 
-    uint32 IceSpear_Timer;
-    uint32 Elementals_Timer;
-    uint32 Hailstone_Timer;
-    uint32 Death_Timer;
+    Timer IceSpear_Timer;
+    Timer Elementals_Timer;
+    Timer Hailstone_Timer;
+    Timer Death_Timer;
 
     boss_lord_ahuneAI(Creature *c) : Scripted_NoMovementAI(c), Summons(m_creature)
     {
@@ -230,16 +228,15 @@ struct boss_lord_ahuneAI : public Scripted_NoMovementAI
         if(me->GetHealth() == 1)            // to ensure nice death animation
         {
             me->SetVisibility(VISIBILITY_ON);
-            if(Death_Timer <= diff)
+            if (Death_Timer.Expired(diff))
             {
                 me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                 me->DealDamage(me, 1);
-            } else
-                Death_Timer -= diff;
+            } 
             return;
         }
 
-        if(Phase_Timer <= diff)
+        if (Phase_Timer.Expired(diff))
         {
 
             if(Phase == 1)
@@ -273,8 +270,7 @@ struct boss_lord_ahuneAI : public Scripted_NoMovementAI
                 }
                 Phase_Timer = 60000;
             }
-        } else
-            Phase_Timer -= diff;
+        } 
 
         if(Phase == 1)
         {
@@ -284,30 +280,27 @@ struct boss_lord_ahuneAI : public Scripted_NoMovementAI
             if(me->GetVisibility() != VISIBILITY_ON)
                 me->SetVisibility(VISIBILITY_ON);
 
-            if(Hailstone_Timer <= diff)
+            if (Hailstone_Timer.Expired(diff))
             {
                 me->SummonCreature(CREATURE_HAILSTONE, x, y, z, 0, TEMPSUMMON_DEAD_DESPAWN, 0);
                 Hailstone_Timer = 60000;
-            } else
-                Hailstone_Timer -= diff;
+            } 
 
-            if(Elementals_Timer <= diff)
+            if (Elementals_Timer.Expired(diff))
             {
                 me->SummonCreature(CREATURE_COLDWAVE, x, y, z, 0, TEMPSUMMON_DEAD_DESPAWN, 0);
                 me->SummonCreature(CREATURE_COLDWAVE, x, y, z, 0, TEMPSUMMON_DEAD_DESPAWN, 0);
                 for(int i = 0; i < PhaseCounter; i++)
                     me->SummonCreature(CREATURE_FROSTWIND, x, y, z, 0, TEMPSUMMON_DEAD_DESPAWN, 0);
                 Elementals_Timer = 8000;
-            } else
-                Elementals_Timer -= diff;
+            } 
 
-            if(IceSpear_Timer <= diff)
+            if (IceSpear_Timer.Expired(diff))
             {
                 if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0))
                     DoCast(target, SPELL_SUMMON_ICE_SPEAR_BUNNY, true);
                 IceSpear_Timer = 5500;
-            }else
-                IceSpear_Timer -= diff;
+            }
 
             DoMeleeAttackIfReady();
         }
@@ -325,7 +318,7 @@ struct npc_ice_spear_bunnyAI : public Scripted_NoMovementAI
 {
     npc_ice_spear_bunnyAI(Creature *c) : Scripted_NoMovementAI(c)  {}
 
-    uint32 Timer;
+    Timer Timer;
     uint64 IceSpear;
     bool Init;
     bool Knockback;
@@ -367,7 +360,7 @@ struct npc_ice_spear_bunnyAI : public Scripted_NoMovementAI
                 IceSpear = iceSpear->GetGUID();
 
         }
-        if(Timer > 3000 && !Knockback)
+        if(Timer.GetCurrent() > 3000 && !Knockback)
         {
             if(IceSpear)
                 if(GameObject *iceSpear = me->GetMap()->GetGameObject(IceSpear))
@@ -377,7 +370,7 @@ struct npc_ice_spear_bunnyAI : public Scripted_NoMovementAI
 
         }
 
-        if(Timer > 6000)
+        if(Timer.GetCurrent() > 6000)
         {
             if(IceSpear)
                 if(GameObject *iceSpear = me->GetMap()->GetGameObject(IceSpear))
@@ -388,7 +381,7 @@ struct npc_ice_spear_bunnyAI : public Scripted_NoMovementAI
             me->setDeathState(JUST_DIED);
             me->RemoveCorpse();
         }
-        Timer += diff;
+        Timer.Update(diff);     // FIXME: not sure about this reverse couting
     }
 
 };

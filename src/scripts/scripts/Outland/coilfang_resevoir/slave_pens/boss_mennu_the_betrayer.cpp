@@ -48,11 +48,11 @@ struct boss_mennu_the_betrayerAI : public ScriptedAI
 
     SummonList Summons;
 
-    uint32 HealingWard_Timer;
-    uint32 NovaTotem_Timer;
-    uint32 LightningBolt_Timer;
-    uint32 EarthGrab_Timer;
-    uint32 StoneSkin_Timer;
+    Timer HealingWard_Timer;
+    Timer NovaTotem_Timer;
+    Timer LightningBolt_Timer;
+    Timer EarthGrab_Timer;
+    Timer StoneSkin_Timer;
 
 
     void Reset()
@@ -105,23 +105,21 @@ struct boss_mennu_the_betrayerAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if(HealingWard_Timer <= diff)
+        if (HealingWard_Timer.Expired(diff))
         {
             AddSpellToCast(m_creature, SPELL_HEALING_TOTEM);
             HealingWard_Timer = 30000;
         }
-        else
-            HealingWard_Timer -= diff;
+        
 
-        if(NovaTotem_Timer <= diff)
+        if (NovaTotem_Timer.Expired(diff))
         {
             AddSpellToCast(m_creature, SPELL_CORRUPTED_NOVA_TOTEM);
             NovaTotem_Timer = 45000;
         }
-        else
-            NovaTotem_Timer -= diff;
 
-        if(LightningBolt_Timer <= diff)
+
+        if (LightningBolt_Timer.Expired(diff))
         {
             if (HeroicMode)
                 AddCustomSpellToCast(m_creature->getVictim(), SPELL_LIGHTNING_BOLT,142,0,0);
@@ -129,24 +127,21 @@ struct boss_mennu_the_betrayerAI : public ScriptedAI
             AddCustomSpellToCast(m_creature->getVictim(), SPELL_LIGHTNING_BOLT,175,0,0);
             LightningBolt_Timer = 10000;
         }
-        else
-            LightningBolt_Timer -= diff;
+        
 
-        if(EarthGrab_Timer <= diff)
+        if (EarthGrab_Timer.Expired(diff))
         {
             AddSpellToCast(m_creature, SPELL_EARTHGRAB_TOTEM);
             EarthGrab_Timer = 30000;
         }
-        else
-            EarthGrab_Timer -= diff;
+        
 
-        if(StoneSkin_Timer <= diff)
+        if (StoneSkin_Timer.Expired(diff))
         {
             AddSpellToCast(m_creature, SPELL_STONESKIN_TOTEM);
             StoneSkin_Timer = 60000;
         }
-        else
-            StoneSkin_Timer -= diff;
+        
 
         CastNextSpellIfAnyAndReady(diff);
         DoMeleeAttackIfReady();
@@ -168,7 +163,7 @@ struct npc_corrupted_nova_totemAI : public Scripted_NoMovementAI
 
     ScriptedInstance *pInstance;
     bool HeroicMode;
-    uint32 Life_Timer;
+    Timer Life_Timer;
     uint32 Phase;
 
     void Reset()
@@ -200,15 +195,13 @@ struct npc_corrupted_nova_totemAI : public Scripted_NoMovementAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(Life_Timer <= diff)
+        if (Life_Timer.Expired(diff))
         {
             if(Phase == 1)
                 Phase = 2;
             if(Phase < 2)
                 m_creature->DealDamage(m_creature, m_creature->GetHealth(), DIRECT_DAMAGE);
         }
-        else
-            Life_Timer -= diff;
     }
 
 };
@@ -224,7 +217,7 @@ struct npc_earthgrab_totemAI : public Scripted_NoMovementAI
     {
     }
 
-    uint32 Earthgrab_Timer;
+    Timer Earthgrab_Timer;
 
     void Reset()
     {
@@ -238,13 +231,11 @@ struct npc_earthgrab_totemAI : public Scripted_NoMovementAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(Earthgrab_Timer <= diff)
+        if (Earthgrab_Timer.Expired(diff))
         {
             DoCast(m_creature, SPELL_ENTANGLING_ROOTS);
             Earthgrab_Timer = 18000 + rand()%4000;
         }
-        else
-            Earthgrab_Timer -= diff;
     }
 
 };

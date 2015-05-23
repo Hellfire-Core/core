@@ -151,7 +151,7 @@ struct mob_coilfang_waterelementalAI : public ScriptedAI
     mob_coilfang_waterelementalAI(Creature *c) : ScriptedAI(c) {}
 
     bool HeroicMode;
-    uint32 WaterBoltVolley_Timer;
+    Timer WaterBoltVolley_Timer;
 
     void Reset()
     {
@@ -166,11 +166,11 @@ struct mob_coilfang_waterelementalAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (WaterBoltVolley_Timer <= diff)
+        if (WaterBoltVolley_Timer.Expired(diff))
         {
             DoCast(me, HeroicMode ? H_SPELL_WATER_BOLT_VOLLEY : SPELL_WATER_BOLT_VOLLEY);
             WaterBoltVolley_Timer = 7000+rand()%5000;
-        }else WaterBoltVolley_Timer -= diff;
+        }
 
         DoMeleeAttackIfReady();
     }
