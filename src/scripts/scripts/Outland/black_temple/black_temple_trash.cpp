@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -44,7 +44,7 @@ EndScriptData */
     * Coilskar Wrangler
     * Dragon Turtle
     * Leviathan
-*/
+    */
 
 /****************
 * Aqueous Lord - id 22878
@@ -52,50 +52,49 @@ EndScriptData */
 
 enum AqueousLord
 {
-    SPELL_VILE_SLIME    = 40099,
+    SPELL_VILE_SLIME = 40099,
     SPELL_CRASHING_WAVE = 40100,
 
-    NPC_AQUEOUS_SPAWN   = 22883
+    NPC_AQUEOUS_SPAWN = 22883
 };
 
 struct mob_aqueous_lordAI : public ScriptedAI
 {
     mob_aqueous_lordAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 VileSlime;
-    uint32 SummonTimer;
-    uint32 CrashingWave;
+    Timer VileSlime;
+    Timer SummonTimer;
+    Timer CrashingWave;
 
     void Reset()
     {
         ClearCastQueue();
 
         VileSlime = 5000;
-        SummonTimer = urand(5000,10000);
+        SummonTimer = urand(5000, 10000);
         CrashingWave = 15000;
     }
     void EnterCombat(Unit*) { DoZoneInCombat(80.0f); }
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(VileSlime <= diff)
+        if (VileSlime.Expired(diff))
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true))
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true))
                 AddSpellToCast(target, SPELL_VILE_SLIME);
             VileSlime = urand(20000, 30000);
         }
-        else
-            VileSlime -= diff;
 
-        if(SummonTimer <= diff)
+
+        if (SummonTimer.Expired(diff))
         {
             WorldLocation temp;
-            for(uint8 i=0; i<2;++i)
+            for (uint8 i = 0; i < 2; ++i)
             {
-                if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true))
+                if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true))
                 {
                     target->GetNearPoint(temp.coord_x, temp.coord_y, temp.coord_z, 15.0);
                     Creature* Spawn = me->SummonCreature(NPC_AQUEOUS_SPAWN, temp.coord_x, temp.coord_y, temp.coord_z, 0, TEMPSUMMON_CORPSE_DESPAWN, 0);
@@ -104,16 +103,14 @@ struct mob_aqueous_lordAI : public ScriptedAI
             }
             SummonTimer = urand(20000, 40000);
         }
-        else
-            SummonTimer -= diff;
 
-        if(CrashingWave <= diff)
+
+        if (CrashingWave.Expired(diff))
         {
             AddSpellToCast(me->getVictim(), SPELL_CRASHING_WAVE);
             CrashingWave = 15000;
         }
-        else
-            CrashingWave -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -126,19 +123,19 @@ struct mob_aqueous_lordAI : public ScriptedAI
 
 enum AqeousSpawn
 {
-    SPELL_SLUDGE_NOVA   = 40102,
-    SPELL_MERGE         = 40106,
+    SPELL_SLUDGE_NOVA = 40102,
+    SPELL_MERGE = 40106,
 
-    NPC_AQUEOUS_LORD    = 22878
+    NPC_AQUEOUS_LORD = 22878
 };
 
 struct mob_aqueous_spawnAI : public ScriptedAI
 {
     mob_aqueous_spawnAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 Zcheck;
-    uint32 SludgeNova;
-    uint32 MergeTimer;
+    Timer Zcheck;
+    Timer SludgeNova;
+    Timer MergeTimer;
     bool merging;
 
     void Reset()
@@ -155,40 +152,37 @@ struct mob_aqueous_spawnAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim() && !merging)
+        if (!UpdateVictim() && !merging)
             return;
 
         // to avoid melting in textures on cb
-        if(Zcheck <= diff)
+        if (Zcheck.Expired(diff))
         {
             float x, y, z;
             me->GetPosition(x, y, z);
-            me->GetMap()->CreatureRelocation(me, x, y, z+0.8, me->GetOrientation());
+            me->GetMap()->CreatureRelocation(me, x, y, z + 0.8, me->GetOrientation());
             Zcheck = 1000;
         }
-        else
-            Zcheck -= diff;
 
-        if(SludgeNova <= diff)
+
+        if (SludgeNova.Expired(diff))
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30, true))
-                    AddSpellToCast(target, SPELL_SLUDGE_NOVA);
-            SludgeNova = urand(15000,18000);
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30, true))
+                AddSpellToCast(target, SPELL_SLUDGE_NOVA);
+            SludgeNova = urand(15000, 18000);
         }
-        else
-            SludgeNova -= diff;
 
 
-        if(!merging && MergeTimer <= diff)
+
+        if (!merging && MergeTimer.Expired(diff))
         {
-            if(Unit* pLord = FindCreature(NPC_AQUEOUS_LORD, 80, me))
+            if (Unit* pLord = FindCreature(NPC_AQUEOUS_LORD, 80, me))
             {
                 AddSpellToCast(pLord, SPELL_MERGE, false, true);
                 merging = true;
             }
         }
-        else
-            MergeTimer -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -201,20 +195,20 @@ struct mob_aqueous_spawnAI : public ScriptedAI
 
 enum CoilscarGeneral
 {
-    SAY_FREE_FRIEND          = -1650022,
+    SAY_FREE_FRIEND = -1650022,
 
-    SPELL_BOOMING_VOICE      = 40080,
-    SPELL_FREE_FRIEND        = 40081,
-    SPELL_CLEAVE             = 40504    // guessed
+    SPELL_BOOMING_VOICE = 40080,
+    SPELL_FREE_FRIEND = 40081,
+    SPELL_CLEAVE = 40504    // guessed
 };
 
 struct mob_coilskar_generalAI : public ScriptedAI
 {
     mob_coilskar_generalAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 FreeFriend;
-    uint32 Cleave;
-    uint32 BoomingVoice;
+    Timer FreeFriend;
+    Timer Cleave;
+    Timer BoomingVoice;
 
     void Reset()
     {
@@ -229,25 +223,24 @@ struct mob_coilskar_generalAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(Cleave <= diff)
+        if (Cleave.Expired(diff))
         {
             AddSpellToCast(me->getVictim(), SPELL_CLEAVE);
             Cleave = urand(15000, 25000);
         }
-        else
-            Cleave -= diff;
 
-        if(FreeFriend <= diff )
+
+        if (FreeFriend.Expired(diff))
         {
             std::list<Creature*> pList = FindFriendlyCC(100);
             if (!pList.empty())
             {
                 Unit* target = *(pList.begin());
 
-                if(target && target->HasAuraTypeWithFamilyFlags(SPELL_AURA_MOD_STUN, SPELLFAMILY_ROGUE, 0x80))    //ignore Sap
+                if (target && target->HasAuraTypeWithFamilyFlags(SPELL_AURA_MOD_STUN, SPELLFAMILY_ROGUE, 0x80))    //ignore Sap
                 {
                     pList.remove((Creature*)target);
                     if (!pList.empty())
@@ -256,13 +249,13 @@ struct mob_coilskar_generalAI : public ScriptedAI
                         target = NULL;
                 }
 
-                if(target)
+                if (target)
                 {
                     DoScriptText(SAY_FREE_FRIEND, me);
                     AddSpellToCast(target, SPELL_FREE_FRIEND);
                     pList.remove((Creature*)target);
 
-                    if(!me->HasAura(SPELL_BOOMING_VOICE, 0))
+                    if (!me->HasAura(SPELL_BOOMING_VOICE, 0))
                     {
                         AddSpellToCast(me, SPELL_BOOMING_VOICE);
                         BoomingVoice = urand(30000, 60000);
@@ -271,16 +264,14 @@ struct mob_coilskar_generalAI : public ScriptedAI
             }
             FreeFriend = urand(10000, 15000);
         }
-        else
-            FreeFriend -= diff;
 
-        if(BoomingVoice <= diff)     //make Booming Voice from time to time even if no creature in CC
+
+        if (BoomingVoice.Expired(diff))     //make Booming Voice from time to time even if no creature in CC
         {
             AddSpellToCast(me, SPELL_BOOMING_VOICE);
             BoomingVoice = urand(40000, 60000);
         }
-        else
-            BoomingVoice -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -293,18 +284,18 @@ struct mob_coilskar_generalAI : public ScriptedAI
 
 enum CoilscarHarpooner
 {
-    SPELL_HARPOONERS_MARK        = 40084,
-    SPELL_HOOKED_NET             = 40082,
-    SPELL_SPEAR_THROW            = 40083
+    SPELL_HARPOONERS_MARK = 40084,
+    SPELL_HOOKED_NET = 40082,
+    SPELL_SPEAR_THROW = 40083
 };
 
 struct mob_coilskar_harpoonerAI : public ScriptedAI
 {
     mob_coilskar_harpoonerAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 SpearThrow;
-    uint32 HookedNet;
-    uint32 HarpoonersMark;
+    Timer SpearThrow;
+    Timer HookedNet;
+    Timer HarpoonersMark;
 
     uint64 MarkTargetGUID;
 
@@ -321,9 +312,9 @@ struct mob_coilskar_harpoonerAI : public ScriptedAI
     void EnterCombat(Unit* who)
     {
         DoZoneInCombat(80.0f);
-        if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 80, true))
+        if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 80, true))
         {
-            if(!target->HasAura(40084, 0))
+            if (!target->HasAura(40084, 0))
             {
                 DoCast(target, SPELL_HARPOONERS_MARK, false);
                 MarkTargetGUID = target->GetGUID();     //constant target for Mark per creature, selected at aggro
@@ -333,38 +324,35 @@ struct mob_coilskar_harpoonerAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(HarpoonersMark <= diff)
+        if (HarpoonersMark.Expired(diff))
         {
-            if(Player* target = me->GetPlayer(MarkTargetGUID))
+            if (Player* target = me->GetPlayer(MarkTargetGUID))
             {
-                if(!target->HasAura(40084, 0))
+                if (!target->HasAura(40084, 0))
                     DoCast(target, SPELL_HARPOONERS_MARK, true);
             }
             HarpoonersMark = 15000;     //check Mark each 15s
         }
-        else
-            HarpoonersMark -= diff;
 
-        if(HookedNet <= diff)
+
+        if (HookedNet.Expired(diff))
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30, true))
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30, true))
                 AddSpellToCast(target, SPELL_HOOKED_NET);
             HookedNet = urand(10000, 20000);
         }
-        else
-            HookedNet -= diff;
 
-        if(SpearThrow <= diff)
+
+        if (SpearThrow.Expired(diff))
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 40, true))
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 40, true))
                 AddSpellToCast(target, SPELL_SPEAR_THROW);
             SpearThrow = urand(5000, 15000);
         }
-        else
-            SpearThrow -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -377,9 +365,9 @@ struct mob_coilskar_harpoonerAI : public ScriptedAI
 
 enum CoilscarSeaCaller
 {
-    SPELL_FORKED_LIGHTNING       = 40088,
-    SPELL_HURRICANE              = 40090,
-    SPELL_SUMMON_GEYSER          = 40091
+    SPELL_FORKED_LIGHTNING = 40088,
+    SPELL_HURRICANE = 40090,
+    SPELL_SUMMON_GEYSER = 40091
 };
 
 struct mob_coilskar_seacallerAI : public ScriptedAI
@@ -387,13 +375,13 @@ struct mob_coilskar_seacallerAI : public ScriptedAI
     mob_coilskar_seacallerAI(Creature *c) : ScriptedAI(c)
     {
         SpellEntry* hurricaneSpell = (SpellEntry*)GetSpellStore()->LookupEntry(SPELL_HURRICANE);
-        if(hurricaneSpell)
+        if (hurricaneSpell)
             hurricaneSpell->AttributesEx |= SPELL_ATTR_EX_CHANNELED_1;
     }
 
-    uint32 ForkedLightning;
-    uint32 Hurricane;
-    uint32 SummonGeyser;
+    Timer ForkedLightning;
+    Timer Hurricane;
+    Timer SummonGeyser;
 
     void Reset()
     {
@@ -407,34 +395,31 @@ struct mob_coilskar_seacallerAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(ForkedLightning <= diff)
+        if (ForkedLightning.Expired(diff))
         {
             Unit* target = NULL;
             AddSpellToCast(target, SPELL_FORKED_LIGHTNING);
             ForkedLightning = urand(10000, 20000);
         }
-        else
-            ForkedLightning -= diff;
 
-        if(Hurricane <= diff)
+
+
+        if (Hurricane.Expired(diff))
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 40, true))
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 40, true))
                 AddSpellToCast(target, SPELL_HURRICANE);
             Hurricane = urand(40000, 60000);
         }
-        else
-            Hurricane -= diff;
 
-        if(SummonGeyser <= diff)
+
+        if (SummonGeyser.Expired(diff))
         {
             AddSpellToCast(me, SPELL_SUMMON_GEYSER);
             SummonGeyser = urand(8000, 16000);
         }
-        else
-            SummonGeyser -= diff;
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -447,9 +432,9 @@ struct mob_coilskar_seacallerAI : public ScriptedAI
 
 enum CoilscarGeyser
 {
-    SPELL_GEYSER                 = 40089,
+    SPELL_GEYSER = 40089,
 
-    MOB_COILSCAR_SEACALLER       = 22875
+    MOB_COILSCAR_SEACALLER = 22875
 };
 
 struct mob_coilskar_geyserAI : public Scripted_NoMovementAI
@@ -459,7 +444,7 @@ struct mob_coilskar_geyserAI : public Scripted_NoMovementAI
     void Reset()
     {
         Unit* SeaCaller = FindCreature(MOB_COILSCAR_SEACALLER, 20, me);
-        if(SeaCaller)
+        if (SeaCaller)
         {
             me->SetLevel(SeaCaller->getLevel());
             me->setFaction(SeaCaller->getFaction());
@@ -481,16 +466,16 @@ struct mob_coilskar_geyserAI : public Scripted_NoMovementAI
 
 enum CoilscarSoothsayer
 {
-    SPELL_HOLY_NOVA              = 40096,
-    SPELL_RESTORATION            = 40097
+    SPELL_HOLY_NOVA = 40096,
+    SPELL_RESTORATION = 40097
 };
 
 struct mob_coilskar_soothsayerAI : public ScriptedAI
 {
     mob_coilskar_soothsayerAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 HolyNova;
-    uint32 Restoration;
+    Timer HolyNova;
+    Timer Restoration;
 
     void Reset()
     {
@@ -503,26 +488,24 @@ struct mob_coilskar_soothsayerAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(HolyNova <= diff)
+        if (HolyNova.Expired(diff))
         {
             DoCastAOE(SPELL_HOLY_NOVA);
             HolyNova = urand(9000, 14000);
         }
-        else
-            HolyNova -= diff;
 
-        if(Restoration <= diff)
+
+        if (Restoration.Expired(diff))
         {
             Unit* healTarget = SelectLowestHpFriendly(40.0f);
-            if(healTarget)
+            if (healTarget)
                 AddSpellToCast(healTarget, SPELL_RESTORATION);
             Restoration = urand(15000, 20000);     //check targets each 15-20s
         }
-        else
-            Restoration -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -535,20 +518,20 @@ struct mob_coilskar_soothsayerAI : public ScriptedAI
 
 enum CoilscarWrangler
 {
-    SPELL_CLEAVE_1               = 15284,
-    SPELL_ELECTRIC_SPUR          = 40076,
-    SPELL_LIGHTNING_PROD         = 40066,
+    SPELL_CLEAVE_1 = 15284,
+    SPELL_ELECTRIC_SPUR = 40076,
+    SPELL_LIGHTNING_PROD = 40066,
 
-    MOB_LEVIATHAN                = 22884
+    MOB_LEVIATHAN = 22884
 };
 
 struct mob_coilskar_wranglerAI : public ScriptedAI
 {
     mob_coilskar_wranglerAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 Cleave;
-    uint32 ElectricSpur;
-    uint32 LightningProd;
+    Timer Cleave;
+    Timer ElectricSpur;
+    Timer LightningProd;
 
     void Reset()
     {
@@ -562,33 +545,30 @@ struct mob_coilskar_wranglerAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(Cleave <= diff)
+        if (Cleave.Expired(diff))
         {
             AddSpellToCast(me->getVictim(), SPELL_CLEAVE_1);
             Cleave = urand(10000, 15000);
         }
-        else
-            Cleave -= diff;
 
-        if(ElectricSpur && ElectricSpur <= diff)
+
+        if (ElectricSpur && ElectricSpur.Expired(diff))
         {
             Unit* target = NULL;
             AddSpellToCast(target, SPELL_ELECTRIC_SPUR, false);
             ElectricSpur = 0;
         }
-        else
-            ElectricSpur -= diff;
 
-        if(LightningProd <= diff)
+
+        if (LightningProd.Expired(diff))
         {
             AddSpellToCast(me->getVictim(), SPELL_LIGHTNING_PROD);
             LightningProd = urand(10000, 20000);
         }
-        else
-            LightningProd -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -601,8 +581,8 @@ struct mob_coilskar_wranglerAI : public ScriptedAI
 
 enum DragonTurtle
 {
-    SPELL_SHELL_SHIELD           = 40087,
-    SPELL_WATER_SPIT             = 40086
+    SPELL_SHELL_SHIELD = 40087,
+    SPELL_WATER_SPIT = 40086
 };
 
 struct mob_dragon_turtleAI : public ScriptedAI
@@ -610,8 +590,8 @@ struct mob_dragon_turtleAI : public ScriptedAI
     mob_dragon_turtleAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
     bool CanBeShielded;
-    uint32 ShellShield;
-    uint32 WaterSpit;
+    Timer ShellShield;
+    Timer WaterSpit;
 
     void Reset()
     {
@@ -625,14 +605,14 @@ struct mob_dragon_turtleAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(ShellShield <= diff)
+        if (ShellShield.Expired(diff))
         {
-            if(!CanBeShielded)
+            if (!CanBeShielded)
             {
-                if(me->GetHealth()*100 / me->GetMaxHealth() < 50)
+                if (me->GetHealth() * 100 / me->GetMaxHealth() < 50)
                     CanBeShielded = true;
                 ShellShield = 1000;
             }
@@ -642,22 +622,21 @@ struct mob_dragon_turtleAI : public ScriptedAI
                 ShellShield = urand(20000, 30000);
             }
         }
-        else
-            ShellShield -= diff;
 
-        if(WaterSpit <= diff)
+
+        if (WaterSpit.Expired(diff))
         {
-            if(!CanBeShielded)
+            if (!CanBeShielded)
             {
-                if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 40, true))
+                if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 40, true))
                     AddSpellToCast(target, SPELL_WATER_SPIT);
                 WaterSpit = 4000;
             }
             else
             {
-                if(!urand(0, 2))    //30% on cast to random player
+                if (!urand(0, 2))    //30% on cast to random player
                 {
-                    if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 40, true))
+                    if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 40, true))
                         AddSpellToCast(target, SPELL_WATER_SPIT);
                 }
                 else
@@ -665,8 +644,7 @@ struct mob_dragon_turtleAI : public ScriptedAI
                 WaterSpit = urand(2500, 3500);
             }
         }
-        else
-            WaterSpit -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -679,18 +657,18 @@ struct mob_dragon_turtleAI : public ScriptedAI
 
 enum Leviathan
 {
-    SPELL_DEBILITATING_SPRAY     = 40079,
-    SPELL_POISON_SPIT            = 40078,
-    SPELL_TAIL_SWEEP             = 40077
+    SPELL_DEBILITATING_SPRAY = 40079,
+    SPELL_POISON_SPIT = 40078,
+    SPELL_TAIL_SWEEP = 40077
 };
 
 struct mob_leviathanAI : public ScriptedAI
 {
     mob_leviathanAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 DebilitatingSpray;
-    uint32 PoisonSpit;
-    uint32 TailSweep;
+    Timer DebilitatingSpray;
+    Timer PoisonSpit;
+    Timer TailSweep;
 
     void Reset()
     {
@@ -704,34 +682,31 @@ struct mob_leviathanAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(DebilitatingSpray <= diff)
+        if (DebilitatingSpray.Expired(diff))
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 45, true))
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 45, true))
                 AddSpellToCast(target, SPELL_DEBILITATING_SPRAY);
             DebilitatingSpray = urand(10000, 20000);
         }
-        else
-            DebilitatingSpray -= diff;
 
-        if(PoisonSpit <= diff)
+
+        if (PoisonSpit.Expired(diff))
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30, true))
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30, true))
                 AddSpellToCast(target, SPELL_POISON_SPIT);
             PoisonSpit = urand(12000, 18000);
         }
-        else
-            PoisonSpit -= diff;
 
-        if(TailSweep <= diff)
+
+        if (TailSweep.Expired(diff))
         {
             AddSpellToCast(SPELL_TAIL_SWEEP, CAST_NULL);
             TailSweep = urand(5000, 8000);
         }
-        else
-            TailSweep -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -805,7 +780,7 @@ CreatureAI* GetAI_mob_leviathan(Creature *_Creature)
     * Dragonmaw Wind Reaver
     * Dragonmaw Wyrmcaller
     * Illidari Fearbringer
-*/
+    */
 
 #define BONECHEWER_ID                       23028
 
@@ -842,7 +817,7 @@ struct mob_bonechewer_taskmasterAI : public ScriptedAI
 {
     mob_bonechewer_taskmasterAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 disgruntledTimer;
+    Timer disgruntledTimer;
     bool disgruntledCast;
 
     void Reset()
@@ -868,18 +843,16 @@ struct mob_bonechewer_taskmasterAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
         if (!disgruntledCast)
         {
-            if (disgruntledTimer <= diff || me->GetHealth()*100/me->GetMaxHealth() < 75)
+            if (disgruntledTimer.Expired(diff) || me->GetHealth() * 100 / me->GetMaxHealth() < 75)
             {
                 me->CastSpell(me, SPELL_BONECHEWER_DISGRUNTLED, false);
                 disgruntledCast = true;
             }
-            else
-                disgruntledTimer -= diff;
         }
 
         DoMeleeAttackIfReady();
@@ -894,7 +867,7 @@ struct mob_bonechewer_workerAI : public ScriptedAI
 {
     mob_bonechewer_workerAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 throwTimer;
+    Timer throwTimer;
 
     void Reset()
     {
@@ -922,17 +895,17 @@ struct mob_bonechewer_workerAI : public ScriptedAI
 
         for (std::list<Creature*>::iterator itr = tmp.begin(); itr != tmp.end(); ++itr)
         {
-            if((*itr) && (*itr)->isAlive())
+            if ((*itr) && (*itr)->isAlive())
                 ((mob_bonechewer_taskmasterAI*)(*itr)->AI())->WorkerDied();
         }
     }
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if (throwTimer <= diff)
+        if (throwTimer.Expired(diff))
         {
             Unit * victim = SelectUnit(SELECT_TARGET_RANDOM, 0, 35, true);
 
@@ -941,8 +914,6 @@ struct mob_bonechewer_workerAI : public ScriptedAI
 
             throwTimer = 15000 + urand(0, 5000);
         }
-        else
-            throwTimer -= diff;
 
         DoMeleeAttackIfReady();
     }
@@ -956,8 +927,8 @@ struct mob_dragonmaw_skystalkerAI : public ScriptedAI
 {
     mob_dragonmaw_skystalkerAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 immolationArrowTimer;
-    uint32 distCheckTimer;
+    Timer immolationArrowTimer;
+    Timer distCheckTimer;
 
     void Reset()
     {
@@ -978,7 +949,7 @@ struct mob_dragonmaw_skystalkerAI : public ScriptedAI
     {
         Map::PlayerList const &PlayerList = ((InstanceMap*)me->GetMap())->GetPlayers();
         std::list<Unit*> rangedList;
-        for(Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
+        for (Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
         {
             Player* i_pl = i->getSource();
             if (i_pl && i_pl->isAlive() && !i_pl->isGameMaster() && !me->IsWithinDistInMap(i_pl, 15) && me->IsWithinDistInMap(i_pl, 40))
@@ -1001,7 +972,7 @@ struct mob_dragonmaw_skystalkerAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
         Unit * victim = me->getVictim();
@@ -1009,7 +980,7 @@ struct mob_dragonmaw_skystalkerAI : public ScriptedAI
         if (!victim)
             return;
 
-        if (distCheckTimer <= diff)
+        if (distCheckTimer.Expired(diff))
         {
             if (!me->IsWithinDistInMap(victim, 37))
             {
@@ -1043,16 +1014,12 @@ struct mob_dragonmaw_skystalkerAI : public ScriptedAI
                 }
             }
         }
-        else
-            distCheckTimer -= diff;
 
-        if (immolationArrowTimer <= diff)
+        if (immolationArrowTimer.Expired(diff))
         {
             ForceSpellCast(SelectUnit(SELECT_TARGET_RANDOM, 0, 60, true), SPELL_SKYSTALKER_IMMOLATION);
             immolationArrowTimer = 10000 + urand(0, 5000);
         }
-        else
-            immolationArrowTimer -= diff;
 
         CastNextSpellIfAnyAndReady(diff);
     }
@@ -1066,9 +1033,9 @@ struct mob_dragonmaw_windreaverAI : public ScriptedAI
 {
     mob_dragonmaw_windreaverAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 doomBoltTimer;
-    uint32 freezeTimer;
-    uint32 distCheckTimer;
+    Timer doomBoltTimer;
+    Timer freezeTimer;
+    Timer distCheckTimer;
 
     void Reset()
     {
@@ -1092,7 +1059,7 @@ struct mob_dragonmaw_windreaverAI : public ScriptedAI
     {
         Map::PlayerList const &PlayerList = ((InstanceMap*)me->GetMap())->GetPlayers();
         std::list<Unit*> rangedList;
-        for(Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
+        for (Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
         {
             Player* i_pl = i->getSource();
             if (i_pl && i_pl->isAlive() && !i_pl->isGameMaster() && !me->IsWithinDistInMap(i_pl, 15) && me->IsWithinDistInMap(i_pl, 40))
@@ -1102,7 +1069,7 @@ struct mob_dragonmaw_windreaverAI : public ScriptedAI
         if (rangedList.empty())
             return NULL;
 
-        int n = urand(0, rangedList.size() - 1) ;
+        int n = urand(0, rangedList.size() - 1);
 
         for (int i = 0; i < n; i++)
             rangedList.pop_front();
@@ -1115,7 +1082,7 @@ struct mob_dragonmaw_windreaverAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
         Unit * victim = me->getVictim();
@@ -1123,7 +1090,7 @@ struct mob_dragonmaw_windreaverAI : public ScriptedAI
         if (!victim)
             return;
 
-        if (distCheckTimer <= diff)
+        if (distCheckTimer.Expired(diff))
         {
             if (!me->IsWithinDistInMap(victim, 37))
             {
@@ -1156,18 +1123,16 @@ struct mob_dragonmaw_windreaverAI : public ScriptedAI
             }
             distCheckTimer = 3000;
         }
-        else
-            distCheckTimer -= diff;
 
-        if (doomBoltTimer <= diff)
+
+        if (doomBoltTimer.Expired(diff))
         {
             AddSpellToCast(SelectUnit(SELECT_TARGET_RANDOM, 0, 40, true), SPELL_WINDREAVER_DOOM_BOLT);
             doomBoltTimer = 5000 + urand(0, 5000);
         }
-        else
-            doomBoltTimer -= diff;
 
-        if (freezeTimer <= diff)
+
+        if (freezeTimer.Expired(diff))
         {
             Unit* tmpTarget = GetClosestPlayer(me, 6.0f);
             if (tmpTarget)
@@ -1185,8 +1150,7 @@ struct mob_dragonmaw_windreaverAI : public ScriptedAI
 
             freezeTimer = 10000 + urand(0, 5000);
         }
-        else
-            freezeTimer -= diff;
+
 
         CastNextSpellIfAnyAndReady(diff);
     }
@@ -1200,9 +1164,9 @@ struct mob_dragonmaw_wyrmcallerAI : public ScriptedAI
 {
     mob_dragonmaw_wyrmcallerAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 cleaveTimer;
-    uint32 fixateTimer;
-    uint32 jabTimer;
+    Timer cleaveTimer;
+    Timer fixateTimer;
+    Timer jabTimer;
 
     void Reset()
     {
@@ -1219,7 +1183,7 @@ struct mob_dragonmaw_wyrmcallerAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
         Unit * victim = me->getVictim();
@@ -1227,47 +1191,43 @@ struct mob_dragonmaw_wyrmcallerAI : public ScriptedAI
         if (!victim)
             return;
 
-        if (cleaveTimer <= diff)
+        if (cleaveTimer.Expired(diff))
         {
             me->CastSpell(victim, SPELL_WYRMCALLER_CLEAVE, false);
             cleaveTimer = 5000 + urand(0, 10000);
         }
-        else
-            cleaveTimer -= diff;
 
-        if (jabTimer <= diff)
+        if (jabTimer.Expired(diff))
         {
             me->CastSpell(victim, SPELL_WYRMCALLER_JAB, false);
             jabTimer = 5000 + urand(0, 5000);
         }
-        else
-            jabTimer -= diff;
 
-        if (fixateTimer <= diff)
+
+        if (fixateTimer.Expired(diff))
         {
             victim = SelectUnit(SELECT_TARGET_RANDOM, 0, 60, true);
             std::list<Creature*> FriendlyList = FindAllFriendlyInGrid(100);
             std::vector<Creature*> Friendly;
 
-            for(std::list<Creature*>::iterator i = FriendlyList.begin(); i != FriendlyList.end(); ++i)
-                if((*i)->isInCombat() && (*i)->IsAIEnabled)
+            for (std::list<Creature*>::iterator i = FriendlyList.begin(); i != FriendlyList.end(); ++i)
+                if ((*i)->isInCombat() && (*i)->IsAIEnabled)
                     Friendly.push_back(*i);
 
-            Unit* target = *(Friendly.begin() + rand()%Friendly.size());
+            Unit* target = *(Friendly.begin() + rand() % Friendly.size());
 
             if (victim && target)
             {
                 target->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_MOD_TAUNT, false);
-                target->ApplySpellImmune(0, IMMUNITY_EFFECT,SPELL_EFFECT_ATTACK_ME, false);
+                target->ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_ATTACK_ME, false);
                 victim->CastSpell(target, SPELL_WYRMCALLER_FIXATE_TRIGGER, true);
-                if(target->GetTypeId() == TYPEID_UNIT)
+                if (target->GetTypeId() == TYPEID_UNIT)
                     target->MonsterTextEmote(EMOTE_FIXATE, victim->GetGUID(), false);
             }
 
             fixateTimer = 15000 + urand(0, 10000);
         }
-        else
-            fixateTimer -= diff;
+
 
         DoMeleeAttackIfReady();
     }
@@ -1281,10 +1241,10 @@ struct mob_illidari_fearbringerAI : public ScriptedAI
 {
     mob_illidari_fearbringerAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 flamesTimer;
-    uint32 rainTimer;
-    uint32 stompTimer;
-    uint32 checkTimer;
+    Timer flamesTimer;
+    Timer rainTimer;
+    Timer stompTimer;
+    Timer checkTimer;
 
     void Reset()
     {
@@ -1300,40 +1260,36 @@ struct mob_illidari_fearbringerAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(checkTimer <= diff)
+        if (checkTimer.Expired(diff))
         {
             me->SetSpeed(MOVE_RUN, 2.5);
             checkTimer = 2000;
         }
-        else
-            checkTimer -= diff;
-        if (flamesTimer <= diff)
+
+        if (flamesTimer.Expired(diff))
         {
             AddSpellToCast(me->getVictim(), SPELL_FEARBRINGER_ILLIDARI_FLAMES);
             flamesTimer = 10000 + urand(0, 10000);
         }
-        else
-            flamesTimer -= diff;
 
-        if (rainTimer <= diff)
+
+        if (rainTimer.Expired(diff))
         {
             AddSpellToCast(SelectUnit(SELECT_TARGET_RANDOM, 0, 50, true), SPELL_FEARBRINGER_RAIN_OF_CHAOS);
             rainTimer = 20000 + urand(0, 10000);
         }
-        else
-            rainTimer -= diff;
 
-        if (stompTimer <= diff)
+
+        if (stompTimer.Expired(diff))
         {
             AddSpellToCast(me, SPELL_FEARBRINGER_WAR_STOMP);
 
             stompTimer = 15000 + urand(0, 10000);
         }
-        else
-            stompTimer -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -1346,32 +1302,32 @@ struct mob_illidari_fearbringerAI : public ScriptedAI
 
 CreatureAI* GetAI_mob_bonechewer_taskmaster(Creature *_Creature)
 {
-    return new mob_bonechewer_taskmasterAI (_Creature);
+    return new mob_bonechewer_taskmasterAI(_Creature);
 }
 
 CreatureAI* GetAI_mob_bonechewer_worker(Creature *_Creature)
 {
-    return new mob_bonechewer_workerAI (_Creature);
+    return new mob_bonechewer_workerAI(_Creature);
 }
 
 CreatureAI* GetAI_mob_dragonmaw_skystalker(Creature *_Creature)
 {
-    return new mob_dragonmaw_skystalkerAI (_Creature);
+    return new mob_dragonmaw_skystalkerAI(_Creature);
 }
 
 CreatureAI* GetAI_mob_dragonmaw_windreaver(Creature *_Creature)
 {
-    return new mob_dragonmaw_windreaverAI (_Creature);
+    return new mob_dragonmaw_windreaverAI(_Creature);
 }
 
 CreatureAI* GetAI_mob_dragonmaw_wyrmcaller(Creature *_Creature)
 {
-    return new mob_dragonmaw_wyrmcallerAI (_Creature);
+    return new mob_dragonmaw_wyrmcallerAI(_Creature);
 }
 
 CreatureAI* GetAI_mob_illidari_fearbringer(Creature *_Creature)
 {
-    return new mob_illidari_fearbringerAI (_Creature);
+    return new mob_illidari_fearbringerAI(_Creature);
 }
 
 /* ============================
@@ -1387,7 +1343,7 @@ CreatureAI* GetAI_mob_illidari_fearbringer(Creature *_Creature)
     * Ashtongue Rogue
     * Ashtongue Sorcerer
     * Ashtongue Spiritbinder
-*/
+    */
 
 /* ============================
 *
@@ -1408,7 +1364,7 @@ CreatureAI* GetAI_mob_illidari_fearbringer(Creature *_Creature)
     * Illidari Heartseeker
     * Illidari Nightlord
     * Storm Fury
-*/
+    */
 
 /****************
 * Ashtongue Battlelord - id 22844
@@ -1422,10 +1378,10 @@ struct mob_ashtongue_battlelordAI : public ScriptedAI
 {
     mob_ashtongue_battlelordAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 Cleave;
-    uint32 ConcussionBlow;
-    uint32 ConcussionThrow;
-    uint32 Frenzy;
+    Timer Cleave;
+    Timer ConcussionBlow;
+    Timer ConcussionThrow;
+    Timer Frenzy;
 
     void Reset()
     {
@@ -1440,44 +1396,40 @@ struct mob_ashtongue_battlelordAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(Cleave <= diff)
+        if (Cleave.Expired(diff))
         {
             AddSpellToCast(me->getVictim(), SPELL_CLEAVE_1);
             Cleave = 10000;
         }
-        else
-            Cleave -= diff;
 
-        if(ConcussionBlow <= diff)
+
+        if (ConcussionBlow.Expired(diff))
         {
             AddSpellToCast(me->getVictim(), SPELL_CONCUSSION_BLOW);
             ConcussionBlow = 25000;
         }
-        else
-            ConcussionBlow -= diff;
 
-        if(ConcussionThrow <= diff)
+
+        if (ConcussionThrow.Expired(diff))
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_TOPAGGRO, 1, 100, true))
+            if (Unit* target = SelectUnit(SELECT_TARGET_TOPAGGRO, 1, 100, true))
             {
                 AddSpellToCast(target, SPELL_CONCUSSION_THROW);
             }
             ConcussionThrow = 22000;
         }
-        else
-            ConcussionThrow -= diff;
 
-        if(Frenzy <= diff)
+
+        if (Frenzy.Expired(diff))
         {
-            if(!me->HasAura(SPELL_FRENZY, 0))
+            if (!me->HasAura(SPELL_FRENZY, 0))
                 AddSpellToCast(me->getVictim(), SPELL_FRENZY);
             Frenzy = 30000;
         }
-        else
-            Frenzy -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -1486,7 +1438,7 @@ struct mob_ashtongue_battlelordAI : public ScriptedAI
 
 CreatureAI* GetAI_mob_ashtongue_battlelord(Creature *_Creature)
 {
-    return new mob_ashtongue_battlelordAI (_Creature);
+    return new mob_ashtongue_battlelordAI(_Creature);
 }
 
 /****************
@@ -1502,8 +1454,8 @@ struct mob_ashtongue_feral_spiritAI : public ScriptedAI
 {
     mob_ashtongue_feral_spiritAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(65.0f); }
 
-    uint32 ChargeRage;
-    uint32 SpiritBond;
+    Timer ChargeRage;
+    Timer SpiritBond;
 
     void Reset()
     {
@@ -1516,26 +1468,24 @@ struct mob_ashtongue_feral_spiritAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(ChargeRage <= diff)
+        if (ChargeRage.Expired(diff))
         {
             AddSpellToCast(me, SPELL_CHARGE_RAGE);
             ChargeRage = urand(20000, 30000);
         }
-        else
-            ChargeRage -= diff;
 
-        if(SpiritBond <= diff)
+
+        if (SpiritBond.Expired(diff))
         {
             AddSpellToCast(me, SPELL_SPIRIT_BOND);
-            if(Creature* Primalist = GetClosestCreatureWithEntry(me, NPC_ASHTONGUE_PRIMALIST, 40.0f))
+            if (Creature* Primalist = GetClosestCreatureWithEntry(me, NPC_ASHTONGUE_PRIMALIST, 40.0f))
                 Primalist->CastSpell(Primalist, SPELL_SPIRIT_BOND, true);
             SpiritBond = 30000;
         }
-        else
-            SpiritBond -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -1544,7 +1494,7 @@ struct mob_ashtongue_feral_spiritAI : public ScriptedAI
 
 CreatureAI* GetAI_mob_ashtongue_feral_spirit(Creature *_Creature)
 {
-    return new mob_ashtongue_feral_spiritAI (_Creature);
+    return new mob_ashtongue_feral_spiritAI(_Creature);
 }
 
 /****************
@@ -1571,7 +1521,7 @@ struct totem_ashtongue_mysticAI : public Scripted_NoMovementAI
 {
     totem_ashtongue_mysticAI(Creature *c) : Scripted_NoMovementAI(c) {}
 
-    uint32 SpellTimer;
+    Timer SpellTimer;
     uint64 SummonerGUID;
 
     void Reset()
@@ -1579,18 +1529,18 @@ struct totem_ashtongue_mysticAI : public Scripted_NoMovementAI
         ClearCastQueue();
 
         DoZoneInCombat(80.0f);
-        switch(me->GetEntry())
+        switch (me->GetEntry())
         {
             case NPC_CYCLONE_TOTEM:
-                me->SetMaxHealth(urand(4100,4200));
+                me->SetMaxHealth(urand(4100, 4200));
                 SpellTimer = urand(2000, 11000);
                 break;
             case NPC_ASHTONGUE_SEARING_TOTEM:
-                me->SetMaxHealth(urand(4800,4900));
+                me->SetMaxHealth(urand(4800, 4900));
                 SpellTimer = 1000;
                 break;
             case NPC_SUMMONED_WINDFURY_TOTEM:
-                me->SetMaxHealth(urand(1800,1900));
+                me->SetMaxHealth(urand(1800, 1900));
                 me->CastSpell((Unit*)NULL, SPELL_WINDFURY_WEAPON, true);
                 break;
         }
@@ -1598,23 +1548,23 @@ struct totem_ashtongue_mysticAI : public Scripted_NoMovementAI
     }
     void IsSummonedBy(Unit* summoner)
     {
-        if(summoner)
+        if (summoner)
             SummonerGUID = summoner->GetGUID();
     }
     void JustDied(Unit* killer)
     {
-        if(me->GetEntry() == NPC_SUMMONED_WINDFURY_TOTEM)
+        if (me->GetEntry() == NPC_SUMMONED_WINDFURY_TOTEM)
         {
             std::list<Creature*> pList;
             Hellground::AllFriendlyCreaturesInGrid u_check(me);
             Hellground::ObjectListSearcher<Creature, Hellground::AllFriendlyCreaturesInGrid> searcher(pList, u_check);
             Cell::VisitAllObjects(me, searcher, 60.0);  // range than of aura, in case mobs moved too far from totem when killed
 
-            if(!pList.empty())
+            if (!pList.empty())
             {
-                for(std::list<Creature*>::iterator iter = pList.begin(); iter != pList.end(); ++iter)
+                for (std::list<Creature*>::iterator iter = pList.begin(); iter != pList.end(); ++iter)
                 {
-                    if((*iter)->HasAura(SPELL_WINDFURY_WEAPON, 0))
+                    if ((*iter)->HasAura(SPELL_WINDFURY_WEAPON, 0))
                     {
                         (*iter)->RemoveAurasDueToSpell(SPELL_WINDFURY_WEAPON);
                         (*iter)->RemoveAurasDueToSpell(AURA_WINDFURY);
@@ -1625,23 +1575,22 @@ struct totem_ashtongue_mysticAI : public Scripted_NoMovementAI
     }
     void UpdateAI(const uint32 diff)
     {
-            if(SpellTimer <= diff)
+        if (SpellTimer.Expired(diff))
+        {
+            switch (me->GetEntry())
             {
-                switch(me->GetEntry())
-                {
-                    case NPC_CYCLONE_TOTEM:
-                        if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 40, true))
-                            AddSpellToCast(target, SPELL_CYCLON);
-                        SpellTimer = 11000;
-                        break;
-                    case NPC_ASHTONGUE_SEARING_TOTEM:
-                        AddSpellToCast(me, SPELL_ATTACK);
-                        SpellTimer = 3000;
-                        break;
-                }
+                case NPC_CYCLONE_TOTEM:
+                    if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 40, true))
+                        AddSpellToCast(target, SPELL_CYCLON);
+                    SpellTimer = 11000;
+                    break;
+                case NPC_ASHTONGUE_SEARING_TOTEM:
+                    AddSpellToCast(me, SPELL_ATTACK);
+                    SpellTimer = 3000;
+                    break;
             }
-            else
-                SpellTimer -= diff;
+        }
+
 
         CastNextSpellIfAnyAndReady();
     }
@@ -1649,20 +1598,20 @@ struct totem_ashtongue_mysticAI : public Scripted_NoMovementAI
 
 CreatureAI* GetAI_totem_ashtongue_mystic(Creature *_Creature)
 {
-    return new totem_ashtongue_mysticAI (_Creature);
+    return new totem_ashtongue_mysticAI(_Creature);
 }
 
 struct mob_ashtongue_mysticAI : public ScriptedAI
 {
     mob_ashtongue_mysticAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 FrostShock;
-    uint32 FlameShock;
-    uint32 ChainHeal;
-    uint32 SearingTotem;
-    uint32 WindfuryTotem;
-    uint32 CycloneTotem;
-    uint32 CheckTimer;
+    Timer FrostShock;
+    Timer FlameShock;
+    Timer ChainHeal;
+    Timer SearingTotem;
+    Timer WindfuryTotem;
+    Timer CycloneTotem;
+    Timer CheckTimer;
 
     void Reset()
     {
@@ -1683,35 +1632,33 @@ struct mob_ashtongue_mysticAI : public ScriptedAI
     }
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(FrostShock <= diff)
+        if (FrostShock.Expired(diff))
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 20, true))
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 20, true))
                 AddSpellToCast(target, SPELL_FROST_SHOCK);
             FrostShock = 22000;
         }
-        else
-            FrostShock -= diff;
 
-        if(FlameShock <= diff)
+
+        if (FlameShock.Expired(diff))
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 20, true))
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 20, true))
                 AddSpellToCast(target, SPELL_FLAME_SHOCK);
             FlameShock = 30000;
         }
-        else
-            FlameShock -= diff;
 
-        if(ChainHeal <= diff)
+
+        if (ChainHeal.Expired(diff))
         {
-            if(me->GetHealth()*100 / me->GetMaxHealth() < 70)
+            if (me->GetHealth() * 100 / me->GetMaxHealth() < 70)
             {
                 ForceSpellCast(me, SPELL_CHAIN_HEAL);
                 ChainHeal = 20000;
             }
-            else if(Unit* healTarget = SelectLowestHpFriendly(40, 15000))
+            else if (Unit* healTarget = SelectLowestHpFriendly(40, 15000))
             {
                 ForceSpellCast(healTarget, SPELL_CHAIN_HEAL);
                 ChainHeal = 20000;
@@ -1719,32 +1666,28 @@ struct mob_ashtongue_mysticAI : public ScriptedAI
             else
                 ChainHeal = 3000;
         }
-        else
-            ChainHeal -= diff;
 
-        if(SearingTotem <= diff)
+
+        if (SearingTotem.Expired(diff))
         {
             AddSpellToCast(me, SPELL_SEARING_TOTEM);
             SearingTotem = urand(8000, 15000);
         }
-        else
-            SearingTotem -= diff;
 
-        if(WindfuryTotem <= diff)
+
+        if (WindfuryTotem.Expired(diff))
         {
             AddSpellToCast(me, SPELL_SUMMON_WINDFURY_TOTEM);
             WindfuryTotem = urand(8000, 15000);
         }
-        else
-            WindfuryTotem -= diff;
 
-        if(CycloneTotem <= diff)
+
+        if (CycloneTotem.Expired(diff))
         {
             AddSpellToCast(me, SPELL_CYCLONE_TOTEM);
             CycloneTotem = urand(8000, 15000);
         }
-        else
-            CycloneTotem -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -1753,7 +1696,7 @@ struct mob_ashtongue_mysticAI : public ScriptedAI
 
 CreatureAI* GetAI_mob_ashtongue_mystic(Creature *_Creature)
 {
-    return new mob_ashtongue_mysticAI (_Creature);
+    return new mob_ashtongue_mysticAI(_Creature);
 }
 
 /****************
@@ -1769,10 +1712,10 @@ struct mob_ashtongue_primalistAI : public ScriptedAI
 {
     mob_ashtongue_primalistAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 MultiShot;
-    uint32 Shoot;
-    uint32 WyvernSting;
-    uint32 SweepingWingClip;
+    Timer MultiShot;
+    Timer Shoot;
+    Timer WyvernSting;
+    Timer SweepingWingClip;
 
     void Reset()
     {
@@ -1792,13 +1735,13 @@ struct mob_ashtongue_primalistAI : public ScriptedAI
     void EnterCombat(Unit*) { DoZoneInCombat(80.0f); }
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(MultiShot <= diff)
+        if (MultiShot.Expired(diff))
         {
             Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100.0f, true);
-            if(target && !me->IsWithinDist(target, 5.0f))
+            if (target && !me->IsWithinDist(target, 5.0f))
             {
                 ForceSpellCast(target, SPELL_MULTI_SHOT);
                 MultiShot = 40000;
@@ -1806,23 +1749,21 @@ struct mob_ashtongue_primalistAI : public ScriptedAI
             else
                 MultiShot = 3000;
         }
-        else
-            MultiShot -= diff;
 
-        if(Shoot <= diff)
+
+        if (Shoot.Expired(diff))
         {
             Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30.0f, true);
-            if(target && !me->IsWithinDist(target, 5.0f))
+            if (target && !me->IsWithinDist(target, 5.0f))
                 ForceSpellCast(target, SPELL_AP_SHOOT);
             Shoot = 1500;
         }
-        else
-            Shoot -= diff;
 
-        if(WyvernSting <= diff)
+
+        if (WyvernSting.Expired(diff))
         {
             Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 1, 35.0f, true);
-            if(target && !me->IsWithinDist(target, 5.0f))
+            if (target && !me->IsWithinDist(target, 5.0f))
             {
                 ForceSpellCast(target, SPELL_WYVERN_STING);
                 WyvernSting = 15000;
@@ -1830,25 +1771,23 @@ struct mob_ashtongue_primalistAI : public ScriptedAI
             else
                 WyvernSting = 2000;
         }
-        else
-            WyvernSting -= diff;
 
-        if(SweepingWingClip <= diff)
+
+        if (SweepingWingClip.Expired(diff))
         {
-            if(me->IsWithinDistInMap(me->getVictim(), 5.0))
+            if (me->IsWithinDistInMap(me->getVictim(), 5.0))
             {
                 AddSpellToCast(me->getVictim(), SPELL_SWEEPING_WING_CLIP);
 
                 float x, y, z;
-                me->GetNearPoint(x,y,z,0.0f, urand(10,15), frand(0.0f, 2*M_PI));
-                me->GetMotionMaster()->MovePoint(1, x,y,z);
+                me->GetNearPoint(x, y, z, 0.0f, urand(10, 15), frand(0.0f, 2 * M_PI));
+                me->GetMotionMaster()->MovePoint(1, x, y, z);
                 SweepingWingClip = 37000;
             }
             else
                 SweepingWingClip = 2500;
         }
-        else
-            SweepingWingClip -= diff;
+
 
         CheckShooterNoMovementInRange(diff, 30.0);
         CastNextSpellIfAnyAndReady();
@@ -1858,7 +1797,7 @@ struct mob_ashtongue_primalistAI : public ScriptedAI
 
 CreatureAI* GetAI_mob_ashtongue_primalist(Creature *_Creature)
 {
-    return new mob_ashtongue_primalistAI (_Creature);
+    return new mob_ashtongue_primalistAI(_Creature);
 }
 
 /****************
@@ -1875,9 +1814,9 @@ struct mob_ashtongue_stalkerAI : public ScriptedAI
 {
     mob_ashtongue_stalkerAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 Blind;
-    uint32 InstantPoison;
-    uint32 MindNumbingPoison;
+    Timer Blind;
+    Timer InstantPoison;
+    Timer MindNumbingPoison;
 
     void Reset()
     {
@@ -1893,25 +1832,24 @@ struct mob_ashtongue_stalkerAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(Blind <= diff)
+        if (Blind.Expired(diff))
         {
             AddSpellToCast(me->getVictim(), SPELL_BLIND);
             Blind = 20000;
         }
-        else
-            Blind -= diff;
 
-        if(InstantPoison <= diff)
+
+        if (InstantPoison.Expired(diff))
         {
-            if(Unit *pTarget = SelectUnit(SELECT_TARGET_TOPAGGRO, 0, 60.0f, true, POWER_RAGE))
+            if (Unit *pTarget = SelectUnit(SELECT_TARGET_TOPAGGRO, 0, 60.0f, true, POWER_RAGE))
             {
                 AddSpellToCast(pTarget, SPELL_INSTANT_POISON);
                 InstantPoison = 10000;
             }
-            else if(Unit *pTarget = SelectUnit(SELECT_TARGET_TOPAGGRO, 0, 60.0f, true, POWER_ENERGY))
+            else if (Unit *pTarget = SelectUnit(SELECT_TARGET_TOPAGGRO, 0, 60.0f, true, POWER_ENERGY))
             {
                 AddSpellToCast(pTarget, SPELL_INSTANT_POISON);
                 InstantPoison = 10000;
@@ -1919,19 +1857,17 @@ struct mob_ashtongue_stalkerAI : public ScriptedAI
             else
                 InstantPoison = 5000;
         }
-        else
-            InstantPoison -= diff;
 
-        if(MindNumbingPoison <= diff)
+
+        if (MindNumbingPoison.Expired(diff))
         {
-            if(Unit *pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0, 60.0f, true, POWER_MANA))
+            if (Unit *pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0, 60.0f, true, POWER_MANA))
             {
                 AddSpellToCast(pTarget, SPELL_MIND_NUMBING_POISON);
                 MindNumbingPoison = 10000;
             }
         }
-        else
-            MindNumbingPoison -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -1940,7 +1876,7 @@ struct mob_ashtongue_stalkerAI : public ScriptedAI
 
 CreatureAI* GetAI_mob_ashtongue_stalker(Creature *_Creature)
 {
-    return new mob_ashtongue_stalkerAI (_Creature);
+    return new mob_ashtongue_stalkerAI(_Creature);
 }
 
 /****************
@@ -1955,9 +1891,9 @@ struct mob_ashtongue_stormcallerAI : public ScriptedAI
 {
     mob_ashtongue_stormcallerAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 ChainLightning;
-    uint32 LightningBolt;
-    uint32 LightningShield;
+    Timer ChainLightning;
+    Timer LightningBolt;
+    Timer LightningShield;
 
     void Reset()
     {
@@ -1975,35 +1911,32 @@ struct mob_ashtongue_stormcallerAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(ChainLightning <= diff)
+        if (ChainLightning.Expired(diff))
         {
             ForceSpellCast(me->getVictim(), SPELL_CHAIN_LIGHTNING);
             ChainLightning = 10000;
         }
-        else
-            ChainLightning -= diff;
 
-        if(LightningBolt <= diff)
+
+        if (LightningBolt.Expired(diff))
         {
-            if(Unit *pTarget = SelectUnit(SELECT_TARGET_TOPAGGRO, 0, 60.0f, true, 0, 8.0f))
+            if (Unit *pTarget = SelectUnit(SELECT_TARGET_TOPAGGRO, 0, 60.0f, true, 0, 8.0f))
             {
                 DoCast(pTarget, SPELL_LIGHTNING_BOLT);
                 LightningBolt = 5000;
             }
         }
-        else
-            LightningBolt -= diff;
 
-        if(LightningShield <= diff)
+
+        if (LightningShield.Expired(diff))
         {
             DoCast(me, SPELL_LIGHTNING_SHIELD);
             LightningShield = 22000;
         }
-        else
-            LightningShield -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -2012,7 +1945,7 @@ struct mob_ashtongue_stormcallerAI : public ScriptedAI
 
 CreatureAI* GetAI_mob_ashtongue_stormcaller(Creature *_Creature)
 {
-    return new mob_ashtongue_stormcallerAI (_Creature);
+    return new mob_ashtongue_stormcallerAI(_Creature);
 }
 
 /****************
@@ -2028,10 +1961,10 @@ struct mob_illidari_boneslicerAI : public ScriptedAI
 {
     mob_illidari_boneslicerAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 CloakOfShadows;
-    uint32 Gouge;
-    uint32 Shadowstep;
-    uint32 WoundPoison;
+    Timer CloakOfShadows;
+    Timer Gouge;
+    Timer Shadowstep;
+    Timer WoundPoison;
 
     void Reset()
     {
@@ -2050,45 +1983,41 @@ struct mob_illidari_boneslicerAI : public ScriptedAI
 
     void DamageMade(Unit* target, uint32 & damage, bool direct_damage)
     {
-        if(damage && direct_damage)
+        if (damage && direct_damage)
             ForceSpellCast(target, SPELL_WOUND_POISON);
     }
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(CloakOfShadows <= diff)
+        if (CloakOfShadows.Expired(diff))
         {
             AddSpellToCast(me, SPELL_CLOAK_OF_SHADOWS);
             CloakOfShadows = 15000;
         }
-        else
-            CloakOfShadows -= diff;
 
-        if(Gouge <= diff)
+
+        if (Gouge.Expired(diff))
         {
             AddSpellToCast(me->getVictim(), SPELL_GOUGE);
             Gouge = 10000;
         }
-        else
-            Gouge -= diff;
 
-        if(Shadowstep <= diff)
+
+        if (Shadowstep.Expired(diff))
         {
             AddSpellToCast(me->getVictim(), SPELL_SHADOWSTEP);
             Shadowstep = 15000;
         }
-        else
-            Shadowstep -= diff;
 
-        if(WoundPoison <= diff)
+
+        if (WoundPoison.Expired(diff))
         {
             AddSpellToCast(me->getVictim(), SPELL_WOUND_POISON);
             WoundPoison = 3000;
         }
-        else
-            WoundPoison -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -2097,7 +2026,7 @@ struct mob_illidari_boneslicerAI : public ScriptedAI
 
 CreatureAI* GetAI_mob_illidari_boneslicer(Creature *_Creature)
 {
-    return new mob_illidari_boneslicerAI (_Creature);
+    return new mob_illidari_boneslicerAI(_Creature);
 }
 
 /****************
@@ -2110,8 +2039,8 @@ struct mob_illidari_centurionAI : public ScriptedAI
 {
     mob_illidari_centurionAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 Cleave;
-    uint32 SonicStrike;
+    Timer Cleave;
+    Timer SonicStrike;
 
     void Reset()
     {
@@ -2124,24 +2053,22 @@ struct mob_illidari_centurionAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(Cleave <= diff)
+        if (Cleave.Expired(diff))
         {
             AddSpellToCast(me->getVictim(), SPELL_CLEAVE_1);
             Cleave = 10000;
         }
-        else
-            Cleave -= diff;
 
-        if(SonicStrike <= diff)  //in cone in front of a caster, should "in front" be changed randomly?
+
+        if (SonicStrike.Expired(diff))  //in cone in front of a caster, should "in front" be changed randomly?
         {
             AddSpellToCast(me, SPELL_SONIC_STRIKE);
             SonicStrike = 15000;
         }
-        else
-            SonicStrike -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -2150,7 +2077,7 @@ struct mob_illidari_centurionAI : public ScriptedAI
 
 CreatureAI* GetAI_mob_illidari_centurion(Creature *_Creature)
 {
-    return new mob_illidari_centurionAI (_Creature);
+    return new mob_illidari_centurionAI(_Creature);
 }
 
 /****************
@@ -2166,10 +2093,10 @@ struct mob_illidari_defilerAI : public ScriptedAI
 {
     mob_illidari_defilerAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 FelImmolate;
-    uint32 CurseOfAgony;
-    uint32 Banish;
-    uint32 RainOfChaos;
+    Timer FelImmolate;
+    Timer CurseOfAgony;
+    Timer Banish;
+    Timer RainOfChaos;
 
     void Reset()
     {
@@ -2184,42 +2111,38 @@ struct mob_illidari_defilerAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(FelImmolate <= diff)
+        if (FelImmolate.Expired(diff))
         {
             AddSpellToCast(me->getVictim(), SPELL_FEL_IMMOLATE);
             FelImmolate = 25000;
         }
-        else
-            FelImmolate -= diff;
 
-        if(CurseOfAgony <= diff)
+
+        if (CurseOfAgony.Expired(diff))
         {
             AddSpellToCast(me, SPELL_CURSE_OF_AGONY);
             CurseOfAgony = 35000;
         }
-        else
-            CurseOfAgony -= diff;
 
-        if(Banish <= diff)
+
+        if (Banish.Expired(diff))
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30, true))
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30, true))
                 AddSpellToCast(target, SPELL_BANISH);
             Banish = 30000;
         }
-        else
-            Banish -= diff;
 
-        if(RainOfChaos <= diff)
+
+        if (RainOfChaos.Expired(diff))
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30, true))
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30, true))
                 AddSpellToCast(target, SPELL_RAIN_OF_CHAOS);
             RainOfChaos = 15000;
         }
-        else
-            RainOfChaos -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -2228,7 +2151,7 @@ struct mob_illidari_defilerAI : public ScriptedAI
 
 CreatureAI* GetAI_mob_illidari_defiler(Creature *_Creature)
 {
-    return new mob_illidari_defilerAI (_Creature);
+    return new mob_illidari_defilerAI(_Creature);
 }
 
 /****************
@@ -2244,10 +2167,10 @@ struct mob_illidari_heartseekerAI : public ScriptedAI
 {
     mob_illidari_heartseekerAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 RapidShot;
-    uint32 Shoot;
-    uint32 SkeletonShot;
-    uint32 Curse;
+    Timer RapidShot;
+    Timer Shoot;
+    Timer SkeletonShot;
+    Timer Curse;
 
     void Reset()
     {
@@ -2271,37 +2194,35 @@ struct mob_illidari_heartseekerAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(Shoot <= diff)
+        if (Shoot.Expired(diff))
         {
             //check if victim is in melee range, if so, start normal chasing
             if (me->IsWithinDistInMap(me->getVictim(), 8.0) && me->GetMotionMaster()->GetCurrentMovementGeneratorType() == IDLE_MOTION_TYPE)
                 DoStartMovement(me->getVictim());
 
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30.0, true, 0, 5.0))
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30.0, true, 0, 5.0))
             {
                 AddSpellToCast(target, SPELL_IH_SHOOT);
                 Shoot = 1800;
             }
         }
-        else
-            Shoot -= diff;
 
-        if(RapidShot <= diff)
+
+        if (RapidShot.Expired(diff))
         {
             AddSpellToCast(me, SPELL_RAPID_SHOT);
             RapidShot = 20000;
         }
-        else
-            RapidShot -= diff;
 
-        if(SkeletonShot <= diff)
+
+        if (SkeletonShot.Expired(diff))
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 40, true))
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 40, true))
             {
-                if(target->IsWithinDistInMap(me, 8.0))
+                if (target->IsWithinDistInMap(me, 8.0))
                     SkeletonShot = 1000;
                 else
                 {
@@ -2310,17 +2231,15 @@ struct mob_illidari_heartseekerAI : public ScriptedAI
                 }
             }
         }
-        else
-            SkeletonShot -= diff;
 
-        if(Curse <= diff)
+
+        if (Curse.Expired(diff))
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 60, true))    // workaround...
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 60, true))    // workaround...
                 target->CastSpell(target, SPELL_CURSE_OF_THE_BLEAKHEART, true, 0, 0, me->GetGUID());
             Curse = 20000;
         }
-        else
-            Curse -= diff;
+
 
         CheckShooterNoMovementInRange(diff, 25.0);
         CastNextSpellIfAnyAndReady();
@@ -2330,7 +2249,7 @@ struct mob_illidari_heartseekerAI : public ScriptedAI
 
 CreatureAI* GetAI_mob_illidari_heartseeker(Creature *_Creature)
 {
-    return new mob_illidari_heartseekerAI (_Creature);
+    return new mob_illidari_heartseekerAI(_Creature);
 }
 
 /****************
@@ -2346,10 +2265,10 @@ struct mob_illidari_nightlordAI : public ScriptedAI
 {
     mob_illidari_nightlordAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 CurseOfMending;
-    uint32 Fear;
-    uint32 ShadowInferno;
-    uint32 Shadowfiends;
+    Timer CurseOfMending;
+    Timer Fear;
+    Timer ShadowInferno;
+    Timer Shadowfiends;
 
     void Reset()
     {
@@ -2364,47 +2283,43 @@ struct mob_illidari_nightlordAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(CurseOfMending <= diff)
+        if (CurseOfMending.Expired(diff))
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 10, true))
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 10, true))
                 ForceSpellCast(target, SPELL_CURSE_OF_MENDING);
             CurseOfMending = 20000;
         }
-        else
-            CurseOfMending -= diff;
 
-        if(Fear <= diff)
+
+        if (Fear.Expired(diff))
         {
             ForceSpellCast(me, SPELL_FEAR);
             Fear = urand(10000, 15000);
         }
-        else
-            Fear -= diff;
 
-        if(ShadowInferno <= diff)
+
+        if (ShadowInferno.Expired(diff))
         {
-            if(Fear < 8200)
+            if (Fear < 8200)
                 Fear += 8000;
-            if(CurseOfMending < 8200)
+            if (CurseOfMending < 8200)
                 CurseOfMending += 8000;
-            if(Shadowfiends < 8200)
+            if (Shadowfiends < 8200)
                 Shadowfiends += 8000;
             ForceSpellCast(me, SPELL_SHADOW_INFERNO);
             ShadowInferno = 20000;
         }
-        else
-            ShadowInferno -= diff;
 
-        if(Shadowfiends <= diff)
+
+        if (Shadowfiends.Expired(diff))
         {
             ForceSpellCast(me, SPELL_SUMMON_SHADOWFIENDS);
             Shadowfiends = 25000;
         }
-        else
-            Shadowfiends -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -2413,7 +2328,7 @@ struct mob_illidari_nightlordAI : public ScriptedAI
 
 CreatureAI* GetAI_mob_illidari_nightlord(Creature *_Creature)
 {
-    return new mob_illidari_nightlordAI (_Creature);
+    return new mob_illidari_nightlordAI(_Creature);
 }
 
 /****************
@@ -2426,7 +2341,7 @@ struct mob_storm_furyAI : public ScriptedAI
 {
     mob_storm_furyAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 StormBlink;
+    Timer StormBlink;
 
     void Reset()
     {
@@ -2438,16 +2353,15 @@ struct mob_storm_furyAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(StormBlink <= diff)
+        if (StormBlink.Expired(diff))
         {
             AddSpellToCast(me, SPELL_STORM_BLINK);
             StormBlink = 25000;
         }
-        else
-            StormBlink -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -2456,7 +2370,7 @@ struct mob_storm_furyAI : public ScriptedAI
 
 CreatureAI* GetAI_mob_storm_fury(Creature *_Creature)
 {
-    return new mob_storm_furyAI (_Creature);
+    return new mob_storm_furyAI(_Creature);
 }
 
 /* ============================
@@ -2477,7 +2391,7 @@ CreatureAI* GetAI_mob_storm_fury(Creature *_Creature)
     * Shadowmoon Soldier
     * Shadowmoon Weapon Master
     * Wrathbone Flayer
-*/
+    */
 
 /****************
 * Hand of Gorefiend - id 23172
@@ -2489,7 +2403,7 @@ struct mob_hand_of_gorefiendAI : public ScriptedAI
 {
     mob_hand_of_gorefiendAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 Enrage;
+    Timer Enrage;
 
     void Reset()
     {
@@ -2499,16 +2413,15 @@ struct mob_hand_of_gorefiendAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(Enrage <= diff)
+        if (Enrage.Expired(diff))
         {
             DoCast(me, SPELL_ENRAGE);
             Enrage = 30000;
         }
-        else
-            Enrage -= diff;
+
 
         DoMeleeAttackIfReady();
     }
@@ -2516,7 +2429,7 @@ struct mob_hand_of_gorefiendAI : public ScriptedAI
 
 CreatureAI* GetAI_mob_hand_of_gorefiend(Creature *_Creature)
 {
-    return new mob_hand_of_gorefiendAI (_Creature);
+    return new mob_hand_of_gorefiendAI(_Creature);
 }
 
 /****************
@@ -2530,12 +2443,12 @@ CreatureAI* GetAI_mob_hand_of_gorefiend(Creature *_Creature)
 #define SPELL_GREEN_BEAM        38909
 #define MOB_SKELETON            22953
 
-struct mob_shadowmoon_blood_mageAI: public ScriptedAI
+struct mob_shadowmoon_blood_mageAI : public ScriptedAI
 {
     mob_shadowmoon_blood_mageAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 BloodSiphon;
-    uint32 Bloodbolt;
+    Timer BloodSiphon;
+    Timer Bloodbolt;
 
     void Reset()
     {
@@ -2552,13 +2465,13 @@ struct mob_shadowmoon_blood_mageAI: public ScriptedAI
 
     void SpellHitTarget(Unit* target, const SpellEntry*)    //workaround
     {
-        if(target->HasAura(41229, 1))
+        if (target->HasAura(41229, 1))
             target->RemoveAura(41229, 1);
     }
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
         {
             if (!me->GetUInt64Value(UNIT_FIELD_CHANNEL_OBJECT))
             {
@@ -2571,22 +2484,20 @@ struct mob_shadowmoon_blood_mageAI: public ScriptedAI
             return;
         }
 
-        if(BloodSiphon <= diff)
+        if (BloodSiphon.Expired(diff))
         {
             AddSpellToCast(me, SPELL_BLOOD_SIPHON);
             BloodSiphon = 20000;
         }
-        else
-            BloodSiphon -= diff;
 
-        if(Bloodbolt <= diff)
+
+        if (Bloodbolt.Expired(diff))
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_TOPAGGRO, 0, 40.0, true))
+            if (Unit* target = SelectUnit(SELECT_TARGET_TOPAGGRO, 0, 40.0, true))
                 ForceSpellCast(target, SPELL_BLOODBOLT);
             Bloodbolt = 15000;
         }
-        else
-            Bloodbolt -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -2608,12 +2519,12 @@ CreatureAI* GetAI_mob_shadowmoon_blood_mage(Creature *_Creature)
 
 #define MOB_WHIRLING_BLADE                  23369
 
-struct mob_shadowmoon_championAI: public ScriptedAI
+struct mob_shadowmoon_championAI : public ScriptedAI
 {
     mob_shadowmoon_championAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 ChaoticLight;
-    uint32 WhirlingBlade;
+    Timer ChaoticLight;
+    Timer WhirlingBlade;
 
     void Reset()
     {
@@ -2627,25 +2538,23 @@ struct mob_shadowmoon_championAI: public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(ChaoticLight <= diff)
+        if (ChaoticLight.Expired(diff))
         {
             AddSpellToCast(me, SPELL_CHAOTIC_LIGHT);
             ChaoticLight = urand(5000, 10000);
         }
-        else
-            ChaoticLight -= diff;
 
-        if(WhirlingBlade <= diff)
+
+        if (WhirlingBlade.Expired(diff))
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 60.0, true))
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 60.0, true))
                 ForceSpellCast(target, SPELL_WHIRLING_BLADE);
             WhirlingBlade = 30000;
         }
-        else
-            WhirlingBlade -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -2657,12 +2566,12 @@ CreatureAI* GetAI_mob_shadowmoon_champion(Creature *_Creature)
     return new mob_shadowmoon_championAI(_Creature);
 }
 
-struct mob_whirling_bladeAI: public Scripted_NoMovementAI
+struct mob_whirling_bladeAI : public Scripted_NoMovementAI
 {
     mob_whirling_bladeAI(Creature *c) : Scripted_NoMovementAI(c) { }
 
-    uint32 Whirl;
-    uint32 DieTimer;
+    Timer Whirl;
+    Timer DieTimer;
 
     void Reset()
     {
@@ -2675,22 +2584,19 @@ struct mob_whirling_bladeAI: public Scripted_NoMovementAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(Whirl <= diff)
+        if (Whirl.Expired(diff))
         {
             AddSpellToCast(me, SPELL_WHIRLWIND);
             Whirl = 6000;
         }
-        else
-            Whirl -= diff;
 
-        if(DieTimer <= diff)
+        if (DieTimer.Expired(diff))
         {
             me->Kill(me, false);
             me->RemoveCorpse();
             DieTimer = 2000;
         }
-        else
-            DieTimer -= diff;
+
 
         CastNextSpellIfAnyAndReady();
     }
@@ -2710,14 +2616,14 @@ CreatureAI* GetAI_mob_whirling_blade(Creature *_Creature)
 #define SPELL_RAISE_DEAD                41071
 #define SPELL_SHADOWBOLT                41069
 
-struct mob_shadowmoon_deathshaperAI: public ScriptedAI
+struct mob_shadowmoon_deathshaperAI : public ScriptedAI
 {
     mob_shadowmoon_deathshaperAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 Shadowbolt;
-    uint32 DeathCoil;
-    uint32 DemonArmor;
-    uint32 RaiseDeadCheck;
+    Timer Shadowbolt;
+    Timer DeathCoil;
+    Timer DemonArmor;
+    Timer RaiseDeadCheck;
 
     std::list<uint64> UsedCorpsesGUID;
 
@@ -2747,26 +2653,26 @@ struct mob_shadowmoon_deathshaperAI: public ScriptedAI
         CorpseGUID.clear();
 
         // select all dead units GUIDs
-        if(!DeadList.empty())
+        if (!DeadList.empty())
         {
-            for(std::list<Unit*>::iterator i = DeadList.begin(); i != DeadList.end(); ++i)
+            for (std::list<Unit*>::iterator i = DeadList.begin(); i != DeadList.end(); ++i)
             {
                 CorpseGUID.push_back((*i)->GetGUID());  // this may be moved to searcher later on
             }
         }
         // remove GUIDs of once used corpses
-        if(!CorpseGUID.empty())
+        if (!CorpseGUID.empty())
         {
-            for(std::list<uint64>::iterator i = CorpseGUID.begin(); i != CorpseGUID.end(); ++i)
+            for (std::list<uint64>::iterator i = CorpseGUID.begin(); i != CorpseGUID.end(); ++i)
             {
-                if(!UsedCorpsesGUID.empty())
+                if (!UsedCorpsesGUID.empty())
                 {
-                    for(std::list<uint64>::iterator iter = UsedCorpsesGUID.begin(); iter != UsedCorpsesGUID.end(); ++iter)
+                    for (std::list<uint64>::iterator iter = UsedCorpsesGUID.begin(); iter != UsedCorpsesGUID.end(); ++iter)
                     {
-                        if((*iter) == (*i))
+                        if ((*iter) == (*i))
                         {
                             CorpseGUID.remove((*iter));
-                            if(CorpseGUID.size())
+                            if (CorpseGUID.size())
                             {
                                 i = CorpseGUID.begin();
                                 iter = UsedCorpsesGUID.begin();
@@ -2780,10 +2686,10 @@ struct mob_shadowmoon_deathshaperAI: public ScriptedAI
             }
         }
         // now get random GUID
-        if(!CorpseGUID.empty())
+        if (!CorpseGUID.empty())
         {
             std::list<uint64>::iterator i = CorpseGUID.begin();
-            advance(i, rand()%CorpseGUID.size());
+            advance(i, rand() % CorpseGUID.size());
             return (*i);
         }
         return 0;
@@ -2791,7 +2697,7 @@ struct mob_shadowmoon_deathshaperAI: public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
         {
             if (!me->GetUInt64Value(UNIT_FIELD_CHANNEL_OBJECT))
             {
@@ -2804,29 +2710,27 @@ struct mob_shadowmoon_deathshaperAI: public ScriptedAI
             return;
         }
 
-        if(Shadowbolt <= diff)
+        if (Shadowbolt.Expired(diff))
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_TOPAGGRO, 0, 40.0, true))
+            if (Unit* target = SelectUnit(SELECT_TARGET_TOPAGGRO, 0, 40.0, true))
                 AddSpellToCast(target, SPELL_SHADOWBOLT);
             Shadowbolt = 5000;
         }
-        else
-            Shadowbolt -= diff;
 
-        if(DeathCoil <= diff)
+
+        if (DeathCoil.Expired(diff))
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30.0, true))
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30.0, true))
                 AddSpellToCast(target, SPELL_DEATH_COIL);
             DeathCoil = 20000;
         }
-        else
-            DeathCoil -= diff;
 
-        if(RaiseDeadCheck <= diff)
+
+        if (RaiseDeadCheck.Expired(diff))
         {
-            if(uint64 targetGUID = SelectCorpseGUID())
+            if (uint64 targetGUID = SelectCorpseGUID())
             {
-                if(Unit* target = Unit::GetUnit(*me, targetGUID))
+                if (Unit* target = Unit::GetUnit(*me, targetGUID))
                 {
                     AddSpellToCast(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), SPELL_RAISE_DEAD, false);
                     UsedCorpsesGUID.push_back(targetGUID);
@@ -2834,16 +2738,14 @@ struct mob_shadowmoon_deathshaperAI: public ScriptedAI
             }
             RaiseDeadCheck = 10000;
         }
-        else
-            RaiseDeadCheck -= diff;
 
-        if(DemonArmor <= diff)
+
+        if (DemonArmor.Expired(diff))
         {
             ForceSpellCast(me, SPELL_DEMON_ARMOR);
             DemonArmor = 1800000;
         }
-        else
-            DemonArmor -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -2868,7 +2770,7 @@ struct mob_shadowmoon_gruntAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
         DoMeleeAttackIfReady();
     }
@@ -2876,7 +2778,7 @@ struct mob_shadowmoon_gruntAI : public ScriptedAI
 
 CreatureAI* GetAI_mob_shadowmoon_grunt(Creature *_Creature)
 {
-    return new mob_shadowmoon_gruntAI (_Creature);
+    return new mob_shadowmoon_gruntAI(_Creature);
 }
 
 /****************
@@ -2893,24 +2795,24 @@ CreatureAI* GetAI_mob_shadowmoon_grunt(Creature *_Creature)
 
 #define MOB_SHADOWMOON_RIDING_HOUND         23083
 
-struct mob_shadowmoon_houndmasterAI: public ScriptedAI
+struct mob_shadowmoon_houndmasterAI : public ScriptedAI
 {
     mob_shadowmoon_houndmasterAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 Shoot;
-    uint32 FreezingTrap;
-    uint32 SilencingShot;
-    uint32 Volley;
-    uint32 WingClip;
-    uint32 Flare;
-    uint32 RangeCheck;
+    Timer Shoot;
+    Timer FreezingTrap;
+    Timer SilencingShot;
+    Timer Volley;
+    Timer WingClip;
+    Timer Flare;
+    Timer RangeCheck;
 
     void Reset()
     {
         ClearCastQueue();
 
-        if(Creature* Hound = GetClosestCreatureWithEntry(me, MOB_SHADOWMOON_RIDING_HOUND, 80))
-            Hound->DisappearAndDie(); 
+        if (Creature* Hound = GetClosestCreatureWithEntry(me, MOB_SHADOWMOON_RIDING_HOUND, 80))
+            Hound->DisappearAndDie();
         me->Mount(14334);
         me->UpdateVisibilityAndView();
         me->UpdateObjectVisibility();          // works nice for players; though still visual bug when: .die -> .respawn (need to get out of vision to see him mounted)
@@ -2931,36 +2833,34 @@ struct mob_shadowmoon_houndmasterAI: public ScriptedAI
         DoZoneInCombat(80.0f);
         DoStartMovement(who);
     }
-    
+
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if (RangeCheck <= diff)
+        if (RangeCheck.Expired(diff))
         {
             Unit* victim = me->getVictim();
             if (me->IsInRange(victim, 5.0f, 30.0f))
-                DoStartNoMovement(victim,CHECK_TYPE_SHOOTER);     
+                DoStartNoMovement(victim, CHECK_TYPE_SHOOTER);
             else
                 if (!me->IsInRange(victim, 5.0f, 30.0f))
                     DoStartMovement(victim);
             RangeCheck = 2000;
         }
-        else
-            RangeCheck -= diff;
 
 
-        if (FreezingTrap <= diff)
+
+        if (FreezingTrap.Expired(diff))
         {
             AddSpellToCast(SPELL_FREEZING_TRAP, CAST_NULL);
             FreezingTrap = 15000;
         }
-        else
-            FreezingTrap -= diff;
 
-        if (Volley <= diff)
+
+        if (Volley.Expired(diff))
         {
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 40.0f, true, 0.0f, 10.0f))
             {
@@ -2970,22 +2870,20 @@ struct mob_shadowmoon_houndmasterAI: public ScriptedAI
             else
                 Volley = 3000;
         }
-        else
-            Volley -= diff;
 
-        if(Shoot <= diff)
+
+        if (Shoot.Expired(diff))
         {
             if (Unit* target = SelectUnit(SELECT_TARGET_TOPAGGRO, 0, 100, true))
                 AddSpellToCast(target, SPELL_SHOOT_1);
 
             Shoot = 2000;
         }
-        else
-            Shoot -= diff;
 
-        if(SilencingShot <= diff)
+
+        if (SilencingShot.Expired(diff))
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 1, 35.0f, true, 0 , 8.0f))
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 1, 35.0f, true, 0, 8.0f))
             {
                 ForceSpellCast(target, SPELL_SILENCING_SHOT);
                 SilencingShot = 15000;
@@ -2993,12 +2891,11 @@ struct mob_shadowmoon_houndmasterAI: public ScriptedAI
             else
                 SilencingShot = 4000;
         }
-        else
-            SilencingShot -= diff;
 
-        if(WingClip <= diff)
+
+        if (WingClip.Expired(diff))
         {
-            if(me->IsWithinDistInMap(me->getVictim(), 5.0))
+            if (me->IsWithinDistInMap(me->getVictim(), 5.0))
             {
                 AddSpellToCast(me->getVictim(), SPELL_WING_CLIP);
                 WingClip = 20000;
@@ -3006,17 +2903,15 @@ struct mob_shadowmoon_houndmasterAI: public ScriptedAI
             else
                 WingClip = 2500;
         }
-        else
-            WingClip -= diff;
 
-        if(Flare <= diff)
+
+        if (Flare.Expired(diff))
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100.0f, true))
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100.0f, true))
                 AddSpellToCast(target, SPELL_FLARE);
             Flare = 20000;
         }
-        else
-            Flare -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -3039,8 +2934,8 @@ struct mob_shadowmoon_reaverAI : public ScriptedAI
 {
     mob_shadowmoon_reaverAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 SpellAbsorption;
-    uint32 ShadowResonance;
+    Timer SpellAbsorption;
+    Timer ShadowResonance;
 
     void Reset()
     {
@@ -3053,25 +2948,23 @@ struct mob_shadowmoon_reaverAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(SpellAbsorption <= diff)
+        if (SpellAbsorption.Expired(diff))
         {
             AddSpellToCast(me, SPELL_SPELL_ABSORPTION);
             SpellAbsorption = 40000;
         }
-        else
-            SpellAbsorption -= diff;
 
-        if(ShadowResonance <= diff)
+
+        if (ShadowResonance.Expired(diff))
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 10.0f, true))
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 10.0f, true))
                 AddSpellToCast(target, SPELL_SHADOW_RESONANCE);
             ShadowResonance = 20000;
         }
-        else
-            ShadowResonance -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -3080,7 +2973,7 @@ struct mob_shadowmoon_reaverAI : public ScriptedAI
 
 CreatureAI* GetAI_mob_shadowmoon_reaver(Creature *_Creature)
 {
-    return new mob_shadowmoon_reaverAI (_Creature);
+    return new mob_shadowmoon_reaverAI(_Creature);
 }
 
 /****************
@@ -3092,12 +2985,12 @@ CreatureAI* GetAI_mob_shadowmoon_reaver(Creature *_Creature)
 #define SPELL_ENRAGE_1                      8599
 #define MOB_SHADOWMOON_HOUNDMASTER          23018
 
-struct mob_shadowmoon_riding_houndAI: public ScriptedAI
+struct mob_shadowmoon_riding_houndAI : public ScriptedAI
 {
     mob_shadowmoon_riding_houndAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 Charge;
-    uint32 Enrage;
+    Timer Charge;
+    Timer Enrage;
 
     void Reset()
     {
@@ -3106,21 +2999,21 @@ struct mob_shadowmoon_riding_houndAI: public ScriptedAI
         Charge = urand(5000, 20000);
         Enrage = 15000;
     }
-    
+
     void JustRespawned()
     {
-        if (Unit* hunter = GetClosestCreatureWithEntry(me, MOB_SHADOWMOON_HOUNDMASTER,30.0f))
+        if (Unit* hunter = GetClosestCreatureWithEntry(me, MOB_SHADOWMOON_HOUNDMASTER, 30.0f))
             AttackStart(hunter->getVictim());
     }
 
     void DamageMade(Unit* target, uint32 &damage, bool direct_damage)
     {
-        if(damage)
+        if (damage)
         {
-            if(target->HasAura(SPELL_CARNIVOROUS_BITE, 0))   //do not stack again when 5 stacks and still more than 6 seconds of DoT to deal spell damage
+            if (target->HasAura(SPELL_CARNIVOROUS_BITE, 0))   //do not stack again when 5 stacks and still more than 6 seconds of DoT to deal spell damage
             {
                 Aura* Aur = target->GetAura(SPELL_CARNIVOROUS_BITE, 0);
-                if(Aur && Aur->GetStackAmount() == 5 && Aur->GetAuraDuration() > 6000)
+                if (Aur && Aur->GetStackAmount() == 5 && Aur->GetAuraDuration() > 6000)
                 {
                     Aur->UpdateAuraDuration();
                     return;
@@ -3133,25 +3026,23 @@ struct mob_shadowmoon_riding_houndAI: public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(Charge <= diff)
+        if (Charge.Expired(diff))
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 40.0f, true))
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 40.0f, true))
                 AddSpellToCast(target, SPELL_CHARGE);
             Charge = 20000;
         }
-        else
-            Charge -= diff;
 
-        if(Enrage <= diff)
+
+        if (Enrage.Expired(diff))
         {
             AddSpellToCast(me, SPELL_ENRAGE_1);
             Enrage = 30000;
         }
-        else
-            Enrage -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -3169,11 +3060,11 @@ CreatureAI* GetAI_mob_shadowmoon_riding_hound(Creature *_Creature)
 
 #define SPELL_STRIKE                43298
 
-struct mob_shadowmoon_soldierAI: public ScriptedAI
+struct mob_shadowmoon_soldierAI : public ScriptedAI
 {
     mob_shadowmoon_soldierAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 Strike;
+    Timer Strike;
 
     void Reset()
     {
@@ -3191,7 +3082,7 @@ struct mob_shadowmoon_soldierAI: public ScriptedAI
         {
             case 0:
                 me->HandleEmoteCommand(EMOTE_ONESHOT_SALUTE);
-            break;
+                break;
         }
     }
 
@@ -3199,16 +3090,15 @@ struct mob_shadowmoon_soldierAI: public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(Strike <= diff)
+        if (Strike.Expired(diff))
         {
             AddSpellToCast(me->getVictim(), SPELL_STRIKE);
             Strike = urand(3000, 8000);
         }
-        else
-            Strike -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -3224,16 +3114,16 @@ CreatureAI* GetAI_mob_shadowmoon_soldier(Creature *_Creature)
 * Shadowmoon Weapon Master - id 23049
 *****************/
 
-static float fieldPositions [8][2] =
+static float fieldPositions[8][2] =
 {
-    {448.26, 195.74},
-    {448.66, 191.27},
-    {449.34, 187.12},
-    {449.50, 182.92},
-    {442.48, 195.18},
-    {442.90, 191.00},
-    {443.34, 186.51},
-    {443.84, 182.04}
+    { 448.26, 195.74 },
+    { 448.66, 191.27 },
+    { 449.34, 187.12 },
+    { 449.50, 182.92 },
+    { 442.48, 195.18 },
+    { 442.90, 191.00 },
+    { 443.34, 186.51 },
+    { 443.84, 182.04 }
 };
 
 #define DISTANCE_TO_MOVE   40.00f
@@ -3266,7 +3156,7 @@ enum Stances
     BATTLE
 };
 
-struct mob_shadowmoon_weapon_masterAI: public ScriptedAI
+struct mob_shadowmoon_weapon_masterAI : public ScriptedAI
 {
     mob_shadowmoon_weapon_masterAI(Creature *c) : ScriptedAI(c)
     {
@@ -3279,12 +3169,12 @@ struct mob_shadowmoon_weapon_masterAI: public ScriptedAI
     ScriptedInstance *pInstance;
     std::vector<uint64> soldiersList;
 
-    uint32 m_nextMove;
+    Timer m_nextMove;
     int32  m_nextId;
     uint8  Stance;
 
-    uint32 SpecialTimer;
-    uint32 KnockAway;
+    Timer SpecialTimer;
+    Timer KnockAway;
 
     void Reset()
     {
@@ -3298,14 +3188,14 @@ struct mob_shadowmoon_weapon_masterAI: public ScriptedAI
         if (!soldiersList.empty())
         {
             m_nextMove = 2000;
-            m_nextId   = 1;
+            m_nextId = 1;
         }
     }
 
     void SetWeaponModelAndDamage(uint8 Stance)
     {
         const CreatureInfo *cinfo = me->GetCreatureInfo();
-        switch(Stance)
+        switch (Stance)
         {
             case DEFENSIVE:
                 //main hand: 1h axe, off-hand: shield
@@ -3326,8 +3216,8 @@ struct mob_shadowmoon_weapon_masterAI: public ScriptedAI
                 me->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_DISPLAY, AXE_MODEL);
                 me->SetUInt32Value(UNIT_VIRTUAL_ITEM_INFO, AXE_INFO);
                 // off-hand: 1h axe
-                me->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_DISPLAY+1, AXE_MODEL);
-                me->SetUInt32Value(UNIT_VIRTUAL_ITEM_INFO+2, AXE_INFO);
+                me->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_DISPLAY + 1, AXE_MODEL);
+                me->SetUInt32Value(UNIT_VIRTUAL_ITEM_INFO + 2, AXE_INFO);
 
                 me->SetBaseWeaponDamage(BASE_ATTACK, MINDAMAGE, cinfo->mindmg);
                 me->SetBaseWeaponDamage(BASE_ATTACK, MAXDAMAGE, cinfo->maxdmg);
@@ -3336,7 +3226,7 @@ struct mob_shadowmoon_weapon_masterAI: public ScriptedAI
                 me->SetBaseWeaponDamage(OFF_ATTACK, MAXDAMAGE, cinfo->maxdmg);
                 me->SetFloatValue(UNIT_FIELD_MINOFFHANDDAMAGE, cinfo->mindmg);
                 me->SetFloatValue(UNIT_FIELD_MAXOFFHANDDAMAGE, cinfo->maxdmg);
-                me->SetAttackTime(OFF_ATTACK, (me->GetAttackTime(BASE_ATTACK)*150)/100);
+                me->SetAttackTime(OFF_ATTACK, (me->GetAttackTime(BASE_ATTACK) * 150) / 100);
                 break;
             default:
                 return;
@@ -3345,14 +3235,14 @@ struct mob_shadowmoon_weapon_masterAI: public ScriptedAI
 
     void DamageTaken(Unit* who, uint32& damage)
     {
-        if(damage)
+        if (damage)
         {
-            if(me->GetHealth()*100 / me->GetMaxHealth() < 80 && Stance == DEFENSIVE)
+            if (me->GetHealth() * 100 / me->GetMaxHealth() < 80 && Stance == DEFENSIVE)
             {
                 me->RemoveAurasDueToSpell(SPELL_DEFENSIVE_STANCE);
                 me->RemoveAurasDueToSpell(SPELL_DEFENSIVE_AURA);
                 DoYell(BATTLE_STANCE_YELL, 0, me);
-                if(me->HasAura(SPELL_SWM_SHIELD_WALL, 0))
+                if (me->HasAura(SPELL_SWM_SHIELD_WALL, 0))
                     me->RemoveAurasDueToSpell(SPELL_SWM_SHIELD_WALL);
                 ForceSpellCast(me, SPELL_BERSERKER_STANCE, INTERRUPT_AND_CAST_INSTANTLY);
                 ForceSpellCast(me, SPELL_BERSERKER_AURA, INTERRUPT_AND_CAST_INSTANTLY);
@@ -3360,11 +3250,11 @@ struct mob_shadowmoon_weapon_masterAI: public ScriptedAI
                 SetWeaponModelAndDamage(Stance);
                 SpecialTimer = 0;
             }
-            if(me->GetHealth()*100 / me->GetMaxHealth() < 35 && Stance == BERSERKER)
+            if (me->GetHealth() * 100 / me->GetMaxHealth() < 35 && Stance == BERSERKER)
             {
                 me->RemoveAurasDueToSpell(SPELL_BERSERKER_STANCE);
                 me->RemoveAurasDueToSpell(SPELL_BERSERKER_AURA);
-                if(me->HasAura(SPELL_WHIRLWIND_1, 0))
+                if (me->HasAura(SPELL_WHIRLWIND_1, 0))
                     me->RemoveAurasDueToSpell(SPELL_WHIRLWIND_1);
                 ForceSpellCast(me, SPELL_BATTLE_STANCE, INTERRUPT_AND_CAST_INSTANTLY);
                 ForceSpellCast(me, SPELL_BATTLE_AURA, INTERRUPT_AND_CAST_INSTANTLY);
@@ -3385,7 +3275,7 @@ struct mob_shadowmoon_weapon_masterAI: public ScriptedAI
             case 0:
             {
                 m_nextMove = 2300;
-                m_nextId   = 1;
+                m_nextId = 1;
                 me->SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_ONESHOT_POINT_NOSHEATHE);
             }
             break;
@@ -3417,77 +3307,75 @@ struct mob_shadowmoon_weapon_masterAI: public ScriptedAI
             {
                 if (pInstance->GetData(DATA_WEAPONMASTER_LIST_SIZE) == 8)
                 {
-                    for (int i = DATA_WEAPONMASTER_SOLDIER; i < DATA_WEAPONMASTER_SOLDIER+8; ++i)
+                    for (int i = DATA_WEAPONMASTER_SOLDIER; i < DATA_WEAPONMASTER_SOLDIER + 8; ++i)
                     {
                         soldiersList.push_back(pInstance->GetData64(i));
                         if (Creature *soldier = me->GetMap()->GetCreature(pInstance->GetData64(i)))
                         {
-                            soldier->Relocate(fieldPositions[i-DATA_WEAPONMASTER_SOLDIER][0], fieldPositions[i-DATA_WEAPONMASTER_SOLDIER][1], _HEIGHT, 0);
-                            soldier->SetHomePosition(fieldPositions[i-DATA_WEAPONMASTER_SOLDIER][0], fieldPositions[i-DATA_WEAPONMASTER_SOLDIER][1], _HEIGHT, 0);
+                            soldier->Relocate(fieldPositions[i - DATA_WEAPONMASTER_SOLDIER][0], fieldPositions[i - DATA_WEAPONMASTER_SOLDIER][1], _HEIGHT, 0);
+                            soldier->SetHomePosition(fieldPositions[i - DATA_WEAPONMASTER_SOLDIER][0], fieldPositions[i - DATA_WEAPONMASTER_SOLDIER][1], _HEIGHT, 0);
                         }
                     }
                     m_nextMove = 1000;
-                    m_nextId   = 0;
+                    m_nextId = 0;
                 }
             }
         }
 
-        if(!UpdateVictim())
+        if (!UpdateVictim())
         {
             if (m_nextId >= 0)
             {
-                if (m_nextMove)
+
+                if (m_nextMove.Expired(diff))
                 {
-                    if (m_nextMove <= diff)
+                    m_nextMove = 0;
+                    int id = m_nextId;
+                    m_nextId = -1;
+
+                    float x = 0;
+                    float y = 0;
+
+                    switch (id)
                     {
-                        m_nextMove = 0;
-                        int id = m_nextId;
-                        m_nextId = -1;
-
-                        float x = 0;
-                        float y = 0;
-
-                        switch (id)
+                        case 0:
                         {
-                            case 0:
+                            for (int i = 0; i < 8; ++i)
                             {
-                                for (int i = 0; i < 8; ++i)
+                                if (Unit *soldier = me->GetUnit(*me, soldiersList[i]))
                                 {
-                                    if (Unit *soldier = me->GetUnit(*me, soldiersList[i]))
-                                    {
-                                        x = soldier->GetPositionX() + DISTANCE_TO_MOVE * cos(0.0f);
-                                        y = soldier->GetPositionY() + DISTANCE_TO_MOVE * sin(0.0f);
-                                        soldier->GetMotionMaster()->MovePoint(0, x, y, _HEIGHT);
-                                    }
+                                    x = soldier->GetPositionX() + DISTANCE_TO_MOVE * cos(0.0f);
+                                    y = soldier->GetPositionY() + DISTANCE_TO_MOVE * sin(0.0f);
+                                    soldier->GetMotionMaster()->MovePoint(0, x, y, _HEIGHT);
                                 }
-                                x = me->GetPositionX() + DISTANCE_TO_MOVE * cos(0.0f);
-                                y = me->GetPositionY() + DISTANCE_TO_MOVE * sin(0.0f);
                             }
-                            break;
-                            case 1:
-                            {
-                                me->SetUInt32Value(UNIT_NPC_EMOTESTATE, 0);
-                                for (int i = 0; i < 8; ++i)
-                                {
-                                    if (Unit *soldier = me->GetUnit(*me, soldiersList[i]))
-                                        soldier->GetMotionMaster()->MovePoint(1, fieldPositions[i][0], fieldPositions[i][1], _HEIGHT);
-                                }
-                                x = WEAPON_X;
-                                y = WEAPON_Y;
-                            }
-                            break;
+                            x = me->GetPositionX() + DISTANCE_TO_MOVE * cos(0.0f);
+                            y = me->GetPositionY() + DISTANCE_TO_MOVE * sin(0.0f);
                         }
-                        me->GetMotionMaster()->MovePoint(id, x, y, _HEIGHT);
+                        break;
+                        case 1:
+                        {
+                            me->SetUInt32Value(UNIT_NPC_EMOTESTATE, 0);
+                            for (int i = 0; i < 8; ++i)
+                            {
+                                if (Unit *soldier = me->GetUnit(*me, soldiersList[i]))
+                                    soldier->GetMotionMaster()->MovePoint(1, fieldPositions[i][0], fieldPositions[i][1], _HEIGHT);
+                            }
+                            x = WEAPON_X;
+                            y = WEAPON_Y;
+                        }
+                        break;
                     }
-                    else m_nextMove -= diff;
+                    me->GetMotionMaster()->MovePoint(id, x, y, _HEIGHT);
+
                 }
             }
             return;
         }
 
-        if(SpecialTimer <= diff)
+        if (SpecialTimer.Expired(diff))
         {
-            switch(Stance)
+            switch (Stance)
             {
                 case DEFENSIVE:
                     AddSpellToCast(me, SPELL_SWM_SHIELD_WALL);
@@ -3503,16 +3391,14 @@ struct mob_shadowmoon_weapon_masterAI: public ScriptedAI
                     break;
             }
         }
-        else
-            SpecialTimer -= diff;
 
-        if(KnockAway <= diff)
+
+        if (KnockAway.Expired(diff))
         {
             AddSpellToCast(me->getVictim(), SPELL_KNOCK_AWAY);
             KnockAway = 20000;
         }
-        else
-            KnockAway -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -3531,12 +3417,12 @@ CreatureAI* GetAI_mob_shadowmoon_weapon_master(Creature *_Creature)
 #define SPELL_CLEAVE_2                      15496
 #define SPELL_IGNORED                       39544
 
-struct mob_wrathbone_flayerAI: public ScriptedAI
+struct mob_wrathbone_flayerAI : public ScriptedAI
 {
     mob_wrathbone_flayerAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 Cleave;
-    uint32 Ignored;
+    Timer Cleave;
+    Timer Ignored;
 
     void Reset()
     {
@@ -3550,24 +3436,22 @@ struct mob_wrathbone_flayerAI: public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(Cleave <= diff)
+        if (Cleave.Expired(diff))
         {
             AddSpellToCast(me->getVictim(), SPELL_CLEAVE_2);
             Cleave = 3000;
         }
-        else
-            Cleave -= diff;
 
-        if(Ignored <= diff)
+
+        if (Ignored.Expired(diff))
         {
             AddSpellToCast(me->getVictim(), SPELL_IGNORED);
             Ignored = 10000;
         }
-        else
-            Ignored -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -3594,7 +3478,7 @@ CreatureAI* GetAI_mob_wrathbone_flayer(Creature *_Creature)
     * Bonechewer Brawler
     * Bonechewer Combatant
     * Bonechewer Spectator
-*/
+    */
 
 /****************
 * Bonechewer Behemoth - id 23196
@@ -3612,13 +3496,13 @@ enum Type
     RANGED_TYPE
 };
 
-struct mob_bonechewer_behemothAI: public ScriptedAI
+struct mob_bonechewer_behemothAI : public ScriptedAI
 {
     mob_bonechewer_behemothAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
     uint8 Type;
-    uint32 SpellTimer;
-    uint32 Frenzy;
+    Timer SpellTimer;
+    Timer Frenzy;
 
 
     void Reset()
@@ -3637,21 +3521,21 @@ struct mob_bonechewer_behemothAI: public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(SpellTimer <= diff)
+        if (SpellTimer.Expired(diff))
         {
             uint32 SpellId = 0;
-            switch(Type)
+            switch (Type)
             {
                 case MELEE_TYPE:
                 {
                     SpellId = RAND(SPELL_BEHEMOTH_CHARGE, SPELL_FEL_STOMP);
-                    switch(SpellId)
+                    switch (SpellId)
                     {
                         case SPELL_BEHEMOTH_CHARGE:
-                            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30.0f, true, 0, 5.0f))
+                            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30.0f, true, 0, 5.0f))
                                 AddSpellToCast(target, SPELL_BEHEMOTH_CHARGE);
                             else
                                 SpellTimer = 2000;
@@ -3665,16 +3549,16 @@ struct mob_bonechewer_behemothAI: public ScriptedAI
                 case RANGED_TYPE:
                 {
                     SpellId = RAND(SPELL_FIERY_COMET, SPELL_METEOR);
-                    switch(SpellId)
+                    switch (SpellId)
                     {
                         case SPELL_FIERY_COMET:
-                            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 40.0f, true, 0, 10.0f))
+                            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 40.0f, true, 0, 10.0f))
                                 AddSpellToCast(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), SPELL_FIERY_COMET);
                             else
                                 SpellTimer = 3000;
                             break;
                         case SPELL_METEOR:
-                            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 120.0f, true))
+                            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 120.0f, true))
                                 AddSpellToCast(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), SPELL_METEOR);
                             else
                                 SpellTimer = 2500;
@@ -3686,17 +3570,15 @@ struct mob_bonechewer_behemothAI: public ScriptedAI
             AddSpellToCast(me->getVictim(), SPELL_CLEAVE_2);
             SpellTimer = Type ? 20000 : 15000;
         }
-        else
-            SpellTimer -= diff;
 
-        if(Frenzy <= diff)
+
+        if (Frenzy.Expired(diff))
         {
-            if(!me->HasAura(SPELL_FRENZY_1, 0))
+            if (!me->HasAura(SPELL_FRENZY_1, 0))
                 AddSpellToCast(me, SPELL_FRENZY_1);
             Frenzy = 10000;
         }
-        else
-            Frenzy -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -3719,13 +3601,13 @@ CreatureAI* GetAI_mob_bonechewer_behemoth(Creature *_Creature)
 
 #define MOB_BONECHEWER_BLADE_FURY       23235
 
-struct mob_bonechewer_shield_discipleAI: public ScriptedAI
+struct mob_bonechewer_shield_discipleAI : public ScriptedAI
 {
     mob_bonechewer_shield_discipleAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 Intervene;
-    uint32 ShieldBash;
-    uint32 ThrowShield;
+    Timer Intervene;
+    Timer ShieldBash;
+    Timer ThrowShield;
 
 
     void Reset()
@@ -3741,22 +3623,22 @@ struct mob_bonechewer_shield_discipleAI: public ScriptedAI
 
     void DamageTaken(Unit* who, uint32& damage)
     {
-        if(damage)
+        if (damage)
         {
-            if(me->GetHealth()*100 / me->GetMaxHealth() < 30 && !me->HasAura(SPELL_BSD_SHIELD_WALL, 0))
+            if (me->GetHealth() * 100 / me->GetMaxHealth() < 30 && !me->HasAura(SPELL_BSD_SHIELD_WALL, 0))
                 ForceSpellCast(me, SPELL_BSD_SHIELD_WALL);
         }
     }
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(Intervene <= diff)
+        if (Intervene.Expired(diff))
         {
-            Unit* InterveneTarget = GetClosestCreatureWithEntry(me,MOB_BONECHEWER_BLADE_FURY, 25.0f);
-            if(InterveneTarget && !me->IsWithinDistInMap(InterveneTarget, 8.0) && InterveneTarget->isInCombat())
+            Unit* InterveneTarget = GetClosestCreatureWithEntry(me, MOB_BONECHEWER_BLADE_FURY, 25.0f);
+            if (InterveneTarget && !me->IsWithinDistInMap(InterveneTarget, 8.0) && InterveneTarget->isInCombat())
             {
                 ForceSpellCast(InterveneTarget, SPELL_INTERVENE);
                 Intervene = 20000;
@@ -3764,25 +3646,22 @@ struct mob_bonechewer_shield_discipleAI: public ScriptedAI
             else
                 Intervene = 3000;
         }
-        else
-            Intervene -= diff;
 
-        if(ShieldBash <= diff)
+
+        if (ShieldBash.Expired(diff))
         {
             AddSpellToCast(me->getVictim(), SPELL_SHIELD_BASH);
             ShieldBash = 15000;
         }
-        else
-            ShieldBash -= diff;
 
-        if(ThrowShield <= diff)
+
+        if (ThrowShield.Expired(diff))
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_TOPAGGRO, 1, 45.0f, true, 0, 5.0f))
+            if (Unit* target = SelectUnit(SELECT_TARGET_TOPAGGRO, 1, 45.0f, true, 0, 5.0f))
                 AddSpellToCast(target, SPELL_THROW_SHIELD);
             ThrowShield = 17000;
         }
-        else
-            ThrowShield -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -3812,12 +3691,12 @@ uint32 CCMechanics[8] =
     MECHANIC_HORROR
 };
 
-struct mob_bonechewer_blade_furyAI: public ScriptedAI
+struct mob_bonechewer_blade_furyAI : public ScriptedAI
 {
     mob_bonechewer_blade_furyAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 Whirlwind;
-    uint32 MoveTimer;
+    Timer Whirlwind;
+    Timer MoveTimer;
 
     void Reset()
     {
@@ -3831,13 +3710,13 @@ struct mob_bonechewer_blade_furyAI: public ScriptedAI
 
     void SetCCImmunity(bool apply)
     {
-        for(uint8 i=0;i<8;++i)
+        for (uint8 i = 0; i < 8; ++i)
             me->ApplySpellImmune(i, IMMUNITY_MECHANIC, CCMechanics[i], apply);
     }
 
     void OnAuraRemove(Aura* aur, bool stackRemove)
     {
-        if(aur->GetId() == SPELL_WHIRLWIND_2)
+        if (aur->GetId() == SPELL_WHIRLWIND_2)
         {
             SetCCImmunity(false);
             me->Relocate(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation());
@@ -3848,31 +3727,28 @@ struct mob_bonechewer_blade_furyAI: public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(Whirlwind <= diff)
+        if (Whirlwind.Expired(diff))
         {
             AddSpellToCast(me, SPELL_WHIRLWIND_2);
             Whirlwind = 15000;
         }
-        else
-            Whirlwind -= diff;
 
-        if(me->HasAura(SPELL_WHIRLWIND_2, 0))
+
+        if (me->HasAura(SPELL_WHIRLWIND_2, 0))
         {
-            if(MoveTimer <= diff)
+            if (MoveTimer.Expired(diff))
             {
                 SetCCImmunity(true);
                 float x, y, z = 0;
                 me->Relocate(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation());
-                me->GetGroundPointAroundUnit(x, y, z, 10.0, 3.14*RAND(0, 1/6, 2/6, 3/6, 4/6, 5/6, 1));
+                me->GetGroundPointAroundUnit(x, y, z, 10.0, 3.14*RAND(0, 1 / 6, 2 / 6, 3 / 6, 4 / 6, 5 / 6, 1));
                 me->GetMotionMaster()->Clear(false);
                 me->GetMotionMaster()->MovePoint(0, x, y, z);
                 MoveTimer = 2500;
             }
-            else
-                MoveTimer -= diff;
         }
         else
             DoMeleeAttackIfReady();
@@ -3895,13 +3771,13 @@ CreatureAI* GetAI_mob_bonechewer_blade_fury(Creature *_Creature)
 #define SPELL_PROPHECY_OF_BLOOD_PL      41230
 #define SPELL_PROPHECY_OF_BLOOD_MOB     41231
 
-struct mob_bonechewer_blood_prophetAI: public ScriptedAI
+struct mob_bonechewer_blood_prophetAI : public ScriptedAI
 {
     mob_bonechewer_blood_prophetAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 BloodDrain;
-    uint32 Bloodbolt;
-    uint32 ProphecyOfBlood;
+    Timer BloodDrain;
+    Timer Bloodbolt;
+    Timer ProphecyOfBlood;
 
 
     void Reset()
@@ -3917,51 +3793,48 @@ struct mob_bonechewer_blood_prophetAI: public ScriptedAI
 
     void DamageTaken(Unit* who, uint32& damage)
     {
-        if(damage)
+        if (damage)
         {
-            if(me->GetHealth()*100 / me->GetMaxHealth() < 35)
+            if (me->GetHealth() * 100 / me->GetMaxHealth() < 35)
                 ForceSpellCast(me, SPELL_FRENZY_1);
         }
     }
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(BloodDrain <= diff)
+        if (BloodDrain.Expired(diff))
         {
             AddSpellToCast(me->getVictim(), SPELL_BLOOD_DRAIN);
             BloodDrain = 25000;
         }
-        else
-            BloodDrain -= diff;
 
-        if(Bloodbolt <= diff)
+
+        if (Bloodbolt.Expired(diff))
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 40.0f, true))
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 40.0f, true))
                 AddSpellToCast(target, SPELL_BLOODBOLT_1);
             Bloodbolt = 15000;
         }
-        else
-            Bloodbolt -= diff;
 
-        if(ProphecyOfBlood <= diff)
+
+        if (ProphecyOfBlood.Expired(diff))
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 20.0f, true))
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 20.0f, true))
                 AddSpellToCast(target, SPELL_PROPHECY_OF_BLOOD_PL);
             std::list<Creature*> Friendly = FindAllFriendlyInGrid(20.0f);
-            if(!Friendly.empty())
+            if (!Friendly.empty())
             {
                 std::list<Creature*>::iterator i = Friendly.begin();
-                advance(i, rand()%Friendly.size());
-                if(Creature* Friend = (*i))
+                advance(i, rand() % Friendly.size());
+                if (Creature* Friend = (*i))
                     AddSpellToCast(Friend, SPELL_PROPHECY_OF_BLOOD_MOB);
             }
             ProphecyOfBlood = 15000;
         }
-        else
-            ProphecyOfBlood -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -3981,13 +3854,13 @@ CreatureAI* GetAI_mob_bonechewer_blood_prophet(Creature *_Creature)
 #define SPELL_CLOUD_OF_DISEASE          41193
 
 
-struct mob_mutated_war_houndAI: public ScriptedAI
+struct mob_mutated_war_houndAI : public ScriptedAI
 {
     mob_mutated_war_houndAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
     void Reset()
     {
-        if(!me->HasAura(SPELL_DISEASE_CLOUD, 0))
+        if (!me->HasAura(SPELL_DISEASE_CLOUD, 0))
             DoCast(me, SPELL_DISEASE_CLOUD);
     }
 
@@ -3995,13 +3868,13 @@ struct mob_mutated_war_houndAI: public ScriptedAI
 
     void DamageTaken(Unit* who, uint32& damage)
     {
-        if(damage && damage > me->GetHealth())
+        if (damage && damage > me->GetHealth())
             me->CastSpell(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), SPELL_CLOUD_OF_DISEASE, false);
     }
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
         DoMeleeAttackIfReady();
     }
@@ -4018,11 +3891,11 @@ CreatureAI* GetAI_mob_mutated_war_hound(Creature *_Creature)
 
 #define SPELL_ENRAGE_2              41254
 
-struct mob_bonechewer_brawlerAI: public ScriptedAI
+struct mob_bonechewer_brawlerAI : public ScriptedAI
 {
     mob_bonechewer_brawlerAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 Enrage;
+    Timer Enrage;
 
     void Reset()
     {
@@ -4035,25 +3908,24 @@ struct mob_bonechewer_brawlerAI: public ScriptedAI
 
     void DamageTaken(Unit* who, uint32& damage)
     {
-        if(damage)
+        if (damage)
         {
-            if(me->GetHealth()*100 / me->GetMaxHealth() < 30)
+            if (me->GetHealth() * 100 / me->GetMaxHealth() < 30)
                 ForceSpellCast(me, SPELL_FRENZY_1);
         }
     }
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(Enrage <= diff)
+        if (Enrage.Expired(diff))
         {
             AddSpellToCast(me, SPELL_ENRAGE_2);
             Enrage = 25000;
         }
-        else
-            Enrage -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -4071,11 +3943,11 @@ CreatureAI* GetAI_mob_bonechewer_brawler(Creature *_Creature)
 
 #define SPELL_COMBAT_RAGE               41251
 
-struct mob_bonechewer_combatantAI: public ScriptedAI
+struct mob_bonechewer_combatantAI : public ScriptedAI
 {
     mob_bonechewer_combatantAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 CombatRage;
+    Timer CombatRage;
 
     void Reset()
     {
@@ -4088,25 +3960,24 @@ struct mob_bonechewer_combatantAI: public ScriptedAI
 
     void DamageTaken(Unit* who, uint32& damage)
     {
-        if(damage)
+        if (damage)
         {
-            if(me->GetHealth()*100 / me->GetMaxHealth() < 30)
+            if (me->GetHealth() * 100 / me->GetMaxHealth() < 30)
                 ForceSpellCast(me, SPELL_FRENZY_1);
         }
     }
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(CombatRage <= diff)
+        if (CombatRage.Expired(diff))
         {
             AddSpellToCast(me, SPELL_COMBAT_RAGE);
             CombatRage = 10000;
         }
-        else
-            CombatRage -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -4128,15 +3999,15 @@ CreatureAI* GetAI_mob_bonechewer_combatant(Creature *_Creature)
 #define SPELL_STRIKE_1                  13446
 #define SPELL_SUNDER_ARMOR              13444
 
-struct mob_bonechewer_spectatorAI: public ScriptedAI
+struct mob_bonechewer_spectatorAI : public ScriptedAI
 {
     mob_bonechewer_spectatorAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 Charge;
-    uint32 Cleave;
-    uint32 MortalWound;
-    uint32 Strike;
-    uint32 SunderArmor;
+    Timer Charge;
+    Timer Cleave;
+    Timer MortalWound;
+    Timer Strike;
+    Timer SunderArmor;
 
     void Reset()
     {
@@ -4153,58 +4024,53 @@ struct mob_bonechewer_spectatorAI: public ScriptedAI
 
     void DamageTaken(Unit* who, uint32& damage)
     {
-        if(damage)
+        if (damage)
         {
-            if(me->GetHealth()*100 / me->GetMaxHealth() < 30)
+            if (me->GetHealth() * 100 / me->GetMaxHealth() < 30)
                 ForceSpellCast(me, SPELL_FRENZY_1);
         }
     }
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(Charge <= diff)
+        if (Charge.Expired(diff))
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 25.0f, true, 0, 8.0f))
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 25.0f, true, 0, 8.0f))
                 AddSpellToCast(target, SPELL_CHARGE_1);
             Charge = urand(20000, 40000);
         }
-        else
-            Charge -= diff;
 
-        if(Cleave <= diff)
+
+        if (Cleave.Expired(diff))
         {
             AddSpellToCast(me->getVictim(), SPELL_CLEAVE_3);
             Cleave = 15000;
         }
-        else
-            Cleave -= diff;
 
-        if(MortalWound <= diff)
+
+        if (MortalWound.Expired(diff))
         {
             AddSpellToCast(me->getVictim(), SPELL_MORTAL_WOUND);
             MortalWound = urand(8000, 12000);
         }
-        else
-            MortalWound -= diff;
 
-        if(Strike <= diff)
+
+        if (Strike.Expired(diff))
         {
             AddSpellToCast(me->getVictim(), SPELL_STRIKE_1);
             Strike = urand(4000, 6000);
         }
-        else
-            Strike -= diff;
 
-        if(SunderArmor <= diff)
+
+        if (SunderArmor.Expired(diff))
         {
             AddSpellToCast(me->getVictim(), SPELL_SUNDER_ARMOR);
             SunderArmor = 10000;
         }
-        else
-            SunderArmor -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -4226,18 +4092,18 @@ CreatureAI* GetAI_mob_bonechewer_spectator(Creature *_Creature)
     * Angered Soul Fragment
     * Hungering Soul Fragment
     * Suffering Soul Fragment
-*/
+    */
 /****************
 * Angered Soul Fragment - id 23398
 *****************/
 
 #define SPELL_ANGER     41986
 
-struct mob_angered_soul_fragmentAI: public ScriptedAI
+struct mob_angered_soul_fragmentAI : public ScriptedAI
 {
     mob_angered_soul_fragmentAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 Anger;
+    Timer Anger;
 
     void Reset()
     {
@@ -4258,16 +4124,15 @@ struct mob_angered_soul_fragmentAI: public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(Anger <= diff)
+        if (Anger.Expired(diff))
         {
             AddSpellToCast(me, SPELL_ANGER);
             Anger = urand(6000, 16000);
         }
-        else
-            Anger -=diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -4285,7 +4150,7 @@ CreatureAI* GetAI_mob_angered_soul_fragment(Creature *_Creature)
 
 #define SPELL_CONSUMING_STRIKES     41248
 
-struct mob_hungering_soul_fragmentAI: public ScriptedAI
+struct mob_hungering_soul_fragmentAI : public ScriptedAI
 {
     mob_hungering_soul_fragmentAI(Creature *c) : ScriptedAI(c) {}
 
@@ -4306,7 +4171,7 @@ struct mob_hungering_soul_fragmentAI: public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
         DoMeleeAttackIfReady();
@@ -4324,11 +4189,11 @@ CreatureAI* GetAI_mob_hungering_soul_fragment(Creature *_Creature)
 
 #define SPELL_SOUL_BLAST        41245
 
-struct mob_suffering_soul_fragmentAI: public ScriptedAI
+struct mob_suffering_soul_fragmentAI : public ScriptedAI
 {
     mob_suffering_soul_fragmentAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 SoulBlast;
+    Timer SoulBlast;
 
     void Reset()
     {
@@ -4349,16 +4214,15 @@ struct mob_suffering_soul_fragmentAI: public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(SoulBlast <= diff)
+        if (SoulBlast.Expired(diff))
         {
             AddSpellToCast(me, SPELL_SOUL_BLAST);
             SoulBlast = urand(8000, 12000);
         }
-        else
-            SoulBlast -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -4385,7 +4249,7 @@ CreatureAI* GetAI_mob_suffering_soul_fragment(Creature *_Creature)
     * Spellbound Attendent
     * Enslaved Servant
     * Temple Concubine
-*/
+    */
 
 /****************
 * Priestess of Dementia - id 22957
@@ -4393,20 +4257,20 @@ CreatureAI* GetAI_mob_suffering_soul_fragment(Creature *_Creature)
 
 enum PristessOfDementia
 {
-    NPC_IMAGE_OF_DEMENTIA   = 23436,
+    NPC_IMAGE_OF_DEMENTIA = 23436,
 
-    SPELL_CONFUSION         = 41397,
-    SPELL_DEMENTIA          = 41404,
-    SPELL_WHIRLWIND_3       = 41399
+    SPELL_CONFUSION = 41397,
+    SPELL_DEMENTIA = 41404,
+    SPELL_WHIRLWIND_3 = 41399
 };
 
-struct mob_pristess_of_dementiaAI: public ScriptedAI
+struct mob_pristess_of_dementiaAI : public ScriptedAI
 {
     mob_pristess_of_dementiaAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 Confusion;
-    uint32 Dementia;
-    uint32 ImageSummon;
+    Timer Confusion;
+    Timer Dementia;
+    Timer ImageSummon;
 
     void Reset()
     {
@@ -4424,31 +4288,30 @@ struct mob_pristess_of_dementiaAI: public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(Confusion <= diff)
+        if (Confusion.Expired(diff))
         {
             AddSpellToCast(me, SPELL_CONFUSION);
             Confusion = urand(15000, 25000);
         }
-        else
-            Confusion -= diff;
 
-        if(Dementia <= diff)
+
+        if (Dementia.Expired(diff))
         {
             AddSpellToCast(me, SPELL_DEMENTIA);
             Dementia = urand(40000, 50000);
         }
-        else
-            Dementia -= diff;
 
-        if(ImageSummon <= diff)
+
+
+        if (ImageSummon.Expired(diff))
         {
             float x, y, z;
-            for(uint8 i=0;i<2;++i)
+            for (uint8 i = 0; i < 2; ++i)
             {
-                if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 200.0f, true))
+                if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 200.0f, true))
                 {
                     target->GetNearPoint(x, y, z, 5.0f);
                     me->SummonCreature(NPC_IMAGE_OF_DEMENTIA, x, y, z, 0, TEMPSUMMON_TIMED_DESPAWN, 15000);
@@ -4456,8 +4319,7 @@ struct mob_pristess_of_dementiaAI: public ScriptedAI
             }
             ImageSummon = urand(25000, 35000);
         }
-        else
-            ImageSummon -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -4469,11 +4331,11 @@ CreatureAI* GetAI_mob_pristess_of_dementia(Creature *_Creature)
     return new mob_pristess_of_dementiaAI(_Creature);
 }
 
-struct mob_image_of_dementiaAI: public ScriptedAI
+struct mob_image_of_dementiaAI : public ScriptedAI
 {
     mob_image_of_dementiaAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 MoveTimer;
+    Timer MoveTimer;
 
     void Reset()
     {
@@ -4484,20 +4346,18 @@ struct mob_image_of_dementiaAI: public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(MoveTimer <= diff)
+        if (MoveTimer.Expired(diff))
         {
             float x, y, z = 0;
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 200.0f, true))
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 200.0f, true))
             {
-                target->GetGroundPointAroundUnit(x, y, z, 10.0, 3.14*RAND(0, 1/6, 2/6, 3/6, 4/6, 5/6, 1));
+                target->GetGroundPointAroundUnit(x, y, z, 10.0, 3.14*RAND(0, 1 / 6, 2 / 6, 3 / 6, 4 / 6, 5 / 6, 1));
                 me->GetMotionMaster()->Clear(false);
                 me->SetSpeed(MOVE_RUN, 2.5, true);
                 me->GetMotionMaster()->MovePoint(0, x, y, z);
             }
             MoveTimer = urand(1500, 3000);
         }
-        else
-            MoveTimer -= diff;
     }
 };
 
@@ -4513,15 +4373,15 @@ CreatureAI* GetAI_mob_image_of_dementia(Creature *_Creature)
 enum PristessOfDelight
 {
     SPELL_CURSE_OF_VITALITY = 41351,
-    SPELL_POLYMORPH         = 41334
+    SPELL_POLYMORPH = 41334
 };
 
-struct mob_pristess_of_delightAI: public ScriptedAI
+struct mob_pristess_of_delightAI : public ScriptedAI
 {
     mob_pristess_of_delightAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 CurseOfVitality;
-    uint32 Polymorph;
+    Timer CurseOfVitality;
+    Timer Polymorph;
 
     void Reset()
     {
@@ -4538,26 +4398,24 @@ struct mob_pristess_of_delightAI: public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(Polymorph <= diff)
+        if (Polymorph.Expired(diff))
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30.0f, true))
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30.0f, true))
                 AddSpellToCast(target, SPELL_POLYMORPH, false, true);
             Polymorph = urand(15000, 18000);
         }
-        else
-            Polymorph -= diff;
 
-        if(CurseOfVitality <= diff)
+
+        if (CurseOfVitality.Expired(diff))
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30.0f, true))
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30.0f, true))
                 AddSpellToCast(target, SPELL_CURSE_OF_VITALITY);
             CurseOfVitality = urand(5000, 8000);
         }
-        else
-            CurseOfVitality -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -4575,25 +4433,25 @@ CreatureAI* GetAI_mob_pristess_of_delight(Creature *_Creature)
 
 enum SisterOfPain
 {
-    NPC_SISTER_OF_PAIN          = 22956,
-    NPC_SISTER_OF_PLEASURE      = 22964,
+    NPC_SISTER_OF_PAIN = 22956,
+    NPC_SISTER_OF_PLEASURE = 22964,
 
-    SPELL_LASH_OF_PAIN          = 41353,
-    SPELL_PAINFUL_RAGE          = 41369,
-    SPELL_SHADOW_WORD_PAIN      = 41355,
-    SPELL_SHELL_OF_PAIN         = 41371,
-    SPELL_SHARED_BONDS          = 41363
+    SPELL_LASH_OF_PAIN = 41353,
+    SPELL_PAINFUL_RAGE = 41369,
+    SPELL_SHADOW_WORD_PAIN = 41355,
+    SPELL_SHELL_OF_PAIN = 41371,
+    SPELL_SHARED_BONDS = 41363
 };
 
 #define YELL_SISTER_OF_PAIN "Pain is inevitable, but the suffering is optional."
 
-struct mob_sister_of_painAI: public ScriptedAI
+struct mob_sister_of_painAI : public ScriptedAI
 {
     mob_sister_of_painAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 LashOfPain;
-    uint32 ShadowWordPain;
-    uint32 ShellOfPain;
+    Timer LashOfPain;
+    Timer ShadowWordPain;
+    Timer ShellOfPain;
 
     void Reset()
     {
@@ -4608,60 +4466,57 @@ struct mob_sister_of_painAI: public ScriptedAI
     {
         DoZoneInCombat(80.0f);
 
-        if(Unit* Sister = FindCreature(NPC_SISTER_OF_PLEASURE, 30, me))
+        if (Unit* Sister = FindCreature(NPC_SISTER_OF_PLEASURE, 30, me))
         {
-            if(!me->HasAura(SPELL_SHARED_BONDS, 0))
+            if (!me->HasAura(SPELL_SHARED_BONDS, 0))
                 Sister->CastSpell(me, SPELL_SHARED_BONDS, false);
         }
     }
 
     void DamageTaken(Unit* who, uint32 &damage)
     {
-        uint32 HPPercent = me->GetHealth()*100 / me->GetMaxHealth();
+        uint32 HPPercent = me->GetHealth() * 100 / me->GetMaxHealth();
         uint8 stack = 0;
-        if(me->HasAura(SPELL_PAINFUL_RAGE, 0))
+        if (me->HasAura(SPELL_PAINFUL_RAGE, 0))
         {
-            if(Aura* Rage = me->GetAura(SPELL_PAINFUL_RAGE, 0))
+            if (Aura* Rage = me->GetAura(SPELL_PAINFUL_RAGE, 0))
                 stack = Rage->GetStackAmount();
         }
-        if(damage)
+        if (damage)
         {
-            if(HPPercent < (95 - 10*stack))
+            if (HPPercent < (95 - 10 * stack))
                 me->CastSpell(me, SPELL_PAINFUL_RAGE, true);
-            if(urand(1, 1000) > 995)
+            if (urand(1, 1000) > 995)
                 DoYell(YELL_SISTER_OF_PAIN, 0, who);
         }
     }
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(LashOfPain <= diff)
+        if (LashOfPain.Expired(diff))
         {
             AddSpellToCast(me->getVictim(), SPELL_LASH_OF_PAIN);
             LashOfPain = urand(12000, 15000);
         }
-        else
-            LashOfPain -= diff;
 
-        if(ShadowWordPain <= diff)
+
+        if (ShadowWordPain.Expired(diff))
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 60.0f, true))
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 60.0f, true))
                 AddSpellToCast(target, SPELL_SHADOW_WORD_PAIN);
             ShadowWordPain = urand(5000, 8000);
         }
-        else
-            ShadowWordPain -= diff;
 
-        if(ShellOfPain <= diff)
+
+        if (ShellOfPain.Expired(diff))
         {
             AddSpellToCast(me, SPELL_SHELL_OF_PAIN);
             ShellOfPain = urand(30000, 50000);
         }
-        else
-            ShellOfPain -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -4679,20 +4534,20 @@ CreatureAI* GetAI_mob_sister_of_pain(Creature *_Creature)
 
 enum SisterOfPleasure
 {
-    SPELL_GREATER_HEAL          = 41378,
-    SPELL_HOLY_NOVA_1           = 41380,
-    SPELL_SHELL_OF_LIFE         = 41381
+    SPELL_GREATER_HEAL = 41378,
+    SPELL_HOLY_NOVA_1 = 41380,
+    SPELL_SHELL_OF_LIFE = 41381
 };
 
 #define YELL_SISTER_OF_PLEASURE "When it comes to the needs of Illidan's troops, Mother Shahraz knows best."
 
-struct mob_sister_of_pleasureAI: public ScriptedAI
+struct mob_sister_of_pleasureAI : public ScriptedAI
 {
     mob_sister_of_pleasureAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 GreaterHeal;
-    uint32 HolyNova;
-    uint32 ShellOfLife;
+    Timer GreaterHeal;
+    Timer HolyNova;
+    Timer ShellOfLife;
     bool cooldown;
 
     void Reset()
@@ -4710,19 +4565,19 @@ struct mob_sister_of_pleasureAI: public ScriptedAI
         DoZoneInCombat(80.0f);
         DoYell(YELL_SISTER_OF_PLEASURE, 0, who);
 
-        if(Unit* Sister = FindCreature(NPC_SISTER_OF_PAIN, 30, me))
+        if (Unit* Sister = FindCreature(NPC_SISTER_OF_PAIN, 30, me))
         {
-            if(!me->HasAura(SPELL_SHARED_BONDS, 0))
+            if (!me->HasAura(SPELL_SHARED_BONDS, 0))
                 Sister->CastSpell(me, SPELL_SHARED_BONDS, false);
         }
     }
 
     void DamageTaken(Unit* who, uint32 &damage)
     {
-        uint32 HPPercent = me->GetHealth()*100 / me->GetMaxHealth();
-        if(damage)
+        uint32 HPPercent = me->GetHealth() * 100 / me->GetMaxHealth();
+        if (damage)
         {
-            if(HPPercent < 75 && !cooldown)
+            if (HPPercent < 75 && !cooldown)
             {
                 ForceSpellCast(me, SPELL_SHELL_OF_LIFE);
                 cooldown = true;
@@ -4732,34 +4587,31 @@ struct mob_sister_of_pleasureAI: public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(HolyNova <= diff)
+        if (HolyNova.Expired(diff))
         {
             DoCastAOE(SPELL_HOLY_NOVA_1);
             HolyNova = urand(7000, 14000);
         }
-        else
-            HolyNova -= diff;
 
-        if(GreaterHeal <= diff)
+
+        if (GreaterHeal.Expired(diff))
         {
             Unit* healTarget = SelectLowestHpFriendly(40.0f, 20000);
-            if(healTarget)
+            if (healTarget)
                 AddSpellToCast(healTarget, SPELL_GREATER_HEAL);
             GreaterHeal = urand(5000, 10000);     //check targets each 5-10s
         }
-        else
-            GreaterHeal -= diff;
 
-        if(cooldown && ShellOfLife <= diff)
+
+        if (cooldown && ShellOfLife.Expired(diff))
         {
             cooldown = false;
             ShellOfLife = urand(15000, 25000);
         }
-        else
-            ShellOfLife -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -4777,18 +4629,18 @@ CreatureAI* GetAI_mob_sister_of_pleasure(Creature *_Creature)
 
 enum CharmingCourtesan
 {
-    SPELL_INFATUATION           = 41345,
-    SPELL_POISONOUS_THROW       = 41346
+    SPELL_INFATUATION = 41345,
+    SPELL_POISONOUS_THROW = 41346
 };
 
 #define YELL_CHARMING_COURTESAN "That which you desire lies this way, hero."
 
-struct mob_charming_courtesanAI: public ScriptedAI
+struct mob_charming_courtesanAI : public ScriptedAI
 {
     mob_charming_courtesanAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 Infatuation;
-    uint32 PoisonousThrow;
+    Timer Infatuation;
+    Timer PoisonousThrow;
 
     void Reset()
     {
@@ -4800,33 +4652,31 @@ struct mob_charming_courtesanAI: public ScriptedAI
 
     void EnterCombat(Unit* who)
     {
-        if(urand(1,100) > 85)
+        if (urand(1, 100) > 85)
             DoYell(YELL_CHARMING_COURTESAN, 0, who);
         DoZoneInCombat(80.0f);
     }
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(Infatuation <= diff)
+        if (Infatuation.Expired(diff))
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100.0f, true))
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100.0f, true))
                 AddSpellToCast(target, SPELL_INFATUATION);
             Infatuation = urand(20000, 30000);
         }
-        else
-            Infatuation -= diff;
 
-        if(PoisonousThrow <= diff)
+
+        if (PoisonousThrow.Expired(diff))
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 60.0f, true))
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 60.0f, true))
                 AddSpellToCast(target, SPELL_INFATUATION);
             PoisonousThrow = urand(6000, 10000);
         }
-        else
-            PoisonousThrow -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -4844,16 +4694,16 @@ CreatureAI* GetAI_mob_charming_courtesan(Creature *_Creature)
 
 enum SpellboundAttendent
 {
-    SPELL_KICK          = 41395,
-    SPELL_SLEEP         = 41396
+    SPELL_KICK = 41395,
+    SPELL_SLEEP = 41396
 };
 
-struct mob_spellbound_attendentAI: public ScriptedAI
+struct mob_spellbound_attendentAI : public ScriptedAI
 {
     mob_spellbound_attendentAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 Kick;
-    uint32 Sleep;
+    Timer Kick;
+    Timer Sleep;
     bool cooldown;
 
     void Reset()
@@ -4872,31 +4722,29 @@ struct mob_spellbound_attendentAI: public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(me->getVictim() && me->getVictim()->IsNonMeleeSpellCast(false) && !cooldown)
+        if (me->getVictim() && me->getVictim()->IsNonMeleeSpellCast(false) && !cooldown)
         {
             ForceSpellCast(me->getVictim(), SPELL_KICK, INTERRUPT_AND_CAST_INSTANTLY);
             cooldown = true;
         }
 
-        if(cooldown && Kick <= diff)
+        if (cooldown && Kick.Expired(diff))
         {
             cooldown = false;
             Kick = 10000;   //10s cooldown as rogue's ability
         }
-        else
-            Kick -= diff;
 
-        if(Sleep <= diff)
+
+        if (Sleep.Expired(diff))
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 1, 30.0f, true))
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 1, 30.0f, true))
                 AddSpellToCast(target, SPELL_SLEEP, false, true);
             Sleep = urand(10000, 18000);
         }
-        else
-            Sleep -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -4914,16 +4762,16 @@ CreatureAI* GetAI_mob_spellbound_attendent(Creature *_Creature)
 
 enum EnslavedSevrant
 {
-    SPELL_UPPERCUT          = 41388,
-    SPELL_KIDNEY_SHOT       = 41389
+    SPELL_UPPERCUT = 41388,
+    SPELL_KIDNEY_SHOT = 41389
 };
 
-struct mob_enslaved_servantAI: public ScriptedAI
+struct mob_enslaved_servantAI : public ScriptedAI
 {
     mob_enslaved_servantAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 Uppercut;
-    uint32 KidneyShot;
+    Timer Uppercut;
+    Timer KidneyShot;
 
     void Reset()
     {
@@ -4940,24 +4788,22 @@ struct mob_enslaved_servantAI: public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(KidneyShot <= diff)
+        if (KidneyShot.Expired(diff))
         {
             AddSpellToCast(me->getVictim(), SPELL_KIDNEY_SHOT);
             KidneyShot = urand(20000, 30000);
         }
-        else
-            KidneyShot -= diff;
 
-        if(Uppercut <= diff)
+
+        if (Uppercut.Expired(diff))
         {
             AddSpellToCast(me->getVictim(), SPELL_UPPERCUT);
             Uppercut = urand(5000, 10000);
         }
-        else
-            Uppercut -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -4975,17 +4821,17 @@ CreatureAI* GetAI_mob_enslaved_servant(Creature *_Creature)
 
 enum TempleConcubine
 {
-    SPELL_LOVE_TAP  = 41338
+    SPELL_LOVE_TAP = 41338
 };
 
 #define YELL_TEMPLE_CONCUBINE "Business… or pleasure?"
 
-struct mob_temple_concubineAI: public ScriptedAI
+struct mob_temple_concubineAI : public ScriptedAI
 {
     mob_temple_concubineAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 LoveTap;
-    uint32 Polymorph;
+    Timer LoveTap;
+    Timer Polymorph;
 
     void Reset()
     {
@@ -5002,30 +4848,28 @@ struct mob_temple_concubineAI: public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(LoveTap <= diff)
+        if (LoveTap.Expired(diff))
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 10.0f, true))
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 10.0f, true))
                 AddSpellToCast(target, SPELL_LOVE_TAP, false, true);
             LoveTap = urand(10000, 20000);
         }
-        else
-            LoveTap -= diff;
 
-        if(Polymorph <= diff)
+
+        if (Polymorph.Expired(diff))
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30.0f, true))
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30.0f, true))
             {
                 AddSpellToCast(target, SPELL_POLYMORPH, false, true);
-                if(urand(1,10) > 3)
+                if (urand(1, 10) > 3)
                     DoYell(YELL_TEMPLE_CONCUBINE, 0, target);
             }
             Polymorph = urand(15000, 25000);
         }
-        else
-            Polymorph -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -5049,7 +4893,7 @@ CreatureAI* GetAI_mob_temple_concubine(Creature *_Creature)
     * Illidari Battle-mage
     * Illidari Blood Lord
     * Promenade Sentinel
-*/
+    */
 
 /****************
 * Illidari Archon - id 23400
@@ -5057,30 +4901,30 @@ CreatureAI* GetAI_mob_temple_concubine(Creature *_Creature)
 
 enum IllidariArchon
 {
-    SPELL_HOLY_SMITE        = 41370,
-    SPELL_HEAL              = 41372,
+    SPELL_HOLY_SMITE = 41370,
+    SPELL_HEAL = 41372,
     SPELL_POWER_WORD_SHIELD = 41373,
-    SPELL_SHADOWFORM        = 29406,
-    SPELL_MIND_FLAY         = 37276,
-    SPELL_POWER_WORD_DEATH  = 41375,
-    SPELL_MIND_BLAST        = 41374,
+    SPELL_SHADOWFORM = 29406,
+    SPELL_MIND_FLAY = 37276,
+    SPELL_POWER_WORD_DEATH = 41375,
+    SPELL_MIND_BLAST = 41374,
 
-    HOLY_TYPE               = 100,
-    SHADOW_TYPE             = 101
+    HOLY_TYPE = 100,
+    SHADOW_TYPE = 101
 };
 
-struct mob_illidari_archonAI: public ScriptedAI
+struct mob_illidari_archonAI : public ScriptedAI
 {
     mob_illidari_archonAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
     uint32 type;
-    uint32 shieldCooldownTimer;
+    Timer shieldCooldownTimer;
     uint32 Heal;
-    bool shieldCooldown;
+    Timer shieldCooldown;
 
-    uint32 MindFlay;
-    uint32 MindBlast;
-    uint32 wordDeathTimer;
+    Timer MindFlay;
+    Timer MindBlast;
+    Timer wordDeathTimer;
     bool wordDeathCooldown;
 
     void Reset()
@@ -5088,30 +4932,30 @@ struct mob_illidari_archonAI: public ScriptedAI
         ClearCastQueue();
 
         type = RAND(HOLY_TYPE, SHADOW_TYPE);
-        switch(type)
+        switch (type)
         {
             case HOLY_TYPE:
-                {
-                    DoCast(me, SPELL_POWER_WORD_SHIELD);
-                    Heal = 2500;
-                    shieldCooldownTimer = 15000;
-                    shieldCooldown = true;
-                    SetAutocast(SPELL_HOLY_SMITE, 4800, true, CAST_TANK, 40, true);
-                    StartAutocast();
-                    break;
-                }
+            {
+                DoCast(me, SPELL_POWER_WORD_SHIELD);
+                Heal = 2500;
+                shieldCooldownTimer = 15000;
+                shieldCooldown = true;
+                SetAutocast(SPELL_HOLY_SMITE, 4800, true, CAST_TANK, 40, true);
+                StartAutocast();
                 break;
+            }
+            break;
             case SHADOW_TYPE:
-                {
-                    StopAutocast();
-                    DoCast(me, SPELL_SHADOWFORM);
-                    MindFlay = 6000;
-                    MindBlast = 2000;
-                    wordDeathTimer = 8000;
-                    wordDeathCooldown = false;
-                    break;
-                }
+            {
+                StopAutocast();
+                DoCast(me, SPELL_SHADOWFORM);
+                MindFlay = 6000;
+                MindBlast = 2000;
+                wordDeathTimer = 8000;
+                wordDeathCooldown = false;
                 break;
+            }
+            break;
         }
     }
 
@@ -5122,43 +4966,40 @@ struct mob_illidari_archonAI: public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        switch(type)
+        switch (type)
         {
             case HOLY_TYPE:
             {
-                if(!shieldCooldown)
+                if (!shieldCooldown)
                 {
-                    if(Unit* shieldTarget = SelectLowestHpFriendly(40, 20000))
+                    if (Unit* shieldTarget = SelectLowestHpFriendly(40, 20000))
                     {
                         AddSpellToCast(shieldTarget, SPELL_POWER_WORD_SHIELD, false, true);
                         shieldCooldown = true;
                     }
                 }
-                if(shieldCooldown && shieldCooldownTimer <= diff)
+                if (shieldCooldown && shieldCooldownTimer.Expired(diff))
                 {
                     shieldCooldown = false;
                     shieldCooldownTimer = 15000;   //15s cooldown as priest's ability
                 }
-                else
-                    shieldCooldownTimer -= diff;
-                if(Heal <= diff)
+
+                if (Heal.Expired(diff))
                 {
-                    if(Unit* healTarget = SelectLowestHpFriendly(40, 60000))
+                    if (Unit* healTarget = SelectLowestHpFriendly(40, 60000))
                         AddSpellToCast(healTarget, SPELL_HEAL, false, true);
                     Heal = 2600;
                 }
-                else
-                    Heal -= diff;
             }
             break;
             case SHADOW_TYPE:
             {
-                if(!wordDeathCooldown)
+                if (!wordDeathCooldown)
                 {
-                    if(me->getVictim()->GetHealth()*100 / me->getVictim()->GetMaxHealth() < 30)
+                    if (me->getVictim()->GetHealth() * 100 / me->getVictim()->GetMaxHealth() < 30)
                     {
                         ClearCastQueue();
                         ForceSpellCast(me->getVictim(), SPELL_POWER_WORD_DEATH, INTERRUPT_AND_CAST);
@@ -5166,29 +5007,26 @@ struct mob_illidari_archonAI: public ScriptedAI
                         wordDeathTimer = 8000;
                     }
                 }
-                if(wordDeathCooldown && wordDeathTimer <= diff)
+                if (wordDeathCooldown && wordDeathTimer.Expired(diff))
                 {
                     wordDeathCooldown = false;
                     wordDeathTimer = 8000;
                 }
-                else
-                    wordDeathTimer -= diff;
-                if(MindFlay <= diff)
+
+                if (MindFlay.Expired(diff))
                 {
-                    if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 20.0f, true))
+                    if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 20.0f, true))
                         AddSpellToCast(target, SPELL_MIND_FLAY);
                     MindFlay = urand(6000, 9000);
                 }
-                else
-                    MindFlay -= diff;
-                if(MindBlast <= diff)
+
+                if (MindBlast.Expired(diff))
                 {
-                    if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30.0f, true))
+                    if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30.0f, true))
                         AddSpellToCast(target, SPELL_MIND_BLAST);
                     MindBlast = urand(12000, 18000);
                 }
-                else
-                    MindBlast -= diff;
+
             }
             break;
         }
@@ -5209,18 +5047,18 @@ CreatureAI* GetAI_mob_illidari_archon(Creature *_Creature)
 
 enum IllidariAssassin
 {
-    SPELL_PARALYZING_POISON     = 3609,
-    SPELL_RIPOSTE_AURA          = 41393,
-    SPELL_VANISH                = 39667,
-    SPELL_AMBUSH                = 41390
+    SPELL_PARALYZING_POISON = 3609,
+    SPELL_RIPOSTE_AURA = 41393,
+    SPELL_VANISH = 39667,
+    SPELL_AMBUSH = 41390
 };
 
-struct mob_illidari_assassinAI: public ScriptedAI
+struct mob_illidari_assassinAI : public ScriptedAI
 {
     mob_illidari_assassinAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 VanishEvent;
-    uint32 ParalyzingPoison;
+    Timer VanishEvent;
+    Timer ParalyzingPoison;
     uint64 AmbushTagetGUID;
     bool ambushed;
 
@@ -5242,20 +5080,20 @@ struct mob_illidari_assassinAI: public ScriptedAI
 
     void OnAuraRemove(Aura* Aur, bool stack)
     {
-        if(Aur->GetId() == SPELL_VANISH)
+        if (Aur->GetId() == SPELL_VANISH)
             AttackStart(me->getVictim());
     }
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(VanishEvent <= diff)
+        if (VanishEvent.Expired(diff))
         {
             ClearCastQueue();
             ForceSpellCast(me, SPELL_VANISH, INTERRUPT_AND_CAST);
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30.0f, true))
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30.0f, true))
             {
                 AmbushTagetGUID = target->GetGUID();
                 DoStartMovement(target);
@@ -5263,14 +5101,13 @@ struct mob_illidari_assassinAI: public ScriptedAI
             }
             VanishEvent = urand(12000, 18000);
         }
-        else
-            VanishEvent -= diff;
 
-        if(!ambushed && me->HasAura(SPELL_VANISH, 1))
+
+        if (!ambushed && me->HasAura(SPELL_VANISH, 1))
         {
-            if(Player* PlayerTarget = me->GetPlayer(AmbushTagetGUID))
+            if (Player* PlayerTarget = me->GetPlayer(AmbushTagetGUID))
             {
-                if(me->IsWithinDistInMap(PlayerTarget, 14.0))
+                if (me->IsWithinDistInMap(PlayerTarget, 14.0))
                 {
                     ForceSpellCast(PlayerTarget, SPELL_AMBUSH);
                     ambushed = true;
@@ -5281,13 +5118,11 @@ struct mob_illidari_assassinAI: public ScriptedAI
         else
             DoMeleeAttackIfReady();
 
-        if(ParalyzingPoison <= diff)
+        if (ParalyzingPoison.Expired(diff))
         {
             AddSpellToCast(me->getVictim(), SPELL_PARALYZING_POISON);
             ParalyzingPoison = urand(10000, 14000);
         }
-        else
-            ParalyzingPoison -= diff;
 
         CastNextSpellIfAnyAndReady();
     }
@@ -5304,19 +5139,19 @@ CreatureAI* GetAI_mob_illidari_assassin(Creature *_Creature)
 
 enum IllidariBattlemage
 {
-    SPELL_BLIZZARD          = 41382,
-    SPELL_FLAMESTRIKE       = 41379,
-    SPELL_FIREBALL          = 41383,
-    SPELL_FROSTBOLT         = 41384
+    SPELL_BLIZZARD = 41382,
+    SPELL_FLAMESTRIKE = 41379,
+    SPELL_FIREBALL = 41383,
+    SPELL_FROSTBOLT = 41384
 };
 
-struct mob_illidari_battle_mageAI: public ScriptedAI
+struct mob_illidari_battle_mageAI : public ScriptedAI
 {
     mob_illidari_battle_mageAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 Blizzard;
-    uint32 Flamestrike;
-    uint32 DirectTimer;
+    Timer Blizzard;
+    Timer Flamestrike;
+    Timer DirectTimer;
 
     void Reset()
     {
@@ -5334,37 +5169,34 @@ struct mob_illidari_battle_mageAI: public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(DirectTimer <= diff)
+        if (DirectTimer.Expired(diff))
         {
             uint32 spellId = RAND(SPELL_FIREBALL, SPELL_FROSTBOLT);
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 40.0f, true))
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 40.0f, true))
                 AddSpellToCast(target, spellId, false, true);
             DirectTimer = urand(2500, 3500);
         }
-        else
-            DirectTimer -= diff;
 
-        if(Flamestrike <= diff)
+
+        if (Flamestrike.Expired(diff))
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30.0f, true))
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30.0f, true))
                 AddSpellToCast(target, SPELL_FLAMESTRIKE, false, true);
             Flamestrike = urand(12000, 18000);
         }
-        else
-            Flamestrike -= diff;
 
-        if(Blizzard <= diff)
+
+        if (Blizzard.Expired(diff))
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 45.0f, true))
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 45.0f, true))
                 AddSpellToCast(target, SPELL_BLIZZARD);
             DirectTimer = urand(10000, 13000);
             Blizzard = urand(18000, 25000);
         }
-        else
-            Blizzard -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -5382,26 +5214,26 @@ CreatureAI* GetAI_mob_illidari_battle_mage(Creature *_Creature)
 
 enum IllidariBloodLord
 {
-    SPELL_HAMMER_OF_JUSTICE     = 13005,
-    SPELL_JUDGEMENT_OF_COMMAND  = 41368,
-    SPELL_DIVINE_SHIELD         = 41367
+    SPELL_HAMMER_OF_JUSTICE = 13005,
+    SPELL_JUDGEMENT_OF_COMMAND = 41368,
+    SPELL_DIVINE_SHIELD = 41367
 };
 
 #define YELL_ILLIDARI_BLOOD_LORD    "This world belongs to the Illidari"
 
-struct mob_illidari_blood_lordAI: public ScriptedAI
+struct mob_illidari_blood_lordAI : public ScriptedAI
 {
     mob_illidari_blood_lordAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 HammerOfJustice;
-    uint32 JudgmentOfCommand;
+    Timer HammerOfJustice;
+    Timer JudgmentOfCommand;
     bool shielded;
 
     void Reset()
     {
         ClearCastQueue();
 
-        HammerOfJustice = urand(6000,8000);
+        HammerOfJustice = urand(6000, 8000);
         JudgmentOfCommand = urand(8000, 10000);
         shielded = false;
     }
@@ -5409,36 +5241,34 @@ struct mob_illidari_blood_lordAI: public ScriptedAI
     void EnterCombat(Unit* who)
     {
         DoZoneInCombat(80.0f);
-        if(urand(1,10) > 7)
+        if (urand(1, 10) > 7)
             DoYell(YELL_ILLIDARI_BLOOD_LORD, 0, who);
     }
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(me->GetHealth()*100 / me->GetMaxHealth() < 20 && !shielded)
+        if (me->GetHealth() * 100 / me->GetMaxHealth() < 20 && !shielded)
         {
             ForceSpellCast(me, SPELL_DIVINE_SHIELD, INTERRUPT_AND_CAST, true);
             shielded = true;
         }
 
-        if(HammerOfJustice <= diff)
+        if (HammerOfJustice.Expired(diff))
         {
             AddSpellToCast(me->getVictim(), SPELL_HAMMER_OF_JUSTICE);
             HammerOfJustice = urand(15000, 25000);
         }
-        else
-            HammerOfJustice -= diff;
 
-        if(JudgmentOfCommand <= diff)
+
+        if (JudgmentOfCommand.Expired(diff))
         {
             AddSpellToCast(me->getVictim(), SPELL_JUDGEMENT_OF_COMMAND);
             JudgmentOfCommand = urand(3000, 8000);
         }
-        else
-            JudgmentOfCommand -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -5456,21 +5286,21 @@ CreatureAI* GetAI_mob_illidari_blood_lord(Creature *_Creature)
 
 enum PromenadeSentinel
 {
-    SPELL_L1_ARCANE_CHARGE          = 41359,
-    SPELL_SPOTLIGHT                 = 41347,
-    SPELL_L4_ARCANE_CHARGE_SUMMON   = 41348,
-    SPELL_L4_ARCANE_CHARGE          = 41349,
-    SPELL_L5_ARCANE_CHARGE          = 41360
+    SPELL_L1_ARCANE_CHARGE = 41359,
+    SPELL_SPOTLIGHT = 41347,
+    SPELL_L4_ARCANE_CHARGE_SUMMON = 41348,
+    SPELL_L4_ARCANE_CHARGE = 41349,
+    SPELL_L5_ARCANE_CHARGE = 41360
 };
 
 #define YELL_PROMENADE_SENTINEL    "Unauthorized entry detected. Engaging annihilation protocols."
 
-struct mob_promenade_sentinelAI: public ScriptedAI
+struct mob_promenade_sentinelAI : public ScriptedAI
 {
     mob_promenade_sentinelAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    uint32 L5arcane;
-    uint32 L4arcane;
+    Timer L5arcane;
+    Timer L4arcane;
 
     void Reset()
     {
@@ -5489,26 +5319,24 @@ struct mob_promenade_sentinelAI: public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(L5arcane <= diff)
+        if (L5arcane.Expired(diff))
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 45.0f, true, me->getVictimGUID()))
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 45.0f, true, me->getVictimGUID()))
                 AddSpellToCast(target, SPELL_L5_ARCANE_CHARGE, false, true);
             L5arcane = urand(15000, 25000);
         }
-        else
-            L5arcane -= diff;
 
-        if(L4arcane <= diff)
+
+        if (L4arcane.Expired(diff))
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 60.0f, true))
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 60.0f, true))
                 AddSpellToCast(target, SPELL_L4_ARCANE_CHARGE_SUMMON);
             L4arcane = urand(10000, 15000);
         }
-        else
-            L4arcane -= diff;
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -5524,7 +5352,7 @@ struct mob_arcane_chargeAI : public Scripted_NoMovementAI
 {
     mob_arcane_chargeAI(Creature *c) : Scripted_NoMovementAI(c) {}
 
-    uint32 Delay;
+    Timer Delay;
 
     void Reset()
     {
@@ -5534,13 +5362,12 @@ struct mob_arcane_chargeAI : public Scripted_NoMovementAI
     void EnterCombat(Unit*) { DoZoneInCombat(80.0f); }
     void UpdateAI(const uint32 diff)
     {
-        if(Delay <= diff)
+        if (Delay.Expired(diff))
         {
             DoCast(me, SPELL_L4_ARCANE_CHARGE);
             Delay = 10000;
         }
-        else
-            Delay -= diff;
+
     }
 };
 
