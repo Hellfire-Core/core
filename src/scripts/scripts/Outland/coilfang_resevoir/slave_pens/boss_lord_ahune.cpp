@@ -318,7 +318,7 @@ struct npc_ice_spear_bunnyAI : public Scripted_NoMovementAI
 {
     npc_ice_spear_bunnyAI(Creature *c) : Scripted_NoMovementAI(c)  {}
 
-    Timer Timer;
+    Timer _Timer;
     uint64 IceSpear;
     bool Init;
     bool Knockback;
@@ -326,7 +326,7 @@ struct npc_ice_spear_bunnyAI : public Scripted_NoMovementAI
 
     void Reset()
     {
-        Timer = 0;
+        _Timer = 0;
         IceSpear = 0;
         Init = false;
         Knockback = false;
@@ -360,7 +360,7 @@ struct npc_ice_spear_bunnyAI : public Scripted_NoMovementAI
                 IceSpear = iceSpear->GetGUID();
 
         }
-        if(Timer.GetCurrent() > 3000 && !Knockback)
+        if(_Timer.GetCurrent() > 3000 && !Knockback)
         {
             if(IceSpear)
                 if(GameObject *iceSpear = me->GetMap()->GetGameObject(IceSpear))
@@ -370,7 +370,7 @@ struct npc_ice_spear_bunnyAI : public Scripted_NoMovementAI
 
         }
 
-        if(Timer.GetCurrent() > 6000)
+        if(_Timer.GetCurrent() > 6000)
         {
             if(IceSpear)
                 if(GameObject *iceSpear = me->GetMap()->GetGameObject(IceSpear))
@@ -381,7 +381,7 @@ struct npc_ice_spear_bunnyAI : public Scripted_NoMovementAI
             me->setDeathState(JUST_DIED);
             me->RemoveCorpse();
         }
-        Timer.Update(diff);     // FIXME: not sure about this reverse couting
+        _Timer.Update(diff);     // FIXME: not sure about this reverse couting
     }
 
 };
