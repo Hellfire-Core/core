@@ -173,7 +173,7 @@ struct mob_broodlingessenceAI : public ScriptedAI
     mob_broodlingessenceAI(Creature *c) : ScriptedAI(c) {}
 
     bool onSpellEffect;
-    int32 Fireball_Timer;
+    Timer Fireball_Timer;
 
     void Reset()
     {
@@ -206,11 +206,11 @@ struct mob_broodlingessenceAI : public ScriptedAI
         if (!UpdateVictim() )
             return;
 
-        Fireball_Timer -= diff;
-        if (Fireball_Timer <= diff)
+
+        if (Fireball_Timer.Expired(diff))
         {
             DoCast(m_creature->getVictim(),SPELL_FIREBALL);
-            Fireball_Timer += 10000;
+            Fireball_Timer = 10000;
         }
         
             

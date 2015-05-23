@@ -160,7 +160,7 @@ struct boss_gruulAI : public ScriptedAI
             Reverberation_Timer = 30000;
         }
 
-        if (ShatterTimer)
+        if (ShatterTimer.GetInterval())
         {
             if (ShatterTimer.Expired(diff))
             {
@@ -216,8 +216,8 @@ struct boss_gruulAI : public ScriptedAI
                 GroundSlamTimer = urand(60000, 65000);
 
                 // is this true ? Oo
-                if (Reverberation_Timer < 10000 + ShatterTimer)
-                    Reverberation_Timer = 10000 + ShatterTimer;
+                if (Reverberation_Timer.GetTimeLeft() < 10000 + ShatterTimer.GetInterval())
+                    Reverberation_Timer = 10000 + ShatterTimer.GetInterval();
 
                 DoScriptText(EMOTE_SHATTER, me);
                 ForceSpellCastWithScriptText(SPELL_GROUND_SLAM, CAST_SELF, RAND(SAY_SLAM1, SAY_SLAM2));

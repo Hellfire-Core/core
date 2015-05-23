@@ -38,7 +38,7 @@ EndContentData */
 
 struct npc_narm_faulkAI : public ScriptedAI
 {
-    uint32 lifeTimer;
+    Timer lifeTimer;
     bool spellHit;
 
     npc_narm_faulkAI(Creature *c) : ScriptedAI(c) {}
@@ -64,13 +64,11 @@ struct npc_narm_faulkAI : public ScriptedAI
     {
         if (!m_creature->GetUInt32Value(UNIT_FIELD_BYTES_1))
         {
-            if(lifeTimer <= diff)
+            if (lifeTimer.Expired(diff))
             {
                 EnterEvadeMode();
                 return;
             }
-            else
-                lifeTimer -= diff;
         }
     }
 

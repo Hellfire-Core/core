@@ -4976,7 +4976,7 @@ struct mob_illidari_archonAI : public ScriptedAI
         {
             case HOLY_TYPE:
             {
-                if (!shieldCooldown)
+                if (!shieldCooldown.GetInterval())
                 {
                     if (Unit* shieldTarget = SelectLowestHpFriendly(40, 20000))
                     {
@@ -4984,7 +4984,7 @@ struct mob_illidari_archonAI : public ScriptedAI
                         shieldCooldown = true;
                     }
                 }
-                if (shieldCooldown && shieldCooldownTimer.Expired(diff))
+                if (shieldCooldownTimer.Expired(diff))
                 {
                     shieldCooldown = false;
                     shieldCooldownTimer = 15000;   //15s cooldown as priest's ability

@@ -781,8 +781,7 @@ void hyjalAI::UpdateAI(const uint32 diff)
 {
     if(IsDummy)
     {
-        MassTeleportTimer -= diff;
-        if(MassTeleportTimer <= diff && DoMassTeleport)
+        if (MassTeleportTimer.Expired(diff) && DoMassTeleport)
         {
             m_creature->CastSpell(m_creature,SPELL_MASS_TELEPORT,false);
             DoMassTeleport = false;
@@ -827,8 +826,7 @@ void hyjalAI::UpdateAI(const uint32 diff)
 
     if(DoRespawn)
     {
-        RespawnTimer -= diff;
-        if(RespawnTimer <= diff)
+        if (RespawnTimer.Expired(diff))
         {
             DoRespawn = false;
             RespawnNearPos(m_creature->GetPositionX(), m_creature->GetPositionY());
@@ -852,8 +850,7 @@ void hyjalAI::UpdateAI(const uint32 diff)
 
     if(bRetreat)
     {
-        RetreatTimer -= diff;
-        if(RetreatTimer <= diff)
+        if (RetreatTimer.Expired(diff))
         {
             IsDummy = true;
             bRetreat = false;
@@ -876,28 +873,26 @@ void hyjalAI::UpdateAI(const uint32 diff)
     if(!EventBegun)
         return;
 
-    if(Summon)
+    if (Summon)
     {
-        if(pInstance && EnemyCount)
+        if (pInstance && EnemyCount)
         {
             EnemyCount = pInstance->GetData(DATA_TRASH);
-            if(!EnemyCount)
-                NextWaveTimer += 5000;
+            if (!EnemyCount)
+                NextWaveTimer = 5000;
         }
 
-        NextWaveTimer -= diff;
-        if(NextWaveTimer <= diff)
+        if (NextWaveTimer.Expired(diff))
         {
-            if(Faction == 0)
+            if (Faction == 0)
                 SummonNextWave(AllianceWaves, WaveCount, AllianceBase);
-            else if(Faction == 1)
+            else if (Faction == 1)
                 SummonNextWave(HordeWaves, WaveCount, HordeBase);
             ++WaveCount;
         }
     }
 
-    CheckTimer -= diff;
-    if(CheckTimer <= diff)
+    if (CheckTimer.Expired(diff))
     {
         for(uint8 i = 0; i < 2; ++i)
         {
@@ -924,7 +919,7 @@ void hyjalAI::UpdateAI(const uint32 diff)
                 }
             }
         }
-        CheckTimer += 5000;
+        CheckTimer = 5000;
     }
     
 
@@ -938,8 +933,7 @@ void hyjalAI::UpdateAI(const uint32 diff)
     {
         if(Spell[i].SpellId)
         {
-            SpellTimer[i] -= diff;
-            if(SpellTimer[i] <= diff)
+            if (SpellTimer[i].Expired(diff))
             {
                 //if(m_creature->IsNonMeleeSpellCast(false))
                     //m_creature->InterruptNonMeleeSpells(false);
@@ -1084,8 +1078,7 @@ void hyjalAI::DoOverrun(uint32 faction, const uint32 diff)
     npc_escortAI::UpdateAI(diff);
     if(WaitForTeleport)
     {
-        TeleportTimer -= diff;
-        if(TeleportTimer <= diff)
+        if (TeleportTimer.Expired(diff))
         {
             std::list<Creature*> creatures;
             Hellground::AllFriendlyCreaturesInGrid creature_check(m_creature);

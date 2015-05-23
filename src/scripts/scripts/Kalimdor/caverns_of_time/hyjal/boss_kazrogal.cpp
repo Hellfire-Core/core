@@ -57,12 +57,12 @@ struct boss_kazrogalAI : public hyjal_trashAI
         }
     }
 
-    int32 CleaveTimer;
-    int32 WarStompTimer;
-    int32 MarkTimer;
-    int32 MarkTimerBase;
-    int32 CheckTimer;
-    int32 CrippleTimer;
+    Timer CleaveTimer;
+    Timer WarStompTimer;
+    Timer MarkTimer;
+    uint32 MarkTimerBase;
+    Timer CheckTimer;
+    Timer CrippleTimer;
 
     bool go;
     uint32 pos;
@@ -165,43 +165,43 @@ struct boss_kazrogalAI : public hyjal_trashAI
         if (!UpdateVictim() )
             return;
 
-        CheckTimer -= diff;
-        if(CheckTimer <= diff)
+
+        if (CheckTimer.Expired(diff))
         {
             DoZoneInCombat();
             m_creature->SetSpeed(MOVE_RUN, 3.0);
-            CheckTimer += 3000;
+            CheckTimer = 3000;
         }
         
 
-        CleaveTimer -= diff;
-        if(CleaveTimer <= diff)
+
+        if (CleaveTimer.Expired(diff))
         {
             DoCast(m_creature->getVictim(), SPELL_CLEAVE);
-            CleaveTimer += 6000+rand()%15000;
+            CleaveTimer = 6000+rand()%15000;
         }
         
 
-        WarStompTimer -= diff;
-        if(WarStompTimer <= diff)
+        
+        if (WarStompTimer.Expired(diff))
         {
             DoCast(m_creature, SPELL_WARSTOMP);
-            WarStompTimer += 60000;
+            WarStompTimer = 60000;
         }
         
 
-        CrippleTimer -= diff;
-        if(CrippleTimer <= diff)
+        
+        if (CrippleTimer.Expired(diff))
         {
             if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 1, 20, true))
                 DoCast(target, SPELL_CRIPPLE);
 
-            CrippleTimer += 20000+rand()%10000;
+            CrippleTimer = 20000+rand()%10000;
         }
         
 
-        MarkTimer -= diff;
-        if(MarkTimer <= diff)
+        
+        if (MarkTimer.Expired(diff))
         {
             m_creature->CastSpell(m_creature, SPELL_MARK, false);
 
@@ -210,7 +210,7 @@ struct boss_kazrogalAI : public hyjal_trashAI
             if(MarkTimerBase <= 5500)
                 MarkTimerBase = 10500;
 
-            MarkTimer += MarkTimerBase;
+            MarkTimer = MarkTimerBase;
             switch(rand()%3)
             {
                 case 0:

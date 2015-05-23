@@ -140,9 +140,9 @@ struct npc_wretched_devourerAI : public ScriptedAI
 {
     npc_wretched_devourerAI(Creature* c) : ScriptedAI(c) {}
 
-    int32 ArcaneTorrent;
-    int32 ManaTap;
-    int32 NetherShock;
+    Timer ArcaneTorrent;
+    Timer ManaTap;
+    Timer NetherShock;
 
     void Reset()
     {
@@ -162,25 +162,25 @@ struct npc_wretched_devourerAI : public ScriptedAI
     {
         if(!UpdateVictim())
             return;
-        ArcaneTorrent -= diff;
-        if(ArcaneTorrent <= diff)
+
+        if (ArcaneTorrent.Expired(diff))
         {
             AddSpellToCast(SPELL_ARCANE_TORRENT, CAST_SELF);
-            ArcaneTorrent += RAND(urand(1500, 4500),urand(6000, 11000));
+            ArcaneTorrent = RAND(urand(1500, 4500),urand(6000, 11000));
         }
 
-        ManaTap -= diff;
-        if(ManaTap <= diff)
+        
+        if (ManaTap.Expired(diff))
         {
             AddSpellToCast(SPELL_MANA_TAP, CAST_TANK);
-            ManaTap += urand(15000, 24000);
+            ManaTap = urand(15000, 24000);
         }
         
-        NetherShock -= diff;
-        if(NetherShock <= diff)
+        
+        if (NetherShock.Expired(diff))
         {
             AddSpellToCast(SPELL_NETHER_SHOCK, CAST_TANK);
-            NetherShock += urand(4000, 8000);
+            NetherShock = urand(4000, 8000);
         }
         
         CastNextSpellIfAnyAndReady();
@@ -207,8 +207,8 @@ struct npc_wretched_fiendAI : public ScriptedAI
 {
     npc_wretched_fiendAI(Creature* c) : ScriptedAI(c) {}
 
-    int32 SunderArmor;
-    int32 BitterWithdrawal;
+    Timer SunderArmor;
+    Timer BitterWithdrawal;
 
     void Reset()
     {
@@ -227,20 +227,19 @@ struct npc_wretched_fiendAI : public ScriptedAI
     {
         if(!UpdateVictim())
             return;
-        SunderArmor -= diff;
-        if(SunderArmor <= diff)
+
+        if (SunderArmor.Expired(diff))
         {
             AddSpellToCast(SPELL_SUNDER_ARMOR, CAST_TANK);
-            SunderArmor += urand(12000, 16000);
+            SunderArmor = urand(12000, 16000);
         }
         
         if(HealthBelowPct(85))
         {
-            BitterWithdrawal -= diff;
-            if(BitterWithdrawal <= diff)
+            if (BitterWithdrawal.Expired(diff))
             {
                 AddSpellToCast(SPELL_BITTER_WITHDRAWAL, CAST_TANK);
-                BitterWithdrawal += urand(10000, 15000);
+                BitterWithdrawal = urand(10000, 15000);
             }
             
         }
@@ -270,10 +269,10 @@ struct npc_erratic_sentryAI : public ScriptedAI
 {
     npc_erratic_sentryAI(Creature* c) : ScriptedAI(c) {}
 
-    int32 CapacitatorOverload;
-    int32 Suppression;
-    int32 ElectricalOverload;
-    int32 CrystalStrike;
+    Timer CapacitatorOverload;
+    Timer Suppression;
+    Timer ElectricalOverload;
+    Timer CrystalStrike;
 
     void Reset()
     {
@@ -291,30 +290,28 @@ struct npc_erratic_sentryAI : public ScriptedAI
             {
                 if(!me->HasAura(44994))
                 {
-                    CapacitatorOverload -= diff;
-                    if(CapacitatorOverload <= diff)
+                    if (CapacitatorOverload.Expired(diff))
                     {
                         DoCast(me, CAPACITATOR_OVERLOAD, true);
-                        CapacitatorOverload += 500;
+                        CapacitatorOverload = 500;
                     }
                     
                 }
             }
             else
             {
-                CapacitatorOverload -= diff;
-                if(CapacitatorOverload <= diff)
+                if (CapacitatorOverload.Expired(diff))
                 {
                     if(roll_chance_i(5))
                     {
                         int32 dmg = 1714;
                         me->CastCustomSpell(me, CAPACITATOR_OVERLOAD, 0, 0, 0, true);
-                        CapacitatorOverload += 500;
+                        CapacitatorOverload = 500;
                         return;
                     }
                     if(HealthBelowPct(100) && roll_chance_i(15))
                         me->SetHealth(me->GetMaxHealth());
-                    CapacitatorOverload += 5000;
+                    CapacitatorOverload = 5000;
                 }
                 
             }
@@ -323,31 +320,30 @@ struct npc_erratic_sentryAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        Suppression -= diff;
-        if(Suppression <= diff)
+
+        if (Suppression.Expired(diff))
         {
             AddSpellToCast(SPELL_SUPPRESSION, CAST_NULL);
             Suppression = urand(15000, 25000);
         }
         
 
-        CrystalStrike -= diff;
-        if(CrystalStrike <= diff)
+
+        if (CrystalStrike.Expired(diff))
         {
             AddSpellToCast(SPELL_CRYSTAL_STRIKE, CAST_TANK);
-            CrystalStrike += 14000;
+            CrystalStrike = 14000;
         }
         
 
         if(HealthBelowPct(80) && !HealthBelowPct(50))
         {
-            ElectricalOverload -= diff;
-            if(ElectricalOverload <= diff)
+            if (ElectricalOverload.Expired(diff))
             {
                 if(roll_chance_i(20))
                     DoYell(YELL_CORE_OVERLOAD, 0, me->getVictim());
                 AddSpellToCast(SPELL_ELECTRICAL_OVERLOAD, CAST_SELF);
-                ElectricalOverload += 10000;
+                ElectricalOverload = 10000;
             }
             
         }
@@ -411,7 +407,7 @@ struct npc_wrath_enforcerAI : public ScriptedAI
 {
     npc_wrath_enforcerAI(Creature* c) : ScriptedAI(c) {}
 
-    int32 FlameWave;
+    Timer FlameWave;
 
     void Reset()
     {
@@ -442,11 +438,11 @@ struct npc_wrath_enforcerAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        FlameWave -= diff;
-        if(FlameWave <= diff)
+
+        if (FlameWave.Expired(diff))
         {
             AddSpellToCast(SPELL_FLAME_WAVE, CAST_SELF);
-            FlameWave += urand(20000, 30000);
+            FlameWave = urand(20000, 30000);
         }
         
 
@@ -470,7 +466,7 @@ struct npc_flame_waveAI : public ScriptedAI
 {
     npc_flame_waveAI(Creature* c) : ScriptedAI(c) {}
 
-    int32 Burn;
+    Timer Burn;
 
     void IsSummonedBy(Unit *summoner)
     {
@@ -485,11 +481,10 @@ struct npc_flame_waveAI : public ScriptedAI
     }
     void UpdateAI(const uint32 diff)
     {
-        Burn -= diff;
-        if(Burn <= diff)
+        if (Burn.Expired(diff))
         {
             DoCast(me, SPELL_BURN, true);
-            Burn += 500;
+            Burn = 500;
         }
         
     }
@@ -512,9 +507,9 @@ struct npc_pit_overlordAI : public ScriptedAI
 {
     npc_pit_overlordAI(Creature* c) : ScriptedAI(c) {}
 
-    int32 Cleave;
-    int32 ConeOfFire;
-    int32 DeathCoil;
+    Timer Cleave;
+    Timer ConeOfFire;
+    Timer DeathCoil;
 
     void Reset()
     {
@@ -546,26 +541,26 @@ struct npc_pit_overlordAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        Cleave -= diff;
-        if(Cleave <= diff)
+
+        if (Cleave.Expired(diff))
         {
             AddSpellToCast(SPELL_CLEAVE);
-            Cleave += urand(10000, 20000);
-        }
-        
-        ConeOfFire -= diff;
-        if(ConeOfFire <= diff)
-        {
-            AddSpellToCast(SPELL_CONE_OF_FIRE, CAST_NULL);
-            ConeOfFire += urand(8000, 16000);
+            Cleave = urand(10000, 20000);
         }
         
 
-        DeathCoil -= diff;
-        if(DeathCoil <= diff)
+        if (ConeOfFire.Expired(diff))
+        {
+            AddSpellToCast(SPELL_CONE_OF_FIRE, CAST_NULL);
+            ConeOfFire = urand(8000, 16000);
+        }
+        
+
+        
+        if (DeathCoil.Expired(diff))
         {
             AddSpellToCast(SPELL_DEATH_COIL);
-            DeathCoil += urand(8000, 12000);
+            DeathCoil = urand(8000, 12000);
         }
         
 
@@ -646,7 +641,7 @@ struct npc_shattered_sun_bombardierAI : public ScriptedAI
     npc_shattered_sun_bombardierAI(Creature* c) : ScriptedAI(c) {}
 
     uint64 PlayerGUID;
-    int32 yell_timer;
+    Timer yell_timer;
     int8 yell;
     bool PathFly;
 
@@ -674,15 +669,14 @@ struct npc_shattered_sun_bombardierAI : public ScriptedAI
             m_creature->GetMotionMaster()->MovePath(BOMBARDIER_FLY_PATH, false);
             me->SetSpeed(MOVE_WALK, 1.4*who->GetSpeed(MOVE_FLIGHT));
             me->SetVisibility(VISIBILITY_ON);
-            yell_timer += 5000;
+            yell_timer = 5000;
             PathFly = true;
         }
     }
 
     void UpdateAI(const uint32 diff)
     {
-        yell_timer -= diff;
-        if (yell_timer <= diff)
+        if (yell_timer.Expired(diff))
         {
             switch(yell)
             {
@@ -691,13 +685,13 @@ struct npc_shattered_sun_bombardierAI : public ScriptedAI
                         me->Yell(BombardierYell[rand()%3], 0, PlayerGUID);
                     me->SetSpeed(MOVE_WALK, 1.01*me->GetSpeed(MOVE_WALK));
                     yell++;
-                    yell_timer += 7000;
+                    yell_timer = 7000;
                     break;
                 case 1:
                     if(me->GetGUIDLow() == 85370)
                         me->Yell(BombardierYell[3+rand()%3], 0, PlayerGUID);
                     yell++;
-                    yell_timer += 7000;
+                    yell_timer = 7000;
                     break;
                 case 2:
                     me->DisappearAndDie();
@@ -754,7 +748,7 @@ struct npc_greengill_slaveAI : public ScriptedAI
     npc_greengill_slaveAI(Creature* c) : ScriptedAI(c) {}
 
     uint64 PlayerGUID;
-    int32 enrageTimer;
+    Timer enrageTimer;
 
     void Reset()
     {
@@ -808,15 +802,14 @@ struct npc_greengill_slaveAI : public ScriptedAI
     {
         if(me->HasAura(ENRAGE))
         {
-            enrageTimer -= diff;
-            if(enrageTimer <= diff)
+            if (enrageTimer.Expired(diff))
             {
                 me->CombatStop();
                 float x, y, z;
                 me->GetNearPoint( x, y, z, 0, 15, frand(0,2*M_PI));
                 me->UpdateAllowedPositionZ(x, y, z);
                 me->GetMotionMaster()->MovePoint(1, x, y, z);
-                enrageTimer += 60000;
+                enrageTimer = 60000;
             }
             
         }
@@ -855,7 +848,7 @@ struct npc_ioqd_brutallusAI : public ScriptedAI
 {
     npc_ioqd_brutallusAI(Creature* c) : ScriptedAI(c) {}
 
-    int32 RandYell_timer;
+    Timer RandYell_timer;
 
     void Reset()
     {
@@ -872,12 +865,11 @@ struct npc_ioqd_brutallusAI : public ScriptedAI
     }
 
     void UpdateAI(const uint32 diff)
-    {
-        RandYell_timer -= diff;
-        if(RandYell_timer <= diff)
+    {    
+        if (RandYell_timer.Expired(diff))
         {
             DoYell(BrutalYell[urand(1, 6)], 0, 0);
-            RandYell_timer += urand(15000, 25000);
+            RandYell_timer = urand(15000, 25000);
         }
         
 
@@ -901,7 +893,7 @@ struct npc_ioqd_madrigosaAI : public ScriptedAI
 {
     npc_ioqd_madrigosaAI(Creature* c) : ScriptedAI(c) {}
 
-    int32 RandYell_timer;
+    Timer RandYell_timer;
 
     void Reset()
     {

@@ -235,7 +235,7 @@ struct boss_lady_vashjAI : public ScriptedAI
     void EventTaintedElementalDeath()
     {
         //the next will spawn 50 seconds after the previous one's death
-        if (TaintedElemental_Timer > 50000)
+        if (TaintedElemental_Timer.GetTimeLeft() > 50000)
             TaintedElemental_Timer = 50000;
     }
 
@@ -461,12 +461,12 @@ struct boss_lady_vashjAI : public ScriptedAI
                     }
 
                     //summon sporebats faster and faster
-                    if(SummonSporebat_StaticTimer > 1000)
-                        SummonSporebat_StaticTimer -= 1000;
+                    if(SummonSporebat_StaticTimer.GetInterval() > 1000)
+                        SummonSporebat_StaticTimer.SetInterval(SummonSporebat_StaticTimer.GetInterval() - 1000);
 
                     SummonSporebat_Timer = SummonSporebat_StaticTimer;
 
-                    if(SummonSporebat_Timer < 5000)
+                    if(SummonSporebat_Timer.GetTimeLeft() < 5000)
                         SummonSporebat_Timer = 5000;
 
                 }
@@ -604,7 +604,7 @@ struct mob_enchanted_elementalAI : public ScriptedAI
     }
 
     ScriptedInstance *instance;
-    uint32 move;
+    Timer move;
     uint32 phase;
     float x, y, z;
     Unit *Vashj;
@@ -653,7 +653,7 @@ struct mob_enchanted_elementalAI : public ScriptedAI
             return;
         }
 
-        if(move <= diff)
+        if (move.Expired(diff))
         {
             me->SetWalk(true);
             me->SetSpeed(MOVE_WALK, 0.6, true);
@@ -695,7 +695,7 @@ struct mob_enchanted_elementalAI : public ScriptedAI
                 me->DealDamage(me, me->GetMaxHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
             }
             move = 1000;
-        }else move -= diff;
+        }
     }
 };
 

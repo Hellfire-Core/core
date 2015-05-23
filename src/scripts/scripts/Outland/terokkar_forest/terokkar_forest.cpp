@@ -886,7 +886,7 @@ struct npc_skyguard_aceAI : public ScriptedAI
             AncientFlame_Timer = 0;
         }
 
-        }
+        
     }
 };
 

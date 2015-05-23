@@ -93,8 +93,8 @@ struct boss_hydross_the_unstableAI : public ScriptedAI
     Timer MarkOfCorruption_Timer;
     Timer WaterTomb_Timer;
     Timer VileSludge_Timer;
-    Timer MarkOfHydross_Count;
-    Timer MarkOfCorruption_Count;
+    uint32 MarkOfHydross_Count;
+    uint32 MarkOfCorruption_Count;
     Timer EnrageTimer;
     bool CorruptedForm;
     bool beam;

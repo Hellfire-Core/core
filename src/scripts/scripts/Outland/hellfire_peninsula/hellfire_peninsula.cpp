@@ -447,7 +447,7 @@ struct npc_demoniac_scryerAI : public ScriptedAI
         float fX, fY, fZ;
         me->GetNearPoint(fX, fY, fZ, 0.0f, 5.0f, fAngle);
 
-        uint32 m_Time = TIME_TOTAL - (SpawnButtressTimer * ButtressCount);
+        uint32 m_Time = TIME_TOTAL - (SpawnButtressTimer.GetTimeLeft() * ButtressCount);
         me->SummonCreature(NPC_BUTTRESS, fX, fY, fZ, me->GetAngle(fX, fY), TEMPSUMMON_TIMED_DESPAWN, m_Time);
         me->SummonCreature(NPC_BUTTRESS_SPAWNER, fX, fY, fZ, me->GetAngle(fX, fY), TEMPSUMMON_TIMED_DESPAWN, m_Time);
     }

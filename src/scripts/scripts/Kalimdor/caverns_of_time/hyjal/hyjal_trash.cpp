@@ -421,8 +421,8 @@ struct mob_giant_infernalAI : public hyjal_trashAI
     bool WpEnabled;
     bool go;
     uint32 pos;
-    int32 spawnTimer;
-    int32 FlameBuffetTimer;
+    Timer spawnTimer;
+    Timer FlameBuffetTimer;
     bool imol;
 
     void Reset()
@@ -448,13 +448,10 @@ struct mob_giant_infernalAI : public hyjal_trashAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (Delay <= diff)
+        if (Delay.Expired(diff))
             Delay = 0;
         else
-        {
-            Delay -= diff;
             return;
-        }
 
         if (!meteor)
         {
@@ -473,8 +470,7 @@ struct mob_giant_infernalAI : public hyjal_trashAI
         }
         else if (!CanMove)
         {
-            spawnTimer -= diff;
-            if (spawnTimer <= diff)
+            if (spawnTimer.Expired(diff))
             {
                 m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                 m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
@@ -527,11 +523,11 @@ struct mob_giant_infernalAI : public hyjal_trashAI
             imol = true;
         }
 
-        FlameBuffetTimer -= diff;
-        if (FlameBuffetTimer <= diff)
+
+        if (FlameBuffetTimer.Expired(diff))
         {
             DoCast(m_creature->getVictim(), SPELL_FLAME_BUFFET, true);
-            FlameBuffetTimer += 7000;
+            FlameBuffetTimer = 7000;
         }
 
 
@@ -559,7 +555,7 @@ struct mob_abominationAI : public hyjal_trashAI
     }
 
     bool go;
-    int32 KnockDownTimer;
+    Timer KnockDownTimer;
     uint32 pos;
     void Reset()
     {
@@ -634,11 +630,10 @@ struct mob_abominationAI : public hyjal_trashAI
         if (!UpdateVictim())
             return;
 
-        KnockDownTimer -= diff;
-        if (KnockDownTimer <= diff)
+        if (KnockDownTimer.Expired(diff))
         {
             DoCast(m_creature->getVictim(), SPELL_KNOCKDOWN);
-            KnockDownTimer += 15000 + rand() % 10000;
+            KnockDownTimer = 15000 + rand() % 10000;
         }
 
 
@@ -666,9 +661,9 @@ struct mob_ghoulAI : public hyjal_trashAI
     }
 
     bool go;
-    int32 FrenzyTimer;
+    Timer FrenzyTimer;
     uint32 pos;
-    int32 MoveTimer;
+    Timer MoveTimer;
     bool RandomMove;
     void Reset()
     {
@@ -762,11 +757,10 @@ struct mob_ghoulAI : public hyjal_trashAI
             }
         }
 
-        FrenzyTimer -= diff;
-        if (FrenzyTimer <= diff)
+        if (FrenzyTimer.Expired(diff))
         {
             DoCast(m_creature, SPELL_FRENZY);
-            FrenzyTimer += 15000 + rand() % 15000;
+            FrenzyTimer = 15000 + rand() % 15000;
         }
 
 
@@ -803,9 +797,9 @@ struct mob_necromancerAI : public hyjal_trashAI
     SummonList summons;
 
     bool go;
-    int32 ShadowBoltTimer;
-    int32 UnholyFrenzyTimer;
-    int32 CrippleTimer;
+    Timer ShadowBoltTimer;
+    Timer UnholyFrenzyTimer;
+    Timer CrippleTimer;
     uint32 pos;
 
     void Reset()
@@ -920,29 +914,29 @@ struct mob_necromancerAI : public hyjal_trashAI
         if (!UpdateVictim())
             return;
 
-        ShadowBoltTimer -= diff;
-        if (ShadowBoltTimer <= diff)
+
+        if (ShadowBoltTimer.Expired(diff))
         {
             DoCast(m_creature->getVictim(), SPELL_SHADOW_BOLT);
-            ShadowBoltTimer += 5000 + rand() % 5000;
+            ShadowBoltTimer = 5000 + rand() % 5000;
         }
 
 
-        UnholyFrenzyTimer -= diff;
-        if (UnholyFrenzyTimer <= diff)
+        
+        if (UnholyFrenzyTimer.Expired(diff))
         {
             DoCast(m_creature, SPELL_UNHOLY_FRENZY);
-            UnholyFrenzyTimer += 10000 + rand() % 5000;
+            UnholyFrenzyTimer = 10000 + rand() % 5000;
         }
 
 
-        CrippleTimer -= diff;
-        if (CrippleTimer <= diff)
+
+        if (CrippleTimer.Expired(diff))
         {
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30, true))
             {
                 DoCast(target, SPELL_CRIPPLE);
-                CrippleTimer += 10000 + rand() % 5000;
+                CrippleTimer = 10000 + rand() % 5000;
             }
         }
 
@@ -972,9 +966,9 @@ struct mob_bansheeAI : public hyjal_trashAI
     }
 
     bool go;
-    int32 CourseTimer;
-    int32 WailTimer;
-    int32 ShellTimer;
+    Timer CourseTimer;
+    Timer WailTimer;
+    Timer ShellTimer;
     uint32 pos;
 
     void Reset()
@@ -1055,29 +1049,29 @@ struct mob_bansheeAI : public hyjal_trashAI
         if (!UpdateVictim())
             return;
 
-        CourseTimer -= diff;
-        if (CourseTimer <= diff)
+
+        if (CourseTimer.Expired(diff))
         {
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 50, true))
                 DoCast(target, SPELL_BANSHEE_CURSE);
 
-            CourseTimer += 20000 + rand() % 5000;
+            CourseTimer = 20000 + rand() % 5000;
         }
         
 
-        WailTimer -= diff;
-        if (WailTimer <= diff)
+
+        if (WailTimer.Expired(diff))
         {
             DoCast(m_creature->getVictim(), SPELL_BANSHEE_WAIL);
-            WailTimer += 5000 + rand() % 5000;
+            WailTimer = 5000 + rand() % 5000;
         }
         
 
-        ShellTimer -= diff;
-        if (ShellTimer <= diff)
+
+        if (ShellTimer.Expired(diff))
         {
             DoCast(m_creature, SPELL_ANTI_MAGIC_SHELL);
-            ShellTimer += 30000 + rand() % 10000;
+            ShellTimer = 30000 + rand() % 10000;
         }
         
 
@@ -1104,7 +1098,7 @@ struct mob_crypt_fiendAI : public hyjal_trashAI
     }
 
     bool go;
-    int32 WebTimer;
+    Timer WebTimer;
     uint32 pos;
 
     void Reset()
@@ -1185,11 +1179,11 @@ struct mob_crypt_fiendAI : public hyjal_trashAI
         if (!UpdateVictim())
             return;
 
-        WebTimer -= diff;
-        if (WebTimer <= diff)
+
+        if (WebTimer.Expired(diff))
         {
             DoCast(m_creature->getVictim(), SPELL_WEB);
-            WebTimer += 20000 + rand() % 5000;
+            WebTimer = 20000 + rand() % 5000;
         }
         
 
@@ -1216,7 +1210,7 @@ struct mob_fel_stalkerAI : public hyjal_trashAI
     }
 
     bool go;
-    uint32 ManaBurnTimer;
+    Timer ManaBurnTimer;
     uint32 pos;
 
     void Reset()
@@ -1295,12 +1289,11 @@ struct mob_fel_stalkerAI : public hyjal_trashAI
             }
         }
         if (!UpdateVictim())
-            return;
-        ManaBurnTimer -= diff;
-        if (ManaBurnTimer <= diff)
+            return
+        if (ManaBurnTimer.Expired(diff))
         {
             DoCast(m_creature->getVictim(), SPELL_MANA_BURN);
-            ManaBurnTimer += 9000 + rand() % 5000;
+            ManaBurnTimer = 9000 + rand() % 5000;
         }
 
         DoMeleeAttackIfReady();
@@ -1326,9 +1319,9 @@ struct mob_frost_wyrmAI : public hyjal_trashAI
     }
 
     bool go;
-    int32 FrostBreathTimer;
+    Timer FrostBreathTimer;
     uint32 pos;
-    int32 MoveTimer;
+    Timer MoveTimer;
 
     void Reset()
     {
@@ -1404,23 +1397,22 @@ struct mob_frost_wyrmAI : public hyjal_trashAI
 
         if (!m_creature->IsWithinDistInMap(m_creature->getVictim(), 25))
         {
-            MoveTimer -= diff;
-            if (MoveTimer <= diff)
+            if (MoveTimer.Expired(diff))
             {
                 m_creature->GetMotionMaster()->MoveChase(m_creature->getVictim(), 20);
-                MoveTimer += 2000;
+                MoveTimer = 2000;
             }
         }
 
-        FrostBreathTimer -= diff;
-        if (FrostBreathTimer <= diff)
+        
+        if (FrostBreathTimer.Expired(diff))
         {
             if (m_creature->IsWithinDistInMap(m_creature->getVictim(), 25))
             {
                 DoCast(m_creature->getVictim(), SPELL_FROST_BREATH);
                 m_creature->StopMoving();
                 m_creature->GetMotionMaster()->Clear();
-                FrostBreathTimer += 4000;
+                FrostBreathTimer = 4000;
             }
         }
     }
@@ -1446,9 +1438,9 @@ struct mob_gargoyleAI : public hyjal_trashAI
     }
 
     bool go;
-    int32 StrikeTimer;
+    Timer StrikeTimer;
     uint32 pos;
-    int32 MoveTimer;
+    Timer MoveTimer;
     float Zpos;
     bool forcemove;
 
@@ -1526,13 +1518,12 @@ struct mob_gargoyleAI : public hyjal_trashAI
         {
             if (faction == 0)//alliance
             {
-                StrikeTimer -= diff;
-                if (StrikeTimer <= diff)
+                if (StrikeTimer.Expired(diff))
                 {
                     Creature* dummyTarget = m_creature->SummonTrigger(DummyTarget[0], DummyTarget[1], DummyTarget[2], 0, 3000);
                     if (dummyTarget)
                         m_creature->CastSpell(dummyTarget, SPELL_GARGOYLE_STRIKE, false);
-                    StrikeTimer += 2000 + rand() % 1000;
+                    StrikeTimer = 2000 + rand() % 1000;
                 }
             }
         }
@@ -1550,8 +1541,8 @@ struct mob_gargoyleAI : public hyjal_trashAI
                     m_creature->Attack(target, false);
             }
 
-            MoveTimer -= diff;
-            if (MoveTimer <= diff)
+            
+            if (MoveTimer.Expired(diff))
             {
                 float x, y, z;
                 m_creature->getVictim()->GetPosition(x, y, z);
@@ -1561,19 +1552,19 @@ struct mob_gargoyleAI : public hyjal_trashAI
                 if (Zpos <= 0)
                     Zpos = 0;
 
-                MoveTimer += 2000;
+                MoveTimer = 2000;
             }
         }
 
-        StrikeTimer -= diff;
-        if (StrikeTimer <= diff)
+
+        if (StrikeTimer.Expired(diff))
         {
             if (m_creature->IsWithinDistInMap(m_creature->getVictim(), 20))
             {
                 DoCast(m_creature->getVictim(), SPELL_GARGOYLE_STRIKE);
                 m_creature->StopMoving();
                 m_creature->GetMotionMaster()->Clear();
-                StrikeTimer += 2000 + rand() % 1000;
+                StrikeTimer = 2000 + rand() % 1000;
             }
             else
                 StrikeTimer = 0;
@@ -1597,8 +1588,8 @@ struct alliance_riflemanAI : public Scripted_NoMovementAI
         Reset();
     }
 
-    int32 ExplodeTimer;
-    int32 ShootTimer;
+    Timer ExplodeTimer;
+    Timer ShootTimer;
 
     void JustDied(Unit*)
     {}
@@ -1633,8 +1624,8 @@ struct alliance_riflemanAI : public Scripted_NoMovementAI
         if (!UpdateVictim())
             return;
 
-        ExplodeTimer -= diff;
-        if (ExplodeTimer <= diff)
+
+        if (ExplodeTimer.Expired(diff))
         {
             if (!m_creature->IsWithinDistInMap(m_creature->getVictim(), 30))
             {
@@ -1645,15 +1636,13 @@ struct alliance_riflemanAI : public Scripted_NoMovementAI
             int dmg = 500 + rand() % 700;
 
             m_creature->CastCustomSpell(m_creature->getVictim(), SPELL_EXPLODING_SHOT, &dmg, 0, 0, false);
-            ExplodeTimer += 2000 + rand() % 5000;
+            ExplodeTimer = 2000 + rand() % 5000;
         }
-       
 
-        ShootTimer -= diff;
-        if (ShootTimer <= diff)
+        if (ShootTimer.Expired(diff))
         {
             DoCast(m_creature->getVictim(), SPELL_SHOOT, true);
-            ShootTimer += 2000;
+            ShootTimer = 2000;
         }
         
     }

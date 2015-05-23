@@ -2391,7 +2391,7 @@ struct npc_shadowlord_triggerAI : public Scripted_NoMovementAI
             NewZ = 137.15;  //normalize Z
             DoTeleportTo(NewX, NewY, NewZ);
             m_creature->Relocate(NewX, NewY, NewZ);
-            if(!Ccounter && counter && !Reset_Timer)
+            if(!Ccounter && counter && !Reset_Timer.GetInterval())
                 Reset_Timer = 20000;
         }
 
@@ -2424,14 +2424,13 @@ struct npc_shadowlord_triggerAI : public Scripted_NoMovementAI
             m_creature->RemoveCorpse();
         }
 
-        if(Reset_Timer)
+
+        if (Reset_Timer.Expired(diff))
         {
-            if(Reset_Timer.Expired(diff))
-            {
-                EnterEvadeMode();
-                Reset_Timer = 0;
-            }
+            EnterEvadeMode();
+            Reset_Timer = 0;
         }
+        
     }
 };
 

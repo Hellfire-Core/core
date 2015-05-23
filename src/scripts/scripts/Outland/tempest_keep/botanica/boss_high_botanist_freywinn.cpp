@@ -132,7 +132,7 @@ struct boss_high_botanist_freywinnAI : public ScriptedAI
                     }
                 }
 
-                if( DeadAddsCount < 3 && TreeForm_Timer.GetCurrent()+30000 <= TreeForm_Timer.GetInterval() )
+                if( DeadAddsCount < 3 && TreeForm_Timer.GetTimeLeft() < 30000 )
                     DeadAddsCount = 3;
 
                 if( DeadAddsCount >= 3 )
