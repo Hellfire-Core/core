@@ -43,8 +43,8 @@ struct instance_magtheridons_lair : public ScriptedInstance
     uint64 DoorGUID;
     std::set<uint64> ColumnGUID;
 
-    uint32 CageTimer;
-    uint32 RespawnTimer;
+    Timer CageTimer;
+    Timer RespawnTimer;
     GBK_handler m_gbk;
 
     void Initialize()
@@ -190,47 +190,37 @@ struct instance_magtheridons_lair : public ScriptedInstance
 
     void Update(uint32 diff)
     {
-        if (CageTimer)
+        if (CageTimer.Expired(diff))
         {
-            if (CageTimer <= diff)
+            Creature *Magtheridon = instance->GetCreature(MagtheridonGUID);
+            if (Magtheridon && Magtheridon->isAlive())
             {
-                Creature *Magtheridon = instance->GetCreature(MagtheridonGUID);
-                if (Magtheridon && Magtheridon->isAlive())
-                {
-                    Magtheridon->RemoveAurasDueToSpell(30205); // SPELL_SHADOW_CAGE_C
-                    Magtheridon->AI()->DoZoneInCombat();
-                    Magtheridon->AI()->AttackStart(Magtheridon->SelectNearestTarget(999));
-                }
-
-                CageTimer = 0;
+                Magtheridon->RemoveAurasDueToSpell(30205); // SPELL_SHADOW_CAGE_C
+                Magtheridon->AI()->DoZoneInCombat();
+                Magtheridon->AI()->AttackStart(Magtheridon->SelectNearestTarget(999));
             }
-            else
-                CageTimer -= diff;
+
+            CageTimer = 0;
         }
 
-        if (RespawnTimer)
+        if (RespawnTimer.Expired(diff))
         {
-            if (RespawnTimer <= diff)
+            for (std::set<uint64>::iterator i = ChannelerGUID.begin(); i != ChannelerGUID.end(); ++i)
             {
-                for (std::set<uint64>::iterator i = ChannelerGUID.begin(); i != ChannelerGUID.end(); ++i)
+                if (Creature *Channeler = instance->GetCreature(*i))
                 {
-                    if (Creature *Channeler = instance->GetCreature(*i))
-                    {
-                        if(Channeler->isAlive())
-                            Channeler->AI()->EnterEvadeMode();
-                        else
-                            Channeler->Respawn();
-                    }
+                    if(Channeler->isAlive())
+                        Channeler->AI()->EnterEvadeMode();
+                    else
+                        Channeler->Respawn();
                 }
-
-                HandleGameObject(DoorGUID, true);
-
-                RespawnTimer = 0;
-                if (Encounters[0] != DONE)
-                    Encounters[0] = NOT_STARTED;
             }
-            else
-                RespawnTimer -= diff;
+
+            HandleGameObject(DoorGUID, true);
+
+            RespawnTimer = 0;
+            if (Encounters[0] != DONE)
+                Encounters[0] = NOT_STARTED;
         }
     }
 

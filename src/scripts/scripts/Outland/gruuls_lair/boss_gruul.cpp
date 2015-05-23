@@ -85,14 +85,14 @@ struct boss_gruulAI : public ScriptedAI
 
     WorldLocation wLoc;
 
-    uint32 Growth_Timer;
-    uint32 CaveIn_Timer;
-    uint32 GroundSlamTimer;
-    uint32 ShatterTimer;
+    Timer Growth_Timer;
+    Timer CaveIn_Timer;
+    Timer GroundSlamTimer;
+    Timer ShatterTimer;
     uint32 PerformingGroundSlam;
-    uint32 HurtfulStrike_Timer;
-    uint32 Reverberation_Timer;
-    uint32 Check_Timer;
+    Timer HurtfulStrike_Timer;
+    Timer Reverberation_Timer;
+    Timer Check_Timer;
 
     void Reset()
     {
@@ -131,7 +131,7 @@ struct boss_gruulAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (Check_Timer <= diff)
+        if (Check_Timer.Expired(diff))
         {
             if (!me->IsWithinDistInMap(&wLoc, 74.0f))
             {
@@ -143,32 +143,26 @@ struct boss_gruulAI : public ScriptedAI
             me->SetSpeed(MOVE_RUN, 2.0f);
             Check_Timer= 3000;
         }
-        else
-            Check_Timer -= diff;
 
         // Growth
         // Gruul can cast this spell up to 30 times
-        if (Growth_Timer <= diff)
+        if (Growth_Timer.Expired(diff))
         {
             AddSpellToCast(me, SPELL_GROWTH);
             DoScriptText(EMOTE_GROW, me);
             Growth_Timer = 30000;
         }
-        else
-            Growth_Timer -= diff;
 
         // Reverberation - timer should expiring even if in ground slam mode
-        if (Reverberation_Timer <= diff)
+        if (Reverberation_Timer.Expired(diff))
         {
             AddSpellToCast(SPELL_REVERBERATION, CAST_NULL);
             Reverberation_Timer = 30000;
         }
-        else
-            Reverberation_Timer -= diff;
 
         if (ShatterTimer)
         {
-            if (ShatterTimer <= diff)
+            if (ShatterTimer.Expired(diff))
             {
                 me->GetMotionMaster()->Clear();
 
@@ -186,15 +180,13 @@ struct boss_gruulAI : public ScriptedAI
                 //The dummy shatter spell is cast
                 ForceSpellCastWithScriptText(SPELL_SHATTER, CAST_SELF, RAND(SAY_SHATTER1, SAY_SHATTER2), INTERRUPT_AND_CAST_INSTANTLY);
             }
-            else
-                ShatterTimer -= diff;
 
             CastNextSpellIfAnyAndReady();
         }
         else
         {
             // Hurtful Strike
-            if (HurtfulStrike_Timer <= diff)
+            if (HurtfulStrike_Timer.Expired(diff))
             {
                 Unit* target = SelectUnit(SELECT_TARGET_TOPAGGRO, 0, me->GetMeleeReach(), true, me->getVictimGUID());
                 if (!target)
@@ -203,22 +195,18 @@ struct boss_gruulAI : public ScriptedAI
                 AddSpellToCast(target, SPELL_HURTFUL_STRIKE);
                 HurtfulStrike_Timer = 8000;
             }
-            else
-                HurtfulStrike_Timer -= diff;
 
             // Cave In
-            if (CaveIn_Timer <= diff)
+            if (CaveIn_Timer.Expired(diff))
             {
                 if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100.0f, true))
                     AddSpellToCast(target, SPELL_CAVE_IN);
 
                 CaveIn_Timer = 20000;
             }
-            else
-                CaveIn_Timer -= diff;
 
             // Ground Slam, Gronn Lord's Grasp, Stoned, Shatter
-            if (GroundSlamTimer <= diff)
+            if (GroundSlamTimer.Expired(diff))
             {
                 me->GetMotionMaster()->Clear();
                 me->GetMotionMaster()->MoveIdle();
@@ -234,8 +222,6 @@ struct boss_gruulAI : public ScriptedAI
                 DoScriptText(EMOTE_SHATTER, me);
                 ForceSpellCastWithScriptText(SPELL_GROUND_SLAM, CAST_SELF, RAND(SAY_SLAM1, SAY_SLAM2));
             }
-            else
-                GroundSlamTimer -= diff;
 
             CastNextSpellIfAnyAndReady();
             DoMeleeAttackIfReady();

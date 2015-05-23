@@ -109,7 +109,7 @@ struct mob_abyssalAI : public ScriptedAI
 {
     mob_abyssalAI(Creature *c) : ScriptedAI(c) { }
 
-    uint32 FireBlast_Timer;
+    Timer FireBlast_Timer;
 
     void Reset()
     {
@@ -126,13 +126,11 @@ struct mob_abyssalAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (FireBlast_Timer <= diff)
+        if (FireBlast_Timer.Expired(diff))
         {
             AddSpellToCast(SPELL_FIRE_BLAST, CAST_TANK);
             FireBlast_Timer = urand(5000, 15000);
         }
-        else
-            FireBlast_Timer -= diff;
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -148,7 +146,7 @@ struct boss_magtheridonAI : public BossAI
     }
 
     uint8 clickersCount;
-    uint32 RandChat_Timer;
+    Timer RandChat_Timer;
 
     bool Phase3;
 
@@ -240,13 +238,11 @@ struct boss_magtheridonAI : public BossAI
     {
         if (!UpdateVictim())
         {
-            if (RandChat_Timer <= diff)
+            if (RandChat_Timer.Expired(diff))
             {
                 DoScriptText(RAND(MAGT_RANDOM_YELL_1, MAGT_RANDOM_YELL_2, MAGT_RANDOM_YELL_3, MAGT_RANDOM_YELL_4, MAGT_RANDOM_YELL_5, MAGT_RANDOM_YELL_6), m_creature);
                 RandChat_Timer = 90000;
             }
-            else
-                RandChat_Timer -= diff;
 
             return;
         }
@@ -329,11 +325,11 @@ struct mob_hellfire_channelerAI : public ScriptedAI
 
     ScriptedInstance* pInstance;
 
-    uint32 ShadowBoltVolley_Timer;
-    uint32 DarkMending_Timer;
-    uint32 Fear_Timer;
-    uint32 Infernal_Timer;
-    uint32 Check_Timer;
+    Timer ShadowBoltVolley_Timer;
+    Timer DarkMending_Timer;
+    Timer Fear_Timer;
+    Timer Infernal_Timer;
+    Timer Check_Timer;
 
     void Reset()
     {
@@ -374,15 +370,13 @@ struct mob_hellfire_channelerAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (ShadowBoltVolley_Timer <= diff)
+        if (ShadowBoltVolley_Timer.Expired(diff))
         {
             AddSpellToCast(SPELL_SHADOW_BOLT_VOLLEY, CAST_SELF);
             ShadowBoltVolley_Timer = urand(10000, 20000);
         }
-        else
-            ShadowBoltVolley_Timer -= diff;
 
-        if (DarkMending_Timer <= diff)
+        if (DarkMending_Timer.Expired(diff))
         {
             Unit * target = SelectLowestHpFriendly(30.0f);
             if (!target && HealthBelowPct(50))
@@ -393,26 +387,17 @@ struct mob_hellfire_channelerAI : public ScriptedAI
 
             DarkMending_Timer = urand(10000, 20000);
         }
-        else
-            DarkMending_Timer -= diff;
 
-        if (Fear_Timer <= diff)
+        if (Fear_Timer.Expired(diff))
         {
             AddSpellToCast(SPELL_FEAR, CAST_RANDOM_WITHOUT_TANK);
             Fear_Timer = urand(25000, 40000);
         }
-        else
-            Fear_Timer -= diff;
 
-        if (Infernal_Timer)
+        if (Infernal_Timer.Expired(diff))
         {
-            if (Infernal_Timer <= diff)
-            {
-                AddSpellToCast(SPELL_BURNING_ABYSSAL, CAST_RANDOM);
-                Infernal_Timer = 0;
-            }
-            else
-                Infernal_Timer -= diff;
+            AddSpellToCast(SPELL_BURNING_ABYSSAL, CAST_RANDOM);
+            Infernal_Timer = 0;
         }
 
         CastNextSpellIfAnyAndReady();
@@ -427,7 +412,7 @@ struct mob_magtheridon_triggerAI : public Scripted_NoMovementAI
         m_creature->setActive(true);
     }
 
-    uint32 debrisTimer;
+    Timer debrisTimer;
 
     void JustRespawned()
     {
@@ -437,15 +422,10 @@ struct mob_magtheridon_triggerAI : public Scripted_NoMovementAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (debrisTimer)
+        if (debrisTimer.Expired(diff))
         {
-            if (debrisTimer <= diff)
-            {
-                me->CastSpell(me, SPELL_DEBRIS_DAMAGE, true);
-                debrisTimer = 0;
-            }
-            else
-                debrisTimer -= diff;
+            me->CastSpell(me, SPELL_DEBRIS_DAMAGE, true);
+            debrisTimer = 0;
         }
     }
 };
