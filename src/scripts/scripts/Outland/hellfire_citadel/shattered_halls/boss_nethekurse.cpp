@@ -96,12 +96,12 @@ struct boss_grand_warlock_nethekurseAI : public ScriptedAI
     uint32 PeonEngagedCount;
     uint32 PeonKilledCount;
 
-    uint32 IntroEvent_Timer;
-    uint32 DeathCoil_Timer;
-    uint32 ShadowFissure_Timer;
-    uint32 Cleave_Timer;
-    uint32 ShadowBolt_Timer;
-    uint32 DarkCleave_Timer;
+    Timer IntroEvent_Timer;
+    Timer DeathCoil_Timer;
+    Timer ShadowFissure_Timer;
+    Timer Cleave_Timer;
+    Timer ShadowBolt_Timer;
+    Timer DarkCleave_Timer;
 
     void Reset()
     {
@@ -266,10 +266,8 @@ struct boss_grand_warlock_nethekurseAI : public ScriptedAI
 
             if (pInstance->GetData(TYPE_NETHEKURSE) == IN_PROGRESS)
             {
-                if (IntroEvent_Timer <= diff)
-                {
+                if (IntroEvent_Timer.Expired(diff))
                     PeonsAreDead();
-                } else IntroEvent_Timer -= diff;
             }
         }
 
@@ -288,40 +286,40 @@ struct boss_grand_warlock_nethekurseAI : public ScriptedAI
                 SpinOnce = true;
             }
 
-            if (ShadowBolt_Timer <= diff)
+            if (ShadowBolt_Timer.Expired(diff))
             {
                 if (Unit *pTarget = SelectUnit(SELECT_TARGET_RANDOM,0))
                     DoCast(pTarget,SPELL_SHADOW_BOLT);
                 ShadowBolt_Timer = 1000;
-            } else ShadowBolt_Timer -= diff;
+            }
 
-            if (DarkCleave_Timer <= diff)
+            if (DarkCleave_Timer.Expired(diff))
             {
                 DoCast(me->getVictim(),SPELL_DARK_CLEAVE);
                 DarkCleave_Timer = 1000;
-            } else DarkCleave_Timer -= diff;
+            }
         }
         else
         {
-            if (ShadowFissure_Timer <= diff)
+            if (ShadowFissure_Timer.Expired(diff))
             {
                 if (Unit *pTarget = SelectUnit(SELECT_TARGET_RANDOM,0))
                     DoCast(pTarget,SPELL_SHADOW_FISSURE);
                 ShadowFissure_Timer = 7500+rand()%7500;
-            } else ShadowFissure_Timer -= diff;
+            }
 
-            if (DeathCoil_Timer <= diff)
+            if (DeathCoil_Timer.Expired(diff))
             {
                 if (Unit *pTarget = SelectUnit(SELECT_TARGET_RANDOM,0))
                     DoCast(pTarget,SPELL_DEATH_COIL);
                 DeathCoil_Timer = 15000+rand()%5000;
-            } else DeathCoil_Timer -= diff;
+            }
 
-            if (Cleave_Timer <= diff)
+            if (Cleave_Timer.Expired(diff))
             {
                 DoCast(me->getVictim(),(HeroicMode ? H_SPELL_SHADOW_SLAM : SPELL_SHADOW_CLEAVE));
                 Cleave_Timer = 20000+rand()%2500;
-            } else Cleave_Timer -= diff;
+            }
 
             if ((me->GetHealth()*100) / me->GetMaxHealth() <= 20)
                 Phase = true;
@@ -339,8 +337,8 @@ struct mob_fel_orc_convertAI : public ScriptedAI
     }
 
     ScriptedInstance* pInstance;
-    uint32 Hemorrhage_Timer;
-    uint32 Kill_Timer;
+    Timer Hemorrhage_Timer;
+    Timer Kill_Timer;
 
     void Reset()
     {
@@ -395,23 +393,20 @@ struct mob_fel_orc_convertAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (Kill_Timer)
+        if (Kill_Timer.Expired(diff))
         {
-            if (Kill_Timer <= diff)
-            {
-                me->DealDamage(me, me->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
-                Kill_Timer = 0;
-            } else Kill_Timer -= diff;
+            me->DealDamage(me, me->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+            Kill_Timer = 0;
         }
 
         if (!UpdateVictim())
             return;
 
-        if (Hemorrhage_Timer <= diff)
+        if (Hemorrhage_Timer.Expired(diff))
         {
             DoCast(me->getVictim(),SPELL_HEMORRHAGE);
             Hemorrhage_Timer = 15000;
-        } else Hemorrhage_Timer -= diff;
+        }
 
         DoMeleeAttackIfReady();
     }

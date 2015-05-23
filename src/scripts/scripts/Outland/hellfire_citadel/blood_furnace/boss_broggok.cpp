@@ -63,10 +63,10 @@ struct boss_broggokAI : public ScriptedAI
         pInstance = c->GetInstanceData();
     }
 
-    uint32 AcidSpray_Timer;
-    uint32 PoisonSpawn_Timer;
-    uint32 PoisonBolt_Timer;
-    uint32 checkTimer;
+    Timer AcidSpray_Timer;
+    Timer PoisonSpawn_Timer;
+    Timer PoisonBolt_Timer;
+    Timer checkTimer;
 
     SummonList summons;
     ScriptedInstance *pInstance;
@@ -179,7 +179,7 @@ struct boss_broggokAI : public ScriptedAI
     {
         if (!UpdateVictim())
         {
-            if (checkTimer <= diff)
+            if (checkTimer.Expired(diff))
             {
                 if (phase != EVENT_NULL && phase != EVENT_FIGHT)
                 {
@@ -204,35 +204,27 @@ struct boss_broggokAI : public ScriptedAI
                 }
                 checkTimer = 2000;
             }
-            else
-                checkTimer -= diff;
 
             return;
         }
 
-        if (AcidSpray_Timer <= diff)
+        if (AcidSpray_Timer.Expired(diff))
         {
             AddSpellToCast(me->getVictim(),SPELL_SLIME_SPRAY);
             AcidSpray_Timer = urand(4000, 12000);
         }
-        else
-            AcidSpray_Timer -=diff;
 
-        if (PoisonBolt_Timer <= diff)
+        if (PoisonBolt_Timer.Expired(diff))
         {
             AddSpellToCast(me->getVictim(), SPELL_POISON_BOLT);
             PoisonBolt_Timer = urand(4000, 12000);;
         }
-        else
-            PoisonBolt_Timer -=diff;
 
-        if (PoisonSpawn_Timer <= diff)
+        if (PoisonSpawn_Timer.Expired(diff))
         {
             AddSpellToCast(me, SPELL_POISON_CLOUD);
             PoisonSpawn_Timer = 20000;
         }
-        else
-            PoisonSpawn_Timer -=diff;
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();

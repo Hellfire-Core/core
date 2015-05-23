@@ -102,7 +102,7 @@ struct instance_shattered_halls : public ScriptedInstance
     uint64 soldierh2GUID;
     uint64 soldierh3GUID;
 
-    uint32 ExecutionTimer;
+    Timer ExecutionTimer;
     uint32 Team;
     uint8 ExecutionStage;
 
@@ -364,39 +364,35 @@ struct instance_shattered_halls : public ScriptedInstance
 
     void Update(uint32 diff)
     {
-        if (ExecutionTimer)
+        if (ExecutionTimer.Expired(diff))
         {
-            if (ExecutionTimer <= diff)
+            switch(ExecutionStage)
             {
-                switch(ExecutionStage)
-                {
-                    case 0:
-                        if (Creature* Soldier = instance->GetCreature(Team == ALLIANCE ? officeraGUID : officerhGUID))
-                            Soldier->DealDamage(Soldier, Soldier->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+                case 0:
+                    if (Creature* Soldier = instance->GetCreature(Team == ALLIANCE ? officeraGUID : officerhGUID))
+                        Soldier->DealDamage(Soldier, Soldier->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
 
-                        //DoScriptText(Team == ALLIANCE ? SAY_KARGATH_EXECUTE_ALLY : SAY_KARGATH_EXECUTE_HORDE, instance->GetCreature(kargathGUID));
+                    //DoScriptText(Team == ALLIANCE ? SAY_KARGATH_EXECUTE_ALLY : SAY_KARGATH_EXECUTE_HORDE, instance->GetCreature(kargathGUID));
 
-                        DoCastGroupDebuff(SPELL_KARGATH_EXECUTIONER_2);
-                        ExecutionTimer = 10*MINUTE*IN_MILISECONDS;
-                        break;
-                    case 1:
-                        if (Creature* Soldier = instance->GetCreature(Team == ALLIANCE ? soldiera2GUID : soldierh2GUID))
-                            Soldier->DealDamage(Soldier, Soldier->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+                    DoCastGroupDebuff(SPELL_KARGATH_EXECUTIONER_2);
+                    ExecutionTimer = 10*MINUTE*IN_MILISECONDS;
+                    break;
+                case 1:
+                    if (Creature* Soldier = instance->GetCreature(Team == ALLIANCE ? soldiera2GUID : soldierh2GUID))
+                        Soldier->DealDamage(Soldier, Soldier->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
 
-                        DoCastGroupDebuff(SPELL_KARGATH_EXECUTIONER_3);
-                        ExecutionTimer = 15*MINUTE*IN_MILISECONDS;
-                        break;
-                     case 2:
-                         if (Creature* Soldier = instance->GetCreature(Team == ALLIANCE ? soldiera3GUID : soldierh3GUID))
-                             Soldier->DealDamage(Soldier, Soldier->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+                    DoCastGroupDebuff(SPELL_KARGATH_EXECUTIONER_3);
+                    ExecutionTimer = 15*MINUTE*IN_MILISECONDS;
+                    break;
+                 case 2:
+                     if (Creature* Soldier = instance->GetCreature(Team == ALLIANCE ? soldiera3GUID : soldierh3GUID))
+                         Soldier->DealDamage(Soldier, Soldier->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
 
-                         SetData(TYPE_EXECUTION_DONE, FAIL);
-                         ExecutionTimer = 0;
-                         break;
-                }
-                ++ExecutionStage;
+                     SetData(TYPE_EXECUTION_DONE, FAIL);
+                     ExecutionTimer = 0;
+                     break;
             }
-            else ExecutionTimer -= diff;
+            ++ExecutionStage;
         }
 
         if (summon == WAIT_FOR_SUMMON)

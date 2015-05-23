@@ -54,9 +54,9 @@ struct boss_watchkeeper_gargolmarAI : public ScriptedAI
 
     bool HeroicMode;
 
-    uint32 Surge_Timer;
-    uint32 MortalWound_Timer;
-    uint32 Retaliation_Timer;
+    Timer Surge_Timer;
+    Timer MortalWound_Timer;
+    Timer Retaliation_Timer;
 
     bool HasTaunted;
     bool YelledForHeal;
@@ -65,7 +65,7 @@ struct boss_watchkeeper_gargolmarAI : public ScriptedAI
     {
         Surge_Timer = 5000;
         MortalWound_Timer = 4000;
-        Retaliation_Timer = 0;
+        Retaliation_Timer = 1;
 
         HasTaunted = false;
         YelledForHeal = false;
@@ -126,13 +126,13 @@ struct boss_watchkeeper_gargolmarAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (MortalWound_Timer <= diff)
+        if (MortalWound_Timer.Expired(diff))
         {
             DoCast(me->getVictim(),HeroicMode ? H_SPELL_MORTAL_WOUND : SPELL_MORTAL_WOUND);
             MortalWound_Timer = 5000+rand()%8000;
-        }else MortalWound_Timer -= diff;
+        }
 
-        if (Surge_Timer <= diff)
+        if (Surge_Timer.Expired(diff))
         {
             DoScriptText(SAY_SURGE, me);
 
@@ -140,15 +140,15 @@ struct boss_watchkeeper_gargolmarAI : public ScriptedAI
                 DoCast(target,SPELL_SURGE);
 
             Surge_Timer = 5000+rand()%8000;
-        }else Surge_Timer -= diff;
+        }
 
         if ((me->GetHealth()*100) / me->GetMaxHealth() < 20)
         {
-            if (Retaliation_Timer <= diff)
+            if (Retaliation_Timer.Expired(diff))
             {
                 DoCast(me,SPELL_RETALIATION);
                 Retaliation_Timer = 30000;
-            }else Retaliation_Timer -= diff;
+            }
         }
 
         if (!YelledForHeal)

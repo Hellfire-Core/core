@@ -72,9 +72,9 @@ struct npc_aeranasAI : public ScriptedAI
 {
     npc_aeranasAI(Creature* creature) : ScriptedAI(creature) {}
 
-    uint32 Faction_Timer;
-    uint32 EnvelopingWinds_Timer;
-    uint32 Shock_Timer;
+    Timer Faction_Timer;
+    Timer EnvelopingWinds_Timer;
+    Timer Shock_Timer;
 
     void Reset()
     {
@@ -92,14 +92,11 @@ struct npc_aeranasAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (Faction_Timer)
-        {
-            if (Faction_Timer <= diff)
+            if (Faction_Timer.Expired(diff))
             {
                 me->setFaction(FACTION_HOSTILE);
                 Faction_Timer = 0;
-            }else Faction_Timer -= diff;
-        }
+            }
 
         if (!UpdateVictim())
             return;
@@ -115,17 +112,17 @@ struct npc_aeranasAI : public ScriptedAI
             return;
         }
 
-        if (Shock_Timer <= diff)
+        if (Shock_Timer.Expired(diff))
         {
             DoCast(me->getVictim(),SPELL_SHOCK);
             Shock_Timer = 10000;
-        }else Shock_Timer -= diff;
+        }
 
-        if (EnvelopingWinds_Timer <= diff)
+        if (EnvelopingWinds_Timer.Expired(diff))
         {
             DoCast(me->getVictim(),SPELL_ENVELOPING_WINDS);
             EnvelopingWinds_Timer = 25000;
-        }else EnvelopingWinds_Timer -= diff;
+        }
 
         DoMeleeAttackIfReady();
     }
@@ -397,10 +394,10 @@ struct npc_demoniac_scryerAI : public ScriptedAI
 
     bool IfIsComplete;
 
-    uint32 SpawnDemonTimer;
-    uint32 SpawnOrcTimer;
-    uint32 SpawnButtressTimer;
-    uint32 EndTimer;
+    Timer SpawnDemonTimer;
+    Timer SpawnOrcTimer;
+    Timer SpawnButtressTimer;
+    Timer EndTimer;
     uint32 ButtressCount;
     std::list<uint64> PlayersWithQuestList;
 
@@ -504,17 +501,16 @@ struct npc_demoniac_scryerAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (EndTimer <= diff)
+        if (EndTimer.Expired(diff))
         {
             me->setDeathState(CORPSE);
             EndTimer = 262000;
         }
-        else EndTimer -= diff;
 
         if (IfIsComplete)
             return;
 
-        if (SpawnButtressTimer <= diff)
+        if (SpawnButtressTimer.Expired(diff))
         {
             if (ButtressCount >= MAX_BUTTRESS)
             {
@@ -534,21 +530,18 @@ struct npc_demoniac_scryerAI : public ScriptedAI
             SpawnButtressTimer = 45000;
             DoSpawnButtress();
         }
-        else SpawnButtressTimer -= diff;
 
-        if (SpawnDemonTimer <= diff)
+        if (SpawnDemonTimer.Expired(diff))
         {
             DoSpawnDemon();
             SpawnDemonTimer = 15000;
         }
-        else SpawnDemonTimer -= diff;
 
-        if (SpawnOrcTimer <= diff)
+        if (SpawnOrcTimer.Expired(diff))
         {
             DospawnOrc();
             SpawnOrcTimer = 30000;
         }
-        else SpawnOrcTimer -= diff;
     }
 };
 
@@ -598,8 +591,8 @@ struct npc_magic_sucker_device_spawnerAI : public ScriptedAI
 {
     npc_magic_sucker_device_spawnerAI(Creature* creature) : ScriptedAI(creature) {}
 
-    uint32 CastTimer;
-    uint32 CheckTimer;
+    Timer CastTimer;
+    Timer CheckTimer;
 
     void Reset()
     {
@@ -609,14 +602,13 @@ struct npc_magic_sucker_device_spawnerAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (CastTimer <= diff)
+        if (CastTimer.Expired(diff))
         {
             DoCast(me, SPELL_EFFECT);
             CastTimer = 1800;
         }
-        else CastTimer -= diff;
 
-        if (CheckTimer <= diff)
+        if (CheckTimer.Expired(diff))
         {
             if (Creature* pScr = GetClosestCreatureWithEntry(me, NPC_SCRYER, 15.0f, false))
             {
@@ -629,7 +621,6 @@ struct npc_magic_sucker_device_spawnerAI : public ScriptedAI
 
             CheckTimer = 5000;
         }
-        else CheckTimer -= diff;
     }
 };
 CreatureAI* GetAI_npc_magic_sucker_device_spawner(Creature* creature)
@@ -895,19 +886,19 @@ struct npc_felblood_initiateAI : public ScriptedAI
 {
     npc_felblood_initiateAI(Creature *creature) : ScriptedAI(creature) { }
 
-    uint32 Spellbreaker;
-    uint32 ChangeTimer;
-    uint32 OOCTimer;
-    uint32 BitterWithdrawal;
-    uint32 SinisterStrike;
+    Timer SpellbreakerTimer;
+    Timer ChangeTimer;
+    Timer OOCTimer;
+    Timer BitterWithdrawalTimer;
+    Timer SinisterStrikeTimer;
 
     void Reset()
     {
-        Spellbreaker = urand(6000, 10000);
+        SpellbreakerTimer = urand(6000, 10000);
         ChangeTimer = 0;
         OOCTimer = 5000;
-        BitterWithdrawal = urand(10000, 15000);
-        SinisterStrike = urand(5000, 15000);
+        BitterWithdrawalTimer = urand(10000, 15000);
+        SinisterStrikeTimer = urand(5000, 15000);
     }
 
     void HandleOffCombatEffects()
@@ -934,7 +925,7 @@ struct npc_felblood_initiateAI : public ScriptedAI
     {
       if(!me->isInCombat())
       {
-          if(OOCTimer <= diff)
+          if(OOCTimer.Expired(diff))
           {
               if(!me->IsNonMeleeSpellCast(false))
                   HandleOffCombatEffects();
@@ -942,53 +933,41 @@ struct npc_felblood_initiateAI : public ScriptedAI
                   me->Yell(YellSiphon[urand(0,3)], 0, 0);
               OOCTimer = 60000;
           }
-          else
-              OOCTimer -= diff;
       }
 
       if(!UpdateVictim())
           return;
 
-      if(ChangeTimer)
+      if(ChangeTimer.Expired(diff))
       {
-          if(ChangeTimer <= diff)
-          {
-              me->UpdateEntry(MOB_EMACIATED_FELBLOOD);
-              me->Yell(YellChange[urand(0,2)], 0, 0);
-              me->RemoveAurasDueToSpell(SPELL_SELF_STUN);
-              me->AI()->AttackStart(me->getVictim());
-              ChangeTimer = 0;
-          }
-          else ChangeTimer -= diff;
+          me->UpdateEntry(MOB_EMACIATED_FELBLOOD);
+          me->Yell(YellChange[urand(0,2)], 0, 0);
+          me->RemoveAurasDueToSpell(SPELL_SELF_STUN);
+          me->AI()->AttackStart(me->getVictim());
+          ChangeTimer = 0;
       }
 
       if(me->GetEntry() == MOB_EMACIATED_FELBLOOD)
       {
-          if(BitterWithdrawal <= diff)
-          {
-              AddSpellToCast(SPELL_BITTER_WITHDRAWAL);
-              BitterWithdrawal = urand(12000, 18000);
-          }
-          else
-              BitterWithdrawal -= diff;
+            if(BitterWithdrawalTimer.Expired(diff))
+            {
+                AddSpellToCast(SPELL_BITTER_WITHDRAWAL);
+                BitterWithdrawalTimer = urand(12000, 18000);
+            }
 
-           if(SinisterStrike <= diff)
-           {
-               AddSpellToCast(SPELL_SINISTER_STRIKE);
-               SinisterStrike = urand(10000, 15000);
-           }
-           else
-                SinisterStrike -= diff;
+            if(SinisterStrikeTimer.Expired(diff))
+            {
+                AddSpellToCast(SPELL_SINISTER_STRIKE);
+                SinisterStrikeTimer = urand(10000, 15000);
+            }
       }
       else
       {
-          if(Spellbreaker <= diff)
+          if(SpellbreakerTimer.Expired(diff))
           {
               AddSpellToCast(SPELL_SPELLBREAKER);
-              Spellbreaker = urand(8000, 12000);
+              SpellbreakerTimer = urand(8000, 12000);
           }
-          else
-                Spellbreaker -= diff;
       }
 
        CastNextSpellIfAnyAndReady();
@@ -1156,8 +1135,8 @@ struct npc_anchorite_relic_bunnyAI : public ScriptedAI
 {
     npc_anchorite_relic_bunnyAI(Creature* creature) : ScriptedAI(creature) {}
 
-    uint32 ChTimer;
-    uint32 EndTimer;
+    Timer ChTimer;
+    Timer EndTimer;
 
     void Reset()
     {
@@ -1190,7 +1169,7 @@ struct npc_anchorite_relic_bunnyAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (ChTimer <= diff)
+        if (ChTimer.Expired(diff))
         {
             if (Creature* Ber = GetClosestCreatureWithEntry(me, NPC_HAND_BERSERKER, 17.5f, true))
             {
@@ -1201,9 +1180,8 @@ struct npc_anchorite_relic_bunnyAI : public ScriptedAI
             }
             else me->InterruptNonMeleeSpells(false);
         }
-        else ChTimer -= diff;
 
-        if (EndTimer <= diff)
+        if (EndTimer.Expired(diff))
         {
             if (GameObject* relic = GetClosestGameObjectWithEntry(me, GO_RELIC, 5.0f))
             {
@@ -1214,7 +1192,6 @@ struct npc_anchorite_relic_bunnyAI : public ScriptedAI
 
             EndTimer = 60000;
         }
-        else EndTimer -= diff;
     }
 };
 
@@ -1291,14 +1268,14 @@ struct npc_anchorite_baradaAI : public ScriptedAI
 
     bool Exorcim;
 
-    uint32 StepsTimer;
+    Timer StepsTimer;
     uint32 Steps;
     uint64 PlayerGUID;
 
     void Reset()
     {
         Exorcim = false;
-        StepsTimer = 0;
+        StepsTimer = 1;
         Steps = 0;
         PlayerGUID = 0;
     }
@@ -1423,12 +1400,11 @@ struct npc_anchorite_baradaAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (StepsTimer <= diff)
+        if (StepsTimer.Expired(diff))
         {
             if (Exorcim)
                 StepsTimer = NextStep(++Steps);
         }
-        else StepsTimer -= diff;
     }
 };
 
@@ -1498,8 +1474,8 @@ struct npc_darkness_releasedAI : public ScriptedAI
         }
     }
 
-    uint32 AtTimer;
-    uint32 ChTimer;
+    Timer AtTimer;
+    Timer ChTimer;
 
     void Reset() { }
 
@@ -1513,7 +1489,7 @@ struct npc_darkness_releasedAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (AtTimer <= diff)
+        if (AtTimer.Expired(diff))
         {
             DoCast(me, SPELL_DARKNESS);
             switch (urand(0,3))
@@ -1526,9 +1502,8 @@ struct npc_darkness_releasedAI : public ScriptedAI
 
         AtTimer = 10000;
         }
-        else AtTimer -= diff;
 
-        if (ChTimer <= diff)
+        if (ChTimer.Expired(diff))
         {
             if (Creature* Bar = GetClosestCreatureWithEntry(me, NPC_BARADA, 15.0f, false))
             {
@@ -1543,7 +1518,6 @@ struct npc_darkness_releasedAI : public ScriptedAI
 
             ChTimer = 5000;
         }
-        else ChTimer -= diff;
     }
 };
 
@@ -1568,7 +1542,7 @@ struct npc_foul_purgeAI : public ScriptedAI
         ChTimer = 4000;
     }
 
-    uint32 ChTimer;
+    Timer ChTimer;
 
     void Reset() { }
 
@@ -1579,7 +1553,7 @@ struct npc_foul_purgeAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (ChTimer <= diff)
+        if (ChTimer.Expired(diff))
         {
             if (Creature* Bar = GetClosestCreatureWithEntry(me, NPC_BARADA, 15.0f, false))
             {
@@ -1594,7 +1568,6 @@ struct npc_foul_purgeAI : public ScriptedAI
 
             ChTimer = 4000;
         }
-        else ChTimer -= diff;
 
         DoMeleeAttackIfReady();
     }
@@ -1671,13 +1644,13 @@ struct npc_vindicator_sedaiAI : public ScriptedAI
     bool Vision;
 
     ObjectGuid PlayerGUID;
-    uint32 StepsTimer;
+    Timer StepsTimer;
     uint32 Steps;
 
     void Reset()
     {
         Vision = true;
-        StepsTimer =0;
+        StepsTimer = 1;
         Steps = 0;
         me->SetWalk(true);
     }
@@ -1837,12 +1810,11 @@ struct npc_vindicator_sedaiAI : public ScriptedAI
     void UpdateAI(const uint32 diff)
     {
 
-        if (StepsTimer <= diff)
+        if (StepsTimer.Expired(diff))
         {
             if (Vision)
                 StepsTimer = NextStep(++Steps);
         }
-        else StepsTimer -= diff;
 
         DoMeleeAttackIfReady();
     }
@@ -1897,14 +1869,14 @@ struct npc_pathaleon_imageAI : public ScriptedAI
     bool Event;
     bool SummonTrigger;
 
-    uint32 SumTimer;
-    uint32 StepsTimer;
+    Timer SumTimer;
+    Timer StepsTimer;
     uint32 Steps;
 
     void Reset()
     {
         SumTimer = 5000;
-        StepsTimer = 0;
+        StepsTimer = 1;
         Steps = 0;
         Event = true;
         SummonTrigger = false;
@@ -1989,21 +1961,16 @@ struct npc_pathaleon_imageAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (StepsTimer <= diff)
+        if (StepsTimer.Expired(diff))
         {
             if (Event)
                 StepsTimer = NextStep(++Steps);
         }
-        else StepsTimer -= diff;
 
-        if (SummonTrigger)
+        if (SumTimer.Expired(diff))
         {
-            if (SumTimer <= diff)
-            {
-                DoSpawnCtrigger();
-                SumTimer = 5000;
-            }
-            else SumTimer -= diff;
+            DoSpawnCtrigger();
+            SumTimer = 5000;
         }
     }
 };
@@ -2028,7 +1995,7 @@ struct npc_vieraAI : public npc_escortAI
 {
     npc_vieraAI(Creature* creature) : npc_escortAI(creature) {}
 
-    uint32 EndsTimer;
+    Timer EndsTimer;
 
     void WaypointReached(uint32 i)
     {
@@ -2083,11 +2050,8 @@ struct npc_vieraAI : public npc_escortAI
 
     void UpdateEscortAI(const uint32 diff)
     {
-        if (EndsTimer <= diff)
-        {
+        if (EndsTimer.Expired(diff))
             SetEscortPaused(false);
-        }
-        else EndsTimer -= diff;
     }
 };
 
@@ -2181,7 +2145,7 @@ struct npc_east_hovelAI : public ScriptedAI
     npc_east_hovelAI(Creature* creature) : ScriptedAI(creature) {}
 
     bool Summon;
-    uint32 ResetTimer;
+    Timer ResetTimer;
     void Reset()
     {
         Summon = true;
@@ -2207,11 +2171,10 @@ struct npc_east_hovelAI : public ScriptedAI
     {
         if(!Summon)
         {
-            if (ResetTimer <= diff)
+            if (ResetTimer.Expired(diff))
             {
                 Summon = true;
             }
-            else ResetTimer -= diff;
         }
     }
 };
@@ -2225,7 +2188,7 @@ struct npc_west_hovelAI : public ScriptedAI
     npc_west_hovelAI(Creature* creature) : ScriptedAI(creature) {}
 
     bool Summon;
-    uint32 ResetTimer;
+    Timer ResetTimer;
     void Reset()
     {
         Summon = true;
@@ -2250,11 +2213,10 @@ struct npc_west_hovelAI : public ScriptedAI
     {
         if(!Summon)
         {
-            if (ResetTimer <= diff)
+            if (ResetTimer.Expired(diff))
             {
                 Summon = true;
             }
-            else ResetTimer -= diff;
         }
     }
 };
@@ -2268,7 +2230,7 @@ struct npc_stableAI : public ScriptedAI
     npc_stableAI(Creature* creature) : ScriptedAI(creature) {}
 
     bool Summon;
-    uint32 ResetTimer;
+    Timer ResetTimer;
     void Reset()
     {
         Summon = true;
@@ -2294,11 +2256,10 @@ struct npc_stableAI : public ScriptedAI
     {
         if(!Summon)
         {
-            if (ResetTimer <= diff)
+            if (ResetTimer.Expired(diff))
             {
                 Summon = true;
             }
-            else ResetTimer -= diff;
         }
     }
 };
@@ -2312,7 +2273,7 @@ struct npc_barracksAI : public ScriptedAI
     npc_barracksAI(Creature* creature) : ScriptedAI(creature) {}
 
     bool Summon;
-    uint32 ResetTimer;
+    Timer ResetTimer;
     void Reset()
     {
         Summon = true;
@@ -2338,11 +2299,10 @@ struct npc_barracksAI : public ScriptedAI
     {
         if(!Summon)
         {
-            if (ResetTimer <= diff)
+            if (ResetTimer.Expired(diff))
             {
                 Summon = true;
             }
-            else ResetTimer -= diff;
         }
     }
 };

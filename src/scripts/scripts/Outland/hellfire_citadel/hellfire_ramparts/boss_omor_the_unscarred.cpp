@@ -53,12 +53,12 @@ struct boss_omor_the_unscarredAI : public ScriptedAI
 
     ScriptedInstance* pInstance;
 
-    uint32 OrbitalStrike_Timer;
-    uint32 ShadowWhip_Timer;
-    uint32 Aura_Timer;
-    uint32 DemonicShield_Timer;
-    uint32 Shadowbolt_Timer;
-    uint32 Summon_Timer;
+    Timer OrbitalStrike_Timer;
+    Timer ShadowWhip_Timer;
+    Timer Aura_Timer;
+    Timer DemonicShield_Timer;
+    Timer Shadowbolt_Timer;
+    Timer Summon_Timer;
     uint64 playerGUID;
     bool CanPullBack;
 
@@ -116,17 +116,15 @@ struct boss_omor_the_unscarredAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (Summon_Timer <= diff)
+        if (Summon_Timer.Expired(diff))
         {
             AddSpellToCast(me, SPELL_SUMMON_FIENDISH_HOUND);
             Summon_Timer = 18000;
         }
-        else
-            Summon_Timer -= diff;
 
         if (CanPullBack)
         {
-            if (ShadowWhip_Timer <= diff)
+            if (ShadowWhip_Timer.Expired(diff))
             {
                 if (Unit* temp = Unit::GetUnit(*me,playerGUID))
                 {
@@ -146,10 +144,8 @@ struct boss_omor_the_unscarredAI : public ScriptedAI
                 }
                 ShadowWhip_Timer = 2200;
             }
-            else
-                ShadowWhip_Timer -= diff;
         }
-        else if (OrbitalStrike_Timer <= diff)
+        else if (OrbitalStrike_Timer.Expired(diff))
         {
             Unit *temp = SelectUnit(SELECT_TARGET_NEAREST, 0, 100, true);
 
@@ -167,21 +163,17 @@ struct boss_omor_the_unscarredAI : public ScriptedAI
                 }
             }
         }
-        else
-            OrbitalStrike_Timer -= diff;
 
         if ((me->GetHealth()*100) / me->GetMaxHealth() < 20)
         {
-            if (DemonicShield_Timer <= diff)
+            if (DemonicShield_Timer.Expired(diff))
             {
                 AddSpellToCast(me, SPELL_DEMONIC_SHIELD);
                 DemonicShield_Timer = 15000;
             }
-            else
-                DemonicShield_Timer -= diff;
         }
 
-        if (Aura_Timer <= diff)
+        if (Aura_Timer.Expired(diff))
         {
             DoScriptText(SAY_CURSE, me);
 
@@ -191,10 +183,8 @@ struct boss_omor_the_unscarredAI : public ScriptedAI
                 Aura_Timer = 18000;
             }
         }
-        else
-            Aura_Timer -= diff;
 
-        if (Shadowbolt_Timer <= diff)
+        if (Shadowbolt_Timer.Expired(diff))
         {
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0))
             {
@@ -205,8 +195,6 @@ struct boss_omor_the_unscarredAI : public ScriptedAI
                 }
             }
         }
-        else
-            Shadowbolt_Timer -= diff;
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();

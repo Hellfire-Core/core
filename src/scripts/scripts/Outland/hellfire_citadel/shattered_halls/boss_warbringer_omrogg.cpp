@@ -104,7 +104,7 @@ struct mob_omrogg_headsAI : public ScriptedAI
     mob_omrogg_headsAI(Creature *c) : ScriptedAI(c) {}
 
     bool DeathYell;
-    uint32 Death_Timer;
+    Timer Death_Timer;
 
     void Reset() {}
 
@@ -119,13 +119,11 @@ struct mob_omrogg_headsAI : public ScriptedAI
         if (!DeathYell)
             return;
 
-        if (Death_Timer <= diff)
+        if (Death_Timer.Expired(diff))
         {
             DoScriptText(YELL_DIE_R, me);
             DeathYell = false;
         }
-        else
-            Death_Timer -= diff;
     }
 };
 
@@ -151,13 +149,13 @@ struct boss_warbringer_omroggAI : public ScriptedAI
     bool ThreatYell2;
     bool KillingYell;
 
-    uint32 Delay_Timer;
-    uint32 BlastWave_Timer;
+    Timer Delay_Timer;
+    Timer BlastWave_Timer;
     uint32 BlastCount;
-    uint32 Fear_Timer;
-    uint32 BurningMaul_Timer;
-    uint32 ThunderClap_Timer;
-    uint32 ResetThreat_Timer;
+    Timer Fear_Timer;
+    Timer BurningMaul_Timer;
+    Timer ThunderClap_Timer;
+    Timer ResetThreat_Timer;
 
     void Reset()
     {
@@ -284,7 +282,7 @@ struct boss_warbringer_omroggAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (Delay_Timer <= diff)
+        if (Delay_Timer.Expired(diff))
         {
             Delay_Timer = 3500;
 
@@ -327,12 +325,12 @@ struct boss_warbringer_omroggAI : public ScriptedAI
                 DoScriptText(KillingDelay[ikilling].id, source);
                 KillingYell = false;
             }
-        }else Delay_Timer -= diff;
+        }
 
         if (!UpdateVictim())
             return;
 
-        if (BlastCount && BlastWave_Timer <= diff)
+        if (BlastWave_Timer.Expired(diff) && BlastCount)
         {
             DoCast(me,SPELL_BLAST_WAVE);
             BlastWave_Timer = 5000;
@@ -340,18 +338,18 @@ struct boss_warbringer_omroggAI : public ScriptedAI
 
             if (BlastCount == 3)
                 BlastCount = 0;
-        }else BlastWave_Timer -= diff;
+        }
 
-        if (BurningMaul_Timer <= diff)
+        if (BurningMaul_Timer.Expired(diff))
         {
             DoScriptText(EMOTE_ENRAGE, me);
             DoCast(me,HeroicMode ? H_SPELL_BURNING_MAUL : SPELL_BURNING_MAUL);
             BurningMaul_Timer = 40000;
             BlastWave_Timer = 16000;
             BlastCount = 1;
-        }else BurningMaul_Timer -= diff;
+        }
 
-        if (ResetThreat_Timer <= diff)
+        if (ResetThreat_Timer.Expired(diff))
         {
             if (Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0))
             {
@@ -360,19 +358,19 @@ struct boss_warbringer_omroggAI : public ScriptedAI
                 me->AddThreat(target, 0.0f);
             }
             ResetThreat_Timer = 35000+rand()%10000;
-        }else ResetThreat_Timer -= diff;
+        }
 
-        if (Fear_Timer <= diff)
+        if (Fear_Timer.Expired(diff))
         {
             DoCast(me,SPELL_FEAR);
             Fear_Timer = 15000+rand()%25000;
-        }else Fear_Timer -= diff;
+        }
 
-        if (ThunderClap_Timer <= diff)
+        if (ThunderClap_Timer.Expired(diff))
         {
             DoCast(me,SPELL_THUNDERCLAP);
             ThunderClap_Timer = 25000+rand()%15000;
-        }else ThunderClap_Timer -= diff;
+        }
 
         DoMeleeAttackIfReady();
     }

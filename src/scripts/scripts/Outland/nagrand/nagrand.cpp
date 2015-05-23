@@ -140,8 +140,8 @@ struct mob_lumpAI : public ScriptedAI
         bReset = false;
     }
 
-    uint32 Reset_Timer;
-    uint32 Spear_Throw_Timer;
+    Timer Reset_Timer;
+    Timer Spear_Throw_Timer;
     bool bReset;
 
     void Reset()
@@ -191,14 +191,13 @@ struct mob_lumpAI : public ScriptedAI
         //check if we waiting for a reset
         if (bReset)
         {
-            if (Reset_Timer <= diff)
+            if (Reset_Timer.Expired(diff))
             {
                 EnterEvadeMode();
                 bReset = false;
                 me->setFaction(1711);               //hostile
                 return;
             }
-            else Reset_Timer -= diff;
         }
 
         //Return since we have no target
@@ -206,11 +205,11 @@ struct mob_lumpAI : public ScriptedAI
             return;
 
         //Spear_Throw_Timer
-        if (Spear_Throw_Timer <= diff)
+        if (Spear_Throw_Timer.Expired(diff))
         {
             DoCast(me->getVictim(), SPELL_SPEAR_THROW);
             Spear_Throw_Timer = 20000;
-        }else Spear_Throw_Timer -= diff;
+        }
 
         DoMeleeAttackIfReady();
     }
@@ -573,7 +572,7 @@ struct mob_sparrowhawkAI : public ScriptedAI
 
     mob_sparrowhawkAI(Creature *creature) : ScriptedAI(creature) {}
 
-    uint32 Check_Timer;
+    Timer Check_Timer;
     uint64 PlayerGUID;
     bool fleeing;
 
@@ -608,7 +607,7 @@ struct mob_sparrowhawkAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(Check_Timer <= diff)
+        if(Check_Timer.Expired(diff))
         {
             if(PlayerGUID)
             {
@@ -633,7 +632,7 @@ struct mob_sparrowhawkAI : public ScriptedAI
                 }
             }
             Check_Timer = 1000;
-        } else Check_Timer -= diff;
+        }
 
         if (PlayerGUID)
             return;
@@ -830,14 +829,14 @@ struct npc_nagrand_captiveAI : public npc_escortAI
 {
     npc_nagrand_captiveAI(Creature* creature) : npc_escortAI(creature) { Reset(); }
 
-    uint32 ChainLightningTimer;
-    uint32 HealTimer;
-    uint32 FrostShockTimer;;
+    Timer ChainLightningTimer;
+    Timer HealTimer;
+    Timer FrostShockTimer;;
 
     void Reset()
     {
         ChainLightningTimer = 1000;
-        HealTimer = 0;
+        HealTimer = 1;
         FrostShockTimer = 6000;
     }
 
@@ -926,32 +925,26 @@ struct npc_nagrand_captiveAI : public npc_escortAI
         if (!me->getVictim())
             return;
 
-        if (ChainLightningTimer <= diff)
+        if (ChainLightningTimer.Expired(diff))
         {
             DoCast(me->getVictim(), SPELL_CHAIN_LIGHTNING);
             ChainLightningTimer = urand(7000, 14000);
         }
-        else
-            ChainLightningTimer -= diff;
 
         if (me->GetHealth()*100 < me->GetMaxHealth()*30)
         {
-            if (HealTimer <= diff)
+            if (HealTimer.Expired(diff))
             {
                 DoCast(me, SPELL_HEALING_WAVE);
                 HealTimer = 5000;
             }
-            else
-                HealTimer -= diff;
         }
 
-        if (FrostShockTimer <= diff)
+        if (FrostShockTimer.Expired(diff))
         {
             DoCast(me->getVictim(), SPELL_FROST_SHOCK);
             FrostShockTimer = urand(7500, 15000);
         }
-        else
-            FrostShockTimer -= diff;
 
         DoMeleeAttackIfReady();
     }
@@ -1013,7 +1006,7 @@ struct npc_multiphase_disurbanceAI : public ScriptedAI
 {
     npc_multiphase_disurbanceAI(Creature *creature) : ScriptedAI(creature){}
 
-    uint32 despawnTimer;
+    Timer despawnTimer;
 
     void Reset()
     {
@@ -1022,15 +1015,10 @@ struct npc_multiphase_disurbanceAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (despawnTimer)
+        if (despawnTimer.Expired(diff))
         {
-            if (despawnTimer <= diff)
-            {
-                me->ForcedDespawn();
-                despawnTimer = 0;
-            }
-            else
-                despawnTimer -= diff;
+            me->ForcedDespawn();
+            despawnTimer = 0;
         }
     }
 
@@ -1314,7 +1302,7 @@ struct npc_warmaul_pyreAI : public ScriptedAI
 
     std::list<uint64> SaboteurList;
     uint64 PlayerGUID;
-    uint32 StepsTimer;
+    Timer StepsTimer;
     uint32 Steps;
     uint32 CorpseCount;
     uint32 MoveCount;
@@ -1323,7 +1311,7 @@ struct npc_warmaul_pyreAI : public ScriptedAI
     {
         Event = false;
         PlayerGUID = 0;
-        StepsTimer = 0;
+        StepsTimer = 1;
         Steps = 0;
         CorpseCount = 0;
         MoveCount = 1;
@@ -1551,13 +1539,11 @@ struct npc_warmaul_pyreAI : public ScriptedAI
     void UpdateAI(const uint32 diff)
     {
 
-        if (StepsTimer <= diff)
+        if (StepsTimer.Expired(diff))
         {
             if (Event)
                 StepsTimer = NextStep(++Steps);
         }
-        else
-            StepsTimer -= diff;
     }
 };
 

@@ -67,14 +67,13 @@ struct boss_warchief_kargath_bladefistAI : public ScriptedAI
     std::vector<uint64> adds;
     std::vector<uint64> assassins;
 
-    uint32 Charge_timer;
-    uint32 Blade_Dance_Timer;
-    uint32 Summon_Assistant_Timer;
-    uint32 Assistant_Timer;
-    uint32 resetcheck_timer;
-    uint32 Wait_Timer;
-
-    uint32 Assassins_Timer;
+    Timer Charge_timer;
+    Timer Blade_Dance_Timer;
+    Timer Summon_Assistant_Timer;
+    Timer Assistant_Timer;
+    Timer resetcheck_timer;
+    Timer Wait_Timer;
+    Timer Assassins_Timer;
 
     uint32 summoned;
     bool InBlade;
@@ -213,88 +212,65 @@ struct boss_warchief_kargath_bladefistAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (Assassins_Timer)
+        if (Assassins_Timer.Expired(diff))
         {
-            if (Assassins_Timer <= diff)
-            {
-                SpawnAssassin();
-                Assassins_Timer = 0;
-            }
-            else
-                Assassins_Timer -= diff;
+            SpawnAssassin();
+            Assassins_Timer = 0;
         }
 
-        if (Assistant_Timer)
+        if (Assistant_Timer.Expired(diff))
         {
-            if (Assistant_Timer <= diff)
-            {
-                Assistant = true;
-                Assistant_Timer = 0;
-            }
-            else
-                Assistant_Timer -= diff;
+            Assistant = true;
+            Assistant_Timer = 0;
         }
 
         if (InBlade)
         {
-            if (Wait_Timer)
-                if (Wait_Timer <= diff)
+            if (Wait_Timer.Expired(diff))
+            {
+                if (target_num <= 0)
                 {
-                    if (target_num <= 0)
-                    {
-                        // stop bladedance
-                        InBlade = false;
-                        me->SetSpeed(MOVE_RUN,2);
-                        (*me).GetMotionMaster()->MoveChase(me->getVictim());
-                        Blade_Dance_Timer = 30000;
-                        Wait_Timer = 0;
-                        if (HeroicMode)
-                            Charge_timer = 5000;
-                    }
-                    else
-                    {
-                        //move in bladedance
-                        float x,y,randx,randy;
-                        randx = (rand()%40);
-                        randy = (rand()%40);
-                        x = 210+ randx ;
-                        y = -60- randy ;
-                        (*me).GetMotionMaster()->MovePoint(1,x,y,me->GetPositionZ());
-                        Wait_Timer = 0;
-                    }
+                    // stop bladedance
+                    InBlade = false;
+                    me->SetSpeed(MOVE_RUN,2);
+                    (*me).GetMotionMaster()->MoveChase(me->getVictim());
+                    Blade_Dance_Timer = 30000;
+                    Wait_Timer = 0;
+                    if (HeroicMode)
+                        Charge_timer = 5000;
                 }
                 else
-                    Wait_Timer -= diff;
+                {
+                    //move in bladedance
+                    float x,y,randx,randy;
+                    randx = (rand()%40);
+                    randy = (rand()%40);
+                    x = 210+ randx ;
+                    y = -60- randy ;
+                    (*me).GetMotionMaster()->MovePoint(1,x,y,me->GetPositionZ());
+                    Wait_Timer = 0;
+                }
+            }
         }
         else
         {
-            if (Blade_Dance_Timer)
+            if (Blade_Dance_Timer.Expired(diff))
             {
-                if (Blade_Dance_Timer <= diff)
-                {
-                    target_num = TARGET_NUM;
-                    Wait_Timer = 1;
-                    InBlade = true;
-                    Blade_Dance_Timer = 0;
-                    me->SetSpeed(MOVE_RUN,4);
-                    return;
-                }
-                else
-                    Blade_Dance_Timer -= diff;
+                target_num = TARGET_NUM;
+                Wait_Timer = 1;
+                InBlade = true;
+                Blade_Dance_Timer = 0;
+                me->SetSpeed(MOVE_RUN,4);
+                return;
             }
 
-            if (Charge_timer)
+            if (Charge_timer.Expired(diff))
             {
-                if (Charge_timer <= diff)
-                {
-                    DoCast(SelectUnit(SELECT_TARGET_RANDOM,0), H_SPELL_CHARGE);
-                    Charge_timer = 0;
-                }
-                else
-                    Charge_timer -= diff;
+                DoCast(SelectUnit(SELECT_TARGET_RANDOM,0), H_SPELL_CHARGE);
+                Charge_timer = 0;
             }
 
-            if (Summon_Assistant_Timer <= diff)
+            if (Summon_Assistant_Timer.Expired(diff))
             {
                 Unit* target = NULL;
                 Creature* Summoned;
@@ -310,13 +286,11 @@ struct boss_warchief_kargath_bladefistAI : public ScriptedAI
 
                 Summon_Assistant_Timer = (HeroicMode ? 15000 : 20000);
             }
-            else
-                Summon_Assistant_Timer -= diff;
 
             DoMeleeAttackIfReady();
         }
 
-        if (resetcheck_timer <= diff)
+        if (resetcheck_timer.Expired(diff))
         {
             uint32 tempx,tempy;
             tempx = me->GetPositionX();
@@ -329,8 +303,6 @@ struct boss_warchief_kargath_bladefistAI : public ScriptedAI
             }
             resetcheck_timer = 5000;
         }
-        else
-            resetcheck_timer -= diff;
     }
 };
 

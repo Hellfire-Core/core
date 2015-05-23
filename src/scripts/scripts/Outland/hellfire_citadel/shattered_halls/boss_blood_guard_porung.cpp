@@ -54,7 +54,7 @@ struct boss_blood_guard_porungAI : public ScriptedAI
     }
 
     ScriptedInstance* pInstance;
-    uint32 Cleave_Timer;
+    Timer Cleave_Timer;
     uint64 playerGUID;
     uint8 wave;
     bool waveone;
@@ -127,13 +127,11 @@ struct boss_blood_guard_porungAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (Cleave_Timer <= diff)
+        if (Cleave_Timer.Expired(diff))
         {
             DoCast(me->getVictim(), SPELL_CLEAVE, false);
             Cleave_Timer = 7500 + rand()%5000;
         }
-        else
-            Cleave_Timer -= diff;
 
         DoMeleeAttackIfReady();
     }

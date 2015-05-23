@@ -81,11 +81,11 @@ struct boss_kelidan_the_breakerAI : public ScriptedAI
 
     ScriptedInstance* pInstance;
 
-    uint32 ShadowVolley_Timer;
-    uint32 BurningNova_Timer;
-    uint32 Firenova_Timer;
-    uint32 Corruption_Timer;
-    uint32 check_Timer;
+    Timer ShadowVolley_Timer;
+    Timer BurningNova_Timer;
+    Timer Firenova_Timer;
+    Timer Corruption_Timer;
+    Timer check_Timer;
 
     bool Firenova;
     bool addYell;
@@ -97,7 +97,7 @@ struct boss_kelidan_the_breakerAI : public ScriptedAI
         ShadowVolley_Timer = 1000;
         BurningNova_Timer = 15000;
         Corruption_Timer = 5000;
-        check_Timer = 0;
+        check_Timer = 1;
         Firenova = false;
         addYell = false;
 
@@ -216,35 +216,29 @@ struct boss_kelidan_the_breakerAI : public ScriptedAI
 
         if (Firenova)
         {
-            if (Firenova_Timer <= diff)
+            if (Firenova_Timer.Expired(diff))
             {
                 ForceSpellCast(me, SPELL_FIRE_NOVA, INTERRUPT_AND_CAST_INSTANTLY);
                 Firenova = false;
                 ShadowVolley_Timer = 2000;
             }
-            else
-                Firenova_Timer -=diff;
 
             return;
         }
 
-        if (ShadowVolley_Timer <= diff)
+        if (ShadowVolley_Timer.Expired(diff))
         {
             AddSpellToCast(m_creature, SPELL_SHADOW_BOLT_VOLLEY);
             ShadowVolley_Timer = urand(5000, 13000);
         }
-        else
-            ShadowVolley_Timer -=diff;
 
-        if (Corruption_Timer <= diff)
+        if (Corruption_Timer.Expired(diff))
         {
             AddSpellToCast(me,SPELL_CORRUPTION);
             Corruption_Timer = urand(30000, 50000);
         }
-        else
-            Corruption_Timer -=diff;
 
-        if (BurningNova_Timer <= diff)
+        if (BurningNova_Timer.Expired(diff))
         {
             if (m_creature->IsNonMeleeSpellCast(false))
                 m_creature->InterruptNonMeleeSpells(true);
@@ -270,8 +264,6 @@ struct boss_kelidan_the_breakerAI : public ScriptedAI
             Firenova_Timer= 5000;
             Firenova = true;
         }
-        else
-            BurningNova_Timer -= diff;
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -300,9 +292,9 @@ struct mob_shadowmoon_channelerAI : public ScriptedAI
 
     ScriptedInstance* pInstance;
 
-    uint32 ShadowBolt_Timer;
-    uint32 MarkOfShadow_Timer;
-    uint32 check_Timer;
+    Timer ShadowBolt_Timer;
+    Timer MarkOfShadow_Timer;
+    Timer check_Timer;
 
     void Reset()
     {
@@ -337,23 +329,19 @@ struct mob_shadowmoon_channelerAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (MarkOfShadow_Timer <= diff)
+        if (MarkOfShadow_Timer.Expired(diff))
         {
             if (Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0))
                 AddSpellToCast(target,SPELL_MARK_OF_SHADOW);
 
             MarkOfShadow_Timer = 15000+rand()%5000;
         }
-        else
-            MarkOfShadow_Timer -=diff;
 
-        if (ShadowBolt_Timer <= diff)
+        if (ShadowBolt_Timer.Expired(diff))
         {
             AddSpellToCast(me->getVictim(), SPELL_SHADOW_BOLT);
             ShadowBolt_Timer = urand(5000, 6000);
         }
-        else
-            ShadowBolt_Timer -=diff;
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
