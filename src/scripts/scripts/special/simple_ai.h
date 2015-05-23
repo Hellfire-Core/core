@@ -83,7 +83,7 @@ public:
     }Spell[10];
 
 protected:
-    uint32 Spell_Timer[10];
+    Timer Spell_Timer[10];
 };
 
 #endif
