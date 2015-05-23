@@ -63,9 +63,9 @@ struct mob_sunwell_mage_guardAI : public ScriptedAI
     }
 
     ScriptedInstance* pInstance;
-    int32 Glaive_Timer;
-    int32 Magic_Field_Timer;
-    int32 OOCTimer;
+    Timer Glaive_Timer;
+    Timer Magic_Field_Timer;
+    Timer OOCTimer;
 
     void Reset()
     {
@@ -90,11 +90,11 @@ struct mob_sunwell_mage_guardAI : public ScriptedAI
     {
         if (!me->IsNonMeleeSpellCast(false) && !me->isInCombat())
         {
-            OOCTimer -= diff;
-            if (OOCTimer <= diff)
+            
+            if (OOCTimer.Expired(diff))
             {
                 HandleOffCombatEffects();
-                OOCTimer += 10000;
+                OOCTimer = 10000;
             }
 
         }
@@ -102,21 +102,21 @@ struct mob_sunwell_mage_guardAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        Glaive_Timer -= diff;
-        if (Glaive_Timer <= diff)
+        
+        if (Glaive_Timer.Expired(diff))
         {
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 60.0, true))
                 AddSpellToCast(target, SPELL_GLAIVE_THROW);
-            Glaive_Timer += urand(14000, 20000);
+            Glaive_Timer = urand(14000, 20000);
         }
 
 
-        Magic_Field_Timer -= diff;
-        if (Magic_Field_Timer <= diff)
+        
+        if (Magic_Field_Timer.Expired(diff))
         {
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 60.0, true))
                 AddSpellToCast(target, SPELL_MAGIC_DAMPENING_FIELD);
-            Magic_Field_Timer += urand(50000, 65000);
+            Magic_Field_Timer = urand(50000, 65000);
         }
 
 
@@ -139,9 +139,9 @@ struct mob_sunblade_magisterAI : public ScriptedAI
 
     ScriptedInstance* pInstance;
 
-    int32 Frostbolt_Timer;
-    int32 Arcane_Nova_Timer;
-    int32 OOCTimer;
+    Timer Frostbolt_Timer;
+    Timer Arcane_Nova_Timer;
+    Timer OOCTimer;
 
     void Reset()
     {
@@ -171,11 +171,11 @@ struct mob_sunblade_magisterAI : public ScriptedAI
     {
         if (!me->IsNonMeleeSpellCast(false) && !me->isInCombat())
         {
-            OOCTimer -= diff;
-            if (OOCTimer <= diff)
+            
+            if (OOCTimer.Expired(diff))
             {
                 HandleOffCombatEffects();
-                OOCTimer += 10000;
+                OOCTimer = 10000;
             }
 
         }
@@ -183,20 +183,20 @@ struct mob_sunblade_magisterAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        Frostbolt_Timer -= diff;
-        if (Frostbolt_Timer <= diff)
+        
+        if (Frostbolt_Timer.Expired(diff))
         {
             AddSpellToCast(me->getVictim(), SPELL_FROSTBOLT);
-            Frostbolt_Timer += SpellMgr::GetSpellCastTime(GetSpellStore()->LookupEntry(SPELL_FROSTBOLT)) - (diff + 100);    // ??????????????????
+            Frostbolt_Timer = SpellMgr::GetSpellCastTime(GetSpellStore()->LookupEntry(SPELL_FROSTBOLT)) - (diff + 100);    // ??????????????????
         }
 
 
-        Arcane_Nova_Timer -= diff;
-        if (Arcane_Nova_Timer <= diff)
+        
+        if (Arcane_Nova_Timer.Expired(diff))
         {
             ClearCastQueue();
             AddSpellToCast(SPELL_ARCANE_NOVA, CAST_SELF);
-            Arcane_Nova_Timer += urand(16000, 20000);
+            Arcane_Nova_Timer = urand(16000, 20000);
         }
 
 
@@ -223,10 +223,10 @@ struct mob_sunblade_warlockAI : public ScriptedAI
     ScriptedInstance* pInstance;
     SummonList Summons;
 
-    int32 SummonImp_Timer;
-    int32 FelArmor_Timer;
-    int32 Immolate_Timer;
-    int32 OOCTimer;
+    Timer SummonImp_Timer;
+    Timer FelArmor_Timer;
+    Timer Immolate_Timer;
+    Timer OOCTimer;
     uint64 SummonGUID;
 
     void Reset()
@@ -272,8 +272,8 @@ struct mob_sunblade_warlockAI : public ScriptedAI
     {
         if (!me->isInCombat())
         {
-            SummonImp_Timer -= diff;
-            if (SummonImp_Timer <= diff)
+            
+            if (SummonImp_Timer.Expired(diff))
             {
                 // check if still having pet ;]
                 if (!me->GetMap()->GetCreature(SummonGUID))
@@ -281,38 +281,38 @@ struct mob_sunblade_warlockAI : public ScriptedAI
 
                 if (!SummonGUID)
                     DoCast(m_creature, SPELL_SUMMON_SUNBLADE_IMP, false);
-                SummonImp_Timer += 15000;
+                SummonImp_Timer = 15000;
             }
 
 
             if (!me->IsNonMeleeSpellCast(false) && !me->isInCombat())
             {
-                OOCTimer -= diff;
-                if (OOCTimer <= diff)
+                
+                if (OOCTimer.Expired(diff))
                 {
                     HandleOffCombatEffects();
-                    OOCTimer += 10000;
+                    OOCTimer = 10000;
                 }
             }
 
             if (!UpdateVictim())
             return;
 
-            FelArmor_Timer -= diff;
-            if (FelArmor_Timer <= diff)
+            
+            if (FelArmor_Timer.Expired(diff))
             {
                 if (!me->HasAura(SPELL_FEL_ARMOR, 0))
                     DoCast(me, SPELL_FEL_ARMOR, true);
-                FelArmor_Timer += 120000;
+                FelArmor_Timer = 120000;
             }
 
 
-            Immolate_Timer -= diff;
-            if (Immolate_Timer <= diff)
+            
+            if (Immolate_Timer.Expired(diff))
             {
                 ClearCastQueue();
                 AddSpellToCast(m_creature->getVictim(), SPELL_IMMOLATE);
-                Immolate_Timer += urand(16000, 25000);
+                Immolate_Timer = urand(16000, 25000);
             }
 
 
@@ -359,9 +359,9 @@ struct mob_sunblade_physicianAI : public ScriptedAI
 
     ScriptedInstance* pInstance;
 
-    int32 Poison_Timer;
-    int32 Prayer_of_Mending_Timer;
-    int32 OOCTimer;
+    Timer Poison_Timer;
+    Timer Prayer_of_Mending_Timer;
+    Timer OOCTimer;
 
     void Reset()
     {
@@ -400,33 +400,33 @@ struct mob_sunblade_physicianAI : public ScriptedAI
     {
         if (!me->IsNonMeleeSpellCast(false) && !me->isInCombat())
         {
-            OOCTimer -= diff;
-            if (OOCTimer <= diff)
+            
+            if (OOCTimer.Expired(diff))
             {
                 HandleOffCombatEffects();
-                OOCTimer += 10000;
+                OOCTimer = 10000;
             }
         }
 
         if (!UpdateVictim())
             return;
 
-        Poison_Timer -= diff;
-        if (Poison_Timer <= diff)
+        
+        if (Poison_Timer.Expired(diff))
         {
             AddSpellToCast(SPELL_INJECT_POISON, CAST_SELF);
-            Poison_Timer += urand(16000, 20000);
+            Poison_Timer = urand(16000, 20000);
         }
 
-        Prayer_of_Mending_Timer -= diff;
-        if (Prayer_of_Mending_Timer <= diff)
+        
+        if (Prayer_of_Mending_Timer.Expired(diff))
         {
             if (CanCastPoM())  // only one PoM active at a time
             {
                 if (Unit* healTarget = SelectLowestHpFriendly(40))
                     AddSpellToCast(healTarget, SPELL_PRAYER_OF_MENDING);
             }
-            Prayer_of_Mending_Timer += urand(7000, 12000);
+            Prayer_of_Mending_Timer = urand(7000, 12000);
         }
 
 
@@ -448,10 +448,10 @@ struct mob_sunblade_blood_knightAI : public ScriptedAI
 
     ScriptedInstance* pInstance;
 
-    int32 Judgement_Timer;
-    int32 Holy_Light_Timer;
-    int32 Seal_Timer;
-    int32 OOCTimer;
+    Timer Judgement_Timer;
+    Timer Holy_Light_Timer;
+    Timer Seal_Timer;
+    Timer OOCTimer;
 
     void Reset()
     {
@@ -477,47 +477,46 @@ struct mob_sunblade_blood_knightAI : public ScriptedAI
     {
         if (!me->IsNonMeleeSpellCast(false) && !me->isInCombat())
         {
-            OOCTimer -= diff;
-            if (OOCTimer <= diff)
+            if (OOCTimer.Expired(diff))
             {
                 HandleOffCombatEffects();
-                OOCTimer += 10000;
+                OOCTimer = 10000;
             }
         }
 
         if (!UpdateVictim())
             return;
 
-        Seal_Timer -= diff;
-        if (Seal_Timer <= diff)
+
+        if (Seal_Timer.Expired(diff))
         {
             AddSpellToCast(SPELL_SEAL_OF_WRATH, CAST_SELF);
             Seal_Timer += urand(20000, 30000);
         }
 
 
-        Judgement_Timer -= diff;
-        if (Judgement_Timer <= diff)
+
+        if (Judgement_Timer.Expired(diff))
         {
             if (me->HasAura(SPELL_SEAL_OF_WRATH, 0))
             {
                 AddSpellToCast(me->getVictim(), SPELL_JUDGEMENT_OF_WRATH);
                 me->RemoveAurasDueToSpell(SPELL_SEAL_OF_WRATH);
-                Seal_Timer += urand(5000, 10000);
-                Judgement_Timer += urand(13000, 20000);
+                Seal_Timer = urand(5000, 10000);
+                Judgement_Timer = urand(13000, 20000);
             }
         }
 
 
-        Holy_Light_Timer -= diff;
-        if (Holy_Light_Timer <= diff)
+        
+        if (Holy_Light_Timer.Expired(diff))
         {
             Unit* healTarget = SelectLowestHpFriendly(40.0f, 10000);
             if (healTarget)
                 AddSpellToCast(healTarget, SPELL_HOLY_LIGHT);
             else
                 AddSpellToCast(me, SPELL_HOLY_LIGHT);
-            Holy_Light_Timer += urand(7000, 10000);
+            Holy_Light_Timer = urand(7000, 10000);
         }
 
 
@@ -548,9 +547,9 @@ struct mob_wretched_skulkerAI : public ScriptedAI
 {
     mob_wretched_skulkerAI(Creature *c) : ScriptedAI(c) {}
 
-    int32 Drink_Timer;
-    int32 Wretched_Stab_Timer;
-    int32 OOCTimer;
+    Timer Drink_Timer;
+    Timer Wretched_Stab_Timer;
+    Timer OOCTimer;
 
     void Reset()
     {
@@ -584,11 +583,11 @@ struct mob_wretched_skulkerAI : public ScriptedAI
     {
         if (!me->IsNonMeleeSpellCast(false) && !me->isInCombat())
         {
-            OOCTimer -= diff;
-            if (OOCTimer <= diff)
+
+            if (OOCTimer.Expired(diff))
             {
                 HandleOffCombatEffects();
-                OOCTimer += 10000;
+                OOCTimer = 10000;
             }
 
         }
@@ -596,19 +595,19 @@ struct mob_wretched_skulkerAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        Drink_Timer -= diff;
-        if (Drink_Timer <= diff)
+        
+        if (Drink_Timer.Expired(diff))
         {
             AddSpellToCast(SPELL_DRINK_FEL_INFUSION, CAST_SELF);
-            Drink_Timer += HeroicMode ? urand(10000, 18000) : urand(15000, 25000);
+            Drink_Timer = HeroicMode ? urand(10000, 18000) : urand(15000, 25000);
         }
 
 
-        Wretched_Stab_Timer -= diff;
-        if (Wretched_Stab_Timer <= diff)
+      
+        if (Wretched_Stab_Timer.Expired(diff))
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_WRETCHED_STAB);
-            Wretched_Stab_Timer += urand(3000, 7000);
+            Wretched_Stab_Timer = urand(3000, 7000);
         }
 
 
@@ -623,9 +622,9 @@ struct mob_wretched_bruiserAI : public ScriptedAI
 {
     mob_wretched_bruiserAI(Creature *c) : ScriptedAI(c) {}
 
-    int32 OOCTimer;
-    int32 Drink_Timer;
-    int32 Wretched_Strike_Timer;
+    Timer OOCTimer;
+    Timer Drink_Timer;
+    Timer Wretched_Strike_Timer;
 
     void Reset()
     {
@@ -658,11 +657,11 @@ struct mob_wretched_bruiserAI : public ScriptedAI
     {
         if (!me->IsNonMeleeSpellCast(false) && !me->isInCombat())
         {
-            OOCTimer -= diff;
-            if (OOCTimer <= diff)
+          
+            if (OOCTimer.Expired(diff))
             {
                 HandleOffCombatEffects();
-                OOCTimer += 10000;
+                OOCTimer = 10000;
             }
 
         }
@@ -670,19 +669,19 @@ struct mob_wretched_bruiserAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        Drink_Timer -= diff;
-        if (Drink_Timer <= diff)
+        
+        if (Drink_Timer.Expired(diff))
         {
             AddSpellToCast(SPELL_DRINK_FEL_INFUSION, CAST_SELF);
-            Drink_Timer += HeroicMode ? urand(10000, 18000) : urand(15000, 25000);
+            Drink_Timer = HeroicMode ? urand(10000, 18000) : urand(15000, 25000);
         }
 
 
-        Wretched_Strike_Timer -= diff;
-        if (Wretched_Strike_Timer <= diff)
+        
+        if (Wretched_Strike_Timer.Expired(diff))
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_WRETCHED_STRIKE);
-            Wretched_Strike_Timer += urand(7000, 16000);
+            Wretched_Strike_Timer = urand(7000, 16000);
         }
 
 
@@ -698,9 +697,9 @@ struct mob_wretched_huskAI : public ScriptedAI
 {
     mob_wretched_huskAI(Creature *c) : ScriptedAI(c) {}
 
-    int32 OOCTimer;
-    int32 Drink_Timer;
-    int32 Wretched_Cast_Timer;
+    Timer OOCTimer;
+    Timer Drink_Timer;
+    Timer Wretched_Cast_Timer;
 
     void Reset()
     {
@@ -740,31 +739,31 @@ struct mob_wretched_huskAI : public ScriptedAI
     {
         if (!me->IsNonMeleeSpellCast(false) && !me->isInCombat())
         {
-            OOCTimer -= diff;
-            if (OOCTimer <= diff)
+            
+            if (OOCTimer.Expired(diff))
             {
                 HandleOffCombatEffects();
-                OOCTimer += 10000;
+                OOCTimer = 10000;
             }
         }
 
         if (!UpdateVictim())
             return;
 
-        Drink_Timer -= diff;
-        if (Drink_Timer <= diff)
+        
+        if (Drink_Timer.Expired(diff))
         {
             ClearCastQueue();
             AddSpellToCast(SPELL_DRINK_FEL_INFUSION, CAST_SELF);
-            Drink_Timer += HeroicMode ? urand(10000, 18000) : urand(15000, 25000);
+            Drink_Timer = HeroicMode ? urand(10000, 18000) : urand(15000, 25000);
         }
 
 
-        Wretched_Cast_Timer -= diff;
-        if (Wretched_Cast_Timer <= diff)
+        
+        if (Wretched_Cast_Timer.Expired(diff))
         {
             AddSpellToCast(m_creature->getVictim(), RAND(SPELL_WRETCHED_FIREBALL, SPELL_WRETCHED_FROSTBOLT));
-            Wretched_Cast_Timer += me->HasAura(SPELL_DRINK_FEL_INFUSION, 1) ? 1400 : 2900;
+            Wretched_Cast_Timer = me->HasAura(SPELL_DRINK_FEL_INFUSION, 1) ? 1400 : 2900;
         }
 
 
@@ -809,9 +808,9 @@ struct mob_sister_of_tormentAI : public ScriptedAI
 
     ScriptedInstance* pInstance;
 
-    int32 LashOfPain_Timer;
-    int32 DeadlyEmbrace_Timer;
-    int32 OOCTimer;
+    Timer LashOfPain_Timer;
+    Timer DeadlyEmbrace_Timer;
+    Timer OOCTimer;
 
     void Reset()
     {
@@ -836,11 +835,11 @@ struct mob_sister_of_tormentAI : public ScriptedAI
     {
         if (!me->IsNonMeleeSpellCast(false) && !me->isInCombat())
         {
-            OOCTimer -= diff;
-            if (OOCTimer <= diff)
+            
+            if (OOCTimer.Expired(diff))
             {
                 HandleOffCombatEffects();
-                OOCTimer += 10000;
+                OOCTimer = 10000;
             }
 
         }
@@ -848,20 +847,20 @@ struct mob_sister_of_tormentAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        LashOfPain_Timer -= diff;
-        if (LashOfPain_Timer <= diff)
+        
+        if (LashOfPain_Timer.Expired(diff))
         {
             AddSpellToCast(SPELL_LASH_OF_PAIN, CAST_TANK);
-            LashOfPain_Timer += urand(8000, 14000);
+            LashOfPain_Timer = urand(8000, 14000);
         }
 
 
-        DeadlyEmbrace_Timer -= diff;
-        if (DeadlyEmbrace_Timer <= diff)
+        
+        if (DeadlyEmbrace_Timer.Expired(diff))
         {
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 20.0, true))
                 AddSpellToCast(target, SPELL_DEADLY_EMRACE);
-            DeadlyEmbrace_Timer += (17000, 23000);
+            DeadlyEmbrace_Timer = (17000, 23000);
         }
 
 
@@ -903,11 +902,11 @@ struct mob_coilskar_witchAI : public ScriptedAI
 
     ScriptedInstance* pInstance;
 
-    int32 Check_Timer;
-    int32 Shoot_Timer;
-    int32 FrostArrow_Timer;
-    int32 ForkedLightning_Timer;
-    int32 OOCTimer;
+    Timer Check_Timer;
+    Timer Shoot_Timer;
+    Timer FrostArrow_Timer;
+    Timer ForkedLightning_Timer;
+    Timer OOCTimer;
     bool canShield;
 
     void Reset()
@@ -941,54 +940,54 @@ struct mob_coilskar_witchAI : public ScriptedAI
     {
         if (!me->IsNonMeleeSpellCast(false) && !me->isInCombat())
         {
-            OOCTimer -= diff;
-            if (OOCTimer <= diff)
+            
+            if (OOCTimer.Expired(diff))
             {
                 HandleOffCombatEffects();
-                OOCTimer += 10000;
+                OOCTimer = 10000;
             }
         }
 
         if (!UpdateVictim())
             return;
 
-        Check_Timer -= diff;
-        if (Check_Timer <= diff)
+        
+        if (Check_Timer.Expired(diff))
         {
             if (HealthBelowPct(51) && canShield)
             {
                 canShield = false;
                 ForceSpellCast(SPELL_MANA_SHIELD, CAST_SELF);
             }
-            Check_Timer += 1500;
+            Check_Timer = 1500;
         }
 
-        Shoot_Timer -= diff;
-        if (Shoot_Timer <= diff)
+        
+        if (Shoot_Timer.Expired(diff))
         {
             if (me->GetMotionMaster()->GetCurrentMovementGeneratorType() == IDLE_MOTION_TYPE)
             {
                 if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30.0f, true, 5.0f))
                     AddSpellToCast(target, SPELL_SHOOT);
             }
-            Shoot_Timer += 3000;
+            Shoot_Timer = 3000;
         }
 
 
-        FrostArrow_Timer -= diff;
-        if (FrostArrow_Timer <= diff)
+      
+        if (FrostArrow_Timer.Expired(diff))
         {
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 50.0f, true))
                 AddSpellToCast(target, SPELL_FROST_ARROW);
-            FrostArrow_Timer += urand(9000, 12000);
+            FrostArrow_Timer = urand(9000, 12000);
         }
 
 
-        ForkedLightning_Timer -= diff;
-        if (ForkedLightning_Timer <= diff)
+        
+        if (ForkedLightning_Timer.Expired(diff))
         {
             AddSpellToCast(SPELL_FORKED_LIGHTNING, CAST_NULL);
-            ForkedLightning_Timer += urand(12000, 18000);
+            ForkedLightning_Timer = urand(12000, 18000);
         }
 
 
@@ -1009,9 +1008,9 @@ struct mob_ethereum_smugglerAI : public ScriptedAI
 
     ScriptedInstance* pInstance;
 
-    int32 ExplosionCombo_Timer;
-    int32 Check_Timer;
-    int32 OOCTimer;
+     Timer ExplosionCombo_Timer;
+     Timer Check_Timer;
+     Timer OOCTimer;
 
     void Reset()
     {
@@ -1036,11 +1035,10 @@ struct mob_ethereum_smugglerAI : public ScriptedAI
     {
         if (!me->IsNonMeleeSpellCast(false) && !me->isInCombat())
         {
-            OOCTimer -= diff;
-            if (OOCTimer <= diff)
+            if (OOCTimer.Expired(diff))
             {
                 HandleOffCombatEffects();
-                OOCTimer += 10000;
+                OOCTimer = 10000;
             }
 
         }
@@ -1048,21 +1046,17 @@ struct mob_ethereum_smugglerAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (Check_Timer)
+        // when not casting AE, chase victim
+        if (Check_Timer.Expired(diff))
         {
-            Check_Timer -= diff;
-            // when not casting AE, chase victim
-            if (Check_Timer <= diff)
-            {
-                me->setHover(false);
-                DoStartMovement(me->getVictim());
-                Check_Timer = 0;
-            }
-
+            me->setHover(false);
+            DoStartMovement(me->getVictim());
+            Check_Timer = 0;
         }
 
-        ExplosionCombo_Timer -= diff;
-        if (ExplosionCombo_Timer <= diff)
+
+        
+        if (ExplosionCombo_Timer.Expired(diff))
         {
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100.0f, true))
             {
@@ -1073,9 +1067,9 @@ struct mob_ethereum_smugglerAI : public ScriptedAI
                 me->GetMotionMaster()->MoveIdle();
                 for (uint8 i = 0; i < 3; ++i)
                   AddSpellToCast(SPELL_ARCANE_EXPLOSION, CAST_NULL);
-                Check_Timer += 2500;
+                Check_Timer = 2500;
             }
-            ExplosionCombo_Timer += 30000;
+            ExplosionCombo_Timer = 30000;
         }
 
 
@@ -1092,7 +1086,7 @@ struct mob_mgt_kalecgosAI : public ScriptedAI
 {
     mob_mgt_kalecgosAI(Creature *c) : ScriptedAI(c) {}
 
-    int32 Timer;
+    Timer Timer;
     uint32 step;
 
     void Reset()
@@ -1163,8 +1157,8 @@ struct mob_mgt_kalecgosAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        Timer -= diff;
-        if (Timer <= diff)
+        
+        if (Timer.Expired(diff))
         {
             DoFlight(step);
             ++step;

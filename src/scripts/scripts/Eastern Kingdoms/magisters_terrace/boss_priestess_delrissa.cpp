@@ -117,15 +117,15 @@ struct boss_priestess_delrissaAI : public ScriptedAI
     bool canUseMedalion;
     bool aggroSpeach;
 
-    int32 Heal_Timer;
-    int32 Renew_Timer;
-    int32 Scream_Cooldown;
-    int32 Medalion_Cooldown;
-    int32 Shield_Timer;
-    int32 SWPain_Timer;
-    int32 Dispel_Timer;
-    int32 Check_Timer;
-    int32 ResetThreatTimer;
+    Timer Heal_Timer;
+    Timer Renew_Timer;
+    Timer Scream_Cooldown;
+    Timer Medalion_Cooldown;
+    Timer Shield_Timer;
+    Timer SWPain_Timer;
+    Timer Dispel_Timer;
+    Timer Check_Timer;
+    Timer ResetThreatTimer;
 
     void Reset()
     {
@@ -313,8 +313,8 @@ struct boss_priestess_delrissaAI : public ScriptedAI
         if(me->getVictim()->isCrowdControlled())
             DoModifyThreatPercent(me->getVictim(), -100);
 
-        Check_Timer -= diff;
-        if(Check_Timer <= diff)
+        
+        if (Check_Timer.Expired(diff))
         {
             DoZoneInCombat();
             RegenMana();
@@ -339,12 +339,12 @@ struct boss_priestess_delrissaAI : public ScriptedAI
                 canFear = false;
             }
             else
-            Check_Timer += 2000;
+            Check_Timer = 2000;
         }
         
 
-        ResetThreatTimer -= diff;
-        if(ResetThreatTimer <= diff)
+        
+        if (ResetThreatTimer.Expired(diff))
         {
             DoResetThreat();
             if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, 200, true))
@@ -352,76 +352,76 @@ struct boss_priestess_delrissaAI : public ScriptedAI
                 AttackStart(target);
                 me->AddThreat(target, 200000);
             }
-            ResetThreatTimer += urand(8000, 20000);
+            ResetThreatTimer = urand(8000, 20000);
         }
         
         if(!canFear)
         {
-            Scream_Cooldown -= diff;
-            if(Scream_Cooldown <= diff)
+            
+            if (Scream_Cooldown.Expired(diff))
             {
                 canFear = true;
-                Scream_Cooldown += HeroicMode?15000:30000;
+                Scream_Cooldown = HeroicMode?15000:30000;
             }
         }
 
         if(HeroicMode && !canUseMedalion)
         {
-            Medalion_Cooldown -= diff;
-            if(Medalion_Cooldown <= diff)
+            
+            if (Medalion_Cooldown.Expired(diff))
             {
                 canUseMedalion = true;
-                Medalion_Cooldown += 60000;
+                Medalion_Cooldown = 60000;
             }
             
         }
 
-        Heal_Timer -= diff;
-        if(Heal_Timer <= diff)
+        
+        if (Heal_Timer.Expired(diff))
         {
             
             if (Unit* target = SelectLowestHpFriendly(40, 200))
             {
                 AddSpellToCast(target, SPELL_FLASH_HEAL, false, true);
                 if (target->GetHealth() * 100 / target->GetMaxHealth() < 50)
-                    Heal_Timer += 3000;
+                    Heal_Timer = 3000;
                 else
-                    Heal_Timer += urand(4000, 10000);
+                    Heal_Timer = urand(4000, 10000);
                 return;
             }
-                Heal_Timer += 2000;
+                Heal_Timer = 2000;
         }
         
-        Renew_Timer -= diff;
-        if(Renew_Timer <= diff)
+        
+        if (Renew_Timer.Expired(diff))
         {
   
             if(Unit *target = SelectLowestHpFriendlyMissingBuff(40, SPELL_RENEW))
             {
                 AddSpellToCast(target, SPELL_RENEW);
                 if(target->GetHealth() * 100 / target->GetMaxHealth() < 40)
-                    Renew_Timer += 4000;
+                    Renew_Timer = 4000;
                 else
-                    Renew_Timer += 8000;
+                    Renew_Timer = 8000;
                 return;
             }
-            Renew_Timer += 1000;
+            Renew_Timer = 1000;
         }
         
-        Shield_Timer -= diff;
-        if(Shield_Timer <= diff)
+        
+        if (Shield_Timer.Expired(diff))
         {        
             if(Unit *target = SelectLowestHpFriendlyMissingBuff(40, SPELL_WEAKENED_SOUL))
             {
                 ForceSpellCast(target, SPELL_SHIELD, INTERRUPT_AND_CAST);
-                Shield_Timer += 15000;
+                Shield_Timer = 15000;
                 return;
             }
-        Shield_Timer += 1000;
+        Shield_Timer = 1000;
         }
         
-        Dispel_Timer -= diff;
-        if (Dispel_Timer <= diff)
+        
+        if (Dispel_Timer.Expired(diff))
         {
             Unit* target = NULL;
 
@@ -447,14 +447,14 @@ struct boss_priestess_delrissaAI : public ScriptedAI
             if(target)
             {
                 AddSpellToCast(target, SPELL_DISPEL_MAGIC);
-                Dispel_Timer += 10000;
+                Dispel_Timer = 10000;
                 return;
             }
-            Dispel_Timer += 1000;
+            Dispel_Timer = 1000;
         }
         
-        SWPain_Timer -= diff;
-        if(SWPain_Timer <= diff)
+
+        if (SWPain_Timer.Expired(diff))
         {
 
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30, true, -SPELL_SW_PAIN))
@@ -462,10 +462,10 @@ struct boss_priestess_delrissaAI : public ScriptedAI
                 if(!target->isCrowdControlled())
                 {
                     AddSpellToCast(target,SPELL_SW_PAIN);
-                    SWPain_Timer += 10000;
+                    SWPain_Timer = 10000;
                     return;
                 }
-                SWPain_Timer += 1000;
+                SWPain_Timer = 1000;
             }
         }
         
@@ -491,9 +491,9 @@ struct boss_priestess_guestAI : public ScriptedAI
     bool resetThreat;
     bool canUseMedalion;
     bool usedPotion;
-    int32 ResetThreatTimer;
-    int32 Check_Timer;
-    int32 Medalion_Cooldown;
+    Timer ResetThreatTimer;
+    Timer Check_Timer;
+    Timer Medalion_Cooldown;
     float targetRange;
 
     void Reset()
@@ -570,8 +570,8 @@ struct boss_priestess_guestAI : public ScriptedAI
             usedPotion = true;
         }
 
-        Check_Timer -= diff;
-        if(Check_Timer <= diff)
+        
+        if (Check_Timer.Expired(diff))
         {
             if(HeroicMode && canUseMedalion)
             {
@@ -588,25 +588,24 @@ struct boss_priestess_guestAI : public ScriptedAI
             }
             if(me->GetPositionZ() < -22.5)
                 DoTeleportTo(me->GetPositionX(), me->GetPositionY(), -19.5);
-            Check_Timer += 2000;
+            Check_Timer = 2000;
         }
         
 
         if(HeroicMode && !canUseMedalion)
         {
-            Medalion_Cooldown -= diff;
-            if(Medalion_Cooldown <= diff)
+           
+            if (Medalion_Cooldown.Expired(diff))
             {
                 canUseMedalion = true;
-                Medalion_Cooldown += 60000;
+                Medalion_Cooldown = 60000;
             }
             
         }
 
         if(resetThreat)
         {
-            ResetThreatTimer -= diff;
-            if(ResetThreatTimer <= diff)
+            if (ResetThreatTimer.Expired(diff))
             {
                 DoResetThreat();
                 if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, targetRange, true))
@@ -635,12 +634,12 @@ struct boss_kagani_nightstrikeAI : public boss_priestess_guestAI
     //Rogue
     boss_kagani_nightstrikeAI(Creature *c) : boss_priestess_guestAI(c) {}
 
-    int32 Gouge_Timer;
-    int32 Kick_Cooldown;
-    int32 Vanish_Timer;
-    int32 Eviscerate_Timer;
-    int32 Backstab_Timer;
-    int32 Check_Timer;
+    Timer Gouge_Timer;
+    Timer Kick_Cooldown;
+    Timer Vanish_Timer;
+    Timer Eviscerate_Timer;
+    Timer Backstab_Timer;
+    Timer Check_Timer;
 
     bool canKick;
     bool InVanish;
@@ -686,17 +685,16 @@ struct boss_kagani_nightstrikeAI : public boss_priestess_guestAI
 
         if(InVanish)
         {
-            Check_Timer -= diff;
-            if(Check_Timer <= diff)
+            if (Check_Timer.Expired(diff))
             {
                 if(me->IsWithinMeleeRange(me->getVictim()))
                 {
                     if(!me->getVictim()->HasInArc(M_PI, me))
                         AddSpellToCast(me->getVictim(), SPELL_BACKSTAB);
                     me->RemoveAurasDueToSpell(SPELL_VANISH);
-                    Gouge_Timer += urand(10000, 15000);
+                    Gouge_Timer = urand(10000, 15000);
                 }
-                Check_Timer += 2000;
+                Check_Timer = 2000;
             }
             
 
@@ -706,8 +704,8 @@ struct boss_kagani_nightstrikeAI : public boss_priestess_guestAI
 
         boss_priestess_guestAI::UpdateAI(diff);
 
-        Vanish_Timer -= diff;
-        if(Vanish_Timer <= diff)
+        
+        if (Vanish_Timer.Expired(diff))
         {
             ForceSpellCast(me, SPELL_VANISH, INTERRUPT_AND_CAST);
             DoResetThreat();
@@ -720,18 +718,17 @@ struct boss_kagani_nightstrikeAI : public boss_priestess_guestAI
                 me->GetMotionMaster()->MovePoint(0, x, y, z);
             }
             InVanish = true;
-            Check_Timer += 2000;
-            Vanish_Timer += urand(20000, 30000);
+            Check_Timer = 2000;
+            Vanish_Timer = urand(20000, 30000);
         }
         
 
         if(!canKick)
         {
-            Kick_Cooldown -= diff;
-            if(Kick_Cooldown <= diff)
+            if (Kick_Cooldown.Expired(diff))
             {
                 canKick = true;
-                Kick_Cooldown += urand(15000, 18000);
+                Kick_Cooldown = urand(15000, 18000);
             }
             
         }
@@ -745,28 +742,28 @@ struct boss_kagani_nightstrikeAI : public boss_priestess_guestAI
             }
         }
 
-        Backstab_Timer -= diff;
-        if(Backstab_Timer <= diff)
+        
+        if (Backstab_Timer.Expired(diff))
         {
             if(!m_creature->getVictim()->HasInArc(M_PI, m_creature))
                 ForceSpellCast(SPELL_BACKSTAB, CAST_TANK, INTERRUPT_AND_CAST);
-            Backstab_Timer += 3000;
+            Backstab_Timer = 3000;
         }
         
 
-        Gouge_Timer -= diff;
-        if(Gouge_Timer <= diff)
+        
+        if (Gouge_Timer.Expired(diff))
         {
             AddSpellToCast(SPELL_GOUGE, CAST_TANK);
             DoModifyThreatPercent(m_creature->getVictim(),-100);
-            Gouge_Timer += urand(12000, 25000);
+            Gouge_Timer = urand(12000, 25000);
         }
         
-        Eviscerate_Timer -= diff;
-        if(Eviscerate_Timer <= diff)
+        
+        if (Eviscerate_Timer.Expired(diff))
         {
             AddSpellToCast(SPELL_EVISCERATE, CAST_TANK);
-            Eviscerate_Timer += urand(4000, 10000);
+            Eviscerate_Timer = urand(4000, 10000);
         }
         
         CastNextSpellIfAnyAndReady();
@@ -791,12 +788,12 @@ struct boss_ellris_duskhallowAI : public boss_priestess_guestAI
     //Warlock
     boss_ellris_duskhallowAI(Creature *c) : boss_priestess_guestAI(c) { }
 
-    int32 Check_Timer;
-    int32 Autocast_Timer;
-    int32 SummonImp_Timer;
-    int32 Seed_of_Corruption_Timer;
-    int32 Curse_of_Agony_Timer;
-    int32 Fear_Timer;
+    Timer Check_Timer;
+    Timer Autocast_Timer;
+    Timer SummonImp_Timer;
+    Timer Seed_of_Corruption_Timer;
+    Timer Curse_of_Agony_Timer;
+    Timer Fear_Timer;
 
     void Reset()
     {
@@ -831,8 +828,8 @@ struct boss_ellris_duskhallowAI : public boss_priestess_guestAI
     {
         if(!me->isInCombat())
         {
-            SummonImp_Timer -= diff;
-            if(SummonImp_Timer <= diff)
+          
+            if (SummonImp_Timer.Expired(diff))
             {
                 // check if still having pet nearby;]
                 Unit* Fizzle = FindCreature(NPC_FIZZLE, 60.0, me);
@@ -845,7 +842,7 @@ struct boss_ellris_duskhallowAI : public boss_priestess_guestAI
                     ((Creature*)Fizzle)->RemoveCorpse();
                     DoCast(m_creature, SPELL_SUMMON_IMP, false);
                 }
-                SummonImp_Timer += 15000;
+                SummonImp_Timer = 15000;
             } 
         }
 
@@ -857,43 +854,43 @@ struct boss_ellris_duskhallowAI : public boss_priestess_guestAI
         if(me->getVictim()->isCrowdControlled())
             DoModifyThreatPercent(me->getVictim(), -100);
 
-        Check_Timer -= diff;
-        if(Check_Timer <= diff)
+        
+        if (Check_Timer.Expired(diff))
         {
             RegenMana();
-            Check_Timer += 2000;
+            Check_Timer = 2000;
         }
         
-        Autocast_Timer -= diff;
-        if(Autocast_Timer <= diff)
+        
+        if (Autocast_Timer.Expired(diff))
         {
             AddSpellToCast(SPELL_SHADOW_BOLT, CAST_TANK);
             if(roll_chance_f(20.0))
                 AddSpellToCast(SPELL_IMMOLATE, CAST_TANK);
-            Autocast_Timer += 3000;
+            Autocast_Timer = 3000;
         }
         
 
-        Seed_of_Corruption_Timer -= diff;
-        if(Seed_of_Corruption_Timer <= diff)
+        
+        if (Seed_of_Corruption_Timer.Expired(diff))
         {
             AddSpellToCast(SPELL_SEED_OF_CORRUPTION, CAST_RANDOM);
-            Seed_of_Corruption_Timer += 10000;
+            Seed_of_Corruption_Timer = 10000;
         }
         
-        Curse_of_Agony_Timer -= diff;
-        if(Curse_of_Agony_Timer <= diff)
+        
+        if (Curse_of_Agony_Timer.Expired(diff))
         {
             AddSpellToCast(SPELL_CURSE_OF_AGONY, CAST_TANK);
             Curse_of_Agony_Timer += urand(12000, 15000);
         }
         
 
-        Fear_Timer -= diff;
-        if(Fear_Timer <= diff)
+        
+        if (Fear_Timer.Expired(diff))
         {
             AddSpellToCast(SPELL_FEAR, CAST_RANDOM);
-            Fear_Timer += urand(8000, 12000);
+            Fear_Timer = urand(8000, 12000);
         }
         
 
@@ -908,8 +905,8 @@ struct mob_fizzleAI : public ScriptedAI
 {
     mob_fizzleAI(Creature *c) : ScriptedAI(c) { }
 
-    int32 Autocast_Timer;
-    int32 Check_Timer;
+    Timer Autocast_Timer;
+    Timer Check_Timer;
 
     void Reset()
     {
@@ -930,11 +927,11 @@ struct mob_fizzleAI : public ScriptedAI
         if(me->getVictim()->isCrowdControlled())
             DoModifyThreatPercent(me->getVictim(), -100);
 
-        Autocast_Timer -= diff;
-        if(Autocast_Timer <= diff)
+        
+        if (Autocast_Timer.Expired(diff))
         {
             AddSpellToCast(SPELL_IMP_FIREBALL, CAST_TANK);
-            Autocast_Timer += 1900;
+            Autocast_Timer = 1900;
         }
         
 
@@ -955,9 +952,9 @@ struct boss_eramas_brightblazeAI : public boss_priestess_guestAI
     //Monk
     boss_eramas_brightblazeAI(Creature *c) : boss_priestess_guestAI(c) {}
 
-    int32 Knockdown_Timer;
-    int32 Snap_Kick_Timer;
-    int32 ChacraDrain_Timer;
+    Timer Knockdown_Timer;
+    Timer Snap_Kick_Timer;
+    Timer ChacraDrain_Timer;
 
     void Reset()
     {
@@ -984,32 +981,32 @@ struct boss_eramas_brightblazeAI : public boss_priestess_guestAI
         if(me->getVictim()->isCrowdControlled())
             DoResetThreat();
 
-        Knockdown_Timer -= diff;
-        if(Knockdown_Timer <= diff)
+        
+        if (Knockdown_Timer.Expired(diff))
         {
             if(me->IsWithinMeleeRange(me->getVictim()))
             {
                 AddSpellToCast(SPELL_KNOCKDOWN, CAST_TANK);
-                Knockdown_Timer += 10000;
+                Knockdown_Timer = 10000;
             }
         }
         
-        Snap_Kick_Timer -= diff;
-        if(Snap_Kick_Timer <= diff)
+        
+        if (Snap_Kick_Timer.Expired(diff))
         {
             if(me->IsWithinMeleeRange(me->getVictim()))
             {
                 AddSpellToCast(SPELL_SNAP_KICK, CAST_TANK);
-                Snap_Kick_Timer += 12000;
+                Snap_Kick_Timer = 12000;
             }
         }
         
-        ChacraDrain_Timer -= diff;
-        if(ChacraDrain_Timer <= diff)
+       
+        if (ChacraDrain_Timer.Expired(diff))
         {
             if(HeroicMode)
                 AddSpellToCast(SPELL_HEALING_POTION, CAST_SELF);
-            ChacraDrain_Timer += urand(10000, 20000);
+            ChacraDrain_Timer = urand(10000, 20000);
         }
         
 
@@ -1037,17 +1034,17 @@ struct boss_yazzaiAI : public boss_priestess_guestAI
     bool canBlink;
     bool hasIceBlocked;
 
-    int32 FrostNova_Cooldown;
-    int32 ConeOfCold_Cooldown;
-    int32 Blink_Cooldown;
+    Timer FrostNova_Cooldown;
+    Timer ConeOfCold_Cooldown;
+    Timer Blink_Cooldown;
 
-    int32 Check_Timer;
-    int32 Autocast_Timer;
-    int32 MeleeCheck_Timer;
-    int32 Polymorph_Timer;
-    int32 Ice_Block_Timer;
-    int32 Blizzard_Timer;
-    int32 Ice_Lance_Timer;
+    Timer Check_Timer;
+    Timer Autocast_Timer;
+    Timer MeleeCheck_Timer;
+    Timer Polymorph_Timer;
+    Timer Ice_Block_Timer;
+    Timer Blizzard_Timer;
+    Timer Ice_Lance_Timer;
 
     void Reset()
     {
@@ -1089,53 +1086,53 @@ struct boss_yazzaiAI : public boss_priestess_guestAI
         if(me->getVictim() && me->getVictim()->isCrowdControlled())
             DoModifyThreatPercent(me->getVictim(), -100);
 
-        Check_Timer -= diff;
-        if(Check_Timer <= diff)
+        
+        if (Check_Timer.Expired(diff))
         {
             RegenMana();
-            Check_Timer += 2000;
+            Check_Timer = 2000;
         }
         
-        Autocast_Timer -= diff;
-        if(Autocast_Timer <= diff)
+        
+        if (Autocast_Timer.Expired(diff))
         {
             AddSpellToCast(SPELL_FROSTBOLT, CAST_TANK);
-            Autocast_Timer += 3000;
+            Autocast_Timer = 3000;
         }
         
 
         if(!canFroze)
         {
-            FrostNova_Cooldown -= diff;
-            if(FrostNova_Cooldown <= diff)
+            
+            if (FrostNova_Cooldown.Expired(diff))
             {
                 canFroze = true;
-                FrostNova_Cooldown += 25000;
+                FrostNova_Cooldown = 25000;
             }
         }
         if(!canCoC)
         {
-            ConeOfCold_Cooldown -= diff;
-            if(ConeOfCold_Cooldown <= diff)
+            
+            if (ConeOfCold_Cooldown.Expired(diff))
             {
                 canCoC = true;
-                ConeOfCold_Cooldown += 10000;
+                ConeOfCold_Cooldown = 10000;
             }
         }
         if(!canBlink)
         {
-            Blink_Cooldown -= diff;
-            if(Blink_Cooldown <= diff)
+          
+            if (Blink_Cooldown.Expired(diff))
             {
                 ClearCastQueue();
                 SetAutocast(SPELL_FROSTBOLT, 3000, true);
                 canBlink = true;
-                Blink_Cooldown += 15000;
+                Blink_Cooldown = 15000;
             }
         }
 
-        MeleeCheck_Timer -= diff;
-        if(MeleeCheck_Timer <= diff)
+        ;
+        if (MeleeCheck_Timer.Expired(diff))
         {
             if(me->IsWithinMeleeRange(me->getVictim()))
             {
@@ -1155,11 +1152,11 @@ struct boss_yazzaiAI : public boss_priestess_guestAI
                 if(canBlink)
                 {
                     ForceSpellCast(SPELL_BLINK, CAST_SELF);
-                    MeleeCheck_Timer += 3000;
+                    MeleeCheck_Timer = 3000;
                     canBlink = false;
                     return;
                 }
-                MeleeCheck_Timer += 2000;
+                MeleeCheck_Timer = 2000;
             }
 
             if(me->IsWithinDistInMap(me->getVictim(), 10.0))
@@ -1173,15 +1170,15 @@ struct boss_yazzaiAI : public boss_priestess_guestAI
         }
         
 
-        Polymorph_Timer -= diff;
-        if(Polymorph_Timer <= diff)
+        
+        if (Polymorph_Timer.Expired(diff))
         {
-            Polymorph_Timer += 1000;
+            Polymorph_Timer = 1000;
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30, true))
             {
                 AddSpellToCast(target, SPELL_POLYMORPH);
                 DoModifyThreatPercent(target,-100);
-                Polymorph_Timer += urand(15000, 25000);
+                Polymorph_Timer = urand(15000, 25000);
             }
         }
         
@@ -1193,11 +1190,11 @@ struct boss_yazzaiAI : public boss_priestess_guestAI
             hasIceBlocked = true;
         }
 
-        Blizzard_Timer -= diff;
-        if(Blizzard_Timer <= diff)
+        
+        if (Blizzard_Timer.Expired(diff))
         {
             AddSpellToCast(SPELL_BLIZZARD, CAST_RANDOM);
-            Blizzard_Timer += urand(16000, 24000);
+            Blizzard_Timer = urand(16000, 24000);
         }
         
 
@@ -1221,13 +1218,13 @@ struct boss_warlord_salarisAI : public boss_priestess_guestAI
     //Warrior
     boss_warlord_salarisAI(Creature *c) : boss_priestess_guestAI(c) {}
 
-    int32 BattleShout_Timer;
-    int32 Intercept_Timer;
-    int32 Disarm_Timer;
-    int32 Piercing_Howl_Timer;
-    int32 Frightening_Shout_Timer;
-    int32 Hamstring_Timer;
-    int32 Mortal_Strike_Timer;
+    Timer BattleShout_Timer;
+    Timer Intercept_Timer;
+    Timer Disarm_Timer;
+    Timer Piercing_Howl_Timer;
+    Timer Frightening_Shout_Timer;
+    Timer Hamstring_Timer;
+    Timer Mortal_Strike_Timer;
 
     void Reset()
     {
@@ -1257,16 +1254,15 @@ struct boss_warlord_salarisAI : public boss_priestess_guestAI
         if(me->getVictim() && me->getVictim()->isCrowdControlled())
             DoModifyThreatPercent(me->getVictim(), -100);
 
-        BattleShout_Timer -= diff;
-        if(BattleShout_Timer <= diff)
+        
+        if (BattleShout_Timer.Expired(diff))
         {
             ForceSpellCast(SPELL_BATTLE_SHOUT, CAST_NULL);
-            BattleShout_Timer += 110000;
+            BattleShout_Timer = 110000;
         }
         
 
-        Intercept_Timer -= diff;
-        if(Intercept_Timer <= diff)
+        if (Intercept_Timer.Expired(diff))
         {
             Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 25.0, true, 0, 8.0);
             if(target)
@@ -1275,49 +1271,49 @@ struct boss_warlord_salarisAI : public boss_priestess_guestAI
                 AttackStart(target);
                 me->AddThreat(target, 10000);
                 ForceSpellCast(target, SPELL_INTERCEPT, INTERRUPT_AND_CAST);
-                Intercept_Timer += urand(15000, 25000);
+                Intercept_Timer = urand(15000, 25000);
             }
             else
-                Intercept_Timer += 2000;
+                Intercept_Timer = 2000;
         }
 
-        Disarm_Timer -= diff;
-        if(Disarm_Timer <= diff)
+        
+        if (Disarm_Timer.Expired(diff))
         {
             AddSpellToCast(SPELL_DISARM, CAST_TANK);
-            Disarm_Timer += 60000;
+            Disarm_Timer = 60000;
         }
         
 
-        Hamstring_Timer -= diff;
-        if(Hamstring_Timer <= diff)
+        
+        if (Hamstring_Timer.Expired(diff))
         {
             AddSpellToCast(SPELL_HAMSTRING, CAST_TANK);
-            Hamstring_Timer += urand(5000, 10000);
+            Hamstring_Timer = urand(5000, 10000);
         }
         
 
-        Mortal_Strike_Timer -= diff;
-        if(Mortal_Strike_Timer <= diff)
+        
+        if (Mortal_Strike_Timer.Expired(diff))
         {
             AddSpellToCast(SPELL_MORTAL_STRIKE, CAST_TANK);
-            Mortal_Strike_Timer += urand(10000, 15000);
+            Mortal_Strike_Timer = urand(10000, 15000);
         }
         
 
-        Piercing_Howl_Timer -= diff;
-        if(Piercing_Howl_Timer <= diff)
+        
+        if (Piercing_Howl_Timer.Expired(diff))
         {
             AddSpellToCast(SPELL_PIERCING_HOWL, CAST_NULL);
-            Piercing_Howl_Timer += urand(20000, 35000);
+            Piercing_Howl_Timer + urand(20000, 35000);
         }
         
 
-        Frightening_Shout_Timer -= diff;
-        if(Frightening_Shout_Timer <= diff)
+        
+        if (Frightening_Shout_Timer.Expired(diff))
         {
             AddSpellToCast(SPELL_PSYCHIC_SCREAM, CAST_NULL); 
-            Frightening_Shout_Timer += urand(15000, 40000);
+            Frightening_Shout_Timer = urand(15000, 40000);
         }
         
 
@@ -1340,14 +1336,14 @@ struct boss_garaxxasAI : public boss_priestess_guestAI
     //Hunter
     boss_garaxxasAI(Creature *c) : boss_priestess_guestAI(c) {}
 
-    int32 GetSliver_Timer;
-    int32 Aimed_Shot_Timer;
-    int32 Shoot_Timer;
-    int32 Concussive_Shot_Timer;
-    int32 Multi_Shot_Timer;
-    int32 Wing_Clip_Cooldown;
+    Timer GetSliver_Timer;
+    Timer Aimed_Shot_Timer;
+    Timer Shoot_Timer;
+    Timer Concussive_Shot_Timer;
+    Timer Multi_Shot_Timer;
+    Timer Wing_Clip_Cooldown;
     bool canWingClip;
-    int32 Freezing_Trap_Cooldown;
+    Timer Freezing_Trap_Cooldown;
     bool canSetTrap;
 
     void Reset()
@@ -1379,8 +1375,8 @@ struct boss_garaxxasAI : public boss_priestess_guestAI
     {
         if(!me->isInCombat())
         {
-            GetSliver_Timer -= diff;
-            if(GetSliver_Timer <= diff)
+            
+            if (GetSliver_Timer.Expired(diff))
             {
                 // check if still having pet ;]
                 Unit* Sliver = FindCreature(NPC_SLIVER, 60.0, me);
@@ -1399,7 +1395,7 @@ struct boss_garaxxasAI : public boss_priestess_guestAI
                     me->GetNearPoint( x, y, z, 0, 3.0, frand(0, 2*M_PI));
                     Creature* Sliver = m_creature->SummonCreature(NPC_SLIVER, x, y, z, me->GetOrientation(), TEMPSUMMON_CORPSE_TIMED_DESPAWN, 30000);
                 }
-                GetSliver_Timer += 15000;
+                GetSliver_Timer = 15000;
             }
             
         }
@@ -1414,11 +1410,11 @@ struct boss_garaxxasAI : public boss_priestess_guestAI
 
         if(!canSetTrap)
         {
-            Freezing_Trap_Cooldown -= diff;
-            if(Freezing_Trap_Cooldown <= diff)
+            
+            if (Freezing_Trap_Cooldown.Expired(diff))
             {
                 canSetTrap = true;
-                Freezing_Trap_Cooldown += 30000;
+                Freezing_Trap_Cooldown = 30000;
             }
         }
 
@@ -1438,10 +1434,10 @@ struct boss_garaxxasAI : public boss_priestess_guestAI
 
         if(!canWingClip)
         {
-            Wing_Clip_Cooldown -= diff;
-            if(Wing_Clip_Cooldown <= diff)
+         
+            if (Wing_Clip_Cooldown.Expired(diff))
             {
-                Wing_Clip_Cooldown += 10000;
+                Wing_Clip_Cooldown = 10000;
                 canWingClip = true;
             }
         }
@@ -1456,34 +1452,33 @@ struct boss_garaxxasAI : public boss_priestess_guestAI
             canWingClip = false;
         }
 
-        Concussive_Shot_Timer -= diff;
-        if(Concussive_Shot_Timer <= diff)
+        
+        if (Concussive_Shot_Timer.Expired(diff))
         {
             AddSpellToCast(SPELL_CONCUSSIVE_SHOT, CAST_RANDOM);
-            Concussive_Shot_Timer += urand(8000, 12000);
+            Concussive_Shot_Timer = urand(8000, 12000);
         }
         
 
-        Multi_Shot_Timer -= diff;
-        if(Multi_Shot_Timer <= diff)
+        if (Multi_Shot_Timer.Expired(diff))
         {
             AddSpellToCast(SPELL_MULTI_SHOT, CAST_RANDOM);
-            Multi_Shot_Timer += urand(8000, 12000);
+            Multi_Shot_Timer = urand(8000, 12000);
         }
         
-        Aimed_Shot_Timer -= diff;
-        if(Aimed_Shot_Timer <= diff)
+        
+        if (Aimed_Shot_Timer.Expired(diff))
         {
             AddSpellToCast(SPELL_AIMED_SHOT, CAST_TANK);
-            Aimed_Shot_Timer += urand(12000, 18000);
+            Aimed_Shot_Timer = urand(12000, 18000);
         }
         
-        Shoot_Timer -= diff;
-        if(Shoot_Timer <= diff)
+        
+        if (Shoot_Timer.Expired(diff))
         {
             if(me->GetMotionMaster()->GetCurrentMovementGeneratorType() == IDLE_MOTION_TYPE)
                 AddSpellToCast(me->getVictim(), SPELL_SHOOT);
-            Shoot_Timer += urand(3000, 5000);
+            Shoot_Timer = urand(3000, 5000);
         }
         
 
@@ -1528,13 +1523,13 @@ struct boss_apokoAI : public boss_priestess_guestAI
     //Shaman
     boss_apokoAI(Creature *c) : boss_priestess_guestAI(c), summons(c) {}
 
-    int32 Totem_Timer;
+    Timer Totem_Timer;
     uint8  Totem_Amount;
-    int32 War_Stomp_Timer;
-    int32 Purge_Timer;
-    int32 Healing_Wave_Cooldown;
-    int32 Frost_Shock_Timer;
-    int32 TotemSpell;
+    Timer War_Stomp_Timer;
+    Timer Purge_Timer;
+    Timer Healing_Wave_Cooldown;
+    Timer Frost_Shock_Timer;
+    uint32 TotemSpell;
     bool canHeal;
     SummonList summons;
 
@@ -1580,16 +1575,15 @@ struct boss_apokoAI : public boss_priestess_guestAI
         }
         else
         {
-            Healing_Wave_Cooldown -= diff;
-            if(Healing_Wave_Cooldown <= diff)
+            if (Healing_Wave_Cooldown.Expired(diff))
             {
                 canHeal = true;
-                Healing_Wave_Cooldown += (HeroicMode?urand(5000, 8000):urand(6000, 10000));
+                Healing_Wave_Cooldown = (HeroicMode?urand(5000, 8000):urand(6000, 10000));
             }
         }
 
-        Totem_Timer -= diff;
-        if(Totem_Timer <= diff)
+        
+        if (Totem_Timer.Expired(diff))
         {
             // do not summon same totem twice in row
             uint32 tempSpell = RAND(SPELL_WINDFURY_TOTEM, SPELL_FIRE_NOVA_TOTEM, SPELL_EARTHBIND_TOTEM);
@@ -1600,29 +1594,29 @@ struct boss_apokoAI : public boss_priestess_guestAI
             TotemSpell = tempSpell;
             AddSpellToCast(TotemSpell, CAST_SELF);
             RegenMana();
-            Totem_Timer += urand(3000, 8000);
+            Totem_Timer = urand(3000, 8000);
         }
         
-        War_Stomp_Timer -= diff;
-        if(War_Stomp_Timer <= diff)
+        
+        if (War_Stomp_Timer.Expired(diff))
         {
             AddSpellToCast(SPELL_WAR_STOMP, CAST_NULL);
-            War_Stomp_Timer += urand(8000, 15000);
-        }
-        
-        Purge_Timer -= diff;
-        if(Purge_Timer <= diff)
-        {
-            AddSpellToCast(SPELL_PURGE, CAST_RANDOM);
-            Purge_Timer += urand(8000, 15000);
+            War_Stomp_Timer = urand(8000, 15000);
         }
         
 
-        Frost_Shock_Timer -= diff;
-        if(Frost_Shock_Timer <= diff)
+        if (Purge_Timer.Expired(diff))
+        {
+            AddSpellToCast(SPELL_PURGE, CAST_RANDOM);
+            Purge_Timer = urand(8000, 15000);
+        }
+        
+
+        
+        if (Frost_Shock_Timer.Expired(diff))
         {
             AddSpellToCast(SPELL_FROST_SHOCK, CAST_TANK);
-            Frost_Shock_Timer += urand(6000, 15000);
+            Frost_Shock_Timer = urand(6000, 15000);
         }
         
 
@@ -1645,11 +1639,11 @@ struct boss_zelfanAI : public boss_priestess_guestAI
     //Engineer
     boss_zelfanAI(Creature *c) : boss_priestess_guestAI(c) {}
 
-    int32 Goblin_Dragon_Gun_Timer;
-    int32 Rocket_Launch_Timer;
-    int32 Recombobulate_Timer;
-    int32 High_Explosive_Sheep_Timer;
-    int32 Fel_Iron_Bomb_Timer;
+    Timer Goblin_Dragon_Gun_Timer;
+    Timer Rocket_Launch_Timer;
+    Timer Recombobulate_Timer;
+    Timer High_Explosive_Sheep_Timer;
+    Timer Fel_Iron_Bomb_Timer;
 
     void Reset()
     {
@@ -1683,38 +1677,38 @@ struct boss_zelfanAI : public boss_priestess_guestAI
         if(me->getVictim() && me->getVictim()->isCrowdControlled())
             DoModifyThreatPercent(me->getVictim(), -100);
 
-        Goblin_Dragon_Gun_Timer -= diff;
-        if(Goblin_Dragon_Gun_Timer <= diff)
+        
+        if (Goblin_Dragon_Gun_Timer.Expired(diff))
         {
             if (me->IsWithinDistInMap(me->getVictim(), 5))
             {
                 ForceSpellCast(SPELL_GOBLIN_DRAGON_GUN, CAST_TANK, INTERRUPT_AND_CAST);
-                Goblin_Dragon_Gun_Timer += urand(10000, 15000);
+                Goblin_Dragon_Gun_Timer = urand(10000, 15000);
             }
             else
-                Goblin_Dragon_Gun_Timer += 2000;
+                Goblin_Dragon_Gun_Timer = 2000;
         }
         
-        Rocket_Launch_Timer -= diff;
-        if(Rocket_Launch_Timer <= diff)
+        
+        if (Rocket_Launch_Timer.Expired(diff))
         {
             AddSpellToCast(SPELL_ROCKET_LAUNCH, CAST_RANDOM);
-            Rocket_Launch_Timer += urand(8000, 12000);
+            Rocket_Launch_Timer = urand(8000, 12000);
         }
         
-        Fel_Iron_Bomb_Timer -= diff;
-        if(Fel_Iron_Bomb_Timer <= diff)
+        
+        if (Fel_Iron_Bomb_Timer.Expired(diff))
         {
             AddSpellToCast(SPELL_FEL_IRON_BOMB, CAST_RANDOM);
-            Fel_Iron_Bomb_Timer += HeroicMode?urand(3500, 7000):urand(4000, 10000);
+            Fel_Iron_Bomb_Timer = HeroicMode?urand(3500, 7000):urand(4000, 10000);
             ResetThreatTimer = 0;
         }
         
 
-        Recombobulate_Timer -= diff;
-        if(Recombobulate_Timer <= diff)
+        
+        if (Recombobulate_Timer.Expired(diff))
         {
-            Recombobulate_Timer += 3000;
+            Recombobulate_Timer = 3000;
             std::list<Creature*> CC_list = FindFriendlyCC(30.0);
             if(!CC_list.empty())
             {
@@ -1723,18 +1717,18 @@ struct boss_zelfanAI : public boss_priestess_guestAI
                     if((*i)->IsPolymorphed())
                     {
                         ForceSpellCast((*i), SPELL_RECOMBOBULATE, INTERRUPT_AND_CAST);
-                        Recombobulate_Timer += urand(15000, 30000);
+                        Recombobulate_Timer = urand(15000, 30000);
                         break;
                     }
                 }
             }
         }
         
-        High_Explosive_Sheep_Timer -= diff;
-        if(High_Explosive_Sheep_Timer <= diff)
+        
+        if (High_Explosive_Sheep_Timer.Expired(diff))
         {
             AddSpellToCast(SPELL_HIGH_EXPLOSIVE_SHEEP, CAST_SELF);
-            High_Explosive_Sheep_Timer += HeroicMode?urand(15000, 20000):urand(22000, 32000);
+            High_Explosive_Sheep_Timer = HeroicMode?urand(15000, 20000):urand(22000, 32000);
         }
         
 
@@ -1747,8 +1741,8 @@ struct mob_high_explosive_sheepAI : public ScriptedAI
 {
     mob_high_explosive_sheepAI(Creature *c) : ScriptedAI(c) {}
 
-    int32 SelfDestro_Timer;
-    int32 Check_Timer;
+    timer SelfDestro_Timer;
+    timer Check_Timer;
 
     void Reset()
     {
@@ -1762,8 +1756,8 @@ struct mob_high_explosive_sheepAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        Check_Timer -= diff;
-        if(Check_Timer <= diff)
+        
+        if (Check_Timer.Expired(diff))
         {
             if(me->IsWithinMeleeRange(me->getVictim()))
                 DoCast(me, SPELL_SHEEP_EXPLOSION);
@@ -1771,8 +1765,8 @@ struct mob_high_explosive_sheepAI : public ScriptedAI
         }
         
 
-        SelfDestro_Timer -= diff;
-        if(SelfDestro_Timer <= diff)
+        
+        if (SelfDestro_Timer.Expired(diff))
             DoCast(me, SPELL_SHEEP_EXPLOSION);
         
     }
