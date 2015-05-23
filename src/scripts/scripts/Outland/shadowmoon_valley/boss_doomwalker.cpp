@@ -50,12 +50,12 @@ struct boss_doomwalkerAI : public ScriptedAI
         m_creature->GetPosition(wLoc);
     }
 
-    uint32 Chain_Timer;
-    uint32 Enrage_Timer;
-    uint32 Overrun_Timer;
-    uint32 Quake_Timer;
-    uint32 Armor_Timer;
-    uint32 Check_Timer;
+    Timer Chain_Timer;
+    Timer Enrage_Timer;
+    Timer Overrun_Timer;
+    Timer Quake_Timer;
+    Timer Armor_Timer;
+    Timer Check_Timer;
 
     WorldLocation wLoc;
 
@@ -103,28 +103,28 @@ struct boss_doomwalkerAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if(Check_Timer <= diff)
+        if(Check_Timer.Expired(diff))
         {
             if(!m_creature->IsWithinDistInMap(&wLoc, 80.0f))
                 EnterEvadeMode();
 
             Check_Timer = 2000;
-        }else Check_Timer -= diff;
+        }
 
         //Spell Enrage, when hp <= 20% gain enrage
         if (((m_creature->GetHealth()*100)/ m_creature->GetMaxHealth()) <= 20)
         {
-            if(Enrage_Timer <= diff)
+            if(Enrage_Timer.Expired(diff))
             {
                 m_creature->RemoveAurasDueToSpell(SPELL_ENRAGE);
                 DoCast(m_creature,SPELL_ENRAGE);
                 Enrage_Timer = 600000;
                 InEnrage = true;
-            }else Enrage_Timer -= diff;
+            }
         }
 
         //Spell Overrun
-        if (Overrun_Timer <= diff)
+        if (Overrun_Timer.Expired(diff))
         {
             DoScriptText(RAND(SAY_OVERRUN_1, SAY_OVERRUN_2), m_creature);
 
@@ -133,10 +133,10 @@ struct boss_doomwalkerAI : public ScriptedAI
             DoResetThreat();
 
             Overrun_Timer = 25000 + rand()%15000;
-        }else Overrun_Timer -= diff;
+        }
 
         //Spell Earthquake
-        if (Quake_Timer <= diff)
+        if (Quake_Timer.Expired(diff))
         {
             if (rand()%2)
                 return;
@@ -150,10 +150,10 @@ struct boss_doomwalkerAI : public ScriptedAI
             DoCast(m_creature,SPELL_EARTHQUAKE);
             Enrage_Timer = 8000;
             Quake_Timer = 30000 + rand()%25000;
-        }else Quake_Timer -= diff;
+        }
 
         //Spell Chain Lightning
-        if (Chain_Timer <= diff)
+        if (Chain_Timer.Expired(diff))
         {
             Unit* target = NULL;
             target = SelectUnit(SELECT_TARGET_RANDOM,1, GetSpellMaxRange(SPELL_CHAIN_LIGHTNING), true, m_creature->getVictimGUID());
@@ -165,14 +165,14 @@ struct boss_doomwalkerAI : public ScriptedAI
                 DoCast(target,SPELL_CHAIN_LIGHTNING);
 
             Chain_Timer = 10000 + rand()%25000;
-        }else Chain_Timer -= diff;
+        }
 
         //Spell Sunder Armor
-        if (Armor_Timer <= diff)
+        if (Armor_Timer.Expired(diff))
         {
             DoCast(m_creature->getVictim(),SPELL_SUNDER_ARMOR);
             Armor_Timer = 10000 + rand()%15000;
-        }else Armor_Timer -= diff;
+        }
 
         DoMeleeAttackIfReady();
     }

@@ -53,7 +53,7 @@ struct npc_raliq_the_drunkAI : public ScriptedAI
 {
     npc_raliq_the_drunkAI(Creature* creature) : ScriptedAI(creature) {}
 
-    uint32 Uppercut_Timer;
+    Timer Uppercut_Timer;
 
     void Reset()
     {
@@ -68,11 +68,11 @@ struct npc_raliq_the_drunkAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if( Uppercut_Timer <= diff )
+        if (Uppercut_Timer.Expired(diff))
         {
             DoCast(me->getVictim(),SPELL_UPPERCUT);
             Uppercut_Timer = 15000;
-        }else Uppercut_Timer -= diff;
+        }
 
         DoMeleeAttackIfReady();
     }
@@ -116,7 +116,7 @@ struct npc_salsalabimAI : public ScriptedAI
 {
     npc_salsalabimAI(Creature* creature) : ScriptedAI(creature) {}
 
-    uint32 MagneticPull_Timer;
+    Timer MagneticPull_Timer;
 
     void Reset()
     {
@@ -142,11 +142,11 @@ struct npc_salsalabimAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if( MagneticPull_Timer <= diff )
+        if (MagneticPull_Timer.Expired(diff))
         {
             DoCast(me->getVictim(),SPELL_MAGNETIC_PULL);
             MagneticPull_Timer = 15000;
-        }else MagneticPull_Timer -= diff;
+        }
 
         DoMeleeAttackIfReady();
     }
@@ -300,9 +300,9 @@ struct npc_kservantAI : public npc_escortAI
     npc_kservantAI(Creature *creature) : npc_escortAI(creature) {}
 
     uint32 PointId;
-    uint32 TalkTimer;
+    Timer TalkTimer;
     uint32 TalkCount;
-    uint32 RandomTalkCooldown;
+    Timer RandomTalkCooldown;
 
     void Reset()
     {
@@ -376,13 +376,8 @@ struct npc_kservantAI : public npc_escortAI
 
     void UpdateEscortAI(const uint32 diff)
     {
-        if (RandomTalkCooldown)
-        {
-            if (RandomTalkCooldown <= diff)
-                RandomTalkCooldown = 0;
-            else
-                RandomTalkCooldown -= diff;
-        }
+        if (RandomTalkCooldown.Expired(diff))
+            RandomTalkCooldown = 0;
 
         if (HasEscortState(STATE_ESCORT_PAUSED))
         {
@@ -390,7 +385,7 @@ struct npc_kservantAI : public npc_escortAI
             if (!player)
                 return;
 
-            if (TalkTimer <= diff)
+            if (TalkTimer.Expired(diff))
             {
                 TalkTimer = 7500;
 
@@ -514,8 +509,6 @@ struct npc_kservantAI : public npc_escortAI
                 }
                 ++TalkCount;
             }
-            else
-                TalkTimer -= diff;
         }
         return;
     }
@@ -556,8 +549,8 @@ struct npc_dirty_larryAI : public ScriptedAI
 
     uint64 PlayerGUID;
 
-    uint32 SayTimer;
-    uint32 EvadeTimer;
+    Timer SayTimer;
+    Timer EvadeTimer;
     uint32 Step;
 
     WorldLocation wLoc;
@@ -620,11 +613,11 @@ struct npc_dirty_larryAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(SayTimer <= diff)
+        if(SayTimer.Expired(diff))
         {
             if(Event)
                 SayTimer = NextStep(++Step);
-        }else SayTimer -= diff;
+        }
 
         if(Attack)
         {
@@ -694,14 +687,15 @@ struct npc_dirty_larryAI : public ScriptedAI
                 player->GroupEventHappens(QUEST_WBI, me);
             Reset();
         }
-        if(EvadeTimer <= diff)
+
+        if(EvadeTimer.Expired(diff))
         {
-                if(me->GetDistance2d(wLoc.coord_x, wLoc.coord_y) >= 50)
+            if(me->GetDistance2d(wLoc.coord_x, wLoc.coord_y) >= 50)
                 EnterEvadeMode();
-                EvadeTimer = 3000;
-                return;
+            EvadeTimer = 3000;
+            return;
         }
-        else EvadeTimer -= diff;
+
         DoMeleeAttackIfReady();
     }
 };
@@ -858,7 +852,7 @@ struct npc_kaelthas_imageAI : public ScriptedAI
     npc_kaelthas_imageAI(Creature* creature) : ScriptedAI(creature) {}
 
     uint8 Step;
-    uint32 NextStep_Timer;
+    Timer NextStep_Timer;
     std::list<uint64> PlayersInCity;
     bool Init;
     std::string Defeater_Name;
@@ -914,7 +908,7 @@ struct npc_kaelthas_imageAI : public ScriptedAI
             Init = true;
         }
 
-        if(NextStep_Timer <= diff)
+        if(NextStep_Timer.Expired(diff))
         {
             NextStep_Timer = 13000;
             Creature* adal = NULL;
@@ -984,9 +978,6 @@ struct npc_kaelthas_imageAI : public ScriptedAI
             }
             Step++;
         }
-        else
-            NextStep_Timer -= diff;
-
     }
 };
 
