@@ -140,8 +140,8 @@ struct mob_blood_elf_council_voice_triggerAI : public ScriptedAI
 
     uint64 m_council[4];
 
-    uint32 m_enrageTimer;
-    uint32 m_yellTimer;
+    Timer m_enrageTimer;
+    Timer m_yellTimer;
 
     uint8 m_counter;                                      // Serves as the counter for both the aggro and enrage yells
 
@@ -173,7 +173,7 @@ struct mob_blood_elf_council_voice_triggerAI : public ScriptedAI
         if (m_counter > 3)
             return;
 
-        if (m_yellTimer <= diff)
+        if (m_yellTimer.Expired(diff))
         {
             if (Unit *pMember = me->GetCreature(m_council[m_counter]))
             {
@@ -185,10 +185,9 @@ struct mob_blood_elf_council_voice_triggerAI : public ScriptedAI
             if (m_counter > 3)
                 m_counter = 0;                            // Reuse for Enrage Yells
         }
-        else
-            m_yellTimer -= diff;
+        
 
-        if (m_enrageTimer <= diff)
+        if (m_enrageTimer.Expired(diff))
         {
             if (Creature* pMember = pInstance->GetCreature(m_council[m_counter]))
             {
@@ -200,8 +199,6 @@ struct mob_blood_elf_council_voice_triggerAI : public ScriptedAI
 
             m_counter += 1;
         }
-        else
-            m_enrageTimer -= diff;
     }
 };
 
@@ -275,7 +272,7 @@ struct illidari_council_baseAI : public ScriptedAI
 
     uint64 m_council[4];
 
-    uint32 m_checkTimer;
+    Timer m_checkTimer;
 
     ScriptedInstance* pInstance;
 
@@ -441,14 +438,14 @@ struct boss_gathios_the_shattererAI : public illidari_council_baseAI
 
     WorldLocation wLoc;
 
-    uint32 m_sealTimer;
-    uint32 m_auraTimer;
-    uint32 m_hammerTimer;
-    uint32 m_blessingTimer;
-    uint32 m_judgementTimer;
-    uint32 m_consecrationTimer;
+    Timer m_sealTimer;
+    Timer m_auraTimer;
+    Timer m_hammerTimer;
+    Timer m_blessingTimer;
+    Timer m_judgementTimer;
+    Timer m_consecrationTimer;
 
-    uint32 m_checkTimer;
+    Timer m_checkTimer;
 
     void Reset()
     {
@@ -498,7 +495,7 @@ struct boss_gathios_the_shattererAI : public illidari_council_baseAI
         if (!UpdateVictim())
             return;
 
-        if (m_checkTimer <= diff)
+        if (m_checkTimer.Expired(diff))
         {
             if (me->IsWithinDistInMap(&wLoc, 100.0f))
                 DoZoneInCombat();
@@ -513,63 +510,54 @@ struct boss_gathios_the_shattererAI : public illidari_council_baseAI
             SharedRule(damage);
             m_checkTimer = 1000;
         }
-        else
-            m_checkTimer -= diff;
+        
 
-        if (m_blessingTimer <= diff)
-        {
+        if (m_blessingTimer.Expired(diff))
             if (Unit *pUnit = SelectCouncil())
             {
                 AddSpellToCast(pUnit, RAND(SPELL_BLESS_SPELLWARD, SPELL_BLESS_PROTECTION));
                 m_blessingTimer = RAND(urand(15000, 20000), urand(25000, 35000));
             }
-        }
-        else
-            m_blessingTimer -= diff;
+        
+        
 
-        if (m_consecrationTimer <= diff)
+        if (m_consecrationTimer.Expired(diff))
         {
             AddSpellToCast(me, SPELL_CONSECRATION);
             m_consecrationTimer = urand(30000, 35000);
         }
-        else
-            m_consecrationTimer -= diff;
+        
 
-        if (m_hammerTimer <= diff)
-        {
+        if (m_hammerTimer.Expired(diff))
             if (Unit *pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0, 40, true, 0, 10.0f))
             {
                 AddSpellToCast(pTarget, SPELL_HAMMER_OF_JUSTICE);
                 m_hammerTimer = urand(10000, 20000);
             }
-        }
-        else
-            m_hammerTimer -= diff;
+        
+        
 
-        if (m_sealTimer <= diff)
+        if (m_sealTimer.Expired(diff))
         {
             AddSpellToCast(me, RAND(SPELL_SEAL_OF_COMMAND, SPELL_SEAL_OF_BLOOD));
             m_sealTimer = urand(17000, 20000);
         }
-        else
-            m_sealTimer -= diff;
+        
 
-        if (m_judgementTimer <= diff)
+        if (m_judgementTimer.Expired(diff))
         {
             RegenMana();
             ForceSpellCast(me->getVictim(), SPELL_GATHIOS_JUDGEMENT, INTERRUPT_AND_CAST);
             m_judgementTimer = 15000;
         }
-        else
-            m_judgementTimer -= diff;
+        
 
-        if (m_auraTimer <= diff)
+        if (m_auraTimer.Expired(diff))
         {
             AddSpellToCast(RAND(SPELL_DEVOTION_AURA, SPELL_CHROMATIC_AURA), CAST_SELF);
             m_auraTimer = 60000;
         }
-        else
-            m_auraTimer -= diff;
+        
 
         DoMeleeAttackIfReady();
         CastNextSpellIfAnyAndReady();
@@ -586,11 +574,11 @@ struct boss_high_nethermancer_zerevorAI : public illidari_council_baseAI
 
     WorldLocation wLoc;
 
-    uint32 m_blizzardTimer;
-    uint32 m_flamestrikeTimer;
-    uint32 m_dampenTimer;
-    uint32 m_aexpTimer;
-    uint32 m_immunityTimer;
+    Timer m_blizzardTimer;
+    Timer m_flamestrikeTimer;
+    Timer m_dampenTimer;
+    Timer m_aexpTimer;
+    Timer m_immunityTimer;
 
     void Reset()
     {
@@ -632,7 +620,7 @@ struct boss_high_nethermancer_zerevorAI : public illidari_council_baseAI
         if (!UpdateVictim())
             return;
 
-        if (m_checkTimer <= diff)
+        if (m_checkTimer.Expired(diff))
         {
             if (me->IsWithinDistInMap(&wLoc, 100.0f))
                 DoZoneInCombat();
@@ -660,38 +648,32 @@ struct boss_high_nethermancer_zerevorAI : public illidari_council_baseAI
             me->SetSpeed(MOVE_RUN, 2.0);
             m_checkTimer = 1000;
         }
-        else
-            m_checkTimer -= diff;
+        
 
-        if (m_immunityTimer <= diff)
+        if (m_immunityTimer.Expired(diff))
         {
             me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_INTERRUPT, false);
             m_immunityTimer = 60000;
         }
-        else
-            m_immunityTimer -= diff;
+        
 
-        if (m_dampenTimer <= diff)
+        if (m_dampenTimer.Expired(diff))
         {
             ForceSpellCast(me, SPELL_DAMPEN_MAGIC);
             m_dampenTimer = 67200;                      // almost 1,12 minutes (??)
         }
-        else
-            m_dampenTimer -= diff;
+        
 
-        if (m_blizzardTimer <= diff)
-        {
+        if (m_blizzardTimer.Expired(diff))
             if (Unit *pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0, 200, true))
             {
                 AddSpellToCast(pTarget, SPELL_BLIZZARD, true);
                 m_blizzardTimer = urand(11000, 17000);
             }
-        }
-        else
-            m_blizzardTimer -= diff;
+        
+        
 
-        if (m_flamestrikeTimer <= diff)
-        {
+        if (m_flamestrikeTimer.Expired(diff))
             if (Unit *pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0, 200, true))
             {
                 me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_INTERRUPT, true);
@@ -699,11 +681,10 @@ struct boss_high_nethermancer_zerevorAI : public illidari_council_baseAI
                 m_flamestrikeTimer = urand(9000, 12000);
                 m_immunityTimer = 3000;
             }
-        }
-        else
-            m_flamestrikeTimer -= diff;
 
-        if (m_aexpTimer <= diff)
+        
+
+        if (m_aexpTimer.Expired(diff))
         {
             std::list<HostileReference*>& m_threatlist = me->getThreatManager().getThreatList();
             for (std::list<HostileReference*>::iterator i = m_threatlist.begin(); i!= m_threatlist.end();++i)
@@ -721,8 +702,7 @@ struct boss_high_nethermancer_zerevorAI : public illidari_council_baseAI
                 }
             }
         }
-        else
-            m_aexpTimer -= diff;
+
 
         CastNextSpellIfAnyAndReady(diff);
     }
@@ -738,10 +718,10 @@ struct boss_lady_malandeAI : public illidari_council_baseAI
 
     WorldLocation wLoc;
 
-    uint32 m_smiteTimer;
-    uint32 m_cohTimer;
-    uint32 m_wrathTimer;
-    uint32 m_shieldTimer;
+    Timer m_smiteTimer;
+    Timer m_cohTimer;
+    Timer m_wrathTimer;
+    Timer m_shieldTimer;
 
     void Reset()
     {
@@ -764,7 +744,7 @@ struct boss_lady_malandeAI : public illidari_council_baseAI
         if (!UpdateVictim())
             return;
 
-        if (m_checkTimer <= diff)
+        if (m_checkTimer.Expired(diff))
         {
             if (me->IsWithinDistInMap(&wLoc, 100.0f))
                 DoZoneInCombat();
@@ -779,43 +759,36 @@ struct boss_lady_malandeAI : public illidari_council_baseAI
             me->SetSpeed(MOVE_RUN, 2.0);
             m_checkTimer = 1000;
         }
-        else
-            m_checkTimer -= diff;
-
-        if (m_smiteTimer <= diff)
+        
+        if (m_smiteTimer.Expired(diff))
         {
             AddSpellToCast(me->getVictim(), SPELL_EMPOWERED_SMITE, false, true);
             m_smiteTimer = urand(5000, 9000);
         }
-        else
-            m_smiteTimer -= diff;
+        
 
-        if (m_cohTimer <= diff)
+        if (m_cohTimer.Expired(diff))
         {
             AddSpellToCast(me, SPELL_CIRCLE_OF_HEALING);
             m_cohTimer = urand(19000, 23000);
         }
-        else
-            m_cohTimer -= diff;
+        
 
-        if (m_wrathTimer <= diff)
-        {
+        if (m_wrathTimer.Expired(diff))
             if (Unit *pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true))
             {
                 AddSpellToCast(pTarget, SPELL_DIVINE_WRATH, false, true);
                 m_wrathTimer = urand(15000, 30000);
             }
-        }
-        else
-            m_wrathTimer -= diff;
+        
+        
 
-        if (m_shieldTimer <= diff)
+        if (m_shieldTimer.Expired(diff))
         {
             AddSpellToCast(me, SPELL_REFLECTIVE_SHIELD);
             m_shieldTimer = urand(40000, 55000);
         }
-        else
-            m_shieldTimer -= diff;
+        
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -832,7 +805,7 @@ struct boss_veras_darkshadowAI : public illidari_council_baseAI
 
     WorldLocation wLoc;
 
-    uint32 m_vanishTimer;
+    Timer m_vanishTimer;
 
     void Reset()
     {
@@ -859,7 +832,7 @@ struct boss_veras_darkshadowAI : public illidari_council_baseAI
         if (!UpdateVictim())
             return;
 
-        if (m_checkTimer <= diff)
+        if (m_checkTimer.Expired(diff))
         {
             if (me->IsWithinDistInMap(&wLoc, 100.0f))
                 DoZoneInCombat();
@@ -877,10 +850,9 @@ struct boss_veras_darkshadowAI : public illidari_council_baseAI
                 DoStartMovement(me->getVictim());
             m_checkTimer = 1000;
         }
-        else
-            m_checkTimer -= diff;
+        
 
-        if (m_vanishTimer <= diff)
+        if (m_vanishTimer.Expired(diff))
         {
             if (me->HasAuraType(SPELL_AURA_MOD_STUN))    // remove stun
                 me->RemoveSpellsCausingAura(SPELL_AURA_MOD_STUN);
@@ -906,8 +878,7 @@ struct boss_veras_darkshadowAI : public illidari_council_baseAI
 
             m_vanishTimer = 60000;
         }
-        else
-                m_vanishTimer -= diff;
+        
 
         if (me->HasAura(SPELL_VANISH, 1))
             return;

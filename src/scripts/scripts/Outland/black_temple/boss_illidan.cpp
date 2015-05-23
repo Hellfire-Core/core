@@ -234,8 +234,8 @@ struct boss_illidan_stormrageAI : public BossAI
     uint8 m_flameCount;
     uint32 m_hoverPoint;
 
-    uint32 m_combatTimer;
-    uint32 m_enrageTimer;
+    Timer m_combatTimer;
+    Timer m_enrageTimer;
 
     bool b_maievPhase;
     bool b_maievDone;
@@ -955,13 +955,12 @@ struct boss_illidan_stormrageAI : public BossAI
 
         DoSpecialThings(diff, DO_EVERYTHING, 200.0f, 2.5f);
 
-        if (m_enrageTimer <= diff)
+        if (m_enrageTimer.Expired(diff))
         {
             ForceSpellCastWithScriptText(me, SPELL_ILLIDAN_HARD_ENRAGE, YELL_ILLIDAN_HARD_ENRAGE, INTERRUPT_AND_CAST_INSTANTLY);
             m_enrageTimer = 25000;
         }
-        else
-            m_enrageTimer -= diff;
+        
 
         if (m_phase == PHASE_ONE && HealthBelowPct(65.0f))
         {
@@ -1636,7 +1635,7 @@ struct boss_illidan_glaiveAI : public Scripted_NoMovementAI
 
     ScriptedInstance *pInstance;
 
-    uint32 m_summonTimer;
+    Timer m_summonTimer;
 
     uint64 m_tearGUID;
 
@@ -1669,16 +1668,13 @@ struct boss_illidan_glaiveAI : public Scripted_NoMovementAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (m_summonTimer)
+
+        if (m_summonTimer.Expired(diff))
         {
-            if (m_summonTimer <= diff)
-            {
-                AddSpellToCast(me, SPELL_GLAIVE_SUMMON_TEAR);
-                m_summonTimer = 0;
-            }
-            else
-                m_summonTimer -= diff;
+            AddSpellToCast(me, SPELL_GLAIVE_SUMMON_TEAR);
+            m_summonTimer = 0;
         }
+
 
         CastNextSpellIfAnyAndReady();
     }
@@ -1713,7 +1709,7 @@ struct boss_illidan_flameofazzinothAI : public ScriptedAI
 
     EventMap events;
     SummonList summons;
-    uint32 check_timer;
+    Timer check_timer;
 
     uint64 m_owner;
 
@@ -1760,14 +1756,13 @@ struct boss_illidan_flameofazzinothAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if(check_timer <= diff)
+        if (check_timer.Expired(diff))
         {
             me->SetWalk(false);
             me->SetSpeed(MOVE_RUN, 2.5f);
             check_timer = 2000;
         }
-        else
-            check_timer -= diff;
+        
 
         events.Update(diff);
         while(uint32 eventId = events.ExecuteEvent())
@@ -1831,7 +1826,7 @@ struct boss_illidan_shadowdemonAI : public ScriptedAI
     ScriptedInstance *pInstance;
 
     uint64 m_targetGUID;
-    uint32 m_checkTimer;
+    Timer m_checkTimer;
 
     void Reset()
     {
@@ -1895,8 +1890,7 @@ struct boss_illidan_shadowdemonAI : public ScriptedAI
 
                 m_checkTimer = 2000;
             }
-            else
-                m_checkTimer -= diff;
+           
         }
 
         CastNextSpellIfAnyAndReady();

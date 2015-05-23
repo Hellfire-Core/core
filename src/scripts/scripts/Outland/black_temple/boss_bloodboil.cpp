@@ -94,21 +94,21 @@ struct boss_gurtogg_bloodboilAI : public ScriptedAI
     uint64 m_targetGUID;
     float m_targetThreat;
 
-    uint32 BloodboilTimer;
-
-    uint32 BewilderingStrikeTimer;
-    uint32 AcidicWoundTimer;
-
-    uint32 ArcingSmashTimer;
-    uint32 FelAcidTimer;
-    uint32 EjectTimer;
-
-    uint32 PhaseChangeTimer;
-
-    uint32 EnrageTimer;
-
-    uint32 ChargeTimer;
-    uint32 CheckTimer;
+    Timer BloodboilTimer;
+    
+    Timer BewilderingStrikeTimer;
+    Timer AcidicWoundTimer;
+    
+    Timer ArcingSmashTimer;
+    Timer FelAcidTimer;
+    Timer EjectTimer;
+    
+    Timer PhaseChangeTimer;
+    
+    Timer EnrageTimer;
+    
+    Timer ChargeTimer;
+    Timer CheckTimer;
 
     bool Phase1;
 
@@ -233,35 +233,31 @@ struct boss_gurtogg_bloodboilAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (CheckTimer <= diff)
+        if (CheckTimer.Expired(diff))
         {
             DoZoneInCombat();
             CheckTimer = 1000;
             m_creature->SetSpeed(MOVE_RUN, Phase1 ? 2.0 : 3.0);
         }
-        else
-            CheckTimer -= diff;
+        
 
-        if (EnrageTimer)
+
+        if (EnrageTimer.Expired(diff))
         {
-            if (EnrageTimer <= diff)
-            {
-                EnrageTimer = 0;
-                ForceSpellCastWithScriptText(m_creature, SPELL_BERSERK, RAND(SAY_ENRAGE1, SAY_ENRAGE2), INTERRUPT_AND_CAST_INSTANTLY);
-            }
-            else
-                EnrageTimer -= diff;
+            EnrageTimer = 0;
+            ForceSpellCastWithScriptText(m_creature, SPELL_BERSERK, RAND(SAY_ENRAGE1, SAY_ENRAGE2), INTERRUPT_AND_CAST_INSTANTLY);
         }
 
-        if (ArcingSmashTimer <= diff)
+        
+
+        if (ArcingSmashTimer.Expired(diff))
         {
             ForceSpellCast(m_creature->getVictim(), SPELL_ARCING_SMASH, DONT_INTERRUPT, false, true);
             ArcingSmashTimer = 10000;
         }
-        else
-            ArcingSmashTimer -= diff;
 
-        if (FelAcidTimer <= diff)
+
+        if (FelAcidTimer.Expired(diff))
         {
             if (Phase1)
             {
@@ -277,47 +273,42 @@ struct boss_gurtogg_bloodboilAI : public ScriptedAI
                 FelAcidTimer = urand(5000, 25000);
             }
         }
-        else
-            FelAcidTimer -= diff;
+        
 
         if (Phase1)
         {
-            if (AcidicWoundTimer <= diff)
+            if (AcidicWoundTimer.Expired(diff))
             {
                 AddSpellToCast(m_creature->getVictim(), SPELL_ACIDIC_WOUND);
                 AcidicWoundTimer = 2000;
             }
-            else
-                AcidicWoundTimer -= diff;
 
-            if (BewilderingStrikeTimer <= diff)
+
+            if (BewilderingStrikeTimer.Expired(diff))
             {
                 AddSpellToCast(m_creature->getVictim(), SPELL_BEWILDERING_STRIKE);
                 BewilderingStrikeTimer = urand(5000, 65000);
             }
-            else
-                BewilderingStrikeTimer -= diff;
+            
 
-            if (BloodboilTimer <= diff)
+            if (BloodboilTimer.Expired(diff))
             {
                 CastBloodboil();
                 BloodboilTimer = 10000;
             }
-            else
-                BloodboilTimer -= diff;
+            
 
 
-            if (EjectTimer <= diff)
+            if (EjectTimer.Expired(diff))
             {
                 AddSpellToCast(m_creature->getVictim(), SPELL_EJECT);
                 EjectTimer = 15000;
             }
-            else
-                EjectTimer -= diff;
+            
         }
         else
         {
-            if (ChargeTimer <= diff)
+            if (ChargeTimer.Expired(diff))
             {
                 Unit *pVictim = m_creature->getVictim();
                 if (!m_creature->IsWithinDistInMap(pVictim, 5.0f))
@@ -327,11 +318,9 @@ struct boss_gurtogg_bloodboilAI : public ScriptedAI
                 }
                 ChargeTimer = 2000;
             }
-            else
-                ChargeTimer -= diff;
         }
 
-        if (PhaseChangeTimer <= diff)
+        if (PhaseChangeTimer.Expired(diff))
         {
             if (Phase1)
             {
@@ -397,8 +386,7 @@ struct boss_gurtogg_bloodboilAI : public ScriptedAI
                 //ForceSpellCast(m_creature, SPELL_ACIDIC_WOUND, INTERRUPT_AND_CAST_INSTANTLY);
             }
         }
-        else
-            PhaseChangeTimer -= diff;
+        
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();

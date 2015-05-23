@@ -173,9 +173,9 @@ struct mob_ashtongue_defenderAI : public ScriptedAI
 
     ScriptedInstance* instance;
 
-    uint32 m_debilStrikeTimer;
-    uint32 m_shieldBashTimer;
-    uint32 m_checkTimer;
+     m_debilStrikeTimer;
+     m_shieldBashTimer;
+     m_checkTimer;
 
     void Reset()
     {
@@ -219,15 +219,14 @@ struct mob_ashtongue_defenderAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (m_debilStrikeTimer <= diff)
+        if (m_debilStrikeTimer.Expired(diff))
         {
             AddSpellToCast(me->getVictim(), SPELL_DEBILITATIG_STRIKE);
             m_debilStrikeTimer = 20000;
         }
-        else
-            m_debilStrikeTimer -= diff;
+        
 
-        if (m_shieldBashTimer <= diff)
+        if (m_shieldBashTimer.Expired(diff))
         {
             if (me->getVictim() && me->getVictim()->hasUnitState(UNIT_STAT_CASTING))
             {
@@ -235,10 +234,9 @@ struct mob_ashtongue_defenderAI : public ScriptedAI
                 m_shieldBashTimer = 10000;
             }
         }
-        else
-            m_shieldBashTimer -= diff;
 
-        if (m_checkTimer <= diff)
+
+        if (m_checkTimer.Expired(diff))
         {
             if(!instance)
                 return;
@@ -253,8 +251,7 @@ struct mob_ashtongue_defenderAI : public ScriptedAI
             }
             m_checkTimer = 5000;
         }
-        else
-            m_checkTimer -= diff;
+        
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -277,10 +274,10 @@ struct mob_ashtongue_spiritbinderAI : public ScriptedAI
 
     ScriptedInstance* instance;
 
-    uint32 m_chainHealTimer;
-    uint32 m_spiritHealTimer;
-    uint32 m_spiritMendTimer;
-    uint32 m_checkTimer;
+    Timer m_chainHealTimer;
+    Timer m_spiritHealTimer;
+    Timer m_spiritMendTimer;
+    Timer m_checkTimer;
 
     void Reset()
     {
@@ -361,23 +358,21 @@ struct mob_ashtongue_spiritbinderAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (m_chainHealTimer <= diff)
+        if (m_chainHealTimer.Expired(diff))
         {
             AddSpellToCast(me, SPELL_CHAIN_HEAL, false);
             m_chainHealTimer = 20000;
         }
-        else
-            m_chainHealTimer -= diff;
+        
 
-        if (m_spiritMendTimer <= diff)
+        if (m_spiritMendTimer.Expired(diff))
         {
             AddSpellToCast(me, SPELL_SPIRIT_MEND, false);
             m_spiritMendTimer = 20000;
         }
-        else
-            m_spiritMendTimer -= diff;
+        
 
-        if (m_spiritHealTimer <= diff)
+        if (m_spiritHealTimer.Expired(diff))
         {
             //if(Unit *pFriend = FindSpiritHealTarget())
             //{
@@ -387,10 +382,9 @@ struct mob_ashtongue_spiritbinderAI : public ScriptedAI
             //else
                 //m_spiritHealTimer = 5000;
         }
-        else
-            m_spiritHealTimer -= diff;
+        
 
-        if (m_checkTimer <= diff)
+        if (m_checkTimer.Expired(diff))
         {
             if(!instance)
                 return;
@@ -405,8 +399,7 @@ struct mob_ashtongue_spiritbinderAI : public ScriptedAI
             }
             m_checkTimer = 5000;
         }
-        else
-            m_checkTimer -= diff;
+        
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -428,9 +421,9 @@ struct mob_ashtongue_elementalistAI : public ScriptedAI
 
     ScriptedInstance* instance;
 
-    uint32 m_rainofFireTimer;
-    uint32 m_lightningBoltTimer;
-    uint32 m_checkTimer;
+    Timer m_rainofFireTimer;
+    Timer m_lightningBoltTimer;
+    Timer m_checkTimer;
 
     void Reset()
     {
@@ -468,15 +461,14 @@ struct mob_ashtongue_elementalistAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (m_lightningBoltTimer <= diff)
+        if (m_lightningBoltTimer.Expired(diff))
         {
             AddSpellToCast(me->getVictim(), SPELL_LIGHTNING_BOLT, false);
             m_lightningBoltTimer = 10000;
         }
-        else
-            m_lightningBoltTimer -= diff;
 
-        if (m_rainofFireTimer <= diff)
+
+        if (m_rainofFireTimer.Expired(diff))
         {
             DoZoneInCombat();
             if(Unit *pEnemy = SelectUnit(SELECT_TARGET_RANDOM, 0, 40.0f, true))
@@ -485,10 +477,9 @@ struct mob_ashtongue_elementalistAI : public ScriptedAI
                 m_rainofFireTimer = 15000;
             }
         }
-        else
-            m_rainofFireTimer -= diff;
+        
 
-        if (m_checkTimer <= diff)
+        if (m_checkTimer.Expired(diff))
         {
             if (!instance)
                 return;
@@ -503,8 +494,7 @@ struct mob_ashtongue_elementalistAI : public ScriptedAI
             }
             m_checkTimer = 5000;
         }
-        else
-            m_checkTimer -= diff;
+        
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -527,9 +517,9 @@ struct mob_ashtongue_rogueAI : public ScriptedAI
 
     ScriptedInstance* instance;
 
-    uint32 m_debilPoisonTimer;
-    uint32 m_eviscerateTimer;
-    uint32 m_checkTimer;
+    Timer m_debilPoisonTimer;
+    Timer m_eviscerateTimer;
+    Timer m_checkTimer;
 
     void Reset()
     {
@@ -569,23 +559,21 @@ struct mob_ashtongue_rogueAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (m_debilPoisonTimer <= diff)
+        if (m_debilPoisonTimer.Expired(diff))
         {
             AddSpellToCast(me->getVictim(), SPELL_DEBILITATING_POISON, false);
             m_debilPoisonTimer = 15000;
         }
-        else
-            m_debilPoisonTimer -= diff;
+        
 
-        if (m_eviscerateTimer <= diff)
+        if (m_eviscerateTimer.Expired(diff))
         {
             AddSpellToCast(me->getVictim(), SPELL_EVISCERATE, false);
             m_eviscerateTimer = 10000;
         }
-        else
-            m_eviscerateTimer -= diff;
+        
 
-        if (m_checkTimer <= diff)
+        if (m_checkTimer.Expired(diff))
         {
             if (!instance)
                 return;
@@ -600,8 +588,7 @@ struct mob_ashtongue_rogueAI : public ScriptedAI
             }
             m_checkTimer = 5000;
         }
-        else
-            m_checkTimer -= diff;
+        
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -617,7 +604,7 @@ struct mob_ashtongue_sorcererAI : public ScriptedAI
 
     ScriptedInstance *instance;
 
-    uint32 m_checkTimer;
+    Timer m_checkTimer;
     uint64 m_shadeGUID;
 
     bool m_channeling;
@@ -661,7 +648,7 @@ struct mob_ashtongue_sorcererAI : public ScriptedAI
         if (!m_channeling)
             return;
 
-        if (m_checkTimer <= diff)
+        if (m_checkTimer.Expired(diff))
         {
             if (!me->IsNonMeleeSpellCast(true, false, true)) // that shouldn't happen
             {
@@ -677,8 +664,6 @@ struct mob_ashtongue_sorcererAI : public ScriptedAI
             m_checkTimer = 1000;
 
         }
-        else
-            m_checkTimer -= diff;
     }
 };
 
@@ -730,12 +715,12 @@ struct boss_shade_of_akamaAI : public ScriptedAI
 
     uint64 AkamaGUID;
 
-    uint32 m_damageTimer;
-
-    uint32 m_waveTimer;
-    uint32 m_guardTimer;
-    uint32 m_sorcTimer;
-    uint32 m_checkTimer;
+    Timer m_damageTimer;
+    
+    Timer m_waveTimer;
+    Timer m_guardTimer;
+    Timer m_sorcTimer;
+    Timer m_checkTimer;
 
     uint32 m_freeSlot;
 
@@ -778,7 +763,7 @@ struct boss_shade_of_akamaAI : public ScriptedAI
 
     void ProcessSpawning(const uint32 diff)
     {
-        if (m_waveTimer <= diff)
+        if (m_waveTimer.Expired(diff))
         {
             Creature *akama = me->GetCreature(*me, AkamaGUID);
             for (int i = 0; i < 2; ++i)
@@ -794,10 +779,9 @@ struct boss_shade_of_akamaAI : public ScriptedAI
             }
             m_waveTimer = 35000;
         }
-        else
-            m_waveTimer -= diff;
+        
 
-        if (m_guardTimer <= diff)
+        if (m_guardTimer.Expired(diff))
         {
             if (Creature *pDefender = me->SummonCreature(CREATURE_DEFENDER, SpawnLocations[0][0], SpawnLocations[0][1], SPAWN_Z, 0.0f, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 15000))
             {
@@ -810,10 +794,9 @@ struct boss_shade_of_akamaAI : public ScriptedAI
             }
             m_guardTimer = 30000;
         }
-        else
-            m_guardTimer -= diff;
+        
 
-        if (m_sorcTimer <= diff)
+        if (m_sorcTimer.Expired(diff))
         {
             if (!m_freeSlot)
             {
@@ -831,8 +814,6 @@ struct boss_shade_of_akamaAI : public ScriptedAI
             }
             m_sorcTimer = 30000;
         }
-        else
-            m_sorcTimer -= diff;
     }
 
     void KilledUnit(Unit *) {}
@@ -1078,7 +1059,7 @@ struct boss_shade_of_akamaAI : public ScriptedAI
                 if(me->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE))
                     ProcessSpawning(diff);
 
-                if (m_checkTimer <= diff)
+                if (m_checkTimer.Expired(diff))
                 {
                     if (!me->IsWithinDistInMap(&wLoc, 100))
                         EnterEvadeMode();
@@ -1087,12 +1068,11 @@ struct boss_shade_of_akamaAI : public ScriptedAI
 
                     m_checkTimer = 2000;
                 }
-                else
-                    m_checkTimer -= diff;
+                
 
                 if (event_phase >= AKAMA_FIGHT)
                 {
-                    if (m_damageTimer <= diff)
+                    if (m_damageTimer.Expired(diff))
                     {
                         if (AkamaGUID)
                         {
@@ -1111,8 +1091,6 @@ struct boss_shade_of_akamaAI : public ScriptedAI
                                 EnterEvadeMode();
                         }
                     }
-                    else
-                        m_damageTimer -= diff;
                 }
             }
         }
@@ -1151,11 +1129,11 @@ struct npc_akamaAI : public Scripted_NoMovementAI
 
     uint64 ShadeGUID;
 
-    uint32 m_destructiveTimer;
-    uint32 m_lightningBoltTimer;
-
+    Timer m_destructiveTimer;
+    Timer m_lightningBoltTimer;
+    
     uint32 m_talk;
-    uint32 m_talkTimer;
+    Timer m_talkTimer;
 
     bool m_yell;
 
@@ -1292,61 +1270,56 @@ struct npc_akamaAI : public Scripted_NoMovementAI
         if (!instance)
             return;
 
-        if (m_talkTimer)
+        if (m_talkTimer.Expired(diff))
         {
-            if (m_talkTimer <= diff)
+            m_talkTimer = 0;
+            switch (m_talk)
             {
-                m_talkTimer = 0;
-                switch (m_talk)
-                {
-                    case 0:
-                        me->GetMotionMaster()->MovePoint(1, moveTo[1][0], moveTo[1][1], moveTo[1][2]);
-                        break;
-                    case 1:
-                        me->GetMotionMaster()->MovePoint(2, moveTo[0][0], moveTo[0][1], moveTo[0][2]);
-                        break;
-                    case 2:
-                        me->GetMotionMaster()->MovePoint(3, moveTo[0][0] - 5.0f, moveTo[0][1], moveTo[0][2]);
-                        break;
-                    case 3:
-                        me->GetMotionMaster()->MovePoint(4, moveTo[0][0] - 4.0f, moveTo[0][1], moveTo[0][2]);
-                        break;
-                    case 4:
-                    {
-                        me->HandleEmoteCommand(EMOTE_ONESHOT_ROAR);
-                        ++m_talk;
-                        m_talkTimer = 1500;
-                    }
+                case 0:
+                    me->GetMotionMaster()->MovePoint(1, moveTo[1][0], moveTo[1][1], moveTo[1][2]);
                     break;
-                    case 5:
-                    {
-                        DoScriptText(SAY_FREE, me);
-                        DoCast(me, 40927, true);
-                        if (Creature *shade = me->GetCreature(*me, ShadeGUID))
-                            DoCast(shade, SPELL_AKAMA_SOUL_RETRIEVE);
+                case 1:
+                    me->GetMotionMaster()->MovePoint(2, moveTo[0][0], moveTo[0][1], moveTo[0][2]);
+                    break;
+                case 2:
+                    me->GetMotionMaster()->MovePoint(3, moveTo[0][0] - 5.0f, moveTo[0][1], moveTo[0][2]);
+                    break;
+                case 3:
+                    me->GetMotionMaster()->MovePoint(4, moveTo[0][0] - 4.0f, moveTo[0][1], moveTo[0][2]);
+                    break;
+                case 4:
+                {
+                    me->HandleEmoteCommand(EMOTE_ONESHOT_ROAR);
+                    ++m_talk;
+                    m_talkTimer = 1500;
+                }
+                break;
+                case 5:
+                {
+                    DoScriptText(SAY_FREE, me);
+                    DoCast(me, 40927, true);
+                    if (Creature *shade = me->GetCreature(*me, ShadeGUID))
+                        DoCast(shade, SPELL_AKAMA_SOUL_RETRIEVE);
 
-                        ++m_talk;
-                        m_talkTimer = 60000;
-                        for (int i = 0; i < MAX_BROKEN; ++i)
+                    ++m_talk;
+                    m_talkTimer = 60000;
+                    for (int i = 0; i < MAX_BROKEN; ++i)
+                    {
+                        Creature *broken = me->SummonCreature(CREATURE_BROKEN, BrokenPositions[i][0], BrokenPositions[i][1], AKAMA_Z, 0.0f, TEMPSUMMON_TIMED_DESPAWN, 45000);
+                        if (broken)
                         {
-                            Creature *broken = me->SummonCreature(CREATURE_BROKEN, BrokenPositions[i][0], BrokenPositions[i][1], AKAMA_Z, 0.0f, TEMPSUMMON_TIMED_DESPAWN, 45000);
-                            if (broken)
-                            {
-                                m_summons.Summon(broken);
-                                broken->SetWalk(true);
-                                broken->GetMotionMaster()->MovePoint(0, BrokenMoveTo[i][0], BrokenMoveTo[i][1], SPAWN_Z);
-                                broken->SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_KNEEL);
-                            }
+                            m_summons.Summon(broken);
+                            broken->SetWalk(true);
+                            broken->GetMotionMaster()->MovePoint(0, BrokenMoveTo[i][0], BrokenMoveTo[i][1], SPAWN_Z);
+                            broken->SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_KNEEL);
                         }
                     }
-                    break;
-                    default:
-                        me->AI()->EnterEvadeMode();
-                        break;
                 }
+                break;
+                default:
+                    me->AI()->EnterEvadeMode();
+                    break;
             }
-            else
-                m_talkTimer -= diff;
         }
 
         if (instance->GetData(EVENT_SHADEOFAKAMA) != IN_PROGRESS)
@@ -1364,21 +1337,19 @@ struct npc_akamaAI : public Scripted_NoMovementAI
         if (me->m_currentSpells[CURRENT_CHANNELED_SPELL])
             return;
 
-        if (m_destructiveTimer <= diff)
+        if (m_destructiveTimer.Expired(diff))
         {
             AddSpellToCast(me->getVictim(), SPELL_DESTRUCTIVE_POISON, true);
             m_destructiveTimer = 5000;
         }
-        else
-            m_destructiveTimer -= diff;
+        
 
-        if (m_lightningBoltTimer <= diff)
+        if (m_lightningBoltTimer.Expired(diff))
         {
             AddSpellToCast(me->getVictim(), SPELL_CHAIN_LIGHTNING);
             m_lightningBoltTimer = 8000;
         }
-        else
-            m_lightningBoltTimer -= diff;
+        
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();

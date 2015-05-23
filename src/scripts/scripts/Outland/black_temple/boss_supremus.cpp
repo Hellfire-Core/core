@@ -90,17 +90,17 @@ struct boss_supremusAI : public ScriptedAI
 
     ScriptedInstance* pInstance;
 
-    uint32 MoltenFlameTimer;
+    Timer MoltenFlameTimer;
+    
+    Timer SummonFlameTimer;
+    Timer SwitchTargetTimer;
+    Timer PhaseSwitchTimer;
+    Timer MoltenPunch_Timer;
+    Timer SummonVolcanoTimer;
+    Timer HatefulStrikeTimer;
+    Timer BerserkTimer;
 
-    uint32 SummonFlameTimer;
-    uint32 SwitchTargetTimer;
-    uint32 PhaseSwitchTimer;
-    uint32 MoltenPunch_Timer;
-    uint32 SummonVolcanoTimer;
-    uint32 HatefulStrikeTimer;
-    uint32 BerserkTimer;
-
-    uint32 CheckTimer;
+    Timer CheckTimer;
     WorldLocation wLoc;
 
     bool Phase1;
@@ -199,20 +199,15 @@ struct boss_supremusAI : public ScriptedAI
             return;
 
         if(!m_creature->HasAura(SPELL_BERSERK, 0))
-        {
-            if(BerserkTimer <= diff)
+            if (BerserkTimer.Expired(diff))
                 DoCast(m_creature, SPELL_BERSERK);
-            else
-                BerserkTimer -= diff;
-        }
 
-        if(SummonFlameTimer <= diff)
+        if (SummonFlameTimer.Expired(diff))
         {
             AddSpellToCast(m_creature, SPELL_MOLTEN_PUNCH);
             SummonFlameTimer = 20000;
         }
-        else
-            SummonFlameTimer -= diff;
+
 
         if(DoEmote)
         {
@@ -222,16 +217,15 @@ struct boss_supremusAI : public ScriptedAI
 
         if(Phase1)
         {
-            if(CheckTimer <= diff)
+            if (CheckTimer.Expired(diff))
             {
                 DoZoneInCombat();
                 m_creature->SetSpeed(MOVE_RUN, 2.5f);
                 CheckTimer = 1000;
             }
-            else
-                CheckTimer -= diff;
+            
 
-            if(HatefulStrikeTimer <= diff)
+            if (HatefulStrikeTimer.Expired(diff))
             {
                 if(Unit* target = CalculateHatefulStrikeTarget())
                 {
@@ -239,21 +233,17 @@ struct boss_supremusAI : public ScriptedAI
                     HatefulStrikeTimer = 5000;
                 }
             }
-            else
-                HatefulStrikeTimer -= diff;
         }
         else
         {
-            if(CheckTimer <= diff)
+            if (CheckTimer.Expired(diff))
             {
                 DoZoneInCombat();
                 m_creature->SetSpeed(MOVE_RUN, 0.90f);
                 CheckTimer = 1000;
             }
-            else
-                CheckTimer -= diff;
 
-            if(SwitchTargetTimer <= diff)
+            if (SwitchTargetTimer.Expired(diff))
             {
                 if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true, m_creature->getVictimGUID()))
                 {
@@ -265,10 +255,9 @@ struct boss_supremusAI : public ScriptedAI
                     SwitchTargetTimer = 10000;
                 }
             }
-            else
-                SwitchTargetTimer -= diff;
+            
 
-            if(MoltenPunch_Timer <= diff)
+            if (MoltenPunch_Timer.Expired(diff))
             {
                 Unit *target = m_creature->getVictim();
                 if(target)
@@ -285,10 +274,9 @@ struct boss_supremusAI : public ScriptedAI
                 }
                 MoltenPunch_Timer = 8000+rand()%4000;
             }
-            else
-                MoltenPunch_Timer -= diff;
+            
 
-            if(SummonVolcanoTimer <= diff)
+            if (SummonVolcanoTimer.Expired(diff))
             {
                 if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 999, true))
                 {
@@ -296,11 +284,9 @@ struct boss_supremusAI : public ScriptedAI
                     SummonVolcanoTimer = 10000;
                 }
             }
-            else
-                SummonVolcanoTimer -= diff;
         }
 
-        if(PhaseSwitchTimer <= diff)
+        if (PhaseSwitchTimer.Expired(diff))
         {
             if(!Phase1)
             {
@@ -323,8 +309,7 @@ struct boss_supremusAI : public ScriptedAI
                 DoZoneInCombat();
             }
         }
-        else
-            PhaseSwitchTimer -= diff;
+        
 
         DoMeleeAttackIfReady();
         CastNextSpellIfAnyAndReady();
@@ -335,7 +320,7 @@ struct npc_volcanoAI : public Scripted_NoMovementAI
 {
     npc_volcanoAI(Creature *c) : Scripted_NoMovementAI(c) { }
 
-    uint32 CastTimer;
+    Timer CastTimer;
 
     void Reset()
     {
@@ -353,13 +338,11 @@ struct npc_volcanoAI : public Scripted_NoMovementAI
         if(!CastTimer)
             return;
 
-        if(CastTimer <= diff)
+        if (CastTimer.Expired(diff))
         {
             m_creature->CastSpell(m_creature, SPELL_VOLCANIC_ERUPTION, false);
             CastTimer = 0;
         }
-        else
-            CastTimer -= diff;
     }
 };
 

@@ -74,8 +74,8 @@ struct mob_doom_blossomAI : public NullCreatureAI
 
     ScriptedInstance* pInstance;
 
-    uint32 CheckTeronTimer;
-    uint32 ShadowBoltTimer;
+    Timer CheckTeronTimer;
+    Timer ShadowBoltTimer;
     uint64 TeronGUID;
 
     void Reset()
@@ -106,7 +106,7 @@ struct mob_doom_blossomAI : public NullCreatureAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(CheckTeronTimer <= diff)
+        if (CheckTeronTimer.Expired(diff))
         {
             Creature* Teron = (Unit::GetCreature((*m_creature), TeronGUID));
             if(Teron && Teron->isInCombat())
@@ -129,10 +129,9 @@ struct mob_doom_blossomAI : public NullCreatureAI
 
             CheckTeronTimer = 5000;
         }
-        else
-            CheckTeronTimer -= diff;
+        
 
-        if(ShadowBoltTimer <= diff)
+        if (ShadowBoltTimer.Expired(diff))
         {
             Creature* Teron = (Unit::GetCreature((*m_creature), TeronGUID));
             if(!Teron)
@@ -143,8 +142,7 @@ struct mob_doom_blossomAI : public NullCreatureAI
 
             ShadowBoltTimer = 1500+rand()%1000;
         }
-        else
-            ShadowBoltTimer -= diff;
+        
 
         return;
     }
@@ -159,9 +157,9 @@ struct mob_shadowy_constructAI : public ScriptedAI
 
     ScriptedInstance* pInstance;
 
-    uint32 DelayTimer;
-    uint32 CheckTeronTimer;
-    uint32 ChangeTarget;
+    Timer DelayTimer;
+    Timer CheckTeronTimer;
+    Timer ChangeTarget;
 
     void Reset()
     {
@@ -187,7 +185,7 @@ struct mob_shadowy_constructAI : public ScriptedAI
     void AttackStart(Unit* who)
     {
         // unit or target with posses spirit immune cannot be taken as targets
-        if(DelayTimer || who->GetTypeId() != TYPEID_PLAYER || who->HasAura(40282, 0) || who->HasAura(40251, 0) || who->HasAura(40268,0))
+        if(DelayTimer.GetInterval() || who->GetTypeId() != TYPEID_PLAYER || who->HasAura(40282, 0) || who->HasAura(40251, 0) || who->HasAura(40268,0))
             return;
 
         if(me->getVictim())
@@ -230,7 +228,7 @@ struct mob_shadowy_constructAI : public ScriptedAI
 
     void UpdateTarget(uint32 diff)
     {
-        if(ChangeTarget <= diff)
+        if (ChangeTarget.Expired(diff))
         {
             DoZoneInCombat();
             if (pInstance)
@@ -240,31 +238,26 @@ struct mob_shadowy_constructAI : public ScriptedAI
                         AttackStart(pTarget);
                 }
 
-            if(!UpdateVictim())
+            if (!UpdateVictim())
             {
-                if(Unit *pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1, 200, true))
+                if (Unit *pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1, 200, true))
                     AttackStart(pTarget);
             }
         }
-        else
-            ChangeTarget -= diff;
     }
 
     void UpdateAI(const uint32 diff)
     {
-        if(DelayTimer > diff)
+        if (DelayTimer.Expired(diff))
         {
-            DelayTimer -= diff;
+            DelayTimer = 0; 
+        }
+        else
             return;
-        }
-        else if(DelayTimer)
-        {
-            DelayTimer = 0;
-        }
 
         UpdateTarget(diff);
-
-        if(CheckTeronTimer <= diff)
+                               
+        if (CheckTeronTimer.Expired(diff))
         {
             if (pInstance)
             {
@@ -274,8 +267,6 @@ struct mob_shadowy_constructAI : public ScriptedAI
             }
             CheckTeronTimer = 2000;
         }
-        else
-            CheckTeronTimer -= diff;
 
         DoMeleeAttackIfReady();
     }
@@ -295,15 +286,15 @@ struct boss_teron_gorefiendAI : public ScriptedAI
 
     ScriptedInstance* pInstance;
 
-    uint32 IncinerateTimer;
-    uint32 SummonDoomBlossomTimer;
-    uint32 EnrageTimer;
-    uint32 CrushingShadowsTimer;
-    uint32 ShadowOfDeathTimer;
-    uint32 SummonShadowsTimer;
-    uint32 RandomYellTimer;
-    uint32 AggroTimer;
-    uint32 CheckTimer;
+    Timer IncinerateTimer;
+    Timer SummonDoomBlossomTimer;
+    Timer EnrageTimer;
+    Timer CrushingShadowsTimer;
+    Timer ShadowOfDeathTimer;
+    Timer SummonShadowsTimer;
+    Timer RandomYellTimer;
+    Timer AggroTimer;
+    Timer CheckTimer;
 
     WorldLocation wLoc;
 
@@ -451,21 +442,18 @@ struct boss_teron_gorefiendAI : public ScriptedAI
     void UpdateAI(const uint32 diff)
     {
         if(Intro == INTRO_IN_PROGRESS)
-        {
-            if(AggroTimer <= diff)
+            if (AggroTimer.Expired(diff))
             {
                 m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                 m_creature->SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_NONE);
                 Intro = INTRO_DONE;
             }
-            else
-                AggroTimer -= diff;
-        }
+        
 
         if(!UpdateVictim() || Intro == INTRO_IN_PROGRESS)
             return;
 
-        if (CheckTimer <= diff)
+        if (CheckTimer.Expired(diff))
         {
             if(!m_creature->IsWithinDistInMap(&wLoc, 90))
                 EnterEvadeMode();
@@ -476,18 +464,15 @@ struct boss_teron_gorefiendAI : public ScriptedAI
 
             CheckTimer = 1500;
         }
-        else
-            CheckTimer -= diff;
 
-        if(SummonDoomBlossomTimer <= diff)
+        if (SummonDoomBlossomTimer.Expired(diff))
         {
             AddSpellToCast(m_creature, 40188);
             SummonDoomBlossomTimer = 25000+rand()%15000;
         }
-        else
-            SummonDoomBlossomTimer -= diff;
+        
 
-        if(IncinerateTimer <= diff)
+        if (IncinerateTimer.Expired(diff))
         {
             Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 200, true, m_creature->getVictimGUID());
             if(!target)
@@ -499,19 +484,17 @@ struct boss_teron_gorefiendAI : public ScriptedAI
                 IncinerateTimer = urand(5000, 40000);
             }
         }
-        else
-            IncinerateTimer -= diff;
+        
 
-        if(CrushingShadowsTimer <= diff)
+        if (CrushingShadowsTimer.Expired(diff))
         {
             AddSpellToCastWithScriptText(m_creature, SPELL_CRUSHING_SHADOWS, SAY_SPELL3);
             CrushingShadowsTimer = urand(17000, 42000);
         }
-        else
-            CrushingShadowsTimer -= diff;
+        
 
 
-        if(ShadowOfDeathTimer <= diff)
+        if (ShadowOfDeathTimer.Expired(diff))
         {
             Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true, m_creature->getVictimGUID());
 
@@ -521,25 +504,21 @@ struct boss_teron_gorefiendAI : public ScriptedAI
                 ShadowOfDeathTimer = 30000;
             }
         }
-        else
-            ShadowOfDeathTimer -= diff;
+        
 
-        if(RandomYellTimer <= diff)
+        if (RandomYellTimer.Expired(diff))
         {
             DoScriptText(RAND(SAY_SPELL1, SAY_SPELL2), m_creature);
             RandomYellTimer = 50000 + rand()%51000;
         }
-        else
-            RandomYellTimer -= diff;
+        
 
         if(!m_creature->HasAura(SPELL_BERSERK, 0))
         {
-            if(EnrageTimer <= diff)
+            if (EnrageTimer.Expired(diff))
             {
                 AddSpellToCastWithScriptText(m_creature, SPELL_BERSERK, SAY_ENRAGE);
             }
-            else
-                EnrageTimer -= diff;
         }
 
         CastNextSpellIfAnyAndReady();

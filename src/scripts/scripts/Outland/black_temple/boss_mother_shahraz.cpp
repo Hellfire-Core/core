@@ -116,13 +116,13 @@ struct boss_shahrazAI : public ScriptedAI
     uint8 m_position;
     WorldLocation wLoc;
 
-    uint32 m_shriekTimer;
-    uint32 m_yellTimer;
-    uint32 m_attractionTimer;
-    uint32 m_enrageTimer;
-    uint32 m_enragePeriodic;
-
-    uint32 m_checkTimer;
+    Timer m_shriekTimer;
+    Timer m_yellTimer;
+    Timer m_attractionTimer;
+    Timer m_enrageTimer;
+    Timer m_enragePeriodic;
+     
+    Timer m_checkTimer;
     uint32 prevBeam;
 
     bool m_enraged;
@@ -219,7 +219,7 @@ struct boss_shahrazAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (m_checkTimer <= diff)
+        if (m_checkTimer.Expired(diff))
         {
             if(me->GetDistance(wLoc.coord_x, wLoc.coord_y, wLoc.coord_z) > 110)
             {
@@ -231,8 +231,7 @@ struct boss_shahrazAI : public ScriptedAI
 
             m_checkTimer = 2000;
         }
-        else
-            m_checkTimer -= diff;
+        
 
         if (!m_enraged && ((me->GetHealth()*100 / me->GetMaxHealth()) < 10))
         {
@@ -245,60 +244,52 @@ struct boss_shahrazAI : public ScriptedAI
 
         if (b_canEnrage)
         {
-            if (m_enragePeriodic <= diff)
+            if (m_enragePeriodic.Expired(diff))
             {
                 DoScriptText(SAY_ENRAGE, m_creature);
                 ForceSpellCast(me, SPELL_ENRAGE);
                 m_enragePeriodic = urand(20000, 30000);
             }
-            else
-                m_enragePeriodic -= diff;
         }
 
         // Select 3 random targets (can select same target more than once), teleport to a random location then make them cast explosions until they get away from each other.
-        if (m_attractionTimer <= diff)
+        if (m_attractionTimer.Expired(diff))
         {
             m_position = urand(0, 33);
             ForceSpellCastWithScriptText(me, SPELL_FATAL_ATTRACTION, RAND(SAY_SPELL2, SAY_SPELL3));
 
             m_attractionTimer = urand(23000, 30000);
         }
-        else
-            m_attractionTimer -= diff;
+        
 
-        if (m_shriekTimer <= diff)
+        if (m_shriekTimer.Expired(diff))
         {
             if(!urand(0, 2))
                 DoScriptText(SAY_SPELL1, m_creature);
             AddSpellToCast(me->getVictim(), SPELL_SILENCING_SHRIEK);
             m_shriekTimer = 20000;
         }
-        else
-            m_shriekTimer -= diff;
 
         //Enrage
-        if (m_enrageTimer)
+        if (m_enrageTimer.GetInterval())
         {
             if (!me->HasAura(SPELL_BERSERK, 0))
             {
-                if (m_enrageTimer <= diff)
+                if (m_enrageTimer.Expired(diff))
                 {
                     m_enrageTimer = 0;
                     ForceSpellCastWithScriptText(me, SPELL_BERSERK, SAY_ENRAGE, INTERRUPT_AND_CAST);
                 }
-                else
-                    m_enrageTimer -= diff;
             }
         }
 
         //Random taunts
-        if (m_yellTimer <= diff)
+        if (m_yellTimer.Expired(diff))
         {
             DoScriptText(RAND(SAY_TAUNT1, SAY_TAUNT2, SAY_TAUNT3), me);
             m_yellTimer = urand(15000, 35000);
         }
-        else
-            m_yellTimer -= diff;
+
 
         if (castBeam)
         {

@@ -59,12 +59,12 @@ struct boss_najentusAI : public ScriptedAI
 
     ScriptedInstance* pInstance;
 
-    uint32 NeedleSpineTimer;
-    uint32 EnrageTimer;
-    uint32 SpecialYellTimer;
-    uint32 TidalShieldTimer;
-    uint32 ImpalingSpineTimer;
-    uint32 CheckTimer;
+    Timer NeedleSpineTimer;
+    Timer EnrageTimer;
+    Timer SpecialYellTimer;
+    Timer TidalShieldTimer;
+    Timer ImpalingSpineTimer;
+    Timer CheckTimer;
 
     uint8 plToNeedle;
 
@@ -177,7 +177,7 @@ struct boss_najentusAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (CheckTimer <= diff)
+        if (CheckTimer.Expired(diff))
         {
             if (!m_creature->IsWithinDistInMap(&wLoc, 105))
                 EnterEvadeMode();
@@ -185,8 +185,7 @@ struct boss_najentusAI : public ScriptedAI
                 DoZoneInCombat();
             CheckTimer = 3000;
         }
-        else
-            CheckTimer -= diff;
+        
 
         if (checkAura)
         {
@@ -196,7 +195,7 @@ struct boss_najentusAI : public ScriptedAI
                 checkAura = false;
         }
 
-        if(TidalShieldTimer <= diff)
+        if (TidalShieldTimer.Expired(diff))
         {
             m_creature->CastSpell(m_creature, SPELL_TIDAL_SHIELD, true);
 
@@ -205,36 +204,32 @@ struct boss_najentusAI : public ScriptedAI
             TidalShieldTimer = 60000;
             checkAura = true;
         }
-        else
-            TidalShieldTimer -= diff;
+        
 
-        if(EnrageTimer <= diff)
+        if (EnrageTimer.Expired(diff))
         {
             DoScriptText(SAY_ENRAGE2, m_creature);
             m_creature->CastSpell(m_creature, SPELL_BERSERK, true);
             EnrageTimer = 600000;
         }
-        else
-            EnrageTimer -= diff;
+        
 
-        if(NeedleSpineTimer <= diff)
+        if (NeedleSpineTimer.Expired(diff))
         {
             m_creature->CastSpell(m_creature, 39992u, true);
             NeedleSpineTimer = 2000 + rand()%2000;
         }
-        else
-            NeedleSpineTimer -= diff;
+        
 
-        if(SpecialYellTimer <= diff)
+        if (SpecialYellTimer.Expired(diff))
         {
             DoScriptText(RAND(SAY_SPECIAL1, SAY_SPECIAL2), m_creature);
 
             SpecialYellTimer = 25000 + (rand()%76)*1000;
         }
-        else
-            SpecialYellTimer -= diff;
+        
 
-        if(ImpalingSpineTimer <= diff)
+        if (ImpalingSpineTimer.Expired(diff))
         {
             Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, 150, true, m_creature->getVictimGUID());
 
@@ -258,8 +253,7 @@ struct boss_najentusAI : public ScriptedAI
             }
             ImpalingSpineTimer = 21000;
         }
-        else
-            ImpalingSpineTimer -= diff;
+        
 
         DoMeleeAttackIfReady();
     }
