@@ -1180,9 +1180,8 @@ void CreatureEventAI::UpdateAI(const uint32 diff)
     {
         //Events are only updated once every EVENT_UPDATE_TIME ms to prevent lag with large amount of events
         EventDiff += diff;
-        EventUpdateTime -= diff;
 
-        if (EventUpdateTime <= diff)
+        if (EventUpdateTime.Expired(diff))
         {
 
 

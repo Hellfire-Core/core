@@ -244,7 +244,7 @@ class HELLGROUND_IMPORT_EXPORT Aura
 
         int32 GetAuraMaxDuration() const { return m_maxduration; }
         void SetAuraMaxDuration(int32 duration) { m_maxduration = duration; }
-        int32 GetAuraDuration() const { return m_duration; }
+        int32 GetAuraDuration() const { return m_duration.GetTimeLeft(); }
         void SetAuraDuration(int32 duration)
         {
             m_duration = duration;
@@ -362,7 +362,7 @@ class HELLGROUND_IMPORT_EXPORT Aura
 
         int32 GetStackAmount() const { return m_stackAmount; }
         void SetStackAmount(int32 amount) { m_stackAmount = amount; }
-        int32 GetPeriodicTimer() const { return m_periodicTimer; }
+        int32 GetPeriodicTimer() const { return m_periodicTimer.GetTimeLeft(); }
         void SetPeriodicTimer(int32 timer) { m_periodicTimer = timer; }
 
         // Single cast aura helpers
@@ -379,10 +379,10 @@ class HELLGROUND_IMPORT_EXPORT Aura
         int32 m_currentBasePoints;                          // cache SpellEntry::EffectBasePoints and use for set custom base points
         uint64 m_caster_guid;
         Unit* m_target;
-        int32 m_maxduration;
-        int32 m_duration;
+        uint32 m_maxduration;
+        Timer m_duration;
         uint32 m_tickNumber;
-        int32 m_timeCla;
+        Timer m_timeCla;
         uint64 m_castItemGuid;                              // it is NOT safe to keep a pointer to the item because it may get deleted
         time_t m_applyTime;
 
@@ -403,8 +403,8 @@ class HELLGROUND_IMPORT_EXPORT Aura
         bool m_in_use:1;                                    // true while in Aura::ApplyModifier call
         bool m_isSingleTargetAura:1;                        // true if it's a single target spell and registered at caster - can change at spell steal for example
 
-        int32 m_heartbeatTimer;
-        int32 m_periodicTimer;
+        Timer m_heartbeatTimer;
+        Timer m_periodicTimer;
         int32 m_amplitude;
         uint32 m_PeriodicEventId;
         DiminishingGroup m_AuraDRGroup;

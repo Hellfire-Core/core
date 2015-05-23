@@ -17205,14 +17205,13 @@ void Player::UpdateAfkReport(time_t currTime)
 
 void Player::UpdateContestedPvP(uint32 diff)
 {
-    if (!m_contestedPvPTimer||isInCombat())
+    if (!m_contestedPvPTimer.GetInterval()||isInCombat())
         return;
-    if (m_contestedPvPTimer <= diff)
+    if (m_contestedPvPTimer.Expired(diff))
     {
         ResetContestedPvP();
     }
-    else
-        m_contestedPvPTimer -= diff;
+    
 }
 
 void Player::UpdatePvPFlag(time_t currTime)

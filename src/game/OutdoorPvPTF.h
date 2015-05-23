@@ -125,8 +125,8 @@ public:
     void SendRemoveWorldStates(Player * plr);
 private:
     bool m_IsLocked;
-    int32 m_LockTimer;
-    int32 m_LockTimerUpdate;
+    Timer m_LockTimer;
+    Timer m_LockTimerUpdate;
     uint32 m_AllianceTowersControlled;
     uint32 m_HordeTowersControlled;
     uint32 hours_left, second_digit, first_digit;

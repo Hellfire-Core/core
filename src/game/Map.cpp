@@ -2322,7 +2322,7 @@ void InstanceMap::Remove(Player *player, bool remove)
 {
     sLog.outDetail("MAP: Removing player '%s' from instance '%u' of map '%s' before relocating to other map", player->GetName(), GetInstanceId(), GetMapName());
     //if last player set unload timer
-    if (!m_unloadTimer && m_mapRefManager.getSize() == 1)
+    if (!m_unloadTimer.GetInterval() && m_mapRefManager.getSize() == 1)
         m_unloadTimer = m_unloadWhenEmpty ? MIN_UNLOAD_DELAY : std::max(sWorld.getConfig(CONFIG_INSTANCE_UNLOAD_DELAY), (uint32)MIN_UNLOAD_DELAY);
     Map::Remove(player, remove);
     // for normal instances schedule the reset after all players have left
@@ -3115,14 +3115,19 @@ bool Map::WaypointMovementPathfinding() const
 
 bool Map::CanUnload(uint32 diff)
 {
-    if (!m_unloadTimer)
-        return false;
+ //  if (!m_unloadTimer)   //FIXME: look, here we return if timer = 0
+ //      return false;
+ //
+ //  if (m_unloadTimer <= diff)    // here we return in every other situation
+ //      return true;
+ //
+ //  m_unloadTimer -= diff;         // does not happen 
+ //  return false;
 
-    if (m_unloadTimer <= diff)
+    if (m_unloadTimer.Expired(diff)) // this does the same what the "up" but allows timer to be counted
         return true;
+    else return false;
 
-    m_unloadTimer -= diff;
-    return false;
 }
 
 bool Map::IsRemovalGrid(float x, float y) const

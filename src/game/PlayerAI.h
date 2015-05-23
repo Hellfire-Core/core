@@ -57,13 +57,13 @@ void Reset()
 
     void UpdateAI(const uint32 diff);
 
-    int32 TC_Timer;
+    Timer TC_Timer;
     SpellEntry const *TCSpell;
 
-    int32 Bloodrage_Timer;
+    Timer Bloodrage_Timer;
     SpellEntry const *BloodrageSpell;
 
-    int32 Demo_Timer;
+    Timer Demo_Timer;
     SpellEntry const *DemoSpell;
 };
 
@@ -102,25 +102,25 @@ void Reset()
     void UpdateAI(const uint32 diff);
     bool bestial;
 
-    int32 Steady_Timer;
+    Timer Steady_Timer;
     SpellEntry const *SteadySpell;
 
-    int32 Arcane_Timer;
+    Timer Arcane_Timer;
     SpellEntry const *ArcaneSpell;
 
-    int32 Multi_Timer;
+    Timer Multi_Timer;
     SpellEntry const *MultiSpell;
 
-    int32 Volley_Timer;
+    Timer Volley_Timer;
     SpellEntry const *VolleySpell;
 
-    int32 Rapid_Timer;
+    Timer Rapid_Timer;
     SpellEntry const *RapidSpell;
 
-    int32 Bestial_Timer;
+    Timer Bestial_Timer;
     SpellEntry const *BestialSpell;
 
-    int32 Auto_Timer;
+    Timer Auto_Timer;
     SpellEntry const *AutoSpell;
 };
 
@@ -158,22 +158,22 @@ void Reset()
     bool crusader;
     bool shock;
 
-    int32 Avenging_Timer;
+    Timer Avenging_Timer;
     SpellEntry const *AvengingSpell;
 
-    int32 Crusader_Timer;
+    Timer Crusader_Timer;
     SpellEntry const *CrusaderSpell;
 
-    int32 Consecration_Timer;
+    Timer Consecration_Timer;
     SpellEntry const *ConsecrationSpell;
 
-    int32 Judgement_Timer;
+    Timer Judgement_Timer;
     SpellEntry const *JudgementSpell;
 
-    int32 Shock_Timer;
+    Timer Shock_Timer;
     SpellEntry const *ShockSpell;
 
-    int32 Flash_Timer;
+    Timer Flash_Timer;
     SpellEntry const *FlashSpell;
 };
 
@@ -224,16 +224,16 @@ struct WarlockAI: public PlayerAI
 
     void UpdateAI(const uint32 diff);
 
-    int32 AOE_Timer;
+    Timer AOE_Timer;
     SpellEntry const *AOESpell;
 
-    int32 DOT_Timer;
+    Timer DOT_Timer;
     SpellEntry const *DOTSpell;
 
-    int32 Fear_Timer;
+    Timer Fear_Timer;
     SpellEntry const *FearSpell;
 
-    int32 NormalSpell_Timer;
+    Timer NormalSpell_Timer;
     SpellEntry const *NormalSpell;
 };
 
@@ -286,26 +286,26 @@ struct DruidAI: public PlayerAI
 
     bool feral;
 
-    int32 Demo_Timer;
+    Timer Demo_Timer;
     SpellEntry const *DemoSpell;
 
-    int32 MangleB_Timer;
+    Timer MangleB_Timer;
     SpellEntry const *MangleBSpell;
 
-    int32 MangleC_Timer;
+    Timer MangleC_Timer;
     SpellEntry const *MangleCSpell;
 
-    int32 Heal_Timer;
+    Timer Heal_Timer;
     SpellEntry const *Heal1Spell;
     SpellEntry const *Heal2Spell;
     SpellEntry const *Heal3Spell;
 
-    int32 Dmg_Timer;
+    Timer Dmg_Timer;
     SpellEntry const *Dmg1Spell;
     SpellEntry const *Dmg2Spell;
     SpellEntry const *Dmg3Spell;
 
-    int32 Hurricane_Timer;
+    Timer Hurricane_Timer;
     SpellEntry const *HurricaneSpell;
 
 };
@@ -333,13 +333,13 @@ void Reset()
     void UpdateAI(const uint32 diff);
 
     bool blade;
-    int32 Flurry_Timer;
+    Timer Flurry_Timer;
     SpellEntry const *FlurrySpell;
 
-    int32 Gouge_Timer;
+    Timer Gouge_Timer;
     SpellEntry const *GougeSpell;
 
-    int32 Sinister_Timer;
+    Timer Sinister_Timer;
     SpellEntry const *SinisterSpell;
 
 };
@@ -379,19 +379,19 @@ struct ShamanAI: public PlayerAI
 
     bool heal;
 
-    int32 Totem_Timer;
+    Timer Totem_Timer;
     SpellEntry const *Totem;
 
-    int32 Shield_Timer;
+    Timer Shield_Timer;
     SpellEntry const *ShieldSpell;
 
-    int32 Heal_Timer;
+    Timer Heal_Timer;
     SpellEntry const *HealSpell;
 
-    int32 BL_Timer;
+    Timer BL_Timer;
     SpellEntry const *BLSpell;
 
-    int32 Lightning_Timer;
+    Timer Lightning_Timer;
     SpellEntry const *LightningSpell;
 
 
@@ -441,22 +441,22 @@ struct PriestAI: public PlayerAI
     bool vampiric;
     bool holynova;
 
-    int32 Vampiric_Timer;
+    Timer Vampiric_Timer;
     SpellEntry const *VampiricSpell;
 
-    int32 DmgSpell_Timer;
+    Timer DmgSpell_Timer;
     SpellEntry const *DmgSpell;
 
-    int32 Flash_Timer;
+    Timer Flash_Timer;
     SpellEntry const *FlashSpell;
 
-    int32 Nova_Timer;
+    Timer Nova_Timer;
     SpellEntry const *NovaSpell;
 
-    int32 DOTSpell_Timer;
+    Timer DOTSpell_Timer;
     SpellEntry const *DOTSpell;
 
-    int32 PWShield_Timer;
+    Timer PWShield_Timer;
     SpellEntry const *PWShieldSpell;
 
     void UpdateAI(const uint32 diff);
@@ -506,16 +506,16 @@ struct MageAI: public PlayerAI
         NormalSpell_Timer = 3200;
     }
 
-    int32 MassiveAOE_Timer;
+    Timer MassiveAOE_Timer;
     SpellEntry const *MassiveAOESpell;
 
-    int32 ConeSpell_Timer;
+    Timer ConeSpell_Timer;
     SpellEntry const *ConeSpell;
 
-    int32 AOESpell_Timer;
+    Timer AOESpell_Timer;
     SpellEntry const *AOESpell;
 
-    int32 NormalSpell_Timer;
+    Timer NormalSpell_Timer;
     SpellEntry const *NormalSpell;
 
     bool Special;

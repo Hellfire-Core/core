@@ -2319,7 +2319,7 @@ class HELLGROUND_EXPORT Player : public Unit
         std::set<uint32> m_bgAfkReporter;
         uint8 m_bgAfkReportedCount;
         time_t m_bgAfkReportedTimer;
-        uint32 m_contestedPvPTimer;
+        Timer m_contestedPvPTimer;
 
         uint32 m_bgTeam;    // what side the player will be added to
 

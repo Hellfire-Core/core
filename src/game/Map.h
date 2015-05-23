@@ -340,7 +340,7 @@ class HELLGROUND_IMPORT_EXPORT Map : public GridRefManager<NGridType>
         uint8 i_spawnMode;
         uint32 i_id;
         uint32 i_InstanceId;
-        uint32 m_unloadTimer;
+        Timer m_unloadTimer;
 
         float m_ActiveObjectUpdateDistance;
 

@@ -992,7 +992,7 @@ void Spell::DoAllEffectOnTarget(TargetInfo *target)
                 bg->UpdatePlayerScore(((Player*)caster), SCORE_HEALING_DONE, gain);
 
             if (caster->GetMap() && caster->GetMap()->IsDungeon() && ((InstanceMap*)caster->GetMap())->GetInstanceData())
-                ((InstanceMap*)caster->GetMap())->GetInstanceData()->OnPlayerHealDamage(caster->ToPlayer(),gain);
+                ((InstanceMap*)caster->GetMap())->GetInstanceData()->OnPlayerHealDamage(caster->ToPlayer(), gain);
         }
     }
     // Do damage and triggers
@@ -2963,7 +2963,7 @@ void Spell::update(uint32 difftime)
     }
 
     // check if caster has moved before the spell finished
-    if (m_timer != 0 && m_caster->hasUnitState(UNIT_STAT_CASTING_NOT_MOVE)/* && !m_caster->HasUnitMovementFlag(MOVEFLAG_FALLINGFAR)*/)
+    if (m_timer.GetInterval() != 0 && m_caster->hasUnitState(UNIT_STAT_CASTING_NOT_MOVE)/* && !m_caster->HasUnitMovementFlag(MOVEFLAG_FALLINGFAR)*/)
     {
         // Check for movin' by(rotation keys ft. mouse button)
         //         if ((m_caster->GetTypeId() == TYPEID_PLAYER && ((Player*)m_caster)->isMoving() && m_casttime &&
@@ -2984,20 +2984,15 @@ void Spell::update(uint32 difftime)
     {
         case SPELL_STATE_PREPARING:
         {
-            if (m_timer)
-            {
-                if (difftime >= m_timer)
-                    m_timer = 0;
-                else
-                    m_timer -= difftime;
-            }
+            if (m_timer.Expired(difftime))
+                m_timer = 0;
 
-            if (m_timer == 0 && !IsNextMeleeSwingSpell() && !IsAutoRepeat())
+            if (m_timer.GetInterval() == 0 && !IsNextMeleeSwingSpell() && !IsAutoRepeat())
                 cast(GetSpellEntry()->CastingTimeIndex == 1);
         } break;
         case SPELL_STATE_CASTING:
         {
-            if (m_timer > 0)
+            if (m_timer.GetInterval() > 0)
             {
                 if (m_caster->GetTypeId() == TYPEID_PLAYER)
                 {
@@ -3021,13 +3016,11 @@ void Spell::update(uint32 difftime)
                         cancel();
                 }
 
-                if (difftime >= m_timer)
+                if (m_timer.Expired(difftime))
                     m_timer = 0;
-                else
-                    m_timer -= difftime;
             }
 
-            if (m_timer == 0)
+            if (m_timer.GetInterval() == 0)
             {
                 SendChannelUpdate(0);
 
@@ -3234,7 +3227,7 @@ void Spell::SendSpellStart()
     data << uint32(GetSpellEntry()->Id);;                       // spellId
     data << uint8(m_cast_count);                            // pending spell cast?
     data << uint16(castFlags);                              // cast flags
-    data << uint32(m_timer);                                // delay?
+    data << uint32(m_timer.GetTimeLeft());                                // delay?
     data << m_targets;
 
     if (castFlags & CAST_FLAG_AMMO)                         // projectile info
@@ -5397,13 +5390,13 @@ void Spell::Delayed() // only called in DealDamage()
 
     int32 delaytime = GetNextDelayAtDamageMsTime();
 
-    if (int32(m_timer) + delaytime > m_casttime)
+    if (int32(m_timer.GetTimeLeft()) + delaytime > m_casttime)
     {
-        delaytime = m_casttime - m_timer;
+        delaytime = m_casttime - m_timer.GetTimeLeft();
         m_timer = m_casttime;
     }
     else
-        m_timer += delaytime;
+        m_timer = delaytime;
 
     sLog.outDetail("Spell %u partially interrupted for (%d) ms at damage", GetSpellEntry()->Id, delaytime);
 
@@ -5428,15 +5421,15 @@ void Spell::DelayedChannel()
 
     int32 delaytime = GetNextDelayAtDamageMsTime();
 
-    if (int32(m_timer) < delaytime)
+    if (int32(m_timer.GetTimeLeft()) < delaytime)
     {
-        delaytime = m_timer;
+        delaytime = m_timer.GetTimeLeft();  
         m_timer = 0;
     }
-    else
-        m_timer -= delaytime;
+    else                                    
+        m_timer.Update(delaytime);          // FIXME: magic?
 
-    sLog.outDebug("Spell %u partially interrupted for %i ms, new duration: %u ms", GetSpellEntry()->Id, delaytime, m_timer);
+    sLog.outDebug("Spell %u partially interrupted for %i ms, new duration: %u ms", GetSpellEntry()->Id, delaytime, m_timer.GetTimeLeft());
 
     for (std::list<TargetInfo>::iterator ihit = m_UniqueTargetInfo.begin(); ihit != m_UniqueTargetInfo.end(); ++ihit)
     {
@@ -5464,7 +5457,7 @@ void Spell::DelayedChannel()
             dynObj->Delay(delaytime);
     }
 
-    SendChannelUpdate(m_timer);
+    SendChannelUpdate(m_timer.GetTimeLeft());
 }
 
 void Spell::UpdatePointers()

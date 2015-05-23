@@ -327,8 +327,8 @@ class HELLGROUND_IMPORT_EXPORT BattleGround
 
         void AnnounceBGStart();
 
-        void ModifyStartDelayTime(int diff) { m_StartDelayTime -= diff; }
-        void SetStartDelayTime(int Time)    { m_StartDelayTime = Time; }
+        void ModifyStartDelayTime(int diff) { m_StartDelayTime -= diff; }  //}
+        void SetStartDelayTime(int Time)    { m_StartDelayTime = Time; }   //} FIXME: convert to [Timer]
 
         void SetMaxPlayersPerTeam(uint32 MaxPlayers) { m_MaxPlayersPerTeam = MaxPlayers; }
         void SetMinPlayersPerTeam(uint32 MinPlayers) { m_MinPlayersPerTeam = MinPlayers; }

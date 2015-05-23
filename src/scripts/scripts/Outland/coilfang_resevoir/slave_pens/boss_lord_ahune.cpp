@@ -381,7 +381,7 @@ struct npc_ice_spear_bunnyAI : public Scripted_NoMovementAI
             me->setDeathState(JUST_DIED);
             me->RemoveCorpse();
         }
-        _Timer.Update(diff);     // FIXME: not sure about this reverse couting
+        _Timer.Update(diff); 
     }
 
 };

@@ -550,16 +550,15 @@ void Aura::Update(uint32 diff)
     if (!m_target)
         return;
 
-    if (m_duration > 0)
+    if (m_duration.GetInterval() > 0)
     {
-        m_duration -= diff;
-        if (m_duration < 0)
+        if (m_duration.Expired(diff))
             m_duration = 0;
-        m_timeCla -= diff;
+
 
         // GetEffIndex()==0 prevent double/triple apply manaPerSecond/manaPerSecondPerLevel to same spell with many auras
         // all spells with manaPerSecond/manaPerSecondPerLevel have aura in effect 0
-        if (GetEffIndex()==0 && m_timeCla <= 0)
+        if (GetEffIndex() == 0 && m_timeCla.Expired(diff))
         {
             if (Unit* caster = GetCaster())
             {
@@ -626,18 +625,18 @@ void Aura::Update(uint32 diff)
         }
     }
 
-    if (m_heartbeatTimer && m_heartbeatTimer < (m_maxduration - m_duration))
+    if (m_heartbeatTimer.GetInterval() && m_heartbeatTimer.GetTimeLeft() < (m_maxduration - m_duration.GetTimeLeft()))
     {
-        m_heartbeatTimer *= 2;
+        m_heartbeatTimer.Delay(m_heartbeatTimer.GetTimeLeft()); // timer *= 2;
         if (Unit *caster = GetCaster())
             if (caster->MagicSpellHitResult(m_target, m_spellProto) != SPELL_MISS_NONE)
                 m_target->RemoveAurasByCasterSpell(m_spellProto->Id, caster->GetGUID());
     }
 
-    if (m_isPeriodic && (m_duration >= 0 || m_isPassive || m_permanent))
+    if (m_isPeriodic && (m_duration.GetInterval() >= 0 || m_isPassive || m_permanent))
     {
-        m_periodicTimer -= diff;
-        if (m_periodicTimer <= 0)                            // tick also at m_periodicTimer==0 to prevent lost last tick in case max m_duration == (max m_periodicTimer)*N
+        
+        if (m_periodicTimer.Expired(diff))                     //FIXME: this ->    // tick also at m_periodicTimer==0 to prevent lost last tick in case max m_duration == (max m_periodicTimer)*N
         {
             ++m_tickNumber;
 
@@ -652,7 +651,7 @@ void Aura::Update(uint32 diff)
                 return;
             }
             // update before applying (aura can be removed in TriggerSpell or PeriodicTick calls)
-            m_periodicTimer += m_amplitude;//m_modifier.periodictime;
+            m_periodicTimer.Delay(m_amplitude);//m_modifier.periodictime;
 
             if (!m_target->hasUnitState(UNIT_STAT_ISOLATED))
                 PeriodicTick();
@@ -912,7 +911,7 @@ void Aura::UpdateAuraDuration()
         WorldPacket data;
         data.Initialize(SMSG_UPDATE_AURA_DURATION, 1+4);
         data << (uint8)m_auraSlot;
-        data << (uint32)m_duration;
+        data << (uint32)m_duration.GetTimeLeft();
         ((Player *)m_target)->SendPacketToSelf(&data);
 
         data.Initialize(SMSG_SET_EXTRA_AURA_INFO, (8+1+4+4+4));
@@ -2051,7 +2050,7 @@ void Aura::TriggerSpell()
                     // Invisibility
                     case 66:
                     {
-                        if (!m_duration)
+                        if (!m_duration.GetInterval())
                             m_target->CastSpell(m_target, 32612, true, NULL, this);
                         else if (m_tickNumber < 5)
                             m_target->getHostileRefManager().addThreatPercent(-(int32)(100/(6-m_tickNumber)));
@@ -2556,7 +2555,7 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
                 return;
             case 43681:                                     // Inactive
                 m_periodicTimer = sWorld.getConfig(CONFIG_BATTLEGROUND_KICK_AFTER_INACTIVE_TIME) * IN_MILISECONDS;
-                if (m_periodicTimer)
+                if (m_periodicTimer.GetInterval())
                     m_isPeriodic = true;
             case 43873:                                     // Headless Horseman Laugh
                 m_target->PlayDistanceSound(11965);
@@ -5014,8 +5013,8 @@ void Aura::HandleAuraModStalked(bool apply, bool Real)
 
 void Aura::HandlePeriodicTriggerSpell(bool apply, bool Real)
 {
-    if (m_periodicTimer <= 0)
-        m_periodicTimer += m_amplitude;
+    if (m_periodicTimer.GetTimeLeft() <= 0)
+        m_periodicTimer.Delay(m_amplitude);
 
     m_isPeriodic = apply;
 
@@ -5099,16 +5098,16 @@ void Aura::HandlePeriodicTriggerSpell(bool apply, bool Real)
 
 void Aura::HandlePeriodicTriggerSpellWithValue(bool apply, bool Real)
 {
-    if (m_periodicTimer <= 0)
-        m_periodicTimer += m_modifier.periodictime;
+    if (m_periodicTimer.GetTimeLeft() <= 0)
+        m_periodicTimer.Delay(m_modifier.periodictime);
 
     m_isPeriodic = apply;
 }
 
 void Aura::HandlePeriodicEnergize(bool apply, bool Real)
 {
-    if (m_periodicTimer <= 0)
-        m_periodicTimer += m_modifier.periodictime;
+    if (m_periodicTimer.GetTimeLeft() <= 0)
+        m_periodicTimer.Delay(m_modifier.periodictime);
 
     m_isPeriodic = apply;
 
@@ -5118,8 +5117,8 @@ void Aura::HandlePeriodicEnergize(bool apply, bool Real)
 
 void Aura::HandlePeriodicHeal(bool apply, bool Real)
 {
-    if (m_periodicTimer <= 0)
-        m_periodicTimer += m_amplitude;
+    if (m_periodicTimer.GetTimeLeft() <= 0)
+        m_periodicTimer.Delay(m_amplitude);
 
     m_isPeriodic = apply;
 
@@ -5182,8 +5181,8 @@ void Aura::HandlePeriodicDamage(bool apply, bool Real)
     if (!Real)
         return;
 
-    if (m_periodicTimer <= 0)
-        m_periodicTimer += m_amplitude;
+    if (m_periodicTimer.GetTimeLeft() <= 0)
+        m_periodicTimer.Delay(m_amplitude);
 
     m_isPeriodic = apply;
 
@@ -5450,8 +5449,8 @@ void Aura::HandlePeriodicDamage(bool apply, bool Real)
 
 void Aura::HandlePeriodicDamagePCT(bool apply, bool Real)
 {
-    if (m_periodicTimer <= 0)
-        m_periodicTimer += m_modifier.periodictime;
+    if (m_periodicTimer.GetTimeLeft() <= 0)
+        m_periodicTimer.Delay(m_modifier.periodictime);
 
     m_isPeriodic = apply;
 }
@@ -5461,8 +5460,8 @@ void Aura::HandlePeriodicLeech(bool apply, bool Real)
     if (!Real)
         return;
 
-    if (m_periodicTimer <= 0)
-        m_periodicTimer += m_amplitude;
+    if (m_periodicTimer.GetTimeLeft() <= 0)
+        m_periodicTimer.Delay(m_amplitude);
 
     m_isPeriodic = apply;
 
@@ -5476,8 +5475,8 @@ void Aura::HandlePeriodicLeech(bool apply, bool Real)
 
 void Aura::HandlePeriodicManaLeech(bool apply, bool Real)
 {
-    if (m_periodicTimer <= 0)
-        m_periodicTimer += m_amplitude;
+    if (m_periodicTimer.GetTimeLeft() <= 0)
+        m_periodicTimer.Delay(m_amplitude);
 
     m_isPeriodic = apply;
 }
@@ -5803,9 +5802,9 @@ void Aura::HandleAuraModTotalHealthPercentRegen(bool apply, bool Real)
         if ((GetSpellProto()->AuraInterruptFlags & AURA_INTERRUPT_FLAG_NOT_SEATED) && !m_target->IsSitState())
             m_target->SetStandState(PLAYER_STATE_SIT);
 
-        if (m_periodicTimer <= 0)
+        if (m_periodicTimer.GetTimeLeft() <= 0)
         {
-            m_periodicTimer += m_amplitude;
+            m_periodicTimer.Delay(m_amplitude);
 
             if (m_target->GetHealth() < m_target->GetMaxHealth())
             {
@@ -5828,9 +5827,9 @@ void Aura::HandleAuraModTotalManaPercentRegen(bool apply, bool Real)
         if (m_modifier.periodictime == 0)
             m_modifier.periodictime = 1000;
 
-        if (m_periodicTimer <= 0 && m_target->getPowerType() == POWER_MANA)
+        if (m_periodicTimer.GetTimeLeft() <= 0 && m_target->getPowerType() == POWER_MANA)
         {
-            m_periodicTimer += m_amplitude > 0 ? m_amplitude : 1000;
+            m_periodicTimer.Delay(m_amplitude > 0 ? m_amplitude : 1000);
             if (m_target->GetPower(POWER_MANA) < m_target->GetMaxPower(POWER_MANA))
             {
                 // PeriodicTick can cast triggered spells with stats changes
@@ -5852,9 +5851,9 @@ void Aura::HandleModRegen(bool apply, bool Real)            // eating
         if ((GetSpellProto()->AuraInterruptFlags & AURA_INTERRUPT_FLAG_NOT_SEATED)  && !m_target->IsSitState())
             m_target->SetStandState(PLAYER_STATE_SIT);
 
-        if (m_periodicTimer <= 0)
+        if (m_periodicTimer.GetTimeLeft() <= 0)
         {
-            m_periodicTimer += 5000;
+            m_periodicTimer.Delay(5000);
             int32 gain = m_target->ModifyHealth(GetModifierValue());
 
             if (Unit *caster = GetCaster())
@@ -5874,7 +5873,7 @@ void Aura::HandleModPowerRegen(bool apply, bool Real)       // drinking
     if ((GetSpellProto()->AuraInterruptFlags & AURA_INTERRUPT_FLAG_NOT_SEATED) && apply && !m_target->IsSitState())
         m_target->SetStandState(PLAYER_STATE_SIT);
 
-    if (apply && m_periodicTimer <= 0)
+    if (apply && m_periodicTimer.GetTimeLeft() <= 0)
     {
 
         Powers pt = m_target->getPowerType();
@@ -6753,7 +6752,7 @@ void Aura::HandleAuraRetainComboPoints(bool apply, bool Real)
 
     // combo points was added in SPELL_EFFECT_ADD_COMBO_POINTS handler
     // remove only if aura expire by time (in case combo points amount change aura removed without combo points lost)
-    if (!apply && m_duration==0 && target->GetComboTarget())
+    if (!apply && m_duration.GetInterval()==0 && target->GetComboTarget())
         if (Unit* unit = m_target->GetMap()->GetUnit(target->GetComboTarget()))
             target->AddComboPoints(unit, -GetModifierValue());
 }
@@ -6847,8 +6846,8 @@ void Aura::CleanupTriggeredSpells()
 
 void Aura::HandleAuraPowerBurn(bool apply, bool Real)
 {
-    if (m_periodicTimer <= 0)
-        m_periodicTimer += m_modifier.periodictime;
+    if (m_periodicTimer.GetTimeLeft() <= 0)
+        m_periodicTimer.Delay(m_modifier.periodictime);
 
     m_isPeriodic = apply;
 }
@@ -7805,7 +7804,7 @@ void Aura::PeriodicDummyTick()
                 m_target->CastSpell(m_target, 43310, true);
             }
 
-            if((m_maxduration - m_duration) >= 8000
+            if((m_maxduration - m_duration.GetTimeLeft()) >= 8000
                 && (((Player*)m_target)->GetQuestStatus(11318) == QUEST_STATUS_INCOMPLETE || ((Player*)m_target)->GetQuestStatus(11409) == QUEST_STATUS_INCOMPLETE))
             {
                 m_target->CastSpell(m_target, 43345, true);
@@ -7829,7 +7828,7 @@ void Aura::PeriodicDummyTick()
                 m_target->CastSpell(m_target, 42992, true);
             }
 
-            if((m_maxduration - m_duration) >= 8000
+            if((m_maxduration - m_duration.GetTimeLeft()) >= 8000
                 && (((Player*)m_target)->GetQuestStatus(11318) == QUEST_STATUS_INCOMPLETE || ((Player*)m_target)->GetQuestStatus(11409) == QUEST_STATUS_INCOMPLETE))
             {
                 m_target->CastSpell(m_target, 43346, true);
@@ -7860,7 +7859,7 @@ void Aura::PeriodicDummyTick()
                 m_target->CastSpell(m_target, 42993, true);
             }
 
-            if((m_maxduration - m_duration) >= 8000
+            if((m_maxduration - m_duration.GetTimeLeft()) >= 8000
                 && (((Player*)m_target)->GetQuestStatus(11318) == QUEST_STATUS_INCOMPLETE || ((Player*)m_target)->GetQuestStatus(11409) == QUEST_STATUS_INCOMPLETE))
             {
                 m_target->CastSpell(m_target, 43347, true);

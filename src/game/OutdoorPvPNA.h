@@ -274,8 +274,8 @@ private:
     uint32 m_WyvernStateEast;
     uint32 m_WyvernStateWest;
     uint32 m_HalaaState;
-    int32 m_RespawnTimer;
-    int32 m_GuardCheckTimer;
+    Timer m_RespawnTimer;
+    Timer m_GuardCheckTimer;
 };
 
 class OutdoorPvPNA : public OutdoorPvP

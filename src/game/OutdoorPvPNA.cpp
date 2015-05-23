@@ -546,10 +546,10 @@ bool OPvPCapturePointNA::Update(uint32 diff)
     else if (m_ControllingFaction == HORDE && m_activePlayers[0].size() < m_activePlayers[1].size())
         capturable = true;
 
-    m_GuardCheckTimer -= diff;
-    if (m_GuardCheckTimer <= diff)
+    
+    if (m_GuardCheckTimer.Expired(diff))
     {
-        m_GuardCheckTimer += NA_GUARD_CHECK_TIME;
+        m_GuardCheckTimer = NA_GUARD_CHECK_TIME;
         uint32 cnt = GetAliveGuardsCount();
         if (cnt != m_GuardsAlive)
         {
@@ -563,14 +563,13 @@ bool OPvPCapturePointNA::Update(uint32 diff)
 
     if (m_capturable || capturable)
     {
-        m_RespawnTimer -= diff;
-        if (m_RespawnTimer <= diff)
+        if (m_RespawnTimer.Expired(diff))
         {
             // if the guards have been killed, then the challenger has one hour to take over halaa.
             // in case they fail to do it, the guards are respawned, and they have to start again.
             if (m_ControllingFaction)
                 FactionTakeOver(m_ControllingFaction);
-            m_RespawnTimer += NA_RESPAWN_TIME;
+            m_RespawnTimer = NA_RESPAWN_TIME;
         } 
 
         return OPvPCapturePoint::Update(diff);

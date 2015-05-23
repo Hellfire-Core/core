@@ -645,7 +645,7 @@ class HELLGROUND_IMPORT_EXPORT CreatureEventAI : public CreatureAI
 
                                                             //Holder for events (stores enabled, time, and eventid)
         std::list<CreatureEventAIHolder> CreatureEventAIList;
-        uint32 EventUpdateTime;                             //Time between event updates
+        Timer EventUpdateTime;                             //Time between event updates
         uint32 EventDiff;                                   //Time between the last event call
         bool bEmptyList;
 

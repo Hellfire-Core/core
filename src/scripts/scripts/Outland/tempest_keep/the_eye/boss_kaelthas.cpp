@@ -711,7 +711,7 @@ struct boss_kaelthasAI : public ScriptedAI
                 if(!m_creature->getThreatManager().getThreatList().empty() && (Phase == 1 || Phase == 2 || Phase == 3))        //threat reseting up to phase 4
                     DoResetThreat();
 
-                Check_Timer = 3000;  //temporary, lets see if lowers stress a bit
+                Check_Timer = 1000; 
             }
         }
 
@@ -1112,9 +1112,6 @@ struct boss_kaelthasAI : public ScriptedAI
                         }
                     }
                 }
-                else
-                    //Check_Timer -= 5000;
-                    Check_Timer.Update(5000); //FIXME: Is this correct? or should be completely deleted?
 
                 //Animation timer
                 if(Phase == 5)
