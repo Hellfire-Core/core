@@ -196,7 +196,7 @@ struct npc_dancing_flamesAI : public ScriptedAI
         if (!active && CanIteractTimer.Expired(diff))
         {
             active = true;
-            can_iteract = 3500;
+            CanIteractTimer = 3500;
             me->HandleEmoteCommand(EMOTE_ONESHOT_DANCE);
         }
     }

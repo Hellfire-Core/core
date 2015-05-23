@@ -43,12 +43,12 @@ struct boss_ouroAI : public ScriptedAI
 
     ScriptedInstance *pInstance;
 
-     Sweep_Timer;
-     SandBlast_Timer;
-     Submerge_Timer;
-     Back_Timer;
-     ChangeTarget_Timer;
-     Spawn_Timer;
+    Timer Sweep_Timer;
+    Timer SandBlast_Timer;
+    Timer Submerge_Timer;
+    Timer Back_Timer;
+    Timer ChangeTarget_Timer;
+    Timer Spawn_Timer;
 
     bool Enrage;
     bool Submerged;

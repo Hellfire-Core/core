@@ -1874,7 +1874,7 @@ struct boss_illidan_shadowdemonAI : public ScriptedAI
     {
         if (m_targetGUID)
         {
-            if (m_checkTimer <= diff)
+            if (m_checkTimer.Expired(diff))
             {
                 Unit *pUnit = me->GetUnit(m_targetGUID);
                 if (!pUnit || pUnit->isDead() || pUnit->HasAuraType(SPELL_AURA_SPIRIT_OF_REDEMPTION))

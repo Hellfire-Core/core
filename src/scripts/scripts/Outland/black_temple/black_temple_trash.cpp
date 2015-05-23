@@ -555,7 +555,7 @@ struct mob_coilskar_wranglerAI : public ScriptedAI
         }
 
 
-        if (ElectricSpur && ElectricSpur.Expired(diff))
+        if (ElectricSpur.Expired(diff))
         {
             Unit* target = NULL;
             AddSpellToCast(target, SPELL_ELECTRIC_SPUR, false);
@@ -2303,12 +2303,15 @@ struct mob_illidari_nightlordAI : public ScriptedAI
 
         if (ShadowInferno.Expired(diff))
         {
-            if (Fear < 8200)
-                Fear += 8000;
-            if (CurseOfMending < 8200)
-                CurseOfMending += 8000;
-            if (Shadowfiends < 8200)
-                Shadowfiends += 8000;
+            if (Fear.GetTimeLeft() < 8200)
+                Fear.Delay(8000);
+
+            if (CurseOfMending.GetTimeLeft() < 8200)
+                CurseOfMending.Delay(8000);
+
+            if (Shadowfiends.GetTimeLeft() < 8200)
+                Shadowfiends.Delay(8000);
+
             ForceSpellCast(me, SPELL_SHADOW_INFERNO);
             ShadowInferno = 20000;
         }
@@ -4824,7 +4827,7 @@ enum TempleConcubine
     SPELL_LOVE_TAP = 41338
 };
 
-#define YELL_TEMPLE_CONCUBINE "Business… or pleasure?"
+#define YELL_TEMPLE_CONCUBINE "Business... or pleasure?"
 
 struct mob_temple_concubineAI : public ScriptedAI
 {

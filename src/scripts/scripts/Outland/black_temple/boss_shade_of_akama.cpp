@@ -173,9 +173,9 @@ struct mob_ashtongue_defenderAI : public ScriptedAI
 
     ScriptedInstance* instance;
 
-     m_debilStrikeTimer;
-     m_shieldBashTimer;
-     m_checkTimer;
+    Timer m_debilStrikeTimer;
+    Timer m_shieldBashTimer;
+    Timer m_checkTimer;
 
     void Reset()
     {

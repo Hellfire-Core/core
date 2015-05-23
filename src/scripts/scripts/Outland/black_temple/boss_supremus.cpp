@@ -335,9 +335,6 @@ struct npc_volcanoAI : public Scripted_NoMovementAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!CastTimer)
-            return;
-
         if (CastTimer.Expired(diff))
         {
             m_creature->CastSpell(m_creature, SPELL_VOLCANIC_ERUPTION, false);
