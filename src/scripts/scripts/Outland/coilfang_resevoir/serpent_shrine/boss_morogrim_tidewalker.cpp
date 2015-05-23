@@ -89,10 +89,10 @@ struct boss_morogrim_tidewalkerAI : public ScriptedAI
 
     ScriptedInstance* pInstance;
 
-    uint32 TidalWave_Timer;
-    uint32 WateryGrave_Timer;
-    uint32 Earthquake_Timer;
-    uint32 WateryGlobules_Timer;
+    Timer TidalWave_Timer;
+    Timer WateryGrave_Timer;
+    Timer Earthquake_Timer;
+    Timer WateryGlobules_Timer;
 
     WorldLocation wLoc;
 
@@ -138,7 +138,7 @@ struct boss_morogrim_tidewalkerAI : public ScriptedAI
         DoSpecialThings(diff, DO_EVERYTHING, 135.0f);
 
         //Earthquake_Timer
-        if (Earthquake_Timer <= diff)
+        if (Earthquake_Timer.Expired(diff))
         {
             if (!Earthquake)
             {
@@ -166,22 +166,20 @@ struct boss_morogrim_tidewalkerAI : public ScriptedAI
                 Earthquake_Timer = urand(40000, 45000);
             }
         }
-        else
-            Earthquake_Timer -= diff;
+        
 
         //TidalWave_Timer
-        if (TidalWave_Timer <= diff)
+        if (TidalWave_Timer.Expired(diff))
         {
             AddSpellToCast(SPELL_TIDAL_WAVE, CAST_NULL);
             TidalWave_Timer = 20000;
         }
-        else
-            TidalWave_Timer -= diff;
+        
 
         if (!Phase2)
         {
             //WateryGrave_Timer
-            if (WateryGrave_Timer <= diff)
+            if (WateryGrave_Timer.Expired(diff))
             {
                 //Teleport 4 players under the waterfalls
                 std::list<Unit*> tmpList;
@@ -195,9 +193,7 @@ struct boss_morogrim_tidewalkerAI : public ScriptedAI
                 DoScriptText(EMOTE_WATERY_GRAVE, m_creature);
                 WateryGrave_Timer = 30000;
             }
-            else
-                WateryGrave_Timer -= diff;
-
+           
             //Start Phase2
             if (HealthBelowPct(25))
                 Phase2 = true;
@@ -205,7 +201,7 @@ struct boss_morogrim_tidewalkerAI : public ScriptedAI
         else
         {
             //WateryGlobules_Timer
-            if (WateryGlobules_Timer <= diff)
+            if (WateryGlobules_Timer.Expired(diff))
             {
                 std::list<Unit*> tmpList;
                 SelectUnitList(tmpList, 4, SELECT_TARGET_RANDOM, 200.0f, true, me->getVictimGUID());
@@ -217,8 +213,6 @@ struct boss_morogrim_tidewalkerAI : public ScriptedAI
                 DoScriptText(EMOTE_WATERY_GLOBULES, m_creature);
                 WateryGlobules_Timer = 25000;
             }
-            else
-                WateryGlobules_Timer -= diff;
         }
 
         CastNextSpellIfAnyAndReady();
@@ -236,7 +230,7 @@ struct mob_water_globuleAI : public ScriptedAI
         c->GetPosition(wLoc);
     }
 
-    uint32 Check_Timer;
+    Timer Check_Timer;
     WorldLocation wLoc;
 
     void Reset()
@@ -269,7 +263,7 @@ struct mob_water_globuleAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (Check_Timer <= diff)
+        if (Check_Timer.Expired(diff))
         {
             if (!m_creature->IsWithinDistInMap(&wLoc, 85.0f))
             {
@@ -285,8 +279,6 @@ struct mob_water_globuleAI : public ScriptedAI
 
             Check_Timer = 1000;
         }
-        else
-            Check_Timer -= diff;
 
         //do NOT deal any melee damage to the target.
     }

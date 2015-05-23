@@ -118,14 +118,14 @@ struct boss_fathomlord_karathressAI : public ScriptedAI
 
     ScriptedInstance* pInstance;
 
-    uint32 PulseCombat_Timer;
-    uint32 CataclysmicBolt_Timer;
-    uint32 Enrage_Timer;
-    uint32 SearNova_Timer;
+    Timer PulseCombat_Timer;
+    Timer CataclysmicBolt_Timer;
+    Timer Enrage_Timer;
+    Timer SearNova_Timer;
     bool ExtraAbility[3];
 
-    uint32 TidalSurge_Timer;
-    uint32 AuraCheck_Timer;
+    Timer TidalSurge_Timer;
+    Timer AuraCheck_Timer;
 
     bool BlessingOfTides;
     uint8 BlessingOfTidesCounter;
@@ -268,7 +268,7 @@ struct boss_fathomlord_karathressAI : public ScriptedAI
         }
 
         //Aura Check
-        if(AuraCheck_Timer <= diff)
+        if(AuraCheck_Timer.Expired(diff))
         {
             if(!m_creature->IsWithinDistInMap(&wLoc, 135.0f))
                 EnterEvadeMode();
@@ -283,30 +283,27 @@ struct boss_fathomlord_karathressAI : public ScriptedAI
 
             AuraCheck_Timer = 3000;
         }
-        else
-            AuraCheck_Timer -= diff;
+        
 
         //TidalSurge_Timer
         if(ExtraAbility[2])
         {
-            if (TidalSurge_Timer <= diff)
+            if (TidalSurge_Timer.Expired(diff))
             {
                 Unit *who = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_TIDAL_SURGE), true, m_creature->getVictimGUID());
 
-                if(who && who->isAlive())
+                if (who && who->isAlive())
                 {
                     DoCast(who, SPELL_TIDAL_SURGE);
-                    who->CastSpell( who, SPELL_TIDAL_SURGE_FREEZE, true );
+                    who->CastSpell(who, SPELL_TIDAL_SURGE_FREEZE, true);
                 }
 
-                TidalSurge_Timer = 15000+rand()%5000;
+                TidalSurge_Timer = 15000 + rand() % 5000;
             }
-            else
-                TidalSurge_Timer -= diff;
         }
 
         //CataclysmicBolt_Timer
-        if(CataclysmicBolt_Timer <= diff)
+        if (CataclysmicBolt_Timer.Expired(diff))
         {
             //if there aren't other units, cast on the tank
             if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_CATACLYSMIC_BOLT), true, m_creature->getVictimGUID()))
@@ -316,26 +313,22 @@ struct boss_fathomlord_karathressAI : public ScriptedAI
 
             CataclysmicBolt_Timer = 10000;
         }
-        else
-            CataclysmicBolt_Timer -= diff;
-
+        
         //SearNova_Timer
-        if(SearNova_Timer <= diff)
+        if (SearNova_Timer.Expired(diff))
         {
             DoCast(m_creature->getVictim(), SPELL_SEAR_NOVA);
             SearNova_Timer = 20000+rand()%40000;
         }
-        else
-            SearNova_Timer -= diff;
+        
 
         //Enrage_Timer
-        if(Enrage_Timer <= diff)
+        if (Enrage_Timer.Expired(diff))
         {
             DoCast(m_creature, SPELL_ENRAGE);
             Enrage_Timer = 600000;
         }
-        else
-            Enrage_Timer -= diff;
+        
 
         //Blessing of Tides Trigger
         if((m_creature->GetHealth()*100 / m_creature->GetMaxHealth()) <= 75 && !BlessingOfTides)
@@ -381,10 +374,10 @@ struct boss_fathomguard_sharkkisAI : public ScriptedAI
 
     ScriptedInstance* pInstance;
 
-    uint32 LeechingThrow_Timer;
-    uint32 TheBeastWithin_Timer;
-    uint32 Multishot_Timer;
-    uint32 Pet_Timer;
+    Timer LeechingThrow_Timer;
+    Timer TheBeastWithin_Timer;
+    Timer Multishot_Timer;
+    Timer Pet_Timer;
 
     bool pet;
 
@@ -451,27 +444,25 @@ struct boss_fathomguard_sharkkisAI : public ScriptedAI
         }
 
         //LeechingThrow_Timer
-        if(LeechingThrow_Timer <= diff)
+        if (LeechingThrow_Timer.Expired(diff))
         {
             if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0,GetSpellMaxRange(SPELL_LEECHING_THROW),true))
                 DoCast(target, SPELL_LEECHING_THROW);
 
             LeechingThrow_Timer = 20000;
         }
-        else
-            LeechingThrow_Timer -= diff;
+        
 
         //Multishot_Timer
-        if(Multishot_Timer <= diff)
+        if (Multishot_Timer.Expired(diff))
         {
             DoCast(m_creature->getVictim(), SPELL_MULTISHOT);
             Multishot_Timer = 10000;
         }
-        else
-            Multishot_Timer -= diff;
+        
 
         //TheBeastWithin_Timer
-        if(TheBeastWithin_Timer <= diff)
+        if (TheBeastWithin_Timer.Expired(diff))
         {
             DoCast(m_creature, SPELL_THE_BEAST_WITHIN);
             Creature *pet = Unit::GetCreature(*m_creature, pInstance->GetData64(DATA_SHARKKIS_PET));
@@ -480,19 +471,15 @@ struct boss_fathomguard_sharkkisAI : public ScriptedAI
 
             TheBeastWithin_Timer = 30000;
         }
-        else
-            TheBeastWithin_Timer -= diff;
+        
 
         if(!pet)
         {
-            if(Pet_Timer <= diff)
+            if (Pet_Timer.Expired(diff))
             {
                 pet = true;
-//                me->Say("Summoning pet", 0, 0);
                 DoCast(m_creature, SpellID[rand()%2], true);
             }
-            else
-                Pet_Timer -= diff;
         }
 
         DoMeleeAttackIfReady();
@@ -509,10 +496,10 @@ struct boss_fathomguard_tidalvessAI : public ScriptedAI
 
     ScriptedInstance* pInstance;
 
-    uint32 FrostShock_Timer;
-    uint32 Spitfire_Timer;
-    uint32 PoisonCleansing_Timer;
-    uint32 Earthbind_Timer;
+    Timer FrostShock_Timer;
+    Timer Spitfire_Timer;
+    Timer PoisonCleansing_Timer;
+    Timer Earthbind_Timer;
 
     void Reset()
     {
@@ -565,16 +552,15 @@ struct boss_fathomguard_tidalvessAI : public ScriptedAI
             DoCast(m_creature, SPELL_WINDFURY_WEAPON);
 
         //FrostShock_Timer
-        if (FrostShock_Timer <= diff)
+        if (FrostShock_Timer.Expired(diff))
         {
             DoCast(m_creature->getVictim(), SPELL_FROST_SHOCK);
             FrostShock_Timer = 25000+rand()%5000;
         }
-        else
-            FrostShock_Timer -= diff;
+        
 
         //Spitfire_Timer
-        if(Spitfire_Timer <= diff)
+        if (Spitfire_Timer.Expired(diff))
         {
             DoCast(m_creature, SPELL_SPITFIRE_TOTEM);
             Unit *SpitfireTotem = Unit::GetUnit( *m_creature, CREATURE_SPITFIRE_TOTEM );
@@ -583,26 +569,23 @@ struct boss_fathomguard_tidalvessAI : public ScriptedAI
 
             Spitfire_Timer = 60000;
         }
-        else
-            Spitfire_Timer -= diff;
+        
 
         //PoisonCleansing_Timer
-        if(PoisonCleansing_Timer <= diff)
+        if (PoisonCleansing_Timer.Expired(diff))
         {
             DoCast(m_creature, SPELL_POISON_CLEANSING_TOTEM);
             PoisonCleansing_Timer = 30000;
         }
-        else
-            PoisonCleansing_Timer -= diff;
+        
 
         //Earthbind_Timer
-        if(Earthbind_Timer <= diff)
+        if (Earthbind_Timer.Expired(diff))
         {
             DoCast(m_creature, SPELL_EARTHBIND_TOTEM);
             Earthbind_Timer = 45000;
         }
-        else
-            Earthbind_Timer -= diff;
+        
 
         DoMeleeAttackIfReady();
     }
@@ -618,10 +601,10 @@ struct boss_fathomguard_caribdisAI : public ScriptedAI
 
     ScriptedInstance* pInstance;
 
-    uint32 WaterBoltVolley_Timer;
-    uint32 TidalSurge_Timer;
-    uint32 Heal_Timer;
-    uint32 Cyclone_Timer;
+    Timer WaterBoltVolley_Timer;
+    Timer TidalSurge_Timer;
+    Timer Heal_Timer;
+    Timer Cyclone_Timer;
 
     void Reset()
     {
@@ -685,16 +668,15 @@ struct boss_fathomguard_caribdisAI : public ScriptedAI
         }
 
         //WaterBoltVolley_Timer
-        if (WaterBoltVolley_Timer <= diff)
+        if (WaterBoltVolley_Timer.Expired(diff))
         {
             DoCast(m_creature->getVictim(), SPELL_WATER_BOLT_VOLLEY);
             WaterBoltVolley_Timer = 30000;
         }
-        else
-            WaterBoltVolley_Timer -= diff;
+
 
         //TidalSurge_Timer
-        if(TidalSurge_Timer <= diff)
+        if (TidalSurge_Timer.Expired(diff))
         {
             if(Unit *target = m_creature->getVictim())
             {
@@ -703,11 +685,10 @@ struct boss_fathomguard_caribdisAI : public ScriptedAI
             }
             TidalSurge_Timer = 15000+rand()%5000;
         }
-        else
-            TidalSurge_Timer -= diff;
+
 
         //Cyclone_Timer
-        if(Cyclone_Timer <= diff)
+        if (Cyclone_Timer.Expired(diff))
         {
             //DoCast(m_creature, SPELL_SUMMON_CYCLONE); // Doesn't work
             Cyclone_Timer = 30000+rand()%10000;
@@ -720,11 +701,10 @@ struct boss_fathomguard_caribdisAI : public ScriptedAI
                 Cyclone->CastSpell(Cyclone, 32332, true);
             }
         }
-        else
-            Cyclone_Timer -= diff;
+        
 
         //Heal_Timer
-        if(Heal_Timer <= diff)
+        if (Heal_Timer.Expired(diff))
         {
             // It can be cast on any of the mobs
             Unit *pUnit = NULL;
@@ -737,8 +717,7 @@ struct boss_fathomguard_caribdisAI : public ScriptedAI
 
             Heal_Timer = 60000;
         }
-        else
-            Heal_Timer -= diff;
+        
 
         DoMeleeAttackIfReady();
     }
@@ -748,8 +727,8 @@ struct mob_caribdis_cycloneAI : public ScriptedAI
 {
     mob_caribdis_cycloneAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 Check_Timer;
-    uint32 Swap_Timer;
+    Timer Check_Timer;
+    Timer Swap_Timer;
 
     void Reset()
     {
@@ -768,7 +747,7 @@ struct mob_caribdis_cycloneAI : public ScriptedAI
         if (!UpdateVictim() )
             return;
 
-        if(Swap_Timer <= diff)
+        if (Swap_Timer.Expired(diff))
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_FARTHEST, 0, 100, true))
             {
@@ -781,10 +760,9 @@ struct mob_caribdis_cycloneAI : public ScriptedAI
                 Swap_Timer = 5000;
             }
         }
-        else
-            Swap_Timer -= diff;
+        
 
-        if(Check_Timer <= diff)
+        if (Check_Timer.Expired(diff))
         {
             Map* pMap = m_creature->GetMap();
             Map::PlayerList const &PlayerList = pMap->GetPlayers();
@@ -792,18 +770,16 @@ struct mob_caribdis_cycloneAI : public ScriptedAI
             {
                 for (Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
                 {
-                    if(m_creature->IsWithinMeleeRange(i->getSource()))
+                    if (m_creature->IsWithinMeleeRange(i->getSource()))
                     {
                         Player *p = i->getSource();
-                        if(!p->HasAura(SPELL_CYCLONE_CYCLONE, 0))
+                        if (!p->HasAura(SPELL_CYCLONE_CYCLONE, 0))
                             DoCast(p, SPELL_CYCLONE_CYCLONE);
                     }
                 }
             }
             Check_Timer = 500;
         }
-        else
-            Check_Timer -= diff;
     }
 };
 

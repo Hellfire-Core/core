@@ -87,15 +87,15 @@ struct boss_hydross_the_unstableAI : public ScriptedAI
 
     ScriptedInstance* pInstance;
     uint64 beams[2];
-    uint32 PosCheck_Timer;
-    uint32 PulseCombat_Timer;
-    uint32 MarkOfHydross_Timer;
-    uint32 MarkOfCorruption_Timer;
-    uint32 WaterTomb_Timer;
-    uint32 VileSludge_Timer;
-    uint32 MarkOfHydross_Count;
-    uint32 MarkOfCorruption_Count;
-    uint32 EnrageTimer;
+    Timer PosCheck_Timer;
+    Timer PulseCombat_Timer;
+    Timer MarkOfHydross_Timer;
+    Timer MarkOfCorruption_Timer;
+    Timer WaterTomb_Timer;
+    Timer VileSludge_Timer;
+    Timer MarkOfHydross_Count;
+    Timer MarkOfCorruption_Count;
+    Timer EnrageTimer;
     bool CorruptedForm;
     bool beam;
     SummonList Summons;
@@ -222,7 +222,7 @@ struct boss_hydross_the_unstableAI : public ScriptedAI
         if (!UpdateVictim() )
             return;
 
-        if(PulseCombat_Timer <= diff)
+        if (PulseCombat_Timer.Expired(diff))
         {
             if(m_creature->GetDistance2d(wLoc.coord_x, wLoc.coord_y) < 100.0)
                 DoZoneInCombat();
@@ -232,14 +232,12 @@ struct boss_hydross_the_unstableAI : public ScriptedAI
             PulseCombat_Timer = 3000;
             me->SetSpeed(MOVE_RUN, 3.0);
         }
-        else
-            PulseCombat_Timer -= diff;
 
         // corrupted form
         if (CorruptedForm)
         {
             //MarkOfCorruption_Timer
-            if (MarkOfCorruption_Timer <= diff)
+            if (MarkOfCorruption_Timer.Expired(diff))
             {
                 if (MarkOfCorruption_Count <= 5)
                 {
@@ -263,22 +261,20 @@ struct boss_hydross_the_unstableAI : public ScriptedAI
 
                 MarkOfCorruption_Timer = 15000;
             }
-            else
-                MarkOfCorruption_Timer -= diff;
+            
 
             //VileSludge_Timer
-            if (VileSludge_Timer <= diff)
+            if (VileSludge_Timer.Expired(diff))
             {
                 if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_VILE_SLUDGE), true))
                     DoCast(target, SPELL_VILE_SLUDGE);
 
                 VileSludge_Timer = 15000;
             }
-            else
-                VileSludge_Timer -= diff;
+            
 
             //PosCheck_Timer
-            if (PosCheck_Timer <= diff)
+            if (PosCheck_Timer.Expired(diff))
             {
                 if (m_creature->GetDistance2d(HYDROSS_X, HYDROSS_Y) < SWITCH_RADIUS)
                 {
@@ -304,14 +300,12 @@ struct boss_hydross_the_unstableAI : public ScriptedAI
 
                 PosCheck_Timer = 2500;
             }
-            else
-                PosCheck_Timer -=diff;
         }
         // clean form
         else
         {
             //MarkOfHydross_Timer
-            if (MarkOfHydross_Timer <= diff)
+            if (MarkOfHydross_Timer.Expired(diff))
             {
                 if (MarkOfHydross_Count <= 5)
                 {
@@ -335,22 +329,20 @@ struct boss_hydross_the_unstableAI : public ScriptedAI
 
                 MarkOfHydross_Timer = 15000;
             }
-            else
-                MarkOfHydross_Timer -= diff;
+            
 
             //WaterTomb_Timer
-            if(WaterTomb_Timer <= diff)
+            if (WaterTomb_Timer.Expired(diff))
             {
                 if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0,GetSpellMaxRange(SPELL_WATER_TOMB), true))
                     DoCast(target, SPELL_WATER_TOMB);
 
                 WaterTomb_Timer = 7000;
             }
-            else
-                WaterTomb_Timer -= diff;
+
 
             //PosCheck_Timer
-            if (PosCheck_Timer <= diff)
+            if (PosCheck_Timer.Expired(diff))
             {
                 if (m_creature->GetDistance2d(HYDROSS_X, HYDROSS_Y) >= SWITCH_RADIUS)
                 {
@@ -375,15 +367,15 @@ struct boss_hydross_the_unstableAI : public ScriptedAI
                 }
 
                 PosCheck_Timer = 2500;
-            }else PosCheck_Timer -=diff;
+            }
         }
 
         //EnrageTimer
-        if (EnrageTimer <= diff)
+        if (EnrageTimer.Expired(diff))
         {
             DoCast(m_creature, SPELL_ENRAGE);
             EnrageTimer = 60000;
-        }else EnrageTimer -= diff;
+        }
 
         DoMeleeAttackIfReady();
     }

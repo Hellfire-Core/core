@@ -83,12 +83,12 @@ struct mobs_nether_drakeAI : public ScriptedAI
     mobs_nether_drakeAI(Creature* creature) : ScriptedAI(creature) {}
 
     bool IsNihil;
-    uint32 NihilSpeech_Timer;
+    Timer NihilSpeech_Timer;
     uint32 NihilSpeech_Phase;
 
-    uint32 ArcaneBlast_Timer;
-    uint32 ManaBurn_Timer;
-    uint32 IntangiblePresence_Timer;
+    Timer ArcaneBlast_Timer;
+    Timer ManaBurn_Timer;
+    Timer IntangiblePresence_Timer;
 
     void Reset()
     {
@@ -160,7 +160,7 @@ struct mobs_nether_drakeAI : public ScriptedAI
         {
             if (NihilSpeech_Phase)
             {
-                if (NihilSpeech_Timer <= diff)
+                if (NihilSpeech_Timer.Expired(diff))
                 {
                     switch (NihilSpeech_Phase)
                     {
@@ -190,8 +190,6 @@ struct mobs_nether_drakeAI : public ScriptedAI
                     }
                     NihilSpeech_Timer = 5000;
                 }
-                else
-                    NihilSpeech_Timer -=diff;
             }
             return;                                         //anything below here is not interesting for Nihil, so skip it
         }
@@ -199,31 +197,28 @@ struct mobs_nether_drakeAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (IntangiblePresence_Timer <= diff)
+        if (IntangiblePresence_Timer.Expired(diff))
         {
             DoCast(me->getVictim(),SPELL_INTANGIBLE_PRESENCE);
             IntangiblePresence_Timer = 15000+rand()%15000;
         }
-        else
-            IntangiblePresence_Timer -= diff;
 
-        if (ManaBurn_Timer <= diff)
+
+        if (ManaBurn_Timer.Expired(diff))
         {
             Unit* target = me->getVictim();
             if (target && target->getPowerType() == POWER_MANA)
                 DoCast(target,SPELL_MANA_BURN);
             ManaBurn_Timer = 8000+rand()%8000;
         }
-        else
-            ManaBurn_Timer -= diff;
 
-        if (ArcaneBlast_Timer <= diff)
+
+        if (ArcaneBlast_Timer.Expired(diff))
         {
             DoCast(me->getVictim(),SPELL_ARCANE_BLAST);
             ArcaneBlast_Timer = 2500+rand()%5000;
         }
-        else
-            ArcaneBlast_Timer -= diff;
+        
 
         DoMeleeAttackIfReady();
     }
@@ -450,7 +445,7 @@ struct npc_vim_bunnyAI : public ScriptedAI
 {
     npc_vim_bunnyAI(Creature* creature) : ScriptedAI(creature){}
 
-    uint32 CheckTimer;
+    Timer CheckTimer;
 
     void Reset()
     {
@@ -469,7 +464,7 @@ struct npc_vim_bunnyAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (CheckTimer <= diff)
+        if (CheckTimer.Expired(diff))
         {
             if (me->GetDistance2d(3279.80f, 4639.76f) < 5.0)
             {
@@ -501,8 +496,6 @@ struct npc_vim_bunnyAI : public ScriptedAI
                 CheckTimer = 2000;
             }
         }
-        else
-            CheckTimer -= diff;
     }
 };
 
@@ -1406,7 +1399,7 @@ struct npc_razaan_eventAI : public ScriptedAI
 
     bool Check;
 
-    uint32 CheckTimer;
+    Timer CheckTimer;
     uint32 Count;
 
     void Reset()
@@ -1438,7 +1431,7 @@ struct npc_razaan_eventAI : public ScriptedAI
     {
         if (Check)
         {
-            if (CheckTimer <= diff)
+            if (CheckTimer.Expired(diff))
             {
                 if (Creature* razaan = GetClosestCreatureWithEntry(me, NPC_RAZAAN, 75.0f, true))
                 {
@@ -1448,12 +1441,11 @@ struct npc_razaan_eventAI : public ScriptedAI
                 else
                 {
                     if (Creature* razaan = GetClosestCreatureWithEntry(me, NPC_RAZAAN, 75.0f, false))
-                        me->SummonGameObject(GO_SOULS, razaan->GetPositionX(), razaan->GetPositionY(), razaan->GetPositionZ()+3.0f, razaan->GetOrientation(), 0, 0, 0, 0, 50);
+                        me->SummonGameObject(GO_SOULS, razaan->GetPositionX(), razaan->GetPositionY(), razaan->GetPositionZ() + 3.0f, razaan->GetOrientation(), 0, 0, 0, 0, 50);
 
                     Reset();
                 }
             }
-            else CheckTimer -= diff;
         }
     }
 };
@@ -1481,8 +1473,8 @@ struct npc_razaani_raiderAI : public ScriptedAI
     npc_razaani_raiderAI(Creature* creature) : ScriptedAI(creature) {}
 
     uint64 PlayerGUID;
-    uint32 FlareTimer;
-    uint32 WarpTimer;
+    Timer FlareTimer;
+    Timer WarpTimer;
 
     void Reset()
     {
@@ -1537,19 +1529,18 @@ struct npc_razaani_raiderAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (FlareTimer <= diff)
+        if (FlareTimer.Expired(diff))
         {
             DoCast (me->getVictim(), SPELL_FLARE);
             FlareTimer = urand(9000, 14000);
         }
-        else FlareTimer -= diff;
 
-        if (WarpTimer <= diff)
+
+        if (WarpTimer.Expired(diff))
         {
-            DoCast (me->getVictim(), SPELL_WARP);
+            DoCast(me->getVictim(), SPELL_WARP);
             WarpTimer = urand(14000, 18000);
         }
-        else WarpTimer -= diff;
 
         DoMeleeAttackIfReady();
     }
@@ -1603,8 +1594,8 @@ struct npc_rally_zapnabberAI : public ScriptedAI
     bool Flight;
 
     uint64 playerGUID;
-    uint32 FlightTimer;
-    uint32 EffectTimer;
+    Timer FlightTimer;
+    Timer EffectTimer;
     uint8 flights;
     uint8 Count;
 
@@ -1705,7 +1696,7 @@ struct npc_rally_zapnabberAI : public ScriptedAI
     {
         if (Flight)
         {
-            if (EffectTimer <= diff)
+            if (EffectTimer.Expired(diff))
             {
                 Map* tmpMap = me->GetMap();
 
@@ -1733,13 +1724,10 @@ struct npc_rally_zapnabberAI : public ScriptedAI
                 EffectTimer = 3000;
  
             }
-            else EffectTimer -= diff;
 
-            if (FlightTimer <= diff)
-            {
+
+            if (FlightTimer.Expired(diff))
                 Flights();
-            }
-            else FlightTimer -= diff;
         }
 
         DoMeleeAttackIfReady();
@@ -1941,7 +1929,7 @@ struct npc_cannon_targetAI : public ScriptedAI
 
     uint64 PlayerGUID;
     uint64 CannonGUID;
-    uint32 PartyTimer;
+    Timer PartyTimer;
     uint8 Count;
 
     void Reset() 
@@ -2011,7 +1999,7 @@ struct npc_cannon_targetAI : public ScriptedAI
     {
         if (PartyTime)
         {
-            if (PartyTimer <= diff)
+            if (PartyTimer.Expired(diff))
             {
                 if (Creature* cannon = me->GetCreature(CannonGUID))
                 {
@@ -2026,7 +2014,6 @@ struct npc_cannon_targetAI : public ScriptedAI
 
                 PartyTimer = 3000;
             }
-            else PartyTimer -= diff;
         }
     }
 };
@@ -2122,8 +2109,8 @@ struct npc_soulgrinderAI : public ScriptedAI
     bool DoSpawns;
 
     SummonList summons;
-    uint32 SpawnTimer;
-    uint32 BeamTimer;
+    Timer SpawnTimer;
+    Timer BeamTimer;
     uint8 Count;
     uint64 PlayerGUID;
     uint64 SkullocGUID;
@@ -2261,16 +2248,15 @@ struct npc_soulgrinderAI : public ScriptedAI
     {
         if (DoSpawns)
         {            
-            if (SpawnTimer <= diff)
+            if (SpawnTimer.Expired(diff))
             {
                 DoSpawn();
 
                 SpawnTimer = 20000;
             }
-            else SpawnTimer -= diff;
         }
 
-        if (BeamTimer <= diff)
+        if (BeamTimer.Expired(diff))
         {
             Beam();
 
@@ -2278,7 +2264,6 @@ struct npc_soulgrinderAI : public ScriptedAI
                 BeamTimer = 5000;
             else BeamTimer = 80000;
         }
-        else BeamTimer -= diff;
     }
 };
 
@@ -2362,10 +2347,10 @@ struct npc_bashir_landingAI : public ScriptedAI
     SummonList summons;
     std::list<uint64> attackers;
 
-    uint32 CheckTimer;
-    uint32 SpawnTimer;
-    uint32 StartSpawnTimer;
-    uint32 EndTimer;
+    Timer CheckTimer;
+    Timer SpawnTimer;
+    Timer StartSpawnTimer;
+    Timer EndTimer;
     uint8 Wave;
     uint64 AetherGUID;
     uint64 CollectorGUID;
@@ -2627,7 +2612,7 @@ struct npc_bashir_landingAI : public ScriptedAI
     {
         if (!Assault)
         {
-            if (CheckTimer <= diff)
+            if (CheckTimer.Expired(diff))
             {
                 Map* tmpMap = me->GetMap();
 
@@ -2665,34 +2650,31 @@ struct npc_bashir_landingAI : public ScriptedAI
                      else EventFail();
                  }
             }
-            else CheckTimer -= diff;
+
 
             if (Next)
             {
-                if (SpawnTimer <= diff) 
+                if (SpawnTimer.Expired(diff))
                 {
                     NextWave();
                     SpawnTimer = 180000;
                 }
-                else SpawnTimer -= diff;
             }
         }
 
         if (CanStart)
         {
-            if (StartSpawnTimer <= diff) 
+            if (StartSpawnTimer.Expired(diff))
             {
                 NextWave();
                 CanStart = false;
             }
-            else StartSpawnTimer -= diff;
         }
 
-        if (EndTimer <= diff) 
+        if (EndTimer.Expired(diff))
         {
             EventFail();
         }
-        else EndTimer -= diff;
     }
 };
 

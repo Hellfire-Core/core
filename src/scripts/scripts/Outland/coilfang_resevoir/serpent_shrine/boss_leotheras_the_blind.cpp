@@ -81,9 +81,9 @@ struct mob_inner_demonAI : public ScriptedAI
         victimGUID = 0;
     }
 
-    uint32 ShadowBolt_Timer;
+    Timer ShadowBolt_Timer;
 
-    uint32 Link_Timer;
+    Timer Link_Timer;
     uint64 victimGUID;
 
     void Reset()
@@ -129,25 +129,23 @@ struct mob_inner_demonAI : public ScriptedAI
             }
         }
 
-        if(Link_Timer <= diff)
+        if(Link_Timer.Expired(diff))
         {
             DoCast(m_creature->getVictim(), SPELL_SOUL_LINK, true);
             Link_Timer = 1000;
         }
-        else
-            Link_Timer -= diff;
+        
 
 
         if(!m_creature->HasAura(AURA_DEMONIC_ALIGNMENT, 0))
             DoCast(m_creature, AURA_DEMONIC_ALIGNMENT,true);
 
-        if(ShadowBolt_Timer <= diff)
+        if (ShadowBolt_Timer.Expired(diff))
         {
             DoCast(m_creature->getVictim(), SPELL_SHADOWBOLT, false);
             ShadowBolt_Timer = 10000;
         }
-        else
-            ShadowBolt_Timer -= diff;
+        
 
        DoMeleeAttackIfReady();
     }
@@ -170,14 +168,14 @@ struct boss_leotheras_the_blindAI : public ScriptedAI
 
     Map *minstance;
 
-    uint32 Whirlwind_Timer;
-    uint32 ChaosBlast_Timer;
-    uint32 PulseCombat_Timer;
-    uint32 SwitchToDemon_Timer;
-    uint32 SwitchToHuman_Timer;
-    uint32 Berserk_Timer;
-    uint32 InnerDemons_Timer;
-    uint32 BanishTimer;
+    Timer Whirlwind_Timer;
+    Timer ChaosBlast_Timer;
+    Timer PulseCombat_Timer;
+    Timer SwitchToDemon_Timer;
+    Timer SwitchToHuman_Timer;
+    Timer Berserk_Timer;
+    Timer InnerDemons_Timer;
+    Timer BanishTimer;
 
     WorldLocation wLoc;
 
@@ -377,7 +375,7 @@ struct boss_leotheras_the_blindAI : public ScriptedAI
         if (!UpdateVictim() || m_creature->HasAura(AURA_BANISH, 0))
         {
 
-            if(BanishTimer <= diff)
+            if (BanishTimer.Expired(diff))
             {
                 if (minstance->GetCreatureById(MOB_SPELLBINDER, GET_ALIVE_CREATURE_GUID))
                     ChannelersAlive = true;
@@ -386,31 +384,26 @@ struct boss_leotheras_the_blindAI : public ScriptedAI
                 CheckBanish();         //no need to check every update tick
                 BanishTimer = 1000;
             }
-            else
-                BanishTimer -= diff;
             return;
         }
 
-        if(PulseCombat_Timer <= diff)
+        if (PulseCombat_Timer.Expired(diff))
         {
             DoZoneInCombat();
             PulseCombat_Timer = 2000;
             me->SetSpeed(MOVE_RUN, DemonForm ? 3.0 : 2.0);
         }
-        else
-            PulseCombat_Timer -= diff;
+        
 
         if(m_creature->HasAura(SPELL_WHIRLWIND, 0))
         {
-            if(Whirlwind_Timer <= diff)
+            if (Whirlwind_Timer.Expired(diff))
             {
                 
                 DoResetThreat();
                 
                 Whirlwind_Timer = 2000;
             }
-            else
-                Whirlwind_Timer -= diff;
         }
 
         // reseting after changing forms and after ending whirlwind
@@ -435,22 +428,21 @@ struct boss_leotheras_the_blindAI : public ScriptedAI
         }
 
         //Enrage_Timer ( 10 min )
-        if(Berserk_Timer <= diff)
+        if (Berserk_Timer.Expired(diff))
         {
             if(!m_creature->HasAura(SPELL_BERSERK, 0))
                 DoCast(m_creature, SPELL_BERSERK);
             m_creature->SetSpeed(MOVE_RUN, 3.0);
             Berserk_Timer = 5000;
         }
-        else
-            Berserk_Timer -= diff;
+        
 
         if(!DemonForm)
         {
             //Whirldind Timer
             if(!m_creature->HasAura(SPELL_WHIRLWIND, 0))
             {
-                if(Whirlwind_Timer <= diff)
+                if (Whirlwind_Timer.Expired(diff))
                 {
                     DoCast(m_creature, SPELL_WHIRLWIND);
                     // while whirlwinding this variable is used to countdown target's change
@@ -458,14 +450,12 @@ struct boss_leotheras_the_blindAI : public ScriptedAI
                     NeedThreatReset = true;
                     //m_creature->SetReactState(REACT_PASSIVE);
                 }
-                else
-                    Whirlwind_Timer -= diff;
             }
 
             //Switch_Timer
             if(!IsFinalForm)
             {
-                if(SwitchToDemon_Timer <= diff)
+                if (SwitchToDemon_Timer.Expired(diff))
                 {
                     //switch to demon form
                     m_creature->RemoveAurasDueToSpell(SPELL_WHIRLWIND,0);
@@ -479,8 +469,6 @@ struct boss_leotheras_the_blindAI : public ScriptedAI
                     m_creature->SetReactState(REACT_AGGRESSIVE);
                     m_creature->SetMeleeDamageSchool(SPELL_SCHOOL_FIRE);
                 }
-                else
-                    SwitchToDemon_Timer -= diff;
             }
             DoMeleeAttackIfReady();
         }
@@ -493,7 +481,7 @@ struct boss_leotheras_the_blindAI : public ScriptedAI
             if(m_creature->IsWithinDistInMap(m_creature->getVictim(), 30))
                 m_creature->StopMoving();
 
-            if(ChaosBlast_Timer <= diff)
+            if (ChaosBlast_Timer.Expired(diff))
             {
                 // will cast only when in range of spell
                 if(m_creature->IsWithinDistInMap(m_creature->getVictim(), 30))
@@ -504,11 +492,10 @@ struct boss_leotheras_the_blindAI : public ScriptedAI
                 }
                 ChaosBlast_Timer = 3000;
             }
-            else
-                ChaosBlast_Timer -= diff;
+           
 
             //Summon Inner Demon
-            if(InnerDemons_Timer <= diff)
+            if (InnerDemons_Timer.Expired(diff))
             {
                 std::list<HostileReference *>& ThreatList = m_creature->getThreatManager().getThreatList();
                 std::vector<Unit *> TargetList;
@@ -549,13 +536,12 @@ struct boss_leotheras_the_blindAI : public ScriptedAI
                 }
                 DoScriptText(SAY_INNER_DEMONS, m_creature);
 
-                InnerDemons_Timer = 999999;
+                InnerDemons_Timer = 0;
             }
-            else
-                InnerDemons_Timer -= diff;
+
 
             //Switch_Timer
-            if(SwitchToHuman_Timer <= diff)
+            if (SwitchToHuman_Timer.Expired(diff))
             {
                 //switch to nightelf form
                 m_creature->SetUInt32Value(UNIT_FIELD_DISPLAYID, MODEL_NIGHTELF);
@@ -570,8 +556,6 @@ struct boss_leotheras_the_blindAI : public ScriptedAI
                 SwitchToHuman_Timer = 60000;
                 m_creature->SetMeleeDamageSchool(SPELL_SCHOOL_NORMAL);
             }
-            else
-                SwitchToHuman_Timer -= diff;
         }
 
         if (!IsFinalForm && (m_creature->GetHealth()*100 / m_creature->GetMaxHealth()) < 15)
@@ -603,9 +587,9 @@ struct boss_leotheras_the_blind_demonformAI : public ScriptedAI
 {
     boss_leotheras_the_blind_demonformAI(Creature *c) : ScriptedAI(c) {}
 
-    uint32 ChaosBlast_Timer;
+    Timer ChaosBlast_Timer;
     bool DealDamage;
-    uint32 checkTimer;
+    Timer checkTimer;
 
     void Reset()
     {
@@ -645,19 +629,17 @@ struct boss_leotheras_the_blind_demonformAI : public ScriptedAI
         //Return since we have no target
         if (!UpdateVictim() )
             return;
-        if (checkTimer <= diff)
+        if (checkTimer.Expired(diff))
         {
             checkTimer = 2000;
             me->SetSpeed(MOVE_RUN, 3.0);
         }
-        else
-            checkTimer -= diff;
 
         //ChaosBlast_Timer
         if(m_creature->IsWithinDistInMap(m_creature->getVictim(), 25))
             m_creature->StopMoving();
 
-        if(ChaosBlast_Timer <= diff)
+        if (ChaosBlast_Timer.Expired(diff))
          {
             // will cast only when in range od spell
             if(m_creature->IsWithinDistInMap(m_creature->getVictim(), 25))
@@ -667,7 +649,7 @@ struct boss_leotheras_the_blind_demonformAI : public ScriptedAI
                 m_creature->CastCustomSpell(m_creature->getVictim(), SPELL_CHAOS_BLAST, &damage, NULL, NULL, false, NULL, NULL, m_creature->GetGUID());
                 ChaosBlast_Timer = 3000;
             }
-         }else ChaosBlast_Timer -= diff;
+         }
 
         //Do NOT deal any melee damage to the target.
     }
@@ -684,8 +666,8 @@ struct mob_greyheart_spellbinderAI : public ScriptedAI
 
     uint64 leotherasGUID;
 
-    uint32 Mindblast_Timer;
-    uint32 Earthshock_Timer;
+    Timer Mindblast_Timer;
+    Timer Earthshock_Timer;
 
     void Reset()
     {
@@ -757,15 +739,15 @@ struct mob_greyheart_spellbinderAI : public ScriptedAI
             return;
         }
 
-        if(Mindblast_Timer <= diff)
+        if (Mindblast_Timer.Expired(diff))
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0, GetSpellMaxRange(SPELL_MINDBLAST), true))
                 DoCast(target, SPELL_MINDBLAST);
 
             Mindblast_Timer = 10000 + rand()%5000;
-        }else Mindblast_Timer -= diff;
+        }
 
-        if(Earthshock_Timer <= diff)
+        if (Earthshock_Timer.Expired(diff))
         {
             Map *map = m_creature->GetMap();
             Map::PlayerList const &PlayerList = map->GetPlayers();
@@ -786,7 +768,7 @@ struct mob_greyheart_spellbinderAI : public ScriptedAI
                 }
             }
             Earthshock_Timer = 8000 + rand()%7000;
-        }else Earthshock_Timer -= diff;
+        }
         DoMeleeAttackIfReady();
     }
 

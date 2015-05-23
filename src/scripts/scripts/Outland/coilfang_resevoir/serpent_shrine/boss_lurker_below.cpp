@@ -336,8 +336,8 @@ struct mob_coilfang_guardianAI : public ScriptedAI
 {
     mob_coilfang_guardianAI(Creature *c) : ScriptedAI(c) { }
 
-    uint32 m_harmstringTimer;
-    uint32 m_arcingTimer;
+    Timer m_harmstringTimer;
+    Timer m_arcingTimer;
 
     void Reset()
     {
@@ -357,21 +357,19 @@ struct mob_coilfang_guardianAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (m_harmstringTimer <= diff)
+        if (m_harmstringTimer.Expired(diff))
         {
             AddSpellToCast(SPELL_HARMSTRING);
             m_harmstringTimer = 10500;
         }
-        else
-            m_harmstringTimer -= diff;
 
-        if (m_arcingTimer <= diff)
+
+        if (m_arcingTimer.Expired(diff))
         {
             AddSpellToCast(SPELL_ARCING_SMASH);
             m_arcingTimer = urand(10000, 20000);
         }
-        else
-            m_arcingTimer -= diff;
+        
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -388,8 +386,8 @@ struct mob_coilfang_ambusherAI : public Scripted_NoMovementAI
 {
     mob_coilfang_ambusherAI(Creature *c) : Scripted_NoMovementAI(c) { }
 
-    uint32 m_spreadTimer;
-    uint32 m_shootTimer;
+    Timer m_spreadTimer;
+    Timer m_shootTimer;
 
     void Reset()
     {
@@ -409,22 +407,19 @@ struct mob_coilfang_ambusherAI : public Scripted_NoMovementAI
         if (!UpdateVictim())
             return;
 
-        if (m_spreadTimer <= diff)
+        if (m_spreadTimer.Expired(diff))
         {
             AddSpellToCast(SPELL_SPREAD_SHOT, CAST_RANDOM);
             m_spreadTimer = urand(10000, 20000);
         }
-        else
-            m_spreadTimer -= diff;
 
-        if (m_shootTimer <= diff)
+
+        if (m_shootTimer.Expired(diff))
         {
             AddSpellToCast(SPELL_NORMAL_SHOT, CAST_RANDOM);
             m_shootTimer = 2000;
         }
-        else
-            m_shootTimer -= diff;
-
+        
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
     }

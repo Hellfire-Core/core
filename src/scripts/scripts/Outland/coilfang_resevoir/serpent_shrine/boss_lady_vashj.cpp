@@ -151,20 +151,20 @@ struct boss_lady_vashjAI : public ScriptedAI
 
     uint64 ShieldGeneratorChannel[4];
 
-    uint32 AggroTimer;
-    uint32 ShockBlast_Timer;
-    uint32 PulseCombat_Timer;
-    uint32 Entangle_Timer;
-    uint32 StaticCharge_Timer;
-    uint32 ForkedLightning_Timer;
-    uint32 Check_Timer;
-    uint32 ParalyzeCheck_Timer;
-    uint32 EnchantedElemental_Timer;
-    uint32 TaintedElemental_Timer;
-    uint32 CoilfangElite_Timer;
-    uint32 CoilfangStrider_Timer;
-    uint32 SummonSporebat_Timer;
-    uint32 SummonSporebat_StaticTimer;
+    Timer AggroTimer;
+    Timer ShockBlast_Timer;
+    Timer PulseCombat_Timer;
+    Timer Entangle_Timer;
+    Timer StaticCharge_Timer;
+    Timer ForkedLightning_Timer;
+    Timer Check_Timer;
+    Timer ParalyzeCheck_Timer;
+    Timer EnchantedElemental_Timer;
+    Timer TaintedElemental_Timer;
+    Timer CoilfangElite_Timer;
+    Timer CoilfangStrider_Timer;
+    Timer SummonSporebat_Timer;
+    Timer SummonSporebat_StaticTimer;
     uint8 EnchantedElemental_Pos;
     uint8 Phase;
     uint8 path_nr;
@@ -330,17 +330,14 @@ struct boss_lady_vashjAI : public ScriptedAI
     {
         if(!CanAttack && Intro)
         {
-            if(AggroTimer <= diff)
+            if(AggroTimer.Expired(diff))
             {
                 CanAttack = true;
                 me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                 AggroTimer = 19000;
             }
             else
-            {
-                AggroTimer -= diff;
                 return;
-            }
         }
         //to prevent abuses during phase 2
         Unit *nearTarget = SelectUnit(SELECT_TARGET_NEAREST,0,100.0f,true);
@@ -353,18 +350,17 @@ struct boss_lady_vashjAI : public ScriptedAI
         if (!UpdateVictim() )
             return;
 
-        if(PulseCombat_Timer <= diff)
+        if (PulseCombat_Timer.Expired(diff))
         {
             DoZoneInCombat();
             PulseCombat_Timer = 3000;
         }
-        else
-            PulseCombat_Timer -= diff;
+        
 
         // Paralyze effect
         if(Phase == 2)
         {
-           if(ParalyzeCheck_Timer <= diff)
+            if (ParalyzeCheck_Timer.Expired(diff))
            {
                Paralyze(true);
                if(me->hasUnitState(UNIT_STAT_CHASE))
@@ -374,14 +370,12 @@ struct boss_lady_vashjAI : public ScriptedAI
                }
                ParalyzeCheck_Timer = 1000;
            }
-           else
-               ParalyzeCheck_Timer -= diff;
         }
 
         if(Phase == 1 || Phase == 3)
         {
             //ShockBlast_Timer
-            if (ShockBlast_Timer <= diff)
+            if (ShockBlast_Timer.Expired(diff))
             {
                 //Shock Burst
                 //Randomly used in Phases 1 and 3 on Vashj's target, it's a Shock spell doing 8325-9675 nature damage and stunning the target for 5 seconds, during which she will not attack her target but switch to the next person on the aggro list.
@@ -391,11 +385,10 @@ struct boss_lady_vashjAI : public ScriptedAI
                 DoCast(me->getVictim(), SPELL_SHOCK_BLAST);
                 ShockBlast_Timer = 8000+rand()%12000;       //random cooldown
             }
-            else
-                ShockBlast_Timer -= diff;
+            
 
             //StaticCharge_Timer
-            if(StaticCharge_Timer <= diff)
+            if (StaticCharge_Timer.Expired(diff))
             {
                 //Static Charge
                 //Used on random people (only 1 person at any given time) in Phases 1 and 3, it's a debuff doing 2775 to 3225 Nature damage to the target and everybody in about 5 yards around it, every 1 seconds for 30 seconds. It can be removed by Cloak of Shadows, Iceblock, Divine Shield, etc, but not by Cleanse or Dispel Magic.
@@ -406,11 +399,10 @@ struct boss_lady_vashjAI : public ScriptedAI
 
                 StaticCharge_Timer = 10000+rand()%20000;    //blizzlike
             }
-            else
-                StaticCharge_Timer -= diff;
+            
 
             //Entangle_Timer
-            if(Entangle_Timer <= diff)
+            if (Entangle_Timer.Expired(diff))
             {
                 if(!Entangle)
                 {
@@ -427,8 +419,7 @@ struct boss_lady_vashjAI : public ScriptedAI
                     Entangle_Timer = 20000+rand()%5000;
                 }
             }
-            else
-                Entangle_Timer -= diff;
+            
 
             //Phase 1
             if(Phase == 1)
@@ -458,7 +449,7 @@ struct boss_lady_vashjAI : public ScriptedAI
             else
             {
                 //SummonSporebat_Timer
-                if(SummonSporebat_Timer <= diff)
+                if (SummonSporebat_Timer.Expired(diff))
                 {
                     Creature *Sporebat = NULL;
                     Sporebat = me->SummonCreature(TOXIC_SPOREBAT, SPOREBAT_X, SPOREBAT_Y, SPOREBAT_Z, SPOREBAT_O, TEMPSUMMON_CORPSE_DESPAWN, 0);
@@ -479,15 +470,13 @@ struct boss_lady_vashjAI : public ScriptedAI
                         SummonSporebat_Timer = 5000;
 
                 }
-                else
-                    SummonSporebat_Timer -= diff;
             }
 
             //Melee attack
             DoMeleeAttackIfReady();
 
             //Check_Timer - used to check if somebody is in melee range
-            if(Check_Timer <= diff)
+            if (Check_Timer.Expired(diff))
             {
                 bool InMeleeRange = false;
                 Unit *target;
@@ -508,13 +497,13 @@ struct boss_lady_vashjAI : public ScriptedAI
                     CastShootOrMultishot();
 
                 Check_Timer = 2000;
-            }else Check_Timer -= diff;
+            }
         }
         //Phase 2
         else
         {
             //ForkedLightning_Timer
-            if(ForkedLightning_Timer <= diff)
+            if (ForkedLightning_Timer.Expired(diff))
             {
                 //Forked Lightning
                 //Used constantly in Phase 2, it shoots out completely randomly targeted bolts of lightning which hit everybody in a roughtly 60 degree cone in front of Vashj for 2313-2687 nature damage.
@@ -527,11 +516,10 @@ struct boss_lady_vashjAI : public ScriptedAI
 
                 ForkedLightning_Timer = 2000+rand()%6000;   //blizzlike
             }
-            else
-                ForkedLightning_Timer -= diff;
+            
 
             //EnchantedElemental_Timer
-            if(EnchantedElemental_Timer <= diff)
+            if (EnchantedElemental_Timer.Expired(diff))
             {
                 Creature *Elemental;
 
@@ -545,11 +533,10 @@ struct boss_lady_vashjAI : public ScriptedAI
                     EnchantedElemental_Timer = 20000+rand()%5000;
 
             }
-            else
-                EnchantedElemental_Timer -= diff;
+            
 
             //TaintedElemental_Timer
-            if(TaintedElemental_Timer <= diff)
+            if (TaintedElemental_Timer.Expired(diff))
             {
                 Creature *Tain_Elemental;
                 uint32 pos = rand()%8;
@@ -557,32 +544,29 @@ struct boss_lady_vashjAI : public ScriptedAI
 
                 TaintedElemental_Timer = 120000;
             }
-            else
-                TaintedElemental_Timer -= diff;
+
 
             //CoilfangElite_Timer
-            if(CoilfangElite_Timer <= diff)
+            if (CoilfangElite_Timer.Expired(diff))
             {
                 path_nr = urand(0,3);
                 me->SummonCreature(COILFANG_ELITE, StriderNagaWP[path_nr*4][0],StriderNagaWP[path_nr*4][1],StriderNagaWP[path_nr*4][2],0, TEMPSUMMON_DEAD_DESPAWN, 0);
                 CoilfangElite_Timer = 50000+rand()%5000;
             }
-            else
-                CoilfangElite_Timer -= diff;
+            
 
             //CoilfangStrider_Timer
-            if(CoilfangStrider_Timer <= diff)
+            if (CoilfangStrider_Timer.Expired(diff))
             {
                 uint32 pos = rand()%3;
                 me->SummonCreature(COILFANG_STRIDER, StriderNagaWP[pos*4][0],StriderNagaWP[pos*4][1],StriderNagaWP[pos*4][2],0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 10000);
 
                 CoilfangStrider_Timer = 60000+rand()%10000;
             }
-            else
-                CoilfangStrider_Timer -= diff;
+            
 
             //Check_Timer
-            if(Check_Timer <= diff)
+            if (Check_Timer.Expired(diff))
             {
                 //Start Phase 3
                 if(instance && instance->GetData(DATA_CANSTARTPHASE3))
@@ -601,8 +585,6 @@ struct boss_lady_vashjAI : public ScriptedAI
                 }
                 Check_Timer = 1000;
             }
-            else
-                Check_Timer -= diff;
         }
     }
 };
@@ -728,8 +710,8 @@ struct mob_tainted_elementalAI : public Scripted_NoMovementAI
 
     ScriptedInstance *instance;
 
-    uint32 PoisonBolt_Timer;
-    uint32 Despawn_Timer;
+    Timer PoisonBolt_Timer;
+    Timer Despawn_Timer;
 
     void Reset()
     {
@@ -756,16 +738,16 @@ struct mob_tainted_elementalAI : public Scripted_NoMovementAI
     void UpdateAI(const uint32 diff)
     {
         //PoisonBolt_Timer
-        if(PoisonBolt_Timer <= diff)
+        if (PoisonBolt_Timer.Expired(diff))
         {
             if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_POISON_BOLT), true))
                 DoCast(target, SPELL_POISON_BOLT);
 
             PoisonBolt_Timer = 5000+rand()%5000;
-        }else PoisonBolt_Timer -= diff;
+        }
 
         //Despawn_Timer
-        if(Despawn_Timer <= diff)
+        if (Despawn_Timer.Expired(diff))
         {
             //call Unsummon()
             me->setDeathState(DEAD);
@@ -773,7 +755,7 @@ struct mob_tainted_elementalAI : public Scripted_NoMovementAI
 
             //to prevent crashes
             Despawn_Timer = 5000;
-        }else Despawn_Timer -= diff;
+        }
     }
 };
 
@@ -794,10 +776,10 @@ struct mob_toxic_sporebatAI : public ScriptedAI
 
     ScriptedInstance *instance;
 
-    uint32 movement_timer;
-    uint32 ToxicSpore_Timer;
-    uint32 bolt_timer;
-    uint32 Check_Timer;
+    Timer movement_timer;
+    Timer ToxicSpore_Timer;
+    Timer bolt_timer;
+    Timer Check_Timer;
 
     void Reset()
     {
@@ -831,15 +813,15 @@ struct mob_toxic_sporebatAI : public ScriptedAI
     void UpdateAI (const uint32 diff)
     {
         //Random movement
-        if (movement_timer <= diff)
+        if (movement_timer.Expired(diff))
         {
             uint32 rndpos = rand()%8;
             me->GetMotionMaster()->MovePoint(1,SporebatWPPos[rndpos][0], SporebatWPPos[rndpos][1], SporebatWPPos[rndpos][2]);
             movement_timer = 6000;
-        }else movement_timer -= diff;
+        }
 
         //toxic spores
-        if(bolt_timer <= diff)
+        if (bolt_timer.Expired(diff))
         {
             if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, 300, true))
             {
@@ -851,10 +833,10 @@ struct mob_toxic_sporebatAI : public ScriptedAI
             }
             bolt_timer = 10000+rand()%5000;
         }
-        else bolt_timer -= diff;
+        
 
         //Check_Timer
-        if(Check_Timer <= diff)
+        if (Check_Timer.Expired(diff))
         {
             if(instance)
             {
@@ -870,7 +852,7 @@ struct mob_toxic_sporebatAI : public ScriptedAI
             }
 
             Check_Timer = 1000;
-        }else Check_Timer -= diff;
+        }
     }
 };
 
@@ -884,7 +866,7 @@ struct mob_coilfang_eliteAI : public ScriptedAI
     ScriptedInstance *instance;
 
     uint8 MoveWP, path_nr;
-    uint32 Cleave_Timer, Check_Timer;
+    Timer Cleave_Timer, Check_Timer;
 
     bool Move, OnPath;
 
@@ -964,7 +946,7 @@ struct mob_coilfang_eliteAI : public ScriptedAI
             Move = false;
         }
 
-        if(Check_Timer)
+        if(Check_Timer.Expired(diff))
         {
             DoZoneInCombat();
 
@@ -972,7 +954,7 @@ struct mob_coilfang_eliteAI : public ScriptedAI
                 me->Kill(me,false);
 
               Check_Timer = 2000;
-        }else Check_Timer -= diff;
+        }
 
         if(OnPath)
             return;
@@ -980,11 +962,11 @@ struct mob_coilfang_eliteAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if(Cleave_Timer <= diff)
+        if (Cleave_Timer.Expired(diff))
         {
             me->CastSpell(me->getVictim(),31345,false);
             Cleave_Timer = 10000+rand()%5000;
-        }else Cleave_Timer -= diff;
+        }
 
         DoMeleeAttackIfReady();
     }
@@ -1000,7 +982,7 @@ struct mob_coilfang_striderAI : public ScriptedAI
     ScriptedInstance *instance;
 
     uint8 MoveWP, path_nr;
-    uint32 MindBlast_Timer, Check_Timer;
+    Timer MindBlast_Timer, Check_Timer;
 
     bool Move, OnPath;
 
@@ -1082,15 +1064,15 @@ struct mob_coilfang_striderAI : public ScriptedAI
             Move = false;
         }
 
-        if(Check_Timer)
+        if (Check_Timer.Expired(diff))
         {
             DoZoneInCombat();
 
-            if(instance && instance->GetData(DATA_LADYVASHJEVENT) != IN_PROGRESS)
-                me->Kill(me,false);
+            if (instance && instance->GetData(DATA_LADYVASHJEVENT) != IN_PROGRESS)
+                me->Kill(me, false);
 
-              Check_Timer = 2000;
-        }else Check_Timer -= diff;
+            Check_Timer = 2000;
+        }
 
         if(OnPath)
             return;
@@ -1098,11 +1080,11 @@ struct mob_coilfang_striderAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if(MindBlast_Timer <= diff)
+        if (MindBlast_Timer.Expired(diff))
         {
             me->CastSpell(me->getVictim(),SPELL_MIND_BLAST,true);
             MindBlast_Timer = 3000+rand()%1000;
-        }else MindBlast_Timer -= diff;
+        }
 
         DoMeleeAttackIfReady();
     }
@@ -1115,7 +1097,7 @@ struct mob_shield_generator_channelAI : public ScriptedAI
     }
 
     ScriptedInstance *instance;
-    uint32 Check_Timer;
+    Timer Check_Timer;
     bool Cast;
     void Reset()
     {
@@ -1135,7 +1117,7 @@ struct mob_shield_generator_channelAI : public ScriptedAI
         if(!instance)
             return;
 
-        if(Check_Timer <= diff)
+        if (Check_Timer.Expired(diff))
         {
             Unit *Vashj = NULL;
             Vashj = Unit::GetUnit((*me), instance->GetData64(DATA_LADYVASHJ));
@@ -1150,7 +1132,7 @@ struct mob_shield_generator_channelAI : public ScriptedAI
                 }
             }
             Check_Timer = 1000;
-        }else Check_Timer -= diff;
+        }
     }
 };
 
