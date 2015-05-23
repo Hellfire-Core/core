@@ -52,10 +52,10 @@ struct boss_temporusAI : public ScriptedAI
     bool HeroicMode;
     bool canApplyWound;
 
-    int32 MortalWound_Timer;
-    int32 WingBuffet_Timer;
-    int32 Haste_Timer;
-    int32 SpellReflection_Timer;
+    Timer MortalWound_Timer;
+    Timer WingBuffet_Timer;
+    Timer Haste_Timer;
+    Timer SpellReflection_Timer;
 
     void Reset()
     {
@@ -123,39 +123,39 @@ struct boss_temporusAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        Haste_Timer -= diff;
-        if (Haste_Timer <= diff)
+
+        if (Haste_Timer.Expired(diff))
         {
             AddSpellToCast(SPELL_HASTE, CAST_SELF);
-            Haste_Timer += urand(20000, 25000);
+            Haste_Timer = urand(20000, 25000);
         }
         
 
-        WingBuffet_Timer -= diff;
-        if (WingBuffet_Timer <= diff)
+        
+        if (WingBuffet_Timer.Expired(diff))
         {
             AddSpellToCast(m_creature, HeroicMode ? H_SPELL_WING_BUFFET : SPELL_WING_BUFFET);
-            WingBuffet_Timer += urand(15000, 25000);
+            WingBuffet_Timer = urand(15000, 25000);
         }
         
 
-        MortalWound_Timer -= diff;
-        if (MortalWound_Timer <= diff)
+        
+        if (MortalWound_Timer.Expired(diff))
         {
             canApplyWound = true;
 
             if (m_creature->HasAura(SPELL_HASTE, 0))
-                MortalWound_Timer += urand(2000, 3000);
+                MortalWound_Timer = urand(2000, 3000);
             else
-                MortalWound_Timer += urand(6000, 9000);
+                MortalWound_Timer = urand(6000, 9000);
         }
         
 
-        SpellReflection_Timer -= diff;
-        if (HeroicMode && SpellReflection_Timer <= diff)
+     
+        if (HeroicMode && SpellReflection_Timer.Expired(diff))
         {
             AddSpellToCast(m_creature, SPELL_REFLECT);
-            SpellReflection_Timer += urand(40000, 50000);
+            SpellReflection_Timer = urand(40000, 50000);
         }
         
 

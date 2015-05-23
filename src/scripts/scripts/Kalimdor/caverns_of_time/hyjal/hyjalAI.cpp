@@ -950,7 +950,7 @@ void hyjalAI::UpdateAI(const uint32 diff)
                 if(target && target->isAlive())
                 {
                     AddSpellToCast(target, Spell[i].SpellId);
-                    SpellTimer[i] += Spell[i].CooldownMin + rand() % (Spell[i].CooldownMax - Spell[i].CooldownMin);
+                    SpellTimer[i] = Spell[i].CooldownMin + rand() % (Spell[i].CooldownMax - Spell[i].CooldownMin);
                 }
             }
         }

@@ -87,9 +87,9 @@ struct instance_dark_portal : public ScriptedInstance
     uint8 mRiftWaveCount;
     uint8 mRiftWaveId;
 
-    int32 NextPortal_Timer;
-    int32 DespawnDelay;
-    int32 Check_Timer;
+    Timer NextPortal_Timer;
+    Timer DespawnDelay;
+    Timer Check_Timer;
 
     uint64 MedivhGUID;
     uint8 CurrentRiftId;
@@ -504,16 +504,13 @@ struct instance_dark_portal : public ScriptedInstance
 
         if (Encounter[0] == FAIL)
         {
-            if (DespawnDelay)
+            if (DespawnDelay.Expired(diff))
             {
-                DespawnDelay -= diff;
-                if (DespawnDelay <= diff)
-                {
-                    if (Unit* medivh = Unit::GetUnit(*player, MedivhGUID))
-                        ((Creature*)medivh)->RemoveCorpse();
-                    DespawnDelay = 0;
-                }
+                if (Unit* medivh = Unit::GetUnit(*player, MedivhGUID))
+                    ((Creature*)medivh)->RemoveCorpse();
+                DespawnDelay = 0;
             }
+           
         }
 
         if (Encounter[1] != IN_PROGRESS)
@@ -527,31 +524,28 @@ struct instance_dark_portal : public ScriptedInstance
             return;
         }
 
-        if (Check_Timer)
-        {
-            Check_Timer -= diff;
-            if (Check_Timer <= diff)
-            {
-                if (!IsAnyPortalOpened())
-                    NextPortal_Timer = 13000;
 
-                Check_Timer = 0;
-            }
+
+        if (Check_Timer.Expired(diff))
+        {
+            if (!IsAnyPortalOpened())
+                NextPortal_Timer = 13000;
+
+            Check_Timer = 0;
         }
         
+        
 
-        if (NextPortal_Timer)
+
+        if (NextPortal_Timer.Expired(diff))
         {
-            NextPortal_Timer -= diff;
-            if (NextPortal_Timer <= diff)
-            {
-                ++mRiftPortalCount;
-                UpdateBMWorldState(WORLD_STATE_BM_RIFT, mRiftPortalCount);
+            ++mRiftPortalCount;
+            UpdateBMWorldState(WORLD_STATE_BM_RIFT, mRiftPortalCount);
 
-                DoSpawnPortal();
-                NextPortal_Timer = GetTimer(mRiftPortalCount);
-            }
+            DoSpawnPortal();
+            NextPortal_Timer = GetTimer(mRiftPortalCount);
         }
+        
         
     }
 

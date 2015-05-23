@@ -4976,7 +4976,7 @@ struct mob_illidari_archonAI : public ScriptedAI
         {
             case HOLY_TYPE:
             {
-                if (!shieldCooldown.GetInterval())
+                if (!shieldCooldown)
                 {
                     if (Unit* shieldTarget = SelectLowestHpFriendly(40, 20000))
                     {

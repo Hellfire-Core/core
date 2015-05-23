@@ -106,10 +106,10 @@ struct boss_lieutenant_drakeAI : public ScriptedAI
     bool WaypointReached;
     uint32 wpId;
 
-    int32 Whirlwind_Timer;
-    int32 Fear_Timer;
-    int32 MortalStrike_Timer;
-    int32 ExplodingShout_Timer;
+    Timer Whirlwind_Timer;
+    Timer Fear_Timer;
+    Timer MortalStrike_Timer;
+    Timer ExplodingShout_Timer;
 
     void Reset()
     {
@@ -184,29 +184,28 @@ struct boss_lieutenant_drakeAI : public ScriptedAI
             return;
         }
 
-        Whirlwind_Timer -= diff;
-        if (Whirlwind_Timer <= diff)
+
+        if (Whirlwind_Timer.Expired(diff))
         {
             DoCast(me->getVictim(), SPELL_WHIRLWIND);
-            Whirlwind_Timer += 20000 + rand() % 5000;
+            Whirlwind_Timer = 20000 + rand() % 5000;
         }
 
 
-        Fear_Timer -= diff;
-        if (Fear_Timer <= diff)
+        if (Fear_Timer.Expired(diff))
         {
             DoScriptText(SAY_SHOUT, me);
             DoCast(me->getVictim(), SPELL_FRIGHTENING_SHOUT);
-            Fear_Timer += 30000 + rand() % 10000;
+            Fear_Timer = 30000 + rand() % 10000;
         }
 
 
-        MortalStrike_Timer -= diff;
-        if (MortalStrike_Timer <= diff)
+
+        if (MortalStrike_Timer.Expired(diff))
         {
             DoScriptText(SAY_MORTAL, me);
             DoCast(me->getVictim(), SPELL_MORTAL_STRIKE);
-            MortalStrike_Timer += 45000 + rand() % 5000;
+            MortalStrike_Timer = 45000 + rand() % 5000;
         }
 
 

@@ -52,11 +52,11 @@ struct boss_aeonusAI : public ScriptedAI
     ScriptedInstance *pInstance;
     bool HeroicMode;
 
-    int32 Say_Timer;
-    int32 Cleave_Timer;
-    int32 SandBreath_Timer;
-    int32 TimeStop_Timer;
-    int32 Frenzy_Timer;
+    Timer Say_Timer;
+    Timer Cleave_Timer;
+    Timer SandBreath_Timer;
+    Timer TimeStop_Timer;
+    Timer Frenzy_Timer;
 
     void Reset()
     {
@@ -112,43 +112,42 @@ struct boss_aeonusAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        Say_Timer -= diff;
-        if (Say_Timer && Say_Timer <= diff)
+        
+        if (Say_Timer.Expired(diff))
         {
             DoScriptText(SAY_AGGRO, m_creature);
             Say_Timer = 0;
         }
         
 
-        Cleave_Timer -= diff;
-        if (Cleave_Timer <= diff)
+        if (Cleave_Timer.Expired(diff))
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_CLEAVE);
-            Cleave_Timer += 6000+rand()%4000;
+            Cleave_Timer = 6000+rand()%4000;
         }
         
 
-        SandBreath_Timer -= diff;
-        if (SandBreath_Timer <= diff)
+
+        if (SandBreath_Timer.Expired(diff))
         {
             AddSpellToCast(m_creature->getVictim(), HeroicMode ? H_SPELL_SAND_BREATH : SPELL_SAND_BREATH);
-            SandBreath_Timer += 30000;
+            SandBreath_Timer = 30000;
         }
         
 
-        TimeStop_Timer -= diff;
-        if (TimeStop_Timer <= diff)
+
+        if (TimeStop_Timer.Expired(diff))
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_TIME_STOP);
-            TimeStop_Timer += 40000;
+            TimeStop_Timer = 40000;
         }
         
 
-        Frenzy_Timer -= diff;
-        if (Frenzy_Timer <= diff)
+
+        if (Frenzy_Timer.Expired(diff))
         {
             AddSpellToCastWithScriptText(m_creature, SPELL_ENRAGE, EMOTE_FRENZY);
-            Frenzy_Timer += 120000;
+            Frenzy_Timer = 120000;
         }
         
 

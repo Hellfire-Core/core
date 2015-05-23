@@ -271,10 +271,10 @@ struct npc_thrall_old_hillsbradAI : public npc_escortAI
     uint64 EpochGUID;
     uint8 Part;
     uint32 Steps;
-    int32 StepsTimer;
-    int32 StrikeTimer;
-    int32 ShieldBlockTimer;
-    int32 EmoteTimer;
+    Timer StepsTimer;
+    Timer StrikeTimer;
+    Timer ShieldBlockTimer;
+    Timer EmoteTimer;
 
     bool LowHp;
     bool HadMount;
@@ -875,43 +875,41 @@ struct npc_thrall_old_hillsbradAI : public npc_escortAI
     {
         npc_escortAI::UpdateAI(diff);
 
-        StepsTimer -= diff;
-        if (StepsTimer <= diff)
+        
+        if (StepsTimer.Expired(diff))
         {
             if (Event)
-                StepsTimer += NextStep(++Steps);
+                StepsTimer.Delay(NextStep(++Steps));
         }
         
 
         if (HadMount && !me->isInCombat())
             DoMount();
 
-        if (EmoteTimer)
+
+        if (EmoteTimer.Expired(diff))
         {
-            EmoteTimer -= diff;
-            if (EmoteTimer <= diff)
-            {
-                me->SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_ONESHOT_NONE);
-                EmoteTimer = 0;
-            }
+            me->SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_ONESHOT_NONE);
+            EmoteTimer = 0;
         }
+
 
         if (!UpdateVictim())
             return;
 
-        StrikeTimer -= diff;
-        if (StrikeTimer <= diff)
+
+        if (StrikeTimer.Expired(diff))
         {
             DoCast(me->getVictim(), SPELL_STRIKE);
-            StrikeTimer += urand(4000, 7000);
+            StrikeTimer = urand(4000, 7000);
         }
         
 
-        ShieldBlockTimer -= diff;
-        if (ShieldBlockTimer <= diff)
+        
+        if (ShieldBlockTimer.Expired(diff))
         {
             DoCast(me, SPELL_SHIELD_BLOCK);
-            ShieldBlockTimer += urand(8000, 15000);
+            ShieldBlockTimer = urand(8000, 15000);
         }
         
 
@@ -1142,7 +1140,7 @@ struct erozion_imageAI : public ScriptedAI
     bool Intro;
 
     uint8 Next;
-    uint32 StepsTimer;
+    Timer StepsTimer;
     uint32 Steps;
 
     void Reset()
@@ -1211,12 +1209,11 @@ struct erozion_imageAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (StepsTimer <= diff)
+        if (StepsTimer.Expired(diff))
         {
             if (Intro)
                 StepsTimer = NextStep(++Steps);
         }
-        else StepsTimer -= diff;
     }
 };
 

@@ -1289,7 +1289,7 @@ struct mob_fel_stalkerAI : public hyjal_trashAI
             }
         }
         if (!UpdateVictim())
-            return
+            return;
         if (ManaBurnTimer.Expired(diff))
         {
             DoCast(m_creature->getVictim(), SPELL_MANA_BURN);
