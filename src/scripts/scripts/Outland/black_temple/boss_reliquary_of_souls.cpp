@@ -176,7 +176,7 @@ struct boss_reliquary_of_soulsAI : public Scripted_NoMovementAI
 
     uint32 Phase;
     uint32 Counter;
-    Timer Timer;
+    Timer _Timer;
 
     uint32 SoulCount;
     uint32 SoulDeathCount;
@@ -221,7 +221,7 @@ struct boss_reliquary_of_soulsAI : public Scripted_NoMovementAI
                     pInstance->SetData(EVENT_RELIQUARYOFSOULS, IN_PROGRESS);
                 Phase = 1;
                 Counter = 0;
-                Timer = 0;
+                _Timer = 0;
                 DelayTimer = 15000;
             }
         }
@@ -323,21 +323,21 @@ struct boss_reliquary_of_soulsAI : public Scripted_NoMovementAI
             }
         }
 
-        if (Timer.Expired(diff))
+        if (_Timer.Expired(diff))
         {
             switch (Counter)
             {
                 case 0:
                     me->SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_READY2H);  // I R ANNNGRRRY!
-                    Timer = 3000;
+                    _Timer = 3000;
                     break;
                 case 1:
-                    Timer = 2800;
+                    _Timer = 2800;
                     DoCast(me, SPELL_SUBMERGE);
                     break;
                 case 2:
                 {
-                    Timer = 5000;
+                    _Timer = 5000;
                     if (Creature* Summon = DoSpawnCreature(23417 + Phase, 0, 0, 0, 0, TEMPSUMMON_DEAD_DESPAWN, 0))
                     {
                         if (Unit* target = SelectUnit(SELECT_TARGET_TOPAGGRO, 0))
@@ -359,7 +359,7 @@ struct boss_reliquary_of_soulsAI : public Scripted_NoMovementAI
                     if (!Essence)
                         return;
 
-                    Timer = 1000;
+                    _Timer = 1000;
                     if (Phase == 3)
                     {
                         if (!Essence->isAlive())
@@ -382,7 +382,7 @@ struct boss_reliquary_of_soulsAI : public Scripted_NoMovementAI
                     if (!Essence)
                         return;
 
-                    Timer = 1500;
+                    _Timer = 1500;
                     if (Essence->IsWithinDistInMap(me, 3))
                         me->RemoveAurasDueToSpell(SPELL_SUBMERGE);
                     else
@@ -411,19 +411,19 @@ struct boss_reliquary_of_soulsAI : public Scripted_NoMovementAI
                     EssenceGUID = 0;
                     SoulCount = 0;
                     SoulDeathCount = 0;
-                    Timer = 3000;
+                    _Timer = 3000;
                     break;
                 }
                 case 6:
                     SummonSouls();
-                    Timer = urand(35000, 40000);//200;
+                    _Timer = urand(35000, 40000);//200;
                     break;
                 case 7:
                     /*if(pInstance->GetData(DATA_ENSLAVED_SOUL) >= SoulCount)
                     {*/
                     Counter = 1;
                     Phase++;
-                    Timer = 5000;
+                    _Timer = 5000;
                     //}
                     return;
                 default:

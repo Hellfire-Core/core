@@ -126,7 +126,7 @@ struct boss_void_reaverAI : public ScriptedAI
         {
             AddSpellToCastWithScriptText(m_creature, SPELL_POUNDING, RAND(SAY_POUNDING1, SAY_POUNDING2));
 
-            if (KnockAway_Timer < 3100)
+            if (KnockAway_Timer.GetTimeLeft() < 3100)
                 KnockAway_Timer = 3100;
 
             Pounding_Timer = 12000;

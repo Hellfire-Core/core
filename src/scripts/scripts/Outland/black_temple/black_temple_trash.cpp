@@ -4922,8 +4922,8 @@ struct mob_illidari_archonAI : public ScriptedAI
 
     uint32 type;
     Timer shieldCooldownTimer;
-    uint32 Heal;
-    Timer shieldCooldown;
+    Timer Heal;
+    bool shieldCooldown;
 
     Timer MindFlay;
     Timer MindBlast;

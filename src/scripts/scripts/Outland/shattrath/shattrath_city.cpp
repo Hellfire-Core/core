@@ -319,7 +319,7 @@ struct npc_kservantAI : public npc_escortAI
 
     void MoveInLineOfSight(Unit* who)
     {
-        if (!RandomTalkCooldown && who->GetTypeId() == TYPEID_UNIT && me->IsWithinDistInMap(who, 10.0f))
+        if (!RandomTalkCooldown.GetInterval() && who->GetTypeId() == TYPEID_UNIT && me->IsWithinDistInMap(who, 10.0f))
         {
             switch(who->GetEntry())
             {

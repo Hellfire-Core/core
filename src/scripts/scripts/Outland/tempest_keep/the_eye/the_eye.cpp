@@ -386,7 +386,7 @@ struct mob_crimson_hand_blood_knightAI : public ScriptedAI
                 else
                     FlashofLight_Timer = rand()%7000;
             }
-            FlashofLight_Timer += 2000;
+            FlashofLight_Timer.Delay(2000); //FIXME: Needed or not?
         }
 
         if (HammerofJustice_Timer.Expired(diff))
@@ -489,7 +489,7 @@ struct mob_Bloodwarder_SquireAI : public ScriptedAI
                 else
                     FlashofLight_Timer = rand()%7000;
             }
-            FlashofLight_Timer+=2000;
+            FlashofLight_Timer.Delay(2000); //FIXME: Needed here?
         }
 
         if (HammerofJustice_Timer.Expired(diff))

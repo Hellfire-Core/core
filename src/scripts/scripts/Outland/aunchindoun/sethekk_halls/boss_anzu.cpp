@@ -200,10 +200,10 @@ struct npc_anzu_spiritAI : public Scripted_NoMovementAI
     }
 
     uint32 Spell;
-    Timer Timer;
+    Timer _Timer;
 
     void Reset() {
-        Timer = 5000;
+        _Timer = 5000;
         me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_PL_SPELL_TARGET);
     }
 
@@ -217,13 +217,13 @@ struct npc_anzu_spiritAI : public Scripted_NoMovementAI
         if (isDruidHotSpell(aur->GetSpellProto()))
         {
             DoCast(me, Spell);
-            Timer = 5000;
+            _Timer = 5000;
         }
     }
 
     void UpdateAI(const uint32 diff)
     {
-        if (Timer.Expired(diff))
+        if (_Timer.Expired(diff))
         {
             const Unit::AuraList& auras = me->GetAurasByType(SPELL_AURA_PERIODIC_HEAL);
             for (Unit::AuraList::const_iterator i = auras.begin(); i != auras.end(); ++i)
@@ -234,7 +234,7 @@ struct npc_anzu_spiritAI : public Scripted_NoMovementAI
                     break;
                 }
             }
-            Timer = 5000;
+            _Timer = 5000;
         }
     }
 };
