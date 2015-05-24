@@ -64,9 +64,9 @@ struct mob_sunblade_arch_mageAI : public ScriptedAI
 {
     mob_sunblade_arch_mageAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    int32 ArcaneExplosion;
-    int32 FrostNova;
-    int32 Blink;
+    Timer ArcaneExplosion;
+    Timer FrostNova;
+    Timer Blink;
 
     void Reset()
     {
@@ -86,27 +86,27 @@ struct mob_sunblade_arch_mageAI : public ScriptedAI
         if(Blink > 1000 && (me->isFrozen() || me->HasAuraType(SPELL_AURA_MOD_ROOT)))
             Blink = 1000;
 
-        ArcaneExplosion -= diff;
-        if(ArcaneExplosion <= diff)
+        
+        if (ArcaneExplosion.Expired(diff))
         {
             AddSpellToCast(SPELL_ARCANE_EXPLOSION, CAST_SELF);
-            ArcaneExplosion += urand(4000, 8000);
+            ArcaneExplosion = urand(4000, 8000);
         }
         
 
-        FrostNova -= diff;
-        if(FrostNova <= diff)
+
+        if (FrostNova.Expired(diff))
         {
             AddSpellToCast(SPELL_FROST_NOVA, CAST_SELF);
-            FrostNova += urand(6000, 16000);
+            FrostNova = urand(6000, 16000);
         }
         
 
-        Blink -= diff;
-        if(Blink <= diff)
+        
+        if (Blink.Expired(diff))
         {
             AddSpellToCast(SPELL_BLINK, CAST_SELF);
-            Blink += urand(15000, 30000);
+            Blink = urand(15000, 30000);
         }
         
 
@@ -139,9 +139,9 @@ struct mob_sunblade_cabalistAI : public ScriptedAI
 {
     mob_sunblade_cabalistAI(Creature *c) : ScriptedAI(c), summons(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    int32 IgniteMana;
-    int32 ShadowBolt;
-    int32 SummonImp;
+    Timer IgniteMana;
+    Timer ShadowBolt;
+    Timer SummonImp;
     SummonList summons;
 
     void Reset()
@@ -172,28 +172,25 @@ struct mob_sunblade_cabalistAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        IgniteMana -= diff;
-        if(IgniteMana <= diff)
+        if (IgniteMana.Expired(diff))
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 50, true, POWER_MANA))
                 AddSpellToCast(target, SPELL_IGNITE_MANA, false, true);
-            IgniteMana += urand(8000, 16000);
+            IgniteMana = urand(8000, 16000);
         }
         
 
-        ShadowBolt -= diff;
-        if(ShadowBolt <= diff)
+        if (ShadowBolt.Expired(diff))
         {
             AddSpellToCast(SPELL_SHADOW_BOLT, CAST_TANK);
-            ShadowBolt += urand(2100, 2500);
+            ShadowBolt = urand(2100, 2500);
         }
         
 
-         SummonImp -= diff;
-        if(SummonImp <= diff)
+        if (SummonImp.Expired(diff))
         {
             AddSpellToCast(SPELL_SUMMON_IMP, CAST_NULL);
-            SummonImp += urand(15000, 20000);
+            SummonImp = urand(15000, 20000);
         }
         
 
@@ -226,9 +223,9 @@ struct mob_sunblade_dawn_priestAI : public ScriptedAI
 {
     mob_sunblade_dawn_priestAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    int32 HolyNova;
-    int32 Renew;
-    int32 SelfRenew;
+    Timer HolyNova;
+    Timer Renew;
+    Timer SelfRenew;
     bool canRenew;
     bool canSelfRenew;
 
@@ -255,7 +252,7 @@ struct mob_sunblade_dawn_priestAI : public ScriptedAI
         {
             AddSpellToCast(me, SPELL_RENEW);
             canSelfRenew = false;
-            SelfRenew += 15000;
+            SelfRenew = 15000;
         }
 
         if(Unit* healTarget = SelectLowestHpFriendly(100, 2000))
@@ -264,29 +261,25 @@ struct mob_sunblade_dawn_priestAI : public ScriptedAI
             {
                 AddSpellToCast(healTarget, SPELL_RENEW);
                 canRenew = false;
-                Renew += urand(10000, 15000);
+                Renew = urand(10000, 15000);
             }
         }
 
         if(!canRenew)
-        {
-            Renew -= diff;
-            if(Renew <= diff)
+            if (Renew.Expired(diff))
                 canRenew = true;
             
-        }
+   
         if(!canSelfRenew)
-        {
-            SelfRenew -= diff;
-            if(SelfRenew <= diff)
+            if (SelfRenew.Expired(diff))
                 canSelfRenew = true;
-        }
+        
 
-        HolyNova -= diff;
-        if(HolyNova <= diff)
+       
+        if (HolyNova.Expired(diff))
         {
             AddSpellToCast(SPELL_HOLY_NOVA, CAST_NULL);
-            HolyNova += urand(5000, 10000);
+            HolyNova = urand(5000, 10000);
         }
         
 
@@ -318,9 +311,9 @@ struct mob_sunblade_dusk_priestAI : public ScriptedAI
 {
     mob_sunblade_dusk_priestAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-   int32 Fear;
-   int32 WordPain;
-   int32 MindFlay;
+    Timer Fear;
+    Timer WordPain;
+    Timer MindFlay;
 
     void Reset()
     {
@@ -337,28 +330,28 @@ struct mob_sunblade_dusk_priestAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        Fear -= diff;
-        if(Fear <= diff)
+
+        if (Fear.Expired(diff))
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 25, true, me->getVictim()->GetGUID()))
                 AddSpellToCast(target, SPELL_FEAR);
-            Fear += urand(6000, 18000);
+            Fear = urand(6000, 18000);
         }
         
-        WordPain -= diff;
-        if(WordPain <= diff)
+        
+        if (WordPain.Expired(diff))
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 60, true))
                 AddSpellToCast(target, SPELL_SHADOW_WORD_PAIN);
-            WordPain += urand(12000, 30000);
+            WordPain = urand(12000, 30000);
         }
         
-        MindFlay -= diff;
-        if(MindFlay <= diff)
+        
+        if (MindFlay.Expired(diff))
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 50, true))
                 AddSpellToCast(target, SPELL_MIND_FLAY, false, true);
-            MindFlay += urand(9000, 12000);
+            MindFlay = urand(9000, 12000);
         }
         
 
@@ -473,7 +466,7 @@ struct mob_sunblade_scoutAI : public ScriptedAI
 {
     mob_sunblade_scoutAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(30); }
 
-    int32 SinisterStrike;
+    Timer SinisterStrike;
     bool activating_protector;
 
     void Reset()
@@ -540,11 +533,11 @@ struct mob_sunblade_scoutAI : public ScriptedAI
         if(!UpdateVictim() || activating_protector)
             return;
 
-        SinisterStrike -= diff;
-        if(SinisterStrike <= diff)
+        
+        if (SinisterStrike.Expired(diff))
         {
             AddSpellToCast(me->getVictim(), SPELL_SINISTER_STRIKE);
-            SinisterStrike += urand(4000, 8000);
+            SinisterStrike = urand(4000, 8000);
         }
         
 
@@ -577,9 +570,9 @@ struct mob_sunblade_slayerAI : public ScriptedAI
 {
     mob_sunblade_slayerAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    int32 ScatterShot;
-    int32 Shoot;
-    int32 SlayingShot;
+    Timer ScatterShot;
+    Timer Shoot;
+    Timer SlayingShot;
 
     void Reset()
     {
@@ -602,27 +595,26 @@ struct mob_sunblade_slayerAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        ScatterShot -= diff;
-        if(ScatterShot <= diff)
+        if (ScatterShot.Expired(diff))
         {
             AddSpellToCast(SPELL_SCATTER_SHOT, CAST_TANK);
             ScatterShot += urand(6000, 12000);
         }
         
 
-        Shoot -= diff;
-        if(Shoot <= diff)
+        
+        if (Shoot.Expired(diff))
         {
             AddSpellToCast(SPELL_SHOOT, CAST_TANK);
-            Shoot += urand(2500, 4000);
+            Shoot = urand(2500, 4000);
         }
         
 
-        SlayingShot -= diff;
-        if(SlayingShot <= diff)
+        
+        if (SlayingShot.Expired(diff))
         {
             AddSpellToCast(SPELL_SLAYING_SHOT, CAST_TANK);
-            SlayingShot += urand(8000, 15000);
+            SlayingShot = urand(8000, 15000);
         }
         
 
@@ -654,8 +646,8 @@ struct mob_sunblade_vindicatorAI : public ScriptedAI
 {
     mob_sunblade_vindicatorAI(Creature *c) : ScriptedAI(c) { me->SetAggroRange(AGGRO_RANGE); }
 
-    int32 Cleave;
-    int32 MortalStrike;
+    Timer Cleave;
+    Timer MortalStrike;
 
     void Reset()
     {
@@ -671,19 +663,19 @@ struct mob_sunblade_vindicatorAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        Cleave -= diff;
-        if(Cleave <= diff)
+        
+        if (Cleave.Expired(diff))
         {
             AddSpellToCast(SPELL_CLEAVE, CAST_TANK);
-            Cleave += urand(4000, 9000);
+            Cleave = urand(4000, 9000);
         }
         
 
-        MortalStrike -= diff;
-        if(MortalStrike <= diff)
+        
+        if (MortalStrike.Expired(diff))
         {
             AddSpellToCast(SPELL_MORTAL_STRIKE, CAST_TANK);
-            MortalStrike += urand(8000, 15000);
+            MortalStrike = urand(8000, 15000);
         }
         
 
@@ -735,8 +727,8 @@ struct mob_shadowsword_assassinAI : public ScriptedAI
 {
     mob_shadowsword_assassinAI(Creature *c) : ScriptedAI(c) { pInstance = c->GetInstanceData(); }
 
-    int32 Shadowstep;
-    int32 CheckTimer;
+    Timer Shadowstep;
+    Timer CheckTimer;
     ScriptedInstance* pInstance;
 
     void Reset()
@@ -805,20 +797,20 @@ struct mob_shadowsword_assassinAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        CheckTimer -= diff;
-        if(CheckTimer <= diff)
+        
+        if (CheckTimer.Expired(diff))
         {
             if(me->isInRoots())
                 DoCast(me->getVictim(), SPELL_SHADOWSTEP);
-            CheckTimer += 2000;
+            CheckTimer = 2000;
         }
         
 
-        Shadowstep -= diff;
-        if(Shadowstep <= diff)
+       
+        if (Shadowstep.Expired(diff))
         {
             AddSpellToCast(SPELL_SHADOWSTEP, CAST_TANK);
-            Shadowstep += urand(10000, 20000);
+            Shadowstep = urand(10000, 20000);
         }
         
 
@@ -860,9 +852,9 @@ struct mob_shadowsword_commanderAI : public ScriptedAI
     }
 
     ScriptedInstance* pInstance;
-    int32 ShieldSlam;
-    int32 Yell_timer;
-    int32 ShoutTimer;
+    Timer ShieldSlam;
+    Timer Yell_timer;
+    Timer ShoutTimer;
     uint64 TriggerGUID;
 
     void Reset()
@@ -913,10 +905,9 @@ struct mob_shadowsword_commanderAI : public ScriptedAI
                 if(Creature* ImpTrigger = GetClosestCreatureWithEntry(me, MOB_GAUNTLET_IMP_TRIGGER, 70))
                     TriggerGUID = ImpTrigger->GetGUID();
             }
-            if(Yell_timer && TriggerGUID)
+            if(Yell_timer.GetInterval() && TriggerGUID)
             {
-                Yell_timer -= diff;
-                if(Yell_timer <= diff)
+                if (Yell_timer.Expired(diff))
                 {
                     me->YellToZone(YELL_GAUNTLET_START, 0, me->GetGUID());
                     Yell_timer = 0;
@@ -927,18 +918,16 @@ struct mob_shadowsword_commanderAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        ShieldSlam -= diff;
-        if(ShieldSlam <= diff)
+        if (ShieldSlam.Expired(diff))
         {
             AddSpellToCast(SPELL_SHIELD_SLAM, CAST_TANK);
-            ShieldSlam += urand(8000, 12000);
+            ShieldSlam = urand(8000, 12000);
         }
-        
-        ShoutTimer -= diff;
-        if(ShoutTimer <= diff)
+
+        if (ShoutTimer.Expired(diff))
         {
             DoCast(me, SPELL_BATTLE_SHOUT);
-            ShoutTimer += 30000;
+            ShoutTimer = 30000;
         }
         
 
@@ -973,9 +962,9 @@ struct mob_shadowsword_deathbringerAI : public ScriptedAI
         me->SetAggroRange(AGGRO_RANGE);
     }
 
-    int32 DiseaseBuffet;
-    int32 VolatileDisease;
-    int32 DespawnTimer;
+    Timer DiseaseBuffet;
+    Timer VolatileDisease;
+    Timer DespawnTimer;
     ScriptedInstance* pInstance;
 
     void Reset()
@@ -1007,28 +996,26 @@ struct mob_shadowsword_deathbringerAI : public ScriptedAI
     {
         if (me->GetMotionMaster()->GetCurrentMovementGeneratorType() == IDLE_MOTION_TYPE && !me->isInCombat())
         {
-            DespawnTimer -= diff;
-            if (DespawnTimer <= diff)
+            if (DespawnTimer.Expired(diff))
                 me->ForcedDespawn();
         }
 
         if(!UpdateVictim())
             return;
 
-        DiseaseBuffet -= diff;
-        if(DiseaseBuffet <= diff)
+
+        if (DiseaseBuffet.Expired(diff))
         {
             AddSpellToCast(SPELL_DISEASE_BUFFET);
-            DiseaseBuffet += urand(10000, 14000);
+            DiseaseBuffet = urand(10000, 14000);
         }
         
 
-        VolatileDisease -= diff;
-        if(VolatileDisease <= diff)
+        if (VolatileDisease.Expired(diff))
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 8.0f, true))
                 AddSpellToCast(target, SPELL_VOLATILE_DISEASE);
-            VolatileDisease += urand(10000, 16000);
+            VolatileDisease = urand(10000, 16000);
         }
         
 
@@ -1064,8 +1051,8 @@ struct mob_shadowsword_lifeshaperAI : public ScriptedAI
     }
 
     ScriptedInstance* pInstance;
-    int32 DrainLife;
-    int32 HealthFunnel;
+    Timer DrainLife;
+    Timer HealthFunnel;
     bool canFunnelHP;
 
     void Reset()
@@ -1114,8 +1101,7 @@ struct mob_shadowsword_lifeshaperAI : public ScriptedAI
 
         if(!canFunnelHP)
         {
-            HealthFunnel -= diff;
-            if(HealthFunnel <= diff)
+            if (HealthFunnel.Expired(diff))
                 canFunnelHP = true;
         }
 
@@ -1125,16 +1111,15 @@ struct mob_shadowsword_lifeshaperAI : public ScriptedAI
             {
                 AddSpellToCast(healTarget, SPELL_HEALTH_FUNNEL);
                 canFunnelHP = false;
-                HealthFunnel += 8000;
+                HealthFunnel = 8000;
             }
         }
 
-        DrainLife -= diff;
-        if(DrainLife <= diff)
+        if (DrainLife.Expired(diff))
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 50, true))
                 AddSpellToCast(target, SPELL_DRAIN_LIFE);
-            DrainLife += urand(10000,15000);
+            DrainLife = urand(10000,15000);
         }
         
 
@@ -1171,9 +1156,9 @@ struct mob_shadowsword_manafiendAI : public ScriptedAI
     }
 
     ScriptedInstance* pInstance;
-    int32 ArcaneExplosion;
-    int32 DrainMana;
-    int32 CheckTimer;
+    Timer ArcaneExplosion;
+    Timer DrainMana;
+    Timer CheckTimer;
 
     void Reset()
     {
@@ -1219,19 +1204,18 @@ struct mob_shadowsword_manafiendAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        CheckTimer -= diff;
-        if(CheckTimer <= diff)
+        if (CheckTimer.Expired(diff))
         {
             if(me->IsWithinDistInMap(me->getVictim(), 15))
                 AddSpellToCast(SPELL_ARCANE_EXPLOSION_2, CAST_SELF);
-            CheckTimer += urand(4000, 8000);
+            CheckTimer = urand(4000, 8000);
         }
         
-        DrainMana -= diff;
-        if(DrainMana <= diff)
+        
+        if (DrainMana.Expired(diff))
         {
             AddSpellToCast(SPELL_DRAIN_MANA, CAST_NULL);
-            DrainMana += urand(10000, 20000);
+            DrainMana = urand(10000, 20000);
         }
         
 
@@ -1268,9 +1252,9 @@ struct mob_shadowsword_soulbinderAI : public ScriptedAI
     }
 
     ScriptedInstance* pInstance;
-    int32 CurseOfExhaustion;
-    int32 Domination;
-    int32 FlashOfDarkness;
+    Timer CurseOfExhaustion;
+    Timer Domination;
+    Timer FlashOfDarkness;
 
     void Reset()
     {
@@ -1314,26 +1298,26 @@ struct mob_shadowsword_soulbinderAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        CurseOfExhaustion -= diff;
-        if(CurseOfExhaustion <= diff)
+        
+        if (CurseOfExhaustion.Expired(diff))
         {
             AddSpellToCast(SPELL_CURSE_OF_EXHAUSTION, CAST_RANDOM);
-            CurseOfExhaustion += urand(5000,10000);
+            CurseOfExhaustion = urand(5000,10000);
         }
         
-        Domination -= diff;
-        if(Domination <= diff)
+        
+        if (Domination.Expired(diff))
         {
             AddSpellToCast(SPELL_DOMINATION, CAST_TANK);
-            Domination += urand(14000, 24000);
+            Domination = urand(14000, 24000);
         }
         
 
-        FlashOfDarkness -= diff;
-        if(FlashOfDarkness <= diff)
+        
+        if (FlashOfDarkness.Expired(diff))
         {
             AddSpellToCast(SPELL_FLASH_OF_DARKNESS, CAST_NULL);
-            FlashOfDarkness += urand(10000, 15000);
+            FlashOfDarkness = urand(10000, 15000);
         }
         
 
@@ -1370,8 +1354,8 @@ struct mob_shadowsword_vanquisherAI : public ScriptedAI
     }
 
     ScriptedInstance* pInstance;
-    int32 Cleave;
-    int32 MeltArmor;
+    Timer Cleave;
+    Timer MeltArmor;
     bool emote;
 
     void Reset()
@@ -1427,19 +1411,17 @@ struct mob_shadowsword_vanquisherAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        MeltArmor -= diff;
-        if(MeltArmor <= diff)
+        if (MeltArmor.Expired(diff))
         {
             AddSpellToCast(SPELL_MELT_AROMOR, CAST_TANK);
-            MeltArmor += urand(8000, 16000);
+            MeltArmor = urand(8000, 16000);
         }
         
 
-        Cleave -= diff;
-        if(Cleave <= diff)
+        if (Cleave.Expired(diff))
         {
             AddSpellToCast(SPELL_CLEAVE_2, CAST_TANK);
-            Cleave += urand(4000, 9000);
+            Cleave = urand(4000, 9000);
         }
         
 
@@ -1477,7 +1459,7 @@ struct mob_volatile_fiendAI : public ScriptedAI
     }
 
     bool summoned, exploding;
-    int32 explosion_timer;
+    Timer explosion_timer;
     ScriptedInstance* pInstance;
 
     void Reset()
@@ -1530,12 +1512,11 @@ struct mob_volatile_fiendAI : public ScriptedAI
 
         if(exploding)
         {
-            explosion_timer -= diff;
-            if (explosion_timer <= diff)
+            if (explosion_timer.Expired(diff))
             {
                 me->Kill(me, false);
                 exploding = false;
-                explosion_timer += 2000;
+                explosion_timer = 2000;
             }
         }
 
@@ -1592,9 +1573,9 @@ struct mob_apocalypse_guardAI : public ScriptedAI
     }
 
     ScriptedInstance* pInstance;
-    int32 Cleave;
-    int32 CorruptingStrike;
-    int32 DeathCoil;
+    Timer Cleave;
+    Timer CorruptingStrike;
+    Timer DeathCoil;
     bool InfernalDefense;
 
     void Reset()
@@ -1627,26 +1608,23 @@ struct mob_apocalypse_guardAI : public ScriptedAI
             InfernalDefense = true;
         }
 
-        Cleave -= diff;
-        if(Cleave <= diff)
+        if (Cleave.Expired(diff))
         {
             AddSpellToCast(SPELL_CLEAVE_3, CAST_TANK);
-            Cleave += urand(4000, 8000);
+            Cleave = urand(4000, 8000);
         }
         
-        CorruptingStrike -= diff;
-        if(CorruptingStrike <= diff)
+        if (CorruptingStrike.Expired(diff))
         {
             AddSpellToCast(SPELL_CORRUPTING_STRIKE, CAST_TANK);
-            CorruptingStrike += urand(6000, 12000);
+            CorruptingStrike = urand(6000, 12000);
         }
         
-        DeathCoil -= diff;
-        if(DeathCoil <= diff)
+        if (DeathCoil.Expired(diff))
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30.0, true, me->getVictimGUID(), 5.0))
                 AddSpellToCast(target, SPELL_DEATH_COIL, false, true);
-            DeathCoil += urand(7000, 12000);
+            DeathCoil = urand(7000, 12000);
         }
         
 
@@ -1682,8 +1660,8 @@ struct mob_cataclysm_houndAI : public ScriptedAI
     }
 
     ScriptedInstance* pInstance;
-    int32 Enrage;
-    int32 CataclysmBreath;
+    Timer Enrage;
+    Timer CataclysmBreath;
 
     void Reset()
     {
@@ -1707,16 +1685,15 @@ struct mob_cataclysm_houndAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        Enrage -= diff;
-        if(Enrage <= diff)
+
+        if (Enrage.Expired(diff))
         {
             AddSpellToCast(SPELL_ENRAGE, CAST_SELF);
-            Enrage += urand(10000, 12000);
+            Enrage = urand(10000, 12000);
         }
         
 
-        CataclysmBreath -= diff;
-        if(CataclysmBreath <= diff)
+        if (CataclysmBreath.Expired(diff))
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 20, true))
             {
@@ -1724,7 +1701,7 @@ struct mob_cataclysm_houndAI : public ScriptedAI
                 me->SetInFront(target);
                 AddSpellToCast(target, SPELL_CATACLYSM_BREATH, false, true);
             }
-            CataclysmBreath += 8000;
+            CataclysmBreath = 8000;
         }
         
 
@@ -1761,9 +1738,9 @@ struct mob_chaos_gazerAI : public ScriptedAI
     }
 
     ScriptedInstance* pInstance;
-    int32 DrainLifeCD;
-    int32 Petrify;
-    int32 TentacleSweep;
+    Timer DrainLifeCD;
+    Timer Petrify;
+    Timer TentacleSweep;
     bool canDrainLife;
 
     void Reset()
@@ -1795,44 +1772,42 @@ struct mob_chaos_gazerAI : public ScriptedAI
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 22.0, true, 0, 16.0))
             {
                 ForceSpellCast(target, SPELL_DRAIN_LIFE_1, DONT_INTERRUPT, false, true);
-                DrainLifeCD += urand(10000, 12000);
+                DrainLifeCD = urand(10000, 12000);
             }
             else
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 16.0, true, 0, 8.0))
             {
                 ForceSpellCast(target, SPELL_DRAIN_LIFE_1, DONT_INTERRUPT, false, true);
-                DrainLifeCD += urand(10000, 12000);
+                DrainLifeCD = urand(10000, 12000);
             }
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 8.0, true, me->getVictimGUID()))
             {
                 ForceSpellCast(target, SPELL_DRAIN_LIFE_1, DONT_INTERRUPT, false, true);
-                DrainLifeCD += urand(10000, 12000);
+                DrainLifeCD = urand(10000, 12000);
             }
             else
-                DrainLifeCD += 1000;
+                DrainLifeCD = 1000;
             canDrainLife = false;
         }
 
         if(!canDrainLife)
         {
-            DrainLifeCD -= diff;
-            if(DrainLifeCD <= diff)
+            if (DrainLifeCD.Expired(diff))
                 canDrainLife = true;
         }
 
-        Petrify -= diff;
-        if(Petrify <= diff)
+
+        if (Petrify.Expired(diff))
         {
             AddSpellToCast(SPELL_PETRIFY, CAST_TANK);
-            Petrify += urand(9000, 12000);
+            Petrify = urand(9000, 12000);
         }
         
 
-        TentacleSweep -= diff;
-        if(TentacleSweep <= diff)
+        if (TentacleSweep.Expired(diff))
         {
             AddSpellToCast(SPELL_TENTACLE_SWEEP, CAST_TANK);
-            TentacleSweep += urand(7000, 12000);
+            TentacleSweep = urand(7000, 12000);
         }
         
 
@@ -1869,7 +1844,7 @@ struct mob_doomfire_destroyerAI : public ScriptedAI
     }
 
     ScriptedInstance* pInstance;
-    int32 SummonTimer;
+    Timer SummonTimer;
     SummonList summons;
 
     void Reset()
@@ -1908,11 +1883,11 @@ struct mob_doomfire_destroyerAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        SummonTimer -= diff;
-        if(SummonTimer <= diff)
+        
+        if (SummonTimer.Expired(diff))
         {
             AddSpellToCast(SPELL_CREATE_DOMMFIRE_SHARD, CAST_NULL);
-            SummonTimer += urand(5500, 7000);
+            SummonTimer = urand(5500, 7000);
         }
         
 
@@ -2011,8 +1986,8 @@ struct mob_oblivion_mageAI : public ScriptedAI
     }
 
     ScriptedInstance* pInstance;
-    int32 Polymorph;
-    int32 EvadeTimer;
+    Timer Polymorph;
+    Timer EvadeTimer;
     bool channeling;
 
     void Reset()
@@ -2042,8 +2017,7 @@ struct mob_oblivion_mageAI : public ScriptedAI
     {
         if (!me->isInCombat() && !channeling)
         {
-            EvadeTimer -= diff;
-            if(EvadeTimer <= diff)
+            if (EvadeTimer.Expired(diff))
             {
                 if (Unit* Destroyer = FindCreature(NPC_DOOMFIRE_DESTROYER, 20, me))
                     DoCast(me, SPELL_FIRE_CHANNELING);
@@ -2060,12 +2034,12 @@ struct mob_oblivion_mageAI : public ScriptedAI
                 AttackStart(target, false);
         }
 
-        Polymorph -= diff;
-        if(Polymorph <= diff)
+        
+        if (Polymorph.Expired(diff))
         {
             ClearCastQueue();
             AddSpellToCast(SPELL_POLYMORPH, CAST_RANDOM_WITHOUT_TANK, false, true);
-            Polymorph += urand(5000, 8000);
+            Polymorph = urand(5000, 8000);
         }
 
         CastNextSpellIfAnyAndReady(diff);
@@ -2149,8 +2123,8 @@ struct mob_priestess_of_tormentAI : public ScriptedAI
     }
 
     ScriptedInstance* pInstance;
-    int32 Whirlwind;
-    int32 MoveTimer;
+    Timer Whirlwind;
+    Timer MoveTimer;
     bool moving;
 
     void Reset()
@@ -2187,8 +2161,7 @@ struct mob_priestess_of_tormentAI : public ScriptedAI
 
         if (moving)
         {
-            MoveTimer -= diff;
-            if(MoveTimer <= diff)
+            if (MoveTimer.Expired(diff))
             {
                 float x, y, z = 0;
                 if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 40.0f, true))
@@ -2198,16 +2171,16 @@ struct mob_priestess_of_tormentAI : public ScriptedAI
                     me->SetSpeed(MOVE_RUN, 1.5, true);
                     me->GetMotionMaster()->MovePoint(0, x, y, z);
                 }
-                MoveTimer += urand(1000, 2500);
+                MoveTimer = urand(1000, 2500);
             }
         }
 
-        Whirlwind -= diff;
-        if(Whirlwind <= diff)
+
+        if (Whirlwind.Expired(diff))
         {
             DoCast(me, SPELL_WHIRLWIND);
             moving = true;
-            Whirlwind += urand(13000, 16000);
+            Whirlwind = urand(13000, 16000);
         }
         
 
@@ -2253,7 +2226,7 @@ struct mob_shadowsword_guardianAI : public ScriptedAI
     }
 
     ScriptedInstance* pInstance;
-    int32 BearDown;
+    Timer BearDown;
 
     void Reset()
     {
@@ -2284,12 +2257,11 @@ struct mob_shadowsword_guardianAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        BearDown -= diff;
-        if(BearDown <= diff)
+        if (BearDown.Expired(diff))
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 50.0f, true, me->getVictimGUID(), 7.0f))
                 AddSpellToCast(target, SPELL_BEAR_DOWN, false, true);
-            BearDown += urand(7000, 14000);
+            BearDown = urand(7000, 14000);
         }
         
 
@@ -2322,8 +2294,8 @@ struct npc_gauntlet_imp_triggerAI : public Scripted_NoMovementAI
     ScriptedInstance* pInstance;
     WorldLocation wLoc;
     SummonList summons;
-    int32 Deathbringer_timer;
-    int32 Imp_timer;
+    Timer Deathbringer_timer;
+    Timer Imp_timer;
 
     void Reset()
     {
@@ -2360,18 +2332,17 @@ struct npc_gauntlet_imp_triggerAI : public Scripted_NoMovementAI
             if(!me->HasAura(SPELL_SUMMON_VISUAL))
                 DoCast(me, SPELL_SUMMON_VISUAL, true);
 
-            Imp_timer -= diff;
-            if(Imp_timer <= diff)
+            if (Imp_timer.Expired(diff))
             {
                 me->SummonCreature(MOB_VOLATILE_FIEND, wLoc.coord_x, wLoc.coord_y, wLoc.coord_z, wLoc.orientation, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 60000);
-                Imp_timer += 12000;
+                Imp_timer = 12000;
             }
             
-            Deathbringer_timer -= diff;
-            if(Deathbringer_timer <= diff)
+
+            if (Deathbringer_timer.Expired(diff))
             {
                 me->SummonCreature(MOB_SHADOWSWORD_DEATHBRINGER, wLoc.coord_x, wLoc.coord_y, wLoc.coord_z, wLoc.orientation, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 60000);
-                Deathbringer_timer += 45000;
+                Deathbringer_timer = 45000;
             }
         }
 

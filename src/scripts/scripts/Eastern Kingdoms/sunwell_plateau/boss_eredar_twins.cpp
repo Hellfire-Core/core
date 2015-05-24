@@ -112,11 +112,11 @@ struct boss_sacrolashAI : public ScriptedAI
 
     InstanceData *pInstance;
 
-    int32 ShadowbladesTimer;
-    int32 SpecialTimer;
-    int32 ConfoundingblowTimer;
-    int32 ShadowimageTimer;
-    int32 EnrageTimer;
+    Timer ShadowbladesTimer;
+    Timer SpecialTimer;
+    Timer ConfoundingblowTimer;
+    Timer ShadowimageTimer;
+    Timer EnrageTimer;
 
     void Reset()
     {
@@ -238,54 +238,52 @@ struct boss_sacrolashAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        SpecialTimer -= diff;
-        if (SpecialTimer <= diff)
+        if (SpecialTimer.Expired(diff))
         {
             if (pInstance->GetData(DATA_ALYTHESS) == DONE)
             {
                 AddSpellToCastWithScriptText(SPELL_CONFLAGRATION, CAST_RANDOM_WITHOUT_TANK, EMOTE_CONFLAGRATION, false, true);
-                SpecialTimer += urand(14000, 16000);
+                SpecialTimer = urand(14000, 16000);
             }
             else
             {
                 if(Unit* target = GetNovaTarget())
                     AddSpellToCastWithScriptText(target, SPELL_SHADOW_NOVA, EMOTE_SHADOW_NOVA, false, true);
                 DoScriptText(YELL_SHADOW_NOVA, me);
-                SpecialTimer += urand(30000,35000);
+                SpecialTimer = urand(30000,35000);
             }
         }
 
 
-        ConfoundingblowTimer -= diff;
-        if (ConfoundingblowTimer <= diff)
+        
+        if (ConfoundingblowTimer.Expired(diff))
         {
             AddSpellToCast(SPELL_CONFOUNDING_BLOW, CAST_TANK);
-            ConfoundingblowTimer += urand(20000, 25000);
+            ConfoundingblowTimer = urand(20000, 25000);
         }
         
 
-        ShadowimageTimer -= diff;
-        if (ShadowimageTimer <= diff)
+        
+        if (ShadowimageTimer.Expired(diff))
         {
             for (int i = 0; i < 3; i++)
                 DoSpawnCreature(MOB_SHADOW_IMAGE, 0, 0 , 0, frand(0, 2*M_PI), TEMPSUMMON_TIMED_DESPAWN, 15000);
-            ShadowimageTimer += 20000;
+            ShadowimageTimer = 20000;
         }
         
 
-        ShadowbladesTimer -= diff;
-        if (ShadowbladesTimer <= diff)
+        if (ShadowbladesTimer.Expired(diff))
         {
             AddSpellToCast(SPELL_SHADOW_BLADES, CAST_SELF);
-            ShadowbladesTimer += 10000;
+            ShadowbladesTimer = 10000;
         }
         
 
-        EnrageTimer -= diff;
-        if (EnrageTimer <= diff)
+        
+        if (EnrageTimer.Expired(diff))
         {
             AddSpellToCastWithScriptText(SPELL_ENRAGE, CAST_SELF, YELL_ENRAGE);
-            EnrageTimer += 360000;
+            EnrageTimer = 360000;
         }
         
 
@@ -312,12 +310,12 @@ struct boss_alythessAI : public Scripted_NoMovementAI
     bool IntroDone, TrashWaveDone;
 
     uint32 IntroStepCounter;
-    int32 IntroYellTimer;
+    Timer IntroYellTimer;
 
-    int32 SpecialTimer;
-    int32 PyrogenicsTimer;
-    int32 FlamesearTimer;
-    int32 EnrageTimer;
+    Timer SpecialTimer;
+    Timer PyrogenicsTimer;
+    Timer FlamesearTimer;
+    Timer EnrageTimer;
 
     void Reset()
     {
@@ -495,54 +493,51 @@ struct boss_alythessAI : public Scripted_NoMovementAI
     {
         if (IntroStepCounter < 10)
         {
-            IntroYellTimer -= diff;
-            if (IntroYellTimer <= diff)
+            if (IntroYellTimer.Expired(diff))
             {
-                IntroYellTimer += IntroStep(++IntroStepCounter);
+                IntroYellTimer = IntroStep(++IntroStepCounter);
             }
         }
 
         if (!UpdateVictim())
             return;
 
-        SpecialTimer -= diff;
-        if (SpecialTimer <= diff)
+        if (SpecialTimer.Expired(diff))
         {
             if (pInstance->GetData(DATA_SACROLASH) == DONE)
             {
                 AddSpellToCastWithScriptText(SPELL_SHADOW_NOVA, CAST_RANDOM_WITHOUT_TANK, EMOTE_SHADOW_NOVA, false, true);
-                SpecialTimer += urand(14000, 16000);
+                SpecialTimer = urand(14000, 16000);
             }
             else
             {
                 if(Unit* target = GetConflagTarget())
                     AddSpellToCastWithScriptText(target , SPELL_CONFLAGRATION, EMOTE_CONFLAGRATION, false, true);
                 DoScriptText(YELL_CANFLAGRATION, me);
-                SpecialTimer += urand(30000,35000);
+                SpecialTimer = urand(30000,35000);
             }
         }
         
-        FlamesearTimer -= diff;
-        if (FlamesearTimer <= diff)
+        
+        if (FlamesearTimer.Expired(diff))
         {
             AddSpellToCast(SPELL_FLAME_SEAR, CAST_SELF);
-            FlamesearTimer += 10000;
+            FlamesearTimer = 10000;
         }
         
 
-        PyrogenicsTimer -= diff;
-        if (PyrogenicsTimer <= diff)
+
+        if (PyrogenicsTimer.Expired(diff))
         {
             AddSpellToCast(SPELL_PYROGENICS, CAST_SELF);
-            PyrogenicsTimer += 15000;
+            PyrogenicsTimer = 15000;
         }
         
 
-        EnrageTimer -= diff;
-        if (EnrageTimer <= diff)
+        if (EnrageTimer.Expired(diff))
         {
             AddSpellToCastWithScriptText(SPELL_ENRAGE, CAST_SELF, YELL_BERSERK);
-            EnrageTimer += 360000;
+            EnrageTimer = 360000;
         }
         
 
@@ -560,8 +555,8 @@ struct mob_shadow_imageAI : public ScriptedAI
 {
     mob_shadow_imageAI(Creature *c) : ScriptedAI(c) { pInstance = c->GetInstanceData(); }
 
-    int32 ShadowfuryTimer;
-    int32 DarkstrikeTimer;
+    Timer ShadowfuryTimer;
+    Timer DarkstrikeTimer;
     InstanceData *pInstance;
 
     void Reset()
@@ -615,21 +610,21 @@ struct mob_shadow_imageAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        ShadowfuryTimer -= diff;
-        if (ShadowfuryTimer <= diff)
+        
+        if (ShadowfuryTimer.Expired(diff))
         {
             if (me->IsWithinMeleeRange(me->getVictim()) && roll_chance_f(15))
             {
                 AddSpellToCast(SPELL_SHADOW_FURY, CAST_NULL);
-                ShadowfuryTimer += 5000;
+                ShadowfuryTimer = 5000;
             }
             else
-                ShadowfuryTimer += 1500;
+                ShadowfuryTimer = 1500;
         }
         
 
-        DarkstrikeTimer -= diff;
-        if (DarkstrikeTimer <= diff)
+
+        if (DarkstrikeTimer.Expired(diff))
         {
             if (!me->IsNonMeleeSpellCast(false))
             {
@@ -637,7 +632,7 @@ struct mob_shadow_imageAI : public ScriptedAI
                 if (me->IsWithinMeleeRange(me->getVictim()))
                     AddSpellToCast(SPELL_DARK_STRIKE, CAST_TANK);
             }
-            DarkstrikeTimer += 1000;
+            DarkstrikeTimer = 1000;
         }
         
 

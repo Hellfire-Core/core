@@ -131,15 +131,15 @@ struct boss_kalecgosAI : public ScriptedAI
 
     ScriptedInstance *instance;
 
-    int32 ArcaneBuffetTimer;
-    int32 FrostBreathTimer;
-    int32 WildMagicTimer;
-    int32 SpectralBlastTimer;
-    int32 TailLashTimer;
-    int32 CheckTimer;
-    int32 TalkTimer;
-    int32 TalkSequence;
-    int32 ResetTimer;
+    Timer ArcaneBuffetTimer;
+    Timer FrostBreathTimer;
+    Timer WildMagicTimer;
+    Timer SpectralBlastTimer;
+    Timer TailLashTimer;
+    Timer CheckTimer;
+    Timer TalkTimer;
+    uint32 TalkSequence;
+    Timer ResetTimer;
     WorldLocation wLoc;
 
     bool isFriendly;
@@ -314,10 +314,9 @@ struct boss_kalecgosAI : public ScriptedAI
                 return;
         }
 
-        if (ResetTimer)
+        if (ResetTimer.GetInterval())
         {
-            ResetTimer -= diff;
-            if (ResetTimer <= diff)
+            if (ResetTimer.Expired(diff))
             {
                 ResetTimer = 0;
                 me->setFaction(16);     //aggresive
@@ -326,7 +325,7 @@ struct boss_kalecgosAI : public ScriptedAI
             
             return;
         }
-        else if (TalkTimer)
+        else if (TalkTimer.GetInterval())
         {
             if (!TalkSequence)
             {
@@ -339,8 +338,7 @@ struct boss_kalecgosAI : public ScriptedAI
                 TalkSequence++;
             }
 
-            TalkTimer -= diff;
-            if (TalkTimer <= diff)
+            if (TalkTimer.Expired(diff))
             {
                 if (isFriendly)
                     GoodEnding();
@@ -374,9 +372,9 @@ struct boss_kalecgosAI : public ScriptedAI
             if (me->getVictim() && me->getVictim()->HasAura(AURA_SPECTRAL_REALM, 0))
                 me->getThreatManager().modifyThreatPercent(me->getVictim(), -10);
 
-            CheckTimer -= diff;
+           
             // various checks + interaction with sathrovarr
-            if (CheckTimer <= diff)
+            if (CheckTimer.Expired(diff))
             {
                 if (!me->IsWithinDistInMap(&wLoc, 30))
                     EnterEvadeMode();
@@ -425,7 +423,7 @@ struct boss_kalecgosAI : public ScriptedAI
                     isFriendly = true;
                     return;
                 }
-                CheckTimer += 1000;
+                CheckTimer = 1000;
 
                 if (me->isInCombat())
                     DoZoneInCombat();
@@ -437,53 +435,53 @@ struct boss_kalecgosAI : public ScriptedAI
             if (!UpdateVictim())
                 return;
 
-            ArcaneBuffetTimer -= diff;
+            
             // cast spells
-            if (ArcaneBuffetTimer <= diff)
+            if (ArcaneBuffetTimer.Expired(diff))
             {
                 AddSpellToCast(SPELL_ARCANE_BUFFET, CAST_SELF);
                 if (roll_chance_f(20.0))
                     DoScriptText(RAND(SAY_EVIL_SPELL1, SAY_EVIL_SPELL2), me);
 
-                ArcaneBuffetTimer += 8000;
+                ArcaneBuffetTimer = 8000;
             }
             
 
-            FrostBreathTimer -= diff;
-            if (FrostBreathTimer <= diff)
+
+            if (FrostBreathTimer.Expired(diff))
             {
                 if (roll_chance_f(20.0))
                     DoScriptText(RAND(SAY_EVIL_SPELL1, SAY_EVIL_SPELL2), me);
 
                 AddSpellToCast(SPELL_FROST_BREATH, CAST_SELF);
-                FrostBreathTimer += 15000;
+                FrostBreathTimer = 15000;
             }
             
 
-            TailLashTimer -= diff;
-            if (TailLashTimer <= diff)
+            
+            if (TailLashTimer.Expired(diff))
             {
                 if (roll_chance_f(20.0))
                     DoScriptText(RAND(SAY_EVIL_SPELL1, SAY_EVIL_SPELL2), me);
 
                 AddSpellToCast(SPELL_TAIL_LASH, CAST_SELF);
-                TailLashTimer += 15000;
+                TailLashTimer = 15000;
             }
             
 
-            WildMagicTimer -= diff;
-            if (WildMagicTimer <= diff)
+           
+            if (WildMagicTimer.Expired(diff))
             {
                 AddSpellToCast(WildMagic[rand()%6], CAST_SELF);
-                WildMagicTimer += 20000;
+                WildMagicTimer = 20000;
             }
             
 
-            SpectralBlastTimer -= diff;
-            if (SpectralBlastTimer <= diff)
+            
+            if (SpectralBlastTimer.Expired(diff))
             {
                 AddSpellToCast(SPELL_SPECTRAL_BLAST, CAST_SELF);
-                SpectralBlastTimer += 20000+(rand()%5000);
+                SpectralBlastTimer = 20000+(rand()%5000);
             }
             
 
@@ -503,10 +501,10 @@ struct boss_sathrovarrAI : public ScriptedAI
 
     ScriptedInstance *instance;
 
-    int32 CorruptionStrikeTimer;
-    int32 AgonyCurseTimer;
-    int32 ShadowBoltTimer;
-    int32 CheckTimer;
+    Timer CorruptionStrikeTimer;
+    Timer AgonyCurseTimer;
+    Timer ShadowBoltTimer;
+    Timer CheckTimer;
 
     uint64 KalecGUID;
     bool isEnraged;
@@ -608,11 +606,10 @@ struct boss_sathrovarrAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        CheckTimer -= diff;
+      
         // interaction with kalecgos
-        if (CheckTimer <= diff)
+        if (CheckTimer.Expired(diff))
         {
-
             // should not leave Inner Veil
             if (me->GetPositionZ() > -60)
                 me->GetMap()->CreatureRelocation(me, me->GetPositionX(), me->GetPositionY(), DEMON_REALM_Z, me->GetOrientation());
@@ -662,7 +659,7 @@ struct boss_sathrovarrAI : public ScriptedAI
             if (me->isInCombat())
                 DoZoneInCombat();
 
-            CheckTimer += 1000;
+            CheckTimer = 1000;
         }
         
 
@@ -682,9 +679,9 @@ struct boss_sathrovarrAI : public ScriptedAI
             return;
 
 
-        ShadowBoltTimer -= diff;
+        
         // cast spells
-        if (ShadowBoltTimer <= diff)
+        if (ShadowBoltTimer.Expired(diff))
         {
             Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 40.0f, true);
             if (target)
@@ -693,26 +690,24 @@ struct boss_sathrovarrAI : public ScriptedAI
             if (roll_chance_f(10.0))
                 DoScriptText(SAY_SATH_SPELL1, me);
 
-            ShadowBoltTimer += 7000+(rand()%3000);
+            ShadowBoltTimer = 7000+(rand()%3000);
         }
         
 
-        AgonyCurseTimer -= diff;
-        if (AgonyCurseTimer <= diff)
+        if (AgonyCurseTimer.Expired(diff))
         {
             AddSpellToCast(SPELL_AGONY_CURSE, CAST_SELF);
-            AgonyCurseTimer += 35000;
+            AgonyCurseTimer = 35000;
         }
         
 
-        CorruptionStrikeTimer -= diff;
-        if (CorruptionStrikeTimer <= diff)
+        if (CorruptionStrikeTimer.Expired(diff))
         {
             AddSpellToCast(me->getVictim(), SPELL_CORRUPTION_STRIKE);
             if (roll_chance_f(10.0))
                 DoScriptText(SAY_SATH_SPELL2, me);
 
-            CorruptionStrikeTimer += 13000;
+            CorruptionStrikeTimer = 13000;
         }
         
 
@@ -725,11 +720,11 @@ struct boss_kalecAI : public ScriptedAI
 {
     ScriptedInstance *instance;
 
-    int32 RevitalizeTimer;
-    int32 HeroicStrikeTimer;
-    int32 CheckTimer;
-    int32 YellTimer;
-    int32 YellSequence;
+    Timer RevitalizeTimer;
+    Timer HeroicStrikeTimer;
+    Timer CheckTimer;
+    Timer YellTimer;
+    uint32 YellSequence;
 
     bool isEnraged;
 
@@ -793,8 +788,8 @@ struct boss_kalecAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        YellTimer -= diff;
-        if (YellTimer <= diff)
+        
+        if (YellTimer.Expired(diff))
         {
             switch(YellSequence)
             {
@@ -819,12 +814,12 @@ struct boss_kalecAI : public ScriptedAI
             default:
                 break;
             }
-            YellTimer += 5000;
+            YellTimer = 5000;
         }
         
 
-        CheckTimer -= diff;
-        if (CheckTimer <= diff)
+      
+        if (CheckTimer.Expired(diff))
         {
             if (instance && instance->GetData(DATA_KALECGOS_PHASE) == PHASE_ENRAGE)
                 isEnraged = true;
@@ -833,24 +828,23 @@ struct boss_kalecAI : public ScriptedAI
             if (me->GetPositionZ() > -60)
                 me->GetMap()->CreatureRelocation(me, me->GetPositionX(), me->GetPositionY(), DEMON_REALM_Z, me->GetOrientation());
 
-            CheckTimer += 1000;
+            CheckTimer = 1000;
         }
         
 
-        RevitalizeTimer -= diff;
-        if (RevitalizeTimer <= diff)
+        
+        if (RevitalizeTimer.Expired(diff))
         {
             if (Unit* target = SelectUnitToRevitalize())
                 AddSpellToCast(target, SPELL_REVITALIZE, false, true);
-            RevitalizeTimer += 7000;
+            RevitalizeTimer = 7000;
         }
         
 
-        HeroicStrikeTimer -= diff;
-        if (HeroicStrikeTimer <= diff)
+        if (HeroicStrikeTimer.Expired(diff))
         {
             AddSpellToCast(me->getVictim(), SPELL_HEROIC_STRIKE);
-            HeroicStrikeTimer += 2000;
+            HeroicStrikeTimer = 2000;
         }
         
 
