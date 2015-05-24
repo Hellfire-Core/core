@@ -334,7 +334,7 @@ struct boss_felblood_kaelthasAI : public ScriptedAI
                     AddSpellToCast(SPELL_SUMMON_FLAMESTRIKE, CAST_RANDOM);
                     if(roll_chance_f(40))
                         DoScriptText(SAY_FLAMESTRIKE, me);
-                    FlameStrikeTimer += urand(25000, 35000);
+                    FlameStrikeTimer = urand(25000, 35000);
                 }
                 
 

@@ -459,12 +459,12 @@ void BattleGroundAV::Update(uint32 diff)
 
                 if (m_Mine_Reclaim_Timer[mine].Expired(diff))        //we don't need to set this timer to 0 cause this codepart wont get called when this thing is 0                 
                     ChangeMineOwner(mine,AV_NEUTRAL_TEAM);
-                }
+                
             }
         }
         if (m_Mine_Timer.Passed())
             m_Mine_Timer=AV_MINE_TICK_TIMER; //this is at the end, cause we need to update both mines
-
+                 
         //looks for all timers of the nodes and destroy the building (for graveyards the building wont get destroyed, it goes just to the other team
         for (BG_AV_Nodes i = BG_AV_NODES_FIRSTAID_STATION; i < BG_AV_NODES_MAX; ++i)
         {

@@ -541,7 +541,7 @@ struct boss_malchezaarAI : public ScriptedAI
                 }
 
                 if (ShadowNovaTimer.GetTimeLeft() > 35000)
-                    ShadowNovaTimer.Delay(EnfeebleTimer + 5000);
+                    ShadowNovaTimer = EnfeebleTimer.GetTimeLeft() + 5000;
 
                 return;
             }

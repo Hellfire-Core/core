@@ -98,7 +98,7 @@ void move_triggerAI::MakeMove()
 #endif
     ChessPiecesStances tmpStance = pieceStance;
 
-    moveTimer += 3000;
+    moveTimer = 3000;
     pieceStance = PIECE_NONE;
     Creature * temp = m_creature->GetCreature(unitToMove);
     Creature * temp2 = m_creature->GetCreature(MedivhGUID);
@@ -562,7 +562,7 @@ void npc_chesspieceAI::UpdateAI(const uint32 diff)
                     ab2 = ((boss_MedivhAI*)medivh->AI())->GetSpellTarget(me->GetGUID(), ability2ID);
             }
             else
-                ability2Timer += urand(500, 5000);
+                ability2Timer = urand(500, 5000);
         }
         
 

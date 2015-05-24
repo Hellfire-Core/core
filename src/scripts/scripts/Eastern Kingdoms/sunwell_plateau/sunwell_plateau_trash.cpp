@@ -83,7 +83,7 @@ struct mob_sunblade_arch_mageAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if(Blink > 1000 && (me->isFrozen() || me->HasAuraType(SPELL_AURA_MOD_ROOT)))
+        if(Blink.GetTimeLeft() > 1000 && (me->isFrozen() || me->HasAuraType(SPELL_AURA_MOD_ROOT)))
             Blink = 1000;
 
         
@@ -404,7 +404,7 @@ struct mob_sunblade_protectorAI : public ScriptedAI
     void Reset()
     {
         ClearCastQueue();
-        FelLightning += urand(3000, 6000);
+        FelLightning = urand(3000, 6000);
     }
 
     void EnterEvadeMode()
@@ -597,7 +597,7 @@ struct mob_sunblade_slayerAI : public ScriptedAI
         if (ScatterShot.Expired(diff))
         {
             AddSpellToCast(SPELL_SCATTER_SHOT, CAST_TANK);
-            ScatterShot += urand(6000, 12000);
+            ScatterShot = urand(6000, 12000);
         }
         
 
@@ -1746,7 +1746,7 @@ struct mob_chaos_gazerAI : public ScriptedAI
     {
         DrainLifeCD = urand(10000, 12000);
         Petrify = urand(3000, 7000);
-        TentacleSweep = Petrify + urand(1000, 1500);
+        TentacleSweep = Petrify.GetTimeLeft() + urand(1000, 1500);
         canDrainLife = true;
     }
 

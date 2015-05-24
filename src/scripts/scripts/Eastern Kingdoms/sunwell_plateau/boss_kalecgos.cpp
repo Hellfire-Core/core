@@ -256,7 +256,7 @@ struct boss_kalecgosAI : public ScriptedAI
 
     void MoveInLineOfSight(Unit *who)
     {
-        if (!TalkTimer && !ResetTimer)
+        if (!TalkTimer.GetInterval() && !ResetTimer.GetInterval())
             CreatureAI::MoveInLineOfSight(who);
     }
 

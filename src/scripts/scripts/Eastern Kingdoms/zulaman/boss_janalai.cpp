@@ -125,7 +125,7 @@ struct boss_janalaiAI : public ScriptedAI
     Timer FireBreathTimer;
     Timer BombTimer;
     Timer BombSequenceTimer;
-    Timer BombCount;
+    uint32 BombCount;
     Timer HatcherTimer;
     Timer EnrageTimer;
     Timer ResetTimer;

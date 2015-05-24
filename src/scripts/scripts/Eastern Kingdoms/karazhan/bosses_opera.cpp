@@ -84,7 +84,7 @@ struct boss_operaAI : public ScriptedAI
 
     void EnterEvadeMode()
     {
-        if (!eventStarted || AggroTimer)
+        if (!eventStarted || AggroTimer.GetInterval())
             return;
 
         evade = true;
@@ -258,7 +258,7 @@ struct boss_dorotheeAI : public boss_operaAI
         if (WaterBoltTimer.Expired(diff))
         {
             AddSpellToCast(SelectUnit(SELECT_TARGET_RANDOM, 0), SPELL_WATERBOLT);
-            WaterBoltTimer = TitoDied ? 1500 : WaterBoltTimer + 5000;
+            WaterBoltTimer = TitoDied ? 1500 : 5000;
         }
         
 
@@ -883,7 +883,6 @@ struct boss_bigbadwolfAI : public boss_operaAI
         }
         
 
-        .Expired(diff)
         if (SwipeTimer.Expired(diff))
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_WIDE_SWIPE);
@@ -1644,21 +1643,21 @@ struct npc_barnesAI : public ScriptedAI
             case EVENT_OZ:
                 if (OzDialogue[count].textid)
                      text = OzDialogue[count].textid;
-                if(OzDialogue[count].timer)
-                    TalkTimer = OzDialogue[count].timer;
+                if(OzDialogue[count].timer.GetInterval())
+                    TalkTimer = OzDialogue[count].timer;     // FIXME: this and 2 bellow; it will create a duplicate or just set pointers to the same memory area?
                 break;
 
             case EVENT_HOOD:
                 if (HoodDialogue[count].textid)
                     text = HoodDialogue[count].textid;
-                if(HoodDialogue[count].timer)
+                if(HoodDialogue[count].timer.GetInterval())
                     TalkTimer = HoodDialogue[count].timer;
                 break;
 
             case EVENT_RAJ:
                  if (RAJDialogue[count].textid)
                      text = RAJDialogue[count].textid;
-                if(RAJDialogue[count].timer)
+                if(RAJDialogue[count].timer.GetInterval())
                     TalkTimer = RAJDialogue[count].timer;
                 break;
         }

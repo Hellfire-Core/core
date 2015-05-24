@@ -452,7 +452,7 @@ struct boss_nightbaneAI : public ScriptedAI
                 {
                     if (Unit* target = SelectUnit(SELECT_TARGET_FARTHEST, 0, GetSpellMaxRange(SPELL_FIREBALL_BARRAGE), true, uint64(0), 40.0f))
                         DoCast(target, SPELL_FIREBALL_BARRAGE);
-                    FireballBarrageTimer += 20000; //Timer
+                    FireballBarrageTimer = 20000; //Timer
                 }
                 
 

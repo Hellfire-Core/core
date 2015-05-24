@@ -224,7 +224,7 @@ struct boss_zuljinAI : public ScriptedAI
 
     void KilledUnit(Unit* victim)
     {
-        if(Intro_Timer)
+        if(Intro_Timer.GetInterval())
             return;
         DoScriptText(RAND(YELL_KILL_ONE, YELL_KILL_TWO), m_creature);
     }
@@ -255,7 +255,7 @@ struct boss_zuljinAI : public ScriptedAI
         {
             if(m_creature->isAttackReady() && m_creature->IsWithinMeleeRange(m_creature->getVictim()))
             {
-                if(Phase == 1 && !Overpower_Timer)
+                if(Phase == 1 && !Overpower_Timer.GetInterval())
                 {
                     uint32 health = m_creature->getVictim()->GetHealth();
                     m_creature->AttackerStateUpdate(m_creature->getVictim());

@@ -708,7 +708,7 @@ void TerrainInfo::CleanUpGrids(const uint32 diff)
          }
      }
 
-     i_timer.Reset();
+     i_timer.SetCurrent(0);
 }
 
 int TerrainInfo::RefGrid(const uint32& x, const uint32& y)

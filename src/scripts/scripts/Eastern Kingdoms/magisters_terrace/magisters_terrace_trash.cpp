@@ -491,7 +491,7 @@ struct mob_sunblade_blood_knightAI : public ScriptedAI
         if (Seal_Timer.Expired(diff))
         {
             AddSpellToCast(SPELL_SEAL_OF_WRATH, CAST_SELF);
-            Seal_Timer += urand(20000, 30000);
+            Seal_Timer = urand(20000, 30000);
         }
 
 
@@ -1120,32 +1120,32 @@ struct mob_mgt_kalecgosAI : public ScriptedAI
         {
             case 0:
                 me->GetMotionMaster()->MovePoint(1, 198.4, -273.3, -8.72);
-                Timer += 6000;
+                Timer = 6000;
                 break;
             case 1:
                 DoYell("Be still, mortals, and hearken to my words.", 0, 0);
-                Timer += 60000;
+                Timer = 60000;
                 break;
             case 2:
                 me->HandleEmoteCommand(EMOTE_ONESHOT_LAND);
-                Timer += 1000;
+                Timer = 1000;
                 break;
             case 3:
             {
                 float x, y, z;
                 me->GetPosition(x, y, z);
                 me->GetMap()->CreatureRelocation(me, x, y, z, 2 * M_PI);
-                Timer += 1500;
+                Timer = 1500;
                 break;
             }
             case 4:
                 DoCast(me, SPELL_TRANSFORM_INTO_KALEC);
-                Timer += 1000;
+                Timer = 1000;
                 break;
             case 5:
                 me->SetVisibility(VISIBILITY_OFF);
                 DoSpawnCreature(NPC_MGT_KALEC, 0, 0, 0, me->GetOrientation(), TEMPSUMMON_CORPSE_DESPAWN, 0);
-                Timer += 2000;
+                Timer = 2000;
                 break;
             case 6:
                 me->Kill(me, false);

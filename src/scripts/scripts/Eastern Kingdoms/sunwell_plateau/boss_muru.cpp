@@ -167,7 +167,7 @@ struct boss_muruAI : public Scripted_NoMovementAI
 
     void MoveInLineOfSight(Unit *who)
     {
-        if(ResetTimer)
+        if(ResetTimer.GetInterval())
             return;
         if(pInstance->GetData(DATA_EREDAR_TWINS_EVENT) != DONE)
             return;
@@ -933,7 +933,7 @@ struct mob_shadowsword_fury_mageAI : public ScriptedAI
         {
             me->GetMotionMaster()->Clear();
             me->SetRooted(true);
-            ActivationTimer += 1000;
+            ActivationTimer = 1000;
         }
     }
 

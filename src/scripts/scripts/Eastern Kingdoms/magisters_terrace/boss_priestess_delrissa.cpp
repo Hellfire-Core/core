@@ -613,7 +613,7 @@ struct boss_priestess_guestAI : public ScriptedAI
                     AttackStart(target);
                     me->AddThreat(target, 200000);
                 }
-                ResetThreatTimer += urand(8000, 20000);
+                ResetThreatTimer = urand(8000, 20000);
             }
             
         }
@@ -882,7 +882,7 @@ struct boss_ellris_duskhallowAI : public boss_priestess_guestAI
         if (Curse_of_Agony_Timer.Expired(diff))
         {
             AddSpellToCast(SPELL_CURSE_OF_AGONY, CAST_TANK);
-            Curse_of_Agony_Timer += urand(12000, 15000);
+            Curse_of_Agony_Timer = urand(12000, 15000);
         }
         
 
@@ -1305,7 +1305,7 @@ struct boss_warlord_salarisAI : public boss_priestess_guestAI
         if (Piercing_Howl_Timer.Expired(diff))
         {
             AddSpellToCast(SPELL_PIERCING_HOWL, CAST_NULL);
-            Piercing_Howl_Timer + urand(20000, 35000);
+            Piercing_Howl_Timer = urand(20000, 35000);
         }
         
 
@@ -1741,8 +1741,8 @@ struct mob_high_explosive_sheepAI : public ScriptedAI
 {
     mob_high_explosive_sheepAI(Creature *c) : ScriptedAI(c) {}
 
-    timer SelfDestro_Timer;
-    timer Check_Timer;
+    Timer SelfDestro_Timer;
+    Timer Check_Timer;
 
     void Reset()
     {
@@ -1761,7 +1761,7 @@ struct mob_high_explosive_sheepAI : public ScriptedAI
         {
             if(me->IsWithinMeleeRange(me->getVictim()))
                 DoCast(me, SPELL_SHEEP_EXPLOSION);
-            Check_Timer += 500;
+            Check_Timer = 500;
         }
         
 

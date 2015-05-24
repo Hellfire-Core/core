@@ -434,7 +434,7 @@ struct boss_baroness_dorothea_millstipeAI : public boss_moroes_guestAI
         if(!UpdateVictim() )
             return;
 
-        boss_moroes_guestAI::UpdateAI(diff)
+        boss_moroes_guestAI::UpdateAI(diff);
 
         if (MindFlay_Timer.Expired(diff))
         {
@@ -457,7 +457,7 @@ struct boss_baroness_dorothea_millstipeAI : public boss_moroes_guestAI
             if(target)
             {
                 DoCast(target,SPELL_SWPAIN);
-                ShadowWordPain_Timer += 7000;
+                ShadowWordPain_Timer = 7000;
             }
         }
     }
@@ -504,7 +504,7 @@ struct boss_baron_rafe_dreugerAI : public boss_moroes_guestAI
         if (JudgementOfCommand_Timer.Expired(diff))
         {
             DoCast(m_creature->getVictim(),SPELL_JUDGEMENTOFCOMMAND);
-            JudgementOfCommand_Timer += SealOfCommand_Timer + 29000;
+            JudgementOfCommand_Timer = SealOfCommand_Timer.GetTimeLeft() + 29000;
         }
 
         
@@ -585,7 +585,7 @@ struct boss_lady_catriona_von_indiAI : public boss_moroes_guestAI
             else
                 DoCast(SelectUnit(SELECT_TARGET_RANDOM, 0), SPELL_DISPELMAGIC);
 
-            DispelMagic_Timer += 25000;
+            DispelMagic_Timer = 25000;
         }
     }
 };

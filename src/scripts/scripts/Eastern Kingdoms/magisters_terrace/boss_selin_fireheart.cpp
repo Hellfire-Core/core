@@ -90,7 +90,7 @@ struct boss_selin_fireheartAI : public ScriptedAI
             pInstance->SetData(DATA_SELIN_EVENT, NOT_STARTED);
 
         DrainLifeTimer = urand(3000, 7000);
-        DrainManaTimer = DrainLifeTimer + 5000;
+        DrainManaTimer = DrainLifeTimer.GetTimeLeft() + 5000;
         FelExplosionTimer = 2100;
         DrainCrystalTimer = HeroicMode? 15000 : 20000;
         CheckTimer = 1000;
