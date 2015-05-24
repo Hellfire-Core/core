@@ -122,13 +122,13 @@ struct boss_janalaiAI : public ScriptedAI
 
     WorldLocation wLoc;
 
-    int32 FireBreathTimer;
-    int32 BombTimer;
-    int32 BombSequenceTimer;
-    int32 BombCount;
-    int32 HatcherTimer;
-    int32 EnrageTimer;
-    int32 ResetTimer;
+    Timer FireBreathTimer;
+    Timer BombTimer;
+    Timer BombSequenceTimer;
+    Timer BombCount;
+    Timer HatcherTimer;
+    Timer EnrageTimer;
+    Timer ResetTimer;
 
     bool noeggs;
     bool enraged;
@@ -138,7 +138,7 @@ struct boss_janalaiAI : public ScriptedAI
 
     uint64 FireBombGUIDs[40];
 
-    int32 checkTimer;
+    Timer checkTimer;
     bool Intro;
 
     void Reset()
@@ -324,15 +324,13 @@ struct boss_janalaiAI : public ScriptedAI
             if(!m_creature->IsNonMeleeSpellCast(false))
             {
                 isFlameBreathing = false;
-            }else 
+            }
+            else 
             {
-                if(EnrageTimer >= diff)
-                    EnrageTimer -= diff;
-                else
+                if (EnrageTimer.Expired(diff))
                     EnrageTimer = 0;
-                if(HatcherTimer >= diff)
-                    HatcherTimer -= diff;
-                else
+
+                if (HatcherTimer.Expired(diff))
                     HatcherTimer = 0;
                 return;
             }
@@ -340,18 +338,13 @@ struct boss_janalaiAI : public ScriptedAI
 
         if(isBombing)
         {
-            BombSequenceTimer -= diff;
-            if(BombSequenceTimer <= diff)
+            if (BombSequenceTimer.Expired(diff))
                 HandleBombSequence();
 
     
-            if(EnrageTimer >= diff)
-                EnrageTimer -= diff;
-            else
+            if (EnrageTimer.Expired(diff))
                 EnrageTimer = 0;
-            if(HatcherTimer >= diff)
-                HatcherTimer -= diff;
-            else
+            if (HatcherTimer.Expired(diff))
                 HatcherTimer = 0;
             return;
         }
@@ -359,14 +352,14 @@ struct boss_janalaiAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        checkTimer -= diff;
-        if (checkTimer <= diff)
+
+        if (checkTimer.Expired(diff))
         {
             if (!m_creature->IsWithinDistInMap(&wLoc, 23))
                 EnterEvadeMode();
             else
                 DoZoneInCombat();
-            checkTimer += 3000;
+            checkTimer = 3000;
         }
         
 
@@ -374,25 +367,23 @@ struct boss_janalaiAI : public ScriptedAI
         if(!enraged && m_creature->GetHealth() * 4 < m_creature->GetMaxHealth())
             EnrageTimer = 0;
 
-        EnrageTimer -= diff;
-        if(EnrageTimer <= diff)
+        if (EnrageTimer.Expired(diff))
         {
             if(!enraged)
             {
                 m_creature->CastSpell(m_creature, SPELL_ENRAGE, true);
                 enraged = true;
-                EnrageTimer += 300000;
+                EnrageTimer = 300000;
             }
             else
             {
                 DoScriptText(SAY_BERSERK, m_creature);
                 m_creature->CastSpell(m_creature, SPELL_BERSERK, true);
-                EnrageTimer += 300000;
+                EnrageTimer = 300000;
             }
         }
 
-        BombTimer -= diff;
-        if(BombTimer <= diff)
+        if (BombTimer.Expired(diff))
         {
             DoScriptText(SAY_FIRE_BOMBS, m_creature);
 
@@ -425,7 +416,7 @@ struct boss_janalaiAI : public ScriptedAI
 
         if(!noeggs)
         {
-            HatcherTimer -= diff;
+
             if(100 * m_creature->GetHealth() < 35 * m_creature->GetMaxHealth())
             {
                 DoScriptText(SAY_ALL_EGGS, m_creature);
@@ -440,15 +431,14 @@ struct boss_janalaiAI : public ScriptedAI
             }
             else
             {
-                HatcherTimer -= diff;
-                if (HatcherTimer <= diff)
+                if (HatcherTimer.Expired(diff))
                 {
                     if (HatchAllEggs(0))
                     {
                         DoScriptText(SAY_SUMMON_HATCHER, m_creature);
                         m_creature->SummonCreature(MOB_AMANI_HATCHER, hatcherway[0][0][0], hatcherway[0][0][1], hatcherway[0][0][2], 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 10000);
                         m_creature->SummonCreature(MOB_AMANI_HATCHER, hatcherway[1][0][0], hatcherway[1][0][1], hatcherway[1][0][2], 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 10000);
-                        HatcherTimer += 90000;
+                        HatcherTimer = 90000;
                     }
                     else
                         noeggs = true;
@@ -456,8 +446,7 @@ struct boss_janalaiAI : public ScriptedAI
             }
         }
 
-        ResetTimer -= diff;
-        if(ResetTimer <= diff)
+        if (ResetTimer.Expired(diff))
         {
             float x, y, z, o;
             m_creature->GetHomePosition(x, y, z, o);
@@ -466,13 +455,13 @@ struct boss_janalaiAI : public ScriptedAI
                 EnterEvadeMode();
                 return;
             }
-            ResetTimer += 5000;
+            ResetTimer = 5000;
         }
 
         DoMeleeAttackIfReady();
 
-        FireBreathTimer -= diff;
-        if(FireBreathTimer <= diff)
+
+        if (FireBreathTimer.Expired(diff))
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0, GetSpellMaxRange(SPELL_FLAME_BREATH), true))
             {
@@ -482,7 +471,7 @@ struct boss_janalaiAI : public ScriptedAI
                 m_creature->StopMoving();
                 isFlameBreathing = true;
             }
-            FireBreathTimer += 8000;
+            FireBreathTimer = 8000;
         }
     }
 };
@@ -529,7 +518,7 @@ struct mob_amanishi_hatcherAI : public ScriptedAI
 
     uint32 waypoint;
     uint32 HatchNum;
-    int32 WaitTimer;
+    Timer WaitTimer;
 
     bool side;
     bool hasChangedSide;
@@ -601,7 +590,7 @@ struct mob_amanishi_hatcherAI : public ScriptedAI
 
         if(!isHatching)
         {
-            if(WaitTimer)
+            if(WaitTimer.GetInterval())
             {
                 m_creature->GetMotionMaster()->Clear();
                 m_creature->GetMotionMaster()->MovePoint(0,hatcherway[side][waypoint][0],hatcherway[side][waypoint][1],hatcherway[side][waypoint][2]);
@@ -611,13 +600,12 @@ struct mob_amanishi_hatcherAI : public ScriptedAI
         }
         else
         {
-            WaitTimer -= diff;
-            if(WaitTimer <= diff)
+            if (WaitTimer.Expired(diff))
             {
                 if(HatchEggs(HatchNum))
                 {
                     HatchNum++;
-                    WaitTimer += 10000;
+                    WaitTimer = 10000;
                 }
                 else if(!hasChangedSide)
                 {
@@ -650,7 +638,7 @@ struct mob_hatchlingAI : public ScriptedAI
     }
 
     ScriptedInstance *pInstance;
-    int32 BuffetTimer;
+    Timer BuffetTimer;
 
     void Reset()
     {
@@ -677,11 +665,10 @@ struct mob_hatchlingAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        BuffetTimer -= diff;
-        if(BuffetTimer <= diff)
+        if (BuffetTimer.Expired(diff))
         {
             m_creature->CastSpell(m_creature->getVictim(), SPELL_FLAMEBUFFET, false);
-            BuffetTimer += 10000;
+            BuffetTimer = 10000;
         }
 
         DoMeleeAttackIfReady();

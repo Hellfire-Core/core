@@ -63,16 +63,16 @@ struct boss_akilzonAI : public ScriptedAI
 
     std::list<Creature*> BirdsList;
 
-    int32 StaticDisruption_Timer;
-    int32 GustOfWind_Timer;
-    int32 CallLighting_Timer;
-    int32 ElectricalStorm_Timer;
-    int32 SummonEagles_Timer;
-    int32 Enrage_Timer;
+    Timer StaticDisruption_Timer;
+    Timer GustOfWind_Timer;
+    Timer CallLighting_Timer;
+    Timer ElectricalStorm_Timer;
+    Timer SummonEagles_Timer;
+    Timer Enrage_Timer;
 
     bool isRaining;
 
-    int32 checkTimer;
+    Timer checkTimer;
     WorldLocation wLoc;
 
     void Reset()
@@ -158,8 +158,7 @@ struct boss_akilzonAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        checkTimer -= diff;
-        if (checkTimer <= diff)
+        if (checkTimer.Expired(diff))
         {
             if (!m_creature->IsWithinDistInMap(&wLoc, 110.0f))
                 EnterEvadeMode();
@@ -168,73 +167,72 @@ struct boss_akilzonAI : public ScriptedAI
                 m_creature->SetSpeed(MOVE_RUN, 2.0);
                 DoZoneInCombat();
             }
-            checkTimer += 1000;
+            checkTimer = 1000;
         }
 
          
 
-        Enrage_Timer -= diff;
-        if (Enrage_Timer <= diff)
+
+        if (Enrage_Timer.Expired(diff))
         {
             DoScriptText(SAY_ENRAGE, m_creature);
             m_creature->CastSpell(m_creature, SPELL_BERSERK, true);
-            Enrage_Timer += 600000;
+            Enrage_Timer = 600000;
         }
         
             
 
-        StaticDisruption_Timer -= diff;
-        if (StaticDisruption_Timer <= diff)
+
+        if (StaticDisruption_Timer.Expired(diff))
         {
-            if(ElectricalStorm_Timer < 3000)
-                StaticDisruption_Timer += 6000;
+            if(ElectricalStorm_Timer.GetTimeLeft() < 3000)
+                StaticDisruption_Timer = 6000;
 
             Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_STATIC_DISRUPTION), true, m_creature->getVictimGUID());
             if(!target)
                 target = m_creature->getVictim();
             AddSpellToCast(target, SPELL_STATIC_DISRUPTION, false, true);
-            StaticDisruption_Timer += urand(7000, 14000);
+            StaticDisruption_Timer = urand(7000, 14000);
         }
         
 
-        GustOfWind_Timer -= diff;
-        if (GustOfWind_Timer <= diff)
+        if (GustOfWind_Timer.Expired(diff))
         {
             //we dont want to start a storm with player in the air
-            if(ElectricalStorm_Timer < 8000)
-                GustOfWind_Timer += 18000;
+            if(ElectricalStorm_Timer.GetTimeLeft() < 8000)
+                GustOfWind_Timer = 18000;
             else
             {
                 if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_GUST_OF_WIND), true, m_creature->getVictimGUID()))
                     AddSpellToCast(target, SPELL_GUST_OF_WIND);
-                GustOfWind_Timer += urand(8000, 14000);
+                GustOfWind_Timer = urand(8000, 14000);
             }
         }
         
 
-        CallLighting_Timer -= diff;
-        if (CallLighting_Timer <= diff)
+        
+        if (CallLighting_Timer.Expired(diff))
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_CALL_LIGHTNING);
-            CallLighting_Timer += RAND(urand(10000, 15000), urand(30000, 45000));
+            CallLighting_Timer = RAND(urand(10000, 15000), urand(30000, 45000));
         }
         
 
-        if (!isRaining && ElectricalStorm_Timer < urand(8000, 12000))
+        if (!isRaining && ElectricalStorm_Timer.GetTimeLeft() < urand(8000, 12000))
         {
             SetWeather(WEATHER_STATE_HEAVY_RAIN, 0.9999f);
             isRaining = true;
         }
 
-        if (isRaining && ElectricalStorm_Timer > 50000)
+        if (isRaining && ElectricalStorm_Timer.GetTimeLeft() > 50000)
         {
             SetWeather(WEATHER_STATE_FINE, 0.0f);
-            SummonEagles_Timer += 13000;
+            SummonEagles_Timer = 13000;
             isRaining = false;
         }
 
-        ElectricalStorm_Timer -= diff;
-        if (ElectricalStorm_Timer <= diff)
+        
+        if (ElectricalStorm_Timer.Expired(diff))
         {
             Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_ELECTRICAL_STORM), true);
 
@@ -249,17 +247,17 @@ struct boss_akilzonAI : public ScriptedAI
             target->CastSpell(target, 44007, true);
             m_creature->CastSpell(target, SPELL_ELECTRICAL_STORM, false);
 
-            ElectricalStorm_Timer += 60000;
-            StaticDisruption_Timer += 10000;
+            ElectricalStorm_Timer = 60000;
+            StaticDisruption_Timer = 10000;
         }
         
 
-        SummonEagles_Timer -= diff;
-        if (SummonEagles_Timer <= diff)
+        
+        if (SummonEagles_Timer.Expired(diff))
         {
             DoScriptText(urand(0,1) ? SAY_SUMMON : SAY_SUMMON_ALT, m_creature);
             DoSummonEagles();
-            SummonEagles_Timer += 999999;
+            SummonEagles_Timer = 999999;
         }
         
 
@@ -278,8 +276,8 @@ struct mob_soaring_eagleAI : public ScriptedAI
 
     ScriptedInstance* pInstance;
 
-    int32 EagleSwoop_Timer;
-    int32 Return_Timer;
+    Timer EagleSwoop_Timer;
+    Timer Return_Timer;
     bool canMoveRandom;
     bool canCast;
 
@@ -329,20 +327,17 @@ struct mob_soaring_eagleAI : public ScriptedAI
             return;
 
         if (canMoveRandom)
-        {
-            Return_Timer -= diff;
-            if (Return_Timer <= diff)
+            if (Return_Timer.Expired(diff))
             {
                 DoMoveToRandom();
-                Return_Timer += 800;
+                Return_Timer = 800;
             }
-        }
 
         if (!canCast)
             return;
 
-        EagleSwoop_Timer -= diff;
-        if (EagleSwoop_Timer <= diff)
+       
+        if (EagleSwoop_Timer.Expired(diff))
         {
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true))
             {
@@ -351,7 +346,7 @@ struct mob_soaring_eagleAI : public ScriptedAI
                 canMoveRandom = true;
                 canCast = false;
             }
-            EagleSwoop_Timer += urand(4000, 6000);
+            EagleSwoop_Timer = urand(4000, 6000);
         }
     }
 };

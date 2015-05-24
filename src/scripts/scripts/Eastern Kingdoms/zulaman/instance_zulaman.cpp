@@ -59,7 +59,7 @@ struct instance_zulaman : public ScriptedInstance
     uint64 AkilzonGUID;
     uint64 HexLordGUID;
 
-    int32 QuestTimer;
+    Timer QuestTimer;
     int16 BossKilled;
     int16 QuestMinute;
     uint16 ChestLooted;
@@ -536,12 +536,11 @@ struct instance_zulaman : public ScriptedInstance
     {
         if(QuestMinute)
         {
-            QuestTimer -= diff;
-            if(QuestTimer <= diff)
+            if (QuestTimer.Expired(diff))
             {
                 QuestMinute--;
                 SaveToDB();
-                QuestTimer += 60000;
+                QuestTimer = 60000;
                 if(QuestMinute)
                 {
                     UpdateWorldState(3104, 1);

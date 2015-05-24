@@ -236,12 +236,12 @@ struct boss_hex_lord_malacrassAI : public ScriptedAI
 
     uint64 PlayerGUID;
 
-    int32 SpiritBolts_Timer;
-    int32 DrainPower_Timer;
-    int32 SiphonSoul_Timer;
-    int32 PlayerAbility_Timer[3];
-    int32 CheckAddState_Timer;
-    int32 ResetTimer;
+    Timer SpiritBolts_Timer;
+    Timer DrainPower_Timer;
+    Timer SiphonSoul_Timer;
+    Timer PlayerAbility_Timer[3];
+    Timer CheckAddState_Timer;
+    Timer ResetTimer;
 
     uint32 PlayerClass;
 
@@ -367,8 +367,7 @@ struct boss_hex_lord_malacrassAI : public ScriptedAI
         if(!UpdateVictim() )
             return;
 
-        ResetTimer -= diff;
-        if(ResetTimer <= diff)
+        if (ResetTimer.Expired(diff))
         {
             if(m_creature->IsWithinDistInMap(&wLoc, 10))
             {
@@ -378,11 +377,11 @@ struct boss_hex_lord_malacrassAI : public ScriptedAI
             else
                 DoZoneInCombat();
 
-            ResetTimer += 5000;
+            ResetTimer = 5000;
         }
 
-        CheckAddState_Timer -= diff;
-        if(CheckAddState_Timer <= diff)
+        
+        if (CheckAddState_Timer.Expired(diff))
         {
             for(uint8 i = 0; i < 4; ++i)
             {
@@ -390,37 +389,34 @@ struct boss_hex_lord_malacrassAI : public ScriptedAI
                 if(Temp && Temp->isAlive() && !Temp->getVictim())
                     ((Creature*)Temp)->AI()->AttackStart(m_creature->getVictim());
             }
-            CheckAddState_Timer += 5000;
+            CheckAddState_Timer = 5000;
         }
 
         if(HealthBelowPct(80))
         {
-            DrainPower_Timer -= diff;
-            if(DrainPower_Timer <= diff)
+            if (DrainPower_Timer.Expired(diff))
             {
                 ForceSpellCastWithScriptText(m_creature, SPELL_DRAIN_POWER, YELL_DRAIN_POWER, INTERRUPT_AND_CAST_INSTANTLY);
-                DrainPower_Timer += 40000 + rand()%10000;    // must cast in 60 sec, or buff/debuff will disappear
+                DrainPower_Timer = 40000 + rand()%10000;    // must cast in 60 sec, or buff/debuff will disappear
             }
         }
 
-        SpiritBolts_Timer -= diff;
-        if(SpiritBolts_Timer <= diff)
+        if (SpiritBolts_Timer.Expired(diff))
         {
-            if(DrainPower_Timer && DrainPower_Timer < 12000)    // channel 10 sec
-                SpiritBolts_Timer += 13000;  // cast drain power first
+            if(DrainPower_Timer.GetInterval() && DrainPower_Timer.GetTimeLeft() < 12000)    // channel 10 sec
+                SpiritBolts_Timer = 13000;  // cast drain power first
             else
             {
                 ClearCastQueue();
                 AddSpellToCastWithScriptText(m_creature, SPELL_SPIRIT_BOLTS, YELL_SPIRIT_BOLTS);
-                SpiritBolts_Timer += 40000;
-                SiphonSoul_Timer += 10000;  // ready to drain
+                SpiritBolts_Timer = 40000;
+                SiphonSoul_Timer = 10000;  // ready to drain
                 for(uint8 i = 0; i <3; i++)
                     PlayerAbility_Timer[i] = 99999;
             }
         }
 
-        SiphonSoul_Timer -= diff;
-        if(SiphonSoul_Timer <= diff)
+        if (SiphonSoul_Timer.Expired(diff))
         {
             Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_SIPHON_SOUL), true);
             Unit *trigger = DoSpawnCreature(MOB_TEMP_TRIGGER, 0, 0, 0, 0, TEMPSUMMON_TIMED_DESPAWN, 30000);
@@ -449,15 +445,14 @@ struct boss_hex_lord_malacrassAI : public ScriptedAI
 
                 for(uint8 i = 0; i < 3; i++)
                     PlayerAbility_Timer[i] = PlayerAbility[PlayerClass][i].startCooldown;
-                SiphonSoul_Timer += 99999;   // buff lasts 30 sec
+                SiphonSoul_Timer = 99999;   // buff lasts 30 sec
             }
             DoScriptText(YELL_SIPHON_SOUL, m_creature);
         }
 
         for(uint8 i = 0; i < 3; i++)
         {
-            PlayerAbility_Timer[i] -= diff;
-            if(PlayerAbility_Timer[i] <= diff)
+            if (PlayerAbility_Timer[i].Expired(diff))
             {
                 UseAbility(i);
                 PlayerAbility_Timer[i] = PlayerAbility[PlayerClass][i].cooldown;
@@ -506,8 +501,8 @@ struct boss_thurgAI : public boss_hexlord_addAI
 
     boss_thurgAI(Creature *c) : boss_hexlord_addAI(c) {}
 
-    int32 bloodlust_timer;
-    int32 cleave_timer;
+    Timer bloodlust_timer;
+    Timer cleave_timer;
 
     void Reset()
     {
@@ -522,8 +517,7 @@ struct boss_thurgAI : public boss_hexlord_addAI
         if(!UpdateVictim() )
             return;
 
-        bloodlust_timer -= diff;
-        if(bloodlust_timer <= diff)
+        if (bloodlust_timer.Expired(diff))
         {
             std::list<Creature*> templist = FindFriendlyMissingBuff(50, SPELL_BLOODLUST);
             if(!templist.empty())
@@ -531,14 +525,13 @@ struct boss_thurgAI : public boss_hexlord_addAI
                 if(Unit* target = *(templist.begin()))
                     m_creature->CastSpell(target, SPELL_BLOODLUST, false);
             }
-            bloodlust_timer += 12000;
+            bloodlust_timer = 12000;
         }
 
-        cleave_timer -= diff;
-        if(cleave_timer <= diff)
+        if (cleave_timer.Expired(diff))
         {
             m_creature->CastSpell(m_creature->getVictim(),SPELL_CLEAVE, false);
-            cleave_timer += 12000; //3 sec cast
+            cleave_timer = 12000; //3 sec cast
         }
 
         boss_hexlord_addAI::UpdateAI(diff);
@@ -553,8 +546,8 @@ struct boss_alyson_antilleAI : public boss_hexlord_addAI
     //Holy Priest
     boss_alyson_antilleAI(Creature *c) : boss_hexlord_addAI(c) {}
 
-    int32 flashheal_timer;
-    int32 dispelmagic_timer;
+    Timer flashheal_timer;
+    Timer dispelmagic_timer;
 
     void Reset()
     {
@@ -589,8 +582,7 @@ struct boss_alyson_antilleAI : public boss_hexlord_addAI
         if(!UpdateVictim() )
             return;
 
-        flashheal_timer -= diff;
-        if(flashheal_timer <= diff)
+        if (flashheal_timer.Expired(diff))
         {
             Unit* target = SelectLowestHpFriendly(99, 30000);
             if(target)
@@ -614,7 +606,7 @@ struct boss_alyson_antilleAI : public boss_hexlord_addAI
                 else if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_DISPEL_MAGIC), true))
                     m_creature->CastSpell(target, SPELL_DISPEL_MAGIC, false);
             }
-            flashheal_timer += 2500;
+            flashheal_timer = 2500;
         }
 
         boss_hexlord_addAI::UpdateAI(diff);
@@ -627,7 +619,7 @@ struct boss_gazakrothAI : public boss_hexlord_addAI
 {
     boss_gazakrothAI(Creature *c) : boss_hexlord_addAI(c)  {}
 
-    int32 firebolt_timer;
+    Timer firebolt_timer;
 
     void Reset()
     {
@@ -655,13 +647,12 @@ struct boss_gazakrothAI : public boss_hexlord_addAI
         if(!UpdateVictim() )
             return;
 
-        firebolt_timer -= diff;
-        if(firebolt_timer <= diff)
+        if (firebolt_timer.Expired(diff))
         {
             if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0))
             {
                 m_creature->CastSpell(target,SPELL_FIREBOLT, false);
-                firebolt_timer += 700;
+                firebolt_timer = 700;
             }
         }
 
@@ -676,8 +667,8 @@ struct boss_lord_raadanAI : public boss_hexlord_addAI
 {
     boss_lord_raadanAI(Creature *c) : boss_hexlord_addAI(c)  {}
 
-    int32 flamebreath_timer;
-    int32 thunderclap_timer;
+    Timer flamebreath_timer;
+    Timer thunderclap_timer;
 
     void Reset()
     {
@@ -692,18 +683,16 @@ struct boss_lord_raadanAI : public boss_hexlord_addAI
         if(!UpdateVictim() )
             return;
 
-        thunderclap_timer -= diff;
-        if (thunderclap_timer <= diff)
+        if (thunderclap_timer.Expired(diff))
         {
             m_creature->CastSpell(m_creature->getVictim(),SPELL_THUNDERCLAP, false);
-            thunderclap_timer += 12000;
+            thunderclap_timer = 12000;
         }
 
-        flamebreath_timer -= diff;
-        if (flamebreath_timer <= diff)
+        if (flamebreath_timer.Expired(diff))
         {
             m_creature->CastSpell(m_creature->getVictim(),SPELL_FLAME_BREATH, false);
-            flamebreath_timer += 12000;
+            flamebreath_timer = 12000;
         }
 
         boss_hexlord_addAI::UpdateAI(diff);
@@ -716,7 +705,7 @@ struct boss_darkheartAI : public boss_hexlord_addAI
 {
     boss_darkheartAI(Creature *c) : boss_hexlord_addAI(c)  {}
 
-    int32 psychicwail_timer;
+    Timer psychicwail_timer;
 
     void Reset()
     {
@@ -730,11 +719,10 @@ struct boss_darkheartAI : public boss_hexlord_addAI
         if(!UpdateVictim() )
             return;
 
-        psychicwail_timer -= diff;
-        if (psychicwail_timer <= diff)
+        if (psychicwail_timer.Expired(diff))
         {
             m_creature->CastSpell(m_creature->getVictim(),SPELL_PSYCHIC_WAIL, false);
-            psychicwail_timer += 12000;
+            psychicwail_timer = 12000;
         }
 
         boss_hexlord_addAI::UpdateAI(diff);
@@ -747,7 +735,7 @@ struct boss_slitherAI : public boss_hexlord_addAI
 {
     boss_slitherAI(Creature *c) : boss_hexlord_addAI(c) {}
 
-    int32 venomspit_timer;
+    Timer venomspit_timer;
 
 
     void Reset()
@@ -776,12 +764,12 @@ struct boss_slitherAI : public boss_hexlord_addAI
         if(!UpdateVictim() )
             return;
 
-        venomspit_timer -= diff;
-        if (venomspit_timer <= diff)
+
+        if (venomspit_timer.Expired(diff))
         {
             if(Unit* victim = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_VENOM_SPIT), true))
                 m_creature->CastSpell(victim,SPELL_VENOM_SPIT, false);
-            venomspit_timer += 2500;
+            venomspit_timer = 2500;
         }
 
         boss_hexlord_addAI::UpdateAI(diff);
@@ -795,7 +783,7 @@ struct boss_fenstalkerAI : public boss_hexlord_addAI
 {
     boss_fenstalkerAI(Creature *c) : boss_hexlord_addAI(c) {}
 
-    int32 volatileinf_timer;
+    Timer volatileinf_timer;
 
 
     void Reset()
@@ -809,12 +797,11 @@ struct boss_fenstalkerAI : public boss_hexlord_addAI
         if(!UpdateVictim() )
             return;
 
-        volatileinf_timer -= diff;
-        if (volatileinf_timer <= diff)
+        if (volatileinf_timer.Expired(diff))
         {
             // core bug
             m_creature->getVictim()->CastSpell(m_creature->getVictim(),SPELL_VOLATILE_INFECTION, false);
-            volatileinf_timer += 12000;
+            volatileinf_timer = 12000;
         }
 
         boss_hexlord_addAI::UpdateAI(diff);
@@ -830,8 +817,8 @@ struct boss_koraggAI : public boss_hexlord_addAI
 {
     boss_koraggAI(Creature *c) : boss_hexlord_addAI(c) {}
 
-    int32 coldstare_timer;
-    int32 mightyblow_timer;
+    Timer coldstare_timer;
+    Timer mightyblow_timer;
 
 
     void Reset()
@@ -846,18 +833,17 @@ struct boss_koraggAI : public boss_hexlord_addAI
         if(!UpdateVictim() )
             return;
 
-        mightyblow_timer -= diff;
-        if (mightyblow_timer <= diff)
+        if (mightyblow_timer.Expired(diff))
         {
             m_creature->CastSpell(m_creature->getVictim(),SPELL_MIGHTY_BLOW, false);
-            mightyblow_timer += 12000;
+            mightyblow_timer = 12000;
         }
-        coldstare_timer -= diff;
-        if (coldstare_timer <= diff)
+        
+        if (coldstare_timer.Expired(diff))
         {
             if(Unit* victim = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_COLD_STARE), true))
                 m_creature->CastSpell(victim,SPELL_COLD_STARE, false);
-            coldstare_timer += 12000;
+            coldstare_timer = 12000;
         }
 
         boss_hexlord_addAI::UpdateAI(diff);

@@ -145,7 +145,7 @@ struct npc_hostageAI : public ScriptedAI
 
 
     ScriptedInstance *pInstance;
-    int32 CheckTimer;
+    Timer CheckTimer;
     float dist;
     float angle;
     bool EventStarted;
@@ -181,8 +181,7 @@ struct npc_hostageAI : public ScriptedAI
     {
         if(!EventStarted && pInstance)
         {
-            CheckTimer -= diff;
-            if(CheckTimer <= diff)
+            if (CheckTimer.Expired(diff))
             {
                 uint8 i = GetHostageIndex(me->GetEntry());
                 if(pInstance->GetData(DATA_HOSTAGE_0_STATE + i) & HOSTAGE_FREED)
@@ -196,7 +195,7 @@ struct npc_hostageAI : public ScriptedAI
                     }
                     EventStarted = true;
                 }
-                CheckTimer += 800;
+                CheckTimer = 800;
             } 
         }
     }
@@ -341,14 +340,14 @@ struct npc_ashliAI : public ScriptedAI
     }
 
     ScriptedInstance *pInstance;
-    int32 CheckTimer;
+    Timer CheckTimer;
     bool EventStarted;
     bool Move;
     bool Fire;
     bool FillTargets;
     bool BossKilled;
     bool YellAshliVaseDone[3];
-    int32 FreeMeTimer;
+    Timer FreeMeTimer;
     uint32 MovePoint;
     std::list<uint64> targets;
 
@@ -406,24 +405,21 @@ struct npc_ashliAI : public ScriptedAI
     {
         if(!EventStarted && pInstance)
         {
-            if(FreeMeTimer)
+ 
+            if (FreeMeTimer.Expired(diff))
             {
-                if(FreeMeTimer <= diff)
-                {
-                    DoScriptText(RAND(YELL_ASHLI_FREE_ME1, YELL_ASHLI_FREE_ME2, YELL_ASHLI_FREE_ME3), me);
-                    FreeMeTimer += 20000;
-                } else
-                    FreeMeTimer -= diff;
+                DoScriptText(RAND(YELL_ASHLI_FREE_ME1, YELL_ASHLI_FREE_ME2, YELL_ASHLI_FREE_ME3), me);
+                FreeMeTimer = 20000;
             }
+        
 
-            CheckTimer -= diff;
-            if(CheckTimer <= diff)
+            if (CheckTimer.Expired(diff))
             {
                 if(!BossKilled && pInstance->GetData(DATA_HOSTAGE_ASHLI_STATE) & HOSTAGE_SAVED)
                 {
                     BossKilled = true;
                     DoScriptText(YELL_ASHLI_KILL, me);
-                    FreeMeTimer += 20000;
+                    FreeMeTimer = 20000;
                 }
                 if(pInstance->GetData(DATA_HOSTAGE_ASHLI_STATE) & HOSTAGE_FREED)
                 {
@@ -431,7 +427,7 @@ struct npc_ashliAI : public ScriptedAI
                     EventStarted = true;
                     DoScriptText(YELL_ASHLI_FREED, me);
                 }
-                CheckTimer += 800;
+                CheckTimer = 800;
             } 
         }
 
@@ -662,7 +658,7 @@ struct npc_harrison_jones_zaAI : public npc_escortAI
     }
 
     ScriptedInstance* m_pInstance;
-    uint32 RespawnDelay;
+    Timer RespawnDelay;
 
     void DamageTaken(Unit* done_by, uint32 &damage)
     {
@@ -702,7 +698,7 @@ struct npc_harrison_jones_zaAI : public npc_escortAI
                 break;
             case 5:
                 m_pInstance->SetData(TYPE_EVENT_RUN,SPECIAL);
-                me->SetRespawnDelay(RespawnDelay);
+                me->SetRespawnDelay(RespawnDelay.GetInterval());
                 break;
             case 6:
                 std::list<Creature*> trolls = FindAllCreaturesWithEntry(23889, 100);
@@ -814,8 +810,8 @@ struct npc_zulaman_door_triggerAI : public Scripted_NoMovementAI
     }
 
     ScriptedInstance* pInstance;
-    int32 CheckTimer;
-    int32 StoperTime;
+    Timer CheckTimer;
+    Timer StoperTime;
 
     uint32 CountChannelingPlayers()
     {
@@ -859,16 +855,15 @@ struct npc_zulaman_door_triggerAI : public Scripted_NoMovementAI
 
     void UpdateAI(const uint32 diff)
     {
-        CheckTimer -= diff;
-        if(CheckTimer <= diff)
+        if (CheckTimer.Expired(diff))
         {
             if(CountChannelingPlayers() >= 5)
-                StoperTime += (2000+diff);
-            CheckTimer += 2000;
+                StoperTime = (2000+diff);
+            CheckTimer = 2000;
         }
         
 
-        if(StoperTime >= 30000) // to be verified
+        if(StoperTime.GetTimeLeft() >= 30000) // to be verified
         {
             StopBanging();
             if(Creature* pCreature = me->GetMap()->GetCreature(pInstance->GetData64(DATA_HARRISON)))
@@ -928,8 +923,8 @@ struct npc_amanishi_lookoutAI : public ScriptedAI
     uint8 MovePoint;
     SummonList Summons;
 
-    int32 warriorsTimer;
-    int32 eaglesTimer;
+    Timer warriorsTimer;
+    Timer eaglesTimer;
 
     void Reset()
     {
@@ -1036,22 +1031,19 @@ struct npc_amanishi_lookoutAI : public ScriptedAI
 
         else if (pInstance && pInstance->GetData(DATA_AKILZONGAUNTLET) == AKILZON_GAUNTLET_IN_PROGRESS)
         {
-            warriorsTimer -= diff;
-            if(warriorsTimer <= diff)
+            if (warriorsTimer.Expired(diff))
             {
-                for(uint8 i = 0; i < 2; i++)
-                    me->SummonCreature(NPC_AMANISHI_WARRIOR, GauntletWP[0][0] + 2*i, GauntletWP[0][1] + 2*i, GauntletWP[0][2], 3.1415f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 120000);
-                warriorsTimer += 40000;
+                for (uint8 i = 0; i < 2; i++)
+                    me->SummonCreature(NPC_AMANISHI_WARRIOR, GauntletWP[0][0] + 2 * i, GauntletWP[0][1] + 2 * i, GauntletWP[0][2], 3.1415f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 120000);
+                warriorsTimer = 40000;
             }
-            
 
-            eaglesTimer -= diff;
-            if(eaglesTimer <= diff)
+            if (eaglesTimer.Expired(diff))
             {
                 uint8 maxEagles = RAND(5, 6);
                 for(uint8 i = 0; i < maxEagles; i++)
                     me->SummonCreature(NPC_AMANISHI_EAGLE, GauntletWP[4][0] + 2*(i%2)-4, GauntletWP[4][1] + 2*(i/2) - 4, GauntletWP[4][2], 3.1415f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 120000);
-                eaglesTimer += 25000;
+                eaglesTimer = 25000;
             }
         }
 
@@ -1087,8 +1079,8 @@ struct npc_amanishi_warriorAI : public npc_escortAI
 
     ScriptedInstance *pInstance;
 
-    int32 KickTimer;
-    int32 ChargeTimer;
+    Timer KickTimer;
+    Timer ChargeTimer;
 
     void Reset()
     {
@@ -1102,18 +1094,17 @@ struct npc_amanishi_warriorAI : public npc_escortAI
         if(!UpdateVictim())
             return;
 
-        KickTimer -= diff;
-        if(KickTimer <= diff)
+        if (KickTimer.Expired(diff))
         {
             DoCast(me->getVictim(), SPELL_KICK);
-            KickTimer += 9000;
+            KickTimer = 9000;
         } 
 
-        ChargeTimer -= diff;
-        if(ChargeTimer <= diff)
+       
+        if (ChargeTimer.Expired(diff))
         {
             DoCast(me->getVictim(), SPELL_CHARGE);
-            ChargeTimer += 5000;
+            ChargeTimer = 5000;
         } 
 
         DoMeleeAttackIfReady();
@@ -1145,7 +1136,7 @@ struct npc_amani_eagleAI : public npc_escortAI
     }
 
     ScriptedInstance *pInstance;
-    int32 TalonTimer;
+    Timer TalonTimer;
 
     void Reset()
     {
@@ -1158,11 +1149,10 @@ struct npc_amani_eagleAI : public npc_escortAI
         if(!UpdateVictim())
             return;
 
-        TalonTimer -= diff;
-        if(TalonTimer <= diff)
+        if (TalonTimer.Expired(diff))
         {
             DoCast(me->getVictim(), SPELL_TALON);
-            TalonTimer += 10000;
+            TalonTimer = 10000;
         } 
 
         DoMeleeAttackIfReady();
@@ -1195,7 +1185,7 @@ struct npc_amanishi_scoutAI : public ScriptedAI
     }
 
     ScriptedInstance *pInstance;
-    int32 SummonTimer;
+    Timer SummonTimer;
 
     void Reset()
     {
@@ -1234,15 +1224,14 @@ struct npc_amanishi_scoutAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if(SummonTimer)
+        if(SummonTimer.GetInterval())
         {
             /*
             Unit *drums = FindCreature(22515, 5, me);
             if(drums)
                 me->GetMotionMaster()->MoveFollow(drums, 0, 0);
             */
-            SummonTimer -= diff;
-            if(SummonTimer <= diff)
+            if (SummonTimer.Expired(diff))
             {
                 DoCast(me, SPELL_ALERT_DRUMS, false);
                 //DoCast(me, SPELL_SUMMON_SENTRIES, true);
@@ -1251,7 +1240,7 @@ struct npc_amanishi_scoutAI : public ScriptedAI
                 me->GetPosition(x, y, z);
                 me->SummonCreature(MOB_SENTRY, x+1, y+1, z, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 10000);
                 me->SummonCreature(MOB_SENTRY, x-1, y-1, z, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 10000);
-                SummonTimer += 5000;
+                SummonTimer = 5000;
             } 
         }
     }

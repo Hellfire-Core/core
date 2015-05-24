@@ -136,25 +136,25 @@ struct boss_zuljinAI : public ScriptedAI
     uint32 Phase;
     uint32 health_20;
 
-    int32 Intro_Timer;
-    int32 Berserk_Timer;
-
-    int32 Whirlwind_Timer;
-    int32 Grievous_Throw_Timer;
-
-    int32 Creeping_Paralysis_Timer;
-    int32 Overpower_Timer;
-
-    int32 Claw_Rage_Timer;
-    int32 Lynx_Rush_Timer;
-    int32 Claw_Counter;
-    int32 Claw_Loop_Timer;
-
-    int32 Flame_Whirl_Timer;
-    int32 Flame_Breath_Timer;
-    int32 Pillar_Of_Fire_Timer;
-
-    int32 checkTimer;
+    Timer Intro_Timer;
+    Timer Berserk_Timer;
+    
+    Timer Whirlwind_Timer;
+    Timer Grievous_Throw_Timer;
+    
+    Timer Creeping_Paralysis_Timer;
+    Timer Overpower_Timer;
+    
+    Timer Claw_Rage_Timer;
+    Timer Lynx_Rush_Timer;
+    uint32 Claw_Counter;
+    Timer Claw_Loop_Timer;
+    
+    Timer Flame_Whirl_Timer;
+    Timer Flame_Breath_Timer;
+    Timer Pillar_Of_Fire_Timer;
+    
+    Timer checkTimer;
     WorldLocation wLoc;
 
     SummonList Summons;
@@ -368,54 +368,52 @@ struct boss_zuljinAI : public ScriptedAI
                 EnterPhase(Phase + 1);
         }
 
-        checkTimer -= diff;
-        if (checkTimer <= diff)
+        
+        if (checkTimer.Expired(diff))
         {
             if (!m_creature->IsWithinDistInMap(&wLoc, 100))
                 EnterEvadeMode();
             else
                 DoZoneInCombat();
-            checkTimer += 3000;
+            checkTimer = 3000;
         }
         
 
-        Berserk_Timer -= diff;
-        if(Berserk_Timer <= diff)
+        
+        if (Berserk_Timer.Expired(diff))
         {
             m_creature->CastSpell(m_creature, SPELL_BERSERK, true);
             DoScriptText(YELL_BERSERK, m_creature);
-            Berserk_Timer += 60000;
+            Berserk_Timer = 60000;
         }
 
         switch (Phase)
         {
         case 0:
-            Whirlwind_Timer -= diff;
-            if(Whirlwind_Timer <= diff)
+            if (Whirlwind_Timer.Expired(diff))
             {
                 DoCast(m_creature, SPELL_WHIRLWIND);
-                Whirlwind_Timer += 15000 + rand()%5000;
+                Whirlwind_Timer = 15000 + rand()%5000;
             }
 
-            Grievous_Throw_Timer -= diff;
-            if(Grievous_Throw_Timer <= diff)
+            
+            if (Grievous_Throw_Timer.Expired(diff))
             {
                 if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_GRIEVOUS_THROW), true))
                     m_creature->CastSpell(target, SPELL_GRIEVOUS_THROW, false);
-                Grievous_Throw_Timer += 10000;
+                Grievous_Throw_Timer = 10000;
             }
             break;
 
         case 1:
-            Creeping_Paralysis_Timer -= diff;
-            if(Creeping_Paralysis_Timer <= diff)
+            if (Creeping_Paralysis_Timer.Expired(diff))
             {
                 DoCast(m_creature, SPELL_CREEPING_PARALYSIS);
-                Creeping_Paralysis_Timer += 20000;
+                Creeping_Paralysis_Timer = 20000;
             }
 
-            Overpower_Timer -= diff;
-            if(Overpower_Timer <= diff)
+            
+            if (Overpower_Timer.Expired(diff))
             {
                 // implemented in DoMeleeAttackIfReady()
                 Overpower_Timer = 0;
@@ -426,63 +424,63 @@ struct boss_zuljinAI : public ScriptedAI
             return;
 
         case 3:
-            if(Claw_Rage_Timer <= diff)
+            if (Claw_Rage_Timer.Expired(diff))
             {
-                if(!TankGUID)
+                if (!TankGUID)
                 {
-                    if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0))
+                    if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0))
                     {
                         TankGUID = m_creature->getVictimGUID();
                         m_creature->SetSpeed(MOVE_RUN, 5.0f);
                         AttackStart(target); // change victim
                         Claw_Rage_Timer = 0;
-                        Claw_Loop_Timer += 500;
+                        Claw_Loop_Timer = 500;
                         Claw_Counter = 0;
                     }
                 }
-                else if(!Claw_Rage_Timer) // do not do this when Lynx_Rush
+            }
+            else if (!Claw_Rage_Timer.GetInterval()) // do not do this when Lynx_Rush
+            {
+                if (Claw_Loop_Timer.Expired(diff))
                 {
-                    Claw_Loop_Timer -= diff;
-                    if(Claw_Loop_Timer <= diff)
+                    Unit* target = m_creature->getVictim();
+                    if (!target || !target->isTargetableForAttack())
+                        target = Unit::GetUnit(*m_creature, TankGUID);
+
+                    if (!target || !target->isTargetableForAttack())
+                        target = SelectUnit(SELECT_TARGET_RANDOM, 0);
+
+                    if (target)
                     {
-                        Unit* target = m_creature->getVictim();
-                        if(!target || !target->isTargetableForAttack())
-                            target = Unit::GetUnit(*m_creature, TankGUID);
-
-                        if(!target || !target->isTargetableForAttack())
-                            target = SelectUnit(SELECT_TARGET_RANDOM, 0);
-
-                        if(target)
+                        AttackStart(target);
+                        m_creature->SetSpeed(MOVE_RUN, 5.0f);
+                        if (m_creature->IsWithinMeleeRange(target))
                         {
-                            AttackStart(target);
-                            m_creature->SetSpeed(MOVE_RUN, 5.0f);
-                            if(m_creature->IsWithinMeleeRange(target))
+                            m_creature->CastSpell(target, SPELL_CLAW_RAGE_DAMAGE, true);
+                            Claw_Counter++;
+                            if (Claw_Counter == 12)
                             {
-                                m_creature->CastSpell(target, SPELL_CLAW_RAGE_DAMAGE, true);
-                                Claw_Counter++;
-                                if(Claw_Counter == 12)
-                                {
-                                    Claw_Rage_Timer += 15000 + rand()%5000;
-                                    m_creature->SetSpeed(MOVE_RUN, 1.2f);
-                                    AttackStart(Unit::GetUnit(*m_creature, TankGUID));
-                                    TankGUID = 0;
-                                    return;
-                                }
-                                else
-                                    Claw_Loop_Timer += 500;
+                                Claw_Rage_Timer = 15000 + rand() % 5000;
+                                m_creature->SetSpeed(MOVE_RUN, 1.2f);
+                                AttackStart(Unit::GetUnit(*m_creature, TankGUID));
+                                TankGUID = 0;
+                                return;
                             }
-                        }
-                        else
-                        {
-                            EnterEvadeMode(); // if(target)
-                            return;
+                            else
+                                Claw_Loop_Timer = 500;
                         }
                     }
-                } //if(TankGUID)
-            }else Claw_Rage_Timer -= diff;
+                    else
+                    {
+                        EnterEvadeMode(); // if(target)
+                        return;
+                    }
+                }
+            } //if(TankGUID)
 
-            Lynx_Rush_Timer -= diff;
-            if(Lynx_Rush_Timer <= diff)
+
+            
+            if (Lynx_Rush_Timer.Expired(diff))
             {
                 if(!TankGUID)
                 {
@@ -495,7 +493,7 @@ struct boss_zuljinAI : public ScriptedAI
                         Claw_Counter = 0;
                     }
                 }
-                else if(!Lynx_Rush_Timer)
+                else if(!Lynx_Rush_Timer.GetInterval())
                 {
                     Unit* target = m_creature->getVictim();
                     if(!target || !target->isTargetableForAttack())
@@ -513,7 +511,7 @@ struct boss_zuljinAI : public ScriptedAI
                             Claw_Counter++;
                             if(Claw_Counter == 9)
                             {
-                                Lynx_Rush_Timer += 15000 + rand()%5000;
+                                Lynx_Rush_Timer = 15000 + rand()%5000;
                                 m_creature->SetSpeed(MOVE_RUN, 1.2f);
                                 AttackStart(Unit::GetUnit(*m_creature, TankGUID));
                                 TankGUID = 0;
@@ -535,29 +533,28 @@ struct boss_zuljinAI : public ScriptedAI
 
             break;
         case 4:
-            Flame_Whirl_Timer -= diff;
-            if(Flame_Whirl_Timer <= diff)
+            if (Flame_Whirl_Timer.Expired(diff))
             {
                 DoCast(m_creature, SPELL_FLAME_WHIRL);
-                Flame_Whirl_Timer += 12000;
+                Flame_Whirl_Timer = 12000;
             }
 
-            Pillar_Of_Fire_Timer -= diff;
-            if(Pillar_Of_Fire_Timer <= diff)
+            
+            if (Pillar_Of_Fire_Timer.Expired(diff))
             {
                 if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_SUMMON_PILLAR), true))
                     DoCast(target, SPELL_SUMMON_PILLAR);
-                Pillar_Of_Fire_Timer += 10000;
+                Pillar_Of_Fire_Timer = 10000;
             }
 
-            Flame_Breath_Timer -= diff;
-            if(Flame_Breath_Timer <= diff)
+            
+            if (Flame_Breath_Timer.Expired(diff))
             {
                 if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0))
                     m_creature->SetInFront(target);
                 DoCast(m_creature, SPELL_FLAME_BREATH);
                 DoScriptText(YELL_FIRE_BREATH, m_creature);
-                Flame_Breath_Timer += 10000;
+                Flame_Breath_Timer = 10000;
             } 
             break;
 

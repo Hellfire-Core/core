@@ -101,24 +101,24 @@ struct boss_nalorakkAI : public ScriptedAI
 
     ScriptedInstance *pInstance;
 
-    int32 BrutalSwipe_Timer;
-    int32 Mangle_Timer;
-    int32 Surge_Timer;
-
-    int32 LaceratingSlash_Timer;
-    int32 RendFlesh_Timer;
-    int32 DeafeningRoar_Timer;
-
-    int32 ShapeShift_Timer;
-    int32 Berserk_Timer;
+    Timer BrutalSwipe_Timer;
+    Timer Mangle_Timer;
+    Timer Surge_Timer;
+    
+    Timer LaceratingSlash_Timer;
+    Timer RendFlesh_Timer;
+    Timer DeafeningRoar_Timer;
+    
+    Timer ShapeShift_Timer;
+    Timer Berserk_Timer;
 
     bool inBearForm;
     bool MoveEvent;
     bool inMove;
     uint32 MovePhase;
-    int32 waitTimer;
+    Timer waitTimer;
 
-    int32 checkTimer;
+    Timer checkTimer;
     WorldLocation wLoc;
 
     void Reset()
@@ -345,100 +345,94 @@ struct boss_nalorakkAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(waitTimer)
-        {
-            if(inMove)
-                waitTimer -= diff;
-                if(waitTimer <= diff)
-                {
-                    (*m_creature).GetMotionMaster()->MovementExpired();
-                    (*m_creature).GetMotionMaster()->MovePoint(MovePhase,NalorakkWay[MovePhase][0],NalorakkWay[MovePhase][1],NalorakkWay[MovePhase][2]);
-                    waitTimer = 0;
-                }
-        }
+
+        if (inMove)
+            if (waitTimer.Expired(diff))
+            {
+                (*m_creature).GetMotionMaster()->MovementExpired();
+                (*m_creature).GetMotionMaster()->MovePoint(MovePhase, NalorakkWay[MovePhase][0], NalorakkWay[MovePhase][1], NalorakkWay[MovePhase][2]);
+                waitTimer = 0;
+            }
+        
 
         if(!UpdateVictim())
             return;
 
-        checkTimer -= diff;
-        if (checkTimer <= diff)
+        
+        if (checkTimer.Expired(diff))
         {
             if (!m_creature->IsWithinDistInMap(&wLoc, 75) && !MoveEvent)
                 EnterEvadeMode();
             else
                 DoZoneInCombat();
             m_creature->SetSpeed(MOVE_RUN,2);
-            checkTimer += 3000;
+            checkTimer = 3000;
         }
         
 
-        Berserk_Timer -= diff;
-        if(Berserk_Timer <= diff)
+    
+        if (Berserk_Timer.Expired(diff))
         {
             AddSpellToCastWithScriptText(m_creature, SPELL_BERSERK, YELL_BERSERK, true);
-            Berserk_Timer += 600000;
+            Berserk_Timer = 600000;
         }
 
         if(!inBearForm)
         {
-            BrutalSwipe_Timer -= diff;
-            if(BrutalSwipe_Timer <= diff)
+            if (BrutalSwipe_Timer.Expired(diff))
             {
                 AddSpellToCast(m_creature->getVictim(), SPELL_BRUTALSWIPE);
-                BrutalSwipe_Timer += 7000 + rand()%5000;
+                BrutalSwipe_Timer = 7000 + rand()%5000;
             }
 
-            Mangle_Timer -= diff;
-            if(Mangle_Timer <= diff)
+            if (Mangle_Timer.Expired(diff))
             {
                 if(m_creature->getVictim() && !m_creature->getVictim()->HasAura(SPELL_MANGLEEFFECT, 0))
                 {
                     AddSpellToCast(m_creature->getVictim(), SPELL_MANGLE);
-                    Mangle_Timer += 1000;
+                    Mangle_Timer = 1000;
                 }
                 else 
-                    Mangle_Timer += 10000 + rand()%5000;
+                    Mangle_Timer = 10000 + rand()%5000;
             }
 
-            Surge_Timer -= diff;
-            if(Surge_Timer <= diff)
+            
+            if (Surge_Timer.Expired(diff))
             {
                 if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 1, GetSpellMaxRange(SPELL_SURGE), true, m_creature->getVictimGUID()))
                     AddSpellToCastWithScriptText(target, SPELL_SURGE, YELL_SURGE);
-                Surge_Timer += 15000 + rand()%5000;
+                Surge_Timer = 15000 + rand()%5000;
             }
 
-            if(ShapeShift_Timer)
+
+            if (ShapeShift_Timer.Expired(diff))
             {
-                ShapeShift_Timer -= diff;
-                if(ShapeShift_Timer <= diff)
-                {
-                    AddSpellToCastWithScriptText(m_creature, SPELL_BEARFORM, YELL_SHIFTEDTOBEAR, true);
-                    ShapeShift_Timer += 0;
-                }
+                AddSpellToCastWithScriptText(m_creature, SPELL_BEARFORM, YELL_SHIFTEDTOBEAR, true);
+                ShapeShift_Timer = 0;
             }
+            
         }
         else
         {
-            LaceratingSlash_Timer -= diff;
-            if(LaceratingSlash_Timer <= diff)
+            
+            if (LaceratingSlash_Timer.Expired(diff))
             {
                 AddSpellToCast(m_creature->getVictim(), SPELL_LACERATINGSLASH);
-                LaceratingSlash_Timer += 18000 + rand()%5000;
+                LaceratingSlash_Timer = 18000 + rand()%5000;
             }
 
-            RendFlesh_Timer -= diff;
-            if(RendFlesh_Timer <= diff)
+            
+            if (RendFlesh_Timer.Expired(diff))
             {
                 AddSpellToCast(m_creature->getVictim(), SPELL_RENDFLESH);
-                RendFlesh_Timer += 5000 + rand()%5000;
+                RendFlesh_Timer = 5000 + rand()%5000;
             }
 
-            DeafeningRoar_Timer -= diff;
-            if(DeafeningRoar_Timer <= diff)
+            
+            if (DeafeningRoar_Timer.Expired(diff))
             {
                 AddSpellToCast(m_creature->getVictim(), SPELL_DEAFENINGROAR);
-                DeafeningRoar_Timer += 15000 + rand()%5000;
+                DeafeningRoar_Timer = 15000 + rand()%5000;
             }
         }
 
