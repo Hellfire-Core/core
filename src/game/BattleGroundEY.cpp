@@ -132,9 +132,7 @@ void BattleGroundEY::Update(uint32 diff)
     }
     else if (GetStatus() == STATUS_IN_PROGRESS)
     {
-
-        m_PointAddingTimer -= diff;
-        if (m_PointAddingTimer <= 0)
+        if (m_PointAddingTimer.Expired(diff))
         {
             m_PointAddingTimer = BG_EY_FPOINTS_TICK_TIME;
             if (m_TeamPointsCount[BG_TEAM_ALLIANCE] > 0)
@@ -145,9 +143,7 @@ void BattleGroundEY::Update(uint32 diff)
 
         if (m_FlagState == BG_EY_FLAG_STATE_WAIT_RESPAWN || m_FlagState == BG_EY_FLAG_STATE_ON_GROUND)
         {
-            m_FlagsTimer -= diff;
-
-            if (m_FlagsTimer < 0)
+            if (m_FlagsTimer.Expired(diff))
             {
                 m_FlagsTimer = 0;
                 if (m_FlagState == BG_EY_FLAG_STATE_WAIT_RESPAWN)
@@ -157,8 +153,7 @@ void BattleGroundEY::Update(uint32 diff)
             }
         }
 
-        m_TowerCapCheckTimer -= diff;
-        if (m_TowerCapCheckTimer <= 0)
+        if (m_TowerCapCheckTimer.Expired(diff))
         {
             //check if player joined point
             /*I used this order of calls, because although we will check if one player is in gameobject's distance 2 times
@@ -172,8 +167,7 @@ void BattleGroundEY::Update(uint32 diff)
         }
 
         //checking for players walking on the bottom of the map (yup, it's possible)
-        uCheckDelayer -= diff;
-        if (uCheckDelayer <= diff)
+        if (uCheckDelayer.Expired(diff))
         {
             for (BattleGroundPlayerMap::const_iterator itr = GetPlayers().begin(); itr != GetPlayers().end(); ++itr)
             {
@@ -181,15 +175,14 @@ void BattleGroundEY::Update(uint32 diff)
                     if (plr->GetPositionZ() < 850.0f)
                         Exploiter = plr;
 
-                uCheckDelayer += 5000;
+                uCheckDelayer = 5000;
             }
         }
 
 
         if (Exploiter && Exploiter->isAlive())
         {
-            uWalkingDead -= diff;
-            if (uWalkingDead <= diff)
+            if (uWalkingDead.Expired(diff))
             {
                 Exploiter->Kill(Exploiter, false);
                 Exploiter = NULL;

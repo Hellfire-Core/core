@@ -273,9 +273,9 @@ class BattleGroundMgr
 
         /* Battlegrounds */
         BattleGroundSet m_BattleGrounds[MAX_BATTLEGROUND_TYPE_ID];
-        uint32 m_NextRatingDiscardUpdate;
+        Timer m_NextRatingDiscardUpdate;
         time_t m_NextAutoDistributionTime;
-        uint32 m_AutoDistributionTimeChecker;
+        Timer m_AutoDistributionTimeChecker;
         bool   m_ArenaTesting;
         bool   m_Testing;
         bool   m_ApAnnounce;

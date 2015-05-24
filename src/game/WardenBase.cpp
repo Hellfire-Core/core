@@ -140,19 +140,18 @@ void WardenBase::Update()
 
         if (m_WardenDataSent)
         {
-            // 1.5 minutes after send packet
-            if ((m_WardenKickTimer > 90000) && sWorld.getConfig(CONFIG_WARDEN_KICK))
+            // 20 seconds after send packet
+            if ((m_WardenKickTimer >= 20000) && sWorld.getConfig(CONFIG_WARDEN_KICK))
                     Client->KickPlayer();
             else
                 m_WardenKickTimer += diff;
         }
-        else if (m_WardenCheckTimer > 0)
+        else if (m_WardenCheckTimer.GetInterval() > 0)
         {
-            m_WardenCheckTimer -= diff;
-            if (m_WardenCheckTimer >= diff)
+            if (m_WardenCheckTimer.Expired(diff))
             {
                 RequestData();
-                m_WardenCheckTimer += urand(m_checkIntervalMin, m_checkIntervalMax);
+                m_WardenCheckTimer = urand(m_checkIntervalMin, m_checkIntervalMax);
             }
 
         }

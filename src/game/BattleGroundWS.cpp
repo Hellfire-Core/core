@@ -172,9 +172,7 @@ void BattleGroundWS::Update(uint32 diff)
     {
         if (m_FlagState[BG_TEAM_ALLIANCE] == BG_WS_FLAG_STATE_WAIT_RESPAWN)
         {
-            m_FlagsTimer[BG_TEAM_ALLIANCE] -= diff;
-
-            if (m_FlagsTimer[BG_TEAM_ALLIANCE] < 0)
+            if (m_FlagsTimer[BG_TEAM_ALLIANCE].Expired(diff))
             {
                 m_FlagsTimer[BG_TEAM_ALLIANCE] = 0;
                 RespawnFlag(ALLIANCE, true);
@@ -182,9 +180,7 @@ void BattleGroundWS::Update(uint32 diff)
         }
         if (m_FlagState[BG_TEAM_ALLIANCE] == BG_WS_FLAG_STATE_ON_GROUND)
         {
-            m_FlagsDropTimer[BG_TEAM_ALLIANCE] -= diff;
-
-            if (m_FlagsDropTimer[BG_TEAM_ALLIANCE] < 0)
+            if (m_FlagsDropTimer[BG_TEAM_ALLIANCE].Expired(diff))
             {
                 m_FlagsDropTimer[BG_TEAM_ALLIANCE] = 0;
                 RespawnFlagAfterDrop(ALLIANCE);
@@ -192,9 +188,7 @@ void BattleGroundWS::Update(uint32 diff)
         }
         if (m_FlagState[BG_TEAM_HORDE] == BG_WS_FLAG_STATE_WAIT_RESPAWN)
         {
-            m_FlagsTimer[BG_TEAM_HORDE] -= diff;
-
-            if (m_FlagsTimer[BG_TEAM_HORDE] < 0)
+            if (m_FlagsTimer[BG_TEAM_HORDE].Expired(diff))
             {
                 m_FlagsTimer[BG_TEAM_HORDE] = 0;
                 RespawnFlag(HORDE, true);
@@ -202,9 +196,7 @@ void BattleGroundWS::Update(uint32 diff)
         }
         if (m_FlagState[BG_TEAM_HORDE] == BG_WS_FLAG_STATE_ON_GROUND)
         {
-            m_FlagsDropTimer[BG_TEAM_HORDE] -= diff;
-
-            if (m_FlagsDropTimer[BG_TEAM_HORDE] < 0)
+            if (m_FlagsDropTimer[BG_TEAM_HORDE].Expired(diff))
             {
                 m_FlagsDropTimer[BG_TEAM_HORDE] = 0;
                 RespawnFlagAfterDrop(HORDE);

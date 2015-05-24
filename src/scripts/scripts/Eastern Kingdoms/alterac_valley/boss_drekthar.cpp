@@ -64,12 +64,12 @@ struct boss_drektharAI : public ScriptedAI
         m_creature->GetPosition(wLoc);
     }
 
-    int32 WhirlwindTimer;
-    int32 Whirlwind2Timer;
-    int32 KnockdownTimer;
-    int32 FrenzyTimer;
-    int32 YellTimer;
-    int32 CheckTimer;
+    Timer WhirlwindTimer;
+    Timer Whirlwind2Timer;
+    Timer KnockdownTimer;
+    Timer FrenzyTimer;
+    Timer YellTimer;
+    Timer CheckTimer;
     WorldLocation wLoc;
 
     void Reset()
@@ -130,8 +130,7 @@ struct boss_drektharAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        CheckTimer -= diff;
-        if (CheckTimer <= diff)
+        if (CheckTimer.Expired(diff))
         {
             if(!m_creature->IsWithinDistInMap(&wLoc, 20.0f))
                 EnterEvadeMode();
@@ -139,43 +138,41 @@ struct boss_drektharAI : public ScriptedAI
             me->SetSpeed(MOVE_WALK, 2.0f, true);
             me->SetSpeed(MOVE_RUN, 2.0f, true);
 
-            CheckTimer += 2000;
+            CheckTimer = 2000;
         }
         
 
-        WhirlwindTimer -= diff;
-        if (WhirlwindTimer <= diff)
+        if (WhirlwindTimer.Expired(diff))
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_WHIRLWIND);
-            WhirlwindTimer +=  urand(8000, 18000);
+            WhirlwindTimer =  urand(8000, 18000);
         }
         
-        Whirlwind2Timer -= diff;
-        if (Whirlwind2Timer <= diff)
+        if (Whirlwind2Timer.Expired(diff))
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_WHIRLWIND2);
-            Whirlwind2Timer += urand(7000, 25000);
+            Whirlwind2Timer = urand(7000, 25000);
         }
         
-        KnockdownTimer -= diff;
-        if (KnockdownTimer <= diff)
+        
+        if (KnockdownTimer.Expired(diff))
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_KNOCKDOWN);
-            KnockdownTimer += urand(10000, 15000);
+            KnockdownTimer = urand(10000, 15000);
         }
         
-        FrenzyTimer -= diff;
-        if (FrenzyTimer <= diff)
+        
+        if (FrenzyTimer.Expired(diff))
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_FRENZY);
-            FrenzyTimer += urand(20000, 25000);
+            FrenzyTimer = urand(20000, 25000);
         }
         
-        YellTimer -= diff;
-        if (YellTimer <= diff)
+        
+        if (YellTimer.Expired(diff))
         {
             DoScriptText(RAND(YELL_RANDOM1, YELL_RANDOM2, YELL_RANDOM3, YELL_RANDOM4, YELL_RANDOM5), m_creature);
-            YellTimer += urand(20000, 30000); //20 to 30 seconds
+            YellTimer = urand(20000, 30000); //20 to 30 seconds
         }
         
 
@@ -200,11 +197,11 @@ struct boss_drektharOfficerAI : public ScriptedAI
         m_creature->GetPosition(wLoc);
     }
 
-    int32 chargeTimer;
-    int32 cleaveTimer;
-    int32 demoShoutTimer;
-    int32 whirlwindTimer;
-    int32 CheckTimer;
+    Timer chargeTimer;
+    Timer cleaveTimer;
+    Timer demoShoutTimer;
+    Timer whirlwindTimer;
+    Timer CheckTimer;
     WorldLocation wLoc;
 
     void Reset()
@@ -261,8 +258,8 @@ struct boss_drektharOfficerAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        CheckTimer -= diff;
-        if (CheckTimer <= diff)
+        
+        if (CheckTimer.Expired(diff))
         {
             if (!m_creature->IsWithinDistInMap(&wLoc, 20.0f))
                 EnterEvadeMode();
@@ -270,39 +267,38 @@ struct boss_drektharOfficerAI : public ScriptedAI
             me->SetSpeed(MOVE_WALK, 1.5f, true);
             me->SetSpeed(MOVE_RUN, 1.5f, true);
 
-            CheckTimer += 2000;
+            CheckTimer = 2000;
         }
         
-        chargeTimer -= diff;
-        if (chargeTimer <= diff)
+        if (chargeTimer.Expired(diff))
         {
             Unit * target = SelectUnit(SELECT_TARGET_RANDOM, 0, 25.0f, true, 0, 8.0f);
 
             if (target)
                 AddSpellToCast(target, AV_DT_CHARGE);
 
-            chargeTimer += urand(7500, 20000);
+            chargeTimer = urand(7500, 20000);
         }
         
-        cleaveTimer -= diff;
-        if (cleaveTimer <= diff)
+        
+        if (cleaveTimer.Expired(diff))
         {
             AddSpellToCast(AV_DT_CLEAVE, CAST_TANK);
-            cleaveTimer += urand(5000, 10000);
+            cleaveTimer = urand(5000, 10000);
         }
         
-        demoShoutTimer -= diff;
-        if (demoShoutTimer <= diff)
+        
+        if (demoShoutTimer.Expired(diff))
         {
             AddSpellToCast(AV_DT_DEMOSHOUT, CAST_NULL);
-            demoShoutTimer += urand(14000, 25000);
+            demoShoutTimer = urand(14000, 25000);
         }
         
-        whirlwindTimer -= diff;
-        if (whirlwindTimer <= diff)
+        
+        if (whirlwindTimer.Expired(diff))
         {
             AddSpellToCast(AV_DT_WHIRLWIND, CAST_SELF);
-            whirlwindTimer += urand(9000, 13000);
+            whirlwindTimer = urand(9000, 13000);
         }
         
            

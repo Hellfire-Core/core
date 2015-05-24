@@ -428,9 +428,8 @@ void BattleGroundAV::Update(uint32 diff)
         {
             if (!m_CaptainAlive[i])
                 continue;
-            if (m_CaptainBuffTimer[i] > diff)
-                m_CaptainBuffTimer[i] -= diff;
-            else
+
+            if (m_CaptainBuffTimer[i].Expired(diff))
             {
                 if (i==0)
                 {
@@ -450,22 +449,20 @@ void BattleGroundAV::Update(uint32 diff)
             }
         }
         //add points from mine owning, and look if he neutral team wanrts to reclaim the mine
-        m_Mine_Timer -=diff;
+
         for (uint8 mine=0; mine <2; mine++)
         {
             if (m_Mine_Owner[mine] == ALLIANCE || m_Mine_Owner[mine] == HORDE)
             {
-                if (m_Mine_Timer <= 0)
+                if (m_Mine_Timer.Expired(diff))
                     UpdateScore(m_Mine_Owner[mine],1);
 
-                if (m_Mine_Reclaim_Timer[mine] > diff)
-                    m_Mine_Reclaim_Timer[mine] -= diff;
-                else{ //we don't need to set this timer to 0 cause this codepart wont get called when this thing is 0
+                if (m_Mine_Reclaim_Timer[mine].Expired(diff))        //we don't need to set this timer to 0 cause this codepart wont get called when this thing is 0                 
                     ChangeMineOwner(mine,AV_NEUTRAL_TEAM);
                 }
             }
         }
-        if (m_Mine_Timer <= 0)
+        if (m_Mine_Timer.Passed())
             m_Mine_Timer=AV_MINE_TICK_TIMER; //this is at the end, cause we need to update both mines
 
         //looks for all timers of the nodes and destroy the building (for graveyards the building wont get destroyed, it goes just to the other team

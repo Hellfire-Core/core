@@ -200,8 +200,8 @@ class BattleGroundWS : public BattleGround
         uint64 m_DroppedFlagGUID[2];
         uint8 m_FlagState[2];                               // for checking flag state
         uint32 m_TeamScores[2];
-        int32 m_FlagsTimer[2];
-        int32 m_FlagsDropTimer[2];
+        Timer m_FlagsTimer[2];
+        Timer m_FlagsDropTimer[2];
 
         int32 m_FlagSpellForceTimer;
         int32 m_FlagSpellBrutalTimer;

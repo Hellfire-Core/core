@@ -41,10 +41,10 @@ struct boss_balindaAI : public ScriptedAI
         m_creature->GetPosition(wLoc);
     }
 
-    int32 CoCTimer;
-    int32 CheckTimer;
-    int32 WaterElementalTimer;
-    int32 CastTimer;
+    Timer CoCTimer;
+    Timer CheckTimer;
+    Timer WaterElementalTimer;
+    Timer CastTimer;
     uint32 SpellId;
     WorldLocation wLoc;
     SummonList summons;
@@ -88,8 +88,8 @@ struct boss_balindaAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        CheckTimer -= diff;
-        if (CheckTimer <= diff)
+        
+        if (CheckTimer.Expired(diff))
         {
             if (!m_creature->IsWithinDistInMap(&wLoc, 20))
             {
@@ -97,48 +97,45 @@ struct boss_balindaAI : public ScriptedAI
                 EnterEvadeMode();
                 return;
             }
-            CheckTimer += 2000;
+            CheckTimer = 2000;
         }
         
 
-        WaterElementalTimer -= diff;
-        if (WaterElementalTimer <= diff)
+        
+        if (WaterElementalTimer.Expired(diff))
         {
             ForceSpellCast(m_creature, SPELL_WATER_ELEMENTAL);
-            WaterElementalTimer += 90000; // 90s
+            WaterElementalTimer = 90000; // 90s
         }
         
           
 
         // update CoC timer
-        if (CoCTimer > diff)
-            CoCTimer -= diff;
-        else
+        if (CoCTimer.Expired(diff))
             CoCTimer = 0;
 
         // select spell
-        CastTimer -= diff;
-        if (CastTimer <= diff)
+        if (CastTimer.Expired(diff))
         {
             // if victim is in range of 6.5 yards and there are 3 attackers cast explosion or CoC if ready
             if (m_creature->getAttackers().size() >= 3 && m_creature->IsWithinDistInMap(m_creature->getVictim(), 6.5f, false))
             {
-                if (!CoCTimer)
+                if (!CoCTimer.GetInterval())
                 {
                     ForceSpellCast(me->getVictim(), SPELL_CONE_OF_COLD);
-                    CoCTimer += urand(8000, 12000);
+                    CoCTimer = urand(8000, 12000);
                     CastTimer = 0;
                 }
                 else
                 {
                     ForceSpellCast(me->getVictim(), SPELL_ARCANE_EXPLOSION);
-                    CastTimer += 2000;
+                    CastTimer = 2000;
                 }
             }
             else
             {
                 AddSpellToCast(m_creature->getVictim(), RAND(SPELL_FROSTBOLT, SPELL_FIREBALL));
-                CastTimer += 2500;
+                CastTimer = 2500;
             }
         }
         

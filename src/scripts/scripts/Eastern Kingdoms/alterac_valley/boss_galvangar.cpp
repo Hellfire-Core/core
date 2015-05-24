@@ -42,11 +42,11 @@ struct boss_galvangarAI : public ScriptedAI
     }
 
 
-    int32 CleaveTimer;
-    int32 FrighteningShoutTimer;
-    int32 WhirlwindTimer;
-    int32 MortalStrikeTimer;
-    int32 CheckTimer;
+    Timer CleaveTimer;
+    Timer FrighteningShoutTimer;
+    Timer WhirlwindTimer;
+    Timer MortalStrikeTimer;
+    Timer CheckTimer;
     WorldLocation wLoc;
 
 
@@ -73,56 +73,44 @@ struct boss_galvangarAI : public ScriptedAI
 
     void JustDied(Unit* Killer){}
 
-    void UpdateTimer(int32 &timer, const uint32 diff)
-    {
-                timer -= diff;
-    }
-
     void UpdateAI(const uint32 diff)
     {
         if (!UpdateVictim())
             return;
 
-        CheckTimer -= diff;
-        if (CheckTimer <= diff)
+        if (CheckTimer.Expired(diff))
         {
             if (!m_creature->IsWithinDistInMap(&wLoc, 20.0f))
             {
                 EnterEvadeMode();
                 return;
             }
-            CheckTimer += 2000;
+            CheckTimer = 2000;
         }
         
 
-
-        UpdateTimer(CleaveTimer, diff);
-        UpdateTimer(WhirlwindTimer, diff);
-        UpdateTimer(FrighteningShoutTimer, diff);
-        UpdateTimer(MortalStrikeTimer, diff);
-
-        if (CleaveTimer <= diff)
+        if (CleaveTimer.Expired(diff))
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_CLEAVE);
-            CleaveTimer +=  urand(4000, 12000);
+            CleaveTimer =  urand(4000, 12000);
         }
 
-        if (FrighteningShoutTimer <= diff)
+        if (FrighteningShoutTimer.Expired(diff))
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_FRIGHTENING_SHOUT);
-            FrighteningShoutTimer += urand(14000, 24000);
+            FrighteningShoutTimer = urand(14000, 24000);
         }
 
-        if (MortalStrikeTimer <= diff)
+        if (MortalStrikeTimer.Expired(diff))
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_MORTAL_STRIKE);
-            MortalStrikeTimer += 6000;
+            MortalStrikeTimer = 6000;
         }
 
-        if (WhirlwindTimer <= diff)
+        if (WhirlwindTimer.Expired(diff))
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_WHIRLWIND);
-            WhirlwindTimer += 10000;
+            WhirlwindTimer = 10000;
         }
 
         CastNextSpellIfAnyAndReady();

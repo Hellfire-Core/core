@@ -398,7 +398,7 @@ struct mob_sunblade_protectorAI : public ScriptedAI
         }
     }
 
-    int32 FelLightning;
+    Timer FelLightning;
     bool isInactive;
 
     void Reset()
@@ -428,12 +428,11 @@ struct mob_sunblade_protectorAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        FelLightning -= diff;
-        if(FelLightning <= diff)
+        if (FelLightning.Expired(diff))
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 60, true))
                 AddSpellToCast(target, SPELL_FEL_LIGHTNING);
-            FelLightning += 6000;
+            FelLightning = 6000;
         }
         
         CastNextSpellIfAnyAndReady();

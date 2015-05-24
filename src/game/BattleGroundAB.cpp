@@ -152,11 +152,7 @@ void BattleGroundAB::Update(uint32 diff)
             }
 
             // 1-minute to occupy a node from contested state
-            if (m_NodeTimers[node])
-            {
-                if (m_NodeTimers[node] > diff)
-                    m_NodeTimers[node] -= diff;
-                else
+            if (m_NodeTimers[node].Expired(diff))
                 {
                     m_NodeTimers[node] = 0;
                     // Change from contested to occupied !
@@ -178,7 +174,7 @@ void BattleGroundAB::Update(uint32 diff)
                     SendPacketToAll(&data);
                     PlaySoundToAll((teamIndex == 0) ? SOUND_NODE_CAPTURED_ALLIANCE : SOUND_NODE_CAPTURED_HORDE);
                 }
-            }
+            
 
             for (int team = 0; team < 2; ++team)
                 if (m_Nodes[node] == team + BG_AB_NODE_TYPE_OCCUPIED)

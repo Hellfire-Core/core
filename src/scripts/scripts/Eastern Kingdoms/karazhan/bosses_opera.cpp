@@ -982,7 +982,7 @@ struct boss_julianneAI : public boss_operaAI
         AggroTimer = 15000;
     }
 
-    uint32 EntryYellTimer;
+    Timer EntryYellTimer;
 
     uint32 Phase;
     uint64 RomuloGUID;
@@ -1242,15 +1242,13 @@ void boss_julianneAI::UpdateAI(const uint32 diff)
     if (!eventStarted)
         return;
 
-    if (EntryYellTimer)
+
+    if (EntryYellTimer.Expired(diff))
     {
-        EntryYellTimer -= diff;
-        if (EntryYellTimer <= diff)
-        {
-            DoScriptText(SAY_JULIANNE_ENTER, m_creature);
-            EntryYellTimer = 0;
-        }
+        DoScriptText(SAY_JULIANNE_ENTER, m_creature);
+        EntryYellTimer = 0;
     }
+    
 
 
         

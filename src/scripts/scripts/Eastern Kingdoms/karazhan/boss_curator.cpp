@@ -157,7 +157,7 @@ struct boss_curatorAI : public ScriptedAI
         }
 
 
-        if (berserkTimer.Expired(diff)
+        if (berserkTimer.Expired(diff))
         {
             ForceSpellCastWithScriptText(SPELL_BERSERK, CAST_SELF, SAY_ENRAGE);
             berserkTimer = 60000;

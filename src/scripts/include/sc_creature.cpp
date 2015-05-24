@@ -211,11 +211,11 @@ void ScriptedAI::CheckCasterNoMovementInRange(uint32 diff, float maxrange)
     if (!me->IsInMap(me->getVictim()))
         return;
 
-    if (casterTimer > 2000)  // just in case
+    if (casterTimer.GetTimeLeft() > 2000)  // just in case
         casterTimer = 2000;
 
-    casterTimer -= diff;
-    if (casterTimer <= diff)
+
+    if (casterTimer.Expired(diff))
     {
         if (me->GetMotionMaster()->GetCurrentMovementGeneratorType() == CONFUSED_MOTION_TYPE)
         {
@@ -237,12 +237,13 @@ void ScriptedAI::CheckCasterNoMovementInRange(uint32 diff, float maxrange)
             me->UpdateAllowedPositionZ(x, y, z);
             me->SetSpeed(MOVE_RUN, 1.5);
             me->GetMotionMaster()->MovePoint(40, x, y, z);  //to not possibly collide with any Movement Inform check
-            casterTimer += 200;
+            casterTimer = 200;
+            return;
         }
         else
             me->GetMotionMaster()->MoveIdle();
 
-        casterTimer += 2000;
+        casterTimer = 2000;
     }
 }
 
@@ -254,15 +255,14 @@ void ScriptedAI::CheckShooterNoMovementInRange(uint32 diff, float maxrange)
     if (!me->IsInMap(me->getVictim()))
         return;
 
-    if (casterTimer > 3000)  // just in case
+    if (casterTimer.GetTimeLeft() > 3000)  // just in case
         casterTimer = 3000;
 
-    casterTimer -= diff;
-    if (casterTimer <= diff)
+    if (casterTimer.Expired(diff))
     {
         if (me->GetMotionMaster()->GetCurrentMovementGeneratorType() == CONFUSED_MOTION_TYPE)
         {
-            casterTimer += 1000;
+            casterTimer = 1000;
             return;
         }
 
@@ -273,7 +273,7 @@ void ScriptedAI::CheckShooterNoMovementInRange(uint32 diff, float maxrange)
                 DoStartMovement(me->getVictim());
             else
             {
-                casterTimer += 3000;
+                casterTimer = 3000;
                 return;
             }
         }
@@ -294,12 +294,13 @@ void ScriptedAI::CheckShooterNoMovementInRange(uint32 diff, float maxrange)
             me->UpdateAllowedPositionZ(x, y, z);
             me->SetSpeed(MOVE_RUN, 1.5);
             me->GetMotionMaster()->MovePoint(41, x, y, z);  //to not possibly collide with any Movement Inform check
-            casterTimer += 200;
+            casterTimer = 200;
+            return;
         }
         else
             me->GetMotionMaster()->MoveIdle();
 
-        casterTimer += 3000;
+        casterTimer = 3000;
     }
     
 }
@@ -415,8 +416,7 @@ void ScriptedAI::CastNextSpellIfAnyAndReady(uint32 diff)
 
     if (autocast)
     {
-        autocastTimer -= diff;
-        if (autocastTimer <= diff)
+        if (autocastTimer.Expired(diff))
         {
             if (!cast)
             {
@@ -467,7 +467,7 @@ void ScriptedAI::CastNextSpellIfAnyAndReady(uint32 diff)
                     m_creature->CastSpell(victim, autocastId, false);
                 }
 
-                autocastTimer += autocastTimerDef;
+                autocastTimer = autocastTimerDef;
             }
         }
     }
@@ -1072,8 +1072,7 @@ void Scripted_NoMovementAI::AttackStart(Unit* pWho)
 
 void ScriptedAI::DoSpecialThings(uint32 diff, SpecialThing flags, float range, float speedRate)
 {
-    m_specialThingTimer -= diff;
-    if (m_specialThingTimer <= diff)
+    if (m_specialThingTimer.Expired(diff))
     {
         if (flags & DO_PULSE_COMBAT)
             DoZoneInCombat(range);
@@ -1092,7 +1091,7 @@ void ScriptedAI::DoSpecialThings(uint32 diff, SpecialThing flags, float range, f
                 EnterEvadeMode();
         }
 
-        m_specialThingTimer += 1000;
+        m_specialThingTimer = 1000;
     }
 }
 
