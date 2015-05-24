@@ -24,6 +24,7 @@
 #include <map>
 #include "Auth/BigNumber.h"
 #include "ByteBuffer.h"
+#include "Timer.h"
 
 enum WardenOpcodes
 {

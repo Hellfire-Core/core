@@ -105,20 +105,20 @@ struct npc_calliardAI : public ScriptedAI
 {
     npc_calliardAI(Creature* c) : ScriptedAI(c) {}
 
-    Timer Timer;
+    Timer _Timer;
 
     void Reset()
     {
-        Timer = 60000;
+        _Timer = 60000;
     }
 
     void UpdateAI(const uint32 diff)
     {
         
-        if (Timer.Expired(diff))
+        if (_Timer.Expired(diff))
         {
             me->Say(RAND<const char*>(CALLIARD_SAY1, CALLIARD_SAY2, CALLIARD_SAY3), 0, 0);
-            Timer = urand(60000, 180000);
+            _Timer = urand(60000, 180000);
         } 
         
 

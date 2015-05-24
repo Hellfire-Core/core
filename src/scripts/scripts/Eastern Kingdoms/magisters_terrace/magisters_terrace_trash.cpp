@@ -1086,12 +1086,12 @@ struct mob_mgt_kalecgosAI : public ScriptedAI
 {
     mob_mgt_kalecgosAI(Creature *c) : ScriptedAI(c) {}
 
-    Timer Timer;
+    Timer _Timer;
     uint32 step;
 
     void Reset()
     {
-        Timer = 1000;
+        _Timer = 1000;
         step = 0;
         me->setActive(true);
         me->SetLevitate(true);
@@ -1106,7 +1106,7 @@ struct mob_mgt_kalecgosAI : public ScriptedAI
             {
                 case 1:
                     me->GetMap()->CreatureRelocation(me, 198.4, -273.3, -8.72, me->GetOrientation());
-                    Timer = 500;
+                    _Timer = 500;
                     break;
                 default:
                     break;
@@ -1120,32 +1120,32 @@ struct mob_mgt_kalecgosAI : public ScriptedAI
         {
             case 0:
                 me->GetMotionMaster()->MovePoint(1, 198.4, -273.3, -8.72);
-                Timer = 6000;
+                _Timer = 6000;
                 break;
             case 1:
                 DoYell("Be still, mortals, and hearken to my words.", 0, 0);
-                Timer = 60000;
+                _Timer = 60000;
                 break;
             case 2:
                 me->HandleEmoteCommand(EMOTE_ONESHOT_LAND);
-                Timer = 1000;
+                _Timer = 1000;
                 break;
             case 3:
             {
                 float x, y, z;
                 me->GetPosition(x, y, z);
                 me->GetMap()->CreatureRelocation(me, x, y, z, 2 * M_PI);
-                Timer = 1500;
+                _Timer = 1500;
                 break;
             }
             case 4:
                 DoCast(me, SPELL_TRANSFORM_INTO_KALEC);
-                Timer = 1000;
+                _Timer = 1000;
                 break;
             case 5:
                 me->SetVisibility(VISIBILITY_OFF);
                 DoSpawnCreature(NPC_MGT_KALEC, 0, 0, 0, me->GetOrientation(), TEMPSUMMON_CORPSE_DESPAWN, 0);
-                Timer = 2000;
+                _Timer = 2000;
                 break;
             case 6:
                 me->Kill(me, false);
@@ -1158,7 +1158,7 @@ struct mob_mgt_kalecgosAI : public ScriptedAI
     void UpdateAI(const uint32 diff)
     {
         
-        if (Timer.Expired(diff))
+        if (_Timer.Expired(diff))
         {
             DoFlight(step);
             ++step;
