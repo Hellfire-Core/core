@@ -130,7 +130,9 @@ struct ShortIntervalTimer
 
     void Reschedule(const uint32 interval)
     {
-        if (_current >= _interval)
+        if (interval == 0)
+            _current = 0;
+        else if (_current >= _interval)
             _current -= _interval;
 
         SetInterval(interval);
