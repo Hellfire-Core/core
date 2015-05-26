@@ -116,7 +116,7 @@ struct boss_alarAI : public ScriptedAI
         if(pInstance && pInstance->GetData(DATA_ALAREVENT) != DONE)
             pInstance->SetData(DATA_ALAREVENT, NOT_STARTED);
 
-        Berserk_Timer = 1200000;
+        Berserk_Timer.Reset(1200000);
         Platforms_Move_Timer = 0;
 
         Phase1 = true;
@@ -125,8 +125,8 @@ struct boss_alarAI : public ScriptedAI
         WaitTimer = 0;
         AfterMoving = false;
         ForceMove = false;
-        ForceTimer = 5000;
-        checkTimer = 3000;
+        ForceTimer.Reset(5000);
+        checkTimer.Reset(3000);
 
         cur_wp = 4;
         m_creature->SetDisplayId(m_creature->GetNativeDisplayId());
@@ -541,7 +541,7 @@ struct mob_ember_of_alarAI : public ScriptedAI
 
     void Reset()
     {
-        CheckTimer = 2000;
+        CheckTimer.Reset(2000);
     }
     void EnterCombat(Unit *who) { DoZoneInCombat(); }
     void EnterEvadeMode() { m_creature->setDeathState(JUST_DIED); }
@@ -608,7 +608,7 @@ struct mob_flame_patch_alarAI : public ScriptedAI
         m_creature->setFaction(16);
         m_creature->SetLevel(73);
         needCast = true;
-        CheckTimer = 1000;
+        CheckTimer.Reset(1000);
     }
     void EnterCombat(Unit *who) {}
     void AttackStart(Unit* who) {}

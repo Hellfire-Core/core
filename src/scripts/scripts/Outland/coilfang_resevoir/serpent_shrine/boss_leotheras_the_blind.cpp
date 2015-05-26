@@ -88,8 +88,8 @@ struct mob_inner_demonAI : public ScriptedAI
 
     void Reset()
     {
-        ShadowBolt_Timer = 10000;
-        Link_Timer = 1000;
+        ShadowBolt_Timer.Reset(10000);
+        Link_Timer.Reset(1000);
     }
     void JustDied(Unit *victim)
     {
@@ -196,14 +196,14 @@ struct boss_leotheras_the_blindAI : public ScriptedAI
     {
         ChannelersAlive = true;
         EnterEvadeMode();
-        BanishTimer = 1000;
-        PulseCombat_Timer = 5000;
-        Whirlwind_Timer = 15000;
-        ChaosBlast_Timer = 1000;
-        SwitchToDemon_Timer = 45000;
-        SwitchToHuman_Timer = 60000;
-        Berserk_Timer = 600000;
-        InnerDemons_Timer = 30000;
+        BanishTimer.Reset(1000);
+        PulseCombat_Timer.Reset(5000);
+        Whirlwind_Timer.Reset(15000);
+        ChaosBlast_Timer.Reset(1000);
+        SwitchToDemon_Timer.Reset(45000);
+        SwitchToHuman_Timer.Reset(60000);
+        Berserk_Timer.Reset(600000);
+        InnerDemons_Timer.Reset(30000);
         m_creature->SetCanDualWield(true);
         DealDamage = true;
         DemonForm = false;
@@ -593,8 +593,8 @@ struct boss_leotheras_the_blind_demonformAI : public ScriptedAI
 
     void Reset()
     {
-        ChaosBlast_Timer = 1000;
-        checkTimer = 2000;
+        ChaosBlast_Timer.Reset(1000);
+        checkTimer.Reset(2000);
         DealDamage = true;
         m_creature->SetMeleeDamageSchool(SPELL_SCHOOL_FIRE);
     }
@@ -671,8 +671,8 @@ struct mob_greyheart_spellbinderAI : public ScriptedAI
 
     void Reset()
     {
-        Mindblast_Timer  = 3000 + rand()%5000;
-        Earthshock_Timer = 5000 + rand()%5000;
+        Mindblast_Timer.Reset(3000 + rand() % 5000);
+        Earthshock_Timer.Reset(5000 + rand() % 5000);
         if(pInstance)
         {
             if (pInstance->GetData(DATA_LEOTHERASTHEBLINDEVENT) != NOT_STARTED)

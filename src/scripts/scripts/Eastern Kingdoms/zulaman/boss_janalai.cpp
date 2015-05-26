@@ -146,13 +146,13 @@ struct boss_janalaiAI : public ScriptedAI
         if(pInstance && pInstance->GetData(DATA_JANALAIEVENT) != DONE)
             pInstance->SetData(DATA_JANALAIEVENT, NOT_STARTED);
 
-        FireBreathTimer = 8000;
-        BombTimer = 30000;
-        BombSequenceTimer = 1000;
+        FireBreathTimer.Reset(8000);
+        BombTimer.Reset(30000);
+        BombSequenceTimer.Reset(1000);
         BombCount = 0;
-        HatcherTimer = 10000;
-        EnrageTimer = 300000;
-        ResetTimer = 5000;
+        HatcherTimer.Reset(10000);
+        EnrageTimer.Reset(300000);
+        ResetTimer.Reset(5000);
 
         noeggs = false;
         isBombing =false;
@@ -165,7 +165,7 @@ struct boss_janalaiAI : public ScriptedAI
 
         HatchAllEggs(1);
 
-        checkTimer = 3000;
+        checkTimer.Reset(3000);
         Intro = false;
     }
 
@@ -642,7 +642,7 @@ struct mob_hatchlingAI : public ScriptedAI
 
     void Reset()
     {
-        BuffetTimer = 7000;
+        BuffetTimer.Reset(7000);
         if(m_creature->GetPositionY() > 1150)
             m_creature->GetMotionMaster()->MovePoint(0, hatcherway[0][3][0]+rand()%4-2,1150+rand()%4-2,hatcherway[0][3][2]);
         else

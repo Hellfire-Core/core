@@ -199,9 +199,9 @@ struct boss_felmystAI : public ScriptedAI
     {
         Phase = PHASE_NULL;
         Event = EVENT_NULL;
-        _Timer[EVENT_BERSERK] = 600000;
-        _Timer[EVENT_CHECK] = 1000;
-        PulseCombat = 2000;
+        _Timer[EVENT_BERSERK].Reset(600000);
+        _Timer[EVENT_CHECK].Reset(1000);
+        PulseCombat.Reset(2000);
         FlightCount = 0;
         IntroPhase = 0;
         IntroTimer = 0;

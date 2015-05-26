@@ -78,9 +78,9 @@ struct npc_aeranasAI : public ScriptedAI
 
     void Reset()
     {
-        Faction_Timer = 8000;
-        EnvelopingWinds_Timer = 9000;
-        Shock_Timer = 5000;
+        Faction_Timer.Reset(8000);
+        EnvelopingWinds_Timer.Reset(9000);
+        Shock_Timer.Reset(5000);
 
         me->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER);
         me->setFaction(FACTION_FRIENDLY);
@@ -404,10 +404,10 @@ struct npc_demoniac_scryerAI : public ScriptedAI
     void Reset()
     {
         IfIsComplete = false;
-        SpawnDemonTimer = 15000;
-        SpawnOrcTimer = 30000;
-        SpawnButtressTimer = 45000;
-        EndTimer = 262000;
+        SpawnDemonTimer.Reset(15000);
+        SpawnOrcTimer.Reset(30000);
+        SpawnButtressTimer.Reset(45000);
+        EndTimer.Reset(262000);
         ButtressCount = 0;
         PlayersWithQuestList.clear();
 
@@ -596,8 +596,8 @@ struct npc_magic_sucker_device_spawnerAI : public ScriptedAI
 
     void Reset()
     {
-        CastTimer = 1800;
-        CheckTimer = 5000;
+        CastTimer.Reset(1800);
+        CheckTimer.Reset(5000);
     }
 
     void UpdateAI(const uint32 diff)
@@ -894,11 +894,11 @@ struct npc_felblood_initiateAI : public ScriptedAI
 
     void Reset()
     {
-        SpellbreakerTimer = urand(6000, 10000);
+        SpellbreakerTimer.Reset(urand(6000, 10000));
         ChangeTimer = 0;
-        OOCTimer = 5000;
-        BitterWithdrawalTimer = urand(10000, 15000);
-        SinisterStrikeTimer = urand(5000, 15000);
+        OOCTimer.Reset(5000);
+        BitterWithdrawalTimer.Reset(urand(10000, 15000));
+        SinisterStrikeTimer.Reset(urand(5000, 15000));
     }
 
     void HandleOffCombatEffects()
@@ -1140,8 +1140,8 @@ struct npc_anchorite_relic_bunnyAI : public ScriptedAI
 
     void Reset()
     {
-        ChTimer = 2000;
-        EndTimer = 60000;
+        ChTimer.Reset(2000);
+        EndTimer.Reset(60000);
     }
 
     void AttackedBy(Unit* pEnemy) {}
@@ -1275,7 +1275,7 @@ struct npc_anchorite_baradaAI : public ScriptedAI
     void Reset()
     {
         Exorcim = false;
-        StepsTimer = 1;
+        StepsTimer.Reset(1);
         Steps = 0;
         PlayerGUID = 0;
     }
@@ -1650,7 +1650,7 @@ struct npc_vindicator_sedaiAI : public ScriptedAI
     void Reset()
     {
         Vision = true;
-        StepsTimer = 1;
+        StepsTimer.Reset(1);
         Steps = 0;
         me->SetWalk(true);
     }
@@ -1875,8 +1875,8 @@ struct npc_pathaleon_imageAI : public ScriptedAI
 
     void Reset()
     {
-        SumTimer = 5000;
-        StepsTimer = 1;
+        SumTimer.Reset(5000);
+        StepsTimer.Reset(1);
         Steps = 0;
         Event = true;
         SummonTrigger = false;

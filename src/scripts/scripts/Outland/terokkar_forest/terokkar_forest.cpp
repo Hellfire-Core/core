@@ -80,7 +80,7 @@ struct mob_unkor_the_ruthlessAI : public ScriptedAI
     {
         CanDoQuest = false;
         UnkorUnfriendly_Timer = 0;
-        Pulverize_Timer = 3000;
+        Pulverize_Timer.Reset(3000);
         me->SetUInt32Value(UNIT_FIELD_BYTES_1, PLAYER_STATE_NONE);
         me->setFaction(FACTION_HOSTILE);
     }
@@ -284,9 +284,9 @@ struct npc_floonAI : public ScriptedAI
 
     void Reset()
     {
-        Silence_Timer = 2000;
-        Frostbolt_Timer = 4000;
-        FrostNova_Timer = 9000;
+        Silence_Timer.Reset(2000);
+        Frostbolt_Timer.Reset(4000);
+        FrostNova_Timer.Reset(9000);
         me->setFaction(FACTION_FRIENDLY_FL);
     }
 
@@ -632,9 +632,9 @@ struct mob_terokkAI : public ScriptedAI
     void Reset()
     {
         ResetSkyguards();
-        ShadowBoltVolley_Timer = 5000;
-        Cleave_Timer = 7000;
-        ChosenOne_Timer = 30000;
+        ShadowBoltVolley_Timer.Reset(5000);
+        Cleave_Timer.Reset(7000);
+        ChosenOne_Timer.Reset(30000);
         ChosenOneActive_Timer = 0;
         ChosenOneTarget = 0;
         phase = 0;
@@ -1057,7 +1057,7 @@ struct npc_letollAI : public npc_escortAI
 {
     npc_letollAI(Creature* creature) : npc_escortAI(creature)
     {
-        EventTimer = 5000;
+        EventTimer.Reset(5000);
         EventCount = 0;
         Reset();
     }
@@ -1352,7 +1352,7 @@ struct npc_sarthisAI : public npc_escortAI
         MinionGUID.clear();
         SpeechTimer = 0;
         SpeechTimer2 = 0;
-        ResetTimer = 120000;
+        ResetTimer.Reset(120000);
     }
 
     void WaypointReached(uint32 i)
@@ -1539,7 +1539,7 @@ struct npc_minion_of_sarthisAI : public ScriptedAI
 
     uint32 delay;
 
-    void Reset() {delay = 5000;}
+    void Reset() { delay=5000; }
 
     void MovementInform(uint32 Type, uint32 Id)
     {
@@ -1622,11 +1622,11 @@ struct npc_razorthorn_ravagerAI : public ScriptedAI
 
     void Reset()
     {
-        RavageTimer = 12000;
-        RendTimer = urand(3000, 6000);
-        RavageTauntTimer = urand(6000, 10000);
-        DiggingTimer = 5000;
-        CheckTimer = 2000;
+        RavageTimer.Reset(12000);
+        RendTimer.Reset(urand(3000, 6000));
+        RavageTauntTimer.Reset(urand(6000, 10000));
+        DiggingTimer.Reset(5000);
+        CheckTimer.Reset(2000);
         digging = false;
         checked = false;
     }
@@ -1852,13 +1852,13 @@ struct quest_the_vengeful_harbringerAI : public ScriptedAI
     {
         event_done=false;
         trash_counter=0;
-        trash_timer=15000;
-        visual_1_timer=5000;
+        trash_timer.Reset(15000);
+        visual_1_timer.Reset(5000);
         IS_ASCENDANT_ALREADY_SUMMONED=false;
         corpse_moved=false;
 
         owner = 0;
-        checktimer = 2000;
+        checktimer.Reset(2000);
 
         Creature *visual_energy  = GetClosestCreatureWithEntry(me, 21429, 30.0f);
         Creature *portal_trigger = GetClosestCreatureWithEntry(me, 21463, 30.0f);
@@ -2077,7 +2077,7 @@ struct npc_akunoAI : public npc_escortAI
 
     void Reset()
     {
-        chainLightningTimer = urand(6000, 12000);
+        chainLightningTimer.Reset(urand(6000, 12000));
     }
 
     void WaypointReached(uint32 uiPointId)
@@ -2173,7 +2173,7 @@ struct npc_empoorAI : public ScriptedAI
 
     void Reset()
     {
-        ShockTimer = 5000;
+        ShockTimer.Reset(5000);
         me->setFaction(FACTION_FRIENDLY_A);
     }
 

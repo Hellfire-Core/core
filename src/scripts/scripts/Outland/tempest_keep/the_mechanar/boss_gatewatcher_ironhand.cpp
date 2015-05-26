@@ -62,9 +62,9 @@ struct boss_gatewatcher_iron_handAI : public ScriptedAI
 
     void Reset()
     {
-        Shadow_Power_Timer = 25000;
-        Jackhammer_Timer = 45000;
-        Stream_of_Machine_Fluid_Timer = 55000;
+        Shadow_Power_Timer.Reset(25000);
+        Jackhammer_Timer.Reset(45000);
+        Stream_of_Machine_Fluid_Timer.Reset(55000);
 
         if(pInstance)
             pInstance->SetData(DATA_IRONHAND_EVENT, NOT_STARTED);

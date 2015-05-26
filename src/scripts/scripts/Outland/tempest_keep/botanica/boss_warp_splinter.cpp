@@ -129,9 +129,9 @@ struct boss_warp_splinterAI : public ScriptedAI
 
     void Reset()
     {
-        War_Stomp_Timer = 25000 + rand()%15000;
-        Summon_Treants_Timer = 45000;
-        Arcane_Volley_Timer = 8000 + rand()%12000;
+        War_Stomp_Timer.Reset(25000 + rand() % 15000);
+        Summon_Treants_Timer.Reset(45000);
+        Arcane_Volley_Timer.Reset(8000 + rand() % 12000);
 
         m_creature->SetSpeed( MOVE_RUN, 0.7f, true);
     }

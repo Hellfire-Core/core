@@ -60,9 +60,9 @@ struct boss_high_botanist_freywinnAI : public ScriptedAI
     {
         Adds_List.clear();
 
-        SummonSeedling_Timer = 6000;
-        TreeForm_Timer = 30000;
-        MoveCheck_Timer = 1000;
+        SummonSeedling_Timer.Reset(6000);
+        TreeForm_Timer.Reset(30000);
+        MoveCheck_Timer.Reset(1000);
         DeadAddsCount = 0;
         MoveFree = true;
     }

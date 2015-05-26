@@ -81,13 +81,13 @@ struct npc_millhouse_manastormAI : public ScriptedAI
 
     void Reset()
     {
-        EventProgress_Timer = 2000;
+        EventProgress_Timer.Reset(2000);
         LowHp = false;
         Init = false;
         Phase = 1;
 
-        Pyroblast_Timer = 1000;
-        Fireball_Timer = 2500;
+        Pyroblast_Timer.Reset(1000);
+        Fireball_Timer.Reset(2500);
 
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
 
@@ -268,7 +268,7 @@ struct npc_warden_mellicharAI : public ScriptedAI
         IsRunning = false;
         CanSpawn = false;
 
-        EventProgress_Timer = 22000;
+        EventProgress_Timer.Reset(22000);
         Phase = 1;
 
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
@@ -545,7 +545,7 @@ struct npc_arcatraz_sentinelAI : public ScriptedAI
         me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
         me->CastSpell(me, SPELL_AURA, true);
 
-        ThreatWipe_Timer = urand(5000, 10000);
+        ThreatWipe_Timer.Reset(urand(5000, 10000));
         Suicide_Timer = 0;
     }
 
@@ -667,7 +667,7 @@ struct npc_negaton_screamerAI : public ScriptedAI
 
     void Reset()
     {
-        fearTimer = urand(1000, 7000);
+        fearTimer.Reset(urand(1000, 7000));
         volleyTimer = 0;
         school = SPELL_SCHOOL_NORMAL;
         me->RemoveSpellsCausingAura(SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN);

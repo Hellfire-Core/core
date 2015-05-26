@@ -64,12 +64,12 @@ struct boss_maiden_of_virtueAI : public ScriptedAI
 
     void Reset()
     {
-        Repentance_Timer    = 30000+(rand()%15000);
-        Holyfire_Timer      = 8000+(rand()%17000);
-        Holywrath_Timer     = 20000+(rand()%10000);
-        Holyground_Timer    = 3000;
-        Enrage_Timer        = 600000;
-        CheckTimer = 3000;
+        Repentance_Timer.Reset(30000 + (rand() % 15000));
+        Holyfire_Timer.Reset(8000 + (rand() % 17000));
+        Holywrath_Timer.Reset(20000 + (rand() % 10000));
+        Holyground_Timer.Reset(3000);
+        Enrage_Timer.Reset(600000);
+        CheckTimer.Reset(3000);
 
         if(pInstance && pInstance->GetData(DATA_MAIDENOFVIRTUE_EVENT) != DONE)
             pInstance->SetData(DATA_MAIDENOFVIRTUE_EVENT, NOT_STARTED);

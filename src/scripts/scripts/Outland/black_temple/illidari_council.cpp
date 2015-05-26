@@ -147,8 +147,8 @@ struct mob_blood_elf_council_voice_triggerAI : public ScriptedAI
 
     void Reset()
     {
-        m_enrageTimer = 900000;                               // 15 minutes
-        m_yellTimer = 500;
+        m_enrageTimer.Reset(900000);                               // 15 minutes
+        m_yellTimer.Reset(500);
 
         m_counter = 0;
     }
@@ -451,14 +451,14 @@ struct boss_gathios_the_shattererAI : public illidari_council_baseAI
     {
         ClearCastQueue();
 
-        m_consecrationTimer = urand(6000, 10000);
-        m_hammerTimer = 10000;
-        m_sealTimer = 1000;
-        m_auraTimer = urand(3000, 30000);
-        m_blessingTimer = urand(35000, 50000);
-        m_judgementTimer = 16000;
+        m_consecrationTimer.Reset(urand(6000, 10000));
+        m_hammerTimer.Reset(10000);
+        m_sealTimer.Reset(1000);
+        m_auraTimer.Reset(urand(3000, 30000));
+        m_blessingTimer.Reset(urand(35000, 50000));
+        m_judgementTimer.Reset(16000);
 
-        m_checkTimer = 1000;
+        m_checkTimer.Reset(1000);
     }
 
     Unit* SelectCouncil()
@@ -584,11 +584,11 @@ struct boss_high_nethermancer_zerevorAI : public illidari_council_baseAI
     {
         ClearCastQueue();
 
-        m_blizzardTimer = urand(12000, 20000);
-        m_flamestrikeTimer = 3800;
-        m_dampenTimer = 67200;
-        m_aexpTimer = 3000;
-        m_immunityTimer = 60000;
+        m_blizzardTimer.Reset(urand(12000, 20000));
+        m_flamestrikeTimer.Reset(3800);
+        m_dampenTimer.Reset(67200);
+        m_aexpTimer.Reset(3000);
+        m_immunityTimer.Reset(60000);
         SetAutocast(SPELL_ARCANE_BOLT, 2000, true, CAST_TANK, 40.0f, true);
 
         m_checkTimer = 1000;
@@ -727,12 +727,12 @@ struct boss_lady_malandeAI : public illidari_council_baseAI
     {
         ClearCastQueue();
 
-        m_smiteTimer = 200;
-        m_cohTimer = 20000;
-        m_wrathTimer = urand(8000,12000);
-        m_shieldTimer = 15000;
+        m_smiteTimer.Reset(200);
+        m_cohTimer.Reset(20000);
+        m_wrathTimer.Reset(urand(8000, 12000));
+        m_shieldTimer.Reset(15000);
 
-        m_checkTimer = 1000;
+        m_checkTimer.Reset(1000);
     }
 
 
@@ -811,8 +811,8 @@ struct boss_veras_darkshadowAI : public illidari_council_baseAI
     {
         ClearCastQueue();
 
-        m_vanishTimer = urand(15000, 25000);
-        m_checkTimer = 1000;
+        m_vanishTimer.Reset(urand(15000, 25000));
+        m_checkTimer.Reset(1000);
     }
 
     void OnAuraRemove(Aura* aur, bool stackRemove)

@@ -2510,8 +2510,8 @@ struct guard_shattrath_aldorAI : public guardAI
 
     void Reset()
     {
-        Banish_Timer = 5000;
-        Exile_Timer = 8500;
+        Banish_Timer.Reset(5000);
+        Exile_Timer.Reset(8500);
         playerGUID = 0;
         CanTeleport = false;
     }
@@ -2707,8 +2707,8 @@ struct guard_shattrath_scryerAI : public guardAI
 
     void Reset()
     {
-        Banish_Timer = 5000;
-        Exile_Timer = 8500;
+        Banish_Timer.Reset(5000);
+        Exile_Timer.Reset(8500);
         playerGUID = 0;
         CanTeleport = false;
     }

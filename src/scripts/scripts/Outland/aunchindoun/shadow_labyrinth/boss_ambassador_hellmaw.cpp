@@ -71,11 +71,11 @@ struct boss_ambassador_hellmawAI : public ScriptedAI
 
     void Reset()
     {
-        EventCheck_Timer = 5000;
+        EventCheck_Timer.Reset(5000);
         Banish_Timer = 0;
-        CorrosiveAcid_Timer = 25000;
-        Fear_Timer = 40000;
-        Enrage_Timer = 180000;
+        CorrosiveAcid_Timer.Reset(25000);
+        Fear_Timer.Reset(40000);
+        Enrage_Timer.Reset(180000);
         Intro = false;
         IsBanished = false;
 

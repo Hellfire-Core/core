@@ -169,28 +169,28 @@ struct boss_zuljinAI : public ScriptedAI
 
         health_20 = m_creature->GetMaxHealth()*0.2;
 
-        Intro_Timer = 37000;
-        Berserk_Timer = 600000;
+        Intro_Timer.Reset(37000);
+        Berserk_Timer.Reset(600000);
 
-        Whirlwind_Timer = 7000;
-        Grievous_Throw_Timer = 8000;
+        Whirlwind_Timer.Reset(7000);
+        Grievous_Throw_Timer.Reset(8000);
 
-        Creeping_Paralysis_Timer = 7000;
+        Creeping_Paralysis_Timer.Reset(7000);
         Overpower_Timer = 0;
 
-        Claw_Rage_Timer = 5000;
-        Lynx_Rush_Timer = 14000;
+        Claw_Rage_Timer.Reset(5000);
+        Lynx_Rush_Timer.Reset(14000);
         Claw_Loop_Timer = 0;
         Claw_Counter = 0;
 
-        Flame_Whirl_Timer = 5000;
-        Flame_Breath_Timer = 6000;
-        Pillar_Of_Fire_Timer = 7000;
+        Flame_Whirl_Timer.Reset(5000);
+        Flame_Breath_Timer.Reset(6000);
+        Pillar_Of_Fire_Timer.Reset(7000);
 
         ClawTargetGUID = 0;
         TankGUID = 0;
 
-        checkTimer = 3000;
+        checkTimer.Reset(3000);
 
         Summons.DespawnAll();
 

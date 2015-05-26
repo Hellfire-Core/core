@@ -70,9 +70,9 @@ struct mob_aqueous_lordAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        VileSlime = 5000;
-        SummonTimer = urand(5000, 10000);
-        CrashingWave = 15000;
+        VileSlime.Reset(5000);
+        SummonTimer.Reset(urand(5000, 10000));
+        CrashingWave.Reset(15000);
     }
     void EnterCombat(Unit*) { DoZoneInCombat(80.0f); }
 
@@ -142,9 +142,9 @@ struct mob_aqueous_spawnAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        Zcheck = 1000;
-        SludgeNova = 5000;
-        MergeTimer = urand(10000, 50000);
+        Zcheck.Reset(1000);
+        SludgeNova.Reset(5000);
+        MergeTimer.Reset(urand(10000, 50000));
         merging = false;
 
     }
@@ -214,9 +214,9 @@ struct mob_coilskar_generalAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        FreeFriend = 1000;
-        Cleave = 10000;
-        BoomingVoice = 40000;
+        FreeFriend.Reset(1000);
+        Cleave.Reset(10000);
+        BoomingVoice.Reset(40000);
     }
 
     void EnterCombat(Unit*) { DoZoneInCombat(80.0f); }
@@ -303,9 +303,9 @@ struct mob_coilskar_harpoonerAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        SpearThrow = urand(1000, 5000);
-        HookedNet = urand(15000, 20000);
-        HarpoonersMark = 15000;
+        SpearThrow.Reset(urand(1000, 5000));
+        HookedNet.Reset(urand(15000, 20000));
+        HarpoonersMark.Reset(15000);
         MarkTargetGUID = 0;
     }
 
@@ -387,9 +387,9 @@ struct mob_coilskar_seacallerAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        ForkedLightning = urand(1000, 3000);
-        Hurricane = urand(20000, 30000);
-        SummonGeyser = urand(3000, 8000);
+        ForkedLightning.Reset(urand(1000, 3000));
+        Hurricane.Reset(urand(20000, 30000));
+        SummonGeyser.Reset(urand(3000, 8000));
     }
     void EnterCombat(Unit*) { DoZoneInCombat(80.0f); }
 
@@ -481,8 +481,8 @@ struct mob_coilskar_soothsayerAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        HolyNova = urand(5000, 15000);
-        Restoration = (8000, 12000);
+        HolyNova.Reset(urand(5000, 15000));
+        Restoration.Reset((8000, 12000));
     }
     void EnterCombat(Unit*) { DoZoneInCombat(80.0f); }
 
@@ -537,9 +537,9 @@ struct mob_coilskar_wranglerAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        Cleave = urand(2000, 6000);
-        ElectricSpur = urand(15000, 40000);
-        LightningProd = urand(8000, 15000);
+        Cleave.Reset(urand(2000, 6000));
+        ElectricSpur.Reset(urand(15000, 40000));
+        LightningProd.Reset(urand(8000, 15000));
     }
     void EnterCombat(Unit*) { DoZoneInCombat(80.0f); }
 
@@ -597,8 +597,8 @@ struct mob_dragon_turtleAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        WaterSpit = urand(2000, 10000);
-        ShellShield = 3000;
+        WaterSpit.Reset(urand(2000, 10000));
+        ShellShield.Reset(3000);
         CanBeShielded = false;
     }
     void EnterCombat(Unit*) { DoZoneInCombat(80.0f); }
@@ -674,9 +674,9 @@ struct mob_leviathanAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        DebilitatingSpray = urand(3000, 9000);
-        PoisonSpit = urand(6000, 15000);
-        TailSweep = 6000;
+        DebilitatingSpray.Reset(urand(3000, 9000));
+        PoisonSpit.Reset(urand(6000, 15000));
+        TailSweep.Reset(6000);
     }
     void EnterCombat(Unit*) { DoZoneInCombat(80.0f); }
 
@@ -822,7 +822,7 @@ struct mob_bonechewer_taskmasterAI : public ScriptedAI
 
     void Reset()
     {
-        disgruntledTimer = 20000;
+        disgruntledTimer.Reset(20000);
         disgruntledCast = false;
     }
 
@@ -871,7 +871,7 @@ struct mob_bonechewer_workerAI : public ScriptedAI
 
     void Reset()
     {
-        throwTimer = 15000 + urand(0, 5000);
+        throwTimer.Reset(15000 + urand(0, 5000));
     }
 
     void EnterCombat(Unit *who)
@@ -934,8 +934,8 @@ struct mob_dragonmaw_skystalkerAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        immolationArrowTimer = 10000 + urand(0, 5000);
-        distCheckTimer = 1000;
+        immolationArrowTimer.Reset(10000 + urand(0, 5000));
+        distCheckTimer.Reset(1000);
         SetAutocast(SPELL_SKYSTALKER_SHOOT, 2500, true);
     }
 
@@ -1041,9 +1041,9 @@ struct mob_dragonmaw_windreaverAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        doomBoltTimer = 5000 + urand(0, 5000);
-        freezeTimer = 10000 + urand(0, 5000);
-        distCheckTimer = 3000;
+        doomBoltTimer.Reset(5000 + urand(0, 5000));
+        freezeTimer.Reset(10000 + urand(0, 5000));
+        distCheckTimer.Reset(3000);
         SetAutocast(SPELL_WINDREAVER_FIREBALL, 2500, true);
     }
 
@@ -1170,9 +1170,9 @@ struct mob_dragonmaw_wyrmcallerAI : public ScriptedAI
 
     void Reset()
     {
-        cleaveTimer = 5000 + urand(0, 10000);
-        fixateTimer = 15000 + urand(0, 10000);
-        jabTimer = 5000 + urand(0, 5000);
+        cleaveTimer.Reset(5000 + urand(0, 10000));
+        fixateTimer.Reset(15000 + urand(0, 10000));
+        jabTimer.Reset(5000 + urand(0, 5000));
     }
 
     void EnterCombat(Unit *who)
@@ -1250,10 +1250,10 @@ struct mob_illidari_fearbringerAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        checkTimer = 2000;
-        flamesTimer = 5000 + urand(0, 10000);
-        rainTimer = 15000 + urand(0, 10000);
-        stompTimer = 10000 + urand(0, 10000);
+        checkTimer.Reset(2000);
+        flamesTimer.Reset(5000 + urand(0, 10000));
+        rainTimer.Reset(15000 + urand(0, 10000));
+        stompTimer.Reset(10000 + urand(0, 10000));
     }
 
     void EnterCombat(Unit *who) { DoZoneInCombat(80.0f); }
@@ -1387,10 +1387,10 @@ struct mob_ashtongue_battlelordAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        Cleave = urand(3000, 10000);
-        ConcussionBlow = urand(10500, 25000);
-        ConcussionThrow = urand(10500, 25000);
-        Frenzy = 5000;
+        Cleave.Reset(urand(3000, 10000));
+        ConcussionBlow.Reset(urand(10500, 25000));
+        ConcussionThrow.Reset(urand(10500, 25000));
+        Frenzy.Reset(5000);
     }
     void EnterCombat(Unit*) { DoZoneInCombat(80.0f); }
 
@@ -1461,8 +1461,8 @@ struct mob_ashtongue_feral_spiritAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        ChargeRage = urand(10000, 30000);
-        SpiritBond = urand(15000, 25000);
+        ChargeRage.Reset(urand(10000, 30000));
+        SpiritBond.Reset(urand(15000, 25000));
     }
     void EnterCombat(Unit*) { DoZoneInCombat(80.0f); }
 
@@ -1533,11 +1533,11 @@ struct totem_ashtongue_mysticAI : public Scripted_NoMovementAI
         {
             case NPC_CYCLONE_TOTEM:
                 me->SetMaxHealth(urand(4100, 4200));
-                SpellTimer = urand(2000, 11000);
+                SpellTimer.Reset(urand(2000, 11000));
                 break;
             case NPC_ASHTONGUE_SEARING_TOTEM:
                 me->SetMaxHealth(urand(4800, 4900));
-                SpellTimer = 1000;
+                SpellTimer.Reset(1000);
                 break;
             case NPC_SUMMONED_WINDFURY_TOTEM:
                 me->SetMaxHealth(urand(1800, 1900));
@@ -1617,13 +1617,13 @@ struct mob_ashtongue_mysticAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        FrostShock = urand(5000, 22000);
-        FlameShock = urand(10000, 30000);
-        ChainHeal = 5000;
-        CheckTimer = 2000;
-        SearingTotem = urand(500, 30000);
-        WindfuryTotem = urand(500, 30000);
-        CycloneTotem = urand(500, 30000);
+        FrostShock.Reset(urand(5000, 22000));
+        FlameShock.Reset(urand(10000, 30000));
+        ChainHeal.Reset(5000);
+        CheckTimer.Reset(2000);
+        SearingTotem.Reset(urand(500, 30000));
+        WindfuryTotem.Reset(urand(500, 30000));
+        CycloneTotem.Reset(urand(500, 30000));
     }
     void EnterCombat(Unit*)
     {
@@ -1721,10 +1721,10 @@ struct mob_ashtongue_primalistAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        MultiShot = urand(20000, 40000);
-        Shoot = 500;
-        WyvernSting = urand(7000, 15000);
-        SweepingWingClip = urand(20000, 37000);
+        MultiShot.Reset(urand(20000, 40000));
+        Shoot.Reset(500);
+        WyvernSting.Reset(urand(7000, 15000));
+        SweepingWingClip.Reset(urand(20000, 37000));
     }
 
     void AttackStart(Unit* who)
@@ -1824,9 +1824,9 @@ struct mob_ashtongue_stalkerAI : public ScriptedAI
 
         DoCast(me, SPELL_STEALTH);
         DoCast(me, SPELL_DUAL_WIELD);
-        Blind = urand(10000, 20000);
-        InstantPoison = urand(5000, 10000);
-        MindNumbingPoison = urand(5000, 10000);
+        Blind.Reset(urand(10000, 20000));
+        InstantPoison.Reset(urand(5000, 10000));
+        MindNumbingPoison.Reset(urand(5000, 10000));
     }
     void EnterCombat(Unit*) { DoZoneInCombat(80.0f); }
 
@@ -1899,9 +1899,9 @@ struct mob_ashtongue_stormcallerAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        ChainLightning = urand(6000, 25000);
-        LightningBolt = urand(1500, 3000);
-        LightningShield = 25000;
+        ChainLightning.Reset(urand(6000, 25000));
+        LightningBolt.Reset(urand(1500, 3000));
+        LightningShield.Reset(25000);
     }
     void EnterCombat(Unit*)
     {
@@ -1970,10 +1970,10 @@ struct mob_illidari_boneslicerAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        CloakOfShadows = 15000;
-        Gouge = urand(1000, 10000);;
-        Shadowstep = urand(5000, 15000);
-        WoundPoison = urand(1000, 3000);
+        CloakOfShadows.Reset(15000);
+        Gouge.Reset(urand(1000, 10000));;
+        Shadowstep.Reset(urand(5000, 15000));
+        WoundPoison.Reset(urand(1000, 3000));
     }
     void EnterCombat(Unit*)
     {
@@ -2046,8 +2046,8 @@ struct mob_illidari_centurionAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        Cleave = urand(3000, 10000);
-        SonicStrike = urand(5000, 15000);
+        Cleave.Reset(urand(3000, 10000));
+        SonicStrike.Reset(urand(5000, 15000));
     }
     void EnterCombat(Unit*) { DoZoneInCombat(80.0f); }
 
@@ -2102,10 +2102,10 @@ struct mob_illidari_defilerAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        FelImmolate = urand(15000, 25000);
-        CurseOfAgony = urand(20000, 35000);
-        Banish = urand(10000, 30000);
-        RainOfChaos = urand(3000, 15000);
+        FelImmolate.Reset(urand(15000, 25000));
+        CurseOfAgony.Reset(urand(20000, 35000));
+        Banish.Reset(urand(10000, 30000));
+        RainOfChaos.Reset(urand(3000, 15000));
     }
     void EnterCombat(Unit*){ DoZoneInCombat(80.0f); }
 
@@ -2176,10 +2176,10 @@ struct mob_illidari_heartseekerAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        RapidShot = urand(10000, 20000);
-        Shoot = 500;
-        SkeletonShot = urand(15000, 35000);
-        Curse = urand(1000, 20000);
+        RapidShot.Reset(urand(10000, 20000));
+        Shoot.Reset(500);
+        SkeletonShot.Reset(urand(15000, 35000));
+        Curse.Reset(urand(1000, 20000));
     }
 
     void EnterCombat(Unit* who)
@@ -2274,10 +2274,10 @@ struct mob_illidari_nightlordAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        CurseOfMending = urand(10000, 20000);
-        Fear = urand(3000, 15000);
-        ShadowInferno = 7000;
-        Shadowfiends = urand(15000, 20000);
+        CurseOfMending.Reset(urand(10000, 20000));
+        Fear.Reset(urand(3000, 15000));
+        ShadowInferno.Reset(7000);
+        Shadowfiends.Reset(urand(15000, 20000));
     }
     void EnterCombat(Unit*) { DoZoneInCombat(80.0f); }
 
@@ -2350,7 +2350,7 @@ struct mob_storm_furyAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        StormBlink = urand(15000, 25000);
+        StormBlink.Reset(urand(15000, 25000));
     }
     void EnterCombat(Unit*) { DoZoneInCombat(80.0f); }
 
@@ -2410,7 +2410,7 @@ struct mob_hand_of_gorefiendAI : public ScriptedAI
 
     void Reset()
     {
-        Enrage = 10000;
+        Enrage.Reset(10000);
     }
     void EnterCombat(Unit*) { DoZoneInCombat(80.0f); }
 
@@ -2457,8 +2457,8 @@ struct mob_shadowmoon_blood_mageAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        BloodSiphon = urand(3000, 20000);
-        Bloodbolt = urand(5000, 15000);
+        BloodSiphon.Reset(urand(3000, 20000));
+        Bloodbolt.Reset(urand(5000, 15000));
     }
     void EnterCombat(Unit *)
     {
@@ -2533,7 +2533,7 @@ struct mob_shadowmoon_championAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        ChaoticLight = urand(2000, 5000);
+        ChaoticLight.Reset(urand(2000, 5000));
         WhirlingBlade = 0;
     }
 
@@ -2581,8 +2581,8 @@ struct mob_whirling_bladeAI : public Scripted_NoMovementAI
         ClearCastQueue();
 
         DoCast(me, SPELL_WHIRLWIND, true);
-        Whirl = 6000;
-        DieTimer = 14000;
+        Whirl.Reset(6000);
+        DieTimer.Reset(14000);
     }
 
     void UpdateAI(const uint32 diff)
@@ -2634,10 +2634,10 @@ struct mob_shadowmoon_deathshaperAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        Shadowbolt = urand(500, 5000);
-        DeathCoil = urand(5000, 20000);
-        DemonArmor = 1800000;
-        RaiseDeadCheck = 10000;
+        Shadowbolt.Reset(urand(500, 5000));
+        DeathCoil.Reset(urand(5000, 20000));
+        DemonArmor.Reset(1800000);
+        RaiseDeadCheck.Reset(10000);
 
         UsedCorpsesGUID.clear();
     }
@@ -2820,12 +2820,12 @@ struct mob_shadowmoon_houndmasterAI : public ScriptedAI
         me->UpdateVisibilityAndView();
         me->UpdateObjectVisibility();          // works nice for players; though still visual bug when: .die -> .respawn (need to get out of vision to see him mounted)
         me->GetMotionMaster()->Initialize();   // start moving in waypoints after exiting combat
-        FreezingTrap = 15000;
-        SilencingShot = urand(5000, 15000);
-        Volley = urand(10000, 25000);
-        WingClip = urand(8000, 20000);
-        Flare = urand(2000, 20000);
-        RangeCheck = 1000;
+        FreezingTrap.Reset(15000);
+        SilencingShot.Reset(urand(5000, 15000));
+        Volley.Reset(urand(10000, 25000));
+        WingClip.Reset(urand(8000, 20000));
+        Flare.Reset(urand(2000, 20000));
+        RangeCheck.Reset(1000);
     }
 
     void EnterCombat(Unit * who)
@@ -2944,8 +2944,8 @@ struct mob_shadowmoon_reaverAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        SpellAbsorption = 10000;
-        ShadowResonance = urand(5000, 20000);
+        SpellAbsorption.Reset(10000);
+        ShadowResonance.Reset(urand(5000, 20000));
     }
     void EnterCombat(Unit*) { DoZoneInCombat(80.0f); }
 
@@ -2999,8 +2999,8 @@ struct mob_shadowmoon_riding_houndAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        Charge = urand(5000, 20000);
-        Enrage = 15000;
+        Charge.Reset(urand(5000, 20000));
+        Enrage.Reset(15000);
     }
 
     void JustRespawned()
@@ -3073,7 +3073,7 @@ struct mob_shadowmoon_soldierAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        Strike = urand(3000, 8000);
+        Strike.Reset(urand(3000, 8000));
     }
 
     void MovementInform(uint32 type, uint32 id)
@@ -3185,12 +3185,12 @@ struct mob_shadowmoon_weapon_masterAI : public ScriptedAI
 
         me->LoadEquipment(484, true);
         Stance = DEFENSIVE;
-        KnockAway = urand(3000, 20000);
+        KnockAway.Reset(urand(3000, 20000));
         SpecialTimer = 0;
 
         if (!soldiersList.empty())
         {
-            m_nextMove = 2000;
+            m_nextMove.Reset(2000);
             m_nextId = 1;
         }
     }
@@ -3431,8 +3431,8 @@ struct mob_wrathbone_flayerAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        Cleave = 1500;
-        Ignored = urand(3000, 10000);
+        Cleave.Reset(1500);
+        Ignored.Reset(urand(3000, 10000));
     }
 
     void EnterCombat(Unit *) { DoZoneInCombat(80.0f); }
@@ -3513,8 +3513,8 @@ struct mob_bonechewer_behemothAI : public ScriptedAI
         ClearCastQueue();
 
         Type = RAND(MELEE_TYPE, RANGED_TYPE);
-        SpellTimer = Type ? urand(5000, 20000) : urand(3000, 15000);
-        Frenzy = 35000;
+        SpellTimer.Reset(Type ? urand(5000, 20000) : urand(3000, 15000));
+        Frenzy.Reset(35000);
     }
 
     void EnterCombat(Unit *)
@@ -3617,9 +3617,9 @@ struct mob_bonechewer_shield_discipleAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        Intervene = urand(15000, 20000);
-        ShieldBash = urand(4000, 15000);
-        ThrowShield = urand(7000, 17000);
+        Intervene.Reset(urand(15000, 20000));
+        ShieldBash.Reset(urand(4000, 15000));
+        ThrowShield.Reset(urand(7000, 17000));
     }
 
     void EnterCombat(Unit *) { DoZoneInCombat(80.0f); }
@@ -3705,7 +3705,7 @@ struct mob_bonechewer_blade_furyAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        Whirlwind = urand(5000, 15000);
+        Whirlwind.Reset(urand(5000, 15000));
         MoveTimer = 0;
     }
 
@@ -3787,9 +3787,9 @@ struct mob_bonechewer_blood_prophetAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        BloodDrain = urand(5000, 25000);
-        Bloodbolt = urand(1000, 10000);
-        ProphecyOfBlood = 12000;
+        BloodDrain.Reset(urand(5000, 25000));
+        Bloodbolt.Reset(urand(1000, 10000));
+        ProphecyOfBlood.Reset(12000);
     }
 
     void EnterCombat(Unit *) { DoZoneInCombat(80.0f); }
@@ -3904,7 +3904,7 @@ struct mob_bonechewer_brawlerAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        Enrage = urand(15000, 25000);
+        Enrage.Reset(urand(15000, 25000));
     }
 
     void EnterCombat(Unit *) { DoZoneInCombat(80.0f); }
@@ -3956,7 +3956,7 @@ struct mob_bonechewer_combatantAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        CombatRage = urand(3000, 10000);
+        CombatRage.Reset(urand(3000, 10000));
     }
 
     void EnterCombat(Unit *) { DoZoneInCombat(80.0f); }
@@ -4016,11 +4016,11 @@ struct mob_bonechewer_spectatorAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        Charge = urand(3000, 6000);
-        Cleave = urand(5000, 15000);
-        MortalWound = urand(2000, 6000);
-        Strike = 1500;
-        SunderArmor = urand(3000, 10000);
+        Charge.Reset(urand(3000, 6000));
+        Cleave.Reset(urand(5000, 15000));
+        MortalWound.Reset(urand(2000, 6000));
+        Strike.Reset(1500);
+        SunderArmor.Reset(urand(3000, 10000));
     }
 
     void EnterCombat(Unit* who) { DoZoneInCombat(80.0f); }
@@ -4112,7 +4112,7 @@ struct mob_angered_soul_fragmentAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        Anger = urand(1500, 6000);
+        Anger.Reset(urand(1500, 6000));
     }
 
     void EnterCombat(Unit *)
@@ -4202,7 +4202,7 @@ struct mob_suffering_soul_fragmentAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        SoulBlast = urand(2000, 5000);
+        SoulBlast.Reset(urand(2000, 5000));
     }
 
     void EnterCombat(Unit *)
@@ -4279,9 +4279,9 @@ struct mob_pristess_of_dementiaAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        Confusion = urand(5000, 15000);
-        Dementia = 3000;
-        ImageSummon = 15000;
+        Confusion.Reset(urand(5000, 15000));
+        Dementia.Reset(3000);
+        ImageSummon.Reset(15000);
     }
 
     void EnterCombat(Unit *)
@@ -4343,7 +4343,7 @@ struct mob_image_of_dementiaAI : public ScriptedAI
     void Reset()
     {
         me->CastSpell(me, SPELL_WHIRLWIND_3, false);
-        MoveTimer = 1000;
+        MoveTimer.Reset(1000);
         DoZoneInCombat(80.0f);
     }
 
@@ -4390,8 +4390,8 @@ struct mob_pristess_of_delightAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        CurseOfVitality = urand(1000, 3000);
-        Polymorph = urand(5000, 10000);
+        CurseOfVitality.Reset(urand(1000, 3000));
+        Polymorph.Reset(urand(5000, 10000));
     }
 
     void EnterCombat(Unit *)
@@ -4460,9 +4460,9 @@ struct mob_sister_of_painAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        LashOfPain = urand(3000, 5000);
-        ShadowWordPain = urand(1000, 3000);
-        ShellOfPain = urand(10000, 20000);
+        LashOfPain.Reset(urand(3000, 5000));
+        ShadowWordPain.Reset(urand(1000, 3000));
+        ShellOfPain.Reset(urand(10000, 20000));
     }
 
     void EnterCombat(Unit *)
@@ -4557,9 +4557,9 @@ struct mob_sister_of_pleasureAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        GreaterHeal = 2000;
-        HolyNova = urand(5000, 10000);
-        ShellOfLife = 20000;
+        GreaterHeal.Reset(2000);
+        HolyNova.Reset(urand(5000, 10000));
+        ShellOfLife.Reset(20000);
         cooldown = false;
     }
 
@@ -4649,8 +4649,8 @@ struct mob_charming_courtesanAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        Infatuation = urand(10000, 15000);
-        PoisonousThrow = urand(2000, 10000);
+        Infatuation.Reset(urand(10000, 15000));
+        PoisonousThrow.Reset(urand(2000, 10000));
     }
 
     void EnterCombat(Unit* who)
@@ -4713,8 +4713,8 @@ struct mob_spellbound_attendentAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        Sleep = urand(3000, 8000);
-        Kick = 10000;
+        Sleep.Reset(urand(3000, 8000));
+        Kick.Reset(10000);
         cooldown = false;
     }
 
@@ -4780,8 +4780,8 @@ struct mob_enslaved_servantAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        Uppercut = urand(5000, 15000);
-        KidneyShot = urand(3000, 10000);;
+        Uppercut.Reset(urand(5000, 15000));
+        KidneyShot.Reset(urand(3000, 10000));
     }
 
     void EnterCombat(Unit* who)
@@ -4840,8 +4840,8 @@ struct mob_temple_concubineAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        LoveTap = urand(2000, 15000);
-        Polymorph = urand(5000, 10000);
+        LoveTap.Reset(urand(2000, 15000));
+        Polymorph.Reset(urand(5000, 10000));
     }
 
     void EnterCombat(Unit* who)
@@ -4940,8 +4940,8 @@ struct mob_illidari_archonAI : public ScriptedAI
             case HOLY_TYPE:
             {
                 DoCast(me, SPELL_POWER_WORD_SHIELD);
-                Heal = 2500;
-                shieldCooldownTimer = 15000;
+                Heal.Reset(2500);
+                shieldCooldownTimer.Reset(15000);
                 shieldCooldown = true;
                 SetAutocast(SPELL_HOLY_SMITE, 4800, true, CAST_TANK, 40, true);
                 StartAutocast();
@@ -4952,9 +4952,9 @@ struct mob_illidari_archonAI : public ScriptedAI
             {
                 StopAutocast();
                 DoCast(me, SPELL_SHADOWFORM);
-                MindFlay = 6000;
-                MindBlast = 2000;
-                wordDeathTimer = 8000;
+                MindFlay.Reset(6000);
+                MindBlast.Reset(2000);
+                wordDeathTimer.Reset(8000);
                 wordDeathCooldown = false;
                 break;
             }
@@ -5070,8 +5070,8 @@ struct mob_illidari_assassinAI : public ScriptedAI
         ClearCastQueue();
 
         DoCast(me, SPELL_RIPOSTE_AURA);
-        VanishEvent = urand(6000, 8000);
-        ParalyzingPoison = 15000;
+        VanishEvent.Reset(urand(6000, 8000));
+        ParalyzingPoison.Reset(15000);
         AmbushTagetGUID = 0;
         ambushed = false;
     }
@@ -5160,9 +5160,9 @@ struct mob_illidari_battle_mageAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        DirectTimer = urand(2500, 5000);
-        Flamestrike = 6000;
-        Blizzard = 12000;
+        DirectTimer.Reset(urand(2500, 5000));
+        Flamestrike.Reset(6000);
+        Blizzard.Reset(12000);
     }
 
     void EnterCombat(Unit* who)
@@ -5236,8 +5236,8 @@ struct mob_illidari_blood_lordAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        HammerOfJustice = urand(6000, 8000);
-        JudgmentOfCommand = urand(8000, 10000);
+        HammerOfJustice.Reset(urand(6000, 8000));
+        JudgmentOfCommand.Reset(urand(8000, 10000));
         shielded = false;
     }
 
@@ -5309,8 +5309,8 @@ struct mob_promenade_sentinelAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        L5arcane = urand(7000, 10000);
-        L4arcane = urand(1000, 3000);
+        L5arcane.Reset(urand(7000, 10000));
+        L4arcane.Reset(urand(1000, 3000));
     }
 
     void EnterCombat(Unit* who)
@@ -5360,7 +5360,7 @@ struct mob_arcane_chargeAI : public Scripted_NoMovementAI
     void Reset()
     {
         DoCast(me, SPELL_SPOTLIGHT);
-        Delay = 3000;
+        Delay.Reset(3000);
     }
     void EnterCombat(Unit*) { DoZoneInCombat(80.0f); }
     void UpdateAI(const uint32 diff)

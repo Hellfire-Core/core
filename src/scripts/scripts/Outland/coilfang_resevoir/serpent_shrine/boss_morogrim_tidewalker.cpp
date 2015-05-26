@@ -101,9 +101,9 @@ struct boss_morogrim_tidewalkerAI : public ScriptedAI
 
     void Reset()
     {
-        TidalWave_Timer = 10000;
-        WateryGrave_Timer = 30000;
-        Earthquake_Timer = 40000;
+        TidalWave_Timer.Reset(10000);
+        WateryGrave_Timer.Reset(30000);
+        Earthquake_Timer.Reset(40000);
         WateryGlobules_Timer = 0;
 
         Earthquake = false;
@@ -235,7 +235,7 @@ struct mob_water_globuleAI : public ScriptedAI
 
     void Reset()
     {
-        Check_Timer = 1000;
+        Check_Timer.Reset(1000);
 
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);

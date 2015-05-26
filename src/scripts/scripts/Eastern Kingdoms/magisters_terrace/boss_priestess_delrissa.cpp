@@ -137,15 +137,15 @@ struct boss_priestess_delrissaAI : public ScriptedAI
         canUseMedalion = true;
         aggroSpeach = false;
 
-        Heal_Timer   = 15000;
-        Renew_Timer  = 10000;
-        Scream_Cooldown = HeroicMode?15000:30000;
-        Medalion_Cooldown = 60000;
-        Shield_Timer = 2000;
-        SWPain_Timer = 5000;
-        Dispel_Timer = 7500;
-        Check_Timer = 2000;
-        ResetThreatTimer = urand(3000, 8000);
+        Heal_Timer.Reset(15000);
+        Renew_Timer.Reset(10000);
+        Scream_Cooldown.Reset(HeroicMode ? 15000 : 30000);
+        Medalion_Cooldown.Reset(60000);
+        Shield_Timer.Reset(2000);
+        SWPain_Timer.Reset(5000);
+        Dispel_Timer.Reset(7500);
+        Check_Timer.Reset(2000);
+        ResetThreatTimer.Reset(urand(3000, 8000));
         me->setActive(true);
 
         CheckAdds();
@@ -501,9 +501,9 @@ struct boss_priestess_guestAI : public ScriptedAI
         usedPotion = false;
         resetThreat = true;
         canUseMedalion = true;
-        ResetThreatTimer = urand(3000, 8000);             // These guys like to switch targets often, and are not meant to be tanked.
-        Check_Timer = 2000;
-        Medalion_Cooldown = 60000;
+        ResetThreatTimer.Reset(urand(3000, 8000));             // These guys like to switch targets often, and are not meant to be tanked.
+        Check_Timer.Reset(2000);
+        Medalion_Cooldown.Reset(60000);
         targetRange = 100;
         me->setActive(true);
 
@@ -647,11 +647,11 @@ struct boss_kagani_nightstrikeAI : public boss_priestess_guestAI
     void Reset()
     {
         boss_priestess_guestAI::Reset();
-        Gouge_Timer = 5500;
-        Kick_Cooldown = 7000;
-        Vanish_Timer = urand(5000, 15000);
-        Eviscerate_Timer = urand(6000, 12000);
-        Backstab_Timer = 3000;
+        Gouge_Timer.Reset(5500);
+        Kick_Cooldown.Reset(7000);
+        Vanish_Timer.Reset((5000, 15000));
+        Eviscerate_Timer.Reset(urand(6000, 12000));
+        Backstab_Timer.Reset(3000);
         Check_Timer = 0;
         canKick = true;
         InVanish = false;
@@ -797,12 +797,12 @@ struct boss_ellris_duskhallowAI : public boss_priestess_guestAI
 
     void Reset()
     {
-        Check_Timer = 2000;
+        Check_Timer.Reset(2000);
         Autocast_Timer = 0;
-        SummonImp_Timer = 5000;
-        Seed_of_Corruption_Timer = 2000;
-        Curse_of_Agony_Timer = 1000;
-        Fear_Timer = 10000;
+        SummonImp_Timer.Reset(5000);
+        Seed_of_Corruption_Timer.Reset(2000);
+        Curse_of_Agony_Timer.Reset(1000);
+        Fear_Timer.Reset(10000);
 
         boss_priestess_guestAI::Reset();
     }
@@ -911,7 +911,7 @@ struct mob_fizzleAI : public ScriptedAI
     void Reset()
     {
         Autocast_Timer = 0;
-        Check_Timer = 2000;
+        Check_Timer.Reset(2000);
     }
 
     void AttackStart(Unit* who)
@@ -958,9 +958,9 @@ struct boss_eramas_brightblazeAI : public boss_priestess_guestAI
 
     void Reset()
     {
-        Knockdown_Timer = urand(10000, 20000);
-        Snap_Kick_Timer = urand(4000, 8000);
-        ChacraDrain_Timer = urand(10000, 20000);
+        Knockdown_Timer.Reset(urand(10000, 20000));
+        Snap_Kick_Timer.Reset(urand(4000, 8000));
+        ChacraDrain_Timer.Reset(urand(10000, 20000));
 
         boss_priestess_guestAI::Reset();
     }
@@ -1052,14 +1052,14 @@ struct boss_yazzaiAI : public boss_priestess_guestAI
         canFroze = true;
         canCoC = true;
         canBlink = true;
-        FrostNova_Cooldown = 25000;
-        ConeOfCold_Cooldown = 10000;
-        Blink_Cooldown = 15000;
+        FrostNova_Cooldown.Reset(25000);
+        ConeOfCold_Cooldown.Reset(10000);
+        Blink_Cooldown.Reset(15000);
         Polymorph_Timer = 0;
-        MeleeCheck_Timer = 2000;
-        Check_Timer = 5000;
+        MeleeCheck_Timer.Reset(2000);
+        Check_Timer.Reset(5000);
         Autocast_Timer = 0;
-        Blizzard_Timer = urand(3000, 10000);
+        Blizzard_Timer.Reset(urand(3000, 10000));
 
         boss_priestess_guestAI::Reset();
     }
@@ -1229,13 +1229,13 @@ struct boss_warlord_salarisAI : public boss_priestess_guestAI
     void Reset()
     {
         boss_priestess_guestAI::Reset();
-        BattleShout_Timer = 110000;
-        Intercept_Timer = 1000;
-        Disarm_Timer = urand(10000, 15000);
-        Hamstring_Timer = urand(4000, 5000);
-        Mortal_Strike_Timer = urand(8000, 12000);
-        Piercing_Howl_Timer = urand(5000, 8000);
-        Frightening_Shout_Timer = urand(15000, 24000);
+        BattleShout_Timer.Reset(110000);
+        Intercept_Timer.Reset(1000);
+        Disarm_Timer.Reset(urand(10000, 15000));
+        Hamstring_Timer.Reset(urand(4000, 5000));
+        Mortal_Strike_Timer.Reset(urand(8000, 12000));
+        Piercing_Howl_Timer.Reset(urand(5000, 8000));
+        Frightening_Shout_Timer.Reset(urand(15000, 24000));
         resetThreat = false;
     }
 
@@ -1349,13 +1349,13 @@ struct boss_garaxxasAI : public boss_priestess_guestAI
     void Reset()
     {
         targetRange = 30;
-        Aimed_Shot_Timer = 500;
-        Shoot_Timer = 2500;
-        Concussive_Shot_Timer = urand(6000, 8000);
-        Multi_Shot_Timer = urand(16000, 20000);
-        Wing_Clip_Cooldown = 10000;
+        Aimed_Shot_Timer.Reset(500);
+        Shoot_Timer.Reset(2500);
+        Concussive_Shot_Timer.Reset(urand(6000, 8000));
+        Multi_Shot_Timer.Reset(urand(16000, 20000));
+        Wing_Clip_Cooldown.Reset(10000);
         canWingClip = true;
-        Freezing_Trap_Cooldown = 30000;
+        Freezing_Trap_Cooldown.Reset(30000);
         canSetTrap = true;
 
         boss_priestess_guestAI::Reset();
@@ -1536,11 +1536,11 @@ struct boss_apokoAI : public boss_priestess_guestAI
     void Reset()
     {
         summons.DespawnAll();
-        Totem_Timer = urand(3000, 5000);
-        War_Stomp_Timer = urand(2000, 10000);
-        Healing_Wave_Cooldown = 5000;
-        Purge_Timer = urand(8000, 15000);
-        Frost_Shock_Timer = urand(5000, 10000);
+        Totem_Timer.Reset(urand(3000, 5000));
+        War_Stomp_Timer.Reset(urand(2000, 10000));
+        Healing_Wave_Cooldown.Reset(5000);
+        Purge_Timer.Reset(urand(8000, 15000));
+        Frost_Shock_Timer.Reset(urand(5000, 10000));
         TotemSpell = RAND(SPELL_WINDFURY_TOTEM, SPELL_FIRE_NOVA_TOTEM, SPELL_EARTHBIND_TOTEM);
         canHeal = true;
 
@@ -1647,11 +1647,11 @@ struct boss_zelfanAI : public boss_priestess_guestAI
 
     void Reset()
     {
-        Goblin_Dragon_Gun_Timer = urand(5000, 20000);
-        Rocket_Launch_Timer = 1000;
-        Recombobulate_Timer = urand(3000, 6000);
-        High_Explosive_Sheep_Timer = (HeroicMode?1000:urand(8000, 15000));
-        Fel_Iron_Bomb_Timer = urand(4000, 15000);
+        Goblin_Dragon_Gun_Timer.Reset(urand(5000, 20000));
+        Rocket_Launch_Timer.Reset(1000);
+        Recombobulate_Timer.Reset(urand(3000, 6000));
+        High_Explosive_Sheep_Timer.Reset((HeroicMode ? 1000 : urand(8000, 15000)));
+        Fel_Iron_Bomb_Timer.Reset(urand(4000, 15000));
 
         boss_priestess_guestAI::Reset();
     }
@@ -1747,8 +1747,8 @@ struct mob_high_explosive_sheepAI : public ScriptedAI
     void Reset()
     {
         me->SetWalk(true);
-        SelfDestro_Timer = 60000;
-        Check_Timer = 500;
+        SelfDestro_Timer.Reset(60000);
+        Check_Timer.Reset(500);
     }
 
     void UpdateAI(const uint32 diff)

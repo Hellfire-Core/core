@@ -64,10 +64,10 @@ struct boss_doomwalkerAI : public ScriptedAI
     void Reset()
     {
         Enrage_Timer    = 0;
-        Armor_Timer     = 5000 + rand()%8000;
-        Chain_Timer     = 10000 + rand()%20000;
-        Quake_Timer     = 25000 + rand()%10000;
-        Overrun_Timer   = 30000 + rand()%15000;
+        Armor_Timer.Reset(5000 + rand() % 8000);
+        Chain_Timer.Reset(10000 + rand() % 20000);
+        Quake_Timer.Reset(25000 + rand() % 10000);
+        Overrun_Timer.Reset(30000 + rand() % 15000);
 
         InEnrage = false;
     }

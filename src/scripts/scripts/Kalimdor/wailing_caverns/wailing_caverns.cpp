@@ -134,8 +134,8 @@ struct npc_disciple_of_naralexAI : public npc_escortAI
 
     void Reset()
     {
-        sleepTimer = urand(5000, 15000);
-        potionTimer = 120000;
+        sleepTimer.Reset(urand(5000, 15000));
+        potionTimer.Reset(120000);
         potCooldown = false;
     }
 

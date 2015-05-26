@@ -80,10 +80,10 @@ struct boss_mekgineer_steamriggerAI : public ScriptedAI
 
     void Reset()
     {
-        Shrink_Timer = 20000;
-        Saw_Blade_Timer = 15000;
-        Electrified_Net_Timer = 10000;
-        Berserk_timer = 300000;
+        Shrink_Timer.Reset(20000);
+        Saw_Blade_Timer.Reset(15000);
+        Electrified_Net_Timer.Reset(10000);
+        Berserk_timer.Reset(300000);
 
         Summon75 = false;
         Summon50 = false;
@@ -221,7 +221,7 @@ struct mob_steamrigger_mechanicAI : public ScriptedAI
 
     void Reset()
     {
-        Repair_Timer = irand(1500, 2500);
+        Repair_Timer.Reset(irand(1500, 2500));
 
         if (Unit* Mekgineer = Unit::GetUnit((*me), pInstance->GetData64(DATA_MEKGINEERSTEAMRIGGER)))
         {

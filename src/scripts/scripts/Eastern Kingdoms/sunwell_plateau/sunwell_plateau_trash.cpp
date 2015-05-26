@@ -71,9 +71,9 @@ struct mob_sunblade_arch_mageAI : public ScriptedAI
     void Reset()
     {
         ClearCastQueue();
-        ArcaneExplosion = urand(5000, 12000);
-        FrostNova = urand(5000, 10000);
-        Blink = urand(10000, 18000);
+        ArcaneExplosion.Reset(urand(5000, 12000));
+        FrostNova.Reset(urand(5000, 10000));
+        Blink.Reset(urand(10000, 18000));
     }
 
     void EnterCombat(Unit*) { DoZoneInCombat(80.0f); }
@@ -148,9 +148,9 @@ struct mob_sunblade_cabalistAI : public ScriptedAI
     {
         ClearCastQueue();
         summons.DespawnAll();
-        IgniteMana = urand(3000, 10000);;
-        ShadowBolt = urand(500, 1000);
-        SummonImp = urand(1000, 8000);
+        IgniteMana.Reset(urand(3000, 10000));
+        ShadowBolt.Reset(urand(500, 1000));
+        SummonImp.Reset(urand(1000, 8000));
     }
 
     void AttackStart(Unit* who)
@@ -234,9 +234,9 @@ struct mob_sunblade_dawn_priestAI : public ScriptedAI
         ClearCastQueue();
         DoCast(me, SPELL_HOLYFORM);
 
-        HolyNova = urand(5000, 10000);
-        Renew = 1000;
-        SelfRenew = 500;
+        HolyNova.Reset(urand(5000, 10000));
+        Renew.Reset(1000);
+        SelfRenew.Reset(500);
         canRenew = true;
         canSelfRenew = true;
     }
@@ -318,9 +318,9 @@ struct mob_sunblade_dusk_priestAI : public ScriptedAI
     void Reset()
     {
         ClearCastQueue();
-        Fear = urand(5000, 15000);
-        WordPain = urand(6000, 12000);
-        MindFlay = urand(2000, 10000);
+        Fear.Reset(urand(5000, 15000));
+        WordPain.Reset(urand(6000, 12000));
+        MindFlay.Reset(urand(2000, 10000));
     }
 
     void EnterCombat(Unit*) { DoZoneInCombat(80.0f); }
@@ -404,7 +404,7 @@ struct mob_sunblade_protectorAI : public ScriptedAI
     void Reset()
     {
         ClearCastQueue();
-        FelLightning = urand(3000, 6000);
+        FelLightning.Reset(urand(3000, 6000));
     }
 
     void EnterEvadeMode()
@@ -474,7 +474,7 @@ struct mob_sunblade_scoutAI : public ScriptedAI
         activating_protector = false;
         DoCast(me, SPELL_STEALTH_DETECT, true);
 
-        SinisterStrike = urand(3000, 10000);
+        SinisterStrike.Reset(urand(3000, 10000));
     }
 
     bool ActivateProtector(Unit* who)
@@ -576,9 +576,9 @@ struct mob_sunblade_slayerAI : public ScriptedAI
     void Reset()
     {
         ClearCastQueue();
-        ScatterShot = urand(6000, 12000);
-        Shoot = urand(100, 1000);
-        SlayingShot = urand(8000, 15000);
+        ScatterShot.Reset(urand(6000, 12000));
+        Shoot.Reset(urand(100, 1000));
+        SlayingShot.Reset(urand(8000, 15000));
         DoCast(me, SPELL_DUAL_WIELD, true);
     }
 
@@ -651,8 +651,8 @@ struct mob_sunblade_vindicatorAI : public ScriptedAI
     void Reset()
     {
         ClearCastQueue();
-        Cleave = urand(4000, 9000);
-        MortalStrike = urand(5000, 15000);
+        Cleave.Reset(urand(4000, 9000));
+        MortalStrike.Reset(urand(5000, 15000));
     }
 
     void EnterCombat(Unit*) { DoZoneInCombat(80.0f); }
@@ -733,8 +733,8 @@ struct mob_shadowsword_assassinAI : public ScriptedAI
     void Reset()
     {
         ClearCastQueue();
-        CheckTimer = 2000;
-        Shadowstep = urand(10000, 20000);
+        CheckTimer.Reset(2000);
+        Shadowstep.Reset(urand(10000, 20000));
         DoCast(me, SPELL_GREATER_INVISIBILITY, true);
     }
 
@@ -859,9 +859,9 @@ struct mob_shadowsword_commanderAI : public ScriptedAI
     void Reset()
     {
         me->setActive(true);
-        ShieldSlam = urand(5000, 10000);
-        Yell_timer = 3000;
-        ShoutTimer = 30000;
+        ShieldSlam.Reset(urand(5000, 10000));
+        Yell_timer.Reset(3000);
+        ShoutTimer.Reset(30000);
         TriggerGUID = 0;
     }
 
@@ -969,9 +969,9 @@ struct mob_shadowsword_deathbringerAI : public ScriptedAI
     void Reset()
     {
         me->setActive(true);
-        DiseaseBuffet = urand(5000, 10000);
-        VolatileDisease = urand(3000, 6000);
-        DespawnTimer = 15000;
+        DiseaseBuffet.Reset(urand(5000, 10000));
+        VolatileDisease.Reset(urand(3000, 6000));
+        DespawnTimer.Reset(15000);
         DoCast(me, SPELL_DUAL_WIELD, true);
     }
 
@@ -1057,8 +1057,8 @@ struct mob_shadowsword_lifeshaperAI : public ScriptedAI
     void Reset()
     {
         ClearCastQueue();
-        DrainLife = (4000, 10000);
-        HealthFunnel = 8000;
+        DrainLife.Reset((4000, 10000));
+        HealthFunnel.Reset(8000);
         canFunnelHP = true;
         if (pInstance->GetData(DATA_TRASH_GAUNTLET_EVENT) == DONE)
             pInstance->SetData(DATA_TRASH_GAUNTLET_EVENT, FAIL);
@@ -1163,8 +1163,8 @@ struct mob_shadowsword_manafiendAI : public ScriptedAI
     {
         ClearCastQueue();
         DoCast(me, SPELL_CHILLING_TOUCH_AURA);
-        DrainMana = urand(3000, 5000);
-        CheckTimer = 1000;
+        DrainMana.Reset(urand(3000, 5000));
+        CheckTimer.Reset(1000);
         if (pInstance->GetData(DATA_TRASH_GAUNTLET_EVENT) == DONE)
             pInstance->SetData(DATA_TRASH_GAUNTLET_EVENT, FAIL);
     }
@@ -1258,9 +1258,9 @@ struct mob_shadowsword_soulbinderAI : public ScriptedAI
     void Reset()
     {
         ClearCastQueue();
-        CurseOfExhaustion = urand(4000, 8000);
-        Domination = urand(6000, 10000);
-        FlashOfDarkness = urand(2000, 6000);
+        CurseOfExhaustion.Reset(urand(4000, 8000));
+        Domination.Reset(urand(6000, 10000));
+        FlashOfDarkness.Reset(urand(2000, 6000));
     }
 
     void JustDied(Unit* killer)
@@ -1465,7 +1465,7 @@ struct mob_volatile_fiendAI : public ScriptedAI
     {
         summoned = false;
         exploding = false;
-        explosion_timer = 2000;
+        explosion_timer.Reset(2000);
     }
 
     void EnterCombat(Unit*)
@@ -1579,9 +1579,9 @@ struct mob_apocalypse_guardAI : public ScriptedAI
 
     void Reset()
     {
-        Cleave = urand(3500, 5500);
-        CorruptingStrike = urand(4000, 10000);
-        DeathCoil = urand(3000, 7000);
+        Cleave.Reset(urand(3500, 5500));
+        CorruptingStrike.Reset(urand(4000, 10000));
+        DeathCoil.Reset(urand(3000, 7000));
         InfernalDefense = false;
     }
 
@@ -1664,8 +1664,8 @@ struct mob_cataclysm_houndAI : public ScriptedAI
 
     void Reset()
     {
-        Enrage = urand(10000, 20000);
-        CataclysmBreath = urand(4000, 10000);
+        Enrage.Reset(urand(10000, 20000));
+        CataclysmBreath.Reset(urand(4000, 10000));
     }
 
 
@@ -1744,9 +1744,9 @@ struct mob_chaos_gazerAI : public ScriptedAI
 
     void Reset()
     {
-        DrainLifeCD = urand(10000, 12000);
-        Petrify = urand(3000, 7000);
-        TentacleSweep = Petrify.GetTimeLeft() + urand(1000, 1500);
+        DrainLifeCD.Reset(urand(10000, 12000));
+        Petrify.Reset(urand(3000, 7000));
+        TentacleSweep.Reset(Petrify.GetInterval() + urand(1000, 1500));
         canDrainLife = true;
     }
 
@@ -1849,7 +1849,7 @@ struct mob_doomfire_destroyerAI : public ScriptedAI
     void Reset()
     {
         DoCast(me, SPELL_IMMOLATION_AURA, true);
-        SummonTimer = 1000;
+        SummonTimer.Reset(1000);
         summons.DespawnAll();
     }
 
@@ -1992,8 +1992,8 @@ struct mob_oblivion_mageAI : public ScriptedAI
     void Reset()
     {
         SetAutocast(SPELL_FLAME_BUFFET, 2000, true);
-        Polymorph = 1000;
-        EvadeTimer = 10000;
+        Polymorph.Reset(1000);
+        EvadeTimer.Reset(10000);
         channeling = false;
     }
 
@@ -2129,8 +2129,8 @@ struct mob_priestess_of_tormentAI : public ScriptedAI
     void Reset()
     {
         DoCast(me, SPELL_BURN_MANA_AURA, true);
-        Whirlwind = urand(2500, 4500);
-        MoveTimer = 1000;
+        Whirlwind.Reset(urand(2500, 4500));
+        MoveTimer.Reset(1000);
         moving = false;
     }
 
@@ -2229,7 +2229,7 @@ struct mob_shadowsword_guardianAI : public ScriptedAI
 
     void Reset()
     {
-        BearDown = urand(7000, 10000);
+        BearDown.Reset(urand(7000, 10000));
     }
 
     void MoveInLineOfSight(Unit* who)
@@ -2299,8 +2299,8 @@ struct npc_gauntlet_imp_triggerAI : public Scripted_NoMovementAI
     void Reset()
     {
         me->setActive(true);
-        Deathbringer_timer = 30000;
-        Imp_timer = 1000;
+        Deathbringer_timer.Reset(30000);
+        Imp_timer.Reset(1000);
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
         summons.DespawnAll();

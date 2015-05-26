@@ -80,10 +80,10 @@ struct boss_talon_king_ikissAI : public ScriptedAI
     {
         HeroicMode = m_creature->GetMap()->IsHeroic();
 
-        ArcaneVolley_Timer = 5000;
-        Sheep_Timer = 8000;
-        Blink_Timer = 35000;
-        Slow_Timer = 15000+rand()%15000;
+        ArcaneVolley_Timer.Reset(5000);
+        Sheep_Timer.Reset(8000);
+        Blink_Timer.Reset(35000);
+        Slow_Timer.Reset(15000 + rand() % 15000);
         Blink = false;
         Intro = false;
         ManaShield = false;

@@ -410,21 +410,21 @@ struct boss_kaelthasAI : public ScriptedAI
         ClearCastQueue();
 
         m_creature->SetNoCallAssistance(true);
-        Fireball_Timer = 5000+rand()%10000;
-        Arcane_Timer1 = 20000;
-        Arcane_Timer2 = 40000;
-        MindControl_Timer = 10000;
-        Phoenix_Timer =50000;
-        ShockPyroChain_Timer = 60000;
+        Fireball_Timer.Reset(5000 + rand() % 10000);
+        Arcane_Timer1.Reset(20000);
+        Arcane_Timer2.Reset(40000);
+        MindControl_Timer.Reset(10000);
+        Phoenix_Timer.Reset(50000);
+        ShockPyroChain_Timer.Reset(60000);
         PyrosCast = 0;
         Pyro_Timer = 0;
-        ShockBarrier_Timer = 60000;
-        GravityLapse_Timer = 16000;
+        ShockBarrier_Timer.Reset(60000);
+        GravityLapse_Timer.Reset(16000);
         GravityLapse_Phase = 0;
-        NetherBeam_Timer = 8000;
-        Kick_Timer = 3000;
-        Check_Timer = 4000;
-        Check_Timer2 = 3000;
+        NetherBeam_Timer.Reset(8000);
+        Kick_Timer.Reset(3000);
+        Check_Timer.Reset(4000);
+        Check_Timer2.Reset(3000);
         PyrosCast = 0;
         Phase = 0;
         Anim_Timer = 0;
@@ -1270,12 +1270,12 @@ struct boss_thaladred_the_darkenerAI : public advisorbase_ai
 
     void Reset()
     {
-        Gaze_Timer = 100;
-        Rend_Timer = 1000;
-        Silence_Timer = 20000;
-        PsychicBlow_Timer = 10000;
-        Check_Timer = 1000;
-        Check_Timer2 = 3000;
+        Gaze_Timer.Reset(100);
+        Rend_Timer.Reset(1000);
+        Silence_Timer.Reset(20000);
+        PsychicBlow_Timer.Reset(10000);
+        Check_Timer.Reset(1000);
+        Check_Timer2.Reset(3000);
 
         m_creature->SetWalk(true);
         m_creature->SetSpeed(MOVE_WALK, 2.0f, false);
@@ -1388,8 +1388,8 @@ struct boss_lord_sanguinarAI : public advisorbase_ai
 
     void Reset()
     {
-        Fear_Timer = 20000;
-        Check_Timer = 3000;
+        Fear_Timer.Reset(20000);
+        Check_Timer.Reset(3000);
 
         advisorbase_ai::Reset();
     }
@@ -1454,12 +1454,12 @@ struct boss_grand_astromancer_capernianAI : public advisorbase_ai
     {
         ClearCastQueue();
 
-        Fireball_Timer = 1000;
-        Conflagration_Timer = 20000;
-        ArcaneExplosion_Timer = 5000;
-        Yell_Timer = 2000;
+        Fireball_Timer.Reset(1000);
+        Conflagration_Timer.Reset(20000);
+        ArcaneExplosion_Timer.Reset(5000);
+        Yell_Timer.Reset(2000);
         Yell = false;
-        Check_Timer = 3000;
+        Check_Timer.Reset(3000);
 
         SetAutocast(SPELL_CAPERNIAN_FIREBALL, 2500, true);
 
@@ -1571,9 +1571,9 @@ struct boss_master_engineer_telonicusAI : public advisorbase_ai
 
     void Reset()
     {
-        Bomb_Timer = 10000;
-        RemoteToy_Timer = 5000;
-        Check_Timer = 3000;
+        Bomb_Timer.Reset(10000);
+        RemoteToy_Timer.Reset(5000);
+        Check_Timer.Reset(3000);
 
         advisorbase_ai::Reset();
     }
@@ -1671,7 +1671,7 @@ struct mob_kael_flamestrikeAI : public Scripted_NoMovementAI
 
     void Reset()
     {
-        timer = 5000;
+        timer.Reset(5000);
         Casting = false;
         KillSelf = false;
 
@@ -1727,7 +1727,7 @@ struct mob_phoenix_tkAI : public ScriptedAI
     void Reset()
     {
         m_creature->SetLevitate(true);//birds can fly! :)
-        Cycle_Timer = 2000;
+        Cycle_Timer.Reset(2000);
         Egg = true;
         m_creature->CastSpell(m_creature,SPELL_BURN,true);
     }
@@ -1802,7 +1802,7 @@ struct mob_phoenix_egg_tkAI : public ScriptedAI
 
     void Reset()
     {
-        Rebirth_Timer = 15000;
+        Rebirth_Timer.Reset(15000);
         summoned = false;
     }
 
@@ -1886,8 +1886,8 @@ struct mob_nether_vaporAI : public ScriptedAI
 
     void Reset()
     {
-        Vapor_Timer = 27000;
-        Move_Timer = 500;
+        Vapor_Timer.Reset(27000);
+        Move_Timer.Reset(500);
 
         m_creature->setFaction(16);
         m_creature->SetLevitate(true);
@@ -1961,31 +1961,31 @@ struct weapon_advisorAI : public ScriptedAI
         switch(m_creature->GetEntry())
         {
             case NETHERSTRAND_LONGBOW:
-                Shoot_Timer      = 2000;
-                MultiShoot_Timer = 16000;
+                Shoot_Timer.Reset(2000);
+                MultiShoot_Timer.Reset(16000);
             break;
             case DEVASTATION:
-                Whirlwind_Timer  = 30000;              // Every 30 s
+                Whirlwind_Timer.Reset(30000);              // Every 30 s
             break;
             case COSMIC_INFUSER:
-                Heal_Timer      = 1000;               // To remove stress from core
-                HNova_Timer     = 10000+rand()%10000; // 10-20 s
+                Heal_Timer.Reset(1000);               // To remove stress from core
+                HNova_Timer.Reset(10000 + rand() % 10000); // 10-20 s
             break;
             case INFINITY_BLADES:
-                Thrash_Timer    = 10000;              // Poprawne czasy znalezc !
+                Thrash_Timer.Reset(10000);              // Poprawne czasy znalezc !
             break;
             case PHASESHIFT_BULWARK:
-                SBash_Timer     = 12000;
+                SBash_Timer.Reset(12000);
                 m_creature->CastSpell(m_creature,SPELL_BULWARK_SSPIKE,true);
             break;
             case STAFF_OF_DISINTEGRATION:
-                WBolt_Timer     = 3000;               // Poprawne czasy znalezc !
-                WBolt_count     = 0;
-                FNova_Timer     = 12000;
+                WBolt_Timer.Reset(3000);               // Poprawne czasy znalezc !
+                WBolt_count = 0;
+                FNova_Timer.Reset(12000);
             break;
         }
-        Check_Timer = 3000;
-        Rend_Timer = 2000;
+        Check_Timer.Reset(3000);
+        Rend_Timer.Reset(2000);
     }
 
     void AttackStart(Unit *who)

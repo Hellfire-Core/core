@@ -71,11 +71,11 @@ struct boss_vanndarAI : public ScriptedAI
 
     void Reset()
     {
-        AvatarTimer             = 3000;
-        ThunderclapTimer        = 4000;
-        StormboltTimer          = 6000;
-        YellTimer               = urand(20000, 30000); //20 to 30 seconds
-        CheckTimer              = 2000;
+        AvatarTimer.Reset(3000);
+        ThunderclapTimer.Reset(4000);
+        StormboltTimer.Reset(6000);
+        YellTimer.Reset(urand(20000, 30000)); //20 to 30 seconds
+        CheckTimer.Reset(2000);
     }
 
     void EnterCombat(Unit *who)
@@ -200,11 +200,11 @@ struct boss_vanndarOfficerAI : public ScriptedAI
 
     void Reset()
     {
-        chargeTimer             = urand(7500, 20000);
-        cleaveTimer             = urand(5000, 10000);
-        demoShoutTimer          = urand(2000, 4000);
-        whirlwindTimer          = urand(9000, 13000);
-        CheckTimer              = 2000;
+        chargeTimer.Reset(urand(7500, 20000));
+        cleaveTimer.Reset(urand(5000, 10000));
+        demoShoutTimer.Reset(urand(2000, 4000));
+        whirlwindTimer.Reset(urand(9000, 13000));
+        CheckTimer.Reset(2000);
     }
 
     void EnterCombat(Unit *who)

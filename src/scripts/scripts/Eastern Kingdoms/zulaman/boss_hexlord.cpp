@@ -253,11 +253,11 @@ struct boss_hex_lord_malacrassAI : public ScriptedAI
         if(pInstance && pInstance->GetData(DATA_HEXLORDEVENT)!= DONE)
             pInstance->SetData(DATA_HEXLORDEVENT, NOT_STARTED);
 
-        SpiritBolts_Timer = 20000;
+        SpiritBolts_Timer.Reset(20000);
         DrainPower_Timer = 0;
-        SiphonSoul_Timer = 100000;
-        CheckAddState_Timer = 5000;
-        ResetTimer = 5000;
+        SiphonSoul_Timer.Reset(100000);
+        CheckAddState_Timer.Reset(5000);
+        ResetTimer.Reset(5000);
 
         PlayerClass = 0;
         SpawnAdds();
@@ -267,7 +267,7 @@ struct boss_hex_lord_malacrassAI : public ScriptedAI
         m_creature->SetByteValue(UNIT_FIELD_BYTES_2, 0, SHEATH_STATE_MELEE);
         Intro = false;
         for(uint8 i = 0; i < 3; i++)
-            PlayerAbility_Timer[i] = 999999;
+            PlayerAbility_Timer[i].Reset(999999);
     }
 
     void MoveInLineOfSight(Unit *who)
@@ -506,8 +506,8 @@ struct boss_thurgAI : public boss_hexlord_addAI
 
     void Reset()
     {
-        bloodlust_timer = 15000;
-        cleave_timer = 10000;
+        bloodlust_timer.Reset(15000);
+        cleave_timer.Reset(10000);
 
         boss_hexlord_addAI::Reset();
     }
@@ -551,8 +551,8 @@ struct boss_alyson_antilleAI : public boss_hexlord_addAI
 
     void Reset()
     {
-        flashheal_timer = 2500;
-        dispelmagic_timer = 10000;
+        flashheal_timer.Reset(2500);
+        dispelmagic_timer.Reset(10000);
 
         //AcquireGUID();
 
@@ -623,7 +623,7 @@ struct boss_gazakrothAI : public boss_hexlord_addAI
 
     void Reset()
     {
-        firebolt_timer = 2000;
+        firebolt_timer.Reset(2000);
         boss_hexlord_addAI::Reset();
     }
 /*  Ponizszy kod spowoduje ze imp bedzie wchodzil pod tekstury :(
@@ -672,8 +672,8 @@ struct boss_lord_raadanAI : public boss_hexlord_addAI
 
     void Reset()
     {
-        flamebreath_timer = 8000;
-        thunderclap_timer = 13000;
+        flamebreath_timer.Reset(8000);
+        thunderclap_timer.Reset(13000);
 
         boss_hexlord_addAI::Reset();
 
@@ -709,7 +709,7 @@ struct boss_darkheartAI : public boss_hexlord_addAI
 
     void Reset()
     {
-        psychicwail_timer = 8000;
+        psychicwail_timer.Reset(8000);
 
         boss_hexlord_addAI::Reset();
 
@@ -740,7 +740,7 @@ struct boss_slitherAI : public boss_hexlord_addAI
 
     void Reset()
     {
-        venomspit_timer = 5000;
+        venomspit_timer.Reset(5000);
         boss_hexlord_addAI::Reset();
     }
 /*
@@ -788,7 +788,7 @@ struct boss_fenstalkerAI : public boss_hexlord_addAI
 
     void Reset()
     {
-        volatileinf_timer = 15000;
+        volatileinf_timer.Reset(15000);
         boss_hexlord_addAI::Reset();
 
     }
@@ -823,8 +823,8 @@ struct boss_koraggAI : public boss_hexlord_addAI
 
     void Reset()
     {
-        coldstare_timer = 15000;
-        mightyblow_timer = 10000;
+        coldstare_timer.Reset(15000);
+        mightyblow_timer.Reset(10000);
         boss_hexlord_addAI::Reset();
 
     }

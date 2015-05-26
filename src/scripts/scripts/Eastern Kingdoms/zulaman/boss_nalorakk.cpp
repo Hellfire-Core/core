@@ -129,23 +129,24 @@ struct boss_nalorakkAI : public ScriptedAI
             m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
             inMove = false;
             waitTimer = 0;
-            m_creature->SetSpeed(MOVE_RUN,2);
+            m_creature->SetSpeed(MOVE_RUN, 2);
             m_creature->SetWalk(false);
-        }else
+        }
+        else
         {
-            (*m_creature).GetMotionMaster()->MovePoint(0,NalorakkWay[7][0],NalorakkWay[7][1],NalorakkWay[7][2]);
+            (*m_creature).GetMotionMaster()->MovePoint(0, NalorakkWay[7][0], NalorakkWay[7][1], NalorakkWay[7][2]);
         }
 
-        if(pInstance && pInstance->GetData(DATA_NALORAKKEVENT) != DONE)
+        if (pInstance && pInstance->GetData(DATA_NALORAKKEVENT) != DONE)
             pInstance->SetData(DATA_NALORAKKEVENT, NOT_STARTED);
 
-        Surge_Timer = 15000 + rand()%5000;
-        BrutalSwipe_Timer = 7000 + rand()%5000;
-        Mangle_Timer = 10000 + rand()%5000;
-        ShapeShift_Timer = 45000 + rand()%5000;
-        Berserk_Timer = 600000;
+        Surge_Timer.Reset(15000 + rand() % 5000);
+        BrutalSwipe_Timer.Reset(7000 + rand() % 5000);
+        Mangle_Timer.Reset(10000 + rand() % 5000);
+        ShapeShift_Timer.Reset(45000 + rand() % 5000);
+        Berserk_Timer.Reset(600000);
 
-        checkTimer = 3000;
+        checkTimer.Reset(3000);
 
         inBearForm = false;
         m_creature->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_DISPLAY + 1, 5122);

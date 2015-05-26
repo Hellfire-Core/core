@@ -83,10 +83,10 @@ struct boss_blackheart_the_inciterAI : public ScriptedAI
     void Reset()
     {
         InciteChaos = false;
-        InciteChaos_Timer = 20000;
-        InciteChaosWait_Timer = 15000;
-        Charge_Timer = 5000;
-        Knockback_Timer = 15000;
+        InciteChaos_Timer.Reset(20000);
+        InciteChaosWait_Timer.Reset(15000);
+        Charge_Timer.Reset(5000);
+        Knockback_Timer.Reset(15000);
 
         if (pInstance)
             pInstance->SetData(DATA_BLACKHEARTTHEINCITEREVENT, NOT_STARTED);

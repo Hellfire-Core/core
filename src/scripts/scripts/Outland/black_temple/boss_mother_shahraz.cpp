@@ -153,17 +153,17 @@ struct boss_shahrazAI : public ScriptedAI
 
         pInstance->SetData(EVENT_MOTHERSHAHRAZ, NOT_STARTED);
 
-        m_attractionTimer = urand(20000, 30000);
-        m_shriekTimer = 20000;
-        m_yellTimer = urand(70000, 111000);
-        m_enrageTimer = 600000;
-        m_enragePeriodic = 2000;
+        m_attractionTimer.Reset(urand(20000, 30000));
+        m_shriekTimer.Reset(20000);
+        m_yellTimer.Reset(urand(70000, 111000));
+        m_enrageTimer.Reset(600000);
+        m_enragePeriodic.Reset(2000);
         m_enraged = false;
         b_canEnrage = false;
         castBeam = false;
         prevBeam = 0;
 
-        m_checkTimer = 1000;
+        m_checkTimer.Reset(1000);
 
         m_position = 0;
     }

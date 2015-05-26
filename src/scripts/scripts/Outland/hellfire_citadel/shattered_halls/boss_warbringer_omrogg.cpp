@@ -167,13 +167,13 @@ struct boss_warbringer_omroggAI : public ScriptedAI
         ThreatYell2 = false;
         KillingYell = false;
 
-        Delay_Timer = 4000;
+        Delay_Timer.Reset(4000);
         BlastWave_Timer = 0;
         BlastCount = 0;
-        Fear_Timer = 8000;
-        BurningMaul_Timer = 25000;
-        ThunderClap_Timer = 15000;
-        ResetThreat_Timer = 30000;
+        Fear_Timer.Reset(8000);
+        BurningMaul_Timer.Reset(25000);
+        ThunderClap_Timer.Reset(15000);
+        ResetThreat_Timer.Reset(30000);
 
         if (pInstance)
             pInstance->SetData(TYPE_WARBRINGER, NOT_STARTED);

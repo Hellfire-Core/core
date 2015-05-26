@@ -89,10 +89,10 @@ struct boss_netherspiteAI : public ScriptedAI
         ClearCastQueue();
 
         Berserk = false;
-        NetherInfusionTimer = 540000;
-        VoidZoneTimer = 15000;
-        NetherbreathTimer = 3000;
-        ExhaustCheckTimer = 1000;
+        NetherInfusionTimer.Reset(540000);
+        VoidZoneTimer.Reset(15000);
+        NetherbreathTimer.Reset(3000);
+        ExhaustCheckTimer.Reset(1000);
         HandleDoors(true);
         DestroyPortals();
 
@@ -385,8 +385,8 @@ struct mob_void_zoneAI : public Scripted_NoMovementAI
     void Reset()
     {
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-        checkTimer = 500;
-        dieTimer = 25000;
+        checkTimer.Reset(500);
+        dieTimer.Reset(25000);
     }
 
     void UpdateAI(const uint32 diff)

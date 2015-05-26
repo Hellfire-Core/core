@@ -146,8 +146,8 @@ struct mob_lumpAI : public ScriptedAI
 
     void Reset()
     {
-        Reset_Timer = 60000;
-        Spear_Throw_Timer = 2000;
+        Reset_Timer.Reset(60000);
+        Spear_Throw_Timer.Reset(2000);
 
         me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
     }
@@ -579,7 +579,7 @@ struct mob_sparrowhawkAI : public ScriptedAI
     void Reset()
     {
         me->RemoveAurasDueToSpell(SPELL_SPARROWHAWK_NET);
-        Check_Timer = 1000;
+        Check_Timer.Reset(1000);
         PlayerGUID = 0;
         fleeing = false;
     }
@@ -835,9 +835,9 @@ struct npc_nagrand_captiveAI : public npc_escortAI
 
     void Reset()
     {
-        ChainLightningTimer = 1000;
-        HealTimer = 1;
-        FrostShockTimer = 6000;
+        ChainLightningTimer.Reset(1000);
+        HealTimer.Reset(1);
+        FrostShockTimer.Reset(6000);
     }
 
     void EnterCombat(Unit* /*who*/)
@@ -1311,7 +1311,7 @@ struct npc_warmaul_pyreAI : public ScriptedAI
     {
         Event = false;
         PlayerGUID = 0;
-        StepsTimer = 1;
+        StepsTimer.Reset(1);
         Steps = 0;
         CorpseCount = 0;
         MoveCount = 1;

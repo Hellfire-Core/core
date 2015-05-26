@@ -58,11 +58,11 @@ struct boss_the_black_stalkerAI : public ScriptedAI
 
     void Reset()
     {
-        Levitate_Timer = 12000;
-        ChainLightning_Timer = 6000;
-        StaticCharge_Timer = 10000;
-        SporeStriders_Timer = 10000+rand()%5000;
-        check_Timer = 5000;
+        Levitate_Timer.Reset(12000);
+        ChainLightning_Timer.Reset(6000);
+        StaticCharge_Timer.Reset(10000);
+        SporeStriders_Timer.Reset(10000 + rand() % 5000);
+        check_Timer.Reset(5000);
         LevitatedTarget = 0;
         LevitatedTarget_Timer = 0;
         Striders.clear();

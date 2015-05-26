@@ -70,12 +70,12 @@ struct boss_azgalorAI : public hyjal_trashAI
     void Reset()
     {
         damageTaken = 0;
-        RainTimer = 20000;
-        DoomTimer = 50000;
-        HowlTimer = 30000;
-        CleaveTimer = 10000;
-        EnrageTimer = 600000;
-        CheckTimer = 3000;
+        RainTimer.Reset(20000);
+        DoomTimer.Reset(50000);
+        HowlTimer.Reset(30000);
+        CleaveTimer.Reset(10000);
+        EnrageTimer.Reset(600000);
+        CheckTimer.Reset(3000);
         enraged = false;
 
         if(pInstance && IsEvent)
@@ -256,9 +256,9 @@ struct mob_lesser_doomguardAI : public hyjal_trashAI
 
     void Reset()
     {
-        CrippleTimer = 50000;
-        WarstompTimer = 10000;
-        CheckTimer = 2000;
+        CrippleTimer.Reset(50000);
+        WarstompTimer.Reset(10000);
+        CheckTimer.Reset(2000);
     }
 
     void WaypointReached(uint32){}

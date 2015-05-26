@@ -61,7 +61,7 @@ struct boss_lord_ahune_coreAI : public Scripted_NoMovementAI
     {
         DamageRecentlyTaken = false;
         NeedToHideGhost = false;
-        AhuneGhostShow_Timer = 3000;
+        AhuneGhostShow_Timer.Reset(3000);
         Ahune = 0;
     }
 
@@ -154,14 +154,14 @@ struct boss_lord_ahuneAI : public Scripted_NoMovementAI
         PhaseCounter = 0;
         Phase = 1;
         Core = 0;
-        Phase_Timer = 60000;
+        Phase_Timer.Reset(60000);
         Summons.DespawnAll();
         me->SetVisibility(VISIBILITY_ON);
 
-        Elementals_Timer = 5000;
-        Hailstone_Timer = 3000;
-        IceSpear_Timer = 5000;
-        Death_Timer = 1000;
+        Elementals_Timer.Reset(5000);
+        Hailstone_Timer.Reset(3000);
+        IceSpear_Timer.Reset(5000);
+        Death_Timer.Reset(1000);
         me->LowerPlayerDamageReq(me->GetHealth() / 2 + 1);
     }
 

@@ -77,14 +77,14 @@ struct boss_najentusAI : public ScriptedAI
 
     void Reset()
     {
-        EnrageTimer = 480000;
-        SpecialYellTimer = 45000 + (rand()%76)*1000;
+        EnrageTimer.Reset(480000);
+        SpecialYellTimer.Reset(45000 + (rand() % 76) * 1000);
 
-        ImpalingSpineTimer = 20000;
-        NeedleSpineTimer   = 2000 + rand()%2000;
-        TidalShieldTimer   = 60000;
+        ImpalingSpineTimer.Reset(20000);
+        NeedleSpineTimer.Reset(2000 + rand() % 2000);
+        TidalShieldTimer.Reset(60000);
 
-        CheckTimer = 3000;
+        CheckTimer.Reset(3000);
 
         plToNeedle = 3;
         checkAura = false;

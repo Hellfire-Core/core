@@ -945,7 +945,7 @@ void CreatureEventAI::JustRespawned()
 
 void CreatureEventAI::Reset()
 {
-    EventUpdateTime = EVENT_UPDATE_TIME;
+    EventUpdateTime.Reset(EVENT_UPDATE_TIME);
     EventDiff = 0;
 
     if (bEmptyList)

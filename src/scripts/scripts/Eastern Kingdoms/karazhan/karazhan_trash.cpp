@@ -50,7 +50,7 @@ struct mob_phantom_guestAI : public ScriptedAI
         me->CastSpell(me, SPELL_DANCE_VIBE, true);
 
         MainTimer = 0;
-        SecondaryTimer = urand(5000, 20000);
+        SecondaryTimer.Reset(urand(5000, 20000));
 
         if(GameObject *chair = FindGameObject(GO_CHAIR, 5.0, me))
             chair->Use(me);
@@ -163,8 +163,8 @@ struct mob_spectral_sentryAI : public ScriptedAI
         me->CastSpell(me, SPELL_DUAL_WIELD, true);
 
         ShotTimer = 0;
-        MultiShotTimer = 8000;
-        RandomSayTimer = urand(40000, 80000);
+        MultiShotTimer.Reset(8000);
+        RandomSayTimer.Reset(urand(40000, 80000));
     }
     
     void EnterCombat(Unit *who)
@@ -240,7 +240,7 @@ struct mob_arcane_protectorAI : public ScriptedAI
 
     void Reset()
     {
-        SkillTimer = urand(10000, 20000);
+        SkillTimer.Reset(urand(10000, 20000));
     }
     
     void EnterCombat(Unit *who)
@@ -375,7 +375,7 @@ struct mob_shadow_pillagerAI : public ScriptedAI
     void Reset()
     {
         SetAutocast(SPELL_SEARING_PAIN, 2500, true);
-        DotTimer = urand(2000, 6000);
+        DotTimer.Reset(urand(2000, 6000));
     }
     
     void AttackStart(Unit *who)

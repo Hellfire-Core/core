@@ -164,10 +164,10 @@ struct boss_grandmaster_vorpilAI : public ScriptedAI
 
     void Reset()
     {
-        ShadowBoltVolley_Timer = 15000;
-        DrawShadows_Timer = 45000;
-        summonTraveler_Timer = 90000;
-        banish_Timer = 17000;
+        ShadowBoltVolley_Timer.Reset(15000);
+        DrawShadows_Timer.Reset(45000);
+        summonTraveler_Timer.Reset(90000);
+        banish_Timer.Reset(17000);
         HelpYell = false;
         destroyPortals();
 

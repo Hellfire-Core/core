@@ -66,12 +66,12 @@ struct boss_omor_the_unscarredAI : public ScriptedAI
     {
         DoScriptText(SAY_WIPE, me);
 
-        OrbitalStrike_Timer = 22000;
-        ShadowWhip_Timer = 2000;
-        Aura_Timer = 18000;
-        DemonicShield_Timer = 1000;
+        OrbitalStrike_Timer.Reset(22000);
+        ShadowWhip_Timer.Reset(2000);
+        Aura_Timer.Reset(18000);
+        DemonicShield_Timer.Reset(1000);
         Shadowbolt_Timer = 1;
-        Summon_Timer = 20000;
+        Summon_Timer.Reset(20000);
         playerGUID = 0;
         CanPullBack = false;
 

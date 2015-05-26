@@ -107,15 +107,15 @@ struct boss_hydross_the_unstableAI : public ScriptedAI
         DeSummonBeams();
         beams[0] = 0;
         beams[1] = 0;
-        PosCheck_Timer = 2500;
-        PulseCombat_Timer = 5000;
-        MarkOfHydross_Timer = 15000;
-        MarkOfCorruption_Timer = 15000;
-        WaterTomb_Timer = 7000;
-        VileSludge_Timer = 7000;
+        PosCheck_Timer.Reset(2500);
+        PulseCombat_Timer.Reset(5000);
+        MarkOfHydross_Timer.Reset(15000);
+        MarkOfCorruption_Timer.Reset(15000);
+        WaterTomb_Timer.Reset(7000);
+        VileSludge_Timer.Reset(7000);
         MarkOfHydross_Count = 0;
         MarkOfCorruption_Count = 0;
-        EnrageTimer = 600000;
+        EnrageTimer.Reset(600000);
 
         CorruptedForm = false;
         m_creature->SetMeleeDamageSchool(SPELL_SCHOOL_FROST);

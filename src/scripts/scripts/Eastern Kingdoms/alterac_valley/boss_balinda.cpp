@@ -51,11 +51,11 @@ struct boss_balindaAI : public ScriptedAI
 
     void Reset()
     {
-        CoCTimer            = 8000;
-        CheckTimer          = 2000;
-        CastTimer            = 0;
-        SpellId             = 0;
-        WaterElementalTimer = 0;
+        CoCTimer.Reset(8000);
+        CheckTimer.Reset(2000);
+        CastTimer.Reset(0);
+        SpellId = 0;
+        WaterElementalTimer.Reset(0);
 
         summons.DespawnAll();
     }

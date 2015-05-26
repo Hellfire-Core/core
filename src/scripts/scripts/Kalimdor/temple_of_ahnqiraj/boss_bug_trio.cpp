@@ -56,9 +56,9 @@ struct boss_kriAI : public ScriptedAI
 
     void Reset()
     {
-        Cleave_Timer = 4000 + rand()%4000;
-        ToxicVolley_Timer = 6000 + rand()%6000;
-        Check_Timer = 2000;
+        Cleave_Timer.Reset(4000 + rand() % 4000);
+        ToxicVolley_Timer.Reset(6000 + rand() % 6000);
+        Check_Timer.Reset(2000);
 
         VemDead = false;
         Death = false;
@@ -145,9 +145,9 @@ struct boss_vemAI : public ScriptedAI
 
     void Reset()
     {
-        Charge_Timer = 15000 + rand()%12000;
-        KnockBack_Timer = 8000 + rand()%12000;
-        Enrage_Timer = 120000;
+        Charge_Timer.Reset(15000 + rand() % 12000);
+        KnockBack_Timer.Reset(8000 + rand() % 12000);
+        Enrage_Timer.Reset(120000);
 
         Enraged = false;
 
@@ -232,9 +232,9 @@ struct boss_yaujAI : public ScriptedAI
 
     void Reset()
     {
-        Heal_Timer = 25000 + rand()%15000;
-        Fear_Timer = 12000 + rand()%12000;
-        Check_Timer = 2000;
+        Heal_Timer.Reset(25000 + rand() % 15000);
+        Fear_Timer.Reset(12000 + rand() % 12000);
+        Check_Timer.Reset(2000);
 
         VemDead = false;
 

@@ -88,11 +88,11 @@ struct boss_nexusprince_shaffarAI : public ScriptedAI
 
     void Reset()
     {
-        Blink_Timer = 1500;
-        Beacon_Timer = 10000;
-        FireBall_Timer = 8000;
-        Frostbolt_Timer = 4000;
-        FrostNova_Timer = 15000;
+        Blink_Timer.Reset(1500);
+        Beacon_Timer.Reset(10000);
+        FireBall_Timer.Reset(8000);
+        Frostbolt_Timer.Reset(4000);
+        FrostNova_Timer.Reset(15000);
 
         HasTaunted = false;
         CanBlink = false;
@@ -278,9 +278,9 @@ struct mob_ethereal_beaconAI : public ScriptedAI
 
     void Reset()
     {
-        Apprentice_Timer = (HeroicMode ? 10000 : 20000);
-        ArcaneBolt_Timer = 1000;
-        Check_Timer = 1000;
+        Apprentice_Timer.Reset((HeroicMode ? 10000 : 20000));
+        ArcaneBolt_Timer.Reset(1000);
+        Check_Timer.Reset(1000);
     }
 
     void EnterCombat(Unit *who)
@@ -365,7 +365,7 @@ struct mob_ethereal_apprenticeAI : public ScriptedAI
 
     void Reset()
     {
-        Cast_Timer = 3000;
+        Cast_Timer.Reset(3000);
         isFireboltTurn = true;
     }
 

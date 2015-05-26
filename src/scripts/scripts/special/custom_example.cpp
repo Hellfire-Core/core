@@ -83,11 +83,11 @@ struct custom_exampleAI : public ScriptedAI
     void Reset()
     {
         Phase = 1;                                          //Start in phase 1
-        Phase_Timer = 60000;                                //60 seconds
-        Spell_1_Timer = 5000;                               //5 seconds
-        Spell_2_Timer = 37000;                              //37 seconds
-        Spell_3_Timer = 19000;                              //19 seconds
-        Beserk_Timer = 120000;                              //2 minutes
+        Phase_Timer.Reset(60000);                                //60 seconds
+        Spell_1_Timer.Reset(5000);                               //5 seconds
+        Spell_2_Timer.Reset(37000);                              //37 seconds
+        Spell_3_Timer.Reset(19000);                              //19 seconds
+        Beserk_Timer.Reset(120000);                              //2 minutes
     }
 
     //*** HANDLED FUNCTION ***

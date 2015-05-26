@@ -215,16 +215,16 @@ struct boss_malchezaarAI : public ScriptedAI
         for(int i = 0; i < TOTAL_INFERNAL_POINTS; ++i)
             positions.push_back(&InfernalPoints[i]);
 
-        EnfeebleTimer = 30000;
-        EnfeebleResetTimer = 38000;
-        ShadowNovaTimer = 35000;
-        SWPainTimer = 20000;
-        AmplifyDamageTimer = 5000;
-        Cleave_Timer = 8000;
-        InfernalTimer = 45000;
-        InfernalCleanupTimer = 47000;
-        AxesTargetSwitchTimer = 7500 + rand()%12500;
-        CheckTimer = 3000;
+        EnfeebleTimer.Reset(30000);
+        EnfeebleResetTimer.Reset(38000);
+        ShadowNovaTimer.Reset(35000);
+        SWPainTimer.Reset(20000);
+        AmplifyDamageTimer.Reset(5000);
+        Cleave_Timer.Reset(8000);
+        InfernalTimer.Reset(45000);
+        InfernalCleanupTimer.Reset(47000);
+        AxesTargetSwitchTimer.Reset(7500 + rand() % 12500);
+        CheckTimer.Reset(3000);
         phase = 1;
 
         if(pInstance)

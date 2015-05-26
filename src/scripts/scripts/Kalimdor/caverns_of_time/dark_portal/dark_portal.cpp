@@ -298,7 +298,7 @@ struct npc_time_riftAI : public ScriptedAI
     void Reset()
     {
 
-        TimeRiftWave_Timer = 15000;
+        TimeRiftWave_Timer.Reset(15000);
         mRiftWaveCount = 0;
 
         mPortalCount = pInstance->GetData(DATA_PORTAL_COUNT);
@@ -444,16 +444,16 @@ struct rift_summonAI : public ScriptedAI
             {
                 if(Type)    //mage
                 {
-                    Spell_Timer1 = 1000;                                    //Frostbolt
-                    Spell_Timer2 = HeroicMode ? 18500 : 12500;              //Pyroblast
-                    Spell_Timer3 = HeroicMode ? urand(12000, 27000) : 8000; //Blast Wave
-                    Spell_Timer4 = HeroicMode ? 15000 : 0;                  //Polymorph
+                    Spell_Timer1.Reset(1000);                                    //Frostbolt
+                    Spell_Timer2.Reset(HeroicMode ? 18500 : 12500);              //Pyroblast
+                    Spell_Timer3.Reset(HeroicMode ? urand(12000, 27000) : 8000); //Blast Wave
+                    Spell_Timer4.Reset(HeroicMode ? 15000 : 0);                  //Polymorph
                 }
                 else      //warlock
                 {
-                    Spell_Timer1 = 7000;                            //Shadow Bolt Volley
-                    Spell_Timer2 = HeroicMode ? 6000 : 10000;       //Curse of Vulnerability
-                    Spell_Timer3 = urand(3000, 23000);              //Fear
+                    Spell_Timer1.Reset(7000);                            //Shadow Bolt Volley
+                    Spell_Timer2.Reset(HeroicMode ? 6000 : 10000);       //Curse of Vulnerability
+                    Spell_Timer3.Reset(urand(3000, 23000));              //Fear
                 }
                 frenzy = false;
                 break;
@@ -462,14 +462,14 @@ struct rift_summonAI : public ScriptedAI
             {
                 if(Type)    //protection type
                 {
-                    Spell_Timer1 = urand(6000, 12000);      //sunder armor
-                    Spell_Timer2 = urand(5000, HeroicMode ? 20000 : 25000);     //thunderclap
+                    Spell_Timer1.Reset(urand(6000, 12000));      //sunder armor
+                    Spell_Timer2.Reset(urand(5000, HeroicMode ? 20000 : 25000));     //thunderclap
                 }
                 else        //fury-arms
                 {
-                    Spell_Timer1 = HeroicMode ? urand(6200, 18800) : urand(4800, 18800);    //knockdown
-                    Spell_Timer2 = HeroicMode ? urand(4900, 17700) : urand(6100, 18000);    //mortal strike
-                    Spell_Timer3 = HeroicMode ? urand(4600, 15700) : urand(7200, 11800);    //harmstring
+                    Spell_Timer1.Reset(HeroicMode ? urand(6200, 18800) : urand(4800, 18800));    //knockdown
+                    Spell_Timer2.Reset(HeroicMode ? urand(4900, 17700) : urand(6100, 18000));    //mortal strike
+                    Spell_Timer3.Reset(HeroicMode ? urand(4600, 15700) : urand(7200, 11800));    //harmstring
                 }
                 break;
             }
@@ -477,14 +477,14 @@ struct rift_summonAI : public ScriptedAI
             {
                 if(Type)    //combat
                 {
-                    Spell_Timer1 = HeroicMode ? urand(500, 7300) : urand(1200, 11100);      //sinister strike
-                    Spell_Timer2 = HeroicMode ? urand(1000, 15800) : urand(1900, 10100);    //rupture
-                    Spell_Timer3 = HeroicMode ? urand(800, 7800) : 0;                       //crippling poison
+                    Spell_Timer1.Reset(HeroicMode ? urand(500, 7300) : urand(1200, 11100));      //sinister strike
+                    Spell_Timer2.Reset(HeroicMode ? urand(1000, 15800) : urand(1900, 10100));    //rupture
+                    Spell_Timer3.Reset(HeroicMode ? urand(800, 7800) : 0);                       //crippling poison
                 }
                 else        //assasin
                 {
-                    Spell_Timer1 = urand(1200, 12400);                      //kidney shot
-                    Spell_Timer2 = HeroicMode ? urand(1000, 6500) : 0;      //deadly poison
+                    Spell_Timer1.Reset(urand(1200, 12400));                      //kidney shot
+                    Spell_Timer2.Reset(HeroicMode ? urand(1000, 6500) : 0);      //deadly poison
                     Spell_Timer3 = 0;                                       //backstab
                 }
                 break;
@@ -496,23 +496,23 @@ struct rift_summonAI : public ScriptedAI
                 if(Type)    //frost
                 {
                     Spell_Timer1 = 0;    //frostbolt
-                    Spell_Timer2 = HeroicMode ? urand(3600, 12200) : urand(3700, 12900);    //frost nova
+                    Spell_Timer2.Reset(HeroicMode ? urand(3600, 12200) : urand(3700, 12900));    //frost nova
                 }
                 else        //arcane
                 {
                     Spell_Timer1 = 0;                       //arcane bolt
-                    Spell_Timer2 = urand(8600, 18500);      //arcane explosion
+                    Spell_Timer2.Reset(urand(8600, 18500));      //arcane explosion
                 }
                 break;
             }
             case C_EXECU:
-                Spell_Timer1 = HeroicMode ? urand(2000, 11700) : urand(7300, 14000);    //cleave
-                Spell_Timer2 = HeroicMode ? urand(2000, 3900) : 7200;                   //strike
-                Spell_Timer3 = HeroicMode ? urand(600, 10200) : 0;                      //harmstring
+                Spell_Timer1.Reset(HeroicMode ? urand(2000, 11700) : urand(7300, 14000));    //cleave
+                Spell_Timer2.Reset(HeroicMode ? urand(2000, 3900) : 7200);                   //strike
+                Spell_Timer3.Reset(HeroicMode ? urand(600, 10200) : 0);                      //harmstring
                 break;
             case C_VANQU:
-                Spell_Timer1 = 1000;                //scorch + shadow bolt
-                Spell_Timer2 = urand(5900, 6000);   //fire blast
+                Spell_Timer1.Reset(1000);                //scorch + shadow bolt
+                Spell_Timer2.Reset(urand(5900, 6000));   //fire blast
                 break;
             default:
                 break;

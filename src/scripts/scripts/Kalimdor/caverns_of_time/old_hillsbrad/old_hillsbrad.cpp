@@ -295,8 +295,8 @@ struct npc_thrall_old_hillsbradAI : public npc_escortAI
         StepsTimer = 0;
         EmoteTimer = 0;
         Part = 0;
-        StrikeTimer = urand(3000, 7000);
-        ShieldBlockTimer = urand(6000, 11000);
+        StrikeTimer.Reset(urand(3000, 7000));
+        ShieldBlockTimer.Reset(urand(6000, 11000));
 
         if (HadMount)
             DoMount();

@@ -115,12 +115,12 @@ struct boss_grand_warlock_nethekurseAI : public ScriptedAI
         PeonEngagedCount = 0;
         PeonKilledCount = 0;
 
-        IntroEvent_Timer = 20000;
-        DeathCoil_Timer = 20000;
-        ShadowFissure_Timer = 8000;
-        Cleave_Timer = 17000;
-        ShadowBolt_Timer = 1000;
-        DarkCleave_Timer = 1000;
+        IntroEvent_Timer.Reset(20000);
+        DeathCoil_Timer.Reset(20000);
+        ShadowFissure_Timer.Reset(8000);
+        Cleave_Timer.Reset(17000);
+        ShadowBolt_Timer.Reset(1000);
+        DarkCleave_Timer.Reset(1000);
 
         if (pInstance)
             pInstance->SetData(TYPE_NETHEKURSE, NOT_STARTED);
@@ -343,7 +343,7 @@ struct mob_fel_orc_convertAI : public ScriptedAI
     void Reset()
     {
         me->SetNoCallAssistance(true);
-        Hemorrhage_Timer = 3000;
+        Hemorrhage_Timer.Reset(3000);
         Kill_Timer = 0;
     }
 

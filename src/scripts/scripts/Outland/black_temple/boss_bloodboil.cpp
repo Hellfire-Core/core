@@ -122,22 +122,22 @@ struct boss_gurtogg_bloodboilAI : public ScriptedAI
         m_targetGUID = 0;
         m_targetThreat = 0;
 
-        BloodboilTimer = 10000;
+        BloodboilTimer.Reset(10000);
 
-        BewilderingStrikeTimer = urand(5000, 65000);
-        AcidicWoundTimer = 2000;
+        BewilderingStrikeTimer.Reset(urand(5000, 65000));
+        AcidicWoundTimer.Reset(2000);
 
-        ArcingSmashTimer = 10000;
-        FelAcidTimer = urand(20000, 25000);
-        EjectTimer = 15000;
+        ArcingSmashTimer.Reset(10000);
+        FelAcidTimer.Reset(urand(20000, 25000));
+        EjectTimer.Reset(15000);
 
-        PhaseChangeTimer = 59000;
-        CheckTimer = 1000;
+        PhaseChangeTimer.Reset(59000);
+        CheckTimer.Reset(1000);
 
-        EnrageTimer = 600000;
+        EnrageTimer.Reset(600000);
 
         Phase1 = true;
-        ChargeTimer = 2000;
+        ChargeTimer.Reset(2000);
 
         //DoCast(m_creature, SPELL_ACIDIC_WOUND, true);
     }

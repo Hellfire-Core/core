@@ -121,11 +121,11 @@ struct boss_sacrolashAI : public ScriptedAI
     void Reset()
     {
         ClearCastQueue();
-        ShadowbladesTimer = 10000;
-        SpecialTimer = 30000;
-        ConfoundingblowTimer = 25000;
-        ShadowimageTimer = 14000;
-        EnrageTimer = 360000;
+        ShadowbladesTimer.Reset(10000);
+        SpecialTimer.Reset(30000);
+        ConfoundingblowTimer.Reset(25000);
+        ShadowimageTimer.Reset(14000);
+        EnrageTimer.Reset(360000);
         DoCast(me, SPELL_SHADOWFORM);
         DoCast(me, SPELL_DUAL_WIELD);
 
@@ -320,11 +320,11 @@ struct boss_alythessAI : public Scripted_NoMovementAI
     void Reset()
     {
         ClearCastQueue();
-        SpecialTimer = urand(15000, 19000);
-        PyrogenicsTimer = 15000;
-        EnrageTimer = 360000;
-        FlamesearTimer = urand(10000, 15000);
-        IntroYellTimer = 500;
+        SpecialTimer.Reset(urand(15000, 19000));
+        PyrogenicsTimer.Reset(15000);
+        EnrageTimer.Reset(360000);
+        FlamesearTimer.Reset(urand(10000, 15000));
+        IntroYellTimer.Reset(500);
         IntroStepCounter = 10;
 
         IntroDone = false;
@@ -561,8 +561,8 @@ struct mob_shadow_imageAI : public ScriptedAI
 
     void Reset()
     {
-        ShadowfuryTimer = 1500;
-        DarkstrikeTimer = 3000;
+        ShadowfuryTimer.Reset(1500);
+        DarkstrikeTimer.Reset(3000);
     }
 
     void AttackStart(Unit * target)

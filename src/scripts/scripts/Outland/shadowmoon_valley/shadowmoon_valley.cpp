@@ -86,11 +86,11 @@ struct mob_azalothAI : public ScriptedAI
 
     void Reset()
     {
-        cleave_timer  = 6000;
-        cripple_timer = 18000;
-        rain_timer    = 15000;
-        warstomp_timer= 10000;
-        banish_timer  = TIME_TO_BANISH;
+        cleave_timer.Reset(6000);
+        cripple_timer.Reset(18000);
+        rain_timer.Reset(15000);
+        warstomp_timer.Reset(10000);
+        banish_timer.Reset(TIME_TO_BANISH);
     }
 
     void UpdateAI(const uint32 diff)
@@ -175,7 +175,7 @@ struct mob_mature_netherwing_drakeAI : public npc_escortAI
 
     void Reset()
     {
-        CastTimer = 5000;
+        CastTimer.Reset(5000);
     }
 
     void WaypointReached(uint32 i)
@@ -281,7 +281,7 @@ struct mob_enslaved_netherwing_drakeAI : public ScriptedAI
         if(!Tapped)
             m_creature->setFaction(FACTION_DEFAULT);
 
-        FlyTimer = 10000;
+        FlyTimer.Reset(10000);
         m_creature->SetLevitate(false);
         m_creature->SetVisibility(VISIBILITY_ON);
     }
@@ -827,7 +827,7 @@ struct npc_overlord_morghorAI : public ScriptedAI
         ConversationTimer = 0;
         Step = 0;
 
-        resetTimer = 180000;
+        resetTimer.Reset(180000);
 
         Event = false;
         m_creature->SetUInt32Value(UNIT_NPC_FLAGS, 2);
@@ -1392,7 +1392,7 @@ struct mob_torloth_the_magnificentAI : public ScriptedAI
 
     void Reset()
     {
-        AnimationTimer = 4000;
+        AnimationTimer.Reset(4000);
         AnimationCount = 0;
         LordIllidanGUID = 0;
         AggroTargetGUID = 0;
@@ -1540,8 +1540,8 @@ struct npc_lord_illidan_stormrageAI : public ScriptedAI
     {
         PlayerGUID = 0;
 
-        WaveTimer = 10000;
-        AnnounceTimer = 7000;
+        WaveTimer.Reset(10000);
+        AnnounceTimer.Reset(7000);
         LiveCount = 0;
         WaveCount = 0;
 
@@ -2473,14 +2473,14 @@ struct mob_shadowlord_deathwailAI : public ScriptedAI
 
         m_creature->SetNoCallAssistance(true);
         m_creature->LoadCreaturesAddon(true);
-        Check_Timer = 2000;
+        Check_Timer.Reset(2000);
         landed = true;
         felfire = false;
 
-        Shadowbolt_Timer = 4000;
-        ShadowboltVoley_Timer = 13000;
-        Fear_Timer = 20000;
-        Deathcoil_Timer = 8000;
+        Shadowbolt_Timer.Reset(4000);
+        ShadowboltVoley_Timer.Reset(13000);
+        Fear_Timer.Reset(20000);
+        Deathcoil_Timer.Reset(8000);
 
         m_creature->GetMotionMaster()->Initialize();
         m_creature->SetLevitate(true);
@@ -2800,7 +2800,7 @@ struct npc_maiev_BT_attuAI : public npc_escortAI
     void Reset()
     {
         moving = false;
-        FanOfBladesTimer = urand(2000, 6000);
+        FanOfBladesTimer.Reset(urand(2000, 6000));
     }
 
     void MoveInLineOfSight(Unit* who)
@@ -2869,7 +2869,7 @@ struct npc_akama_BT_attuAI : public npc_escortAI
 
     void Reset()
     {
-        ChainLightningTimer = 1000;
+        ChainLightningTimer.Reset(1000);
         moving = false;
         say = false;
         yell = false;
@@ -2968,7 +2968,7 @@ struct npc_ashtongue_deathswornAI : public npc_escortAI
     {
         if(!HasEscortState(STATE_ESCORT_ESCORTING))
         {
-            AttackTimer = 25000;
+            AttackTimer.Reset(25000);
             intro = false;
         }
     }
@@ -3054,9 +3054,9 @@ struct mob_illidari_shadowlordAI : public ScriptedAI
 
     void Reset()
     {
-        CarrionSwarmTimer = urand(4000, 10000);
-        InfernoTimer = urand(6000, 15000);
-        SleepTimer = urand(2000, 30000);
+        CarrionSwarmTimer.Reset(urand(4000, 10000));
+        InfernoTimer.Reset(urand(6000, 15000));
+        SleepTimer.Reset(urand(2000, 30000));
     }
 
     void UpdateAI(const uint32 diff)
@@ -3106,7 +3106,7 @@ struct npc_xiriAI : public Scripted_NoMovementAI
 
     void Reset()
     {
-        QuestTimer = 140000;
+        QuestTimer.Reset(140000);
         PlayerGUID = 0;
         EventStarted = false;
     }

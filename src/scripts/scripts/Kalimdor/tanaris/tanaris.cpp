@@ -62,13 +62,13 @@ struct mob_aquementasAI : public ScriptedAI
 
     void Reset()
     {
-        SendItem_Timer = 0;
-        SwitchFaction_Timer = 10000;
+        SendItem_Timer.Reset(0);
+        SwitchFaction_Timer.Reset(10000);
         me->setFaction(35);
         isFriendly = true;
 
-        AquaJet_Timer = 5000;
-        FrostShock_Timer = 1000;
+        AquaJet_Timer.Reset(5000);
+        FrostShock_Timer.Reset(1000);
     }
 
     void SendItem(Unit* receiver)

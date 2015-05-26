@@ -74,12 +74,12 @@ struct boss_drektharAI : public ScriptedAI
 
     void Reset()
     {
-        WhirlwindTimer          = urand(0, 10000);
-        Whirlwind2Timer         = urand(0, 15000);
-        KnockdownTimer          = 12000;
-        FrenzyTimer             = 6000;
-        YellTimer               = urand(20000, 30000); //20 to 30 seconds
-        CheckTimer              = 2000;
+        WhirlwindTimer.Reset(urand(0, 10000));
+        Whirlwind2Timer.Reset(urand(0, 15000));
+        KnockdownTimer.Reset(12000);
+        FrenzyTimer.Reset(6000);
+        YellTimer.Reset(urand(20000, 30000)); //20 to 30 seconds
+        CheckTimer.Reset(2000);
     }
 
     void EnterCombat(Unit *who)
@@ -206,11 +206,11 @@ struct boss_drektharOfficerAI : public ScriptedAI
 
     void Reset()
     {
-        chargeTimer             = urand(7500, 20000);
-        cleaveTimer             = urand(5000, 10000);
-        demoShoutTimer          = urand(2000, 4000);
-        whirlwindTimer          = urand(9000, 13000);
-        CheckTimer              = 2000;
+        chargeTimer.Reset(urand(7500, 20000));
+        cleaveTimer.Reset(urand(5000, 10000));
+        demoShoutTimer.Reset(urand(2000, 4000));
+        whirlwindTimer.Reset(urand(9000, 13000));
+        CheckTimer.Reset(2000);
     }
 
     void EnterCombat(Unit *who)

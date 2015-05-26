@@ -69,9 +69,9 @@ struct mob_sunwell_mage_guardAI : public ScriptedAI
 
     void Reset()
     {
-        Glaive_Timer = (HeroicMode ? urand(3000, 6000) : urand(5000, 10000));
-        Magic_Field_Timer = (10000, 20000);
-        OOCTimer = 5000;
+        Glaive_Timer.Reset((HeroicMode ? urand(3000, 6000) : urand(5000, 10000)));
+        Magic_Field_Timer.Reset((10000, 20000));
+        OOCTimer.Reset(5000);
     }
 
     void HandleOffCombatEffects()
@@ -146,8 +146,8 @@ struct mob_sunblade_magisterAI : public ScriptedAI
     void Reset()
     {
         Frostbolt_Timer = 0;
-        Arcane_Nova_Timer = urand(12000, 20000);
-        OOCTimer = 5000;
+        Arcane_Nova_Timer.Reset(urand(12000, 20000));
+        OOCTimer.Reset(5000);
     }
 
     void HandleOffCombatEffects()
@@ -231,11 +231,11 @@ struct mob_sunblade_warlockAI : public ScriptedAI
 
     void Reset()
     {
-        SummonImp_Timer = 5000;
+        SummonImp_Timer.Reset(5000);
         DoCast(me, SPELL_FEL_ARMOR, true);
         SetAutocast(SPELL_INCINERATE, 1900, true);
-        Immolate_Timer = urand(8000, 12000);
-        OOCTimer = 5000;
+        Immolate_Timer.Reset(urand(8000, 12000));
+        OOCTimer.Reset(5000);
     }
 
     void JustDied(Unit* killer)
@@ -365,9 +365,9 @@ struct mob_sunblade_physicianAI : public ScriptedAI
 
     void Reset()
     {
-        Poison_Timer = urand(5000, 8000);
-        Prayer_of_Mending_Timer = urand(3000, 8000);
-        OOCTimer = 5000;
+        Poison_Timer.Reset(urand(5000, 8000));
+        Prayer_of_Mending_Timer.Reset(urand(3000, 8000));
+        OOCTimer.Reset(5000);
     }
 
     void HandleOffCombatEffects()
@@ -455,10 +455,10 @@ struct mob_sunblade_blood_knightAI : public ScriptedAI
 
     void Reset()
     {
-        Seal_Timer = urand(1000, 6000);
-        Judgement_Timer = urand(10000, 15000);
-        Holy_Light_Timer = urand(8000, 20000);
-        OOCTimer = 5000;
+        Seal_Timer.Reset(urand(1000, 6000));
+        Judgement_Timer.Reset(urand(10000, 15000));
+        Holy_Light_Timer.Reset(urand(8000, 20000));
+        OOCTimer.Reset(5000);
     }
 
     void HandleOffCombatEffects()
@@ -555,9 +555,9 @@ struct mob_wretched_skulkerAI : public ScriptedAI
     {
         me->SetStandState(PLAYER_STATE_SIT);
         DoCast(me, SPELL_DUAL_WIELD);
-        OOCTimer = 10000;
-        Drink_Timer = HeroicMode ? urand(5000, 18000) : urand(10000, 25000);
-        Wretched_Stab_Timer = urand(4000, 7000);
+        OOCTimer.Reset(10000);
+        Drink_Timer.Reset(HeroicMode ? urand(5000, 18000) : urand(10000, 25000));
+        Wretched_Stab_Timer.Reset(urand(4000, 7000));
     }
 
     void EnterCombat(Unit* who)
@@ -629,9 +629,9 @@ struct mob_wretched_bruiserAI : public ScriptedAI
     void Reset()
     {
         me->SetStandState(PLAYER_STATE_SIT);
-        OOCTimer = 10000;
-        Drink_Timer = HeroicMode ? urand(5000, 18000) : urand(10000, 25000);
-        Wretched_Strike_Timer = urand(6000, 10000);
+        OOCTimer.Reset(10000);
+        Drink_Timer.Reset(HeroicMode ? urand(5000, 18000) : urand(10000, 25000));
+        Wretched_Strike_Timer.Reset(urand(6000, 10000));
     }
 
     void EnterCombat(Unit* who)
@@ -704,8 +704,8 @@ struct mob_wretched_huskAI : public ScriptedAI
     void Reset()
     {
         me->SetStandState(PLAYER_STATE_SIT);
-        OOCTimer = 5000;
-        Drink_Timer = HeroicMode ? urand(5000, 18000) : urand(15000, 25000);
+        OOCTimer.Reset(5000);
+        Drink_Timer.Reset(HeroicMode ? urand(5000, 18000) : urand(15000, 25000));
         Wretched_Cast_Timer = 0;
     }
 
@@ -814,9 +814,9 @@ struct mob_sister_of_tormentAI : public ScriptedAI
 
     void Reset()
     {
-        LashOfPain_Timer = urand(8000, 14000);
-        DeadlyEmbrace_Timer = (17000, 23000);
-        OOCTimer = 5000;
+        LashOfPain_Timer.Reset(urand(8000, 14000));
+        DeadlyEmbrace_Timer.Reset((17000, 23000));
+        OOCTimer.Reset(5000);
     }
 
     void HandleOffCombatEffects()
@@ -911,11 +911,11 @@ struct mob_coilskar_witchAI : public ScriptedAI
 
     void Reset()
     {
-        Check_Timer = 1500;
+        Check_Timer.Reset(1500);
         Shoot_Timer = 0;
-        FrostArrow_Timer = urand(2000, 12000);;
-        ForkedLightning_Timer = urand(5000, 10000);
-        OOCTimer = 5000;
+        FrostArrow_Timer.Reset(urand(2000, 12000));
+        ForkedLightning_Timer.Reset(urand(5000, 10000));
+        OOCTimer.Reset(5000);
         canShield = true;
     }
 
@@ -1015,8 +1015,8 @@ struct mob_ethereum_smugglerAI : public ScriptedAI
     void Reset()
     {
         Check_Timer = 0;
-        ExplosionCombo_Timer = 5000;
-        OOCTimer = 5000;
+        ExplosionCombo_Timer.Reset(5000);
+        OOCTimer.Reset(5000);
     }
 
     void HandleOffCombatEffects()
@@ -1091,7 +1091,7 @@ struct mob_mgt_kalecgosAI : public ScriptedAI
 
     void Reset()
     {
-        _Timer = 1000;
+        _Timer.Reset(1000);
         step = 0;
         me->setActive(true);
         me->SetLevitate(true);

@@ -78,11 +78,11 @@ struct boss_pathaleon_the_calculatorAI : public ScriptedAI
 
     void Reset()
     {
-        Summon_Timer = 30000;
-        ManaTap_Timer = 12000 + rand()%8000;
-        ArcaneTorrent_Timer = 16000 + rand()%9000;
-        Domination_Timer = 25000 + rand()%15000;
-        ArcaneExplosion_Timer = 8000 + rand()%5000;
+        Summon_Timer.Reset(30000);
+        ManaTap_Timer.Reset(12000 + rand() % 8000);
+        ArcaneTorrent_Timer.Reset(16000 + rand() % 9000);
+        Domination_Timer.Reset(25000 + rand() % 15000);
+        ArcaneExplosion_Timer.Reset(8000 + rand() % 5000);
 
         Enraged = false;
 
@@ -206,9 +206,9 @@ struct mob_nether_wraithAI : public ScriptedAI
 
     void Reset()
     {
-        ArcaneMissiles_Timer = 1000 + rand()%3000;
-        Detonation_Timer = 20000;
-        Die_Timer = 2200;
+        ArcaneMissiles_Timer.Reset(1000 + rand() % 3000);
+        Detonation_Timer.Reset(20000);
+        Die_Timer.Reset(2200);
         Detonation = false;
 
     }

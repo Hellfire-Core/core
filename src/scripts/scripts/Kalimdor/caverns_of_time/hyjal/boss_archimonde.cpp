@@ -85,7 +85,7 @@ struct mob_ancient_wispAI : public ScriptedAI
 
     void Reset()
     {
-        CheckTimer = 1000;
+        CheckTimer.Reset(1000);
     }
 
     void DamageTaken(Unit* done_by, uint32 &damage)
@@ -125,7 +125,7 @@ struct mob_doomfire_targettingAI : public NullCreatureAI
     void Reset()
     {
         ChangeTargetTimer = 100;
-        SummonTimer = 1000;
+        SummonTimer.Reset(1000);
         me->SetWalk(false);
         me->setActive(true);
         me->SetSpeed(MOVE_RUN, 0.85);
@@ -328,19 +328,19 @@ struct boss_archimondeAI : public hyjal_trashAI
 
         damageTaken = 0;
         DrainNordrassilTimer = 0;
-        FearTimer = 42000;
-        AirBurstTimer = 30000;
-        GripOfTheLegionTimer = urand(5000, 25000);
-        DoomfireTimer = 20000;
-        SoulChargeTimer = 3000;
+        FearTimer.Reset(42000);
+        AirBurstTimer.Reset(30000);
+        GripOfTheLegionTimer.Reset(urand(5000, 25000));
+        DoomfireTimer.Reset(20000);
+        SoulChargeTimer.Reset(3000);
         SoulChargeCount = 0;
-        SoulChargeUnleashTimer = 5000;
-        MeleeRangeCheckTimer = 15000;
-        HandOfDeathTimer = 2000;
+        SoulChargeUnleashTimer.Reset(5000);
+        MeleeRangeCheckTimer.Reset(15000);
+        HandOfDeathTimer.Reset(2000);
         WispCount = 0;                                      // When ~30 wisps are summoned, Archimonde dies
-        EnrageTimer = 600000;                               // 10 minutes
-        CheckTimer = 3000;
-        CheckDistanceTimer = 30000;                         // This checks if he's too close to the World Tree (75 yards from a point on the tree), if true then he will enrage
+        EnrageTimer.Reset(600000);                               // 10 minutes
+        CheckTimer.Reset(3000);
+        CheckDistanceTimer.Reset(30000);                         // This checks if he's too close to the World Tree (75 yards from a point on the tree), if true then he will enrage
         SummonWispTimer = 0;
         chargeSpell = 0;
         unleashSpell = 0;

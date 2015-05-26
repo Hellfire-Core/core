@@ -106,15 +106,15 @@ struct boss_halazziAI : public ScriptedAI
             pInstance->SetData(DATA_HALAZZIEVENT, NOT_STARTED);
 
         TransformCount = 0;
-        BerserkTimer = 600000;
-        CheckTimer = 1000;
+        BerserkTimer.Reset(600000);
+        CheckTimer.Reset(1000);
 
         DoCast(m_creature, SPELL_DUAL_WIELD, true);
 
         Phase = PHASE_NONE;
         EnterPhase(PHASE_LYNX);
 
-        checkTimer2 = 3000;
+        checkTimer2.Reset(3000);
         Intro = false;
     }
 
@@ -355,8 +355,8 @@ struct boss_spiritlynxAI : public ScriptedAI
 
     void Reset()
     {
-        FrenzyTimer = (30+rand()%20)*1000;  //frenzy every 30-50 seconds
-        shredder_timer = 4000;
+        FrenzyTimer.Reset((30 + rand() % 20) * 1000);  //frenzy every 30-50 seconds
+        shredder_timer.Reset(4000);
     }
 
     void DamageTaken(Unit *done_by, uint32 &damage)

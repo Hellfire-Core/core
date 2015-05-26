@@ -112,21 +112,21 @@ struct boss_high_astromancer_solarianAI : public ScriptedAI
 
     void Reset()
     {
-        ArcaneMissiles_Timer = 2000;
-        MarkOfTheAstromancer_Timer = 15000;
-        BlindingLight_Timer = 41000;
-        Fear_Timer = 20000;
-        VoidBolt_Timer = 10000;
-        Phase1_Timer = 50000;
-        Phase2_Timer = 10000;
-        Phase3_Timer = 15000;
-        AppearDelay_Timer = 2000;
+        ArcaneMissiles_Timer.Reset(2000);
+        MarkOfTheAstromancer_Timer.Reset(15000);
+        BlindingLight_Timer.Reset(41000);
+        Fear_Timer.Reset(20000);
+        VoidBolt_Timer.Reset(10000);
+        Phase1_Timer.Reset(50000);
+        Phase2_Timer.Reset(10000);
+        Phase3_Timer.Reset(15000);
+        AppearDelay_Timer.Reset(2000);
         BlindingLight = false;
         AppearDelay = false;
-        MarkOfTheSolarian_Timer=45000;
-        Jump_Timer=8000;
-        Check_Timer = 3000;
-        Wrath_Timer = 20000+rand()%5000;//twice in phase one
+        MarkOfTheSolarian_Timer.Reset(45000);
+        Jump_Timer.Reset(8000);
+        Check_Timer.Reset(3000);
+        Wrath_Timer.Reset(20000 + rand() % 5000);//twice in phase one
         Phase = 1;
 
         if(pInstance && pInstance->GetData(DATA_HIGHASTROMANCERSOLARIANEVENT) != DONE)
@@ -429,9 +429,9 @@ struct mob_solarium_priestAI : public ScriptedAI
 
     void Reset()
     {
-        healTimer = 9000;
-        holysmiteTimer = 1;
-        aoesilenceTimer = 15000;
+        healTimer.Reset(9000);
+        holysmiteTimer.Reset(1);
+        aoesilenceTimer.Reset(15000);
     }
 
     void EnterCombat(Unit *who)

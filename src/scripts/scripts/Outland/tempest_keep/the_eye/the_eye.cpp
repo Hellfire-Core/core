@@ -43,8 +43,8 @@ struct mob_crystalcore_devastatorAI : public ScriptedAI
 
     void Reset()
     {
-        Countercharge_Timer = 9000;
-        Knockaway_Timer = 25000;
+        Countercharge_Timer.Reset(9000);
+        Knockaway_Timer.Reset(25000);
     }
 
     void EnterCombat(Unit *who)
@@ -101,8 +101,8 @@ struct mob_crystalcore_mechanicAI : public ScriptedAI
 
     void Reset()
     {
-        Recharge_Timer = 20000;
-        Sawblade_Timer = 4000;
+        Recharge_Timer.Reset(20000);
+        Sawblade_Timer.Reset(4000);
         Saw_count=0;
     }
 
@@ -170,8 +170,8 @@ struct mob_phoenixhawk_hatchlingAI : public ScriptedAI
 
     void Reset()
     {
-        Silence_Timer = 2000;
-        WingBuffet_Timer = 4000;
+        Silence_Timer.Reset(2000);
+        WingBuffet_Timer.Reset(4000);
     }
 
     void EnterCombat(Unit *who)
@@ -219,8 +219,8 @@ struct mob_phoenix_hawkAI : public ScriptedAI
 
     void Reset()
     {
-        ManaBurn_Timer = 15000;
-        Dive_Timer = 4000;
+        ManaBurn_Timer.Reset(15000);
+        Dive_Timer.Reset(4000);
     }
 
     void EnterCombat(Unit *who)
@@ -276,10 +276,10 @@ struct mob_tempest_falconerAI : public ScriptedAI
 
     void Reset()
     {
-        FireShield_Timer = 2000;
-        ImmolationArrow_Timer = 10000+rand()%4000;
-        Knockback_Timer = 5000;
-        Shoot_Timer = 3000;
+        FireShield_Timer.Reset(2000);
+        ImmolationArrow_Timer.Reset(10000 + rand() % 4000);
+        Knockback_Timer.Reset(5000);
+        Shoot_Timer.Reset(3000);
     }
 
     void EnterCombat(Unit *who)
@@ -347,11 +347,11 @@ struct mob_crimson_hand_blood_knightAI : public ScriptedAI
 
     void Reset()
     {
-        Cleanse_Timer = 20000;
-        FlashofLight_Timer = 10000+rand()%4000;
-        HammerofJustice_Timer = 3000;
-        HammerofWrath_Timer = 5000;
-        Renew_Timer = 5000;
+        Cleanse_Timer.Reset(20000);
+        FlashofLight_Timer.Reset(10000 + rand() % 4000);
+        HammerofJustice_Timer.Reset(3000);
+        HammerofWrath_Timer.Reset(5000);
+        Renew_Timer.Reset(5000);
     }
 
     void EnterCombat(Unit *who)
@@ -451,10 +451,10 @@ struct mob_Bloodwarder_SquireAI : public ScriptedAI
 
     void Reset()
     {
-        Cleanse_Timer = 20000;
-        FlashofLight_Timer = 10000+rand()%4000;
-        HammerofJustice_Timer = 3000;
-        HammerofWrath_Timer = 5000;
+        Cleanse_Timer.Reset(20000);
+        FlashofLight_Timer.Reset(10000 + rand() % 4000);
+        HammerofJustice_Timer.Reset(3000);
+        HammerofWrath_Timer.Reset(5000);
     }
 
     void EnterCombat(Unit *who)
@@ -546,10 +546,10 @@ struct mob_Bloodwarder_VindicatorAI : public ScriptedAI
 
     void Reset()
     {
-        Cleanse_Timer = 20000;
-        FlashofLight_Timer = 10000+rand()%4000;
-        HammerofJustice_Timer = 3000;
-        HammerofWrath_Timer = 5000;
+        Cleanse_Timer.Reset(20000);
+        FlashofLight_Timer.Reset(10000 + rand() % 4000);
+        HammerofJustice_Timer.Reset(3000);
+        HammerofWrath_Timer.Reset(5000);
     }
 
     void EnterCombat(Unit *who)
@@ -639,10 +639,10 @@ struct mob_tempest_smithAI : public ScriptedAI
 
     void Reset()
     {
-        Fragmentation_Bomb_Timer= 7000;
-        Golem_Repair_Timer = 10000+rand()%4000;
-        Power_Up_Timer = 20000;
-        Shell_Shock_Timer = 11000;
+        Fragmentation_Bomb_Timer.Reset(7000);
+        Golem_Repair_Timer.Reset(10000 + rand() % 4000);
+        Power_Up_Timer.Reset(20000);
+        Shell_Shock_Timer.Reset(11000);
     }
 
     void EnterCombat(Unit *who)
@@ -728,10 +728,10 @@ struct mob_novice_astromancerAI : public ScriptedAI
 
     void Reset()
     {
-        Fire_Nova_Timer= 7000+rand()%2000;
-        Fire_Shield_Timer = 1000;
-        Fireball_Timer = 2000;
-        Rain_of_Fire_Timer = 5000+rand()%2000;
+        Fire_Nova_Timer.Reset(7000 + rand() % 2000);
+        Fire_Shield_Timer.Reset(1000);
+        Fireball_Timer.Reset(2000);
+        Rain_of_Fire_Timer.Reset(5000 + rand() % 2000);
     }
 
     void EnterCombat(Unit *who)

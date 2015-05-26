@@ -63,7 +63,7 @@ struct boss_blood_guard_porungAI : public ScriptedAI
 
     void Reset() 
     {
-        Cleave_Timer = 10000;
+        Cleave_Timer.Reset(10000);
         playerGUID = 0;
         waveone = false;
         wavetwo = false;

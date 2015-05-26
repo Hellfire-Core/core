@@ -86,7 +86,7 @@ struct mob_kilrekAI : public ScriptedAI
     {
         TerestianGUID = 0;
 
-        AmplifyTimer = 2000;
+        AmplifyTimer.Reset(2000);
     }
 
     void EnterCombat(Unit *who)
@@ -200,11 +200,11 @@ struct boss_terestianAI : public ScriptedAI
             }
         }
 
-        SacrificeTimer      = 30000;
-        CheckTimer          = 3000;
-        ShadowboltTimer     =  5000;
-        SummonTimer         = 10000;
-        BerserkTimer        = 600000;
+        SacrificeTimer.Reset(30000);
+        CheckTimer.Reset(3000);
+        ShadowboltTimer.Reset(5000);
+        SummonTimer.Reset(10000);
+        BerserkTimer.Reset(600000);
 
         SummonedPortals     = false;
         Berserk             = false;
@@ -367,7 +367,7 @@ struct mob_fiendish_impAI : public ScriptedAI
 
     void Reset()
     {
-        FireboltTimer = 2000;
+        FireboltTimer.Reset(2000);
     }
 
     void EnterCombat(Unit *who) {}

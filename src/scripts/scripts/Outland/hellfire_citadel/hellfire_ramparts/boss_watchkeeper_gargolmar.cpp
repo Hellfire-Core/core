@@ -63,8 +63,8 @@ struct boss_watchkeeper_gargolmarAI : public ScriptedAI
 
     void Reset()
     {
-        Surge_Timer = 5000;
-        MortalWound_Timer = 4000;
+        Surge_Timer.Reset(5000);
+        MortalWound_Timer.Reset(4000);
         Retaliation_Timer = 1;
 
         HasTaunted = false;

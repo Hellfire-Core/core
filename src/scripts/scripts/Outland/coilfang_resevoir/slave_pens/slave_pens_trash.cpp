@@ -39,9 +39,9 @@ struct mob_coilfang_slavehandlerAI : public ScriptedAI
 
     void Reset()
     {
-        hamstringtimer = urand(5800,6200);
-        headcracktimer = 11100;
-        yelltimer = urand(60000,120000);
+        hamstringtimer.Reset(urand(5800, 6200));
+        headcracktimer.Reset(11100);
+        yelltimer.Reset(urand(60000, 120000));
     }
 
     void JustDied(Unit* )
@@ -135,9 +135,9 @@ struct npc_coilfang_slavemasterAI : public ScriptedAI
 
     void Reset()
     {
-        hamstringtimer = urand(5800,6200);
-        headcracktimer = 11100;
-        yelltimer = urand(60000,120000);
+        hamstringtimer.Reset(urand(5800, 6200));
+        headcracktimer.Reset(11100);
+        yelltimer.Reset(urand(60000, 120000));
         frenzy = false;
     }
 

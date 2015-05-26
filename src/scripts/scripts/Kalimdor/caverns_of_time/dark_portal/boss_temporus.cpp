@@ -59,11 +59,11 @@ struct boss_temporusAI : public ScriptedAI
 
     void Reset()
     {
-        MortalWound_Timer = 5000;
+        MortalWound_Timer.Reset(5000);
         canApplyWound = false;
-        WingBuffet_Timer = 10000;
-        Haste_Timer = 20000;
-        SpellReflection_Timer = 40000;
+        WingBuffet_Timer.Reset(10000);
+        Haste_Timer.Reset(20000);
+        SpellReflection_Timer.Reset(40000);
         m_creature->setActive(true);
 
         SayIntro();

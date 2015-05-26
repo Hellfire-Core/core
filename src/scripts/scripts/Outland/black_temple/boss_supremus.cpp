@@ -115,15 +115,15 @@ struct boss_supremusAI : public ScriptedAI
         if (pInstance)
             pInstance->SetData(EVENT_SUPREMUS, NOT_STARTED);
 
-        MoltenFlameTimer = 10000;
-        HatefulStrikeTimer = 5000;
-        SummonFlameTimer = 20000;
-        SwitchTargetTimer = 90000;
-        MoltenPunch_Timer = 4000;
-        PhaseSwitchTimer = 60000;
-        SummonVolcanoTimer = 5000;
-        BerserkTimer = 900000;                              // 15 minute enrage
-        CheckTimer = 1000;
+        MoltenFlameTimer.Reset(10000);
+        HatefulStrikeTimer.Reset(5000);
+        SummonFlameTimer.Reset(20000);
+        SwitchTargetTimer.Reset(90000);
+        MoltenPunch_Timer.Reset(4000);
+        PhaseSwitchTimer.Reset(60000);
+        SummonVolcanoTimer.Reset(5000);
+        BerserkTimer.Reset(900000);                              // 15 minute enrage
+        CheckTimer.Reset(1000);
 
         WorldLocation wLoc;
 
@@ -324,7 +324,7 @@ struct npc_volcanoAI : public Scripted_NoMovementAI
 
     void Reset()
     {
-        CastTimer = 1000;
+        CastTimer.Reset(1000);
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
     }

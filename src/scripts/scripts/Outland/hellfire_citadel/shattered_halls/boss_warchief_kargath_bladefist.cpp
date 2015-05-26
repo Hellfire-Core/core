@@ -94,11 +94,11 @@ struct boss_warchief_kargath_bladefistAI : public ScriptedAI
         Assistant = false;
 
         Charge_timer = 0;
-        Blade_Dance_Timer = 30000;
-        Summon_Assistant_Timer = (HeroicMode ? 20000 : 30000);
-        Assistant_Timer = 120000;
-        Assassins_Timer = 5000;
-        resetcheck_timer = 5000;
+        Blade_Dance_Timer.Reset(30000);
+        Summon_Assistant_Timer.Reset((HeroicMode ? 20000 : 30000));
+        Assistant_Timer.Reset(120000);
+        Assassins_Timer.Reset(5000);
+        resetcheck_timer.Reset(5000);
 
         if (pInstance)
             pInstance->SetData(TYPE_KARGATH, NOT_STARTED);

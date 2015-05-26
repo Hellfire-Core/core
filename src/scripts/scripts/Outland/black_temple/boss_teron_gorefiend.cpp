@@ -80,8 +80,8 @@ struct mob_doom_blossomAI : public NullCreatureAI
 
     void Reset()
     {
-        CheckTeronTimer = 10000;
-        ShadowBoltTimer = 2000;
+        CheckTeronTimer.Reset(10000);
+        ShadowBoltTimer.Reset(2000);
         Creature* Teron = (Unit::GetCreature((*m_creature), TeronGUID));
         if(Teron)
             m_creature->setFaction(Teron->getFaction());
@@ -166,9 +166,9 @@ struct mob_shadowy_constructAI : public ScriptedAI
         DoCast(m_creature, SPELL_PASSIVE_SHADOWFORM, false);
         DoCast(m_creature, SPELL_SHADOW_STRIKES, false);
 
-        CheckTeronTimer = 5000;
-        ChangeTarget = 4000;
-        DelayTimer = 2000;
+        CheckTeronTimer.Reset(5000);
+        ChangeTarget.Reset(4000);
+        DelayTimer.Reset(2000);
 
         me->SetSpeed(MOVE_RUN, 1.0f);
         me->setActive(true);
@@ -316,13 +316,13 @@ struct boss_teron_gorefiendAI : public ScriptedAI
         if(pInstance)
             pInstance->SetData(EVENT_TERONGOREFIEND, NOT_STARTED);
 
-        IncinerateTimer = 40000;
-        SummonDoomBlossomTimer = 10000;
-        EnrageTimer = 600000;
-        CrushingShadowsTimer = 30000;
-        ShadowOfDeathTimer = 10000;
-        RandomYellTimer = 50000;
-        CheckTimer = 3000;
+        IncinerateTimer.Reset(40000);
+        SummonDoomBlossomTimer.Reset(10000);
+        EnrageTimer.Reset(600000);
+        CrushingShadowsTimer.Reset(30000);
+        ShadowOfDeathTimer.Reset(10000);
+        RandomYellTimer.Reset(50000);
+        CheckTimer.Reset(3000);
 
         m_creature->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_MOD_STUN, true);
 

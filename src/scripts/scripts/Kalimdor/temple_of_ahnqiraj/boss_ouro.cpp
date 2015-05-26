@@ -56,12 +56,12 @@ struct boss_ouroAI : public ScriptedAI
 
     void Reset()
     {
-        Sweep_Timer = 5000 + rand()%5000;
-        SandBlast_Timer = 20000 + rand()%15000;
-        Submerge_Timer = 90000 + rand()%60000;
-        Back_Timer = 30000 + rand()%15000;
-        ChangeTarget_Timer = 5000 + rand()%3000;
-        Spawn_Timer = 10000 + rand()%10000;
+        Sweep_Timer.Reset(5000 + rand() % 5000);
+        SandBlast_Timer.Reset(20000 + rand() % 15000);
+        Submerge_Timer.Reset(90000 + rand() % 60000);
+        Back_Timer.Reset(30000 + rand() % 15000);
+        ChangeTarget_Timer.Reset(5000 + rand() % 3000);
+        Spawn_Timer.Reset(10000 + rand() % 10000);
 
         Enrage = false;
         Submerged = false;

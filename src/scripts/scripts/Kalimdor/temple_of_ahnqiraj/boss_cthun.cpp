@@ -123,7 +123,7 @@ struct flesh_tentacleAI : public Scripted_NoMovementAI
 
     void Reset()
     {
-        CheckTimer = 1000;
+        CheckTimer.Reset(1000);
     }
 
     void EnterCombat(Unit *who)
@@ -163,16 +163,16 @@ struct eye_of_cthunAI : public Scripted_NoMovementAI
     void Reset()
     {
         //Phase information
-        PhaseTimer = 50000;                                 //First dark glare in 50 seconds
+        PhaseTimer.Reset(50000);                                 //First dark glare in 50 seconds
 
         //Eye beam phase 50 seconds
-        BeamTimer = 3000;
-        EyeTentacleTimer = 45000;                           //Always spawns 5 seconds before Dark Beam
-        ClawTentacleTimer = 12500;                          //4 per Eye beam phase (unsure if they spawn durring Dark beam)
+        BeamTimer.Reset(3000);
+        EyeTentacleTimer.Reset(45000);                           //Always spawns 5 seconds before Dark Beam
+        ClawTentacleTimer.Reset(12500);                          //4 per Eye beam phase (unsure if they spawn durring Dark beam)
 
         //Dark Beam phase 35 seconds (each tick = 1 second, 35 ticks)
         DarkGlareTick = 0;
-        DarkGlareTickTimer = 1000;
+        DarkGlareTickTimer.Reset(1000);
         DarkGlareAngle = 0;
         ClockWise = false;
 
@@ -483,21 +483,21 @@ struct cthunAI : public Scripted_NoMovementAI
     void Reset()
     {
         //One random wisper every 90 - 300 seconds
-        WisperTimer = 90000;
+        WisperTimer.Reset(90000);
 
         //Phase information
-        PhaseTimer = 10000;                                 //Emerge in 10 seconds
+        PhaseTimer.Reset(10000);                                 //Emerge in 10 seconds
 
         //No hold player for transition
         HoldPlayer = 0;
 
         //Body Phase
-        EyeTentacleTimer = 30000;
+        EyeTentacleTimer.Reset(30000);
         FleshTentaclesKilled = 0;
-        GiantClawTentacleTimer = 15000;                     //15 seconds into body phase (1 min repeat)
-        GiantEyeTentacleTimer = 45000;                      //15 seconds into body phase (1 min repeat)
-        StomachAcidTimer = 4000;                            //Every 4 seconds
-        StomachEnterTimer = 10000;                          //Every 10 seconds
+        GiantClawTentacleTimer.Reset(15000);                     //15 seconds into body phase (1 min repeat)
+        GiantEyeTentacleTimer.Reset(45000);                      //15 seconds into body phase (1 min repeat)
+        StomachAcidTimer.Reset(4000);                            //Every 4 seconds
+        StomachEnterTimer.Reset(10000);                          //Every 10 seconds
         StomachEnterVisTimer = 0;                           //Always 3.5 seconds after Stomach Enter Timer
         StomachEnterTarget = 0;                             //Target to be teleported to stomach
 
@@ -946,10 +946,10 @@ struct eye_tentacleAI : public Scripted_NoMovementAI
     void Reset()
     {
         //Mind flay half a second after we spawn
-        MindflayTimer = 500;
+        MindflayTimer.Reset(500);
 
         //This prevents eyes from overlapping
-        KillSelfTimer = 35000;
+        KillSelfTimer.Reset(35000);
     }
 
     void EnterCombat(Unit *who)
@@ -1009,9 +1009,9 @@ struct claw_tentacleAI : public Scripted_NoMovementAI
     void Reset()
     {
         //First rupture should happen half a second after we spawn
-        GroundRuptureTimer = 500;
-        HamstringTimer = 2000;
-        EvadeTimer = 5000;
+        GroundRuptureTimer.Reset(500);
+        HamstringTimer.Reset(2000);
+        EvadeTimer.Reset(5000);
     }
 
     void EnterCombat(Unit *who)
@@ -1104,10 +1104,10 @@ struct giant_claw_tentacleAI : public Scripted_NoMovementAI
     void Reset()
     {
         //First rupture should happen half a second after we spawn
-        GroundRuptureTimer = 500;
-        HamstringTimer = 2000;
-        ThrashTimer = 5000;
-        EvadeTimer = 5000;
+        GroundRuptureTimer.Reset(500);
+        HamstringTimer.Reset(2000);
+        ThrashTimer.Reset(5000);
+        EvadeTimer.Reset(5000);
     }
 
     void EnterCombat(Unit *who)
@@ -1205,7 +1205,7 @@ struct giant_eye_tentacleAI : public Scripted_NoMovementAI
     void Reset()
     {
         //Green Beam half a second after we spawn
-        BeamTimer = 500;
+        BeamTimer.Reset(500);
     }
 
     void EnterCombat(Unit *who)

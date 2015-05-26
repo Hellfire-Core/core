@@ -112,16 +112,16 @@ struct boss_felblood_kaelthasAI : public ScriptedAI
     void Reset()
     {
         FireballTimer = 0;
-        PhoenixTimer = urand(15000,20000);
-        FlameStrikeTimer = urand(25000, 35000);
-        CheckTimer = 2000;
-        IntroTimer = 36000;
-        OutroTimer = 11000;
+        PhoenixTimer.Reset(urand(15000, 20000));
+        FlameStrikeTimer.Reset(urand(25000, 35000));
+        CheckTimer.Reset(2000);
+        IntroTimer.Reset(36000);
+        OutroTimer.Reset(11000);
         Intro = false;
         Outro = false;
         summons.DespawnAll();
 
-        PyroblastTimer = 60000;
+        PyroblastTimer.Reset(60000);
 
         GravityLapseTimer = 0;
         GravityLapsePhase = 0;
@@ -409,7 +409,7 @@ struct mob_felkael_flamestrikeAI : public Scripted_NoMovementAI
 
     void Reset()
     {
-        FlameStrikeTimer = 5000;
+        FlameStrikeTimer.Reset(5000);
         DoCast(m_creature, SPELL_FLAMESTRIKE_VISUAL, true);
     }
     void UpdateAI(const uint32 diff)
@@ -435,8 +435,8 @@ struct mob_felkael_phoenix_eggAI : public Scripted_NoMovementAI
 
     void Reset()
     {
-        CheckTimer = 2000;
-        HatchTimer = 15000;
+        CheckTimer.Reset(2000);
+        HatchTimer.Reset(15000);
     }
 
     void UpdateAI(const uint32 diff)
@@ -542,9 +542,9 @@ struct mob_arcane_sphereAI : public ScriptedAI
         m_creature->SetLevitate(true);
         m_creature->SetSpeed(MOVE_FLIGHT, 0.6);
         DoCast(m_creature, SPELL_ARCANE_SPHERE_PASSIVE, true);
-        DespawnTimer = 29000;
-        ChangeTargetTimer = 1000;
-        CheckTimer = 1000;
+        DespawnTimer.Reset(29000);
+        ChangeTargetTimer.Reset(1000);
+        CheckTimer.Reset(1000);
     }
 
     void MovementInform(uint32 Type, uint32 Id)

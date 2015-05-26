@@ -32,7 +32,7 @@ void move_triggerAI::Reset()
 #ifdef CHESS_DEBUG_INFO
     printf("\n Wywolanie move_triggerAI::Reset()");
 #endif
-    moveTimer   = 3000;
+    moveTimer.Reset(3000);
     pieceStance = PIECE_NONE;
     unitToMove = 0;
     MedivhGUID = pInstance->GetData64(DATA_CHESS_ECHO_OF_MEDIVH);
@@ -430,9 +430,9 @@ void npc_chesspieceAI::Reset()
 
     me->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
 
-    nextTryTimer = urand(500, 5000);
+    nextTryTimer.Reset(urand(500, 5000));
 
-    changeFacingTimer = urand (3000, 7500);
+    changeFacingTimer.Reset(urand(3000, 7500));
 }
 
 void npc_chesspieceAI::MovementInform(uint32 type, uint32 data)
@@ -2052,12 +2052,12 @@ void boss_MedivhAI::Reset()
 
     eventStarted = false;
     miniEventState = MINI_EVENT_NONE;
-    miniEventTimer = 5000;
+    miniEventTimer.Reset(5000);
     endGameEventState = GAMEEND_NONE;
-    endEventTimer = 2500;
+    endEventTimer.Reset(2500);
     hordePieces = 16;
     alliancePieces = 16;
-    moveTimer = 60000;
+    moveTimer.Reset(60000);
     medivhSidePieces.clear();
     tpList.clear();
     moveList.clear();

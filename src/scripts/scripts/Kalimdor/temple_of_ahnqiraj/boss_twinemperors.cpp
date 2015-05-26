@@ -421,9 +421,9 @@ struct boss_veknilashAI : public boss_twinemperorsAI
     void Reset()
     {
         TwinReset();
-        UpperCut_Timer = 14000 + rand()%15000;
-        UnbalancingStrike_Timer = 8000 + rand()%10000;
-        Scarabs_Timer = 7000 + rand()%7000;
+        UpperCut_Timer.Reset(14000 + rand() % 15000);
+        UnbalancingStrike_Timer.Reset(8000 + rand() % 10000);
+        Scarabs_Timer.Reset(7000 + rand() % 7000);
 
                                                             //Added. Can be removed if its included in DB.
         m_creature->ApplySpellImmune(0, IMMUNITY_DAMAGE, SPELL_SCHOOL_MASK_MAGIC, true);
@@ -503,9 +503,9 @@ struct boss_veklorAI : public boss_twinemperorsAI
     {
         TwinReset();
         ShadowBolt_Timer = 0;
-        Blizzard_Timer = 15000 + rand()%5000;;
-        ArcaneBurst_Timer = 1000;
-        Scorpions_Timer = 7000 + rand()%7000;
+        Blizzard_Timer.Reset(15000 + rand() % 5000);
+        ArcaneBurst_Timer.Reset(1000);
+        Scorpions_Timer.Reset(7000 + rand() % 7000);
 
         //Added. Can be removed if its included in DB.
         m_creature->ApplySpellImmune(0, IMMUNITY_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, true);

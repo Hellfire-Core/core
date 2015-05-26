@@ -117,10 +117,10 @@ struct boss_lieutenant_drakeAI : public ScriptedAI
         wpId = 0;
         me->SetWalk(true);
         me->GetMotionMaster()->MovePoint(DrakeWP[wpId].wpId, DrakeWP[wpId].x, DrakeWP[wpId].y, DrakeWP[wpId].z);
-        Whirlwind_Timer = 20000;
-        Fear_Timer = 30000;
-        MortalStrike_Timer = 45000;
-        ExplodingShout_Timer = 25000;
+        Whirlwind_Timer.Reset(20000);
+        Fear_Timer.Reset(30000);
+        MortalStrike_Timer.Reset(45000);
+        ExplodingShout_Timer.Reset(25000);
     }
 
     void MovementInform(uint32 type, uint32 id)

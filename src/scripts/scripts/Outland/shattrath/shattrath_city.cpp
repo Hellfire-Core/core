@@ -57,7 +57,7 @@ struct npc_raliq_the_drunkAI : public ScriptedAI
 
     void Reset()
     {
-        Uppercut_Timer = 5000;
+        Uppercut_Timer.Reset(5000);
         me->setFaction(FACTION_FRIENDLY_RD);
     }
 
@@ -120,7 +120,7 @@ struct npc_salsalabimAI : public ScriptedAI
 
     void Reset()
     {
-        MagneticPull_Timer = 15000;
+        MagneticPull_Timer.Reset(15000);
         me->setFaction(FACTION_FRIENDLY_SA);
     }
 
@@ -306,7 +306,7 @@ struct npc_kservantAI : public npc_escortAI
 
     void Reset()
     {
-        TalkTimer = 2500;
+        TalkTimer.Reset(2500);
         TalkCount = 0;
         PointId = 0;
         RandomTalkCooldown = 0;
@@ -564,7 +564,7 @@ struct npc_dirty_larryAI : public ScriptedAI
         PlayerGUID = 0;
         SayTimer = 0;
         Step = 0;
-        EvadeTimer = 3000;
+        EvadeTimer.Reset(3000);
 
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
         me->setFaction(1194);
@@ -862,7 +862,7 @@ struct npc_kaelthas_imageAI : public ScriptedAI
     void Reset()
     {
         Step = 0;
-        NextStep_Timer = 2000;
+        NextStep_Timer.Reset(2000);
         PlayersInCity.clear();
         Init = false;
         FireGO = 0;

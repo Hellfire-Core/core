@@ -52,11 +52,11 @@ struct boss_galvangarAI : public ScriptedAI
 
     void Reset()
     {
-        CleaveTimer                = 4000;
-        FrighteningShoutTimer      = 10000;
-        WhirlwindTimer             = 5000;
-        MortalStrikeTimer          = 2000;
-        CheckTimer                 = 2000;
+        CleaveTimer.Reset(4000);
+        FrighteningShoutTimer.Reset(10000);
+        WhirlwindTimer.Reset(5000);
+        MortalStrikeTimer.Reset(2000);
+        CheckTimer.Reset(2000);
     }
 
     void EnterCombat(Unit *who)

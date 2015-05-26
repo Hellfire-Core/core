@@ -184,9 +184,9 @@ struct mob_ashtongue_defenderAI : public ScriptedAI
         me->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_MOD_TAUNT, false);
         me->ApplySpellImmune(0, IMMUNITY_EFFECT,SPELL_EFFECT_ATTACK_ME, false);
 
-        m_debilStrikeTimer = 10000;
-        m_shieldBashTimer = 1000;
-        m_checkTimer = 10000;
+        m_debilStrikeTimer.Reset(10000);
+        m_shieldBashTimer.Reset(1000);
+        m_checkTimer.Reset(10000);
     }
 
     void EnterCombat(Unit *pWho)
@@ -283,10 +283,10 @@ struct mob_ashtongue_spiritbinderAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        m_chainHealTimer  = urand(10000, 15000);
-        m_spiritHealTimer = urand(7000, 10000);
-        m_spiritMendTimer = urand(14000, 20000);
-        m_checkTimer = 5000;
+        m_chainHealTimer.Reset(urand(10000, 15000));
+        m_spiritHealTimer.Reset(urand(7000, 10000));
+        m_spiritMendTimer.Reset(urand(14000, 20000));
+        m_checkTimer.Reset(5000);
     }
 
     void MoveInLineOfSight(Unit *pWho)
@@ -429,9 +429,9 @@ struct mob_ashtongue_elementalistAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        m_rainofFireTimer  = urand(5000, 18000);
-        m_lightningBoltTimer = urand(2000, 4000);
-        m_checkTimer = 5000;
+        m_rainofFireTimer.Reset(urand(5000, 18000));
+        m_lightningBoltTimer.Reset(urand(2000, 4000));
+        m_checkTimer.Reset(5000);
     }
 
     void MoveInLineOfSight(Unit *pWho)
@@ -525,9 +525,9 @@ struct mob_ashtongue_rogueAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        m_debilPoisonTimer  = urand(5000, 15000);
-        m_eviscerateTimer = urand(2000, 7000);
-        m_checkTimer = 5000;
+        m_debilPoisonTimer.Reset(urand(5000, 15000));
+        m_eviscerateTimer.Reset(urand(2000, 7000));
+        m_checkTimer.Reset(5000);
 
         ForceSpellCast(me, SPELL_DUAL_WIELD, INTERRUPT_AND_CAST);
     }
@@ -611,7 +611,7 @@ struct mob_ashtongue_sorcererAI : public ScriptedAI
 
     void Reset()
     {
-        m_checkTimer = 1000;
+        m_checkTimer.Reset(1000);
 
         m_channeling = false;
         m_shadeGUID = instance->GetData64(DATA_SHADEOFAKAMA);
@@ -733,7 +733,7 @@ struct boss_shade_of_akamaAI : public ScriptedAI
     void Reset()
     {
         m_freeSlot = 0;
-        m_checkTimer = 3000;
+        m_checkTimer.Reset(3000);
         event_phase = 0;
         m_summons.DespawnAll();
         SpawnChannelers();
@@ -750,10 +750,10 @@ struct boss_shade_of_akamaAI : public ScriptedAI
             akama->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
         }
 
-        m_damageTimer = 10000;
-        m_waveTimer = 7000;
-        m_guardTimer = 9000;
-        m_sorcTimer = 9000;
+        m_damageTimer.Reset(10000);
+        m_waveTimer.Reset(7000);
+        m_guardTimer.Reset(9000);
+        m_sorcTimer.Reset(9000);
 
         m_updateSpeed = false;
 
@@ -1143,8 +1143,8 @@ struct npc_akamaAI : public Scripted_NoMovementAI
     {
         ClearCastQueue();
 
-        m_destructiveTimer = 5000;
-        m_lightningBoltTimer = 8000;
+        m_destructiveTimer.Reset(5000);
+        m_lightningBoltTimer.Reset(8000);
 
         m_yell = false;
         m_talk = 0;

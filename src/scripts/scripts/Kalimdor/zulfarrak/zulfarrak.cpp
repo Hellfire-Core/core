@@ -53,8 +53,8 @@ struct npc_sergeant_blyAI : public ScriptedAI
 
     void Reset()
     {
-        ShieldBash_Timer = 5000;
-        Revenge_Timer = 8000;
+        ShieldBash_Timer.Reset(5000);
+        Revenge_Timer.Reset(8000);
 
         m_creature->setFaction(FACTION_FRIENDLY);
     }

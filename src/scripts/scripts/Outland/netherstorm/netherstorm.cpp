@@ -101,7 +101,7 @@ struct npc_manaforge_control_consoleAI : public ScriptedAI
 
     void Reset()
     {
-        Event_Timer = 3000;
+        Event_Timer.Reset(3000);
         Wave_Timer = 0;
         Phase = 1;
         Wave = false;
@@ -416,7 +416,7 @@ struct npc_commander_dawnforgeAI : public ScriptedAI
 
         Phase = 1;
         PhaseSubphase = 0;
-        Phase_Timer = 4000;
+        Phase_Timer.Reset(4000);
         isEvent = false;
     }
 
@@ -821,7 +821,7 @@ struct mob_phase_hunterAI : public ScriptedAI
 
         WeakPercent = 25 + (rand()%16); // 25-40
         PlayerGUID = 0;
-        ManaBurnTimer = 5000 + (rand()%3 * 1000); // 5-8 sec cd
+        ManaBurnTimer.Reset(5000 + (rand() % 3 * 1000)); // 5-8 sec cd
     }
 
     void EnterCombat(Unit* who)
@@ -1008,7 +1008,7 @@ struct mob_talbukAI : public ScriptedAI
 
     void Reset()
     {
-        Tagged_Timer = 60000;
+        Tagged_Timer.Reset(60000);
     }
 
     void EnterCombat(Unit* who) {}
@@ -1230,7 +1230,7 @@ struct mob_dr_boomAI : public ScriptedAI
 
     void Reset()
     {
-        SummonTimer = 2000;
+        SummonTimer.Reset(2000);
 
         std::list<Creature*> temp = FindAllCreaturesWithEntry(BOOM_BOT_TARGET, 30.0f);
 
@@ -1478,7 +1478,7 @@ struct npc_scrapped_reaverAI : public ScriptedAI
     void Reset()
     {
         Ambush = false;
-        ZaxxTimer = 10000;
+        ZaxxTimer.Reset(10000);
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
     }
 
@@ -1614,9 +1614,9 @@ struct npc_drijyaAI : public npc_escortAI
         SummonTrooper = false;
         SummonDestroyer = false;
         Count = 0;
-        SpawnTimer = 3500;
-        StartSpawnTimer = 15000;
-        DestroyingTimer = 60000;
+        SpawnTimer.Reset(3500);
+        StartSpawnTimer.Reset(15000);
+        DestroyingTimer.Reset(60000);
     }
 
     void AttackedBy(Unit* who) {}
@@ -1840,8 +1840,8 @@ struct npc_captured_vanguardAI : public npc_escortAI
     void Reset()
     {
         CantStart = false;
-        GlaiveTimer = urand(4000, 8000);
-        HamstringTimer = urand(8000, 13000);
+        GlaiveTimer.Reset(urand(4000, 8000));
+        HamstringTimer.Reset(urand(8000, 13000));
         EndTimer = 0;
     }
 
@@ -2196,7 +2196,7 @@ struct npc_saeedAI : public npc_escortAI
         }
 
         Check = false;
-        CleaveTimer = 20000;
+        CleaveTimer.Reset(20000);
     }
 
     void DoSpawnDimensius()
@@ -2522,9 +2522,9 @@ struct npc_dimensiusAI : public ScriptedAI
     {
         CanSpawn = true;
         DoSpawns = false;
-        VaultTimer = 15000;
-        SpiraltTimer = 2000;
-        ShadowRainTimer = 10000;
+        VaultTimer.Reset(15000);
+        SpiraltTimer.Reset(2000);
+        ShadowRainTimer.Reset(10000);
         SpawnsCount = 0;
     }
 
@@ -2707,8 +2707,8 @@ struct npc_king_salhadaarAI : public ScriptedAI
 
         me->setFaction(FACTION_FRIENDLY);
         Count = 0;
-        FluxTimer = 6000;
-        StasisTimer = 22000;
+        FluxTimer.Reset(6000);
+        StasisTimer.Reset(22000);
         Spawn = true;
 
         Creature* ball;

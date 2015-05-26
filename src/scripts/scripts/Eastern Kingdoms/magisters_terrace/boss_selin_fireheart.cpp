@@ -89,11 +89,11 @@ struct boss_selin_fireheartAI : public ScriptedAI
         if(pInstance)
             pInstance->SetData(DATA_SELIN_EVENT, NOT_STARTED);
 
-        DrainLifeTimer = urand(3000, 7000);
-        DrainManaTimer = DrainLifeTimer.GetTimeLeft() + 5000;
-        FelExplosionTimer = 2100;
-        DrainCrystalTimer = HeroicMode? 15000 : 20000;
-        CheckTimer = 1000;
+        DrainLifeTimer.Reset(urand(3000, 7000));
+        DrainManaTimer.Reset(DrainLifeTimer.GetTimeLeft() + 5000);
+        FelExplosionTimer.Reset(2100);
+        DrainCrystalTimer.Reset(HeroicMode ? 15000 : 20000);
+        CheckTimer.Reset(1000);
 
         IsDraining = false;
         DrainingCrystal = false;
@@ -307,7 +307,7 @@ struct mob_fel_crystalAI : public ScriptedAI
 
     void Reset()
     {
-        Check_Timer = 1000;
+        Check_Timer.Reset(1000);
     }
     void AttackStart(Unit* who) {}
     void MoveInLineOfSight(Unit* who) {}

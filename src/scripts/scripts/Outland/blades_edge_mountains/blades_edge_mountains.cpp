@@ -92,7 +92,7 @@ struct mobs_nether_drakeAI : public ScriptedAI
 
     void Reset()
     {
-        NihilSpeech_Timer = 2000;
+        NihilSpeech_Timer.Reset(2000);
         IsNihil = false;
 
         if (me->GetEntry() == ENTRY_NIHIL)
@@ -103,9 +103,9 @@ struct mobs_nether_drakeAI : public ScriptedAI
 
         NihilSpeech_Phase = 1;
 
-        ArcaneBlast_Timer = 7500;
-        ManaBurn_Timer = 10000;
-        IntangiblePresence_Timer = 15000;
+        ArcaneBlast_Timer.Reset(7500);
+        ManaBurn_Timer.Reset(10000);
+        IntangiblePresence_Timer.Reset(15000);
     }
 
     void SpellHit(Unit* caster, const SpellEntry* spell)
@@ -449,7 +449,7 @@ struct npc_vim_bunnyAI : public ScriptedAI
 
     void Reset()
     {
-        CheckTimer = 1000;
+        CheckTimer.Reset(1000);
     }
 
     bool GetPlayer()
@@ -1479,8 +1479,8 @@ struct npc_razaani_raiderAI : public ScriptedAI
     void Reset()
     {
         PlayerGUID = 0;
-        FlareTimer = urand(4000, 8000);
-        WarpTimer = urand(8000, 13000);
+        FlareTimer.Reset(urand(4000, 8000));
+        WarpTimer.Reset(urand(8000, 13000));
     }
 
     void AttackStart(Unit* who)
@@ -2124,8 +2124,8 @@ struct npc_soulgrinderAI : public ScriptedAI
         }
 
         DoSpawns = true;
-        SpawnTimer = 5000;
-        BeamTimer = 35000;
+        SpawnTimer.Reset(5000);
+        BeamTimer.Reset(35000);
         Count = 0;
         PlayerGUID = 0;
         SkullocGUID = 0;
@@ -2360,10 +2360,10 @@ struct npc_bashir_landingAI : public ScriptedAI
         CanStart = true;
         Assault = false;
         Next = true;
-        CheckTimer = 3000;
-        SpawnTimer = 60000;
-        StartSpawnTimer = 240000;
-        EndTimer = 1500000;
+        CheckTimer.Reset(3000);
+        SpawnTimer.Reset(60000);
+        StartSpawnTimer.Reset(240000);
+        EndTimer.Reset(1500000);
         attackers.clear();
         Wave = 0;
         AetherGUID = 0;

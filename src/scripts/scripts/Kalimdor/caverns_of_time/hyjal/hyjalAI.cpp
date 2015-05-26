@@ -362,9 +362,9 @@ void hyjalAI::Reset()
     BossGUID[1] = 0;
 
     // Timers
-    NextWaveTimer = 10000;
+    NextWaveTimer.Reset(10000);
     CheckTimer = 0;
-    RetreatTimer = 1000;
+    RetreatTimer.Reset(1000);
 
     // Misc
     WaveCount = 0;

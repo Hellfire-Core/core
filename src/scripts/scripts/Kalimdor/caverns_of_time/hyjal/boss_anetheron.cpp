@@ -74,10 +74,10 @@ struct boss_anetheronAI : public hyjal_trashAI
         ClearCastQueue();
 
         damageTaken = 0;
-        SwarmTimer = 10000;
-        SleepTimer = 60000;
-        InfernoTimer = 60000;
-        CheckTimer = 3000;
+        SwarmTimer.Reset(10000);
+        SleepTimer.Reset(60000);
+        InfernoTimer.Reset(60000);
+        CheckTimer.Reset(3000);
 
         if(pInstance && IsEvent)
             pInstance->SetData(DATA_ANETHERONEVENT, NOT_STARTED);
@@ -279,8 +279,8 @@ struct mob_towering_infernalAI : public ScriptedAI
     {
         m_creature->setFaction(1720);
         m_creature->ApplySpellImmune(2, IMMUNITY_MECHANIC, MECHANIC_BANISH, true);
-        CheckTimer = 5000;
-        WaitTimer = 3500;
+        CheckTimer.Reset(5000);
+        WaitTimer.Reset(3500);
     }
 
     void JustRespawned()

@@ -51,7 +51,7 @@ struct mob_stolen_soulAI : public ScriptedAI
 
     void Reset()
     {
-        Class_Timer = 1000;
+        Class_Timer.Reset(1000);
     }
 
     void EnterCombat(Unit *who)
@@ -168,9 +168,9 @@ struct boss_exarch_maladaarAI : public ScriptedAI
         soulholder = 0;
         soulclass = 0;
 
-        Fear_timer = 15000 + rand()% 5000;
-        Ribbon_of_Souls_timer = 5000;
-        StolenSoul_Timer = 25000 + rand()% 10000;
+        Fear_timer.Reset(15000 + rand() % 5000);
+        Ribbon_of_Souls_timer.Reset(5000);
+        StolenSoul_Timer.Reset(25000 + rand() % 10000);
 
         Avatar_summoned = false;
     }
@@ -306,7 +306,7 @@ struct mob_avatar_of_martyredAI : public ScriptedAI
 
     void Reset()
     {
-        Mortal_Strike_timer = 10000;
+        Mortal_Strike_timer.Reset(10000);
     }
 
     void EnterCombat(Unit *who)

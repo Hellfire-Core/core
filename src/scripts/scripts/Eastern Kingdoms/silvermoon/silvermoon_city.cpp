@@ -45,12 +45,12 @@ struct npc_blood_knight_stillbladeAI : public ScriptedAI
 {
     npc_blood_knight_stillbladeAI(Creature *c) : ScriptedAI(c) {}
 
-    int32 lifeTimer;
+    Timer lifeTimer;
     bool spellHit;
 
     void Reset()
     {
-        lifeTimer = 120000;
+        lifeTimer.Reset(120000);
         m_creature->SetUInt32Value(UNIT_DYNAMIC_FLAGS, 32);
         m_creature->SetUInt32Value(UNIT_FIELD_BYTES_1,7);   // lay down
         spellHit = false;
@@ -69,8 +69,7 @@ struct npc_blood_knight_stillbladeAI : public ScriptedAI
     {
         if (!m_creature->GetUInt32Value(UNIT_FIELD_BYTES_1))
         {
-            lifeTimer -= diff;
-            if(lifeTimer <= diff)
+            if(lifeTimer.Expired(diff))
                 m_creature->AI()->EnterEvadeMode();
             
         }

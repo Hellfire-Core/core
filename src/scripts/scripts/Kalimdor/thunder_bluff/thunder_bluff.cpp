@@ -50,11 +50,11 @@ struct npc_cairne_bloodhoofAI : public ScriptedAI
 
     void Reset()
     {
-        BerserkerCharge_Timer = 30000;
-        Cleave_Timer = 5000;
-        MortalStrike_Timer = 10000;
-        Thunderclap_Timer = 15000;
-        Uppercut_Timer = 10000;
+        BerserkerCharge_Timer.Reset(30000);
+        Cleave_Timer.Reset(5000);
+        MortalStrike_Timer.Reset(10000);
+        Thunderclap_Timer.Reset(15000);
+        Uppercut_Timer.Reset(10000);
     }
 
     void EnterCombat(Unit *who) {}

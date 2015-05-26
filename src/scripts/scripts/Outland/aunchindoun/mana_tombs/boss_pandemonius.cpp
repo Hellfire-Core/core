@@ -60,8 +60,8 @@ struct boss_pandemoniusAI : public ScriptedAI
 
     void Reset()
     {
-        VoidBlast_Timer = 30000;
-        DarkShell_Timer = 20000;
+        VoidBlast_Timer.Reset(30000);
+        DarkShell_Timer.Reset(20000);
         VoidBlast_Counter = 0;
 
         if(pInstance)

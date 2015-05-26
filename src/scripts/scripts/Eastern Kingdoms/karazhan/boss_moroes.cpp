@@ -90,12 +90,12 @@ struct boss_moroesAI : public ScriptedAI
 
     void Reset()
     {
-        Vanish_Timer = 30000;
-        Blind_Timer = 35000;
-        Gouge_Timer = 23000;
-        Wait_Timer = 0;
-        NonAttackable_Timer = 0;
-        CheckAdds_Timer = 5000;
+        Vanish_Timer.Reset(30000);
+        Blind_Timer.Reset(35000);
+        Gouge_Timer.Reset(23000);
+        Wait_Timer.Reset(0);
+        NonAttackable_Timer.Reset(0);
+        CheckAdds_Timer.Reset(5000);
         Enrage = false;
         InVanish = false;
         NonAttackable = false;
@@ -420,9 +420,9 @@ struct boss_baroness_dorothea_millstipeAI : public boss_moroes_guestAI
 
     void Reset()
     {
-        ManaBurn_Timer = 7000;
-        MindFlay_Timer = 1000;
-        ShadowWordPain_Timer = 6000;
+        ManaBurn_Timer.Reset(7000);
+        MindFlay_Timer.Reset(1000);
+        ShadowWordPain_Timer.Reset(6000);
 
         DoCast(m_creature,SPELL_SHADOWFORM, true);
 
@@ -478,8 +478,8 @@ struct boss_baron_rafe_dreugerAI : public boss_moroes_guestAI
 
     void Reset()
     {
-        HammerOfJustice_Timer = 1000;
-        SealOfCommand_Timer = 7000;
+        HammerOfJustice_Timer.Reset(1000);
+        SealOfCommand_Timer.Reset(7000);
         JudgementOfCommand_Timer = SealOfCommand_Timer.GetInterval() + 29000;
 
         boss_moroes_guestAI::Reset();
@@ -533,10 +533,10 @@ struct boss_lady_catriona_von_indiAI : public boss_moroes_guestAI
 
     void Reset()
     {
-        DispelMagic_Timer = 11000;
-        GreaterHeal_Timer = 1500;
-        HolyFire_Timer = 5000;
-        PowerWordShield_Timer = 1000;
+        DispelMagic_Timer.Reset(11000);
+        GreaterHeal_Timer.Reset(1500);
+        HolyFire_Timer.Reset(5000);
+        PowerWordShield_Timer.Reset(1000);
 
         AcquireGUID();
 
@@ -607,10 +607,10 @@ struct boss_lady_keira_berrybuckAI : public boss_moroes_guestAI
 
     void Reset()
     {
-        Cleanse_Timer = 13000;
-        GreaterBless_Timer = 1000;
-        HolyLight_Timer = 7000;
-        DivineShield_Timer = 31000;
+        Cleanse_Timer.Reset(13000);
+        GreaterBless_Timer.Reset(1000);
+        HolyLight_Timer.Reset(7000);
+        DivineShield_Timer.Reset(31000);
 
         AcquireGUID();
 
@@ -677,9 +677,9 @@ struct boss_lord_robin_darisAI : public boss_moroes_guestAI
 
     void Reset()
     {
-        Hamstring_Timer = 7000;
-        MortalStrike_Timer = 10000;
-        WhirlWind_Timer = 21000;
+        Hamstring_Timer.Reset(7000);
+        MortalStrike_Timer.Reset(10000);
+        WhirlWind_Timer.Reset(21000);
 
         boss_moroes_guestAI::Reset();
     }
@@ -731,10 +731,10 @@ struct boss_lord_crispin_ferenceAI : public boss_moroes_guestAI
 
     void Reset()
     {
-        Disarm_Timer = 6000;
-        HeroicStrike_Timer = 10000;
-        ShieldBash_Timer = 8000;
-        ShieldWall_Timer = 4000;
+        Disarm_Timer.Reset(6000);
+        HeroicStrike_Timer.Reset(10000);
+        ShieldBash_Timer.Reset(8000);
+        ShieldWall_Timer.Reset(4000);
 
         boss_moroes_guestAI::Reset();
     }

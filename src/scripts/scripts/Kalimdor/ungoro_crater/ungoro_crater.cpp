@@ -91,7 +91,7 @@ struct npc_ameAI : public npc_escortAI
 
     void Reset()
     {
-      DEMORALIZINGSHOUT_Timer = 5000;
+        DEMORALIZINGSHOUT_Timer.Reset(5000);
     }
 
     void JustSummoned(Creature* summoned)
@@ -243,9 +243,9 @@ struct npc_ringoAI : public FollowerAI
 
     void Reset()
     {
-        m_uiFaintTimer = urand(30000, 60000);
+        m_uiFaintTimer.Reset(urand(30000, 60000));
         m_uiEndEventProgress = 0;
-        m_uiEndEventTimer = 1000;
+        m_uiEndEventTimer.Reset(1000);
         SpraggleGUID = 0;
     }
 

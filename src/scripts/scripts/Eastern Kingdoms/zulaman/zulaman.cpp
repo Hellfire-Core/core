@@ -152,7 +152,7 @@ struct npc_hostageAI : public ScriptedAI
 
     void Reset()
     {
-        CheckTimer = 5000;
+        CheckTimer.Reset(5000);
         EventStarted = false;
     }
     void EnterCombat(Unit *who) {}
@@ -353,7 +353,7 @@ struct npc_ashliAI : public ScriptedAI
 
     void Reset()
     {
-        CheckTimer = 10000;
+        CheckTimer.Reset(10000);
         EventStarted = false;
         MovePoint = 0;
         Move = false;
@@ -849,8 +849,8 @@ struct npc_zulaman_door_triggerAI : public Scripted_NoMovementAI
 
     void Reset()
     {
-        StoperTime = 0;
-        CheckTimer = 2000;
+        StoperTime.Reset(0);
+        CheckTimer.Reset(2000);
     }
 
     void UpdateAI(const uint32 diff)
@@ -934,8 +934,8 @@ struct npc_amanishi_lookoutAI : public ScriptedAI
         me->SetVisibility(VISIBILITY_ON);
         me->setActive(true);
         EventStarted = false;
-        warriorsTimer = 40000;
-        eaglesTimer = 1000;
+        warriorsTimer.Reset(40000);
+        eaglesTimer.Reset(1000);
         Move = false;
 
         if(pInstance)
@@ -1085,8 +1085,8 @@ struct npc_amanishi_warriorAI : public npc_escortAI
     void Reset()
     {
         Start(true, true);
-        KickTimer = 9000;
-        ChargeTimer = 2000;
+        KickTimer.Reset(9000);
+        ChargeTimer.Reset(2000);
     }
 
     void UpdateEscortAI(const uint32 diff)
@@ -1141,7 +1141,7 @@ struct npc_amani_eagleAI : public npc_escortAI
     void Reset()
     {
         Start(true, true);
-        TalonTimer = 10000;
+        TalonTimer.Reset(10000);
     }
 
     void UpdateEscortAI(const uint32 diff)

@@ -53,12 +53,12 @@ struct boss_murmurAI : public Scripted_NoMovementAI
 
     void Reset()
     {
-        SonicBoom_Timer = (HeroicMode ? 40000 : 50000);
-        MurmursTouch_Timer = (HeroicMode ? 28000 : 31000);
-        Resonance_Timer = 5000;
-        MagneticPull_Timer = 45000;
-        ThunderingStorm_Timer = 5000;
-        SonicShock_Timer = 5000;
+        SonicBoom_Timer.Reset((HeroicMode ? 40000 : 50000));
+        MurmursTouch_Timer.Reset((HeroicMode ? 28000 : 31000));
+        Resonance_Timer.Reset(5000);
+        MagneticPull_Timer.Reset(45000);
+        ThunderingStorm_Timer.Reset(5000);
+        SonicShock_Timer.Reset(5000);
 
         //database should have `RegenHealth`=0 to prevent regen
         uint32 hp = (me->GetMaxHealth()*40)/100;

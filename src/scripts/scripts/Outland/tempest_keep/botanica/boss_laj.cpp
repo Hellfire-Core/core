@@ -66,10 +66,10 @@ struct boss_lajAI : public ScriptedAI
         m_creature->ApplySpellImmune(0, IMMUNITY_SCHOOL, SPELL_SCHOOL_MASK_NATURE, false);
 
         CanSummon = false;
-        Teleport_Timer = 20000;
-        Summon_Timer = 2500;
-        Transform_Timer = 30000;
-        Allergic_Timer = 5000;
+        Teleport_Timer.Reset(20000);
+        Summon_Timer.Reset(2500);
+        Transform_Timer.Reset(30000);
+        Allergic_Timer.Reset(5000);
     }
 
     void DoTransform()

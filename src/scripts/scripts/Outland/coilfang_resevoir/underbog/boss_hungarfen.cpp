@@ -44,8 +44,8 @@ struct boss_hungarfenAI : public ScriptedAI
     void Reset()
     {
         Root = false;
-        Mushroom_Timer = 5000;                              // 1 mushroom after 5s, then one per 10s. This should be different in heroic mode
-        AcidGeyser_Timer = 10000;
+        Mushroom_Timer.Reset(5000);                              // 1 mushroom after 5s, then one per 10s. This should be different in heroic mode
+        AcidGeyser_Timer.Reset(10000);
     }
 
     void EnterCombat(Unit *who)
@@ -107,7 +107,7 @@ struct mob_underbog_mushroomAI : public ScriptedAI
     {
         Stop = false;
         Grow_Timer = 0;
-        Shrink_Timer = 20000;
+        Shrink_Timer.Reset(20000);
 
         DoCast(me,SPELL_PUTRID_MUSHROOM,true);
         DoCast(me,SPELL_SPORE_CLOUD,true);

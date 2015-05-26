@@ -48,7 +48,7 @@ struct boss_operaAI : public ScriptedAI
     {
         ClearCastQueue();
         eventStarted = false;
-        checkTimer = 3000;
+        checkTimer.Reset(3000);
         if (!pInstance)
             pInstance = me->GetInstanceData();
     }
@@ -207,11 +207,11 @@ struct boss_dorotheeAI : public boss_operaAI
 
     void Reset()
     {
-        AggroTimer = 500;
+        AggroTimer.Reset(500);
 
-        WaterBoltTimer = 5000;
-        FearTimer = 15000;
-        SummonTitoTimer = 47500;
+        WaterBoltTimer.Reset(5000);
+        FearTimer.Reset(15000);
+        SummonTitoTimer.Reset(47500);
 
         SummonedTito = false;
         TitoDied = false;
@@ -295,7 +295,7 @@ struct mob_titoAI : public ScriptedAI
 
         DorotheeGUID = 0;
 
-        YipTimer = 10000;
+        YipTimer.Reset(10000);
     }
 
     void JustDied(Unit* killer)
@@ -352,9 +352,9 @@ struct boss_strawmanAI : public boss_operaAI
 
     void Reset()
     {
-        AggroTimer = 13000;
-        BrainBashTimer = 5000;
-        BrainWipeTimer = 7000;
+        AggroTimer.Reset(13000);
+        BrainBashTimer.Reset(5000);
+        BrainWipeTimer.Reset(7000);
 
         boss_operaAI::Reset();
     }
@@ -435,9 +435,9 @@ struct boss_tinheadAI : public boss_operaAI
 
     void Reset()
     {
-        AggroTimer = 15000;
-        CleaveTimer = 5000;
-        RustTimer   = 30000;
+        AggroTimer.Reset(15000);
+        CleaveTimer.Reset(5000);
+        RustTimer.Reset(30000);
 
         RustCount   = 0;
 
@@ -515,10 +515,10 @@ struct boss_roarAI : public boss_operaAI
 
     void Reset()
     {
-        AggroTimer = 20000;
-        MangleTimer = 5000;
-        ShredTimer  = 10000;
-        ScreamTimer = 15000;
+        AggroTimer.Reset(20000);
+        MangleTimer.Reset(5000);
+        ShredTimer.Reset(10000);
+        ScreamTimer.Reset(15000);
 
         boss_operaAI::Reset();
     }
@@ -596,9 +596,9 @@ struct boss_croneAI : public boss_operaAI
 
     void Reset()
     {
-        CycloneTimer = 30000;
-        ChainLightningTimer = 10000;
-        checkTimer = 3000;
+        CycloneTimer.Reset(30000);
+        ChainLightningTimer.Reset(10000);
+        checkTimer.Reset(3000);
 
         boss_operaAI::Reset();
         eventStarted = true;
@@ -658,7 +658,7 @@ struct mob_cycloneAI : public ScriptedAI
 
     void Reset()
     {
-        MoveTimer = 1000;
+        MoveTimer.Reset(1000);
     }
 
     void MoveInLineOfSight(Unit* who)
@@ -790,9 +790,9 @@ struct boss_bigbadwolfAI : public boss_operaAI
 
     void Reset()
     {
-        ChaseTimer = 30000;
-        FearTimer = 25000 + rand()%10000;
-        SwipeTimer = 5000;
+        ChaseTimer.Reset(30000);
+        FearTimer.Reset(25000 + rand() % 10000);
+        SwipeTimer.Reset(5000);
 
         HoodGUID = 0;
         TempThreat = 0;
@@ -1012,12 +1012,12 @@ struct boss_julianneAI : public boss_operaAI
         RomuloGUID = 0;
         Phase = PHASE_JULIANNE;
 
-        BlindingPassionTimer = 30000;
-        DevotionTimer = 15000;
-        EternalAffectionTimer = 25000;
-        PowerfulAttractionTimer = 5000;
-        SummonRomuloTimer = 10000;
-        ResurrectTimer = 10000;
+        BlindingPassionTimer.Reset(30000);
+        DevotionTimer.Reset(15000);
+        EternalAffectionTimer.Reset(25000);
+        PowerfulAttractionTimer.Reset(5000);
+        SummonRomuloTimer.Reset(10000);
+        ResurrectTimer.Reset(10000);
         DrinkPoisonTimer = 0;
         ResurrectSelfTimer = 0;
 
@@ -1083,11 +1083,11 @@ struct boss_romuloAI : public boss_operaAI
 
         Phase = PHASE_ROMULO;
 
-        BackwardLungeTimer = 15000;
-        DaringTimer = 20000;
-        DeadlySwatheTimer = 25000;
-        PoisonThrustTimer = 10000;
-        ResurrectTimer = 10000;
+        BackwardLungeTimer.Reset(15000);
+        DaringTimer.Reset(20000);
+        DeadlySwatheTimer.Reset(25000);
+        PoisonThrustTimer.Reset(10000);
+        ResurrectTimer.Reset(10000);
 
         IsFakingDeath = false;
         JulianneDead = false;
@@ -1556,8 +1556,8 @@ struct npc_barnesAI : public ScriptedAI
     void Reset()
     {
         TalkCount = 0;
-        TalkTimer = 2000;
-        WipeTimer = 5000;
+        TalkTimer.Reset(2000);
+        WipeTimer.Reset(5000);
 
         PerformanceReady = false;
         IsTalking = false;

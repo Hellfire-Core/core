@@ -43,13 +43,13 @@ struct mob_vashjir_honor_guardAI : public ScriptedAI
 
     void Reset()
     {
-        Shout_Timer = urand(25000, 40000);
-        Knockback_Timer = urand(10000, 30000);
+        Shout_Timer.Reset(urand(25000, 40000));
+        Knockback_Timer.Reset(urand(10000, 30000));
         Execute_Timer = 0;
-        Cleave_Timer = urand(3000, 6000);
+        Cleave_Timer.Reset(urand(3000, 6000));
         Frenzy_Cast = false;
-        Talk_Timer = 10000;
-        Check_Timer = 1000;
+        Talk_Timer.Reset(10000);
+        Check_Timer.Reset(1000);
     }
 
     void UpdateAI(const uint32 diff)
@@ -207,12 +207,12 @@ struct mob_underbog_colossusAI : public ScriptedAI
 
     void Reset()
     {
-        Infection_Timer = urand(0, 10000);
-        Parasite_Timer = 10000;
-        Quake_Timer = urand(10000, 40000);
-        Geyser_Timer = 15000;
-        Blow_Timer = 1000;
-        Enrage_Timer = 15000;
+        Infection_Timer.Reset(urand(0, 10000));
+        Parasite_Timer.Reset(10000);
+        Quake_Timer.Reset(urand(10000, 40000));
+        Geyser_Timer.Reset(15000);
+        Blow_Timer.Reset(1000);
+        Enrage_Timer.Reset(15000);
         me->CastSpell(me, Vulnerability, false);
     }
 
@@ -332,7 +332,7 @@ struct mob_serpentshrine_parasiteAI : public ScriptedAI
     void Reset()
     {
         TargetGUID = 0;
-        Check_Timer = 100;
+        Check_Timer.Reset(1000);
     }
 
     void UpdateAI(const uint32 diff)

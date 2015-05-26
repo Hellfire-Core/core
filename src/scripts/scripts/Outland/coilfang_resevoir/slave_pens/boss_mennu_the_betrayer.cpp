@@ -59,11 +59,11 @@ struct boss_mennu_the_betrayerAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        HealingWard_Timer = 15000;
-        NovaTotem_Timer = 45000;
-        LightningBolt_Timer = 10000;
-        EarthGrab_Timer = 15000;
-        StoneSkin_Timer = 15000;
+        HealingWard_Timer.Reset(15000);
+        NovaTotem_Timer.Reset(45000);
+        LightningBolt_Timer.Reset(10000);
+        EarthGrab_Timer.Reset(15000);
+        StoneSkin_Timer.Reset(15000);
         Summons.DespawnAll();
     }
 
@@ -168,7 +168,7 @@ struct npc_corrupted_nova_totemAI : public Scripted_NoMovementAI
 
     void Reset()
     {
-        Life_Timer = HeroicMode?15000:5000;
+        Life_Timer.Reset(HeroicMode ? 15000 : 5000);
         Phase = 0;
     }
 
@@ -221,7 +221,7 @@ struct npc_earthgrab_totemAI : public Scripted_NoMovementAI
 
     void Reset()
     {
-        Earthgrab_Timer = 4000;
+        Earthgrab_Timer.Reset(4000);
     }
 
     void JustDied(Unit *u)

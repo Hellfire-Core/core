@@ -45,7 +45,7 @@ struct npc_henze_faulkAI : public ScriptedAI
 
     void Reset()
     {
-        lifeTimer = 120000;
+        lifeTimer.Reset(120000);
         m_creature->SetUInt32Value(UNIT_DYNAMIC_FLAGS, 32);
         m_creature->SetUInt32Value(UNIT_FIELD_BYTES_1,7);   // lay down
         spellHit = false;

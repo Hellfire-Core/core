@@ -82,12 +82,12 @@ struct boss_epoch_hunterAI : public ScriptedAI
         Intro = true;
         Next = true;
         Wave = 0;
-        IntroTimer = 45000;
-        NextTimer = 51000;
-        SandBreath_Timer = 25000;
-        ImpendingDeath_Timer = 30000;
-        WingBuffet_Timer = 35000;
-        Mda_Timer = 40000;
+        IntroTimer.Reset(45000);
+        NextTimer.Reset(51000);
+        SandBreath_Timer.Reset(25000);
+        ImpendingDeath_Timer.Reset(30000);
+        WingBuffet_Timer.Reset(35000);
+        Mda_Timer.Reset(40000);
         attackers.clear();
         me->SetReactState(REACT_PASSIVE);
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);

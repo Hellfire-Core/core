@@ -109,7 +109,7 @@ struct npc_calliardAI : public ScriptedAI
 
     void Reset()
     {
-        _Timer = 60000;
+        _Timer.Reset(60000);
     }
 
     void UpdateAI(const uint32 diff)

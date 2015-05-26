@@ -427,8 +427,8 @@ struct mob_giant_infernalAI : public hyjal_trashAI
 
     void Reset()
     {
-        spawnTimer = 2000;
-        FlameBuffetTimer = 2000;
+        spawnTimer.Reset(2000);
+        FlameBuffetTimer.Reset(2000);
         imol = false;
     }
 
@@ -559,7 +559,7 @@ struct mob_abominationAI : public hyjal_trashAI
     uint32 pos;
     void Reset()
     {
-        KnockDownTimer = 10000;
+        KnockDownTimer.Reset(10000);
     }
 
     void WaypointReached(uint32 i)
@@ -667,8 +667,8 @@ struct mob_ghoulAI : public hyjal_trashAI
     bool RandomMove;
     void Reset()
     {
-        FrenzyTimer = 5000 + rand() % 5000;
-        MoveTimer = 2000;
+        FrenzyTimer.Reset(5000 + rand() % 5000);
+        MoveTimer.Reset(2000);
         RandomMove = false;
     }
 
@@ -804,9 +804,9 @@ struct mob_necromancerAI : public hyjal_trashAI
 
     void Reset()
     {
-        ShadowBoltTimer = 1000 + rand() % 5000;
-        UnholyFrenzyTimer = 5000;
-        CrippleTimer = 4000;
+        ShadowBoltTimer.Reset(1000 + rand() % 5000);
+        UnholyFrenzyTimer.Reset(5000);
+        CrippleTimer.Reset(4000);
         summons.DespawnAll();
     }
 
@@ -973,9 +973,9 @@ struct mob_bansheeAI : public hyjal_trashAI
 
     void Reset()
     {
-        CourseTimer = 10000 + rand() % 5000;
-        WailTimer = 15000 + rand() % 5000;
-        ShellTimer = 5000 + rand() % 10000;
+        CourseTimer.Reset(10000 + rand() % 5000);
+        WailTimer.Reset(15000 + rand() % 5000);
+        ShellTimer.Reset(5000 + rand() % 10000);
     }
 
     void WaypointReached(uint32 i)
@@ -1103,7 +1103,7 @@ struct mob_crypt_fiendAI : public hyjal_trashAI
 
     void Reset()
     {
-        WebTimer = 20000 + rand() % 5000;
+        WebTimer.Reset(20000 + rand() % 5000);
     }
 
     void WaypointReached(uint32 i)
@@ -1215,7 +1215,7 @@ struct mob_fel_stalkerAI : public hyjal_trashAI
 
     void Reset()
     {
-        ManaBurnTimer = 9000 + rand() % 5000;
+        ManaBurnTimer.Reset(9000 + rand() % 5000);
     }
 
     void WaypointReached(uint32 i)
@@ -1325,7 +1325,7 @@ struct mob_frost_wyrmAI : public hyjal_trashAI
 
     void Reset()
     {
-        FrostBreathTimer = 5000;
+        FrostBreathTimer.Reset(5000);
         MoveTimer = 0;
         m_creature->SetLevitate(true);
     }
@@ -1448,7 +1448,7 @@ struct mob_gargoyleAI : public hyjal_trashAI
     {
         forcemove = true;
         Zpos = 10.0;
-        StrikeTimer = 2000 + rand() % 5000;
+        StrikeTimer.Reset(2000 + rand() % 5000);
         MoveTimer = 0;
         m_creature->SetLevitate(true);
     }
@@ -1596,8 +1596,8 @@ struct alliance_riflemanAI : public Scripted_NoMovementAI
 
     void Reset()
     {
-        ShootTimer = 2000;
-        ExplodeTimer = 5000 + rand() % 5000;
+        ShootTimer.Reset(2000);
+        ExplodeTimer.Reset(5000 + rand() % 5000);
     }
 
     void MoveInLineOfSight(Unit *who)

@@ -107,7 +107,7 @@ struct npc_enslaved_soulAI : public ScriptedAI
 
     void Reset()
     {
-        checkTimer = 3000;
+        checkTimer.Reset(3000);
     }
 
     void EnterCombat(Unit* who)
@@ -200,7 +200,7 @@ struct boss_reliquary_of_soulsAI : public Scripted_NoMovementAI
 
         Phase = 0;
 
-        CheckTimer = 2000;
+        CheckTimer.Reset(2000);
         DelayTimer = 0;
 
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
@@ -508,12 +508,12 @@ struct boss_essence_of_sufferingAI : public ScriptedAI
         StatAuraGUID = 0;
         FixateVictimGUID = 0;
 
-        AggroYellTimer = 5000;
-        FixateTimer = 5000;
-        EnrageTimer = 44000 + rand() % 3000;
-        SoulDrainTimer = 20000 + rand() % 5000;
-        AuraTimer = 5000;
-        checkTimer = 3000;
+        AggroYellTimer.Reset(5000);
+        FixateTimer.Reset(5000);
+        EnrageTimer.Reset(44000 + rand() % 3000);
+        SoulDrainTimer.Reset(20000 + rand() % 5000);
+        AuraTimer.Reset(5000);
+        checkTimer.Reset(3000);
 
         emoteDone = false;
         backToCage = false;
@@ -649,10 +649,10 @@ struct boss_essence_of_desireAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        RuneShieldTimer = 15000;
-        DeadenTimer = 30000;
-        SoulShockTimer = 5000;
-        checkTimer = 3000;
+        RuneShieldTimer.Reset(15000);
+        DeadenTimer.Reset(30000);
+        SoulShockTimer.Reset(5000);
+        checkTimer.Reset(3000);
         me->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_MOD_CONFUSE, true);
 
         emoteDone = false;
@@ -777,9 +777,9 @@ struct boss_essence_of_angerAI : public ScriptedAI
     {
         AggroTargetGUID = 0;
 
-        CheckTankTimer = 5000;
-        SoulScreamTimer = 10000;
-        SpiteTimer = 30000;
+        CheckTankTimer.Reset(5000);
+        SoulScreamTimer.Reset(10000);
+        SpiteTimer.Reset(30000);
 
         SpiteTargetGUID.clear();
 

@@ -60,11 +60,11 @@ struct boss_aeonusAI : public ScriptedAI
 
     void Reset()
     {
-        Say_Timer = 20000;
-        Cleave_Timer = 5000;
-        SandBreath_Timer = 30000;
-        TimeStop_Timer = 40000;
-        Frenzy_Timer = 120000;
+        Say_Timer.Reset(20000);
+        Cleave_Timer.Reset(5000);
+        SandBreath_Timer.Reset(30000);
+        TimeStop_Timer.Reset(40000);
+        Frenzy_Timer.Reset(120000);
         m_creature->setActive(true);
 
         SayIntro();

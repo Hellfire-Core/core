@@ -94,11 +94,11 @@ struct boss_harbinger_skyrissAI : public ScriptedAI
         IsImage66 = false;
 
         Intro_Phase = 1;
-        Intro_Timer = 5000;
-        MindRend_Timer = 3000;
-        Fear_Timer = 15000;
-        Domination_Timer = 30000;
-        ManaBurn_Timer = 25000;
+        Intro_Timer.Reset(5000);
+        MindRend_Timer.Reset(3000);
+        Fear_Timer.Reset(15000);
+        Domination_Timer.Reset(30000);
+        ManaBurn_Timer.Reset(25000);
     }
 
     void MoveInLineOfSight(Unit *who)
@@ -337,7 +337,7 @@ struct boss_harbinger_skyriss_illusionAI : public ScriptedAI
 
     void Reset()
     {
-        MindRend_Timer = 5000;
+        MindRend_Timer.Reset(5000);
     }
 
     void UpdateAI(const uint32 diff)

@@ -39,8 +39,8 @@ struct boss_yorAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        DoubleBreath_Timer = 8000+rand()%5000;
-        Stomp_Timer = 15000+rand()%5000;
+        DoubleBreath_Timer.Reset(8000 + rand() % 5000);
+        Stomp_Timer.Reset(15000 + rand() % 5000);
 
         if(pInstance)
             pInstance->SetData(DATA_YOREVENT, NOT_STARTED);

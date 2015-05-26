@@ -70,12 +70,12 @@ struct boss_kazrogalAI : public hyjal_trashAI
     void Reset()
     {
         damageTaken = 0;
-        CleaveTimer = 5000;
-        WarStompTimer = 15000;
-        MarkTimer = 45000;
+        CleaveTimer.Reset(5000);
+        WarStompTimer.Reset(15000);
+        MarkTimer.Reset(45000);
         MarkTimerBase = 45000;
-        CheckTimer = 3000;
-        CrippleTimer = 15000+rand()%10000;
+        CheckTimer.Reset(3000);
+        CrippleTimer.Reset(15000 + rand() % 10000);
 
         if(pInstance && IsEvent)
             pInstance->SetData(DATA_KAZROGALEVENT, NOT_STARTED);

@@ -70,9 +70,9 @@ struct boss_anzuAI : public ScriptedAI
 
         Banished = false;
         Banish_Timer = 0;
-        SpellBomb_Timer = 22000;
-        CycloneOfFeathers_Timer = 5000;
-        ParalyzingScreech_Timer = 14000;
+        SpellBomb_Timer.Reset(22000);
+        CycloneOfFeathers_Timer.Reset(5000);
+        ParalyzingScreech_Timer.Reset(14000);
         BanishedTimes = 2;
 
         if (pInstance)
@@ -203,7 +203,7 @@ struct npc_anzu_spiritAI : public Scripted_NoMovementAI
     Timer _Timer;
 
     void Reset() {
-        _Timer = 5000;
+        _Timer.Reset(5000);
         me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_PL_SPELL_TARGET);
     }
 

@@ -82,12 +82,12 @@ struct boss_akilzonAI : public ScriptedAI
         if(pInstance && pInstance->GetData(DATA_AKILZONEVENT) != DONE)
             pInstance->SetData(DATA_AKILZONEVENT, NOT_STARTED);
 
-        StaticDisruption_Timer = urand(5000, 10000);
-        GustOfWind_Timer = urand(8000, 15000);
-        CallLighting_Timer = urand(8000, 12000);
-        ElectricalStorm_Timer = 60000;
-        Enrage_Timer = 480000; //8 minutes to enrage
-        SummonEagles_Timer = 99999;
+        StaticDisruption_Timer.Reset(urand(5000, 10000));
+        GustOfWind_Timer.Reset(urand(8000, 15000));
+        CallLighting_Timer.Reset(urand(8000, 12000));
+        ElectricalStorm_Timer.Reset(60000);
+        Enrage_Timer.Reset(480000); //8 minutes to enrage
+        SummonEagles_Timer.Reset(99999);
 
         BirdsList.clear();
 
@@ -284,11 +284,11 @@ struct mob_soaring_eagleAI : public ScriptedAI
     void Reset()
     {
         DoZoneInCombat();
-        EagleSwoop_Timer = urand(2000, 6000);
+        EagleSwoop_Timer.Reset(urand(2000, 6000));
         me->SetWalk(false);
         me->SetLevitate(true);
         me->SetSpeed(MOVE_FLIGHT, 1.5);
-        Return_Timer = 200;
+        Return_Timer.Reset(200);
         canMoveRandom = true;
         canCast = true;
     }

@@ -68,8 +68,8 @@ struct boss_midnightAI : public ScriptedAI
     {
         Phase = 1;
         Attumen = 0;
-        Mount_Timer = 0;
-        CheckTimer = 3000;
+        Mount_Timer.Reset(0);
+        CheckTimer.Reset(3000);
 
         m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
         m_creature->SetVisibility(VISIBILITY_ON);
@@ -226,7 +226,7 @@ struct boss_attumenAI : public ScriptedAI
 
     void Reset()
     {
-        ResetTimer = 2000;
+        ResetTimer.Reset(2000);
     }
 
     void KilledUnit(Unit *victim)

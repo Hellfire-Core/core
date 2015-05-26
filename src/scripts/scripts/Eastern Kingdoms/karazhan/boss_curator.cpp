@@ -70,9 +70,9 @@ struct boss_curatorAI : public ScriptedAI
 
     void Reset()
     {
-        addTimer = 10000;
-        hatefulBoltTimer = 15000;                           //This time may be wrong
-        berserkTimer = 720000;                              //12 minutes
+        addTimer.Reset(10000);
+        hatefulBoltTimer.Reset(15000);                           //This time may be wrong
+        berserkTimer.Reset(720000);                              //12 minutes
         enraged = false;
         evocating = false;
         me->ApplySpellImmune(0, IMMUNITY_SCHOOL, SPELL_SCHOOL_MASK_ARCANE, true);

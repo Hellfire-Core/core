@@ -64,14 +64,14 @@ struct boss_chrono_lord_dejaAI : public ScriptedAI
         if (HeroicMode)
         {
             GetSpellRangeStore();
-            ArcaneBlast_Timer = 2000;
-            Attraction_Timer = 18000;
+            ArcaneBlast_Timer.Reset(2000);
+            Attraction_Timer.Reset(18000);
         }
         else
-            ArcaneBlast_Timer = 20000;
+            ArcaneBlast_Timer.Reset(20000);
 
-        ArcaneDischarge_Timer = 10000;
-        TimeLapse_Timer = 15000;
+        ArcaneDischarge_Timer.Reset(10000);
+        TimeLapse_Timer.Reset(15000);
         arcane = false;
         m_creature->setActive(true);
 

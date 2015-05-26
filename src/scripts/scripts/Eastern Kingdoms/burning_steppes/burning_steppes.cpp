@@ -177,7 +177,7 @@ struct mob_broodlingessenceAI : public ScriptedAI
 
     void Reset()
     {
-        Fireball_Timer = 0;
+        Fireball_Timer.Reset(0);
         onSpellEffect = false;
     }
 

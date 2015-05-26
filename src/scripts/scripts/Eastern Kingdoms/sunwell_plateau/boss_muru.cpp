@@ -124,8 +124,8 @@ struct boss_muruAI : public Scripted_NoMovementAI
     void Reset()
     {
         ResetTimer = 0;
-        EnrageTimer = 600000;
-        HumanoidStart = 10000;
+        EnrageTimer.Reset(600000);
+        HumanoidStart.Reset(10000);
         TransitionTimer = 0;
         Summons.DespawnAll();
 
@@ -270,9 +270,9 @@ struct boss_entropiusAI : public ScriptedAI
     {
         me->GetMotionMaster()->MoveIdle();
         DoZoneInCombat(80);
-        DarknessTimer = urand(6000, 8000);
-        BlackHole = urand(4000, 10000);
-        TransitionTimer = 3000;
+        DarknessTimer.Reset(urand(6000, 8000));
+        BlackHole.Reset(urand(4000, 10000));
+        TransitionTimer.Reset(3000);
         me->SetRooted(true);
     }
 
@@ -377,7 +377,7 @@ struct npc_muru_portalAI : public Scripted_NoMovementAI
     {
         SummonTimer = 0;
         TransformTimer = 0;
-        CheckTimer = 1000;
+        CheckTimer.Reset(1000);
     }
 
     void EnterCombat(Unit *who) {}
@@ -454,7 +454,7 @@ struct npc_void_summonerAI : public Scripted_NoMovementAI
 
     void Reset()
     {
-        SummonTimer = 2000;
+        SummonTimer.Reset(2000);
     }
 
     void JustSummoned(Creature* summoned)
@@ -492,8 +492,8 @@ struct npc_dark_fiendAI : public ScriptedAI
 
     void Reset()
     {
-        ActivationTimer = 2000;
-        CheckTimer = 500;
+        ActivationTimer.Reset(2000);
+        CheckTimer.Reset(500);
         DespawnTimer = 0;
         me->SetRooted(true);
         DoCast(me, SPELL_DARKFIEND_SKIN);
@@ -599,8 +599,8 @@ struct npc_void_sentinelAI : public ScriptedAI
         me->GetHomePosition(x,y,z,o);
         DoTeleportTo(x,y,71);
         DoCast(me, SPELL_SHADOW_PULSE_PERIODIC);
-        VoidBlastTimer = urand(8000, 12000);
-        ActivationTimer = 1500;
+        VoidBlastTimer.Reset(urand(8000, 12000));
+        ActivationTimer.Reset(1500);
         me->SetRooted(true);
         if(pInstance->GetData(DATA_MURU_EVENT) == NOT_STARTED)
             me->DisappearAndDie();
@@ -678,8 +678,8 @@ struct mob_void_spawnAI : public ScriptedAI
     
     void Reset()
     {
-        Volley = urand(3000, 7000);
-        ActivationTimer = 2000;
+        Volley.Reset(urand(3000, 7000));
+        ActivationTimer.Reset(2000);
         me->SetRooted(true);
         DoZoneInCombat(100);
         if(pInstance->GetData(DATA_MURU_EVENT) == NOT_STARTED)
@@ -734,15 +734,15 @@ struct npc_blackholeAI : public ScriptedAI
 
     void Reset()
     {
-        DespawnTimer = urand(15000, 17000);
+        DespawnTimer.Reset(urand(15000, 17000));
         me->SetLevitate(true);
         me->SetSpeed(MOVE_FLIGHT, 0.5);
         me->setFaction(14);
         float x,y,z,o;
         me->GetHomePosition(x,y,z,o);
         DoTeleportTo(x,y,72);
-        VisualTimer = 2000;
-        ActivationTimer = 2000;
+        VisualTimer.Reset(2000);
+        ActivationTimer.Reset(2000);
         ChasingTimer = 0;
         victimGUID = 0;
         me->SetFloatValue(OBJECT_FIELD_SCALE_X, 1.0f);
@@ -842,8 +842,8 @@ struct npc_darknessAI : public Scripted_NoMovementAI
     void Reset()
     {
         DoCast(me, SPELL_VOID_ZONE_PRE_EFFECT_VISUAL, true);
-        VoidZoneTimer = 3000;
-        CheckTimer = 1000;
+        VoidZoneTimer.Reset(3000);
+        CheckTimer.Reset(1000);
     }
 
     void UpdateAI(const uint32 diff)
@@ -906,7 +906,7 @@ struct mob_shadowsword_fury_mageAI : public ScriptedAI
         }
         else
             DoZoneInCombat(400.0f);
-        SpellFury = urand(25000, 35000);
+        SpellFury.Reset(urand(25000, 35000));
     }
 
     void OnAuraApply(Aura* aur, Unit* caster, bool stackApply)
@@ -1015,7 +1015,7 @@ struct mob_shadowsword_berserkerAI : public ScriptedAI
         else
             DoZoneInCombat(400.0f);
         DoCast(me, SPELL_DUAL_WIELD, true);
-        Flurry = urand(16000, 20000);
+        Flurry.Reset(urand(16000, 20000));
     }
 
     void MovementInform(uint32 Type, uint32 Id)

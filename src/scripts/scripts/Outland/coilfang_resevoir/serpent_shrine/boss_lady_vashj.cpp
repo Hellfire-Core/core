@@ -176,20 +176,20 @@ struct boss_lady_vashjAI : public ScriptedAI
 
     void Reset()
     {
-        AggroTimer = 19000;
-        PulseCombat_Timer = 5000;
-        ShockBlast_Timer = urand(1, 60001);
-        Entangle_Timer = 30000;
-        StaticCharge_Timer = urand(10000, 25000);
-        ForkedLightning_Timer = 2000;
-        Check_Timer = 15000;
-        ParalyzeCheck_Timer = 1000;
-        EnchantedElemental_Timer = 5000;
-        TaintedElemental_Timer = 50000;
-        CoilfangElite_Timer = 45000;
-        CoilfangStrider_Timer = urand(60000, 70000);
-        SummonSporebat_Timer = 10000;
-        SummonSporebat_StaticTimer = 25000;
+        AggroTimer.Reset(19000);
+        PulseCombat_Timer.Reset(5000);
+        ShockBlast_Timer.Reset(urand(1, 60001));
+        Entangle_Timer.Reset(30000);
+        StaticCharge_Timer.Reset(urand(10000, 25000));
+        ForkedLightning_Timer.Reset(2000);
+        Check_Timer.Reset(15000);
+        ParalyzeCheck_Timer.Reset(1000);
+        EnchantedElemental_Timer.Reset(5000);
+        TaintedElemental_Timer.Reset(50000);
+        CoilfangElite_Timer.Reset(45000);
+        CoilfangStrider_Timer.Reset(urand(60000, 70000));
+        SummonSporebat_Timer.Reset(10000);
+        SummonSporebat_StaticTimer.Reset(25000);
         EnchantedElemental_Pos = 0;
         Phase = 0;
         Intro = false;
@@ -715,8 +715,8 @@ struct mob_tainted_elementalAI : public Scripted_NoMovementAI
 
     void Reset()
     {
-        PoisonBolt_Timer = 5000+rand()%5000;
-        Despawn_Timer = 16000;
+        PoisonBolt_Timer.Reset(5000 + rand() % 5000);
+        Despawn_Timer.Reset(16000);
     }
 
     void JustDied(Unit *killer)
@@ -786,9 +786,9 @@ struct mob_toxic_sporebatAI : public ScriptedAI
         me->SetLevitate(true);
         me->setFaction(14);
         movement_timer = 0;
-        ToxicSpore_Timer = 5000;
-        bolt_timer = 5500;
-        Check_Timer = 1000;
+        ToxicSpore_Timer.Reset(5000);
+        bolt_timer.Reset(5500);
+        Check_Timer.Reset(1000);
     }
 
     void EnterCombat(Unit *who)
@@ -884,8 +884,8 @@ struct mob_coilfang_eliteAI : public ScriptedAI
             }
         }
 
-        Cleave_Timer = 10000+rand()%5000;
-        Check_Timer  = 2000;
+        Cleave_Timer.Reset(10000 + rand() % 5000);
+        Check_Timer.Reset(2000);
 
         MoveWP = 1;
         Move = false;
@@ -1002,8 +1002,8 @@ struct mob_coilfang_striderAI : public ScriptedAI
             }
         }
 
-        MindBlast_Timer = 3000+rand()%10000;
-        Check_Timer     = 2000;
+        MindBlast_Timer.Reset(3000 + rand() % 10000);
+        Check_Timer.Reset(2000);
 
         MoveWP = 1;
         Move = false;

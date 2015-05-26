@@ -74,7 +74,7 @@ struct npc_chicken_cluckAI : public ScriptedAI
 
     void Reset()
     {
-        ResetFlagTimer = 120000;
+        ResetFlagTimer.Reset(120000);
 
         me->setFaction(FACTION_CHICKEN);
         me->RemoveFlag(UNIT_NPC_FLAGS, (UNIT_NPC_FLAG_GOSSIP | UNIT_NPC_FLAG_QUESTGIVER));
@@ -181,7 +181,7 @@ struct npc_dancing_flamesAI : public ScriptedAI
     void Reset()
     {
         active = true;
-        CanIteractTimer = 3500;
+        CanIteractTimer.Reset(3500);
         DoCast(me,SPELL_BRAZIER,true);
         DoCast(me,SPELL_FIERY_AURA,false);
         float x, y, z;
@@ -368,7 +368,7 @@ struct npc_doctorAI : public ScriptedAI
     void Reset()
     {
         Event = false;
-        SummonPatient_Timer = 10000;
+        SummonPatient_Timer.Reset(10000);
         PatientSavedCount = 0;
         PatientDiedCount = 0;
         Playerguid = 0;
@@ -397,7 +397,7 @@ struct npc_injured_patientAI : public ScriptedAI
     void Reset()
     {
         Doctorguid = 0;
-        BleedTimer = 1000;
+        BleedTimer.Reset(1000);
         Coord = NULL;
         //no select
         me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
@@ -971,8 +971,8 @@ struct npc_tonk_mineAI : public ScriptedAI
 
     void Reset()
     {
-        ArmingTimer = 3000;
-        CheckTimer = 1000;
+        ArmingTimer.Reset(3000);
+        CheckTimer.Reset(1000);
     }
 
     void EnterCombat(Unit *who) {}
@@ -1222,7 +1222,7 @@ struct npc_garments_of_questsAI : public ScriptedAI
         IsHealed = false;
         CanRun = false;
 
-        RunAwayTimer = 5000;
+        RunAwayTimer.Reset(5000);
 
         me->SetStandState(PLAYER_STATE_KNEEL);
         me->SetHealth(int(me->GetMaxHealth()*0.7));
@@ -1423,7 +1423,7 @@ struct npc_mojoAI : public ScriptedAI
 
     void Reset()
     {
-        heartsResetTimer = 15000;
+        heartsResetTimer.Reset(15000);
         hearts = false;
         me->GetMotionMaster()->MoveFollow(me->GetOwner(), 2.0, M_PI/2);
     }
@@ -1530,7 +1530,7 @@ struct npc_woeful_healerAI : public ScriptedAI
 
     void Reset()
     {
-        healTimer = urand(2500, 7500);
+        healTimer.Reset(urand(2500, 7500));
         me->GetMotionMaster()->MoveFollow(me->GetOwner(), 2.0, M_PI/2);
     }
 
@@ -1646,9 +1646,9 @@ struct npc_fire_elemental_guardianAI : public ScriptedAI
 
     void Reset()
     {
-//        FireNova_Timer = 5000 + rand() % 15000; // 5-20 sec cd
-        FireBlast_Timer = 10000 +rand() % 5000; // 10-15 sec cd
-        FireShield_Timer = 2000; // 1 tick/ 2sec
+//        FireNova_Timer .Reset( 5000 + rand() % 15000); // 5-20 sec cd
+        FireBlast_Timer.Reset(10000 + rand() % 5000); // 10-15 sec cd
+        FireShield_Timer.Reset(2000); // 1 tick/ 2sec
         me->ApplySpellImmune(0, IMMUNITY_SCHOOL, SPELL_SCHOOL_MASK_FIRE, true);
         me->SetReactState(REACT_DEFENSIVE);
         me->SetAggroRange(0);
@@ -1751,7 +1751,7 @@ struct npc_earth_elemental_guardianAI : public ScriptedAI
 
     void Reset()
     {
-        AngeredEarth_Timer = 1000;
+        AngeredEarth_Timer.Reset(1000);
         me->ApplySpellImmune(0, IMMUNITY_SCHOOL, SPELL_SCHOOL_MASK_NATURE, true);
         me->SetReactState(REACT_DEFENSIVE);
         me->SetAggroRange(0);
@@ -2037,16 +2037,16 @@ struct npc_crashin_trashin_robotAI : public ScriptedAI
 
     void Reset()
     {
-        waitTimer = 5000;
-        machineGunTimer = urand(1000, 3000);
-        netTimer = urand(10000, 20000);
-        electricalTimer = urand(5000, 35000);
-        checkTimer = 3000;
+        waitTimer.Reset(5000);
+        machineGunTimer.Reset(urand(1000, 3000));
+        netTimer.Reset(urand(10000, 20000));
+        electricalTimer.Reset(urand(5000, 35000));
+        checkTimer.Reset(3000);
         me->SetDefaultMovementType(RANDOM_MOTION_TYPE);
 
         me->GetMotionMaster()->MoveRandom(10.0);
-        moveTimer = urand(1000, 10000);
-        despawnTimer = 180000;
+        moveTimer.Reset(urand(1000, 10000));
+        despawnTimer.Reset(180000);
     }
 
     void EnterCombat(Unit *who)
@@ -2475,8 +2475,8 @@ struct npc_small_pet_handlerAI : public ScriptedAI
         m_bIsIdle = false;
         m_bIsInAction = false;
 
-        m_uiCheckTimer = 1000;
-        m_uiActionTimer = urand(10000, 30000);
+        m_uiCheckTimer.Reset(1000);
+        m_uiActionTimer.Reset(urand(10000, 30000));
 
         me->GetMotionMaster()->MoveFollow(me->GetOwner(), PET_FOLLOW_DIST, PET_FOLLOW_ANGLE);
 
@@ -2661,7 +2661,7 @@ struct npc_resurrectAI : public Scripted_NoMovementAI
     void Reset() override
     {
         me->SetReactState(REACT_PASSIVE);
-        timer = 2000;
+        timer.Reset(2000);
     }
 
     void MoveInLineOfSight(Unit *who) override {}
@@ -2883,7 +2883,7 @@ struct npc_gnomish_flame_turret : public Scripted_NoMovementAI
         SetAutocast(SPELL_GNOMISH_FLAME_TURRET, 1000);
         StartAutocast();
         me->SetReactState(REACT_AGGRESSIVE);
-        CheckTimer = 2000;
+        CheckTimer.Reset(2000);
     }
 
     bool UpdateVictim()
@@ -2957,13 +2957,13 @@ struct npc_bad_santaAI : public ScriptedAI
             for (uint8 i = 0; i < 3; i++)
                 me->RemoveAura(SPELL_ENRAGE, i);
         ClearCastQueue();
-        Frost_Buffet_Timer = 3000;
-        Weakness_Timer = 5000;
-        Blizzard_Timer = 15000;
-        Volley_Timer = 20000;
-        Armor_Timer = 30000;
-        Nova_Timer = 10000;
-        IceBolt_Timer = 45000;
+        Frost_Buffet_Timer.Reset(3000);
+        Weakness_Timer.Reset(5000);
+        Blizzard_Timer.Reset(15000);
+        Volley_Timer.Reset(20000);
+        Armor_Timer.Reset(30000);
+        Nova_Timer.Reset(10000);
+        IceBolt_Timer.Reset(45000);
         StopAutocast();
     }
 
@@ -3204,7 +3204,7 @@ struct npc_voodoo_servantAI : public ScriptedAI
 
     void Reset()
     {
-        LightingBlast_Timer = 100;
+        LightingBlast_Timer.Reset(100);
         me->SetReactState(REACT_DEFENSIVE);
         me->SetAggroRange(0);
         me->CombatStopWithPets();

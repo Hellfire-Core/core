@@ -248,8 +248,8 @@ struct boss_illidan_stormrageAI : public BossAI
         ClearCastQueue();
         summons.DespawnAll();
 
-        m_combatTimer = 1000;
-        m_enrageTimer = 25*60000 +34000; // DBM value
+        m_combatTimer.Reset(1000);
+        m_enrageTimer.Reset(25 * 60000 + 34000); // DBM value
 
         m_hoverPoint = 0;
         m_flameCount = 0;
@@ -1720,7 +1720,7 @@ struct boss_illidan_flameofazzinothAI : public ScriptedAI
         ClearCastQueue();
 
         m_owner = 0;
-        check_timer = 2000;
+        check_timer.Reset(2000);
 
         m_creature->SetMeleeDamageSchool(SPELL_SCHOOL_FIRE);
         m_creature->ApplySpellImmune(0, IMMUNITY_SCHOOL, SPELL_SCHOOL_MASK_FIRE, true);
@@ -1832,7 +1832,7 @@ struct boss_illidan_shadowdemonAI : public ScriptedAI
     {
         me->SetReactState(REACT_PASSIVE);
 
-        m_checkTimer = 2000;
+        m_checkTimer.Reset(2000);
         m_targetGUID = 0;
     }
 

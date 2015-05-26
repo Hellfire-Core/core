@@ -113,7 +113,7 @@ struct mob_abyssalAI : public ScriptedAI
 
     void Reset()
     {
-        FireBlast_Timer = 6000;
+        FireBlast_Timer.Reset(6000);
     }
 
     void EnterCombat(Unit*)
@@ -164,7 +164,7 @@ struct boss_magtheridonAI : public BossAI
         events.ScheduleEvent(MAGTHERIDON_EVENT_CLEAVE, 15000);
         events.ScheduleEvent(MAGTHERIDON_EVENT_QUAKE, 40000);
 
-        RandChat_Timer = 90000;
+        RandChat_Timer.Reset(90000);
 
         Phase3 = false;
 
@@ -333,12 +333,12 @@ struct mob_hellfire_channelerAI : public ScriptedAI
 
     void Reset()
     {
-        ShadowBoltVolley_Timer = urand(8000, 10000);
-        DarkMending_Timer = 10000;
-        Fear_Timer = urand(15000, 20000);
-        Infernal_Timer = urand(10000, 50000);
+        ShadowBoltVolley_Timer.Reset(urand(8000, 10000));
+        DarkMending_Timer.Reset(10000);
+        Fear_Timer.Reset(urand(15000, 20000));
+        Infernal_Timer.Reset(urand(10000, 50000));
 
-        Check_Timer = 5000;
+        Check_Timer.Reset(5000);
     }
 
     void EnterCombat(Unit *who)

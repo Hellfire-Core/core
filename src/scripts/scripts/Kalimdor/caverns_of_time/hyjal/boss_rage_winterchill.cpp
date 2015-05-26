@@ -72,12 +72,12 @@ struct boss_rage_winterchillAI : public hyjal_trashAI
         ClearCastQueue();
 
         damageTaken = 0;
-        FrostArmorTimer = 20000;
-        DecayTimer = 45000;
-        NovaTimer = 15000;
-        IceboltTimer = 10000;
-        CheckTimer = 3000;
-        Enrage_Timer = 600000;
+        FrostArmorTimer.Reset(20000);
+        DecayTimer.Reset(45000);
+        NovaTimer.Reset(15000);
+        IceboltTimer.Reset(10000);
+        CheckTimer.Reset(3000);
+        Enrage_Timer.Reset(600000);
 
         if(pInstance && IsEvent)
             pInstance->SetData(DATA_RAGEWINTERCHILLEVENT, NOT_STARTED);

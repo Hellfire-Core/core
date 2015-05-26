@@ -96,13 +96,13 @@ struct boss_gruulAI : public ScriptedAI
 
     void Reset()
     {
-        Growth_Timer = 30000;
+        Growth_Timer.Reset(30000);
         CaveIn_Timer = 40000;
-        GroundSlamTimer = 35000;
+        GroundSlamTimer.Reset(35000);
         ShatterTimer = 0;
-        HurtfulStrike_Timer = 8000;
-        Reverberation_Timer = 105000;
-        Check_Timer = 3000;
+        HurtfulStrike_Timer.Reset(8000);
+        Reverberation_Timer.Reset(105000);
+        Check_Timer.Reset(3000);
 
         pInstance->SetData(DATA_GRUULEVENT, NOT_STARTED);
     }

@@ -59,9 +59,9 @@ struct boss_fankrissAI : public ScriptedAI
 
     void Reset()
     {
-        MortalWound_Timer = 10000 + rand()%5000;
-        SpawnHatchlings_Timer = 6000 + rand()%6000;
-        SpawnSpawns_Timer = 15000 + rand()%30000;
+        MortalWound_Timer.Reset(10000 + rand() % 5000);
+        SpawnHatchlings_Timer.Reset(6000 + rand() % 6000);
+        SpawnSpawns_Timer.Reset(15000 + rand() % 30000);
 
         if (pInstance)
             pInstance->SetData(DATA_FANKRISS_THE_UNYIELDING, NOT_STARTED);

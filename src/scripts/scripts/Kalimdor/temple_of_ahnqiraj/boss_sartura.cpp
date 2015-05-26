@@ -63,12 +63,12 @@ struct boss_sarturaAI : public ScriptedAI
 
     void Reset()
     {
-        WhirlWind_Timer = 30000;
-        WhirlWindRandom_Timer = 3000 + rand()%4000;
-        WhirlWindEnd_Timer = 15000;
-        AggroReset_Timer = 45000 + rand()%10000;
-        AggroResetEnd_Timer = 5000;
-        EnrageHard_Timer = 10*60000;
+        WhirlWind_Timer.Reset(30000);
+        WhirlWindRandom_Timer.Reset(3000 + rand() % 4000);
+        WhirlWindEnd_Timer.Reset(15000);
+        AggroReset_Timer.Reset(45000 + rand() % 10000);
+        AggroResetEnd_Timer.Reset(5000);
+        EnrageHard_Timer.Reset(10 * 60000);
 
         WhirlWind = false;
         AggroReset = false;
@@ -193,12 +193,12 @@ struct mob_sartura_royal_guardAI : public ScriptedAI
 
     void Reset()
     {
-        WhirlWind_Timer = 30000;
-        WhirlWindRandom_Timer = 3000 + rand()%4000;
-        WhirlWindEnd_Timer = 15000;
-        AggroReset_Timer = 45000 + rand()%10000;
-        AggroResetEnd_Timer = 5000;
-        KnockBack_Timer = 10000;
+        WhirlWind_Timer.Reset(30000);
+        WhirlWindRandom_Timer.Reset(3000 + rand() % 4000);
+        WhirlWindEnd_Timer.Reset(15000);
+        AggroReset_Timer.Reset(45000 + rand() % 10000);
+        AggroResetEnd_Timer.Reset(5000);
+        KnockBack_Timer.Reset(10000);
 
         WhirlWind = false;
         AggroReset = false;

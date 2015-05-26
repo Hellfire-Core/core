@@ -54,12 +54,12 @@ struct boss_huhuranAI : public ScriptedAI
 
     void Reset()
     {
-        Frenzy_Timer = 25000 + rand()%10000;
-        Wyvern_Timer = 18000 + rand()%10000;
-        Spit_Timer = 8000;
-        PoisonBolt_Timer = 4000;
-        NoxiousPoison_Timer = 10000 + rand()%10000;
-        FrenzyBack_Timer = 15000;
+        Frenzy_Timer.Reset(25000 + rand() % 10000);
+        Wyvern_Timer.Reset(18000 + rand() % 10000);
+        Spit_Timer.Reset(8000);
+        PoisonBolt_Timer.Reset(4000);
+        NoxiousPoison_Timer.Reset(10000 + rand() % 10000);
+        FrenzyBack_Timer.Reset(15000);
 
         Frenzy = false;
         Berserk = false;

@@ -77,10 +77,10 @@ struct boss_broggokAI : public ScriptedAI
 
     void Reset()
     {
-        AcidSpray_Timer = 10000;
-        PoisonSpawn_Timer = 13000;
-        PoisonBolt_Timer = 7000;
-        checkTimer = 3000;
+        AcidSpray_Timer.Reset(10000);
+        PoisonSpawn_Timer.Reset(13000);
+        PoisonBolt_Timer.Reset(7000);
+        checkTimer.Reset(3000);
 
         summons.DespawnAll();
         prisoners.clear();

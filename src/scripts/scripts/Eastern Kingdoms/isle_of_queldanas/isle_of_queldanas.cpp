@@ -147,9 +147,9 @@ struct npc_wretched_devourerAI : public ScriptedAI
     void Reset()
     {
         me->SetPower(POWER_MANA, 0);
-        ArcaneTorrent = RAND(urand(1500, 4500),urand(5000, 10000));
-        ManaTap = urand(3000, 6000);
-        NetherShock = urand(4000, 8000);
+        ArcaneTorrent.Reset(RAND(urand(1500, 4500), urand(5000, 10000)));
+        ManaTap.Reset(urand(3000, 6000));
+        NetherShock.Reset(urand(4000, 8000));
     }
 
     void EnterCombat(Unit* who)
@@ -213,8 +213,8 @@ struct npc_wretched_fiendAI : public ScriptedAI
     void Reset()
     {
         me->SetPower(POWER_MANA, 0);
-        SunderArmor = urand(6000, 10000);
-        BitterWithdrawal = 1000;
+        SunderArmor.Reset(urand(6000, 10000));
+        BitterWithdrawal.Reset(1000);
     }
 
     void EnterCombat(Unit* who)
@@ -276,10 +276,10 @@ struct npc_erratic_sentryAI : public ScriptedAI
 
     void Reset()
     {
-        CapacitatorOverload = 5000;
-        Suppression = urand(3000, 10000);
-        ElectricalOverload = 1000;
-        CrystalStrike = urand(2000, 14000);
+        CapacitatorOverload.Reset(5000);
+        Suppression.Reset(urand(3000, 10000));
+        ElectricalOverload.Reset(1000);
+        CrystalStrike.Reset(urand(2000, 14000));
     }
 
     void UpdateAI(const uint32 diff)
@@ -413,7 +413,7 @@ struct npc_wrath_enforcerAI : public ScriptedAI
     {
         me->setActive(true);
         DoCast(me, 29651, true);
-        FlameWave = urand(5000, 35000);
+        FlameWave.Reset(urand(5000, 35000));
     }
 
     void UpdateAI(const uint32 diff)
@@ -514,9 +514,9 @@ struct npc_pit_overlordAI : public ScriptedAI
     void Reset()
     {
         me->setActive(true);
-        Cleave = urand(5000, 15000);
-        ConeOfFire = urand(1000, 5000);
-        DeathCoil = urand(3000, 8000);
+        Cleave.Reset(urand(5000, 15000));
+        ConeOfFire.Reset(urand(1000, 5000));
+        DeathCoil.Reset(urand(3000, 8000));
     }
 
     void UpdateAI(const uint32 diff)
@@ -650,7 +650,7 @@ struct npc_shattered_sun_bombardierAI : public ScriptedAI
         me->SetVisibility(VISIBILITY_OFF);
         me->setActive(true);
         PlayerGUID = 0;
-        yell_timer = 60000000;
+        yell_timer.Reset(60000000);
         PathFly = false;
         yell = 0;
         me->GetMotionMaster()->MoveIdle();
@@ -753,7 +753,7 @@ struct npc_greengill_slaveAI : public ScriptedAI
     void Reset()
     {
         PlayerGUID = 0;
-        enrageTimer = 30000;
+        enrageTimer.Reset(30000);
     }
     void MovementInform(uint32 type, uint32 id)
     {
@@ -852,7 +852,7 @@ struct npc_ioqd_brutallusAI : public ScriptedAI
 
     void Reset()
     {
-        RandYell_timer = urand(15000, 25000);
+        RandYell_timer.Reset(urand(15000, 25000));
     }
 
     void SpellHit(Unit* caster, const SpellEntry* spell)
@@ -900,7 +900,7 @@ struct npc_ioqd_madrigosaAI : public ScriptedAI
         me->SetLevitate(true);
         me->SetSpeed(MOVE_FLIGHT, 1.5);
         me->GetMotionMaster()->MovePath(MADRIGOSA_PATH, true);
-        RandYell_timer = urand(15000, 25000);
+        RandYell_timer.Reset(urand(15000, 25000));
     }
 
     void UpdateAI(const uint32 diff)

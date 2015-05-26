@@ -56,9 +56,9 @@ struct boss_shirrak_the_dead_watcherAI : public ScriptedAI
     void Reset()
     {
         Inhibitmagic_Timer = 0;
-        Attractmagic_Timer = 28000;
-        Carnivorousbite_Timer = 10000;
-        FocusFire_Timer = 17000;
+        Attractmagic_Timer.Reset(28000);
+        Carnivorousbite_Timer.Reset(10000);
+        FocusFire_Timer.Reset(17000);
         focusedTarget = NULL;
     }
 
@@ -186,7 +186,7 @@ struct mob_focus_fireAI : public ScriptedAI
 
     void Reset()
     {
-        FieryBlast_Timer = 3000+(rand()%1000);
+        FieryBlast_Timer.Reset(3000 + (rand() % 1000));
         fiery1 = fiery2 = true;
     }
 

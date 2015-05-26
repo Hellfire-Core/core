@@ -64,11 +64,11 @@ struct boss_warlord_kalithreshAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        Reflection_Timer = 10000;
-        Impale_Timer = 7000+rand()%7000;
-        Rage_Timer = 45000;
+        Reflection_Timer.Reset(10000);
+        Impale_Timer.Reset(7000 + rand() % 7000);
+        Rage_Timer.Reset(45000);
         CurrentDistiller = 0;
-        checkTimer = 3000;
+        checkTimer.Reset(3000);
 
         std::list<Creature*> naga_distillers = FindAllCreaturesWithEntry(17954, 100);
         for(std::list<Creature*>::iterator it = naga_distillers.begin(); it != naga_distillers.end(); it++)

@@ -101,9 +101,9 @@ struct boss_vazruden_the_heraldAI : public ScriptedAI
         VictimGUID = 0;
         checktimer = 0;
         FireballTimer = 0;
-        ConeOfFireTimer = 1200+rand()%3000;
-        BellowingRoarTimer = 1800+rand()%3000;
-        FlyTimer = 45000+rand()%3000;
+        ConeOfFireTimer.Reset(1200 + rand() % 3000);
+        BellowingRoarTimer.Reset(1800 + rand() % 3000);
+        FlyTimer.Reset(45000 + rand() % 3000);
         me->SetLevitate(true);
         me->SetSpeed(MOVE_FLIGHT, 1.0f);
         me->GetMotionMaster()->MovePath(PATH_ENTRY, true);
@@ -383,7 +383,7 @@ struct boss_vazrudenAI : public ScriptedAI
     void Reset()
     {
         HealthBelow = false;
-        RevengeTimer = 4000+rand()%3000;
+        RevengeTimer.Reset(4000 + rand() % 3000);
         VazHeraldGUID = 0;
     }
 
@@ -474,7 +474,7 @@ struct mob_hellfire_sentryAI : public ScriptedAI
 
     void Reset()
     {
-        KidneyShot_Timer = 3000+rand()%4000;
+        KidneyShot_Timer.Reset(3000 + rand() % 4000);
         VazHeraldGUID = 0;
     }
 

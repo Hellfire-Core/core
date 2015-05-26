@@ -343,8 +343,8 @@ struct mob_coilfang_guardianAI : public ScriptedAI
     {
         ClearCastQueue();
 
-        m_harmstringTimer = urand(5000, 15000);
-        m_arcingTimer = urand(15000, 20000);
+        m_harmstringTimer.Reset(urand(5000, 15000));
+        m_arcingTimer.Reset(urand(15000, 20000));
     }
 
     void JustRespawned()
@@ -393,8 +393,8 @@ struct mob_coilfang_ambusherAI : public Scripted_NoMovementAI
     {
         ClearCastQueue();
 
-        m_spreadTimer = urand(10000, 20000);
-        m_shootTimer = 2000;
+        m_spreadTimer.Reset(urand(10000, 20000));
+        m_shootTimer.Reset(2000);
     }
 
     void JustRespawned()

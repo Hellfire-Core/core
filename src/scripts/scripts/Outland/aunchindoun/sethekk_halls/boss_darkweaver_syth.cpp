@@ -83,11 +83,11 @@ struct boss_darkweaver_sythAI : public ScriptedAI
     {
         summons.DespawnAll();
 
-        flameshock_timer = 2000;
-        arcaneshock_timer = 4000;
-        frostshock_timer = 6000;
-        shadowshock_timer = 8000;
-        chainlightning_timer = 15000;
+        flameshock_timer.Reset(2000);
+        arcaneshock_timer.Reset(4000);
+        frostshock_timer.Reset(6000);
+        shadowshock_timer.Reset(8000);
+        chainlightning_timer.Reset(15000);
 
         summon90 = false;
         summon50 = false;
@@ -240,8 +240,8 @@ struct mob_syth_fireAI : public ScriptedAI
     void Reset()
     {
         m_creature->ApplySpellImmune(0, IMMUNITY_SCHOOL, SPELL_SCHOOL_MASK_FIRE, true);
-        flameshock_timer = 2500;
-        flamebuffet_timer = 5000;
+        flameshock_timer.Reset(2500);
+        flamebuffet_timer.Reset(5000);
     }
 
     void EnterCombat(Unit *who) { }
@@ -293,8 +293,8 @@ struct mob_syth_arcaneAI : public ScriptedAI
     void Reset()
     {
         m_creature->ApplySpellImmune(0, IMMUNITY_SCHOOL, SPELL_SCHOOL_MASK_ARCANE, true);
-        arcaneshock_timer = 2500;
-        arcanebuffet_timer = 5000;
+        arcaneshock_timer.Reset(2500);
+        arcanebuffet_timer.Reset(5000);
     }
 
     void EnterCombat(Unit *who) { }
@@ -345,8 +345,8 @@ struct mob_syth_frostAI : public ScriptedAI
     void Reset()
     {
         m_creature->ApplySpellImmune(0, IMMUNITY_SCHOOL, SPELL_SCHOOL_MASK_FROST, true);
-        frostshock_timer = 2500;
-        frostbuffet_timer = 5000;
+        frostshock_timer.Reset(2500);
+        frostbuffet_timer.Reset(5000);
     }
 
     void EnterCombat(Unit *who) { }
@@ -398,8 +398,8 @@ struct mob_syth_shadowAI : public ScriptedAI
     void Reset()
     {
         m_creature->ApplySpellImmune(0, IMMUNITY_SCHOOL, SPELL_SCHOOL_MASK_SHADOW, true);
-        shadowshock_timer = 2500;
-        shadowbuffet_timer = 5000;
+        shadowshock_timer.Reset(2500);
+        shadowbuffet_timer.Reset(5000);
     }
 
     void EnterCombat(Unit *who) { }

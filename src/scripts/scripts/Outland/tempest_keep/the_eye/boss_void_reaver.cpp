@@ -64,11 +64,11 @@ struct boss_void_reaverAI : public ScriptedAI
 
     void Reset()
     {
-        Pounding_Timer = 15000;
-        ArcaneOrb_Timer = 3000;
-        KnockAway_Timer = 30000;
-        Berserk_Timer = 600000;
-        Check_Timer = 3000;
+        Pounding_Timer.Reset(15000);
+        ArcaneOrb_Timer.Reset(3000);
+        KnockAway_Timer.Reset(30000);
+        Berserk_Timer.Reset(600000);
+        Check_Timer.Reset(3000);
         m_creature->ApplySpellImmune(2, IMMUNITY_EFFECT, SPELL_EFFECT_HEALTH_LEECH, true);
         m_creature->ApplySpellImmune(3, IMMUNITY_STATE, SPELL_AURA_PERIODIC_LEECH, true);
         m_creature->ApplySpellImmune(4, IMMUNITY_STATE, SPELL_AURA_PERIODIC_MANA_LEECH, true);

@@ -136,12 +136,12 @@ struct boss_fathomlord_karathressAI : public ScriptedAI
 
     void Reset()
     {
-        PulseCombat_Timer = 5000;
-        CataclysmicBolt_Timer = 10000;
-        Enrage_Timer = 600000;                 // 10 minutes
-        SearNova_Timer = 20000+rand()%40000;   // 20 - 60 seconds
-        AuraCheck_Timer = 3000;
-        TidalSurge_Timer = 15000+rand()%5000;
+        PulseCombat_Timer.Reset(5000);
+        CataclysmicBolt_Timer.Reset(10000);
+        Enrage_Timer.Reset(600000);                 // 10 minutes
+        SearNova_Timer.Reset(20000 + rand() % 40000);   // 20 - 60 seconds
+        AuraCheck_Timer.Reset(3000);
+        TidalSurge_Timer.Reset(15000 + rand() % 5000);
 
         BlessingOfTides = false;
         BlessingOfTidesCounter = 0;
@@ -383,10 +383,10 @@ struct boss_fathomguard_sharkkisAI : public ScriptedAI
 
     void Reset()
     {
-        LeechingThrow_Timer = 20000;
-        TheBeastWithin_Timer = 30000;
-        Multishot_Timer = 10000;
-        Pet_Timer = 10000;
+        LeechingThrow_Timer.Reset(20000);
+        TheBeastWithin_Timer.Reset(30000);
+        Multishot_Timer.Reset(10000);
+        Pet_Timer.Reset(10000);
 
         pet = false;
     }
@@ -503,10 +503,10 @@ struct boss_fathomguard_tidalvessAI : public ScriptedAI
 
     void Reset()
     {
-        FrostShock_Timer = 25000;
-        Spitfire_Timer = 60000;
-        PoisonCleansing_Timer = 30000;
-        Earthbind_Timer = 45000;
+        FrostShock_Timer.Reset(25000);
+        Spitfire_Timer.Reset(60000);
+        PoisonCleansing_Timer.Reset(30000);
+        Earthbind_Timer.Reset(45000);
     }
 
     void JustDied(Unit *victim)
@@ -608,10 +608,10 @@ struct boss_fathomguard_caribdisAI : public ScriptedAI
 
     void Reset()
     {
-        WaterBoltVolley_Timer = 35000;
-        TidalSurge_Timer = 15000+rand()%5000;
-        Heal_Timer = 55000;
-        Cyclone_Timer = 3000+rand()%10000;
+        WaterBoltVolley_Timer.Reset(35000);
+        TidalSurge_Timer.Reset(15000 + rand() % 5000);
+        Heal_Timer.Reset(55000);
+        Cyclone_Timer.Reset(3000 + rand() % 10000);
     }
 
     Unit* selectAdvisorUnit()
@@ -732,7 +732,7 @@ struct mob_caribdis_cycloneAI : public ScriptedAI
 
     void Reset()
     {
-        Check_Timer = 1000;
+        Check_Timer.Reset(1000);
         Swap_Timer = 0;
     }
 

@@ -156,13 +156,13 @@ struct boss_kalecgosAI : public ScriptedAI
         me->RemoveUnitMovementFlag(MOVEFLAG_ONTRANSPORT);
         me->SetStandState(PLAYER_STATE_SLEEP);
 
-        ArcaneBuffetTimer = 8000;
-        FrostBreathTimer = 15000;
-        WildMagicTimer = 10000;
-        TailLashTimer = 25000;
+        ArcaneBuffetTimer.Reset(8000);
+        FrostBreathTimer.Reset(15000);
+        WildMagicTimer.Reset(10000);
+        TailLashTimer.Reset(25000);
         ResetTimer = 0;
-        SpectralBlastTimer = 20000+(rand()%5000);
-        CheckTimer = 1000;
+        SpectralBlastTimer.Reset(20000 + (rand() % 5000));
+        CheckTimer.Reset(1000);
 
         stateCheckTimer.Reset(2000);
 
@@ -512,10 +512,10 @@ struct boss_sathrovarrAI : public ScriptedAI
 
     void Reset()
     {
-        ShadowBoltTimer = 7000 + rand()%3 * 1000;
-        AgonyCurseTimer = urand(20000, 35000);
-        CorruptionStrikeTimer = 13000;
-        CheckTimer = 1000;
+        ShadowBoltTimer.Reset(7000 + rand() % 3 * 1000);
+        AgonyCurseTimer.Reset(urand(20000, 35000));
+        CorruptionStrikeTimer.Reset(13000);
+        CheckTimer.Reset(1000);
         isEnraged = false;
         isBanished = false;
         me->setActive(true);
@@ -738,10 +738,10 @@ struct boss_kalecAI : public ScriptedAI
 
     void Reset()
     {
-        RevitalizeTimer = 5000;
-        HeroicStrikeTimer = 3000;
-        CheckTimer = 1000;
-        YellTimer = 10000;
+        RevitalizeTimer.Reset(5000);
+        HeroicStrikeTimer.Reset(3000);
+        CheckTimer.Reset(1000);
+        YellTimer.Reset(10000);
         YellSequence = 0;
         me->setActive(true);
 

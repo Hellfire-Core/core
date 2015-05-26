@@ -55,10 +55,10 @@ struct boss_the_makerAI : public ScriptedAI
 
     void Reset()
     {
-        AcidSpray_Timer = 15000;
-        ExplodingBreaker_Timer = 6000;
-        Domination_Timer = 20000;
-        Knockdown_Timer = 10000;
+        AcidSpray_Timer.Reset(15000);
+        ExplodingBreaker_Timer.Reset(6000);
+        Domination_Timer.Reset(20000);
+        Knockdown_Timer.Reset(10000);
 
         if (pInstance)
             pInstance->SetData(DATA_MAKEREVENT, NOT_STARTED);

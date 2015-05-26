@@ -94,9 +94,9 @@ struct boss_kelidan_the_breakerAI : public ScriptedAI
 
     void Reset()
     {
-        ShadowVolley_Timer = 1000;
-        BurningNova_Timer = 15000;
-        Corruption_Timer = 5000;
+        ShadowVolley_Timer.Reset(1000);
+        BurningNova_Timer.Reset(15000);
+        Corruption_Timer.Reset(5000);
         check_Timer = 1;
         Firenova = false;
         addYell = false;
@@ -298,8 +298,8 @@ struct mob_shadowmoon_channelerAI : public ScriptedAI
 
     void Reset()
     {
-        ShadowBolt_Timer = urand(1000, 2000);
-        MarkOfShadow_Timer = urand(5000, 7000);
+        ShadowBolt_Timer.Reset(urand(1000, 2000));
+        MarkOfShadow_Timer.Reset(urand(5000, 7000));
         check_Timer = 0;
         if (m_creature->IsNonMeleeSpellCast(false))
             m_creature->InterruptNonMeleeSpells(true);

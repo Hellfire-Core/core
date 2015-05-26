@@ -82,11 +82,11 @@ struct boss_skeramAI : public ScriptedAI
 
     void Reset()
     {
-        ArcaneExplosion_Timer = 6000 + rand() % 6000;
-        EarthShock_Timer = 2000;
-        FullFillment_Timer = 15000;
-        Blink_Timer = 8000 + rand() % 12000;
-        Invisible_Timer = 500;
+        ArcaneExplosion_Timer.Reset(6000 + rand() % 6000);
+        EarthShock_Timer.Reset(2000);
+        FullFillment_Timer.Reset(15000);
+        Blink_Timer.Reset(8000 + rand() % 12000);
+        Invisible_Timer.Reset(500);
 
         Images75 = false;
         Images50 = false;

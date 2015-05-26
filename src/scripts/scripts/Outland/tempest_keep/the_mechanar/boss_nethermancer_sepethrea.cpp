@@ -63,9 +63,9 @@ struct boss_nethermancer_sepethreaAI : public ScriptedAI
 
     void Reset()
     {
-        arcane_blast_Timer = urand(12000, 18000);
-        dragons_breath_Timer = urand(22000, 28000);
-        yell_timer = 5000;
+        arcane_blast_Timer.Reset(urand(12000, 18000));
+        dragons_breath_Timer.Reset(urand(22000, 28000));
+        yell_timer.Reset(5000);
 
         pInstance->SetData(DATA_NETHERMANCER_EVENT, NOT_STARTED);
 
@@ -163,7 +163,7 @@ struct mob_ragin_flamesAI : public ScriptedAI
 
     void Reset()
     {
-        infernoTimer = urand(8000,13000);
+        infernoTimer.Reset(urand(8000, 13000));
         canMelee = true;
 
         me->ApplySpellImmune(0, IMMUNITY_DAMAGE, SPELL_SCHOOL_MASK_MAGIC, true);

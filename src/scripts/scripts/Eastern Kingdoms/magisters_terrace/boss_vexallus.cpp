@@ -68,8 +68,8 @@ struct boss_vexallusAI : public ScriptedAI
 
     void Reset()
     {
-        ChainLightningTimer = urand(12000, 20000);
-        ArcaneShockTimer = urand(14000, 19000);
+        ChainLightningTimer.Reset(urand(12000, 20000));
+        ArcaneShockTimer.Reset(urand(14000, 19000));
         SpawnAddInterval = 15;
         AlreadySpawnedAmount = 0;
         summons.DespawnAll();

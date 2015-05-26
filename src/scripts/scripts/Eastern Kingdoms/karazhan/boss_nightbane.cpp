@@ -112,17 +112,17 @@ struct boss_nightbaneAI : public ScriptedAI
                 pInstance->SetData64(DATA_NIGHTBANE, m_creature->GetGUID());
         }
 
-        BellowingRoarTimer = 30000;
-        CharredEarthTimer = 15000;
-        DistractingAshTimer = 20000;
-        SmolderingBreathTimer = 10000;
-        TailSweepTimer = 12000;
-        RainofBonesTimer = 10000;
-        SmokingBlastTimer = 20000;
-        FireballBarrageTimer = 13000;
-        SearingCindersTimer = 14000;
-        WaitTimer = 1000;
-        Cleave_Timer = 6000;
+        BellowingRoarTimer.Reset(30000);
+        CharredEarthTimer.Reset(15000);
+        DistractingAshTimer.Reset(20000);
+        SmolderingBreathTimer.Reset(10000);
+        TailSweepTimer.Reset(12000);
+        RainofBonesTimer.Reset(10000);
+        SmokingBlastTimer.Reset(20000);
+        FireballBarrageTimer.Reset(13000);
+        SearingCindersTimer.Reset(14000);
+        WaitTimer.Reset(1000);
+        Cleave_Timer.Reset(6000);
 
         Phase = 1;
         FlyCount = 0;
