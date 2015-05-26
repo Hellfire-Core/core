@@ -141,8 +141,11 @@ void WardenBase::Update()
         if (m_WardenDataSent)
         {
             // 20 seconds after send packet
-            if ((m_WardenKickTimer >= 20000) && sWorld.getConfig(CONFIG_WARDEN_KICK))
-                    Client->KickPlayer();
+            if ((m_WardenKickTimer >= 30000) && sWorld.getConfig(CONFIG_WARDEN_KICK))
+            {
+                Client->KickPlayer();
+                sLog.outLog(DEBUG_LOG, "Player %u kicked for warden timeout.", Client->GetAccountId());
+            }
             else
                 m_WardenKickTimer += diff;
         }
