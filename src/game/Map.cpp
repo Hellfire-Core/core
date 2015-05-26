@@ -2322,7 +2322,7 @@ void InstanceMap::Remove(Player *player, bool remove)
 {
     sLog.outDetail("MAP: Removing player '%s' from instance '%u' of map '%s' before relocating to other map", player->GetName(), GetInstanceId(), GetMapName());
     //if last player set unload timer
-    if (!m_unloadTimer.GetInterval() && m_mapRefManager.getSize() == 1)
+    if (!m_unloadTimer.GetTimeLeft() && m_mapRefManager.getSize() == 1)
         m_unloadTimer = m_unloadWhenEmpty ? MIN_UNLOAD_DELAY : std::max(sWorld.getConfig(CONFIG_INSTANCE_UNLOAD_DELAY), (uint32)MIN_UNLOAD_DELAY);
     Map::Remove(player, remove);
     // for normal instances schedule the reset after all players have left

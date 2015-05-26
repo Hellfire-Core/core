@@ -144,7 +144,7 @@ void WardenBase::Update()
             if ((m_WardenKickTimer >= 60000) && sWorld.getConfig(CONFIG_WARDEN_KICK))           //FIXME: this value seems not to reset after receiving proper response, causing players to disconnect when switching maps
             {
                 Client->KickPlayer();
-                sLog.outLog(DEBUG_LOG, "Player %u kicked for warden timeout.", Client->GetAccountId());
+                sLog.outLog(LOG_WARDEN, "Player %u kicked for warden timeout.", Client->GetAccountId());
             }
             else
                 m_WardenKickTimer += diff;
