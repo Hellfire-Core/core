@@ -149,15 +149,13 @@ void WardenBase::Update()
             else
                 m_WardenKickTimer += diff;
         }
-        else if (m_WardenCheckTimer.GetInterval() > 0)
+        else if (m_WardenCheckTimer.Expired(diff))
         {
-            if (m_WardenCheckTimer.Expired(diff))
-            {
-                RequestData();
-                m_WardenCheckTimer = urand(m_checkIntervalMin, m_checkIntervalMax);
-            }
-
+            RequestData();
+            m_WardenCheckTimer = urand(m_checkIntervalMin, m_checkIntervalMax);
         }
+
+        
     }
 }
 
