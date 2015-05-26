@@ -2963,7 +2963,7 @@ void Spell::update(uint32 difftime)
     }
 
     // check if caster has moved before the spell finished
-    if (m_timer.GetInterval() != 0 && m_caster->hasUnitState(UNIT_STAT_CASTING_NOT_MOVE)/* && !m_caster->HasUnitMovementFlag(MOVEFLAG_FALLINGFAR)*/)
+    if (m_timer.GetTimeLeft() != 0 && m_caster->hasUnitState(UNIT_STAT_CASTING_NOT_MOVE)/* && !m_caster->HasUnitMovementFlag(MOVEFLAG_FALLINGFAR)*/)
     {
         // Check for movin' by(rotation keys ft. mouse button)
         //         if ((m_caster->GetTypeId() == TYPEID_PLAYER && ((Player*)m_caster)->isMoving() && m_casttime &&
@@ -2987,12 +2987,12 @@ void Spell::update(uint32 difftime)
             if (m_timer.Expired(difftime))
                 m_timer = 0;
 
-            if (m_timer.GetInterval() == 0 && !IsNextMeleeSwingSpell() && !IsAutoRepeat())
+            if (m_timer.GetTimeLeft() == 0 && !IsNextMeleeSwingSpell() && !IsAutoRepeat())
                 cast(GetSpellEntry()->CastingTimeIndex == 1);
         } break;
         case SPELL_STATE_CASTING:
         {
-            if (m_timer.GetInterval() > 0)
+            if (m_timer.GetTimeLeft() > 0)
             {
                 if (m_caster->GetTypeId() == TYPEID_PLAYER)
                 {
