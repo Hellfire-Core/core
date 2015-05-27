@@ -259,10 +259,10 @@ copy ..\..\src\hellgroundcore\hellgroundcore.conf.dist ..\..\bin\$(Platform)_$(C
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>Detour.lib;ACE.lib;libmySQL.lib;libeay32.lib;ws2_32.lib;winmm.lib;odbc32.lib;odbccp32.lib;advapi32.lib;dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Detour_VC120.lib;ACE.lib;libmySQL.lib;libeay32.lib;ws2_32.lib;winmm.lib;odbc32.lib;odbccp32.lib;advapi32.lib;dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(TargetPath)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>$(OutDir);..\..\dep\lib\precompiled\Release_2013;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OutDir);..\..\dep\lib\precompiled\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>VCOMP.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)$(TargetName).pdb</ProgramDatabaseFile>
@@ -278,7 +278,7 @@ copy ..\..\src\hellgroundcore\hellgroundcore.conf.dist ..\..\bin\$(Platform)_$(C
       <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>copy ..\..\dep\lib\precompiled\Release_2013\*.dll ..\..\bin\$(Platform)_$(Configuration)
+      <Command>copy ..\..\dep\lib\precompiled\Release\*.dll ..\..\bin\$(Platform)_$(Configuration)
 if exist $(TargetPath) move $(TargetPath) $(OutDir)..
 copy ..\..\src\hellgroundcore\hellgroundcore.conf.dist ..\..\bin\$(Platform)_$(Configuration)\HellgroundCore.conf.dist</Command>
     </PostBuildEvent>
