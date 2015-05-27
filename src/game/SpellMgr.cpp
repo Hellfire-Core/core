@@ -4059,6 +4059,8 @@ bool SpellMgr::IsSpellAllowedInLocation(SpellEntry const *spellInfo,uint32 map_i
 
             return mapEntry->multimap_id == 199 || mapEntry->multimap_id == 208;
         }
+        case 40817: // summon banishing portal
+            return (zone_id == 3785) || (zone_id == 3784);
     }
 
     return true;
