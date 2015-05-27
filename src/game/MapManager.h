@@ -78,7 +78,7 @@ class MapManager
         //void LoadGrid(int mapid, float x, float y, WorldObject const* obj, bool no_unload = false);
         void UnloadAll();
 
-        static bool ExistMapAndVMap(uint32 mapid, float x, float y);
+        static bool ExistMap(uint32 mapid, float x, float y);
         static bool IsValidMAP(uint32 mapid);
 
         static bool IsValidMapCoord(uint32 mapid, float x,float y)

@@ -161,7 +161,6 @@ class ScriptMgr
 
         void (HELLGROUND_IMPORT* m_pOnInitScriptLibrary)(char const*);
         void (HELLGROUND_IMPORT* m_pOnFreeScriptLibrary)();
-        const char* (HELLGROUND_IMPORT* m_pGetScriptLibraryVersion)();
 
         CreatureAI* (HELLGROUND_IMPORT* m_pGetCreatureAI) (Creature*);
         InstanceData* (HELLGROUND_IMPORT* m_pCreateInstanceData) (Map*);

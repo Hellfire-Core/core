@@ -851,14 +851,6 @@ class HELLGROUND_EXPORT World
 
         LocaleConstant GetAvailableDbcLocale(LocaleConstant locale) const { if (m_availableDbcLocaleMask & (1 << locale)) return locale; else return m_defaultDbcLocale; }
 
-        //used World DB version
-        void LoadDBVersion();
-        char const* GetDBVersion() { return m_DBVersion.c_str(); }
-
-        //used Script version
-        void SetScriptsVersion(char const* version) { m_ScriptsVersion = version ? version : "unknown scripting library"; }
-        char const* GetScriptsVersion() { return m_ScriptsVersion.c_str(); }
-
         void addDisconnectTime(std::pair<uint32,time_t> tPair){ m_disconnects.insert(tPair); }
 
         void CleanupDeletedChars();
@@ -990,10 +982,6 @@ class HELLGROUND_EXPORT World
 
         std::list<std::string> m_Autobroadcasts;
         std::list<std::pair<uint64, std::string> > m_GuildAnnounces[2];
-
-        //used versions
-        std::string m_DBVersion;
-        std::string m_ScriptsVersion;
 };
 
 extern uint32 realmID;

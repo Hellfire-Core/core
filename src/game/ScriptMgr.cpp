@@ -884,7 +884,6 @@ bool ScriptMgr::LoadScriptLibrary(const char* libName)
 
     GetScriptHookPtr(m_pOnInitScriptLibrary,        "InitScriptLibrary");
     GetScriptHookPtr(m_pOnFreeScriptLibrary,        "FreeScriptLibrary");
-    GetScriptHookPtr(m_pGetScriptLibraryVersion,    "GetScriptLibraryVersion");
 
     GetScriptHookPtr(m_pGetCreatureAI,              "GetCreatureAI");
     GetScriptHookPtr(m_pCreateInstanceData,         "CreateInstanceData");
@@ -920,9 +919,6 @@ bool ScriptMgr::LoadScriptLibrary(const char* libName)
 
     if (m_pOnInitScriptLibrary)
         m_pOnInitScriptLibrary(sConfig.GetFilename().c_str());
-
-    if (m_pGetScriptLibraryVersion)
-        sWorld.SetScriptsVersion(m_pGetScriptLibraryVersion());
 
     return true;
 }

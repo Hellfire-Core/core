@@ -404,8 +404,6 @@ bool Master::_StartDB()
     ///- Clean the database before starting
     clearOnlineAccounts();
 
-    sWorld.LoadDBVersion();
-
     //sLog.outString("Using %s", sWorld.GetDBVersion());
     return true;
 }

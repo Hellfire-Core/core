@@ -265,12 +265,6 @@ void Script::RegisterSelf(bool bReportError)
 //*** Functions to be Exported ***
 
 HELLGROUND_DLL_EXPORT
-char const* GetScriptLibraryVersion()
-{
-    return "Default Hellground scripting library";
-}
-
-HELLGROUND_DLL_EXPORT
 bool GossipHello(Player* pPlayer, Creature* pCreature)
 {
     Script* pTempScript = m_scripts[pCreature->GetScriptId()];
