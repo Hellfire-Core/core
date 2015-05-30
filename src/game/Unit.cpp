@@ -8145,6 +8145,15 @@ uint32 Unit::SpellDamageBonus(Unit *pVictim, SpellEntry const *spellProto, uint3
             {
                 DoneTotalMod = 1.0f;
             }
+            else if (spellProto->Id == 16608) // demon forged breastplate drain life 40%
+            {
+                CastingTime = 3500;
+                DotFactor = 0.32f;
+            }
+            else if (spellProto->Id == 18817) // skullflame shield drain life 100%
+            {
+                CastingTime = 3500;
+            }
             break;
         case SPELLFAMILY_MAGE:
             // Mana Tap(Racial)

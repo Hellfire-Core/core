@@ -2891,6 +2891,10 @@ void SpellMgr::LoadSpellCustomAttr()
                     break;
                 case 30532: // karazhan chess teleport
                     spellInfo->rangeIndex = 6;
+                    break;
+                case 18818: // skullflame shield flamestrike
+                    spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
+                    break;
                 }
                 if (spellInfo->SpellIconID == 184 && spellInfo->Attributes == 4259840)
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
