@@ -38,7 +38,6 @@ ScriptMgr::ScriptMgr() :
     m_hScriptLib(NULL),
     m_pOnInitScriptLibrary(NULL),
     m_pOnFreeScriptLibrary(NULL),
-    m_pGetScriptLibraryVersion(NULL),
     m_pGetCreatureAI(NULL),
     m_pCreateInstanceData(NULL),
 
@@ -936,7 +935,6 @@ void ScriptMgr::UnloadScriptLibrary()
 
     m_pOnInitScriptLibrary      = NULL;
     m_pOnFreeScriptLibrary      = NULL;
-    m_pGetScriptLibraryVersion  = NULL;
 
     m_pGetCreatureAI            = NULL;
     m_pCreateInstanceData       = NULL;
