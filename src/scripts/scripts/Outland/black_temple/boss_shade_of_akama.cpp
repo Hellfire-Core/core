@@ -1362,9 +1362,8 @@ void boss_shade_of_akamaAI::JustDied(Unit *Killer)
     m_summons.DespawnAll();
     if (Creature *akama = me->GetCreature(*me, AkamaGUID))
         ((npc_akamaAI *)akama->AI())->ShadeKilled(Killer);
-
-    if (instance)
-        instance->SetData(EVENT_SHADEOFAKAMA, DONE);   //na wszelki wypadek
+    else if (instance)
+        instance->SetData(EVENT_SHADEOFAKAMA, DONE);   // in case there was no akama O_o
 }
 
 CreatureAI* GetAI_boss_shade_of_akama(Creature *_Creature)

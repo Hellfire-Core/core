@@ -274,7 +274,7 @@ public:
 
     void StartCombat(GBK_Encounters encounter)
     {
-        if (m_encounter != GBK_NONE)
+        if (m_encounter != GBK_NONE && m_encounter != encounter)
         {
             if (m_encounter != GBK_ANTISPAMINLOGSINATOR)
             {
@@ -284,6 +284,8 @@ public:
             }
             return;
         }
+        else if (m_encounter == encounter)
+            return; // combat in progress anyway, just dance
 
         m_encounter = encounter;
         m_timer = time(NULL);
