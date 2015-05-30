@@ -8652,10 +8652,18 @@ uint32 Unit::SpellHealingBonus(SpellEntry const *spellProto, uint32 healamount, 
             {
                 // Flash of Light
                 if ((spellProto->SpellFamilyFlags & 0x0000000040000000LL) && (*i)->GetEffIndex() == 1)
+                {
                     AdvertisedBenefit += (*i)->GetModifier()->m_amount;
+                    if (HasAura(38320)) AdvertisedBenefit += 60; // libram of souls redeemed
+                    break;
+                }
                 // Holy Light
                 else if ((spellProto->SpellFamilyFlags & 0x0000000080000000LL) && (*i)->GetEffIndex() == 0)
+                {
                     AdvertisedBenefit += (*i)->GetModifier()->m_amount;
+                    if (HasAura(38320)) AdvertisedBenefit += 120; // libram of souls redeemed
+                    break;
+                }
             }
         }
     }
