@@ -221,7 +221,8 @@ struct boss_reliquary_of_soulsAI : public Scripted_NoMovementAI
                     pInstance->SetData(EVENT_RELIQUARYOFSOULS, IN_PROGRESS);
                 Phase = 1;
                 Counter = 0;
-                _Timer = 0;
+                _Timer = 1;
+                _Timer.SetCurrent(1); // make it expired
                 DelayTimer.Reset(15000);
             }
         }
@@ -274,8 +275,6 @@ struct boss_reliquary_of_soulsAI : public Scripted_NoMovementAI
 
     void UpdateAI(const uint32 diff)
     {
-
-        //FIXME: check this later, if working, remove this comment
         if (DelayTimer.GetInterval())
         {
             if (DelayTimer.Expired(diff))

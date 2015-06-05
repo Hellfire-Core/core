@@ -66,7 +66,6 @@
 #ifndef __SHOW_STUPID_WARNINGS__
 #   pragma warning(disable:4005)                            // 'identifier' : macro redefinition
 #   pragma warning(disable:4018)                            // 'expression' : signed/unsigned mismatch
-#   pragma warning(disable:4099)                            // pdb was not found, linking object as if no debug info
 #   pragma warning(disable:4244)                            // 'argument' : conversion from 'type1' to 'type2', possible loss of data
 #   pragma warning(disable:4267)                            // 'var' : conversion from 'size_t' to 'type', possible loss of data
 #   pragma warning(disable:4305)                            // 'identifier' : truncation from 'type1' to 'type2'
@@ -74,6 +73,7 @@
 #   pragma warning(disable:4355)                            // 'this' : used in base member initializer list
 #   pragma warning(disable:4800)                            // 'type' : forcing value to bool 'true' or 'false' (performance warning)
 #   pragma warning(disable:4522)                            // warning when class has 2 constructors
+#   pragma warning(disable:4724)                            // possible mod by 0 (in Timer.h, in fact not possible)
 #endif                                                      // __SHOW_STUPID_WARNINGS__
 #endif                                                      // __GNUC__
 
