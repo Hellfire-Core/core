@@ -9748,7 +9748,7 @@ void Unit::SetVisibility(UnitVisibility x)
 void Unit::UpdateSpeed(UnitMoveType mtype, bool forced)
 {
     // not in combat pet have same speed as owner
-    switch (mtype)
+    /*switch (mtype)
     {
         case MOVE_RUN:
         case MOVE_WALK:
@@ -9771,7 +9771,7 @@ void Unit::UpdateSpeed(UnitMoveType mtype, bool forced)
             break;
         default:
             break;
-    }
+    }*/
 
     int32 main_speed_mod  = 0;
     float stack_bonus     = 1.0f;
