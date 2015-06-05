@@ -669,7 +669,11 @@ void ScriptedAI::SetAutocast(uint32 spellId, uint32 timer, bool startImmediately
 
     autocastId = spellId;
 
-    autocastTimer = startImmediately ? 0 : timer;
+    autocastTimer = timer;
+
+    if (startImmediately)
+        autocastTimer.SetCurrent(timer);
+
     autocastTimerDef = timer;
 
     autocastMode = mode;

@@ -222,7 +222,7 @@ struct boss_reliquary_of_soulsAI : public Scripted_NoMovementAI
                 Phase = 1;
                 Counter = 0;
                 _Timer = 0;
-                DelayTimer = 15000;
+                DelayTimer.Reset(15000);
             }
         }
 
