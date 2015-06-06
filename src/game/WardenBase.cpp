@@ -152,7 +152,7 @@ void WardenBase::Update()
         else if (m_WardenCheckTimer.Expired(diff))
         {
             RequestData();
-            m_WardenCheckTimer = urand(m_checkIntervalMin, m_checkIntervalMax);
+            m_WardenCheckTimer.Reset(urand(m_checkIntervalMin, m_checkIntervalMax));
         }
 
         

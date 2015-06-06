@@ -597,7 +597,7 @@ void hyjalAI::StartEvent(Player* player)
     EventBegun = true;
     Summon = true;
 
-    NextWaveTimer = 15000;
+    NextWaveTimer.Reset(15000);
     CheckTimer = 5000;
     PlayerGUID = player->GetGUID();
 
@@ -879,7 +879,7 @@ void hyjalAI::UpdateAI(const uint32 diff)
         {
             EnemyCount = pInstance->GetData(DATA_TRASH);
             if (!EnemyCount)
-                NextWaveTimer = 5000;
+                NextWaveTimer.Reset(5000);
         }
 
         if (NextWaveTimer.Expired(diff))

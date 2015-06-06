@@ -132,8 +132,8 @@ struct ShortIntervalTimer
     {
         if (interval == 0)
             _current = 0;
-        else if (_current >= interval)
-            _current %= interval;
+        else if (_current >= _interval)
+            _current -= _interval;
 
         SetInterval(interval);
     }
