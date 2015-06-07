@@ -3142,6 +3142,7 @@ void SpellMgr::LoadSpellCustomAttr()
             /* HUNTER CUSTOM ATTRIBUTES */
             case 1543:                      // Flare no longer produces combat
                 spellInfo->AttributesEx3 |= SPELL_ATTR_EX3_NO_INITIAL_AGGRO;
+                spellInfo->speed = 15;
                 break;
             /* WARRIOR CUSTOM ATTRIBUTES */
             case 12721: // Deep Wounds
