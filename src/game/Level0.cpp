@@ -254,10 +254,10 @@ bool ChatHandler::HandleArenaReadyCommand(const char* args)
     if ( bg == nullptr )
         return false;
 
-    bool result = bg->SetPlayerReady(player->GetGUID());
-    if (result)
+    uint8 result = bg->SetPlayerReady(player->GetGUID());
+    if (result != 0)
     {
-        PSendSysMessage("You have been NOT marked as ready due to some problems.");
+        PSendSysMessage("You have been NOT marked as ready due to some (%u) problems.",result);
         return false;
     }
 

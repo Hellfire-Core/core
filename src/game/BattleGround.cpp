@@ -91,6 +91,9 @@ BattleGround::BattleGround()
     m_PlayersCount[BG_TEAM_ALLIANCE]    = 0;
     m_PlayersCount[BG_TEAM_HORDE]       = 0;
 
+    m_guidsReady[BG_TEAM_ALLIANCE].clear();
+    m_guidsReady[BG_TEAM_HORDE].clear();
+
     m_PrematureCountDown = false;
     m_PrematureCountDown = 0;
     m_TimeElapsedSinceBeggining = 0;
@@ -1981,24 +1984,24 @@ void BattleGround::SendObjectiveComplete(uint32 id, uint32 TeamID, float x, floa
     }
 }
 
-bool BattleGround::SetPlayerReady(uint64 playerGUID)
+uint8 BattleGround::SetPlayerReady(uint64 playerGUID)
 {
     if ( !isArena() )
-        return false;
+        return 1;
 
     uint32 readyCount = m_guidsReady[ 0 ].size() + m_guidsReady[ 1 ].size();
     if ( readyCount == GetMaxPlayers() )
-        return false;
+        return 2;
 
     uint32 team = GetPlayerTeam( playerGUID );
     if ( team == TEAM_NONE )
-        return false;
+        return 3;
 
     if ( GetStatus() != STATUS_WAIT_JOIN )
-        return false;
+        return 4;
 
     if ( GetStartDelayTime() <= sWorld.getConfig(CONFIG_ARENA_READY_START_TIMER) )
-        return false;
+        return 5;
 
     uint8 idx = team == ALLIANCE ? 0 : 1;
     m_guidsReady[ idx ].insert( playerGUID );
@@ -2013,5 +2016,5 @@ bool BattleGround::SetPlayerReady(uint64 playerGUID)
     {
         SendMessageToTeam(team == ALLIANCE ? HORDE : ALLIANCE, "Opponents are ready to start earlier, what about you?");
     }
-    return true;
+    return 0;
 }
