@@ -895,63 +895,6 @@ void GameEventMgr::LoadFromDB()
         sLog.outString();
         sLog.outString(">> Loaded %u battleground holidays in game events", count);
     }
-
-    ////////////////////////
-    // GameEventPool
-    ////////////////////////
-
-    mGameEventPoolIds.resize(mGameEvent.size()*2-1);
-
-    sLog.outString("Loading Game Event Pool Data...");
-
-    //                                   1                    2
-    result = GameDataDatabase.Query("SELECT pool_template.entry, game_event_pool.event "
-        "FROM pool_template JOIN game_event_pool ON pool_template.entry = game_event_pool.pool_entry");
-
-    count = 0;
-    if (!result)
-    {
-        BarGoLink bar2(1);
-        bar2.step();
-
-        sLog.outString();
-        sLog.outString(">> Loaded %u pools in game events", count);
-    }
-    else
-    {
-
-        BarGoLink bar2(result->GetRowCount());
-        do
-        {
-            Field *fields = result->Fetch();
-
-            bar2.step();
-
-            uint32 entry   = fields[0].GetUInt16();
-            int16 event_id = fields[1].GetInt16();
-
-            int32 internal_event_id = mGameEvent.size() + event_id - 1;
-
-            if (internal_event_id < 0 || internal_event_id >= mGameEventPoolIds.size())
-            {
-                sLog.outLog(LOG_DB_ERR, "`game_event_pool` game event id (%i) is out of range compared to max event id in `game_event`",event_id);
-                continue;
-            }
-
-            if (!sPoolMgr.CheckPool(entry))
-            {
-                sLog.outLog(LOG_DB_ERR, "Pool Id (%u) has all creatures or gameobjects with explicit chance sum <>100 and no equal chance defined. The pool system cannot pick one to spawn.", entry);
-                continue;
-            }
-
-            ++count;
-            IdList& poollist = mGameEventPoolIds[internal_event_id];
-            poollist.push_back(entry);
-
-        } while (result->NextRow());
-        sLog.outString();
-        sLog.outString(">> Loaded %u pools in game events", count);
-    }
 }
 
 uint32 GameEventMgr::GetNPCFlag(Creature * cr)
@@ -1227,14 +1170,6 @@ void GameEventMgr::GameEventSpawn(int16 event_id)
         }
     }
 
-    if (internal_event_id < 0 || internal_event_id >= mGameEventPoolIds.size())
-    {
-        sLog.outLog(LOG_DEFAULT, "ERROR: GameEventMgr::GameEventSpawn attempt access to out of range mGameEventPoolIds element %i (size: %lu)", internal_event_id, mGameEventPoolIds.size());
-        return;
-    }
-
-    for (IdList::iterator itr = mGameEventPoolIds[internal_event_id].begin(); itr != mGameEventPoolIds[internal_event_id].end(); ++itr)
-        sPoolMgr.SpawnPool(*itr, 0);
 }
 
 void GameEventMgr::GameEventUnspawn(int16 event_id)
@@ -1286,15 +1221,6 @@ void GameEventMgr::GameEventUnspawn(int16 event_id)
                     pGameobject->AddObjectToRemoveList();
         }
     }
-
-    if (internal_event_id < 0 || internal_event_id >= mGameEventPoolIds.size())
-    {
-        sLog.outLog(LOG_DEFAULT, "ERROR: GameEventMgr::GameEventUnspawn attempt access to out of range mGameEventPoolIds element %i (size: %lu)", internal_event_id, mGameEventPoolIds.size());
-        return;
-    }
-
-    for (IdList::iterator itr = mGameEventPoolIds[internal_event_id].begin(); itr != mGameEventPoolIds[internal_event_id].end(); ++itr)
-        sPoolMgr.DespawnPool(*itr);
 }
 
 void GameEventMgr::ChangeEquipOrModel(int16 event_id, bool activate)
