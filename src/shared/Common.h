@@ -73,7 +73,6 @@
 #   pragma warning(disable:4355)                            // 'this' : used in base member initializer list
 #   pragma warning(disable:4800)                            // 'type' : forcing value to bool 'true' or 'false' (performance warning)
 #   pragma warning(disable:4522)                            // warning when class has 2 constructors
-#   pragma warning(disable:4724)                            // possible mod by 0 (in Timer.h, in fact not possible)
 #endif                                                      // __SHOW_STUPID_WARNINGS__
 #endif                                                      // __GNUC__
 

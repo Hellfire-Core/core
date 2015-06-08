@@ -52,7 +52,7 @@ bool SpawnedPoolData::IsSpawnedObject<GameObject>(uint32 db_guid) const
 
 // Method that tell if a pool is spawned currently
 template<>
-bool SpawnedPoolData::IsSpawnedObject<Pool>(uint32 sub_pool_id) const
+bool SpawnedPoolData::IsSpawnedObject<void>(uint32 sub_pool_id) const
 {
     return mSpawnedPools.find(sub_pool_id) != mSpawnedPools.end();
 }
@@ -72,7 +72,7 @@ void SpawnedPoolData::AddSpawn<GameObject>(uint32 db_guid, uint32 pool_id)
 }
 
 template<>
-void SpawnedPoolData::AddSpawn<Pool>(uint32 sub_pool_id, uint32 pool_id)
+void SpawnedPoolData::AddSpawn<void>(uint32 sub_pool_id, uint32 pool_id)
 {
     mSpawnedPools[sub_pool_id] = 0;
     ++mSpawnedPools[pool_id];
@@ -97,36 +97,12 @@ void SpawnedPoolData::RemoveSpawn<GameObject>(uint32 db_guid, uint32 pool_id)
 }
 
 template<>
-void SpawnedPoolData::RemoveSpawn<Pool>(uint32 sub_pool_id, uint32 pool_id)
+void SpawnedPoolData::RemoveSpawn<void>(uint32 sub_pool_id, uint32 pool_id)
 {
     mSpawnedPools.erase(sub_pool_id);
     uint32& val = mSpawnedPools[pool_id];
     if (val > 0)
         --val;
-}
-
-////////////////////////////////////////////////////////////
-// Methods of class PoolObject
-template<>
-void PoolObject::CheckEventLinkAndReport<Creature>(uint32 poolId, int16 event_id, std::map<uint32, int16> const& creature2event, std::map<uint32, int16> const& /*go2event*/) const
-{
-    std::map<uint32, int16>::const_iterator itr = creature2event.find(guid);
-    if (itr == creature2event.end() || itr->second != event_id)
-        sLog.outLog(LOG_DB_ERR, "Creature (GUID: %u) expected to be listed in `game_event_creature` for event %u as part pool %u", guid, event_id, poolId);
-}
-
-template<>
-void PoolObject::CheckEventLinkAndReport<GameObject>(uint32 poolId, int16 event_id, std::map<uint32, int16> const& /*creature2event*/, std::map<uint32, int16> const& go2event) const
-{
-    std::map<uint32, int16>::const_iterator itr = go2event.find(guid);
-    if (itr == go2event.end() || itr->second != event_id)
-        sLog.outLog(LOG_DB_ERR, "Gameobject (GUID: %u) expected to be listed in `game_event_gameobject` for event %u as part pool %u", guid, event_id, poolId);
-}
-
-template<>
-void PoolObject::CheckEventLinkAndReport<Pool>(uint32 poolId, int16 event_id, std::map<uint32, int16> const& creature2event, std::map<uint32, int16> const& go2event) const
-{
-    sPoolMgr.CheckEventLinkAndReport(guid, event_id, creature2event, go2event);
 }
 
 ////////////////////////////////////////////////////////////
@@ -155,17 +131,6 @@ bool PoolGroup<T>::CheckPool() const
             return false;
     }
     return true;
-}
-
-// Method to check event linking
-template <class T>
-void PoolGroup<T>::CheckEventLinkAndReport(int16 event_id, std::map<uint32, int16> const& creature2event, std::map<uint32, int16> const& go2event) const
-{
-    for (uint32 i=0; i < EqualChanced.size(); ++i)
-        EqualChanced[i].CheckEventLinkAndReport<T>(poolId, event_id, creature2event, go2event);
-
-    for (uint32 i=0; i<ExplicitlyChanced.size(); ++i)
-        ExplicitlyChanced[i].CheckEventLinkAndReport<T>(poolId, event_id, creature2event, go2event);
 }
 
 template <class T>
@@ -284,14 +249,14 @@ void PoolGroup<GameObject>::Despawn1Object(uint32 guid)
 
 // Same on one pool
 template<>
-void PoolGroup<Pool>::Despawn1Object(uint32 child_pool_id)
+void PoolGroup<void>::Despawn1Object(uint32 child_pool_id)
 {
     sPoolMgr.DespawnPool(child_pool_id);
 }
 
 // Method for a pool only to remove any found record causing a circular dependency loop
 template<>
-void PoolGroup<Pool>::RemoveOneRelation(uint16 child_pool_id)
+void PoolGroup<void>::RemoveOneRelation(uint16 child_pool_id)
 {
     for (PoolObjectList::iterator itr = ExplicitlyChanced.begin(); itr != ExplicitlyChanced.end(); ++itr)
     {
@@ -462,7 +427,7 @@ void PoolGroup<GameObject>::Spawn1Object(PoolObject* obj, bool instantly)
 
 // Same for 1 pool
 template <>
-void PoolGroup<Pool>::Spawn1Object(PoolObject* obj, bool instantly)
+void PoolGroup<void>::Spawn1Object(PoolObject* obj, bool instantly)
 {
     sPoolMgr.SpawnPool(obj->guid, instantly);
 }
@@ -518,7 +483,7 @@ void PoolGroup<GameObject>::ReSpawn1Object(PoolObject* obj)
 
 // Nothing to do for a child Pool
 template <>
-void PoolGroup<Pool>::ReSpawn1Object(PoolObject* /*obj*/)
+void PoolGroup<void>::ReSpawn1Object(PoolObject* /*obj*/)
 {
 }
 
@@ -623,7 +588,6 @@ void PoolManager::LoadFromDB()
 
         PoolTemplateData& pPoolTemplate = mPoolTemplate[pool_id];
         pPoolTemplate.MaxLimit  = fields[1].GetUInt32();
-        pPoolTemplate.AutoSpawn = true;          // will update and later data loading
 
     } while (result->NextRow());
 
@@ -825,14 +789,11 @@ void PoolManager::LoadFromDB()
             ++count;
 
             PoolObject plObject = PoolObject(child_pool_id, chance);
-            PoolGroup<Pool>& plgroup = mPoolPoolGroups[mother_pool_id];
+            PoolGroup<void>& plgroup = mPoolPoolGroups[mother_pool_id];
             plgroup.SetPoolId(mother_pool_id);
             plgroup.AddEntry(plObject, pPoolTemplateMother->MaxLimit);
             SearchPair p(child_pool_id, mother_pool_id);
             mPoolSearchMap.insert(p);
-
-            // update top independent pool flag
-            mPoolTemplate[child_pool_id].AutoSpawn = false;
 
         } while( result->NextRow() );
 
@@ -884,7 +845,7 @@ void PoolManager::Initialize()
 
     for(uint16 pool_entry = 0; pool_entry < mPoolTemplate.size(); ++pool_entry)
     {
-        if (mPoolTemplate[pool_entry].AutoSpawn)
+        if (IsPartOfAPool<void>(pool_entry) == NULL)
         {
             if (!CheckPool(pool_entry))
             {
@@ -920,7 +881,7 @@ void PoolManager::SpawnPoolGroup<GameObject>(uint16 pool_id, uint32 db_guid, boo
 // Call to spawn a pool, if cache if true the method will spawn only if cached entry is different
 // If it's same, the pool is respawned only
 template<>
-void PoolManager::SpawnPoolGroup<Pool>(uint16 pool_id, uint32 sub_pool_id, bool instantly)
+void PoolManager::SpawnPoolGroup<void>(uint16 pool_id, uint32 sub_pool_id, bool instantly)
 {
     if (!mPoolPoolGroups[pool_id].isEmpty())
         mPoolPoolGroups[pool_id].SpawnObject(mSpawnedData, mPoolTemplate[pool_id].MaxLimit, sub_pool_id, instantly);
@@ -930,7 +891,7 @@ void PoolManager::SpawnPoolGroup<Pool>(uint16 pool_id, uint32 sub_pool_id, bool 
     \param instantly defines if (leaf-)objects are spawned instantly or with fresh respawn timer */
 void PoolManager::SpawnPool(uint16 pool_id, bool instantly)
 {
-    SpawnPoolGroup<Pool>(pool_id, 0, instantly);
+    SpawnPoolGroup<void>(pool_id, 0, instantly);
     SpawnPoolGroup<GameObject>(pool_id, 0, instantly);
     SpawnPoolGroup<Creature>(pool_id, 0, instantly);
 }
@@ -957,26 +918,18 @@ bool PoolManager::CheckPool(uint16 pool_id) const
         mPoolPoolGroups[pool_id].CheckPool();
 }
 
-// Method that check linking all elements to event
-void PoolManager::CheckEventLinkAndReport(uint16 pool_id, int16 event_id, std::map<uint32, int16> const& creature2event, std::map<uint32, int16> const& go2event) const
-{
-    mPoolGameobjectGroups[pool_id].CheckEventLinkAndReport(event_id, creature2event, go2event);
-    mPoolCreatureGroups[pool_id].CheckEventLinkAndReport(event_id, creature2event, go2event);
-    mPoolPoolGroups[pool_id].CheckEventLinkAndReport(event_id, creature2event, go2event);
-}
-
 // Call to update the pool when a gameobject/creature part of pool [pool_id] is ready to respawn
 // Here we cache only the creature/gameobject whose guid is passed as parameter
 // Then the spawn pool call will use this cache to decide
 template<typename T>
 void PoolManager::UpdatePool(uint16 pool_id, uint32 db_guid_or_pool_id)
 {
-    if (uint16 motherpoolid = IsPartOfAPool<Pool>(pool_id))
-        SpawnPoolGroup<Pool>(motherpoolid, pool_id, false);
+    if (uint16 motherpoolid = IsPartOfAPool<void>(pool_id))
+        SpawnPoolGroup<void>(motherpoolid, pool_id, false);
     else
         SpawnPoolGroup<T>(pool_id, db_guid_or_pool_id, false);
 }
 
-template void PoolManager::UpdatePool<Pool>(uint16 pool_id, uint32 db_guid_or_pool_id);
+template void PoolManager::UpdatePool<void>(uint16 pool_id, uint32 db_guid_or_pool_id);
 template void PoolManager::UpdatePool<GameObject>(uint16 pool_id, uint32 db_guid_or_pool_id);
 template void PoolManager::UpdatePool<Creature>(uint16 pool_id, uint32 db_guid_or_pool_id);
