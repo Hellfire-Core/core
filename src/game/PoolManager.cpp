@@ -822,7 +822,7 @@ void PoolManager::Initialize()
 
     for(uint16 pool_entry = 0; pool_entry < max_pool_id; ++pool_entry)
     {
-        if (IsPartOfAPool<void>(pool_entry) == NULL)
+        if (IsPartOfAPool<void>(pool_entry) == 0)
         {
             if (!CheckPool(pool_entry))
             {
