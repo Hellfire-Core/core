@@ -27,11 +27,6 @@
 #include "Creature.h"
 #include "GameObject.h"
 
-struct PoolTemplateData
-{
-    uint32  MaxLimit;
-};
-
 struct PoolObject
 {
     uint32  guid;
@@ -67,22 +62,25 @@ class PoolGroup
 {
     typedef std::vector<PoolObject> PoolObjectList;
     public:
-        explicit PoolGroup() : poolId(0) { }
-        void SetPoolId(uint32 pool_id) { poolId = pool_id; }
+        explicit PoolGroup() : poolId(0), maxLimit(0) { }
         ~PoolGroup() {};
+        void SetPoolId(uint32 pool_id) { poolId = pool_id; };
+        void SetLimit(uint32 l) { maxLimit = l; };
+
         bool isEmpty() const { return ExplicitlyChanced.empty() && EqualChanced.empty(); }
-        void AddEntry(PoolObject& poolitem, uint32 maxentries);
+        void AddEntry(PoolObject& poolitem);
         bool CheckPool() const;
         PoolObject* RollOne(SpawnedPoolData& spawns, uint32 triggerFrom);
         void DespawnObject(SpawnedPoolData& spawns, uint32 guid=0);
         void Despawn1Object(uint32 guid);
-        void SpawnObject(SpawnedPoolData& spawns, uint32 limit, uint32 triggerFrom, bool instantly);
+        void SpawnObject(SpawnedPoolData& spawns, uint32 triggerFrom, bool instantly);
 
         void Spawn1Object(PoolObject* obj, bool instantly);
         void ReSpawn1Object(PoolObject* obj);
         void RemoveOneRelation(uint16 child_pool_id);
     private:
         uint32 poolId;
+        uint32 maxLimit;
         PoolObjectList ExplicitlyChanced;
         PoolObjectList EqualChanced;
 };
@@ -130,7 +128,6 @@ class PoolManager
         void SpawnPoolGroup(uint16 pool_id, uint32 db_guid_or_pool_id, bool instantly);
 
         uint16 max_pool_id;
-        typedef std::vector<PoolTemplateData> PoolTemplateDataMap;
 
         typedef std::vector<PoolGroup<Creature> >   PoolGroupCreatureMap;
         typedef std::vector<PoolGroup<GameObject> > PoolGroupGameObjectMap;
@@ -138,7 +135,6 @@ class PoolManager
         typedef std::pair<uint32, uint16> SearchPair;
         typedef std::map<uint32, uint16> SearchMap;
 
-        PoolTemplateDataMap mPoolTemplate;
         PoolGroupCreatureMap mPoolCreatureGroups;
         PoolGroupGameObjectMap mPoolGameobjectGroups;
         PoolGroupPoolMap mPoolPoolGroups;
