@@ -105,7 +105,7 @@ class PoolManager
         {
             if (uint16 pool_id = IsPartOfAPool<T>(db_guid_or_pool_id))
             {
-                if (uint16 top_pool_id = IsPartOfTopPool<Pool>(pool_id))
+                if (uint16 top_pool_id = IsPartOfTopPool<void>(pool_id))
                     return top_pool_id;
 
                 return pool_id;
