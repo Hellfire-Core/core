@@ -153,7 +153,6 @@ struct boss_lady_vashjAI : public ScriptedAI
 
     Timer AggroTimer;
     Timer ShockBlast_Timer;
-    Timer PulseCombat_Timer;
     Timer Entangle_Timer;
     Timer StaticCharge_Timer;
     Timer ForkedLightning_Timer;
@@ -177,7 +176,6 @@ struct boss_lady_vashjAI : public ScriptedAI
     void Reset()
     {
         AggroTimer.Reset(19000);
-        PulseCombat_Timer.Reset(5000);
         ShockBlast_Timer.Reset(urand(1, 60001));
         Entangle_Timer.Reset(30000);
         StaticCharge_Timer.Reset(urand(10000, 25000));
@@ -350,26 +348,22 @@ struct boss_lady_vashjAI : public ScriptedAI
         if (!UpdateVictim() )
             return;
 
-        if (PulseCombat_Timer.Expired(diff))
-        {
-            DoZoneInCombat();
-            PulseCombat_Timer = 3000;
-        }
+        DoSpecialThings(diff, DO_PULSE_COMBAT, 200.0f);
         
 
         // Paralyze effect
-        if(Phase == 2)
+        if (Phase == 2)
         {
             if (ParalyzeCheck_Timer.Expired(diff))
-           {
-               Paralyze(true);
-               if(me->hasUnitState(UNIT_STAT_CHASE))
-               {
+            {
+                Paralyze(true);
+                if (me->hasUnitState(UNIT_STAT_CHASE))
+                {
                     me->GetMotionMaster()->Clear();
                     DoTeleportTo(MIDDLE_X, MIDDLE_Y, MIDDLE_Z);
-               }
-               ParalyzeCheck_Timer = 1000;
-           }
+                }
+                ParalyzeCheck_Timer = 1000;
+            }
         }
 
         if(Phase == 1 || Phase == 3)
@@ -613,7 +607,7 @@ struct mob_enchanted_elementalAI : public ScriptedAI
     {
         me->SetSpeed(MOVE_WALK,0.6);//walk
         me->SetSpeed(MOVE_RUN,0.6);//run
-        move = 0;
+        move.Reset(1);
         phase = 1;
         Vashj = NULL;
 
@@ -785,7 +779,7 @@ struct mob_toxic_sporebatAI : public ScriptedAI
     {
         me->SetLevitate(true);
         me->setFaction(14);
-        movement_timer = 0;
+        movement_timer.Reset(1);
         ToxicSpore_Timer.Reset(5000);
         bolt_timer.Reset(5500);
         Check_Timer.Reset(1000);
@@ -807,7 +801,7 @@ struct mob_toxic_sporebatAI : public ScriptedAI
             return;
 
         if(id == 1)
-            movement_timer = 0;
+            movement_timer = 0;   // FIXME: disable timer?
     }
 
     void UpdateAI (const uint32 diff)
@@ -1101,7 +1095,7 @@ struct mob_shield_generator_channelAI : public ScriptedAI
     bool Cast;
     void Reset()
     {
-        Check_Timer = 0;
+        Check_Timer.Reset(0);
         Cast = false;
         me->SetUInt32Value(UNIT_FIELD_DISPLAYID , 11686);  //invisible
 
