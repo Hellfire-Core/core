@@ -128,6 +128,9 @@ struct boss_nightbaneAI : public ScriptedAI
         FlyCount = 0;
         MovePhase = 0;
 
+        me->SetIgnoreVictimSelection(false);
+        me->SetReactState(REACT_AGGRESSIVE);
+
         m_creature->SetSpeed(MOVE_RUN, 2.0f);
         m_creature->SetLevitate(true);
         m_creature->SetWalk(false);
@@ -264,6 +267,7 @@ struct boss_nightbaneAI : public ScriptedAI
         DoYell(YELL_FLY_PHASE, LANG_UNIVERSAL, NULL);
 
         me->SetReactState(REACT_PASSIVE);
+        me->SetIgnoreVictimSelection(true);
         DoResetThreat();
         m_creature->InterruptSpell(CURRENT_GENERIC_SPELL);
         m_creature->HandleEmoteCommand(EMOTE_ONESHOT_LIFTOFF);
@@ -308,6 +312,8 @@ struct boss_nightbaneAI : public ScriptedAI
                     m_creature->SetLevitate(false);
                     m_creature->HandleEmoteCommand(EMOTE_ONESHOT_LAND);
                     m_creature->GetMotionMaster()->MovePoint(8, IntroWay[7][0], IntroWay[7][1], IntroWay[7][2]);
+                    me->SetReactState(REACT_AGGRESSIVE);
+                    me->SetIgnoreVictimSelection(false);
                 }
                 else
                 {
