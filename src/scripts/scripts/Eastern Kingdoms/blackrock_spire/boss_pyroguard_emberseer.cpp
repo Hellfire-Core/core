@@ -86,8 +86,8 @@ struct boss_pyroguard_emberseerAI : public BossAI
         events.Reset();
         pInstance->SetData(DATA_EMBERSEER, DONE);
 
-        if (Creature *warden = GetClosestCreatureWithEntry(me, 99999, 60.0))
-           warden->Kill(warden);
+        if (Creature *dementor = GetClosestCreatureWithEntry(me, 99999, 1000.0))
+            dementor->Kill(dementor);
     }
 
     void EnterEvadeMode()
