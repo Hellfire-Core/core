@@ -195,15 +195,18 @@ struct boss_netherspiteAI : public ScriptedAI
                 {
                     if (Creature *beamer = Unit::GetCreature(*portal, BeamerGUID[j]))
                     {
-                        //beamer->CastStop(); // does shit.
-                        beamer->AI()->EnterEvadeMode();
+                        beamer->DisappearAndDie();
 
-                        if (current->GetTypeId() == TYPEID_PLAYER)
-                            beamer->CastSpell(current, PlayerDebuff[j], false);
+                        if (Creature *beamer = portal->SummonCreature(PortalID[j], portal->GetPositionX(),
+                            portal->GetPositionY(), portal->GetPositionZ(), portal->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN, 60000))
+                        {
+                            if (current->GetTypeId() == TYPEID_PLAYER)
+                                beamer->CastSpell(current, PlayerDebuff[j], false);
 
-                        beamer->CastSpell(target, PortalBeam[j], false);
-                        BeamTarget[j] = target->GetGUID();
-                        BeamerGUID[j] = beamer->GetGUID();
+                            beamer->CastSpell(target, PortalBeam[j], false);
+                            BeamTarget[j] = target->GetGUID();
+                            BeamerGUID[j] = beamer->GetGUID();
+                        }
                     }
                 }
 
