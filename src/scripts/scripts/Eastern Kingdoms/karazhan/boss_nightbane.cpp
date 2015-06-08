@@ -326,8 +326,7 @@ struct boss_nightbaneAI : public ScriptedAI
                 DoSpecialThings(diff, DO_PULSE_COMBAT);
                 return;
             }
-
-            if (!UpdateVictim())
+            else if (!UpdateVictim())
                 return;
 
             DoSpecialThings(diff, DO_PULSE_COMBAT);
