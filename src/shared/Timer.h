@@ -166,7 +166,7 @@ struct TimeTracker
         TimeTracker(time_t expiry) : i_expiryTime(expiry) {}
         void Update(time_t diff) { i_expiryTime -= diff; }
         bool Passed(void) const { return (i_expiryTime <= 0); }
-        void Reset(time_t interval) { i_expiryTime += interval; }
+        void Reset(time_t interval) { i_expiryTime = interval; }
         time_t GetExpiry(void) const { return i_expiryTime; }
 
     private:
@@ -179,7 +179,7 @@ struct TimeTrackerSmall
         TimeTrackerSmall(int32 expiry =0) : i_expiryTime(expiry) {}
         void Update(int32 diff) { i_expiryTime -= diff; }
         bool Passed(void) const { return (i_expiryTime <= 0); }
-        void Reset(int32 interval) { i_expiryTime += interval; }
+        void Reset(int32 interval) { i_expiryTime = interval; }
         int32 GetExpiry(void) const { return i_expiryTime; }
 
     private:
