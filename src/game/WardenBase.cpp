@@ -146,7 +146,7 @@ void WardenBase::Update()
                 Client->KickPlayer();
                 sLog.outLog(LOG_WARDEN, "Player %u kicked for warden timeout (%u ms).", Client->GetAccountId(),m_WardenKickTimer);
             }
-            else
+            else if (Client->GetPlayer() && Client->GetPlayer()->IsInWorld())
                 m_WardenKickTimer += diff;
         }
         else if (m_WardenCheckTimer.Expired(diff))
