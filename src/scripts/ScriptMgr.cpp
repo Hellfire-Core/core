@@ -41,7 +41,6 @@ void FillSpellSummary();
 // -------------------
 void LoadDatabase()
 {
-    pSystemMgr.LoadVersion();
     pSystemMgr.LoadScriptTexts();
     pSystemMgr.LoadScriptTextsCustom();
     pSystemMgr.LoadScriptWaypoints(); //[TZERO] to implement

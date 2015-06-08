@@ -40,25 +40,6 @@ SystemMgr& SystemMgr::Instance()
     return pSysMgr;
 }
 
-void SystemMgr::LoadVersion()
-{
-    //Get Version information
-    QueryResultAutoPtr pResult = GameDataDatabase.PQuery("SELECT script_version FROM version LIMIT 1");
-
-    if (pResult)
-    {
-        Field* pFields = pResult->Fetch();
-
-        outstring_log("TSCR: Database version is: %s", pFields[0].GetString());
-        outstring_log();
-    }
-    else
-    {
-        error_log("TSCR: Missing `version`.`script_version` information.");
-        outstring_log();
-    }
-}
-
 void SystemMgr::LoadScriptTexts()
 {
     outstring_log("TSCR: Loading Script Texts...");
