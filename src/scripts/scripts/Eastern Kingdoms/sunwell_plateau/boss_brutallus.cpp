@@ -115,8 +115,8 @@ struct boss_brutallusAI : public ScriptedAI
         CheckGroundTimer = 500;
 
         IntroPhase = 0;
-        IntroPhaseTimer = 0;
-        IntroFrostBoltTimer = 0;
+        IntroPhaseTimer = 1;      // to avoid being disabled
+        IntroFrostBoltTimer = 1;  // same
         Enraged = false;
 
         ForceSpellCast(me, SPELL_DUAL_WIELD, INTERRUPT_AND_CAST_INSTANTLY);
