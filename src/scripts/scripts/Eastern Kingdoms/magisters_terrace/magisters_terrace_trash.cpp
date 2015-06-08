@@ -145,7 +145,7 @@ struct mob_sunblade_magisterAI : public ScriptedAI
 
     void Reset()
     {
-        Frostbolt_Timer = 0;
+        Frostbolt_Timer.Reset(1);
         Arcane_Nova_Timer.Reset(urand(12000, 20000));
         OOCTimer.Reset(5000);
     }
@@ -706,7 +706,7 @@ struct mob_wretched_huskAI : public ScriptedAI
         me->SetStandState(PLAYER_STATE_SIT);
         OOCTimer.Reset(5000);
         Drink_Timer.Reset(HeroicMode ? urand(5000, 18000) : urand(15000, 25000));
-        Wretched_Cast_Timer = 0;
+        Wretched_Cast_Timer.Reset(0);
     }
 
     void AttackStart(Unit* who)
@@ -912,7 +912,7 @@ struct mob_coilskar_witchAI : public ScriptedAI
     void Reset()
     {
         Check_Timer.Reset(1500);
-        Shoot_Timer = 0;
+        Shoot_Timer.Reset(0);
         FrostArrow_Timer.Reset(urand(2000, 12000));
         ForkedLightning_Timer.Reset(urand(5000, 10000));
         OOCTimer.Reset(5000);
@@ -1014,7 +1014,7 @@ struct mob_ethereum_smugglerAI : public ScriptedAI
 
     void Reset()
     {
-        Check_Timer = 0;
+        Check_Timer.Reset(0);
         ExplosionCombo_Timer.Reset(5000);
         OOCTimer.Reset(5000);
     }

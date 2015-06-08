@@ -111,7 +111,7 @@ struct boss_felblood_kaelthasAI : public ScriptedAI
 
     void Reset()
     {
-        FireballTimer = 0;
+        FireballTimer.Reset(0);
         PhoenixTimer.Reset(urand(15000, 20000));
         FlameStrikeTimer.Reset(urand(25000, 35000));
         CheckTimer.Reset(2000);
@@ -123,7 +123,7 @@ struct boss_felblood_kaelthasAI : public ScriptedAI
 
         PyroblastTimer.Reset(60000);
 
-        GravityLapseTimer = 0;
+        GravityLapseTimer.Reset(0);
         GravityLapsePhase = 0;
 
         Phase = 0;
@@ -349,7 +349,7 @@ struct boss_felblood_kaelthasAI : public ScriptedAI
                     m_creature->ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_INTERRUPT_CAST, true);
                     m_creature->StopMoving();
                     DoStartNoMovement(me->getVictim());
-                    GravityLapseTimer = 0;
+                    GravityLapseTimer = 1;
                     GravityLapsePhase = 1;
                     Phase = 2;
                     if(pInstance)
@@ -551,7 +551,7 @@ struct mob_arcane_sphereAI : public ScriptedAI
     {
         if(Type == POINT_MOTION_TYPE)
             if(Id == 1)
-                ChangeTargetTimer = 0;
+                ChangeTargetTimer.Reset(1);
     }
 
     void UpdateAI(const uint32 diff)
@@ -561,7 +561,7 @@ struct mob_arcane_sphereAI : public ScriptedAI
         {
             m_creature->SetSpeed(MOVE_FLIGHT, 0.6);    // to be tested
             if(pInstance && pInstance->GetData(DATA_KAELTHAS_EVENT) != IN_PROGRESS)
-                DespawnTimer = 0;
+                DespawnTimer.Reset(1);
             CheckTimer = 1000;
         }
         
