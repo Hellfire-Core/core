@@ -99,21 +99,6 @@ class PoolManager
         template<typename T>
         uint16 IsPartOfAPool(uint32 db_guid_or_pool_id) const;
 
-        // Method that tell if the creature/gameobject/pool is part of top level pool and return the pool id if yes
-        template<typename T>
-        uint16 IsPartOfTopPool(uint32 db_guid_or_pool_id) const
-        {
-            if (uint16 pool_id = IsPartOfAPool<T>(db_guid_or_pool_id))
-            {
-                if (uint16 top_pool_id = IsPartOfTopPool<void>(pool_id))
-                    return top_pool_id;
-
-                return pool_id;
-            }
-
-            return 0;
-        }
-
         template<typename T>
         bool IsSpawnedObject(uint32 db_guid_or_pool_id) const { return mSpawnedData.IsSpawnedObject<T>(db_guid_or_pool_id); }
 
