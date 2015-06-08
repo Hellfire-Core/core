@@ -390,6 +390,14 @@ struct boss_nightbaneAI : public ScriptedAI
                         DoCast(target, SPELL_SEARING_CINDERS);
                     SearingCindersTimer = 10000; //timer
                 }
+
+                if (DistractingAshTimer.Expired(diff))
+                {
+                    if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_DISTRACTING_ASH), true))
+                        m_creature->AddAura(SPELL_DISTRACTING_ASH, target);
+
+                    DistractingAshTimer = 2000;//timer wrong
+                }
                 
 
                 uint32 Prozent;
