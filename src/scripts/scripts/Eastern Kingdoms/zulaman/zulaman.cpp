@@ -811,7 +811,7 @@ struct npc_zulaman_door_triggerAI : public Scripted_NoMovementAI
 
     ScriptedInstance* pInstance;
     Timer CheckTimer;
-    Timer StoperTime;
+    uint8 BangingDone;
 
     uint32 CountChannelingPlayers()
     {
@@ -849,21 +849,21 @@ struct npc_zulaman_door_triggerAI : public Scripted_NoMovementAI
 
     void Reset()
     {
-        StoperTime.Reset(0);
-        CheckTimer.Reset(2000);
+        BangingDone = 0;
+        CheckTimer.Reset(1000);
     }
 
     void UpdateAI(const uint32 diff)
     {
         if (CheckTimer.Expired(diff))
         {
-            if(CountChannelingPlayers() >= 5)
-                StoperTime = (2000+diff);
-            CheckTimer = 2000;
+            if (CountChannelingPlayers() >= 5)
+                BangingDone++;
+            CheckTimer = 1000; // check every sec
         }
         
 
-        if(StoperTime.GetTimeLeft() >= 30000) // to be verified
+        if(BangingDone >= 30) // to be verified
         {
             StopBanging();
             if(Creature* pCreature = me->GetMap()->GetCreature(pInstance->GetData64(DATA_HARRISON)))
@@ -873,7 +873,7 @@ struct npc_zulaman_door_triggerAI : public Scripted_NoMovementAI
             }
             if(GameObject* pGo = me->GetMap()->GetGameObject(pInstance->GetData64(DATA_GO_GONG)))
                 pGo->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_NOTSELECTABLE);
-            StoperTime = 0;
+            BangingDone = 0;
         }
     }
 };
