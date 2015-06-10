@@ -117,7 +117,7 @@ struct boss_alarAI : public ScriptedAI
             pInstance->SetData(DATA_ALAREVENT, NOT_STARTED);
 
         Berserk_Timer.Reset(1200000);
-        Platforms_Move_Timer = 0;
+        Platforms_Move_Timer.Reset(1);
 
         Phase1 = true;
 
