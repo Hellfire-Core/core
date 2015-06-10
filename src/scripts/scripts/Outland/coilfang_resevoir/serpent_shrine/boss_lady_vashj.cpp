@@ -607,7 +607,7 @@ struct mob_enchanted_elementalAI : public ScriptedAI
     {
         me->SetSpeed(MOVE_WALK,0.6);//walk
         me->SetSpeed(MOVE_RUN,0.6);//run
-        move.Reset(1);
+        move = 1000;
         phase = 1;
         Vashj = NULL;
 
@@ -770,7 +770,7 @@ struct mob_toxic_sporebatAI : public ScriptedAI
 
     ScriptedInstance *instance;
 
-    Timer movement_timer;
+    bool moving;
     Timer ToxicSpore_Timer;
     Timer bolt_timer;
     Timer Check_Timer;
@@ -779,7 +779,7 @@ struct mob_toxic_sporebatAI : public ScriptedAI
     {
         me->SetLevitate(true);
         me->setFaction(14);
-        movement_timer.Reset(1);
+        moving = false;
         ToxicSpore_Timer.Reset(5000);
         bolt_timer.Reset(5500);
         Check_Timer.Reset(1000);
@@ -801,17 +801,17 @@ struct mob_toxic_sporebatAI : public ScriptedAI
             return;
 
         if(id == 1)
-            movement_timer = 0;   // FIXME: disable timer?
+            moving = false;
     }
 
     void UpdateAI (const uint32 diff)
     {
         //Random movement
-        if (movement_timer.Expired(diff))
+        if (!moving)
         {
             uint32 rndpos = rand()%8;
             me->GetMotionMaster()->MovePoint(1,SporebatWPPos[rndpos][0], SporebatWPPos[rndpos][1], SporebatWPPos[rndpos][2]);
-            movement_timer = 6000;
+            moving = true;
         }
 
         //toxic spores
@@ -1095,7 +1095,7 @@ struct mob_shield_generator_channelAI : public ScriptedAI
     bool Cast;
     void Reset()
     {
-        Check_Timer.Reset(0);
+        Check_Timer = 1000;
         Cast = false;
         me->SetUInt32Value(UNIT_FIELD_DISPLAYID , 11686);  //invisible
 
