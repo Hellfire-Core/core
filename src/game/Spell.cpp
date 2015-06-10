@@ -5396,7 +5396,7 @@ void Spell::Delayed() // only called in DealDamage()
         m_timer = m_casttime;
     }
     else
-        m_timer = delaytime;
+        m_timer.Delay(delaytime);
 
     sLog.outDetail("Spell %u partially interrupted for (%d) ms at damage", GetSpellEntry()->Id, delaytime);
 
