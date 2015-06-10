@@ -448,10 +448,13 @@ struct mob_giant_infernalAI : public hyjal_trashAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (Delay.Expired(diff))
-            Delay = 0;
-        else
+        if (Delay.GetInterval())
+        {
+            if (Delay.Expired(diff))
+                Delay = 0;
             return;
+        }
+        
 
         if (!meteor)
         {
