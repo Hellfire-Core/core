@@ -658,7 +658,7 @@ struct npc_harrison_jones_zaAI : public npc_escortAI
     }
 
     ScriptedInstance* m_pInstance;
-    Timer RespawnDelay;
+    uint32 RespawnDelay;
 
     void DamageTaken(Unit* done_by, uint32 &damage)
     {
@@ -698,7 +698,7 @@ struct npc_harrison_jones_zaAI : public npc_escortAI
                 break;
             case 5:
                 m_pInstance->SetData(TYPE_EVENT_RUN,SPECIAL);
-                me->SetRespawnDelay(RespawnDelay.GetInterval());
+                me->SetRespawnDelay(RespawnDelay);
                 break;
             case 6:
                 std::list<Creature*> trolls = FindAllCreaturesWithEntry(23889, 100);
@@ -725,9 +725,9 @@ struct npc_harrison_jones_zaAI : public npc_escortAI
     {
         me->RemoveAllAuras();
         me->setActive(true);    // very important due to grid issues
-        //if event not started respawn on reset
+        //if event not started let him restart in a moment (not instantly, causes deadlock)
         if (m_pInstance->GetData(TYPE_EVENT_RUN) == NOT_STARTED)
-            me->Respawn();
+            me->SetRespawnDelay(10);
     }
 
     void StartEvent(Player* pPlayer)
