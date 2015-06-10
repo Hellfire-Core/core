@@ -68,7 +68,7 @@ struct boss_midnightAI : public ScriptedAI
     {
         Phase = 1;
         Attumen = 0;
-        Mount_Timer.Reset(0);
+        Mount_Timer.Reset(1000);
         CheckTimer.Reset(3000);
 
         m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
@@ -189,7 +189,7 @@ struct boss_midnightAI : public ScriptedAI
         pAttumen->GetMotionMaster()->MovePoint(0, newX, newY, newZ);
         //pAttumen->Relocate(newX,newY,newZ,-angle);
         //pAttumen->SendMonsterMove(newX, newY, newZ, 0, true, 1000);
-        Mount_Timer = 1000;
+        Mount_Timer.Reset(1000);
     }
 
     void SetMidnight(Creature *, uint64);                   //Below ..

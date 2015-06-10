@@ -161,7 +161,6 @@ hyjal_trashAI::hyjal_trashAI(Creature *c) : npc_escortAI(c)
 {
     pInstance = (c->GetInstanceData());
     IsEvent = false;
-    Delay = 0;
     LastOverronPos = 0;
     IsOverrun = false;
     OverrunType = 0;
@@ -423,6 +422,7 @@ struct mob_giant_infernalAI : public hyjal_trashAI
     uint32 pos;
     Timer spawnTimer;
     Timer FlameBuffetTimer;
+    Timer Delay;
     bool imol;
 
     void Reset()
