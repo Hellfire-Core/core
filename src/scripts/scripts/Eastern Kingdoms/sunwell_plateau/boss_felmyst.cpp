@@ -200,7 +200,6 @@ struct boss_felmystAI : public ScriptedAI
         Event = EVENT_NULL;
         _Timer[EVENT_BERSERK].Reset(600000);
         _Timer[EVENT_CHECK].Reset(1000);
-        PulseCombat.Reset(2000);
         FlightCount = 0;
         IntroPhase = 0;
         IntroTimer = 0;
