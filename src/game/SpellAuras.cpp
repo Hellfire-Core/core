@@ -2379,6 +2379,10 @@ void Aura::TriggerSpell()
             case 43120:
                 target = m_target;
                 break;
+            // Gnomish death ray
+            case 13278:
+                target = m_target;
+                break;
             // Burn should self-damage Phoenix
             case 44197:
             {

@@ -1151,7 +1151,7 @@ void Spell::EffectDummy(uint32 i)
                 case 13280:                                 // Gnomish Death Ray direct damage
                 {
                     int custdamage = m_originalCaster->GetMaxHealth() * 0.35f;
-                    m_originalCaster->CastCustomSpell(m_caster, 13279, &custdamage, NULL, NULL, true);
+                    m_originalCaster->CastCustomSpell(roll_chance_i(5)? m_originalCaster: m_caster, 13279, &custdamage, NULL, NULL, true);
                     return;
                 }
                 case 13278:                                 // Gnomish Death Ray self DOT
