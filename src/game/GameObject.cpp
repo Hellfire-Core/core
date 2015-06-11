@@ -528,7 +528,7 @@ void GameObject::Delete(bool setGoState)
 
     uint16 poolid = sPoolMgr.IsPartOfAPool<GameObject>(GetGUIDLow());
     if (poolid)
-        sPoolMgr.UpdatePool<GameObject>(poolid, GetGUIDLow());
+        sPoolMgr.UpdatePool<GameObject>(poolid);
     else
         AddObjectToRemoveList();
 }
@@ -834,7 +834,7 @@ void GameObject::Respawn()
 
     uint16 poolid = sPoolMgr.IsPartOfAPool<GameObject>(GetGUIDLow());
     if (poolid)
-        sPoolMgr.UpdatePool<GameObject>(poolid, GetGUIDLow());
+        sPoolMgr.UpdatePool<GameObject>(poolid);
     else
         GetMap()->Add(this);
 

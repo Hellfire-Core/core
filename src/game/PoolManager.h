@@ -70,10 +70,10 @@ class PoolGroup
         bool isEmpty() const { return ExplicitlyChanced.empty() && EqualChanced.empty(); }
         void AddEntry(PoolObject& poolitem);
         bool CheckPool() const;
-        PoolObject* RollOne(SpawnedPoolData& spawns, uint32 triggerFrom);
+        PoolObject* RollOne(SpawnedPoolData& spawns);
         void DespawnObject(SpawnedPoolData& spawns, uint32 guid=0);
         void Despawn1Object(uint32 guid);
-        void SpawnObject(SpawnedPoolData& spawns, uint32 triggerFrom, bool instantly);
+        void SpawnObject(SpawnedPoolData& spawns, bool instantly);
 
         void Spawn1Object(PoolObject* obj, bool instantly);
         void ReSpawn1Object(PoolObject* obj);
@@ -99,18 +99,18 @@ class PoolManager
         template<typename T>
         uint16 IsPartOfAPool(uint32 db_guid_or_pool_id) const;
 
-        template<typename T>
-        bool IsSpawnedObject(uint32 db_guid_or_pool_id) const { return mSpawnedData.IsSpawnedObject<T>(db_guid_or_pool_id); }
+        bool IsSpawnedOrNotInPoolGameobject(uint32 db_guid) const;
+        
 
         bool CheckPool(uint16 pool_id) const;
         void SpawnPool(uint16 pool_id, bool instantly);
         void DespawnPool(uint16 pool_id);
 
         template<typename T>
-        void UpdatePool(uint16 pool_id, uint32 db_guid_or_pool_id = 0);
+        void UpdatePool(uint16 pool_id);
     protected:
         template<typename T>
-        void SpawnPoolGroup(uint16 pool_id, uint32 db_guid_or_pool_id, bool instantly);
+        void SpawnPoolGroup(uint16 pool_id, bool instantly);
 
         uint16 max_pool_id;
 

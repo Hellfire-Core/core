@@ -1913,7 +1913,7 @@ void Creature::Respawn()
         //GetMap()->Add(this);
         uint16 poolid = sPoolMgr.IsPartOfAPool<Creature>(GetGUIDLow());
         if (poolid)
-            sPoolMgr.UpdatePool<Creature>(poolid, GetGUIDLow());
+            sPoolMgr.UpdatePool<Creature>(poolid);
     }
 
     SendMonsterStop();

@@ -363,7 +363,7 @@ bool ChatHandler::HandleGameObjectTargetCommand(const char* args)
     bool found = false;
     float x, y, z, o;
     uint32 lowguid, id;
-    uint16 mapid, pool_id;
+    uint16 mapid;
 
     do
     {
@@ -375,8 +375,7 @@ bool ChatHandler::HandleGameObjectTargetCommand(const char* args)
         z =       fields[4].GetFloat();
         o =       fields[5].GetFloat();
         mapid =   fields[6].GetUInt16();
-        pool_id = sPoolMgr.IsPartOfAPool<GameObject>(lowguid);
-        if (!pool_id || (pool_id && sPoolMgr.IsSpawnedObject<GameObject>(lowguid)))
+        if (sPoolMgr.IsSpawnedOrNotInPoolGameobject(lowguid))
             found = true;
     } while (result->NextRow() && (!found));
 
