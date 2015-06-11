@@ -165,6 +165,7 @@ class ChatHandler
         bool HandleDebugVmapsCommand(const char* args);
         bool HandleDebugWPCommand(const char* args);
 
+        bool HandleDebugSendBattlegroundOpcodes(const char* args);
         bool HandleDebugSendBuyErrorCommand(const char* args);
         bool HandleDebugSendChannelNotifyCommand(const char* args);
         bool HandleDebugSendChatMsgCommand(const char* args);

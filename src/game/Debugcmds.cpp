@@ -1032,3 +1032,43 @@ bool ChatHandler::HandleDebugVmapsCommand(const char* args)
 
     return true;
 }
+
+bool ChatHandler::HandleDebugSendBattlegroundOpcodes(const char* args)
+{
+    Player *pPlayer = m_session->GetPlayer();
+    BattleGround* bg = sBattleGroundMgr.GetBattleGround(pPlayer->GetInstanceId(), BATTLEGROUND_TYPE_NONE);
+    bool done = false;
+
+    WorldPacket data;
+    if (strcmp(args, "join") == 0)
+    {
+        sBattleGroundMgr.BuildPlayerJoinedBattleGroundPacket(&data, pPlayer);
+        m_session->SendPacket(&data);
+        done = true;
+    }
+    else if (strcmp(args, "leave") == 0)
+    {
+        sBattleGroundMgr.BuildPlayerLeftBattleGroundPacket(&data, pPlayer);
+        m_session->SendPacket(&data);
+        done = true;
+    }
+    else if (strcmp(args, "log") == 0)
+    {
+        if (!bg)
+        {
+            SendSysMessage("No such BG");
+            SetSentErrorMessage(true);
+            return false;
+        }
+        sBattleGroundMgr.BuildPvpLogDataPacket(&data,bg);
+        m_session->SendPacket(&data);
+        done = true;
+    }
+
+    if (done)
+    {
+        SendSysMessage(LANG_DONE);
+        return true;
+    }
+    return false;
+}

@@ -257,6 +257,7 @@ ChatCommand * ChatHandler::getCommandTable()
 
     static ChatCommand debugSendCommandTable[] =
     {
+        { "bgopcode",       PERM_GMT_DEV,   PERM_CONSOLE, false, &ChatHandler::HandleDebugSendBattlegroundOpcodes,    "", NULL },
         { "buyerror",       PERM_ADM,       PERM_CONSOLE, false, &ChatHandler::HandleDebugSendBuyErrorCommand,        "", NULL },
         { "channelnotify",  PERM_ADM,       PERM_CONSOLE, false, &ChatHandler::HandleDebugSendChannelNotifyCommand,   "", NULL },
         { "chatmessage",    PERM_ADM,       PERM_CONSOLE, false, &ChatHandler::HandleDebugSendChatMsgCommand,         "", NULL },
