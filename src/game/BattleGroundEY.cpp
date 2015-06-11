@@ -587,8 +587,8 @@ void BattleGroundEY::ResetBGSubclass()
     m_FlagCapturedBgObjectType = 0;
     m_FlagKeeper = 0;
     m_DroppedFlagGUID = 0;
-    m_PointAddingTimer = 0;
-    m_TowerCapCheckTimer = 0;
+    m_PointAddingTimer.Reset(1);
+    m_TowerCapCheckTimer.Reset(1);
 
     for (uint8 i = 0; i < EY_POINTS_MAX; ++i)
     {
