@@ -183,7 +183,6 @@ struct boss_felmystAI : public ScriptedAI
     PhaseFelmyst Phase;
     EventFelmyst Event;
     Timer _Timer[10];
-    Timer PulseCombat;
 
     SummonList summons;
 
@@ -642,11 +641,7 @@ struct boss_felmystAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (PulseCombat.Expired(diff))
-        {
-            DoZoneInCombat();
-            PulseCombat = 2000;
-        }
+        DoSpecialThings(diff, DO_PULSE_COMBAT, 400.0f);
 
         
         // use enrage timer both phases
