@@ -292,8 +292,8 @@ struct npc_thrall_old_hillsbradAI : public npc_escortAI
         TarethaGUID = pInstance->GetData64(DATA_TARETHA);
 
         Steps = 0;
-        StepsTimer = 0;
-        EmoteTimer = 0;
+        StepsTimer = 1000;
+        EmoteTimer = 1000;
         Part = 0;
         StrikeTimer.Reset(urand(3000, 7000));
         ShieldBlockTimer.Reset(urand(6000, 11000));
