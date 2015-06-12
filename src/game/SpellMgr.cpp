@@ -2948,6 +2948,8 @@ void SpellMgr::LoadSpellCustomAttr()
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SCROLL_STACK;
                 else if (spellInfo->Id == 25997) // Eye for an eye
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
+                else if (spellInfo->Id == 43743) // improved Seal of Righteousness
+                    spellInfo->Effect[1] = 0;
                 break;
             }
             case SPELLFAMILY_PRIEST:

@@ -8252,11 +8252,15 @@ uint32 Unit::SpellDamageBonus(Unit *pVictim, SpellEntry const *spellProto, uint3
                    CastingTime = uint32(wspeed*3500*0.102f);
                 else
                    CastingTime = uint32(wspeed*3500*0.098f);
+                if (HasAura(43743)) // improved SoR
+                    DoneAdvertisedBenefit += 94;
             }
             // Judgement of Righteousness - 71.43%
             else if ((spellProto->SpellFamilyFlags & 1024) && spellProto->SpellIconID == 25)
             {
                 CastingTime = 2500;
+                if (HasAura(43743)) // improved SoR
+                    DoneAdvertisedBenefit += 94;
             }
             // Seal of Vengeance - DOT: 17% per Application, DIRECT: 1.1%
             else if ((spellProto->SpellFamilyFlags & 0x80000000000LL) && spellProto->SpellIconID == 2292)
