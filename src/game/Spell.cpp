@@ -631,6 +631,14 @@ void Spell::prepareDataForTriggerSystem()
         }
     }
 
+    if (GetSpellEntry()->Id == 45055) // HACK: shadow bolt from Timbal's focusing crystal considered a dot
+    {
+        m_procAttacker = PROC_FLAG_ON_DO_PERIODIC;
+        m_procVictim = PROC_FLAG_ON_TAKE_PERIODIC;
+        m_canTrigger = true;
+        return;
+    }
+
     if (m_CastItem && GetSpellEntry()->SpellFamilyName != SPELLFAMILY_POTION)
         m_canTrigger = false;         // Do not trigger from item cast spell(except potions)
 
