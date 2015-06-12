@@ -324,6 +324,16 @@ void LoadDBCStores(const std::string& dataPath)
         std::swap(*((uint32*)(&spell->SpellFamilyFlags)),*(((uint32*)(&spell->SpellFamilyFlags))+1));
         #endif
     }
+    { // HACK zone
+        sSpellStore.SetIndex(45398, "spell.dbc - missing Righteous Weapon Coating", &SpellEntry::righteousWeaponCoating_customSpell);
+        sSpellStore.SetIndex(45396, "spell.dbc - missing Blessed Weapon Coating", &SpellEntry::blessedWeaponCoating_customSpell);
+        memcpy(&SpellEntry::righteousWeaponCoating_customSpell, sSpellStore.LookupEntry(38299), sizeof(SpellEntry));
+        SpellEntry::righteousWeaponCoating_customSpell.Id = 45398;
+        SpellEntry::righteousWeaponCoating_customSpell.EffectTriggerSpell[0] = 45401;
+        memcpy(&SpellEntry::blessedWeaponCoating_customSpell, sSpellStore.LookupEntry(38299), sizeof(SpellEntry));
+        SpellEntry::blessedWeaponCoating_customSpell.Id = 45396;
+        SpellEntry::blessedWeaponCoating_customSpell.EffectTriggerSpell[0] = 45403;
+    }
 
     for (uint32 j = 0; j < sSkillLineAbilityStore.GetNumRows(); ++j)
     {
@@ -371,7 +381,6 @@ void LoadDBCStores(const std::string& dataPath)
         case 1665: entry->spellid[0] = 16343; entry->type[0] = ITEM_ENCHANTMENT_TYPE_COMBAT_SPELL; break;
         case 1666: entry->spellid[0] = 16344; entry->type[0] = ITEM_ENCHANTMENT_TYPE_COMBAT_SPELL; break;
         case 2634: entry->spellid[0] = 25488; entry->type[0] = ITEM_ENCHANTMENT_TYPE_COMBAT_SPELL; break;
-        case 3266: entry->spellid[0] = 45401; entry->type[0] = ITEM_ENCHANTMENT_TYPE_COMBAT_SPELL; break; // righteous weapon
 
         case 2506: entry->spellid[0] = 7598; break; // elemental sharpening stone
         case 2543: entry->spellid[0] = 13928; break; // arcanum of rapidity
@@ -382,7 +391,6 @@ void LoadDBCStores(const std::string& dataPath)
         case 2683: entry->spellid[0] = 14673; break; // shadow guard
         case 3214: entry->amount[0] = 12; break; // sparkling falling star
         case 3219: entry->amount[1] = 12; break; // rigid bladestone
-        case 3265: entry->type[0] = ITEM_ENCHANTMENT_TYPE_NONE; break; // blessed weapon coating
         }
     }}
 

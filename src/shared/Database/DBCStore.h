@@ -84,6 +84,13 @@ class DBCStorage
             nCount = 0;
         }
 
+        void SetIndex(uint32 id,const char* what, T* ptr)
+        {
+            sLog.outString("injecting DBC data at id = %u : \"%s\"",id,what);
+            sLog.outString("use wisely, this may be dangerous");
+            indexTable[id] = ptr;
+        }
+
     private:
         uint32 nCount;
         uint32 fieldCount;

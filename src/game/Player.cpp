@@ -7287,7 +7287,7 @@ void Player::CastItemCombatSpell(Unit *target, WeaponAttackType attType, uint32 
       (spellInfo->DmgClass == SPELL_DAMAGE_CLASS_MAGIC || spellInfo->DmgClass == SPELL_DAMAGE_CLASS_NONE)))
         return;
 
-    if (!target || !target->isAlive() || target == this)
+    if (!target || !target->isAlive() || target == this || IsInFeralForm(true))
         return;
 
     for (int i = EQUIPMENT_SLOT_START; i < EQUIPMENT_SLOT_END; i++)
@@ -7299,7 +7299,6 @@ void Player::CastItemCombatSpell(Unit *target, WeaponAttackType attType, uint32 
             {
                 if (ItemPrototype const *proto = item->GetProto())
                 {
-                    bool isRWC = false;
                     // Additional check for weapons
                     if (proto->Class == ITEM_CLASS_WEAPON)
                     {
@@ -7313,10 +7312,8 @@ void Player::CastItemCombatSpell(Unit *target, WeaponAttackType attType, uint32 
                             default: continue;
                         }
 
-                        if (item->GetEnchantmentId(TEMP_ENCHANTMENT_SLOT) == 3266)
-                            isRWC = true; // righteous weapon coating
 
-                        if (slot != i && !(isRWC && attType == RANGED_ATTACK && i == EQUIPMENT_SLOT_MAINHAND))
+                        if (slot != i)
                             continue;
 
                         // Check if item is useable (forms or disarm)
@@ -7325,8 +7322,7 @@ void Player::CastItemCombatSpell(Unit *target, WeaponAttackType attType, uint32 
 
                     }
 
-                    if(!IsInFeralForm(true) || isRWC)
-                        ((Player*)this)->CastItemCombatSpell(target, attType, procVictim, procEx, item, proto, spellInfo);
+                    ((Player*)this)->CastItemCombatSpell(target, attType, procVictim, procEx, item, proto, spellInfo);
                 }
             }
         }
