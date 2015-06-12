@@ -963,7 +963,7 @@ void Spell::DoAllEffectOnTarget(TargetInfo *target)
     // Do healing and triggers
     if (m_healing > 0)
     {
-        bool crit = caster->isSpellCrit(NULL, GetSpellEntry(), m_spellSchoolMask);
+        bool crit = caster->isSpellCrit(NULL, GetSpellEntry(), m_spellSchoolMask, BASE_ATTACK, m_extraCrit);
         uint32 addhealth = m_healing;
         if (crit)
         {
@@ -2346,6 +2346,10 @@ void Spell::prepare(SpellCastTargets * targets, Aura* triggeredByAura)
             finish(false);
             return;
         }
+        // fill extra crit chance from mods
+        // no mod gives pct chance for spell crit (surge of light is also taken as flat in spellmgr::loadspellcustomattr
+        m_extraCrit = 0.0f;
+        m_caster->ToPlayer()->ApplySpellMod(GetSpellEntry()->Id, SPELLMOD_CRITICAL_CHANCE, m_extraCrit);
     }
     else if (m_caster->GetTypeId() == TYPEID_UNIT && ((Creature*)m_caster)->isPet())
     {
@@ -5990,16 +5994,16 @@ void Spell::CalculateDamageDoneForAllTargets()
         {
             target.damage += CalculateDamageDone(unit, mask, multiplier);
             if (m_originalCaster)
-                target.crit = m_originalCaster->isSpellCrit(unit, GetSpellEntry(), m_spellSchoolMask, m_attackType);
+                target.crit = m_originalCaster->isSpellCrit(unit, GetSpellEntry(), m_spellSchoolMask, m_attackType, m_extraCrit);
             else
-                target.crit = m_caster->isSpellCrit(unit, GetSpellEntry(), m_spellSchoolMask, m_attackType);
+                target.crit = m_caster->isSpellCrit(unit, GetSpellEntry(), m_spellSchoolMask, m_attackType, m_extraCrit);
         }
         else if (target.missCondition == SPELL_MISS_REFLECT)                // In case spell reflect from target, do all effect on caster (if hit)
         {
             if (target.reflectResult == SPELL_MISS_NONE)       // If reflected spell hit caster -> do all effect on him
             {
                 target.damage += CalculateDamageDone(m_caster, mask, multiplier);
-                target.crit = m_caster->isSpellCrit(m_caster, GetSpellEntry(), m_spellSchoolMask, m_attackType);
+                target.crit = m_caster->isSpellCrit(m_caster, GetSpellEntry(), m_spellSchoolMask, m_attackType, m_extraCrit);
             }
         }
     }

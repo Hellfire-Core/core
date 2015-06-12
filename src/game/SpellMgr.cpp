@@ -2972,6 +2972,7 @@ void SpellMgr::LoadSpellCustomAttr()
                 else if (spellInfo->SpellFamilyFlags & 0x08 && spellInfo->SpellVisual == 278)
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SCROLL_STACK;
                 // surge of light
+                // need to stay this way spell extra crit calculations ignore pct mods in spell::prepare
                 else if (spellInfo->Id == 33151)
                     spellInfo->EffectApplyAuraName[2] = SPELLMOD_FLAT;
                 // mass dispel simplification - combine 3 spells limiting triggering

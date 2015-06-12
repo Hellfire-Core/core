@@ -8470,11 +8470,11 @@ int32 Unit::SpellBaseDamageBonusForVictim(SpellSchoolMask schoolMask, Unit *pVic
     return TakenAdvertisedBenefit;
 }
 
-bool Unit::isSpellCrit(Unit *pVictim, SpellEntry const *spellProto, SpellSchoolMask schoolMask, WeaponAttackType attackType)
+bool Unit::isSpellCrit(Unit *pVictim, SpellEntry const *spellProto, SpellSchoolMask schoolMask, WeaponAttackType attackType, float extraChance)
 {
     if (ToCreature() && ToCreature()->isTotem())
         if (Unit* owner = GetOwner())
-            return owner->isSpellCrit(pVictim, spellProto, schoolMask, attackType);
+            return owner->isSpellCrit(pVictim, spellProto, schoolMask, attackType, extraChance);
 
     if (!SpellMgr::CanSpellCrit(spellProto))
         return false;
@@ -8484,7 +8484,6 @@ bool Unit::isSpellCrit(Unit *pVictim, SpellEntry const *spellProto, SpellSchoolM
         return false;
 
     float baseChance = 0.0f;
-    float extraChance = 0.0f;
     switch (spellProto->DmgClass)
     {
         case SPELL_DAMAGE_CLASS_NONE:
@@ -8554,9 +8553,6 @@ bool Unit::isSpellCrit(Unit *pVictim, SpellEntry const *spellProto, SpellSchoolM
         default:
             return false;
     }
-
-    if (Player* modOwner = GetSpellModOwner())
-        modOwner->ApplySpellMod(spellProto->Id, SPELLMOD_CRITICAL_CHANCE, extraChance);
 
     SendCombatStats("isSpellCrit (id=%d): baseChance = %f extraChance = %f totalChance = %f", pVictim, spellProto->Id, baseChance, extraChance, baseChance+extraChance);
     return RollPRD(baseChance/100, extraChance/100, spellProto->Id);

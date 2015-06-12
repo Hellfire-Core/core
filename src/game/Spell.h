@@ -519,6 +519,7 @@ class Spell
         int32 m_casttime;                                   // Calculated spell cast time initialized only in Spell::prepare
         bool m_canReflect;                                  // can reflect this spell?
         bool m_autoRepeat;
+        float m_extraCrit;                                  // extra crit bonus from aura modifiers, initialized only in Spell::prepare
 
         uint8 m_delayAtDamageCount;
         int32 GetNextDelayAtDamageMsTime() { return m_delayAtDamageCount < 5 ? 1000 - (m_delayAtDamageCount++)* 200 : 200; }
