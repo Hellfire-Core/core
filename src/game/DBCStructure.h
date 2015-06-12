@@ -861,11 +861,6 @@ struct SpellEntry
         return false;
     }
 
-    static SpellEntry righteousWeaponCoating_customSpell;
-    static SpellEntry blessedWeaponCoating_customSpell;
-    private:
-        // prevent creating custom entries (copy data from original in fact)
-        SpellEntry(SpellEntry const&);                      // DON'T must have implementation
 };
 
 typedef std::set<uint32> SpellCategorySet;

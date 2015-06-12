@@ -325,14 +325,14 @@ void LoadDBCStores(const std::string& dataPath)
         #endif
     }
     { // HACK zone
-        sSpellStore.SetIndex(45398, "spell.dbc - missing Righteous Weapon Coating", &SpellEntry::righteousWeaponCoating_customSpell);
-        sSpellStore.SetIndex(45396, "spell.dbc - missing Blessed Weapon Coating", &SpellEntry::blessedWeaponCoating_customSpell);
-        memcpy(&SpellEntry::righteousWeaponCoating_customSpell, sSpellStore.LookupEntry(38299), sizeof(SpellEntry));
-        SpellEntry::righteousWeaponCoating_customSpell.Id = 45398;
-        SpellEntry::righteousWeaponCoating_customSpell.EffectTriggerSpell[0] = 45401;
-        memcpy(&SpellEntry::blessedWeaponCoating_customSpell, sSpellStore.LookupEntry(38299), sizeof(SpellEntry));
-        SpellEntry::blessedWeaponCoating_customSpell.Id = 45396;
-        SpellEntry::blessedWeaponCoating_customSpell.EffectTriggerSpell[0] = 45403;
+        static SpellEntry righteousWeaponCoating_customSpell(*sSpellStore.LookupEntry(38299)),
+            blessedWeaponCoating_customSpell(*sSpellStore.LookupEntry(38299));
+        sSpellStore.SetIndex(45398, "spell.dbc - missing Righteous Weapon Coating", &righteousWeaponCoating_customSpell);
+        sSpellStore.SetIndex(45396, "spell.dbc - missing Blessed Weapon Coating", &blessedWeaponCoating_customSpell);
+        righteousWeaponCoating_customSpell.Id = 45398;
+        righteousWeaponCoating_customSpell.EffectTriggerSpell[0] = 45401;
+        blessedWeaponCoating_customSpell.Id = 45396;
+        blessedWeaponCoating_customSpell.EffectTriggerSpell[0] = 45403;
     }
 
     for (uint32 j = 0; j < sSkillLineAbilityStore.GetNumRows(); ++j)
