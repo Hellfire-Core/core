@@ -87,7 +87,7 @@ struct instance_zulaman : public ScriptedInstance
 
         AkilzonGUID = 0;
         HarrisonGUID = 0;
-        QuestTimer = 0;
+        QuestTimer = 1;
         QuestMinute = 0;
         BossKilled = 0;
         ChestLooted = 0;
