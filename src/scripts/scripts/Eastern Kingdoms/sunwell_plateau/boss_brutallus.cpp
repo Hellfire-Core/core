@@ -107,16 +107,16 @@ struct boss_brutallusAI : public ScriptedAI
 
     void Reset()
     {
-        SlashTimer = 11000;
-        StompTimer = 30000;
-        BurnTimer = 20000;
-        BerserkTimer = 360000;
-        CheckTimer = 1000;
-        CheckGroundTimer = 500;
+        SlashTimer.Reset(11000);
+        StompTimer.Reset(30000);
+        BurnTimer.Reset(20000);
+        BerserkTimer.Reset(360000);
+        CheckTimer.Reset(1000);
+        CheckGroundTimer.Reset(500);
 
         IntroPhase = 0;
-        IntroPhaseTimer = 1;      // to avoid being disabled
-        IntroFrostBoltTimer = 1;  // same
+        IntroPhaseTimer.Reset(1);
+        IntroFrostBoltTimer.Reset(1);
         Enraged = false;
 
         ForceSpellCast(me, SPELL_DUAL_WIELD, INTERRUPT_AND_CAST_INSTANTLY);
@@ -164,6 +164,7 @@ struct boss_brutallusAI : public ScriptedAI
     void DoIntro()
     {
         Creature *pMadrigosa = (Creature*)me->GetUnit(pInstance->GetData64(DATA_MADRIGOSA));
+
         if (!pMadrigosa)
             return;
 
@@ -227,6 +228,7 @@ struct boss_brutallusAI : public ScriptedAI
                 pMadrigosa->setHover(true);
                 IntroPhaseTimer = 4500;
                 ++IntroPhase;
+                break;
             case 7:
                 pMadrigosa->SetInFront(me);
                 pMadrigosa->CastSpell(me, SPELL_INTRO_FROST_BLAST, false);
@@ -335,6 +337,7 @@ struct boss_brutallusAI : public ScriptedAI
                 break;
             case 20:
                 EnterEvadeMode();
+                IntroPhaseTimer = 0;
                 ++IntroPhase;
                 break;
         }
@@ -350,7 +353,7 @@ struct boss_brutallusAI : public ScriptedAI
     {
         if (pInstance->GetData(DATA_BRUTALLUS_INTRO_EVENT) == SPECIAL || pInstance->GetData(DATA_BRUTALLUS_INTRO_EVENT) == IN_PROGRESS || IntroPhase == 20)
         {
-            if(IntroPhase < 12 && IntroPhase > 14)
+            if (IntroPhase < 12 && IntroPhase > 14)
             {
                 if (CheckGroundTimer.Expired(diff))
                 {
@@ -363,14 +366,11 @@ struct boss_brutallusAI : public ScriptedAI
                 }
             }
 
-            
             if (IntroPhaseTimer.Expired(diff))
                 DoIntro();
-            
 
             if (IntroPhase >= 7 && IntroPhase <= 9)
             {
-                
                 if (IntroFrostBoltTimer.Expired(diff))
                 {
                     if(Unit *pMadrigosa = me->GetUnit(pInstance->GetData64(DATA_MADRIGOSA)))
@@ -389,7 +389,6 @@ struct boss_brutallusAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        
         if (CheckTimer.Expired(diff))
         {
             DoZoneInCombat();
@@ -397,38 +396,31 @@ struct boss_brutallusAI : public ScriptedAI
             me->SetSpeed(MOVE_RUN, 2.0f);
             CheckTimer = 1000;
         }
-        
 
-        
         if (SlashTimer.Expired(diff))
         {
             AddSpellToCast(me, SPELL_METEOR_SLASH);
             SlashTimer = 11000;
         }
-        
 
-        
         if (StompTimer.Expired(diff))
         {
             AddSpellToCastWithScriptText(me->getVictim(), SPELL_STOMP, RAND(YELL_LOVE1, YELL_LOVE2, YELL_LOVE3));
             StompTimer = 30000;
         }
-        
-        
+
         if (BurnTimer.Expired(diff))
         {
             if(Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0, 300.0f, true))
                 AddSpellToCast(pTarget, SPELL_BURN);
             BurnTimer = 20000;
         }
-        
-        
-        if (BerserkTimer.Expired(diff) && !Enraged)
+
+        if (!Enraged && BerserkTimer.Expired(diff))
         {
             AddSpellToCastWithScriptText(me, SPELL_BERSERK, YELL_BERSERK);
             Enraged = true;
         }
-        
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -478,15 +470,14 @@ struct npc_death_cloudAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(Phase == 1)
+        if (Phase == 1)
         {
-            
             if (_Timer.Expired(diff))
             {
                 float x, y, z;
-                if (Unit* pMadrigosa= me->GetUnit(pInstance->GetData64(DATA_MADRIGOSA)))
+                if (Unit* pMadrigosa = me->GetUnit(pInstance->GetData64(DATA_MADRIGOSA)))
                 {
-                    if(summon)
+                    if (summon)
                     {
                         pMadrigosa->CastSpell(pMadrigosa, SPELL_TRANSFORM_FELMYST, false);
                         Phase = 2;
@@ -502,7 +493,7 @@ struct npc_death_cloudAI : public ScriptedAI
                         Creature* Trigger = me->SummonTrigger(x, y, z, 0, SummonTimer.GetTimeLeft()*4);
                         if(Trigger)
                             Trigger->CastSpell(Trigger, SPELL_DEATH_CLOUD, true);
-                        _Timer = SummonTimer;
+                        _Timer = SummonTimer.GetInterval();
                     }
                     else
                     {
@@ -517,10 +508,8 @@ struct npc_death_cloudAI : public ScriptedAI
                 }
             }
         }
-
-        if(Phase == 2)
+        else if (Phase == 2)
         {
-            
             if (DespawnTimer.Expired(diff))
             {
                 if (Unit* pMadrigosa= me->GetUnit(pInstance->GetData64(DATA_MADRIGOSA)))
