@@ -103,7 +103,6 @@ struct boss_alarAI : public ScriptedAI
     float DefaultMoveSpeedRate;
 
     bool Phase1;
-    bool ForceMove;
     Timer ForceTimer;
     Timer checkTimer;
 
@@ -124,8 +123,7 @@ struct boss_alarAI : public ScriptedAI
         WaitEvent = WE_NONE;
         WaitTimer = 0;
         AfterMoving = false;
-        ForceMove = false;
-        ForceTimer.Reset(5000);
+        ForceTimer.Reset(0);
         checkTimer.Reset(3000);
 
         cur_wp = 4;
@@ -217,8 +215,7 @@ struct boss_alarAI : public ScriptedAI
                 m_creature->SetSelection(0);
                 m_creature->SetSpeed(MOVE_RUN, 5.0f);
                 m_creature->SetSpeed(MOVE_FLIGHT, 5.0f);
-                ForceMove = true;
-                ForceTimer = 0;
+                ForceTimer = 1;
                 cur_wp = 5;
                 //m_creature->GetMotionMaster()->Clear();
                 //m_creature->GetMotionMaster()->MovePoint(0, waypoint[5][0], waypoint[5][1], waypoint[5][2]);
@@ -242,7 +239,7 @@ struct boss_alarAI : public ScriptedAI
         {
             WaitTimer = 1;
             AfterMoving = true;
-            ForceMove = false;
+            ForceTimer = 0;
         }
     }
 
@@ -285,7 +282,7 @@ struct boss_alarAI : public ScriptedAI
             Berserk_Timer = 60000;
         }
 
-        if(ForceMove && ForceTimer.Expired(diff))
+        if(ForceTimer.Expired(diff))
         {
             m_creature->GetMotionMaster()->MovePoint(0, waypoint[cur_wp][0], waypoint[cur_wp][1], waypoint[cur_wp][2]);
             ForceTimer = 5000;
@@ -315,7 +312,7 @@ struct boss_alarAI : public ScriptedAI
                             WaitEvent = WE_DUMMY;
                             return;
                         case WE_DIE:
-                            ForceMove = false;
+                            ForceTimer = 0;
                             DoTeleportTo(wLoc.coord_x, wLoc.coord_y, wLoc.coord_z, 0.0f);
                             WaitTimer = 5000;
                             WaitEvent = WE_REVIVE;
@@ -429,8 +426,7 @@ struct boss_alarAI : public ScriptedAI
                     }
                 }
 
-                ForceMove = true;
-                ForceTimer = 5000;
+                ForceTimer.Reset(5000);
                 m_creature->GetMotionMaster()->MovePoint(0, waypoint[cur_wp][0], waypoint[cur_wp][1], waypoint[cur_wp][2]);
                 WaitTimer = 0;
                 return;
