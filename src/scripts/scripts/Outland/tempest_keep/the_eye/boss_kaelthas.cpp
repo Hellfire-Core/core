@@ -417,7 +417,7 @@ struct boss_kaelthasAI : public ScriptedAI
         Phoenix_Timer.Reset(50000);
         ShockPyroChain_Timer.Reset(60000);
         PyrosCast = 0;
-        Pyro_Timer = 0;
+        Pyro_Timer = 1; // autoexpire
         ShockBarrier_Timer.Reset(60000);
         GravityLapse_Timer.Reset(16000);
         GravityLapse_Phase = 0;
@@ -1108,7 +1108,7 @@ struct boss_kaelthasAI : public ScriptedAI
                             ChainPyros = false;
                             PyrosCast = 0;
                             ShockPyroChain_Timer = 48000;
-                            Pyro_Timer = 0;
+                            Pyro_Timer.Reset(1);
                         }
                     }
                 }
