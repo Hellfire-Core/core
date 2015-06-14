@@ -1,7 +1,7 @@
-/* 
+/*
  * Copyright (C) 2006-2008 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -480,7 +480,6 @@ struct boss_archimondeAI : public hyjal_trashAI
         if (!UpdateVictim() && !HealthBelowPct(10.0f))
             return;
 
-
         if (CheckTimer.Expired(diff))
         {
             if (!me->IsWithinDistInMap(&wLoc, 125))
@@ -494,10 +493,9 @@ struct boss_archimondeAI : public hyjal_trashAI
 
             CheckTimer = 1000;
         }
-        
 
         if (!Enraged)
-        
+
             if (EnrageTimer.Expired(diff))
             {
                 if (!HealthBelowPct(10.0f))
@@ -508,9 +506,7 @@ struct boss_archimondeAI : public hyjal_trashAI
                     DoScriptText(SAY_ENRAGE, me);
                 }
             }
-            
 
-            
         if (CheckDistanceTimer.Expired(diff))
             {
                 if(me->GetDistance2d(wLoc.coord_x, wLoc.coord_y) > 80.0)
@@ -523,7 +519,6 @@ struct boss_archimondeAI : public hyjal_trashAI
                 }
                 CheckDistanceTimer = 5000;
             }
-        
 
         if (HealthBelowPct(10.0f))
         {
@@ -537,7 +532,6 @@ struct boss_archimondeAI : public hyjal_trashAI
                 Enraged = true;
             }
 
-
             if (SummonWispTimer.Expired(diff))
             {
                 if (Creature* pWisp = DoSpawnCreature(CREATURE_ANCIENT_WISP, rand()%40, rand()%40, 0, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 15000))
@@ -546,7 +540,6 @@ struct boss_archimondeAI : public hyjal_trashAI
                 SummonWispTimer = 1500;
                 ++WispCount;
             }
-            
 
             if (WispCount >= 30)
             {
@@ -566,7 +559,6 @@ struct boss_archimondeAI : public hyjal_trashAI
             }
             return;                                         // Don't do anything after this point.
         }
-
 
         if (SoulChargeTimer.Expired(diff))
         {
@@ -596,7 +588,6 @@ struct boss_archimondeAI : public hyjal_trashAI
                 SoulChargeTimer = 3000;
             }
         }
-        
 
         if (SoulChargeUnleash)
         {
@@ -622,7 +613,6 @@ struct boss_archimondeAI : public hyjal_trashAI
             }
         }
 
-
         if (GripOfTheLegionTimer.Expired(diff))
         {
             if (Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true))
@@ -630,13 +620,11 @@ struct boss_archimondeAI : public hyjal_trashAI
                 AddSpellToCast(target, SPELL_GRIP_OF_THE_LEGION);
 
                 if (AirBurstTimer.GetTimeLeft() < 3000)
-                    AirBurstTimer = 3000;
+                    AirBurstTimer.Reset(3000);
 
                 GripOfTheLegionTimer = urand(5000, 25000);
             }
         }
-        
-
 
         if (AirBurstTimer.Expired(diff))
         {
@@ -645,22 +633,18 @@ struct boss_archimondeAI : public hyjal_trashAI
                 AddSpellToCastWithScriptText(target, SPELL_AIR_BURST, RAND(SAY_AIR_BURST1, SAY_AIR_BURST2), false, true);
 
                 if (FearTimer.GetTimeLeft() < 10000)
-                    FearTimer = 10000;
+                    FearTimer.Reset(10000);
 
                 AirBurstTimer = urand(25000, 35000);
             }
         }
-        
 
-        
         if (FearTimer.Expired(diff))
         {
             AddSpellToCast(me, SPELL_FEAR);
             FearTimer = 42000;
         }
-        
 
-       
         if (DoomfireTimer.Expired(diff))
         {
             //SummonDoomfire();
@@ -669,8 +653,7 @@ struct boss_archimondeAI : public hyjal_trashAI
             AddSpellToCast(SPELL_DOOMFIRE_STRIKE, CAST_SELF);
             DoomfireTimer = urand(9000, 12000);
         }
-        
-     
+
         if (MeleeRangeCheckTimer.Expired(diff))
         {
             if (CanUseFingerOfDeath())
@@ -683,7 +666,6 @@ struct boss_archimondeAI : public hyjal_trashAI
             else
                 MeleeRangeCheckTimer = 5000;
         }
-        
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
