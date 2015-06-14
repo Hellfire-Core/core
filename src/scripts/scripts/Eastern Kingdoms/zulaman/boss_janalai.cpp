@@ -431,7 +431,7 @@ struct boss_janalaiAI : public ScriptedAI
             }
             else
             {
-                if (HatcherTimer.Expired(diff))
+                if (HatcherTimer.Expired(diff) || !HatcherTimer.GetInterval())
                 {
                     if (HatchAllEggs(0))
                     {

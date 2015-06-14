@@ -480,56 +480,53 @@ struct boss_zuljinAI : public ScriptedAI
 
 
             
-            if (Lynx_Rush_Timer.Expired(diff))
+            if (Lynx_Rush_Timer.Expired(diff) && !TankGUID)
             {
-                if(!TankGUID)
+                if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0))
                 {
-                    if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0))
-                    {
-                        TankGUID = m_creature->getVictimGUID();
-                        m_creature->SetSpeed(MOVE_RUN, 5.0f);
-                        AttackStart(target); // change victim
-                        Lynx_Rush_Timer = 0;
-                        Claw_Counter = 0;
-                    }
+                    TankGUID = m_creature->getVictimGUID();
+                    m_creature->SetSpeed(MOVE_RUN, 5.0f);
+                    AttackStart(target); // change victim
+                    Lynx_Rush_Timer = 0;
+                    Claw_Counter = 0;
                 }
-                else if(!Lynx_Rush_Timer.GetInterval())
+            }
+            else if(!Lynx_Rush_Timer.GetInterval())
+            {
+                Unit* target = m_creature->getVictim();
+                if(!target || !target->isTargetableForAttack())
                 {
-                    Unit* target = m_creature->getVictim();
-                    if(!target || !target->isTargetableForAttack())
-                    {
-                        if(target = SelectUnit(SELECT_TARGET_RANDOM, 0))
-                            AttackStart(target);
-                    }
+                    if(target = SelectUnit(SELECT_TARGET_RANDOM, 0))
+                        AttackStart(target);
+                }
 
-                    if(target)
+                if(target)
+                {
+                    m_creature->SetSpeed(MOVE_RUN, 5.0f);
+                    if(m_creature->IsWithinMeleeRange(target))
                     {
-                        m_creature->SetSpeed(MOVE_RUN, 5.0f);
-                        if(m_creature->IsWithinMeleeRange(target))
+                        m_creature->CastSpell(target, SPELL_LYNX_RUSH_DAMAGE, true);
+                        Claw_Counter++;
+                        if(Claw_Counter == 9)
                         {
-                            m_creature->CastSpell(target, SPELL_LYNX_RUSH_DAMAGE, true);
-                            Claw_Counter++;
-                            if(Claw_Counter == 9)
-                            {
-                                Lynx_Rush_Timer = 15000 + rand()%5000;
-                                m_creature->SetSpeed(MOVE_RUN, 1.2f);
-                                AttackStart(Unit::GetUnit(*m_creature, TankGUID));
-                                TankGUID = 0;
-                            }
-                            else
-                            {
-                                if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0))
-                                    AttackStart(target);
-                            }
+                            Lynx_Rush_Timer = 15000 + rand()%5000;
+                            m_creature->SetSpeed(MOVE_RUN, 1.2f);
+                            AttackStart(Unit::GetUnit(*m_creature, TankGUID));
+                            TankGUID = 0;
+                        }
+                        else
+                        {
+                            if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0))
+                                AttackStart(target);
                         }
                     }
-                    else
-                    {
-                        EnterEvadeMode(); // if(target)
-                        return;
-                    }
-                } //if(TankGUID)
-            }
+                }
+                else
+                {
+                    EnterEvadeMode(); // if(target)
+                    return;
+                }
+            } //if(TankGUID)
 
             break;
         case 4:
