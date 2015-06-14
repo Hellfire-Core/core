@@ -217,7 +217,7 @@ struct boss_malchezaarAI : public ScriptedAI
 
         EnfeebleTimer.Reset(30000);
         EnfeebleResetTimer.Reset(38000);
-        ShadowNovaTimer.Reset(35000);
+        ShadowNovaTimer.Reset(0);
         SWPainTimer.Reset(20000);
         AmplifyDamageTimer.Reset(5000);
         Cleave_Timer.Reset(8000);
@@ -539,8 +539,7 @@ struct boss_malchezaarAI : public ScriptedAI
                         }
                     }
                 }
-
-                if (ShadowNovaTimer.GetTimeLeft() > 35000)
+                if (!ShadowNovaTimer.GetInterval())
                     ShadowNovaTimer = EnfeebleTimer.GetTimeLeft() + 5000;
 
                 return;
@@ -609,18 +608,6 @@ struct boss_malchezaarAI : public ScriptedAI
             SummonInfernal(diff);
             InfernalTimer =  phase == 3 ? 15000 : 45000;    //15 secs in phase 3, 45 otherwise
         }
-        
-        if (phase != 3)
-        {
-            
-            if (ShadowNovaTimer.Expired(diff))
-            {
-                DoCast(m_creature, SPELL_SHADOWNOVA);
-                ShadowNovaTimer = 35000;
-            }
-        }
-        
-
 
         if(phase != 2)
         {
@@ -641,13 +628,19 @@ struct boss_malchezaarAI : public ScriptedAI
             
         }
 
+        if (ShadowNovaTimer.Expired(diff))
+        {
+            DoCast(m_creature, SPELL_SHADOWNOVA);
+            ShadowNovaTimer = (phase == 3) ? 30000 : 0;
+        }
+
         if(phase != 3)
         {
             if (EnfeebleTimer.Expired(diff))
             {
                 EnfeebleHealthEffect();
                 EnfeebleTimer = 30000;
-                ShadowNovaTimer = 5000;
+                ShadowNovaTimer.Reset(5000);
                 EnfeebleResetTimer = 9000;
             }
         }
