@@ -44,7 +44,7 @@ struct mob_treantAI  : public ScriptedAI
 
     void Reset()
     {
-        check_Timer = 0;
+        check_Timer = 1000;
     }
 
     void EnterCombat(Unit *who) {}
