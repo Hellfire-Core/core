@@ -228,7 +228,6 @@ struct boss_felmystAI : public ScriptedAI
 
         DoZoneInCombat();
         RemoveMCAuraIfExist();  // just in case
-        EnterPhase(PHASE_GROUND);
         Phase = PHASE_NULL; // not attack yet, but counters on
         me->GetMotionMaster()->Clear();
         me->GetMotionMaster()->MoveIdle();
@@ -396,7 +395,7 @@ struct boss_felmystAI : public ScriptedAI
             case 5:
                 Phase = PHASE_NULL;
                 me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                IntroTimer = 0;
+                IntroTimer = 1;
                 break;
             case 6:
                 Phase = PHASE_GROUND;
