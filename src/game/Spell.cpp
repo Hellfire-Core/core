@@ -5402,13 +5402,13 @@ void Spell::Delayed() // only called in DealDamage()
 
     int32 delaytime = GetNextDelayAtDamageMsTime();
 
-    if (int32(m_timer.GetTimeLeft()) + delaytime > m_casttime)
+    if (int32(m_timer.GetTimeLeft()) + delaytime > m_casttime) // push back to zero
     {
         delaytime = m_casttime - m_timer.GetTimeLeft();
-        m_timer = m_casttime;
+        m_timer.Reset(m_casttime);
     }
     else
-        m_timer.Delay(delaytime);
+        m_timer.Delay(delaytime); // push back just a moment
 
     sLog.outDetail("Spell %u partially interrupted for (%d) ms at damage", GetSpellEntry()->Id, delaytime);
 
@@ -5433,13 +5433,13 @@ void Spell::DelayedChannel()
 
     int32 delaytime = GetNextDelayAtDamageMsTime();
 
-    if (int32(m_timer.GetTimeLeft()) < delaytime)
+    if (int32(m_timer.GetTimeLeft()) < delaytime) // channel pushed so much that time is up
     {
         delaytime = m_timer.GetTimeLeft();  
         m_timer = 0;
     }
     else                                    
-        m_timer.Update(delaytime);          // FIXME: magic?
+        m_timer.Update(delaytime); // just skip some msconds of channe
 
     sLog.outDebug("Spell %u partially interrupted for %i ms, new duration: %u ms", GetSpellEntry()->Id, delaytime, m_timer.GetTimeLeft());
 
