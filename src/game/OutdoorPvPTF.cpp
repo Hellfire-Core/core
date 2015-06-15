@@ -159,7 +159,7 @@ bool OutdoorPvPTF::Update(uint32 diff)
         if (m_LockTimer.Expired(diff))
         {
             m_LockTimer = TF_LOCK_TIME;
-            m_LockTimerUpdate = 0;
+            m_LockTimerUpdate = TF_LOCK_TIME_UPDATE;
             m_IsLocked = false;
             SendUpdateWorldState(TF_UI_TOWERS_CONTROLLED_DISPLAY, uint32(1));
             SendUpdateWorldState(TF_UI_LOCKED_DISPLAY_NEUTRAL,uint32(0));
@@ -217,7 +217,7 @@ bool OutdoorPvPTF::SetupOutdoorPvP()
 
     m_IsLocked = false;
     m_LockTimer = TF_LOCK_TIME;
-    m_LockTimerUpdate = 0;
+    m_LockTimerUpdate = TF_LOCK_TIME_UPDATE;
     hours_left = 6;
     second_digit = 0;
     first_digit = 0;
