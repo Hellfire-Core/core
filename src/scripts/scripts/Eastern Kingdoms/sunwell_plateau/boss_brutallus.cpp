@@ -1,7 +1,7 @@
-/* 
+/*
  * Copyright (C) 2006-2008 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -28,27 +28,27 @@ EndScriptData */
 
 enum Quotes
 {
- YELL_INTRO                 =   -1580017,
- YELL_INTRO_BREAK_ICE       =   -1580018,
- YELL_INTRO_CHARGE          =   -1580019,
- YELL_INTRO_KILL_MADRIGOSA  =   -1580020,
- YELL_INTRO_TAUNT           =   -1580021,
+    YELL_INTRO                 =   -1580017,
+    YELL_INTRO_BREAK_ICE       =   -1580018,
+    YELL_INTRO_CHARGE          =   -1580019,
+    YELL_INTRO_KILL_MADRIGOSA  =   -1580020,
+    YELL_INTRO_TAUNT           =   -1580021,
 
- YELL_MADR_ICE_BARRIER      =   -1580031,
- YELL_MADR_INTRO            =   -1580032,
- YELL_MADR_ICE_BLOCK        =   -1580033,
- YELL_MADR_TRAP             =   -1580034,
- YELL_MADR_DEATH            =   -1580035,
+    YELL_MADR_ICE_BARRIER      =   -1580031,
+    YELL_MADR_INTRO            =   -1580032,
+    YELL_MADR_ICE_BLOCK        =   -1580033,
+    YELL_MADR_TRAP             =   -1580034,
+    YELL_MADR_DEATH            =   -1580035,
 
- YELL_AGGRO                 =   -1580022,
- YELL_KILL1                 =   -1580023,
- YELL_KILL2                 =   -1580024,
- YELL_KILL3                 =   -1580025,
- YELL_LOVE1                 =   -1580026,
- YELL_LOVE2                 =   -1580027,
- YELL_LOVE3                 =   -1580028,
- YELL_BERSERK               =   -1580029,
- YELL_DEATH                 =   -1580030
+    YELL_AGGRO                 =   -1580022,
+    YELL_KILL1                 =   -1580023,
+    YELL_KILL2                 =   -1580024,
+    YELL_KILL3                 =   -1580025,
+    YELL_LOVE1                 =   -1580026,
+    YELL_LOVE2                 =   -1580027,
+    YELL_LOVE3                 =   -1580028,
+    YELL_BERSERK               =   -1580029,
+    YELL_DEATH                 =   -1580030
 };
 
 enum Spells
@@ -289,7 +289,7 @@ struct boss_brutallusAI : public ScriptedAI
                 me->GetMotionMaster()->MoveFall();
                 IntroPhaseTimer = 3500;
                 ++IntroPhase;
-                break;  
+                break;
             case 15:
                 for(uint8 i = 0; i < 8;++i)
                     me->SetSpeed(UnitMoveType(i), 10.0);
@@ -378,7 +378,7 @@ struct boss_brutallusAI : public ScriptedAI
                         pMadrigosa->CastSpell(me, SPELL_INTRO_FROSTBOLT, false);
                         IntroFrostBoltTimer = 2000;
                     }
-                }    
+                }
             }
 
             DoMeleeAttackIfReady();

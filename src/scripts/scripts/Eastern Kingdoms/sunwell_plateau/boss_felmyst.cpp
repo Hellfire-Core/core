@@ -229,7 +229,6 @@ struct boss_felmystAI : public ScriptedAI
         DoZoneInCombat();
         RemoveMCAuraIfExist();  // just in case
         EnterPhase(PHASE_GROUND);
-        Phase = PHASE_NULL; // not attack yet, but counters on
         me->GetMotionMaster()->Clear();
         me->GetMotionMaster()->MoveIdle();
         me->SetSpeed(MOVE_FLIGHT, 2);
@@ -575,10 +574,13 @@ struct boss_felmystAI : public ScriptedAI
                 _Timer[EVENT_CORROSION] = urand(20000, 30000);
                 break;
             case EVENT_GAS_NOVA:
+            {
                 AddSpellToCastWithScriptText(me, SPELL_GAS_NOVA, YELL_BREATH);
                 // gas nova should only be used 2 times in phase 1
-                _Timer[EVENT_GAS_NOVA] =(_Timer[EVENT_FLIGHT].GetTimeLeft() <= 20000)?40000:urand(20000, 25000);
+                uint32 intval = (_Timer[EVENT_FLIGHT].GetTimeLeft() <= 20000) ? 40000 : urand(20000, 25000);
+                _Timer[EVENT_GAS_NOVA].Reset(intval);
                 break;
+            }
             case EVENT_ENCAPSULATE:
                 if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 60, true))
                 {
@@ -587,7 +589,7 @@ struct boss_felmystAI : public ScriptedAI
                     AddSpellToCast(target, SPELL_ENCAPSULATE_CHANNEL, false, true);
                     _Timer[EVENT_ENCAPSULATE] = urand(22000, 35000);
                     if(_Timer[EVENT_FLIGHT].GetTimeLeft() < 7000)
-                        _Timer[EVENT_FLIGHT] = 7000;
+                        _Timer[EVENT_FLIGHT].Reset(7000);
                 }
                 break;
             case EVENT_FLIGHT:
@@ -605,7 +607,7 @@ struct boss_felmystAI : public ScriptedAI
                 else
                 {
                     side ? counter-- : counter++;
-                    _Timer[EVENT_SUMMON_FOG] = (6000/(path ? (path%2 ? 8 : 25) : 7));  // check this timer
+                    _Timer[EVENT_SUMMON_FOG].Reset(6000/(path ? (path%2 ? 8 : 25) : 7));  // check this timer
                 }
                 break;
         }
@@ -635,14 +637,14 @@ struct boss_felmystAI : public ScriptedAI
 
         if (IntroTimer.Expired(diff))
             DoIntro();
-    
+
 
         if (!UpdateVictim())
             return;
 
         DoSpecialThings(diff, DO_PULSE_COMBAT, 400.0f);
 
-        
+
         // use enrage timer both phases
         if (_Timer[EVENT_BERSERK].Expired(diff))
             ProcessEvent(EVENT_BERSERK);
@@ -707,9 +709,10 @@ struct mob_felmyst_trailAI : public Scripted_NoMovementAI
         pInstance = (c->GetInstanceData());
         me->CastSpell(me, SPELL_TRAIL_TRIGGER, true);
         me->setFaction(1771);
-        Delay = 6000;
-        Despawn = 20000;
+        Delay.Reset(6000);
+        Despawn.Reset(20000);
     }
+
     ScriptedInstance* pInstance;
     Timer Delay;   // timer for Unyielding Dead summoning
     Timer Despawn; // for despawning
@@ -730,7 +733,7 @@ struct mob_felmyst_trailAI : public Scripted_NoMovementAI
 
     void UpdateAI(const uint32 diff)
     {
-        
+
         if (Delay.Expired(diff))
         {
             DoCast(me, SPELL_DEAD_SUMMON);
@@ -738,7 +741,7 @@ struct mob_felmyst_trailAI : public Scripted_NoMovementAI
         }
 
 
-        
+
         if (Despawn.Expired(diff))
             me->ForcedDespawn();
 
