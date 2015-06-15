@@ -1717,8 +1717,6 @@ void BattleGroundMgr::DistributeArenaPoints()
     // used to distribute arena points based on last week's stats
     sWorld.SendGlobalText("Flushing Arena points based on team ratings, this may take a few minutes. Please stand by...", NULL);
 
-    sWorld.SendGlobalText("Distributing arena points to players...", NULL);
-
     //temporary structure for storing maximum points to add values for all players
     std::map<uint32, uint32> PlayerPoints;
 
@@ -1731,8 +1729,11 @@ void BattleGroundMgr::DistributeArenaPoints()
         }
     }
 
+    sWorld.SendGlobalText("Distributing arena points to players...", NULL);
+
+    uint32 cycles = 0;
     //cycle that gives points to all players
-    for (std::map<uint32, uint32>::iterator plr_itr = PlayerPoints.begin(); plr_itr != PlayerPoints.end(); ++plr_itr)
+    for (std::map<uint32, uint32>::iterator plr_itr = PlayerPoints.begin(); plr_itr != PlayerPoints.end(); ++plr_itr, cycles++)
     {
         //update to database
         RealmDataDatabase.PExecute("UPDATE characters SET arena_pending_points = '%u' WHERE `guid` = '%u'", plr_itr->second, plr_itr->first);
@@ -1740,6 +1741,12 @@ void BattleGroundMgr::DistributeArenaPoints()
         Player* pl = sObjectMgr.GetPlayer(plr_itr->first);
         if (pl)
             pl->ModifyArenaPoints(plr_itr->second);
+
+        if (cycles == 500)
+        {
+            RealmDataDatabase.Ping(); // keep connection alive, we can stay in here for some time and we dont execute any SQL directly
+            cycles = 0;
+        }
     }
 
     PlayerPoints.clear();
