@@ -6770,8 +6770,14 @@ bool ChatHandler::HandleSendMessageCommand(const char* args)
     return true;
 }
 
-bool ChatHandler::HandleFlushArenaPointsCommand(const char * /*args*/)
+bool ChatHandler::HandleFlushArenaPointsCommand(const char* args)
 {
+    if (strcmp(args, "i know what i am doing") != 0)
+    {
+        SendSysMessage("You know what are you doing?");
+        SetSentErrorMessage(true);
+        return false;
+    }
     sBattleGroundMgr.DistributeArenaPoints();
     return true;
 }
