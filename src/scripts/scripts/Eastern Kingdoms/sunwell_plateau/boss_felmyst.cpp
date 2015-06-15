@@ -228,6 +228,7 @@ struct boss_felmystAI : public ScriptedAI
 
         DoZoneInCombat();
         RemoveMCAuraIfExist();  // just in case
+        EnterPhase(PHASE_GROUND);
         Phase = PHASE_NULL; // not attack yet, but counters on
         me->GetMotionMaster()->Clear();
         me->GetMotionMaster()->MoveIdle();
@@ -344,19 +345,19 @@ struct boss_felmystAI : public ScriptedAI
         switch(NextPhase)
         {
             case PHASE_GROUND:
-                _Timer[EVENT_CLEAVE] = urand(5000, 10000);
-                _Timer[EVENT_CORROSION] = urand(12000, 20000);
-                _Timer[EVENT_GAS_NOVA] = urand(20000, 25000);
-                _Timer[EVENT_ENCAPSULATE] = 30000;
-                _Timer[EVENT_FLIGHT] = 60000;
-                _Timer[EVENT_CHECK] = 1000;
+                _Timer[EVENT_CLEAVE].Reset(urand(5000, 10000));
+                _Timer[EVENT_CORROSION].Reset(urand(12000, 20000));
+                _Timer[EVENT_GAS_NOVA].Reset(urand(20000, 25000));
+                _Timer[EVENT_ENCAPSULATE].Reset(30000);
+                _Timer[EVENT_FLIGHT].Reset(60000);
+                _Timer[EVENT_CHECK].Reset(1000);
                 //DoResetThreat();
                 break;
             case PHASE_FLIGHT:
                 side = RAND(LEFT_SIDE, RIGHT_SIDE);
-                _Timer[EVENT_FLIGHT_SEQUENCE] = 1000;
-                _Timer[EVENT_SUMMON_FOG] = 0;
-                _Timer[EVENT_CHECK] = 1000;
+                _Timer[EVENT_FLIGHT_SEQUENCE].Reset(1000);
+                _Timer[EVENT_SUMMON_FOG].Reset(0);
+                _Timer[EVENT_CHECK].Reset(1000);
                 FlightCount = 0;
                 BreathCount = 0;
                 break;
