@@ -1060,7 +1060,7 @@ void BGQueueRemoveEvent::Abort(uint64 /*e_time*/)
 /***            BATTLEGROUND MANAGER                   ***/
 /*********************************************************/
 
-BattleGroundMgr::BattleGroundMgr() : m_AutoDistributionTimeChecker(0), m_ArenaTesting(false), m_ApAnnounce(false)
+BattleGroundMgr::BattleGroundMgr() : m_AutoDistributionTimeChecker(120000), m_ArenaTesting(false), m_ApAnnounce(false)
 {
     for(uint32 i = BATTLEGROUND_TYPE_NONE; i < MAX_BATTLEGROUND_TYPE_ID; i++)
         m_BattleGrounds[i].clear();
