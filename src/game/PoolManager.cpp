@@ -125,8 +125,8 @@ bool PoolGroup<T>::CheckPool() const
     if (EqualChanced.empty())
         return (ExplicitlyChanced.empty());
     float chance = 0.0f;
-    for (PoolObjectList::iterator itr = ExplicitlyChanced.begin(); itr != ExplicitlyChanced.end(); itr++)
-        chance += itr->chance;
+    for (uint32 i =0;i<ExplicitlyChanced.size(); i++)
+        chance += ExplicitlyChanced[i].chance;
     return (chance <= 100.0f);
 }
 
