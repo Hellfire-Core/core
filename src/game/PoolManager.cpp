@@ -122,15 +122,12 @@ void PoolGroup<T>::AddEntry(PoolObject& poolitem)
 template <class T>
 bool PoolGroup<T>::CheckPool() const
 {
-    if (EqualChanced.size() == 0)
-    {
-        float chance = 0;
-        for (uint32 i=0; i<ExplicitlyChanced.size(); ++i)
-            chance += ExplicitlyChanced[i].chance;
-        if (chance != 100 && chance != 0)
-            return false;
-    }
-    return true;
+    if (EqualChanced.empty())
+        return (ExplicitlyChanced.empty());
+    float chance = 0.0f;
+    for (PoolObjectList::iterator itr = ExplicitlyChanced.begin(); itr != ExplicitlyChanced.end(); itr++)
+        chance += itr->chance;
+    return (chance <= 100.0f);
 }
 
 template <class T>
@@ -142,8 +139,10 @@ PoolObject* PoolGroup<T>::RollOne(SpawnedPoolData& spawns)
 
         for (uint32 i = 0; i < ExplicitlyChanced.size(); ++i)
         {
+            if (spawns.IsSpawnedObject<T>(ExplicitlyChanced[i].guid))
+                continue;
             roll -= ExplicitlyChanced[i].chance;
-            if (roll < 0 && !spawns.IsSpawnedObject<T>(ExplicitlyChanced[i].guid))
+            if (roll < 0)
                 return &ExplicitlyChanced[i];
         }
     }
@@ -545,6 +544,8 @@ void PoolManager::LoadFromDB()
         mPoolCreatureGroups[pool_id].SetLimit(fields[1].GetUInt32());
         mPoolGameobjectGroups[pool_id].SetLimit(fields[1].GetUInt32());
         mPoolPoolGroups[pool_id].SetLimit(fields[1].GetUInt32());
+        if (fields[1].GetUInt32() == 0)
+            sLog.outLog(LOG_DB_ERR, "pool id %u has max limit set to 0", pool_id);
 
     } while (result->NextRow());
 
@@ -790,7 +791,7 @@ void PoolManager::Initialize()
         {
             if (!CheckPool(pool_entry))
             {
-                sLog.outLog(LOG_DB_ERR, "Pool Id (%u) has all creatures or gameobjects with explicit chance sum <>100 and no equal chance defined. The pool system cannot pick one to spawn.", pool_entry);
+                sLog.outLog(LOG_DB_ERR, "Pool Id (%u) has invalid chance sum, cannot spawn", pool_entry);
                 continue;
             }
             SpawnPool(pool_entry, true);
