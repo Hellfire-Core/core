@@ -1,7 +1,7 @@
-/* 
+/*
  * Copyright (C) 2006-2008 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -27,17 +27,22 @@ EndScriptData */
 #include "precompiled.h"
 #include "def_molten_core.h"
 
-#define EMOTE_AEGIS                     -1409002
+#define EMOTE_AEGIS     -1409002
 
-#define SPELL_MAGMASPLASH               13879
-#define SPELL_PYROBLAST                 20228
-#define SPELL_EARTHQUAKE                19798
-#define SPELL_ENRAGE                    19953
-#define SPELL_BUFF                      20553
+enum Golemagg
+{
+    SPELL_MAGMASPLASH   = 13879,
+    SPELL_PYROBLAST     = 20228,
+    SPELL_EARTHQUAKE    = 19798,
+    SPELL_ENRAGE        = 19953,
+    SPELL_TRUST         = 20553
+};
 
-//-- CoreRager Spells --
-#define SPELL_MANGLE                    19820
-#define SPELL_AEGIS                     20620               //This is self cast whenever we are below 50%
+enum CoreRager
+{
+    SPELL_MANGLE        = 19820,
+    SPELL_AEGIS         = 20620              //This is self cast whenever we are below 50%
+};
 
 struct boss_golemaggAI : public ScriptedAI
 {
@@ -47,17 +52,17 @@ struct boss_golemaggAI : public ScriptedAI
     }
     ScriptedInstance *pInstance;
 
-    int32 Pyroblast_Timer;
-    int32 EarthQuake_Timer;
-    int32 Enrage_Timer;
-    int32 Buff_Timer;
+    Timer Pyroblast_Timer;
+    Timer EarthQuake_Timer;
+    Timer Enrage_Timer;
+    Timer Buff_Timer;
 
     void Reset()
     {
-        Pyroblast_Timer = 7000;                             //These times are probably wrong
-        EarthQuake_Timer = 3000;
-        Buff_Timer = 2500;
-        Enrage_Timer = 0;
+        Pyroblast_Timer.Reset(7000);        // These times are probably wrong
+        EarthQuake_Timer.Reset(3000);
+        Buff_Timer.Reset(2500);
+        Enrage_Timer.Reset(60000);          // fixme: is this correct?
 
         m_creature->CastSpell(m_creature,SPELL_MAGMASPLASH,true);
 
@@ -82,44 +87,34 @@ struct boss_golemaggAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        Pyroblast_Timer -= diff;
-        if (Pyroblast_Timer <= diff)
+        if (Pyroblast_Timer.Expired(diff))
         {
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0))
                 DoCast(target,SPELL_PYROBLAST);
 
-            Pyroblast_Timer += 7000;
+            Pyroblast_Timer = 7000;
         }
 
-        //Enrage_Timer
-        if ( m_creature->GetHealth()*100 / m_creature->GetMaxHealth() < 11 )
+        if (HealthBelowPct(11))
         {
-            Enrage_Timer -= diff;
-            if (Enrage_Timer <= diff)
+            if (Enrage_Timer.Expired(diff))
             {
                 DoCast(m_creature,SPELL_ENRAGE);
-                Enrage_Timer += 62000;
+                Enrage_Timer = 62000;
             }
-        }
 
-        //EarthQuake_Timer
-        if ( m_creature->GetHealth()*100 / m_creature->GetMaxHealth() < 11 )
-        {
-            EarthQuake_Timer -= diff;
-            if (EarthQuake_Timer <= diff)
+            if (EarthQuake_Timer.Expired(diff))
             {
                 DoCast(m_creature->getVictim(),SPELL_EARTHQUAKE);
-                EarthQuake_Timer += 3000;
+                EarthQuake_Timer = 3000;
+            }
+
+            if (Buff_Timer.Expired(diff))
+            {
+                //DoCast(m_creature, SPELL_TRUST); //fixme: should be cast on adds
+                Buff_Timer = 2500;
             }
         }
-
-        //Casting Buff for Coreragers. Spell is not working right. Players get the buff...
-        //        Buff_Timer -= diff;
-        //        if(Buff_Timer <= diff)
-        //        {
-        //            DoCast(m_creature, SPELL_BUFF);
-        //            Buff_Timer += 2500;
-        //        }
 
         DoMeleeAttackIfReady();
     }
@@ -132,14 +127,14 @@ struct mob_core_ragerAI : public ScriptedAI
         pInstance = (c->GetInstanceData());
     }
 
-    int32 Mangle_Timer;
-    int32 Check_Timer;
+    Timer Mangle_Timer;
+    Timer Check_Timer;
     ScriptedInstance *pInstance;
 
     void Reset()
     {
-        Mangle_Timer = 7000;                                //These times are probably wrong
-        Check_Timer = 1000;
+        Mangle_Timer.Reset(7000);                                //These times are probably wrong
+        Check_Timer.Reset(1000);
     }
 
     void EnterCombat(Unit *who)
@@ -151,33 +146,29 @@ struct mob_core_ragerAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        Mangle_Timer -= diff;
-        if (Mangle_Timer <= diff)
+        if (Mangle_Timer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(),SPELL_MANGLE);
-            Mangle_Timer += 10000;
+            DoCast(m_creature->getVictim(), SPELL_MANGLE);
+            Mangle_Timer = 10000;
         }
 
-        //Cast AEGIS
-        if ( m_creature->GetHealth()*100 / m_creature->GetMaxHealth() < 50 )
+        if (HealthBelowPct(50))
         {
             DoCast(m_creature,SPELL_AEGIS);
             DoScriptText(EMOTE_AEGIS, m_creature);
         }
 
-        Check_Timer -= diff;
-        if(Check_Timer <= diff)
+        if (Check_Timer.Expired(diff))
         {
             if(pInstance)
             {
                 Unit *pGolemagg = Unit::GetUnit((*m_creature), pInstance->GetData64(DATA_GOLEMAGG));
+
                 if(!pGolemagg || !pGolemagg->isAlive())
-                {
-                    m_creature->DealDamage(m_creature, m_creature->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, true);
-                }
+                    me->DisappearAndDie();
             }
 
-            Check_Timer += 1000;
+            Check_Timer = 1000;
         }
 
         DoMeleeAttackIfReady();
