@@ -1,7 +1,7 @@
-/* 
+/*
  * Copyright (C) 2006-2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -28,11 +28,14 @@ EndScriptData */
 #define YELL_AGGRO                        -2100019
 #define YELL_EVADE                        -2100020
 
-#define SPELL_ARCANE_EXPLOSION            46608
-#define SPELL_CONE_OF_COLD                38384
-#define SPELL_FIREBALL                    46988
-#define SPELL_FROSTBOLT                   46987
-#define SPELL_WATER_ELEMENTAL             45067
+enum Balinda
+{
+    SPELL_ARCANE_EXPLOSION  = 46608,
+    SPELL_CONE_OF_COLD      = 38384,
+    SPELL_FIREBALL          = 46988,
+    SPELL_FROSTBOLT         = 46987,
+    SPELL_WATER_ELEMENTAL   = 45067
+};
 
 struct boss_balindaAI : public ScriptedAI
 {
@@ -53,9 +56,9 @@ struct boss_balindaAI : public ScriptedAI
     {
         CoCTimer.Reset(8000);
         CheckTimer.Reset(2000);
-        CastTimer.Reset(0);
+        CastTimer.Reset(1);
         SpellId = 0;
-        WaterElementalTimer.Reset(0);
+        WaterElementalTimer.Reset(1);
 
         summons.DespawnAll();
     }
@@ -88,7 +91,6 @@ struct boss_balindaAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        
         if (CheckTimer.Expired(diff))
         {
             if (!m_creature->IsWithinDistInMap(&wLoc, 20))
@@ -99,16 +101,12 @@ struct boss_balindaAI : public ScriptedAI
             }
             CheckTimer = 2000;
         }
-        
 
-        
         if (WaterElementalTimer.Expired(diff))
         {
             ForceSpellCast(m_creature, SPELL_WATER_ELEMENTAL);
             WaterElementalTimer = 90000; // 90s
         }
-        
-          
 
         // update CoC timer
         if (CoCTimer.Expired(diff))
@@ -124,7 +122,7 @@ struct boss_balindaAI : public ScriptedAI
                 {
                     ForceSpellCast(me->getVictim(), SPELL_CONE_OF_COLD);
                     CoCTimer = urand(8000, 12000);
-                    CastTimer = 0;
+                    CastTimer = 1;
                 }
                 else
                 {
@@ -138,7 +136,6 @@ struct boss_balindaAI : public ScriptedAI
                 CastTimer = 2500;
             }
         }
-        
 
         CastNextSpellIfAnyAndReady();
         //DoMeleeAttackIfReady();
@@ -152,7 +149,10 @@ CreatureAI* GetAI_boss_balinda(Creature *_Creature)
 
 // WATER ELEMENTAL
 
-#define SPELL_WATER_BOLT                46983
+enum WaterElemental
+{
+    SPELL_WATER_BOLT    = 46983
+};
 
 struct mob_av_water_elementalAI : public ScriptedAI
 {
@@ -174,12 +174,10 @@ struct mob_av_water_elementalAI : public ScriptedAI
     }
 };
 
-
 CreatureAI* GetAI_mob_av_water_elemental(Creature *_Creature)
 {
     return new mob_av_water_elementalAI (_Creature);
 }
-
 
 void AddSC_boss_balinda()
 {
