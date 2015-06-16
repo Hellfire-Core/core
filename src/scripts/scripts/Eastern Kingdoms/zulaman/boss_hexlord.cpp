@@ -1,7 +1,7 @@
-/* 
+/*
  * Copyright (C) 2006-2007 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -191,7 +191,10 @@ struct boss_hexlord_addAI : public ScriptedAI
 
     void Reset() {}
 
-    void EnterCombat(Unit* who) {DoZoneInCombat();}
+    void EnterCombat(Unit* who)
+    {
+        DoZoneInCombat();
+    }
 
     void JustDied(Unit* )
     {
@@ -380,7 +383,6 @@ struct boss_hex_lord_malacrassAI : public ScriptedAI
             ResetTimer = 5000;
         }
 
-        
         if (CheckAddState_Timer.Expired(diff))
         {
             for(uint8 i = 0; i < 4; ++i)
@@ -410,9 +412,9 @@ struct boss_hex_lord_malacrassAI : public ScriptedAI
                 ClearCastQueue();
                 AddSpellToCastWithScriptText(m_creature, SPELL_SPIRIT_BOLTS, YELL_SPIRIT_BOLTS);
                 SpiritBolts_Timer = 40000;
-                SiphonSoul_Timer = 10000;  // ready to drain
+                SiphonSoul_Timer.Reset(10000);  // ready to drain
                 for(uint8 i = 0; i <3; i++)
-                    PlayerAbility_Timer[i] = 99999;
+                    PlayerAbility_Timer[i].Reset(99999);
             }
         }
 
@@ -444,7 +446,7 @@ struct boss_hex_lord_malacrassAI : public ScriptedAI
                 if(PlayerClass == 4 && target->HasSpell(15473)) PlayerClass = 5; // shadow priest
 
                 for(uint8 i = 0; i < 3; i++)
-                    PlayerAbility_Timer[i] = PlayerAbility[PlayerClass][i].startCooldown;
+                    PlayerAbility_Timer[i].Reset(PlayerAbility[PlayerClass][i].startCooldown);
                 SiphonSoul_Timer = 99999;   // buff lasts 30 sec
             }
             DoScriptText(YELL_SIPHON_SOUL, m_creature);
@@ -468,26 +470,27 @@ struct boss_hex_lord_malacrassAI : public ScriptedAI
         Unit *target = NULL;
         switch(PlayerAbility[PlayerClass][i].target)
         {
-        case ABILITY_TARGET_SELF:
-            target = m_creature;
-            break;
-        case ABILITY_TARGET_VICTIM:
-            target = m_creature->getVictim();
-            break;
-        case ABILITY_TARGET_HEAL:
-            target = SelectLowestHpFriendly(50, 0);
-            break;
-        case ABILITY_TARGET_BUFF:
+            case ABILITY_TARGET_SELF:
+                target = m_creature;
+                break;
+            case ABILITY_TARGET_VICTIM:
+                target = m_creature->getVictim();
+                break;
+            case ABILITY_TARGET_HEAL:
+                target = SelectLowestHpFriendly(50, 0);
+                break;
+            case ABILITY_TARGET_BUFF:
             {
                 std::list<Creature*> templist = FindFriendlyMissingBuff(50, PlayerAbility[PlayerClass][i].spell);
                 if(!templist.empty()) target = *(templist.begin());
+                break;
             }
-            break;
-        case ABILITY_TARGET_ENEMY:
-        default:
-            target = SelectUnit(SELECT_TARGET_RANDOM, 0);
-            break;
+            case ABILITY_TARGET_ENEMY:
+            default:
+                target = SelectUnit(SELECT_TARGET_RANDOM, 0);
+                break;
         }
+
         if(target)
             AddSpellToCast(target, PlayerAbility[PlayerClass][i].spell, false);
     }
@@ -678,6 +681,7 @@ struct boss_lord_raadanAI : public boss_hexlord_addAI
         boss_hexlord_addAI::Reset();
 
     }
+
     void UpdateAI(const uint32 diff)
     {
         if(!UpdateVictim() )
@@ -714,6 +718,7 @@ struct boss_darkheartAI : public boss_hexlord_addAI
         boss_hexlord_addAI::Reset();
 
     }
+
     void UpdateAI(const uint32 diff)
     {
         if(!UpdateVictim() )
@@ -736,7 +741,6 @@ struct boss_slitherAI : public boss_hexlord_addAI
     boss_slitherAI(Creature *c) : boss_hexlord_addAI(c) {}
 
     Timer venomspit_timer;
-
 
     void Reset()
     {
@@ -764,7 +768,6 @@ struct boss_slitherAI : public boss_hexlord_addAI
         if(!UpdateVictim() )
             return;
 
-
         if (venomspit_timer.Expired(diff))
         {
             if(Unit* victim = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_VENOM_SPIT), true))
@@ -785,13 +788,13 @@ struct boss_fenstalkerAI : public boss_hexlord_addAI
 
     Timer volatileinf_timer;
 
-
     void Reset()
     {
         volatileinf_timer.Reset(15000);
         boss_hexlord_addAI::Reset();
 
     }
+
     void UpdateAI(const uint32 diff)
     {
         if(!UpdateVictim() )
@@ -812,7 +815,6 @@ struct boss_fenstalkerAI : public boss_hexlord_addAI
 #define SPELL_COLD_STARE      43593
 #define SPELL_MIGHTY_BLOW     43592
 
-
 struct boss_koraggAI : public boss_hexlord_addAI
 {
     boss_koraggAI(Creature *c) : boss_hexlord_addAI(c) {}
@@ -820,14 +822,14 @@ struct boss_koraggAI : public boss_hexlord_addAI
     Timer coldstare_timer;
     Timer mightyblow_timer;
 
-
     void Reset()
     {
         coldstare_timer.Reset(15000);
         mightyblow_timer.Reset(10000);
-        boss_hexlord_addAI::Reset();
 
+        boss_hexlord_addAI::Reset();
     }
+
     void UpdateAI(const uint32 diff)
     {
         if(!UpdateVictim() )
@@ -838,7 +840,7 @@ struct boss_koraggAI : public boss_hexlord_addAI
             m_creature->CastSpell(m_creature->getVictim(),SPELL_MIGHTY_BLOW, false);
             mightyblow_timer = 12000;
         }
-        
+
         if (coldstare_timer.Expired(diff))
         {
             if(Unit* victim = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_COLD_STARE), true))
