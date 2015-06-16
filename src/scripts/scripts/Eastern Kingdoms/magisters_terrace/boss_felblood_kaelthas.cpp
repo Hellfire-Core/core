@@ -1,7 +1,7 @@
-/* 
+/*
  * Copyright (C) 2006-2008 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -111,7 +111,7 @@ struct boss_felblood_kaelthasAI : public ScriptedAI
 
     void Reset()
     {
-        FireballTimer.Reset(0);
+        FireballTimer.Reset(urand(2000, 6000));
         PhoenixTimer.Reset(urand(15000, 20000));
         FlameStrikeTimer.Reset(urand(25000, 35000));
         CheckTimer.Reset(2000);
@@ -286,7 +286,7 @@ struct boss_felblood_kaelthasAI : public ScriptedAI
             }
             CheckTimer = 2000;
         }
-        
+
 
         switch(Phase)
         {
@@ -302,7 +302,7 @@ struct boss_felblood_kaelthasAI : public ScriptedAI
                     }
                 }
 
-                
+
                 if (FireballTimer.Expired(diff))
                 {
                     AddSpellToCast(SPELL_FIREBALL, CAST_TANK);
@@ -320,15 +320,12 @@ struct boss_felblood_kaelthasAI : public ScriptedAI
                     }
                 }
 
-                
                 if (PhoenixTimer.Expired(diff))
                 {
                     AddSpellToCastWithScriptText(SPELL_PHOENIX, CAST_SELF, SAY_PHOENIX);
                     PhoenixTimer = urand(45000, 55000);
                 }
-                
 
-               
                 if (FlameStrikeTimer.Expired(diff))
                 {
                     AddSpellToCast(SPELL_SUMMON_FLAMESTRIKE, CAST_RANDOM);
@@ -336,7 +333,6 @@ struct boss_felblood_kaelthasAI : public ScriptedAI
                         DoScriptText(SAY_FLAMESTRIKE, me);
                     FlameStrikeTimer = urand(25000, 35000);
                 }
-                
 
                 // Below 50%
                 if(HealthBelowPct(50))
@@ -361,7 +357,6 @@ struct boss_felblood_kaelthasAI : public ScriptedAI
 
             case 2:
             {
-                
                 if (GravityLapseTimer.Expired(diff))
                 {
                     switch(GravityLapsePhase)
@@ -419,7 +414,7 @@ struct mob_felkael_flamestrikeAI : public Scripted_NoMovementAI
             DoCast(me, SPELL_FLAMESTRIKE, true);
             me->Kill(me, false);
         }
-        
+
     }
 };
 
@@ -447,9 +442,9 @@ struct mob_felkael_phoenix_eggAI : public Scripted_NoMovementAI
                 me->Kill(me, false);
             CheckTimer = 2000;
         }
-        
 
-        
+
+
         if (HatchTimer.Expired(diff))
         {
             Creature* phoenix = DoSpawnCreature(CREATURE_PHOENIX, 0, 0, 0, 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 5000);
@@ -457,7 +452,7 @@ struct mob_felkael_phoenix_eggAI : public Scripted_NoMovementAI
                 phoenix->CastSpell((Unit*)NULL, SPELL_REBIRTH_EGG, true);
             me->Kill(me, false);
         }
-        
+
     }
 };
 
@@ -502,7 +497,7 @@ struct mob_felkael_phoenixAI : public ScriptedAI
             }
             CheckTimer = 1000;
         }
-        
+
 
         if(!UpdateVictim())
         {
@@ -556,7 +551,7 @@ struct mob_arcane_sphereAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        
+
         if (CheckTimer.Expired(diff))
         {
             m_creature->SetSpeed(MOVE_FLIGHT, 0.6);    // to be tested
@@ -564,16 +559,16 @@ struct mob_arcane_sphereAI : public ScriptedAI
                 DespawnTimer.Reset(1);
             CheckTimer = 1000;
         }
-        
 
-        
+
+
         if (DespawnTimer.Expired(diff))
         {
             me->DisappearAndDie();
         }
-        
 
-        
+
+
         if (ChangeTargetTimer.Expired(diff))
         {
             DoResetThreat();
@@ -581,7 +576,7 @@ struct mob_arcane_sphereAI : public ScriptedAI
                 me->GetMotionMaster()->MovePoint(1, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), false, true, UNIT_ACTION_DOWAYPOINTS);
             ChangeTargetTimer = 7000;   // to be tested
         }
-        
+
     }
 };
 
