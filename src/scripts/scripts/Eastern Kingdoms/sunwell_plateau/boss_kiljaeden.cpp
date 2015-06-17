@@ -1456,7 +1456,8 @@ struct mob_sinster_reflectionAI : public ScriptedAI
                 }
                 if (Timer[2] <= diff)
                 {
-                    DoCast(SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true), SPELL_SR_CURSE_OF_AGONY, true);
+                    if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true))
+                        DoCast(target, SPELL_SR_CURSE_OF_AGONY, true);
                     Timer[2] = 3000;
                 }
                 DoMeleeAttackIfReady();
