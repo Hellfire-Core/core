@@ -955,6 +955,15 @@ struct boss_illidan_stormrageAI : public BossAI
 
         DoSpecialThings(diff, DO_EVERYTHING, 200.0f, 2.5f);
 
+        if (m_combatTimer.Expired(diff)) // zero aggro every second
+        {
+            if (Creature *pAkama = instance->GetCreature(instance->GetData64(DATA_AKAMA)))
+                DoModifyThreatPercent(pAkama, -101);
+            if (Creature *pMaiev = GetClosestCreatureWithEntry(me, 23197, 200.0f))
+                DoModifyThreatPercent(pMaiev, -101);
+            m_combatTimer = 1000;
+        }
+
         if (m_enrageTimer.Expired(diff))
         {
             ForceSpellCastWithScriptText(me, SPELL_ILLIDAN_HARD_ENRAGE, YELL_ILLIDAN_HARD_ENRAGE, INTERRUPT_AND_CAST_INSTANTLY);
