@@ -402,6 +402,7 @@ struct boss_felmystAI : public ScriptedAI
                 if (!me->HasAura(AURA_NOXIOUS_FUMES))
                     me->CastSpell(me, AURA_NOXIOUS_FUMES, true);
                 AttackStart(me->getVictim());
+                IntroTimer = 0;
                 break;
         }
         IntroPhase++;
