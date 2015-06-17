@@ -83,7 +83,7 @@ enum Speeches
 enum SpellIds
 {
     /* Hand of the Deceiver's spells and cosmetics */
-    SPELL_SHADOW_BOLT_VOLLEY                            = 45770, // ~30 yard range Shadow Bolt Volley for ~2k(?) damage
+    SPELL_SHADOW_BOLT_VOLLEY                            = 45770, // aoe + increases shadow damage taken by 750 for 6s
     SPELL_SHADOW_INFUSION                               = 45772, // They gain this at 20% - Immunity to Stun/Silence and makes them look angry!
     SPELL_FELFIRE_PORTAL                                = 46875, // Creates a portal that spawns Felfire Fiends (LIVE FOR THE SWARM!1 FOR THE OVERMIND!)
     SPELL_SHADOW_CHANNELING                             = 46757, // Channeling animation out of combat
@@ -217,12 +217,20 @@ enum KilJaedenTimers
     TIMER_ARMAGEDDON       = 9
 };
 
+
 // Locations of the Hand of Deceiver adds
 float DeceiverLocations[3][3] =
 {
     {1682.045, 631.299, 5.936},
     {1684.099, 618.848, 0.589},
     {1694.170, 612.272, 1.416},
+};
+
+enum HandOfDeceiverAction
+{
+    DECEIVER_ENTER_COMBAT = 0,
+    DECEIVER_DIED         = 1,
+    DECEIVER_RESET        = 2
 };
 
 // Locations, where Shield Orbs will spawn
@@ -484,28 +492,26 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
 
     void Reset()
     {
-        // just for now
-        me->SetVisibility(VISIBILITY_OFF);
         // TODO: Fix timers
-        _Timer[TIMER_KALEC_JOIN]       = 26000;
+        _Timer[TIMER_KALEC_JOIN].Reset(26000);
 
         //Phase 2 Timer
-        _Timer[TIMER_SOUL_FLAY]        = 20000;
-        _Timer[TIMER_LEGION_LIGHTNING] = 40000;
-        _Timer[TIMER_FIRE_BLOOM]       = 30000;
-        _Timer[TIMER_SUMMON_SHILEDORB] = 45000;
+        _Timer[TIMER_SOUL_FLAY].Reset(20000);
+        _Timer[TIMER_LEGION_LIGHTNING].Reset(40000);
+        _Timer[TIMER_FIRE_BLOOM].Reset(30000);
+        _Timer[TIMER_SUMMON_SHILEDORB].Reset(45000);
 
         //Phase 3 Timer
-        _Timer[TIMER_SHADOW_SPIKE]     = 4000;
-        _Timer[TIMER_FLAME_DART]       = 3000;
-        _Timer[TIMER_DARKNESS]         = 45000;
-        _Timer[TIMER_ORBS_EMPOWER]     = 35000;
+        _Timer[TIMER_SHADOW_SPIKE].Reset(4000);
+        _Timer[TIMER_FLAME_DART].Reset(3000);
+        _Timer[TIMER_DARKNESS].Reset(45000);
+        _Timer[TIMER_ORBS_EMPOWER].Reset(35000);
 
         //Phase 4 Timer
-        _Timer[TIMER_ARMAGEDDON]       = 2000;
+        _Timer[TIMER_ARMAGEDDON].Reset(2000);
 
         ActiveTimers = 5;
-        WaitTimer    = 0;
+        WaitTimer.Reset(1);
 
         Phase = PHASE_DECEIVERS;
 
@@ -579,22 +585,14 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
         {
             Creature* Control = ((Creature*)Unit::GetUnit(*m_creature, pInstance->GetData64(DATA_KILJAEDEN_CONTROLLER)));
             if (Control)
-                ((Scripted_NoMovementAI*)Control->AI())->Reset();
+                ((Scripted_NoMovementAI*)Control->AI())->EnterEvadeMode();
         }
     }
 
     void EnterCombat(Unit* who)
     {
-        // temporary
-        if (pInstance->GetData(DATA_MURU_EVENT) != DONE)
-        {
-            EnterEvadeMode();
-            return;
-        }
         DoZoneInCombat();
         DoScriptText(SAY_KJ_EMERGE, m_creature);
-
-        //pInstance->SetData(DATA_KILJAEDEN_EVENT, IN_PROGRESS);
     }
 
     void CastSinisterReflection()
@@ -829,7 +827,7 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
     bool KiljaedenDeath;
     std::list<uint64> deceivers;
 
-    uint32 RandomSayTimer;
+    Timer RandomSayTimer;
     uint32 Phase;
     uint32 DeceiverDeathTimer;
 
@@ -839,28 +837,38 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
         m_creature->addUnitState(UNIT_STAT_STUNNED);
+
     }
 
     void Reset()
     {
+        pInstance->SetData(DATA_KILJAEDEN_EVENT, NOT_STARTED);
         Phase = PHASE_DECEIVERS;
+        deceivers = pInstance->instance->GetCreaturesGUIDList(CREATURE_HAND_OF_THE_DECEIVER);
         //if(KalecKJ)((boss_kalecgos_kjAI*)KalecKJ->AI())->ResetOrbs();
-        DeceiverDeathTimer = 0;
+        //DeceiverDeathTimer = 0;
         DeceiversStatus = 3;
         SummonedAnveena = false;
         KiljaedenDeath = false;
-        RandomSayTimer = 30000;
+        RandomSayTimer.Reset(30000);
         Summons.DespawnAll();
-        deceivers.clear();
+    }
+
+    void EnterCombat(Unit*)
+    {
+        pInstance->SetData(DATA_KILJAEDEN_EVENT, IN_PROGRESS);
+    }
+
+    void EnterEvadeMode()
+    {
+        ResetDeceivers();
+        ScriptedAI::EnterEvadeMode();
     }
 
     void JustSummoned(Creature* summoned)
     {
         switch (summoned->GetEntry())
         {
-            case CREATURE_HAND_OF_THE_DECEIVER:
-                summoned->CastSpell(summoned, SPELL_SHADOW_CHANNELING, false);
-                break;
             case CREATURE_ANVEENA:
                 summoned->SetLevitate(true);
                 summoned->CastSpell(summoned, SPELL_ANVEENA_PRISON, true);
@@ -870,9 +878,22 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
                 summoned->CastSpell(summoned, SPELL_REBIRTH, false);
                 ((boss_kiljaedenAI*)summoned->AI())->Phase = PHASE_NORMAL;
                 summoned->AddThreat(m_creature->getVictim(), 1.0f);
+                summoned->AI()->DoZoneInCombat();
                 break;
         }
         Summons.Summon(summoned);
+    }
+
+    void DoRandomSay(uint32 diff)
+    {    // do not yell when any encounter in progress
+        if (pInstance->IsEncounterInProgress())
+            return;
+
+        if (RandomSayTimer.Expired(diff) && pInstance->GetData(DATA_MURU_EVENT) != DONE && pInstance->GetData(DATA_KILJAEDEN_EVENT) == NOT_STARTED)
+        {
+            DoScriptText(RAND(SAY_KJ_OFFCOMBAT1, SAY_KJ_OFFCOMBAT2, SAY_KJ_OFFCOMBAT3, SAY_KJ_OFFCOMBAT4, SAY_KJ_OFFCOMBAT5), m_creature);
+            RandomSayTimer = 60000;
+        }
     }
 
     void UpdateAI(const uint32 diff)
@@ -880,17 +901,7 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
         if (!pInstance)
             return;
 
-        if (RandomSayTimer <= diff && pInstance->GetData(DATA_MURU_EVENT) != DONE && pInstance->GetData(DATA_KILJAEDEN_EVENT) == NOT_STARTED)
-        {
-            RandomSayTimer = 60000;
-            for (uint32 i = 0; i < 6; ++i)   // do not yell when any encounter in progress
-                if (pInstance->GetData(i) == IN_PROGRESS)
-                    return;
-
-            DoScriptText(RAND(SAY_KJ_OFFCOMBAT1, SAY_KJ_OFFCOMBAT2, SAY_KJ_OFFCOMBAT3, SAY_KJ_OFFCOMBAT4, SAY_KJ_OFFCOMBAT5), m_creature);
-        }
-        else
-            RandomSayTimer -= diff;
+        DoRandomSay(diff);
 
         if (!SummonedAnveena)
         {
@@ -899,47 +910,85 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
             SummonedAnveena = true;
         }
 
-        if (deceivers.size() < 3)
-        {
-            deceivers.clear();
-            deceivers = pInstance->instance->GetCreaturesGUIDList(CREATURE_HAND_OF_THE_DECEIVER);
-            return; //dont go to timing stuff, have to check size again in next loop
-        }
-        if (Phase == PHASE_DECEIVERS && DeceiversStatus != 3)
-        {
-            if (DeceiverDeathTimer <= diff)
-            {
-                std::for_each(deceivers.begin(), deceivers.end(),
-                              [this](uint64& guid)
-                {
-                    if (Creature* c = pInstance->GetCreature(guid))
-                        if (c->isDead())
-                            c->Respawn();
-                }
-                );
-                DeceiversStatus = 3;
-            }
-            else
-                DeceiverDeathTimer -= diff;
-        }
+        // if (Phase == PHASE_DECEIVERS && DeceiversStatus != 3)
+        // {
+        //     if (DeceiverDeathTimer <= diff)
+        //     {
+        //         std::for_each(deceivers.begin(), deceivers.end(),
+        //                       [this](uint64& guid)
+        //         {
+        //             if (Creature* c = pInstance->GetCreature(guid))
+        //                 if (c->isDead())
+        //                     c->Respawn();
+        //         }
+        //         );
+        //         DeceiversStatus = 3;
+        //     }
+        //     else
+        //         DeceiverDeathTimer -= diff;
+        // }
 
     }
 
-    void DoAction(const int32 param)
+    void DeceiverDied()
     {
-        if (param != CREATURE_HAND_OF_THE_DECEIVER || Phase != PHASE_DECEIVERS)
-            return;
-
-        if (DeceiversStatus == 3)
-            DeceiverDeathTimer = 10000;
-
-        DeceiversStatus--;
+        DeceiversStatus -= 1;
 
         if (DeceiversStatus == 0)
         {
             m_creature->RemoveAurasDueToSpell(SPELL_ANVEENA_ENERGY_DRAIN);
             Phase = PHASE_NORMAL;
             DoSpawnCreature(CREATURE_KILJAEDEN, 0, 0, 0, 0, TEMPSUMMON_MANUAL_DESPAWN, 0);
+        }
+    }
+    void PullDeceivers()
+    {
+        std::for_each(deceivers.begin(), deceivers.end(),
+                      [this](uint64& guid)
+        {
+            if (Creature* c = pInstance->GetCreature(guid))
+            {
+                c->AI()->DoZoneInCombat(100.0f);
+            }
+        }
+        );
+    }
+    void ResetDeceivers()
+    {
+        std::for_each(deceivers.begin(), deceivers.end(),
+                      [this](uint64& guid)
+        {
+            if (Creature* c = pInstance->GetCreature(guid))
+            {
+                if (c->isAlive())
+                {
+                    DeceiversStatus = 3; // to avoid KJ spawning on reset (kill will do -= 1)
+                    c->DisappearAndDie();
+                }
+
+                    c->Respawn();
+            }
+        }
+        );
+
+        DeceiversStatus = 3; // Reset() will do it too, but just to be 200% sure
+    }
+
+
+    void DoAction(const int32 param)
+    {
+        switch (param)
+        {
+            case DECEIVER_DIED:
+                DeceiverDied();
+                break;
+            case DECEIVER_ENTER_COMBAT:
+                PullDeceivers();
+                break;
+            case DECEIVER_RESET:
+                ResetDeceivers();
+            default:
+                break;
         }
     }
 };
@@ -966,10 +1015,9 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
 
     void Reset()
     {
-        DoCast(m_creature, SPELL_SHADOW_CHANNELING);
-        // TODO: Timers!
+        me->CastSpell(me, SPELL_SHADOW_CHANNELING, false);
         ShadowBoltVolleyTimer.Reset(8000 + urand(0, 3000)); // So they don't all cast it in the same moment.
-        FelfirePortalTimer = 20000;
+        FelfirePortalTimer.Reset(20000);
         //DeceiverReviveTimer = 10000;
     }
 
@@ -977,6 +1025,7 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
     {
         summoned->setFaction(m_creature->getFaction());
         summoned->SetLevel(m_creature->getLevel());
+        summoned->AI()->DoZoneInCombat();
     }
 
     void EnterCombat(Unit* who)
@@ -986,18 +1035,22 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
             //pInstance->SetData(DATA_KILJAEDEN_EVENT, IN_PROGRESS);
             Creature* Control = ((Creature*)Unit::GetUnit(*m_creature, pInstance->GetData64(DATA_KILJAEDEN_CONTROLLER)));
             if (Control)
+            {
                 Control->AddThreat(who, 1.0f);
+                Control->AI()->DoZoneInCombat();
+                Control->AI()->DoAction(DECEIVER_ENTER_COMBAT); // pull the rest of deceivers
+            }
         }
         m_creature->InterruptNonMeleeSpells(true);
     }
 
     void EnterEvadeMode()
     {
+
+        ScriptedAI::EnterEvadeMode();
+
         if (Creature* Control = ((Creature*)Unit::GetUnit(*m_creature, pInstance->GetData64(DATA_KILJAEDEN_CONTROLLER))))
             Control->AI()->EnterEvadeMode();
-
-        if (!me->IsInEvadeMode())
-            ScriptedAI::EnterEvadeMode();
 
     }
 
@@ -1008,8 +1061,9 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
 
         Creature* Control = Unit::GetCreature(*m_creature, pInstance->GetData64(DATA_KILJAEDEN_CONTROLLER));
         if (Control)
-            Control->AI()->DoAction(CREATURE_HAND_OF_THE_DECEIVER);
+            Control->AI()->DoAction(DECEIVER_DIED);
     }
+
 
     void UpdateAI(const uint32 diff)
     {
@@ -1018,34 +1072,24 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
 
         // Gain Shadow Infusion at 20% health
         if (((m_creature->GetHealth() * 100 / m_creature->GetMaxHealth()) < 20) && !m_creature->HasAura(SPELL_SHADOW_INFUSION, 0))
-            DoCast(m_creature, SPELL_SHADOW_INFUSION, true);
+            AddSpellToCast(me, SPELL_SHADOW_INFUSION, true);
 
         // Shadow Bolt Volley - Shoots Shadow Bolts at all enemies within 30 yards, for ~2k Shadow damage.
         if (ShadowBoltVolleyTimer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(), SPELL_SHADOW_BOLT_VOLLEY);
+            AddSpellToCast(SPELL_SHADOW_BOLT_VOLLEY, CAST_TANK);
             ShadowBoltVolleyTimer = 12000;
         }
 
         // Felfire Portal - Creatres a portal, that spawns Volatile Felfire Fiends, which do suicide bombing.
         if (FelfirePortalTimer.Expired(diff))
         {
-            Creature* Portal = DoSpawnCreature(CREATURE_FELFIRE_PORTAL, 0, 0, 0, 0, TEMPSUMMON_TIMED_DESPAWN, 20000);
-            if (Portal)
-            {
-              // std::list<HostileReference*>::iterator itr;
-              // for (itr = m_creature->getThreatManager().getThreatList().begin(); itr != m_creature->getThreatManager().getThreatList().end(); ++itr)
-              // {
-              //     Unit* pUnit = Unit::GetUnit(*m_creature, (*itr)->getUnitGuid());
-              //     if (pUnit)
-              //         Portal->AddThreat(pUnit, 1.0f);
-              // }
-              //
-                Portal->getThreatManager() = me->getThreatManager();  // copy threat list test :P
-            }
+            DoSpawnCreature(CREATURE_FELFIRE_PORTAL, 0, 0, 0, 0, TEMPSUMMON_TIMED_DESPAWN, 20000);
             FelfirePortalTimer = 20000;
         }
 
+        
+        CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
     }
 };
@@ -1060,41 +1104,41 @@ struct mob_felfire_portalAI : public Scripted_NoMovementAI
 {
     mob_felfire_portalAI(Creature* c) : Scripted_NoMovementAI(c) {}
 
-    uint32 SpawnFiendTimer;
+    Timer SpawnFiendTimer;
 
     void InitializeAI()
     {
-        SpawnFiendTimer = 5000;
+        SpawnFiendTimer = 2000;
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
     }
 
     // TODO: Timers
-    void Reset()
-    {
-
-    }
+    // void Reset()
+    // {
+    //
+    // }
 
     void JustSummoned(Creature* summoned)
     {
         summoned->setFaction(m_creature->getFaction());
         summoned->SetLevel(m_creature->getLevel());
+        summoned->AI()->DoZoneInCombat();
     }
+
 
     void UpdateAI(const uint32 diff)
     {
         if (!UpdateVictim())
             return;
 
-        if (SpawnFiendTimer <= diff)
+        if (SpawnFiendTimer.Expired(diff))
         {
             Creature* Fiend = DoSpawnCreature(CREATURE_VOLATILE_FELFIRE_FIEND, 0, 0, 0, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 20000);
             if (Fiend)
-                Fiend->AddThreat(SelectUnit(SELECT_TARGET_RANDOM, 0), 100000.0f);
-            SpawnFiendTimer = 4000 + rand() % 4000;
+                Fiend->AddThreat(SelectUnit(SELECT_TARGET_RANDOM), 100000.0f);
+            SpawnFiendTimer = 2000;
         }
-        else
-            SpawnFiendTimer -= diff;
     }
 };
 
@@ -1108,21 +1152,16 @@ struct mob_volatile_felfire_fiendAI : public ScriptedAI
 {
     mob_volatile_felfire_fiendAI(Creature* c) : ScriptedAI(c) {}
 
-    uint32 ExplodeTimer;
+    Timer ExplodeTimer;
 
     bool LockedTarget;
 
     void Reset()
     {
-        ExplodeTimer = 2000;
+        ExplodeTimer.Reset(2000);
         LockedTarget = false;
     }
 
-    void DamageTaken(Unit *done_by, uint32 &damage)
-    {
-        if (damage > m_creature->GetHealth())
-            DoCast(m_creature, SPELL_FELFIRE_FISSION, true);
-    }
 
     void UpdateAI(const uint32 diff)
     {
@@ -1135,16 +1174,10 @@ struct mob_volatile_felfire_fiendAI : public ScriptedAI
             LockedTarget = true;
         }
 
-        if (ExplodeTimer)
-        {
-            if (ExplodeTimer <= diff)
-                ExplodeTimer = 0;
-            else ExplodeTimer -= diff;
-        }
-        else if (m_creature->IsWithinDistInMap(m_creature->getVictim(), 3)) // Explode if it's close enough to it's target
+        if (ExplodeTimer.Expired(diff) || m_creature->IsWithinDistInMap(m_creature->getVictim(), 3)) // Explode if it's close enough to it's target
         {
             DoCast(m_creature->getVictim(), SPELL_FELFIRE_FISSION);
-            m_creature->DealDamage(m_creature, m_creature->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+            me->DisappearAndDie();
         }
     }
 };
