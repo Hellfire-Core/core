@@ -8474,11 +8474,11 @@ int32 Unit::SpellBaseDamageBonusForVictim(SpellSchoolMask schoolMask, Unit *pVic
     return TakenAdvertisedBenefit;
 }
 
-bool Unit::isSpellCrit(Unit *pVictim, SpellEntry const *spellProto, SpellSchoolMask schoolMask, WeaponAttackType attackType, float extraChance)
+bool Unit::isSpellCrit(Unit *pVictim, SpellEntry const *spellProto, SpellSchoolMask schoolMask, WeaponAttackType attackType, float spellExtraChance)
 {
     if (ToCreature() && ToCreature()->isTotem())
         if (Unit* owner = GetOwner())
-            return owner->isSpellCrit(pVictim, spellProto, schoolMask, attackType, extraChance);
+            return owner->isSpellCrit(pVictim, spellProto, schoolMask, attackType, spellExtraChance);
 
     if (!SpellMgr::CanSpellCrit(spellProto))
         return false;
@@ -8488,6 +8488,7 @@ bool Unit::isSpellCrit(Unit *pVictim, SpellEntry const *spellProto, SpellSchoolM
         return false;
 
     float baseChance = 0.0f;
+    float extraChance = 0.0f;
     switch (spellProto->DmgClass)
     {
         case SPELL_DAMAGE_CLASS_NONE:
@@ -8505,9 +8506,7 @@ bool Unit::isSpellCrit(Unit *pVictim, SpellEntry const *spellProto, SpellSchoolM
             if (schoolMask & SPELL_SCHOOL_MASK_NORMAL)
                 baseChance = 0.0f;
             // For other schools
-            else if (GetTypeId() == TYPEID_PLAYER)
-                baseChance = GetFloatValue(PLAYER_SPELL_CRIT_PERCENTAGE1 + GetFirstSchoolInMask(schoolMask));
-            else
+            else if (GetTypeId() != TYPEID_PLAYER)
             {
                 baseChance = m_baseSpellCritChance;
                 baseChance += GetTotalAuraModifierByMiscMask(SPELL_AURA_MOD_SPELL_CRIT_CHANCE_SCHOOL, schoolMask);
@@ -8557,8 +8556,8 @@ bool Unit::isSpellCrit(Unit *pVictim, SpellEntry const *spellProto, SpellSchoolM
         default:
             return false;
     }
-
-    SendCombatStats("isSpellCrit (id=%d): baseChance = %f extraChance = %f totalChance = %f", pVictim, spellProto->Id, baseChance, extraChance, baseChance+extraChance);
+    baseChance += spellExtraChance;
+    SendCombatStats("isSpellCrit (id=%d): baseChance = %f (spellExtraChance = %f) extraChance = %f totalChance = %f", pVictim, spellProto->Id, baseChance, spellExtraChance, extraChance, baseChance + extraChance);
     return RollPRD(baseChance/100, extraChance/100, spellProto->Id);
 }
 

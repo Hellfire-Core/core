@@ -2358,6 +2358,8 @@ void Spell::prepare(SpellCastTargets * targets, Aura* triggeredByAura)
         // no mod gives pct chance for spell crit (surge of light is also taken as flat in spellmgr::loadspellcustomattr
         m_extraCrit = 0.0f;
         m_caster->ToPlayer()->ApplySpellMod(GetSpellEntry()->Id, SPELLMOD_CRITICAL_CHANCE, m_extraCrit);
+        // maybe also precalculate this one?
+        m_extraCrit += m_caster->GetFloatValue(PLAYER_SPELL_CRIT_PERCENTAGE1 + GetFirstSchoolInMask(m_spellSchoolMask));
     }
     else if (m_caster->GetTypeId() == TYPEID_UNIT && ((Creature*)m_caster)->isPet())
     {
