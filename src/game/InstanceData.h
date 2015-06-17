@@ -258,7 +258,7 @@ public:
                     }
                 }
                 RealmDataDatabase.PExecute("INSERT INTO boss_fights_loot "
-                    "(SELECT \"%u\", itemId, itemCount FROM group_saved_loot WHERE instanceId = %u);",
+                    "(SELECT \"%u\", itemId, SUM(itemCount) FROM group_saved_loot WHERE instanceId = %u GROUP BY itemId);",
                     kill_id,m_map->GetInstanceId());
                 RealmDataDatabase.CommitTransaction();
             }
