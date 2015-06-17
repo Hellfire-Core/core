@@ -959,20 +959,18 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
 
     ScriptedInstance* pInstance;
 
-    uint32 ShadowBoltVolleyTimer;
-    uint32 FelfirePortalTimer;
-    uint32 DeceiverReviveTimer;
+    Timer ShadowBoltVolleyTimer;
+    Timer FelfirePortalTimer;
+    //Timer DeceiverReviveTimer;
 
 
     void Reset()
     {
         DoCast(m_creature, SPELL_SHADOW_CHANNELING);
         // TODO: Timers!
-        ShadowBoltVolleyTimer = 8000 + urand(0, 3000); // So they don't all cast it in the same moment.
+        ShadowBoltVolleyTimer.Reset(8000 + urand(0, 3000)); // So they don't all cast it in the same moment.
         FelfirePortalTimer = 20000;
-        DeceiverReviveTimer = 10000;
-        if (pInstance)
-            pInstance->SetData(DATA_KILJAEDEN_EVENT, NOT_STARTED);
+        //DeceiverReviveTimer = 10000;
     }
 
     void JustSummoned(Creature* summoned)
@@ -993,6 +991,16 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
         m_creature->InterruptNonMeleeSpells(true);
     }
 
+    void EnterEvadeMode()
+    {
+        if (Creature* Control = ((Creature*)Unit::GetUnit(*m_creature, pInstance->GetData64(DATA_KILJAEDEN_CONTROLLER))))
+            Control->AI()->EnterEvadeMode();
+
+        if (!me->IsInEvadeMode())
+            ScriptedAI::EnterEvadeMode();
+
+    }
+
     void JustDied(Unit* killer)
     {
         if (!pInstance)
@@ -1005,10 +1013,6 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        /*
-        if(!m_creature->isInCombat())
-        DoCast(m_creature, SPELL_SHADOW_CHANNELING);*/
-
         if (!UpdateVictim())
             return;
 
@@ -1017,32 +1021,30 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
             DoCast(m_creature, SPELL_SHADOW_INFUSION, true);
 
         // Shadow Bolt Volley - Shoots Shadow Bolts at all enemies within 30 yards, for ~2k Shadow damage.
-        if (ShadowBoltVolleyTimer <= diff)
+        if (ShadowBoltVolleyTimer.Expired(diff))
         {
             DoCast(m_creature->getVictim(), SPELL_SHADOW_BOLT_VOLLEY);
             ShadowBoltVolleyTimer = 12000;
         }
-        else
-            ShadowBoltVolleyTimer -= diff;
 
         // Felfire Portal - Creatres a portal, that spawns Volatile Felfire Fiends, which do suicide bombing.
-        if (FelfirePortalTimer <= diff)
+        if (FelfirePortalTimer.Expired(diff))
         {
             Creature* Portal = DoSpawnCreature(CREATURE_FELFIRE_PORTAL, 0, 0, 0, 0, TEMPSUMMON_TIMED_DESPAWN, 20000);
             if (Portal)
             {
-                std::list<HostileReference*>::iterator itr;
-                for (itr = m_creature->getThreatManager().getThreatList().begin(); itr != m_creature->getThreatManager().getThreatList().end(); ++itr)
-                {
-                    Unit* pUnit = Unit::GetUnit(*m_creature, (*itr)->getUnitGuid());
-                    if (pUnit)
-                        Portal->AddThreat(pUnit, 1.0f);
-                }
+              // std::list<HostileReference*>::iterator itr;
+              // for (itr = m_creature->getThreatManager().getThreatList().begin(); itr != m_creature->getThreatManager().getThreatList().end(); ++itr)
+              // {
+              //     Unit* pUnit = Unit::GetUnit(*m_creature, (*itr)->getUnitGuid());
+              //     if (pUnit)
+              //         Portal->AddThreat(pUnit, 1.0f);
+              // }
+              //
+                Portal->getThreatManager() = me->getThreatManager();  // copy threat list test :P
             }
             FelfirePortalTimer = 20000;
         }
-        else
-            FelfirePortalTimer -= diff;
 
         DoMeleeAttackIfReady();
     }
