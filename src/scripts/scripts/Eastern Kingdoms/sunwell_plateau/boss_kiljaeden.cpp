@@ -627,7 +627,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
             for (uint8 z = 0; z < 6; ++z)
             {
                 target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true);
-                if (!target->HasAura(SPELL_VENGEANCE_OF_THE_BLUE_FLIGHT, 0)) break;
+                if (target && !target->HasAura(SPELL_VENGEANCE_OF_THE_BLUE_FLIGHT, 0)) break;
             }
             target->GetPosition(x, y, z);
             Creature* SinisterReflection = m_creature->SummonCreature(CREATURE_SINISTER_REFLECTION, x, y, z, 0, TEMPSUMMON_CORPSE_DESPAWN, 0);
@@ -684,7 +684,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                             for (uint8 z = 0; z < 6; ++z)
                             {
                                 randomPlayer = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true);
-                                if (!randomPlayer->HasAura(SPELL_VENGEANCE_OF_THE_BLUE_FLIGHT, 0))
+                                if (randomPlayer && !randomPlayer->HasAura(SPELL_VENGEANCE_OF_THE_BLUE_FLIGHT, 0))
                                     break;
                             }
                             if (randomPlayer)
@@ -770,7 +770,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                         for (uint8 z = 0; z < 6; ++z)
                         {
                             target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true);
-                            if (!target->HasAura(SPELL_VENGEANCE_OF_THE_BLUE_FLIGHT, 0)) break;
+                            if (target && !target->HasAura(SPELL_VENGEANCE_OF_THE_BLUE_FLIGHT, 0)) break;
                         }
                         if (target)
                         {
@@ -1170,7 +1170,8 @@ struct mob_felfire_portalAI : public Scripted_NoMovementAI
         {
             Creature* Fiend = DoSpawnCreature(CREATURE_VOLATILE_FELFIRE_FIEND, 0, 0, 0, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 20000);
             if (Fiend)
-                Fiend->AddThreat(SelectUnit(SELECT_TARGET_RANDOM), 100000.0f);
+                if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM))
+                    Fiend->AddThreat(target, 100000.0f);
             SpawnFiendTimer = 3000;
         }
     }
