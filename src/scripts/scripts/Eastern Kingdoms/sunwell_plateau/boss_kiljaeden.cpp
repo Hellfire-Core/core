@@ -98,6 +98,7 @@ enum SpellIds
     SPELL_SOUL_FLAY_SLOW                                = 47106,
     SPELL_LEGION_LIGHTNING                              = 45664, // Chain Lightning, 4 targets, ~3k Shadow damage, 1.5k mana burn
     SPELL_FIRE_BLOOM                                    = 45641, // Places a debuff on 5 raid members, which causes them to deal 2k Fire damage to nearby allies and selves. MIGHT NOT WORK
+    SPELL_SUNWELL_KNOCKBACK                             = 40191, // 10 yd aoe knockback, no damage
 
     SPELL_SINISTER_REFLECTION                           = 45785, // Summon shadow copies of 5 raid members that fight against KJ's enemies
     SPELL_COPY_WEAPON                                   = 41055, // }
@@ -470,6 +471,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
     boss_kiljaedenAI(Creature* c) : Scripted_NoMovementAI(c), Summons(m_creature)
     {
         pInstance = (c->GetInstanceData());
+        me->SetHomePosition(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation());
     }
 
     ScriptedInstance* pInstance;
@@ -482,6 +484,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
 
     Timer _Timer[10];
     Timer WaitTimer;
+    Timer Emerging;   // we don't want to damage players when emerging, we do this when the fight starts
 
     /* Boolean */
     bool IsKalecJoined;
@@ -489,6 +492,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
     bool TimerIsDeactiveted[10];
     bool IsWaiting;
     bool OrbActivated;
+    bool IsEmerging;
 
     void Reset()
     {
@@ -496,10 +500,10 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
         _Timer[TIMER_KALEC_JOIN].Reset(26000);
 
         //Phase 2 Timer
-        _Timer[TIMER_SOUL_FLAY].Reset(20000);
-        _Timer[TIMER_LEGION_LIGHTNING].Reset(40000);
-        _Timer[TIMER_FIRE_BLOOM].Reset(30000);
-        _Timer[TIMER_SUMMON_SHILEDORB].Reset(45000);
+        _Timer[TIMER_SOUL_FLAY].Reset(3000);
+        _Timer[TIMER_LEGION_LIGHTNING].Reset(10000);
+        _Timer[TIMER_FIRE_BLOOM].Reset(13000);
+        _Timer[TIMER_SUMMON_SHILEDORB].Reset(12000);
 
         //Phase 3 Timer
         _Timer[TIMER_SHADOW_SPIKE].Reset(4000);
@@ -515,16 +519,32 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
 
         Phase = PHASE_DECEIVERS;
 
+        Emerging.Reset(10000);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+
         IsKalecJoined = false;
         IsInDarkness  = false;
         IsWaiting     = false;
         OrbActivated  = false;
+        IsEmerging    = true;
 
         Kalec = ((Creature*)Unit::GetUnit(*m_creature, pInstance->GetData64(DATA_KALECGOS_KJ)));
         ChangeTimers(false, 0);
 
         if (pInstance && pInstance->GetData(DATA_KILJAEDEN_EVENT) != DONE)
             pInstance->SetData(DATA_KILJAEDEN_EVENT, NOT_STARTED);
+    }
+
+    void MoveInLineOfSight(Unit* who)
+    {
+        if (me->GetExactDist2d(who->GetPositionX(), who->GetPositionY()) <= 10.0f)
+            me->CastSpell(who, SPELL_SUNWELL_KNOCKBACK, true);
+    }
+
+    void SpellHitTarget(Unit* target, const SpellEntry* spell)
+    {
+        if (spell->Id == SPELL_SUNWELL_KNOCKBACK && !IsEmerging)
+            target->DealDamage(me, 475, SPELL_DIRECT_DAMAGE, SPELL_SCHOOL_MASK_FIRE, spell, false);
     }
 
     void ChangeTimers(bool status, uint32 WTimer)
@@ -618,9 +638,15 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (Phase < PHASE_NORMAL || !UpdateVictim())
-            return;
+        if (Emerging.Expired(diff))
+        {
+            Emerging = 0;
+            IsEmerging = false;
+            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        }
 
+        if (Phase < PHASE_NORMAL || IsEmerging || !UpdateVictim())
+            return;
 
         if (WaitTimer.Expired(diff))
         {
@@ -648,7 +674,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                         {
                             m_creature->CastSpell(m_creature->getVictim(), SPELL_SOUL_FLAY, false);
                             m_creature->getVictim()->CastSpell(m_creature->getVictim(), SPELL_SOUL_FLAY_SLOW, true);
-                            _Timer[TIMER_SOUL_FLAY] = 3500;
+                            _Timer[TIMER_SOUL_FLAY] = 4000;
                         }
                         break;
                     case TIMER_LEGION_LIGHTNING:
@@ -668,7 +694,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                                 error_log("try to cast SPELL_LEGION_LIGHTNING on invalid target");
 
                             _Timer[TIMER_LEGION_LIGHTNING] = (Phase == PHASE_SACRIFICE) ? 18000 : 30000; // 18 seconds in PHASE_SACRIFICE
-                            _Timer[TIMER_SOUL_FLAY] = 2500;
+                            _Timer[TIMER_SOUL_FLAY].Reset(2500);
                         }
                         break;
                     case TIMER_FIRE_BLOOM:
@@ -677,7 +703,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                             m_creature->RemoveAurasDueToSpell(SPELL_SOUL_FLAY);
                             DoCastAOE(SPELL_FIRE_BLOOM, false);
                             _Timer[TIMER_FIRE_BLOOM] = (Phase == PHASE_SACRIFICE) ? 25000 : 40000; // 25 seconds in PHASE_SACRIFICE
-                            _Timer[TIMER_SOUL_FLAY] = 1000;
+                            _Timer[TIMER_SOUL_FLAY].Reset(1000);
                         }
                         break;
                     case TIMER_SUMMON_SHILEDORB:
@@ -689,7 +715,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                             m_creature->SummonCreature(CREATURE_SHIELD_ORB, sx, sy, SHIELD_ORB_Z, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 45000);
                         }
                         _Timer[TIMER_SUMMON_SHILEDORB] = 30000 + rand() % 30 * 1000; // 30-60seconds cooldown
-                        _Timer[TIMER_SOUL_FLAY] = 2000;
+                        _Timer[TIMER_SOUL_FLAY].Reset(2000);
                         break;
                     case TIMER_SHADOW_SPIKE: //Phase 3
                         if (!m_creature->IsNonMeleeSpellCast(false))
@@ -1001,7 +1027,7 @@ CreatureAI* GetAI_mob_kiljaeden_controller(Creature *_Creature)
 //AI for Hand of the Deceiver
 struct mob_hand_of_the_deceiverAI : public ScriptedAI
 {
-    mob_hand_of_the_deceiverAI(Creature* c) : ScriptedAI(c)
+    mob_hand_of_the_deceiverAI(Creature* c) : ScriptedAI(c), Summons(m_creature)
     {
         pInstance = (c->GetInstanceData());
     }
@@ -1010,6 +1036,7 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
 
     Timer ShadowBoltVolleyTimer;
     Timer FelfirePortalTimer;
+    SummonList Summons;
     //Timer DeceiverReviveTimer;
 
 
@@ -1026,6 +1053,7 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
         summoned->setFaction(m_creature->getFaction());
         summoned->SetLevel(m_creature->getLevel());
         summoned->AI()->DoZoneInCombat();
+        Summons.Summon(summoned);
     }
 
     void EnterCombat(Unit* who)
@@ -1062,6 +1090,8 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
         Creature* Control = Unit::GetCreature(*m_creature, pInstance->GetData64(DATA_KILJAEDEN_CONTROLLER));
         if (Control)
             Control->AI()->DoAction(DECEIVER_DIED);
+
+        Summons.DespawnAll();
     }
 
 
@@ -1102,13 +1132,15 @@ CreatureAI* GetAI_mob_hand_of_the_deceiver(Creature *_Creature)
 //AI for Felfire Portal
 struct mob_felfire_portalAI : public Scripted_NoMovementAI
 {
-    mob_felfire_portalAI(Creature* c) : Scripted_NoMovementAI(c) {}
+    mob_felfire_portalAI(Creature* c) : Scripted_NoMovementAI(c), Summons(m_creature) {}
 
     Timer SpawnFiendTimer;
 
+    SummonList Summons;
+
     void InitializeAI()
     {
-        SpawnFiendTimer = 2000;
+        SpawnFiendTimer = 3000;
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
     }
@@ -1124,7 +1156,9 @@ struct mob_felfire_portalAI : public Scripted_NoMovementAI
         summoned->setFaction(m_creature->getFaction());
         summoned->SetLevel(m_creature->getLevel());
         summoned->AI()->DoZoneInCombat();
+        Summons.Summon(summoned);
     }
+
 
 
     void UpdateAI(const uint32 diff)
@@ -1137,7 +1171,7 @@ struct mob_felfire_portalAI : public Scripted_NoMovementAI
             Creature* Fiend = DoSpawnCreature(CREATURE_VOLATILE_FELFIRE_FIEND, 0, 0, 0, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 20000);
             if (Fiend)
                 Fiend->AddThreat(SelectUnit(SELECT_TARGET_RANDOM), 100000.0f);
-            SpawnFiendTimer = 2000;
+            SpawnFiendTimer = 3000;
         }
     }
 };
@@ -1153,20 +1187,26 @@ struct mob_volatile_felfire_fiendAI : public ScriptedAI
     mob_volatile_felfire_fiendAI(Creature* c) : ScriptedAI(c) {}
 
     Timer ExplodeTimer;
+    Timer WaitTimer;
 
     bool LockedTarget;
 
     void Reset()
     {
-        ExplodeTimer.Reset(2000);
+        WaitTimer.Reset(1500);
+        ExplodeTimer.Reset(3000);
         LockedTarget = false;
     }
 
 
     void UpdateAI(const uint32 diff)
     {
-        if (!UpdateVictim())
+        if (WaitTimer.Expired(diff))
+            WaitTimer = 0;
+
+        if (WaitTimer.Passed() || !UpdateVictim())
             return;
+
 
         if (!LockedTarget)
         {
