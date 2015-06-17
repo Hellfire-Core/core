@@ -6936,10 +6936,11 @@ void ObjectMgr::CountRollVote(const uint64& playerGUID, const uint64& Guid, uint
 {
     for (Rolls::iterator iter = mLootRolls.begin(); iter != mLootRolls.end(); ++iter)
     {
-        if ((*iter)->itemGUID == Guid && (*iter)->isValid() && (*iter)->CountRollVote(playerGUID,Choice))
+        if ((*iter)->isValid() && (*iter)->itemGUID == Guid && (*iter)->CountRollVote(playerGUID, Choice))
         {
             mLootRolls.erase(iter);
             delete (*iter);
+            return;
         }
     }
 }
