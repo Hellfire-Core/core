@@ -410,12 +410,8 @@ void WorldSession::HandleLootRoll(WorldPacket &recv_data)
 
     //sLog.outDebug("WORLD RECIEVE CMSG_LOOT_ROLL, From:%u, Numberofplayers:%u, Choice:%u", (uint32)Guid, NumberOfPlayers, Choice);
 
-    Group* group = GetPlayer()->GetGroup();
-    if (!group)
-        return;
-
     // everything's fine, do it
-    group->CountRollVote(GetPlayer()->GetGUID(), Guid, NumberOfPlayers, Choice);
+    sObjectMgr.CountRollVote(GetPlayer()->GetGUID(), Guid, Choice);
 }
 
 void WorldSession::HandleMinimapPingOpcode(WorldPacket& recv_data)

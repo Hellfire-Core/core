@@ -63,15 +63,6 @@ Group::~Group()
             sLog.outLog(LOG_DEFAULT, "ERROR: Group::~Group: battleground group is not linked to the correct battleground.");
     }
 
-    Rolls::iterator itr;
-    while (!RollId.empty())
-    {
-        itr = RollId.begin();
-        Roll *r = *itr;
-        RollId.erase(itr);
-        delete(r);
-    }
-
     // it is undefined whether objectmgr (which stores the groups) or instancesavemgr
     // will be unloaded first so we must be prepared for both cases
     // this may unload some instance saves
@@ -625,7 +616,7 @@ void Group::PrepareLootRolls(const uint64& playerGUID, Loot *loot, WorldObject* 
                 r->SendLootStartRoll(60000);
                 i->is_blocked = true;
 
-                RollId.push_back(r);
+                sObjectMgr.AddRoll(r);
             }
             else
                 delete r;
@@ -679,19 +670,6 @@ void Group::SendMasterLoot(Loot* loot, WorldObject* object)
         Player *looter = itr->getSource();
         if (loot->IsPlayerAllowedToLoot(looter, object))
             looter->SendPacketToSelf(&data);
-    }
-}
-
-void Group::CountRollVote(const uint64& playerGUID, const uint64& Guid, uint32 NumberOfPlayers, uint8 Choice)
-{
-    Rolls::iterator rollI = GetRoll(Guid);
-    if (rollI == RollId.end())
-        return;
-
-    if ((*rollI)->CountRollVote(playerGUID, NumberOfPlayers, Choice))
-    {
-        RollId.erase(rollI);
-        delete (*rollI);
     }
 }
 
@@ -840,26 +818,6 @@ void Group::Update(uint32 diff)
             m_leaderLogoutTime = 0;
         }
     }
-
-
-    for (Rolls::iterator itr = RollId.begin(); itr != RollId.end(); )
-    {
-        if ((*itr)->rollTimer <= diff)
-        {
-            if ((*itr)->isValid())
-                (*itr)->CountTheRoll(GetMembersCount()); // good value?
-            
-            delete (*itr);
-            itr = RollId.erase(itr);
-        }
-        else
-        {
-            (*itr)->rollTimer -= diff;
-            ++itr;
-        }
-    }
-
-
 }
 
 void Group::UpdatePlayerOutOfRange(Player* pPlayer)
@@ -1022,8 +980,6 @@ bool Group::_removeMember(const uint64 &guid)
         }
     }
 
-    _removeRolls(guid);
-
     member_witerator slot = _getMemberWSlot(guid);
     if (slot != m_memberSlots.end())
     {
@@ -1114,34 +1070,6 @@ void Group::_setLeader(const uint64 &guid)
 
     m_leaderGuid = slot->guid;
     m_leaderName = slot->name;
-}
-
-void Group::_removeRolls(const uint64 &guid)
-{
-    for (Rolls::iterator it = RollId.begin(); it != RollId.end();)
-    {
-        Roll* roll = *it;
-        Roll::PlayerVote::iterator itr2 = roll->playerVote.find(guid);
-        if (itr2 == roll->playerVote.end())
-        {
-            ++it;
-            continue;
-        }
-
-        if (itr2->second == NOT_EMITED_YET)
-        {
-            --roll->totalPlayersRolling;
-            if (roll->CountRollVote(guid, GetMembersCount() - 1, 3))
-            {
-                it = RollId.erase(it);
-                delete roll;
-            }
-            else
-                it++;
-        }
-        else
-            it++;
-    }
 }
 
 bool Group::_setMembersGroup(const uint64 &guid, const uint8 &group)
@@ -1678,11 +1606,11 @@ void Roll::SendLootRollWon(const uint64& SourceGuid, const uint64& TargetGuid, u
     }
 }
 
-void Roll::SendLootAllPassed(uint32 NumberOfPlayers)
+void Roll::SendLootAllPassed()
 {
     WorldPacket data(SMSG_LOOT_ALL_PASSED, (8 + 4 + 4 + 4 + 4));
     data << uint64(itemGUID);                               // Guid of the item rolled
-    data << uint32(NumberOfPlayers);                        // The number of players rolling for it???
+    data << uint32(totalPlayersRolling);                        // The number of players rolling for it???
     data << uint32(itemid);                                 // The itemEntryId for the item that shall be rolled for
     data << uint32(itemRandomPropId);                       // Item random property ID
     data << uint32(itemRandomSuffix);                       // Item random suffix ID
@@ -1698,7 +1626,7 @@ void Roll::SendLootAllPassed(uint32 NumberOfPlayers)
     }
 }
 
-void Roll::CountTheRoll(uint32 NumberOfPlayers)
+void Roll::CountTheRoll()
 {
     if (totalNeed > 0)
     {
@@ -1797,13 +1725,13 @@ void Roll::CountTheRoll(uint32 NumberOfPlayers)
     }
     else
     {
-        SendLootAllPassed(NumberOfPlayers);
+        SendLootAllPassed();
         LootItem *item = &(getLoot()->items[itemSlot]);
         if (item) item->is_blocked = false;
     }
 }
 
-bool Roll::CountRollVote(const uint64& playerGUID, uint32 NumberOfPlayers, uint8 Choice)
+bool Roll::CountRollVote(const uint64& playerGUID, uint8 Choice)
 {
     Roll::PlayerVote::iterator itr = playerVote.find(playerGUID);
     // this condition means that player joins to the party after roll begins
@@ -1839,7 +1767,7 @@ bool Roll::CountRollVote(const uint64& playerGUID, uint32 NumberOfPlayers, uint8
     }
     if (totalPass + totalGreed + totalNeed >= totalPlayersRolling)
     {
-        CountTheRoll(NumberOfPlayers);
+        CountTheRoll();
         return true;
     }
     return false;

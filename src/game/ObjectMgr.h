@@ -269,6 +269,7 @@ class ObjectMgr
         typedef UNORDERED_MAP<uint32, Item*> ItemMap;
 
         typedef std::set< Group * > GroupSet;
+        typedef std::list<Roll*> Rolls;
 
         typedef UNORDERED_MAP<uint32, ArenaTeam*> ArenaTeamMap;
         typedef UNORDERED_MAP<uint32, Quest*> QuestMap;
@@ -297,6 +298,9 @@ class ObjectMgr
         void RemoveGroup(Group* group) { mGroupSet.erase(group); }
         GroupSet::iterator GetGroupSetBegin() { return mGroupSet.begin(); }
         GroupSet::iterator GetGroupSetEnd()   { return mGroupSet.end(); }
+        void UpdateRolls(uint32 diff);
+        void AddRoll(Roll* r) { mLootRolls.push_back(r); };
+        void CountRollVote(const uint64& playerGUID, const uint64& Guid, uint8 Choice);
 
         ArenaTeam* GetArenaTeamById(const uint32 arenateamid) const;
         ArenaTeam* GetArenaTeamByName(const std::string& arenateamname) const;
@@ -785,6 +789,7 @@ class ObjectMgr
         typedef std::set<uint32> GameObjectForQuestSet;
 
         GroupSet                mGroupSet;
+        Rolls                   mLootRolls;
         ArenaTeamMap            mArenaTeamMap;
 
         ItemTextMap             mItemTexts;

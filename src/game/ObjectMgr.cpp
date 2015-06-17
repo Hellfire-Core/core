@@ -6911,3 +6911,35 @@ void ObjectMgr::LoadOpcodesCooldown()
     sLog.outString();
     sLog.outString(">> Loaded %lu opcode cooldowns", _opcodesCooldown.size());
 }
+
+void ObjectMgr::UpdateRolls(uint32 diff)
+{
+    for (Rolls::iterator itr = mLootRolls.begin(); itr != mLootRolls.end();)
+    {
+        if ((*itr)->rollTimer <= diff)
+        {
+            if ((*itr)->isValid())
+                (*itr)->CountTheRoll(); // good value?
+
+            delete (*itr);
+            itr = mLootRolls.erase(itr);
+        }
+        else
+        {
+            (*itr)->rollTimer -= diff;
+            ++itr;
+        }
+    }
+}
+
+void ObjectMgr::CountRollVote(const uint64& playerGUID, const uint64& Guid, uint8 Choice)
+{
+    for (Rolls::iterator iter = mLootRolls.begin(); iter != mLootRolls.end(); ++iter)
+    {
+        if ((*iter)->itemGUID == Guid && (*iter)->isValid() && (*iter)->CountRollVote(playerGUID,Choice))
+        {
+            mLootRolls.erase(iter);
+            delete (*iter);
+        }
+    }
+}

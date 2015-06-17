@@ -1689,6 +1689,9 @@ void World::Update(uint32 diff)
             (*itr)->Update(diff);
 
         diffRecorder.RecordTimeFor("UpdateGroups");
+
+        sObjectMgr.UpdateRolls(diff);
+        diffRecorder.RecordTimeFor("UpdateRolls");
     }
 
     sWorldEventProcessor.ExecuteEvents();
