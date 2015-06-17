@@ -125,7 +125,7 @@ struct boss_netherspiteAI : public ScriptedAI
                 BeamTarget[i] = me->GetGUID();
                 portal->AddAura(PortalVisual[i], portal);
                 portal->AddAura(42176,portal);
-                portal->CastSpell(me, PortalBeam[i], true);
+                portal->CastSpell(me, PortalBeam[i], false);
                 portal->SetVisibility(VISIBILITY_ON);
             }
         }
