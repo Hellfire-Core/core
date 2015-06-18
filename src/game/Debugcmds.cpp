@@ -378,7 +378,7 @@ bool ChatHandler::HandleDebugPlayRangeSound(const char* args)
     }
 
     uint32 affected = 0;
-    uint32 max;
+    uint32 max = 0;
     uint32 dwSoundId = atoi(strtok((char*)args, " "));
     float range = atoi((char*)strtok(NULL, " "));
 
