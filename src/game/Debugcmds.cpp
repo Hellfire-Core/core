@@ -368,6 +368,57 @@ bool ChatHandler::HandleDebugPlaySoundCommand(const char* args)
     return true;
 }
 
+bool ChatHandler::HandleDebugPlayRangeSound(const char* args)
+{
+    if (!*args)
+    {
+        SendSysMessage(LANG_BAD_VALUE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    uint32 affected = 0;
+    uint32 max;
+    uint32 dwSoundId = atoi(strtok((char*)args, " "));
+    float range = atoi((char*)strtok(NULL, " "));
+
+    if (!sSoundEntriesStore.LookupEntry(dwSoundId))
+    {
+        PSendSysMessage(LANG_SOUND_NOT_EXIST, dwSoundId);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    if (m_session->GetPlayer())
+        if (Map* map = m_session->GetPlayer()->GetMap())
+        {
+            Position homepos;
+            m_session->GetPlayer()->GetPosition(homepos);
+
+            Map::PlayerList const &PlayerList = ((Map*)map)->GetPlayers();
+
+            for (InstanceMap::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
+            {
+                if (Player* i_pl = i->getSource())
+                    if (i_pl && i_pl->IsInWorld())
+                    {
+                        max++;
+                        if (range == 0 || i_pl->GetDistance2d(homepos.x, homepos.y) < range)
+                        {
+                            i_pl->PlayDirectSound(dwSoundId, i_pl);
+                            affected++;
+                        }
+                    }
+            }
+            PSendSysMessage("Played soundID = %u in range %f for %u out of %u players.", dwSoundId, range, affected, max);
+            return true;
+        }
+
+
+    return false;
+
+}
+
 //Send notification in channel
 bool ChatHandler::HandleDebugSendChannelNotifyCommand(const char* args)
 {

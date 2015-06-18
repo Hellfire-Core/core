@@ -253,6 +253,7 @@ ChatCommand * ChatHandler::getCommandTable()
     {
         { "cinematic",      PERM_DEVELOPER, PERM_CONSOLE, false, &ChatHandler::HandleDebugPlayCinematicCommand,   "", NULL },
         { "sound",          PERM_DEVELOPER, PERM_CONSOLE, false, &ChatHandler::HandleDebugPlaySoundCommand,       "", NULL },
+        { "rangesound",     PERM_HIGH_GMT,  PERM_CONSOLE, false, &ChatHandler::HandleDebugPlayRangeSound,         "", NULL },
         { NULL,             0,              0,            false, NULL,                                            "", NULL }
     };
 
