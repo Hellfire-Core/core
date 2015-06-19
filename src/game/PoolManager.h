@@ -114,15 +114,11 @@ class PoolManager
 
         uint16 max_pool_id;
 
-        typedef std::vector<PoolGroup<Creature> >   PoolGroupCreatureMap;
         typedef std::vector<PoolGroup<GameObject> > PoolGroupGameObjectMap;
-        typedef std::vector<PoolGroup<void> >       PoolGroupPoolMap;
         typedef std::pair<uint32, uint16> SearchPair;
         typedef std::map<uint32, uint16> SearchMap;
 
-        PoolGroupCreatureMap mPoolCreatureGroups;
         PoolGroupGameObjectMap mPoolGameobjectGroups;
-        PoolGroupPoolMap mPoolPoolGroups;
 
         // static maps DB low guid -> pool id
         SearchMap mCreatureSearchMap;
