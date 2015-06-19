@@ -1127,6 +1127,18 @@ bool ChatHandler::HandleDebugSendBattlegroundOpcodes(const char* args)
         m_session->SendPacket(&data);
         done = true;
     }
+    else if (strcmp(args, "none") == 0)
+    {
+        if (!bg)
+        {
+            SendSysMessage("No such BG");
+            SetSentErrorMessage(true);
+            return false;
+        }
+        sBattleGroundMgr.BuildBattleGroundStatusPacket(&data, bg, pPlayer->GetTeam(), 0, STATUS_NONE, 0, bg->GetStartTime());
+        m_session->SendPacket(&data);
+        done = true;
+    }
 
     if (done)
     {
