@@ -1,6 +1,6 @@
-/* 
+/*
  * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -165,14 +165,14 @@ struct boss_rage_winterchillAI : public hyjal_trashAI
         if (!UpdateVictim() )
             return;
 
-       
+
         if (CheckTimer.Expired(diff))
         {
             DoZoneInCombat();
             m_creature->SetSpeed(MOVE_RUN, 3.0);
             CheckTimer = 1000;
         }
-        
+
 
 
         if (FrostArmorTimer.Expired(diff))
@@ -181,7 +181,7 @@ struct boss_rage_winterchillAI : public hyjal_trashAI
             DoCast(m_creature, SPELL_FROST_ARMOR,true);
             FrostArmorTimer = 11000+rand()%20000;
         }
-        
+
 
 
         if (DecayTimer.Expired(diff))
@@ -191,7 +191,7 @@ struct boss_rage_winterchillAI : public hyjal_trashAI
                 DoCast(target,SPELL_DEATH_AND_DECAY);
 
             if(NovaTimer.GetTimeLeft() < 20000)
-                NovaTimer = 20000;
+                NovaTimer.Reset(20000);
 
             DecayTimer = 60000+rand()%20000;
             switch(rand()%2)
@@ -206,9 +206,9 @@ struct boss_rage_winterchillAI : public hyjal_trashAI
                     break;
             }
         }
-        
 
-        
+
+
         if (NovaTimer.Expired(diff))
         {
             if(Unit *target = m_creature->getVictim())
@@ -218,7 +218,7 @@ struct boss_rage_winterchillAI : public hyjal_trashAI
             NovaTimer = 30000+rand()%15000;
 
             if(DecayTimer.GetTimeLeft() < 10000)
-                DecayTimer = 10000;
+                DecayTimer.Reset(10000);
 
             switch(rand()%2)
             {
@@ -232,9 +232,9 @@ struct boss_rage_winterchillAI : public hyjal_trashAI
                     break;
             }
         }
-        
 
-        
+
+
         if (IceboltTimer.Expired(diff))
         {
             if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, 40, true))
@@ -243,16 +243,16 @@ struct boss_rage_winterchillAI : public hyjal_trashAI
 
             IceboltTimer = 11000+rand()%20000;
         }
-        
 
-        
+
+
         if (Enrage_Timer.Expired(diff))
         {
             //AddSpellToCast(m_creature, SPELL_BERSERK);
             DoCast(m_creature, SPELL_BERSERK);
             Enrage_Timer = 300000;
         }
-        
+
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();

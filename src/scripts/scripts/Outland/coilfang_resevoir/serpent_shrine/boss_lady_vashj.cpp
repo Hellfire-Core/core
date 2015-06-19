@@ -1,7 +1,7 @@
-/* 
+/*
  * Copyright (C) 2006-2008 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -234,7 +234,7 @@ struct boss_lady_vashjAI : public ScriptedAI
     {
         //the next will spawn 50 seconds after the previous one's death
         if (TaintedElemental_Timer.GetTimeLeft() > 50000)
-            TaintedElemental_Timer = 50000;
+            TaintedElemental_Timer.Reset(50000);
     }
 
     void KilledUnit(Unit *victim)
@@ -349,7 +349,7 @@ struct boss_lady_vashjAI : public ScriptedAI
             return;
 
         DoSpecialThings(diff, DO_PULSE_COMBAT, 200.0f);
-        
+
 
         // Paralyze effect
         if (Phase == 2)
@@ -379,7 +379,7 @@ struct boss_lady_vashjAI : public ScriptedAI
                 DoCast(me->getVictim(), SPELL_SHOCK_BLAST);
                 ShockBlast_Timer = 8000+rand()%12000;       //random cooldown
             }
-            
+
 
             //StaticCharge_Timer
             if (StaticCharge_Timer.Expired(diff))
@@ -393,7 +393,7 @@ struct boss_lady_vashjAI : public ScriptedAI
 
                 StaticCharge_Timer = 10000+rand()%20000;    //blizzlike
             }
-            
+
 
             //Entangle_Timer
             if (Entangle_Timer.Expired(diff))
@@ -413,7 +413,7 @@ struct boss_lady_vashjAI : public ScriptedAI
                     Entangle_Timer = 20000+rand()%5000;
                 }
             }
-            
+
 
             //Phase 1
             if(Phase == 1)
@@ -461,7 +461,7 @@ struct boss_lady_vashjAI : public ScriptedAI
                     SummonSporebat_Timer = SummonSporebat_StaticTimer;
 
                     if(SummonSporebat_Timer.GetTimeLeft() < 5000)
-                        SummonSporebat_Timer = 5000;
+                        SummonSporebat_Timer.Reset(5000);
 
                 }
             }
@@ -510,7 +510,7 @@ struct boss_lady_vashjAI : public ScriptedAI
 
                 ForkedLightning_Timer = 2000+rand()%6000;   //blizzlike
             }
-            
+
 
             //EnchantedElemental_Timer
             if (EnchantedElemental_Timer.Expired(diff))
@@ -527,7 +527,7 @@ struct boss_lady_vashjAI : public ScriptedAI
                     EnchantedElemental_Timer = 20000+rand()%5000;
 
             }
-            
+
 
             //TaintedElemental_Timer
             if (TaintedElemental_Timer.Expired(diff))
@@ -547,7 +547,7 @@ struct boss_lady_vashjAI : public ScriptedAI
                 me->SummonCreature(COILFANG_ELITE, StriderNagaWP[path_nr*4][0],StriderNagaWP[path_nr*4][1],StriderNagaWP[path_nr*4][2],0, TEMPSUMMON_DEAD_DESPAWN, 0);
                 CoilfangElite_Timer = 50000+rand()%5000;
             }
-            
+
 
             //CoilfangStrider_Timer
             if (CoilfangStrider_Timer.Expired(diff))
@@ -557,7 +557,7 @@ struct boss_lady_vashjAI : public ScriptedAI
 
                 CoilfangStrider_Timer = 60000+rand()%10000;
             }
-            
+
 
             //Check_Timer
             if (Check_Timer.Expired(diff))
@@ -827,7 +827,7 @@ struct mob_toxic_sporebatAI : public ScriptedAI
             }
             bolt_timer = 10000+rand()%5000;
         }
-        
+
 
         //Check_Timer
         if (Check_Timer.Expired(diff))

@@ -1,7 +1,7 @@
-/* 
+/*
  * Copyright (C) 2006-2008 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -170,7 +170,7 @@ struct boss_akilzonAI : public ScriptedAI
             checkTimer = 1000;
         }
 
-         
+
 
 
         if (Enrage_Timer.Expired(diff))
@@ -179,22 +179,24 @@ struct boss_akilzonAI : public ScriptedAI
             m_creature->CastSpell(m_creature, SPELL_BERSERK, true);
             Enrage_Timer = 600000;
         }
-        
-            
+
+
 
 
         if (StaticDisruption_Timer.Expired(diff))
         {
             if(ElectricalStorm_Timer.GetTimeLeft() < 3000)
                 StaticDisruption_Timer = 6000;
-
-            Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_STATIC_DISRUPTION), true, m_creature->getVictimGUID());
-            if(!target)
-                target = m_creature->getVictim();
-            AddSpellToCast(target, SPELL_STATIC_DISRUPTION, false, true);
-            StaticDisruption_Timer = urand(7000, 14000);
+            else
+            {
+                Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_STATIC_DISRUPTION), true, m_creature->getVictimGUID());
+                if(!target)
+                    target = m_creature->getVictim();
+                AddSpellToCast(target, SPELL_STATIC_DISRUPTION, false, true);
+                StaticDisruption_Timer = urand(7000, 14000);
+            }
         }
-        
+
 
         if (GustOfWind_Timer.Expired(diff))
         {
@@ -208,15 +210,15 @@ struct boss_akilzonAI : public ScriptedAI
                 GustOfWind_Timer = urand(8000, 14000);
             }
         }
-        
 
-        
+
+
         if (CallLighting_Timer.Expired(diff))
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_CALL_LIGHTNING);
             CallLighting_Timer = RAND(urand(10000, 15000), urand(30000, 45000));
         }
-        
+
 
         if (!isRaining && ElectricalStorm_Timer.GetTimeLeft() < urand(8000, 12000))
         {
@@ -231,7 +233,7 @@ struct boss_akilzonAI : public ScriptedAI
             isRaining = false;
         }
 
-        
+
         if (ElectricalStorm_Timer.Expired(diff))
         {
             Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_ELECTRICAL_STORM), true);
@@ -250,16 +252,16 @@ struct boss_akilzonAI : public ScriptedAI
             ElectricalStorm_Timer = 60000;
             StaticDisruption_Timer = 10000;
         }
-        
 
-        
+
+
         if (SummonEagles_Timer.Expired(diff))
         {
             DoScriptText(urand(0,1) ? SAY_SUMMON : SAY_SUMMON_ALT, m_creature);
             DoSummonEagles();
             SummonEagles_Timer = 999999;
         }
-        
+
 
         DoMeleeAttackIfReady();
         CastNextSpellIfAnyAndReady();
@@ -336,7 +338,7 @@ struct mob_soaring_eagleAI : public ScriptedAI
         if (!canCast)
             return;
 
-       
+
         if (EagleSwoop_Timer.Expired(diff))
         {
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true))
