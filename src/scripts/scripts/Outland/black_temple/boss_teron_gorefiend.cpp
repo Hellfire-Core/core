@@ -230,33 +230,31 @@ struct mob_shadowy_constructAI : public ScriptedAI
         if (ChangeTarget.Expired(diff))
         {
             DoZoneInCombat();
+            ChangeTarget = 0;
 
             if (pInstance)
                 if (Creature* pTeron = pInstance->GetCreature(pInstance->GetData64(DATA_TERONGOREFIEND)))
                     if (Unit* pTarget = ((ScriptedAI*)pTeron->AI())->SelectUnit(SELECT_TARGET_RANDOM, 1, 100, true))
-                    {
                         AttackStart(pTarget);
-                        ChangeTarget = 0;
-                    }
 
             if (!UpdateVictim())
                 if (Unit *pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1, 200, true))
-                {
                     AttackStart(pTarget);
-                    ChangeTarget = 0;
-                }
 
-            if (ChangeTarget.GetInterval() != 0)
+            if (ChangeTarget.GetInterval() == 0)
                 ChangeTarget = 500; // try again later
         }
     }
 
     void UpdateAI(const uint32 diff)
     {
-        if (DelayTimer.Expired(diff))
-            DelayTimer = 0;
-        else
-            return;
+        if (DelayTimer.GetTimeLeft() > 0)
+        {
+            if (DelayTimer.Expired(diff))
+                DelayTimer = 0;
+            else
+                return;
+        }
 
         UpdateTarget(diff);
 
