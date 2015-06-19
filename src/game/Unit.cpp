@@ -9537,9 +9537,8 @@ void Unit::ModSpellCastTime(SpellEntry const* spellProto, int32 & castTime, Spel
 
      if (spellProto->Attributes & SPELL_ATTR_RANGED && !(spellProto->AttributesEx2 & SPELL_ATTR_EX2_AUTOREPEAT_FLAG))
             castTime = int32 (float(castTime) * m_modAttackSpeedPct[RANGED_ATTACK]);
-     else // TODO: fix it
-        if (spellProto->SpellFamilyName) // some magic spells doesn't have dmgType == SPELL_DAMAGE_CLASS_MAGIC (arcane missiles/evocation)
-            castTime = int32(float(castTime) * GetFloatValue(UNIT_MOD_CAST_SPEED));
+     else // it seems all channeled spells should be affected by haste
+        castTime = int32(float(castTime) * GetFloatValue(UNIT_MOD_CAST_SPEED));
 }
 
 int32 Unit::ModifyPower(Powers power, int32 dVal)
