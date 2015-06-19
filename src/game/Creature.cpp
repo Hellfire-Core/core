@@ -1909,11 +1909,6 @@ void Creature::Respawn()
         //Call AI respawn virtual function
         AI()->Reset();
         AI()->JustRespawned();
-
-        //GetMap()->Add(this);
-        uint16 poolid = sPoolMgr.IsPartOfAPool<Creature>(GetGUIDLow());
-        if (poolid)
-            sPoolMgr.UpdatePool<Creature>(poolid);
     }
 
     SendMonsterStop();

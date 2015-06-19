@@ -526,9 +526,9 @@ void GameObject::Delete(bool setGoState)
 
     SetUInt32Value(GAMEOBJECT_FLAGS, GetGOInfo()->flags);
 
-    uint16 poolid = sPoolMgr.IsPartOfAPool<GameObject>(GetGUIDLow());
+    uint16 poolid = sPoolMgr.IsPartOfAPool(GetGUIDLow());
     if (poolid)
-        sPoolMgr.UpdatePool<GameObject>(poolid);
+        sPoolMgr.UpdatePool(poolid);
     else
         AddObjectToRemoveList();
 }
@@ -832,9 +832,9 @@ void GameObject::Respawn()
     m_respawnTime = 0;
     SendSpawnAnimation();
 
-    uint16 poolid = sPoolMgr.IsPartOfAPool<GameObject>(GetGUIDLow());
+    uint16 poolid = sPoolMgr.IsPartOfAPool(GetGUIDLow());
     if (poolid)
-        sPoolMgr.UpdatePool<GameObject>(poolid);
+        sPoolMgr.UpdatePool(poolid);
     else
         GetMap()->Add(this);
 
