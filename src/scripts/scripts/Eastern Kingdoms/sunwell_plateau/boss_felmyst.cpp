@@ -232,6 +232,11 @@ struct boss_felmystAI : public ScriptedAI
         me->GetMotionMaster()->Clear();
         me->GetMotionMaster()->MoveIdle();
         me->SetSpeed(MOVE_FLIGHT, 2);
+
+        if (!me->HasAura(AURA_NOXIOUS_FUMES))
+            me->CastSpell(me, AURA_NOXIOUS_FUMES, true);
+
+
         if(Unit* target = SelectUnit(SELECT_TARGET_TOPAGGRO, 0))
         {
             float x, y, z;
@@ -398,18 +403,10 @@ struct boss_felmystAI : public ScriptedAI
             case 5:
                 Phase = PHASE_NULL;
                 me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                IntroTimer = 1;
-                break;
-            case 6:
-                Phase = PHASE_GROUND;
-                if (!me->HasAura(AURA_NOXIOUS_FUMES))
-                    me->CastSpell(me, AURA_NOXIOUS_FUMES, true);
-                AttackStart(me->getVictim());
                 IntroTimer = 0;
                 break;
         }
-        if (IntroPhase < 5)
-            IntroPhase++;     //to avoid auto-aggro after spawning
+        IntroPhase++;     
     }
 
     void JustReachedHome()

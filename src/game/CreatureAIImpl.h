@@ -566,7 +566,6 @@ inline bool CreatureAI::UpdateVictim()
     else if (me->getThreatManager().isThreatListEmpty() || outofthreat)
     {
         EnterEvadeMode();
-        me->SetReactState(REACT_PASSIVE);
         return false;
     }
     else if (me->IsInEvadeMode())
