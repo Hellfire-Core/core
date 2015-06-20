@@ -282,10 +282,10 @@ struct boss_nightbaneAI : public ScriptedAI
 
         Flying = true;
 
-        FlyTimer = 45000 + rand() % 15000; //timer wrong between 45 and 60 seconds
+        FlyTimer.Reset(45000 + rand() % 15000); //timer wrong between 45 and 60 seconds
         ++FlyCount;
 
-        RainofBonesTimer = 5000; //timer wrong (maybe)
+        RainofBonesTimer.Reset(5000); //timer wrong (maybe)
         RainBones = false;
         Skeletons = false;
     }
@@ -319,6 +319,9 @@ struct boss_nightbaneAI : public ScriptedAI
                     m_creature->GetMotionMaster()->MovePoint(8, IntroWay[7][0], IntroWay[7][1], IntroWay[7][2]);
                     me->SetReactState(REACT_AGGRESSIVE);
                     me->SetIgnoreVictimSelection(false);
+                    Flying = false;
+                    DoZoneInCombat(1000.0f);
+                    UpdateVictim();
                 }
                 else
                 {
@@ -486,8 +489,6 @@ struct boss_nightbaneAI : public ScriptedAI
 
                 (*m_creature).GetMotionMaster()->Clear(false);
                 m_creature->GetMotionMaster()->MovePoint(3, IntroWay[3][0], IntroWay[3][1], IntroWay[3][2]);
-
-                Flying = true;
             }
 
         }
