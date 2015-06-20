@@ -408,7 +408,8 @@ struct boss_felmystAI : public ScriptedAI
                 IntroTimer = 0;
                 break;
         }
-        IntroPhase++;
+        if (IntroPhase < 5)
+            IntroPhase++;     //to avoid auto-aggro after spawning
     }
 
     void JustReachedHome()
