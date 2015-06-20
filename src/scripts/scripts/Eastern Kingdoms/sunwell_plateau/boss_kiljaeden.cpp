@@ -863,7 +863,11 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
         m_creature->addUnitState(UNIT_STAT_STUNNED);
+    }
 
+    void JustRespawned()
+    {
+        EnterEvadeMode(); // somehow he is missing auras and stuff on spawn, evade helps, so this will be perfect here:P
     }
 
     void Reset()
