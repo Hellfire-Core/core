@@ -679,11 +679,11 @@ struct boss_illidan_stormrageAI : public BossAI
                 {
                     ForceSpellCast(me, SPELL_ILLIDAN_SHADOW_DEMON_CAST, INTERRUPT_AND_CAST_INSTANTLY);
 
+                    float px, py, pz;
                     for (uint8 i = 0; i < 4; i++)
                     {
-                        // Yes we can have multiple demons assigned to one person, Tank shouldn't be excluded from search :]
-                        if (Unit *pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0, 150.0f, true))
-                            pTarget->CastSpell(me, SPELL_ILLIDAN_SHADOW_DEMON, true);
+                        m_creature->GetNearPoint(px, py, pz, 10.0f);
+                        m_creature->CastSpell(px, py, pz, SPELL_ILLIDAN_SHADOW_DEMON, true);
                     }
                     break;
                 }
@@ -1858,16 +1858,13 @@ struct boss_illidan_shadowdemonAI : public ScriptedAI
     {
         DoZoneInCombat();
 
-        m_targetGUID = pSummoner->GetGUID();
-
-        ForceSpellCast(pSummoner, SPELL_SHADOW_DEMON_FOUND_TARGET);
-        ForceSpellCast(me, SPELL_SHADOW_DEMON_PASSIVE);
-
-        if (!pInstance)
+        Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 150.0f, true);
+        if (!target)
             return;
+        m_targetGUID = target->GetGUID();
 
-        if (Creature *pIllidan = pInstance->GetCreature(pInstance->GetData64(DATA_ILLIDANSTORMRAGE)))
-            pIllidan->AI()->JustSummoned(me);
+        ForceSpellCast(target, SPELL_SHADOW_DEMON_FOUND_TARGET);
+        ForceSpellCast(me, SPELL_SHADOW_DEMON_PASSIVE);
     }
 
     void JustDied(Unit *pKiller)
