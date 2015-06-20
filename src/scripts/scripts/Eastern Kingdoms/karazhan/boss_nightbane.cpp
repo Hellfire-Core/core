@@ -159,12 +159,12 @@ struct boss_nightbaneAI : public ScriptedAI
         if (GameObject *Door = GameObject::GetGameObject((*m_creature), pInstance->GetData64(DATA_MASTERS_TERRACE_DOOR_1)))
         {
             Door->SetUInt32Value(GAMEOBJECT_STATE, open ? 0 : 1);
-            Door->SetFlag(GO_FLAG_LOCKED, 1);
+            Door->SetFlag(GO_FLAG_NOTSELECTABLE, 1);
         }
         if (GameObject *Door = GameObject::GetGameObject((*m_creature), pInstance->GetData64(DATA_MASTERS_TERRACE_DOOR_2)))
         {
             Door->SetUInt32Value(GAMEOBJECT_STATE, open ? 0 : 1);
-            Door->SetFlag(GO_FLAG_LOCKED, 1);
+            Door->SetFlag(GO_FLAG_NOTSELECTABLE, 1);
         }
     }
 
@@ -261,6 +261,11 @@ struct boss_nightbaneAI : public ScriptedAI
 
         summoned->AI()->AttackStart(m_creature->getVictim());
     }
+    
+    void JustRespawned()
+    {
+        DoZoneInCombat(1000.0f);
+    }
 
     void TakeOff()
     {
@@ -327,75 +332,119 @@ struct boss_nightbaneAI : public ScriptedAI
           
 
 
-            if (Flying)
+
+        if (!UpdateVictim())
+            return;
+
+        DoSpecialThings(diff, DO_PULSE_COMBAT);
+
+        //  Phase 1 "GROUND FIGHT"
+        if (Phase == 1)
+        {
+            if (Movement)
             {
-                DoSpecialThings(diff, DO_PULSE_COMBAT);
-                return;
+                DoStartMovement(m_creature->getVictim());
+                me->SetReactState(REACT_AGGRESSIVE);
+                Movement = false;
             }
-            else if (!UpdateVictim())
-                return;
 
-            DoSpecialThings(diff, DO_PULSE_COMBAT);
 
-            //  Phase 1 "GROUND FIGHT"
-            if (Phase == 1)
+            if (BellowingRoarTimer.Expired(diff))
             {
-                if (Movement)
+                DoCast(m_creature->getVictim(), SPELL_BELLOWING_ROAR);
+                BellowingRoarTimer = 30000 + rand() % 10000; //Timer
+            }
+
+
+
+            if (SmolderingBreathTimer.Expired(diff))
+            {
+                DoCast(m_creature->getVictim(), SPELL_SMOLDERING_BREATH);
+                SmolderingBreathTimer = 20000;//timer
+            }
+
+
+
+            if (Cleave_Timer.Expired(diff))
+            {
+                DoCast(m_creature->getVictim(), SPELL_CLEAVE);
+                Cleave_Timer = 6000 + rand() % 6000;
+            }
+
+
+
+            if (CharredEarthTimer.Expired(diff))
+            {
+                if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_CHARRED_EARTH), true))
+                    DoCast(target, SPELL_CHARRED_EARTH);
+                CharredEarthTimer = 20000; //timer
+            }
+
+
+
+            if (TailSweepTimer.Expired(diff))
+            {
+                if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_TAIL_SWEEP), true))
+                    if (!m_creature->HasInArc(M_PI, target))
+                        DoCast(target, SPELL_TAIL_SWEEP);
+                TailSweepTimer = 15000;//timer
+            }
+
+
+            if (SearingCindersTimer.Expired(diff))
+            {
+                if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_SEARING_CINDERS), true))
+                    DoCast(target, SPELL_SEARING_CINDERS);
+                SearingCindersTimer = 10000; //timer
+            }
+
+            if (DistractingAshTimer.Expired(diff))
+            {
+                if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_DISTRACTING_ASH), true))
+                    m_creature->AddAura(SPELL_DISTRACTING_ASH, target);
+
+                DistractingAshTimer = 2000;//timer wrong
+            }
+
+
+            uint32 Prozent;
+            Prozent = (m_creature->GetHealth() * 100) / m_creature->GetMaxHealth();
+
+            if (Prozent < 75 && FlyCount == 0) // first take off 75%
+                TakeOff();
+
+            if (Prozent < 50 && FlyCount == 1) // secound take off 50%
+                TakeOff();
+
+            if (Prozent < 25 && FlyCount == 2) // third take off 25%
+                TakeOff();
+
+            DoMeleeAttackIfReady();
+        }
+
+        //Phase 2 "FLYING FIGHT"
+        if (Phase == 2)
+        {
+            if (!RainBones)
+            {
+                if (!Skeletons)
                 {
-                    DoStartMovement(m_creature->getVictim());
-                    me->SetReactState(REACT_AGGRESSIVE);
-                    Movement = false;
+                    for (uint8 i = 0; i <= 3; ++i)
+                    {
+                        DoCast(m_creature->getVictim(), SPELL_SUMMON_SKELETON);
+                        Skeletons = true;
+                    }
                 }
 
-                
-                if (BellowingRoarTimer.Expired(diff))
-                {
-                    DoCast(m_creature->getVictim(), SPELL_BELLOWING_ROAR);
-                    BellowingRoarTimer = 30000 + rand() % 10000; //Timer
-                }
-                
 
-                
-                if (SmolderingBreathTimer.Expired(diff))
+                if (RainofBonesTimer.Expired(diff) && !RainBones) // only once at the beginning of phase 2
                 {
-                    DoCast(m_creature->getVictim(), SPELL_SMOLDERING_BREATH);
-                    SmolderingBreathTimer = 20000;//timer
+                    DoCast(m_creature->getVictim(), SPELL_RAIN_OF_BONES);
+                    RainBones = true;
+                    SmokingBlastTimer = 20000;
                 }
-                
 
-                
-                if (Cleave_Timer.Expired(diff))
-                {
-                    DoCast(m_creature->getVictim(), SPELL_CLEAVE);
-                    Cleave_Timer = 6000 + rand() % 6000;
-                }
-                
 
-                
-                if (CharredEarthTimer.Expired(diff))
-                {
-                    if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_CHARRED_EARTH), true))
-                        DoCast(target, SPELL_CHARRED_EARTH);
-                    CharredEarthTimer = 20000; //timer
-                }
-                
-
-                
-                if (TailSweepTimer.Expired(diff))
-                {
-                    if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_TAIL_SWEEP), true))
-                        if (!m_creature->HasInArc(M_PI, target))
-                            DoCast(target, SPELL_TAIL_SWEEP);
-                    TailSweepTimer = 15000;//timer
-                }
-                
-                
-                if (SearingCindersTimer.Expired(diff))
-                {
-                    if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_SEARING_CINDERS), true))
-                        DoCast(target, SPELL_SEARING_CINDERS);
-                    SearingCindersTimer = 10000; //timer
-                }
 
                 if (DistractingAshTimer.Expired(diff))
                 {
@@ -404,92 +453,44 @@ struct boss_nightbaneAI : public ScriptedAI
 
                     DistractingAshTimer = 2000;//timer wrong
                 }
-                
 
-                uint32 Prozent;
-                Prozent = (m_creature->GetHealth() * 100) / m_creature->GetMaxHealth();
-
-                if (Prozent < 75 && FlyCount == 0) // first take off 75%
-                    TakeOff();
-
-                if (Prozent < 50 && FlyCount == 1) // secound take off 50%
-                    TakeOff();
-
-                if (Prozent < 25 && FlyCount == 2) // third take off 25%
-                    TakeOff();
-
-                DoMeleeAttackIfReady();
             }
 
-            //Phase 2 "FLYING FIGHT"
-            if (Phase == 2)
+            if (RainBones)
             {
-                if (!RainBones)
+
+                if (SmokingBlastTimer.Expired(diff))
                 {
-                    if (!Skeletons)
-                    {
-                        for (uint8 i = 0; i <= 3; ++i)
-                        {
-                            DoCast(m_creature->getVictim(), SPELL_SUMMON_SKELETON);
-                            Skeletons = true;
-                        }
-                    }
-
-                    
-                    if (RainofBonesTimer.Expired(diff) && !RainBones) // only once at the beginning of phase 2
-                    {
-                        DoCast(m_creature->getVictim(), SPELL_RAIN_OF_BONES);
-                        RainBones = true;
-                        SmokingBlastTimer = 20000;
-                    }
-                    
-
-                    
-                    if (DistractingAshTimer.Expired(diff))
-                    {
-                        if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_DISTRACTING_ASH), true))
-                            m_creature->AddAura(SPELL_DISTRACTING_ASH, target);
-
-                        DistractingAshTimer = 2000;//timer wrong
-                    }
-                    
+                    DoCast(m_creature->getVictim(), SPELL_SMOKING_BLAST);
+                    SmokingBlastTimer = 1500; //timer wrong
                 }
 
-                if (RainBones)
-                {
-                   
-                    if (SmokingBlastTimer.Expired(diff))
-                    {
-                        DoCast(m_creature->getVictim(), SPELL_SMOKING_BLAST);
-                        SmokingBlastTimer = 1500; //timer wrong
-                    }
-                    
-                }
-
-                
-                if (FireballBarrageTimer.Expired(diff))
-                {
-                    if (Unit* target = SelectUnit(SELECT_TARGET_FARTHEST, 0, GetSpellMaxRange(SPELL_FIREBALL_BARRAGE), true, uint64(0), 40.0f))
-                        DoCast(target, SPELL_FIREBALL_BARRAGE);
-                    FireballBarrageTimer = 20000; //Timer
-                }
-                
-
-                
-                if (FlyTimer.Expired(diff)) //landing
-                {
-                    if (rand() % 2 == 0)
-                        DoYell(YELL_LAND_PHASE_1, LANG_UNIVERSAL, NULL);
-                    else
-                        DoYell(YELL_LAND_PHASE_2, LANG_UNIVERSAL, NULL);
-
-                    (*m_creature).GetMotionMaster()->Clear(false);
-                    m_creature->GetMotionMaster()->MovePoint(3, IntroWay[3][0], IntroWay[3][1], IntroWay[3][2]);
-
-                    Flying = true;
-                }
-                
             }
+
+
+            if (FireballBarrageTimer.Expired(diff))
+            {
+                if (Unit* target = SelectUnit(SELECT_TARGET_FARTHEST, 0, GetSpellMaxRange(SPELL_FIREBALL_BARRAGE), true, uint64(0), 40.0f))
+                    DoCast(target, SPELL_FIREBALL_BARRAGE);
+                FireballBarrageTimer = 20000; //Timer
+            }
+
+
+
+            if (FlyTimer.Expired(diff)) //landing
+            {
+                if (rand() % 2 == 0)
+                    DoYell(YELL_LAND_PHASE_1, LANG_UNIVERSAL, NULL);
+                else
+                    DoYell(YELL_LAND_PHASE_2, LANG_UNIVERSAL, NULL);
+
+                (*m_creature).GetMotionMaster()->Clear(false);
+                m_creature->GetMotionMaster()->MovePoint(3, IntroWay[3][0], IntroWay[3][1], IntroWay[3][2]);
+
+                Flying = true;
+            }
+
+        }
     }
 };
 
