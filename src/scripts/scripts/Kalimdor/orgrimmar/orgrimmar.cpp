@@ -81,8 +81,8 @@ struct npc_shenthulAI : public ScriptedAI
 
     bool CanTalk;
     bool CanEmote;
-    int32 Salute_Timer;
-    int32 Reset_Timer;
+    uint32 Salute_Timer;
+    uint32 Reset_Timer;
     uint64 playerGUID;
 
     void Reset()
@@ -98,24 +98,28 @@ struct npc_shenthulAI : public ScriptedAI
     {
         if (CanEmote)
         {
-            Reset_Timer -= diff;
+            
             if (Reset_Timer <= diff)
             {
                 if (Player* temp = Unit::GetPlayer(playerGUID))
                     temp->FailQuest(QUEST_2460);
                 Reset();
             }
+            else
+                Reset_Timer -= diff;
         }
 
         if (CanTalk && !CanEmote)
         {
-            Salute_Timer -= diff;
+            
             if (Salute_Timer <= diff)
             {
                 m_creature->HandleEmoteCommand(EMOTE_ONESHOT_SALUTE);
                 CanEmote = true;
-                Reset_Timer += 60000;
+                Reset_Timer = 60000;
             }
+            else
+                Salute_Timer -= diff;
         }
 
         if (!UpdateVictim())
@@ -172,8 +176,8 @@ struct npc_thrall_warchiefAI : public ScriptedAI
 {
     npc_thrall_warchiefAI(Creature* c) : ScriptedAI(c) {}
 
-    int32 ChainLightning_Timer;
-    int32 Shock_Timer;
+    Timer ChainLightning_Timer;
+    Timer Shock_Timer;
 
     void Reset()
     {
@@ -188,18 +192,16 @@ struct npc_thrall_warchiefAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        ChainLightning_Timer -= diff;
-        if( ChainLightning_Timer <= diff )
+        if( ChainLightning_Timer.Expired(diff) )
         {
             DoCast(m_creature->getVictim(),SPELL_CHAIN_LIGHTNING);
-            ChainLightning_Timer += 9000;
+            ChainLightning_Timer = 9000;
         }
 
-        Shock_Timer -= diff;
-        if( Shock_Timer <= diff )
+        if( Shock_Timer.Expired(diff))
         {
             DoCast(m_creature->getVictim(),SPELL_SHOCK);
-            Shock_Timer += 15000;
+            Shock_Timer = 15000;
         }
 
         DoMeleeAttackIfReady();
