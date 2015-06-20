@@ -297,6 +297,8 @@ struct boss_felmystAI : public ScriptedAI
 
     void JustDied(Unit* Killer)
     {
+        me->SetLevitate(false);
+        me->setHover(false);
         DoScriptText(YELL_DEATH, me);
         pInstance->SetData(DATA_FELMYST_EVENT, DONE);
         me->SummonCreature(MOB_KALECGOS, 1555, 737, 88, 0, TEMPSUMMON_TIMED_DESPAWN, 300000);
@@ -336,7 +338,7 @@ struct boss_felmystAI : public ScriptedAI
 
     void DamageTaken(Unit*, uint32 &damage)
     {
-        if(Phase != PHASE_GROUND && ((uint32(me->GetHealth()*100/me->GetMaxHealth()) <= 1)))
+        if (Phase != PHASE_GROUND && (damage >= me->GetHealth() || me->GetHealth() <= 1))
             damage = 0;
     }
 
