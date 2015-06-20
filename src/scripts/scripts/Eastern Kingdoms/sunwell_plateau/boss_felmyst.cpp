@@ -305,6 +305,7 @@ struct boss_felmystAI : public ScriptedAI
     void EnterEvadeMode()
     {
         CreatureAI::EnterEvadeMode();
+        me->HandleEmoteCommand(EMOTE_ONESHOT_LIFTOFF);
         me->SetSpeed(MOVE_FLIGHT, 1.7, false);
         me->GetMotionMaster()->MovePath(FELMYST_OOC_PATH, true);
         IntroPhase = 6; // to make proper landing on next EnterCombat
