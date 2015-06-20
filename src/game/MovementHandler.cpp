@@ -28,7 +28,7 @@
 #include "Player.h"
 #include "MapManager.h"
 #include "Transports.h"
-#include "BattleGround.h"
+#include "BattleGroundMgr.h"
 #include "WaypointMovementGenerator.h"
 #include "InstanceSaveMgr.h"
 #include "AntiCheat.h"
@@ -138,6 +138,12 @@ void WorldSession::HandleMoveWorldportAckOpcode()
         {
             if (_player->IsInvitedForBattleGroundInstance(_player->GetBattleGroundId()))
                 bg->AddPlayer(_player);
+            else if (_player->isGameMaster()) // add pvp minimap button
+            {
+                WorldPacket data;
+                sBattleGroundMgr.BuildBattleGroundStatusPacket(&data, bg, _player->GetTeam(), 0, STATUS_IN_PROGRESS, 0, bg->GetStartTime());
+                SendPacket(&data);
+            }
         }
     }
 

@@ -1976,6 +1976,16 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
             SetFallInformation(0, final_z);
             // if the player is saved before worldportack (at logout for example)
             // this will be used instead of the current location in SaveToDB
+
+            if (isGameMaster() && oldmap->IsBattleGround()) // remove pvp minibutton
+            {
+                if (BattleGround* bg = sBattleGroundMgr.GetBattleGround(oldmap->GetInstanceId(), BATTLEGROUND_TYPE_NONE))
+                {
+                    WorldPacket data;
+                    sBattleGroundMgr.BuildBattleGroundStatusPacket(&data, bg, GetTeam(), 0, STATUS_NONE, 0, bg->GetStartTime());
+                    m_session->SendPacket(&data);
+                }
+            }
         }
         else
             return false;
