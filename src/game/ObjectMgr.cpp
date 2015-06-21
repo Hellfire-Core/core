@@ -834,14 +834,13 @@ bool ObjectMgr::IsUnqueuedAccount(uint64 accid)
 void ObjectMgr::LoadCreatures()
 {
     uint32 count = 0;
-    //                                                       0              1   2    3
+    //                                                            0           1   2    3
     QueryResultAutoPtr result = GameDataDatabase.Query("SELECT creature.guid, id, map, modelid,"
-    //   4             5           6           7           8            9              10         11
-        "equipment_id, position_x, position_y, position_z, orientation, spawntimesecs, spawndist, currentwaypoint,"
-    //   12         13       14          15            16         17     18
-        "curhealth, curmana, DeathState, MovementType, spawnMask, event, pool_entry "
-        "FROM creature LEFT OUTER JOIN game_event_creature ON creature.guid = game_event_creature.guid "
-        "LEFT OUTER JOIN pool_creature ON creature.guid = pool_creature.guid");
+                                                       //   4             5           6           7           8            9              10         11
+                                                       "equipment_id, position_x, position_y, position_z, orientation, spawntimesecs, spawndist, currentwaypoint,"
+                                                       //   12         13       14          15            16         17     
+                                                       "curhealth, curmana, DeathState, MovementType, spawnMask, event "
+                                                       "FROM creature LEFT OUTER JOIN game_event_creature ON creature.guid = game_event_creature.guid;");
 
 
     if (!result)

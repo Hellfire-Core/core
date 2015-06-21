@@ -1068,7 +1068,7 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
             Creature* Control = ((Creature*)Unit::GetUnit(*m_creature, pInstance->GetData64(DATA_KILJAEDEN_CONTROLLER)));
             if (Control)
             {
-                Control->AddThreat(who, 1.0f);
+                Control->AddThreat(who, 0.0f);
                 Control->AI()->DoZoneInCombat();
                 Control->AI()->DoAction(DECEIVER_ENTER_COMBAT); // pull the rest of deceivers
             }
