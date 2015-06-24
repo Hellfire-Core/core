@@ -341,26 +341,26 @@ struct boss_kaelthasAI : public ScriptedAI
 
     ScriptedInstance* pInstance;
 
-    Timer Fireball_Timer;
-    Timer Visual_Timer;
-    Timer Arcane_Timer1;
-    Timer Arcane_Timer2;
-    Timer ShockPyroChain_Timer;
-    Timer ShockBarrier_Timer;
-    Timer Pyro_Timer;
-    Timer GravityLapse_Timer;
+    uint32 Fireball_Timer;
+    uint32 Visual_Timer;
+    uint32 Arcane_Timer1;
+    uint32 Arcane_Timer2;
+    uint32 ShockPyroChain_Timer;
+    uint32 ShockBarrier_Timer;
+    uint32 Pyro_Timer;
+    uint32 GravityLapse_Timer;
     uint32 GravityLapse_Phase;
-    Timer NetherBeam_Timer;
-    Timer Kick_Timer;
-    Timer MindControl_Timer;
-    Timer Phoenix_Timer;
-    Timer Check_Timer;
+    uint32 NetherBeam_Timer;
+    uint32 Kick_Timer;
+    uint32 MindControl_Timer;
+    uint32 Phoenix_Timer;
+    uint32 Check_Timer;
     uint32 Phase;
     uint32 PhaseSubphase;                                   //generic
-    Timer Phase_Timer;                                     //generic timer
+    uint32 Phase_Timer;                                     //generic timer
     uint32 PyrosCast;
-    Timer Check_Timer2;
-    Timer Anim_Timer;
+    uint32 Check_Timer2;
+    uint32 Anim_Timer;
     uint32 Step;
 
     bool Arcane1;
@@ -410,21 +410,21 @@ struct boss_kaelthasAI : public ScriptedAI
         ClearCastQueue();
 
         m_creature->SetNoCallAssistance(true);
-        Fireball_Timer.Reset(5000 + rand() % 10000);
-        Arcane_Timer1.Reset(20000);
-        Arcane_Timer2.Reset(40000);
-        MindControl_Timer.Reset(10000);
-        Phoenix_Timer.Reset(50000);
-        ShockPyroChain_Timer.Reset(60000);
+        Fireball_Timer = 5000+rand()%10000;
+        Arcane_Timer1 = 20000;
+        Arcane_Timer2 = 40000;
+        MindControl_Timer = 10000;
+        Phoenix_Timer =50000;
+        ShockPyroChain_Timer = 60000;
         PyrosCast = 0;
-        Pyro_Timer = 1; // autoexpire
-        ShockBarrier_Timer.Reset(60000);
-        GravityLapse_Timer.Reset(16000);
+        Pyro_Timer = 0;
+        ShockBarrier_Timer = 60000;
+        GravityLapse_Timer = 16000;
         GravityLapse_Phase = 0;
-        NetherBeam_Timer.Reset(8000);
-        Kick_Timer.Reset(3000);
-        Check_Timer.Reset(4000);
-        Check_Timer2.Reset(3000);
+        NetherBeam_Timer = 8000;
+        Kick_Timer = 3000;
+        Check_Timer = 4000;
+        Check_Timer2 = 3000;
         PyrosCast = 0;
         Phase = 0;
         Anim_Timer = 0;
@@ -689,7 +689,7 @@ struct boss_kaelthasAI : public ScriptedAI
 
         if(pInstance && Phase/*pInstance->GetData(DATA_KAELTHASEVENT) != NOT_STARTED*/)  //temporary, maybe can help with combat drop issue
         {
-            if(Check_Timer.Expired(diff))
+            if(Check_Timer <= diff)
             {
                 if(m_creature->getThreatManager().getThreatList().empty())
                 {
@@ -711,8 +711,10 @@ struct boss_kaelthasAI : public ScriptedAI
                 if(!m_creature->getThreatManager().getThreatList().empty() && (Phase == 1 || Phase == 2 || Phase == 3))        //threat reseting up to phase 4
                     DoResetThreat();
 
-                Check_Timer = 1000; 
+                Check_Timer = 3000;  //temporary, lets see if lowers stress a bit
             }
+            else
+                Check_Timer -= diff;
         }
 
         //Phase 1
@@ -728,7 +730,7 @@ struct boss_kaelthasAI : public ScriptedAI
                 {
                     //Subphase 1 - Start
                     case 0:
-                        if(Phase_Timer.Expired(diff))
+                        if(Phase_Timer <= diff)
                         {
                             DoScriptText(SAY_INTRO_THALADRED, m_creature);
 
@@ -737,11 +739,13 @@ struct boss_kaelthasAI : public ScriptedAI
 
                             ++PhaseSubphase;
                         }
+                        else
+                            Phase_Timer -= diff;
                         break;
 
                         //Subphase 1 - Unlock advisor
                     case 1:
-                        if(Phase_Timer.Expired(diff))
+                        if(Phase_Timer <= diff)
                         {
                             Advisor = Unit::GetCreature((*m_creature), AdvisorGuid[0]);
 
@@ -756,7 +760,7 @@ struct boss_kaelthasAI : public ScriptedAI
                             }
 
                             ++PhaseSubphase;
-                        }
+                        }else Phase_Timer -= diff;
                         break;
 
                         //Subphase 2 - Start
@@ -775,7 +779,7 @@ struct boss_kaelthasAI : public ScriptedAI
 
                         //Subphase 2 - Unlock advisor
                     case 3:
-                        if(Phase_Timer.Expired(diff))
+                        if(Phase_Timer <= diff)
                         {
                             Advisor = Unit::GetCreature((*m_creature), AdvisorGuid[1]);
 
@@ -790,7 +794,7 @@ struct boss_kaelthasAI : public ScriptedAI
                             }
 
                             ++PhaseSubphase;
-                        }
+                        }else Phase_Timer -= diff;
                         break;
 
                         //Subphase 3 - Start
@@ -809,7 +813,7 @@ struct boss_kaelthasAI : public ScriptedAI
 
                         //Subphase 3 - Unlock advisor
                     case 5:
-                        if(Phase_Timer.Expired(diff))
+                        if(Phase_Timer <= diff)
                         {
                             Advisor = Unit::GetCreature((*m_creature), AdvisorGuid[2]);
 
@@ -825,6 +829,8 @@ struct boss_kaelthasAI : public ScriptedAI
 
                             ++PhaseSubphase;
                         }
+                        else
+                            Phase_Timer -= diff;
                         break;
 
                         //Subphase 4 - Start
@@ -843,7 +849,7 @@ struct boss_kaelthasAI : public ScriptedAI
 
                         //Subphase 4 - Unlock advisor
                     case 7:
-                        if(Phase_Timer.Expired(diff))
+                        if(Phase_Timer <= diff)
                         {
                             Advisor = Unit::GetCreature((*m_creature), AdvisorGuid[3]);
 
@@ -861,6 +867,8 @@ struct boss_kaelthasAI : public ScriptedAI
 
                             ++PhaseSubphase;
                         }
+                        else
+                            Phase_Timer -= diff;
                         break;
 
                         //End of phase 1
@@ -884,8 +892,12 @@ struct boss_kaelthasAI : public ScriptedAI
             {
                 if (PhaseSubphase == 0)
                 {
-                    if (Phase_Timer.Expired(diff))
+                    if (Phase_Timer <= diff)
+                    {
                         PhaseSubphase = 1;
+                    }
+                    else
+                        Phase_Timer -= diff;
                 }
 
                 //Spawn weapons
@@ -913,12 +925,12 @@ struct boss_kaelthasAI : public ScriptedAI
                 }
 
                 if (PhaseSubphase == 2)
-                    if (Phase_Timer.Expired(diff))
+                    if (Phase_Timer <= diff)
                 {
                     DoScriptText(SAY_PHASE3_ADVANCE, m_creature);
                     Phase = 3;
                     PhaseSubphase = 0;
-                }
+                }else Phase_Timer -= diff;
                  //missing Resetcheck
             }
             break;
@@ -941,7 +953,7 @@ struct boss_kaelthasAI : public ScriptedAI
                     Phase_Timer = TIME_PHASE_3_4;
                 }
 
-                if(Phase_Timer.Expired(diff))
+                if(Phase_Timer <= diff)
                 {
                     DoScriptText(SAY_PHASE4_INTRO2, m_creature);
                     Phase = 4;
@@ -962,6 +974,8 @@ struct boss_kaelthasAI : public ScriptedAI
                     }
                     Phase_Timer = 30000;
                 }
+                else
+                    Phase_Timer -= diff;
             }
             break;
 
@@ -978,15 +992,17 @@ struct boss_kaelthasAI : public ScriptedAI
                     if(!ChainPyros)
                     {
                         //Fireball_Timer
-                        if(Fireball_Timer.Expired(diff) && !(pInstance->GetData(DATA_KAELTHASEVENT) == 5))
+                        if(!(pInstance->GetData(DATA_KAELTHASEVENT) == 5) && Fireball_Timer <= diff)
                         {
                             AddSpellToCast(m_creature->getVictim(), SPELL_FIREBALL, false);
                             //DoCast(m_creature->getVictim(), SPELL_FIREBALL, false);
                             Fireball_Timer = 5000+rand()%10000;
                         }
+                        else
+                            Fireball_Timer -= diff;
 
                         //Phoenix_Timer
-                        if(Phoenix_Timer.Expired(diff) && !(pInstance->GetData(DATA_KAELTHASEVENT) == 5))
+                        if(!(pInstance->GetData(DATA_KAELTHASEVENT) == 5) && Phoenix_Timer <= diff)
                         {
                             AddSpellToCast(m_creature, SPELL_SUMMON_PHOENIX, true);
                             //DoCast(m_creature, SPELL_SUMMON_PHOENIX, true);
@@ -995,10 +1011,12 @@ struct boss_kaelthasAI : public ScriptedAI
 
                             Phoenix_Timer = 30000 +rand()%10000;
                         }
+                        else
+                            Phoenix_Timer -=diff;
                     }
 
 
-                    if(Arcane_Timer1.Expired(diff) && !Arcane1)
+                    if(!Arcane1 && Arcane_Timer1 <= diff)
                     {
                         //Arcane Disruption and Flamestrike after 20 sec from Pyros chain (4 Phase) or Shock (5 Phase)
                         DoCast(m_creature, SPELL_ARCANE_DISRUPTION, true);
@@ -1028,11 +1046,13 @@ struct boss_kaelthasAI : public ScriptedAI
                             MC_Done = false;                // for second MC to have a good timer
                         }
                     }
+                    else
+                        Arcane_Timer1 -= diff;
 
-                    if(Arcane_Timer2.Expired(diff))
+                    if(Arcane_Timer2 <= diff)
                     {
                         // MC after 50 sec from Pyros chain (4 Phase)
-                        if(Phase == 4 && MindControl_Timer.Expired(diff) && !MC_Done)
+                        if(Phase == 4 && !MC_Done && MindControl_Timer <= diff)
                         {
                             if(m_creature->getThreatManager().getThreatList().size() >= 2)
                             {
@@ -1049,6 +1069,8 @@ struct boss_kaelthasAI : public ScriptedAI
                             }
                             MC_Done = true;
                         }
+                        else
+                            MindControl_Timer -= diff;
 
                         //Arcane Disruption and Flamestrike after 40 sec from Pyros chain (4 Phase) or Shock (5 Phase)
                         if(!Arcane2)
@@ -1061,6 +1083,8 @@ struct boss_kaelthasAI : public ScriptedAI
                                 AddSpellToCast(pUnit, SPELL_FLAME_STRIKE);
                         }
                     }
+                    else
+                        Arcane_Timer2 -= diff;
                 }
 
                 DoSpecialThings(diff, DO_SPEED_UPDATE);
@@ -1074,7 +1098,7 @@ struct boss_kaelthasAI : public ScriptedAI
                     }
 
                     // arcane disruption, shock, pyroblasts chain
-                    if(ShockPyroChain_Timer.Expired(diff))
+                    if(ShockPyroChain_Timer <= diff)
                     {
                         if(PyrosCast == 0)
                         {
@@ -1092,7 +1116,7 @@ struct boss_kaelthasAI : public ScriptedAI
                             ChainPyros = true;
                         }
 
-                        if(Pyro_Timer.Expired(diff))
+                        if(Pyro_Timer <= diff)
                         {
                             if(PyrosCast < 3)
                             {
@@ -1102,29 +1126,39 @@ struct boss_kaelthasAI : public ScriptedAI
                               Pyro_Timer = 4000;
                             }
                         }
+                        else
+                            Pyro_Timer -= diff;
 
                         if(PyrosCast >= 3)
                         {
                             ChainPyros = false;
                             PyrosCast = 0;
                             ShockPyroChain_Timer = 48000;
-                            Pyro_Timer.Reset(1);
+                            Pyro_Timer = 0;
                         }
                     }
+                    else
+                        ShockPyroChain_Timer -= diff;
                 }
+                else
+                    Check_Timer -= 5000;
 
                 //Animation timer
                 if(Phase == 5)
                 {
-                    if(Anim_Timer.Expired(diff))
+                    if(Anim_Timer <= diff)
+                    {
                         Anim_Timer = Intro_next(Step++);
+                    }
+                    else
+                        Anim_Timer -= diff;
                 }
 
                 //Phase 5
                 if(Phase == 6)
                 {
                     //GravityLapse_Timer
-                    if(GravityLapse_Timer.Expired(diff))
+                    if(GravityLapse_Timer <= diff)
                     {
                         std::list<HostileReference*>::iterator iter = m_creature->getThreatManager().getThreatList().begin();
                         uint32 glapse_teleport_id = 35966;
@@ -1225,24 +1259,30 @@ struct boss_kaelthasAI : public ScriptedAI
                                 break;
                         }
                     }
+                    else
+                        GravityLapse_Timer -= diff;
 
                     if(pInstance->GetData(DATA_KAELTHASEVENT) == 5)
                     {
                         //ShockBarrier_Timer in 5th phase only
-                        if(ShockBarrier_Timer.Expired(diff))
+                        if(ShockBarrier_Timer <= diff)
                         {
                             DoCast(m_creature, SPELL_SHOCK_BARRIER, true);
                             ShockBarrier_Timer = 8000;
                         }
+                        else
+                            ShockBarrier_Timer -= diff;
 
                         //NetherBeam_Timer
-                        if(NetherBeam_Timer.Expired(diff))
+                        if(NetherBeam_Timer <= diff)
                         {
                             if (Unit* pUnit = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_NETHER_BEAM), true))
                                 DoCast(pUnit, SPELL_NETHER_BEAM);
 
                             NetherBeam_Timer = 4000;
                         }
+                        else
+                            NetherBeam_Timer -= diff;
                     }
                 }
 
@@ -1261,21 +1301,21 @@ struct boss_thaladred_the_darkenerAI : public advisorbase_ai
 {
     boss_thaladred_the_darkenerAI(Creature *c) : advisorbase_ai(c) {}
 
-    Timer Gaze_Timer;
-    Timer Rend_Timer;
-    Timer Silence_Timer;
-    Timer PsychicBlow_Timer;
-    Timer Check_Timer;
-    Timer Check_Timer2;
+    uint32 Gaze_Timer;
+    uint32 Rend_Timer;
+    uint32 Silence_Timer;
+    uint32 PsychicBlow_Timer;
+    uint32 Check_Timer;
+    uint32 Check_Timer2;
 
     void Reset()
     {
-        Gaze_Timer.Reset(100);
-        Rend_Timer.Reset(1000);
-        Silence_Timer.Reset(20000);
-        PsychicBlow_Timer.Reset(10000);
-        Check_Timer.Reset(1000);
-        Check_Timer2.Reset(3000);
+        Gaze_Timer = 100;
+        Rend_Timer = 1000;
+        Silence_Timer = 20000;
+        PsychicBlow_Timer = 10000;
+        Check_Timer = 1000;
+        Check_Timer2 = 3000;
 
         m_creature->SetWalk(true);
         m_creature->SetSpeed(MOVE_WALK, 2.0f, false);
@@ -1311,11 +1351,13 @@ struct boss_thaladred_the_darkenerAI : public advisorbase_ai
         if(Creature* kael = Unit::GetCreature((*m_creature), pInstance->GetData64(DATA_KAELTHAS)))
         {
             //Check_Timer
-            if(Check_Timer2.Expired(diff))
+            if(Check_Timer2 <= diff)
             {
                 DoZoneInCombat();
                 Check_Timer2 = 3000;
             }
+            else
+                Check_Timer2 -= diff;
         }
 
         if(Unit *t = m_creature->getVictim())
@@ -1330,16 +1372,18 @@ struct boss_thaladred_the_darkenerAI : public advisorbase_ai
             }
         }
 
-        if(Check_Timer.Expired(diff))
+        if(Check_Timer <= diff)
         {
            if(m_creature->getThreatManager().getThreat(m_creature->getVictim(),false) < 5000000.0f)
                m_creature->AddThreat(m_creature->getVictim(), 5000001.0f);
 
             Check_Timer = 1000;
         }
+        else
+            Check_Timer -= diff;
 
         //Gaze_Timer
-        if(Gaze_Timer.Expired(diff))
+        if(Gaze_Timer <= diff)
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true, m_creature->getVictimGUID()))
             {
@@ -1353,26 +1397,34 @@ struct boss_thaladred_the_darkenerAI : public advisorbase_ai
                 Gaze_Timer = 8500;
             }
         }
+        else
+            Gaze_Timer -= diff;
 
         //Silence_Timer
-        if(Silence_Timer.Expired(diff))
+        if(Silence_Timer <= diff)
         {
             DoCast(m_creature, SPELL_SILENCE, true);
             Silence_Timer = 20000;
         }
+        else
+            Silence_Timer -= diff;
 
-        if(Rend_Timer.Expired(diff))
+        if(Rend_Timer <= diff)
         {
             DoCast(m_creature->getVictim(), SPELL_REND);
             Rend_Timer = 10000;
         }
+        else
+            Rend_Timer -= diff;
 
         //PsychicBlow_Timer
-        if(PsychicBlow_Timer.Expired(diff))
+        if(PsychicBlow_Timer <= diff)
         {
             DoCast(m_creature->getVictim(), SPELL_PSYCHIC_BLOW, true);
             PsychicBlow_Timer = 20000+rand()%5000;
         }
+        else
+            PsychicBlow_Timer -= diff;
 
         DoMeleeAttackIfReady();
     }
@@ -1383,13 +1435,13 @@ struct boss_lord_sanguinarAI : public advisorbase_ai
 {
     boss_lord_sanguinarAI(Creature *c) : advisorbase_ai(c){}
 
-    Timer Fear_Timer;
-    Timer Check_Timer;
+    uint32 Fear_Timer;
+    uint32 Check_Timer;
 
     void Reset()
     {
-        Fear_Timer.Reset(20000);
-        Check_Timer.Reset(3000);
+        Fear_Timer = 20000;
+        Check_Timer = 3000;
 
         advisorbase_ai::Reset();
     }
@@ -1420,19 +1472,23 @@ struct boss_lord_sanguinarAI : public advisorbase_ai
         if(Creature* kael = Unit::GetCreature((*m_creature), pInstance->GetData64(DATA_KAELTHAS)))
         {
             //Check_Timer
-            if(Check_Timer.Expired(diff))
+            if(Check_Timer <= diff)
             {
                 DoZoneInCombat();
                 Check_Timer = 3000;
             }
+            else
+                Check_Timer -= diff;
         }
 
         //Fear_Timer
-        if(Fear_Timer.Expired(diff))
+        if(Fear_Timer <= diff)
         {
             DoCast(m_creature, SPELL_BELLOWING_ROAR);
             Fear_Timer = 25000+rand()%10000;                //approximately every 30 seconds
         }
+        else
+            Fear_Timer -= diff;
 
         DoMeleeAttackIfReady();
     }
@@ -1443,23 +1499,23 @@ struct boss_grand_astromancer_capernianAI : public advisorbase_ai
 {
     boss_grand_astromancer_capernianAI(Creature *c) : advisorbase_ai(c){}
 
-    Timer Fireball_Timer;
-    Timer Conflagration_Timer;
-    Timer ArcaneExplosion_Timer;
-    Timer Yell_Timer;
+    uint32 Fireball_Timer;
+    uint32 Conflagration_Timer;
+    uint32 ArcaneExplosion_Timer;
+    uint32 Yell_Timer;
     bool Yell;
-    Timer Check_Timer;
+    uint32 Check_Timer;
 
     void Reset()
     {
         ClearCastQueue();
 
-        Fireball_Timer.Reset(1000);
-        Conflagration_Timer.Reset(20000);
-        ArcaneExplosion_Timer.Reset(5000);
-        Yell_Timer.Reset(2000);
+        Fireball_Timer = 1000;
+        Conflagration_Timer = 20000;
+        ArcaneExplosion_Timer = 5000;
+        Yell_Timer = 2000;
         Yell = false;
-        Check_Timer.Reset(3000);
+        Check_Timer = 3000;
 
         SetAutocast(SPELL_CAPERNIAN_FIREBALL, 2500, true);
 
@@ -1499,23 +1555,30 @@ struct boss_grand_astromancer_capernianAI : public advisorbase_ai
         if (Creature* kael = Unit::GetCreature((*m_creature), pInstance->GetData64(DATA_KAELTHAS)))
         {
             //Check_Timer
-            if (Check_Timer.Expired(diff))
+            if (Check_Timer <= diff)
             {
                 DoZoneInCombat();
                 m_creature->SetSpeed(MOVE_RUN, 2.5f);
                 Check_Timer = 1500;
             }
+            else
+                Check_Timer -= diff;
         }
 
         //Yell_Timer
-        if (!Yell && Yell_Timer.Expired(diff))
+        if (!Yell)
         {
-            DoScriptText(SAY_CAPERNIAN_AGGRO, m_creature);
-            Yell = true;
+            if (Yell_Timer <= diff)
+            {
+                DoScriptText(SAY_CAPERNIAN_AGGRO, m_creature);
+                Yell = true;
+            }
+            else
+                Yell_Timer -= diff;
         }
 
         //Conflagration_Timer
-        if(Conflagration_Timer.Expired(diff))
+        if(Conflagration_Timer <= diff)
         {
             Unit *target = NULL;
             target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_CONFLAGRATION), true);
@@ -1527,9 +1590,11 @@ struct boss_grand_astromancer_capernianAI : public advisorbase_ai
 
             Conflagration_Timer = 10000+rand()%5000;
         }
+        else
+            Conflagration_Timer -= diff;
 
         //ArcaneExplosion_Timer
-        if(ArcaneExplosion_Timer.Expired(diff))
+        if(ArcaneExplosion_Timer <= diff)
         {
             bool InMeleeRange = false;
             std::list<HostileReference*>& m_threatlist = m_creature->getThreatManager().getThreatList();
@@ -1549,6 +1614,8 @@ struct boss_grand_astromancer_capernianAI : public advisorbase_ai
 
             ArcaneExplosion_Timer = urand(2000, 4000);
         }
+        else
+            ArcaneExplosion_Timer -= diff;
 
         CastNextSpellIfAnyAndReady(diff);
         //Do NOT deal any melee damage.
@@ -1565,15 +1632,15 @@ struct boss_master_engineer_telonicusAI : public advisorbase_ai
             TempSpell->Effect[0] = 2;
     }
 
-    Timer Bomb_Timer;
-    Timer RemoteToy_Timer;
-    Timer Check_Timer;
+    uint32 Bomb_Timer;
+    uint32 RemoteToy_Timer;
+    uint32 Check_Timer;
 
     void Reset()
     {
-        Bomb_Timer.Reset(10000);
-        RemoteToy_Timer.Reset(5000);
-        Check_Timer.Reset(3000);
+        Bomb_Timer = 10000;
+        RemoteToy_Timer = 5000;
+        Check_Timer = 3000;
 
         advisorbase_ai::Reset();
     }
@@ -1632,29 +1699,35 @@ struct boss_master_engineer_telonicusAI : public advisorbase_ai
         if(Creature* kael = Unit::GetCreature((*m_creature), pInstance->GetData64(DATA_KAELTHAS)))
         {
             //Check_Timer
-            if(Check_Timer.Expired(diff))
+            if(Check_Timer <= diff)
             {
                 DoZoneInCombat();
                 Check_Timer = 3000;
             }
+            else
+                Check_Timer -= diff;
         }
 
         //RemoteToy_Timer
-        if(RemoteToy_Timer.Expired(diff))
+        if(RemoteToy_Timer <= diff)
         {
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_REMOTE_TOY), true))
                 DoCast(target, SPELL_REMOTE_TOY);
 
             RemoteToy_Timer = 10000+rand()%5000;
         }
+        else
+            RemoteToy_Timer -= diff;
 
         //Bomb_Timer
-        if(Bomb_Timer.Expired(diff))
+        if(Bomb_Timer <= diff)
         {
             m_creature->CastSpell(m_creature->getVictim(), SPELL_BOMB, false);
             Bomb_Timer = 2000+rand()%6000;
             return;
         }
+        else
+            Bomb_Timer -= diff;
 
         DoMeleeAttackIfReady();
     }
@@ -1665,13 +1738,13 @@ struct mob_kael_flamestrikeAI : public Scripted_NoMovementAI
 {
     mob_kael_flamestrikeAI(Creature *c) : Scripted_NoMovementAI(c) {}
 
-    Timer timer;
+    uint32 Timer;
     bool Casting;
     bool KillSelf;
 
     void Reset()
     {
-        timer.Reset(5000);
+        Timer = 5000;
         Casting = false;
         KillSelf = false;
 
@@ -1696,7 +1769,7 @@ struct mob_kael_flamestrikeAI : public Scripted_NoMovementAI
         }
 
         //Timer
-        if(timer.Expired(diff))
+        if(Timer <= diff)
         {
             if(!KillSelf)
             {
@@ -1707,8 +1780,10 @@ struct mob_kael_flamestrikeAI : public Scripted_NoMovementAI
                 m_creature->Kill(m_creature, false);
 
             KillSelf = true;
-            timer = 1000;
+            Timer = 1000;
         }
+        else
+            Timer -= diff;
     }
 };
 
@@ -1721,13 +1796,13 @@ struct mob_phoenix_tkAI : public ScriptedAI
     }
 
     ScriptedInstance* pInstance;
-    Timer Cycle_Timer;
+    uint32 Cycle_Timer;
     bool Egg;
 
     void Reset()
     {
         m_creature->SetLevitate(true);//birds can fly! :)
-        Cycle_Timer.Reset(2000);
+        Cycle_Timer = 2000;
         Egg = true;
         m_creature->CastSpell(m_creature,SPELL_BURN,true);
     }
@@ -1759,7 +1834,7 @@ struct mob_phoenix_tkAI : public ScriptedAI
         else
             m_creature->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_BANISH, true);
 
-        if(Cycle_Timer.Expired(diff))
+        if(Cycle_Timer <= diff)
         {
             Creature* Kael = Unit::GetCreature((*m_creature), pInstance->GetData64(DATA_KAELTHAS));
             if(Kael && Kael->getThreatManager().getThreatList().empty())
@@ -1781,6 +1856,8 @@ struct mob_phoenix_tkAI : public ScriptedAI
              }
              Cycle_Timer = 2000;
         }
+        else
+            Cycle_Timer -= diff;
 
         if (!UpdateVictim())
             return;
@@ -1796,13 +1873,13 @@ struct mob_phoenix_egg_tkAI : public ScriptedAI
         pInstance = (c->GetInstanceData());
     }
 
-    Timer Rebirth_Timer;
+    uint32 Rebirth_Timer;
     bool summoned;
     ScriptedInstance* pInstance;
 
     void Reset()
     {
-        Rebirth_Timer.Reset(15000);
+        Rebirth_Timer = 15000;
         summoned = false;
     }
 
@@ -1850,7 +1927,7 @@ struct mob_phoenix_egg_tkAI : public ScriptedAI
       {
         m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
 
-        if (Rebirth_Timer.Expired(diff))
+        if (Rebirth_Timer <= diff)
         {
             if(!summoned)
             {
@@ -1859,6 +1936,8 @@ struct mob_phoenix_egg_tkAI : public ScriptedAI
             }
             m_creature->Kill(m_creature, false);
         }
+        else
+            Rebirth_Timer -= diff;
       }
       else if(pInstance->GetData(DATA_KAELTHASEVENT) == 5)
               m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
@@ -1881,13 +1960,13 @@ struct mob_nether_vaporAI : public ScriptedAI
 
     ScriptedInstance* pInstance;
 
-    Timer Vapor_Timer;
-    Timer Move_Timer;
+    uint32 Vapor_Timer;
+    uint32 Move_Timer;
 
     void Reset()
     {
-        Vapor_Timer.Reset(27000);
-        Move_Timer.Reset(500);
+        Vapor_Timer = 27000;
+        Move_Timer = 500;
 
         m_creature->setFaction(16);
         m_creature->SetLevitate(true);
@@ -1909,16 +1988,22 @@ struct mob_nether_vaporAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(Move_Timer.Expired(diff))
+        if(Move_Timer <= diff)
         {
             float newX, newY, newZ;
             m_creature->GetRandomPoint(m_creature->GetPositionX(),m_creature->GetPositionY(),m_creature->GetPositionZ(), 6.0, newX, newY, newZ);
             m_creature->MonsterMoveWithSpeed(newX, newY, newZ, 2500,true);
             Move_Timer = 3000;
         }
+        else
+            Move_Timer -= diff;
 
-        if(Vapor_Timer.Expired(diff))
+        if(Vapor_Timer <= diff)
+        {
             m_creature->Kill(m_creature, false);
+        }
+        else
+            Vapor_Timer -= diff;
     }
 };
 
@@ -1943,49 +2028,49 @@ struct weapon_advisorAI : public ScriptedAI
 
     ScriptedInstance* pInstance;
 
-    Timer MultiShoot_Timer;
-    Timer Shoot_Timer;
-    Timer Whirlwind_Timer;
-    Timer Thrash_Timer;
-    Timer SBash_Timer;
-    Timer FNova_Timer;
-    Timer WBolt_Timer;
-    Timer Heal_Timer;
-    Timer HNova_Timer;
+    uint32 MultiShoot_Timer;
+    uint32 Shoot_Timer;
+    uint32 Whirlwind_Timer;
+    uint32 Thrash_Timer;
+    uint32 SBash_Timer;
+    uint32 FNova_Timer;
+    uint32 WBolt_Timer;
+    uint32 Heal_Timer;
+    uint32 HNova_Timer;
     uint8  WBolt_count;
-    Timer Rend_Timer;
-    Timer Check_Timer;
+    uint32 Rend_Timer;
+    uint32 Check_Timer;
 
     void Reset()
     {
         switch(m_creature->GetEntry())
         {
             case NETHERSTRAND_LONGBOW:
-                Shoot_Timer.Reset(2000);
-                MultiShoot_Timer.Reset(16000);
+                Shoot_Timer      = 2000;
+                MultiShoot_Timer = 16000;
             break;
             case DEVASTATION:
-                Whirlwind_Timer.Reset(30000);              // Every 30 s
+                Whirlwind_Timer  = 30000;              // Every 30 s
             break;
             case COSMIC_INFUSER:
-                Heal_Timer.Reset(1000);               // To remove stress from core
-                HNova_Timer.Reset(10000 + rand() % 10000); // 10-20 s
+                Heal_Timer      = 1000;               // To remove stress from core
+                HNova_Timer     = 10000+rand()%10000; // 10-20 s
             break;
             case INFINITY_BLADES:
-                Thrash_Timer.Reset(10000);              // Poprawne czasy znalezc !
+                Thrash_Timer    = 10000;              // Poprawne czasy znalezc !
             break;
             case PHASESHIFT_BULWARK:
-                SBash_Timer.Reset(12000);
+                SBash_Timer     = 12000;
                 m_creature->CastSpell(m_creature,SPELL_BULWARK_SSPIKE,true);
             break;
             case STAFF_OF_DISINTEGRATION:
-                WBolt_Timer.Reset(3000);               // Poprawne czasy znalezc !
-                WBolt_count = 0;
-                FNova_Timer.Reset(12000);
+                WBolt_Timer     = 3000;               // Poprawne czasy znalezc !
+                WBolt_count     = 0;
+                FNova_Timer     = 12000;
             break;
         }
-        Check_Timer.Reset(3000);
-        Rend_Timer.Reset(2000);
+        Check_Timer = 3000;
+        Rend_Timer = 2000;
     }
 
     void AttackStart(Unit *who)
@@ -2010,11 +2095,13 @@ struct weapon_advisorAI : public ScriptedAI
 
     void DoRangedAttackIfReady(const uint32 diff)
     {
-        if(Shoot_Timer.Expired(diff))
+        if(Shoot_Timer <= diff)
         {
             DoCast(m_creature->getVictim(),SPELL_BOW_SHOOT,false);
             Shoot_Timer = 2000;
         }
+        else
+            Shoot_Timer -= diff;
     }
 
     void DamageTaken(Unit* done_by, uint32 &damage)
@@ -2051,39 +2138,45 @@ struct weapon_advisorAI : public ScriptedAI
         if(Creature* kael = Unit::GetCreature((*m_creature), pInstance->GetData64(DATA_KAELTHAS)))
         {
             //Check_Timer
-            if(Check_Timer.Expired(diff))
+            if(Check_Timer <= diff)
             {
                 DoZoneInCombat();
                 Check_Timer = 3000;
             }
+            else
+                Check_Timer -= diff;
         }
 
         switch(m_creature->GetEntry())
         {
             case NETHERSTRAND_LONGBOW:
 
-                if(MultiShoot_Timer.Expired(diff))
+                if(MultiShoot_Timer <= diff)
                 {
                     // DoCast(m_creature,SPELL_BOW_BLINK); ! Need to manualy relocate it xF
                     DoCast(m_creature->getVictim(),SPELL_BOW_MULTISHOOT,false);
                     MultiShoot_Timer = 15000;
                 }
+                else
+                    MultiShoot_Timer -= diff;
 
                 DoRangedAttackIfReady(diff);
             break;
             case DEVASTATION:
 
-                if(Whirlwind_Timer.Expired(diff))
+                if(Whirlwind_Timer <= diff)
                 {
                     DoCast(m_creature, SPELL_DEVASTATION_WW,false);
                     Whirlwind_Timer = 30000;
                 }
+                else
+                    Whirlwind_Timer -= diff;
 
                 DoMeleeAttackIfReady();
             break;
             case COSMIC_INFUSER:
 
-                if(Heal_Timer.Expired(diff))
+                if(Heal_Timer <= diff)
                 {
                     if(Unit* adv = CheckIfAdvisorNeedHeal())
                     {
@@ -2093,40 +2186,48 @@ struct weapon_advisorAI : public ScriptedAI
                     else
                         Heal_Timer = 5000;
                 }
+                else
+                    Heal_Timer -= diff;
 
-                if(HNova_Timer.Expired(diff))
+                if(HNova_Timer <= diff)
                 {
                     DoCast(m_creature,SPELL_INFUSER_HNOVA,false);
                     HNova_Timer = 10000+rand()%10000;
                 }
+                else
+                    HNova_Timer -= diff;
 
                 DoMeleeAttackIfReady();
             break;
             case INFINITY_BLADES:
 
-                if(Thrash_Timer.Expired(diff))
+                if(Thrash_Timer <= diff)
                 {
                     m_creature->CastSpell(m_creature,SPELL_BLADE_TRASH,false);
                     Thrash_Timer = 10000;
                 }
+                else
+                    Thrash_Timer -= diff;
 
                 DoMeleeAttackIfReady();
             break;
             case PHASESHIFT_BULWARK:
 
-                if(SBash_Timer.Expired(diff))
+                if(SBash_Timer <= diff)
                 {
                     if(Unit* random = SelectUnit(SELECT_TARGET_RANDOM,0,GetSpellMaxRange(SPELL_BULWARK_SBASH),true))
                         m_creature->CastSpell(random,SPELL_BULWARK_SBASH,false);
 
                     SBash_Timer = 12000;
                 }
+                else
+                    SBash_Timer -= diff;
 
                 DoMeleeAttackIfReady();
             break;
             case STAFF_OF_DISINTEGRATION:
 
-                if(WBolt_Timer.Expired(diff))
+                if(WBolt_Timer <= diff)
                 {
                     DoCast(m_creature->getVictim(),SPELL_STAFF_WBOLT,false);
                     WBolt_count++;
@@ -2136,18 +2237,22 @@ struct weapon_advisorAI : public ScriptedAI
                         WBolt_count = 0;
 
                 }
+                else
+                    WBolt_Timer -= diff;
 
-                if(FNova_Timer.Expired(diff))
+                if(FNova_Timer <= diff)
                 {
                     DoCast(m_creature,SPELL_STAFF_FNOVA,false);
                     FNova_Timer = 18000;
                 }
+                else
+                    FNova_Timer -= diff;
 
                 DoMeleeAttackIfReady();
             break;
             case WARP_SLICER:
 
-                if(Rend_Timer.Expired(diff))
+                if(Rend_Timer <= diff)
                 {
                     Aura * aur = m_creature->getVictim()->GetAura(SPELL_WARP_REND,0);
                       if(!aur || aur->GetStackAmount() < 10)
@@ -2156,6 +2261,8 @@ struct weapon_advisorAI : public ScriptedAI
                           aur->SetStackAmount(9);
                     Rend_Timer = 2500;
                 }
+                else
+                    Rend_Timer -= diff;
 
                 DoMeleeAttackIfReady();
             break;
