@@ -3170,7 +3170,7 @@ struct npc_instakill_guardianAI : public Scripted_NoMovementAI
             WorldLocation loc, loc2;
             player->GetPosition(loc);
             who->GetPosition(loc2);
-            if (me->GetExactDist(&loc2) < distance)
+            if (who->GetCharmerOrOwner() && who->GetCharmerOrOwner()->GetTypeId() == TYPEID_PLAYER && me->GetExactDist(&loc2) < distance)
             {
                 sWorld.SendGMText(LANG_INSTA_KILL_GUARDIAN_PET,
                                   player->GetName(), player->GetGUIDLow(), who->GetName(), who->GetGUID(),
