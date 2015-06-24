@@ -3161,27 +3161,45 @@ struct npc_instakill_guardianAI : public Scripted_NoMovementAI
 
     void MoveInLineOfSight(Unit* who)
     {
-        Player* player = who->GetCharmerOrOwnerPlayerOrPlayerItself();
-        if (!player || player->isGameMaster())
-            return;
-
-        WorldLocation loc;
-        player->GetPosition(loc);
-        if( m_creature->GetExactDist(&loc) < distance)
+        if (me->isAlive())
         {
-            if (player->isAlive())
+            Player* player = who->GetCharmerOrOwnerPlayerOrPlayerItself();
+            if (!player || player->isGameMaster())
+                return;
+
+            WorldLocation loc, loc2;
+            player->GetPosition(loc);
+            who->GetPosition(loc2);
+            if (me->GetExactDist(&loc2) < distance)
             {
-                player->Kill(player);
-                player->BuildPlayerRepop();
+                sWorld.SendGMText(LANG_INSTA_KILL_GUARDIAN_PET,
+                                  player->GetName(), player->GetGUIDLow(), who->GetName(), who->GetGUID(),
+                                  float(player->GetPositionX()), float(player->GetPositionY()), float(player->GetPositionZ()), player->GetMapId(), player->GetInstanceId());
+                sLog.outLog(LOG_EXPLOITS_CHEATS, "Player's (%s (%u)) PET (%s, (%u)) killed by instakill guardian, position X: %f Y: %f Z: %f Map: %u Instance: %u",
+                            player->GetName(), player->GetGUIDLow(), who->GetName(), who->GetGUID(),
+                            float(player->GetPositionX()), float(player->GetPositionY()), float(player->GetPositionZ()), player->GetMapId(), player->GetInstanceId());
+                who->Kill(player);
             }
 
-            sWorld.SendGMText(LANG_INSTA_KILL_GUARDIAN,
-                player->GetName(),player->GetGUIDLow(),
-                float(player->GetPositionX()),float(player->GetPositionY()),float(player->GetPositionZ()),player->GetMapId(),player->GetInstanceId());
-            sLog.outLog(LOG_EXPLOITS_CHEATS,"Player %s (%u) killed by instakill guardian, position X: %f Y: %f Z: %f Map: %u Instance: %u",
-                player->GetName(),player->GetGUIDLow(),
-                float(player->GetPositionX()),float(player->GetPositionY()),float(player->GetPositionZ()),player->GetMapId(),player->GetInstanceId());
-            who->Kill(player);
+            if (m_creature->GetExactDist(&loc) < distance)
+            {
+                if (player->isDead())
+                    player->TeleportToNearestGraveyard();
+
+                if (player->isAlive())
+                {
+                    player->Kill(player);
+                    player->RepopAtGraveyard();
+                }
+
+                sWorld.SendGMText(LANG_INSTA_KILL_GUARDIAN,
+                                  player->GetName(), player->GetGUIDLow(),
+                                  float(player->GetPositionX()), float(player->GetPositionY()), float(player->GetPositionZ()), player->GetMapId(), player->GetInstanceId());
+                sLog.outLog(LOG_EXPLOITS_CHEATS, "Player %s (%u) killed by instakill guardian, position X: %f Y: %f Z: %f Map: %u Instance: %u",
+                            player->GetName(), player->GetGUIDLow(),
+                            float(player->GetPositionX()), float(player->GetPositionY()), float(player->GetPositionZ()), player->GetMapId(), player->GetInstanceId());
+                player->Kill(player);
+            }
         }
     }
 };
