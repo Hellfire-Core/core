@@ -58,8 +58,8 @@ struct boss_midnightAI : public ScriptedAI
 
     uint64 Attumen;
     uint8 Phase;
-    Timer Mount_Timer;
-    Timer CheckTimer;
+    uint32 Mount_Timer;
+    uint32 CheckTimer;
 
     ScriptedInstance *pInstance;
     WorldLocation wLoc;
@@ -68,8 +68,8 @@ struct boss_midnightAI : public ScriptedAI
     {
         Phase = 1;
         Attumen = 0;
-        Mount_Timer.Reset(1000);
-        CheckTimer.Reset(3000);
+        Mount_Timer = 0;
+        CheckTimer = 3000;
 
         m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
         m_creature->SetVisibility(VISIBILITY_ON);
@@ -100,8 +100,7 @@ struct boss_midnightAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        
-        if (CheckTimer.Expired(diff))
+        if (CheckTimer < diff)
         {
             if (!m_creature->IsWithinDistInMap(&wLoc, 50.0f))
                 EnterEvadeMode();
@@ -110,7 +109,8 @@ struct boss_midnightAI : public ScriptedAI
 
             CheckTimer = 3000;
         }
-        
+        else
+            CheckTimer -= diff;
 
         switch (Phase)
         {
@@ -140,26 +140,28 @@ struct boss_midnightAI : public ScriptedAI
             }
             case 3:
             {
-
-                if (Mount_Timer.Expired(diff))
+                if (Mount_Timer)
                 {
-                    Mount_Timer = 0;
-                    m_creature->SetVisibility(VISIBILITY_OFF);
-                    m_creature->GetMotionMaster()->MoveIdle();
-                    if (Creature *pAttumen = Unit::GetCreature(*m_creature, Attumen))
+                    if (Mount_Timer <= diff)
                     {
-                        pAttumen->SetUInt32Value(UNIT_FIELD_DISPLAYID, MOUNTED_DISPLAYID);
-                        pAttumen->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                        if (pAttumen->getVictim())
+                        Mount_Timer = 0;
+                        m_creature->SetVisibility(VISIBILITY_OFF);
+                        m_creature->GetMotionMaster()->MoveIdle();
+                        if (Creature *pAttumen = Unit::GetCreature(*m_creature, Attumen))
                         {
-                            pAttumen->GetMotionMaster()->MoveChase(pAttumen->getVictim());
-                            pAttumen->SetSelection(pAttumen->getVictimGUID());
+                            pAttumen->SetUInt32Value(UNIT_FIELD_DISPLAYID, MOUNTED_DISPLAYID);
+                            pAttumen->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                            if (pAttumen->getVictim())
+                            {
+                                pAttumen->GetMotionMaster()->MoveChase(pAttumen->getVictim());
+                                pAttumen->SetSelection(pAttumen->getVictimGUID());
+                            }
+                            pAttumen->SetFloatValue(OBJECT_FIELD_SCALE_X,1);
                         }
-                        pAttumen->SetFloatValue(OBJECT_FIELD_SCALE_X, 1);
                     }
+                    else
+                        Mount_Timer -= diff;
                 }
-
-                
                 return;
             }
         }
@@ -189,7 +191,7 @@ struct boss_midnightAI : public ScriptedAI
         pAttumen->GetMotionMaster()->MovePoint(0, newX, newY, newZ);
         //pAttumen->Relocate(newX,newY,newZ,-angle);
         //pAttumen->SendMonsterMove(newX, newY, newZ, 0, true, 1000);
-        Mount_Timer.Reset(1000);
+        Mount_Timer = 1000;
     }
 
     void SetMidnight(Creature *, uint64);                   //Below ..
@@ -218,15 +220,15 @@ struct boss_attumenAI : public ScriptedAI
 
     uint64 Midnight;
     uint8 Phase;
-    Timer CleaveTimer;
-    Timer CurseTimer;
-    Timer RandomYellTimer;
-    Timer ChargeTimer;                                     //only when mounted
-    Timer ResetTimer;
+    uint32 CleaveTimer;
+    uint32 CurseTimer;
+    uint32 RandomYellTimer;
+    uint32 ChargeTimer;                                     //only when mounted
+    uint32 ResetTimer;
 
     void Reset()
     {
-        ResetTimer.Reset(2000);
+        ResetTimer = 2000;
     }
 
     void KilledUnit(Unit *victim)
@@ -245,22 +247,24 @@ struct boss_attumenAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-
-        if (ResetTimer.Expired(diff))
+        if (ResetTimer)
         {
-            ResetTimer = 0;
-            Unit *pMidnight = Unit::GetUnit(*m_creature, Midnight);
-            if (pMidnight)
+            if (ResetTimer <= diff)
             {
-                pMidnight->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                pMidnight->SetVisibility(VISIBILITY_ON);
+                ResetTimer = 0;
+                Unit *pMidnight = Unit::GetUnit(*m_creature, Midnight);
+                if (pMidnight)
+                {
+                    pMidnight->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                    pMidnight->SetVisibility(VISIBILITY_ON);
+                }
+                Midnight = 0;
+                m_creature->SetVisibility(VISIBILITY_OFF);
+                m_creature->DealDamage(m_creature, m_creature->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
             }
-            Midnight = 0;
-            m_creature->SetVisibility(VISIBILITY_OFF);
-            m_creature->DealDamage(m_creature, m_creature->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
         }
-
-        
+        else
+            ResetTimer -= diff;
 
         //Return since we have no target
         if (!UpdateVictim())
@@ -269,42 +273,42 @@ struct boss_attumenAI : public ScriptedAI
         if (m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE ))
             return;
 
-
-        if (CleaveTimer.Expired(diff))
+        if (CleaveTimer < diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_SHADOWCLEAVE);
             CleaveTimer = urand(10000, 16000);
         }
-        
+        else
+            CleaveTimer -= diff;
 
-
-        if (CurseTimer.Expired(diff))
+        if (CurseTimer < diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_INTANGIBLE_PRESENCE);
             CurseTimer = 30000;
         }
-        
+        else
+            CurseTimer -= diff;
 
-
-        if (RandomYellTimer.Expired(diff))
+        if (RandomYellTimer < diff)
         {
             DoScriptText(RAND(SAY_RANDOM1, SAY_RANDOM2), m_creature);
 
             RandomYellTimer = urand(30000, 61000);
         }
-        
+        else
+            RandomYellTimer -= diff;
 
         if (m_creature->GetUInt32Value(UNIT_FIELD_DISPLAYID) == MOUNTED_DISPLAYID)
         {
-            
-            if (ChargeTimer.Expired(diff))
+            if (ChargeTimer < diff)
             {
                 if (Unit * target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100.0f, true, 0, 5.0f))
                     AddSpellToCast(target, SPELL_BERSERKER_CHARGE);
 
                 ChargeTimer = 20000;
             }
-            
+            else
+                ChargeTimer -= diff;
         }
         else
         {
