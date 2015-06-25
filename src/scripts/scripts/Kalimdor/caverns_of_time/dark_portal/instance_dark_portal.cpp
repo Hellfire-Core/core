@@ -87,9 +87,9 @@ struct instance_dark_portal : public ScriptedInstance
     uint8 mRiftWaveCount;
     uint8 mRiftWaveId;
 
-    Timer NextPortal_Timer;
-    Timer DespawnDelay;
-    Timer Check_Timer;
+    uint32 NextPortal_Timer;
+    uint32 DespawnDelay;
+    uint32 Check_Timer;
 
     uint64 MedivhGUID;
     uint8 CurrentRiftId;
@@ -503,15 +503,14 @@ struct instance_dark_portal : public ScriptedInstance
             return;
 
         if (Encounter[0] == FAIL)
-        {
-            if (DespawnDelay.Expired(diff))
+            if (DespawnDelay && DespawnDelay < diff)
             {
                 if (Unit* medivh = Unit::GetUnit(*player, MedivhGUID))
                     ((Creature*)medivh)->RemoveCorpse();
                 DespawnDelay = 0;
             }
-           
-        }
+            else
+                DespawnDelay -= diff;
 
         if (Encounter[1] != IN_PROGRESS)
             return;
@@ -524,29 +523,26 @@ struct instance_dark_portal : public ScriptedInstance
             return;
         }
 
-
-
-        if (Check_Timer.Expired(diff))
+        if (Check_Timer && Check_Timer <= diff)
         {
             if (!IsAnyPortalOpened())
                 NextPortal_Timer = 13000;
 
             Check_Timer = 0;
         }
-        
-        
+        else
+            Check_Timer -= diff;
 
-
-        if (NextPortal_Timer.Expired(diff))
+        if (NextPortal_Timer && NextPortal_Timer <= diff)
         {
             ++mRiftPortalCount;
-            UpdateBMWorldState(WORLD_STATE_BM_RIFT, mRiftPortalCount);
+            UpdateBMWorldState(WORLD_STATE_BM_RIFT,mRiftPortalCount);
 
             DoSpawnPortal();
             NextPortal_Timer = GetTimer(mRiftPortalCount);
         }
-        
-        
+        else
+            NextPortal_Timer -= diff;
     }
 
     std::string GetSaveData()
