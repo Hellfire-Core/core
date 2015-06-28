@@ -670,17 +670,14 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                         }
                         break;
                     case TIMER_SOUL_FLAY:
-                        if (!m_creature->IsNonMeleeSpellCast(false))
-                        {
+                    {
                             m_creature->CastSpell(m_creature->getVictim(), SPELL_SOUL_FLAY, false);
                             m_creature->getVictim()->CastSpell(m_creature->getVictim(), SPELL_SOUL_FLAY_SLOW, true);
                             _Timer[TIMER_SOUL_FLAY] = 4000;
-                        }
-                        break;
+                    }
+                    break;
                     case TIMER_LEGION_LIGHTNING:
-                        if (!m_creature->IsNonMeleeSpellCast(false))
-                        {
-                            m_creature->RemoveAurasDueToSpell(SPELL_SOUL_FLAY);
+                    {
                             for (uint8 z = 0; z < 6; ++z)
                             {
                                 randomPlayer = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true);
@@ -693,19 +690,18 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                             else
                                 error_log("try to cast SPELL_LEGION_LIGHTNING on invalid target");
 
-                            _Timer[TIMER_LEGION_LIGHTNING] = (Phase == PHASE_SACRIFICE) ? 18000 : 30000; // 18 seconds in PHASE_SACRIFICE
-                            _Timer[TIMER_SOUL_FLAY].Reset(2500);
-                        }
-                        break;
+                            _Timer[TIMER_LEGION_LIGHTNING] = (Phase == PHASE_SACRIFICE) ? 18000 : urand(13000, 17000); // 18 seconds in PHASE_SACRIFICE
+                            _Timer[TIMER_SOUL_FLAY].Reset(3500);
+                    }
+                    break;
                     case TIMER_FIRE_BLOOM:
-                        if (!m_creature->IsNonMeleeSpellCast(false))
-                        {
-                            m_creature->RemoveAurasDueToSpell(SPELL_SOUL_FLAY);
-                            DoCastAOE(SPELL_FIRE_BLOOM, false);
-                            _Timer[TIMER_FIRE_BLOOM] = (Phase == PHASE_SACRIFICE) ? 25000 : 40000; // 25 seconds in PHASE_SACRIFICE
-                            _Timer[TIMER_SOUL_FLAY].Reset(1000);
-                        }
-                        break;
+                    {
+                        DoCastAOE(SPELL_FIRE_BLOOM, false);
+                        _Timer[TIMER_FIRE_BLOOM] = (Phase == PHASE_SACRIFICE) ? 25000 : 20000; // 25 seconds in PHASE_SACRIFICE
+                        _Timer[TIMER_SOUL_FLAY].Reset(1000);
+
+                    }
+                    break;
                     case TIMER_SUMMON_SHILEDORB:
                         for (uint8 i = 1; i < Phase; ++i)
                         {
