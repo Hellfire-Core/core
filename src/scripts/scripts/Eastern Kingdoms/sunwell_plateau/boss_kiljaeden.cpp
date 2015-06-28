@@ -1321,13 +1321,13 @@ struct mob_shield_orbAI : public ScriptedAI
         {
             if (Clockwise)
             {
-                y = my - r * sin(c);
-                x = mx - r * cos(c);
+                y = my - r * cos(c);
+                x = mx - r * sin(c);
             }
             else
             {
-                y = my + r * sin(c);
-                x = mx + r * cos(c);
+                y = my + r * cos(c);
+                x = mx + r * sin(c);
             }
             PointReached = false;
             CheckTimer = 250;
