@@ -541,14 +541,17 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
         if (who->GetTypeId() != TYPEID_PLAYER)
             return;
         if (me->GetExactDist2d(who->GetPositionX(), who->GetPositionY()) <= 10.0f)
+        {
             me->CastSpell(who, SPELL_SUNWELL_KNOCKBACK, true);
+            if (!IsEmerging)
+                me->DealDamage(who, 475, SPELL_DIRECT_DAMAGE, SPELL_SCHOOL_MASK_FIRE);
+
+        }
+
     }
 
     void SpellHitTarget(Unit* target, const SpellEntry* spell)
-    {
-        if (spell->Id == SPELL_SUNWELL_KNOCKBACK && !IsEmerging)
-            target->DealDamage(me, 475, SPELL_DIRECT_DAMAGE, SPELL_SCHOOL_MASK_FIRE, spell, false);
-    }
+    {    }
 
     void ChangeTimers(bool status, uint32 WTimer)
     {
@@ -939,6 +942,9 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
             SummonedAnveena = true;
         }
 
+        if (me->isInCombat() && me->getThreatManager().isThreatListEmpty())
+            EnterEvadeMode(); // somehow it was getting stuck in this mode :o combat with noone
+
         // if (Phase == PHASE_DECEIVERS && DeceiversStatus != 3)
         // {
         //     if (DeceiverDeathTimer <= diff)
@@ -977,7 +983,7 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
         {
             if (Creature* c = pInstance->GetCreature(guid))
             {
-                c->AI()->DoZoneInCombat(100.0f);
+                c->AI()->DoZoneInCombat(300.0f);
             }
         }
         );
@@ -1067,6 +1073,7 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
             Creature* Control = ((Creature*)Unit::GetUnit(*m_creature, pInstance->GetData64(DATA_KILJAEDEN_CONTROLLER)));
             if (Control)
             {
+                Control->AI()->EnterCombat(who);
                 Control->AddThreat(who, 0.0f);
                 Control->AI()->DoZoneInCombat();
                 Control->AI()->DoAction(DECEIVER_ENTER_COMBAT); // pull the rest of deceivers
@@ -1210,6 +1217,7 @@ struct mob_volatile_felfire_fiendAI : public ScriptedAI
         {
             WaitTimer = 0;
             me->SetReactState(REACT_AGGRESSIVE);
+            DoZoneInCombat(100.0f);
         }
 
         if (WaitTimer.Passed() || !UpdateVictim())
@@ -1334,7 +1342,7 @@ struct mob_shield_orbAI : public ScriptedAI
             }
             PointReached = false;
             m_creature->GetMotionMaster()->MovePoint(1, x, y, SHIELD_ORB_Z);
-            c += 3.1415926535 / 128;
+            c += 3.1415926535 / 120;
             if (c > 2 * 3.1415926535)
                 c = 0;
         }
@@ -1343,8 +1351,8 @@ struct mob_shield_orbAI : public ScriptedAI
 
         if (_Timer.Expired(diff))
         {
-            ForceSpellCast(SPELL_SHADOW_BOLT, CAST_RANDOM);
-            _Timer = 200; // 5 per second
+            ForceSpellCast(SPELL_SHADOW_BOLT, CAST_RANDOM, INTERRUPT_AND_CAST_INSTANTLY, true);
+            _Timer = 500; // 2 per second
         }
     }
 
