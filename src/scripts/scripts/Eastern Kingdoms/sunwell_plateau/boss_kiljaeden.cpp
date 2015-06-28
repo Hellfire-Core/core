@@ -496,6 +496,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
 
     void Reset()
     {
+        Summons.DespawnAll();
         // TODO: Fix timers
         _Timer[TIMER_KALEC_JOIN].Reset(26000);
 
@@ -537,6 +538,8 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
 
     void MoveInLineOfSight(Unit* who)
     {
+        if (who->GetTypeId() != TYPEID_PLAYER)
+            return;
         if (me->GetExactDist2d(who->GetPositionX(), who->GetPositionY()) <= 10.0f)
             me->CastSpell(who, SPELL_SUNWELL_KNOCKBACK, true);
     }
@@ -1330,27 +1333,18 @@ struct mob_shield_orbAI : public ScriptedAI
                 x = mx + r * sin(c);
             }
             PointReached = false;
-            CheckTimer = 250;
             m_creature->GetMotionMaster()->MovePoint(1, x, y, SHIELD_ORB_Z);
             c += 3.1415926535 / 128;
             if (c > 2 * 3.1415926535)
                 c = 0;
         }
-        else
-            if (CheckTimer.Expired(diff))
-            {
-                DoTeleportTo(x, y, SHIELD_ORB_Z);
-                PointReached = true;
-            }
 
         
 
         if (_Timer.Expired(diff))
         {
-            Unit* random = me->SelectNearestTarget(50.0f);
-            if (random)
-                DoCast(random, SPELL_SHADOW_BOLT, false);
-            _Timer = 500 + rand() % 500;
+            ForceSpellCast(SPELL_SHADOW_BOLT, CAST_RANDOM);
+            _Timer = 200; // 5 per second
         }
     }
 
