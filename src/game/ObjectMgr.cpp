@@ -897,7 +897,6 @@ void ObjectMgr::LoadCreatures()
         data.movementType   = fields[15].GetUInt8();
         data.spawnMask      = fields[16].GetUInt8();
         int16 gameEvent     = fields[17].GetInt16();
-        int16 PoolId        = fields[18].GetInt16();
 
         if (heroicCreatures.find(data.id)!=heroicCreatures.end())
         {
@@ -948,7 +947,7 @@ void ObjectMgr::LoadCreatures()
             }
         }
 
-        if (gameEvent == 0 && PoolId == 0)                    // if not this is to be managed by GameEvent System
+        if (gameEvent == 0)                    // if not this is to be managed by GameEvent System
             AddCreatureToGrid(guid, &data);
         ++count;
 
