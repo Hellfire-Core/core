@@ -1204,7 +1204,10 @@ struct mob_volatile_felfire_fiendAI : public ScriptedAI
     void UpdateAI(const uint32 diff)
     {
         if (WaitTimer.Expired(diff))
+        {
             WaitTimer = 0;
+            me->SetReactState(REACT_AGGRESSIVE);
+        }
 
         if (WaitTimer.Passed() || !UpdateVictim())
             return;
