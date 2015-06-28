@@ -1043,7 +1043,7 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
     void Reset()
     {
         me->CastSpell(me, SPELL_SHADOW_CHANNELING, false);
-        ShadowBoltVolleyTimer.Reset(8000 + urand(0, 3000)); // So they don't all cast it in the same moment.
+        ShadowBoltVolleyTimer.Reset(1000 + urand(0, 3000)); // So they don't all cast it in the same moment.
         FelfirePortalTimer.Reset(20000);
         //DeceiverReviveTimer = 10000;
     }
@@ -1102,13 +1102,13 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
 
         // Gain Shadow Infusion at 20% health
         if (((m_creature->GetHealth() * 100 / m_creature->GetMaxHealth()) < 20) && !m_creature->HasAura(SPELL_SHADOW_INFUSION, 0))
-            AddSpellToCast(me, SPELL_SHADOW_INFUSION, true);
+            ForceSpellCast(me, SPELL_SHADOW_INFUSION, INTERRUPT_AND_CAST_INSTANTLY, true);
 
         // Shadow Bolt Volley - Shoots Shadow Bolts at all enemies within 30 yards, for ~2k Shadow damage.
         if (ShadowBoltVolleyTimer.Expired(diff))
         {
             AddSpellToCast(SPELL_SHADOW_BOLT_VOLLEY, CAST_TANK);
-            ShadowBoltVolleyTimer = 12000;
+            ShadowBoltVolleyTimer = urand(1000, 5000);
         }
 
         // Felfire Portal - Creatres a portal, that spawns Volatile Felfire Fiends, which do suicide bombing.
