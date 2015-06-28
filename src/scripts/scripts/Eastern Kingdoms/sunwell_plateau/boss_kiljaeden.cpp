@@ -1195,8 +1195,9 @@ struct mob_volatile_felfire_fiendAI : public ScriptedAI
     void Reset()
     {
         WaitTimer.Reset(1500);
-        ExplodeTimer.Reset(3000);
+        ExplodeTimer.Reset(5000);
         LockedTarget = false;
+        me->SetReactState(REACT_PASSIVE);
     }
 
 
