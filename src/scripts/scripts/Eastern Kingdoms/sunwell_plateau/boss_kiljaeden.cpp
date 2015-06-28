@@ -1288,8 +1288,8 @@ struct mob_shield_orbAI : public ScriptedAI
 
     bool PointReached;
     bool Clockwise;
-    uint32 Timer;
-    uint32 CheckTimer;
+    Timer _Timer;
+    Timer CheckTimer;
     ScriptedInstance* pInstance;
     float x, y, r, c, mx, my;
 
@@ -1297,14 +1297,16 @@ struct mob_shield_orbAI : public ScriptedAI
     {
         m_creature->SetLevitate(true);
         PointReached = true;
-        Timer = 500 + rand() % 500;
-        CheckTimer = 1000;
+        _Timer.Reset(500 + rand() % 500);
+        CheckTimer.Reset(1000);
         r = 17;
         c = 0;
         mx = ShieldOrbLocations[0][0];
         my = ShieldOrbLocations[0][1];
-        if (rand() % 2 == 0)Clockwise = true;
-        else Clockwise = false;
+        if (rand() % 2 == 0)
+            Clockwise = true;
+        else
+            Clockwise = false;
     }
 
     void Reset()
@@ -1325,29 +1327,28 @@ struct mob_shield_orbAI : public ScriptedAI
                 x = mx + r * cos(c);
             }
             PointReached = false;
-            CheckTimer = 1000;
+            CheckTimer = 250;
             m_creature->GetMotionMaster()->MovePoint(1, x, y, SHIELD_ORB_Z);
-            c += 3.1415926535 / 32;
-            if (c > 2 * 3.1415926535) c = 0;
+            c += 3.1415926535 / 128;
+            if (c > 2 * 3.1415926535)
+                c = 0;
         }
         else
-        {
-            if (CheckTimer <= diff)
+            if (CheckTimer.Expired(diff))
             {
                 DoTeleportTo(x, y, SHIELD_ORB_Z);
                 PointReached = true;
             }
-            else CheckTimer -= diff;
 
-        }
+        
 
-        if (Timer <= diff)
+        if (_Timer.Expired(diff))
         {
-            Unit* random = (Unit::GetUnit((*m_creature), pInstance->GetData64(DATA_PLAYER_GUID)));
-            if (random)DoCast(random, SPELL_SHADOW_BOLT, false);
-            Timer = 500 + rand() % 500;
+            Unit* random = me->SelectNearestTarget(50.0f);
+            if (random)
+                DoCast(random, SPELL_SHADOW_BOLT, false);
+            _Timer = 500 + rand() % 500;
         }
-        else Timer -= diff;
     }
 
     void MovementInform(uint32 type, uint32 id)
