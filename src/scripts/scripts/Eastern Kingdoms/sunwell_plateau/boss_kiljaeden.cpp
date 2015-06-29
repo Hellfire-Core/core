@@ -540,7 +540,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
     {
         if (who->GetTypeId() != TYPEID_PLAYER)
             return;
-        if (me->GetExactDist2d(who->GetPositionX(), who->GetPositionY()) <= 10.0f)
+        if (me->GetExactDist2d(who->GetPositionX(), who->GetPositionY()) <= 14.0f)
         {
             me->CastSpell(who, SPELL_SUNWELL_KNOCKBACK, true);
             if (!IsEmerging)
