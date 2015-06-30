@@ -660,12 +660,16 @@ struct mob_greyheart_spellbinderAI : public ScriptedAI
     {
         pInstance = ((ScriptedInstance *)c->GetInstanceData());
         leotherasGUID = 0;
+        me->GetHomePosition(homepos.x, homepos.y, homepos.z, homepos.o);
+        
     }
 
     ScriptedInstance *pInstance;
 
     uint64 leotherasGUID;
 
+    Position homepos;
+    Position pos;
     Timer Mindblast_Timer;
     Timer Earthshock_Timer;
 
@@ -701,6 +705,9 @@ struct mob_greyheart_spellbinderAI : public ScriptedAI
 
     void CastChanneling()
     {
+        me->GetPosition(pos);
+        if (pos != homepos)
+            EnterEvadeMode();
         if(!m_creature->isInCombat() && !m_creature->m_currentSpells[CURRENT_CHANNELED_SPELL])
         {
             if(leotherasGUID)
