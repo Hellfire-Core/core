@@ -681,13 +681,17 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                         break;
                     case TIMER_SOUL_FLAY:
                     {
+                        if (me->IsNonMeleeSpellCast(false))
+                        {
                             m_creature->CastSpell(m_creature->getVictim(), SPELL_SOUL_FLAY, false);
                             m_creature->getVictim()->CastSpell(m_creature->getVictim(), SPELL_SOUL_FLAY_SLOW, true);
                             _Timer[TIMER_SOUL_FLAY] = 4000;
+                        }
                     }
                     break;
                     case TIMER_LEGION_LIGHTNING:
                     {
+
                             for (uint8 z = 0; z < 6; ++z)
                             {
                                 randomPlayer = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true);
@@ -702,13 +706,16 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
 
                             _Timer[TIMER_LEGION_LIGHTNING] = (Phase == PHASE_SACRIFICE) ? 18000 : urand(13000, 17000); // 18 seconds in PHASE_SACRIFICE
                             _Timer[TIMER_SOUL_FLAY].Reset(3500);
+                            if (_Timer[TIMER_FIRE_BLOOM].GetTimeLeft() <= 2500)
+                                _Timer[TIMER_FIRE_BLOOM].Delay(2500);
                     }
                     break;
                     case TIMER_FIRE_BLOOM:
                     {
                         DoCastAOE(SPELL_FIRE_BLOOM, false);
                         _Timer[TIMER_FIRE_BLOOM] = (Phase == PHASE_SACRIFICE) ? 25000 : 20000; // 25 seconds in PHASE_SACRIFICE
-                        _Timer[TIMER_SOUL_FLAY].Reset(1000);
+                        if (_Timer[TIMER_FIRE_BLOOM].GetTimeLeft() <= 1000)
+                            _Timer[TIMER_FIRE_BLOOM].Delay(1000);
 
                     }
                     break;
@@ -721,16 +728,15 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                             m_creature->SummonCreature(CREATURE_SHIELD_ORB, sx, sy, SHIELD_ORB_Z, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 45000);
                         }
                         _Timer[TIMER_SUMMON_SHILEDORB] = 30000 + rand() % 30 * 1000; // 30-60seconds cooldown
-                        _Timer[TIMER_SOUL_FLAY].Reset(2000);
                         break;
+
                     case TIMER_SHADOW_SPIKE: //Phase 3
-                        if (!m_creature->IsNonMeleeSpellCast(false))
-                        {
-                            DoCastAOE(SPELL_SHADOW_SPIKE, false);
-                            _Timer[TIMER_SHADOW_SPIKE] = 0;
-                            TimerIsDeactiveted[TIMER_SHADOW_SPIKE] = true;
-                            ChangeTimers(true, 30000);
-                        }
+                    {
+                        DoCastAOE(SPELL_SHADOW_SPIKE, false);
+                        _Timer[TIMER_SHADOW_SPIKE] = 0;
+                        TimerIsDeactiveted[TIMER_SHADOW_SPIKE] = true;
+                        ChangeTimers(true, 30000);
+                    }
                         break;
                     case TIMER_FLAME_DART: //Phase 3
                         DoCastAOE(SPELL_FLAME_DART, false);
@@ -854,14 +860,15 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
     Creature* KalecKJ;
     SummonList Summons;
 
-    uint8 DeceiversStatus;
     bool SummonedAnveena;
     bool KiljaedenDeath;
     std::list<uint64> deceivers;
 
     Timer RandomSayTimer;
+    Timer CheckDeceivers;
+
     uint32 Phase;
-    uint32 DeceiverDeathTimer;
+   // uint32 DeceiverDeathTimer;
 
     void InitializeAI()
     {
@@ -878,28 +885,33 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
 
     void Reset()
     {
-        pInstance->SetData(DATA_KILJAEDEN_EVENT, NOT_STARTED);
-        Phase = PHASE_DECEIVERS;
         deceivers = pInstance->instance->GetCreaturesGUIDList(CREATURE_HAND_OF_THE_DECEIVER);
+        pInstance->SetData(DATA_KILJAEDEN_EVENT, NOT_STARTED);
+        pInstance->SetData(DATA_HAND_OF_DECEIVER_COUNT, 1);
+        Phase = PHASE_DECEIVERS;
         //if(KalecKJ)((boss_kalecgos_kjAI*)KalecKJ->AI())->ResetOrbs();
         //DeceiverDeathTimer = 0;
-        DeceiversStatus = 3;
         SummonedAnveena = false;
         KiljaedenDeath = false;
         RandomSayTimer.Reset(30000);
+        CheckDeceivers.Reset(1000);
         Summons.DespawnAll();
+        ResetDeceivers();
+        me->SetReactState(REACT_AGGRESSIVE);
+        me->Yell("Reset called.", 0, 0);
     }
 
-    void EnterCombat(Unit*)
+    void EnterCombat(Unit* who)
     {
         pInstance->SetData(DATA_KILJAEDEN_EVENT, IN_PROGRESS);
+        DoZoneInCombat(1000.0f);
     }
 
-    void EnterEvadeMode()
-    {
-        ResetDeceivers();
-        ScriptedAI::EnterEvadeMode();
-    }
+  //  void EnterEvadeMode()
+  //  {
+  //      ResetDeceivers();
+  //      ScriptedAI::EnterEvadeMode();
+  //  }
 
     void JustSummoned(Creature* summoned)
     {
@@ -946,6 +958,16 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
             SummonedAnveena = true;
         }
 
+        if (CheckDeceivers.Expired(diff))
+        {
+            CheckDeceivers = 1000;
+            if (pInstance->GetData(DATA_HAND_OF_DECEIVER_COUNT) == 0)
+            {
+                m_creature->RemoveAurasDueToSpell(SPELL_ANVEENA_ENERGY_DRAIN);
+                Phase = PHASE_NORMAL;
+                DoSpawnCreature(CREATURE_KILJAEDEN, 0, 0, 0, 0, TEMPSUMMON_MANUAL_DESPAWN, 0);
+            }
+        }
         if (me->isInCombat() && me->getThreatManager().isThreatListEmpty())
             EnterEvadeMode(); // somehow it was getting stuck in this mode :o combat with noone
 
@@ -969,29 +991,6 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
 
     }
 
-    void DeceiverDied()
-    {
-        DeceiversStatus -= 1;
-
-        if (DeceiversStatus == 0)
-        {
-            m_creature->RemoveAurasDueToSpell(SPELL_ANVEENA_ENERGY_DRAIN);
-            Phase = PHASE_NORMAL;
-            DoSpawnCreature(CREATURE_KILJAEDEN, 0, 0, 0, 0, TEMPSUMMON_MANUAL_DESPAWN, 0);
-        }
-    }
-    void PullDeceivers()
-    {
-        std::for_each(deceivers.begin(), deceivers.end(),
-                      [this](uint64& guid)
-        {
-            if (Creature* c = pInstance->GetCreature(guid))
-            {
-                c->AI()->DoZoneInCombat(300.0f);
-            }
-        }
-        );
-    }
     void ResetDeceivers()
     {
         std::for_each(deceivers.begin(), deceivers.end(),
@@ -1000,17 +999,12 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
             if (Creature* c = pInstance->GetCreature(guid))
             {
                 if (c->isAlive())
-                {
-                    DeceiversStatus = 3; // to avoid KJ spawning on reset (kill will do -= 1)
                     c->DisappearAndDie();
-                }
-
-                    c->Respawn();
+                
+                c->Respawn();
             }
         }
         );
-
-        DeceiversStatus = 3; // Reset() will do it too, but just to be 200% sure
     }
 
 
@@ -1018,12 +1012,6 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
     {
         switch (param)
         {
-            case DECEIVER_DIED:
-                DeceiverDied();
-                break;
-            case DECEIVER_ENTER_COMBAT:
-                PullDeceivers();
-                break;
             case DECEIVER_RESET:
                 ResetDeceivers();
             default:
@@ -1043,6 +1031,7 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
     mob_hand_of_the_deceiverAI(Creature* c) : ScriptedAI(c), Summons(m_creature)
     {
         pInstance = (c->GetInstanceData());
+        me->GetHomePosition(homepos.x, homepos.y, homepos.z, homepos.o);
     }
 
     ScriptedInstance* pInstance;
@@ -1050,6 +1039,8 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
     Timer ShadowBoltVolleyTimer;
     Timer FelfirePortalTimer;
     SummonList Summons;
+    Position homepos;
+    Position pos;
     //Timer DeceiverReviveTimer;
 
 
@@ -1069,6 +1060,23 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
         Summons.Summon(summoned);
     }
 
+    void JustRespawned()
+    {
+        pInstance->SetData(DATA_HAND_OF_DECEIVER_COUNT, 1);
+    }
+
+    void CheckPosition()
+    {
+        me->GetPosition(pos);
+        if (pos != homepos)
+        {
+            EnterEvadeMode();
+            return;
+        }
+        else if (!me->IsNonMeleeSpellCast(false))
+            me->CastSpell(me, SPELL_SHADOW_CHANNELING, false);
+    }
+
     void EnterCombat(Unit* who)
     {
         if (pInstance)
@@ -1080,7 +1088,6 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
                 Control->AI()->EnterCombat(who);
                 Control->AddThreat(who, 0.0f);
                 Control->AI()->DoZoneInCombat();
-                Control->AI()->DoAction(DECEIVER_ENTER_COMBAT); // pull the rest of deceivers
             }
         }
         m_creature->InterruptNonMeleeSpells(true);
@@ -1101,16 +1108,21 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
         if (!pInstance)
             return;
 
-        Creature* Control = Unit::GetCreature(*m_creature, pInstance->GetData64(DATA_KILJAEDEN_CONTROLLER));
-        if (Control)
-            Control->AI()->DoAction(DECEIVER_DIED);
-
         Summons.DespawnAll();
+
+        if (me->GetMap()->GetCreatureById(CREATURE_HAND_OF_THE_DECEIVER, GET_ALIVE_CREATURE_GUID))
+            pInstance->SetData(DATA_HAND_OF_DECEIVER_COUNT, 1);
+        else
+            pInstance->SetData(DATA_HAND_OF_DECEIVER_COUNT, 0);
     }
 
 
     void UpdateAI(const uint32 diff)
     {
+        if (!me->isInCombat())
+        {
+            CheckPosition();
+        }
         if (!UpdateVictim())
             return;
 
