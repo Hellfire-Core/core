@@ -540,13 +540,17 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
     {
         if (who->GetTypeId() != TYPEID_PLAYER)
             return;
-        if (me->GetExactDist2d(who->GetPositionX(), who->GetPositionY()) <= 14.0f)
-        {
-            me->CastSpell(who, SPELL_SUNWELL_KNOCKBACK, true);
-            if (!IsEmerging)
-                me->DealDamage(who, 475, SPELL_DIRECT_DAMAGE, SPELL_SCHOOL_MASK_FIRE);
-
-        }
+        Creature* controler = pInstance->GetCreature(pInstance->GetData64(DATA_KILJAEDEN_CONTROLLER)); // we use controler to avoid animation break on KJ
+        if (controler)
+            if (me->GetExactDist2d(who->GetPositionX(), who->GetPositionY()) <= 14.0f)
+            {
+                if (!IsEmerging)
+                {
+                    controler->DealDamage(who, 475, SPELL_DIRECT_DAMAGE, SPELL_SCHOOL_MASK_FIRE);
+                    me->SendSpellNonMeleeDamageLog(who, SPELL_SUNWELL_KNOCKBACK, 475, SPELL_SCHOOL_MASK_FIRE, 0, 0, false, 0);
+                }
+                controler->CastSpell(who, SPELL_SUNWELL_KNOCKBACK, true);
+            }
 
     }
 
