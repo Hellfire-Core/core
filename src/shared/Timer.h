@@ -106,9 +106,9 @@ struct ShortIntervalTimer
     ShortIntervalTimer() : _interval(0), _current(0) {}
     ShortIntervalTimer(const uint32 interval) : _interval(interval), _current(0) {}
 
-    void Delay(const uint32 diff)
+    void Delay(const uint32 delay)
     {
-        _interval += diff;
+        _interval += delay;
     }
 
     bool Expired(const uint32 diff)
