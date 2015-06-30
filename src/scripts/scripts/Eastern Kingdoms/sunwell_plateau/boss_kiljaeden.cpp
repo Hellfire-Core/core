@@ -923,9 +923,9 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
                 summoned->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                 break;
             case CREATURE_KILJAEDEN:
-                summoned->CastSpell(summoned, SPELL_REBIRTH, false);
+                summoned->CastSpell(summoned, SPELL_REBIRTH, true);
                 ((boss_kiljaedenAI*)summoned->AI())->Phase = PHASE_NORMAL;
-                summoned->AddThreat(m_creature->getVictim(), 1.0f);
+                summoned->AddThreat(m_creature->getVictim(), 0.0f);
                 summoned->AI()->DoZoneInCombat();
                 break;
         }
