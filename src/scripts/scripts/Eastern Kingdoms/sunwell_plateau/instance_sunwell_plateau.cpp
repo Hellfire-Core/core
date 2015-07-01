@@ -91,6 +91,7 @@ struct instance_sunwell_plateau : public ScriptedInstance
     uint32 KalecgosPhase;
     uint32 GauntletProgress;
     uint32 EredarTwinsIntro;
+    uint32 HandOfDeceiverCount;
 
     uint32 KJCounter;
     uint32 KJTesting;
@@ -365,6 +366,7 @@ struct instance_sunwell_plateau : public ScriptedInstance
             case DATA_ALYTHESS:                 return EredarTwinsAliveInfo[0];
             case DATA_SACROLASH:                return EredarTwinsAliveInfo[1];
             case DATA_EREDAR_TWINS_INTRO:       return EredarTwinsIntro;
+            case DATA_HAND_OF_DECEIVER_COUNT:   return HandOfDeceiverCount;
             case DATA_KJ_TESTING_COUNTER:       return KJCounter;
             case DATA_KJ_TESTING:               return KJTesting;
         }
@@ -551,6 +553,9 @@ struct instance_sunwell_plateau : public ScriptedInstance
                     if (Creature *pSacrolash = GetCreature(GetData64(DATA_SACROLASH)))
                         pSacrolash->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                 }
+                break;
+            case DATA_HAND_OF_DECEIVER_COUNT:
+                HandOfDeceiverCount = data;
                 break;
             /*case DATA_KJ_TESTING:
                 if(KJTesting != DONE)

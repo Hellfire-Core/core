@@ -44,7 +44,6 @@
 #define DATA_KILJAEDEN_CONTROLLER   19
 #define DATA_ANVEENA                20
 #define DATA_KALECGOS_KJ            21
-#define DATA_HAND_OF_DECEIVER_COUNT 22
 
 /*** GameObjects ***/
 #define DATA_GO_FORCEFIELD          21
@@ -60,6 +59,7 @@
 #define DATA_KALECGOS_PHASE         29
 #define DATA_BRUTALLUS_TRIGGER      30
 #define DATA_EREDAR_TWINS_INTRO     31
+#define DATA_HAND_OF_DECEIVER_COUNT 32
 
 #define DATA_KJ_TESTING_COUNTER     50
 #define DATA_KJ_TESTING             51
