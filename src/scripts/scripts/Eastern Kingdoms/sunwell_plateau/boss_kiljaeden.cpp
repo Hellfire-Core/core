@@ -878,10 +878,9 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
         m_creature->addUnitState(UNIT_STAT_STUNNED);
     }
 
-    void JustRespawned()
-    {
-        EnterEvadeMode(); // somehow he is missing auras and stuff on spawn, evade helps, so this will be perfect here:P
-    }
+   //void JustRespawned()
+   //{
+   //}
 
     void Reset()
     {
@@ -969,7 +968,7 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
             }
         }
         if (me->isInCombat() && me->getThreatManager().isThreatListEmpty())
-            EnterEvadeMode(); // somehow it was getting stuck in this mode :o combat with noone
+            EnterEvadeMode(); // somehow it was getting stuck in this mode :o combat with noone (theatlist and hostilelist empty)
 
         // if (Phase == PHASE_DECEIVERS && DeceiversStatus != 3)
         // {
@@ -1067,6 +1066,11 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
 
     void CheckPosition()
     {
+        if (Creature* controler = (Creature*)Unit::GetUnit(*m_creature, pInstance->GetData64(DATA_KILJAEDEN_CONTROLLER)))
+            if (!controler->HasAura(SPELL_ANVEENA_ENERGY_DRAIN))
+                controler->AI()->EnterEvadeMode();   // idk why there is 80% chance that anveena won't be summoned, aura won't be applied after entering the instance
+                                                     // FIXME: fix this and remove this crazy thing :P
+
         me->GetPosition(pos);
         if (pos != homepos)
         {
