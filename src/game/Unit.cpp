@@ -8606,9 +8606,12 @@ uint32 Unit::SpellHealingBonus(SpellEntry const *spellProto, uint32 healamount, 
 
     float TotalMod = 1.0f;
     // Healing taken percent
-    float minval = pVictim->GetMaxNegativeAuraModifier(SPELL_AURA_MOD_HEALING_PCT);
-    if (minval)
-        TotalMod *= (100.0f + minval) / 100.0f;
+    if (!(spellProto->Attributes & SPELL_ATTR_UNAFFECTED_BY_INVULNERABILITY)) // nature's guardian, Talisman of the Horde/Alliance heal, all potions, judgement of Light
+    {
+        float minval = pVictim->GetMaxNegativeAuraModifier(SPELL_AURA_MOD_HEALING_PCT);
+        if (minval)
+            TotalMod *= (100.0f + minval) / 100.0f;
+    }
 
     float maxval = pVictim->GetMaxPositiveAuraModifier(SPELL_AURA_MOD_HEALING_PCT);
     if (maxval)
