@@ -1226,11 +1226,13 @@ void Spell::DoSpellHitOnUnit(Unit *unit, const uint32 effectMask)
 
     for (uint32 effectNumber = 0; effectNumber < 3; effectNumber++)
     {
+        if (!(effectMask & (1 << effectNumber)))
+            continue;
+
         if (unit->IsImmunedToSpellEffect(GetSpellEntry()->Effect[effectNumber], GetSpellEntry()->EffectMechanic[effectNumber]))
             continue;
 
-        if (effectMask & (1 << effectNumber))
-            HandleEffects(unit, NULL, NULL, effectNumber/*,m_damageMultipliers[effectNumber]*/);
+        HandleEffects(unit, NULL, NULL, effectNumber/*,m_damageMultipliers[effectNumber]*/);
     }
 
     if (unit->GetTypeId() == TYPEID_UNIT && ((Creature*)unit)->IsAIEnabled)
