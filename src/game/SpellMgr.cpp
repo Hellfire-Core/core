@@ -2836,6 +2836,20 @@ void SpellMgr::LoadSpellCustomAttr()
             spellInfo->HasEffect(SPELL_EFFECT_HEALTH_LEECH))
             spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
 
+        // if spellInfo has mechanic - then its effects SHOULD NOT have same mechanic.
+        // override spell effects mechanic to none if spell has same overall mechanic
+        // This is tested - for sure this code is needed
+        if (spellInfo->Mechanic)
+        {
+            for (uint32 j = 0; j < 3; ++j)
+            {
+                if (spellInfo->EffectMechanic[j] == spellInfo->Mechanic)
+                    spellInfo->EffectMechanic[j] = MECHANIC_NONE;
+            }
+        }
+        // this is done for the reason that mechanic is already worked out as SPELL mechanic. Leaving effect mechanic the same will cause double-effect on spell
+
+
         switch (spellInfo->SpellFamilyName)
         {
             case SPELLFAMILY_GENERIC:
@@ -4290,22 +4304,33 @@ SpellSchoolMask SpellMgr::GetSpellSchoolMask( SpellEntry const* spellInfo )
     return SpellSchoolMask(spellInfo->SchoolMask);
 }
 
-uint32 SpellMgr::GetSpellMechanicMask( SpellEntry const* spellInfo, int32 effect )
+uint32 SpellMgr::GetSpellMechanicMask( SpellEntry const* spellInfo)
 {
     uint32 mask = 0;
     if (spellInfo->Mechanic)
         mask |= 1<<spellInfo->Mechanic;
+    return mask;
+}
+
+uint32 SpellMgr::GetEffectMechanicMask( SpellEntry const* spellInfo, int32 effect )
+{
+    uint32 mask = 0;
     if (spellInfo->EffectMechanic[effect])
         mask |= 1<<spellInfo->EffectMechanic[effect];
     return mask;
+}
+
+Mechanics SpellMgr::GetSpellMechanic( SpellEntry const* spellInfo)
+{
+    if (spellInfo->Mechanic)
+        return Mechanics(spellInfo->Mechanic);
+    return MECHANIC_NONE;
 }
 
 Mechanics SpellMgr::GetEffectMechanic( SpellEntry const* spellInfo, int32 effect )
 {
     if (spellInfo->EffectMechanic[effect])
         return Mechanics(spellInfo->EffectMechanic[effect]);
-    if (spellInfo->Mechanic)
-        return Mechanics(spellInfo->Mechanic);
     return MECHANIC_NONE;
 }
 
@@ -4435,33 +4460,37 @@ DiminishingGroup SpellMgr::GetDiminishingReturnsGroupForSpell(SpellEntry const* 
         }
     }
 
-    // Get by mechanic
-    for (uint8 i=0;i<3;++i)
+    Mechanics mech = SpellMgr::GetSpellMechanic(spellproto);
+    if (mech == MECHANIC_NONE) // try to find it in effects
     {
-        if (spellproto->Mechanic      == MECHANIC_STUN    || spellproto->EffectMechanic[i] == MECHANIC_STUN)
+    // Get by mechanic
+        for (uint8 i=0;i<3;++i)
+        {
+            if (mech = SpellMgr::GetEffectMechanic(spellproto, i))
+                break; // found something            
+        }
+    }
+
+    switch (mech)
+    {
+        case MECHANIC_STUN:
             return triggered ? DIMINISHING_TRIGGER_STUN : DIMINISHING_CONTROL_STUN;
-        else if (spellproto->Mechanic == MECHANIC_SLEEP   || spellproto->EffectMechanic[i] == MECHANIC_SLEEP)
+        case MECHANIC_SLEEP:
             return DIMINISHING_SLEEP;
-        else if (spellproto->Mechanic == MECHANIC_ROOT    || spellproto->EffectMechanic[i] == MECHANIC_ROOT)
+        case MECHANIC_ROOT:
             return triggered ? DIMINISHING_TRIGGER_ROOT : DIMINISHING_CONTROL_ROOT;
-        else if (spellproto->Mechanic == MECHANIC_FEAR    || spellproto->EffectMechanic[i] == MECHANIC_FEAR)
+        case MECHANIC_FEAR:
             return DIMINISHING_FEAR;
-        else if (spellproto->Mechanic == MECHANIC_CHARM   || spellproto->EffectMechanic[i] == MECHANIC_CHARM)
+        case MECHANIC_CHARM:
             return DIMINISHING_CHARM;
-        /*
-            Patch 3.0.8 (2009-01-20): All Silence spells now have diminishing returns.
-            This includes: Arcane Torrent, Garrote silence effect, Improved Counterspell effect, Improved Kick effect, Silence, Gag Order, Silencing Shot, Spell Lock, and Strangulate.
-        */
-        //else if (spellproto->Mechanic == MECHANIC_SILENCE || spellproto->EffectMechanic[i] == MECHANIC_SILENCE)
-        //    return DIMINISHING_SILENCE;
-        else if (spellproto->Mechanic == MECHANIC_DISARM  || spellproto->EffectMechanic[i] == MECHANIC_DISARM)
+        case MECHANIC_DISARM:
             return DIMINISHING_DISARM;
-        else if (spellproto->Mechanic == MECHANIC_FREEZE  || spellproto->EffectMechanic[i] == MECHANIC_FREEZE)
+        case MECHANIC_FREEZE:
             return DIMINISHING_FREEZE;
-        else if (spellproto->Mechanic == MECHANIC_KNOCKOUT|| spellproto->EffectMechanic[i] == MECHANIC_KNOCKOUT ||
-                 spellproto->Mechanic == MECHANIC_SAPPED  || spellproto->EffectMechanic[i] == MECHANIC_SAPPED)
+        case MECHANIC_KNOCKOUT:
+        case MECHANIC_SAPPED:
             return DIMINISHING_KNOCKOUT;
-        else if (spellproto->Mechanic == MECHANIC_BANISH  || spellproto->EffectMechanic[i] == MECHANIC_BANISH)
+        case MECHANIC_BANISH:
             return DIMINISHING_BANISH;
     }
 
