@@ -1045,8 +1045,7 @@ class HELLGROUND_IMPORT_EXPORT Unit : public WorldObject
         float GetUnitParryChance()    const;
         float GetUnitBlockChance()    const;
         float GetUnitCriticalChance(WeaponAttackType attackType, const Unit *pVictim) const;
-        int32 GetSpellMechanicResistChance(const SpellEntry *spell);
-        int32 GetEffectMechanicResistChance(const SpellEntry *spell, uint8 eff);
+        int32 GetMechanicResistChance(const SpellEntry *spell);
 
         virtual uint32 GetShieldBlockValue() const =0;
         uint32 GetUnitMeleeSkill(Unit const* target = NULL) const { return (target ? getLevelForTarget(target) : getLevel()) * 5; }

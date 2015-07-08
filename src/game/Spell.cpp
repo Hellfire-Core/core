@@ -1232,15 +1232,6 @@ void Spell::DoSpellHitOnUnit(Unit *unit, const uint32 effectMask)
         if (unit->IsImmunedToSpellEffect(GetSpellEntry()->Effect[effectNumber], GetSpellEntry()->EffectMechanic[effectNumber]))
             continue;
 
-        if (int32 effResChance = unit->GetEffectMechanicResistChance(GetSpellEntry(), effectNumber))
-        {
-            if (effResChance > urand(0,99)) // resistchance 0 ? then 0 cant be > 0; resistchance 100 ? then 100 is always > 99
-            {
-                m_caster->SendSpellMiss(unit, GetSpellEntry()->Id, SPELL_MISS_RESIST);
-                continue;
-            }
-        }
-
         HandleEffects(unit, NULL, NULL, effectNumber/*,m_damageMultipliers[effectNumber]*/);
     }
 
@@ -2862,7 +2853,6 @@ void Spell::_handle_immediate_phase()
     // process ground
     for (uint32 j = 0; j < 3; ++j)
     {
-        // all those spells cant be immuned - so we dont need to check immunity for them. They are or positive or neutral
         if (sSpellMgr.EffectTargetType[GetSpellEntry()->Effect[j]] == SPELL_REQUIRE_DEST/* && GetSpellEntry()->Effect[j] != SPELL_EFFECT_TRIGGER_MISSILE*/)
         {
             if (!m_targets.HasDst()) // FIXME: this will ignore dest set in effect
@@ -4840,8 +4830,7 @@ SpellCastResult Spell::CheckCasterAuras() const
             {
                 if (itr->second)
                 {
-                    if (SpellMgr::GetSpellMechanicMask(itr->second->GetSpellProto()) & mechanic_immune
-                        || SpellMgr::GetEffectMechanicMask(itr->second->GetSpellProto(), itr->second->GetEffIndex()) & mechanic_immune)
+                    if (SpellMgr::GetSpellMechanicMask(itr->second->GetSpellProto(), itr->second->GetEffIndex()) & mechanic_immune)
                         continue;
                     if ((SpellMgr::GetSpellSchoolMask(itr->second->GetSpellProto()) & school_immune) &&
                         !(itr->second->GetSpellProto()->AttributesEx & SPELL_ATTR_EX_UNAFFECTED_BY_SCHOOL_IMMUNE))

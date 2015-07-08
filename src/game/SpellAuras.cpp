@@ -4617,17 +4617,9 @@ void Aura::HandleModStateImmunityMask(bool apply, bool Real)
                 if (!iter->second->IsPositive() && spell->Id != 40081)
                 {
                     //check for mechanic mask
-                    if (SpellMgr::GetSpellMechanicMask(spell) & mechanic)
+                    if (SpellMgr::GetSpellMechanicMask(spell, iter->second->GetEffIndex()) & mechanic)
                     {
                         m_target->RemoveAurasDueToSpell(spell->Id);
-                        if (Auras.empty())
-                            break;
-                        else
-                            next = Auras.begin();
-                    }
-                    else if (SpellMgr::GetEffectMechanicMask(spell, iter->second->GetEffIndex()) & mechanic)
-                    {
-                        m_target->RemoveAura(spell->Id, iter->second->GetEffIndex());
                         if (Auras.empty())
                             break;
                         else
@@ -4735,17 +4727,9 @@ void Aura::HandleModMechanicImmunity(bool apply, bool Real)
                 && spell->Id != GetId())
             {
                 //check for mechanic mask
-                if (SpellMgr::GetSpellMechanicMask(spell) & mechanic)
+                if (SpellMgr::GetSpellMechanicMask(spell, iter->second->GetEffIndex()) & mechanic)
                 {
                     m_target->RemoveAurasDueToSpell(spell->Id);
-                    if (Auras.empty())
-                        break;
-                    else
-                        next = Auras.begin();
-                }
-                else if (SpellMgr::GetEffectMechanicMask(spell, iter->second->GetEffIndex()) & mechanic)
-                {
-                    m_target->RemoveAura(spell->Id, iter->second->GetEffIndex());
                     if (Auras.empty())
                         break;
                     else
@@ -7084,7 +7068,7 @@ void Aura::PeriodicTick()
 
                 // Calculate armor mitigation if it is a physical spell
                 // But not for bleed mechanic spells
-                if (SpellMgr::GetSpellSchoolMask(GetSpellProto()) & SPELL_SCHOOL_MASK_NORMAL && SpellMgr::GetSpellMechanic(GetSpellProto()) != MECHANIC_BLEED && SpellMgr::GetEffectMechanic(GetSpellProto(), m_effIndex) != MECHANIC_BLEED)
+                if (SpellMgr::GetSpellSchoolMask(GetSpellProto()) & SPELL_SCHOOL_MASK_NORMAL && SpellMgr::GetEffectMechanic(GetSpellProto(), m_effIndex) != MECHANIC_BLEED)
                 {
                     damageInfo.damage = pCaster->CalcArmorReducedDamage(m_target, damageInfo.damage);
                 }

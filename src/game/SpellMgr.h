@@ -730,9 +730,7 @@ class HELLGROUND_IMPORT_EXPORT SpellMgr
 
         static SpellSchoolMask GetSpellSchoolMask(SpellEntry const* spellInfo);
 
-        static uint32 GetSpellMechanicMask(SpellEntry const* spellInfo);
-        static uint32 GetEffectMechanicMask(SpellEntry const* spellInfo, int32 effect);
-        static Mechanics GetSpellMechanic(SpellEntry const* spellInfo);
+        static uint32 GetSpellMechanicMask(SpellEntry const* spellInfo, int32 effect);
         static Mechanics GetEffectMechanic(SpellEntry const* spellInfo, int32 effect);
 
         // Diminishing Returns interaction with spells

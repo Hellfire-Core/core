@@ -6099,17 +6099,9 @@ void Spell::EffectScriptEffect(uint32 effIndex)
                 if (!aur->IsPositive())             //only remove negative spells
                 {
                     // check for mechanic mask
-                    if (SpellMgr::GetSpellMechanicMask(aur->GetSpellProto()) & mechanic_mask)
+                    if (SpellMgr::GetSpellMechanicMask(aur->GetSpellProto(), aur->GetEffIndex()) & mechanic_mask)
                     {
                         unitTarget->RemoveAurasDueToSpell(aur->GetId());
-                        if (Auras.empty())
-                            break;
-                        else
-                            next = Auras.begin();
-                    }
-                    else if (SpellMgr::GetEffectMechanicMask(aur->GetSpellProto(), aur->GetEffIndex()) & mechanic_mask)
-                    {
-                        unitTarget->RemoveAura(aur->GetId(), aur->GetEffIndex());
                         if (Auras.empty())
                             break;
                         else
