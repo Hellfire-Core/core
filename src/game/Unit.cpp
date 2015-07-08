@@ -10264,9 +10264,22 @@ int32 Unit::CalculateSpellDuration(SpellEntry const* spellProto, uint8 effect_in
     else
         duration = minduration;
 
-    //apply overall bonus
+    // apply overall bonus
     if (duration > 0)
     {
+        // Duration of crowd control abilities on pvp target is limited by 10 sec. First do this then apply mods
+        Player* targetPlayer = target->GetCharmerOrOwnerOrSelf()->ToPlayer();
+        unitPlayer = GetCharmerOrOwnerOrSelf()->ToPlayer();
+        if (unitPlayer && targetPlayer && duration > 10000 && !SpellMgr::IsPositiveSpell(spellProto->Id) &&
+            (target !=this || !SpellMgr::IsChanneledSpell(spellProto) )&&
+            SpellMgr::IsDiminishingReturnsGroupDurationLimited(SpellMgr::GetDiminishingReturnsGroupForSpell(spellProto,false)))
+            // isDimnishing...(getdimnishing...(SpellEntry*,bool triggered)) does not depend on triggered value
+        {
+            duration = 10000;
+            if (spellProto->SpellFamilyName == SPELLFAMILY_WARLOCK && spellProto->SpellFamilyFlags & 0x80000000LL) // Curse of Tongues
+                duration = 12000;
+        }
+
         if (int32 mechanic = SpellMgr::GetSpellMechanic(spellProto))
         {
             // Find total mod value (negative bonus)
@@ -10286,30 +10299,31 @@ int32 Unit::CalculateSpellDuration(SpellEntry const* spellProto, uint8 effect_in
 
             if (duration < 0) duration = 0;
         }
-    }
 
-    // THIS IS UNDER QUESTION - Should we apply second mechanic duration decrease? Such spells are very rare anyway.
-    // apply effect bonus, if needed. (there is no double effect from same mechanic)
-    if (duration > 0)
-    {
-        if (int32 mechanic = SpellMgr::GetEffectMechanic(spellProto, effect_index))
+
+        // THIS IS UNDER QUESTION - Should we apply second mechanic duration decrease? Such spells are very rare anyway.
+        // apply effect bonus, if needed. (there is no double effect from same mechanic)
+        if (duration > 0)
         {
-            // Find total mod value (negative bonus)
-            int32 durationMod_always = target->GetTotalAuraModifierByMiscValue(SPELL_AURA_MECHANIC_DURATION_MOD, mechanic);
-            // Find max mod (negative bonus)
-            int32 durationMod_not_stack = target->GetMaxNegativeAuraModifierByMiscValue(SPELL_AURA_MECHANIC_DURATION_MOD_NOT_STACK, mechanic);
+            if (int32 mechanic = SpellMgr::GetEffectMechanic(spellProto, effect_index))
+            {
+                // Find total mod value (negative bonus)
+                int32 durationMod_always = target->GetTotalAuraModifierByMiscValue(SPELL_AURA_MECHANIC_DURATION_MOD, mechanic);
+                // Find max mod (negative bonus)
+                int32 durationMod_not_stack = target->GetMaxNegativeAuraModifierByMiscValue(SPELL_AURA_MECHANIC_DURATION_MOD_NOT_STACK, mechanic);
 
-            int32 durationMod = 0;
-            // Select strongest negative mod
-            if (durationMod_always > durationMod_not_stack)
-                durationMod = durationMod_not_stack;
-            else
-                durationMod = durationMod_always;
+                int32 durationMod = 0;
+                // Select strongest negative mod
+                if (durationMod_always > durationMod_not_stack)
+                    durationMod = durationMod_not_stack;
+                else
+                    durationMod = durationMod_always;
 
-            if (durationMod != 0)
-                duration = int32(int64(duration) * (100+durationMod) /100);
+                if (durationMod != 0)
+                    duration = int32(int64(duration) * (100+durationMod) /100);
 
-            if (duration < 0) duration = 0;
+                if (duration < 0) duration = 0;
+            }
         }
     }
 
