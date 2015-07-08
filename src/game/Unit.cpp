@@ -2690,25 +2690,29 @@ float Unit::MeleeSpellMissChance(const Unit *pVictim, WeaponAttackType attType, 
 }
 
 
-int32 Unit::GetMechanicResistChance(const SpellEntry *spell)
+int32 Unit::GetSpellMechanicResistChance(const SpellEntry *spell)
 {
     if (!spell)
         return 0;
-    int32 resist_mech = 0;
-    for (int eff = 0; eff < 3; ++eff)
-    {
-        if (spell->Effect[eff] == 0)
-           break;
 
-        int32 effect_mech = SpellMgr::GetEffectMechanic(spell, eff);
-        if (effect_mech)
-        {
-            int32 temp = GetTotalAuraModifierByMiscValue(SPELL_AURA_MOD_MECHANIC_RESISTANCE, effect_mech);
-            if (resist_mech < temp)
-                resist_mech = temp;
-        }
-    }
-    return resist_mech;
+    if (!spell->Mechanic)
+        return 0;
+
+    return GetTotalAuraModifierByMiscValue(SPELL_AURA_MOD_MECHANIC_RESISTANCE, spell->Mechanic);
+}
+
+int32 Unit::GetEffectMechanicResistChance(const SpellEntry *spell, uint8 eff)
+{
+    if (!spell)
+        return 0;
+
+    if (spell->Effect[eff] == 0)
+        return 0;
+
+    if (int32 effect_mech = SpellMgr::GetEffectMechanic(spell, eff))
+        return GetTotalAuraModifierByMiscValue(SPELL_AURA_MOD_MECHANIC_RESISTANCE, effect_mech);
+
+    return 0;
 }
 
 // Melee based spells hit result calculations
@@ -2766,7 +2770,7 @@ SpellMissInfo Unit::MeleeSpellHitResult(Unit *pVictim, SpellEntry const *spell, 
     }
 
     // Chance resist mechanic
-    int32 resist_chance = pVictim->GetMechanicResistChance(spell)*100;
+    int32 resist_chance = pVictim->GetSpellMechanicResistChance(spell)*100;
     SendCombatStats("MeleeSpellHitResult (id=%d): mechanic resist chance = %d", pVictim, spell->Id, resist_chance);
     tmp += resist_chance;
     if (roll < tmp)
@@ -2897,7 +2901,7 @@ SpellMissInfo Unit::MagicSpellHitResult(Unit *pVictim, SpellEntry const *spell)
     if (SpellMgr::IsDispelSpell(spell))
         modHitChance-=pVictim->GetTotalAuraModifier(SPELL_AURA_MOD_DISPEL_RESIST);
     // Chance resist mechanic (select max value from every mechanic spell effect)
-    int32 resist_chance = pVictim->GetMechanicResistChance(spell);
+    int32 resist_chance = pVictim->GetSpellMechanicResistChance(spell);
     // Apply mod
     modHitChance-=resist_chance;
 
@@ -8105,7 +8109,7 @@ uint32 Unit::SpellDamageBonus(Unit *pVictim, SpellEntry const *spellProto, uint3
                 hasmangle=true;
                 for (int j=0;j<3;j++)
                 {
-                    if (SpellMgr::GetEffectMechanic(spellProto, j)==MECHANIC_BLEED)
+                    if (SpellMgr::GetSpellMechanic(spellProto) == MECHANIC_BLEED || SpellMgr::GetEffectMechanic(spellProto, j) == MECHANIC_BLEED)
                     {
                         TakenTotalMod *= (100.0f+(*i)->GetModifier()->m_amount)/100.0f;
                         break;
@@ -10260,38 +10264,53 @@ int32 Unit::CalculateSpellDuration(SpellEntry const* spellProto, uint8 effect_in
     else
         duration = minduration;
 
+    //apply overall bonus
     if (duration > 0)
     {
-        // Duration of crowd control abilities on pvp target is limited by 10 sec. First do this then apply mods
-        Player* targetPlayer = target->GetCharmerOrOwnerOrSelf()->ToPlayer();
-        unitPlayer = GetCharmerOrOwnerOrSelf()->ToPlayer();
-        if (unitPlayer && targetPlayer && duration > 10000 && !SpellMgr::IsPositiveSpell(spellProto->Id) &&
-            (target !=this || !SpellMgr::IsChanneledSpell(spellProto) )&&
-            SpellMgr::IsDiminishingReturnsGroupDurationLimited(SpellMgr::GetDiminishingReturnsGroupForSpell(spellProto,false)))
-            // isDimnishing...(getdimnishing...(SpellEntry*,bool triggered)) does not depend on triggered value
+        if (int32 mechanic = SpellMgr::GetSpellMechanic(spellProto))
         {
-            duration = 10000;
-            if (spellProto->SpellFamilyName == SPELLFAMILY_WARLOCK && spellProto->SpellFamilyFlags & 0x80000000LL) // Curse of Tongues
-                duration = 12000;
+            // Find total mod value (negative bonus)
+            int32 durationMod_always = target->GetTotalAuraModifierByMiscValue(SPELL_AURA_MECHANIC_DURATION_MOD, mechanic);
+            // Find max mod (negative bonus)
+            int32 durationMod_not_stack = target->GetMaxNegativeAuraModifierByMiscValue(SPELL_AURA_MECHANIC_DURATION_MOD_NOT_STACK, mechanic);
+
+            int32 durationMod = 0;
+            // Select strongest negative mod
+            if (durationMod_always > durationMod_not_stack)
+                durationMod = durationMod_not_stack;
+            else
+                durationMod = durationMod_always;
+
+            if (durationMod != 0)
+                duration = int32(int64(duration) * (100+durationMod) /100);
+
+            if (duration < 0) duration = 0;
         }
+    }
 
-        int32 mechanic = SpellMgr::GetEffectMechanic(spellProto, effect_index);
-        // Find total mod value (negative bonus)
-        int32 durationMod_always = target->GetTotalAuraModifierByMiscValue(SPELL_AURA_MECHANIC_DURATION_MOD, mechanic);
-        // Find max mod (negative bonus)
-        int32 durationMod_not_stack = target->GetMaxNegativeAuraModifierByMiscValue(SPELL_AURA_MECHANIC_DURATION_MOD_NOT_STACK, mechanic);
+    // THIS IS UNDER QUESTION - Should we apply second mechanic duration decrease? Such spells are very rare anyway.
+    // apply effect bonus, if needed. (there is no double effect from same mechanic)
+    if (duration > 0)
+    {
+        if (int32 mechanic = SpellMgr::GetEffectMechanic(spellProto, effect_index))
+        {
+            // Find total mod value (negative bonus)
+            int32 durationMod_always = target->GetTotalAuraModifierByMiscValue(SPELL_AURA_MECHANIC_DURATION_MOD, mechanic);
+            // Find max mod (negative bonus)
+            int32 durationMod_not_stack = target->GetMaxNegativeAuraModifierByMiscValue(SPELL_AURA_MECHANIC_DURATION_MOD_NOT_STACK, mechanic);
 
-        int32 durationMod = 0;
-        // Select strongest negative mod
-        if (durationMod_always > durationMod_not_stack)
-            durationMod = durationMod_not_stack;
-        else
-            durationMod = durationMod_always;
+            int32 durationMod = 0;
+            // Select strongest negative mod
+            if (durationMod_always > durationMod_not_stack)
+                durationMod = durationMod_not_stack;
+            else
+                durationMod = durationMod_always;
 
-        if (durationMod != 0)
-            duration = int32(int64(duration) * (100+durationMod) /100);
+            if (durationMod != 0)
+                duration = int32(int64(duration) * (100+durationMod) /100);
 
-        if (duration < 0) duration = 0;
+            if (duration < 0) duration = 0;
+        }
     }
 
     return duration;
