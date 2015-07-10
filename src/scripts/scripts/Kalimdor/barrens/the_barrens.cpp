@@ -200,7 +200,7 @@ struct npc_taskmaster_fizzuleAI : public ScriptedAI
 {
     npc_taskmaster_fizzuleAI(Creature* c) : ScriptedAI(c) {}
 
-    int32 Reset_Timer;
+    uint32 Reset_Timer;
     uint32 FlareCount;
 
     void Reset()
@@ -228,12 +228,13 @@ struct npc_taskmaster_fizzuleAI : public ScriptedAI
     {
         if (me->getFaction() == FACTION_FRIENDLY_F)
         {
-            Reset_Timer -= diff;
-            if (Reset_Timer <= diff)
+            if (Reset_Timer < diff)
             {
                 EnterEvadeMode();
                 return;
             }
+            else
+                Reset_Timer -= diff;
         }
 
         if (!UpdateVictim())
@@ -290,8 +291,8 @@ struct npc_twiggy_flatheadAI : public ScriptedAI
     bool EventBigWill;
     bool Challenger_down[6];
     uint32 Wave;
-    int32 Wave_Timer;
-    int32 Challenger_checker;
+    uint32 Wave_Timer;
+    uint32 Challenger_checker;
     uint64 PlayerGUID;
     uint64 AffrayChallenger[6];
     uint64 BigWill;
@@ -415,8 +416,7 @@ struct npc_twiggy_flatheadAI : public ScriptedAI
             }
             else if (EventInProgress)
             {
-                Challenger_checker -= diff;
-                if (Challenger_checker <= diff)
+                if (Challenger_checker < diff)
                 {
                     for(uint8 i = 0; i < 6; ++i)
                     {
@@ -430,12 +430,12 @@ struct npc_twiggy_flatheadAI : public ScriptedAI
                             }
                         }
                     }
-                    Challenger_checker += 1000;
+                    Challenger_checker = 1000;
                 }
-                
+                else
+                    Challenger_checker -= diff;
 
-                Wave_Timer -= diff;
-                if(Wave_Timer <= diff)
+                if(Wave_Timer < diff)
                 {
                     if (AffrayChallenger[Wave] && Wave < 6 && !EventBigWill)
                     {
@@ -449,7 +449,7 @@ struct npc_twiggy_flatheadAI : public ScriptedAI
                             pCreature->setFaction(14);
                             ((CreatureAI*)pCreature->AI())->AttackStart(pWarrior);
                             ++Wave;
-                            Wave_Timer += 20000;
+                            Wave_Timer = 20000;
                         }
                     }
                     else if (Wave >= 6 && !EventBigWill)
@@ -476,6 +476,8 @@ struct npc_twiggy_flatheadAI : public ScriptedAI
                         }
                     }
                 }
+                else
+                    Wave_Timer -= diff;
             }
         }
     }
@@ -517,7 +519,7 @@ struct npc_wizzlecrank_shredderAI : public npc_escortAI
     }
 
     bool m_bIsPostEvent;
-    int32 m_uiPostEventTimer;
+    uint32 m_uiPostEventTimer;
     uint32 m_uiPostEventCount;
 
     void Reset()
@@ -594,8 +596,7 @@ struct npc_wizzlecrank_shredderAI : public npc_escortAI
         {
             if (m_bIsPostEvent)
             {
-                m_uiPostEventTimer -= uiDiff;
-                if (m_uiPostEventTimer <= uiDiff)
+                if (m_uiPostEventTimer < uiDiff)
                 {
                     switch(m_uiPostEventCount)
                     {
@@ -618,8 +619,10 @@ struct npc_wizzlecrank_shredderAI : public npc_escortAI
                     }
 
                     ++m_uiPostEventCount;
-                    m_uiPostEventTimer += 5000;
+                    m_uiPostEventTimer = 5000;
                 }
+                else
+                    m_uiPostEventTimer -= uiDiff;
             }
 
             return;
