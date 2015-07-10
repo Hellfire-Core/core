@@ -3298,6 +3298,28 @@ CreatureAI *GetAI_npc_voodoo_servant(Creature* c)
      return new npc_voodoo_servantAI(c);
 };
 
+bool GossipHello_npc_arenaready(Player* player, Creature* _Creature)
+{
+    player->ADD_GOSSIP_ITEM(0, "I am ready for rumble!", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+
+    player->SEND_GOSSIP_MENU(2, _Creature->GetGUID());
+    return true;
+}
+
+bool GossipSelect_npc_arenaready(Player* player, Creature* _Creature, uint32 sender, uint32 action)
+{
+    if (action == GOSSIP_ACTION_INFO_DEF + 1 && player->GetBattleGround())
+    {
+        uint8 result = player->GetBattleGround()->SetPlayerReady(player->GetGUID());
+        if (result == 0)
+            _Creature->MonsterSay("You have been marked as ready.", LANG_UNIVERSAL, 0);
+        else
+            _Creature->MonsterSay("You have been NOT marked as ready due to some problems.", LANG_UNIVERSAL, 0);
+    }
+
+    return true;
+}
+
 
 void AddSC_npcs_special()
 {
@@ -3519,4 +3541,9 @@ void AddSC_npcs_special()
     newscript->GetAI = &GetAI_npc_voodoo_servant;
     newscript->RegisterSelf();
 
+    newscript = new Script;
+    newscript->Name = "npc_arena_ready";
+    newscript->pGossipHello = &GossipHello_npc_arenaready;
+    newscript->pGossipSelect = &GossipSelect_npc_arenaready;
+    newscript->RegisterSelf();
 }

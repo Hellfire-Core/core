@@ -31,7 +31,7 @@
 BattleGroundBE::BattleGroundBE()
 {
     m_BgObjects.resize(BG_BE_OBJECT_MAX);
-    m_BgCreatures.resize(BG_BE_CREATURE_MAX);
+    m_BgCreatures.resize(BG_ARENA_NPC_MAX);
 }
 
 BattleGroundBE::~BattleGroundBE()
@@ -60,8 +60,11 @@ void BattleGroundBE::Update(uint32 diff)
             for (uint32 i = BG_BE_OBJECT_DOOR_1; i <= BG_BE_OBJECT_DOOR_4; i++)
                 SpawnBGObject(i, RESPAWN_IMMEDIATELY);
 
-            for (uint32 i = BG_BE_OBJECT_BUFF_1; i <= BG_BE_OBJECT_BUFF_2; i++)
-                SpawnBGObject(i, RESPAWN_ONE_DAY);
+            SpawnBGObject(BG_BE_OBJECT_BUFF_1, RESPAWN_ONE_DAY);
+            SpawnBGObject(BG_BE_OBJECT_BUFF_2, RESPAWN_ONE_DAY);
+
+            AddCreature(BG_READY_NPC_ENTRY, BG_ARENA_READY_NPC1, 35, 6293.3f, 283.1f, 5.5f, 1.95f);
+            AddCreature(BG_READY_NPC_ENTRY, BG_ARENA_READY_NPC2, 35, 6193.7f, 240.7f, 5.5f, 4.54f);
 
             SetStartDelayTime(START_DELAY1);
             SendMessageToAll(LANG_ARENA_ONE_MINUTE);
@@ -86,8 +89,10 @@ void BattleGroundBE::Update(uint32 diff)
             for (uint32 i = BG_BE_OBJECT_DOOR_1; i <= BG_BE_OBJECT_DOOR_2; i++)
                 DoorOpen(i);
 
-            for (uint32 i = BG_BE_OBJECT_BUFF_1; i <= BG_BE_OBJECT_BUFF_2; i++)
-                SpawnBGObject(i, 60);
+            SpawnBGObject(BG_BE_OBJECT_BUFF_1, 60);
+            SpawnBGObject(BG_BE_OBJECT_BUFF_2, 60);
+            DelCreature(BG_ARENA_READY_NPC1);
+            DelCreature(BG_ARENA_READY_NPC2);
 
             SendMessageToAll(LANG_ARENA_BEGUN);
             SetStatus(STATUS_IN_PROGRESS);

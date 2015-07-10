@@ -44,12 +44,6 @@ enum BattleGroundBEObjects
     BG_BE_OBJECT_TYPE_BUFF_2    = 184664
 };
 
-enum BattleGroundBECreatures
-{
-    BG_BE_ARENA_SPECTATOR   = 0,
-    BG_BE_CREATURE_MAX      = 1
-};
-
 class BattleGroundBEScore : public BattleGroundScore
 {
     public:

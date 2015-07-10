@@ -33,6 +33,15 @@ class WorldPacket;
 
 struct WorldSafeLocsEntry;
 
+enum BattleGroundArenaNPC
+{
+    BG_ARENA_READY_NPC1 = 0,
+    BG_ARENA_READY_NPC2 = 1,
+    BG_ARENA_NPC_MAX    = 2,
+
+    BG_READY_NPC_ENTRY  = 40000
+};
+
 enum BattleGroundSounds
 {
     SOUND_HORDE_WINS                = 8454,

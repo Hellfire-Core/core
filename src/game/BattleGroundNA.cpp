@@ -31,7 +31,7 @@
 BattleGroundNA::BattleGroundNA()
 {
     m_BgObjects.resize(BG_NA_OBJECT_MAX);
-    m_BgCreatures.resize(BG_NA_CREATURE_MAX);
+    m_BgCreatures.resize(BG_ARENA_NPC_MAX);
 }
 
 BattleGroundNA::~BattleGroundNA()
@@ -59,6 +59,8 @@ void BattleGroundNA::Update(uint32 diff)
             }
             for (uint32 i = BG_NA_OBJECT_DOOR_1; i <= BG_NA_OBJECT_DOOR_4; i++)
                 SpawnBGObject(i, RESPAWN_IMMEDIATELY);
+            AddCreature(BG_READY_NPC_ENTRY, BG_ARENA_READY_NPC1, 35, 4077.3f, 2868.3f, 12.2f, 5.77f);
+            AddCreature(BG_READY_NPC_ENTRY, BG_ARENA_READY_NPC2, 35, 4036.8f, 2973.1f, 12.2f, 2.87f);
 
             SetStartDelayTime(START_DELAY1);
             SendMessageToAll(LANG_ARENA_ONE_MINUTE);
@@ -83,8 +85,10 @@ void BattleGroundNA::Update(uint32 diff)
             for (uint32 i = BG_NA_OBJECT_DOOR_1; i <= BG_NA_OBJECT_DOOR_2; i++)
                 DoorOpen(i);
 
-            for (uint32 i = BG_NA_OBJECT_BUFF_1; i <= BG_NA_OBJECT_BUFF_2; i++)
-                SpawnBGObject(i, 60);
+            SpawnBGObject(BG_NA_OBJECT_BUFF_1, 60);
+            SpawnBGObject(BG_NA_OBJECT_BUFF_2, 60);
+            DelCreature(BG_ARENA_READY_NPC1);
+            DelCreature(BG_ARENA_READY_NPC2);
 
             SendMessageToAll(LANG_ARENA_BEGUN);
             SetStatus(STATUS_IN_PROGRESS);

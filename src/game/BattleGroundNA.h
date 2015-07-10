@@ -44,12 +44,6 @@ enum BattleGroundNAObjects
     BG_NA_OBJECT_TYPE_BUFF_2    = 184664
 };
 
-enum BattleGroundNACreatures
-{
-    BG_NA_ARENA_SPECTATOR   = 0,
-    BG_NA_CREATURE_MAX      = 1
-};
-
 enum BattleGroundNATimers
 {
     BG_NA_DOOR_DESPAWN_TIMER = 5
