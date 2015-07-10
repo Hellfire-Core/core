@@ -179,7 +179,3 @@ void TemporarySummon::UnSummon()
         ((Creature*)sum)->AI()->SummonedCreatureDespawn(this);
     }
 }
-
-void TemporarySummon::SaveToDB()
-{
-}

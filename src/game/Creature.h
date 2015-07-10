@@ -588,8 +588,8 @@ class HELLGROUND_IMPORT_EXPORT Creature : public Unit
         void setDeathState(DeathState s);                   // overwrite virtual Unit::setDeathState
 
         bool LoadFromDB(uint32 guid, Map *map);
-        void SaveToDB();
-                                                            // overwrited in Pet
+        virtual void SaveToDB();                            // overwrited in TemporarySummon (to do nothing)
+                                                            // overwrited in Pet and TemporarySummon
         virtual void SaveToDB(uint32 mapid, uint8 spawnMask);
         virtual void DeleteFromDB();                        // overwrited in Pet
 

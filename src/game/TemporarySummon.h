@@ -36,7 +36,8 @@ class TemporarySummon : public Creature
         void Update(uint32 update_diff, uint32 time); 
         void Summon(TemporarySummonType type, uint32 lifetime);
         void UnSummon();
-        void SaveToDB();
+        void SaveToDB() {};
+        void SaveToDB(uint32 mapid, uint8 spawnmask) {};
         Unit* GetSummoner() const { return m_summoner ? GetMap()->GetUnit(m_summoner) : NULL; }
     private:
         TemporarySummonType m_type;
