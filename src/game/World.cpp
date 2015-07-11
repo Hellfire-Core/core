@@ -2161,7 +2161,7 @@ void World::SendGMText(int32 string_id, ...)
 void World::SendGlobalText(const char* text, WorldSession *self)
 {
     WorldPacket data;
-    sLog.outBasic(text);
+    sLog.outBasic("%s", text);
     // need copy to prevent corruption by strtok call in LineFromMessage original string
     char* buf = mangos_strdup(text);
     char* pos = buf;
