@@ -736,7 +736,8 @@ struct mob_greyheart_spellbinderAI : public ScriptedAI
 
         if(!UpdateVictim())
         {
-            CastChanneling();
+            if (!me->isInCombat())
+                CastChanneling();
             return;
         }
 
