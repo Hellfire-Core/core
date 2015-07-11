@@ -61,9 +61,9 @@ void BattleGroundRL::Update(uint32 diff)
             SpawnBGObject(BG_RL_OBJECT_DOOR_1, RESPAWN_IMMEDIATELY);
             SpawnBGObject(BG_RL_OBJECT_DOOR_2, RESPAWN_IMMEDIATELY);
 
-            /* TODO: fill this up
-            AddCreature(BG_READY_NPC_ENTRY, BG_ARENA_READY_NPC1, 35, 0, 0, 0, 0);
-            AddCreature(BG_READY_NPC_ENTRY, BG_ARENA_READY_NPC2, 35, 0, 0, 0, 0);*/
+            
+            AddCreature(BG_READY_NPC_ENTRY, BG_ARENA_READY_NPC1, 35, 1300.576538f, 1598.051382f, 31.602930f, 4.053882f);
+            AddCreature(BG_READY_NPC_ENTRY, BG_ARENA_READY_NPC2, 35, 1271.025757f, 1733.989868f, 31.602962f, 0.853383f);
 
             SetStartDelayTime(START_DELAY1);
             SendMessageToAll(LANG_ARENA_ONE_MINUTE);
