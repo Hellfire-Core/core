@@ -4908,7 +4908,7 @@ void Unit::ProcDamageAndSpell(Unit *pVictim, uint32 procAttacker, uint32 procVic
         ProcDamageAndSpellfor (false,pVictim,procAttacker, procExtra,attType, procSpell, amount);
     // Now go on with a victim's events'n'auras
     // Not much to do if no flags are set or there is no victim
-    if (pVictim && pVictim->isAlive() && procVictim)
+    if (pVictim && (pVictim->isAlive() || pVictim->isDying()) && procVictim)
         pVictim->ProcDamageAndSpellfor (true,this,procVictim, procExtra, attType, procSpell, amount);
 }
 
@@ -5583,7 +5583,7 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
                     return false;
                 Modifier* mod = triggeredByAura->GetModifier();
                 // if damage is more than need or target die from damage deal finish spell
-                if (mod->m_amount <= damage || GetHealth() <= damage)
+                if (mod->m_amount <= damage || GetHealth() <= damage || procFlag & PROC_FLAG_KILLED)
                 {
                     // remember guid before aura delete
                     uint64 casterGuid = triggeredByAura->GetCasterGUID();

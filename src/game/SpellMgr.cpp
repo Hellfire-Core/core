@@ -3155,9 +3155,6 @@ void SpellMgr::LoadSpellCustomAttr()
                 spellInfo->EffectImplicitTargetB[0] = spellInfo->EffectImplicitTargetB[1] = 0;
                 break;
             /* WARLOCK CUSTOM ATTRIBUTES */
-            case 27285:                     // Seed of Corruption - final boom damage
-                spellInfo->AttributesEx3 |= SPELL_ATTR_EX3_CANT_TRIGGER_PROC;
-                break;
             /* HUNTER CUSTOM ATTRIBUTES */
             case 1543:                      // Flare no longer produces combat
                 spellInfo->AttributesEx3 |= SPELL_ATTR_EX3_NO_INITIAL_AGGRO;
