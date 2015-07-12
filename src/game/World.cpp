@@ -815,6 +815,8 @@ void World::LoadConfigSettings(bool reload)
     loadConfig(CONFIG_VMAP_INDOOR_CHECK, "vmap.enableIndoorCheck", true);
     loadConfig(CONFIG_PET_LOS, "vmap.petLOS", false);
     loadConfig(CONFIG_VMAP_TOTEM, "vmap.totem", false);
+    loadConfig(CONFIG_VMAP_GROUND, "vmap.ground.enable", 0);
+    loadConfig(CONFIG_VMAP_GROUND_TOLERANCE, "vmap.ground.tolerance", 5.0f);
 
     loadConfig(CONFIG_MMAP_ENABLED, "mmap.enabled", true);
     sLog.outString("WORLD: mmap pathfinding %sabled", getConfig(CONFIG_MMAP_ENABLED) ? "en" : "dis");

@@ -1734,6 +1734,14 @@ BattleGround.WSGEndAfter.AlwaysDraw = 0
 #    vmap.clusterProcesses
 #        Number of calculation processes created in cluster
 #
+#    vmap.ground.enable
+#        Number of points on way where ground los should be checked
+#        Default: 0 (disable)
+#
+#    vmap.ground.tolerance
+#        Value in yards describing how deep under ground is line of sight allowed
+#        Default: 5 (yards)
+#
 #    mmap.enabled
 #        Enable/Disable pathfinding using mmaps
 #        Default: 0 (disable)
@@ -1748,6 +1756,8 @@ vmap.petLOS = 0
 vmap.totem = 0
 vmap.enableCluster = 0
 vmap.clusterProcesses = 4
+vmap.ground.enable = 0
+vmap.ground.tolerance = 5
 mmap.enabled = 0
 
 ###################################################################################################################

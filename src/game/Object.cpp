@@ -1188,7 +1188,31 @@ bool WorldObject::IsWithinLOS(const float ox, const float oy, const float oz) co
     float x,y,z;
     GetPosition(x,y,z);
     VMAP::IVMapManager *vMapManager = VMAP::VMapFactory::createOrGetVMapManager();
-    return vMapManager->isInLineOfSight(GetMapId(), x, y, z +2.0f, ox, oy, oz +2.0f);
+    bool result = vMapManager->isInLineOfSight(GetMapId(), x, y, z +2.0f, ox, oy, oz +2.0f);
+    
+
+    uint8 prec = sWorld.getConfig(CONFIG_VMAP_GROUND);
+    if (prec && result) // if not result then no reason to check
+    {
+        const TerrainInfo* ti = GetTerrain();
+        if (!ti)
+            return true;
+        float beginh = ti->GetHeight(x, y, z, false);
+        if (beginh == VMAP_INVALID_HEIGHT_VALUE)
+            return true;
+        float endh = ti->GetHeight(ox, oy, oz, false);
+        if (endh == VMAP_INVALID_HEIGHT_VALUE)
+            return true;
+
+        float tolerance = sWorld.getConfig(CONFIG_VMAP_GROUND_TOLERANCE);
+        for (uint8 i = 1; i < prec; i++)
+        {
+            float height = ti->GetHeight(x + (i*(ox - x)) / prec, y + (i*(ox - y)) / prec, std::max(z, oz), false);
+            if (height == VMAP_INVALID_HEIGHT_VALUE || height > tolerance + z + (i*(oz - z)) / prec)
+                return false;
+        }
+    }
+    return result;
 }
 
 bool WorldObject::IsInRange(WorldObject const* obj, float minRange, float maxRange, bool is3D /* = true */) const
