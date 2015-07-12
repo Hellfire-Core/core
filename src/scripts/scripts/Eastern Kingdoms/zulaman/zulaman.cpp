@@ -980,8 +980,8 @@ struct npc_amanishi_lookoutAI : public ScriptedAI
     {
         if(me->getVictim())
             return;
-       // if(EventStarted)
-       //     return;
+        if(EventStarted)
+            return;
 
         if (me->canStartAttack(who))
         {
