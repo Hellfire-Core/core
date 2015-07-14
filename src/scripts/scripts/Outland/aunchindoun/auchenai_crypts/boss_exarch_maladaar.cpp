@@ -170,7 +170,7 @@ struct boss_exarch_maladaarAI : public ScriptedAI
 
         Fear_timer.Reset(15000 + rand() % 5000);
         Ribbon_of_Souls_timer.Reset(5000);
-        StolenSoul_Timer.Reset(25000 + rand() % 10000);
+        StolenSoul_Timer = 0;
 
         Avatar_summoned = false;
     }
@@ -230,7 +230,7 @@ struct boss_exarch_maladaarAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (!Avatar_summoned && ((m_creature->GetHealth()*100) / m_creature->GetMaxHealth() < 25))
+        if (!Avatar_summoned && HealthBelowPct(25))
         {
             if (m_creature->IsNonMeleeSpellCast(false))
                 m_creature->InterruptNonMeleeSpells(true);
@@ -239,7 +239,7 @@ struct boss_exarch_maladaarAI : public ScriptedAI
 
             DoCast(m_creature, SPELL_SUMMON_AVATAR);
             Avatar_summoned = true;
-            StolenSoul_Timer = 15000 + rand()% 15000;
+            StolenSoul_Timer = 15000 + rand() % 15000;
         }
 
         if (StolenSoul_Timer.Expired(diff))
@@ -251,11 +251,7 @@ struct boss_exarch_maladaarAI : public ScriptedAI
                     if (m_creature->IsNonMeleeSpellCast(false))
                         m_creature->InterruptNonMeleeSpells(true);
 
-                    uint32 i = urand(1,2);
-                    if (i == 1)
-                        DoScriptText(SAY_ROAR, m_creature);
-                    else
-                        DoScriptText(SAY_SOUL_CLEAVE, m_creature);
+                    DoScriptText(rand() % 2 ? SAY_ROAR : SAY_SOUL_CLEAVE, m_creature);
 
                     soulmodel = target->GetDisplayId();
                     soulholder = target->GetGUID();
@@ -268,7 +264,6 @@ struct boss_exarch_maladaarAI : public ScriptedAI
                 } 
             }
         }
-        
 
         if (Ribbon_of_Souls_timer.Expired(diff))
         {
@@ -278,13 +273,11 @@ struct boss_exarch_maladaarAI : public ScriptedAI
             Ribbon_of_Souls_timer = 5000 + (rand()%20 * 1000);
         }
 
-
         if (Fear_timer.Expired(diff))
         {
             DoCast(m_creature,SPELL_SOUL_SCREAM);
             Fear_timer = 15000 + rand()% 15000;
         }
-
 
         DoMeleeAttackIfReady();
     }
@@ -323,7 +316,6 @@ struct mob_avatar_of_martyredAI : public ScriptedAI
             DoCast(m_creature->getVictim(), SPELL_AV_MORTAL_STRIKE);
             Mortal_Strike_timer = 10000 + rand()%20 * 1000;
         }
-        
 
         DoMeleeAttackIfReady();
     }
