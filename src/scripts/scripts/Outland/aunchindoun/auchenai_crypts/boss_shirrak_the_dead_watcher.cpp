@@ -55,7 +55,7 @@ struct boss_shirrak_the_dead_watcherAI : public ScriptedAI
 
     void Reset()
     {
-        Inhibitmagic_Timer = 0;
+        Inhibitmagic_Timer.Reset(1); //immediate
         Attractmagic_Timer.Reset(28000);
         Carnivorousbite_Timer.Reset(10000);
         FocusFire_Timer.Reset(17000);
