@@ -17217,7 +17217,7 @@ void Player::UpdateContestedPvP(uint32 diff)
     {
         ResetContestedPvP();
     }
-    
+
 }
 
 void Player::UpdatePvPFlag(time_t currTime)
@@ -17489,7 +17489,7 @@ void Player::Whisper(const std::string& text, uint32 language,uint64 receiver)
     }
 
     // announce to player that player he is whispering to is afk
-    if (rPlayer->isAFK())
+    if (rPlayer->isAFK() && language != LANG_ADDON)
         ChatHandler(this).PSendSysMessage(LANG_PLAYER_AFK, rPlayer->GetName(), rPlayer->afkMsg.c_str());
 
     // if player whisper someone, auto turn of dnd to be able to receive an answer
