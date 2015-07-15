@@ -36,6 +36,7 @@ EndScriptData */
 #define SPELL_CLEAVE                30131
 //phase 2
 #define SPELL_RAIN_OF_BONES         37098
+#define SPELL_RAIN_OF_BONES_EFFECT  37091
 #define SPELL_SMOKING_BLAST         37057
 #define SPELL_FIREBALL_BARRAGE      30282
 #define SPELL_SEARING_CINDERS       30127
@@ -128,7 +129,6 @@ struct boss_nightbaneAI : public ScriptedAI
         FlyCount = 0;
         MovePhase = 0;
 
-        me->SetIgnoreVictimSelection(false);
         me->SetReactState(REACT_AGGRESSIVE);
 
         m_creature->SetSpeed(MOVE_RUN, 2.0f);
@@ -182,6 +182,11 @@ struct boss_nightbaneAI : public ScriptedAI
         if (Phase == 2 && (damage >= me->GetHealth() || me->GetHealth() <= 1))
             damage = 0;
     }
+    void SpellHitTarget(Unit* target, const SpellEntry *entry)
+    {
+        if (entry->Id == SPELL_RAIN_OF_BONES_EFFECT)
+            target->CastSpell(target, SPELL_SUMMON_SKELETON, true, 0, 0, me->GetGUID());
+    }
 
     void AttackStart(Unit* who)
     {
@@ -209,7 +214,11 @@ struct boss_nightbaneAI : public ScriptedAI
     void MovementInform(uint32 type, uint32 id)
     {
         if (type != POINT_MOTION_TYPE)
+        {
+            if (Flying)
+                DoStartNoMovement(me->getVictim()); // TODO: remove after fixing weird stuff with movement and targets while casting spellz
             return;
+        }
 
         if (Intro)
         {
@@ -228,7 +237,7 @@ struct boss_nightbaneAI : public ScriptedAI
             if (id == 0)
             {
                 DoTextEmote(EMOTE_BREATH, NULL, true);
-                Flying = false;
+                Flying = true;
                 Phase = 2;
                 return;
             }
@@ -277,14 +286,14 @@ struct boss_nightbaneAI : public ScriptedAI
     {
         DoYell(YELL_FLY_PHASE, LANG_UNIVERSAL, NULL);
 
-        me->SetReactState(REACT_PASSIVE);
-        me->SetIgnoreVictimSelection(true);
+     //   me->SetReactState(REACT_PASSIVE);
         DoResetThreat();
         m_creature->InterruptSpell(CURRENT_GENERIC_SPELL);
         m_creature->HandleEmoteCommand(EMOTE_ONESHOT_LIFTOFF);
         m_creature->SetLevitate(true);
         (*m_creature).GetMotionMaster()->Clear(false);
         (*m_creature).GetMotionMaster()->MovePoint(0, IntroWay[2][0], IntroWay[2][1], IntroWay[2][2]);
+        DistractingAshTimer.Delay(10000); // wrong, just to not cast while flying up
 
         Flying = true;
 
@@ -323,9 +332,6 @@ struct boss_nightbaneAI : public ScriptedAI
                     m_creature->SetLevitate(false);
                     m_creature->HandleEmoteCommand(EMOTE_ONESHOT_LAND);
                     m_creature->GetMotionMaster()->MovePoint(8, IntroWay[7][0], IntroWay[7][1], IntroWay[7][2]);
-                    me->SetReactState(REACT_AGGRESSIVE);
-                    me->SetIgnoreVictimSelection(false);
-                    Flying = false;
                     DoZoneInCombat(1000.0f);
                     UpdateVictim();
                 }
@@ -341,9 +347,9 @@ struct boss_nightbaneAI : public ScriptedAI
           
 
 
-
-        if (!UpdateVictim())
-            return;
+        if (!Flying || !me->isInCombat())
+            if (!UpdateVictim())
+                return;
 
         DoSpecialThings(diff, DO_PULSE_COMBAT);
 
@@ -353,7 +359,6 @@ struct boss_nightbaneAI : public ScriptedAI
             if (Movement)
             {
                 DoStartMovement(m_creature->getVictim());
-                me->SetReactState(REACT_AGGRESSIVE);
                 Movement = false;
             }
 
@@ -436,44 +441,30 @@ struct boss_nightbaneAI : public ScriptedAI
         {
             if (!RainBones)
             {
-                if (!Skeletons)
+                if (RainofBonesTimer.Expired(diff)) // only once at the beginning of phase 2
                 {
-                    for (uint8 i = 0; i <= 3; ++i)
-                    {
-                        DoCast(m_creature->getVictim(), SPELL_SUMMON_SKELETON);
-                        Skeletons = true;
-                    }
-                }
-
-
-                if (RainofBonesTimer.Expired(diff) && !RainBones) // only once at the beginning of phase 2
-                {
-                    DoCast(m_creature->getVictim(), SPELL_RAIN_OF_BONES);
+                    ForceSpellCast(SPELL_RAIN_OF_BONES, CAST_RANDOM, INTERRUPT_AND_CAST_INSTANTLY);
                     RainBones = true;
-                    SmokingBlastTimer = 20000;
+                    SmokingBlastTimer = 15000;
+                    
                 }
-
-
-
-                if (DistractingAshTimer.Expired(diff))
-                {
-                    if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_DISTRACTING_ASH), true))
-                        m_creature->AddAura(SPELL_DISTRACTING_ASH, target);
-
-                    DistractingAshTimer = 2000;//timer wrong
-                }
-
             }
-
-            if (RainBones)
+            else
             {
-
                 if (SmokingBlastTimer.Expired(diff))
                 {
                     DoCast(m_creature->getVictim(), SPELL_SMOKING_BLAST);
                     SmokingBlastTimer = 1500; //timer wrong
                 }
 
+            }
+
+            if (DistractingAshTimer.Expired(diff))
+            {
+                if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_DISTRACTING_ASH), true))
+                    m_creature->AddAura(SPELL_DISTRACTING_ASH, target);
+
+                DistractingAshTimer = 2000;//timer wrong
             }
 
 
@@ -495,6 +486,8 @@ struct boss_nightbaneAI : public ScriptedAI
 
                 (*m_creature).GetMotionMaster()->Clear(false);
                 m_creature->GetMotionMaster()->MovePoint(3, IntroWay[3][0], IntroWay[3][1], IntroWay[3][2]);
+
+                FlyTimer = 0;
             }
 
         }
