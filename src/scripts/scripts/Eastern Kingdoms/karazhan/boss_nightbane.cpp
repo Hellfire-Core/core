@@ -177,6 +177,12 @@ struct boss_nightbaneAI : public ScriptedAI
         DoYell(YELL_AGGRO, LANG_UNIVERSAL, NULL);
     }
 
+    void DamageTaken(Unit*, uint32 &damage)
+    {
+        if (Phase == 2 && (damage >= me->GetHealth() || me->GetHealth() <= 1))
+            damage = 0;
+    }
+
     void AttackStart(Unit* who)
     {
         if (!Intro && !Flying)
