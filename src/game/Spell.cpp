@@ -5262,7 +5262,11 @@ SpellCastResult Spell::CheckItems()
                 if (!item)
                     return SPELL_FAILED_ITEM_NOT_FOUND;
                 if (item->GetProto()->ItemLevel < GetSpellEntry()->spellLevel)
-                    return SPELL_FAILED_LOWLEVEL;
+                    if (GetSpellEntry()->SpellFamilyName != SPELLFAMILY_SHAMAN && // weapon spells
+                        GetSpellEntry()->SpellFamilyName != SPELLFAMILY_ROGUE &&  // poisons
+                        GetSpellEntry()->SpellFamilyName != SPELLFAMILY_WARLOCK)  // gem ++ AP
+                        return SPELL_FAILED_LOWLEVEL;
+                   
                 SpellItemEnchantmentEntry const *pEnchant = sSpellItemEnchantmentStore.LookupEntry(GetSpellEntry()->EffectMiscValue[0]);
                 if (!pEnchant)
                     return SPELL_FAILED_ERROR;
