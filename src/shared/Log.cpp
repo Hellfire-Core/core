@@ -48,7 +48,8 @@ const char* logToStr[LOG_MAX_FILES][3] =
     { "ExpLogFile",             "a", NULL },                // LOG_EXP
     { "TradeLogFile",           "a", NULL },                // LOG_TRADE
     { "RaceChangeLogFile",      "a", NULL },                // LOG_RACE_CHANGE
-    { "ExploitsCheatsLogFile",  "a", NULL }                 // LOG_EXPLOITS_AND_CHEATS
+    { "ExploitsCheatsLogFile",  "a", NULL },                // LOG_EXPLOITS_AND_CHEATS
+    { "RaidBindsLogFile",       "a", NULL }                 // LOG_RAID_BINDS
 };
 
 Log::Log() : m_includeTime(false), m_gmlog_per_account(false)

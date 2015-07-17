@@ -2260,6 +2260,9 @@ bool InstanceMap::Add(Player *player)
                                 data << uint32(0);
                                 player->SendPacketToSelf(&data);
                                 player->BindToInstance(mapSave, true);
+                                if (IsRaid())
+                                    sLog.outLog(LOG_RAID_BINDS,"Player %s (%u) recived bind %u:%u from %s (%u)",
+                                    player->GetName(),player->GetGUIDLow(),GetId(),GetInstanceId(),leader->GetName(), leader->GetGUIDLow());
                             }
                             else
                             {
@@ -2417,6 +2420,10 @@ void InstanceMap::PermBindAllPlayers(Player *player)
     }
 
     Group *group = player->GetGroup();
+    std::ostringstream str;
+    str << "Creating bind to " << GetId() << ":" << GetInstanceId() << " ";
+    if (group)
+        str << "Leader " << group->GetLeaderName() << " (" << group->GetLeaderGUID() << ")";
     // group members outside the instance group don't get bound
     for (MapRefManager::iterator itr = m_mapRefManager.begin(); itr != m_mapRefManager.end(); ++itr)
     {
@@ -2426,6 +2433,7 @@ void InstanceMap::PermBindAllPlayers(Player *player)
         InstancePlayerBind *bind = plr->GetBoundInstance(save->GetMapId(), save->GetDifficulty());
         if (!bind || !bind->perm)
         {
+            str << plr->GetGUIDLow() << "; ";
             plr->BindToInstance(save, true);
             WorldPacket data(SMSG_INSTANCE_SAVE_CREATED, 4);
             data << uint32(0);
@@ -2436,6 +2444,8 @@ void InstanceMap::PermBindAllPlayers(Player *player)
         if (group && group->GetLeaderGUID() == plr->GetGUID())
             group->BindToInstance(save, true);
     }
+    if (IsRaid())
+        sLog.outLog(LOG_RAID_BINDS, str.str().c_str());
 }
 
 void InstanceMap::UnloadAll()
