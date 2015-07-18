@@ -1113,8 +1113,8 @@ class HELLGROUND_EXPORT Player : public Unit
         GuardianPetList const& GetGuardians() const { return m_guardianPets; }
         void Uncharm();
 
-        void Say(const std::string& text, const uint32 language = 0 /*universal*/);
-        void Yell(const std::string& text, const uint32 language = 0 /*universal*/);
+        void Say(const std::string& text, const uint32 language = LANG_UNIVERSAL);
+        void Yell(const std::string& text, const uint32 language = LANG_UNIVERSAL);
         void TextEmote(const std::string& text);
         void Whisper(const std::string& text, const uint32 language,uint64 receiver);
         void BuildPlayerChat(WorldPacket *data, uint8 msgtype, const std::string& text, uint32 language) const;
@@ -2548,7 +2548,7 @@ class HELLGROUND_EXPORT Player : public Unit
         uint32 m_timeSyncTimer;
         uint32 m_timeSyncClient;
         uint32 m_timeSyncServer;
-        
+
         void AddConsecutiveKill(uint64 guid);
         uint32 GetConsecutiveKillsCount(uint64 guid);
         void UpdateConsecutiveKills();

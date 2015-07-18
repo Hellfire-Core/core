@@ -529,12 +529,12 @@ class HELLGROUND_IMPORT_EXPORT WorldObject : public Object//, public WorldLocati
         bool IsBeingTeleported() { return mSemaphoreTeleport; }
         void SetSemaphoreTeleport(bool semphsetting) { mSemaphoreTeleport = semphsetting; }
 
-        void MonsterSay(const char* text, uint32 language = 0 /*universal*/, uint64 TargetGuid = 0);
-        void MonsterYell(const char* text, uint32 language = 0 /*universal*/, uint64 TargetGuid = 0);
+        void MonsterSay(const char* text, uint32 language = LANG_UNIVERSAL, uint64 TargetGuid = 0);
+        void MonsterYell(const char* text, uint32 language = LANG_UNIVERSAL, uint64 TargetGuid = 0);
         void MonsterTextEmote(const char* text, uint64 TargetGuid, bool IsBossEmote = false);
         void MonsterWhisper(const char* text, uint64 receiver, bool IsBossWhisper = false);
-        void MonsterSay(int32 textId, uint32 language = 0 /*universal*/, uint64 TargetGuid = 0);
-        void MonsterYell(int32 textId, uint32 language = 0 /*universal*/, uint64 TargetGuid = 0);
+        void MonsterSay(int32 textId, uint32 language = LANG_UNIVERSAL, uint64 TargetGuid = 0);
+        void MonsterYell(int32 textId, uint32 language = LANG_UNIVERSAL, uint64 TargetGuid = 0);
         void MonsterTextEmote(int32 textId, uint64 TargetGuid, bool IsBossEmote = false, bool withoutPrename = false);
         void MonsterTextEmoteToZone(int32 textId, uint64 TargetGuid, bool IsBossEmote, bool withoutPrename = false);
         void MonsterWhisper(int32 textId, uint64 receiver, bool IsBossWhisper = false);
