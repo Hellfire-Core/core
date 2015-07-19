@@ -5554,7 +5554,7 @@ void Player::SetSkill(uint32 id, uint16 currVal, uint16 maxVal)
     {
         if (currVal)
         {
-            if (sWorld.getConfig(CONFIG_ALWAYS_MAXSKILL) && !SpellMgr::IsProfessionSkill(id) && id != SKILL_RIDING)
+            if (sWorld.getConfig(CONFIG_ALWAYS_MAXSKILL) && !SpellMgr::IsPrimaryProfessionSkill(id))
                 SetUInt32Value(PLAYER_SKILL_VALUE_INDEX(i), MAKE_SKILL_VALUE(maxVal, maxVal));
             else
             SetUInt32Value(PLAYER_SKILL_VALUE_INDEX(i),MAKE_SKILL_VALUE(currVal, maxVal));
