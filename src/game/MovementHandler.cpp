@@ -202,6 +202,8 @@ void WorldSession::HandleMoveWorldportAckOpcode()
 
         GetPlayer()->m_temporaryUnsummonedPetNumber = 0;
     }
+    if (!GetPlayer()->isAlive())
+        GetPlayer()->SetMovement(MOVE_WATER_WALK);
 }
 
 void WorldSession::HandleMoveTeleportAck(WorldPacket& recv_data)
