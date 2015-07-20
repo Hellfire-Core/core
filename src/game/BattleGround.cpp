@@ -215,7 +215,7 @@ void BattleGround::Update(uint32 diff)
                     plr->CastSpell(plr, SPELL_RESURRECTION_VISUAL, true);   // Resurrection visual
 
                     RestorePet(plr);
-                    
+
                     m_ResurrectQueue.push_back(*itr2);
                 }
                 (itr->second).clear();
@@ -1231,7 +1231,7 @@ void BattleGround::AddPlayer(Player *plr)
         sBattleGroundMgr.inArenasCount[2]++; break;
         }
 
-        ChatHandler(plr).SendSysMessage("NOTICE: If you are ready, write: .arena ready. So, when everyone are ready arena preparation can end earlier.");
+        ChatHandler(plr).SendSysMessage("NOTICE: If you are ready, write: .arena ready. So, when everyone is ready, arena preparation will end earlier.");
     }
     else
     {
@@ -2009,12 +2009,12 @@ uint8 BattleGround::SetPlayerReady(uint64 playerGUID)
     readyCount = m_guidsReady[ 0 ].size() + m_guidsReady[ 1 ].size();
     if ( readyCount == GetMaxPlayers() )
     {
-        SendMessageToAll( "Everyone are ready. Let's rumble!");
+        SendMessageToAll("Everyone is ready. Let's rumble!");
         SetStartDelayTime(sWorld.getConfig(CONFIG_ARENA_READY_START_TIMER));
     }
     else if ( m_guidsReady[ idx ].size() == GetMaxPlayersPerTeam() )
     {
-        SendMessageToTeam(team == ALLIANCE ? HORDE : ALLIANCE, "Opponents are ready to start earlier, what about you?");
+        SendMessageToTeam(team == ALLIANCE ? HORDE : ALLIANCE, "Your opponents are ready to start earlier. How about you?");
     }
     return 0;
 }
