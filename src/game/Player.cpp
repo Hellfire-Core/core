@@ -3201,7 +3201,10 @@ bool Player::addSpell(uint32 spell_id, bool active, bool learning, bool loading,
         if (skill_max_value < new_skill_max_value)
             skill_max_value =  new_skill_max_value;
 
-        SetSkill(spellLearnSkill->skill,skill_value,skill_max_value);
+        if (sWorld.getConfig(CONFIG_ALWAYS_MAXSKILL))
+            SetSkill(spellLearnSkill->skill, skill_max_value, skill_max_value);
+        else
+            SetSkill(spellLearnSkill->skill, skill_value, skill_max_value);
     }
     else
     {
@@ -3230,7 +3233,10 @@ bool Player::addSpell(uint32 spell_id, bool active, bool learning, bool loading,
                         SetSkill(pSkill->id, 300, 300);
                         break;
                     case SKILL_RANGE_LEVEL:
-                        SetSkill(pSkill->id, 1, GetMaxSkillValueForLevel());
+                        if (sWorld.getConfig(CONFIG_ALWAYS_MAXSKILL))
+                            SetSkill(pSkill->id, GetMaxSkillValueForLevel(), GetMaxSkillValueForLevel());
+                        else
+                            SetSkill(pSkill->id, 1, GetMaxSkillValueForLevel());
                         break;
                     case SKILL_RANGE_MONO:
                         SetSkill(pSkill->id, 1, 1);
