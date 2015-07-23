@@ -166,7 +166,7 @@ struct mobs_scourge_archerAI : public ScriptedAI
     mobs_scourge_archerAI(Creature *c) : ScriptedAI(c) 
     {}
 
-    int32 Shoot_Timer;
+    Timer Shoot_Timer;
 
     void MoveInLineOfSight(Unit * unit)
     {
@@ -177,18 +177,22 @@ struct mobs_scourge_archerAI : public ScriptedAI
             AttackStart(unit);
     }
 
+    void Reset()
+    {
+        Shoot_Timer.Reset(1);
+    }
+
     void UpdateAI(const uint32 diff)
     {
         if(!me->getVictim())
             return;
 
-        Shoot_Timer -= diff;
-        if (Shoot_Timer <= diff)
+        if (Shoot_Timer.Expired(diff))
         {
             if(Unit * target = GetClosestCreatureWithEntry(me, RAND(NPC_INJURED_PEASANT, NPC_PLAGUED_PEASANT) , 50))
             {
                 AddSpellToCast(target, SPELL_SHOOT, true);
-                Shoot_Timer += 2000;
+                Shoot_Timer = 2000;
             }
         }
          
@@ -206,8 +210,8 @@ struct trigger_epic_staffAI : public TriggerAI
 {
     trigger_epic_staffAI(Creature *c) : TriggerAI(c) { }
 
-    int32 Summon_Timer;
-    int32 Summon_Footsoldier_Timer;
+    Timer Summon_Timer;
+    Timer Summon_Footsoldier_Timer;
     uint32 Summon_Counter;
     uint32 Counter;
     uint32 FailCounter;
@@ -215,8 +219,8 @@ struct trigger_epic_staffAI : public TriggerAI
 
     void Reset()
     {
-        Summon_Timer = 0;
-        Summon_Footsoldier_Timer = 0;
+        Summon_Timer.Reset(1);
+        Summon_Footsoldier_Timer.Reset(1);
         Summon_Counter = 0;
         Counter = 0;
         FailCounter = 0;
@@ -225,8 +229,7 @@ struct trigger_epic_staffAI : public TriggerAI
 
     void UpdateAI(const uint32 diff)
     {
-        Summon_Footsoldier_Timer -= diff;
-        if (Summon_Footsoldier_Timer <= diff)
+        if (Summon_Footsoldier_Timer.Expired(diff))
         {
             for(int i = 0; i<3; i++)
             {
@@ -234,11 +237,10 @@ struct trigger_epic_staffAI : public TriggerAI
                 me->GetNearPoint(x,y,z, 0.0f, 7.0f, frand(0, 2*M_PI));
                 me->SummonCreature(NPC_SCOURGE_FOOTSOLDIER, x,y,z, 0.0f, TEMPSUMMON_TIMED_DESPAWN, 60000);
             }
-            Summon_Footsoldier_Timer += 20000;
+            Summon_Footsoldier_Timer = 20000;
         }
         
-        Summon_Timer -= diff;
-        if (Summon_Timer <= diff && Summon_Counter < 6)
+        if (Summon_Timer.Expired(diff) && Summon_Counter < 6)
         {
             for(int i = 0; i < 9; i++)
             {
@@ -252,7 +254,7 @@ struct trigger_epic_staffAI : public TriggerAI
                 me->GetNearPoint(x,y,z, 0.0f, 6.0f, frand(0, 2*M_PI));
                 me->SummonCreature(NPC_PLAGUED_PEASANT, x,y,z, 0.0f, TEMPSUMMON_TIMED_DESPAWN, 45000);
             }
-            Summon_Timer += 40000;
+            Summon_Timer = 40000;
             Summon_Counter++;
         }
         
@@ -357,12 +359,16 @@ struct mobs_peasantsAI : public ScriptedAI
     {
     }
 
-    int32 DeathsDoor_Timer;
+    Timer DeathsDoor_Timer;
     uint64 Summoner;
 
     void EnterEvadeMode()
     {
         return;
+    }
+    void Reset()
+    {
+        DeathsDoor_Timer.Reset(1);
     }
 
     void AttackStart(Unit * unit)
@@ -372,12 +378,11 @@ struct mobs_peasantsAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        DeathsDoor_Timer -= diff;
-        if (DeathsDoor_Timer <= diff)
+        if (DeathsDoor_Timer.Expired(diff))
         {
             if(!urand(0, 9))
                 AddSpellToCast(me, SPELL_DEATHS_DOOR, true);
-            DeathsDoor_Timer += 15000;
+            DeathsDoor_Timer = 15000;
         }
         
 
@@ -407,16 +412,20 @@ struct mobs_plagued_peasantAI : public mobs_peasantsAI
 {
     mobs_plagued_peasantAI(Creature *c) : mobs_peasantsAI(c) { }
 
-    int32 SeethingPlague_Timer;
+    Timer SeethingPlague_Timer;
+
+    void Reset()
+    {
+        SeethingPlague_Timer.Reset(1);
+    }
 
     void UpdateAI(const uint32 diff)
     {
-        SeethingPlague_Timer -= diff;
-        if (SeethingPlague_Timer <= diff)
+        if (SeethingPlague_Timer.Expired(diff))
         {
             if(!urand(0, 2))
                 AddSpellToCast(me, SPELL_SEETHING_PLAGUE, true);
-            SeethingPlague_Timer += 10000;
+            SeethingPlague_Timer = 10000;
         }
         
 
@@ -456,7 +465,7 @@ void AddSC_eastern_plaguelands()
     newscript->pGossipSelect = &GossipSelect_npc_tirion_fordring;
     newscript->RegisterSelf();
 
-    newscript = new Script;
+    newscript = new Script;                          s
     newscript->Name="mobs_scourge_archer";
     newscript->GetAI = &GetAI_mobs_scourge_archer;
     newscript->RegisterSelf();
