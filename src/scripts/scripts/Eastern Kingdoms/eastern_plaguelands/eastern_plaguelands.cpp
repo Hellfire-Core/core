@@ -465,7 +465,7 @@ void AddSC_eastern_plaguelands()
     newscript->pGossipSelect = &GossipSelect_npc_tirion_fordring;
     newscript->RegisterSelf();
 
-    newscript = new Script;                          s
+    newscript = new Script;                          
     newscript->Name="mobs_scourge_archer";
     newscript->GetAI = &GetAI_mobs_scourge_archer;
     newscript->RegisterSelf();
