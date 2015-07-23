@@ -1804,7 +1804,7 @@ struct npc_vindicator_sedaiAI : public ScriptedAI
                     };
                     return 1500;
             case 25:me->setDeathState(JUST_DIED);
-        default: return 0;
+        default: return 1;
         }
     }
 
