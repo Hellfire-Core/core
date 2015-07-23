@@ -3634,6 +3634,10 @@ void SpellMgr::LoadSpellCustomAttr()
             case 29838: //Second Wind (Rank 2)
                 spellInfo->procFlags &= ~PROC_FLAG_ON_TAKE_PERIODIC;
                 break;
+            case 45342: // Conflagration Eredar Twins
+                spellInfo->Mechanic = MECHANIC_CONFUSED;
+                spellInfo->EffectMechanic[1] = MECHANIC_NONE;
+                break;
             default:
                 break;
         }
