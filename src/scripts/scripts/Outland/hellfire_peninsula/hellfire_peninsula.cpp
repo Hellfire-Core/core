@@ -935,8 +935,6 @@ struct npc_felblood_initiateAI : public ScriptedAI
           }
       }
 
-      if(!UpdateVictim())
-          return;
 
       if(ChangeTimer.Expired(diff))
       {
@@ -946,6 +944,9 @@ struct npc_felblood_initiateAI : public ScriptedAI
           me->AI()->AttackStart(me->getVictim());
           ChangeTimer = 0;
       }
+
+      if (!UpdateVictim())
+          return;
 
       if(me->GetEntry() == MOB_EMACIATED_FELBLOOD)
       {
