@@ -1384,7 +1384,7 @@ struct npc_anchorite_baradaAI : public ScriptedAI
                                 plr->GroupEventHappens(QUEST_THE_EXORCIM ,me);
                     Reset();
                     }
-            default: return 0;
+            default: return 1;
             }
         }
         return 0;
