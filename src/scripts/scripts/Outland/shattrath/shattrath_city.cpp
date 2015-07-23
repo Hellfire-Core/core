@@ -562,7 +562,7 @@ struct npc_dirty_larryAI : public ScriptedAI
         Done = false;
 
         PlayerGUID = 0;
-        SayTimer = 0;
+        SayTimer.Reset(1);
         Step = 0;
         EvadeTimer.Reset(3000);
 
