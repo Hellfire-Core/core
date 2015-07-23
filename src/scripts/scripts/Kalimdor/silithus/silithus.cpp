@@ -765,7 +765,7 @@ struct npc_anachronos_the_ancientAI : public ScriptedAI
 {
     npc_anachronos_the_ancientAI(Creature* c) : ScriptedAI(c) {}
 
-    int32 AnimationTimer;
+    uint32 AnimationTimer;
     uint8 AnimationCount;
 
     uint64 AnachronosQuestTriggerGUID;
@@ -1074,9 +1074,9 @@ struct npc_anachronos_the_ancientAI : public ScriptedAI
     {
         if (AnimationTimer)
         {
-            AnimationTimer -= diff;
             if (AnimationTimer <= diff)
                 HandleAnimation();
+            else AnimationTimer -= diff;
         }
         if (AnimationCount < 65)
             me->CombatStop();
@@ -1095,7 +1095,7 @@ struct mob_qiraj_war_spawnAI : public ScriptedAI
 
     uint64 MobGUID;
     uint64 PlayerGUID;
-    int32 SpellTimer1, SpellTimer2, SpellTimer3,SpellTimer4;
+    uint32 SpellTimer1, SpellTimer2, SpellTimer3,SpellTimer4;
     bool Timers;
     bool hasTarget;
 
@@ -1129,36 +1129,32 @@ struct mob_qiraj_war_spawnAI : public ScriptedAI
         }
         if (me->GetEntry() == 15424 || me->GetEntry() == 15422|| me->GetEntry() == 15414)
         {
-            SpellTimer1 -= diff;
             if (SpellTimer1 <= diff)
             {
                 DoCast(me, SpawnCast[1].SpellId);
                 DoCast(me, 24319);
-                SpellTimer1 += SpawnCast[1].Timer2;
-            } 
-            SpellTimer2 -= diff;
+                SpellTimer1 = SpawnCast[1].Timer2;
+            } else SpellTimer1 -= diff;
             if (SpellTimer2 <= diff)
             {
                 DoCast(me, SpawnCast[2].SpellId);
-                SpellTimer2 += SpawnCast[2].Timer2;
-            } 
-            SpellTimer3 -= diff;
+                SpellTimer2 = SpawnCast[2].Timer2;
+            } else SpellTimer2 -= diff;
             if (SpellTimer3 <= diff)
             {
                 DoCast(me, SpawnCast[3].SpellId);
-                SpellTimer3 += SpawnCast[3].Timer2;
-            } 
+                SpellTimer3 = SpawnCast[3].Timer2;
+            } else SpellTimer3 -= diff;
         }
         if (me->GetEntry() == 15423 || me->GetEntry() == 15424 || me->GetEntry() == 15422 || me->GetEntry() == 15414)
         {
-            SpellTimer4 -= diff;
             if (SpellTimer4 <= diff)
             {
                 me->RemoveAllAttackers();
                 me->AttackStop();
                 DoCast(me, 15533);
-                SpellTimer4 += SpawnCast[0].Timer2;
-            } 
+                SpellTimer4 = SpawnCast[0].Timer2;
+            } else SpellTimer4 -= diff;
         }
         if (!hasTarget)
         {
@@ -1202,8 +1198,8 @@ struct npc_anachronos_quest_triggerAI : public ScriptedAI
 
     uint64 PlayerGUID;
 
-    int32 WaveTimer;
-    int32 AnnounceTimer;
+    uint32 WaveTimer;
+    uint32 AnnounceTimer;
 
     int8 LiveCount;
     uint8 WaveCount;
@@ -1320,17 +1316,15 @@ struct npc_anachronos_quest_triggerAI : public ScriptedAI
 
         if (WaveCount < 4)
         {
-            AnnounceTimer -= diff;
             if (!Announced && AnnounceTimer <= diff)
             {
                 DoScriptText(WavesInfo[WaveCount].WaveTextId, me);
                 Announced = true;
-            } 
+            } else AnnounceTimer -= diff;
 
-            WaveTimer -= diff;
             if (WaveTimer <= diff)
                 SummonNextWave();
-            
+            else WaveTimer -= diff;
         }
         CheckEventFail();
         if (WaveCount == 4 || Failed)
