@@ -134,7 +134,7 @@ struct boss_nalorakkAI : public ScriptedAI
         }
         else
         {
-            (*m_creature).GetMotionMaster()->MovePoint(0, NalorakkWay[7][0], NalorakkWay[7][1], NalorakkWay[7][2]);
+            m_creature->GetMotionMaster()->MovePoint(0, NalorakkWay[7][0], NalorakkWay[7][1], NalorakkWay[7][2]);
         }
 
         if (pInstance && pInstance->GetData(DATA_NALORAKKEVENT) != DONE)
@@ -187,9 +187,9 @@ struct boss_nalorakkAI : public ScriptedAI
     {
         if(aur->GetId() == SPELL_BEARFORM && aur->GetEffIndex() == 0)
         {
-            LaceratingSlash_Timer = 2000;               // dur 18s
-            RendFlesh_Timer = 3000;                     // dur 5s
-            DeafeningRoar_Timer = 5000 + rand()%5000;   // dur 2s
+            LaceratingSlash_Timer.Reset(2000);               // dur 18s
+            RendFlesh_Timer.Reset(3000);                     // dur 5s
+            DeafeningRoar_Timer.Reset(5000 + rand()%5000);   // dur 2s
             inBearForm = true;
             DoScriptText(EMOTE_SHIFTEDTOBEAR, m_creature);
             m_creature->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_DISPLAY + 1, 0);
@@ -203,10 +203,10 @@ struct boss_nalorakkAI : public ScriptedAI
         {
             m_creature->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_DISPLAY + 1, 5122);
             DoScriptText(YELL_SHIFTEDTOTROLL, m_creature);
-            Surge_Timer = 15000 + rand()%5000;
-            BrutalSwipe_Timer = 7000 + rand()%5000;
-            Mangle_Timer = 10000 + rand()%5000;
-            ShapeShift_Timer = 45000 + rand()%5000;
+            Surge_Timer.Reset(15000 + rand()%5000);
+            BrutalSwipe_Timer.Reset(7000 + rand()%5000);
+            Mangle_Timer.Reset(10000 + rand()%5000);
+            ShapeShift_Timer.Reset(45000 + rand()%5000);
             inBearForm = false;
             ClearCastQueue();
         }
@@ -231,7 +231,7 @@ struct boss_nalorakkAI : public ScriptedAI
                             {
                                 DoScriptText(YELL_NALORAKK_WAVE1, m_creature);
 
-                                (*m_creature).GetMotionMaster()->MovePoint(1,NalorakkWay[1][0],NalorakkWay[1][1],NalorakkWay[1][2]);
+                                m_creature->GetMotionMaster()->MovePoint(1,NalorakkWay[1][0],NalorakkWay[1][1],NalorakkWay[1][2]);
                                 MovePhase ++;
                                 inMove = true;
 
@@ -243,7 +243,7 @@ struct boss_nalorakkAI : public ScriptedAI
                             {
                                 DoScriptText(YELL_NALORAKK_WAVE2, m_creature);
 
-                                (*m_creature).GetMotionMaster()->MovePoint(3,NalorakkWay[3][0],NalorakkWay[3][1],NalorakkWay[3][2]);
+                                m_creature->GetMotionMaster()->MovePoint(3,NalorakkWay[3][0],NalorakkWay[3][1],NalorakkWay[3][2]);
                                 MovePhase ++;
                                 inMove = true;
 
@@ -255,7 +255,7 @@ struct boss_nalorakkAI : public ScriptedAI
                             {
                                 DoScriptText(YELL_NALORAKK_WAVE3, m_creature);
 
-                                (*m_creature).GetMotionMaster()->MovePoint(6,NalorakkWay[6][0],NalorakkWay[6][1],NalorakkWay[6][2]);
+                                m_creature->GetMotionMaster()->MovePoint(6,NalorakkWay[6][0],NalorakkWay[6][1],NalorakkWay[6][2]);
                                 MovePhase ++;
                                 inMove = true;
 
@@ -350,8 +350,8 @@ struct boss_nalorakkAI : public ScriptedAI
         if (inMove)
             if (waitTimer.Expired(diff))
             {
-                (*m_creature).GetMotionMaster()->MovementExpired();
-                (*m_creature).GetMotionMaster()->MovePoint(MovePhase, NalorakkWay[MovePhase][0], NalorakkWay[MovePhase][1], NalorakkWay[MovePhase][2]);
+                m_creature->GetMotionMaster()->MovementExpired();
+                m_creature->GetMotionMaster()->MovePoint(MovePhase, NalorakkWay[MovePhase][0], NalorakkWay[MovePhase][1], NalorakkWay[MovePhase][2]);
                 waitTimer = 0;
             }
         
