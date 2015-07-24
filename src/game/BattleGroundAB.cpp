@@ -485,7 +485,7 @@ void BattleGroundAB::EventPlayerClickedOnFlag(Player *source, GameObject* /*targ
         // create new contested banner
         _CreateBanner(node, BG_AB_NODE_TYPE_CONTESTED, teamIndex, true);
         _SendNodeUpdate(node);
-        m_NodeTimers[node] = BG_AB_FLAG_CAPTURING_TIME;
+        m_NodeTimers[node].Reset(BG_AB_FLAG_CAPTURING_TIME);
         sprintf(buf, GetHellgroundString(LANG_BG_AB_NODE_CLAIMED), _GetNodeName(node), (teamIndex == 0) ? GetHellgroundString(LANG_BG_AB_ALLY) : GetHellgroundString(LANG_BG_AB_HORDE));
         sound = SOUND_NODE_CLAIMED;
         SendObjectiveComplete(BG_AB_CREDITMARKER[node], teamIndex,BG_AB_NodePositions[node][0],BG_AB_NodePositions[node][1]);
@@ -504,7 +504,7 @@ void BattleGroundAB::EventPlayerClickedOnFlag(Player *source, GameObject* /*targ
             // create new contested banner
             _CreateBanner(node, BG_AB_NODE_TYPE_CONTESTED, teamIndex, true);
             _SendNodeUpdate(node);
-            m_NodeTimers[node] = BG_AB_FLAG_CAPTURING_TIME;
+            m_NodeTimers[node].Reset(BG_AB_FLAG_CAPTURING_TIME);
             sprintf(buf, GetHellgroundString(LANG_BG_AB_NODE_ASSAULTED), _GetNodeName(node));
             SendObjectiveComplete(BG_AB_CREDITMARKER[node], teamIndex,BG_AB_NodePositions[node][0],BG_AB_NodePositions[node][1]);
         }
@@ -537,7 +537,7 @@ void BattleGroundAB::EventPlayerClickedOnFlag(Player *source, GameObject* /*targ
         _CreateBanner(node, BG_AB_NODE_TYPE_CONTESTED, teamIndex, true);
         _SendNodeUpdate(node);
         _NodeDeOccupied(node);
-        m_NodeTimers[node] = BG_AB_FLAG_CAPTURING_TIME;
+        m_NodeTimers[node].Reset(BG_AB_FLAG_CAPTURING_TIME);
         sprintf(buf, GetHellgroundString(LANG_BG_AB_NODE_ASSAULTED), _GetNodeName(node));
         sound = (teamIndex == 0) ? SOUND_NODE_ASSAULTED_ALLIANCE : SOUND_NODE_ASSAULTED_HORDE;
         SendObjectiveComplete(BG_AB_CREDITMARKER[node], teamIndex,BG_AB_NodePositions[node][0],BG_AB_NodePositions[node][1]);
