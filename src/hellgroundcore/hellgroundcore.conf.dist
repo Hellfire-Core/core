@@ -253,6 +253,8 @@ DBDiffFile = "querydiff.log"
 ExpLogFile = "exp.log"
 TradeLogFile = "trade.log"
 RaceChangeLogFile = "race_change.log"
+ExploitsCheatsLogFile = "exploit_cheats.log"
+RaidBindsLogFile = "raid_binds.log"
 WhispLogDir = "whisps/"
 
 GmLogTimestamp = 0
