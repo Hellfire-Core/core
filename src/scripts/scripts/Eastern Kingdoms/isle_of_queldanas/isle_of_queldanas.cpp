@@ -470,7 +470,7 @@ struct npc_flame_waveAI : public ScriptedAI
 
     void IsSummonedBy(Unit *summoner)
     {
-        Burn = 0;
+        Burn.Reset(1);
         me->SetReactState(REACT_PASSIVE);
         float x, y, z;
         me->SetWalk(true);
@@ -479,6 +479,7 @@ struct npc_flame_waveAI : public ScriptedAI
         me->UpdateAllowedPositionZ(x, y, z);
         me->GetMotionMaster()->MovePoint(1, x, y, z);
     }
+
     void UpdateAI(const uint32 diff)
     {
         if (Burn.Expired(diff))
@@ -486,7 +487,6 @@ struct npc_flame_waveAI : public ScriptedAI
             DoCast(me, SPELL_BURN, true);
             Burn = 500;
         }
-        
     }
 };
 
