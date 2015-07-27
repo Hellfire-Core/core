@@ -1442,8 +1442,9 @@ void Spell::SearchChainTarget(std::list<Unit*> &TagUnitMap, float max_range, uin
             bool bad_target = false;
             do
             {
-                while (cur->GetDistance(*next) > CHAIN_SPELL_JUMP_RADIUS || !ignoreLOS && !cur->IsWithinLOSInMap(*next) ||
-                    (*next)->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_PL_SPELL_TARGET) || bad_target || (*next) == cur)
+                while (cur->GetDistance(*next) > CHAIN_SPELL_JUMP_RADIUS || (!ignoreLOS && !cur->IsWithinLOSInMap(*next)) ||
+                    (*next)->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_PL_SPELL_TARGET) || bad_target || (*next) == cur ||
+                    ((*next)->GetTypeId() == TYPEID_UNIT && !(*next)->IsPvP()))
                 {
                     bad_target = false;
                     ++next;
