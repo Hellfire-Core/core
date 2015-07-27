@@ -3542,7 +3542,8 @@ void Player::_LoadSpellCooldowns(QueryResultAutoPtr result)
             uint32 item_id  = fields[1].GetUInt32();
             time_t db_time  = (time_t)fields[2].GetUInt64();
 
-            if (!sSpellStore.LookupEntry(spell_id))
+            if (!sSpellStore.LookupEntry(spell_id) &&
+                spell_id != COMMAND_COOLDOWN)
             {
                 sLog.outLog(LOG_DEFAULT, "ERROR: Player %u have unknown spell %u in `character_spell_cooldown`, skipping.",GetGUIDLow(),spell_id);
                 continue;

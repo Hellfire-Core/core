@@ -61,6 +61,7 @@ struct PlayerAI;
 typedef std::deque<Mail*> PlayerMails;
 
 #define PLAYER_MAX_SKILLS       127
+#define COMMAND_COOLDOWN        2
 
 enum AnticheatChecks
 {
