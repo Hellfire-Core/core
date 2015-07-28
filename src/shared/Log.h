@@ -61,6 +61,28 @@ enum LogNames
     LOG_MAX_FILES
 };
 
+enum ChatLogs
+{
+    LOG_CHAT_SAY_A      = 0,
+    LOG_CHAT_SAY_H      = 1,
+    LOG_CHAT_LOCAL_A    = 2,
+    LOG_CHAT_LOCAL_H    = 3,
+    LOG_CHAT_WORLD_A    = 4,
+    LOG_CHAT_WORLD_H    = 5,
+    LOG_CHAT_LFG_A      = 6,
+    LOG_CHAT_LFG_H      = 7,
+    LOG_CHAT_PARTY_A    = 8,
+    LOG_CHAT_PARTY_H    = 9,
+    LOG_CHAT_RAID_A     = 10,
+    LOG_CHAT_RAID_H     = 11,
+    LOG_CHAT_BG_A       = 12,
+    LOG_CHAT_BG_H       = 13,
+    LOG_CHAT_TRADE_A    = 14,
+    LOG_CHAT_TRADE_H    = 15,
+
+    LOG_CHAT_MAX
+};
+
 class Log
 {
     friend class ACE_Singleton<Log, ACE_Thread_Mutex>;
@@ -97,6 +119,7 @@ class Log
                                                             // any log level
         void outWhisp(uint32 account, const char * str, ...) ATTR_PRINTF(3, 4);
         void outPacket(uint32 glow, const char * str, ...) ATTR_PRINTF(3, 4);
+        void outChat(uint32 type, uint32 faction, const char* who, const char* str);
 
         void SetLogFileLevel(char * Level);
         void outTime();
@@ -110,10 +133,12 @@ class Log
 
     private:
         FILE* openLogFile(LogNames log);
+        FILE* openLogFile(ChatLogs log);
         FILE* openGmlogPerAccount(uint32 account);
 
         FILE *logFile[LOG_MAX_FILES];
         std::string logFileNames[LOG_MAX_FILES];
+        FILE *chatLogFile[LOG_CHAT_MAX];
 
         FILE* openWhisplogPerAccount(uint32 account);
 

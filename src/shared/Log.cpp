@@ -52,6 +52,26 @@ const char* logToStr[LOG_MAX_FILES][3] =
     { "RaidBindsLogFile",       "a", NULL }                 // LOG_RAID_BINDS
 };
 
+const char* chatLogFilenames[LOG_CHAT_MAX] =
+{
+    "chatlog_sayA.log",
+    "chatlog_sayH.log",
+    "chatlog_localA.log",
+    "chatlog_localH.log",
+    "chatlog_worldA.log",
+    "chatlog_worldH.log",
+    "chatlog_lfgA.log",
+    "chatlog_lfgH.log",
+    "chatlog_partyA.log",
+    "chatlog_partyH.log",
+    "chatlog_raidA.log",
+    "chatlog_raidH.log",
+    "chatlog_bgA.log",
+    "chatlog_bgH.log",
+    "chatlog_tradeA.log",
+    "chatlog_tradeH.log"
+};
+
 Log::Log() : m_includeTime(false), m_gmlog_per_account(false)
 {
     for (uint8 i = LOG_DEFAULT; i < LOG_MAX_FILES; i++)
@@ -119,6 +139,9 @@ void Log::Initialize()
     for (uint8 i = LOG_DEFAULT; i < LOG_MAX_FILES; ++i)
         logFile[i] = openLogFile(LogNames(i));
 
+    for (uint8 i = 0; i < LOG_CHAT_MAX; i++)
+        chatLogFile[i] = openLogFile(ChatLogs(i));
+    
     // Main log file settings
     m_includeTime  = sConfig.GetBoolDefault("LogTime", false);
     m_logFileLevel = sConfig.GetIntDefault("LogFileLevel", 0);
@@ -151,6 +174,11 @@ FILE* Log::openLogFile(LogNames log)
 
     logFileNames[log] = m_logsDir + logfn;
     return fopen(logFileNames[log].c_str(), logToStr[log][1]);
+}
+
+FILE* Log::openLogFile(ChatLogs log)
+{
+    return fopen(chatLogFilenames[log], "a");
 }
 
 FILE* Log::openGmlogPerAccount(uint32 account)
@@ -454,6 +482,22 @@ void Log::outLog(LogNames log, const char * str, ...)
 
         fprintf(logFile[log], "\n" );
         fflush(logFile[log]);
+    }
+}
+
+void Log::outChat(uint32 type, uint32 faction, const char* who, const char* str)
+{
+    if (faction == 67) // horde
+        type++;
+
+    if (!str)
+        return;
+
+    if (chatLogFile[type])
+    {
+        outTimestamp(chatLogFile[type]);
+        fprintf(chatLogFile[type], str);
+        fflush(chatLogFile[type]);
     }
 }
 
