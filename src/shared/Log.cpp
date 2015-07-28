@@ -497,7 +497,7 @@ void Log::outChat(uint32 type, uint32 faction, const char* who, const char* str)
     if (chatLogFile[type])
     {
         outTimestamp(chatLogFile[type]);
-        fprintf(chatLogFile[type], str);
+        fprintf(chatLogFile[type], "%s: %s\n",who,str);
         fflush(chatLogFile[type]);
     }
 }
