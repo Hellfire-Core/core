@@ -625,7 +625,7 @@ void Channel::Say(uint64 p, const char *what, uint32 lang)
         if (HasFlag(CHANNEL_FLAG_LFG))
             sLog.outChat(LOG_CHAT_LFG_A, plr->GetTeam(), plr->GetName(), what);
         else if (HasFlag(CHANNEL_FLAG_TRADE))
-            sLog.outChat(LOG_CHAT_WORLD_A, plr->GetTeam(), plr->GetName(), what);
+            sLog.outChat(LOG_CHAT_TRADE_A, plr->GetTeam(), plr->GetName(), what);
         else if (HasFlag(CHANNEL_FLAG_GENERAL))
             sLog.outChat(LOG_CHAT_LOCAL_A, plr->GetTeam(), plr->GetName(), what);
     }
