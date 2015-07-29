@@ -462,7 +462,13 @@ void WorldSession::HandleRandomRollOpcode(WorldPacket& recv_data)
     data << roll;
     data << GetPlayer()->GetGUID();
     if (GetPlayer()->GetGroup())
+    {
         GetPlayer()->GetGroup()->BroadcastPacket(&data, false);
+        char out[30];
+        sprintf(out, "%u-%u = %u", minimum, maximum, roll);
+        sLog.outChat(GetPlayer()->GetGroup()->isRaidGroup() ? LOG_CHAT_RAID_A : LOG_CHAT_PARTY_A,
+            GetPlayer()->GetTeam(), (std::string("roll") + GetPlayer()->GetName()).c_str(), out);
+    }
     else
         SendPacket(&data);
 }

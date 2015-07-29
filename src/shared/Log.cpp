@@ -101,11 +101,6 @@ void Log::Initialize()
     }
 
     m_chatLogsDir = sConfig.GetStringDefault("ChatLogsDir", "");
-    if (!m_chatLogsDir.empty())
-    {
-        if ((m_chatLogsDir.at(m_chatLogsDir.length() - 1) != '/') && (m_chatLogsDir.at(m_chatLogsDir.length() - 1) != '\\'))
-            m_chatLogsDir.append("/");
-    }
 
     m_logsTimestamp = "_" + GetTimestampStr();
 
@@ -186,7 +181,7 @@ FILE* Log::openLogFile(LogNames log)
 
 FILE* Log::openLogFile(ChatLogs log)
 {
-    std::string fname = m_chatLogsDir + chatLogFilenames[log];
+    std::string fname = m_logsDir + m_chatLogsDir + chatLogFilenames[log];
     return fopen(fname.c_str(), "w");
 }
 
