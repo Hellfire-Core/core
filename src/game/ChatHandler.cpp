@@ -279,7 +279,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
                 default:
                     break;
             }
-            sLog.outChat(LOG_CHAT_SAY_A, team,_player->GetName(), msg.c_str());
+            if (lang != LANG_ADDON)
+                sLog.outChat(LOG_CHAT_SAY_A, team,_player->GetName(), msg.c_str());
         } 
         break;
 
@@ -351,7 +352,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
             WorldPacket data;
             ChatHandler::FillMessageData(&data, this, CHAT_MSG_PARTY, lang, NULL, 0, msg.c_str(),NULL);
             group->BroadcastPacket(&data, false, group->GetMemberGroup(GetPlayer()->GetGUID()));
-            sLog.outChat(LOG_CHAT_PARTY_A, team, _player->GetName(), msg.c_str());
+            if (lang != LANG_ADDON)
+                sLog.outChat(LOG_CHAT_PARTY_A, team, _player->GetName(), msg.c_str());
         }
         break;
         case CHAT_MSG_GUILD:
@@ -415,7 +417,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
             WorldPacket data;
             ChatHandler::FillMessageData(&data, this, CHAT_MSG_RAID, lang, "", 0, msg.c_str(),NULL);
             group->BroadcastPacket(&data, false);
-            sLog.outChat(LOG_CHAT_RAID_A, team, _player->GetName(), msg.c_str());
+            if (lang != LANG_ADDON)
+                sLog.outChat(LOG_CHAT_RAID_A, team, _player->GetName(), msg.c_str());
         } break;
         case CHAT_MSG_RAID_LEADER:
         {
@@ -436,7 +439,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
             WorldPacket data;
             ChatHandler::FillMessageData(&data, this, CHAT_MSG_RAID_LEADER, lang, "", 0, msg.c_str(),NULL);
             group->BroadcastPacket(&data, false);
-            sLog.outChat(LOG_CHAT_RAID_A, team, _player->GetName(), msg.c_str());
+            if (lang != LANG_ADDON)
+                sLog.outChat(LOG_CHAT_RAID_A, team, _player->GetName(), msg.c_str());
         } break;
         case CHAT_MSG_RAID_WARNING:
         {
@@ -454,7 +458,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
             WorldPacket data;
             ChatHandler::FillMessageData(&data, this, CHAT_MSG_RAID_WARNING, lang, "", 0, msg.c_str(),NULL);
             group->BroadcastPacket(&data, false);
-            sLog.outChat(LOG_CHAT_RAID_A, team, _player->GetName(), msg.c_str());
+            if (lang != LANG_ADDON)
+                sLog.outChat(LOG_CHAT_RAID_A, team, _player->GetName(), msg.c_str());
         } break;
 
         case CHAT_MSG_BATTLEGROUND:
@@ -473,7 +478,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
             WorldPacket data;
             ChatHandler::FillMessageData(&data, this, CHAT_MSG_BATTLEGROUND, lang, "", 0, msg.c_str(),NULL);
             group->BroadcastPacket(&data, false);
-            sLog.outChat(LOG_CHAT_BG_A, team, _player->GetName(), msg.c_str());
+            if (lang != LANG_ADDON)
+                sLog.outChat(LOG_CHAT_BG_A, team, _player->GetName(), msg.c_str());
         } break;
 
         case CHAT_MSG_BATTLEGROUND_LEADER:
@@ -492,7 +498,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
             WorldPacket data;
             ChatHandler::FillMessageData(&data, this, CHAT_MSG_BATTLEGROUND_LEADER, lang, "", 0, msg.c_str(),NULL);
             group->BroadcastPacket(&data, false);
-            sLog.outChat(LOG_CHAT_BG_A, team, _player->GetName(), msg.c_str());
+            if (lang != LANG_ADDON)
+                sLog.outChat(LOG_CHAT_BG_A, team, _player->GetName(), msg.c_str());
         } break;
 
         case CHAT_MSG_CHANNEL:
@@ -512,7 +519,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
                 if (Channel *chn = cMgr->GetChannel(channel,_player))
                     chn->Say(_player->GetGUID(),msg.c_str(),lang);
             }
-            if (channel == "world")
+            if (channel == "world" && lang != LANG_ADDON)
                 sLog.outChat(LOG_CHAT_WORLD_A, team, _player->GetName(), msg.c_str());
         } break;
 

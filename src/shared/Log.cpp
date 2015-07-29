@@ -100,6 +100,13 @@ void Log::Initialize()
             m_logsDir.append("/");
     }
 
+    m_chatLogsDir = sConfig.GetStringDefault("ChatLogsDir", "");
+    if (!m_chatLogsDir.empty())
+    {
+        if ((m_chatLogsDir.at(m_chatLogsDir.length() - 1) != '/') && (m_chatLogsDir.at(m_chatLogsDir.length() - 1) != '\\'))
+            m_chatLogsDir.append("/");
+    }
+
     m_logsTimestamp = "_" + GetTimestampStr();
 
     /// Open specific log files
@@ -139,8 +146,9 @@ void Log::Initialize()
     for (uint8 i = LOG_DEFAULT; i < LOG_MAX_FILES; ++i)
         logFile[i] = openLogFile(LogNames(i));
 
-    for (uint8 i = 0; i < LOG_CHAT_MAX; i++)
-        chatLogFile[i] = openLogFile(ChatLogs(i));
+    if (sConfig.GetBoolDefault("ChatLogsEnabled"))
+        for (uint8 i = 0; i < LOG_CHAT_MAX; i++)
+            chatLogFile[i] = openLogFile(ChatLogs(i));
     
     // Main log file settings
     m_includeTime  = sConfig.GetBoolDefault("LogTime", false);
@@ -178,7 +186,7 @@ FILE* Log::openLogFile(LogNames log)
 
 FILE* Log::openLogFile(ChatLogs log)
 {
-    std::string fname = m_logsDir + "chatlogs/" + chatLogFilenames[log];
+    std::string fname = m_chatLogsDir + chatLogFilenames[log];
     return fopen(fname.c_str(), "w");
 }
 

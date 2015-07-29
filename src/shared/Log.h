@@ -150,6 +150,7 @@ class Log
         // cache values for after initilization use (like gm log per account case)
         std::string m_logsDir;
         std::string m_logsTimestamp;
+        std::string m_chatLogsDir;
 
         // gm log control
         bool m_gmlog_per_account;

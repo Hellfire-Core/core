@@ -256,6 +256,8 @@ RaceChangeLogFile = "race_change.log"
 ExploitsCheatsLogFile = "exploit_cheats.log"
 RaidBindsLogFile = "raid_binds.log"
 WhispLogDir = "whisps/"
+ChatLogsDir = "chatlogs/"
+ChatLogsEnabled = 0
 
 GmLogTimestamp = 0
 LogTimestamp = 0

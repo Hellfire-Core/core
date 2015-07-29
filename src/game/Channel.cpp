@@ -622,6 +622,8 @@ void Channel::Say(uint64 p, const char *what, uint32 lang)
         else
             plr->SendPacketToSelf(&data);
         
+        if (lang == LANG_ADDON)
+            return;
         if (HasFlag(CHANNEL_FLAG_LFG))
             sLog.outChat(LOG_CHAT_LFG_A, plr->GetTeam(), plr->GetName(), what);
         else if (HasFlag(CHANNEL_FLAG_TRADE))
