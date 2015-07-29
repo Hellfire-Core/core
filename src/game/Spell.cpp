@@ -356,7 +356,7 @@ Spell::Spell(Unit* Caster, SpellEntry const *info, bool triggered, uint64 origin
     m_powerCost = 0;                                        // setup to correct value in Spell::prepare, don't must be used before.
     m_casttime = 0;                                         // setup to correct value in Spell::prepare, don't must be used before.
     m_timer = 0;                                            // will set to castime in prepare
-
+    m_extraCrit = 0.0f;
     m_needAliveTargetMask = 0;
 
     // determine reflection
@@ -2358,6 +2358,13 @@ void Spell::prepare(SpellCastTargets * targets, Aura* triggeredByAura)
         return;
     }
 
+    if (Player* mod_owner = m_caster->GetSpellModOwner())
+    {
+        // fill extra crit chance from mods
+        // no mod gives pct chance for spell crit (surge of light is also taken as flat in spellmgr::loadspellcustomattr
+        mod_owner->ApplySpellMod(GetSpellEntry()->Id, SPELLMOD_CRITICAL_CHANCE, m_extraCrit);
+    }
+
     if (m_caster->GetTypeId() == TYPEID_PLAYER)
     {
         if (sObjectMgr.IsPlayerSpellDisabled(GetSpellEntry()->Id))
@@ -2366,10 +2373,6 @@ void Spell::prepare(SpellCastTargets * targets, Aura* triggeredByAura)
             finish(false);
             return;
         }
-        // fill extra crit chance from mods
-        // no mod gives pct chance for spell crit (surge of light is also taken as flat in spellmgr::loadspellcustomattr
-        m_extraCrit = 0.0f;
-        m_caster->ToPlayer()->ApplySpellMod(GetSpellEntry()->Id, SPELLMOD_CRITICAL_CHANCE, m_extraCrit);
         // maybe also precalculate this one?
         m_extraCrit += m_caster->GetFloatValue(PLAYER_SPELL_CRIT_PERCENTAGE1 + GetFirstSchoolInMask(m_spellSchoolMask));
     }
@@ -2390,7 +2393,6 @@ void Spell::prepare(SpellCastTargets * targets, Aura* triggeredByAura)
             return;
         }
     }
-
     // Fill cost data
     m_powerCost = m_CastItem ? 0 : SpellMgr::CalculatePowerCost(GetSpellEntry(), m_caster, m_spellSchoolMask);
 
