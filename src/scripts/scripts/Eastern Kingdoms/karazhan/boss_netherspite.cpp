@@ -81,7 +81,6 @@ struct boss_netherspiteAI : public ScriptedAI
     Timer ExhaustCheckTimer;
     Timer PortalTimer; // timer for beam checking
     uint64 PortalGUID[3]; // guid's of portals
-    uint64 BeamerGUID[3]; // guid's of auxiliary beaming portals
     uint64 BeamTarget[3]; // guid's of portals' current targets
 
     void Reset()
@@ -100,7 +99,6 @@ struct boss_netherspiteAI : public ScriptedAI
         {
             PortalGUID[i] = 0;
             BeamTarget[i] = 0;
-            BeamerGUID[i] = 0;
         }
 
         m_creature->GetMotionMaster()->MovePath(NETHER_PATROL_PATH, true);
@@ -123,10 +121,8 @@ struct boss_netherspiteAI : public ScriptedAI
             {
                 PortalGUID[i] = portal->GetGUID();
                 BeamTarget[i] = me->GetGUID();
-                portal->AddAura(PortalVisual[i], portal);
-                portal->AddAura(42176,portal);
+                portal->CastSpell(portal, PortalVisual[i], true);
                 portal->CastSpell(me, PortalBeam[i], false);
-                portal->SetVisibility(VISIBILITY_ON);
             }
         }
     }
@@ -136,13 +132,6 @@ struct boss_netherspiteAI : public ScriptedAI
         for(int i=0; i<3; ++i)
         {
             if(Creature *portal = Unit::GetCreature(*m_creature, PortalGUID[i]))
-            {
-                portal->SetVisibility(VISIBILITY_OFF);
-                portal->DealDamage(portal, portal->GetMaxHealth());
-                portal->RemoveFromWorld();
-            }
-
-            if(Creature *portal = Unit::GetCreature(*m_creature, BeamerGUID[i]))
             {
                 portal->SetVisibility(VISIBILITY_OFF);
                 portal->DealDamage(portal, portal->GetMaxHealth());
@@ -189,22 +178,15 @@ struct boss_netherspiteAI : public ScriptedAI
                 else
                     target->AddAura(NetherBuff[j], target);
 
-                // cast visual beam on the chosen target if switched
-                // simple target switching isn't working -> using BeamerGUID to cast (workaround)
                 if(target != current)
                 {
-                    if (Creature *beamer = Unit::GetCreature(*portal, BeamerGUID[j]))
-                    {
-                        //beamer->CastStop(); // does shit.
-                        beamer->AI()->EnterEvadeMode();
+                    portal->AI()->EnterEvadeMode();
 
-                        if (current->GetTypeId() == TYPEID_PLAYER)
-                            beamer->CastSpell(current, PlayerDebuff[j], false);
+                    if (current->GetTypeId() == TYPEID_PLAYER)
+                        portal->CastSpell(current, PlayerDebuff[j], false);
 
-                        beamer->CastSpell(target, PortalBeam[j], false);
-                        BeamTarget[j] = target->GetGUID();
-                        BeamerGUID[j] = beamer->GetGUID();
-                    }
+                    portal->CastSpell(target, PortalBeam[j], false);
+                    BeamTarget[j] = target->GetGUID();
                 }
 
                 // aggro target if Red Beam
