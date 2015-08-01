@@ -511,16 +511,11 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
             if (msg.empty())
                 break;
 
-            if (ChatHandler(this).ContainsNotAllowedSigns(msg))
-                return;
-
             if (ChannelMgr* cMgr = channelMgr(team))
             {
                 if (Channel *chn = cMgr->GetChannel(channel,_player))
                     chn->Say(_player->GetGUID(),msg.c_str(),lang);
             }
-            if (channel == "world" && lang != LANG_ADDON)
-                sLog.outChat(LOG_CHAT_WORLD_A, team, _player->GetName(), msg.c_str());
         } break;
 
         case CHAT_MSG_AFK:

@@ -22,33 +22,30 @@
 #include "ObjectMgr.h"
 #include "World.h"
 #include "SocialMgr.h"
+#include "Chat.h"
 
 Channel::Channel(const std::string& name, uint32 channel_id)
 : m_announce(false), m_moderate(false), m_name(name), m_flags(0), m_ownerGUID(0)
 {
     // set special flags if built-in channel
     ChatChannelsEntry const* ch = GetChannelEntryFor(channel_id);
-    if (ch)                                                  // it's built-in channel
+    if (ch)
     {
-        m_channelId = ch->ChannelID;                         // built-in channel
+        m_channelId = ch->ChannelID;                        // built-in channel
 
-        m_flags |= CHANNEL_FLAG_GENERAL;                    // for all built-in channels
-
-        if (ch->flags & CHANNEL_DBC_FLAG_TRADE)              // for trade channel
+        if (ch->flags & CHANNEL_DBC_FLAG_TRADE)             // for trade channel
             m_flags |= CHANNEL_FLAG_TRADE;
 
-        if (ch->flags & CHANNEL_DBC_FLAG_CITY_ONLY2)         // for city only channels
-            m_flags |= CHANNEL_FLAG_CITY;
-
-        if (ch->flags & CHANNEL_DBC_FLAG_LFG)                // for LFG channel
+        if (ch->flags & CHANNEL_DBC_FLAG_LFG)               // for LFG channel
             m_flags |= CHANNEL_FLAG_LFG;
-        else                                                // for all other channels
-            m_flags |= CHANNEL_FLAG_NOT_LFG;
     }
     else                                                    // it's custom channel
     {
         m_flags |= CHANNEL_FLAG_CUSTOM;
         m_channelId = 0;
+
+        if (name == "world")
+            m_flags == CHANNEL_FLAG_WORLD;                  // world not marked as custom
     }
 }
 
@@ -559,6 +556,9 @@ void Channel::Say(uint64 p, const char *what, uint32 lang)
 {
     if (!what)
         return;
+    if (!HasFlag(CHANNEL_FLAG_CUSTOM) && ChatHandler::ContainsNotAllowedSigns(what,true))
+        return;
+
     if (sWorld.getConfig(CONFIG_ALLOW_TWO_SIDE_INTERACTION_CHANNEL))
         lang = LANG_UNIVERSAL;
 
@@ -624,11 +624,14 @@ void Channel::Say(uint64 p, const char *what, uint32 lang)
         
         if (lang == LANG_ADDON)
             return;
+
         if (HasFlag(CHANNEL_FLAG_LFG))
             sLog.outChat(LOG_CHAT_LFG_A, plr->GetTeam(), plr->GetName(), what);
         else if (HasFlag(CHANNEL_FLAG_TRADE))
             sLog.outChat(LOG_CHAT_TRADE_A, plr->GetTeam(), plr->GetName(), what);
-        else if (HasFlag(CHANNEL_FLAG_GENERAL))
+        else if (HasFlag(CHANNEL_FLAG_WORLD))
+            sLog.outChat(LOG_CHAT_WORLD_A, plr->GetTeam(), plr->GetName(), what);
+        else if (!HasFlag(CHANNEL_FLAG_CUSTOM))
             sLog.outChat(LOG_CHAT_LOCAL_A, plr->GetTeam(), plr->GetName(), what);
     }
 }

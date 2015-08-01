@@ -74,7 +74,7 @@ class ChatHandler
 
         int ParseCommands(const char* text);
 
-        bool ContainsNotAllowedSigns(std::string text);
+        static bool ContainsNotAllowedSigns(std::string text,bool strict = false);
 
         virtual char const* GetName() const;
         static ChatCommand* getCommandTable();

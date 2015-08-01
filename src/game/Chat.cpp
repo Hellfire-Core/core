@@ -1033,13 +1033,22 @@ bool ChatHandler::ExecuteCommandInTable(ChatCommand *table, const char* text, st
     return false;
 }
 
-bool ChatHandler::ContainsNotAllowedSigns(std::string text /*copy of text because we change it*/)
+bool ChatHandler::ContainsNotAllowedSigns(std::string text,bool strict)
 {
     for (uint32 i = 0; i < text.length(); ++i)
         text[i] = tolower(text[i]);
 
     if ((text.find(".blp") != text.npos) || (text.find("t|t") != text.npos))
         return true;
+
+    if (!strict)
+        return false;
+
+    for (std::string::iterator itr = text.begin(); itr != text.end(); itr++)
+    {
+        if ((*itr) > 0x7f)
+            return true;
+    }
     return false;
 }
 
