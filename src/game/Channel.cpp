@@ -45,7 +45,7 @@ Channel::Channel(const std::string& name, uint32 channel_id)
         m_channelId = 0;
 
         if (name == "world")
-            m_flags == CHANNEL_FLAG_WORLD;                  // world not marked as custom
+            m_flags = CHANNEL_FLAG_WORLD;                  // world not marked as custom
     }
 }
 
