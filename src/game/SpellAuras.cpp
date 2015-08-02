@@ -601,7 +601,7 @@ void Aura::Update(uint32 diff)
         Unit* caster = GetCaster();
 
         if(caster && !caster->m_currentSpells[CURRENT_CHANNELED_SPELL])
-            caster->RemoveAurasByCasterSpell(GetId(), caster->GetGUID());
+            caster->RemoveAurasByCasterSpell(GetId(), GetCasterGUID());
 
         if(!pRealTarget->isPossessed() && pRealTarget->GetGUID() != GetCasterGUID())
         {

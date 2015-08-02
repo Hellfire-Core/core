@@ -2481,6 +2481,7 @@ void Spell::cancel()
         }
         case SPELL_STATE_CASTING:
         {
+            uint64 casterGuid = m_originalCasterGUID ? m_originalCasterGUID : m_caster->GetGUID();
             for (std::list<TargetInfo>::iterator ihit = m_UniqueTargetInfo.begin(); ihit != m_UniqueTargetInfo.end(); ++ihit)
             {
                 if (ihit->deleted)
@@ -2488,13 +2489,13 @@ void Spell::cancel()
 
                 if (ihit->missCondition == SPELL_MISS_NONE)
                 {
-                    Unit* unit = m_caster->GetGUID() == (*ihit).targetGUID ? m_caster : m_caster->GetMap()->GetUnit(ihit->targetGUID);
+                    Unit* unit = casterGuid == (*ihit).targetGUID ? m_caster : m_caster->GetMap()->GetUnit(ihit->targetGUID);
                     if (unit && unit->isAlive())
-                        unit->RemoveAurasByCasterSpell(GetSpellEntry()->Id, m_caster->GetGUID());
+                        unit->RemoveAurasByCasterSpell(GetSpellEntry()->Id, casterGuid);
                 }
             }
 
-            m_caster->RemoveAurasByCasterSpell(GetSpellEntry()->Id, m_caster->GetGUID());
+            m_caster->RemoveAurasByCasterSpell(GetSpellEntry()->Id, casterGuid);
             SendChannelUpdate(0);
             if (!SpellMgr::IsChanneledSpell(GetSpellEntry()))
             {
