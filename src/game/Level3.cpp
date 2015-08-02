@@ -2799,7 +2799,7 @@ bool ChatHandler::HandleLookupSpellCommand(const char* args)
         return false;
 
     // can be NULL at console call
-    Player* target = getSelectedPlayer();
+    Unit* target = getSelectedUnit();
 
     std::string namepart = args;
     std::wstring wnamepart;
