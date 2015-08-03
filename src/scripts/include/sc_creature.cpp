@@ -212,14 +212,14 @@ void ScriptedAI::CheckCasterNoMovementInRange(uint32 diff, float maxrange)
         return;
 
     if (casterTimer.GetTimeLeft() > 2000)  // just in case
-        casterTimer = 2000;
+        casterTimer.Reset(2000);
 
 
     if (casterTimer.Expired(diff))
     {
-        if (me->GetMotionMaster()->GetCurrentMovementGeneratorType() == CONFUSED_MOTION_TYPE)
+        if (me->hasUnitState(UNIT_STAT_CANNOT_AUTOATTACK))
         {
-            casterTimer = 1000 - diff;
+            casterTimer = 1000;
             return;
         }
 
@@ -227,12 +227,6 @@ void ScriptedAI::CheckCasterNoMovementInRange(uint32 diff, float maxrange)
         if (!me->IsWithinDistInMap(me->getVictim(), maxrange) || !me->IsWithinLOSInMap(me->getVictim()))
         {
             float x, y, z;
-            /*
-            float dist = me->GetDistance2d(me->getVictim());
-            float angle = me->GetAngle(me->getVictim());
-            me->GetPosition(x, y, z);
-            x = x + dist/2 * cos(angle);
-            y = y + dist/2 * sin(angle);*/
             me->getVictim()->GetPosition(x, y, z);
             me->UpdateAllowedPositionZ(x, y, z);
             me->SetSpeed(MOVE_RUN, 1.5);
@@ -256,11 +250,11 @@ void ScriptedAI::CheckShooterNoMovementInRange(uint32 diff, float maxrange)
         return;
 
     if (casterTimer.GetTimeLeft() > 3000)  // just in case
-        casterTimer = 3000;
+        casterTimer.Reset(3000);
 
     if (casterTimer.Expired(diff))
     {
-        if (me->GetMotionMaster()->GetCurrentMovementGeneratorType() == CONFUSED_MOTION_TYPE)
+        if (me->hasUnitState(UNIT_STAT_CANNOT_AUTOATTACK))
         {
             casterTimer = 1000;
             return;
@@ -285,12 +279,6 @@ void ScriptedAI::CheckShooterNoMovementInRange(uint32 diff, float maxrange)
         {
             float x, y, z;
             me->getVictim()->GetPosition(x, y, z);
-            /*
-            float dist = me->GetDistance2d(me->getVictim());
-            float angle = me->GetAngle(me->getVictim());
-            me->GetPosition(x, y, z);
-            x = x + dist/2 * cos(angle);
-            y = y + dist/2 * sin(angle);*/
             me->UpdateAllowedPositionZ(x, y, z);
             me->SetSpeed(MOVE_RUN, 1.5);
             me->GetMotionMaster()->MovePoint(41, x, y, z);  //to not possibly collide with any Movement Inform check
