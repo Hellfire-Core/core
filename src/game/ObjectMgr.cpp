@@ -701,8 +701,7 @@ void ObjectMgr::LoadCreatureModelInfo()
         if (!mInfo)
             continue;
 
-        if (mInfo->combat_reach < 0.1f ||
-            i == 4624) // skullsplitter beastmaster has 36 yards!
+        if (mInfo->combat_reach < 0.1f)
         {
             //sLog.outLog(LOG_DB_ERR, "Creature model (Entry: %u) has invalid combat reach (%f), setting it to 0.5", mInfo->modelid, mInfo->combat_reach);
             const_cast<CreatureModelInfo*>(mInfo)->combat_reach = DEFAULT_COMBAT_REACH;
