@@ -18170,8 +18170,7 @@ void Player::InitDataForForm(bool reapplyMods)
     if (!reapplyMods)
         UpdateEquipSpellsAtFormChange();
 
-    UpdateAttackPowerAndDamage();
-    UpdateAttackPowerAndDamage(true);
+    UpdateAllStats();
 }
 
 // Return true is the bought item has a max count to force refresh of window by caller
