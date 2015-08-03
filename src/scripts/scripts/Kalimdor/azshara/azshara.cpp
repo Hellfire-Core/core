@@ -33,8 +33,7 @@ mob_spirit_of_azuregos
 EndContentData */
 
 #include "precompiled.h"
-#include "World.h"
-#include "WorldPacket.h"
+#include "Chat.h"
 
 /*######
 ## mobs_spitelashes
@@ -173,9 +172,7 @@ bool GossipSelect_npc_loramus_thalipedes(Player *player, Creature *_Creature, ui
 #define SAY_RIZZLE_FINAL -1000247
 
 #define GOSSIP_GET_MOONSTONE "Hand over the Southfury moonstone and I'll let you go."
-
-//next message must be send to player when Rizzle jump into river, not implemented
-#define MSG_ESCAPE_NOTICE "     Rizzle Sprysprocket takes the Southfury moonstone and escapes into the river. Follow her!"
+#define MSG_ESCAPE_NOTICE "Rizzle Sprysprocket takes the Southfury moonstone and escapes into the river. Follow her!"
 
 float WPs[58][4] =
 {
@@ -244,7 +241,6 @@ struct mob_rizzle_sprysprocketAI : public ScriptedAI
 {
     mob_rizzle_sprysprocketAI(Creature *c) : ScriptedAI(c) {}
 
-    int32 spellEscape_Timer;
     int32 Teleport_Timer;
     int32 Check_Timer;
     int32 Grenade_Timer;
@@ -260,9 +256,8 @@ struct mob_rizzle_sprysprocketAI : public ScriptedAI
 
     void Reset()
     {
-        spellEscape_Timer = 1300;
         Teleport_Timer = 3500;
-        Check_Timer = 10000;
+        Check_Timer = 1000;
         Grenade_Timer = 30000;
         Must_Die_Timer = 3000;
         CurrWP = 0;
@@ -301,21 +296,14 @@ struct mob_rizzle_sprysprocketAI : public ScriptedAI
             if(!PlayerGUID)
                 return;
 
-            spellEscape_Timer -= diff;
-            if(spellEscape_Timer <= diff)
-            {
-                DoCast(m_creature, SPELL_RIZZLE_ESCAPE, false);
-                spellEscape_Timer += 10000;
-            } 
-
             Teleport_Timer -= diff;
             if(Teleport_Timer <= diff)
             {
-                DoTeleportTo(3706.39, -3969.15, 35.9118, 0);
+                DoCast(m_creature, SPELL_RIZZLE_ESCAPE, true);
 
                 //begin swimming and summon depth charges
                 Player* player = Unit::GetPlayer(PlayerGUID);
-                SendText(MSG_ESCAPE_NOTICE, player);
+                ChatHandler(player).SendSysMessage(MSG_ESCAPE_NOTICE);
                 DoCast(m_creature, SPELL_PERIODIC_DEPTH_CHARGE);
                 m_creature->SetLevitate(true);
                 m_creature->SetSpeed(MOVE_RUN, 0.85f, true);
@@ -355,10 +343,10 @@ struct mob_rizzle_sprysprocketAI : public ScriptedAI
                 return;
             }
 
-            if(m_creature->IsWithinDistInMap(player, 10) && m_creature->GetPositionX() > player->GetPositionX() && !Reached)
+            if(m_creature->IsWithinDistInMap(player, 15) && m_creature->GetPositionX() + 10 > player->GetPositionX() && !Reached)
             {
                 DoScriptText(SAY_RIZZLE_FINAL, m_creature);
-                m_creature->SetUInt32Value(UNIT_NPC_FLAGS, 1);
+                m_creature->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
                 m_creature->setFaction(35);
                 m_creature->RemoveAurasDueToSpell(SPELL_PERIODIC_DEPTH_CHARGE);
                 Reached = true;
@@ -367,14 +355,6 @@ struct mob_rizzle_sprysprocketAI : public ScriptedAI
             Check_Timer += 1000;
         } 
 
-    }
-
-    void SendText(const char *text, Player* player)
-    {
-        WorldPacket data(SMSG_SERVER_MESSAGE, 0);              // guess size
-        data << text;
-        if(player)
-            player->GetSession()->SendPacket(&data);
     }
 
     void AttackStart(Unit *who)
