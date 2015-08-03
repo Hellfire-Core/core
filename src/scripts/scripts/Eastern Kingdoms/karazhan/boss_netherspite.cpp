@@ -180,10 +180,10 @@ struct boss_netherspiteAI : public ScriptedAI
 
                 if(target != current)
                 {
-                    portal->AI()->EnterEvadeMode();
+                    portal->InterruptSpell(CURRENT_CHANNELED_SPELL);
 
                     if (current->GetTypeId() == TYPEID_PLAYER)
-                        portal->CastSpell(current, PlayerDebuff[j], false);
+                        portal->CastSpell(current, PlayerDebuff[j], true);
 
                     portal->CastSpell(target, PortalBeam[j], false);
                     BeamTarget[j] = target->GetGUID();
