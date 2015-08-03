@@ -1046,7 +1046,7 @@ bool ChatHandler::ContainsNotAllowedSigns(std::string text,bool strict)
 
     for (std::string::iterator itr = text.begin(); itr != text.end(); itr++)
     {
-        if ((*itr) > 0x7f || (*itr) < 0x0)
+        if (char(*itr) < 0x20)
             return true;
     }
     return false;

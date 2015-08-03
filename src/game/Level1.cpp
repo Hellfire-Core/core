@@ -176,6 +176,12 @@ bool ChatHandler::HandleGuildAnnounceCommand(const char *args)
                 return false;
             }
 
+            if (ContainsNotAllowedSigns(msg,true))
+            {
+                PSendSysMessage("Your message contains not allowed symbols, it will not be posted.");
+                return false;
+            }
+
             PSendSysMessage("Your message has been queued and will be displayed soon. Please wait %s before sending another one.", secsToTimeString(sWorld.getConfig(CONFIG_GUILD_ANN_COOLDOWN)).c_str());
 
             sGuildMgr.SaveGuildAnnCooldown(gId);
