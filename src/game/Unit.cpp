@@ -6986,6 +6986,11 @@ bool Unit::HandleProcTriggerSpell(Unit *pVictim, uint32 damage, Aura* triggeredB
         {
             if(!procSpell)
                 return false;
+            // arcane missiles - trigger on misile, dont triger on cast
+            if(procSpell->SpellFamilyName == SPELLFAMILY_MAGE && procSpell->SpellFamilyFlags == 0x200000)
+                break;
+            if (procSpell->SpellFamilyName == SPELLFAMILY_MAGE && procSpell->SpellFamilyFlags == 0x800)
+                return false;
             if(procSpell->powerType != POWER_MANA)
                 return false;
             if(!procSpell->manaCost && !procSpell->ManaCostPercentage && !procSpell->manaCostPerlevel)
@@ -7076,13 +7081,6 @@ bool Unit::HandleProcTriggerSpell(Unit *pVictim, uint32 damage, Aura* triggeredB
         {
             basepoints0 = int32(GetTotalAttackPowerValue(BASE_ATTACK) * triggerAmount / 100);
             trigger_spell_id = 30824;
-            break;
-        }
-        // Enlightenment (trigger only from mana cost spells)
-        case 35095:
-        {
-            if (!procSpell || procSpell->powerType!=POWER_MANA || procSpell->manaCost==0 && procSpell->ManaCostPercentage==0 && procSpell->manaCostPerlevel==0)
-                return false;
             break;
         }
         //Gift of the Doomsayer

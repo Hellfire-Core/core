@@ -3017,8 +3017,6 @@ void SpellMgr::LoadSpellCustomAttr()
                 // some quest spell spamming with non-existing triggered
                 else if (spellInfo->Id == 39280)
                     spellInfo->Effect[1] = 0;
-                else if (spellInfo->SpellFamilyFlags == 0x200000) // arcane missiles hits allow triggering
-                    spellInfo->AttributesEx2 |= SPELL_ATTR_EX2_TRIGGERED_CAN_TRIGGER;
                 break;
             }
             case SPELLFAMILY_WARLOCK:
