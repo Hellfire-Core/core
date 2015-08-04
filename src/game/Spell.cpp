@@ -5265,10 +5265,7 @@ SpellCastResult Spell::CheckItems()
                 Item *item = m_targets.getItemTarget();
                 if (!item)
                     return SPELL_FAILED_ITEM_NOT_FOUND;
-                if (item->GetProto()->ItemLevel < GetSpellEntry()->spellLevel)
-                    if (GetSpellEntry()->SpellFamilyName != SPELLFAMILY_SHAMAN && // weapon spells
-                        GetSpellEntry()->SpellFamilyName != SPELLFAMILY_ROGUE &&  // poisons
-                        GetSpellEntry()->SpellFamilyName != SPELLFAMILY_WARLOCK)  // gem ++ AP
+                if (item->GetProto()->ItemLevel < GetSpellEntry()->spellLevel && GetSpellEntry()->SpellFamilyName == SPELLFAMILY_GENERIC)
                         return SPELL_FAILED_LOWLEVEL;
                    
                 SpellItemEnchantmentEntry const *pEnchant = sSpellItemEnchantmentStore.LookupEntry(GetSpellEntry()->EffectMiscValue[0]);
