@@ -33,7 +33,6 @@ mob_spirit_of_azuregos
 EndContentData */
 
 #include "precompiled.h"
-#include "Chat.h"
 
 /*######
 ## mobs_spitelashes
@@ -172,7 +171,7 @@ bool GossipSelect_npc_loramus_thalipedes(Player *player, Creature *_Creature, ui
 #define SAY_RIZZLE_FINAL -1000247
 
 #define GOSSIP_GET_MOONSTONE "Hand over the Southfury moonstone and I'll let you go."
-#define MSG_ESCAPE_NOTICE "Rizzle Sprysprocket takes the Southfury moonstone and escapes into the river. Follow her!"
+#define MSG_ESCAPE_NOTICE "takes the Southfury moonstone and escapes into the river. Follow her!"
 
 float WPs[58][4] =
 {
@@ -302,8 +301,7 @@ struct mob_rizzle_sprysprocketAI : public ScriptedAI
                 DoCast(m_creature, SPELL_RIZZLE_ESCAPE, true);
 
                 //begin swimming and summon depth charges
-                Player* player = Unit::GetPlayer(PlayerGUID);
-                ChatHandler(player).SendSysMessage(MSG_ESCAPE_NOTICE);
+                me->TextEmote(MSG_ESCAPE_NOTICE, PlayerGUID);
                 DoCast(m_creature, SPELL_PERIODIC_DEPTH_CHARGE);
                 m_creature->SetLevitate(true);
                 m_creature->SetSpeed(MOVE_RUN, 0.85f, true);
