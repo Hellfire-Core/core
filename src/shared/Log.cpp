@@ -182,7 +182,7 @@ FILE* Log::openLogFile(LogNames log)
 FILE* Log::openLogFile(ChatLogs log)
 {
     std::string fname = m_logsDir + m_chatLogsDir + chatLogFilenames[log];
-    return fopen(fname.c_str(), "w");
+    return fopen(fname.c_str(), "a");
 }
 
 FILE* Log::openGmlogPerAccount(uint32 account)
