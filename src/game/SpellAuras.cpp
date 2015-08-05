@@ -4952,29 +4952,6 @@ void Aura::HandleAuraModDispelImmunity(bool apply, bool Real)
         HandleModMechanicImmunity(apply, Real);                             // add bleed immunity
         m_modifier.m_miscvalue = miscvalue;
     }
-    else if (m_modifier.m_miscvalue == DISPEL_STEALTH || m_modifier.m_miscvalue == DISPEL_INVISIBILITY)
-    {
-        if (!apply)
-        {
-            bool found = m_target->HasAuraTypeWithFamilyFlags(SPELL_AURA_MOD_RESISTANCE, SPELLFAMILY_DRUID, 0x400) || m_target->HasAura(35325);
-            if (!found)
-            {
-                Unit::AuraList const& faerieFireStateAuras = m_target->GetAurasByType(SPELL_AURA_DISPEL_IMMUNITY);
-                for (Unit::AuraList::const_iterator i = faerieFireStateAuras.begin(); i != faerieFireStateAuras.end(); ++i)
-                {
-                    if ((*i)->GetModifier()->m_miscvalue == DISPEL_STEALTH || (*i)->GetModifier()->m_miscvalue == DISPEL_INVISIBILITY)
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-            }
-            if (!found)
-                m_target->ModifyAuraState(AURA_STATE_FAERIE_FIRE, false);
-        }
-        else
-            m_target->ModifyAuraState(AURA_STATE_FAERIE_FIRE, true);
-    }
 }
 
 void Aura::HandleAuraProcTriggerSpell(bool apply, bool Real)
@@ -5551,33 +5528,6 @@ void Aura::HandleAuraModResistance(bool apply, bool Real)
             if (m_target->GetTypeId() == TYPEID_PLAYER || ((Creature*)m_target)->isPet())
                 m_target->ApplyResistanceBuffModsMod(SpellSchools(x),m_positive,GetModifierValue(), apply);
         }
-    }
-
-    // Faerie Fire (druid versions)
-    if ((m_spellProto->SpellFamilyName == SPELLFAMILY_DRUID &&
-        m_spellProto->SpellFamilyFlags & 0x0000000000000400LL)
-        || m_spellProto->Id == 35325)
-    {
-        if (!apply)
-        {
-            bool found = m_target->HasAuraTypeWithFamilyFlags(SPELL_AURA_MOD_RESISTANCE, SPELLFAMILY_DRUID, 0x400) || m_target->HasAura(35325);
-            if (!found)
-            {
-                Unit::AuraList const& faerieFireStateAuras = m_target->GetAurasByType(SPELL_AURA_DISPEL_IMMUNITY);
-                for (Unit::AuraList::const_iterator i = faerieFireStateAuras.begin(); i != faerieFireStateAuras.end(); ++i)
-                {
-                    if ((*i)->GetModifier()->m_miscvalue == DISPEL_STEALTH || (*i)->GetModifier()->m_miscvalue == DISPEL_INVISIBILITY)
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-            }
-            if (!found)
-                m_target->ModifyAuraState(AURA_STATE_FAERIE_FIRE, false);
-        }
-        else
-            m_target->ModifyAuraState(AURA_STATE_FAERIE_FIRE, true);
     }
 
     if (apply)

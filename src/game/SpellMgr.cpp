@@ -2848,7 +2848,9 @@ void SpellMgr::LoadSpellCustomAttr()
             }
         }
         // this is done for the reason that mechanic is already worked out as SPELL mechanic. Leaving effect mechanic the same will cause double-effect on spell
-
+        
+        if (spellInfo->SpellIconID == 109 && spellInfo->SpellVisual == 192)
+            spellInfo->AttributesCu |= SPELL_ATTR_CU_BLOCK_STEALTH;
 
         switch (spellInfo->SpellFamilyName)
         {
@@ -2908,6 +2910,15 @@ void SpellMgr::LoadSpellCustomAttr()
                     break;
                 case 18818: // skullflame shield flamestrike
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
+                    break;
+                case 9806: // faerie-fire-alikes
+                case 9991:
+                case 16432:
+                case 35325:
+                case 35328:
+                case 35329:
+                case 35331:
+                    spellInfo->AttributesCu |= SPELL_ATTR_CU_BLOCK_STEALTH;
                     break;
                 }
                 if (spellInfo->SpellIconID == 184 && spellInfo->Attributes == 4259840)

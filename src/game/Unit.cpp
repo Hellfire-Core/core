@@ -3956,6 +3956,9 @@ bool Unit::AddAura(Aura *Aur)
     if (GetTypeId() == TYPEID_UNIT && IsAIEnabled)
         ((Creature*)this)->AI()->OnAuraApply(Aur, Aur->GetCaster(), stackModified);
 
+    if (spellInfo->AttributesCu & SPELL_ATTR_CU_BLOCK_STEALTH)
+        ModifyAuraState(AURA_STATE_FAERIE_FIRE, true);
+
     sLog.outDebug("Aura %u now is in use", Aur->GetModifier()->m_auraname);
     return true;
 }
@@ -4616,6 +4619,20 @@ void Unit::RemoveAura(AuraMap::iterator &i, AuraRemoveMode mode)
                         ApplySpellImmune(id, IMMUNITY_ID, -(*itr), false);
                     else
                         RemoveAurasDueToSpell(*itr);
+        }
+        if (spellInfo->AttributesCu & SPELL_ATTR_CU_BLOCK_STEALTH)
+        {
+            bool found = false;
+            for (AuraMap::iterator itr = m_Auras.begin(); itr != m_Auras.end(); itr++)
+            {
+                if (itr->second->GetSpellProto()->AttributesCu & SPELL_ATTR_CU_BLOCK_STEALTH)
+                {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+                ModifyAuraState(AURA_STATE_FAERIE_FIRE, false);
         }
     }
 

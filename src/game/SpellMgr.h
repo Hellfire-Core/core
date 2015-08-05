@@ -412,7 +412,8 @@ enum AttributesCu
     SPELL_ATTR_CU_FIXED_DAMAGE          = 0x00020000, // ignore all %dmg done, %dmg taken auras
     SPELL_ATTR_CU_NO_SPELL_DMG_COEFF    = 0x00040000, // to those spells won't be applied and bonuses from spell dmg
     SPELL_ATTR_CU_TREAT_AS_WELL_FED     = 0x00080000,
-    SPELL_ATTR_CU_NO_SCROLL_STACK       = 0x00100000  // for spells which can't stack with scrolls (must be also applied to scroll spells)
+    SPELL_ATTR_CU_NO_SCROLL_STACK       = 0x00100000, // for spells which can't stack with scrolls (must be also applied to scroll spells)
+    SPELL_ATTR_CU_BLOCK_STEALTH         = 0x00200000  // simplification, faerie-fire-alike spells
 };
 
 #define SPELL_FAKE_DELAY 200LL
