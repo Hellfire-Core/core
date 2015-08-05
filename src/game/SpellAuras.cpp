@@ -6506,7 +6506,7 @@ void Aura::HandleShapeshiftBoosts(bool apply)
                     continue;
 
                 SpellEntry const *spellInfo = sSpellStore.LookupEntry(itr->first);
-                if (!spellInfo || !(spellInfo->Attributes & ((1<<6) | (1<<7))))
+                if (!spellInfo || !(spellInfo->Attributes & (SPELL_ATTR_PASSIVE | SPELL_ATTR_UNK7)) || itr->second.disabled)
                     continue;
 
                 bool outdoor = m_target->GetTerrain()->IsOutdoors(m_target->GetPositionX(), m_target->GetPositionY(), m_target->GetPositionZ());
