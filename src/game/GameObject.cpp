@@ -891,6 +891,9 @@ void GameObject::Despawn()
     }
     else
     {
+        if (loot.HasLooters())
+            loot.ReleaseAll();
+
         SendObjectDeSpawnAnim(GetGUID());
         m_respawnTime = m_spawnedByDefault ? time(NULL) + m_respawnDelayTime : 0;
 

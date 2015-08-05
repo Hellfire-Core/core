@@ -869,6 +869,16 @@ void Loot::NotifyQuestItemRemoved(uint8 questIndex)
     }
 }
 
+void Loot::ReleaseAll()
+{
+    for (std::set<uint64>::iterator i = PlayersLooting.begin(); i != PlayersLooting.end(); i++)
+    {
+        if (Player* pl = ObjectAccessor::FindPlayer(*i))
+            pl->SendLootRelease(pl->GetLootGUID());
+    }
+    PlayersLooting.clear();
+}
+
 void Loot::generateMoneyLoot(uint32 minAmount, uint32 maxAmount)
 {
     if (maxAmount > 0)
