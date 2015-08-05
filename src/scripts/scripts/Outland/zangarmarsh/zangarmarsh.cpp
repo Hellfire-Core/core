@@ -374,7 +374,7 @@ struct npc_baby_murlocAI : public ScriptedAI
     {
         PlayerGUID = 0;
         CheckTimer.Reset(7000);
-        EndTimer.Reset(55000);
+        EndTimer.Reset(10000);
         DoSummon();
         me->GetMotionMaster()->MovePoint(0, M[0].x, M[0].y, M[0].z);
         me->SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_DANCE);
