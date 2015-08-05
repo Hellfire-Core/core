@@ -110,11 +110,11 @@ struct npc_grimstoneAI : public npc_escortAI
     ScriptedInstance* pInstance;
 
     uint8 EventPhase;
-    int32 Event_Timer;
+    uint32 Event_Timer;
 
     uint8 MobSpawnId;
     uint8 MobCount;
-    int32 MobDeath_Timer;
+    uint32 MobDeath_Timer;
 
     uint64 RingMobGUID[4];
     uint64 RingBossGUID;
@@ -212,14 +212,13 @@ struct npc_grimstoneAI : public npc_escortAI
 
         if (MobDeath_Timer)
         {
-            MobDeath_Timer -= diff;
             if (MobDeath_Timer <= diff)
             {
-                MobDeath_Timer += 2500;
+                MobDeath_Timer = 2500;
 
                 if (RingBossGUID)
                 {
-                    Creature *boss = Unit::GetCreature(*me,RingBossGUID);
+                    Creature *boss = Unit::GetCreature(*me, RingBossGUID);
                     if (boss && !boss->isAlive() && boss->isDead())
                     {
                         RingBossGUID = 0;
@@ -230,9 +229,9 @@ struct npc_grimstoneAI : public npc_escortAI
                     return;
                 }
 
-                for(uint8 i = 0; i < MOB_AMOUNT; i++)
+                for (uint8 i = 0; i < MOB_AMOUNT; i++)
                 {
-                    Creature *mob = Unit::GetCreature(*me,RingMobGUID[i]);
+                    Creature *mob = Unit::GetCreature(*me, RingMobGUID[i]);
                     if (mob && !mob->isAlive() && mob->isDead())
                     {
                         RingMobGUID[i] = 0;
@@ -247,11 +246,12 @@ struct npc_grimstoneAI : public npc_escortAI
                     }
                 }
             }
+            else
+                MobDeath_Timer -= diff;
         }
 
         if (Event_Timer)
         {
-            Event_Timer -= diff;
             if (Event_Timer <= diff)
             {
                 switch(EventPhase)
@@ -261,49 +261,49 @@ struct npc_grimstoneAI : public npc_escortAI
                     DoGate(DATA_ARENA4,1);
                     Start(false, false);
                     CanWalk = true;
-                    //Event_Timer = 0;
+                    Event_Timer = 0;
                     break;
                 case 1:
                     CanWalk = true;
-                    //Event_Timer = 0;
+                    Event_Timer = 0;
                     break;
                 case 2:
-                    Event_Timer += 2000;
+                    Event_Timer = 2000;
                     break;
                 case 3:
                     DoGate(DATA_ARENA1,0);
-                    Event_Timer += 3000;
+                    Event_Timer = 3000;
                     break;
                 case 4:
                     CanWalk = true;
                     me->SetVisibility(VISIBILITY_OFF);
                     SummonRingMob();
-                    Event_Timer += 8000;
+                    Event_Timer = 8000;
                     break;
                 case 5:
                     SummonRingMob();
                     SummonRingMob();
-                    Event_Timer += 8000;
+                    Event_Timer = 8000;
                     break;
                 case 6:
                     SummonRingMob();
-                    //Event_Timer = 0;
+                    Event_Timer = 0;
                     break;
                 case 7:
                     me->SetVisibility(VISIBILITY_ON);
                     DoGate(DATA_ARENA1,1);
                     DoScriptText(-1000004, me);//4
                     CanWalk = true;
-                    //Event_Timer = 0;
+                    Event_Timer = 0;
                     break;
                 case 8:
                     DoGate(DATA_ARENA2,0);
-                    //Event_Timer = 5000;
+                    Event_Timer = 5000;
                     break;
                 case 9:
                     me->SetVisibility(VISIBILITY_OFF);
                     SummonRingBoss();
-                    //Event_Timer = 0;
+                    Event_Timer = 0;
                     break;
                 case 10:
                     //if quest, complete
@@ -311,7 +311,7 @@ struct npc_grimstoneAI : public npc_escortAI
                     DoGate(DATA_ARENA3,0);
                     DoGate(DATA_ARENA4,0);
                     CanWalk = true;
-                    //Event_Timer = 0;
+                    Event_Timer = 0;
                     break;
                 }
                 ++EventPhase;
