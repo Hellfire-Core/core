@@ -1341,7 +1341,7 @@ struct npc_anchorite_baradaAI : public ScriptedAI
                         DoSpawnDarkness();return 4000;
                 case 29:Colonel->GetMotionMaster()->MovePoint(0, P[5].x, P[5].y, P[5].z);return 4000;
                 case 30:Colonel->GetMotionMaster()->MovePoint(0, P[2].x, P[2].y, P[2].z);return 4000;
-                case 31: DoScriptText(SAY_BARADA7, me, 0); return 0;
+                case 31: DoScriptText(SAY_BARADA7, me, 0); return 1;
                 case 32:Colonel->GetMotionMaster()->MovePoint(0, P[3].x, P[3].y, P[3].z);
                         DoSpawnDarkness();return 4000;
                 case 33:Colonel->GetMotionMaster()->MovePoint(0, P[4].x, P[4].y, P[4].z);return 4000;
@@ -1387,7 +1387,8 @@ struct npc_anchorite_baradaAI : public ScriptedAI
             default: return 1;
             }
         }
-        return 0;
+        Reset();
+        return 1;
     }
 
     void JustDied(Unit* who)
