@@ -1602,9 +1602,7 @@ struct npc_lord_illidan_stormrageAI : public ScriptedAI
                     {
                         if(Player* pTarget = Unit::GetPlayer(PlayerGUID))
                         {
-                            float x, y, z;
-                            pTarget->GetPosition(x,y,z);
-                            Spawn->GetMotionMaster()->MovePoint(0,x, y, z);
+                            Spawn->CombatStart(pTarget);
                         }
                     }
                     ((mob_illidari_spawnAI*)Spawn->AI())->LordIllidanGUID = m_creature->GetGUID();
