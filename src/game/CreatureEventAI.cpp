@@ -1481,3 +1481,17 @@ bool CreatureEventAI::SpawnedEventConditionsCheck(CreatureEventAI_Event const& e
 
     return false;
 }
+
+std::string CreatureEventAI::GetDebugInfo()
+{
+    std::ostringstream str;
+    str << "Debug info for EventAI of " << me->GetName() << "(" << me->GetEntry() << " : " << me->GetGUIDLow();
+    str << ") consists of " << CreatureEventAIList.size() << " event entries\n";
+    for (std::list<CreatureEventAIHolder>::iterator i = CreatureEventAIList.begin(); i != CreatureEventAIList.end(); ++i)
+    {
+        str << "Event " << i->Event.event_id << " : type " << i->Event.event_type << " timer " << i->Time;
+        str << (i->Enabled ? " enabled\n" : " disabled\n");
+    }
+
+    return str.str();
+}

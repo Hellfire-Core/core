@@ -155,6 +155,9 @@ class HELLGROUND_IMPORT_EXPORT CreatureAI : public UnitAI
         virtual void ReceiveEmote(Player* pPlayer, uint32 text_emote) {}
         virtual void ReceiveScriptText(WorldObject *pSource, int32 iTextEntry) {}
 
+        // For debugging AI
+        virtual std::string GetDebugInfo() { return std::string("This AI does not support debugging"); }
+
         ///== Triggered Actions Requested ==================
  
         // Called when creature attack expected (if creature can and no have current victim)

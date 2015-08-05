@@ -4749,3 +4749,25 @@ bool ChatHandler::HandleTrollmuteInfoCommand(const char* args)
 
     return true;
 }
+
+bool ChatHandler::HandleNpcDebugAICommand(const char* args)
+{
+    Creature* pCreature = getSelectedCreature();
+    if (!pCreature)
+    {
+        SendSysMessage(LANG_SELECT_CREATURE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    CreatureAI* ai = pCreature->AI();
+    if (!ai)
+    {
+        SendSysMessage("no AI detected");
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    SendSysMessage(ai->GetDebugInfo().c_str());
+    return true;
+}

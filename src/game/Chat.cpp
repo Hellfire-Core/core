@@ -535,6 +535,7 @@ ChatCommand * ChatHandler::getCommandTable()
         { "addtemp",        PERM_HIGH_GMT,  PERM_CONSOLE, false,  &ChatHandler::HandleNpcAddTempCommand,          "", NULL },
         { "changeentry",    PERM_ADM,       PERM_CONSOLE, false,  &ChatHandler::HandleNpcChangeEntryCommand,      "", NULL },
         { "changelevel",    PERM_HIGH_GMT,  PERM_CONSOLE, false,  &ChatHandler::HandleNpcChangeLevelCommand,      "", NULL },
+        { "debugai",        PERM_GMT_DEV,   PERM_CONSOLE, false,  &ChatHandler::HandleNpcDebugAICommand,          "", NULL },
         { "delete",         PERM_HIGH_GMT,  PERM_CONSOLE, false,  &ChatHandler::HandleNpcDeleteCommand,           "", NULL },
         { "deleteformation",PERM_DEVELOPER, PERM_CONSOLE, false,  &ChatHandler::HandleNpcDeleteFormationCommand,  "", NULL },
         { "delitem",        PERM_GMT_DEV,   PERM_CONSOLE, false,  &ChatHandler::HandleNpcDelItemCommand,          "", NULL },
