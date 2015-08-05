@@ -3208,6 +3208,9 @@ void Spell::SendCastResult(SpellCastResult result)
                 case 45373:                             // Bloodberry Elixir
                     data << uint32(4075);
                     break;
+                case 40817:                             // summon banishing portal
+                    data << uint32(3784);
+                    break;
                 default:                                // default case
                     data << uint32(GetSpellEntry()->AreaId);
                     break;
