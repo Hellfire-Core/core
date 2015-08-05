@@ -1622,44 +1622,12 @@ struct npc_drijyaAI : public npc_escortAI
     void AttackedBy(Unit* who) {}
     void AttackStart(Unit* who) {}
 
-    void SpawnImp()
-    {
-        ++Count;
-        me->SummonCreature(NPC_IMP, S[0].x, S[0].y, S[0].z, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 10000);
-    }
-
-    void SpawnTrooper()
-    {
-        ++Count;
-        me->SummonCreature(NPC_TROOPER, S[0].x, S[0].y, S[0].z, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 10000);
-    }
-
-    void SpawnDestroyer()
-    {
-        me->SummonCreature(NPC_DESTROYER, S[1].x, S[1].y, S[1].z, 2.5f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 10000);
-    }
-
     void JustSummoned(Creature* summoned)
     {
-        if (summoned->GetEntry() == NPC_IMP)
-        {
-            if (Player* player = GetPlayerForEscort())
-                summoned->AI()->AttackStart(player); 
-        }
-        if (summoned->GetEntry() == NPC_TROOPER)
-        {
-            if(Player* player = GetPlayerForEscort())
-                summoned->AI()->AttackStart(player);
-        }
-        else
-        {
-            if (summoned->GetEntry() == NPC_DESTROYER)
-            {
-                if (Player* player = GetPlayerForEscort())
-                    summoned->AI()->AttackStart(player);
-            }
-        }
-     }
+        if (Player* player = GetPlayerForEscort())
+            summoned->AI()->AttackStart(player); 
+        summoned->AddThreat(me, 0.0f);
+    }
 
     void WaypointReached(uint32 i)
     {
@@ -1741,7 +1709,8 @@ struct npc_drijyaAI : public npc_escortAI
                         StartSpawnTimer = 15000;
                     }
                     SpawnTimer = 3500;
-                    SpawnImp();
+                    ++Count;
+                    me->SummonCreature(NPC_IMP, S[0].x, S[0].y, S[0].z, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 10000);
                 }
             }
         }
@@ -1757,8 +1726,9 @@ struct npc_drijyaAI : public npc_escortAI
                         SummonTrooper = false;
                         StartSpawnTimer = 15000;
                     }
-                     SpawnTimer = 3500;
-                     SpawnTrooper();
+                    SpawnTimer = 3500;
+                    ++Count;
+                    me->SummonCreature(NPC_TROOPER, S[0].x, S[0].y, S[0].z, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 10000);
                 }
             }
         }
@@ -1767,7 +1737,7 @@ struct npc_drijyaAI : public npc_escortAI
         {
             if (StartSpawnTimer.Expired(diff))
             {
-                SpawnDestroyer();
+                me->SummonCreature(NPC_DESTROYER, S[1].x, S[1].y, S[1].z, 2.5f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 10000);
                 SummonDestroyer = false;
                 StartSpawnTimer = 15000;
             }
