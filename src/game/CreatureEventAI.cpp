@@ -519,18 +519,13 @@ void CreatureEventAI::ProcessAction(CreatureEventAI_Action const& action, uint32
                         //Melee current victim if flag not set
                         if (!(action.cast.castFlags & CAST_NO_MELEE_IF_OOM))
                         {
-                            //if (m_creature->GetMotionMaster()->GetCurrentMovementGeneratorType() == CHASE_MOTION_TYPE)
-                            {
-                                AttackDistance = 0.0f;
-                                AttackAngle = 0.0f;
-
-                                m_creature->GetMotionMaster()->MoveChase(m_creature->getVictim(), AttackDistance, AttackAngle);
-                            }
+                            m_creature->GetMotionMaster()->MoveChase(m_creature->getVictim(), MELEE_RANGE, 0.0f);
                         }
 
                     }
                     else
                     {
+                        m_creature->GetMotionMaster()->MoveIdle();
                         //Interrupt any previous spell
                         if (action.cast.castFlags & CAST_INTURRUPT_PREVIOUS && caster->IsNonMeleeSpellCast(false))
                             caster->InterruptNonMeleeSpells(false);
@@ -582,17 +577,13 @@ void CreatureEventAI::ProcessAction(CreatureEventAI_Action const& action, uint32
                         if (!(action.castguid.castFlags & CAST_NO_MELEE_IF_OOM))
                         {
                             if (m_creature->GetMotionMaster()->GetCurrentMovementGeneratorType() == CHASE_MOTION_TYPE)
-                            {
-                                AttackDistance = 0.0f;
-                                AttackAngle = 0.0f;
-
-                                m_creature->GetMotionMaster()->MoveChase(m_creature->getVictim(), AttackDistance, AttackAngle);
-                            }
+                                m_creature->GetMotionMaster()->MoveChase(m_creature->getVictim(), MELEE_RANGE, 0.0f);
                         }
 
                     }
                     else
                     {
+                        m_creature->GetMotionMaster()->MoveIdle();
                         //Interrupt any previous spell
                         if (caster->IsNonMeleeSpellCast(false) && action.castguid.castFlags & CAST_INTURRUPT_PREVIOUS)
                             caster->InterruptNonMeleeSpells(false);
