@@ -1414,6 +1414,9 @@ bool CreatureEventAI::CanCast(Unit* Target, SpellEntry const *Spell, bool Trigge
     if (!m_creature->IsInRange(Target,TempRange->minRange,TempRange->maxRange))
         return false;
 
+    if (!Triggered && !m_creature->IsWithinLOSInMap(Target))
+        return false;
+
     return true;
 }
 
