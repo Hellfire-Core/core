@@ -3014,6 +3014,10 @@ void SpellMgr::LoadSpellCustomAttr()
                     spellInfo->EffectTriggerSpell[2] = 39897;
                     spellInfo->AttributesEx2 |= SPELL_ATTR_EX2_IGNORE_LOS;
                 }
+                else if (spellInfo->Id == 32409) // shadow word: death back damage, unaffected by anything
+                {
+                    spellInfo->SpellFamilyFlags = 0;
+                }
                 break;
             }
             case SPELLFAMILY_MAGE:
