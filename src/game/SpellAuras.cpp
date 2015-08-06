@@ -2484,6 +2484,14 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
     {
         switch (GetId())
         {
+            case 11446: // aggro on MC
+            case 605:
+            case 10911:
+            case 10912:
+                if (!caster)
+                    return;
+                if (m_target->GetTypeId() == TYPEID_PLAYER)
+                    caster->SetContestedPvP();
             case 38297:
             {
                 if (!caster)
