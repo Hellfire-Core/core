@@ -4787,6 +4787,11 @@ SpellCastResult Spell::CheckPetCast(Unit* target)
         //cooldown
         if (((Creature*)m_caster)->HasSpellCooldown(GetSpellEntry()->Id))
             return SPELL_FAILED_NOT_READY;
+        // dash & dive dont use when near
+        if (target && m_caster->isInCombat() && GetSpellEntry()->Effect[0] == SPELL_EFFECT_APPLY_AURA &&
+            GetSpellEntry()->EffectApplyAuraName[0] == SPELL_AURA_MOD_INCREASE_SPEED &&
+            GetSpellEntry()->SpellVisual == 2276 && m_caster->IsWithinMeleeRange(target))
+            return SPELL_FAILED_TOO_CLOSE;
     }
 
     return CheckCast(true);
