@@ -188,6 +188,7 @@ class HELLGROUND_IMPORT_EXPORT CreatureAI : public UnitAI
         virtual void PassengerBoarded(Unit *who, int8 seatId, bool apply) {}
         bool _EnterEvadeMode();
 
+        std::string m_AIName;
     protected:
         virtual void MoveInLineOfSight(Unit *);
 

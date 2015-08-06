@@ -3825,7 +3825,7 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/)
 
     PSendSysMessage("XpMOD template: %f", cInfo->xpMod);
     PSendSysMessage("XpMOD creature: %f", target->m_xpMod);
-    PSendSysMessage("AIName: %s, ScriptName: %s", target->GetAIName().c_str(), target->GetScriptName().c_str());
+    PSendSysMessage("AIName: %s/%s, ScriptName: %s", target->GetAIName().c_str(),target->AI()->m_AIName.c_str(), target->GetScriptName().c_str());
     PSendSysMessage("DeadByDefault: %i", (int)target->GetIsDeadByDefault());
 
     CreatureDisplayInfoEntry const* displayInfo = sCreatureDisplayInfoStore.LookupEntry(displayid);

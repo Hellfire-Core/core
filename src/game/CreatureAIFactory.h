@@ -44,7 +44,9 @@ template<class REAL_AI>
 inline CreatureAI* CreatureAIFactory<REAL_AI>::Create(void *data) const
 {
     Creature* creature = reinterpret_cast<Creature *>(data);
-    return (new REAL_AI(creature));
+    CreatureAI* ai = (new REAL_AI(creature));
+    ai->m_AIName = key();
+    return ai;
 }
 
 typedef FactoryHolder<CreatureAI> CreatureAICreator;
