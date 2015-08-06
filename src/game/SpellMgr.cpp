@@ -3056,6 +3056,8 @@ void SpellMgr::LoadSpellCustomAttr()
                     spellInfo->Effect[1] = 0;
                 else if (spellInfo->Id == 13810) // frost trap effect ignore los
                     spellInfo->AttributesEx2 |= SPELL_ATTR_EX2_IGNORE_LOS;
+                else if (spellInfo->Id == 1543 || spellInfo->Id == 28822)
+                    spellInfo->AttributesCu |= SPELL_ATTR_CU_BLOCK_STEALTH;
 
                 spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
                 break;
