@@ -1011,6 +1011,8 @@ uint32 Unit::DealDamage(DamageLog *damageInfo, DamageEffectType damagetype, cons
         {
             DEBUG_LOG("DealDamage: victim just died");
             Kill(pVictim, durabilityLoss);
+            if (pVictim->GetTypeId() == TYPEID_PLAYER)
+                SetContestedPvP();
         }
         else                                                    // if (health <= damage)
         {
