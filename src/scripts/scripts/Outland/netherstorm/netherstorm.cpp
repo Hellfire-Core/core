@@ -1625,8 +1625,8 @@ struct npc_drijyaAI : public npc_escortAI
     void JustSummoned(Creature* summoned)
     {
         if (Player* player = GetPlayerForEscort())
-            summoned->AI()->AttackStart(player); 
-        summoned->AddThreat(me, 0.0f);
+            summoned->AddThreat(player, 0.0f);
+        summoned->AI()->AttackStart(me); 
     }
 
     void WaypointReached(uint32 i)
