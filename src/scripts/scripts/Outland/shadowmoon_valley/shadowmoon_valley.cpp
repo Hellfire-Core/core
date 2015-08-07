@@ -1276,7 +1276,7 @@ static SpawnSpells SpawnCast[]=
 
 struct mob_illidari_spawnAI : public ScriptedAI
 {
-    mob_illidari_spawnAI(Creature* c) : ScriptedAI(c) {}
+    mob_illidari_spawnAI(Creature* c) : ScriptedAI(c) { me->SetAggroRange(60.0f); }
 
     uint64 LordIllidanGUID;
     Timer SpellTimer1, SpellTimer2, SpellTimer3;
