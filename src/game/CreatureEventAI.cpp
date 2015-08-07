@@ -159,7 +159,8 @@ bool CreatureEventAI::ProcessEvent(CreatureEventAIHolder& pHolder, Unit* pAction
         return false;
 
     CreatureEventAI_Event const& event = pHolder.Event;
-
+    SendDebug("Processing event %u; type %u, flags %u, chance %u",
+        event.event_id, event.event_type, event.event_flags, event.event_chance);
     //Check event conditions based on the event type, also reset events
     switch (event.event_type)
     {
@@ -386,6 +387,9 @@ bool CreatureEventAI::ProcessEvent(CreatureEventAIHolder& pHolder, Unit* pAction
 
 void CreatureEventAI::ProcessAction(CreatureEventAI_Action const& action, uint32 rnd, uint32 EventId, Unit* pActionInvoker)
 {
+    if (action.type == ACTION_T_NONE)
+        return;
+    SendDebug("Processing action type %u", action.type);
     switch (action.type)
     {
         case ACTION_T_TEXT:
@@ -516,6 +520,7 @@ void CreatureEventAI::ProcessAction(CreatureEventAI_Action const& action, uint32
                     if (!(action.cast.castFlags & (CAST_FORCE_TARGET_SELF | CAST_FORCE_CAST)) &&
                         !CanCast(target, tSpell, (action.cast.castFlags & CAST_TRIGGERED)))
                     {
+                        SendDebug("Cannot cast (flags %u, spell %u)",action.cast.castFlags,action.cast.spellId);
                         //Melee current victim if flag not set
                         if (!(action.cast.castFlags & CAST_NO_MELEE_IF_OOM))
                         {
@@ -525,6 +530,7 @@ void CreatureEventAI::ProcessAction(CreatureEventAI_Action const& action, uint32
                     }
                     else
                     {
+                        SendDebug("Casting spell (flags %u, spell %u)", action.cast.castFlags, action.cast.spellId);
                         m_creature->GetMotionMaster()->MoveIdle();
                         //Interrupt any previous spell
                         if (action.cast.castFlags & CAST_INTURRUPT_PREVIOUS && caster->IsNonMeleeSpellCast(false))
@@ -537,6 +543,8 @@ void CreatureEventAI::ProcessAction(CreatureEventAI_Action const& action, uint32
                 else
                     sLog.outLog(LOG_DB_ERR, "CreatureEventAI: event %d creature %d attempt to cast spell that doesn't exist %d", EventId, m_creature->GetEntry(), action.cast.spellId);
             }
+            else
+                SendDebug("Casting blocked by canCast (flags %u, spell %u)", action.cast.castFlags, action.cast.spellId);
             break;
         }
         case ACTION_T_CAST_GUID:

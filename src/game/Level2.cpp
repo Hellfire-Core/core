@@ -4767,7 +4767,18 @@ bool ChatHandler::HandleNpcDebugAICommand(const char* args)
         SetSentErrorMessage(true);
         return false;
     }
-
-    SendSysMessage(ai->GetDebugInfo().c_str());
+    
+    if (strcmp(args, "on") == 0)
+    {
+        ai->ToggleDebug(m_session->GetPlayer()->GetGUID());
+        SendSysMessage(LANG_DONE);
+    }
+    else if (strcmp(args, "off") == 0)
+    {
+        ai->ToggleDebug(0);
+        SendSysMessage(LANG_DONE);
+    }
+    else
+        SendSysMessage(ai->GetDebugInfo().c_str());
     return true;
 }

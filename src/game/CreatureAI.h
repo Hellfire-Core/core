@@ -85,7 +85,7 @@ class HELLGROUND_IMPORT_EXPORT CreatureAI : public UnitAI
         Creature *DoSummonFlyer(uint32 uiEntry, WorldObject *obj, float fZ, float fRadius = 5.0f, uint32 uiDespawntime = 30000, TemporarySummonType uiType = TEMPSUMMON_CORPSE_TIMED_DESPAWN);
 
     public:
-        explicit CreatureAI(Creature *c) : UnitAI((Unit*)c), me(c), m_creature(c), m_MoveInLineOfSight_locked(false) {}
+        explicit CreatureAI(Creature *c) : UnitAI((Unit*)c), me(c), m_creature(c), m_MoveInLineOfSight_locked(false), m_debugInfoReceiver(0) {}
 
         virtual ~CreatureAI() {}
 
@@ -157,6 +157,8 @@ class HELLGROUND_IMPORT_EXPORT CreatureAI : public UnitAI
 
         // For debugging AI
         virtual std::string GetDebugInfo() { return std::string("This AI does not support debugging"); }
+        void ToggleDebug(uint64 target) { m_debugInfoReceiver = target; };
+        void SendDebug(const char* fmt, ...);
 
         ///== Triggered Actions Requested ==================
  
@@ -195,6 +197,7 @@ class HELLGROUND_IMPORT_EXPORT CreatureAI : public UnitAI
 
     private:
         bool m_MoveInLineOfSight_locked;
+        uint64 m_debugInfoReceiver;
 };
 
 enum Permitions
