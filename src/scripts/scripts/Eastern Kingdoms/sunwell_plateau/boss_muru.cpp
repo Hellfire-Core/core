@@ -419,15 +419,11 @@ struct npc_muru_portalAI : public Scripted_NoMovementAI
             }
         }
 
-
-        if (SummonTimer.Expired(diff))
+        if (SummonTimer.Expired(diff) && pInstance->GetData(DATA_MURU_EVENT) == IN_PROGRESS)
         {
             DoCast(me, SPELL_SUMMON_VOID_SENTINEL_SUMMONER);
             SummonTimer = 0;
         }
-        
-
-
 
         if (TransformTimer.Expired(diff))
         {
