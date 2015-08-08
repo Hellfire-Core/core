@@ -400,10 +400,7 @@ class Spell
         void FillTargetMap();
         void SetTargetMap(uint32 i, uint32 cur);
 
-        // returns targets grounding totem if exists
-        Unit* SelectGroundingTarget(Unit* target);
-        // if nessesary replaces spell target with intervening warrior
-        void SelectInterveneTarget(); 
+        Unit* SelectMagnetTarget();
 
         void HandleHitTriggerAura();
         bool CheckTarget(Unit* target, uint32 eff);
