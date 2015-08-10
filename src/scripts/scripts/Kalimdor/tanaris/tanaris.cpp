@@ -85,6 +85,11 @@ struct mob_aquementasAI : public ScriptedAI
         }
     }
 
+	void JustDied(Unit* pKiller)
+    {
+       SendItem(pKiller);
+    }
+
     void EnterCombat(Unit* who)
     {
         DoScriptText(AGGRO_YELL_AQUE, me, who);
