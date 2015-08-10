@@ -77,35 +77,44 @@ void SimpleAI::EnterCombat(Unit *who)
 {
             //Reset cast timers
             if (Spell[0].First_Cast >= 0)
-                Spell_Timer[0] = Spell[0].First_Cast;
-            else Spell_Timer[0] = 1000;
+                Spell_Timer[0].Reset(Spell[0].First_Cast);
+            else Spell_Timer[0].Reset(1000);
+
             if (Spell[1].First_Cast >= 0)
-                Spell_Timer[1] = Spell[1].First_Cast;
-            else Spell_Timer[1] = 1000;
+                Spell_Timer[1].Reset(Spell[1].First_Cast);
+            else Spell_Timer[1].Reset(1000);
+
             if (Spell[2].First_Cast >= 0)
-                Spell_Timer[2] = Spell[2].First_Cast;
-            else Spell_Timer[2] = 1000;
+                Spell_Timer[2].Reset(Spell[2].First_Cast);
+            else Spell_Timer[2].Reset(1000);
+
             if (Spell[3].First_Cast >= 0)
-                Spell_Timer[3] = Spell[3].First_Cast;
-            else Spell_Timer[3] = 1000;
+                Spell_Timer[3].Reset(Spell[3].First_Cast);
+            else Spell_Timer[3].Reset(1000);
+
             if (Spell[4].First_Cast >= 0)
-                Spell_Timer[4] = Spell[4].First_Cast;
-            else Spell_Timer[4] = 1000;
+                Spell_Timer[4].Reset(Spell[4].First_Cast);
+            else Spell_Timer[4].Reset(1000);
+
             if (Spell[5].First_Cast >= 0)
-                Spell_Timer[5] = Spell[5].First_Cast;
-            else Spell_Timer[5] = 1000;
+                Spell_Timer[5].Reset(Spell[5].First_Cast);
+            else Spell_Timer[5].Reset(1000);
+
             if (Spell[6].First_Cast >= 0)
-                Spell_Timer[6] = Spell[6].First_Cast;
-            else Spell_Timer[6] = 1000;
+                Spell_Timer[6].Reset(Spell[6].First_Cast);
+            else Spell_Timer[6].Reset(1000);
+
             if (Spell[7].First_Cast >= 0)
-                Spell_Timer[7] = Spell[7].First_Cast;
-            else Spell_Timer[7] = 1000;
+                Spell_Timer[7].Reset(Spell[7].First_Cast);
+            else Spell_Timer[7].Reset(1000);
+
             if (Spell[8].First_Cast >= 0)
-                Spell_Timer[8] = Spell[8].First_Cast;
-            else Spell_Timer[8] = 1000;
+                Spell_Timer[8].Reset(Spell[8].First_Cast);
+            else Spell_Timer[8].Reset(1000);
+
             if (Spell[9].First_Cast >= 0)
-                Spell_Timer[9] = Spell[9].First_Cast;
-            else Spell_Timer[9] = 1000;
+                Spell_Timer[9].Reset(Spell[9].First_Cast);
+            else Spell_Timer[9].Reset(1000);
 
             uint32 random_text = rand()%3;
 
