@@ -159,8 +159,7 @@ bool CreatureEventAI::ProcessEvent(CreatureEventAIHolder& pHolder, Unit* pAction
         return false;
 
     CreatureEventAI_Event const& event = pHolder.Event;
-    SendDebug("Processing event %u; type %u, flags %u, chance %u",
-        event.event_id, event.event_type, event.event_flags, event.event_chance);
+    
     //Check event conditions based on the event type, also reset events
     switch (event.event_type)
     {
@@ -366,6 +365,9 @@ bool CreatureEventAI::ProcessEvent(CreatureEventAIHolder& pHolder, Unit* pAction
             sLog.outLog(LOG_DB_ERR, "CreatureEventAI: Creature %u using Event %u has invalid Event Type(%u), missing from ProcessEvent() Switch.", m_creature->GetEntry(), pHolder.Event.event_id, pHolder.Event.event_type);
             break;
     }
+
+    SendDebug("Processing event %u; type %u, flags %u, chance %u",
+        event.event_id, event.event_type, event.event_flags, event.event_chance);
 
     //Disable non-repeatable events
     if (!(pHolder.Event.event_flags & EFLAG_REPEATABLE))
