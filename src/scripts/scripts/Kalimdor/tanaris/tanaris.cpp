@@ -62,7 +62,7 @@ struct mob_aquementasAI : public ScriptedAI
 
     void Reset()
     {
-        SendItem_Timer.Reset(0);
+        SendItem_Timer.Reset(1000);
         SwitchFaction_Timer.Reset(10000);
         me->setFaction(35);
         isFriendly = true;
@@ -73,21 +73,26 @@ struct mob_aquementasAI : public ScriptedAI
 
     void SendItem(Unit* receiver)
     {
-        if (CAST_PLR(receiver)->HasItemCount(11169,1,false) &&
-            CAST_PLR(receiver)->HasItemCount(11172,11,false) &&
-            CAST_PLR(receiver)->HasItemCount(11173,1,false) &&
-            !CAST_PLR(receiver)->HasItemCount(11522,1,true))
+        if (!receiver)
+            return;
+        Player* plr = receiver->GetCharmerOrOwnerPlayerOrPlayerItself();
+        if (!plr)
+            return;
+
+        if (!plr->HasItemCount(11522, 1, true) &&
+            plr->HasItemCount(11169, 1, false) &&
+            plr->HasItemCount(11172, 11, false) &&
+            plr->HasItemCount(11173, 1, false))
         {
             ItemPosCountVec dest;
-            uint8 msg = CAST_PLR(receiver)->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, 11522, 1);
-            if (msg == EQUIP_ERR_OK)
-                CAST_PLR(receiver)->StoreNewItem(dest, 11522, 1, true);
+            if (plr->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, 11522, 1) == EQUIP_ERR_OK)
+                plr->StoreNewItem(dest, 11522, 1, true);
         }
     }
 
 	void JustDied(Unit* pKiller)
     {
-       SendItem(pKiller);
+        SendItem(pKiller);
     }
 
     void EnterCombat(Unit* who)
@@ -113,9 +118,8 @@ struct mob_aquementasAI : public ScriptedAI
         {
             if (SendItem_Timer.Expired(diff))
             {
-                if (me->getVictim()->GetTypeId() == TYPEID_PLAYER)
-                    SendItem(me->getVictim());
-                SendItem_Timer = 5000;
+                SendItem(me->getVictim());
+                SendItem_Timer = 1000;
             }
         }
 
