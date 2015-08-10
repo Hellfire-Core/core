@@ -240,7 +240,7 @@ struct trigger_epic_staffAI : public TriggerAI
             Summon_Footsoldier_Timer = 20000;
         }
         
-        if (Summon_Timer.Expired(diff) && Summon_Counter < 6)
+        if (Summon_Counter < 6 && Summon_Timer.Expired(diff))
         {
             for(int i = 0; i < 9; i++)
             {

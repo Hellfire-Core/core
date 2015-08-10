@@ -480,7 +480,7 @@ struct boss_zuljinAI : public ScriptedAI
 
 
             
-            if (Lynx_Rush_Timer.Expired(diff) && !TankGUID)
+            if (Lynx_Rush_Timer.Expired(diff) && !TankGUID) // Trentone: I don't know what's the right logic for it. Should it count when there's no tank, or not?
             {
                 if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0))
                 {

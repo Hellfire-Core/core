@@ -55,7 +55,7 @@ struct mob_treantAI  : public ScriptedAI
     {
         if (!UpdateVictim() )
         {
-            if(check_Timer.Expired(diff) && WarpGuid)
+            if(WarpGuid && check_Timer.Expired(diff))
             {
                 if(Unit *Warp = (Unit*)Unit::GetUnit(*m_creature, WarpGuid))
                 {

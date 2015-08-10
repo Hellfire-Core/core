@@ -762,7 +762,7 @@ struct cthunAI : public Scripted_NoMovementAI
                     StomachEnterTimer = 13800;
                 }
 
-                    if (StomachEnterVisTimer.Expired(diff) && StomachEnterTarget)
+                    if (StomachEnterTarget && StomachEnterVisTimer.Expired(diff))
                     {
                     //Check for valid player
                     Unit* pUnit = Unit::GetUnit(*m_creature, StomachEnterTarget);

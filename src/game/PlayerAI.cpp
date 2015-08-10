@@ -190,7 +190,7 @@ void PaladinAI::UpdateAI(const uint32 diff)
     }
 
 
-    ;
+    
     if (crusader != false && Crusader_Timer.Expired(diff))
     {
         if (CanCast(me->getVictim(), CrusaderSpell, false))

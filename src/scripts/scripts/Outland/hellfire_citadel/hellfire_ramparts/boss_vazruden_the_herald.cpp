@@ -305,7 +305,7 @@ struct boss_vazruden_the_heraldAI : public ScriptedAI
                  if ((me->GetHealth())*100 / me->GetMaxHealth() < 20)
                      DoMoveToCombat();
 
-                 if (checktimer.Expired(diff) && me->isAlive())
+                 if (me->isAlive() && checktimer.Expired(diff))
                  {
                      if (Creature* Vazruden = me->GetMap()->GetCreature(VazrudenGUID))
                      {

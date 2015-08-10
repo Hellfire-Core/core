@@ -772,7 +772,7 @@ struct rift_summonAI : public ScriptedAI
                             if (Spell_Timer2.Expired(diff) && m_creature->IsWithinCombatRange(m_creature->getVictim(), 10))    //frost nova
                             {
                                 AddSpellToCast(m_creature, HeroicMode?15531:15063, true);
-                                Spell_Timer2 = HeroicMode ? urand(22200, 25700) : urand(33800, 39800);
+                                Spell_Timer2.Reset(HeroicMode ? urand(22200, 25700) : urand(33800, 39800));
                             }
                             
                         }
@@ -789,7 +789,7 @@ struct rift_summonAI : public ScriptedAI
                             if (Spell_Timer2.Expired(diff) && m_creature->IsWithinCombatRange(m_creature->getVictim(), 10))    //arcane explosion
                             {
                                 AddSpellToCast(m_creature, HeroicMode?33623:33860, true);
-                                Spell_Timer2 = HeroicMode ? urand(8000, 10100) : urand(9500, 10100);
+                                Spell_Timer2.Reset(HeroicMode ? urand(8000, 10100) : urand(9500, 10100));
                             }
                         }
                     }

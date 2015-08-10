@@ -781,7 +781,7 @@ void hyjalAI::UpdateAI(const uint32 diff)
 {
     if(IsDummy)
     {
-        if (MassTeleportTimer.Expired(diff) && DoMassTeleport)
+        if (DoMassTeleport && MassTeleportTimer.Expired(diff))
         {
             m_creature->CastSpell(m_creature,SPELL_MASS_TELEPORT,false);
             DoMassTeleport = false;

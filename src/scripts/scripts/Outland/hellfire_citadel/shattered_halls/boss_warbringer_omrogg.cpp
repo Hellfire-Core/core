@@ -330,7 +330,7 @@ struct boss_warbringer_omroggAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (BlastWave_Timer.Expired(diff) && BlastCount)
+        if (BlastCount && BlastWave_Timer.Expired(diff))
         {
             DoCast(me,SPELL_BLAST_WAVE);
             BlastWave_Timer = 5000;

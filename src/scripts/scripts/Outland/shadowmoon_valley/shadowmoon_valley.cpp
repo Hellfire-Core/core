@@ -1702,7 +1702,7 @@ struct npc_lord_illidan_stormrageAI : public ScriptedAI
 
         if(!LiveCount && WaveCount < 4)
         {
-            if(AnnounceTimer.Expired(diff) && !Announced)
+            if(!Announced && AnnounceTimer.Expired(diff))
             {
                 DoScriptText(WavesInfo[WaveCount].WaveTextId, m_creature);
                 Announced = true;
@@ -2899,13 +2899,13 @@ struct npc_akama_BT_attuAI : public npc_escortAI
     {
         npc_escortAI::UpdateAI(diff);
 
-        if(YellTimer.Expired(diff) && yell)
+        if(yell && YellTimer.Expired(diff))
         {
             DoYell(AKAMA_YELL, 0, 0);
             yell = false;
         }
 
-        if(KillSayTimer.Expired(diff) && say)
+        if(say && KillSayTimer.Expired(diff))
         {
             DoSay(AKAMA_KILL, 0, 0);
             say = false;
@@ -2981,7 +2981,7 @@ struct npc_ashtongue_deathswornAI : public npc_escortAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(AttackTimer.Expired(diff) && !intro)
+        if(!intro && AttackTimer.Expired(diff))
         {
             intro = true;
             if(!HasEscortState(STATE_ESCORT_ESCORTING))

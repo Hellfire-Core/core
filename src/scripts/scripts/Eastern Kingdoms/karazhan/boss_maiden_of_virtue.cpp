@@ -117,7 +117,7 @@ struct boss_maiden_of_virtueAI : public ScriptedAI
         }
         
 
-        if (Enrage_Timer.Expired(diff) && !Enraged)
+        if (!Enraged && Enrage_Timer.Expired(diff))
         {
             DoCast(m_creature, SPELL_BERSERK,true);
             Enraged = true;

@@ -219,7 +219,7 @@ struct boss_azgalorAI : public hyjal_trashAI
         
 
         
-        if (EnrageTimer.Expired(diff) && !enraged)
+        if (!enraged && EnrageTimer.Expired(diff))
         {
             m_creature->InterruptNonMeleeSpells(false);
             DoCast(m_creature, SPELL_BERSERK, true);

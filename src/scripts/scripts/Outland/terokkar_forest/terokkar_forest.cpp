@@ -1457,13 +1457,13 @@ struct npc_sarthisAI : public npc_escortAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(CastTimer.Expired(diff) && speech)
+        if(speech && CastTimer.Expired(diff))
         {
             DoCast(me, SPELL_SUMMON_ARCANE_ELEMENTAL);
             CastTimer = 120000; //not let cast again;
         }
 
-        if (SpeechTimer.Expired(diff) && speech)
+        if (speech && SpeechTimer.Expired(diff))
         {
             if(Unit* ArcaneAcolyte = FindCreature(NPC_ARCANE_ELEMENTAL, 30, me))
             {
@@ -1474,7 +1474,7 @@ struct npc_sarthisAI : public npc_escortAI
             SpeechTimer2 = 4000;
         }
 
-        if(SpeechTimer2.Expired(diff) && speech)
+        if(speech && SpeechTimer2.Expired(diff))
         {
             if(Unit* ArcaneAcolyte = FindCreature(NPC_ARCANE_ELEMENTAL, 30, me))
             {
