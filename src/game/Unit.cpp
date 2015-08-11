@@ -5695,7 +5695,7 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
             // Vampiric Touch
             if (dummySpell->SpellFamilyFlags & 0x0000040000000000LL)
             {
-                if (!pVictim || !pVictim->isAlive())
+                if (!pVictim || pVictim->isDead())
                     return false;
 
                 // pVictim is caster of aura
@@ -5715,7 +5715,7 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
                 // Vampiric Embrace
                 case 15286:
                 {
-                    if (!pVictim || !pVictim->isAlive())
+                    if (!pVictim || pVictim->isDead())
                         return false;
 
                     // pVictim is caster of aura
