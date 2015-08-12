@@ -574,7 +574,7 @@ bool ChatHandler::HandleAccountBGMarksCommand(const char* /*args*/)
     if (m_session->IsAccountFlagged(ACC_RESTRICT_BG_MARKS))
     {
         m_session->RemoveAccountFlag(ACC_RESTRICT_BG_MARKS);
-        SendSysMessage("Battleground Marks of Honor restriction has been enabled for this account.");
+        SendSysMessage("Battleground Marks of Honor restriction has been disabled for this account.");
     }
     else
     {
