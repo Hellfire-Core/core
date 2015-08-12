@@ -4261,15 +4261,20 @@ void Unit::RemoveAurasDueToSpellBySteal(uint32 spellId, uint64 casterGUID, Unit 
             }
             if (aur->GetSpellProto()->AttributesEx4 & SPELL_ATTR_EX4_NOT_STEALABLE)
                 onlyDispel = true;
-            // set its duration and maximum duration
-            int32 dur = aur->GetAuraDuration();
-            new_aur->SetAuraMaxDuration(max_dur > dur ? dur : max_dur);
-            new_aur->SetAuraDuration(max_dur > dur ? dur : max_dur);
-            // strange but intended behaviour: Stolen single target auras won't be treated as single targeted
-            new_aur->SetIsSingleTarget(false);
+            
             // add the new aura to stealer when needed
             if (!onlyDispel)
+            {
+                // set its duration and maximum duration
+                int32 dur = aur->GetAuraDuration();
+                new_aur->SetAuraMaxDuration(max_dur > dur ? dur : max_dur);
+                new_aur->SetAuraDuration(max_dur > dur ? dur : max_dur);
+                // strange but intended behaviour: Stolen single target auras won't be treated as single targeted
+                new_aur->SetIsSingleTarget(false);
                 stealer->AddAura(new_aur);
+            }
+            else
+                delete new_aur;
             // Remove aura as dispel
             if (aur->GetStackAmount() > 1)
             {
