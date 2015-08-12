@@ -2349,8 +2349,8 @@ struct npc_shadowlord_triggerAI : public Scripted_NoMovementAI
     void Reset()
     {
         Reset_Timer = 0;
-        Check_Timer = 0;
-        Wave_Timer = 0;
+        Check_Timer = 1;
+        Wave_Timer = 1;
         SoulstealerList.clear();
         SoulstealerList = FindAllCreaturesWithEntry(NPC_SOULSTEALER_ID, 80.0f);
         m_creature->Relocate(x, y, z);
