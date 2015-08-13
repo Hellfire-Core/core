@@ -439,7 +439,7 @@ class HELLGROUND_IMPORT_EXPORT WorldObject : public Object//, public WorldLocati
         }
 
         void GetRandomPoint(float x, float y, float z, float distance, float &rand_x, float &rand_y, float &rand_z) const;
-        void GetValidPointInAngle(Position &pos, float dist, float angle, bool meAsSourcePo, bool ignoreLOSOffset = false, float allowHeightDifference = COMMON_ALLOW_HEIGHT_DIFF) const;
+        void GetValidPointInAngle(Position &pos, float dist, float angle, bool meAsSourcePo, float allowHeightDifference = COMMON_ALLOW_HEIGHT_DIFF) const;
 
 #pragma endregion Move all this shit to Position struct
 

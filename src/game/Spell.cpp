@@ -1749,7 +1749,7 @@ void Spell::SetTargetMap(uint32 i, uint32 cur)
                     float max_dis = SpellMgr::GetSpellMaxRange(sSpellRangeStore.LookupEntry(GetSpellEntry()->rangeIndex));
                     float dis = rand_norm() * (max_dis - min_dis) + min_dis;
                     Position pos;
-                    m_caster->GetValidPointInAngle(pos, dis + DEFAULT_WORLD_OBJECT_SIZE, frand(-0.6, 0.6), true, false, max_dis);
+                    m_caster->GetValidPointInAngle(pos, dis + DEFAULT_WORLD_OBJECT_SIZE, frand(-0.6, 0.6), true, max_dis);
                     float liquidLevel = m_caster->GetMap()->GetTerrain()->GetWaterOrGroundLevel(pos.x, pos.y, pos.z);
                     m_targets.setDestination(pos.x, pos.y, liquidLevel);
                     if (!m_caster->GetTerrain()->IsInWater(pos.x, pos.y, liquidLevel))
@@ -1883,6 +1883,7 @@ void Spell::SetTargetMap(uint32 i, uint32 cur)
 
             Position pos;
             float dist;
+            float allowHeightDifference = COMMON_ALLOW_HEIGHT_DIFF;
 
             float objSize = m_caster->GetObjectSize();
             dist = SpellMgr::GetSpellRadius(GetSpellEntry(), i, true);
@@ -1898,15 +1899,15 @@ void Spell::SetTargetMap(uint32 i, uint32 cur)
                 case TARGET_DEST_CASTER_BACK_RIGHT: pos.o = 3 * M_PI / 4;   break;
                 case TARGET_DEST_CASTER_FRONT_RIGHT:pos.o = M_PI / 4;     break;
                 case TARGET_MINION:
-                case TARGET_DEST_CASTER_FRONT_LEAP:
                 case TARGET_DEST_CASTER_FRONT:      pos.o = 0.0f;       break;
                 case TARGET_DEST_CASTER_BACK:       pos.o = M_PI;       break;
                 case TARGET_DEST_CASTER_RIGHT:      pos.o = M_PI / 2;     break;
                 case TARGET_DEST_CASTER_LEFT:       pos.o = -M_PI / 2;    break;
+                case TARGET_DEST_CASTER_FRONT_LEAP: pos.o = 0.0f; allowHeightDifference = 10.0f; break;
                 default:                            pos.o = rand_norm() * 2 * M_PI; break;
             }
 
-            m_caster->GetValidPointInAngle(pos, dist, pos.o, true);
+            m_caster->GetValidPointInAngle(pos, dist, pos.o, true, allowHeightDifference);
             m_targets.setDestination(pos.x, pos.y, pos.z);
             break;
         }
@@ -4297,7 +4298,7 @@ SpellCastResult Spell::CheckCast(bool strict)
                     }
                     else
                     {
-                        m_caster->GetValidPointInAngle(dest, 1.0f, angle, false, false, 2.0f);
+                        m_caster->GetValidPointInAngle(dest, 1.0f, angle, false, 2.0f);
                         _path.setPathLengthLimit(SpellMgr::GetSpellMaxRange(GetSpellEntry()) * 1.5f);
                         result = _path.calculate(dest.x, dest.y, dest.z);
                     }
