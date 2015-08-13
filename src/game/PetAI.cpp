@@ -358,7 +358,7 @@ void PetAI::UpdateAllies()
 Unit* PetAI::FindValidTarget()
 {
     std::list<Unit *> targets;
-    Hellground::AnyUnfriendlyUnitInObjectRangeCheck u_check(m_creature, m_creature, m_creature->GetAggroRange());
+    Hellground::AnyUnfriendlyUnitInObjectRangeCheck u_check(m_creature, m_creature->GetAggroRange());
     Hellground::UnitListSearcher<Hellground::AnyUnfriendlyUnitInObjectRangeCheck> searcher(targets, u_check);
     Cell::VisitAllObjects(me, searcher, m_creature->GetAggroRange());
 

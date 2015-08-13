@@ -409,23 +409,25 @@ namespace Hellground
     class AnyUnfriendlyUnitInObjectRangeCheck
     {
         public:
-            AnyUnfriendlyUnitInObjectRangeCheck(WorldObject const* obj, Unit const* funit, float range) : i_obj(obj), i_funit(funit), i_range(range) {}
+            AnyUnfriendlyUnitInObjectRangeCheck(Unit const* unit, float range) : i_unit(unit), i_range(range) {}
             bool operator()(Unit* u)
             {
-                if (i_obj->GetTypeId()==TYPEID_UNIT || i_obj->GetTypeId()==TYPEID_PLAYER)   // cant target when out of phase -> invisibility 10
+                if (Player* owner = sObjectAccessor.GetPlayer(i_unit->GetCharmerOrOwnerGUID()))
                 {
-                    if (u->m_invisibilityMask && u->m_invisibilityMask & (1 << 10) && !u->canDetectInvisibilityOf((Unit*)i_obj, u))
-                        return false;
+                    if (!owner->HaveAtClient(u))
+                        return false; // pets should be able to attack stealthed unit if only player detected them
                 }
+                else if (u->m_invisibilityMask && u->m_invisibilityMask & (1 << 10) &&
+                    !u->canDetectInvisibilityOf(i_unit, u))
+                    return false;
 
-                if (u->isAlive() && i_obj->IsWithinDistInMap(u, i_range) && !i_funit->IsFriendlyTo(u))
+                if (u->isAlive() && i_unit->IsWithinDistInMap(u, i_range) && !i_unit->IsFriendlyTo(u))
                     return true;
                 else
                     return false;
             }
         private:
-            WorldObject const* i_obj;
-            Unit const* i_funit;
+            Unit const* i_unit;
             float i_range;
     };
 

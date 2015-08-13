@@ -4050,7 +4050,7 @@ void Aura::HandleFeignDeath(bool apply, bool Real)
     {
         // feign death in pvp: clear target and interrupt casts
         std::list<Unit*> targets;
-        Hellground::AnyUnfriendlyUnitInObjectRangeCheck u_check(m_target, m_target, m_target->GetMap()->GetVisibilityDistance());
+        Hellground::AnyUnfriendlyUnitInObjectRangeCheck u_check(m_target, m_target->GetMap()->GetVisibilityDistance());
         Hellground::UnitListSearcher<Hellground::AnyUnfriendlyUnitInObjectRangeCheck> searcher(targets, u_check);
 
         Cell::VisitAllObjects(m_target, searcher, m_target->GetMap()->GetVisibilityDistance());

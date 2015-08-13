@@ -1708,7 +1708,7 @@ WorldObject* Spell::SearchNearbyTarget(float range, SpellTargets TargetType)
         case SPELL_TARGETS_ENEMY:
         {
             Unit *target = NULL;
-            Hellground::AnyUnfriendlyUnitInObjectRangeCheck u_check(m_caster, m_caster, range);
+            Hellground::AnyUnfriendlyUnitInObjectRangeCheck u_check(m_caster, range);
             Hellground::UnitLastSearcher<Hellground::AnyUnfriendlyUnitInObjectRangeCheck> searcher(target, u_check);
 
             Cell::VisitAllObjects(m_caster, searcher, range);

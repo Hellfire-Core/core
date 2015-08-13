@@ -6667,7 +6667,7 @@ void Spell::EffectSanctuary(uint32 /*i*/)
 
     std::list<Unit*> targets;
 
-    Hellground::AnyUnfriendlyUnitInObjectRangeCheck u_check(unitTarget, unitTarget, m_caster->GetMap()->GetVisibilityDistance());
+    Hellground::AnyUnfriendlyUnitInObjectRangeCheck u_check(unitTarget, m_caster->GetMap()->GetVisibilityDistance());
     Hellground::UnitListSearcher<Hellground::AnyUnfriendlyUnitInObjectRangeCheck> searcher(targets, u_check);
 
     Cell::VisitAllObjects(unitTarget, searcher, m_caster->GetMap()->GetVisibilityDistance());

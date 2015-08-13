@@ -11697,7 +11697,7 @@ void Unit::UpdateReactives(uint32 p_time)
 Unit* Unit::SelectNearbyTarget(float dist, Unit* erase) const
 {
     std::list<Unit *> targets;
-    Hellground::AnyUnfriendlyUnitInObjectRangeCheck u_check(this, this, dist);
+    Hellground::AnyUnfriendlyUnitInObjectRangeCheck u_check(this, dist);
     Hellground::UnitListSearcher<Hellground::AnyUnfriendlyUnitInObjectRangeCheck> searcher(targets, u_check);
 
     Cell::VisitAllObjects(this, searcher, dist);
