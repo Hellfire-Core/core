@@ -4259,8 +4259,6 @@ void Unit::RemoveAurasDueToSpellBySteal(uint32 spellId, uint64 casterGUID, Unit 
                     }
                 }
             }
-            if (aur->GetSpellProto()->AttributesEx4 & SPELL_ATTR_EX4_NOT_STEALABLE)
-                onlyDispel = true;
             
             // add the new aura to stealer when needed
             if (!onlyDispel)
