@@ -19726,6 +19726,8 @@ bool Player::CanBeSummonedBy(const Unit * summoner)
                 {
                     if (Player* leader = GetPlayer(grp->GetLeaderGUID()))
                     {
+                        if (!leader->IsInMap(summoner)) // leader must be in instance for proper binding
+                            return false;
                         InstanceSave * tmpLeaderInst = leader->GetInstanceSave(summoner->GetMapId());
                         if (tmpLeaderInst)
                         {
