@@ -120,7 +120,7 @@ typedef UNORDERED_MAP<uint32,NpcTextLocale> NpcTextLocaleMap;
 typedef UNORDERED_MAP<uint32,PageTextLocale> PageTextLocaleMap;
 typedef UNORDERED_MAP<uint32,HellgroundStringLocale> HellgroundStringLocaleMap;
 typedef UNORDERED_MAP<uint32,NpcOptionLocale> NpcOptionLocaleMap;
-typedef UNORDERED_MAP<uint16,ShortIntervalTimer> OpcodesCooldown;
+typedef UNORDERED_MAP<uint16,Timer> OpcodesCooldown;
 
 typedef std::multimap<uint32,uint32> QuestRelations;
 

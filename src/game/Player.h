@@ -1613,7 +1613,7 @@ class HELLGROUND_EXPORT Player : public Unit
         void UpdateAfkReport(time_t currTime);
         void UpdatePvPFlag(time_t currTime);
         void UpdateContestedPvP(uint32 currTime);
-        void SetContestedPvPTimer(uint32 newTime) {m_contestedPvPTimer = newTime;}
+        void SetContestedPvPTimer(uint32 newTime) {m_contestedPvPTimer.Reset(newTime);}
         void ResetContestedPvP()
         {
             clearUnitState(UNIT_STAT_ATTACK_PLAYER);

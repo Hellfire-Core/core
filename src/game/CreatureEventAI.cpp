@@ -1112,7 +1112,7 @@ void CreatureEventAI::EnterCombat(Unit *enemy)
         }
     }
 
-    EventUpdateTime = EVENT_UPDATE_TIME;
+    EventUpdateTime.Reset(EVENT_UPDATE_TIME);
     EventDiff = 0;
 }
 

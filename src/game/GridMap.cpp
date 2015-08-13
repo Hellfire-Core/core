@@ -682,8 +682,7 @@ void TerrainInfo::Unload(const uint32 x, const uint32 y)
 //call this method only
 void TerrainInfo::CleanUpGrids(const uint32 diff)
 {
-     i_timer.Update(diff);
-     if( !i_timer.Passed() )
+     if (!i_timer.Expired(diff))
          return;
 
      for (int y = 0; y < MAX_NUMBER_OF_GRIDS; ++y)

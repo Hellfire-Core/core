@@ -450,11 +450,12 @@ void BattleGroundAV::Update(uint32 diff)
         }
         //add points from mine owning, and look if he neutral team wanrts to reclaim the mine
 
+        bool mineExpired = m_Mine_Timer.Expired(diff);
         for (uint8 mine=0; mine <2; mine++)
         {
             if (m_Mine_Owner[mine] == ALLIANCE || m_Mine_Owner[mine] == HORDE)
             {
-                if (m_Mine_Timer.Expired(diff))
+                if (mineExpired)
                     UpdateScore(m_Mine_Owner[mine],1);
 
                 if (m_Mine_Reclaim_Timer[mine].Expired(diff))        //we don't need to set this timer to 0 cause this codepart wont get called when this thing is 0                 
@@ -462,7 +463,7 @@ void BattleGroundAV::Update(uint32 diff)
                 
             }
         }
-        if (m_Mine_Timer.Passed())
+        if (mineExpired)
             m_Mine_Timer=AV_MINE_TICK_TIMER; //this is at the end, cause we need to update both mines
                  
         //looks for all timers of the nodes and destroy the building (for graveyards the building wont get destroyed, it goes just to the other team
@@ -756,7 +757,7 @@ void BattleGroundAV::ChangeMineOwner(uint8 mine, uint32 team, bool initial)
 //    }
     if (team == ALLIANCE || team == HORDE)
     {
-        m_Mine_Reclaim_Timer[mine]=AV_MINE_RECLAIM_TIMER;
+        m_Mine_Reclaim_Timer[mine].Reset(AV_MINE_RECLAIM_TIMER);
     char buf[256];
         sprintf(buf, GetHellgroundString(LANG_BG_AV_MINE_TAKEN), GetHellgroundString((mine == AV_NORTH_MINE) ? LANG_BG_AV_MINE_NORTH : LANG_BG_AV_MINE_SOUTH), (team == ALLIANCE) ?  GetHellgroundString(LANG_BG_AV_ALLY) : GetHellgroundString(LANG_BG_AV_HORDE));
         Creature* creature = GetBGCreature(AV_CPLACE_HERALD);
@@ -765,6 +766,7 @@ void BattleGroundAV::ChangeMineOwner(uint8 mine, uint32 team, bool initial)
     }
     else
     {
+        m_Mine_Reclaim_Timer[mine] = 0;
         if (mine==AV_SOUTH_MINE) //i think this gets called all the time
         {
             Creature* creature = GetBGCreature(AV_CPLACE_MINE_S_3);
@@ -1446,7 +1448,7 @@ void BattleGroundAV::ResetBGSubclass()
     m_Team_Scores[i]=BG_AV_SCORE_INITIAL_POINTS;
         m_IsInformedNearVictory[i]=false;
         m_CaptainAlive[i] = true;
-        m_CaptainBuffTimer[i] = 600000; // every 10 minutes (+ instantly after killing a captain)
+        m_CaptainBuffTimer[i].Reset(600000); // every 10 minutes (+ instantly after killing a captain)
         m_Mine_Owner[i] = AV_NEUTRAL_TEAM;
         m_Mine_PrevOwner[i] = m_Mine_Owner[i];
     }
@@ -1460,7 +1462,7 @@ void BattleGroundAV::ResetBGSubclass()
         InitNode(i,HORDE,true);
     InitNode(BG_AV_NODES_SNOWFALL_GRAVE,AV_NEUTRAL_TEAM,false); //give snowfall neutral owner
 
-    m_Mine_Timer=AV_MINE_TICK_TIMER;
+    m_Mine_Timer.Reset(AV_MINE_TICK_TIMER);
     for (uint16 i = 0; i < AV_CPLACE_MAX+AV_STATICCPLACE_MAX; i++)
         if (m_BgCreatures[i])
             DelCreature(i);

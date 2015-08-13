@@ -673,7 +673,7 @@ void BattleGroundEY::EventPlayerDroppedFlag(Player *Source)
     SetFlagPicker(0);
     Source->RemoveAurasDueToSpell(BG_EY_NETHERSTORM_FLAG_SPELL);
     m_FlagState = BG_EY_FLAG_STATE_ON_GROUND;
-    m_FlagsTimer = BG_EY_FLAG_RESPAWN_TIME;
+    m_FlagsTimer.Reset(BG_EY_FLAG_RESPAWN_TIME);
     Source->CastSpell(Source, SPELL_RECENTLY_DROPPED_FLAG, true);
     Source->CastSpell(Source, BG_EY_PLAYER_DROPPED_FLAG_SPELL, true);
     if (Source->GetTeam() == ALLIANCE)
@@ -888,7 +888,7 @@ void BattleGroundEY::EventPlayerCapturedFlag(Player *Source, uint32 BgObjectType
 
     SpawnBGObject(BgObjectType, RESPAWN_IMMEDIATELY);
 
-    m_FlagsTimer = BG_EY_FLAG_RESPAWN_TIME;
+    m_FlagsTimer.Reset(BG_EY_FLAG_RESPAWN_TIME);
     m_FlagCapturedBgObjectType = BgObjectType;
 
     WorldPacket data;
