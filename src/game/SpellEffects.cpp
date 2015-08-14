@@ -7365,6 +7365,7 @@ void Spell::EffectCharge(uint32 /*i*/)
     if (m_caster->GetTypeId() == TYPEID_PLAYER)
         ((Player *)m_caster)->m_AC_timer = 3000;
 
+    float speed = GetSpellEntry()->speed ? GetSpellEntry()->speed : SPEED_CHARGE;
     if (_path.getPathType() & PATHFIND_NOPATH)
     {
         Position dest;
@@ -7372,10 +7373,10 @@ void Spell::EffectCharge(uint32 /*i*/)
 
         float angle = m_caster->GetAngle(target) - m_caster->GetOrientation() - M_PI;
         m_caster->GetValidPointInAngle(dest, 2.0f, angle, false);
-        m_caster->GetMotionMaster()->MoveCharge(dest.x, dest.y, dest.z);
+        m_caster->GetMotionMaster()->MoveCharge(dest.x, dest.y, dest.z, speed);
     }
     else
-        m_caster->GetMotionMaster()->MoveCharge(_path);
+        m_caster->GetMotionMaster()->MoveCharge(_path, speed);
 
     // not all charge effects used in negative spells
     if (!SpellMgr::IsPositiveSpell(GetSpellEntry()->Id) && m_caster->GetTypeId() == TYPEID_PLAYER)
