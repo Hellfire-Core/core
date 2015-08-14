@@ -8049,7 +8049,7 @@ void Spell::EffectStealBeneficialBuff(uint32 i)
         {
             // Need check for passive? this
             if (aur->IsPositive() && !aur->IsPassive() &&
-                !aur->GetSpellProto()->AttributesEx4 & SPELL_ATTR_EX4_NOT_STEALABLE)
+                !(aur->GetSpellProto()->AttributesEx4 & SPELL_ATTR_EX4_NOT_STEALABLE))
                 steal_list.push_back(aur);
         }
     }
