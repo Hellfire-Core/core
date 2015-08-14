@@ -1109,6 +1109,12 @@ void Spell::DoAllEffectOnTarget(TargetInfo *target)
         if (!((Player*)m_caster)->duel || ((Player*)m_caster)->duel->opponent != unit->GetCharmerOrOwnerPlayerOrPlayerItself())
             ((Player*)m_caster)->UpdatePvP(true);
     }
+
+    if (unit->GetTypeId() == TYPEID_UNIT && ((Creature*)unit)->IsAIEnabled)
+        ((Creature*)unit)->AI()->SpellHit(m_caster, GetSpellEntry());
+
+    if (m_caster->GetTypeId() == TYPEID_UNIT && ((Creature*)m_caster)->IsAIEnabled)
+        ((Creature*)m_caster)->AI()->SpellHitTarget(unit, GetSpellEntry());
 }
 
 void Spell::DoSpellHitOnUnit(Unit *unit, const uint32 effectMask)
@@ -1229,13 +1235,6 @@ void Spell::DoSpellHitOnUnit(Unit *unit, const uint32 effectMask)
 
         HandleEffects(unit, NULL, NULL, effectNumber/*,m_damageMultipliers[effectNumber]*/);
     }
-
-    if (unit->GetTypeId() == TYPEID_UNIT && ((Creature*)unit)->IsAIEnabled)
-        ((Creature*)unit)->AI()->SpellHit(m_caster, GetSpellEntry());
-
-    if (m_caster->GetTypeId() == TYPEID_UNIT && ((Creature*)m_caster)->IsAIEnabled)
-        ((Creature*)m_caster)->AI()->SpellHitTarget(unit, GetSpellEntry());
-
 
     // trigger only for first effect targets
     if (m_ChanceTriggerSpells.size() && (effectMask & 0x1))
