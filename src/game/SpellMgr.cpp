@@ -3651,7 +3651,7 @@ void SpellMgr::LoadSpellCustomAttr()
                 spellInfo->Mechanic = MECHANIC_CONFUSED;
                 spellInfo->EffectMechanic[1] = MECHANIC_NONE;
                 break;
-            case 20253: // Intercept Stun (Rank 1)
+            /*case 20253: // Intercept Stun (Rank 1)
             case 20614: // Intercept Stun (Rank 2)
             case 20615: // Intercept Stun (Rank 3)
             case 25273: // Intercept Stun (Rank 4)
@@ -3663,7 +3663,7 @@ void SpellMgr::LoadSpellCustomAttr()
             case 25999: // Boar Charge Immobilize
                 // Feral charge? - unaffected    
                 spellInfo->AttributesCu |= SPELL_ATTR_CU_FAKE_DELAY;
-                break;
+                break;*/ // Trentone: need to ensure MoveCharge path end near target before adding delays on stuns.
             default:
                 break;
         }
