@@ -2788,8 +2788,8 @@ void SpellMgr::LoadSpellCustomAttr()
                     break;
                 case SPELL_EFFECT_CHARGE:
                 case SPELL_EFFECT_CHARGE2:
-                    /*if (!spellInfo->speed && !spellInfo->SpellFamilyName || spellInfo->SpellIconID == 516) // Intercept
-                        spellInfo->speed = SPEED_CHARGE;*/ // this is POINTLESS. Speed doesn't affect effect_charge at all - stun delays will be done below
+                    if (!spellInfo->speed)
+                        spellInfo->speed = SPEED_CHARGE; // Speed doesn't affect stun delay. However didn't delete this part of code cause someday Path speed might depend on charge speed
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_CHARGE;
                     break;
                 case SPELL_EFFECT_TRIGGER_SPELL:
