@@ -2788,8 +2788,8 @@ void SpellMgr::LoadSpellCustomAttr()
                     break;
                 case SPELL_EFFECT_CHARGE:
                 case SPELL_EFFECT_CHARGE2:
-                    if (!spellInfo->speed && !spellInfo->SpellFamilyName || spellInfo->SpellIconID == 516) // Intercept
-                        spellInfo->speed = SPEED_CHARGE;
+                    /*if (!spellInfo->speed && !spellInfo->SpellFamilyName || spellInfo->SpellIconID == 516) // Intercept
+                        spellInfo->speed = SPEED_CHARGE;*/ // this is POINTLESS. Speed doesn't affect effect_charge at all - stun delays will be done below
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_CHARGE;
                     break;
                 case SPELL_EFFECT_TRIGGER_SPELL:
@@ -3652,6 +3652,19 @@ void SpellMgr::LoadSpellCustomAttr()
             case 45342: // Conflagration Eredar Twins
                 spellInfo->Mechanic = MECHANIC_CONFUSED;
                 spellInfo->EffectMechanic[1] = MECHANIC_NONE;
+                break;
+            case 20253: // Intercept Stun (Rank 1)
+            case 20614: // Intercept Stun (Rank 2)
+            case 20615: // Intercept Stun (Rank 3)
+            case 25273: // Intercept Stun (Rank 4)
+            case 25274: // Intercept Stun (Rank 5)
+            case 7922: // Charge Stun
+            case 30153: // Felguard Intercept Stun rank 1
+            case 30195: // Felguard Intercept Stun rank 2
+            case 30197: // Felguard Intercept Stun rank 3
+            case 25999: // Boar Charge Immobilize
+                // Feral charge? - unaffected    
+                spellInfo->AttributesCu |= SPELL_ATTR_CU_FAKE_DELAY;
                 break;
             default:
                 break;
