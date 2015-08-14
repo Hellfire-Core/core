@@ -533,7 +533,6 @@ void CreatureEventAI::ProcessAction(CreatureEventAI_Action const& action, uint32
                     else
                     {
                         SendDebug("Casting spell (flags %u, spell %u)", action.cast.castFlags, action.cast.spellId);
-                        m_creature->GetMotionMaster()->MoveIdle();
                         //Interrupt any previous spell
                         if (action.cast.castFlags & CAST_INTURRUPT_PREVIOUS && caster->IsNonMeleeSpellCast(false))
                             caster->InterruptNonMeleeSpells(false);
@@ -593,7 +592,6 @@ void CreatureEventAI::ProcessAction(CreatureEventAI_Action const& action, uint32
                     }
                     else
                     {
-                        m_creature->GetMotionMaster()->MoveIdle();
                         //Interrupt any previous spell
                         if (caster->IsNonMeleeSpellCast(false) && action.castguid.castFlags & CAST_INTURRUPT_PREVIOUS)
                             caster->InterruptNonMeleeSpells(false);
