@@ -140,8 +140,14 @@ struct boss_warlord_kalithreshAI : public ScriptedAI
 
     void JustDied(Unit* Killer)
     {
-        DoScriptText(SAY_DEATH, me);
+        // suicide all distillers cause combat stop
+        std::list<Creature*> naga_distillers = FindAllCreaturesWithEntry(17954, 100);
+        for(std::list<Creature*>::iterator it = naga_distillers.begin(); it != naga_distillers.end(); it++)
+        {
+            (*it)->Kill(*it);
+        }
 
+        DoScriptText(SAY_DEATH, me);
         if (pInstance)
             pInstance->SetData(TYPE_WARLORD_KALITHRESH, DONE);
     }
