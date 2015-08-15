@@ -231,5 +231,22 @@ bool CannibalizeObjectCheck::operator()(Corpse* u)
     return false;
 }
 
+bool AnyUnfriendlyUnitInObjectRangeCheck::operator()(Unit* u)
+{
+    if (Player* owner = sObjectAccessor.GetPlayer(i_unit->GetCharmerOrOwnerGUID()))
+    {
+        if (!owner->HaveAtClient(u))
+            return false; // pets should be able to attack stealthed unit if only player detected them
+    }
+    else if (u->m_invisibilityMask && u->m_invisibilityMask & (1 << 10) &&
+        !u->canDetectInvisibilityOf(i_unit, u))
+        return false;
+
+    if (u->isAlive() && i_unit->IsWithinDistInMap(u, i_range) && !i_unit->IsFriendlyTo(u))
+        return true;
+    else
+        return false;
+}
+
 template void ObjectUpdater::Visit<GameObject>(GameObjectMapType &);
 template void ObjectUpdater::Visit<DynamicObject>(DynamicObjectMapType &);
