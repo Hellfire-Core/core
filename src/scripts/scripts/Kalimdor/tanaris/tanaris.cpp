@@ -90,7 +90,7 @@ struct mob_aquementasAI : public ScriptedAI
         }
     }
 
-	void JustDied(Unit* pKiller)
+    void JustDied(Unit* pKiller)
     {
         SendItem(pKiller);
     }
