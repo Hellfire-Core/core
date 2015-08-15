@@ -748,7 +748,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
 
                     case TIMER_SHADOW_SPIKE:
                     {
-                        DoCastAOE(SPELL_SHADOW_SPIKE, false);
+                        ForceSpellCast(SPELL_SHADOW_SPIKE, CAST_NULL, INTERRUPT_AND_CAST_INSTANTLY);
                         _Timer[TIMER_SHADOW_SPIKE] = 0;
                         TimerIsDeactiveted[TIMER_SHADOW_SPIKE] = true;
                         ChangeTimers(true, 30000);
