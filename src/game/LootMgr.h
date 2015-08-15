@@ -225,7 +225,6 @@ struct Loot
 
     QuestItemMap const& GetPlayerQuestItems() const { return PlayerQuestItems; }
     QuestItemMap const& GetPlayerFFAItems() const { return PlayerFFAItems; }
-    QuestItemMap const& GetPlayerNonQuestNonFFAConditionalItems() const { return PlayerNonQuestNonFFAConditionalItems; }
 
     std::vector<LootItem> items;
     std::vector<LootItem> quest_items;
@@ -261,10 +260,6 @@ struct Loot
         for (QuestItemMap::iterator itr = PlayerFFAItems.begin(); itr != PlayerFFAItems.end(); ++itr)
             delete itr->second;
         PlayerFFAItems.clear();
-
-        for (QuestItemMap::iterator itr = PlayerNonQuestNonFFAConditionalItems.begin(); itr != PlayerNonQuestNonFFAConditionalItems.end(); ++itr)
-            delete itr->second;
-        PlayerNonQuestNonFFAConditionalItems.clear();
 
         PlayersLooting.clear();
         items.clear();
@@ -306,7 +301,7 @@ struct Loot
     void FillLootFromDB(Creature *pCreature, Player* pLootOwner);
     bool LootLoadedFromDB() { return m_lootLoadedFromDB; }
 
-    LootItem* LootItemInSlot(uint32 lootslot, Player* player, QuestItem** qitem = NULL, QuestItem** ffaitem = NULL, QuestItem** conditem = NULL);
+    LootItem* LootItemInSlot(uint32 lootslot, Player* player, QuestItem** qitem = NULL, QuestItem** ffaitem = NULL);
 
     LootItem* LootItemInSlot(uint32 lootslot);
 
@@ -320,12 +315,11 @@ struct Loot
         void FillNotNormalLootFor(Player* player);
         QuestItemList* FillFFALoot(Player* player);
         QuestItemList* FillQuestLoot(Player* player);
-        QuestItemList* FillNonQuestNonFFAConditionalLoot(Player* player);
+        void FillNonQuestNonFFAConditionalLoot(Player* player); // count conditionals in fact
 
         std::set<uint64> PlayersLooting;
         QuestItemMap PlayerQuestItems;
         QuestItemMap PlayerFFAItems;
-        QuestItemMap PlayerNonQuestNonFFAConditionalItems;
 
         uint64 m_creatureGUID;
         bool m_lootLoadedFromDB;

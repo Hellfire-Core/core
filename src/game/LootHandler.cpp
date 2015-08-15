@@ -113,9 +113,8 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket & recv_data)
 
     QuestItem *qitem = NULL;
     QuestItem *ffaitem = NULL;
-    QuestItem *conditem = NULL;
 
-    LootItem *item = loot->LootItemInSlot(lootSlot,player,&qitem,&ffaitem,&conditem);
+    LootItem *item = loot->LootItemInSlot(lootSlot,player,&qitem,&ffaitem);
 
     if (!item)
     {
@@ -124,7 +123,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket & recv_data)
     }
 
     // questitems use the blocked field for other purposes
-    if (!qitem && item->is_blocked)
+    if (!qitem && (item->is_blocked || !item->AllowedForPlayer(player)))
     {
         player->SendLootRelease(lguid);
         return;
@@ -156,10 +155,6 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket & recv_data)
             }
             else
             {
-                //not freeforall, notify everyone
-                if (conditem)
-                    conditem->is_looted = true;
-
                 loot->NotifyItemRemoved(lootSlot);
             }
         }
@@ -476,7 +471,11 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket & recv_data)
     }
 
     LootItem& item = pLoot->items[slotid];
-
+    if (!item.AllowedForPlayer(target))
+    {
+        _player->SendEquipError(EQUIP_ERR_ITEM_LOCKED,NULL,NULL); // cannot give this to him, sorry
+        return;
+    }
     ItemPosCountVec dest;
     uint8 msg = target->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, item.itemid, item.count);
     if (msg != EQUIP_ERR_OK)
