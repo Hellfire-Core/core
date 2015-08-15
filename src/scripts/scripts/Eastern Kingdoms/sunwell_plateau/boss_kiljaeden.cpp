@@ -675,7 +675,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                             IsKalecJoined = true;
                             TimerIsDeactiveted[TIMER_KALEC_JOIN] = true;
                         }
-                        break;
+                    break;
                     case TIMER_SOUL_FLAY:
                     {
                         if (!me->IsNonMeleeSpellCast(false))
@@ -703,13 +703,14 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
 
                             _Timer[TIMER_LEGION_LIGHTNING] = (Phase == PHASE_SACRIFICE) ? 18000 : urand(13000, 17000); // 18 seconds in PHASE_SACRIFICE
                             _Timer[TIMER_SOUL_FLAY].Reset(3500);
+
                             if (_Timer[TIMER_FIRE_BLOOM].GetTimeLeft() <= 2500)
                                 _Timer[TIMER_FIRE_BLOOM].Delay(2500);
                     }
                     break;
                     case TIMER_FIRE_BLOOM:
-                    {
-                        DoCastAOE(SPELL_FIRE_BLOOM, false);
+                    { 
+                        ForceSpellCast(SPELL_FIRE_BLOOM, CAST_NULL, INTERRUPT_AND_CAST_INSTANTLY);
                         _Timer[TIMER_FIRE_BLOOM] = (Phase == PHASE_SACRIFICE) ? 25000 : 20000; // 25 seconds in PHASE_SACRIFICE
                         if (_Timer[TIMER_LEGION_LIGHTNING].GetTimeLeft() <= 1000)
                             _Timer[TIMER_LEGION_LIGHTNING].Delay(1000);
