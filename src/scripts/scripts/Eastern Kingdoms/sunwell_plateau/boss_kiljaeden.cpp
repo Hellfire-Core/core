@@ -662,54 +662,63 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
         }
 
 
-        for (uint8 t = 0; t < ActiveTimers; ++t)
+        for (uint8 t = 0; t < ActiveTimers; t++)
         {
             if (!TimerIsDeactiveted[t] && _Timer[t].Expired(diff))
             {
                 switch (t)
                 {
                     case TIMER_KALEC_JOIN:
+                    {
                         if (Kalec)
                         {
                             DoScriptText(SAY_KALECGOS_JOIN, Kalec);
                             IsKalecJoined = true;
                             TimerIsDeactiveted[TIMER_KALEC_JOIN] = true;
                         }
+                    }
                     break;
+
                     case TIMER_SOUL_FLAY:
                     {
-                        if (!me->IsNonMeleeSpellCast(false))
+                        if (Phase > PHASE_NORMAL)
                         {
-                            m_creature->CastSpell(m_creature->getVictim(), SPELL_SOUL_FLAY, false);
-                            m_creature->getVictim()->CastSpell(m_creature->getVictim(), SPELL_SOUL_FLAY_SLOW, true);
-                            _Timer[TIMER_SOUL_FLAY] = 4000;
+                            TimerIsDeactiveted[TIMER_SOUL_FLAY] = true;
+                            break;
                         }
+
+                        if (me->IsNonMeleeSpellCast(false))
+                            break;
+                        m_creature->CastSpell(m_creature->getVictim(), SPELL_SOUL_FLAY, false);
+                        m_creature->getVictim()->CastSpell(m_creature->getVictim(), SPELL_SOUL_FLAY_SLOW, true);
+                        _Timer[TIMER_SOUL_FLAY] = 4000;
+                        
                     }
                     break;
+
                     case TIMER_LEGION_LIGHTNING:
                     {
+                        for (uint8 z = 0; z < 6; ++z)
+                        {
+                            randomPlayer = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true);
+                            if (randomPlayer && !randomPlayer->HasAura(SPELL_VENGEANCE_OF_THE_BLUE_FLIGHT, 0))
+                                break;
+                        }
+                        if (randomPlayer)
+                            DoCast(randomPlayer, SPELL_LEGION_LIGHTNING, false);
+                        else
+                            error_log("try to cast SPELL_LEGION_LIGHTNING on invalid target");
 
-                            for (uint8 z = 0; z < 6; ++z)
-                            {
-                                randomPlayer = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true);
-                                if (randomPlayer && !randomPlayer->HasAura(SPELL_VENGEANCE_OF_THE_BLUE_FLIGHT, 0))
-                                    break;
-                            }
-                            if (randomPlayer)
-                                DoCast(randomPlayer, SPELL_LEGION_LIGHTNING, false);
+                        _Timer[TIMER_LEGION_LIGHTNING] = (Phase == PHASE_SACRIFICE) ? 18000 : urand(13000, 17000); // 18 seconds in PHASE_SACRIFICE
+                        _Timer[TIMER_SOUL_FLAY].Reset(3500);
 
-                            else
-                                error_log("try to cast SPELL_LEGION_LIGHTNING on invalid target");
-
-                            _Timer[TIMER_LEGION_LIGHTNING] = (Phase == PHASE_SACRIFICE) ? 18000 : urand(13000, 17000); // 18 seconds in PHASE_SACRIFICE
-                            _Timer[TIMER_SOUL_FLAY].Reset(3500);
-
-                            if (_Timer[TIMER_FIRE_BLOOM].GetTimeLeft() <= 2500)
-                                _Timer[TIMER_FIRE_BLOOM].Delay(2500);
+                        if (_Timer[TIMER_FIRE_BLOOM].GetTimeLeft() <= 2500)
+                            _Timer[TIMER_FIRE_BLOOM].Delay(2500);
                     }
                     break;
+
                     case TIMER_FIRE_BLOOM:
-                    { 
+                    {
                         ForceSpellCast(SPELL_FIRE_BLOOM, CAST_NULL, INTERRUPT_AND_CAST_INSTANTLY);
                         _Timer[TIMER_FIRE_BLOOM] = (Phase == PHASE_SACRIFICE) ? 25000 : 20000; // 25 seconds in PHASE_SACRIFICE
                         if (_Timer[TIMER_LEGION_LIGHTNING].GetTimeLeft() <= 1000)
@@ -717,7 +726,9 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
 
                     }
                     break;
+
                     case TIMER_SUMMON_SHILEDORB:
+                    {
                         for (uint8 i = 1; i < Phase; ++i)
                         {
                             float sx, sy;
@@ -726,47 +737,61 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                             m_creature->SummonCreature(CREATURE_SHIELD_ORB, sx, sy, SHIELD_ORB_Z, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 45000);
                         }
                         _Timer[TIMER_SUMMON_SHILEDORB] = 30000 + rand() % 30 * 1000; // 30-60seconds cooldown
-                        break;
+                    }
+                    break;
 
-                    case TIMER_SHADOW_SPIKE: //Phase 3
+
+                    /*$$$$$$$$$$$$$$$$$$$$$$$$$$$
+                              Phase 3
+                    $$$$$$$$$$$$$$$$$$$$$$$$$$$$*/
+
+
+                    case TIMER_SHADOW_SPIKE:
                     {
                         DoCastAOE(SPELL_SHADOW_SPIKE, false);
                         _Timer[TIMER_SHADOW_SPIKE] = 0;
                         TimerIsDeactiveted[TIMER_SHADOW_SPIKE] = true;
                         ChangeTimers(true, 30000);
                     }
-                        break;
-                    case TIMER_FLAME_DART: //Phase 3
+                    break;
+
+                    case TIMER_FLAME_DART:
+                    {
+                        if (me->IsNonMeleeSpellCast(false))
+                            break;
                         DoCastAOE(SPELL_FLAME_DART, false);
                         _Timer[TIMER_FLAME_DART] = 3000; //TODO Timer
-                        break;
-                    case TIMER_DARKNESS: //Phase 3
-                        if (!m_creature->IsNonMeleeSpellCast(false))
-                        {
-                            // Begins to channel for 8 seconds, then deals 50'000 damage to all raid members.
-                            if (!IsInDarkness)
-                            {
-                                DoScriptText(EMOTE_KJ_DARKNESS, m_creature);
-                                DoCastAOE(SPELL_DARKNESS_OF_A_THOUSAND_SOULS, false);
-                                ChangeTimers(true, 9000);
-                                _Timer[TIMER_DARKNESS] = 8750;
-                                TimerIsDeactiveted[TIMER_DARKNESS] = false;
-                                if (Phase == PHASE_SACRIFICE)
-                                    TimerIsDeactiveted[TIMER_ARMAGEDDON] = false;
-                                IsInDarkness = true;
-                            }
-                            else
-                            {
-                                _Timer[TIMER_DARKNESS] = (Phase == PHASE_SACRIFICE) ? 20000 + rand() % 15000 : 40000 + rand() % 30000;
-                                IsInDarkness = false;
-                                DoCastAOE(SPELL_DARKNESS_OF_A_THOUSAND_SOULS_DAMAGE);
+                    }
+                    break;
 
-                                DoScriptText(RAND(SAY_KJ_DARKNESS1, SAY_KJ_DARKNESS2, SAY_KJ_DARKNESS3), m_creature);
-                            }
-                            _Timer[TIMER_SOUL_FLAY] = 9000;
+                    case TIMER_DARKNESS:
+                    {
+                        // Begins to channel for 8 seconds, then deals 50'000 damage to all raid members.
+                        if (!IsInDarkness)
+                        {
+                            DoScriptText(EMOTE_KJ_DARKNESS, m_creature);
+                            DoCastAOE(SPELL_DARKNESS_OF_A_THOUSAND_SOULS, false);
+                            ChangeTimers(true, 9000);
+                            _Timer[TIMER_DARKNESS] = 8750;
+                            TimerIsDeactiveted[TIMER_DARKNESS] = false;
+                            if (Phase == PHASE_SACRIFICE)
+                                TimerIsDeactiveted[TIMER_ARMAGEDDON] = false;
+                            IsInDarkness = true;
                         }
-                        break;
-                    case TIMER_ORBS_EMPOWER: //Phase 3
+                        else
+                        {
+                            _Timer[TIMER_DARKNESS] = (Phase == PHASE_SACRIFICE) ? 20000 + rand() % 15000 : 40000 + rand() % 30000;
+                            IsInDarkness = false;
+                            DoCastAOE(SPELL_DARKNESS_OF_A_THOUSAND_SOULS_DAMAGE);
+
+                            DoScriptText(RAND(SAY_KJ_DARKNESS1, SAY_KJ_DARKNESS2, SAY_KJ_DARKNESS3), m_creature);
+                        }
+                        _Timer[TIMER_SOUL_FLAY] = 9000;
+                    }
+                    break;
+
+                    case TIMER_ORBS_EMPOWER:
+                    {
                         /*if(Phase == PHASE_SACRIFICE)
                         {
                         if(Kalec)((boss_kalecgos_kjAI*)Kalec->AI())->EmpowerOrb(true);
@@ -774,8 +799,18 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                         _Timer[TIMER_ORBS_EMPOWER] = (Phase == PHASE_SACRIFICE) ? 45000 : 35000;
                         OrbActivated = true;
                         TimerIsDeactiveted[TIMER_ORBS_EMPOWER] = true;
-                        break;
-                    case TIMER_ARMAGEDDON: //Phase 4
+                    }
+                    break;
+
+
+
+                    /*$$$$$$$$$$$$$$$$$$$$$$$$$$$
+                             Phase 4
+                    $$$$$$$$$$$$$$$$$$$$$$$$$$$$*/
+
+
+                    case TIMER_ARMAGEDDON:
+                    {
                         Unit* target;
                         for (uint8 z = 0; z < 6; ++z)
                         {
@@ -789,7 +824,8 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                             m_creature->SummonCreature(CREATURE_ARMAGEDDON_TARGET, x, y, z, 0, TEMPSUMMON_TIMED_DESPAWN, 15000);
                         }
                         _Timer[TIMER_ARMAGEDDON] = 2000; // No, I'm not kidding
-                        break;
+                    }
+                    break;
                 }
                 break;
             }
@@ -800,6 +836,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
         {
             if (Phase == PHASE_NORMAL && ((m_creature->GetHealth() * 100 / m_creature->GetMaxHealth()) < 85))
             {
+                TimerIsDeactiveted[TIMER_SOUL_FLAY] = true;
                 CastSinisterReflection();
                 DoScriptText(SAY_KJ_PHASE3, m_creature);
                 Phase = PHASE_DARKNESS;
