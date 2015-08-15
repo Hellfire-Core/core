@@ -549,6 +549,7 @@ struct npc_apprentice_mirvedaAI : public ScriptedAI
                 Player* player = Unit::GetPlayer(PlayerGUID);
                 if(player)
                     player->CompleteQuest(QUEST_UNEXPECTED_RESULT);
+                Reset();
             }
         }
 
