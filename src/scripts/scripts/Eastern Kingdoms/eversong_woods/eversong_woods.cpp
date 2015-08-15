@@ -262,7 +262,6 @@ struct master_kelerun_bloodmournAI : public ScriptedAI
                 else
                     Reset();
 
-                questPhase++;
                 timer = 0;
             }
             
