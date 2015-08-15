@@ -1298,8 +1298,6 @@ struct npc_warmaul_pyreAI : public ScriptedAI
 {
     npc_warmaul_pyreAI(Creature* creature) : ScriptedAI(creature) {}
 
-    bool Event;
-
     std::list<uint64> SaboteurList;
     uint64 PlayerGUID;
     Timer StepsTimer;
@@ -1309,7 +1307,6 @@ struct npc_warmaul_pyreAI : public ScriptedAI
 
     void Reset()
     {
-        Event = false;
         PlayerGUID = 0;
         StepsTimer.Reset(1);
         Steps = 0;
@@ -1320,10 +1317,16 @@ struct npc_warmaul_pyreAI : public ScriptedAI
 
     void EnterCombat(Unit *who) {}
 
-    void DoSpawn()
+    void IsSummonedBy(Unit* summoner)
     {
-        me->SummonCreature(NPC_SABOTEUR, Z[0].x, Z[0].y, Z[0].z, 0.6f, TEMPSUMMON_CORPSE_DESPAWN, 60000);
-        me->SummonCreature(NPC_SABOTEUR, Z[1].x, Z[1].y, Z[1].z, 3.8f, TEMPSUMMON_CORPSE_DESPAWN, 60000);
+        if (Player* plr = summoner->ToPlayer())
+        {
+            if (plr->GetQuestStatus(9932) == QUEST_STATUS_INCOMPLETE)
+            {
+                StepsTimer.Reset(1);
+                PlayerGUID = plr->GetGUID();
+            }
+        }
     }
 
     void DoSummon()
@@ -1359,29 +1362,10 @@ struct npc_warmaul_pyreAI : public ScriptedAI
     void JustSummoned(Creature* summoned)
     {
         if (summoned->GetEntry() == NPC_SABOTEUR)
+        {
             summoned->SetWalk(true);
-    }
-
-    void MoveInLineOfSight(Unit *who)
-    {
-        if (Player* plr = who->ToPlayer())
-            if (plr->GetQuestStatus(9932) == QUEST_STATUS_INCOMPLETE && me->IsWithinDistInMap(plr, 3.0f))
-            {
-                PlayerGUID = who->GetGUID();
-                Event = true;                     // this is not the best way to start the event :)
-            }
-    }
-
-    void Started()
-    {
-        SaboteurList.clear();
-
-        std::list<Creature*> tempList;
-        Hellground::AllCreaturesOfEntryInRange check(me, NPC_SABOTEUR, 25.0f);
-        Hellground::ObjectListSearcher<Creature, Hellground::AllCreaturesOfEntryInRange> searcher(tempList, check);
-        Cell::VisitGridObjects(me, searcher, 25.0f);
-        for (std::list<Creature*>::iterator itr = tempList.begin(); itr != tempList.end(); itr++)
-            SaboteurList.push_front((*itr)->GetGUID());
+            SaboteurList.push_back(summoned->GetGUID());
+        }
     }
 
     Creature* GetSaboteur(uint8 ListNum)
@@ -1399,7 +1383,7 @@ struct npc_warmaul_pyreAI : public ScriptedAI
                 continue;
             }
             if (Unit* Saboteur = m_creature->GetUnit(*itr))
-                if (Saboteur->isAlive() && Saboteur->IsWithinDistInMap(me, 25.0f))
+                if (Saboteur->isAlive() && Saboteur->IsWithinDistInMap(me, 40.0f))
                     return Saboteur->ToCreature();
         }
 
@@ -1411,125 +1395,123 @@ struct npc_warmaul_pyreAI : public ScriptedAI
         switch (Steps)
         {
             case 1:
-                DoSpawn();
+                SaboteurList.clear();
+                me->SummonCreature(NPC_SABOTEUR, Z[0].x, Z[0].y, Z[0].z, 0.6f, TEMPSUMMON_CORPSE_DESPAWN, 60000);
+                me->SummonCreature(NPC_SABOTEUR, Z[1].x, Z[1].y, Z[1].z, 3.8f, TEMPSUMMON_CORPSE_DESPAWN, 60000);
                 return 4000;
 
             case 2:
-                Started();
-                return 2900;
-
-            case 3:
                 if (Creature* Saboteur = GetSaboteur(2))
                     DoScriptText(SAY_SABOTEUR1, Saboteur);
                 return 5000;
 
-            case 4:
+            case 3:
                 if (Creature* Saboteur = GetSaboteur(1))
                     DoScriptText(SAY_SABOTEUR2, Saboteur);
                 return 5000;
 
-            case 5:
+            case 4:
                 if (Creature* Saboteur = GetSaboteur(2))
                     DoScriptText(SAY_SABOTEUR3, Saboteur);
                 return 5000;
 
-            case 6:
+            case 5:
                 if (Creature* Saboteur = GetSaboteur(1))
                     DoScriptText(SAY_SABOTEUR4, Saboteur);
                 return 4000;
 
-            case 7:
+            case 6:
                 Move();
                 return 6000;
 
-            case 8:
+            case 7:
                 DoSummon();
                 return 2000;
 
-            case 9:
+            case 8:
                 if (Creature* Saboteur = GetSaboteur(2))
                     DoScriptText(SAY_SABOTEUR5, Saboteur);
                 return 2000;
 
-            case 10:
+            case 9:
                 Move();
                 return 7000;
 
-            case 11:
+            case 10:
                 DoSummon();
                 return 2000;
 
-            case 12:
+            case 11:
                 if (Creature* Saboteur = GetSaboteur(1))
                     DoScriptText(SAY_SABOTEUR6, Saboteur);
                 return 2000;
 
-            case 13:
+            case 12:
                 Move();
                 return 7000;
 
-            case 14:
+            case 13:
                 DoSummon();
                 return 2000;
 
-            case 15:
+            case 14:
                 if (Creature* Saboteur = GetSaboteur(2))
                     DoScriptText(SAY_SABOTEUR7, Saboteur);
                 return 3000;
 
-            case 16:
+            case 15:
                 if (Creature* Saboteur = GetSaboteur(1))
                     DoScriptText(SAY_SABOTEUR7, Saboteur);
                 return 2000;
 
-            case 17:
+            case 16:
                 Move();
                 return 7000;
 
-            case 18:
+            case 17:
                 DoSummon();
                 return 2000;     
 
-            case 19:
+            case 18:
                 if (Creature* Saboteur = GetSaboteur(2))
                     DoScriptText(SAY_SABOTEUR8, Saboteur);
                 return 3000;           
 
-            case 21:
+            case 19:
                 if (Creature* Saboteur = GetSaboteur(1))
                     DoScriptText(SAY_SABOTEUR9, Saboteur);
                 return 2000; 
 
-            case 22:
+            case 20:
                 Move();
                 return 7000;
 
-            case 23:
+            case 21:
                 DoSummon();
                 return 2000;
 
-            case 24:
+            case 22:
                 if (Creature* Saboteur = GetSaboteur(2))
                     DoScriptText(SAY_SABOTEUR10, Saboteur);
                 return 2000; 
 
-            case 25:
+            case 23:
                 Move();
                 return 7000;
 
-            case 26:
+            case 24:
                 if (Player* player = me->GetPlayer(PlayerGUID))
                     if (me->IsWithinDistInMap(player, 15.0f))
                         ((Player*) player)->KilledMonster(18395, me->GetObjectGuid());
                 return 2000;
 
-            case 27:
+            case 25:
                 for (std::list<uint64>::iterator itr = SaboteurList.begin(); itr != SaboteurList.end(); ++itr)
                 {
                     if (Unit* Saboteur = m_creature->GetUnit(*itr))
                         Saboteur->Kill(Saboteur);
                 }
-                Reset();
+                me->DisappearAndDie();
 
             default:
                 return 0;
@@ -1538,12 +1520,8 @@ struct npc_warmaul_pyreAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-
         if (StepsTimer.Expired(diff))
-        {
-            if (Event)
-                StepsTimer = NextStep(++Steps);
-        }
+            StepsTimer = NextStep(++Steps);
     }
 };
 
