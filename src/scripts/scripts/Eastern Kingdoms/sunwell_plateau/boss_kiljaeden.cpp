@@ -1140,6 +1140,8 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
         if (Creature* Control = ((Creature*)Unit::GetUnit(*m_creature, pInstance->GetData64(DATA_KILJAEDEN_CONTROLLER))))
             Control->AI()->EnterEvadeMode();
 
+        Summons.DespawnAll();
+
     }
 
     void JustDied(Unit* killer)
