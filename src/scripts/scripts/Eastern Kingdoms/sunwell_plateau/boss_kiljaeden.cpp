@@ -508,7 +508,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
 
         //Phase 3 Timer
         _Timer[TIMER_SHADOW_SPIKE].Reset(4000);
-        _Timer[TIMER_FLAME_DART].Reset(urand(18000, 22000);
+        _Timer[TIMER_FLAME_DART].Reset(urand(18000, 22000));
         _Timer[TIMER_DARKNESS].Reset(45000);
         _Timer[TIMER_ORBS_EMPOWER].Reset(35000);
 
