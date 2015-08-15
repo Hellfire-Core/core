@@ -508,7 +508,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
 
         //Phase 3 Timer
         _Timer[TIMER_SHADOW_SPIKE].Reset(4000);
-        _Timer[TIMER_FLAME_DART].Reset(3000);
+        _Timer[TIMER_FLAME_DART].Reset(urand(18000, 22000);
         _Timer[TIMER_DARKNESS].Reset(45000);
         _Timer[TIMER_ORBS_EMPOWER].Reset(35000);
 
@@ -681,12 +681,6 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
 
                     case TIMER_SOUL_FLAY:
                     {
-                        if (Phase > PHASE_NORMAL)
-                        {
-                            TimerIsDeactiveted[TIMER_SOUL_FLAY] = true;
-                            break;
-                        }
-
                         if (me->IsNonMeleeSpellCast(false))
                             break;
                         m_creature->CastSpell(m_creature->getVictim(), SPELL_SOUL_FLAY, false);
@@ -705,24 +699,19 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                                 break;
                         }
                         if (randomPlayer)
-                            DoCast(randomPlayer, SPELL_LEGION_LIGHTNING, false);
+                            AddSpellToCast(randomPlayer, SPELL_LEGION_LIGHTNING, false, true);
                         else
                             error_log("try to cast SPELL_LEGION_LIGHTNING on invalid target");
 
                         _Timer[TIMER_LEGION_LIGHTNING] = (Phase == PHASE_SACRIFICE) ? 18000 : urand(13000, 17000); // 18 seconds in PHASE_SACRIFICE
                         _Timer[TIMER_SOUL_FLAY].Reset(3500);
-
-                        if (_Timer[TIMER_FIRE_BLOOM].GetTimeLeft() <= 2500)
-                            _Timer[TIMER_FIRE_BLOOM].Delay(2500);
                     }
                     break;
 
                     case TIMER_FIRE_BLOOM:
                     {
-                        ForceSpellCast(SPELL_FIRE_BLOOM, CAST_NULL, INTERRUPT_AND_CAST_INSTANTLY);
+                        AddSpellToCast(SPELL_FIRE_BLOOM, CAST_NULL);
                         _Timer[TIMER_FIRE_BLOOM] = (Phase == PHASE_SACRIFICE) ? 25000 : 20000; // 25 seconds in PHASE_SACRIFICE
-                        if (_Timer[TIMER_LEGION_LIGHTNING].GetTimeLeft() <= 1000)
-                            _Timer[TIMER_LEGION_LIGHTNING].Delay(1000);
 
                     }
                     break;
@@ -748,7 +737,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
 
                     case TIMER_SHADOW_SPIKE:
                     {
-                        ForceSpellCast(SPELL_SHADOW_SPIKE, CAST_NULL, INTERRUPT_AND_CAST_INSTANTLY);
+                        AddSpellToCast(SPELL_SHADOW_SPIKE, CAST_NULL);
                         _Timer[TIMER_SHADOW_SPIKE] = 0;
                         TimerIsDeactiveted[TIMER_SHADOW_SPIKE] = true;
                         ChangeTimers(true, 30000);
@@ -757,10 +746,8 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
 
                     case TIMER_FLAME_DART:
                     {
-                        if (me->IsNonMeleeSpellCast(false))
-                            break;
-                        DoCastAOE(SPELL_FLAME_DART, false);
-                        _Timer[TIMER_FLAME_DART] = 3000; //TODO Timer
+                        AddSpellToCast(SPELL_FLAME_DART, CAST_NULL);
+                        _Timer[TIMER_FLAME_DART] = urand(18000, 22000);
                     }
                     break;
 
@@ -843,7 +830,6 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                 OrbActivated = false;
                 ActiveTimers = 9;
             }
-            else return;
         }
 
         //Phase 4
@@ -856,8 +842,6 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                 OrbActivated = false;
                 ActiveTimers = 10;
             }
-            else
-                return;
         }
 
         //Phase 5 specific spells all we can
@@ -872,8 +856,9 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                 OrbActivated = false;
                 ChangeTimers(true, 10000);// He shouldn't cast spells for ~10 seconds after Anveena's sacrifice. This will be done within Anveena's script
             }
-            else return;
         }
+
+        CastNextSpellIfAnyAndReady();
 
     }
 };
