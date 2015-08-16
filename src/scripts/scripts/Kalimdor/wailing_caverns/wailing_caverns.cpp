@@ -182,7 +182,6 @@ struct npc_disciple_of_naralexAI : public npc_escortAI
             return;
         if (eventTimer.Expired(diff))
         {
-            eventTimer = 0;
             if (pInstance->GetData(currentEvent) == IN_PROGRESS)
             {
                 switch (currentEvent)
@@ -194,6 +193,7 @@ struct npc_disciple_of_naralexAI : public npc_escortAI
                             DoScriptText(SAY_TEMPLE_OF_PROMISE, me);
                             me->SummonCreature(NPC_DEVIATE_RAVAGER, -82.1763, 227.874, -93.3233, 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 5000);
                             me->SummonCreature(NPC_DEVIATE_RAVAGER, -72.9506, 216.645, -93.6756, 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 5000);
+                            eventTimer = 1;
                         }
                     break;
                     case TYPE_NARALEX_PART2:
@@ -214,6 +214,7 @@ struct npc_disciple_of_naralexAI : public npc_escortAI
                             pInstance->SetData(TYPE_NARALEX_PART2, DONE);
                             if (me->HasAura(SPELL_SERPENTINE_CLEANSING, 0))
                                 me->RemoveAurasDueToSpell(SPELL_SERPENTINE_CLEANSING);
+                            eventTimer = 1;
                         }
                     break;
                     case TYPE_NARALEX_PART3:
@@ -270,18 +271,22 @@ struct npc_disciple_of_naralexAI : public npc_escortAI
                             pInstance->SetData(TYPE_MUTANUS_THE_DEVOURER, IN_PROGRESS);
                         }
                         else
-                        if (eventProgress == 6 && pInstance->GetData(TYPE_MUTANUS_THE_DEVOURER) == DONE)
+                        if (eventProgress == 6)
                         {
-                            ++eventProgress;
                             eventTimer = 3000;
-                            if (Creature* naralex = pInstance->instance->GetCreature(pInstance->GetData64(DATA_NARALEX)))
+                            if (pInstance->GetData(TYPE_MUTANUS_THE_DEVOURER) == DONE)
                             {
-                                if (me->HasAura(SPELL_NARALEXS_AWAKENING, 0))
-                                    me->RemoveAurasDueToSpell(SPELL_NARALEXS_AWAKENING);
-                                naralex->SetStandState(UNIT_STAND_STATE_STAND);
-                                DoScriptText(SAY_I_AM_AWAKE, naralex);
+                                ++eventProgress;
+
+                                if (Creature* naralex = pInstance->instance->GetCreature(pInstance->GetData64(DATA_NARALEX)))
+                                {
+                                    if (me->HasAura(SPELL_NARALEXS_AWAKENING, 0))
+                                        me->RemoveAurasDueToSpell(SPELL_NARALEXS_AWAKENING);
+                                    naralex->SetStandState(UNIT_STAND_STATE_STAND);
+                                    DoScriptText(SAY_I_AM_AWAKE, naralex);
+                                }
+                                DoScriptText(SAY_NARALEX_AWAKES, me);
                             }
-                            DoScriptText(SAY_NARALEX_AWAKES, me);
                         }
                         else
                         if (eventProgress == 7)
