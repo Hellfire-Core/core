@@ -2930,15 +2930,20 @@ SpellMissInfo Unit::MagicSpellHitResult(Unit *pVictim, SpellEntry const *spell)
             HitChance = 9900;
     }
 
-    SendCombatStats("MagicSpellHitResult (id=%d): hit chance = %d", pVictim, spell->Id, HitChance);
     uint32 rand = urand(0,10000);
     if (rand > HitChance)
+    {
+        SendCombatStats("MagicSpellHitResult (id=%d): hit chance = %d - missed!", pVictim, spell->Id, HitChance);
         return SPELL_MISS_RESIST;
+    }
 
     // binary resist spells
     if (SpellMgr::IsBinaryResistable(spell) && CalcBinaryResist(pVictim, schoolMask))
+    {
+        SendCombatStats("MagicSpellHitResult (id=%d): hit chance = %d - resisted!", pVictim, spell->Id, HitChance);
         return SPELL_MISS_RESIST;
-
+    }
+    SendCombatStats("MagicSpellHitResult (id=%d): hit chance = %d - hit!", pVictim, spell->Id, HitChance);
     return SPELL_MISS_NONE;
 }
 
