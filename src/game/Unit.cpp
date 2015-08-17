@@ -13292,15 +13292,9 @@ bool Unit::RollPRD(float baseChance, float extraChance, uint32 spellId)
 void Unit::SetFeared(bool apply, Unit* target, uint32 time)
 {
     if (apply)
-    {
-        SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FLEEING);
         GetMotionMaster()->MoveFleeing(target, time);
-    }
     else
-    {
-        RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FLEEING);
         GetUnitStateMgr().DropAction(UNIT_ACTION_FEARED);
-    }
 
     if (GetTypeId() == TYPEID_PLAYER)
         ToPlayer()->SetClientControl(this, !apply);
