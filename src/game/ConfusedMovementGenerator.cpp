@@ -26,6 +26,7 @@
 #include "movement/MoveSplineInit.h"
 #include "movement/MoveSpline.h"
 
+template <>
 void ConfusedMovementGenerator<Player>::Initialize(Player &unit)
 {
     _swimOrFly = (unit.IsInWater() || unit.CanFly());
@@ -37,6 +38,7 @@ void ConfusedMovementGenerator<Player>::Initialize(Player &unit)
     unit.addUnitState(UNIT_STAT_CONFUSED);
 }
 
+template <>
 void ConfusedMovementGenerator<Creature>::Initialize(Creature &unit)
 {
     _swimOrFly = (unit.CanSwim() || unit.CanFly());
