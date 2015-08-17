@@ -64,7 +64,7 @@ void ConfusedMovementGenerator<UNIT>::Interrupt(UNIT &unit)
 template<class UNIT>
 void ConfusedMovementGenerator<UNIT>::_generateMovement(UNIT &unit)
 {
-    if (swimOrFly)
+    if (_swimOrFly)
     {
         for (uint8 idx = 0; idx < MAX_RANDOM_POINTS; ++idx)
         {
