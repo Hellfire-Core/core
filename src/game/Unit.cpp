@@ -9424,10 +9424,10 @@ void Unit::ClearInCombat()
 
         creature->setActive(false, ACTIVE_BY_COMBAT);
         clearUnitState(UNIT_STAT_ATTACK_PLAYER);
-    }
+        RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PET_IN_COMBAT);
+        if (!creature->isPet())
+            return;
 
-    if (GetTypeId() != TYPEID_PLAYER && ((Creature*)this)->isPet())
-    {
         if (Unit *owner = GetOwner())
         {
             for (int i = 0; i < MAX_MOVE_TYPE; ++i)
@@ -9445,7 +9445,7 @@ void Unit::ClearInCombat()
     }
     else if (!isCharmed())
         return;
-
+    // else - charmed player
     RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PET_IN_COMBAT);
 }
 
