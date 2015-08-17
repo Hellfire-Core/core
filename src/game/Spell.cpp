@@ -617,6 +617,7 @@ void Spell::prepareDataForTriggerSystem()
                 break;
             case SPELLFAMILY_SHAMAN:
                 if (GetSpellEntry()->SpellFamilyFlags & 0x800000LL) m_canTrigger = true; // Flurry etc. from WF ATTACK !
+                if (GetSpellEntry()->AttributesEx == 0x0400 && GetSpellEntry()->AttributesEx4 == 0x0080) m_canTrigger = true; // lightning overload spells
                 break;
             case SPELLFAMILY_HUNTER:  // Hunter Explosive Trap Effect/Immolation Trap Effect/Frost Trap Aura/Snake Trap Effect
                 if (GetSpellEntry()->SpellFamilyFlags & 0x0000200000000014LL) m_canTrigger = true;
