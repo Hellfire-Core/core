@@ -33,7 +33,7 @@ template<class UNIT>
 class HELLGROUND_EXPORT ConfusedMovementGenerator : public MovementGeneratorMedium< UNIT, ConfusedMovementGenerator<UNIT> >
 {
     public:
-        explicit ConfusedMovementGenerator() : _nextMoveTime(0) {}
+        explicit ConfusedMovementGenerator() : _nextMoveTime(0),_swimOrFly(false) {}
 
         void Initialize(UNIT &);
         void Finalize(UNIT &);
@@ -48,6 +48,7 @@ class HELLGROUND_EXPORT ConfusedMovementGenerator : public MovementGeneratorMedi
         void _generateMovement(UNIT &unit);
 
         TimeTrackerSmall _nextMoveTime;
+        bool _swimOrFly;
 
         Position _randomPosition[MAX_RANDOM_POINTS+1];
 };

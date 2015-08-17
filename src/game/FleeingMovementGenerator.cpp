@@ -62,7 +62,7 @@ bool FleeingMovementGenerator<UNIT>::_getPoint(UNIT &unit, Position &dest)
         angle += RAND(M_PI/4.0f, M_PI/2.0f, -M_PI/4.0f, -M_PI/2.0f, M_PI*3/4.0f, -M_PI*3/4.0f, M_PI);
 
     // destination point
-    unit.GetValidPointInAngle(dest, 8.0f, angle, true, true);
+    unit.GetValidPointInAngle(dest, 8.0f, angle, true);
     return true;
 }
 
