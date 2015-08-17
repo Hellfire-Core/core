@@ -1858,6 +1858,7 @@ void Creature::setDeathState(DeathState s)
         SetWalk(true);
 
         SetUInt32Value(UNIT_NPC_FLAGS, cinfo->npcflag);
+        SetUInt32Value(UNIT_FIELD_FLAGS, cinfo->unit_flags);
 
         clearUnitState(UNIT_STAT_ALL_STATE);
         GetMotionMaster()->Initialize();
