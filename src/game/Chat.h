@@ -145,6 +145,7 @@ class ChatHandler
         bool HandleDebugArenaCommand(const char * args);
         bool HandleDebugBattleGroundCommand(const char * args);
         bool HandleDebugBossEmoteCommand(const char* args);
+        bool HandleDebugCooldownsCommand(const char* args);
         bool HandleDebugGetInstanceDataCommand(const char* args);
         bool HandleDebugGetInstanceData64Command(const char* args);
         bool HandleDebugGetItemState(const char * args);

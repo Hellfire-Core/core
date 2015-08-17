@@ -1559,6 +1559,7 @@ class HELLGROUND_EXPORT Player : public Unit
         void RemoveAllSpellCooldown(); // item?
         void _LoadSpellCooldowns(QueryResultAutoPtr result);
         void _SaveSpellCooldowns();
+        std::string SendCooldownsDebug();
 
         void setResurrectRequestData(uint64 guid, uint32 mapId, float X, float Y, float Z, uint32 health, uint32 mana)
         {

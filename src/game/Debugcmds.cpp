@@ -1145,3 +1145,16 @@ bool ChatHandler::HandleDebugSendBattlegroundOpcodes(const char* args)
     }
     return false;
 }
+
+bool ChatHandler::HandleDebugCooldownsCommand(const char* args)
+{
+    Player* plr = getSelectedPlayer();
+    if (!plr)
+    {
+        SendSysMessage(LANG_NO_PLAYER);
+        SetSentErrorMessage(true);
+        return false;
+    }
+    SendSysMessage(plr->SendCooldownsDebug().c_str());
+    return true;
+}

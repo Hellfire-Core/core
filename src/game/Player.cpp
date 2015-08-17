@@ -18543,6 +18543,25 @@ void Player::SendCooldownEvent(SpellEntry const *spellInfo)
     data << GetGUID();
     SendPacketToSelf(&data);
 }
+
+std::string Player::SendCooldownsDebug()
+{
+    std::ostringstream str;
+    time_t now = time(NULL);
+    str << "Cooldowns for player " << GetName() << "\n";
+    for (SpellCooldowns::const_iterator itr = m_spellCooldowns.begin(); itr != m_spellCooldowns.end(); itr++)
+    {
+        if (itr->second > now)
+            str << itr->first << ": " << uint32(itr->second - now) << " secs left\n";
+    }
+    str << "Item cooldowns\n";
+    for (ItemCooldowns::const_iterator itr = m_itemCooldowns.begin(); itr != m_itemCooldowns.end(); itr++)
+    {
+        if (itr->second.end > now)
+            str << itr->first << "-" << itr->second.itemid << "; ";
+    }
+    return str.str();
+}
                                                            //slot to be excluded while counting
 bool Player::EnchantmentFitsRequirements(uint32 enchantmentcondition, int8 slot)
 {
