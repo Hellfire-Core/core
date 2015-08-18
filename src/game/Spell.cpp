@@ -1964,7 +1964,7 @@ void Spell::SetTargetMap(uint32 i, uint32 cur)
 
                 if (GetCaster())
                     if (Unit* owner = GetCaster()->GetCharmerOrOwner())
-                        sLog.outLog(LOG_DEFAULT, "     SpellCaster = %s (%u), a pet of %s (%u)", GetCaster()->GetName(), GetCaster()->GetGUID(), owner->GetName(), owner->GetGUID());
+                        sLog.outLog(LOG_DEFAULT, "     SpellCaster = %s (%lu), a pet of %s (%lu)", GetCaster()->GetName(), GetCaster()->GetGUID(), owner->GetName(), owner->GetGUID());
                 break;
             }
 
