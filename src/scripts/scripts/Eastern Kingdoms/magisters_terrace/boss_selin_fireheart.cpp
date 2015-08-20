@@ -1,7 +1,7 @@
-/* 
+/*
  * Copyright (C) 2006-2008 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -80,13 +80,13 @@ struct boss_selin_fireheartAI : public ScriptedAI
     void Reset()
     {
         std::list<Creature*> fel_crystals = FindAllCreaturesWithEntry(CREATURE_FEL_CRYSTAL, 100);
-        for(std::list<Creature*>::iterator it = fel_crystals.begin(); it != fel_crystals.end(); it++)
+        for (std::list<Creature*>::iterator it = fel_crystals.begin(); it != fel_crystals.end(); it++)
         {
             (*it)->Respawn();
             (*it)->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         }
 
-        if(pInstance)
+        if (pInstance)
             pInstance->SetData(DATA_SELIN_EVENT, NOT_STARTED);
 
         DrainLifeTimer.Reset(urand(3000, 7000));
@@ -106,7 +106,7 @@ struct boss_selin_fireheartAI : public ScriptedAI
 
     void SelectNearestCrystal()
     {
-        if(Creature* CrystalChosen = GetClosestCreatureWithEntry(me, CREATURE_FEL_CRYSTAL, 100.0f, true, true))
+        if (Creature* CrystalChosen = GetClosestCreatureWithEntry(me, CREATURE_FEL_CRYSTAL, 100.0f, true, true))
         {
             CrystalGUID = CrystalChosen->GetGUID();
 
@@ -114,7 +114,8 @@ struct boss_selin_fireheartAI : public ScriptedAI
             DoScriptText(EMOTE_CRYSTAL, m_creature);
 
             float x, y, z;                                  // coords that we move to, close to the crystal.
-            switch(CrystalChosen->GetGUIDLow())
+
+            switch (CrystalChosen->GetGUIDLow())
             {
                 // for two crystals close point is not good enough, because selin ends up out of los
                 case 96870:
@@ -133,7 +134,7 @@ struct boss_selin_fireheartAI : public ScriptedAI
 
             m_creature->SetWalk(false);
             m_creature->GetMotionMaster()->MovePoint(1, x, y, z);
-            
+
             DrainingCrystal = true;
         }
     }
@@ -141,8 +142,8 @@ struct boss_selin_fireheartAI : public ScriptedAI
     void ShatterRemainingCrystals()
     {
         std::list<Creature*> fel_crystals = FindAllCreaturesWithEntry(CREATURE_FEL_CRYSTAL, 100);
-        for(std::list<Creature*>::iterator it = fel_crystals.begin(); it != fel_crystals.end(); it++)
-            if((*it)->isAlive())
+        for (std::list<Creature*>::iterator it = fel_crystals.begin(); it != fel_crystals.end(); it++)
+            if ((*it)->isAlive())
                 (*it)->Kill(*it);
     }
 
@@ -153,13 +154,13 @@ struct boss_selin_fireheartAI : public ScriptedAI
 
         // already did in Reset(), will not hurt to do it again
         std::list<Creature*> fel_crystals = FindAllCreaturesWithEntry(CREATURE_FEL_CRYSTAL, 100);
-        for(std::list<Creature*>::iterator it = fel_crystals.begin(); it != fel_crystals.end(); it++)
+        for (std::list<Creature*>::iterator it = fel_crystals.begin(); it != fel_crystals.end(); it++)
         {
             (*it)->Respawn();
             (*it)->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         }
 
-        if( pInstance )
+        if (pInstance)
             pInstance->SetData(DATA_SELIN_EVENT, IN_PROGRESS);
 
     }
@@ -171,13 +172,14 @@ struct boss_selin_fireheartAI : public ScriptedAI
 
     void MovementInform(uint32 type, uint32 id)
     {
-        if(type == POINT_MOTION_TYPE && id == 1)
+        if (type == POINT_MOTION_TYPE && id == 1)
         {
             Unit* CrystalChosen = me->GetUnit(CrystalGUID);
-            if(CrystalChosen && CrystalChosen->isAlive())
+            if (CrystalChosen && CrystalChosen->isAlive())
             {
-                if(roll_chance_f(20.0f))
+                if (roll_chance_f(20.0f))
                     DoScriptText(SAY_DRAINING, m_creature);
+
                 CrystalChosen->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                 CrystalChosen->CastSpell(m_creature, SPELL_MANA_RAGE, false);
                 me->CastSpell(CrystalChosen, SPELL_FEL_CRYSTAL_COSMETIC, false);
@@ -197,13 +199,13 @@ struct boss_selin_fireheartAI : public ScriptedAI
     {
         ShatterRemainingCrystals();
 
-        if(pInstance)
+        if (pInstance)
             pInstance->SetData(DATA_SELIN_EVENT, DONE);         // Encounter complete!
     }
 
     void OnAuraRemove(Aura *aur, bool stack)
     {
-        if(aur->GetSpellProto()->Id == SPELL_MANA_RAGE && aur->GetEffIndex() == 0)
+        if (aur->GetSpellProto()->Id == SPELL_MANA_RAGE && aur->GetEffIndex() == 0)
         {
             IsDraining = false;
             DrainingCrystal = false;
@@ -216,72 +218,70 @@ struct boss_selin_fireheartAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(DrainingJustFinished)
+        if (DrainingJustFinished)
         {
             DoScriptText(SAY_EMPOWERED, m_creature);
             Unit* CrystalChosen = m_creature->GetUnit(CrystalGUID);
-            if( CrystalChosen && CrystalChosen->isAlive() )
+
+            if (CrystalChosen && CrystalChosen->isAlive())
                 CrystalChosen->DealDamage(CrystalChosen, CrystalChosen->GetHealth());
+
             CrystalGUID = 0;
             DrainingJustFinished = false;
         }
 
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        
         if (CheckTimer.Expired(diff))
         {
-            if(!me->IsWithinDistInMap(&wLoc, 30.0))
+            if (!me->IsWithinDistInMap(&wLoc, 30.0))
                 EnterEvadeMode();
+
             CheckTimer = 1000;
         }
-        
 
-        // Heroic only
-        if(HeroicMode)
+        if (HeroicMode)
         {
             if (DrainManaTimer.Expired(diff))
             {
-                if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 45, true, POWER_MANA))
+                if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 45, true, POWER_MANA))
                     AddSpellToCast(target, SPELL_DRAIN_MANA, false, true);
+
                 DrainManaTimer = urand(18000, 25000);
             }
         }
 
-        if(!DrainingCrystal)
+        if (!DrainingCrystal)
         {
             uint32 maxPowerMana = m_creature->GetMaxPower(POWER_MANA);
-            if( maxPowerMana && ((m_creature->GetPower(POWER_MANA)*100 / maxPowerMana) < 10) )
+            if (maxPowerMana && ((m_creature->GetPower(POWER_MANA)*100 / maxPowerMana) < 10))
             {
-                
                 if (DrainLifeTimer.Expired(diff))
                 {
-                    if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 20, true))
+                    if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 20, true))
                         AddSpellToCast(target, SPELL_DRAIN_LIFE, false, true);
+
                     DrainLifeTimer = urand(8000, 12000);
                 }
-                
-                
+
                 if (DrainCrystalTimer.Expired(diff))
                 {
-                    if(me->IsNonMeleeSpellCast(false))
+                    if (me->IsNonMeleeSpellCast(false))
                         return;
+
                     SelectNearestCrystal();
                     DrainCrystalTimer = HeroicMode? 13000 : 18000;
                 }
-                
             }
             else
             {
-                
                 if (FelExplosionTimer.Expired(diff))
                 {
                     AddSpellToCast(m_creature, SPELL_FEL_EXPLOSION);
                     me->RemoveSingleAuraFromStack(SPELL_MANA_RAGE_TRIGGER, 1);
                     FelExplosionTimer = 2300;
                 }
-                
             }
 
             CastNextSpellIfAnyAndReady();
@@ -307,26 +307,31 @@ struct mob_fel_crystalAI : public ScriptedAI
 
     void Reset()
     {
+        me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_FEAR, true);
+        me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_INTERRUPT, true);
+        me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_STUN, true);
+        me->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_MOD_FEAR, true);
+        me->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_SCHOOL_IMMUNITY, true);
+
         Check_Timer.Reset(1000);
     }
+
     void AttackStart(Unit* who) {}
     void MoveInLineOfSight(Unit* who) {}
+
     void UpdateAI(const uint32 diff)
     {
-        
-        if (Check_Timer.Expired(diff))
+        if (pInstance && Check_Timer.Expired(diff))
         {
-            if(pInstance)
-            {
-                uint32 data = pInstance->GetData(DATA_SELIN_EVENT);
-                if(data == IN_PROGRESS)
-                    me->InterruptNonMeleeSpells(true, SPELL_FEL_CRYSTAL_VISUAL);
-                else if(data == NOT_STARTED && !me->IsNonMeleeSpellCast(true))
-                    me->CastSpell((Unit*)NULL, SPELL_FEL_CRYSTAL_VISUAL, false);
-            }
+            uint32 data = pInstance->GetData(DATA_SELIN_EVENT);
+
+            if (data == IN_PROGRESS)
+                me->InterruptNonMeleeSpells(true, SPELL_FEL_CRYSTAL_VISUAL);
+            else if (data == NOT_STARTED && !me->IsNonMeleeSpellCast(true))
+                me->CastSpell((Unit*) nullptr, SPELL_FEL_CRYSTAL_VISUAL, false);
+
             Check_Timer = 2000;
         }
-        
     }
 };
 
@@ -349,4 +354,3 @@ void AddSC_boss_selin_fireheart()
     newscript->GetAI = &GetAI_mob_fel_crystal;
     newscript->RegisterSelf();
 }
-
