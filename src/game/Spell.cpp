@@ -1883,6 +1883,7 @@ void Spell::SetTargetMap(uint32 i, uint32 cur)
 
             Position pos;
             float dist;
+            float allowHeightDifference = COMMON_ALLOW_HEIGHT_DIFF;
 
             float objSize = m_caster->GetObjectSize();
             dist = SpellMgr::GetSpellRadius(GetSpellEntry(), i, true);
@@ -1902,11 +1903,11 @@ void Spell::SetTargetMap(uint32 i, uint32 cur)
                 case TARGET_DEST_CASTER_BACK:       pos.o = M_PI;       break;
                 case TARGET_DEST_CASTER_RIGHT:      pos.o = M_PI / 2;     break;
                 case TARGET_DEST_CASTER_LEFT:       pos.o = -M_PI / 2;    break;
-                case TARGET_DEST_CASTER_FRONT_LEAP: pos.o = 0.0f; break;
+                case TARGET_DEST_CASTER_FRONT_LEAP: pos.o = 0.0f; allowHeightDifference = 10.0f; break;
                 default:                            pos.o = rand_norm() * 2 * M_PI; break;
             }
 
-            m_caster->GetValidPointInAngle(pos, dist, pos.o, true);
+            m_caster->GetValidPointInAngle(pos, dist, pos.o, true, allowHeightDifference);
             m_targets.setDestination(pos.x, pos.y, pos.z);
             break;
         }
