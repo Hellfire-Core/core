@@ -244,7 +244,8 @@ void GameObject::Update(uint32 update_diff, uint32 p_time)
                 {
                     // Arming Time for GAMEOBJECT_TYPE_TRAP (6)
                     if (Unit* owner = GetOwner())
-                        m_cooldownTime = time(NULL); // remember when we set trap
+                        if(owner->GetTypeId() != TYPEID_PLAYER || owner->isInCombat())
+                            m_cooldownTime = time(NULL) + GetGOInfo()->trap.startDelay;
                     m_lootState = GO_READY;
                     break;
                 }
@@ -291,7 +292,6 @@ void GameObject::Update(uint32 update_diff, uint32 p_time)
 
                 if (m_cooldownTime >= time(NULL))
                     return;
-                bool inCombat = m_cooldownTime + goInfo->trap.startDelay <= time(NULL); // works only for traps with owners - only they have m_cooldownTime set in GO_NOT_READY
 
                 bool IsBattleGroundTrap = false;
                 //FIXME: this is activation radius (in different casting radius that must be selected from spell data)
@@ -350,7 +350,7 @@ void GameObject::Update(uint32 update_diff, uint32 p_time)
                     m_cooldownTime = time(NULL) + goInfo->trap.cooldown;
                 }
 
-                if (ok && (inCombat || !ok->isInCombat()))
+                if (ok)
                 {
                     CastSpell(ok, goInfo->trap.spellId);
                     m_cooldownTime = time(NULL) + (goInfo->trap.cooldown ? goInfo->trap.cooldown : 4);  // default 4 sec cooldown??
