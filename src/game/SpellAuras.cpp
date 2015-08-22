@@ -6790,9 +6790,12 @@ void Aura::HandleAuraAoeCharm(bool apply, bool Real)
 
 void Aura::CleanupTriggeredSpells()
 {
-    if (sSpellMgr.GetSpellElixirMask(m_spellProto->Id) & ELIXIR_SHATTRATH_MASK)
+    if (sSpellMgr.GetSpellElixirMask(m_spellProto->Id) & (ELIXIR_UNSTABLE_MASK | ELIXIR_SHATTRATH_MASK))
     {
-        m_target->RemoveAurasDueToSpell(m_spellProto->EffectTriggerSpell[1]);  // remove triggered effect of shattrath flask, when removing it
+        if (m_spellProto->EffectTriggerSpell[1])
+            m_target->RemoveAurasDueToSpell(m_spellProto->EffectTriggerSpell[1]);  // remove triggered effect of flask on remove
+        if (m_spellProto->EffectTriggerSpell[2])
+            m_target->RemoveAurasDueToSpell(m_spellProto->EffectTriggerSpell[2]);  // remove triggered effect of flask on remove
         return;
     }
 
