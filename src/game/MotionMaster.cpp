@@ -290,20 +290,20 @@ void MotionMaster::MoveFall()
     Mutate(new EffectMovementGenerator(0), UNIT_ACTION_EFFECT);
 }
 
-void MotionMaster::MoveCharge(float x, float y, float z, float speed /*= SPEED_CHARGE*/, uint32 id /*= EVENT_CHARGE*/, bool generatePath /*= false*/)
+void MotionMaster::MoveCharge(float x, float y, float z, float speed /*= SPEED_CHARGE*/)
 {
     Movement::MoveSplineInit init(*m_owner);
     init.MoveTo(x,y,z);
     init.SetVelocity(speed);
     init.Launch();
-    Mutate(new EffectMovementGenerator(id), UNIT_ACTION_EFFECT);
+    Mutate(new EffectMovementGenerator(EVENT_CHARGE), UNIT_ACTION_EFFECT);
 }
 
-void MotionMaster::MoveCharge(PathFinder path, float speed /*= SPEED_CHARGE*/, uint32 id /*= EVENT_CHARGE*/)
+void MotionMaster::MoveCharge(PathFinder path, float speed /*= SPEED_CHARGE*/)
 {
     Movement::MoveSplineInit init(*m_owner);
     init.MovebyPath(path.getPath());
     init.SetVelocity(speed);
     init.Launch();
-    Mutate(new EffectMovementGenerator(id), UNIT_ACTION_EFFECT);
+    Mutate(new EffectMovementGenerator(EVENT_CHARGE), UNIT_ACTION_EFFECT);
 }
