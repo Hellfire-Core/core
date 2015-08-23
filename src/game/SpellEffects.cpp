@@ -7389,6 +7389,7 @@ void Spell::EffectCharge2(uint32 /*i*/)
     if (!target && !(m_targets.m_targetMask & TARGET_FLAG_DEST_LOCATION))
         return;
 
+    float speed = GetSpellEntry()->speed ? GetSpellEntry()->speed : SPEED_CHARGE;
     if (_path.getPathType() & PATHFIND_NOPATH)
     {
         Position dest;
@@ -7406,14 +7407,14 @@ void Spell::EffectCharge2(uint32 /*i*/)
             m_caster->GetValidPointInAngle(dest, 2.0f, angle, false);
         }
 
-        m_caster->GetMotionMaster()->MoveCharge(dest.x, dest.y, dest.z);
+        m_caster->GetMotionMaster()->MoveCharge(dest.x, dest.y, dest.z, speed);
     }
     else
-        m_caster->GetMotionMaster()->MoveCharge(_path);
+        m_caster->GetMotionMaster()->MoveCharge(_path, speed);
 
     // not all charge effects used in negative spells
-    if (!SpellMgr::IsPositiveSpell(GetSpellEntry()->Id))
-        m_caster->Attack(unitTarget, true);
+    if (target && !SpellMgr::IsPositiveSpell(GetSpellEntry()->Id))
+        m_caster->Attack(target, true);
 }
 
 void Spell::EffectSummonCritter(uint32 i)
