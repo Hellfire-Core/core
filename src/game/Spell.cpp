@@ -605,8 +605,7 @@ void Spell::prepareDataForTriggerSystem()
                 if (GetSpellEntry()->SpellFamilyFlags & 0x0000000000200080LL) m_canTrigger = true;
                 if (GetSpellEntry()->SpellFamilyFlags & 0x800000000LL) m_canTrigger = true;
                 break;
-            case SPELLFAMILY_WARLOCK: // For Hellfire Effect / Rain of Fire / Seed of Corruption triggers need do it
-                if (GetSpellEntry()->SpellFamilyFlags & 0x0000800000000060LL) m_canTrigger = true;
+            case SPELLFAMILY_WARLOCK: // For Hellfire Effect / Rain of Fire triggers need do it
                 if (GetSpellEntry()->SpellFamilyFlags & 0x0000008000000060LL)
                 {
                     m_procAttacker = PROC_FLAG_ON_DO_PERIODIC;
