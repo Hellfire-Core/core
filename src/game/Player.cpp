@@ -18552,9 +18552,9 @@ std::string Player::SendCooldownsDebug()
     for (SpellCooldowns::const_iterator itr = m_spellCooldowns.begin(); itr != m_spellCooldowns.end(); itr++)
     {
         if (itr->second > now)
-            str << itr->first << ": " << uint32(itr->second - now) << " secs left\n";
+            str << itr->first << ": " << uint32(itr->second - now) << "s; ";
     }
-    str << "Item cooldowns\n";
+    str << "\nItem cooldowns\n";
     for (ItemCooldowns::const_iterator itr = m_itemCooldowns.begin(); itr != m_itemCooldowns.end(); itr++)
     {
         if (itr->second.end > now)
