@@ -62,7 +62,9 @@ bool FleeingMovementGenerator<UNIT>::_getPoint(UNIT &unit, Position &dest)
         angle += RAND(M_PI/4.0f, M_PI/2.0f, -M_PI/4.0f, -M_PI/2.0f, M_PI*3/4.0f, -M_PI*3/4.0f, M_PI);
 
     // destination point
-    unit.GetValidPointInAngle(dest, 8.0f, angle, true);
+    unit.GetPosition(dest);
+    dest.z = _startZ;
+    unit.GetValidPointInAngle(dest, 8.0f, angle, false);
     return true;
 }
 
@@ -73,7 +75,7 @@ void FleeingMovementGenerator<UNIT>::Initialize(UNIT &unit)
         _angle = pFright->GetAngle(&unit);
     else
         _angle = unit.GetOrientation();
-
+    _startZ = unit.GetPositionZ();
     _nextCheckTime.Reset(0);
 
     unit.InterruptNonMeleeSpells(false);

@@ -45,6 +45,7 @@ class FleeingMovementGenerator : public MovementGeneratorMedium< UNIT, FleeingMo
         bool _getPoint(UNIT &, Position &);
 
         float _angle;
+        float _startZ;
         uint64 _frightGUID;
         TimeTracker _nextCheckTime;
 };
