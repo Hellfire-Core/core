@@ -2218,9 +2218,15 @@ bool InstanceMap::Add(Player *player)
                 {
                     // solo saves should be reset when entering a group
                     InstanceGroupBind *groupBind = pGroup->GetBoundInstance(GetId(), GetSpawnMode());
-                    if (playerBind) // this one cannot be pernament, so just reset it
+                    if (playerBind)
                     {
-                        player->UnbindInstance(GetId(), GetSpawnMode());
+                        sLog.outLog(LOG_DEFAULT, "ERROR: InstanceMap::Add: player %s(%d) is being put in instance %d,%d,%d,%d,%d,%d but he is in group %d and is bound to instance %d,%d,%d,%d,%d,%d!", player->GetName(), player->GetGUIDLow(), mapSave->GetMapId(), mapSave->GetInstanceId(), mapSave->GetDifficulty(), mapSave->GetPlayerCount(), mapSave->GetGroupCount(), mapSave->CanReset(), GUID_LOPART(pGroup->GetLeaderGUID()), playerBind->save->GetMapId(), playerBind->save->GetInstanceId(), playerBind->save->GetDifficulty(), playerBind->save->GetPlayerCount(), playerBind->save->GetGroupCount(), playerBind->save->CanReset());
+                        if (groupBind)
+                            sLog.outLog(LOG_DEFAULT, "ERROR: InstanceMap::Add: the group is bound to instance %d,%d,%d,%d,%d,%d", groupBind->save->GetMapId(), groupBind->save->GetInstanceId(), groupBind->save->GetDifficulty(), groupBind->save->GetPlayerCount(), groupBind->save->GetGroupCount(), groupBind->save->CanReset());
+                        sLog.outLog(LOG_DEFAULT, "ERROR: InstanceMap::Add: do not let player %s enter instance otherwise crash will happen", player->GetName());
+                        return false;
+                        // sadly some crashes here, need to check those logs
+                        // player->UnbindInstance(GetId(), GetSpawnMode());
                     }
                     // bind to the group or keep using the group save
                     if (!groupBind)
