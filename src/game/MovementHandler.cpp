@@ -247,18 +247,28 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
         movementInfo.RemoveMovementFlag(MOVEFLAG_WALK_MODE);
 
     /* process position-change */
-    HandleMoverRelocation(movementInfo);
+    bool result = HandleMoverRelocation(movementInfo);
 
     if (plMover)
         plMover->UpdateFallInformationIfNeed(movementInfo, opcode);
 
-    WorldPacket data(opcode, recv_data.size());
-    data << mover->GetPackGUID();                 // write guid
-    movementInfo.Write(data);                     // write data
-    mover->BroadcastPacketExcept(&data, _player);
+    if (result)
+    {
+        WorldPacket data(opcode, recv_data.size());
+        data << mover->GetPackGUID();                 // write guid
+        movementInfo.Write(data);                     // write data
+        mover->BroadcastPacketExcept(&data, _player);
+    }
+    else
+    {
+        WorldPacket data(MSG_MOVE_STOP, recv_data.size());
+        data << mover->GetPackGUID();
+        data << movementInfo;
+        mover->BroadcastPacket(&data,true);
+    }
 }
 
-void WorldSession::HandleMoverRelocation(MovementInfo& movementInfo)
+bool WorldSession::HandleMoverRelocation(MovementInfo& movementInfo)
 {
     uint32 mstime = WorldTimer::getMSTime();
     if ( m_clientTimeDelay == 0 )
@@ -270,6 +280,11 @@ void WorldSession::HandleMoverRelocation(MovementInfo& movementInfo)
 
     if (Player *plMover = mover->ToPlayer())
     {
+        if (mover->hasUnitState(UNIT_STAT_CAN_NOT_REACT))
+        {
+            movementInfo = mover->m_movementInfo;
+            return false;
+        }
         if (sWorld.getConfig(CONFIG_ENABLE_PASSIVE_ANTICHEAT) && !plMover->hasUnitState(UNIT_STAT_LOST_CONTROL | UNIT_STAT_NOT_MOVE) && !plMover->GetSession()->HasPermissions(PERM_GMT_DEV) && plMover->m_AC_timer == 0)
             sWorld.m_ac.execute(new ACRequest(plMover, plMover->m_movementInfo, movementInfo));
 
@@ -308,6 +323,7 @@ void WorldSession::HandleMoverRelocation(MovementInfo& movementInfo)
 
     if (mover->GetObjectGuid().IsPlayer())
         mover->ToPlayer()->HandleFallUnderMap(movementInfo.GetPos()->z);
+    return true;
 }
 
 void WorldSession::HandleForceSpeedChangeAck(WorldPacket &recv_data)
