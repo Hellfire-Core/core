@@ -21,17 +21,17 @@
 #include "Common.h"
 #include "DatabaseEnv.h"
 
-// category cooldown on items
-#define ITEM_COOLDOWN_ALL_ITEMS 4
 // spellid for comands
 #define COMMAND_COOLDOWN 2
+// category cooldown pets gcd
+#define PETS_GCD_CATEGORY 134
 
 class Player;
 class ByteBuffer;
 
 class HELLGROUND_IMPORT_EXPORT CooldownMgr
 {
-    friend class Player; // for RemoveAllSpellCooldowns, RemoveArenaSpellCooldowns, SendInitialSpells
+    friend class Player; // for RemoveAllSpellCooldowns, RemoveArenaSpellCooldowns
 public:
     CooldownMgr() {}
     struct Cooldown

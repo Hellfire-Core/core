@@ -2954,20 +2954,6 @@ void Spell::SendSpellCooldown()
         _player->GetCooldownMgr().AddItemCooldown(m_CastItem->GetEntry(), rec, cat, catrec);
     else
         _player->GetCooldownMgr().AddSpellCooldown(GetSpellEntry()->Id, rec, cat, catrec);
-
-    // check if spellcategorystore still needed
-    /*SpellCategoryStore::const_iterator i_scstore = sSpellCategoryStore.find(cat);
-    if (i_scstore != sSpellCategoryStore.end())
-    {
-        for (SpellCategorySet::const_iterator i_scset = i_scstore->second.begin(); i_scset != i_scstore->second.end(); ++i_scset)
-        {
-            if (*i_scset == GetSpellEntry()->Id)             // skip main spell, already handled above
-                continue;
-
-            _player->AddSpellCooldown(*i_scset, m_CastItem ? ITEM_COOLDOWN_ALL_ITEMS : 0, catrecTime);
-            // category cooldown should apply to all items
-        }
-    }*/
 }
 
 void Spell::update(uint32 difftime)
@@ -6139,7 +6125,7 @@ bool Spell::HasGlobalCooldown()
     Player* owner = m_caster->GetCharmerOrOwnerPlayerOrPlayerItself();
     if (!owner)
         return false;
-    return owner->GetCooldownMgr().HasSpellCooldown(0, GetSpellEntry()->StartRecoveryCategory);
+    return owner->GetCooldownMgr().HasSpellCooldown(0, (m_caster->GetTypeId() != TYPEID_PLAYER) ? PETS_GCD_CATEGORY: GetSpellEntry()->StartRecoveryCategory);
 }
 
 void Spell::TriggerGlobalCooldown()
@@ -6167,7 +6153,7 @@ void Spell::TriggerGlobalCooldown()
         else if (gcd > MAX_GCD)
             gcd = MAX_GCD;
     }
-    owner->GetCooldownMgr().AddSpellCooldown(0, 0, GetSpellEntry()->StartRecoveryCategory, gcd);
+    owner->GetCooldownMgr().AddSpellCooldown(0, 0, (m_caster->GetTypeId() != TYPEID_PLAYER) ? PETS_GCD_CATEGORY : GetSpellEntry()->StartRecoveryCategory, gcd);
 }
 
 void Spell::CancelGlobalCooldown()
