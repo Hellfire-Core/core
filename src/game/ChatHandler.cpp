@@ -330,6 +330,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
             }
 
             GetPlayer()->Whisper(msg, lang,player->GetGUID());
+            if (!player->CanSpeak())
+                ChatHandler(_player).PSendSysMessage("The player you are whispering to is muted and can not reply.");
         } 
         break;
 
