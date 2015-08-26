@@ -649,8 +649,10 @@ CreatureAI* GetAI_npc_geezleAI(Creature *_Creature)
 ## mob_nestlewood_owlkin
 ######*/
 
+#define INOCULATION_QUEST 9303
 #define INOCULATION_CHANNEL 29528
 #define INOCULATED_OWLKIN   16534
+#define OWLKIN              16518
 
 struct mob_nestlewood_owlkinAI : public ScriptedAI
 {
@@ -678,6 +680,7 @@ struct mob_nestlewood_owlkinAI : public ScriptedAI
         {
             ChannelTimer = 3000;
             Hitted = true;
+            ((Player*)caster)->CastCreatureOrGO(OWLKIN, me->GetGUID(), INOCULATION_CHANNEL);
         }
     }
 
