@@ -2940,13 +2940,16 @@ void Spell::SendSpellCooldown()
     if (rec < 0) rec = 0;
     if (catrec < 0) catrec = 0;
 
+    if (m_caster->GetTypeId() != TYPEID_PLAYER) // no category if this is just pet
+        {catrec = 0; cat = 0;}
+
     // no cooldown after applying spell mods
     if (rec == 0 && catrec == 0)
         return;
 
     if (!rec) // only category cooldown, set for good timing
         rec = catrec;
-
+    
     if (m_CastItem)
         _player->GetCooldownMgr().AddItemCooldown(m_CastItem->GetEntry(), rec, cat, catrec);
     else
