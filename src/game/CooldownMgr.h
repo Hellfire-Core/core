@@ -52,7 +52,6 @@ public:
 
     std::string SendCooldownsDebug();
     void WriteCooldowns(ByteBuffer& bb);
-    void Clear();
     void LoadFromDB(QueryResultAutoPtr result);
     void SaveToDB(uint32 playerguid);
 private:

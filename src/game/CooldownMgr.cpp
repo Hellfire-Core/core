@@ -160,17 +160,12 @@ void CooldownMgr::WriteCooldowns(ByteBuffer& bb)
     }
 }
 
-void CooldownMgr::Clear()
+void CooldownMgr::LoadFromDB(QueryResultAutoPtr result)
 {
     m_CategoryCooldowns.clear();
     m_SpellCooldowns.clear();
     m_ItemCooldowns.clear();
     m_ItemCatCooldowns.clear();
-}
-
-void CooldownMgr::LoadFromDB(QueryResultAutoPtr result)
-{
-    Clear();
     if (result)
     {
         time_t curTime = time(NULL);
@@ -183,21 +178,22 @@ void CooldownMgr::LoadFromDB(QueryResultAutoPtr result)
             uint32 item_id = fields[1].GetUInt32();
             time_t db_time = (time_t)fields[2].GetUInt64();
 
-            if (!sSpellStore.LookupEntry(spell_id) &&
-                spell_id != COMMAND_COOLDOWN)
-            {
-                sLog.outLog(LOG_DEFAULT, "ERROR: Player have unknown spell %u in `character_spell_cooldown`, skipping.", spell_id);
-                continue;
-            }
-
             // skip outdated cooldown
             if (db_time <= curTime)
                 continue;
 
-            if (item_id)
-                AddItemCooldown(item_id, db_time*IN_MILISECONDS, 0, 0);
+            if (spell_id)
+            {
+                if (!sSpellStore.LookupEntry(spell_id) &&
+                    spell_id != COMMAND_COOLDOWN)
+                {
+                    sLog.outLog(LOG_DEFAULT, "ERROR: Player have unknown spell %u in `character_spell_cooldown`, skipping.", spell_id);
+                    continue;
+                }
+                AddSpellCooldown(spell_id, (db_time - curTime)*IN_MILISECONDS, 0, 0);
+            }
             else
-                AddSpellCooldown(spell_id, db_time*IN_MILISECONDS, 0, 0);
+                AddItemCooldown(item_id, (db_time - curTime)*IN_MILISECONDS, 0, 0);
         } while (result->NextRow());
     }
 }
@@ -207,6 +203,7 @@ void CooldownMgr::SaveToDB(uint32 playerguid)
     RealmDataDatabase.PExecute("DELETE FROM character_spell_cooldown WHERE guid = '%u'", playerguid);
 
     uint32 now = WorldTimer::getMSTime();
+    time_t curTime = time(NULL);
 
     // remove outdated and save active
     for (CooldownList::iterator itr = m_SpellCooldowns.begin(); itr != m_SpellCooldowns.end();)
@@ -214,10 +211,10 @@ void CooldownMgr::SaveToDB(uint32 playerguid)
         uint32 diff = WorldTimer::getMSTimeDiff(now, itr->second.start);
         if (diff >= itr->second.duration)
             m_SpellCooldowns.erase(itr++);
-        else
+        else if ((itr->second.duration - diff) > 30 * IN_MILISECONDS) // skip shorter than 30sec
         {
             RealmDataDatabase.PExecute("REPLACE INTO character_spell_cooldown (guid,spell,item,time) VALUES ('%u', '%u', '%u', '" UI64FMTD "')",
-                playerguid, itr->first, 0, uint64((itr->second.duration - diff)/1000)); // store just seconds
+                playerguid, itr->first, 0, curTime + uint64((itr->second.duration - diff)/1000)); // store just seconds
             ++itr;
         }
     }
@@ -226,10 +223,10 @@ void CooldownMgr::SaveToDB(uint32 playerguid)
         uint32 diff = WorldTimer::getMSTimeDiff(now, itr->second.start);
         if (diff >= itr->second.duration)
             m_ItemCooldowns.erase(itr++);
-        else
+        else if ((itr->second.duration - diff) > 30 * IN_MILISECONDS) // skip shorter than 30sec
         {
             RealmDataDatabase.PExecute("REPLACE INTO character_spell_cooldown (guid,spell,item,time) VALUES ('%u', '%u', '%u', '" UI64FMTD "')",
-                playerguid, 0, itr->first, uint64((itr->second.duration - diff) / 1000)); // store just seconds
+                playerguid, 0, itr->first, curTime + uint64((itr->second.duration - diff) / 1000)); // store just seconds
             ++itr;
         }
     }
