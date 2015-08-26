@@ -12556,8 +12556,8 @@ void Unit::Kill(Unit *pVictim, bool durabilityLoss)
                 if (creatureVictim->GetCreatureInfo()->rank == CREATURE_ELITE_WORLDBOSS)
                 {
                     std::stringstream ss;
-                    ss << "BossEntry: " << creatureVictim->GetEntry() << " InstanceId: " << creatureVictim->GetInstanceId()
-                        << " MapId: " << m->GetId() << " Players: ";
+                    ss << "BossEntry: " << creatureVictim->GetEntry() << " " << creatureVictim->GetName() << " InstanceId: " << creatureVictim->GetInstanceId()
+                        << " MapId: " << m->GetId() << " " << m->GetMapName() << " Players: ";
                     if (Group *group = creditedPlayer->GetGroup())
                     {
                         for (GroupReference *i = group->GetFirstMember(); true; i = i->next())
