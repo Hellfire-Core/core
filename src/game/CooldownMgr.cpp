@@ -19,6 +19,8 @@
 #include "CooldownMgr.h"
 #include "ByteBuffer.h"
 #include "Timer.h"
+#include "DBCStores.h"
+#include "ObjectMgr.h"
 
 bool CooldownMgr::HasSpellCooldown(uint32 id, uint32 category) const
 {
