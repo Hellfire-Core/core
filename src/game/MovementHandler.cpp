@@ -280,7 +280,7 @@ bool WorldSession::HandleMoverRelocation(MovementInfo& movementInfo)
 
     if (Player *plMover = mover->ToPlayer())
     {
-        if (mover->hasUnitState(UNIT_STAT_CAN_NOT_REACT))
+        if (mover->hasUnitState((UNIT_STAT_STUNNED | UNIT_STAT_CONFUSED | UNIT_STAT_FLEEING)))
         {
             movementInfo = mover->m_movementInfo;
             return false;
