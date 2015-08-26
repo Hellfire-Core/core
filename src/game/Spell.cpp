@@ -2877,15 +2877,15 @@ void Spell::_handle_finish_phase()
 
 void Spell::SendSpellCooldown()
 {
-    if (m_caster->GetTypeId() != TYPEID_PLAYER)
+    Player* _player = m_caster->GetCharmerOrOwnerPlayerOrPlayerItself();
+    if (!_player)
         return;
 
-    Player* _player = (Player*)m_caster;
     // Add cooldown for max (disable spell)
     // Cooldown started on SendCooldownEvent call
     if (GetSpellEntry()->Attributes & SPELL_ATTR_DISABLED_WHILE_ACTIVE)
     {
-        _player->AddSpellCooldown(GetSpellEntry()->Id, 0, time(NULL) - 1);
+        _player->GetCooldownMgr().AddSpellCooldown(GetSpellEntry()->Id,0xFFFFFFFF,0,0);
         return;
     }
 
@@ -2944,31 +2944,27 @@ void Spell::SendSpellCooldown()
     if (rec == 0 && catrec == 0)
         return;
 
-    time_t curTime = time(NULL);
+    if (!rec) // only category cooldown, set for good timing
+        rec = catrec;
 
-    time_t catrecTime = catrec ? curTime + catrec / 1000 : 0;   // in secs
-    time_t recTime = rec ? curTime + rec / 1000 : catrecTime;// in secs
+    if (m_CastItem)
+        _player->GetCooldownMgr().AddItemCooldown(m_CastItem->GetEntry(), rec, cat, catrec);
+    else
+        _player->GetCooldownMgr().AddSpellCooldown(GetSpellEntry()->Id, rec, cat, catrec);
 
-    // self spell cooldown
-    if (recTime > 0)
-        _player->AddSpellCooldown(GetSpellEntry()->Id, m_CastItem ? m_CastItem->GetEntry() : 0, recTime);
-
-    // category spells
-    if (catrec > 0)
+    // check if spellcategorystore still needed
+    /*SpellCategoryStore::const_iterator i_scstore = sSpellCategoryStore.find(cat);
+    if (i_scstore != sSpellCategoryStore.end())
     {
-        SpellCategoryStore::const_iterator i_scstore = sSpellCategoryStore.find(cat);
-        if (i_scstore != sSpellCategoryStore.end())
+        for (SpellCategorySet::const_iterator i_scset = i_scstore->second.begin(); i_scset != i_scstore->second.end(); ++i_scset)
         {
-            for (SpellCategorySet::const_iterator i_scset = i_scstore->second.begin(); i_scset != i_scstore->second.end(); ++i_scset)
-            {
-                if (*i_scset == GetSpellEntry()->Id)             // skip main spell, already handled above
-                    continue;
+            if (*i_scset == GetSpellEntry()->Id)             // skip main spell, already handled above
+                continue;
 
-                _player->AddSpellCooldown(*i_scset, m_CastItem ? ITEM_COOLDOWN_ALL_ITEMS : 0, catrecTime);
-                // category cooldown should apply to all items
-            }
+            _player->AddSpellCooldown(*i_scset, m_CastItem ? ITEM_COOLDOWN_ALL_ITEMS : 0, catrecTime);
+            // category cooldown should apply to all items
         }
-    }
+    }*/
 }
 
 void Spell::update(uint32 difftime)
@@ -3826,14 +3822,13 @@ void Spell::TriggerSpell()
 SpellCastResult Spell::CheckCast(bool strict)
 {
     // check cooldowns to prevent cheating
-    if (!IsTriggeredSpell() && m_caster->GetTypeId() == TYPEID_PLAYER &&
-        ((Player*)m_caster)->HasSpellCooldown(GetSpellEntry()->Id, m_CastItem ? m_CastItem->GetEntry() : 0))
+    if (!IsTriggeredSpell() && m_caster->GetCharmerOrOwnerPlayerOrPlayerItself())
     {
-        //triggered spells shouldn't be cast (cooldown check in handleproctriggerspell)
-        // if (m_triggeredByAuraSpell)
-        //     return SPELL_FAILED_DONT_REPORT;
-        // else
-        return SPELL_FAILED_NOT_READY;
+        CooldownMgr& ownercm = m_caster->GetCharmerOrOwnerPlayerOrPlayerItself()->GetCooldownMgr();
+        if (m_CastItem && ownercm.HasItemCooldown(m_CastItem->GetEntry(),GetSpellEntry()->Category))
+            return SPELL_FAILED_NOT_READY;
+        if (!m_CastItem && ownercm.HasSpellCooldown(GetSpellEntry()->Id, GetSpellEntry()->Category))
+            return SPELL_FAILED_NOT_READY;
     }
 
     if (GetSpellEntry()->Attributes & SPELL_ATTR_DISABLED_WHILE_ACTIVE && m_caster->HasAura(GetSpellEntry()->Id, 0))
@@ -4780,7 +4775,8 @@ SpellCastResult Spell::CheckPetCast(Unit* target)
                 return SPELL_FAILED_BAD_TARGETS;
         }
         //cooldown
-        if (((Creature*)m_caster)->HasSpellCooldown(GetSpellEntry()->Id))
+        if (m_caster->GetCharmerOrOwnerPlayerOrPlayerItself() &&
+            m_caster->GetCharmerOrOwnerPlayerOrPlayerItself()->GetCooldownMgr().HasSpellCooldown(GetSpellEntry()->Id,GetSpellEntry()->Category))
             return SPELL_FAILED_NOT_READY;
         // dash & dive dont use when near
         if (target && m_caster->isInCombat() && GetSpellEntry()->Effect[0] == SPELL_EFFECT_APPLY_AURA &&
@@ -6137,17 +6133,17 @@ enum GCDLimits
 
 bool Spell::HasGlobalCooldown()
 {
-    // Only player or controlled units have global cooldown
-    if (m_caster->GetCharmInfo())
-        return m_caster->GetCharmInfo()->GetCooldownMgr().HasGlobalCooldown(GetSpellEntry());
-    else if (m_caster->GetTypeId() == TYPEID_PLAYER)
-        return ((Player*)m_caster)->GetCooldownMgr().HasGlobalCooldown(GetSpellEntry());
-    else
+    Player* owner = m_caster->GetCharmerOrOwnerPlayerOrPlayerItself();
+    if (!owner)
         return false;
+    return owner->GetCooldownMgr().HasSpellCooldown(0, GetSpellEntry()->StartRecoveryCategory);
 }
 
 void Spell::TriggerGlobalCooldown()
 {
+    Player* owner = m_caster->GetCharmerOrOwnerPlayerOrPlayerItself();
+    if (!owner)
+        return;
     int32 gcd = GetSpellEntry()->StartRecoveryTime;
     if (!gcd)
         return;
@@ -6155,7 +6151,7 @@ void Spell::TriggerGlobalCooldown()
     // Global cooldown can't leave range 1..1.5 secs
     // There are some spells (mostly not cast directly by player) that have < 1 sec and > 1.5 sec global cooldowns
     // but as tests show are not affected by any spell mods.
-    if (GetSpellEntry()->StartRecoveryTime >= MIN_GCD && GetSpellEntry()->StartRecoveryTime <= MAX_GCD)
+    if (gcd >= MIN_GCD && gcd <= MAX_GCD)
     {
         // gcd modifier auras are applied only to own spells and only players have such mods
         //if (m_caster->GetTypeId() == TYPEID_PLAYER)
@@ -6168,16 +6164,15 @@ void Spell::TriggerGlobalCooldown()
         else if (gcd > MAX_GCD)
             gcd = MAX_GCD;
     }
-
-    // Only players or controlled units have global cooldown
-    if (m_caster->GetCharmInfo())
-        m_caster->GetCharmInfo()->GetCooldownMgr().AddGlobalCooldown(GetSpellEntry(), gcd);
-    else if (m_caster->GetTypeId() == TYPEID_PLAYER)
-        ((Player*)m_caster)->GetCooldownMgr().AddGlobalCooldown(GetSpellEntry(), gcd);
+    owner->GetCooldownMgr().AddSpellCooldown(0, 0, GetSpellEntry()->StartRecoveryCategory, gcd);
 }
 
 void Spell::CancelGlobalCooldown()
 {
+    Player* owner = m_caster->GetCharmerOrOwnerPlayerOrPlayerItself();
+    if (!owner)
+        return;
+
     if (!GetSpellEntry()->StartRecoveryTime)
         return;
 
@@ -6185,9 +6180,5 @@ void Spell::CancelGlobalCooldown()
     if (m_caster->m_currentSpells[CURRENT_GENERIC_SPELL] != this)
         return;
 
-    // Only players or controlled units have global cooldown
-    if (m_caster->GetCharmInfo())
-        m_caster->GetCharmInfo()->GetCooldownMgr().CancelGlobalCooldown(GetSpellEntry());
-    else if (m_caster->GetTypeId() == TYPEID_PLAYER)
-        ((Player*)m_caster)->GetCooldownMgr().CancelGlobalCooldown(GetSpellEntry());
+    owner->GetCooldownMgr().CancelSpellCooldown(0,GetSpellEntry()->StartRecoveryCategory);
 }

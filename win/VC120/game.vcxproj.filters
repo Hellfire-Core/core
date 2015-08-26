@@ -570,6 +570,9 @@
     <ClCompile Include="..\..\src\game\HostileRefManager.cpp">
       <Filter>Managers</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\game\CooldownMgr.cpp">
+      <Filter>Managers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\game\Channel.h">
@@ -1083,6 +1086,9 @@
       <Filter>Movement</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\game\HostileRefManager.h">
+      <Filter>Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\game\CooldownMgr.h">
       <Filter>Managers</Filter>
     </ClInclude>
   </ItemGroup>

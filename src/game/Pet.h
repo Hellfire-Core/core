@@ -209,8 +209,6 @@ class Pet : public Creature
         void CastPetAuras(bool current);
         void CastPetAura(PetAura const* aura);
 
-        void _LoadSpellCooldowns();
-        void _SaveSpellCooldowns();
         void _LoadAuras(uint32 timediff);
         void _SaveAuras();
         void _LoadSpells();

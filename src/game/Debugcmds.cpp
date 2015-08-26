@@ -734,13 +734,13 @@ bool ChatHandler::HandleDebugThreatList(const char * /*args*/)
         return false;
 
     Player *pOwner = m_session->GetPlayer();
-    if (!pOwner || pOwner->HasSpellCooldown(COMMAND_COOLDOWN))
+    if (!pOwner || pOwner->GetCooldownMgr().HasSpellCooldown(COMMAND_COOLDOWN,0))
         return false;
 
     uint32 max_count = 0;
     if (!m_session->HasPermissions(PERM_GMT_DEV))
     {
-        pOwner->AddSpellCooldown(COMMAND_COOLDOWN, 0, time(NULL) +10);
+        pOwner->GetCooldownMgr().AddSpellCooldown(COMMAND_COOLDOWN, 10000, 0, 0);
         max_count = 3;
     }
 
@@ -1155,6 +1155,7 @@ bool ChatHandler::HandleDebugCooldownsCommand(const char* args)
         SetSentErrorMessage(true);
         return false;
     }
-    SendSysMessage(plr->SendCooldownsDebug().c_str());
+    PSendSysMessage("Cooldowns for player %s:",plr->GetName());
+    SendSysMessage(plr->GetCooldownMgr().SendCooldownsDebug().c_str());
     return true;
 }

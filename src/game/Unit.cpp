@@ -1915,7 +1915,7 @@ void Unit::CalcAbsorb(Unit *pVictim,SpellSchoolMask schoolMask, const uint32 dam
         // Cheat Death
         if ((*i)->GetSpellProto()->SpellFamilyName==SPELLFAMILY_ROGUE && (*i)->GetSpellProto()->SpellIconID == 2109)
         {
-            if (((Player*)pVictim)->HasSpellCooldown(31231))
+            if (((Player*)pVictim)->GetCooldownMgr().HasSpellCooldown(31231,0))
                 continue;
 
             if (pVictim->GetHealth() <= RemainingDamage)
@@ -1924,7 +1924,7 @@ void Unit::CalcAbsorb(Unit *pVictim,SpellSchoolMask schoolMask, const uint32 dam
                 if (roll_chance_i(chance))
                 {
                     pVictim->CastSpell(pVictim,31231,true);
-                    ((Player*)pVictim)->AddSpellCooldown(31231,0,time(NULL)+60);
+                    ((Player*)pVictim)->GetCooldownMgr().AddSpellCooldown(31231, 60 * IN_MILISECONDS, 0, 0);
 
                     // with health > 10% lost health until health==10%, in other case no losses
                     uint32 health10 = pVictim->GetMaxHealth()/10;
@@ -5058,7 +5058,7 @@ bool Unit::HandleHasteAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
     if (!target || target!=this && !target->isAlive())
         return false;
 
-    if (cooldown && GetTypeId()==TYPEID_PLAYER && ((Player*)this)->HasSpellCooldown(triggered_spell_id))
+    if (cooldown && GetTypeId() == TYPEID_PLAYER && ((Player*)this)->GetCooldownMgr().HasSpellCooldown(triggered_spell_id, 0))
         return false;
 
     if (basepoints0)
@@ -5066,8 +5066,8 @@ bool Unit::HandleHasteAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
     else
         CastSpell(target,triggered_spell_id,true,castItem,triggeredByAura);
 
-    if (cooldown && GetTypeId()==TYPEID_PLAYER)
-        ((Player*)this)->AddSpellCooldown(triggered_spell_id,0,time(NULL) + cooldown);
+    if (cooldown && GetTypeId() == TYPEID_PLAYER)
+        ((Player*)this)->GetCooldownMgr().AddSpellCooldown(triggered_spell_id, cooldown * IN_MILISECONDS, 0, 0);
 
     return true;
 }
@@ -6178,7 +6178,7 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
 
                     static const uint32 WF_RANK_1 = 33757;
                     // custom cooldown processing case
-                    if (cooldown && ((Player*)this)->HasSpellCooldown(WF_RANK_1))
+                    if (cooldown && ((Player*)this)->GetCooldownMgr().HasSpellCooldown(WF_RANK_1, 0))
                         return false;
 
                     uint32 spellId;
@@ -6223,7 +6223,7 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
 
                     // apply cooldown before cast to prevent processing itself
                     if (cooldown)
-                        ((Player*)this)->AddSpellCooldown(WF_RANK_1,0,time(NULL) + cooldown);
+                        ((Player*)this)->GetCooldownMgr().AddSpellCooldown(WF_RANK_1, cooldown * IN_MILISECONDS, 0, 0);
 
                     // Attack Twice
                     for (uint32 i = 0; i<2; ++i)                                                   // if we set castitem it will force our m_cantrigger = true to false for windfury weapon due to later checks in prepareDataForTriggerSystem()
@@ -6274,9 +6274,9 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
                 if (Unit *caster = triggeredByAura->GetCaster())
                     if (caster->GetTypeId() == TYPEID_PLAYER && cooldown)
                     {
-                        if (((Player*)caster)->HasSpellCooldown(triggered_spell_id))
+                        if (((Player*)caster)->GetCooldownMgr().HasSpellCooldown(triggered_spell_id, 0))
                             return false;
-                        ((Player*)caster)->AddSpellCooldown(triggered_spell_id,0,time(NULL) + cooldown);
+                        ((Player*)caster)->GetCooldownMgr().AddSpellCooldown(triggered_spell_id, cooldown * IN_MILISECONDS, 0, 0);
                     }
 
                 CastCustomSpell(this, triggered_spell_id, &basepoints0, NULL, NULL, true);
@@ -6289,7 +6289,7 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
                     return false;
 
                 // custom cooldown processing case
-                if (cooldown && GetTypeId()==TYPEID_PLAYER && ((Player*)this)->HasSpellCooldown(dummySpell->Id))
+                if (cooldown && GetTypeId() == TYPEID_PLAYER && ((Player*)this)->GetCooldownMgr().HasSpellCooldown(dummySpell->Id, 0))
                     return false;
 
                 uint32 spellId = 0;
@@ -6328,7 +6328,7 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
                 CastSpell(pVictim, spellId, true, castItem, triggeredByAura);
 
                 if (cooldown && GetTypeId()==TYPEID_PLAYER)
-                    ((Player*)this)->AddSpellCooldown(dummySpell->Id,0,time(NULL) + cooldown);
+                    ((Player*)this)->GetCooldownMgr().AddSpellCooldown(dummySpell->Id, cooldown * IN_MILISECONDS, 0, 0);
 
                 return true;
             }
@@ -6362,7 +6362,7 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
     if (!target || target != this && !target->isAlive())
         return false;
 
-    if (cooldown && GetTypeId()==TYPEID_PLAYER && ((Player*)this)->HasSpellCooldown(triggered_spell_id))
+    if (cooldown && GetTypeId() == TYPEID_PLAYER && ((Player*)this)->GetCooldownMgr().HasSpellCooldown(triggered_spell_id, 0))
         return false;
 
     if (basepoints0)
@@ -6371,7 +6371,7 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
         CastSpell(target, triggered_spell_id, true, castItem, triggeredByAura, originalCaster);
 
     if (cooldown && GetTypeId() == TYPEID_PLAYER)
-        ((Player*)this)->AddSpellCooldown(triggered_spell_id,0,time(NULL) + cooldown);
+        ((Player*)this)->GetCooldownMgr().AddSpellCooldown(triggered_spell_id,cooldown * IN_MILISECONDS, 0, 0);
 
     return true;
 }
@@ -6760,10 +6760,10 @@ bool Unit::HandleProcTriggerSpell(Unit *pVictim, uint32 damage, Aura* triggeredB
 
              if (pVictim->GetTypeId() == TYPEID_PLAYER)
              {
-                 if (((Player*)pVictim)->HasSpellCooldown(trigger_spell_id))
+                 if (((Player*)pVictim)->GetCooldownMgr().HasSpellCooldown(trigger_spell_id, 0))
                      return false;
 
-                 ((Player*)pVictim)->AddSpellCooldown(trigger_spell_id, 0, time(NULL) +1);
+                 ((Player*)pVictim)->GetCooldownMgr().AddSpellCooldown(trigger_spell_id, 1000, 0, 0);
              }
 
              // Improved Judgement of Light: bonus heal from t4 set
@@ -6822,7 +6822,7 @@ bool Unit::HandleProcTriggerSpell(Unit *pVictim, uint32 damage, Aura* triggeredB
 
              trigger_spell_id = 37661;
 
-             if (ToPlayer()->HasSpellCooldown(trigger_spell_id))
+             if (ToPlayer()->GetCooldownMgr().HasSpellCooldown(trigger_spell_id, 0))
                  return false;
 
              // stacking
@@ -7143,11 +7143,7 @@ bool Unit::HandleProcTriggerSpell(Unit *pVictim, uint32 damage, Aura* triggeredB
     if (m_extraAttacks && spellInfo->HasEffect(SPELL_EFFECT_ADD_EXTRA_ATTACKS))
         return false;
 
-    if (cooldown && GetTypeId()==TYPEID_PLAYER && ((Player*)this)->HasSpellCooldown(trigger_spell_id))
-        return false;
-
-    // only for windfury proc for a moment
-    if(GetTypeId() == TYPEID_UNIT && ((Creature*)this)->HasSpellCooldown(trigger_spell_id))
+    if (cooldown && GetTypeId() == TYPEID_PLAYER && ((Player*)this)->GetCooldownMgr().HasSpellCooldown(trigger_spell_id, 0))
         return false;
 
     // try detect target manually if not set
@@ -7160,16 +7156,12 @@ bool Unit::HandleProcTriggerSpell(Unit *pVictim, uint32 damage, Aura* triggeredB
 
     // apply spell cooldown before casting to prevent triggering spells with SPELL_EFFECT_ADD_EXTRA_ATTACKS if spell has hidden cooldown
     if (cooldown && GetTypeId()==TYPEID_PLAYER)
-        ((Player*)this)->AddSpellCooldown(trigger_spell_id,0,time(NULL) + cooldown);
+        ((Player*)this)->GetCooldownMgr().AddSpellCooldown(trigger_spell_id, cooldown * IN_MILISECONDS, 0, 0);
 
     if (basepoints0)
-        CastCustomSpell(target,trigger_spell_id,&basepoints0,NULL,NULL,true,castItem,triggeredByAura);
+        CastCustomSpell(target, trigger_spell_id, &basepoints0, NULL, NULL, true, castItem, triggeredByAura);
     else
-        CastSpell(target,trigger_spell_id,true,castItem,triggeredByAura);
-
-    // workaround: 3 sec cooldown for NPCs windfury proc
-    if(trigger_spell_id == 32910 && GetTypeId() == TYPEID_UNIT)
-        ((Creature*)this)->_AddCreatureSpellCooldown(32910, time(NULL) + 3);
+        CastSpell(target, trigger_spell_id, true, castItem, triggeredByAura);
 
     return true;
 }
@@ -7256,13 +7248,13 @@ bool Unit::HandleOverrideClassScriptAuraProc(Unit *pVictim, Aura *triggeredByAur
         return false;
     }
 
-    if (cooldown && GetTypeId()==TYPEID_PLAYER && ((Player*)this)->HasSpellCooldown(triggered_spell_id))
+    if (cooldown && GetTypeId() == TYPEID_PLAYER && ((Player*)this)->GetCooldownMgr().HasSpellCooldown(triggered_spell_id, 0))
         return false;
 
     CastSpell(pVictim, triggered_spell_id, true, castItem, triggeredByAura);
 
     if (cooldown && GetTypeId()==TYPEID_PLAYER)
-        ((Player*)this)->AddSpellCooldown(triggered_spell_id,0,time(NULL) + cooldown);
+        ((Player*)this)->GetCooldownMgr().AddSpellCooldown(triggered_spell_id, cooldown * IN_MILISECONDS, 0, 0);
 
     return true;
 }

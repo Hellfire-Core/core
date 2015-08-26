@@ -167,30 +167,28 @@ struct boss_sacrolashAI : public ScriptedAI
         {
             if(school_mask == SPELL_SCHOOL_MASK_SHADOW)
             {
-                SpellEntry* DarkTouched = (SpellEntry*)GetSpellStore()->LookupEntry(SPELL_DARK_TOUCHED);
                 if(target->HasAura(SPELL_FLAME_TOUCHED))
                 {
                     target->RemoveAurasDueToSpell(SPELL_FLAME_TOUCHED);
                     target->CastSpell(target, SPELL_DARK_FLAME, true);
                 }
-                if(!target->HasAura(SPELL_DARK_FLAME) && !target->ToPlayer()->GetCooldownMgr().HasSpellIdCooldown(DarkTouched))
+                if(!target->HasAura(SPELL_DARK_FLAME) && !target->ToPlayer()->GetCooldownMgr().HasSpellCooldown(SPELL_DARK_TOUCHED, 0))
                 {
                     target->CastSpell(target, SPELL_DARK_TOUCHED, true);
-                    target->ToPlayer()->GetCooldownMgr().AddSpellIdCooldown(DarkTouched, 1000);
+                    target->ToPlayer()->GetCooldownMgr().AddSpellCooldown(SPELL_DARK_TOUCHED, 1000, 0, 0);
                 }
             }
             if(school_mask == SPELL_SCHOOL_MASK_FIRE)
             {
-                SpellEntry* FlameTouched = (SpellEntry*)GetSpellStore()->LookupEntry(SPELL_FLAME_TOUCHED);
                 if(target->HasAura(SPELL_DARK_TOUCHED))
                 {
                     target->RemoveAurasDueToSpell(SPELL_DARK_TOUCHED);
                     target->CastSpell(target, SPELL_DARK_FLAME, true);
                 }
-                if(!target->HasAura(SPELL_DARK_FLAME) && !target->ToPlayer()->GetCooldownMgr().HasSpellIdCooldown(FlameTouched))
+                if(!target->HasAura(SPELL_DARK_FLAME) && !target->ToPlayer()->GetCooldownMgr().HasSpellCooldown(SPELL_FLAME_TOUCHED, 0))
                 {
                     target->CastSpell(target, SPELL_FLAME_TOUCHED, true);;
-                    target->ToPlayer()->GetCooldownMgr().AddSpellIdCooldown(FlameTouched, 1000);
+                    target->ToPlayer()->GetCooldownMgr().AddSpellCooldown(SPELL_FLAME_TOUCHED, 1000, 0, 0);
                 }
             }
         }
@@ -376,34 +374,32 @@ struct boss_alythessAI : public Scripted_NoMovementAI
 
     void DamageMade(Unit* target, uint32 &damage, bool direct_damage, uint8 school_mask)
     {
-        if(target->GetTypeId() == TYPEID_PLAYER && damage)
+        if (target->GetTypeId() == TYPEID_PLAYER && damage)
         {
-            if(school_mask == SPELL_SCHOOL_MASK_SHADOW)
+            if (school_mask == SPELL_SCHOOL_MASK_SHADOW)
             {
-                SpellEntry* DarkTouched = (SpellEntry*)GetSpellStore()->LookupEntry(SPELL_DARK_TOUCHED);
-                if(target->HasAura(SPELL_FLAME_TOUCHED))
+                if (target->HasAura(SPELL_FLAME_TOUCHED))
                 {
                     target->RemoveAurasDueToSpell(SPELL_FLAME_TOUCHED);
                     target->CastSpell(target, SPELL_DARK_FLAME, true);
                 }
-                if(!target->HasAura(SPELL_DARK_FLAME) && !target->ToPlayer()->GetCooldownMgr().HasSpellIdCooldown(DarkTouched))
+                if (!target->HasAura(SPELL_DARK_FLAME) && !target->ToPlayer()->GetCooldownMgr().HasSpellCooldown(SPELL_DARK_TOUCHED, 0))
                 {
                     target->CastSpell(target, SPELL_DARK_TOUCHED, true);
-                    target->ToPlayer()->GetCooldownMgr().AddSpellIdCooldown(DarkTouched, 1000);
+                    target->ToPlayer()->GetCooldownMgr().AddSpellCooldown(SPELL_DARK_TOUCHED, 1000, 0, 0);
                 }
             }
-            if(school_mask == SPELL_SCHOOL_MASK_FIRE)
+            if (school_mask == SPELL_SCHOOL_MASK_FIRE)
             {
-                SpellEntry* FlameTouched = (SpellEntry*)GetSpellStore()->LookupEntry(SPELL_FLAME_TOUCHED);
-                if(target->HasAura(SPELL_DARK_TOUCHED))
+                if (target->HasAura(SPELL_DARK_TOUCHED))
                 {
                     target->RemoveAurasDueToSpell(SPELL_DARK_TOUCHED);
                     target->CastSpell(target, SPELL_DARK_FLAME, true);
                 }
-                if(!target->HasAura(SPELL_DARK_FLAME) && !target->ToPlayer()->GetCooldownMgr().HasSpellIdCooldown(FlameTouched))
+                if (!target->HasAura(SPELL_DARK_FLAME) && !target->ToPlayer()->GetCooldownMgr().HasSpellCooldown(SPELL_FLAME_TOUCHED, 0))
                 {
                     target->CastSpell(target, SPELL_FLAME_TOUCHED, true);;
-                    target->ToPlayer()->GetCooldownMgr().AddSpellIdCooldown(FlameTouched, 1000);
+                    target->ToPlayer()->GetCooldownMgr().AddSpellCooldown(SPELL_FLAME_TOUCHED, 1000, 0, 0);
                 }
             }
         }
@@ -591,16 +587,15 @@ struct mob_shadow_imageAI : public ScriptedAI
     {
         if(target->GetTypeId() == TYPEID_PLAYER && damage && school_mask == SPELL_SCHOOL_MASK_SHADOW)
         {
-            SpellEntry* DarkTouched = (SpellEntry*)GetSpellStore()->LookupEntry(SPELL_DARK_TOUCHED);
             if(target->HasAura(SPELL_FLAME_TOUCHED))
             {
                 target->RemoveAurasDueToSpell(SPELL_FLAME_TOUCHED);
                 target->CastSpell(target, SPELL_DARK_FLAME, true);
             }
-            if(!target->HasAura(SPELL_DARK_FLAME) && !target->ToPlayer()->GetCooldownMgr().HasSpellIdCooldown(DarkTouched))
+            if (!target->HasAura(SPELL_DARK_FLAME) && !target->ToPlayer()->GetCooldownMgr().HasSpellCooldown(SPELL_DARK_TOUCHED, 0))
             {
                 target->CastSpell(target, SPELL_DARK_TOUCHED, true);
-                target->ToPlayer()->GetCooldownMgr().AddSpellIdCooldown(DarkTouched, 1000);
+                target->ToPlayer()->GetCooldownMgr().AddSpellCooldown(SPELL_DARK_TOUCHED, 1000, 0, 0);
             }
         }
     }

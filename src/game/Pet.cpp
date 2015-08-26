@@ -81,8 +81,6 @@ Pet::Pet(PetType type) : Creature()
 
     m_spells.clear();
     m_Auras.clear();
-    m_CreatureSpellCooldowns.clear();
-    m_CreatureCategoryCooldowns.clear();
     m_autospells.clear();
     m_declinedname = NULL;
     
@@ -334,7 +332,7 @@ bool Pet::LoadPetFromDB(Unit* owner, uint32 petentry, uint32 petnumber, bool cur
 
     // Spells should be loaded after pet is added to map, because in CheckCast is check on it
     _LoadSpells();
-    _LoadSpellCooldowns();
+    //_LoadSpellCooldowns();
 
     owner->SetPet(this);                                    // in DB stored only full controlled creature
     sLog.outDebug("New Pet has guid %u", GetGUIDLow());
@@ -400,7 +398,6 @@ void Pet::SavePetToDB(PetSaveMode mode)
     //save pet's data as one single transaction
     RealmDataDatabase.BeginTransaction();
     _SaveSpells();
-    _SaveSpellCooldowns();
     _SaveAuras();
 
     switch (mode)
@@ -1273,77 +1270,6 @@ uint32 Pet::GetCurrentFoodBenefitLevel(uint32 itemlevel)
     // -15 or less
     else
         return 0;                                           //food too low level
-}
-
-void Pet::_LoadSpellCooldowns()
-{
-    m_CreatureSpellCooldowns.clear();
-    m_CreatureCategoryCooldowns.clear();
-
-    QueryResultAutoPtr result = RealmDataDatabase.PQuery("SELECT spell,time FROM pet_spell_cooldown WHERE guid = '%u'",m_charmInfo->GetPetNumber());
-
-    if (result)
-    {
-        time_t curTime = time(NULL);
-
-        WorldPacket data(SMSG_SPELL_COOLDOWN, (8+1+result->GetRowCount()*8));
-        data << GetGUID();
-        data << uint8(0x0);                                 // flags (0x1, 0x2)
-
-        do
-        {
-            Field *fields = result->Fetch();
-
-            uint32 spell_id = fields[0].GetUInt32();
-            time_t db_time  = (time_t)fields[1].GetUInt64();
-
-            if (!sSpellStore.LookupEntry(spell_id))
-            {
-                sLog.outLog(LOG_DEFAULT, "ERROR: Pet %u have unknown spell %u in `pet_spell_cooldown`, skipping.",m_charmInfo->GetPetNumber(),spell_id);
-                continue;
-            }
-
-            // skip outdated cooldown
-            if (db_time <= curTime)
-                continue;
-
-            data << uint32(spell_id);
-            data << uint32(uint32(db_time-curTime)*1000);   // in m.secs
-
-            _AddCreatureSpellCooldown(spell_id,db_time);
-
-            sLog.outDebug("Pet (Number: %u) spell %u cooldown loaded (%u secs).", m_charmInfo->GetPetNumber(), spell_id, uint32(db_time-curTime));
-        }
-        while (result->NextRow());
-
-        if (!m_CreatureSpellCooldowns.empty() && GetOwner())
-        {
-            if (GetOwner()->GetTypeId() == TYPEID_PLAYER)
-                ((Player*)GetOwner())->SendPacketToSelf(&data);
-        }
-    }
-}
-
-void Pet::_SaveSpellCooldowns()
-{
-    if (getPetType() == SUMMON_PET) //don't save cooldowns for temp pets, thats senseless
-        return;
-
-    RealmDataDatabase.PExecute("DELETE FROM pet_spell_cooldown WHERE guid = '%u'", m_charmInfo->GetPetNumber());
-
-    time_t curTime = time(NULL);
-
-    // remove oudated and save active
-    for (CreatureSpellCooldowns::iterator itr = m_CreatureSpellCooldowns.begin();itr != m_CreatureSpellCooldowns.end();)
-    {
-        if (itr->second <= curTime)
-            m_CreatureSpellCooldowns.erase(itr++);
-        else
-        {
-            RealmDataDatabase.PExecute("INSERT INTO pet_spell_cooldown (guid,spell,time) VALUES ('%u', '%u', '" UI64FMTD "')", m_charmInfo->GetPetNumber(), itr->first, uint64(itr->second));
-            ++itr;
-        }
-    }
 }
 
 void Pet::_LoadSpells()

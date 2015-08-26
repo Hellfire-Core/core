@@ -502,7 +502,8 @@ void WorldSession::HandlePetCastSpellOpcode(WorldPacket& recvPacket)
         return;
 
     if (spellInfo->StartRecoveryCategory > 0) //Check if spell is affected by GCD
-        if (caster->GetTypeId() == TYPEID_UNIT && caster->GetCharmInfo() && caster->GetCharmInfo()->GetCooldownMgr().HasGlobalCooldown(spellInfo))
+        if (caster->GetTypeId() == TYPEID_UNIT && 
+            _player->GetCooldownMgr().HasSpellCooldown(0,spellInfo->StartRecoveryCategory))
         {
             caster->SendPetCastFail(spellid, SPELL_FAILED_NOT_READY);
             return;
@@ -522,7 +523,6 @@ void WorldSession::HandlePetCastSpellOpcode(WorldPacket& recvPacket)
         if (caster->GetTypeId() == TYPEID_UNIT)
         {
             Creature* pet = (Creature*)caster;
-            pet->AddCreatureSpellCooldown(spellid);
             if (pet->isPet())
             {
                 Pet* p = (Pet*)pet;
@@ -544,16 +544,6 @@ void WorldSession::HandlePetCastSpellOpcode(WorldPacket& recvPacket)
     else
     {
         caster->SendPetCastFail(spellid, result);
-        if (caster->GetTypeId() == TYPEID_PLAYER)
-        {
-            if (!((Player*)caster)->HasSpellCooldown(spellid))
-                caster->SendPetClearCooldown(spellid);
-        }
-        else
-        {
-            if (!((Creature*)caster)->HasSpellCooldown(spellid))
-                caster->SendPetClearCooldown(spellid);
-        }
 
         spell->finish(false);
         delete spell;

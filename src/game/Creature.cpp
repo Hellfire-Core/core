@@ -164,9 +164,6 @@ m_tempSummon(false)
     for (int i =0; i < CREATURE_MAX_SPELLS; ++i)
         m_spells[i] = 0;
 
-    m_CreatureSpellCooldowns.clear();
-    m_CreatureCategoryCooldowns.clear();
-
     DisableReputationGain = false;
 }
 
@@ -2372,58 +2369,6 @@ void Creature::SetInCombatWithZone()
             }
         }
     }
-}
-
-void Creature::_AddCreatureSpellCooldown(uint32 spell_id, time_t end_time)
-{
-    m_CreatureSpellCooldowns[spell_id] = end_time;
-}
-
-void Creature::_AddCreatureCategoryCooldown(uint32 category, time_t end_time)
-{
-    m_CreatureCategoryCooldowns[category] = end_time;
-}
-
-void Creature::AddCreatureSpellCooldown(uint32 spellid)
-{
-    SpellEntry const *spellInfo = sSpellStore.LookupEntry(spellid);
-    if (!spellInfo)
-        return;
-
-    uint32 cooldown = SpellMgr::GetSpellRecoveryTime(spellInfo);
-    uint32 CategoryCooldown = spellInfo->CategoryRecoveryTime;
-
-    if (isPet())
-        if (Unit* Owner = GetOwner())
-            if (Owner->GetTypeId() == TYPEID_PLAYER)
-            {
-                Owner->ToPlayer()->ApplySpellMod(spellid, SPELLMOD_COOLDOWN, CategoryCooldown);
-                if (CategoryCooldown < 0)
-                    CategoryCooldown = 0;
-                cooldown = CategoryCooldown;
-            }
-
-     if (cooldown)
-         _AddCreatureSpellCooldown(spellid, time(NULL) + cooldown/1000);
-
-     if (spellInfo->Category && CategoryCooldown)
-         _AddCreatureCategoryCooldown(spellInfo->Category, time(NULL) + CategoryCooldown/1000);
-}
-
-bool Creature::HasCategoryCooldown(uint32 spell_id) const
-{
-    SpellEntry const *spellInfo = sSpellStore.LookupEntry(spell_id);
-    if (!spellInfo)
-        return false;
-
-    CreatureSpellCooldowns::const_iterator itr = m_CreatureCategoryCooldowns.find(spellInfo->Category);
-    return(itr != m_CreatureCategoryCooldowns.end() && itr->second > time(NULL));
-}
-
-bool Creature::HasSpellCooldown(uint32 spell_id) const
-{
-    CreatureSpellCooldowns::const_iterator itr = m_CreatureSpellCooldowns.find(spell_id);
-    return (itr != m_CreatureSpellCooldowns.end() && itr->second > time(NULL)) || HasCategoryCooldown(spell_id);
 }
 
 bool Creature::IsInEvadeMode() const

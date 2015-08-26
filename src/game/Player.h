@@ -21,12 +21,10 @@
 #ifndef HELLGROUND_PLAYER_H
 #define HELLGROUND_PLAYER_H
 
-#include "Common.h"
-
 #include "ItemPrototype.h"
 #include "Unit.h"
 #include "Item.h"
-
+#include "CooldownMgr.h"
 #include "Database/DatabaseEnv.h"
 #include "BattleGround.h"
 #include "NPCHandler.h"
@@ -61,7 +59,6 @@ struct PlayerAI;
 typedef std::deque<Mail*> PlayerMails;
 
 #define PLAYER_MAX_SKILLS       127
-#define COMMAND_COOLDOWN        2
 
 enum AnticheatChecks
 {
@@ -124,16 +121,6 @@ typedef UNORDERED_MAP<uint16, PlayerSpell> PlayerSpellMap;
 typedef std::list<SpellModifier*> SpellModList;
 
 typedef UNORDERED_MAP<uint64, std::pair<uint32, uint64>> ConsecutiveKillsMap;
-
-#define ITEM_COOLDOWN_ALL_ITEMS 4 // item entry=4 does not exist, used for category cooldowns
-struct ItemCooldown
-{
-    time_t end;
-    uint16 itemid;
-};
-
-typedef std::multimap<uint32, ItemCooldown> ItemCooldowns;
-typedef std::map<uint32, time_t> SpellCooldowns;
 
 enum TrainerSpellState
 {
@@ -1542,24 +1529,13 @@ class HELLGROUND_EXPORT Player : public Unit
         void RemoveSpellMods(Spell const* spell);
         void RestoreSpellMods(Spell const* spell);
 
+        // TODO RECHECK
         CooldownMgr& GetCooldownMgr() { return m_CooldownMgr; }
-
-        bool HasSpellCooldown(uint32 spell_id, uint32 item = 0) const;
-        uint32 GetSpellCooldownDelay(uint32 spell_id) const
-        {
-            SpellCooldowns::const_iterator itr = m_spellCooldowns.find(spell_id);
-            time_t t = time(NULL);
-            return itr != m_spellCooldowns.end() && itr->second > t ? itr->second - t : 0;
-        }
-        void AddSpellCooldown(uint32 spell_id, uint32 itemid, time_t end_time);
         void SendCooldownEvent(SpellEntry const *spellInfo);
         void ProhibitSpellSchool(SpellSchoolMask idSchoolMask, uint32 unTimeMs);
         void RemoveSpellCooldown(uint32 spell_id, bool update = false);
         void RemoveArenaSpellCooldowns();
-        void RemoveAllSpellCooldown(); // item?
-        void _LoadSpellCooldowns(QueryResultAutoPtr result);
-        void _SaveSpellCooldowns();
-        std::string SendCooldownsDebug();
+        void RemoveAllSpellCooldown();
 
         void setResurrectRequestData(uint64 guid, uint32 mapId, float X, float Y, float Z, uint32 health, uint32 mana)
         {
@@ -2415,8 +2391,6 @@ class HELLGROUND_EXPORT Player : public Unit
 
         PlayerMails m_mail;
         PlayerSpellMap m_spells;
-        SpellCooldowns m_spellCooldowns;
-        ItemCooldowns m_itemCooldowns;
 
         ActionButtonList m_actionButtons;
 

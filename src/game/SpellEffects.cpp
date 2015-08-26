@@ -1250,7 +1250,7 @@ void Spell::EffectDummy(uint32 i)
 
                         if (spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE &&
                             (spellInfo->SpellFamilyFlags & 0x26000000860LL) &&
-                            m_caster->ToPlayer()->HasSpellCooldown(classspell))
+                            m_caster->ToPlayer()->GetCooldownMgr().HasSpellCooldown(classspell,0))
                             ((Player*)m_caster)->RemoveSpellCooldown(classspell, true);
                     }
                     return;
@@ -2563,8 +2563,8 @@ void Spell::EffectTriggerSpell(uint32 i)
                 return;
 
             // reset cooldown on it if needed
-            if (((Player*)m_caster)->HasSpellCooldown(spellInfo->Id))
-                ((Player*)m_caster)->RemoveSpellCooldown(spellInfo->Id);
+            //if (((Player*)m_caster)->HasSpellCooldown(spellInfo->Id))
+            //    ((Player*)m_caster)->RemoveSpellCooldown(spellInfo->Id);
 
             AddTriggeredSpell(spellInfo);
             return;
@@ -4897,8 +4897,6 @@ void Spell::EffectSummonPet(uint32 i)
                  OldSummon->SetHealth(OldSummon->GetMaxHealth());
                  OldSummon->SetPower(POWER_MANA, OldSummon->GetMaxPower(POWER_MANA));
                  OldSummon->RemoveAllAurasButPermanent();
-                 OldSummon->m_CreatureSpellCooldowns.clear();
-                 OldSummon->m_CreatureCategoryCooldowns.clear();
             }
             return;
         }
@@ -6818,10 +6816,10 @@ void Spell::EffectStuck(uint32 /*i*/)
     {
         // if player hasn't cooldown on HearthStone and have in bags then use him
         // otherwise teleport to player start location
-        if (!pTarget->HasSpellCooldown(HEARTHSTONE_SPELL, HEARTHSTONE_ITEM) && pTarget->HasItemCount(HEARTHSTONE_ITEM, 1))
+        if (!pTarget->GetCooldownMgr().HasItemCooldown(HEARTHSTONE_ITEM,0) && pTarget->HasItemCount(HEARTHSTONE_ITEM, 1))
         {
             pTarget->CastSpell(pTarget, HEARTHSTONE_SPELL, true);
-            pTarget->AddSpellCooldown(GetSpellEntry()->Id, HEARTHSTONE_ITEM, time(NULL) + HOUR);
+            pTarget->GetCooldownMgr().AddItemCooldown(HEARTHSTONE_ITEM, HOUR*IN_MILISECONDS,0,0);
         }
         else
             if (PlayerInfo const * tmpPlInfo = sObjectMgr.GetPlayerInfo(pTarget->getRace(), pTarget->getClass()))

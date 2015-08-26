@@ -433,8 +433,6 @@ struct TrainerSpellData
 
 typedef std::list<GossipOption> GossipOptionList;
 
-typedef std::map<uint32,time_t> CreatureSpellCooldowns;
-
 extern std::map<uint32, uint32> CreatureAIReInitialize;
 
 // max different by z coordinate for creature aggro reaction
@@ -524,12 +522,6 @@ class HELLGROUND_IMPORT_EXPORT Creature : public Unit
         SpellSchoolMask GetMeleeDamageSchoolMask() const { return m_meleeDamageSchoolMask; }
         void SetMeleeDamageSchool(SpellSchools school) { m_meleeDamageSchoolMask = SpellSchoolMask(1 << school); }
 
-        void _AddCreatureSpellCooldown(uint32 spell_id, time_t end_time);
-        void _AddCreatureCategoryCooldown(uint32 category, time_t end_time);
-        void AddCreatureSpellCooldown(uint32 spellid);
-        bool HasSpellCooldown(uint32 spell_id) const;
-        bool HasCategoryCooldown(uint32 spell_id) const;
-
         bool HasSpell(uint32 spellID) const;
 
         bool UpdateEntry(uint32 entry, uint32 team=ALLIANCE, const CreatureData* data=NULL);
@@ -609,8 +601,6 @@ class HELLGROUND_IMPORT_EXPORT Creature : public Unit
         SpellEntry const *reachWithSpellCure(Unit *pVictim);
 
         uint32 m_spells[CREATURE_MAX_SPELLS];
-        CreatureSpellCooldowns m_CreatureSpellCooldowns;
-        CreatureSpellCooldowns m_CreatureCategoryCooldowns;
 
         bool canSeeOrDetect(Unit const* u, WorldObject const*, bool detect, bool inVisibleList = false, bool is3dDistance = true) const;
         bool IsWithinSightDist(Unit const* u) const;

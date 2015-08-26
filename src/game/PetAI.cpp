@@ -221,8 +221,6 @@ void PetAI::AutocastPreparedSpells()
                 me->SendCreateUpdateToPlayer((Player*)m_owner);
         }
 
-        me->AddCreatureSpellCooldown(spell->GetSpellEntry()->Id);
-
         if (me->isPet())
             ((Pet*)me)->CheckLearning(spell->GetSpellEntry()->Id);
 
