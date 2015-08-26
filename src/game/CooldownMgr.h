@@ -18,7 +18,7 @@
 #ifndef HELLGROUND_COOLMGR_H
 #define HELLGROUND_COOLMGR_H
 
-#include "common.h"
+#include "Common.h"
 #include "DatabaseEnv.h"
 
 // category cooldown on items
