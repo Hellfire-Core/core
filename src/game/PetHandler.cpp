@@ -544,7 +544,13 @@ void WorldSession::HandlePetCastSpellOpcode(WorldPacket& recvPacket)
     else
     {
         caster->SendPetCastFail(spellid, result);
-
+        if (!_player->GetCooldownMgr().HasSpellCooldown(spellid, 0))
+        {
+            WorldPacket noCD(SMSG_CLEAR_COOLDOWN, (4 + 8));
+            noCD << uint32(spellid);
+            noCD << uint64(guid);
+            SendPacket(&noCD);
+        }
         spell->finish(false);
         delete spell;
     }
