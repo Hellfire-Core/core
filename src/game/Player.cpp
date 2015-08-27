@@ -3437,6 +3437,7 @@ void Player::RemoveArenaSpellCooldowns()
         const ItemPrototype* ip = sObjectMgr.GetItemPrototype(iitr->first);
         if (!ip)
             continue;
+        bool remove = false;
         for (uint8 i = 0; i < MAX_ITEM_PROTO_SPELLS; i++)
         {
             SpellEntry const * entry = sSpellStore.LookupEntry(ip->Spells[i].SpellId);
@@ -3446,9 +3447,11 @@ void Player::RemoveArenaSpellCooldowns()
                 data << uint32(iitr->first);
                 data << GetGUID();
                 SendPacketToSelf(&data);
-                m_CooldownMgr.m_ItemCooldowns.erase(iitr);
+                remove = true;
             }
         }
+        if (remove)
+            m_CooldownMgr.m_ItemCooldowns.erase(iitr);
     }
 }
 
