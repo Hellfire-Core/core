@@ -841,14 +841,14 @@ bool GossipHello_npc_sayge(Player *player, Creature *_Creature)
     if(_Creature->isQuestGiver())
         player->PrepareQuestMenu( _Creature->GetGUID() );
 
-    if( player->GetCooldownMgr().HasSpellCooldown(SPELL_INT, 0) ||
-        player->GetCooldownMgr().HasSpellCooldown(SPELL_ARM, 0) ||
-        player->GetCooldownMgr().HasSpellCooldown(SPELL_DMG, 0) ||
-        player->GetCooldownMgr().HasSpellCooldown(SPELL_RES, 0) ||
-        player->GetCooldownMgr().HasSpellCooldown(SPELL_STR, 0) ||
-        player->GetCooldownMgr().HasSpellCooldown(SPELL_AGI, 0) ||
-        player->GetCooldownMgr().HasSpellCooldown(SPELL_STM, 0) ||
-        player->GetCooldownMgr().HasSpellCooldown(SPELL_SPI, 0))
+    if( player->GetCooldownMgr().HasSpellCooldown(SPELL_INT) ||
+        player->GetCooldownMgr().HasSpellCooldown(SPELL_ARM) ||
+        player->GetCooldownMgr().HasSpellCooldown(SPELL_DMG) ||
+        player->GetCooldownMgr().HasSpellCooldown(SPELL_RES) ||
+        player->GetCooldownMgr().HasSpellCooldown(SPELL_STR) ||
+        player->GetCooldownMgr().HasSpellCooldown(SPELL_AGI) ||
+        player->GetCooldownMgr().HasSpellCooldown(SPELL_STM) ||
+        player->GetCooldownMgr().HasSpellCooldown(SPELL_SPI))
         player->SEND_GOSSIP_MENU(7393, _Creature->GetGUID());
     else
     {
@@ -914,42 +914,42 @@ bool GossipSelect_npc_sayge(Player *player, Creature *_Creature, uint32 sender, 
         break;
     case GOSSIP_SENDER_MAIN+1:
         _Creature->CastSpell(player, SPELL_DMG, false);
-        player->GetCooldownMgr().AddSpellCooldown(SPELL_DMG, 7200 * IN_MILISECONDS, 0, 0);
+        player->GetCooldownMgr().AddSpellCooldown(SPELL_DMG, 7200 * IN_MILISECONDS);
         SendAction_npc_sayge(player, _Creature, action);
         break;
     case GOSSIP_SENDER_MAIN+2:
         _Creature->CastSpell(player, SPELL_RES, false);
-        player->GetCooldownMgr().AddSpellCooldown(SPELL_RES, 7200 * IN_MILISECONDS, 0, 0);
+        player->GetCooldownMgr().AddSpellCooldown(SPELL_RES, 7200 * IN_MILISECONDS);
         SendAction_npc_sayge(player, _Creature, action);
         break;
     case GOSSIP_SENDER_MAIN+3:
         _Creature->CastSpell(player, SPELL_ARM, false);
-        player->GetCooldownMgr().AddSpellCooldown(SPELL_ARM, 7200 * IN_MILISECONDS, 0, 0);
+        player->GetCooldownMgr().AddSpellCooldown(SPELL_ARM, 7200 * IN_MILISECONDS);
         SendAction_npc_sayge(player, _Creature, action);
         break;
     case GOSSIP_SENDER_MAIN+4:
         _Creature->CastSpell(player, SPELL_SPI, false);
-        player->GetCooldownMgr().AddSpellCooldown(SPELL_SPI, 7200 * IN_MILISECONDS, 0, 0);
+        player->GetCooldownMgr().AddSpellCooldown(SPELL_SPI, 7200 * IN_MILISECONDS);
         SendAction_npc_sayge(player, _Creature, action);
         break;
     case GOSSIP_SENDER_MAIN+5:
         _Creature->CastSpell(player, SPELL_INT, false);
-        player->GetCooldownMgr().AddSpellCooldown(SPELL_INT, 7200 * IN_MILISECONDS, 0, 0);
+        player->GetCooldownMgr().AddSpellCooldown(SPELL_INT, 7200 * IN_MILISECONDS);
         SendAction_npc_sayge(player, _Creature, action);
         break;
     case GOSSIP_SENDER_MAIN+6:
         _Creature->CastSpell(player, SPELL_STM, false);
-        player->GetCooldownMgr().AddSpellCooldown(SPELL_STM, 7200 * IN_MILISECONDS, 0, 0);
+        player->GetCooldownMgr().AddSpellCooldown(SPELL_STM, 7200 * IN_MILISECONDS);
         SendAction_npc_sayge(player, _Creature, action);
         break;
     case GOSSIP_SENDER_MAIN+7:
         _Creature->CastSpell(player, SPELL_STR, false);
-        player->GetCooldownMgr().AddSpellCooldown(SPELL_STR, 7200 * IN_MILISECONDS, 0, 0);
+        player->GetCooldownMgr().AddSpellCooldown(SPELL_STR, 7200 * IN_MILISECONDS);
         SendAction_npc_sayge(player, _Creature, action);
         break;
     case GOSSIP_SENDER_MAIN+8:
         _Creature->CastSpell(player, SPELL_AGI, false);
-        player->GetCooldownMgr().AddSpellCooldown(SPELL_AGI, 7200 * IN_MILISECONDS, 0, 0);
+        player->GetCooldownMgr().AddSpellCooldown(SPELL_AGI, 7200 * IN_MILISECONDS);
         SendAction_npc_sayge(player, _Creature, action);
         break;
     }

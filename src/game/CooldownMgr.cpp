@@ -22,7 +22,31 @@
 #include "DBCStores.h"
 #include "ObjectMgr.h"
 
-bool CooldownMgr::HasSpellCooldown(uint32 id, uint32 category) const
+bool CooldownMgr::HasGlobalCooldown(uint32 id) const
+{
+    if (id)
+    {
+        CooldownList::const_iterator itr = m_GlobalCooldowns.find(id);
+        if (itr != m_GlobalCooldowns.end() &&
+            WorldTimer::getMSTimeDiff(WorldTimer::getMSTime(), itr->second.start) < itr->second.duration)
+            return true;
+    }
+    return false;
+};
+
+void CooldownMgr::AddGlobalCooldown(uint32 id, uint32 ms)
+{
+    if (id)
+        m_GlobalCooldowns[id] = Cooldown(WorldTimer::getMSTime(), ms);
+};
+
+void CooldownMgr::CancelGlobalCooldown(uint32 id)
+{
+    if (id)
+        m_GlobalCooldowns[id].duration = 0;
+};
+
+bool CooldownMgr::HasSpellCooldown(uint32 id) const
 {
     if (id)
     {
@@ -31,30 +55,19 @@ bool CooldownMgr::HasSpellCooldown(uint32 id, uint32 category) const
             WorldTimer::getMSTimeDiff(WorldTimer::getMSTime(), itr->second.start) < itr->second.duration)
             return true;
     }
-    if (category)
-    {
-        CooldownList::const_iterator itr = m_CategoryCooldowns.find(category);
-        if (itr != m_CategoryCooldowns.end() &&
-            WorldTimer::getMSTimeDiff(WorldTimer::getMSTime(), itr->second.start) < itr->second.duration)
-            return true;
-    }
     return false;
 };
 
-void CooldownMgr::AddSpellCooldown(uint32 id, uint32 ms, uint32 category, uint32 categoryms)
+void CooldownMgr::AddSpellCooldown(uint32 id, uint32 ms)
 {
     if (id)
         m_SpellCooldowns[id] = Cooldown(WorldTimer::getMSTime(), ms);
-    if (category)
-        m_CategoryCooldowns[category] = Cooldown(WorldTimer::getMSTime(), categoryms);
 };
 
-void CooldownMgr::CancelSpellCooldown(uint32 id, uint32 category)
+void CooldownMgr::CancelSpellCooldown(uint32 id)
 {
     if (id)
         m_SpellCooldowns[id].duration = 0;
-    if (category)
-        m_CategoryCooldowns[category].duration = 0;
 };
 
 uint32 CooldownMgr::GetCooldownTimeLeft(uint32 id) const
@@ -69,27 +82,18 @@ uint32 CooldownMgr::GetCooldownTimeLeft(uint32 id) const
         return itr->second.duration - diff;
 };
 
-void CooldownMgr::AddItemCooldown(uint32 item, uint32 ms, uint32 category, uint32 categoryms)
+void CooldownMgr::AddItemCooldown(uint32 item, uint32 ms)
 {
     if (item)
         m_ItemCooldowns[item] = Cooldown(WorldTimer::getMSTime(), ms);
-    if (category)
-        m_ItemCatCooldowns[category] = Cooldown(WorldTimer::getMSTime(), categoryms);
 }
 
-bool CooldownMgr::HasItemCooldown(uint32 item, uint32 category) const
+bool CooldownMgr::HasItemCooldown(uint32 item) const
 {
     if (item)
     {
         CooldownList::const_iterator itr = m_ItemCooldowns.find(item);
         if (itr != m_ItemCooldowns.end() &&
-            WorldTimer::getMSTimeDiff(WorldTimer::getMSTime(), itr->second.start) < itr->second.duration)
-            return true;
-    }
-    if (category)
-    {
-        CooldownList::const_iterator itr = m_ItemCatCooldowns.find(category);
-        if (itr != m_ItemCatCooldowns.end() &&
             WorldTimer::getMSTimeDiff(WorldTimer::getMSTime(), itr->second.start) < itr->second.duration)
             return true;
     }
@@ -162,10 +166,8 @@ void CooldownMgr::WriteCooldowns(ByteBuffer& bb)
 
 void CooldownMgr::LoadFromDB(QueryResultAutoPtr result)
 {
-    m_CategoryCooldowns.clear();
     m_SpellCooldowns.clear();
     m_ItemCooldowns.clear();
-    m_ItemCatCooldowns.clear();
     if (result)
     {
         time_t curTime = time(NULL);
@@ -182,7 +184,7 @@ void CooldownMgr::LoadFromDB(QueryResultAutoPtr result)
             if (db_time <= curTime)
                 continue;
 
-            if (spell_id >0)
+            if (spell_id)
             {
                 if (!sSpellStore.LookupEntry(spell_id) &&
                     spell_id != COMMAND_COOLDOWN)
@@ -190,14 +192,10 @@ void CooldownMgr::LoadFromDB(QueryResultAutoPtr result)
                     sLog.outLog(LOG_DEFAULT, "ERROR: Player have unknown spell %u in `character_spell_cooldown`, skipping.", spell_id);
                     continue;
                 }
-                AddSpellCooldown(spell_id, (db_time - curTime)*IN_MILISECONDS, 0, 0);
+                AddSpellCooldown(spell_id, (db_time - curTime)*IN_MILISECONDS);
             }
-            else if (spell_id < 0)
-                AddSpellCooldown(0, 0, (-1)*spell_id, (db_time - curTime)*IN_MILISECONDS);
-            else if (item_id > 0)
-                AddItemCooldown(item_id, (db_time - curTime)*IN_MILISECONDS, 0, 0);
-            else // item_id < 0
-                AddItemCooldown(0, 0, (-1)*item_id, (db_time - curTime)*IN_MILISECONDS);
+            else
+                AddItemCooldown(item_id, (db_time - curTime)*IN_MILISECONDS);
         } while (result->NextRow());
     }
 }
@@ -231,30 +229,6 @@ void CooldownMgr::SaveToDB(uint32 playerguid)
         {
             RealmDataDatabase.PExecute("REPLACE INTO character_spell_cooldown (guid,spell,item,time) VALUES ('%u', '%u', '%u', '" UI64FMTD "')",
                 playerguid, 0, itr->first, curTime + uint64((itr->second.duration - diff) / 1000)); // store just seconds
-            ++itr;
-        }
-    }
-    for (CooldownList::iterator itr = m_CategoryCooldowns.begin(); itr != m_CategoryCooldowns.end();)
-    {
-        uint32 diff = WorldTimer::getMSTimeDiff(now, itr->second.start);
-        if (diff >= itr->second.duration)
-            m_CategoryCooldowns.erase(itr++);
-        else if ((itr->second.duration - diff) > 30 * IN_MILISECONDS) // skip shorter than 30sec
-        {
-            RealmDataDatabase.PExecute("REPLACE INTO character_spell_cooldown (guid,spell,item,time) VALUES ('%u', '%u', '%u', '" UI64FMTD "')",
-                playerguid, (-1)*(itr->first), 0, curTime + uint64((itr->second.duration - diff) / 1000)); // store just seconds
-            ++itr;
-        }
-    }
-    for (CooldownList::iterator itr = m_ItemCatCooldowns.begin(); itr != m_ItemCatCooldowns.end();)
-    {
-        uint32 diff = WorldTimer::getMSTimeDiff(now, itr->second.start);
-        if (diff >= itr->second.duration)
-            m_ItemCatCooldowns.erase(itr++);
-        else if ((itr->second.duration - diff) > 30 * IN_MILISECONDS) // skip shorter than 30sec
-        {
-            RealmDataDatabase.PExecute("REPLACE INTO character_spell_cooldown (guid,spell,item,time) VALUES ('%u', '%u', '%u', '" UI64FMTD "')",
-                playerguid, 0, (-1)*(itr->first), curTime + uint64((itr->second.duration - diff) / 1000)); // store just seconds
             ++itr;
         }
     }

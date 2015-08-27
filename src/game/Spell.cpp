@@ -2887,7 +2887,7 @@ void Spell::SendSpellCooldown()
     // Cooldown started on SendCooldownEvent call
     if (GetSpellEntry()->Attributes & SPELL_ATTR_DISABLED_WHILE_ACTIVE)
     {
-        _player->GetCooldownMgr().AddSpellCooldown(GetSpellEntry()->Id,0xFFFFFFFF,0,0);
+        _player->GetCooldownMgr().AddSpellCooldown(GetSpellEntry()->Id,0xFFFFFFFF);
         return;
     }
 
@@ -2950,9 +2950,24 @@ void Spell::SendSpellCooldown()
         rec = catrec;
     
     if (m_CastItem)
-        _player->GetCooldownMgr().AddItemCooldown(m_CastItem->GetEntry(), rec, cat, catrec);
+        _player->GetCooldownMgr().AddItemCooldown(m_CastItem->GetEntry(), rec);
     else
-        _player->GetCooldownMgr().AddSpellCooldown(GetSpellEntry()->Id, rec, cat, catrec);
+        _player->GetCooldownMgr().AddSpellCooldown(GetSpellEntry()->Id, rec);
+
+    SpellCategoryStore::const_iterator i_scstore = sSpellCategoryStore.find(cat);
+    if (i_scstore != sSpellCategoryStore.end())
+    {
+        for (SpellCategorySet::const_iterator i_scset = i_scstore->second.begin(); i_scset != i_scstore->second.end(); ++i_scset)
+        {
+            if (*i_scset == GetSpellEntry()->Id)             // skip main spell, already handled above
+                continue;
+            if (m_CastItem)
+                _player->GetCooldownMgr().AddItemCooldown(*i_scset, catrec);
+            else
+                _player->GetCooldownMgr().AddSpellCooldown(*i_scset, catrec);
+            // category cooldown should apply to all items
+        }
+    }
 }
 
 void Spell::update(uint32 difftime)
@@ -3813,9 +3828,9 @@ SpellCastResult Spell::CheckCast(bool strict)
     if (!IsTriggeredSpell() && m_caster->GetCharmerOrOwnerPlayerOrPlayerItself())
     {
         CooldownMgr& ownercm = m_caster->GetCharmerOrOwnerPlayerOrPlayerItself()->GetCooldownMgr();
-        if (m_CastItem && ownercm.HasItemCooldown(m_CastItem->GetEntry(),GetSpellEntry()->Category))
+        if (m_CastItem && ownercm.HasItemCooldown(m_CastItem->GetEntry()))
             return SPELL_FAILED_NOT_READY;
-        if (!m_CastItem && ownercm.HasSpellCooldown(GetSpellEntry()->Id, GetSpellEntry()->Category))
+        if (!m_CastItem && ownercm.HasSpellCooldown(GetSpellEntry()->Id))
             return SPELL_FAILED_NOT_READY;
     }
 
@@ -4764,7 +4779,7 @@ SpellCastResult Spell::CheckPetCast(Unit* target)
         }
         //cooldown
         if (m_caster->GetCharmerOrOwnerPlayerOrPlayerItself() &&
-            m_caster->GetCharmerOrOwnerPlayerOrPlayerItself()->GetCooldownMgr().HasSpellCooldown(GetSpellEntry()->Id,GetSpellEntry()->Category))
+            m_caster->GetCharmerOrOwnerPlayerOrPlayerItself()->GetCooldownMgr().HasSpellCooldown(GetSpellEntry()->Id))
             return SPELL_FAILED_NOT_READY;
         // dash & dive dont use when near
         if (target && m_caster->isInCombat() && GetSpellEntry()->Effect[0] == SPELL_EFFECT_APPLY_AURA &&
@@ -6124,7 +6139,7 @@ bool Spell::HasGlobalCooldown()
     Player* owner = m_caster->GetCharmerOrOwnerPlayerOrPlayerItself();
     if (!owner)
         return false;
-    return owner->GetCooldownMgr().HasSpellCooldown(0, (m_caster->GetTypeId() != TYPEID_PLAYER) ? PETS_GCD_CATEGORY: GetSpellEntry()->StartRecoveryCategory);
+    return owner->GetCooldownMgr().HasGlobalCooldown((m_caster->GetTypeId() != TYPEID_PLAYER) ? PETS_GCD_CATEGORY: GetSpellEntry()->StartRecoveryCategory);
 }
 
 void Spell::TriggerGlobalCooldown()
@@ -6152,7 +6167,7 @@ void Spell::TriggerGlobalCooldown()
         else if (gcd > MAX_GCD)
             gcd = MAX_GCD;
     }
-    owner->GetCooldownMgr().AddSpellCooldown(0, 0, (m_caster->GetTypeId() != TYPEID_PLAYER) ? PETS_GCD_CATEGORY : GetSpellEntry()->StartRecoveryCategory, gcd);
+    owner->GetCooldownMgr().AddGlobalCooldown((m_caster->GetTypeId() != TYPEID_PLAYER) ? PETS_GCD_CATEGORY : GetSpellEntry()->StartRecoveryCategory, gcd);
 }
 
 void Spell::CancelGlobalCooldown()
@@ -6168,5 +6183,5 @@ void Spell::CancelGlobalCooldown()
     if (m_caster->m_currentSpells[CURRENT_GENERIC_SPELL] != this)
         return;
 
-    owner->GetCooldownMgr().CancelSpellCooldown(0,GetSpellEntry()->StartRecoveryCategory);
+    owner->GetCooldownMgr().CancelGlobalCooldown(GetSpellEntry()->StartRecoveryCategory);
 }

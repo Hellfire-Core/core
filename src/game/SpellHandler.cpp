@@ -474,7 +474,7 @@ void WorldSession::HandlePetCancelAuraOpcode(WorldPacket& recvPacket)
 
     pet->RemoveAurasDueToSpell(spellId);
 
-    _player->GetCooldownMgr().AddSpellCooldown(spellId, 0, 0, 0);
+    _player->GetCooldownMgr().AddSpellCooldown(spellId, 0);
 }
 
 void WorldSession::HandleCancelGrowthAuraOpcode(WorldPacket& /*recvPacket*/)

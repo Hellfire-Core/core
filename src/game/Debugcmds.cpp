@@ -734,13 +734,13 @@ bool ChatHandler::HandleDebugThreatList(const char * /*args*/)
         return false;
 
     Player *pOwner = m_session->GetPlayer();
-    if (!pOwner || pOwner->GetCooldownMgr().HasSpellCooldown(COMMAND_COOLDOWN,0))
+    if (!pOwner || pOwner->GetCooldownMgr().HasSpellCooldown(COMMAND_COOLDOWN))
         return false;
 
     uint32 max_count = 0;
     if (!m_session->HasPermissions(PERM_GMT_DEV))
     {
-        pOwner->GetCooldownMgr().AddSpellCooldown(COMMAND_COOLDOWN, 10000, 0, 0);
+        pOwner->GetCooldownMgr().AddSpellCooldown(COMMAND_COOLDOWN, 10000);
         max_count = 3;
     }
 

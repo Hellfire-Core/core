@@ -1250,7 +1250,7 @@ void Spell::EffectDummy(uint32 i)
 
                         if (spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE &&
                             (spellInfo->SpellFamilyFlags & 0x26000000860LL) &&
-                            m_caster->ToPlayer()->GetCooldownMgr().HasSpellCooldown(classspell,0))
+                            m_caster->ToPlayer()->GetCooldownMgr().HasSpellCooldown(classspell))
                             ((Player*)m_caster)->RemoveSpellCooldown(classspell, true);
                     }
                     return;
@@ -6816,10 +6816,10 @@ void Spell::EffectStuck(uint32 /*i*/)
     {
         // if player hasn't cooldown on HearthStone and have in bags then use him
         // otherwise teleport to player start location
-        if (!pTarget->GetCooldownMgr().HasItemCooldown(HEARTHSTONE_ITEM,0) && pTarget->HasItemCount(HEARTHSTONE_ITEM, 1))
+        if (!pTarget->GetCooldownMgr().HasItemCooldown(HEARTHSTONE_ITEM) && pTarget->HasItemCount(HEARTHSTONE_ITEM, 1))
         {
             pTarget->CastSpell(pTarget, HEARTHSTONE_SPELL, true);
-            pTarget->GetCooldownMgr().AddItemCooldown(HEARTHSTONE_ITEM, HOUR*IN_MILISECONDS,0,0);
+            pTarget->GetCooldownMgr().AddItemCooldown(HEARTHSTONE_ITEM, HOUR*IN_MILISECONDS);
         }
         else
             if (PlayerInfo const * tmpPlInfo = sObjectMgr.GetPlayerInfo(pTarget->getRace(), pTarget->getClass()))

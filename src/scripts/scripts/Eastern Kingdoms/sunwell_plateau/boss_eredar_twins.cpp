@@ -172,10 +172,10 @@ struct boss_sacrolashAI : public ScriptedAI
                     target->RemoveAurasDueToSpell(SPELL_FLAME_TOUCHED);
                     target->CastSpell(target, SPELL_DARK_FLAME, true);
                 }
-                if(!target->HasAura(SPELL_DARK_FLAME) && !target->ToPlayer()->GetCooldownMgr().HasSpellCooldown(SPELL_DARK_TOUCHED, 0))
+                if(!target->HasAura(SPELL_DARK_FLAME) && !target->ToPlayer()->GetCooldownMgr().HasSpellCooldown(SPELL_DARK_TOUCHED))
                 {
                     target->CastSpell(target, SPELL_DARK_TOUCHED, true);
-                    target->ToPlayer()->GetCooldownMgr().AddSpellCooldown(SPELL_DARK_TOUCHED, 1000, 0, 0);
+                    target->ToPlayer()->GetCooldownMgr().AddSpellCooldown(SPELL_DARK_TOUCHED, 1000);
                 }
             }
             if(school_mask == SPELL_SCHOOL_MASK_FIRE)
@@ -185,10 +185,10 @@ struct boss_sacrolashAI : public ScriptedAI
                     target->RemoveAurasDueToSpell(SPELL_DARK_TOUCHED);
                     target->CastSpell(target, SPELL_DARK_FLAME, true);
                 }
-                if(!target->HasAura(SPELL_DARK_FLAME) && !target->ToPlayer()->GetCooldownMgr().HasSpellCooldown(SPELL_FLAME_TOUCHED, 0))
+                if(!target->HasAura(SPELL_DARK_FLAME) && !target->ToPlayer()->GetCooldownMgr().HasSpellCooldown(SPELL_FLAME_TOUCHED))
                 {
                     target->CastSpell(target, SPELL_FLAME_TOUCHED, true);;
-                    target->ToPlayer()->GetCooldownMgr().AddSpellCooldown(SPELL_FLAME_TOUCHED, 1000, 0, 0);
+                    target->ToPlayer()->GetCooldownMgr().AddSpellCooldown(SPELL_FLAME_TOUCHED, 1000);
                 }
             }
         }
@@ -383,10 +383,10 @@ struct boss_alythessAI : public Scripted_NoMovementAI
                     target->RemoveAurasDueToSpell(SPELL_FLAME_TOUCHED);
                     target->CastSpell(target, SPELL_DARK_FLAME, true);
                 }
-                if (!target->HasAura(SPELL_DARK_FLAME) && !target->ToPlayer()->GetCooldownMgr().HasSpellCooldown(SPELL_DARK_TOUCHED, 0))
+                if (!target->HasAura(SPELL_DARK_FLAME) && !target->ToPlayer()->GetCooldownMgr().HasSpellCooldown(SPELL_DARK_TOUCHED))
                 {
                     target->CastSpell(target, SPELL_DARK_TOUCHED, true);
-                    target->ToPlayer()->GetCooldownMgr().AddSpellCooldown(SPELL_DARK_TOUCHED, 1000, 0, 0);
+                    target->ToPlayer()->GetCooldownMgr().AddSpellCooldown(SPELL_DARK_TOUCHED, 1000);
                 }
             }
             if (school_mask == SPELL_SCHOOL_MASK_FIRE)
@@ -396,10 +396,10 @@ struct boss_alythessAI : public Scripted_NoMovementAI
                     target->RemoveAurasDueToSpell(SPELL_DARK_TOUCHED);
                     target->CastSpell(target, SPELL_DARK_FLAME, true);
                 }
-                if (!target->HasAura(SPELL_DARK_FLAME) && !target->ToPlayer()->GetCooldownMgr().HasSpellCooldown(SPELL_FLAME_TOUCHED, 0))
+                if (!target->HasAura(SPELL_DARK_FLAME) && !target->ToPlayer()->GetCooldownMgr().HasSpellCooldown(SPELL_FLAME_TOUCHED))
                 {
                     target->CastSpell(target, SPELL_FLAME_TOUCHED, true);;
-                    target->ToPlayer()->GetCooldownMgr().AddSpellCooldown(SPELL_FLAME_TOUCHED, 1000, 0, 0);
+                    target->ToPlayer()->GetCooldownMgr().AddSpellCooldown(SPELL_FLAME_TOUCHED, 1000);
                 }
             }
         }
@@ -592,10 +592,10 @@ struct mob_shadow_imageAI : public ScriptedAI
                 target->RemoveAurasDueToSpell(SPELL_FLAME_TOUCHED);
                 target->CastSpell(target, SPELL_DARK_FLAME, true);
             }
-            if (!target->HasAura(SPELL_DARK_FLAME) && !target->ToPlayer()->GetCooldownMgr().HasSpellCooldown(SPELL_DARK_TOUCHED, 0))
+            if (!target->HasAura(SPELL_DARK_FLAME) && !target->ToPlayer()->GetCooldownMgr().HasSpellCooldown(SPELL_DARK_TOUCHED))
             {
                 target->CastSpell(target, SPELL_DARK_TOUCHED, true);
-                target->ToPlayer()->GetCooldownMgr().AddSpellCooldown(SPELL_DARK_TOUCHED, 1000, 0, 0);
+                target->ToPlayer()->GetCooldownMgr().AddSpellCooldown(SPELL_DARK_TOUCHED, 1000);
             }
         }
     }

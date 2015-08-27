@@ -444,8 +444,10 @@ bool UnitAI::CanCast(Unit* Target, SpellEntry const *Spell, bool Triggered)
     if (!Triggered && me->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SILENCED))
         return false;
 
-    if (!Triggered && me->GetCharmerOrOwnerPlayerOrPlayerItself() &&
-        me->GetCharmerOrOwnerPlayerOrPlayerItself()->GetCooldownMgr().HasSpellCooldown(Spell->Id, Spell->StartRecoveryCategory))
+    Player* owner = me->GetCharmerOrOwnerPlayerOrPlayerItself();
+    if (owner && !Triggered &&
+        (owner->GetCooldownMgr().HasSpellCooldown(Spell->Id) ||
+        owner->GetCooldownMgr().HasGlobalCooldown(Spell->StartRecoveryCategory)))
         return false;
 
     //Check for power

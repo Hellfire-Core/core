@@ -3395,7 +3395,7 @@ void Player::removeSpell(uint32 spell_id, bool disabled)
 
 void Player::RemoveSpellCooldown(uint32 spell_id, bool update /* = false */)
 {
-    m_CooldownMgr.CancelSpellCooldown(spell_id,0);
+    m_CooldownMgr.CancelSpellCooldown(spell_id);
 
     if (update)
     {
@@ -3434,14 +3434,20 @@ void Player::RemoveArenaSpellCooldowns()
     {
         inext = iitr;
         ++inext;
-        SpellEntry const * entry = sSpellStore.LookupEntry(iitr->first);
-        if (entry && !(entry->AttributesEx4 & SPELL_ATTR_EX4_NOT_USABLE_IN_ARENA) && entry->RecoveryTime <= 15 * MINUTE * 1000 && entry->CategoryRecoveryTime <= 15 * MINUTE * 1000)
+        const ItemPrototype* ip = sObjectMgr.GetItemPrototype(iitr->first);
+        if (!ip)
+            continue;
+        for (uint8 i = 0; i < MAX_ITEM_PROTO_SPELLS; i++)
         {
-            WorldPacket data(SMSG_CLEAR_COOLDOWN, (4 + 8));
-            data << uint32(iitr->first);
-            data << GetGUID();
-            SendPacketToSelf(&data);
-            m_CooldownMgr.m_ItemCooldowns.erase(iitr);
+            SpellEntry const * entry = sSpellStore.LookupEntry(ip->Spells[i].SpellId);
+            if (entry && !(entry->AttributesEx4 & SPELL_ATTR_EX4_NOT_USABLE_IN_ARENA) && entry->RecoveryTime <= 15 * MINUTE * 1000 && entry->CategoryRecoveryTime <= 15 * MINUTE * 1000)
+            {
+                WorldPacket data(SMSG_CLEAR_COOLDOWN, (4 + 8));
+                data << uint32(iitr->first);
+                data << GetGUID();
+                SendPacketToSelf(&data);
+                m_CooldownMgr.m_ItemCooldowns.erase(iitr);
+            }
         }
     }
 }
@@ -10748,7 +10754,7 @@ Item* Player::EquipItem(uint16 pos, Item *pItem, bool update)
                     m_weaponChangeTimer = spellProto->StartRecoveryTime;
 
                     if (getClass() != CLASS_ROGUE)
-                        GetCooldownMgr().AddSpellCooldown(0,0,spellProto->StartRecoveryCategory, m_weaponChangeTimer);
+                        GetCooldownMgr().AddGlobalCooldown(spellProto->StartRecoveryCategory, m_weaponChangeTimer);
 
                     WorldPacket data(SMSG_SPELL_COOLDOWN, 8+1+4);
                     data << uint64(GetGUID());
@@ -18006,7 +18012,7 @@ void Player::ProhibitSpellSchool(SpellSchoolMask idSchoolMask, uint32 unTimeMs)
         {
             data << unSpellId;
             data << unTimeMs;                               // in m.secs
-            m_CooldownMgr.AddSpellCooldown(unSpellId, unTimeMs, 0, 0);
+            m_CooldownMgr.AddSpellCooldown(unSpellId, unTimeMs);
         }
     }
     SendPacketToSelf(&data);
@@ -18381,7 +18387,7 @@ void Player::SendCooldownEvent(SpellEntry const *spellInfo)
     if (cooldown < 0)
         cooldown = 0;
     // Add cooldown
-    m_CooldownMgr.AddSpellCooldown(spellInfo->Id, cooldown, 0, 0);
+    m_CooldownMgr.AddSpellCooldown(spellInfo->Id, cooldown);
     // Send activate
     WorldPacket data(SMSG_COOLDOWN_EVENT, (4+8));
     data << spellInfo->Id;
@@ -19184,7 +19190,7 @@ void Player::ApplyEquipCooldown(Item * pItem)
         if (spellData.SpellTrigger != ITEM_SPELLTRIGGER_ON_USE)
             continue;
 
-        m_CooldownMgr.AddItemCooldown(pItem->GetEntry(), 30000, 0, 0);
+        m_CooldownMgr.AddItemCooldown(pItem->GetEntry(), 30000);
 
         WorldPacket data(SMSG_ITEM_COOLDOWN, 12);
         data << pItem->GetGUID();
@@ -19810,7 +19816,7 @@ uint32 Player::GetResurrectionSpellId()
     }
 
     // Reincarnation (passive spell)                        // prio: 1
-    if (prio < 1 && HasSpell(20608) && !m_CooldownMgr.HasSpellCooldown(21169,0) && HasItemCount(17030,1))
+    if (prio < 1 && HasSpell(20608) && !m_CooldownMgr.HasSpellCooldown(21169) && HasItemCount(17030,1))
         spell_id = 21169;
 
     return spell_id;
@@ -20969,7 +20975,7 @@ ReferAFriendError Player::GetReferFriendError(Player * target, bool summon)
 
     if (summon)
     {
-        if (m_CooldownMgr.HasSpellCooldown(45927,0))
+        if (m_CooldownMgr.HasSpellCooldown(45927))
             return ERR_REFER_A_FRIEND_SUMMON_COOLDOWN;
         if (target->getLevel() > sWorld.getConfig(CONFIG_UINT32_RAF_MAXGRANTLEVEL))
             return ERR_REFER_A_FRIEND_SUMMON_LEVEL_MAX_I;

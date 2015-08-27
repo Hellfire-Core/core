@@ -42,23 +42,26 @@ public:
     };
     typedef std::map<uint32, Cooldown> CooldownList;
 
-    bool HasSpellCooldown(uint32 id, uint32 category) const;
-    void AddSpellCooldown(uint32 id, uint32 ms, uint32 category, uint32 categoryms);
-    void CancelSpellCooldown(uint32 id, uint32 category);
+    bool HasGlobalCooldown(uint32 id) const;
+    void AddGlobalCooldown(uint32 id, uint32 ms);
+    void CancelGlobalCooldown(uint32 id);
+
+    bool HasSpellCooldown(uint32 id) const;
+    void AddSpellCooldown(uint32 id, uint32 ms);
+    void CancelSpellCooldown(uint32 id);
     uint32 GetCooldownTimeLeft(uint32 id) const;
 
-    void AddItemCooldown(uint32 item, uint32 ms, uint32 category, uint32 categoryms);
-    bool HasItemCooldown(uint32 item, uint32 category) const;
+    void AddItemCooldown(uint32 item, uint32 ms);
+    bool HasItemCooldown(uint32 item) const;
 
     std::string SendCooldownsDebug();
     void WriteCooldowns(ByteBuffer& bb);
     void LoadFromDB(QueryResultAutoPtr result);
     void SaveToDB(uint32 playerguid);
 private:
-    CooldownList m_CategoryCooldowns;
     CooldownList m_SpellCooldowns;
     CooldownList m_ItemCooldowns;
-    CooldownList m_ItemCatCooldowns;
+    CooldownList m_GlobalCooldowns;
 };
 
 #endif
