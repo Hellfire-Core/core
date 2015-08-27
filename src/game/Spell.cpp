@@ -2883,14 +2883,6 @@ void Spell::SendSpellCooldown()
     if (!_player)
         return;
 
-    // Add cooldown for max (disable spell)
-    // Cooldown started on SendCooldownEvent call
-    if (GetSpellEntry()->Attributes & SPELL_ATTR_DISABLED_WHILE_ACTIVE)
-    {
-        _player->GetCooldownMgr().AddSpellCooldown(GetSpellEntry()->Id,0xFFFFFFFF);
-        return;
-    }
-
     // init cooldown values
     uint32 cat = 0;
     int32 rec = -1;
