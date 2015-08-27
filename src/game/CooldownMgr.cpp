@@ -219,6 +219,8 @@ void CooldownMgr::SaveToDB(uint32 playerguid)
                 playerguid, itr->first, 0, curTime + uint64((itr->second.duration - diff)/1000)); // store just seconds
             ++itr;
         }
+        else 
+            itr++;
     }
     for (CooldownList::iterator itr = m_ItemCooldowns.begin(); itr != m_ItemCooldowns.end();)
     {
@@ -231,5 +233,7 @@ void CooldownMgr::SaveToDB(uint32 playerguid)
                 playerguid, 0, itr->first, curTime + uint64((itr->second.duration - diff) / 1000)); // store just seconds
             ++itr;
         }
+        else
+            itr++;
     }
 }
