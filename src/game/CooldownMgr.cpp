@@ -174,15 +174,15 @@ void CooldownMgr::LoadFromDB(QueryResultAutoPtr result)
         {
             Field *fields = result->Fetch();
 
-            uint32 spell_id = fields[0].GetUInt32();
-            uint32 item_id = fields[1].GetUInt32();
+            int32 spell_id = fields[0].GetUInt32();
+            int32 item_id = fields[1].GetUInt32();
             time_t db_time = (time_t)fields[2].GetUInt64();
 
             // skip outdated cooldown
             if (db_time <= curTime)
                 continue;
 
-            if (spell_id)
+            if (spell_id >0)
             {
                 if (!sSpellStore.LookupEntry(spell_id) &&
                     spell_id != COMMAND_COOLDOWN)
@@ -192,8 +192,12 @@ void CooldownMgr::LoadFromDB(QueryResultAutoPtr result)
                 }
                 AddSpellCooldown(spell_id, (db_time - curTime)*IN_MILISECONDS, 0, 0);
             }
-            else
+            else if (spell_id < 0)
+                AddSpellCooldown(0, 0, (-1)*spell_id, (db_time - curTime)*IN_MILISECONDS);
+            else if (item_id > 0)
                 AddItemCooldown(item_id, (db_time - curTime)*IN_MILISECONDS, 0, 0);
+            else // item_id < 0
+                AddItemCooldown(0, 0, (-1)*item_id, (db_time - curTime)*IN_MILISECONDS);
         } while (result->NextRow());
     }
 }
@@ -227,6 +231,30 @@ void CooldownMgr::SaveToDB(uint32 playerguid)
         {
             RealmDataDatabase.PExecute("REPLACE INTO character_spell_cooldown (guid,spell,item,time) VALUES ('%u', '%u', '%u', '" UI64FMTD "')",
                 playerguid, 0, itr->first, curTime + uint64((itr->second.duration - diff) / 1000)); // store just seconds
+            ++itr;
+        }
+    }
+    for (CooldownList::iterator itr = m_CategoryCooldowns.begin(); itr != m_CategoryCooldowns.end();)
+    {
+        uint32 diff = WorldTimer::getMSTimeDiff(now, itr->second.start);
+        if (diff >= itr->second.duration)
+            m_CategoryCooldowns.erase(itr++);
+        else if ((itr->second.duration - diff) > 30 * IN_MILISECONDS) // skip shorter than 30sec
+        {
+            RealmDataDatabase.PExecute("REPLACE INTO character_spell_cooldown (guid,spell,item,time) VALUES ('%u', '%u', '%u', '" UI64FMTD "')",
+                playerguid, (-1)*(itr->first), 0, curTime + uint64((itr->second.duration - diff) / 1000)); // store just seconds
+            ++itr;
+        }
+    }
+    for (CooldownList::iterator itr = m_ItemCatCooldowns.begin(); itr != m_ItemCatCooldowns.end();)
+    {
+        uint32 diff = WorldTimer::getMSTimeDiff(now, itr->second.start);
+        if (diff >= itr->second.duration)
+            m_ItemCatCooldowns.erase(itr++);
+        else if ((itr->second.duration - diff) > 30 * IN_MILISECONDS) // skip shorter than 30sec
+        {
+            RealmDataDatabase.PExecute("REPLACE INTO character_spell_cooldown (guid,spell,item,time) VALUES ('%u', '%u', '%u', '" UI64FMTD "')",
+                playerguid, 0, (-1)*(itr->first), curTime + uint64((itr->second.duration - diff) / 1000)); // store just seconds
             ++itr;
         }
     }
