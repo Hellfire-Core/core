@@ -2950,24 +2950,34 @@ void Spell::SendSpellCooldown()
         rec = catrec;
     
     if (m_CastItem)
-        _player->GetCooldownMgr().AddItemCooldown(m_CastItem->GetEntry(), rec);
-    else
-        _player->GetCooldownMgr().AddSpellCooldown(GetSpellEntry()->Id, rec);
-
-    SpellCategoryStore::const_iterator i_scstore = sSpellCategoryStore.find(cat);
-    if (i_scstore != sSpellCategoryStore.end())
     {
-        for (SpellCategorySet::const_iterator i_scset = i_scstore->second.begin(); i_scset != i_scstore->second.end(); ++i_scset)
+        _player->GetCooldownMgr().AddItemCooldown(m_CastItem->GetEntry(), rec);
+        SpellCategoryStore::const_iterator i_scstore = sSpellCategoryStore.find(- int32(cat));
+        if (i_scstore != sSpellCategoryStore.end())
         {
-            if (*i_scset == GetSpellEntry()->Id)             // skip main spell, already handled above
-                continue;
-            if (m_CastItem)
+            for (SpellCategorySet::const_iterator i_scset = i_scstore->second.begin(); i_scset != i_scstore->second.end(); ++i_scset)
+            {
+                if (*i_scset == m_CastItem->GetEntry())             // skip main spell, already handled above
+                    continue;
                 _player->GetCooldownMgr().AddItemCooldown(*i_scset, catrec);
-            else
-                _player->GetCooldownMgr().AddSpellCooldown(*i_scset, catrec);
-            // category cooldown should apply to all items
+            }
         }
     }
+    else
+    {
+        _player->GetCooldownMgr().AddSpellCooldown(GetSpellEntry()->Id, rec);
+        SpellCategoryStore::const_iterator i_scstore = sSpellCategoryStore.find(cat);
+        if (i_scstore != sSpellCategoryStore.end())
+        {
+            for (SpellCategorySet::const_iterator i_scset = i_scstore->second.begin(); i_scset != i_scstore->second.end(); ++i_scset)
+            {
+                if (*i_scset == GetSpellEntry()->Id)             // skip main spell, already handled above
+                    continue;
+                _player->GetCooldownMgr().AddSpellCooldown(*i_scset, catrec);
+            }
+        }
+    }
+    
 }
 
 void Spell::update(uint32 difftime)

@@ -1696,7 +1696,7 @@ void ObjectMgr::LoadItemPrototypes()
                     }
                     else if (proto->Spells[j].SpellCategory)
                     {
-                        sSpellCategoryStore[proto->Spells[j].SpellCategory].insert(i);
+                        sSpellCategoryStore[- int32(proto->Spells[j].SpellCategory)].insert(i);
                     }
                 }
             }
