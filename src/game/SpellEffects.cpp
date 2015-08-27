@@ -5354,7 +5354,7 @@ void Spell::EffectInterruptCast(uint32 i)
             if ((spell->getState() == SPELL_STATE_CASTING || (spell->getState() == SPELL_STATE_PREPARING && spell->GetCastTime() > 0.0f)) &&
                 curSpellEntry->PreventionType == SPELL_PREVENTION_TYPE_SILENCE &&
                 ((k == CURRENT_GENERIC_SPELL && curSpellEntry->InterruptFlags & SPELL_INTERRUPT_FLAG_INTERRUPT) ||
-                (k == CURRENT_CHANNELED_SPELL && curSpellEntry->ChannelInterruptFlags & CHANNEL_INTERRUPT_FLAG_MOVEMENT)))
+                (k == CURRENT_CHANNELED_SPELL && curSpellEntry->ChannelInterruptFlags & AURA_INTERRUPT_FLAG_MOVE)))
             {
                 if (m_originalCaster)
                 {

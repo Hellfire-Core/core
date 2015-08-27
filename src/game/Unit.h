@@ -50,16 +50,6 @@ enum SpellInterruptFlags
     SPELL_INTERRUPT_FLAG_DAMAGE       = 0x10  // _complete_ interrupt on direct damage?
 };
 
-enum SpellChannelInterruptFlags
-{
- // CHANNEL_INTERRUPT_FLAG_DAMAGE       = 0x0002,
- // CHANNEL_INTERRUPT_FLAG_INTERRUPT    = 0x0004,
-    CHANNEL_INTERRUPT_FLAG_MOVEMENT     = 0x0008,
- // CHANNEL_INTERRUPT_FLAG_TURNING      = 0x0010,
- // CHANNEL_INTERRUPT_FLAG_DAMAGE2      = 0x0080,
-    CHANNEL_INTERRUPT_FLAG_DELAY        = 0x4000
-};
-
 enum SpellAuraInterruptFlags
 {
     AURA_INTERRUPT_FLAG_NONE                = 0x00000000,
@@ -77,7 +67,7 @@ enum SpellAuraInterruptFlags
     AURA_INTERRUPT_FLAG_USE                 = 0x00000800,   // 11   mine/use/open action on gameobject
     AURA_INTERRUPT_FLAG_ATTACK              = 0x00001000,   // 12   removed by attacking
     AURA_INTERRUPT_FLAG_CAST                = 0x00002000,   // 13   ???
-    AURA_INTERRUPT_FLAG_UNK14               = 0x00004000,   // 14
+    AURA_INTERRUPT_FLAG_DELAY               = 0x00004000,   // 14   channeled spell can be delayed by damage
     AURA_INTERRUPT_FLAG_TRANSFORM           = 0x00008000,   // 15   removed by transform?
     AURA_INTERRUPT_FLAG_UNK16               = 0x00010000,   // 16
     AURA_INTERRUPT_FLAG_MOUNT               = 0x00020000,   // 17   misdirect, aspect, swim speed

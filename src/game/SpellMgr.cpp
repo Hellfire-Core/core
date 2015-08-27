@@ -2822,7 +2822,7 @@ void SpellMgr::LoadSpellCustomAttr()
         if (spellInfo->Effect[0] == SPELL_EFFECT_STUCK)
         {
             if (IsChanneledSpell(spellInfo))
-                spellInfo->ChannelInterruptFlags &= ~CHANNEL_INTERRUPT_FLAG_MOVEMENT;
+                spellInfo->ChannelInterruptFlags &= ~AURA_INTERRUPT_FLAG_MOVE;
             else
                 spellInfo->InterruptFlags &= ~SPELL_INTERRUPT_FLAG_MOVEMENT;
         }

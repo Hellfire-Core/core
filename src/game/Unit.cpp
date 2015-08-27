@@ -1099,7 +1099,7 @@ uint32 Unit::DealDamage(DamageLog *damageInfo, DamageEffectType damagetype, cons
                         if (spell->getState() == SPELL_STATE_CASTING)
                         {
                             uint32 channelInterruptFlags = spell->GetSpellEntry()->ChannelInterruptFlags;
-                            if (damagetype != DOT && channelInterruptFlags & CHANNEL_INTERRUPT_FLAG_DELAY)
+                            if (damagetype != DOT && channelInterruptFlags & AURA_INTERRUPT_FLAG_DELAY)
                                 spell->DelayedChannel();
                         }
                     }
