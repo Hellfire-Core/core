@@ -2827,6 +2827,9 @@ void SpellMgr::LoadSpellCustomAttr()
                 spellInfo->InterruptFlags &= ~SPELL_INTERRUPT_FLAG_MOVEMENT;
         }
 
+        // test, in most cases turning is caused by channeling, so spells just dont work
+        spellInfo->ChannelInterruptFlags &= ~AURA_INTERRUPT_FLAG_TURNING;
+
         LoadCustomSpellCooldowns(spellInfo);
 
         if (spellInfo->HasApplyAura(SPELL_AURA_DAMAGE_SHIELD) ||
