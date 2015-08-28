@@ -252,19 +252,19 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
     if (plMover)
         plMover->UpdateFallInformationIfNeed(movementInfo, opcode);
 
+    WorldPacket data(opcode, recv_data.size());
+    data << mover->GetPackGUID();                 // write guid
+    movementInfo.Write(data);                     // write data
+    mover->BroadcastPacketExcept(&data, _player);
+
     if (result)
     {
-        WorldPacket data(opcode, recv_data.size());
-        data << mover->GetPackGUID();                 // write guid
-        movementInfo.Write(data);                     // write data
-        mover->BroadcastPacketExcept(&data, _player);
-    }
-    else
-    {
-        WorldPacket data(MSG_MOVE_STOP, recv_data.size());
+        WorldPacket data(SMSG_FORCE_MOVE_ROOT, mover->GetPackGUID().size() + 4);
         data << mover->GetPackGUID();
-        data << movementInfo;
-        mover->BroadcastPacket(&data,true);
+        data << mover->GetUnitStateMgr().GetCounter(UNIT_ACTION_ROOT);
+        SendPacket(&data);
+        sLog.outLog(LOG_CHEAT, "Player %N (GUID:%u) moving when rooted, position %f %f %f %u", 
+            _player->GetName(), _player->GetGUIDLow(), movementInfo.pos.x, movementInfo.pos.y, movementInfo.pos.z, _player->GetMapId());
     }
 }
 
@@ -281,10 +281,8 @@ bool WorldSession::HandleMoverRelocation(MovementInfo& movementInfo)
     if (Player *plMover = mover->ToPlayer())
     {
         if (mover->hasUnitState((UNIT_STAT_ROOT)))
-        {
-            movementInfo = mover->m_movementInfo;
             return false;
-        }
+
         if (sWorld.getConfig(CONFIG_ENABLE_PASSIVE_ANTICHEAT) && !plMover->hasUnitState(UNIT_STAT_LOST_CONTROL | UNIT_STAT_NOT_MOVE) && !plMover->GetSession()->HasPermissions(PERM_GMT_DEV) && plMover->m_AC_timer == 0)
             sWorld.m_ac.execute(new ACRequest(plMover, plMover->m_movementInfo, movementInfo));
 
