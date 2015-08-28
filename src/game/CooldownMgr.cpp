@@ -169,7 +169,21 @@ void CooldownMgr::WriteCooldowns(ByteBuffer& bb)
         if (!ip)
             continue;
 
-        bb << uint16(ip->Spells[0].SpellId);
+        uint32 spellid = 0; // search for "use" spell
+        for (uint8 i = 0; i < MAX_ITEM_PROTO_SPELLS; i++)
+        {
+            if (ip->Spells[i].SpellId != 0 &&
+                (ip->Spells[i].SpellTrigger == ITEM_SPELLTRIGGER_ON_USE ||
+                ip->Spells[i].SpellTrigger == ITEM_SPELLTRIGGER_ON_NO_DELAY_USE))
+            {
+                spellid = ip->Spells[i].SpellId;
+                break;
+            }
+        }
+        if (!spellid)
+            continue;
+
+        bb << uint16(spellid);
 
         uint32 diff = WorldTimer::getMSTimeDiff(now, itr->second.start);
         if (diff >= itr->second.duration)
