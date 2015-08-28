@@ -263,7 +263,7 @@ void ScriptedAI::CheckShooterNoMovementInRange(uint32 diff, float maxrange)
         // if victim in melee range, than chase it
         if (me->IsWithinDistInMap(me->getVictim(), 5.0))
         {
-            if (me->GetMotionMaster()->GetCurrentMovementGeneratorType() != CHASE_MOTION_TYPE)
+            if (!me->hasUnitState(UNIT_STAT_CHASE))
                 DoStartMovement(me->getVictim());
             else
             {
@@ -271,7 +271,7 @@ void ScriptedAI::CheckShooterNoMovementInRange(uint32 diff, float maxrange)
                 return;
             }
         }
-        else if(me->GetMotionMaster()->GetCurrentMovementGeneratorType() == CHASE_MOTION_TYPE)
+        else if (me->hasUnitState(UNIT_STAT_CHASE))
             me->GetMotionMaster()->MoveIdle();
 
         // when victim is in distance, stop and shoot

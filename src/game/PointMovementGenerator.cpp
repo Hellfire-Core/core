@@ -36,8 +36,6 @@ void PointMovementGenerator<UNIT>::Initialize(UNIT &unit)
     if ( m_callStopMove )
         unit.StopMoving();
 
-    unit.addUnitState(UNIT_STAT_ROAMING);
-
     Movement::MoveSplineInit init(unit);
 
     if (Creature *creature = unit.ToCreature())
@@ -56,7 +54,6 @@ template<class UNIT>
 void PointMovementGenerator<UNIT>::Interrupt(UNIT &unit)
 {
     unit.StopMoving();
-    unit.clearUnitState(UNIT_STAT_ROAMING);
 }
 
 template<class UNIT>
@@ -77,8 +74,6 @@ bool PointMovementGenerator<UNIT>::Update(UNIT &unit, const uint32 &diff)
 template<class UNIT>
 void PointMovementGenerator<UNIT>::Finalize(UNIT &unit)
 {
-    unit.clearUnitState(UNIT_STAT_ROAMING);
-
     if (!unit.isAlive())
         return;
 
@@ -110,8 +105,6 @@ template bool PointMovementGenerator<Creature>::Update(Creature&, const uint32 &
 
 void AssistanceMovementGenerator::Finalize(Unit &unit)
 {
-    unit.clearUnitState(UNIT_STAT_ROAMING);
-
     ((Creature*)&unit)->SetNoCallAssistance(false);
     ((Creature*)&unit)->CallAssistance();
     if (unit.isAlive())

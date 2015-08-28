@@ -46,8 +46,6 @@ void WaypointMovementGenerator<Creature>::Initialize(Creature &creature)
     _nextMoveTime.Reset(0);
     creature.StopMoving();
 
-    creature.addUnitState(UNIT_STAT_ROAMING);
-
     _pathFinding = !creature.hasUnitState(UNIT_STAT_IGNORE_PATHFINDING) && creature.GetMap()->WaypointMovementPathfinding();
 
     if (creature.IsFormationLeader())
@@ -61,7 +59,6 @@ void WaypointMovementGenerator<Creature>::Finalize(Creature &creature)
 {
     creature.StopMoving();
 
-    creature.clearUnitState(UNIT_STAT_ROAMING);
     creature.SetWalk(false);
     creature.setActive(false, ACTIVE_BY_WAYPOINT_MOVEMENT);
 }

@@ -314,7 +314,7 @@ struct boss_felblood_kaelthasAI : public ScriptedAI
                     }
                     else
                     {
-                        if(me->GetMotionMaster()->GetCurrentMovementGeneratorType() == CHASE_MOTION_TYPE)
+                        if(me->hasUnitState(UNIT_STAT_CHASE))
                             me->GetMotionMaster()->MoveIdle();
                         FireballTimer = 2000;
                     }

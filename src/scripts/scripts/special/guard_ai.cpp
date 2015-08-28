@@ -150,8 +150,8 @@ void guardAI::UpdateAI(const uint32 diff)
             if (info && !GlobalCooldown.GetInterval())
             {
                 //If we are currently moving stop us and set the movement generator
-                if ((*m_creature).GetMotionMaster()->GetCurrentMovementGeneratorType()!=IDLE_MOTION_TYPE)
-                    (*m_creature).GetMotionMaster()->MoveIdle();
+                if (m_creature->GetMotionMaster()->GetCurrentMovementGeneratorType()!=IDLE_MOTION_TYPE)
+                    m_creature->GetMotionMaster()->MoveIdle();
 
                 //Cast spell
                 if (Healing) DoCastSpell(m_creature,info);
@@ -161,11 +161,11 @@ void guardAI::UpdateAI(const uint32 diff)
                 GlobalCooldown = GENERIC_CREATURE_COOLDOWN;
 
             }                                               //If no spells available and we arn't moving run to target
-            else if ((*m_creature).GetMotionMaster()->GetCurrentMovementGeneratorType()!=CHASE_MOTION_TYPE)
+            else if (!m_creature->hasUnitState(UNIT_STAT_CHASE))
             {
                 //Cancel our current spell and then mutate new movement generator
                 m_creature->InterruptNonMeleeSpells(false);
-                (*m_creature).GetMotionMaster()->MoveChase(m_creature->getVictim());
+                m_creature->GetMotionMaster()->MoveChase(m_creature->getVictim());
             }
         }
     }

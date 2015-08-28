@@ -701,7 +701,7 @@ struct boss_kaelthasAI : public ScriptedAI
 
                 if(pInstance->GetData(DATA_KAELTHASEVENT) == 5)
                 {
-                    if(m_creature->hasUnitState(UNIT_STAT_CHASE))
+                    if (m_creature->hasUnitState(UNIT_STAT_CHASE))
                         m_creature->GetMotionMaster()->Clear();
                 }
 
@@ -1688,11 +1688,10 @@ struct boss_master_engineer_telonicusAI : public advisorbase_ai
             {
                 if(m_creature->GetDistance2d(hunter) > 30.0f)
                     DoStartMovement(hunter, 28.0f, 2*M_PI);
-                else if( m_creature->hasUnitState(UNIT_STAT_CHASE))
+                else if (m_creature->hasUnitState(UNIT_STAT_CHASE))
                     m_creature->StopMoving();
             }
-            else
-                if(!m_creature->hasUnitState(UNIT_STAT_CHASE) )
+            else if (!m_creature->hasUnitState(UNIT_STAT_CHASE))
                     ScriptedAI::AttackStart(hunter);
         }
 

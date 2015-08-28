@@ -640,7 +640,7 @@ void WorldSession::HandleTextEmoteOpcode(WorldPacket & recv_data)
         default:
         {
             // in feign death state allowed only text emotes.
-            if (!player->hasUnitState(UNIT_STAT_DIED))
+            if (!player->HasFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_FEIGN_DEATH))
                 player->HandleEmoteCommand(emote_anim);
             break;
         }

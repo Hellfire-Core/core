@@ -250,7 +250,7 @@ struct boss_alarAI : public ScriptedAI
         {
             Player* i_pl = i->getSource();
             if (i_pl && i_pl->isAlive() && !i_pl->isGameMaster() &&
-                i_pl->isInCombat() && !i_pl->hasUnitState(UNIT_STAT_DIED) &&
+                i_pl->isInCombat() && !i_pl->HasFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_FEIGN_DEATH) &&
                 i_pl->IsWithinDistInMap(&wLoc, 135))
                     return true;
         }

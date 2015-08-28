@@ -9483,9 +9483,6 @@ bool Unit::canAttack(Unit const* target, bool force) const
             return false;
         // if this == player or owner == player check other conditions
     }
-    // real dead case ~UNIT_FLAG2_FEIGN_DEATH && UNIT_STAT_DIED
-    else if (target->hasUnitState(UNIT_STAT_DIED))
-        return false;
 
     if ((m_invisibilityMask || target->m_invisibilityMask) && !canDetectInvisibilityOf(target, this))
         return false;

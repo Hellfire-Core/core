@@ -585,7 +585,7 @@ void CreatureEventAI::ProcessAction(CreatureEventAI_Action const& action, uint32
                         //Melee current victim if flag not set
                         if (!(action.castguid.castFlags & CAST_NO_MELEE_IF_OOM))
                         {
-                            if (m_creature->GetMotionMaster()->GetCurrentMovementGeneratorType() == CHASE_MOTION_TYPE)
+                            if (m_creature->hasUnitState(UNIT_STAT_CHASE))
                                 m_creature->GetMotionMaster()->MoveChase(m_creature->getVictim(), MELEE_RANGE, 0.0f);
                         }
 

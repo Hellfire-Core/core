@@ -105,7 +105,7 @@ void GuardAI::EnterEvadeMode()
     i_state = STATE_NORMAL;
 
     // Remove ChaseMovementGenerator from MotionMaster stack list, and add HomeMovementGenerator instead
-    if (me->GetMotionMaster()->GetCurrentMovementGeneratorType() == CHASE_MOTION_TYPE)
+    if (me->hasUnitState(UNIT_STAT_CHASE))
         m_creature->GetMotionMaster()->MoveTargetedHome();
 
     m_creature->UpdateSpeed(MOVE_RUN, true);

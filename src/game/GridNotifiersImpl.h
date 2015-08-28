@@ -50,7 +50,7 @@ inline void PlayerCreatureRelocationWorker(Player* p, Creature* c)
     if (p->IsTaxiFlying() && !c->CanReactToPlayerOnTaxi())
         return;
 
-    if (c->hasUnitState(UNIT_STAT_LOST_CONTROL | UNIT_STAT_SIGHTLESS | UNIT_STAT_IGNORE_ATTACKERS))
+    if (c->hasUnitState(UNIT_STAT_LOST_CONTROL | UNIT_STAT_IGNORE_ATTACKERS))
         return;
 
     // Creature AI reaction
@@ -60,7 +60,7 @@ inline void PlayerCreatureRelocationWorker(Player* p, Creature* c)
 
 inline void CreatureCreatureRelocationWorker(Creature* c1, Creature* c2)
 {
-    if (c1->hasUnitState(UNIT_STAT_LOST_CONTROL | UNIT_STAT_SIGHTLESS | UNIT_STAT_IGNORE_ATTACKERS))
+    if (c1->hasUnitState(UNIT_STAT_LOST_CONTROL | UNIT_STAT_IGNORE_ATTACKERS))
         return;
 
     if (c2->hasUnitState(UNIT_STAT_IGNORE_ATTACKERS))

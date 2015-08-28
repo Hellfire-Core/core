@@ -4040,11 +4040,6 @@ void Aura::HandleFeignDeath(bool apply, bool Real)
     if (!apply && GetTarget()->HasAuraType(GetModifier()->m_auraname))
         return;
 
-    //if (apply)
-    //    m_target->GetUnitStateMgr().PushAction(UNIT_ACTION_FEIGNDEATH);
-    //else
-    //    m_target->GetUnitStateMgr().DropAction(UNIT_ACTION_FEIGNDEATH);
-
     if (apply)
     {
         // feign death in pvp: clear target and interrupt casts
@@ -4078,7 +4073,6 @@ void Aura::HandleFeignDeath(bool apply, bool Real)
         m_target->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNKNOWN6); // blizz like 2.0.x
         m_target->SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_FEIGN_DEATH); // blizz like 2.0.x
         m_target->SetFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_DEAD); // blizz like 2.0.x
-        m_target->addUnitState(UNIT_STAT_DIED);
 
         m_target->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_UNATTACKABLE);
         // prevent interrupt message
@@ -4150,8 +4144,6 @@ void Aura::HandleFeignDeath(bool apply, bool Real)
         m_target->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_FEIGN_DEATH);
                                                             // blizz like 2.0.x
         m_target->RemoveFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_DEAD);
-
-        m_target->clearUnitState(UNIT_STAT_DIED);
     }
 }
 

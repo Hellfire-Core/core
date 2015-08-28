@@ -526,7 +526,7 @@ struct mob_sunblade_scoutAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(activating_protector && me->GetMotionMaster()->GetCurrentMovementGeneratorType() == CHASE_MOTION_TYPE)
+        if (activating_protector && me->hasUnitState(UNIT_STAT_CHASE))
             activating_protector = false;
 
         if(!UpdateVictim() || activating_protector)
