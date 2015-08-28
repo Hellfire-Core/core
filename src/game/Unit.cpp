@@ -6316,6 +6316,11 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
                     case 10605: spellId = 45300; break;     // Rank  4
                     case 25439: spellId = 45301; break;     // Rank  5
                     case 25442: spellId = 45302; break;     // Rank  6
+                        // self procs LO effect can proc another LO
+                    case 45284: case 45286: case 45287: case 45288: case 45289: case 45290:
+                    case 45291: case 45292: case 45293: case 45294: case 45295: case 45296:
+                    case 45297: case 45298: case 45299: case 45300: case 45301: case 45302:
+                        spellId = procSpell->Id; break;
                     default:
                         sLog.outLog(LOG_DEFAULT, "ERROR: Unit::HandleDummyAuraProc: non handled spell id: %u (LO)", procSpell->Id);
                         return false;
