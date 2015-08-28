@@ -3035,6 +3035,8 @@ void SpellMgr::LoadSpellCustomAttr()
                 // some quest spell spamming with non-existing triggered
                 else if (spellInfo->Id == 39280)
                     spellInfo->Effect[1] = 0;
+                else if (spellInfo->Id == 33395) // elementals' freeze (blocks frost nova)
+                    spellInfo->Category = 0;
 
                 if (spellInfo->SpellFamilyFlags & 0x0000000800200080LL) // Arcane Missles / Blizzard / Molten Armor proc
                     spellInfo->AttributesEx2 |= SPELL_ATTR_EX2_TRIGGERED_CAN_TRIGGER;
