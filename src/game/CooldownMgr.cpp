@@ -64,11 +64,12 @@ void CooldownMgr::AddSpellCooldown(uint32 id, uint32 ms)
         return;
 
     CooldownList::const_iterator itr = m_SpellCooldowns.find(id);
-    if (itr == m_SpellCooldowns.end())
-        return;
-    uint32 diff = WorldTimer::getMSTimeDiff(WorldTimer::getMSTime(), itr->second.start);
-    if (itr->second.duration - diff > ms)
-        return; // do not overwrite longer one
+    if (itr != m_SpellCooldowns.end())
+    {
+        uint32 diff = WorldTimer::getMSTimeDiff(WorldTimer::getMSTime(), itr->second.start);
+        if (itr->second.duration > ms + diff)
+            return; // do not overwrite longer one
+    }
     m_SpellCooldowns[id] = Cooldown(WorldTimer::getMSTime(), ms);
 };
 
@@ -96,12 +97,12 @@ void CooldownMgr::AddItemCooldown(uint32 item, uint32 ms)
         return;
 
     CooldownList::const_iterator itr = m_ItemCooldowns.find(item);
-    if (itr == m_ItemCooldowns.end())
-        return;
-    uint32 diff = WorldTimer::getMSTimeDiff(WorldTimer::getMSTime(), itr->second.start);
-    if (itr->second.duration - diff > ms)
-        return; // do not overwrite longer one
-
+    if (itr != m_ItemCooldowns.end())
+    {
+        uint32 diff = WorldTimer::getMSTimeDiff(WorldTimer::getMSTime(), itr->second.start);
+        if (itr->second.duration > ms + diff)
+            return; // do not overwrite longer one
+    }
     m_ItemCooldowns[item] = Cooldown(WorldTimer::getMSTime(), ms);
 }
 
