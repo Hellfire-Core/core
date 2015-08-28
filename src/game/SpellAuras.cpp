@@ -1181,10 +1181,9 @@ void Aura::_RemoveAura()
         }
 
         // reset cooldown state for spells
-        if (caster && caster->GetTypeId() == TYPEID_PLAYER)
+        if (caster && GetSpellProto()->Attributes & SPELL_ATTR_DISABLED_WHILE_ACTIVE && caster->GetCharmerOrOwnerPlayerOrPlayerItself())
         {
-            if (GetSpellProto()->Attributes & SPELL_ATTR_DISABLED_WHILE_ACTIVE)
-                ((Player*)caster)->SendCooldownEvent(GetSpellProto());
+            caster->GetCharmerOrOwnerPlayerOrPlayerItself()->SendCooldownEvent(GetSpellProto());
         }
     }
     m_isRemoved = true;

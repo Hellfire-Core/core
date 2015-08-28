@@ -138,10 +138,10 @@ void CooldownMgr::WriteCooldowns(ByteBuffer& bb)
 
         uint32 diff = WorldTimer::getMSTimeDiff(now, itr->second.start);
         if (diff >= itr->second.duration)
-            diff = 0; // no cooldown left
+            diff = 0;
 
         bb << uint16(0);                    // cast item id
-        bb << uint16(0);                    // spell category
+        bb << uint16(sEntry->Category);     // spell category
         bb << uint32(diff);                 // cooldown
         bb << uint32(0);                    // category cooldown
     }
@@ -155,12 +155,12 @@ void CooldownMgr::WriteCooldowns(ByteBuffer& bb)
 
         uint32 diff = WorldTimer::getMSTimeDiff(now, itr->second.start);
         if (diff >= itr->second.duration)
-            diff = 0; // no cooldown left
+            diff = 0;
 
-        bb << uint16(itr->first);                    // cast item id
-        bb << uint16(0);                    // spell category
-        bb << uint32(diff);                 // cooldown
-        bb << uint32(0);                    // category cooldown
+        bb << uint16(itr->first);                   // cast item id
+        bb << uint16(ip->Spells[0].SpellCategory);  // spell category
+        bb << uint32(diff);                         // cooldown
+        bb << uint32(0);                            // category cooldown
     }
 }
 

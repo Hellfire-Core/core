@@ -1529,7 +1529,6 @@ class HELLGROUND_EXPORT Player : public Unit
         void RemoveSpellMods(Spell const* spell);
         void RestoreSpellMods(Spell const* spell);
 
-        // TODO RECHECK
         CooldownMgr& GetCooldownMgr() { return m_CooldownMgr; }
         void SendCooldownEvent(SpellEntry const *spellInfo);
         void ProhibitSpellSchool(SpellSchoolMask idSchoolMask, uint32 unTimeMs);
