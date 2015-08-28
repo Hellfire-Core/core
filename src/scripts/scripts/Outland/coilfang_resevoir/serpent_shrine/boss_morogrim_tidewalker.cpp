@@ -104,7 +104,7 @@ struct boss_morogrim_tidewalkerAI : public ScriptedAI
         TidalWave_Timer.Reset(10000);
         WateryGrave_Timer.Reset(30000);
         Earthquake_Timer.Reset(40000);
-        WateryGlobules_Timer = 0;
+        WateryGlobules_Timer = 1;
 
         Earthquake = false;
         Phase2 = false;
