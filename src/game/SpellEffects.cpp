@@ -2023,11 +2023,14 @@ void Spell::EffectDummy(uint32 i)
 
                     m_caster->CastCustomSpell(m_caster,31818,&mana,NULL,NULL,true,NULL);
 
-                    // Mana Feed
-                    int32 manaFeedVal = m_caster->CalculateSpellDamage(GetSpellEntry(),1, GetSpellEntry()->EffectBasePoints[1],m_caster);
-                    manaFeedVal = manaFeedVal * mana / 100;
-                    if (manaFeedVal > 0)
-                        m_caster->CastCustomSpell(m_caster,32553,&manaFeedVal,NULL,NULL,true,NULL);
+                    if (m_caster->GetPet())
+                    {
+                        // Mana Feed
+                        int32 manaFeedVal = m_caster->CalculateSpellDamage(GetSpellEntry(),1, GetSpellEntry()->EffectBasePoints[1],m_caster);
+                        manaFeedVal = manaFeedVal * mana / 100;
+                        if (manaFeedVal > 0)
+                            m_caster->CastCustomSpell(m_caster,32553,&manaFeedVal,NULL,NULL,true,NULL);
+                    }
                 }
                 else
                     SendCastResult(SPELL_FAILED_FIZZLE);

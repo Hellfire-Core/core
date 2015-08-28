@@ -7412,6 +7412,16 @@ void Aura::PeriodicTick()
             {
                 int32 gain = pCaster->ModifyPower(power,gain_amount);
                 m_target->AddThreat(pCaster, float(gain) * 0.5f, SpellMgr::GetSpellSchoolMask(GetSpellProto()), GetSpellProto());
+                // Mana Feed warlock talent - Drain Mana
+                if (GetSpellProto()->SpellFamilyName == SPELLFAMILY_WARLOCK && GetSpellProto()->SpellFamilyFlags & 0x10)
+                    if (pCaster->GetPet())
+                    {
+                        // Mana Feed
+                        int32 manaFeedVal = pCaster->CalculateSpellDamage(GetSpellProto(),1, GetSpellProto()->EffectBasePoints[1],pCaster);
+                        manaFeedVal = manaFeedVal * gain_amount / 100;
+                        if (manaFeedVal > 0)
+                            pCaster->CastCustomSpell(pCaster,32553,&manaFeedVal,NULL,NULL,true,NULL);
+                    }
             }
 
             // Mark of Kaz'rogal
