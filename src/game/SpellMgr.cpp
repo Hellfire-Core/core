@@ -2950,11 +2950,12 @@ void SpellMgr::LoadSpellCustomAttr()
             }
             case SPELLFAMILY_SHAMAN:
             {
-                // Flametongue weapon proc
-                /*if (spellInfo->SpellFamilyFlags & 2097152 && spellInfo->SpellVisual == 0)
-                    spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;*/ // Flametongue totem proc procs spell 16368
                 if (spellInfo->Id == 16368)
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
+                else if (spellInfo->SpellFamilyFlags & 0x800000LL) // wf attack
+                    spellInfo->AttributesEx2 |= SPELL_ATTR_EX2_TRIGGERED_CAN_TRIGGER; 
+                else if (spellInfo->AttributesEx == 0x0400 && spellInfo->AttributesEx4 == 0x0080)// lightning overload spells
+                    spellInfo->AttributesEx2 |= SPELL_ATTR_EX2_TRIGGERED_CAN_TRIGGER;
                 break;
             }
             case SPELLFAMILY_PALADIN:
@@ -2968,7 +2969,6 @@ void SpellMgr::LoadSpellCustomAttr()
                 // Blessing of Sanctuary, greater and normal
                 else if (spellInfo->SpellIconID == 1804 || spellInfo->SpellIconID == 19)
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
-
                 // Devotion Aura
                 else if (spellInfo->SpellFamilyFlags & 0x40 && spellInfo->SpellIconID == 291)
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SCROLL_STACK;
@@ -2976,6 +2976,9 @@ void SpellMgr::LoadSpellCustomAttr()
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
                 else if (spellInfo->Id == 43743) // improved Seal of Righteousness
                     spellInfo->Effect[1] = 0;
+
+                if (spellInfo->SpellFamilyFlags & 0x0001040002200000LL) // seal of blood/command/holy shock
+                    spellInfo->AttributesEx2 |= SPELL_ATTR_EX2_TRIGGERED_CAN_TRIGGER;
                 break;
             }
             case SPELLFAMILY_PRIEST:
@@ -3026,13 +3029,15 @@ void SpellMgr::LoadSpellCustomAttr()
                 // Molten Armor
                 if (spellInfo->SpellFamilyFlags & 0x800000000LL)
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
-
                 // Arcane Intellect/Brilliance
                 else if (spellInfo->SpellFamilyFlags & 0x0400)
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SCROLL_STACK;
                 // some quest spell spamming with non-existing triggered
                 else if (spellInfo->Id == 39280)
                     spellInfo->Effect[1] = 0;
+
+                if (spellInfo->SpellFamilyFlags & 0x0000000800200080LL) // Arcane Missles / Blizzard / Molten Armor proc
+                    spellInfo->AttributesEx2 |= SPELL_ATTR_EX2_TRIGGERED_CAN_TRIGGER;
                 break;
             }
             case SPELLFAMILY_WARLOCK:
@@ -3047,6 +3052,8 @@ void SpellMgr::LoadSpellCustomAttr()
                 else if (spellInfo->SpellVisual == 9152)
                     spellInfo->Attributes |= SPELL_ATTR_CANT_CANCEL;
                 
+                if (spellInfo->SpellFamilyFlags & 0x0000800000000000LL) // Seed of corruption (proc one from another)
+                    spellInfo->AttributesEx2 |= SPELL_ATTR_EX2_TRIGGERED_CAN_TRIGGER;
                 break;
             }
             case SPELLFAMILY_HUNTER:
@@ -3060,11 +3067,18 @@ void SpellMgr::LoadSpellCustomAttr()
                 else if (spellInfo->Id == 1543 || spellInfo->Id == 28822)
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_BLOCK_STEALTH;
 
+                if (spellInfo->SpellFamilyFlags & 0x0000200000000014LL) // trap effects
+                    spellInfo->AttributesEx2 |= SPELL_ATTR_EX2_TRIGGERED_CAN_TRIGGER;
                 spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
                 break;
             }
             case SPELLFAMILY_WARRIOR:
+                spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
+                break;
             case SPELLFAMILY_ROGUE:
+                if (spellInfo->SpellFamilyFlags & 0x600000000LL) // mutilate
+                    spellInfo->AttributesEx2 |= SPELL_ATTR_EX2_TRIGGERED_CAN_TRIGGER;
+
                 spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
                 break;
         }

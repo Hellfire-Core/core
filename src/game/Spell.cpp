@@ -594,41 +594,20 @@ void Spell::prepareDataForTriggerSystem()
     // Fill flag can spell trigger or not
     if (!IsTriggeredSpell())
         m_canTrigger = true;          // Normal cast - can trigger
-    else if (!m_triggeredByAuraSpell)
-        m_canTrigger = true;          // Triggered from SPELL_EFFECT_TRIGGER_SPELL - can trigger
-    else                              // Exceptions (some periodic triggers)
-    {
+    else if (m_triggeredByAuraSpell)
         m_canTrigger = false;         // Triggered spells can`t trigger another
-        switch (GetSpellEntry()->SpellFamilyName)
-        {
-            case SPELLFAMILY_MAGE:    // Arcane Missles / Blizzard triggers need do it / Molten Armor proc also
-                if (GetSpellEntry()->SpellFamilyFlags & 0x0000000000200080LL) m_canTrigger = true;
-                if (GetSpellEntry()->SpellFamilyFlags & 0x800000000LL) m_canTrigger = true;
-                break;
-            case SPELLFAMILY_WARLOCK: // For Hellfire Effect / Rain of Fire triggers need do it
-                if (GetSpellEntry()->SpellFamilyFlags & 0x0000008000000060LL)
-                {
-                    m_procAttacker = PROC_FLAG_ON_DO_PERIODIC;
-                    m_procVictim = PROC_FLAG_ON_TAKE_PERIODIC;
-                    m_canTrigger = true;
-                    return;
-                }
-                break;
-            case SPELLFAMILY_SHAMAN:
-                if (GetSpellEntry()->SpellFamilyFlags & 0x800000LL) m_canTrigger = true; // Flurry etc. from WF ATTACK !
-                if (GetSpellEntry()->AttributesEx == 0x0400 && GetSpellEntry()->AttributesEx4 == 0x0080) m_canTrigger = true; // lightning overload spells
-                break;
-            case SPELLFAMILY_HUNTER:  // Hunter Explosive Trap Effect/Immolation Trap Effect/Frost Trap Aura/Snake Trap Effect
-                if (GetSpellEntry()->SpellFamilyFlags & 0x0000200000000014LL) m_canTrigger = true;
-                break;
-            case SPELLFAMILY_PALADIN: // For Holy Shock and Seals triggers need do it
-                if (GetSpellEntry()->SpellFamilyFlags & 0x0001000000200000LL) m_canTrigger = true;  // Holy Shock
-                if (GetSpellEntry()->SpellFamilyFlags & 0x0000040002000000LL) m_canTrigger = true;  // Seal of Command & Seal of Blood
-                break;
-            case SPELLFAMILY_ROGUE: // mutilate mainhand + offhand
-                if (GetSpellEntry()->SpellFamilyFlags & 0x600000000LL) m_canTrigger = true;
-                break;
-        }
+    else
+        m_canTrigger = true;          // Triggered from SPELL_EFFECT_TRIGGER_SPELL - can trigger
+        
+
+    if (GetSpellEntry()->SpellFamilyName == SPELLFAMILY_WARLOCK &&
+        GetSpellEntry()->SpellFamilyFlags & 0x0000008000000060LL)
+        // For Hellfire Effect / Rain of Fire triggers need do it
+    {
+        m_procAttacker = PROC_FLAG_ON_DO_PERIODIC;
+        m_procVictim = PROC_FLAG_ON_TAKE_PERIODIC;
+        m_canTrigger = true;
+        return;
     }
 
     if (GetSpellEntry()->Id == 45055) // HACK: shadow bolt from Timbal's focusing crystal considered a dot
