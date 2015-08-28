@@ -4360,7 +4360,7 @@ SpellCastResult Spell::CheckCast(bool strict)
 
                 // In BattleGround players can use only flags and banners
                 if (((Player*)m_caster)->InBattleGround() &&
-                    !((Player*)m_caster)->isAllowUseBattleGroundObject())
+                    !((Player*)m_caster)->isAllowUseBattleGroundObject() && GetSpellEntry()->EffectMiscValue[i] != 4/*traps*/)
                     return SPELL_FAILED_TRY_AGAIN;
 
                 // get the lock entry
