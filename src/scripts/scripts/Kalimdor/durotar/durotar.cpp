@@ -53,11 +53,12 @@ struct npc_lazy_peonAI : public ScriptedAI
 
     uint64 uiPlayerGUID;
 
-    uint32 m_uiRebuffTimer;
+    Timer m_uiRebuffTimer;
     bool work;
 
     void Reset ()
     {
+        m_uiRebuffTimer.Reset(urand(MIN_TIME_TO_GO_ASLEEP, MAX_TIME_TO_GO_ASLEEP));         //Rebuff agian in 1-10 minutes
         uiPlayerGUID = 0;
         work = false;
     }
@@ -88,13 +89,11 @@ struct npc_lazy_peonAI : public ScriptedAI
         if (work == true)
             me->HandleEmoteCommand(466);
 
-        if (m_uiRebuffTimer <= uiDiff)
+        if (m_uiRebuffTimer.Expired(uiDiff))
         {
             DoCast(me, SPELL_BUFF_SLEEP);
-            m_uiRebuffTimer = urand(MIN_TIME_TO_GO_ASLEEP, MAX_TIME_TO_GO_ASLEEP);        //Rebuff agian in 1-10 minutes
+            m_uiRebuffTimer = urand(MIN_TIME_TO_GO_ASLEEP, MAX_TIME_TO_GO_ASLEEP);
         }
-        else
-            m_uiRebuffTimer -= uiDiff;
 
         if (!UpdateVictim())
             return;
