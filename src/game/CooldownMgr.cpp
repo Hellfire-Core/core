@@ -156,12 +156,20 @@ void CooldownMgr::WriteCooldowns(ByteBuffer& bb)
 
         uint32 diff = WorldTimer::getMSTimeDiff(now, itr->second.start);
         if (diff >= itr->second.duration)
-            diff = 0;
+            diff = itr->second.duration;
 
-        bb << uint16(0);                    // cast item id
-        bb << uint16(sEntry->Category);     // spell category
-        bb << uint32(diff);                 // cooldown
-        bb << uint32(0);                    // category cooldown
+        bb << uint16(0);                                // cast item id
+        bb << uint16(sEntry->Category);                 // spell category
+        if (sEntry->Category)
+        {
+            bb << uint32(0);                            // cooldown
+            bb << uint32(itr->second.duration - diff);  // category cooldown
+        }
+        else
+        {
+            bb << uint32(itr->second.duration - diff);  // cooldown
+            bb << uint32(0);                            // category cooldown
+        }
     }
     for (CooldownList::const_iterator itr = m_ItemCooldowns.begin(); itr != m_ItemCooldowns.end(); ++itr)
     {
@@ -169,30 +177,37 @@ void CooldownMgr::WriteCooldowns(ByteBuffer& bb)
         if (!ip)
             continue;
 
-        uint32 spellid = 0; // search for "use" spell
-        for (uint8 i = 0; i < MAX_ITEM_PROTO_SPELLS; i++)
+        uint8 i;
+        for (i = 0; i < MAX_ITEM_PROTO_SPELLS; i++)
         {
             if (ip->Spells[i].SpellId != 0 &&
                 (ip->Spells[i].SpellTrigger == ITEM_SPELLTRIGGER_ON_USE ||
                 ip->Spells[i].SpellTrigger == ITEM_SPELLTRIGGER_ON_NO_DELAY_USE))
             {
-                spellid = ip->Spells[i].SpellId;
                 break;
             }
         }
-        if (!spellid)
+        if (i == MAX_ITEM_PROTO_SPELLS)
             continue;
 
-        bb << uint16(spellid);
+        bb << uint16(ip->Spells[i].SpellId);
 
         uint32 diff = WorldTimer::getMSTimeDiff(now, itr->second.start);
         if (diff >= itr->second.duration)
-            diff = 0;
+            diff = itr->second.duration;
 
-        bb << uint16(itr->first);                   // cast item id
-        bb << uint16(ip->Spells[0].SpellCategory);  // spell category
-        bb << uint32(diff);                         // cooldown
-        bb << uint32(0);                            // category cooldown
+        bb << uint16(itr->first);                       // cast item id
+        bb << uint16(ip->Spells[i].SpellCategory);      // spell category
+        if (ip->Spells[i].SpellCategory)
+        {
+            bb << uint32(0);                            // cooldown
+            bb << uint32(itr->second.duration - diff);  // category cooldown
+        }
+        else
+        {
+            bb << uint32(itr->second.duration - diff);  // cooldown
+            bb << uint32(0);                            // category cooldown
+        }
     }
 }
 

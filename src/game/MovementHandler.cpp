@@ -257,7 +257,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
     movementInfo.Write(data);                     // write data
     mover->BroadcastPacketExcept(&data, _player);
 
-    if (result)
+    if (!result)
     {
         WorldPacket data(SMSG_FORCE_MOVE_ROOT, mover->GetPackGUID().size() + 4);
         data << mover->GetPackGUID();
@@ -280,9 +280,6 @@ bool WorldSession::HandleMoverRelocation(MovementInfo& movementInfo)
 
     if (Player *plMover = mover->ToPlayer())
     {
-        if (mover->hasUnitState((UNIT_STAT_ROOT)))
-            return false;
-
         if (sWorld.getConfig(CONFIG_ENABLE_PASSIVE_ANTICHEAT) && !plMover->hasUnitState(UNIT_STAT_LOST_CONTROL | UNIT_STAT_NOT_MOVE) && !plMover->GetSession()->HasPermissions(PERM_GMT_DEV) && plMover->m_AC_timer == 0)
             sWorld.m_ac.execute(new ACRequest(plMover, plMover->m_movementInfo, movementInfo));
 
