@@ -312,18 +312,14 @@ void LoadDBCStores(const std::string& dataPath)
     LoadDBC(availableDbcLocales,bar,bad_dbc_files,sSkillLineAbilityStore,    dbcPath,"SkillLineAbility.dbc");
     LoadDBC(availableDbcLocales,bar,bad_dbc_files,sSoundEntriesStore,        dbcPath,"SoundEntries.dbc");
     LoadDBC(availableDbcLocales,bar,bad_dbc_files,sSpellStore,               dbcPath,"Spell.dbc");
+#if HELLGROUND_ENDIAN == HELLGROUND_BIGENDIAN
     for(uint32 i = 1; i < sSpellStore.GetNumRows(); ++i)
     {
-        SpellEntry const * spell = sSpellStore.LookupEntry(i);
-        if(spell && spell->Category)
-            sSpellCategoryStore[spell->Category].insert(i);
-
-        #if HELLGROUND_ENDIAN == HELLGROUND_BIGENDIAN
         // DBC not support uint64 fields but SpellEntry have SpellFamilyFlags mapped at 2 uint32 fields
         // uint32 field already converted to bigendian if need, but must be swapped for correct uint64 bigendian view
         std::swap(*((uint32*)(&spell->SpellFamilyFlags)),*(((uint32*)(&spell->SpellFamilyFlags))+1));  
-        #endif
     }
+#endif
 
     { // HACK zone
         static SpellEntry righteousWeaponCoating_customSpell(*sSpellStore.LookupEntry(38299)),

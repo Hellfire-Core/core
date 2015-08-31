@@ -3687,6 +3687,14 @@ void SpellMgr::LoadSpellCustomAttr()
                 break;
         }
     }
+
+    for (uint32 i = 1; i < sSpellStore.GetNumRows(); ++i)
+    {
+        SpellEntry const * spell = sSpellStore.LookupEntry(i);
+        if (spell && spell->Category)
+            sSpellCategoryStore[spell->Category].insert(i);
+    }
+
     CreatureAI::FillAISpellEntry();
 }
 
