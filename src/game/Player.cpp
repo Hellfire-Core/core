@@ -2783,7 +2783,7 @@ void Player::InitStatsForLevel(bool reapplyMods)
 void Player::SendInitialSpells()
 {
     uint16 spellCount = 0;
-    WorldPacket data(SMSG_INITIAL_SPELLS, (1+2+4*m_spells.size()+2));
+    WorldPacket data(SMSG_INITIAL_SPELLS, (1+2+4*m_spells.size() /* + cooldowns size unknown now*/));
     data << uint8(0);
 
     size_t countPos = data.wpos();

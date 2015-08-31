@@ -142,7 +142,7 @@ std::string CooldownMgr::SendCooldownsDebug()
 void CooldownMgr::WriteCooldowns(ByteBuffer& bb)
 {
     uint16 size = m_SpellCooldowns.size() + m_ItemCooldowns.size();
-    bb.resize(size*14 + 2);
+    bb.reserve(size*14 + 2);
     bb << uint16(size);
     uint32 now = WorldTimer::getMSTime();
 
