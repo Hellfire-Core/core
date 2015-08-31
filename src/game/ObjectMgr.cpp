@@ -4422,7 +4422,7 @@ AreaTrigger const* ObjectMgr::GetMapEntranceTrigger(uint32 Map) const
 
 void ObjectMgr::SetHighestGuids()
 {
-    QueryResultAutoPtr result = RealmDataDatabase.Query("SELECT MAX(guid) FROM characters");
+    QueryResultAutoPtr result = RealmDataDatabase.Query("SELECT `LastCharacterGuid` from saved_variables");
     if (result)
         m_hiCharGuid = (*result)[0].GetUInt32()+1;
 
@@ -4552,6 +4552,7 @@ uint32 ObjectMgr::GenerateLowGuid(HighGuid guidhigh)
                 sLog.outLog(LOG_DEFAULT, "ERROR: Players guid overflow!! Can't continue, shutting down server. ");
                 World::StopNow(ERROR_EXIT_CODE);
             }
+            RealmDataDatabase.PExecute("UPDATE `saved_variables` SET `LastCharacterGuid = %u", m_hiCharGuid + 1);
             return m_hiCharGuid++;
         case HIGHGUID_GAMEOBJECT:
             if (m_hiGoGuid>=0x00FFFFFE)
