@@ -5132,6 +5132,8 @@ void Player::SetRegularAttackTime()
                 SetAttackTime(WeaponAttackType(i), BASE_ATTACK_TIME);
         }
     }
+    if (!GetWeaponForAttack(BASE_ATTACK))
+        SetAttackTime(BASE_ATTACK, BASE_ATTACK_TIME);
 }
 
 //skill+step, checking for max value
