@@ -1117,7 +1117,7 @@ bool GOUse_go_ethereum_prison(Player* player, GameObject* go)
         break;
     }
 
-    go->UseDoorOrButton(5*MINUTE*IN_MILISECONDS);
+    go->UseDoorOrButton(5*MINUTE);
 
     return true;
 }
