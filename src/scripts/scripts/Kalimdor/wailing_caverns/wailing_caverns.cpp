@@ -178,15 +178,24 @@ struct npc_disciple_of_naralexAI : public npc_escortAI
     {
         if (currentEvent != TYPE_NARALEX_PART3)
             npc_escortAI::UpdateAI(diff);
+        
+        if (potCooldown)     // 2 mins cooldown on healing potion
+        {
+            if (potionTimer.Expired(diff))
+                potCooldown = false;
+        }
 
         if (!pInstance)
             return;
-        if (eventTimer.Expired(diff))
+
+        if (!UpdateVictim())
         {
-            if (pInstance->GetData(currentEvent) == IN_PROGRESS)
+            if (eventTimer.Expired(diff))
             {
-                switch (currentEvent)
+                if (pInstance->GetData(currentEvent) == IN_PROGRESS)
                 {
+                    switch (currentEvent)
+                    {
                     case TYPE_NARALEX_PART1:
                         if (eventProgress == 1)
                         {
@@ -196,7 +205,7 @@ struct npc_disciple_of_naralexAI : public npc_escortAI
                             me->SummonCreature(NPC_DEVIATE_RAVAGER, -72.9506, 216.645, -93.6756, 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 5000);
                             eventTimer = 1;
                         }
-                    break;
+                        break;
                     case TYPE_NARALEX_PART2:
                         if (eventProgress == 1)
                         {
@@ -206,7 +215,7 @@ struct npc_disciple_of_naralexAI : public npc_escortAI
                             eventTimer = 30000;
                             me->SummonCreature(NPC_DEVIATE_VIPER, -61.5261, 273.676, -92.8442, 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 5000);
                             me->SummonCreature(NPC_DEVIATE_VIPER, -58.4658, 280.799, -92.8393, 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 5000);
-                            me->SummonCreature(NPC_DEVIATE_VIPER, -50.002,  278.578, -92.8442, 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 5000);
+                            me->SummonCreature(NPC_DEVIATE_VIPER, -50.002, 278.578, -92.8442, 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 5000);
                         }
                         else if (eventProgress == 2)
                         {
@@ -216,7 +225,7 @@ struct npc_disciple_of_naralexAI : public npc_escortAI
                                 me->RemoveAurasDueToSpell(SPELL_SERPENTINE_CLEANSING);
                             eventTimer = 1;
                         }
-                    break;
+                        break;
                     case TYPE_NARALEX_PART3:
                         switch (eventProgress)
                         {
@@ -312,19 +321,12 @@ struct npc_disciple_of_naralexAI : public npc_escortAI
                         }
                         if (eventProgress != 6 || pInstance->GetData(TYPE_MUTANUS_THE_DEVOURER) == DONE)
                             eventProgress++;
-                    break;
+                        break;
+                    }
                 }
             }
-        }
-
-        if(potCooldown)     // 2 mins cooldown on healing potion
-        {
-            if (potionTimer.Expired(diff))
-                potCooldown = false;
-        }
-
-        if(!UpdateVictim())
             return;
+        } // if !UpdateVictim()
 
         if (sleepTimer.Expired(diff))
         {
