@@ -5786,6 +5786,19 @@ void Player::CheckAreaExploreAndOutdoor()
     {
         if (!isGameMaster())
         {
+            if (sWorld.getConfig(CONFIG_VMAP_INDOOR_CHECK))
+            {
+                if (isOutdoor) // feral druid exiting bulding
+                {
+                    if (HasSpell(24866) && m_form == FORM_CAT)
+                        CastSpell(this,24866,true,NULL,GetAura(m_ShapeShiftFormSpellId,0));
+                    else if (HasSpell(17002) && m_form == FORM_CAT)
+                        CastSpell(this, 17002, true, NULL, GetAura(m_ShapeShiftFormSpellId, 0));
+                }
+                else
+                    RemoveAurasWithAttribute(SPELL_ATTR_OUTDOORS_ONLY, true);
+            }
+
             UpdateSpeed(MOVE_RUN, true);
             UpdateSpeed(MOVE_SWIM, true);
             UpdateSpeed(MOVE_FLIGHT, true);
@@ -5793,9 +5806,6 @@ void Player::CheckAreaExploreAndOutdoor()
 
         m_outdoors = isOutdoor;
     }
-
-    if (!isOutdoor && sWorld.getConfig(CONFIG_VMAP_INDOOR_CHECK) && !isGameMaster())
-        RemoveAurasWithAttribute(SPELL_ATTR_OUTDOORS_ONLY, true);
 
     if (areaFlag==0xffff)
         return;

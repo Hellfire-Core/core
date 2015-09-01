@@ -3869,9 +3869,9 @@ SpellCastResult Spell::CheckCast(bool strict)
             !m_caster->GetTerrain()->IsOutdoors(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ()))
             return SPELL_FAILED_ONLY_OUTDOORS;
 
-        if (GetSpellEntry()->Attributes & SPELL_ATTR_INDOORS_ONLY &&
+        /*if (GetSpellEntry()->Attributes & SPELL_ATTR_INDOORS_ONLY &&
             m_caster->GetTerrain()->IsOutdoors(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ()))
-            return SPELL_FAILED_ONLY_INDOORS;
+            return SPELL_FAILED_ONLY_INDOORS; UNUSED*/
     }
 
     if (GetSpellEntry()->AttributesEx6 & SPELL_ATTR_EX6_NOT_IN_RAID_INSTANCE && m_caster->GetInstanceId())

@@ -3590,14 +3590,10 @@ int32 Unit::GetTotalAuraModifier(AuraType auratype) const
 {
     int32 modifier = 0;
 
-    bool outdoors = true;
-    if (sWorld.getConfig(CONFIG_VMAP_INDOOR_CHECK))
-        outdoors = GetTerrain()->IsOutdoors(GetPositionX(),GetPositionY(),GetPositionZ());
 
     AuraList const& mTotalAuraList = GetAurasByType(auratype);
     for (AuraList::const_iterator i = mTotalAuraList.begin();i != mTotalAuraList.end(); ++i)
-        if(outdoors || !((*i)->GetSpellProto()->Attributes & SPELL_ATTR_OUTDOORS_ONLY))
-            modifier += (*i)->GetModifierValue();
+        modifier += (*i)->GetModifierValue();
 
     return modifier;
 }
@@ -3606,14 +3602,9 @@ float Unit::GetTotalAuraMultiplier(AuraType auratype) const
 {
     float multiplier = 1.0f;
 
-    bool outdoors = true;
-    if (sWorld.getConfig(CONFIG_VMAP_INDOOR_CHECK))
-        outdoors = GetTerrain()->IsOutdoors(GetPositionX(),GetPositionY(),GetPositionZ());
-
     AuraList const& mTotalAuraList = GetAurasByType(auratype);
     for (AuraList::const_iterator i = mTotalAuraList.begin();i != mTotalAuraList.end(); ++i)
-        if(outdoors || !((*i)->GetSpellProto()->Attributes & SPELL_ATTR_OUTDOORS_ONLY))
-            multiplier *= (100.0f + (*i)->GetModifierValue())/100.0f;
+        multiplier *= (100.0f + (*i)->GetModifierValue())/100.0f;
 
     return multiplier;
 }
@@ -3622,19 +3613,12 @@ int32 Unit::GetMaxPositiveAuraModifier(AuraType auratype) const
 {
     int32 modifier = 0;
 
-    bool outdoors = true;
-    if (sWorld.getConfig(CONFIG_VMAP_INDOOR_CHECK))
-        outdoors = GetTerrain()->IsOutdoors(GetPositionX(),GetPositionY(),GetPositionZ());
-
     AuraList const& mTotalAuraList = GetAurasByType(auratype);
     for (AuraList::const_iterator i = mTotalAuraList.begin();i != mTotalAuraList.end(); ++i)
     {
-        if(outdoors || !((*i)->GetSpellProto()->Attributes & SPELL_ATTR_OUTDOORS_ONLY))
-        {
-            int32 amount = (*i)->GetModifierValue();
-            if (amount > modifier)
-                modifier = amount;
-        }
+        int32 amount = (*i)->GetModifierValue();
+        if (amount > modifier)
+            modifier = amount;
     }
 
     return modifier;
