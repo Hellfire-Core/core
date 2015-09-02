@@ -1870,6 +1870,7 @@ void Spell::EffectDummy(uint32 i)
                             ((Player*)m_caster)->RemoveSpellCooldown(classspell, true);
                         }
                     }
+                    ((Player*)m_caster)->RemoveSpellCooldown(33395, true); // freeze (pets spell)
                     return;
                 }
                 case 32826:
