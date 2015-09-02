@@ -3472,8 +3472,25 @@ void Player::RemoveAllSpellCooldown()
     {
         for (CooldownMgr::CooldownList::const_iterator itr = m_CooldownMgr.m_ItemCooldowns.begin(); itr != m_CooldownMgr.m_ItemCooldowns.end(); ++itr)
         {
+            const ItemPrototype* ip = sObjectMgr.GetItemPrototype(itr->first);
+            if (!ip)
+                continue;
+
+            uint8 i;
+            for (i = 0; i < MAX_ITEM_PROTO_SPELLS; i++)
+            {
+                if (ip->Spells[i].SpellId != 0 &&
+                    (ip->Spells[i].SpellTrigger == ITEM_SPELLTRIGGER_ON_USE ||
+                    ip->Spells[i].SpellTrigger == ITEM_SPELLTRIGGER_ON_NO_DELAY_USE))
+                {
+                    break;
+                }
+            }
+            if (i == MAX_ITEM_PROTO_SPELLS)
+                continue;
+
             WorldPacket data(SMSG_CLEAR_COOLDOWN, (4 + 8));
-            data << uint32(itr->first);
+            data << uint32(ip->Spells[i].SpellId);
             data << uint64(GetGUID());
             SendPacketToSelf(&data);
         }
