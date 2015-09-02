@@ -503,7 +503,7 @@ void WorldSession::HandlePetCastSpellOpcode(WorldPacket& recvPacket)
 
     if (spellInfo->StartRecoveryCategory > 0) //Check if spell is affected by GCD
         if (caster->GetTypeId() == TYPEID_UNIT && 
-            _player->GetCooldownMgr().HasGlobalCooldown(spellInfo->StartRecoveryCategory))
+            _player->GetCooldownMgr().HasGlobalCooldown(PETS_GCD_CATEGORY))
         {
             caster->SendPetCastFail(spellid, SPELL_FAILED_NOT_READY);
             return;
