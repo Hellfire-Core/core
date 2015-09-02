@@ -336,7 +336,7 @@ void CharmInfo::HandleSpellActCommand(uint64 targetGUID, uint32 spellId)
     Player* plCharmer = m_unit->GetCharmerOrOwnerPlayerOrPlayerItself();
     // Global Cooldown, stop cast
     if (plCharmer && spellInfo->StartRecoveryCategory > 0 &&
-        plCharmer->GetCooldownMgr().HasGlobalCooldown(spellInfo->StartRecoveryCategory)) // PETS_GCD_CATEGORY?
+        plCharmer->GetCooldownMgr().HasGlobalCooldown(PETS_GCD_CATEGORY))
         return;
 
     for (uint32 i = 0; i < 3;i++)
