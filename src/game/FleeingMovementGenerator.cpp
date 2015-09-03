@@ -82,7 +82,6 @@ void FleeingMovementGenerator<UNIT>::Initialize(UNIT &unit)
 
     unit.StopMoving();
     unit.addUnitState(UNIT_STAT_FLEEING);
-    unit.SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FLEEING);
 }
 
 template<class UNIT>
@@ -106,6 +105,8 @@ template<class UNIT>
 void FleeingMovementGenerator<UNIT>::Finalize(UNIT &unit)
 {
     Interrupt(unit);
+
+    unit.clearUnitState(UNIT_STAT_FLEEING);
     unit.AddEvent(new AttackResumeEvent(unit), ATTACK_DISPLAY_DELAY);
 }
 
@@ -114,7 +115,6 @@ void FleeingMovementGenerator<UNIT>::Interrupt(UNIT &unit)
 {
     unit.StopMoving();
     unit.clearUnitState(UNIT_STAT_FLEEING);
-    unit.RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FLEEING);
 }
 
 template<class UNIT>
