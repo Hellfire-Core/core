@@ -2954,8 +2954,6 @@ void SpellMgr::LoadSpellCustomAttr()
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
                 else if (spellInfo->SpellFamilyFlags & 0x800000LL) // wf attack
                     spellInfo->AttributesEx2 |= SPELL_ATTR_EX2_TRIGGERED_CAN_TRIGGER; 
-                else if (spellInfo->AttributesEx == 0x0400 && spellInfo->AttributesEx4 == 0x0080)// lightning overload spells
-                    spellInfo->AttributesEx2 |= SPELL_ATTR_EX2_TRIGGERED_CAN_TRIGGER;
                 break;
             }
             case SPELLFAMILY_PALADIN:

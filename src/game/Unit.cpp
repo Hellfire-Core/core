@@ -6330,7 +6330,8 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
                 if (procSpell->SpellFamilyFlags & 0x0000000000000002LL)
                     ((Player*)this)->RemoveSpellCooldown(spellId);
 
-                CastSpell(pVictim, spellId, true, castItem, triggeredByAura);
+                CastSpell(pVictim, spellId, true, castItem, ( spellId == procSpell->Id ? triggeredByAura : NULL));
+                // LB can trigger LO, LO can trigger second LO, but second LO should be not allowed to trigger anything
 
                 if (cooldown && GetTypeId()==TYPEID_PLAYER)
                     ((Player*)this)->GetCooldownMgr().AddSpellCooldown(dummySpell->Id, cooldown * IN_MILISECONDS);
