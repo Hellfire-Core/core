@@ -254,11 +254,11 @@ struct npc_grimstoneAI : public npc_escortAI
         {
             if (Event_Timer <= diff)
             {
-                switch(EventPhase)
+                switch (EventPhase)
                 {
                 case 0:
                     DoScriptText(-1000001, me);//1
-                    DoGate(DATA_ARENA4,1);
+                    DoGate(DATA_ARENA4, 1);
                     Start(false, false);
                     CanWalk = true;
                     Event_Timer = 0;
@@ -271,7 +271,7 @@ struct npc_grimstoneAI : public npc_escortAI
                     Event_Timer = 2000;
                     break;
                 case 3:
-                    DoGate(DATA_ARENA1,0);
+                    DoGate(DATA_ARENA1, 0);
                     Event_Timer = 3000;
                     break;
                 case 4:
@@ -291,13 +291,13 @@ struct npc_grimstoneAI : public npc_escortAI
                     break;
                 case 7:
                     me->SetVisibility(VISIBILITY_ON);
-                    DoGate(DATA_ARENA1,1);
+                    DoGate(DATA_ARENA1, 1);
                     DoScriptText(-1000004, me);//4
                     CanWalk = true;
                     Event_Timer = 0;
                     break;
                 case 8:
-                    DoGate(DATA_ARENA2,0);
+                    DoGate(DATA_ARENA2, 0);
                     Event_Timer = 5000;
                     break;
                 case 9:
@@ -307,15 +307,17 @@ struct npc_grimstoneAI : public npc_escortAI
                     break;
                 case 10:
                     //if quest, complete
-                    DoGate(DATA_ARENA2,1);
-                    DoGate(DATA_ARENA3,0);
-                    DoGate(DATA_ARENA4,0);
+                    DoGate(DATA_ARENA2, 1);
+                    DoGate(DATA_ARENA3, 0);
+                    DoGate(DATA_ARENA4, 0);
                     CanWalk = true;
                     Event_Timer = 0;
                     break;
                 }
                 ++EventPhase;
             }
+            else
+                Event_Timer -= diff;
         }
 
         if (CanWalk)
