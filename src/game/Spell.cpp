@@ -2751,7 +2751,7 @@ uint64 Spell::handle_delayed(uint64 t_offset)
     { 
         // finish the spell if UpdatePointers() returned false, something wrong happened there 
         finish(false); 
-        return;
+        return 0;
     }
     uint64 next_time = 0;
 
