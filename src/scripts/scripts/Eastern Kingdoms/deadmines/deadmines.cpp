@@ -37,7 +37,9 @@ EndScriptData */
 
 #define GO_IRONCLAD_DOOR    16397
 #define GO_DEFIAS_CANNON    16398
-#define GO_DOOR_LEVER        101833
+#define GO_DOOR_LEVER       101833
+#define QUEST_FORTUNE       7938
+#define GO_MYSTERIOUS_CHEST 180024
 
 #define CANNON_BLAST_TIMER 3000
 #define PIRATES_DELAY_TIMER 1000
@@ -55,6 +57,7 @@ struct instance_deadmines : public ScriptedInstance
     uint32 State;
     uint32 CannonBlast_Timer;
     uint32 PiratesDelay_Timer;
+    bool MysteriousChestSpawned;
 
     void Initialize()
     {
@@ -62,6 +65,7 @@ struct instance_deadmines : public ScriptedInstance
         DefiasCannon = NULL;
         DoorLever =    NULL;
         State = CANNON_NOT_USED;
+        MysteriousChestSpawned = false;
     }
 
     virtual void Update(uint32 diff)
@@ -190,6 +194,15 @@ struct instance_deadmines : public ScriptedInstance
         data.SetOpcode(SMSG_PLAY_SOUND);
         data << uint32(sound);
         unit->BroadcastPacket(&data,false);
+    }
+
+    void OnPlayerEnter(Player* plr)
+    {
+        if (!MysteriousChestSpawned && plr->GetQuestStatus(QUEST_FORTUNE) == QUEST_STATUS_INCOMPLETE)
+        {
+            plr->SummonGameObject(GO_MYSTERIOUS_CHEST,-30.4f,-374.8f,59.3f,6.1f,0.0f,0.0f,0.0f,0.0f,0);
+            MysteriousChestSpawned = true;
+        }
     }
 };
 
