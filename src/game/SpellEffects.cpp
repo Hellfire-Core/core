@@ -3901,6 +3901,7 @@ void Spell::EffectSummonChangeItem(uint32 i)
                 m_targets.setItemTarget(NULL);
 
             m_CastItem = NULL;
+            m_castItemGUID = 0;
 
             player->StoreItem(dest, pNewItem, true);
             player->ItemAddedQuestCheck(newitemid, 1);
@@ -3920,6 +3921,7 @@ void Spell::EffectSummonChangeItem(uint32 i)
                 m_targets.setItemTarget(NULL);
 
             m_CastItem = NULL;
+            m_castItemGUID = 0;
 
             player->BankItem(dest, pNewItem, true);
             return;
@@ -3938,6 +3940,7 @@ void Spell::EffectSummonChangeItem(uint32 i)
                 m_targets.setItemTarget(NULL);
 
             m_CastItem = NULL;
+            m_castItemGUID = 0;
 
             player->EquipItem(dest, pNewItem, true);
             player->AutoUnequipOffhandIfNeed();

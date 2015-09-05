@@ -479,7 +479,7 @@ class Spell
         Unit* GetOriginalCaster() const { return m_originalCaster; }
         int32 GetPowerCost() const { return m_powerCost; }
 
-        void UpdatePointers();                              // must be used at call Spell code after time delay (non triggered spell cast/update spell call/etc)
+        bool UpdatePointers();                              // must be used at call Spell code after time delay (non triggered spell cast/update spell call/etc)
 
         bool IsAffectedBy(SpellEntry const *spellInfo, uint32 effectId);
 

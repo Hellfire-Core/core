@@ -2500,7 +2500,12 @@ void Spell::cast(bool skipCheck)
         return;
 
     // update pointers base at GUIDs to prevent access to non-existed already object
-    UpdatePointers();
+    if (!UpdatePointers()) 
+    { 
+        // finish the spell if UpdatePointers() returned false, something wrong happened there 
+        finish(false); 
+        return;
+    }
 
     if (!IsTriggeredSpell()) // reflective shields, molten armor etc. are not checked for it. They should ignore stealth. (as of reflective shields ignore stealth 100% sure)
     {
@@ -2742,7 +2747,12 @@ void Spell::handle_immediate()
 
 uint64 Spell::handle_delayed(uint64 t_offset)
 {
-    UpdatePointers();
+    if (!UpdatePointers()) 
+    { 
+        // finish the spell if UpdatePointers() returned false, something wrong happened there 
+        finish(false); 
+        return;
+    }
     uint64 next_time = 0;
 
     if (!m_immediateHandled)
@@ -2954,7 +2964,12 @@ void Spell::SendSpellCooldown()
 void Spell::update(uint32 difftime)
 {
     // update pointers based at it's GUIDs
-    UpdatePointers();
+    if (!UpdatePointers()) 
+    { 
+        // finish the spell if UpdatePointers() returned false, something wrong happened there 
+        finish(false); 
+        return;
+    }
 
     if (m_targets.getUnitTargetGUID() && !m_targets.getUnitTarget())
     {
@@ -3645,6 +3660,7 @@ void Spell::TakeCastItem()
             m_targets.setItemTarget(NULL);
 
         m_CastItem = NULL;
+        m_castItemGUID = 0;
     }
 }
 
@@ -3743,6 +3759,7 @@ void Spell::TakeReagents()
                 }
 
                 m_CastItem = NULL;
+                m_castItemGUID = 0;
             }
         }
 
@@ -5477,7 +5494,7 @@ void Spell::DelayedChannel()
     SendChannelUpdate(m_timer.GetTimeLeft());
 }
 
-void Spell::UpdatePointers()
+bool Spell::UpdatePointers()
 {
     if (m_originalCasterGUID == m_caster->GetGUID())
         m_originalCaster = m_caster;
@@ -5488,9 +5505,15 @@ void Spell::UpdatePointers()
     }
 
     if (m_castItemGUID && m_caster->GetTypeId() == TYPEID_PLAYER)
+    {
         m_CastItem = ((Player*)m_caster)->GetItemByGuid(m_castItemGUID);
+        // cast item not found, somehow the item is no longer where we expected 
+        if (!m_CastItem) 
+            return false;
+    }
 
     m_targets.Update(m_caster);
+    return true;
 }
 
 bool Spell::IsAffectedBy(SpellEntry const *spellInfo, uint32 effectId)
