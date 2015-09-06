@@ -573,10 +573,14 @@ struct feather_vortexAI : public ScriptedAI
 {
     feather_vortexAI(Creature *c) : ScriptedAI(c) {}
 
+    Timer TargetChangeTimer;
+
     void Reset() 
     {
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         me->SetSpeed(MOVE_RUN, 1.0f);
+
+        TargetChangeTimer.Reset(1);
     }
 
     void EnterCombat(Unit* ) {
@@ -595,10 +599,15 @@ struct feather_vortexAI : public ScriptedAI
     void UpdateAI(const uint32 diff)
     {
         //if the vortex reach the target, it change his target to another player
-        if(!m_creature->getVictim() || m_creature->IsWithinMeleeRange(m_creature->getVictim()) || !m_creature->getVictim()->isAlive())
+        if (!m_creature->getVictim() ||
+            m_creature->IsWithinMeleeRange(m_creature->getVictim()) ||
+            !m_creature->getVictim()->isAlive() ||
+            TargetChangeTimer.Expired(diff))
         {
-            if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0))
+            if (Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0))
                 AttackStart(target);
+
+            TargetChangeTimer.Reset(urand(5000, 15000));
         }
     }
 };
