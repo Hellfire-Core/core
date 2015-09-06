@@ -263,7 +263,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
         data << mover->GetPackGUID();
         data << mover->GetUnitStateMgr().GetCounter(UNIT_ACTION_ROOT);
         SendPacket(&data);
-        sLog.outLog(LOG_CHEAT, "Player %N (GUID:%u) moving when rooted, position %f %f %f %u", 
+        sLog.outLog(LOG_CHEAT, "Player %s (GUID:%u) moving when rooted, position %f %f %f %u",
             _player->GetName(), _player->GetGUIDLow(), movementInfo.pos.x, movementInfo.pos.y, movementInfo.pos.z, _player->GetMapId());
     }
 }
