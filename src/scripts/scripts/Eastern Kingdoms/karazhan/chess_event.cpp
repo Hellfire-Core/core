@@ -4148,6 +4148,7 @@ bool GossipSelect_npc_chesspiece(Player* player, Creature* _Creature, uint32 sen
         player->CastSpell(_Creature, SPELL_POSSES_CHESSPIECE, true);
     }
 
+    player->TeleportTo(_Creature->GetMapId(), -11108.2, -1841.56, 229.625, 5.39745);
     player->CLOSE_GOSSIP_MENU();
 
     return true;
