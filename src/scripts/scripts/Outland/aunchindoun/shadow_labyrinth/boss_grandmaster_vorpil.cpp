@@ -78,13 +78,13 @@ struct mob_voidtravelerAI : public ScriptedAI
 
     bool HeroicMode;
     uint64 VorpilGUID;
-    Timer move;
+    Timer MoveTimer;
     bool sacrificed;
 
     void Reset()
     {
         VorpilGUID = 0;
-        move = 0;
+        MoveTimer.Reset(1);
         sacrificed = false;
         me->setActive(true);
     }
@@ -101,7 +101,7 @@ struct mob_voidtravelerAI : public ScriptedAI
         }
         */
 
-        if (move.Expired(diff))
+        if (MoveTimer.Expired(diff))
         {
             Unit *Vorpil = Unit::GetUnit(*me, VorpilGUID);
             if(!Vorpil)
@@ -124,7 +124,7 @@ struct mob_voidtravelerAI : public ScriptedAI
             {
                 DoCast(me, SPELL_SACRIFICE, false);
                 sacrificed = true;
-                move = 500;
+                MoveTimer = 500;
                 return;
             }
 
@@ -133,7 +133,7 @@ struct mob_voidtravelerAI : public ScriptedAI
                 me->DealDamage(me, me->GetMaxHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
                 return;
             }
-            move = 1000;
+            MoveTimer = 1000;
         }
     }
 };
