@@ -220,8 +220,21 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
             case CHAT_MSG_WHISPER:
             case CHAT_MSG_WHISPER_INFORM:
             case CHAT_MSG_REPLY:
-                mask = DENY_WHISP;
+            {
+                if (!normalizePlayerName(to))
+                {
+                    WorldPacket data(SMSG_CHAT_PLAYER_NOT_FOUND, (to.size() + 1));
+                    data << to;
+                    SendPacket(&data);
+                    break;
+                }
+                Player *target = sObjectMgr.GetPlayer(to.c_str());
+
+                if (target && !target->isGameMaster())
+                    mask = DENY_WHISP;
+
                 break;
+            }
             case CHAT_MSG_CHANNEL:
             case CHAT_MSG_CHANNEL_JOIN:
             case CHAT_MSG_CHANNEL_LEAVE:
@@ -296,13 +309,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
             if (ChatHandler(this).ContainsNotAllowedSigns(msg))
                 return;
 
-            if (!normalizePlayerName(to))
-            {
-                WorldPacket data(SMSG_CHAT_PLAYER_NOT_FOUND, (to.size()+1));
-                data<<to;
-                SendPacket(&data);
-                break;
-            }
+
 
             Player *player = sObjectMgr.GetPlayer(to.c_str());
             if (!player ||
