@@ -81,6 +81,8 @@ struct boss_rage_winterchillAI : public hyjal_trashAI
         Enrage_Timer.Reset(600000);
 
         me->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_MOD_FEAR, true);
+        me->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_MOD_STUN, true);
+        me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_STUN, true);
 
         if(pInstance && IsEvent)
             pInstance->SetData(DATA_RAGEWINTERCHILLEVENT, NOT_STARTED);
