@@ -1228,6 +1228,7 @@ enum
     QUEST_THE_EXORCIM          = 10935,
     NPC_COLONEL_JULES          = 22432,
     NPC_DARKNESS_RELEASED      = 22507,
+    NPC_FOUL_PURGE             = 22506,
 
     SPELL_EXORCIM              = 39277,
     SPELL_EXORCIM2             = 39278,
@@ -1300,7 +1301,7 @@ struct npc_anchorite_baradaAI : public ScriptedAI
                 case 2:DoScriptText(SAY_BARADA1, me,0);return 5000;
                 case 3:DoScriptText(SAY_BARADA2, me,0);return 3000;
                 case 4:DoScriptText(SAY_COLONEL1, Colonel, 0);return 3000;
-                case 5:me->SetWalk(true);;return 3000;
+                case 5:me->SetWalk(true);return 3000;
                 case 6:me->GetMotionMaster()->MovePoint(0, P[7].x, P[7].y, P[7].z);return 2000;
                 case 7:me->GetMotionMaster()->MovePoint(0, P[8].x, P[8].y, P[8].z);return 2100;
                 case 8:me->SetFacingToObject(Colonel);return 2000;
@@ -1391,6 +1392,14 @@ struct npc_anchorite_baradaAI : public ScriptedAI
         return 1;
     }
 
+    void SpellHit(Unit* who, SpellEntry* spell)
+    {
+        //heal Barada and player if barada is targeted by beads
+        if (spell->Id == 39371)
+        {
+            who->CastSpell(me, 39322, true);
+        }
+    }
     void JustDied(Unit* who)
     {
         if (Creature* Colonel = GetClosestCreatureWithEntry(me, NPC_COLONEL_JULES, 15.0f))
@@ -1405,7 +1414,7 @@ struct npc_anchorite_baradaAI : public ScriptedAI
         if (StepsTimer.Expired(diff))
         {
             if (Exorcim)
-                StepsTimer = NextStep(++Steps);
+                StepsTimer.Reset(NextStep(++Steps));
         }
     }
 };
@@ -1467,6 +1476,7 @@ struct npc_darkness_releasedAI : public ScriptedAI
         DoCast(me, SPELL_AURA_ME);
         me->SetLevitate(true);
         me->SetSpeed(MOVE_FLIGHT, 0.08f);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
         switch(urand(0,3))
         {
             case 0: me->GetMotionMaster()->MovePoint(0, M[0].x, M[0].y, M[0].z); break;
@@ -1483,6 +1493,27 @@ struct npc_darkness_releasedAI : public ScriptedAI
 
     void AttackedBy(Unit* who) {}
     void AttackStart(Unit* who) {}
+    
+    void SpellHit(Unit* who, SpellEntry* spell)
+    {
+        //FIXME: SpellHit is not called for using those beads, idk why
+
+        //kill all dark stuff around when beads target one of those
+        if (spell->Id == 39371)
+        {
+            while (Unit* darkness = GetClosestCreatureWithEntry(me, NPC_DARKNESS_RELEASED, 50.0f, true))
+            {
+                who->DealDamage(darkness, darkness->GetHealth(), SPELL_DIRECT_DAMAGE, SPELL_SCHOOL_MASK_HOLY, spell, false);
+            }
+
+            while (Unit* ooze = GetClosestCreatureWithEntry(me, NPC_FOUL_PURGE, 50.0f, true))
+            {
+                who->DealDamage(ooze, ooze->GetHealth(), SPELL_DIRECT_DAMAGE, SPELL_SCHOOL_MASK_HOLY, spell, false);
+            }
+
+            me->DealDamage(me, me->GetHealth(), SPELL_DIRECT_DAMAGE, SPELL_SCHOOL_MASK_HOLY, spell, false);
+        }
+    }
 
     void JustDied(Unit* who)
     {
@@ -1538,7 +1569,6 @@ struct npc_foul_purgeAI : public ScriptedAI
     {
         if (Creature* Bara = GetClosestCreatureWithEntry(me, NPC_BARADA, 15.0f))
         {
-            me->GetMotionMaster()->MovePoint(0, Bara->GetPositionX(), Bara->GetPositionY(), Bara->GetPositionZ());
             AttackStart(Bara);
         }
         ChTimer = 4000;
@@ -1551,6 +1581,27 @@ struct npc_foul_purgeAI : public ScriptedAI
     void JustDied(Unit* who)
     {
         me->RemoveCorpse();
+    }
+
+    void SpellHit(Unit* who, SpellEntry* spell)
+    {
+        //FIXME: SpellHit is not called for using those beads, idk why
+
+        //kill all fiends around after using those quest beads on any darkness released
+        if (spell->Id == 39371)
+        {
+            while (Unit* darkness = GetClosestCreatureWithEntry(me, NPC_DARKNESS_RELEASED, 50.0f, true))
+            {
+                who->DealDamage(darkness, darkness->GetHealth(), SPELL_DIRECT_DAMAGE, SPELL_SCHOOL_MASK_HOLY, spell, false);
+            }
+
+            while (Unit* ooze = GetClosestCreatureWithEntry(me, NPC_FOUL_PURGE, 50.0f, true))
+            {
+                who->DealDamage(ooze, ooze->GetHealth(), SPELL_DIRECT_DAMAGE, SPELL_SCHOOL_MASK_HOLY, spell, false);
+            }
+
+            me->DealDamage(me, me->GetHealth(), SPELL_DIRECT_DAMAGE, SPELL_SCHOOL_MASK_HOLY, spell, false);
+        }
     }
 
     void UpdateAI(const uint32 diff)
@@ -1957,7 +2008,7 @@ struct npc_pathaleon_imageAI : public ScriptedAI
                 return 60000;
             case 10:
                 me->setDeathState(CORPSE);
-            default: return 0;
+            default: return 1;
         }
     }
 
@@ -1966,7 +2017,7 @@ struct npc_pathaleon_imageAI : public ScriptedAI
         if (StepsTimer.Expired(diff))
         {
             if (Event)
-                StepsTimer = NextStep(++Steps);
+                StepsTimer.Reset(NextStep(++Steps));
         }
 
         if (SumTimer.Expired(diff))
