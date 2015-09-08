@@ -6154,8 +6154,8 @@ void Spell::TriggerGlobalCooldown()
     if (!owner)
         return;
     int32 gcd = GetSpellEntry()->StartRecoveryTime;
-    if (!gcd && m_caster->GetTypeId() != TYPEID_PLAYER)
-        gcd = MAX_GCD; // force pet spells to have gcd (enslave abusing)
+    if (!gcd && m_caster->GetTypeId() != TYPEID_PLAYER && !m_caster->ToTotem())
+        gcd = MAX_GCD; // force pet spells to have gcd (enslave/MC abusing)
 
     if (!gcd)
         return;
