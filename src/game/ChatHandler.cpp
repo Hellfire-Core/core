@@ -77,27 +77,27 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
     std::string msg = "";
     std::string to = "";
 
-    switch (type)
+    if (type == CHAT_MSG_WHISPER)
     {
-        case CHAT_MSG_WHISPER:
-            recv_data >> to;
-            // no-break
-        case CHAT_MSG_CHANNEL:
-            if (type != CHAT_MSG_WHISPER)
-                recv_data >> channel;
-            // no-break
-        default:
+        recv_data >> to;
+        if (!normalizePlayerName(to))
         {
-            recv_data >> msg;
-            if (type != CHAT_MSG_AFK && type != CHAT_MSG_DND)
-            {
-                if (msg.empty())
-                    return;
-
-                if (ChatHandler(this).ParseCommands(msg.c_str()) > 0)
-                    return;
-            }
+            WorldPacket data(SMSG_CHAT_PLAYER_NOT_FOUND, (to.size() + 1));
+            data << to;
+            SendPacket(&data);
         }
+    }
+    else if(type == CHAT_MSG_CHANNEL)
+        recv_data >> channel;
+
+    recv_data >> msg;
+    if (type != CHAT_MSG_AFK && type != CHAT_MSG_DND)
+    {
+        if (msg.empty())
+            return;
+
+        if (ChatHandler(this).ParseCommands(msg.c_str()) > 0)
+            return;
     }
 
     // prevent talking at unknown language (cheating)
@@ -221,15 +221,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
             case CHAT_MSG_WHISPER_INFORM:
             case CHAT_MSG_REPLY:
             {
-                if (!normalizePlayerName(to))
-                {
-                    WorldPacket data(SMSG_CHAT_PLAYER_NOT_FOUND, (to.size() + 1));
-                    data << to;
-                    SendPacket(&data);
-                    break;
-                }
                 Player *target = sObjectMgr.GetPlayer(to.c_str());
-
                 if (target && !target->isGameMaster())
                     mask = DENY_WHISP;
 
@@ -308,8 +300,6 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
 
             if (ChatHandler(this).ContainsNotAllowedSigns(msg))
                 return;
-
-
 
             Player *player = sObjectMgr.GetPlayer(to.c_str());
             if (!player ||
