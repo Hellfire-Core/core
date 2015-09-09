@@ -3882,7 +3882,7 @@ SpellCastResult Spell::CheckCast(bool strict)
             return SPELL_FAILED_MOVING;
     }
 
-    if (m_caster->GetTypeId() == TYPEID_PLAYER && !((Player*)m_caster)->isGameMaster() && sWorld.getConfig(CONFIG_VMAP_INDOOR_CHECK))
+    if (!IsTriggeredSpell() && m_caster->GetTypeId() == TYPEID_PLAYER && !((Player*)m_caster)->isGameMaster() && sWorld.getConfig(CONFIG_VMAP_INDOOR_CHECK))
     {
         if (GetSpellEntry()->Attributes & SPELL_ATTR_OUTDOORS_ONLY &&
             !m_caster->GetTerrain()->IsOutdoors(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ()))

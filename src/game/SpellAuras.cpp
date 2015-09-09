@@ -6475,15 +6475,6 @@ void Aura::HandleShapeshiftBoosts(bool apply)
                 if (!spellInfo || !(spellInfo->Attributes & (SPELL_ATTR_PASSIVE | SPELL_ATTR_UNK7)) || itr->second.disabled)
                     continue;
 
-                bool outdoor = true;
-                if (sWorld.getConfig(CONFIG_VMAP_INDOOR_CHECK))
-                    outdoor = m_target->GetTerrain()->IsOutdoors(m_target->GetPositionX(), m_target->GetPositionY(), m_target->GetPositionZ());
-                //if (outdoor && spellInfo->Attributes & SPELL_ATTR_INDOORS_ONLY)
-                //    continue; UNUSED
-
-                if (!outdoor && spellInfo->Attributes & SPELL_ATTR_OUTDOORS_ONLY)
-                    continue;
-
                 if (spellInfo->Stances & (1<<form))
                     m_target->CastSpell(m_target, itr->first, true, NULL, this);
             }
