@@ -512,11 +512,6 @@ void WorldSession::HandlePetCastSpellOpcode(WorldPacket& recvPacket)
     SpellCastTargets targets;
 
     recvPacket >> targets.ReadForCaster(caster);
-    if (spellInfo->Targets && (spellInfo->Targets != targets.m_targetMask))
-    {
-        sLog.outLog(LOG_DEFAULT, "HandlePetCastSpellOpcode: possibly malformed packet from player %s %u (target mask %u should be %u) spell %u",
-            _player->GetName(), _player->GetGUIDLow(), targets.m_targetMask, spellInfo->Targets, spellid);
-    }
 
     uint64 charmerGuid = caster->isCharmed() ? caster->GetCharmerGUID() : 0;
     Spell *spell = new Spell(caster, spellInfo, spellid == 33395, charmerGuid); // water elemental can cast freeze as triggered

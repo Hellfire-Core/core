@@ -355,11 +355,6 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
     // client provided targets
     SpellCastTargets targets;
     recvPacket >> targets.ReadForCaster(_player);
-    if (spellInfo->Targets && (spellInfo->Targets != targets.m_targetMask))
-    {
-        sLog.outLog(LOG_DEFAULT, "HandleCastSpellOpcode: possibly malformed packet from player %s %u (target mask %u should be %u) spell %u",
-            _player->GetName(), _player->GetGUIDLow(), targets.m_targetMask, spellInfo->Targets, spellId);
-    }
 
     // auto-selection buff level base at target level (in spellInfo)
     if (Unit* target = targets.getUnitTarget())
