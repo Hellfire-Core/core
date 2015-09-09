@@ -1588,6 +1588,7 @@ class HELLGROUND_IMPORT_EXPORT Unit : public WorldObject
             m_reducedThreatPercent = pct;
             m_misdirectionTargetGUID = guid;
         }
+
         uint32 GetReducedThreatPercent() { return m_reducedThreatPercent; }
         Unit *GetMisdirectionTarget() { return m_misdirectionTargetGUID ? GetUnit(*this, m_misdirectionTargetGUID) : NULL; }
 

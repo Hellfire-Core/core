@@ -434,6 +434,8 @@ void ThreatManager::clearReferences()
 
 //============================================================
 
+#define MISDIRECTION_TRIGGER_SPELL 35079
+
 void ThreatManager::addThreat(Unit* pVictim, float pThreat, SpellSchoolMask schoolMask, SpellEntry const *pThreatSpell)
 {
     //function deals with adding threat and adding players and pets into ThreatList
@@ -460,12 +462,14 @@ void ThreatManager::addThreat(Unit* pVictim, float pThreat, SpellSchoolMask scho
 
     // must check > 0.0f, otherwise dead loop
     if (threat > 0.0f && pVictim->GetReducedThreatPercent())
-    {
-        float reducedThreat = threat * pVictim->GetReducedThreatPercent() / 100;
-        threat -= reducedThreat;
         if (Unit *unit = pVictim->GetMisdirectionTarget())
-            _addThreat(unit, reducedThreat);
-    }
+            if (unit->GetAuraByCasterSpell(MISDIRECTION_TRIGGER_SPELL, pVictim->GetGUID()))
+            {
+                float reducedThreat = threat * pVictim->GetReducedThreatPercent() / 100;
+                threat -= reducedThreat;
+
+                _addThreat(unit, reducedThreat);
+            }
 
     _addThreat(pVictim, threat);
 }
