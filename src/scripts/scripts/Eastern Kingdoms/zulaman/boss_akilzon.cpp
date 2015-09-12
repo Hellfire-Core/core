@@ -95,6 +95,12 @@ struct boss_akilzonAI : public ScriptedAI
 
         SetWeather(WEATHER_STATE_FINE, 0.0f);
 
+        me->ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_INTERRUPT_CAST, true);
+        me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_STUN, true);
+        me->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_MOD_FEAR, true);
+        me->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_MOD_SILENCE, true);
+        me->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_MOD_STUN, true);
+
         checkTimer = 3000;
     }
 
@@ -229,7 +235,7 @@ struct boss_akilzonAI : public ScriptedAI
         if (isRaining && ElectricalStorm_Timer.GetTimeLeft() > 50000)
         {
             SetWeather(WEATHER_STATE_FINE, 0.0f);
-            SummonEagles_Timer = 13000;
+            SummonEagles_Timer.Reset(13000);
             isRaining = false;
         }
 
@@ -250,7 +256,7 @@ struct boss_akilzonAI : public ScriptedAI
             m_creature->CastSpell(target, SPELL_ELECTRICAL_STORM, false);
 
             ElectricalStorm_Timer = 60000;
-            StaticDisruption_Timer = 10000;
+            StaticDisruption_Timer.Reset(10000);
         }
 
 
