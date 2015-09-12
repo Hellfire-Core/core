@@ -282,7 +282,6 @@ struct boss_nightbaneAI : public ScriptedAI
     {
         DoYell(YELL_FLY_PHASE, LANG_UNIVERSAL, NULL);
 
-     //   me->SetReactState(REACT_PASSIVE);
         DoResetThreat();
         m_creature->InterruptSpell(CURRENT_GENERIC_SPELL);
         m_creature->HandleEmoteCommand(EMOTE_ONESHOT_LIFTOFF);
@@ -440,7 +439,7 @@ struct boss_nightbaneAI : public ScriptedAI
             {
                 if (Unit* target = SelectUnit(SELECT_TARGET_FARTHEST, 0, GetSpellMaxRange(SPELL_FIREBALL_BARRAGE), true, uint64(0), 40.0f))
                     DoCast(target, SPELL_FIREBALL_BARRAGE);
-                FireballBarrageTimer = 20000; //Timer
+                FireballBarrageTimer = 5000; //Timer
             }
 
             if (FlyTimer.Expired(diff)) //landing
@@ -450,6 +449,7 @@ struct boss_nightbaneAI : public ScriptedAI
                 else
                     DoYell(YELL_LAND_PHASE_2, LANG_UNIVERSAL, NULL);
 
+                DoResetThreat();
                 m_creature->GetMotionMaster()->Clear(false);
                 m_creature->GetMotionMaster()->MovePoint(3, IntroWay[3][0], IntroWay[3][1], IntroWay[3][2]);
 
