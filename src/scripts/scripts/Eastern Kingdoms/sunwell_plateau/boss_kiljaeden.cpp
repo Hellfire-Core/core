@@ -626,20 +626,26 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
     {
         DoScriptText(RAND(SAY_KJ_REFLECTION1, SAY_KJ_REFLECTION2), m_creature);
 
-        DoCast(m_creature, SPELL_SINISTER_REFLECTION, true);
+        //DoCast(m_creature, SPELL_SINISTER_REFLECTION, true);
         for (uint8 i = 0; i < 4; i++)
         {
             float x, y, z;
             Unit* target;
             for (uint8 z = 0; z < 6; ++z)
             {
-                target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true);
-                if (target && !target->HasAura(SPELL_VENGEANCE_OF_THE_BLUE_FLIGHT, 0)) break;
+                target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true)
+                    ;
+                if (target && !target->HasAura(SPELL_VENGEANCE_OF_THE_BLUE_FLIGHT, 0))
+                    break;
             }
             target->GetPosition(x, y, z);
             Creature* SinisterReflection = m_creature->SummonCreature(CREATURE_SINISTER_REFLECTION, x, y, z, 0, TEMPSUMMON_CORPSE_DESPAWN, 0);
             if (SinisterReflection)
+            {
+                SinisterReflection->CastCustomSpell(SPELL_SINISTER_REFLECTION, SPELLVALUE_MAX_TARGETS, 1, false);
                 SinisterReflection->AI()->AttackStart(target);
+            }
+
         }
     }
 
@@ -683,8 +689,22 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                     {
                         if (me->IsNonMeleeSpellCast(false))
                             break;
-                        m_creature->CastSpell(m_creature->getVictim(), SPELL_SOUL_FLAY, false);
-                        m_creature->getVictim()->CastSpell(m_creature->getVictim(), SPELL_SOUL_FLAY_SLOW, true);
+                        randomPlayer = NULL;
+                        randomPlayer = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true);
+                        if (!randomPlayer)
+                            randomPlayer = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, false); // attack pets or totems or whateva~
+
+                        if (randomPlayer)
+                        {
+                            m_creature->CastSpell(randomPlayer, SPELL_SOUL_FLAY, false);
+                            m_creature->getVictim()->CastSpell(randomPlayer, SPELL_SOUL_FLAY_SLOW, true);
+                        }
+                        else
+                        {
+                            me->Say("#######DEBUG####### This should not happen in combat. TIMER_SOUL_FLAY, notarget. Report this on the forum please.",0,0);
+                        }
+
+
                         _Timer[TIMER_SOUL_FLAY] = 4000;
                         
                     }
@@ -694,6 +714,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                     {
                         for (uint8 z = 0; z < 6; ++z)
                         {
+                            randomPlayer = NULL;
                             randomPlayer = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true);
                             if (randomPlayer && !randomPlayer->HasAura(SPELL_VENGEANCE_OF_THE_BLUE_FLIGHT, 0))
                                 break;
@@ -823,7 +844,6 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
         {
             if (Phase == PHASE_NORMAL && ((m_creature->GetHealth() * 100 / m_creature->GetMaxHealth()) < 85))
             {
-                TimerIsDeactiveted[TIMER_SOUL_FLAY] = true;
                 CastSinisterReflection();
                 DoScriptText(SAY_KJ_PHASE3, m_creature);
                 Phase = PHASE_DARKNESS;
