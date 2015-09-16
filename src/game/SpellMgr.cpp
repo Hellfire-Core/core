@@ -3678,6 +3678,9 @@ void SpellMgr::LoadSpellCustomAttr()
                 // Feral charge? - unaffected    
                 spellInfo->AttributesCu |= SPELL_ATTR_CU_FAKE_DELAY;
                 break;
+            case 30834: // Infernal Relay
+                spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_TARGET_ANY;
+                break;
             default:
                 break;
         }
