@@ -627,26 +627,29 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
         DoScriptText(RAND(SAY_KJ_REFLECTION1, SAY_KJ_REFLECTION2), m_creature);
 
         //DoCast(m_creature, SPELL_SINISTER_REFLECTION, true);
+        float x, y, z;
+        Unit* target;
+        //for (uint8 z = 0; z < 6; ++z)
+        //{
+        target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true);
+        //  if (target && !target->HasAura(SPELL_VENGEANCE_OF_THE_BLUE_FLIGHT, 0))
+        //    break;
+        //}
         for (uint8 i = 0; i < 4; i++)
         {
-            float x, y, z;
-            Unit* target;
-            for (uint8 z = 0; z < 6; ++z)
-            {
-                target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true)
-                    ;
-                if (target && !target->HasAura(SPELL_VENGEANCE_OF_THE_BLUE_FLIGHT, 0))
-                    break;
-            }
             target->GetPosition(x, y, z);
             Creature* SinisterReflection = m_creature->SummonCreature(CREATURE_SINISTER_REFLECTION, x, y, z, 0, TEMPSUMMON_CORPSE_DESPAWN, 0);
             if (SinisterReflection)
             {
-                SinisterReflection->CastCustomSpell(SPELL_SINISTER_REFLECTION, SPELLVALUE_MAX_TARGETS, 1, false);
-                SinisterReflection->AI()->AttackStart(target);
-            }
+                SinisterReflection->setFaction(me->getFaction());
+                SinisterReflection->SetFacingToObject(target);
+                target->CastSpell(SinisterReflection, SPELL_SINISTER_REFLECTION, true);
+                //SinisterReflection->CastCustomSpell(SPELL_SINISTER_REFLECTION, SPELLVALUE_MAX_TARGETS, 1, target);
 
+            }
         }
+
+
     }
 
     void UpdateAI(const uint32 diff)
@@ -1269,14 +1272,18 @@ struct mob_volatile_felfire_fiendAI : public ScriptedAI
             DoZoneInCombat(100.0f);
         }
 
-        if (WaitTimer.Passed() || !UpdateVictim())
+        if (!WaitTimer.Passed() || !UpdateVictim())
             return;
 
 
         if (!LockedTarget)
         {
-            m_creature->AddThreat(m_creature->getVictim(), 10000000.0f);
-            LockedTarget = true;
+            Unit* random = SelectUnit(SELECT_TARGET_RANDOM, 0, 28.0f, true, false);
+            if (random)
+            {
+                me->AddThreat(random, 10000.0f);
+                LockedTarget = true;
+            }
         }
 
         if (ExplodeTimer.Expired(diff) || m_creature->IsWithinDistInMap(m_creature->getVictim(), 3)) // Explode if it's close enough to it's target
@@ -1425,13 +1432,15 @@ struct mob_sinster_reflectionAI : public ScriptedAI
     mob_sinster_reflectionAI(Creature* c) : ScriptedAI(c) {}
 
     uint8 Class;
-    Timer Timer[3];
+    Timer _Timer[3];
+    Timer Wait;
 
     void Reset()
     {
-        Timer[0].Reset(1);
-        Timer[1].Reset(1);
-        Timer[2].Reset(1);
+        _Timer[0].Reset(1);
+        _Timer[1].Reset(1);
+        _Timer[2].Reset(1);
+        Wait.Reset(5000);
         Class = 0;
     }
 
@@ -1466,106 +1475,111 @@ struct mob_sinster_reflectionAI : public ScriptedAI
             }
         }
 
+        if (!Wait.Expired(diff))
+            return;
+        if (!UpdateVictim())
+            return;
+
         switch (Class)
         {
             case CLASS_DRUID:
-                if (Timer[1].Expired(diff))
+                if (_Timer[1].Expired(diff))
                 {
                     DoCast(m_creature->getVictim(), SPELL_SR_MOONFIRE, false);
-                    Timer[1] = 3000;
+                    _Timer[1] = 3000;
                 }
                 DoMeleeAttackIfReady();
                 break;
             case CLASS_HUNTER:
-                if (Timer[1].Expired(diff))
+                if (_Timer[1].Expired(diff))
                 {
                     DoCast(m_creature->getVictim(), SPELL_SR_MULTI_SHOT, false);
-                    Timer[1] = 9000;
+                    _Timer[1] = 9000;
                 }
-                if (Timer[2].Expired(diff))
+                if (_Timer[2].Expired(diff))
                 {
                     DoCast(m_creature->getVictim(), SPELL_SR_SHOOT, false);
-                    Timer[2] = 5000;
+                    _Timer[2] = 5000;
                 }
                 if (m_creature->IsWithinMeleeRange(m_creature->getVictim(), 6))
                 {
-                    if (Timer[3].Expired(diff))
+                    if (_Timer[3].Expired(diff))
                     {
                         DoCast(m_creature->getVictim(), SPELL_SR_MULTI_SHOT, false);
-                        Timer[3] = 7000;
+                        _Timer[3] = 7000;
                     }
                     DoMeleeAttackIfReady();
                 }
                 break;
             case CLASS_MAGE:
-                if (Timer[1].Expired(diff))
+                if (_Timer[1].Expired(diff))
                 {
                     DoCast(m_creature->getVictim(), SPELL_SR_FIREBALL, false);
-                    Timer[1] = 3000;
+                    _Timer[1] = 3000;
                 }
                 DoMeleeAttackIfReady();
                 break;
             case CLASS_WARLOCK:
-                if (Timer[1].Expired(diff))
+                if (_Timer[1].Expired(diff))
                 {
                     DoCast(m_creature->getVictim(), SPELL_SR_SHADOW_BOLT, false);
-                    Timer[1] = 4000;
+                    _Timer[1] = 4000;
                 }
-                if (Timer[2].Expired(diff))
+                if (_Timer[2].Expired(diff))
                 {
                     if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true))
                         DoCast(target, SPELL_SR_CURSE_OF_AGONY, true);
-                    Timer[2] = 3000;
+                    _Timer[2] = 3000;
                 }
                 DoMeleeAttackIfReady();
                 break;
             case CLASS_WARRIOR:
-                if (Timer[1].Expired(diff))
+                if (_Timer[1].Expired(diff))
                 {
                     DoCast(m_creature->getVictim(), SPELL_SR_WHIRLWIND, false);
-                    Timer[1] = 10000;
+                    _Timer[1] = 10000;
                 }
                 DoMeleeAttackIfReady();
                 break;
             case CLASS_PALADIN:
-                if (Timer[1].Expired(diff))
+                if (_Timer[1].Expired(diff))
                 {
                     DoCast(m_creature->getVictim(), SPELL_SR_HAMMER_OF_JUSTICE, false);
-                    Timer[1] = 7000;
+                    _Timer[1] = 7000;
                 }
-                if (Timer[2].Expired(diff))
+                if (_Timer[2].Expired(diff))
                 {
                     DoCast(m_creature->getVictim(), SPELL_SR_HOLY_SHOCK, false);
-                    Timer[2] = 3000;
+                    _Timer[2] = 3000;
                 }
                 DoMeleeAttackIfReady();
                 break;
             case CLASS_PRIEST:
-                if (Timer[1].Expired(diff))
+                if (_Timer[1].Expired(diff))
                 {
                     DoCast(m_creature->getVictim(), SPELL_SR_HOLY_SMITE, false);
-                    Timer[1] = 5000;
+                    _Timer[1] = 5000;
                 }
-                if (Timer[2].Expired(diff))
+                if (_Timer[2].Expired(diff))
                 {
                     DoCast(m_creature, SPELL_SR_RENEW, false);
-                    Timer[2] = 7000;
+                    _Timer[2] = 7000;
                 }
                 DoMeleeAttackIfReady();
                 break;
             case CLASS_SHAMAN:
-                if (Timer[1].Expired(diff))
+                if (_Timer[1].Expired(diff))
                 {
                     DoCast(m_creature->getVictim(), SPELL_SR_EARTH_SHOCK, false);
-                    Timer[1] = 5000;
+                    _Timer[1] = 5000;
                 }
                 DoMeleeAttackIfReady();
                 break;
             case CLASS_ROGUE:
-                if (Timer[1].Expired(diff))
+                if (_Timer[1].Expired(diff))
                 {
                     DoCast(m_creature->getVictim(), SPELL_SR_HEMORRHAGE, true);
-                    Timer[1] = 5000;
+                    _Timer[1] = 5000;
                 }
                 DoMeleeAttackIfReady();
                 break;
