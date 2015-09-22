@@ -689,21 +689,8 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                     {
                         if (me->IsNonMeleeSpellCast(false))
                             break;
-                        randomPlayer = NULL;
-                        randomPlayer = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true);
-                        if (!randomPlayer)
-                            randomPlayer = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, false); // attack pets or totems or whateva~
 
-                        if (randomPlayer)
-                        {
-                            m_creature->CastSpell(randomPlayer, SPELL_SOUL_FLAY, false);
-                            m_creature->getVictim()->CastSpell(randomPlayer, SPELL_SOUL_FLAY_SLOW, true);
-                        }
-                        else
-                        {
-                            me->Say("#######DEBUG####### This should not happen in combat. TIMER_SOUL_FLAY, notarget. Report this on the forum please.",0,0);
-                        }
-
+                        AddSpellToCast(me->getVictim(), SPELL_SOUL_FLAY);
 
                         _Timer[TIMER_SOUL_FLAY] = 4000;
                         
