@@ -1437,7 +1437,7 @@ struct mob_sinster_reflectionAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (Class == 0)
+        if (Class == 0 && me->getVictim())
         {
             Class = m_creature->getVictim()->getClass();
             switch (Class)
