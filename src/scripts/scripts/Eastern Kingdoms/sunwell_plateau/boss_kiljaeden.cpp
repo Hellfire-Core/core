@@ -1425,13 +1425,13 @@ struct mob_sinster_reflectionAI : public ScriptedAI
     mob_sinster_reflectionAI(Creature* c) : ScriptedAI(c) {}
 
     uint8 Class;
-    uint32 Timer[3];
+    Timer Timer[3];
 
     void Reset()
     {
-        Timer[0] = 0;
-        Timer[1] = 0;
-        Timer[2] = 0;
+        Timer[0].Reset(1);
+        Timer[1].Reset(1);
+        Timer[2].Reset(1);
         Class = 0;
     }
 
@@ -1469,7 +1469,7 @@ struct mob_sinster_reflectionAI : public ScriptedAI
         switch (Class)
         {
             case CLASS_DRUID:
-                if (Timer[1] <= diff)
+                if (Timer[1].Expired(diff))
                 {
                     DoCast(m_creature->getVictim(), SPELL_SR_MOONFIRE, false);
                     Timer[1] = 3000;
@@ -1477,19 +1477,19 @@ struct mob_sinster_reflectionAI : public ScriptedAI
                 DoMeleeAttackIfReady();
                 break;
             case CLASS_HUNTER:
-                if (Timer[1] <= diff)
+                if (Timer[1].Expired(diff))
                 {
                     DoCast(m_creature->getVictim(), SPELL_SR_MULTI_SHOT, false);
                     Timer[1] = 9000;
                 }
-                if (Timer[2] <= diff)
+                if (Timer[2].Expired(diff))
                 {
                     DoCast(m_creature->getVictim(), SPELL_SR_SHOOT, false);
                     Timer[2] = 5000;
                 }
                 if (m_creature->IsWithinMeleeRange(m_creature->getVictim(), 6))
                 {
-                    if (Timer[3] <= diff)
+                    if (Timer[3].Expired(diff))
                     {
                         DoCast(m_creature->getVictim(), SPELL_SR_MULTI_SHOT, false);
                         Timer[3] = 7000;
@@ -1498,7 +1498,7 @@ struct mob_sinster_reflectionAI : public ScriptedAI
                 }
                 break;
             case CLASS_MAGE:
-                if (Timer[1] <= diff)
+                if (Timer[1].Expired(diff))
                 {
                     DoCast(m_creature->getVictim(), SPELL_SR_FIREBALL, false);
                     Timer[1] = 3000;
@@ -1506,12 +1506,12 @@ struct mob_sinster_reflectionAI : public ScriptedAI
                 DoMeleeAttackIfReady();
                 break;
             case CLASS_WARLOCK:
-                if (Timer[1] <= diff)
+                if (Timer[1].Expired(diff))
                 {
                     DoCast(m_creature->getVictim(), SPELL_SR_SHADOW_BOLT, false);
                     Timer[1] = 4000;
                 }
-                if (Timer[2] <= diff)
+                if (Timer[2].Expired(diff))
                 {
                     if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true))
                         DoCast(target, SPELL_SR_CURSE_OF_AGONY, true);
@@ -1520,7 +1520,7 @@ struct mob_sinster_reflectionAI : public ScriptedAI
                 DoMeleeAttackIfReady();
                 break;
             case CLASS_WARRIOR:
-                if (Timer[1] <= diff)
+                if (Timer[1].Expired(diff))
                 {
                     DoCast(m_creature->getVictim(), SPELL_SR_WHIRLWIND, false);
                     Timer[1] = 10000;
@@ -1528,12 +1528,12 @@ struct mob_sinster_reflectionAI : public ScriptedAI
                 DoMeleeAttackIfReady();
                 break;
             case CLASS_PALADIN:
-                if (Timer[1] <= diff)
+                if (Timer[1].Expired(diff))
                 {
                     DoCast(m_creature->getVictim(), SPELL_SR_HAMMER_OF_JUSTICE, false);
                     Timer[1] = 7000;
                 }
-                if (Timer[2] <= diff)
+                if (Timer[2].Expired(diff))
                 {
                     DoCast(m_creature->getVictim(), SPELL_SR_HOLY_SHOCK, false);
                     Timer[2] = 3000;
@@ -1541,12 +1541,12 @@ struct mob_sinster_reflectionAI : public ScriptedAI
                 DoMeleeAttackIfReady();
                 break;
             case CLASS_PRIEST:
-                if (Timer[1] <= diff)
+                if (Timer[1].Expired(diff))
                 {
                     DoCast(m_creature->getVictim(), SPELL_SR_HOLY_SMITE, false);
                     Timer[1] = 5000;
                 }
-                if (Timer[2] <= diff)
+                if (Timer[2].Expired(diff))
                 {
                     DoCast(m_creature, SPELL_SR_RENEW, false);
                     Timer[2] = 7000;
@@ -1554,7 +1554,7 @@ struct mob_sinster_reflectionAI : public ScriptedAI
                 DoMeleeAttackIfReady();
                 break;
             case CLASS_SHAMAN:
-                if (Timer[1] <= diff)
+                if (Timer[1].Expired(diff))
                 {
                     DoCast(m_creature->getVictim(), SPELL_SR_EARTH_SHOCK, false);
                     Timer[1] = 5000;
@@ -1562,7 +1562,7 @@ struct mob_sinster_reflectionAI : public ScriptedAI
                 DoMeleeAttackIfReady();
                 break;
             case CLASS_ROGUE:
-                if (Timer[1] <= diff)
+                if (Timer[1].Expired(diff))
                 {
                     DoCast(m_creature->getVictim(), SPELL_SR_HEMORRHAGE, true);
                     Timer[1] = 5000;
@@ -1570,9 +1570,6 @@ struct mob_sinster_reflectionAI : public ScriptedAI
                 DoMeleeAttackIfReady();
                 break;
         }
-        debug_log("Sinister-Timer");
-        for (uint8 i = 0; i < 3; ++i)
-            Timer[i] -= diff;
     }
 
 };
