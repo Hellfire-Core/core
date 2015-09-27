@@ -66,6 +66,49 @@ EndContentData */
 #define C_EXECU 18994
 #define C_VANQU 18995
 
+#define C_ORCS 17023
+
+float OrcsLocationStart[6][4]=
+{
+   {-2098.4  , 7120.17 , 34.58 , 6.17},
+   {-2097.82 , 7122.57 , 34.58 , 6.13 },
+   {-2097.47 , 7124.29 , 34.58 , 6.14 },
+   {-2096.87 , 7126.23 , 34.58 , 6.15},
+   {-2096.45 , 7128.42 , 34.58 , 6.17},
+   {-2095.79 , 7131.01 , 34.58 , 6.15 },
+};
+
+float OrcsLocationEnd[24][4]=
+{
+   { -2045.55 ,  7115.2 ,   23.9073 ,  6.01854 },
+   { -2040.33 ,  7120.68 ,  22.9844 ,  3.00261 },
+   { -2043.49 ,  7130.63 ,  24.1012 ,  6.06172 },
+   { -2045.01 ,  7117.83 ,  23.8104 ,  6.15595 },
+   { -2044.26 ,  7124.12 ,  23.8552 ,  6.13632 },
+   { -2043.57 ,  7127.51 ,  23.8659 ,  6.17559 },
+
+   { -2056.24 ,  7116.63 ,  27.7814 ,  6.18345 },
+   { -2055.97 ,  7119.47 ,  27.8518 ,  6.1756 }, 
+   { -2055.88 ,  7122.5  ,  28.0675 ,  6.12847 }, 
+   { -2056.07 ,  7126.16 ,  28.6046 ,  6.14811 },
+   { -2055.67 ,  7128.68 ,  28.9588 ,  6.16381 },
+   { -2054.81 ,  7131.32 ,  29.5189 ,  6.15203 },
+    
+   { -2073.43 ,  7115.83 ,  30.5849 ,  6.24629 },
+   { -2072.95 ,  7119.7  ,  30.5851 ,  6.21095 },
+   { -2072.41 ,  7123.06 ,  30.5881 ,  6.22666 },
+   { -2071.72 ,  7126.01 ,  30.5871 ,  6.18739 },
+   { -2070.7  ,  7128.53 ,  30.5687 ,  6.18738 },
+   { -2069.5  ,  7132    ,  30.483  ,  6.13555 },
+    
+   { -2084.54 ,  7117.77 ,  34.5878 ,  0.0322094 }, 
+   { -2084.07 ,  7120.62 ,  34.5878 ,  6.229 },
+   { -2084.01 ,  7123.15 ,  34.5863 ,  6.18973 },
+   { -2083.62 ,  7125.65 ,  34.5627 ,  6.18973 },
+   { -2083.48 ,  7128    ,  34.5495 ,  6.20937 },
+   { -2083.2  ,  7130.69 ,  34.5279 ,  6.20544 },
+};
+
 struct npc_medivh_bmAI : public ScriptedAI
 {
     npc_medivh_bmAI(Creature *c) : ScriptedAI(c)
@@ -90,6 +133,17 @@ struct npc_medivh_bmAI : public ScriptedAI
     bool Intro;
     bool Delay;
 
+    // Orcs after event
+    Timer Orcs_Wave_Start_Timer;
+    Timer Orcs_Wave_End_Timer;
+    Timer Orcs_Wave_Clear_Timer;
+    Timer Medivh_Speech_Timer;
+    Timer Orc_General_Speech_Timer;
+    int currentOrcWave;
+    std::list<uint64> OrcsGUID;
+    std::list<uint64>::iterator OrcIterator; // for waves
+    Unit* OrcGeneral; // he will say text
+
     void Reset()
     {
         SpellCorrupt_Timer = 0;
@@ -107,6 +161,15 @@ struct npc_medivh_bmAI : public ScriptedAI
             m_creature->CastSpell(m_creature,SPELL_CHANNEL, true);
         else if (m_creature->HasAura(SPELL_CHANNEL,0))
             m_creature->RemoveAura(SPELL_CHANNEL,0);
+
+        Orcs_Wave_Start_Timer = 0;
+        Orcs_Wave_End_Timer = 0;
+        Orcs_Wave_Clear_Timer = 0;
+        Medivh_Speech_Timer = 0;
+        Orc_General_Speech_Timer = 0;
+        OrcsGUID.clear();
+        OrcGeneral = NULL;
+        currentOrcWave = 0;
     }
 
     void MoveInLineOfSight(Unit *who)
@@ -260,9 +323,94 @@ struct npc_medivh_bmAI : public ScriptedAI
             {
                 DoScriptText(SAY_WIN, m_creature);
                 Check_Timer = 0;
-                //TODO: start the post-event here
+                Orcs_Wave_Start_Timer = 3000;
+            }
+        }
+
+        if (Orcs_Wave_Start_Timer.Expired(diff))
+        {
+            for (int orc_counter = 0; orc_counter < 6; ++orc_counter)
+            {
+                Unit *orc = m_creature->SummonCreature(C_ORCS, OrcsLocationStart[orc_counter][0],OrcsLocationStart[orc_counter][1],OrcsLocationStart[orc_counter][2],OrcsLocationStart[orc_counter][3], TEMPSUMMON_DEAD_DESPAWN,0);
+                orc->MonsterMoveWithSpeed(OrcsLocationEnd[orc_counter + 6 * currentOrcWave][0], OrcsLocationEnd[orc_counter + 6 * currentOrcWave][1], OrcsLocationEnd[orc_counter + 6 * currentOrcWave][2], 500 + 1625 * (4 - currentOrcWave), true, true);
+                orc->setFaction( m_creature->getFaction() );
+                OrcsGUID.push_back(orc->GetGUID());
+
+                if (!OrcGeneral && orc_counter == 1 && currentOrcWave == 0)
+                    OrcGeneral = orc;
             }
 
+            if (currentOrcWave >= 3)
+            {
+                Orcs_Wave_Start_Timer = 0;
+                Medivh_Speech_Timer = 9000;
+                OrcsGUID.reverse();
+                OrcIterator = OrcsGUID.begin();
+            }
+            else 
+            {
+                Orcs_Wave_Start_Timer = 2500;
+                currentOrcWave++;
+            }
+        }
+
+        if (Medivh_Speech_Timer.Expired(diff))
+        {
+            DoScriptText(SAY_ORCS_ENTER, m_creature);
+            Orc_General_Speech_Timer = 9000;
+            Medivh_Speech_Timer = 0;
+        }
+
+        if (Orc_General_Speech_Timer.Expired(diff))
+        {
+            DoScriptText(SAY_ORCS_ANSWER, OrcGeneral);
+            Orcs_Wave_End_Timer = 10000;
+            Orc_General_Speech_Timer = 0;
+        }
+
+        if (Orcs_Wave_End_Timer.Expired(diff))
+        {
+            if (!OrcsGUID.empty() && OrcIterator != OrcsGUID.end())
+            {
+                int orc_counter = 5;
+                while (orc_counter >= 0)
+                {
+                    if (Creature * orc = m_creature->GetCreature(*OrcIterator++))
+                    {
+                        orc->MonsterMoveWithSpeed(OrcsLocationStart[orc_counter][0],OrcsLocationStart[orc_counter][1],OrcsLocationStart[orc_counter][2], 500 + 1625 * (4 - currentOrcWave), true, true);
+                    }
+                    orc_counter--;
+                }
+            }
+
+            if (currentOrcWave < 0)
+            {
+                Orcs_Wave_End_Timer = 0;
+                Orcs_Wave_Clear_Timer = 6500;
+            }
+            else 
+            {
+                Orcs_Wave_End_Timer = 500;
+                currentOrcWave--;
+            }
+        }
+
+        if (Orcs_Wave_Clear_Timer.Expired(diff))
+        {
+            if (!OrcsGUID.empty())
+            {
+                for (std::list<uint64>::iterator orcGUID = OrcsGUID.begin(); orcGUID != OrcsGUID.end(); ++orcGUID)
+                {
+                    if (Creature * orc = m_creature->GetCreature(*orcGUID))
+                    {
+                        orc->SetVisibility(VISIBILITY_OFF);
+                        orc->ForcedDespawn();
+                    }
+                }
+            }
+
+            OrcsGUID.clear();
+            Orcs_Wave_Clear_Timer = 0;
         }
     }
 };
