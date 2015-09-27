@@ -6694,7 +6694,9 @@ void Spell::EffectSanctuary(uint32 /*i*/)
         }
     }
 
-    unitTarget->CombatStop();
+    if (!unitTarget->GetInstanceData() || !unitTarget->GetInstanceData()->IsEncounterInProgress())
+        unitTarget->CombatStop();
+
     unitTarget->getHostileRefManager().deleteReferences();  // stop all fighting
     // Vanish allows to remove all threat and cast regular stealth so other spells can be used
     if (GetSpellEntry()->SpellFamilyName == SPELLFAMILY_ROGUE && (GetSpellEntry()->SpellFamilyFlags & SPELLFAMILYFLAG_ROGUE_VANISH))
