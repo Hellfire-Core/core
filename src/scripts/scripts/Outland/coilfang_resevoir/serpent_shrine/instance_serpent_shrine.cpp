@@ -162,7 +162,16 @@ struct instance_serpentshrine_cavern : public ScriptedInstance
                     SetData(DATA_STRANGE_POOL, DONE);
                 break;
             case GAMEOBJECT_FISHINGNODE_ENTRY:
-                if(LurkerSubEvent == LURKER_NOT_STARTED)
+            {
+                if (!go->GetOwner())
+                    return;
+
+                Player* player = go->GetOwner()->ToPlayer();
+
+                if (!player || player->GetSkillValue(SKILL_FISHING) < 300 || rand() % 3)
+                    return;
+
+                if (LurkerSubEvent == LURKER_NOT_STARTED)
                 {
                     if (Unit *pTemp = instance->GetCreature(LurkerBelow))
                     {
@@ -173,8 +182,9 @@ struct instance_serpentshrine_cavern : public ScriptedInstance
                         LurkerSubEvent = LURKER_FISHING;
                     }
                 }
-                break;
 
+                break;
+            }
         }
     }
 
