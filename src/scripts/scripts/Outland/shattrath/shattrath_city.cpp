@@ -85,9 +85,9 @@ CreatureAI* GetAI_npc_raliq_the_drunk(Creature *creature)
 bool GossipHello_npc_raliq_the_drunk(Player *player, Creature *creature )
 {
     if( player->GetQuestStatus(10009) == QUEST_STATUS_INCOMPLETE )
-        player->ADD_GOSSIP_ITEM(1, GOSSIP_RALIQ, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+        player->ADD_GOSSIP_ITEM(0, GOSSIP_RALIQ, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
 
-    player->SEND_GOSSIP_MENU(9440, creature->GetGUID());
+    player->SEND_GOSSIP_MENU(creature->GetNpcTextId(), creature->GetGUID());
     return true;
 }
 
@@ -1008,6 +1008,7 @@ void AddSC_shattrath_city()
 
     newscript = new Script;
     newscript->Name="npc_raliq_the_drunk";
+    newscript->GetAI =  &GetAI_npc_raliq_the_drunk;
     newscript->pGossipHello =  &GossipHello_npc_raliq_the_drunk;
     newscript->pGossipSelect = &GossipSelect_npc_raliq_the_drunk;
     newscript->RegisterSelf();

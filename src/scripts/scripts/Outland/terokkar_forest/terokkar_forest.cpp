@@ -326,9 +326,9 @@ CreatureAI* GetAI_npc_floon(Creature *creature)
 bool GossipHello_npc_floon(Player *player, Creature *creature )
 {
     if( player->GetQuestStatus(10009) == QUEST_STATUS_INCOMPLETE )
-        player->ADD_GOSSIP_ITEM(1, GOSSIP_FLOON1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF);
+        player->ADD_GOSSIP_ITEM(0, GOSSIP_FLOON1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF);
 
-    player->SEND_GOSSIP_MENU(9442, creature->GetGUID());
+    player->SEND_GOSSIP_MENU(creature->GetNpcTextId(), creature->GetGUID());
     return true;
 }
 
@@ -2518,6 +2518,7 @@ void AddSC_terokkar_forest()
 
     newscript = new Script;
     newscript->Name="npc_floon";
+    newscript->GetAI = &GetAI_npc_floon;
     newscript->pGossipHello =  &GossipHello_npc_floon;
     newscript->pGossipSelect = &GossipSelect_npc_floon;
     newscript->RegisterSelf();

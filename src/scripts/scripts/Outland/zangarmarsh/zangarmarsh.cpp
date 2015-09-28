@@ -165,9 +165,9 @@ CreatureAI* GetAI_npc_cooshcoosh(Creature *creature)
 bool GossipHello_npc_cooshcoosh(Player *player, Creature *creature )
 {
     if( player->GetQuestStatus(10009) == QUEST_STATUS_INCOMPLETE )
-        player->ADD_GOSSIP_ITEM(1, GOSSIP_COOSH, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF);
+        player->ADD_GOSSIP_ITEM(0, GOSSIP_COOSH, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF);
 
-    player->SEND_GOSSIP_MENU(9441, creature->GetGUID());
+    player->SEND_GOSSIP_MENU(creature->GetNpcTextId(), creature->GetGUID());
     return true;
 }
 
@@ -483,6 +483,7 @@ void AddSC_zangarmarsh()
 
     newscript = new Script;
     newscript->Name="npc_cooshcoosh";
+    newscript->GetAI = &GetAI_npc_cooshcoosh;
     newscript->pGossipHello =  &GossipHello_npc_cooshcoosh;
     newscript->pGossipSelect = &GossipSelect_npc_cooshcoosh;
     newscript->RegisterSelf();
