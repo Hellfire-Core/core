@@ -3953,6 +3953,12 @@ bool SpellMgr::IsSpellAllowedInLocation(SpellEntry const *spellInfo,uint32 map_i
             return true;
     }
 
+    if (spellInfo->Id == 1002 || spellInfo->Id == 126)
+    {
+        if (!(map_id == 0 || map_id == 1 || map_id == 530 ))
+            return false;
+    }
+
     // normal case
     if (spellInfo->AreaId && spellInfo->AreaId != zone_id && spellInfo->AreaId != area_id)
         return false;
