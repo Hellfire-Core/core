@@ -4231,6 +4231,7 @@ void Unit::RemoveAurasDueToSpellByDispel(uint32 spellId, uint64 casterGUID, Unit
 void Unit::RemoveAurasDueToSpellBySteal(uint32 spellId, uint64 casterGUID, Unit *stealer)
 {
     bool onlyDispel = false;
+
     for (AuraMap::iterator iter = m_Auras.begin(); iter != m_Auras.end();)
     {
         Aura *aur = iter->second;
@@ -4252,7 +4253,7 @@ void Unit::RemoveAurasDueToSpellBySteal(uint32 spellId, uint64 casterGUID, Unit 
                 Unit::AuraMap const& auras = stealer->GetAuras();
                 for (Unit::AuraMap::const_iterator itr = auras.begin(); itr != auras.end(); ++itr)
                 {
-                    Aura *stealer_aur = (*itr).second;
+                    Aura *stealer_aur = itr->second;
                     if (aur->GetSpellProto()->SpellFamilyName == stealer_aur->GetSpellProto()->SpellFamilyName &&
                         aur->GetSpellProto()->SpellFamilyFlags == stealer_aur->GetSpellProto()->SpellFamilyFlags &&
                         aur->GetSpellProto()->SpellFamilyFlags != 0 && // some spells dont have sff, and they will fail to be stealed. Maybe icon check will be better?
@@ -4265,6 +4266,13 @@ void Unit::RemoveAurasDueToSpellBySteal(uint32 spellId, uint64 casterGUID, Unit 
                 }
             }
             
+            if (spellId == 43421) // Hex Lord Malacrass' Lifebloom
+            {
+                delete new_aur;
+                RemoveAura(iter, AURA_REMOVE_BY_DISPEL);
+                return;
+            }
+
             // add the new aura to stealer when needed
             if (!onlyDispel)
             {
@@ -4278,6 +4286,7 @@ void Unit::RemoveAurasDueToSpellBySteal(uint32 spellId, uint64 casterGUID, Unit 
             }
             else
                 delete new_aur;
+
             // Remove aura as dispel
             if (aur->GetStackAmount() > 1)
             {
