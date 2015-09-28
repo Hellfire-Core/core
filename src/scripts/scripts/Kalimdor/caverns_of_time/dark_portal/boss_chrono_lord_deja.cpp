@@ -96,7 +96,7 @@ struct boss_chrono_lord_dejaAI : public ScriptedAI
             if (me->isAlive() && m_creature->IsWithinDistInMap(who,20.0f))
             {
                 DoScriptText(SAY_BANISH, m_creature);
-                m_creature->DealDamage(who, who->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+                who->ToCreature()->ForcedDespawn();
             }
         }
 
