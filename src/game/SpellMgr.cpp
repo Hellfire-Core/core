@@ -461,6 +461,9 @@ SpellSpecific SpellMgr::GetSpellSpecific(uint32 spellId)
                 case 14204: //           Enrage rank 5
                 case 12292: //             Death Wish
                     return SPELL_WARRIOR_ENRAGE;
+                case 38245: //             Polymorph
+                case 43309: //             Polymorph
+                    return SPELL_MAGE_POLYMORPH;
                 break;
                 default: break;
             }
