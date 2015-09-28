@@ -468,6 +468,7 @@
     <ClCompile Include="..\..\src\game\Channel.cpp" />
     <ClCompile Include="..\..\src\game\CharmInfo.cpp" />
     <ClCompile Include="..\..\src\game\Chat.cpp" />
+    <ClCompile Include="..\..\src\game\CooldownMgr.cpp" />
     <ClCompile Include="..\..\src\game\DBCStores.cpp" />
     <ClCompile Include="..\..\src\game\GameEvent.cpp" />
     <ClCompile Include="..\..\src\game\GossipDef.cpp" />
@@ -639,6 +640,7 @@
     <ClInclude Include="..\..\src\game\Channel.h" />
     <ClInclude Include="..\..\src\game\CharmInfo.h" />
     <ClInclude Include="..\..\src\game\Chat.h" />
+    <ClInclude Include="..\..\src\game\CooldownMgr.h" />
     <ClInclude Include="..\..\src\game\DBCEnums.h" />
     <ClInclude Include="..\..\src\game\DBCfmt.h" />
     <ClInclude Include="..\..\src\game\DBCStores.h" />

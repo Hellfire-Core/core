@@ -186,6 +186,9 @@
     <ClCompile Include="..\..\src\game\HostileRefManager.cpp">
       <Filter>References</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\game\CooldownMgr.cpp">
+      <Filter>Managers</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\game\ThreatManager.cpp">
       <Filter>References</Filter>
     </ClCompile>
@@ -703,6 +706,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\game\HostileRefManager.h">
       <Filter>References</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\game\CooldownMgr.h">
+      <Filter>Managers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\game\ThreatManager.h">
       <Filter>References</Filter>
