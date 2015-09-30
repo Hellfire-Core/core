@@ -993,7 +993,7 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
             {
                 m_creature->RemoveAurasDueToSpell(SPELL_ANVEENA_ENERGY_DRAIN);
                 Phase = PHASE_NORMAL;
-                DoSpawnCreature(CREATURE_KILJAEDEN, 0, 0, 0, 0, TEMPSUMMON_MANUAL_DESPAWN, 0);
+                DoSpawnCreature(CREATURE_KILJAEDEN, 0, 0, 0, 3.886, TEMPSUMMON_MANUAL_DESPAWN, 0);
                 CheckDeceivers = 0;
             }
         }
