@@ -313,7 +313,10 @@ struct instance_sunwell_plateau : public ScriptedInstance
                 if(GetData(DATA_FELMYST_EVENT) == DONE)
                     HandleGameObject(FireBarrier, OPEN);
                 break;
-            case 188119: IceBarrier     = gobj->GetGUID(); break;
+            case 188119: IceBarrier     = gobj->GetGUID();
+                if (GetData(DATA_BRUTALLUS_INTRO_EVENT) == DONE)
+                    HandleGameObject(IceBarrier, OPEN);
+                break;
             // Eredar Twins Up - door 4
             case 187770:
                 Gate[0] = gobj->GetGUID();

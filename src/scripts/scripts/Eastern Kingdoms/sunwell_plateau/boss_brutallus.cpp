@@ -551,7 +551,7 @@ struct brutallus_intro_triggerAI : public Scripted_NoMovementAI
         // temporary
         if(!pInstance)
             return;
-        if(who->GetTypeId() == TYPEID_PLAYER && me->IsWithinDist(who, 90) && pInstance && pInstance->GetData(DATA_BRUTALLUS_INTRO_EVENT) == NOT_STARTED)
+        if(who->GetTypeId() == TYPEID_PLAYER && me->IsWithinDist(who, 40) && pInstance && pInstance->GetData(DATA_BRUTALLUS_INTRO_EVENT) == NOT_STARTED)
         {
             if(Unit *pBrutallus = me->GetUnit(pInstance->GetData64(DATA_BRUTALLUS)))
                 pInstance->SetData(DATA_BRUTALLUS_INTRO_EVENT, SPECIAL);
