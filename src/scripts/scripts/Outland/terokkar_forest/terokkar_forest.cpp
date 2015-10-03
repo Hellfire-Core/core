@@ -404,29 +404,30 @@ struct npc_isla_starmaneAI : public npc_escortAI
         if(!player)
             return;
 
-        switch(i)
+        switch (i)
         {
-        case 0:
+            case 0:
             {
-            GameObject* Cage = FindGameObject(GO_CAGE, 10, me);
-            if(Cage)
-                Cage->SetGoState(GO_STATE_ACTIVE);
+                GameObject* Cage = FindGameObject(GO_CAGE, 10, me);
+                if (Cage)
+                    Cage->SetGoState(GO_STATE_ACTIVE);
             }break;
-        case 2: DoScriptText(SAY_PROGRESS_1, me, player); break;
-        case 5: DoScriptText(SAY_PROGRESS_2, me, player); break;
-        case 6: DoScriptText(SAY_PROGRESS_3, me, player); break;
-        case 29:DoScriptText(SAY_PROGRESS_4, me, player);
-            if (player)
-            {
-                if( player->GetTeam() == ALLIANCE)
-                    player->GroupEventHappens(QUEST_EFTW_A, me);
-                else if(player->GetTeam() == HORDE)
-                    player->GroupEventHappens(QUEST_EFTW_H, me);
-            } Completed = true;
-            me->SetInFront(player); break;
-        case 30: me->HandleEmoteCommand(EMOTE_ONESHOT_WAVE); break;
-        case 31: DoCast(me, SPELL_CAT);
-            me->SetWalk(false); break;
+            case 2: DoScriptText(SAY_PROGRESS_1, me, player); break;
+            case 5: DoScriptText(SAY_PROGRESS_2, me, player); break;
+            case 6: DoScriptText(SAY_PROGRESS_3, me, player); break;
+            case 29:DoScriptText(SAY_PROGRESS_4, me, player);
+                if (player)
+                {
+                    if (player->GetTeam() == ALLIANCE)
+                        player->GroupEventHappens(QUEST_EFTW_A, me);
+                    else if (player->GetTeam() == HORDE)
+                        player->GroupEventHappens(QUEST_EFTW_H, me);
+                } 
+                Completed = true;
+                me->SetInFront(player); break;
+            case 30: me->HandleEmoteCommand(EMOTE_ONESHOT_WAVE); break;
+            case 31: DoCast(me, SPELL_CAT);
+                me->SetWalk(false); break;
         }
     }
 
@@ -440,13 +441,18 @@ struct npc_isla_starmaneAI : public npc_escortAI
 
     void JustDied(Unit* killer)
     {
-        Player* player = GetPlayerForEscort();
-        if (player && !Completed)
+        if (Player* player = GetPlayerForEscort())
         {
-            if(player->GetTeam() == ALLIANCE)
-                player->FailQuest(QUEST_EFTW_A);
-            else if(player->GetTeam() == HORDE)
-                player->FailQuest(QUEST_EFTW_H);
+            if (player->GetTeam() == ALLIANCE)
+            {
+                if (player->GetQuestStatus(QUEST_EFTW_A) != QUEST_STATUS_COMPLETE)
+                    player->FailQuest(QUEST_EFTW_A);
+            }
+            else if (player->GetTeam() == HORDE)
+            {
+                if (player->GetQuestStatus(QUEST_EFTW_H) != QUEST_STATE_COMPLETE)
+                    player->FailQuest(QUEST_EFTW_H);
+            }
         }
     }
 
