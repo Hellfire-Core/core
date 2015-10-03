@@ -40,11 +40,11 @@ struct mob_treantAI  : public ScriptedAI
     }
 
     uint64 WarpGuid;
-    Timer check_Timer;
+    Timer lifeExpired;
 
     void Reset()
     {
-        check_Timer = 1000;
+        lifeExpired = 20000;
     }
 
     void EnterCombat(Unit *who) {}
@@ -53,27 +53,22 @@ struct mob_treantAI  : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (!UpdateVictim() )
+        if (!UpdateVictim())
         {
-            if(WarpGuid && check_Timer.Expired(diff))
+            if (WarpGuid && lifeExpired.Expired(diff))
             {
-                if(Unit *Warp = (Unit*)Unit::GetUnit(*m_creature, WarpGuid))
+                if (Unit *Warp = me->GetUnit(WarpGuid))
                 {
-                    if(m_creature->IsWithinMeleeRange(Warp,2.5f))
-                    {
-                        int32 CurrentHP_Treant = (int32)m_creature->GetHealth();
-                        Warp->CastCustomSpell(Warp,SPELL_HEAL_FATHER,&CurrentHP_Treant, 0, 0, true,0 ,0, m_creature->GetGUID());
-                        m_creature->DealDamage(m_creature, m_creature->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
-                        return;
-                    }
-                    m_creature->GetMotionMaster()->MoveFollow(Warp,0,0);
+                    int32 CurrentHP_Treant = (int32)m_creature->GetHealth();
+                    Warp->CastCustomSpell(Warp, SPELL_HEAL_FATHER, &CurrentHP_Treant, 0, 0, true, 0, 0, m_creature->GetGUID());
+                    m_creature->DealDamage(m_creature, m_creature->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+                    return;
                 }
-                check_Timer = 1000;
             }
             return;
         }
 
-        if (m_creature->getVictimGUID() !=  WarpGuid)
+        if (m_creature->getVictimGUID() != WarpGuid)
             DoMeleeAttackIfReady();
     }
 };
@@ -188,7 +183,7 @@ struct boss_warp_splinterAI : public ScriptedAI
             else
                 DoZoneInCombat();
 
-            Check_Timer = 3000;
+            Check_Timer = 1000;
         }
 
         //Check for Arcane Volley
