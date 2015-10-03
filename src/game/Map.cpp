@@ -370,6 +370,8 @@ bool Map::Add(Player *player)
     SendInitSelf(player);
     SendInitTransports(player);
 
+    if (!player->isAlive())
+        player->SetMovement(MOVE_WATER_WALK);
     player->GetViewPoint().Event_AddedToWorld(&(*grid)(cell.CellX(), cell.CellY()));
     //player->UpdateObjectVisibility();
     player->m_clientGUIDs.clear();
