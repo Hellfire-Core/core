@@ -241,8 +241,8 @@ struct mob_rizzle_sprysprocketAI : public ScriptedAI
     mob_rizzle_sprysprocketAI(Creature *c) : ScriptedAI(c) {}
 
     int32 Teleport_Timer;
-    int32 Check_Timer;
-    int32 Grenade_Timer;
+    Timer Check_Timer;
+    Timer Grenade_Timer;
     int32 Must_Die_Timer;
     uint32 CurrWP;
 
@@ -256,8 +256,8 @@ struct mob_rizzle_sprysprocketAI : public ScriptedAI
     void Reset()
     {
         Teleport_Timer = 3500;
-        Check_Timer = 1000;
-        Grenade_Timer = 30000;
+        Check_Timer.Reset(1000);
+        Grenade_Timer.Reset(30000);
         Must_Die_Timer = 3000;
         CurrWP = 0;
 
@@ -319,8 +319,8 @@ struct mob_rizzle_sprysprocketAI : public ScriptedAI
             ContinueWP = false;
         }
 
-        Grenade_Timer -= diff;
-        if(Grenade_Timer <= diff)
+
+        if(Grenade_Timer.Expired(diff))
         {
             Player *player = (Player *)Unit::GetUnit((*m_creature), PlayerGUID);
             if(player && Reached == false)
@@ -328,11 +328,9 @@ struct mob_rizzle_sprysprocketAI : public ScriptedAI
                DoScriptText(SAY_RIZZLE_GRENADE, m_creature, player);
                DoCast(player, SPELL_RIZZLE_FROST_GRENADE, true);
             }
-            Grenade_Timer += 30000;
         } 
 
-        Check_Timer -= diff;
-        if(Check_Timer <= diff)
+        if(Check_Timer.Expired(diff))
         {
             Unit *player = m_creature->GetUnit(PlayerGUID);
             if(!player)
@@ -341,7 +339,7 @@ struct mob_rizzle_sprysprocketAI : public ScriptedAI
                 return;
             }
 
-            if(m_creature->IsWithinDistInMap(player, 15) && m_creature->GetPositionX() + 10 > player->GetPositionX() && !Reached)
+            if (((me->GetDistance(player) < 3) || (me->GetDistance(player) < 10 && me->GetPositionX() - 3 < player->GetPositionX())) && !Reached)
             {
                 DoScriptText(SAY_RIZZLE_FINAL, m_creature);
                 m_creature->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
@@ -349,8 +347,6 @@ struct mob_rizzle_sprysprocketAI : public ScriptedAI
                 m_creature->RemoveAurasDueToSpell(SPELL_PERIODIC_DEPTH_CHARGE);
                 Reached = true;
             }
-
-            Check_Timer += 1000;
         } 
 
     }
