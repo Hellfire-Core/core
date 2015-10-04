@@ -42,7 +42,6 @@ struct mob_treantAI  : public ScriptedAI
     void Reset()
     {
         lifeExpired.Reset(20000);
-        me->SetSpeed(MOVE_RUN, 0.5f);
     }
 
     void EnterCombat(Unit *who) {}
