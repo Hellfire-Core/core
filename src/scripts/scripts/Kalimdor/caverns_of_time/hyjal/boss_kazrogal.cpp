@@ -1,6 +1,6 @@
-/* 
+/*
  * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -21,7 +21,7 @@
 #include "hyjal_trash.h"
 
 #define SPELL_CLEAVE   31436
-#define SPELL_WARSTOMP 31480
+#define SPELL_WARSTOMP 38911
 #define SPELL_MARK     31447
 #define SPELL_CRIPPLE  31477
 
@@ -165,32 +165,25 @@ struct boss_kazrogalAI : public hyjal_trashAI
         if (!UpdateVictim() )
             return;
 
-
         if (CheckTimer.Expired(diff))
         {
             DoZoneInCombat();
             m_creature->SetSpeed(MOVE_RUN, 3.0);
             CheckTimer = 3000;
         }
-        
-
 
         if (CleaveTimer.Expired(diff))
         {
             DoCast(m_creature->getVictim(), SPELL_CLEAVE);
             CleaveTimer = 6000+rand()%15000;
         }
-        
 
-        
         if (WarStompTimer.Expired(diff))
         {
             DoCast(m_creature, SPELL_WARSTOMP);
             WarStompTimer = 60000;
         }
-        
 
-        
         if (CrippleTimer.Expired(diff))
         {
             if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 1, 20, true))
@@ -198,9 +191,7 @@ struct boss_kazrogalAI : public hyjal_trashAI
 
             CrippleTimer = 20000+rand()%10000;
         }
-        
 
-        
         if (MarkTimer.Expired(diff))
         {
             m_creature->CastSpell(m_creature, SPELL_MARK, false);
@@ -223,7 +214,6 @@ struct boss_kazrogalAI : public hyjal_trashAI
                     break;
             }
         }
-        
 
         DoMeleeAttackIfReady();
     }
