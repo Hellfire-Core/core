@@ -450,7 +450,7 @@ struct npc_isla_starmaneAI : public npc_escortAI
             }
             else if (player->GetTeam() == HORDE)
             {
-                if (player->GetQuestStatus(QUEST_EFTW_H) != QUEST_STATE_COMPLETE)
+                if (player->GetQuestStatus(QUEST_EFTW_H) != QUEST_STATUS_COMPLETE)
                     player->FailQuest(QUEST_EFTW_H);
             }
         }

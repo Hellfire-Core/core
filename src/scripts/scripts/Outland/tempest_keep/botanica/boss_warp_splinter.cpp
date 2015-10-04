@@ -34,22 +34,26 @@ EndScriptData */
 
 struct mob_treantAI  : public ScriptedAI
 {
-    mob_treantAI (Creature *c) : ScriptedAI(c)
-    {
-        WarpGuid = 0;
-    }
+    mob_treantAI (Creature *c) : ScriptedAI(c), WarpGuid(0) {}
 
     uint64 WarpGuid;
     Timer lifeExpired;
 
     void Reset()
     {
-        lifeExpired = 20000;
+        lifeExpired.Reset(20000);
+        me->SetSpeed(MOVE_RUN, 0.5f);
     }
 
     void EnterCombat(Unit *who) {}
 
     void MoveInLineOfSight(Unit*) {}
+
+    void MovementInform(uint32 type, uint32 id)
+    {
+        if (type == POINT_MOTION_TYPE && id == 1)
+            me->GetMotionMaster()->MoveIdle();
+    }
 
     void UpdateAI(const uint32 diff)
     {
@@ -57,6 +61,8 @@ struct mob_treantAI  : public ScriptedAI
         {
             if (WarpGuid && lifeExpired.Expired(diff))
             {
+                lifeExpired = 0;
+
                 if (Unit *Warp = me->GetUnit(WarpGuid))
                 {
                     int32 CurrentHP_Treant = (int32)m_creature->GetHealth();
@@ -104,7 +110,7 @@ float treant_pos[6][3] =
 
 struct boss_warp_splinterAI : public ScriptedAI
 {
-    boss_warp_splinterAI(Creature *c) : ScriptedAI(c)
+    boss_warp_splinterAI(Creature *c) : ScriptedAI(c), summons(me)
     {
         HeroicMode = c->GetMap()->IsHeroic();
         Treant_Spawn_Pos_X = c->GetPositionX();
@@ -112,6 +118,7 @@ struct boss_warp_splinterAI : public ScriptedAI
         m_creature->GetPosition(wLoc);
     }
 
+    SummonList summons;
     Timer War_Stomp_Timer;
     Timer Summon_Treants_Timer;
     Timer Arcane_Volley_Timer;
@@ -124,6 +131,7 @@ struct boss_warp_splinterAI : public ScriptedAI
 
     void Reset()
     {
+        summons.DespawnAll();
         War_Stomp_Timer.Reset(25000 + rand() % 15000);
         Summon_Treants_Timer.Reset(45000);
         Arcane_Volley_Timer.Reset(8000 + rand() % 12000);
@@ -141,9 +149,15 @@ struct boss_warp_splinterAI : public ScriptedAI
         DoScriptText(RAND(SAY_SLAY_1, SAY_SLAY_2), m_creature);
     }
 
+    void JustSummoned(Creature* treant)
+    {
+        summons.Summon(treant);
+    }
+
     void JustDied(Unit* Killer)
     {
         DoScriptText(SAY_DEATH, m_creature);
+        summons.DespawnAll();
     }
 
     void SummonTreants()
@@ -157,7 +171,11 @@ struct boss_warp_splinterAI : public ScriptedAI
             float O = - m_creature->GetAngle(X,Y);
 
             if(Creature *pTreant = m_creature->SummonCreature(CREATURE_TREANT,treant_pos[i][0],treant_pos[i][1],treant_pos[i][2],O,TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN,25000))
+            {
+                pTreant->setFaction(me->getFaction());
+                pTreant->GetMotionMaster()->MovePoint(1, wLoc.coord_x, wLoc.coord_y, wLoc.coord_z);
                 ((mob_treantAI*)pTreant->AI())->WarpGuid = m_creature->GetGUID();
+            }
         }
 
         DoScriptText(RAND(SAY_SUMMON_1, SAY_SUMMON_2), m_creature);

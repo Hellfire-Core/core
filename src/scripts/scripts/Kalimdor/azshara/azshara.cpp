@@ -328,6 +328,8 @@ struct mob_rizzle_sprysprocketAI : public ScriptedAI
                DoScriptText(SAY_RIZZLE_GRENADE, m_creature, player);
                DoCast(player, SPELL_RIZZLE_FROST_GRENADE, true);
             }
+
+            Grenade_Timer = 30000;
         } 
 
         if(Check_Timer.Expired(diff))
@@ -347,6 +349,8 @@ struct mob_rizzle_sprysprocketAI : public ScriptedAI
                 m_creature->RemoveAurasDueToSpell(SPELL_PERIODIC_DEPTH_CHARGE);
                 Reached = true;
             }
+
+            Check_Timer = 1000;
         } 
 
     }
