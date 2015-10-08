@@ -6935,6 +6935,11 @@ void ObjectMgr::CountRollVote(const uint64& playerGUID, const uint64& Guid, uint
 {
     for (Rolls::iterator iter = mLootRolls.begin(); iter != mLootRolls.end(); ++iter)
     {
+        if ((*iter) == NULL)
+        {
+            sLog.outLog(LOG_DEFAULT, "ERROR: Objectmgr::CountRollVote(args) Rolls::iterator is NULL!");
+            return;
+        }
         if ((*iter)->isValid() && (*iter)->itemGUID == Guid && (*iter)->CountRollVote(playerGUID, Choice))
         {
             mLootRolls.erase(iter);
