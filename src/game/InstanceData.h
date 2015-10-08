@@ -213,10 +213,11 @@ public:
             for (Map::PlayerList::const_iterator i = list.begin(); i != list.end(); ++i)
             {
                 if (Player* plr = i->getSource())
-                {
-                    guilds[plr->GetGuildId()]++;
-                    totalcount++;
-                }
+                    if (plr->GetSession() && plr->GetSession()->GetPermissions() == PERM_PLAYER)
+                    {
+                        guilds[plr->GetGuildId()]++;
+                        totalcount++;
+                    }
             }
             for (std::map<uint32, uint32>::iterator mitr = guilds.begin(); mitr != guilds.end(); mitr++)
             {
