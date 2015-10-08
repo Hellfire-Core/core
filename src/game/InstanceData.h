@@ -225,10 +225,12 @@ public:
                     guild_id = mitr->first;
                     break;
                 }
-            }
-
+            }          
             if (guild_id)
-            {
+            {   // to get the last record before inserting our result
+                QueryResultAutoPtr record = RealmDataDatabase.PQuery(
+                    "SELECT `length` FROM boss_fights WHERE mob_id = %u ORDER BY LENGTH ASC LIMIT 1", uint32(m_encounter));
+
                 RealmDataDatabase.DirectPExecute("INSERT INTO boss_fights VALUES (NULL,%u,%u,%u,%u,SYSDATE())",
                     uint32(m_encounter), m_map->GetInstanceId(), guild_id, uint32(time(NULL) - m_timer));
                 QueryResultAutoPtr result = RealmDataDatabase.PQuery(
@@ -261,6 +263,26 @@ public:
                     "(SELECT \"%u\", itemId, SUM(itemCount) FROM group_saved_loot WHERE instanceId = %u GROUP BY itemId);",
                     kill_id,m_map->GetInstanceId());
                 RealmDataDatabase.CommitTransaction();
+
+                
+                if (record) //TODO: add disable/enable to config
+                {
+                    uint32 last_record = record->Fetch()[0].GetUInt32();
+                    if (last_record > uint32(time(NULL) - m_timer))
+                    {
+                        QueryResultAutoPtr names = RealmDataDatabase.PQuery(
+                            "SELECT g.name, n.boss_name FROM boss_fights f JOIN guild g ON g.guildid = f.guild_id JOIN boss_id_names n ON n.boss_id = f.mob_id "
+                            "WHERE kill_id = %u", kill_id);
+                        if (names)
+                        {
+                            std::string message = "New server record: " + std::to_string(uint32(time(NULL) - m_timer)) + " seconds (last record: "
+                                + std::to_string(last_record) + " seconds) for boss " + names->Fetch()[1].GetCppString()
+                                + " by guild <" + names->Fetch()[0].GetCppString() + ">.";
+                            
+                            sWorld.SendServerMessage(SERVER_MSG_STRING, message.c_str());
+                        }
+                    }
+                }
             }
         }
 
