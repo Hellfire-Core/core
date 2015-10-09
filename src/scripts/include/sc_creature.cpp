@@ -31,9 +31,9 @@ struct TSpellSummary
     uint8 Effects;                                          // set of enum SelectEffect
 } *SpellSummary;
 
-void SummonList::DoAction(uint32 entry, uint32 info)
+void SummonList::DoAction(uint32 entry, uint32 info) const
 {
-    for (iterator i = begin(); i != end(); )
+    for (const_iterator i = begin(); i != end(); )
     {
          Creature *summon = Unit::GetCreature(*m_creature, *i);
          i++;
@@ -42,9 +42,9 @@ void SummonList::DoAction(uint32 entry, uint32 info)
     }
 }
 
-void SummonList::Cast(uint32 entry, uint32 spell, Unit* target)
+void SummonList::Cast(uint32 entry, uint32 spell, Unit* target) const
 {
-    for (iterator i = begin(); i != end(); )
+    for (const_iterator i = begin(); i != end(); )
     {
          Creature *summon = Unit::GetCreature(*m_creature, *i);
          i++;
@@ -88,9 +88,9 @@ void SummonList::DespawnEntry(uint32 entry)
     }
 }
 
-void SummonList::AuraOnEntry(uint32 entry, uint32 spellId, bool apply)
+void SummonList::AuraOnEntry(uint32 entry, uint32 spellId, bool apply) const
 {
-    for(iterator i = begin(); i != end(); ++i)
+    for(const_iterator i = begin(); i != end(); ++i)
     {
         if(Creature *summon = Unit::GetCreature(*m_creature, *i))
         {
@@ -118,7 +118,7 @@ void SummonList::DespawnAll()
     clear();
 }
 
-bool SummonList::isEmpty()
+bool SummonList::isEmpty() const
 {
     return empty();
 }

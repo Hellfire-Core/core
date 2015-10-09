@@ -47,10 +47,10 @@ public:
     void Despawn(Creature *summon);
     void DespawnEntry(uint32 entry);
     void DespawnAll();
-    bool isEmpty();
-    void AuraOnEntry(uint32 entry, uint32 spellId, bool apply);
-    void DoAction(uint32 entry, uint32 info);
-    void Cast(uint32 entry, uint32 spell, Unit* target);
+    bool isEmpty() const;
+    void AuraOnEntry(uint32 entry, uint32 spellId, bool apply) const;
+    void DoAction(uint32 entry, uint32 info) const;
+    void Cast(uint32 entry, uint32 spell, Unit* target) const;
 private:
     Creature *m_creature;
 };
