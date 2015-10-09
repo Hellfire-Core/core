@@ -54,14 +54,15 @@ enum Akilzon
 
 struct boss_akilzonAI : public ScriptedAI
 {
-    boss_akilzonAI(Creature *c) : ScriptedAI(c)
+    boss_akilzonAI(Creature *c) : ScriptedAI(c), summons(me)
     {
-        pInstance = (c->GetInstanceData());
+        pInstance = c->GetInstanceData();
         m_creature->GetPosition(wLoc);
     }
     ScriptedInstance *pInstance;
 
     std::list<Creature*> BirdsList;
+    SummonList summons;
 
     Timer StaticDisruption_Timer;
     Timer GustOfWind_Timer;
@@ -89,6 +90,7 @@ struct boss_akilzonAI : public ScriptedAI
         Enrage_Timer.Reset(480000); //8 minutes to enrage
         SummonEagles_Timer.Reset(99999);
 
+        summons.DespawnAll();
         BirdsList.clear();
 
         isRaining = false;
@@ -114,9 +116,16 @@ struct boss_akilzonAI : public ScriptedAI
 
     void JustDied(Unit* Killer)
     {
+        summons.DespawnAll();
         DoScriptText(SAY_DEATH, m_creature);
+
         if(pInstance)
             pInstance->SetData(DATA_AKILZONEVENT, DONE);
+    }
+
+    void JustSummoned(Creature* eagle)
+    {
+        summons.Summon(eagle);
     }
 
     void KilledUnit(Unit* victim)
