@@ -1462,6 +1462,22 @@ void Spell::EffectDummy(uint32 i)
 
                     return;
                 }
+                case 49357: // Brewfest Mount Transformation
+                case 52845: // Brewfest Mount Transformation (Faction Swap)
+                {
+                    if (!m_caster->ToPlayer() || !m_caster->HasAuraType(SPELL_AURA_MOUNTED))
+                        return;
+
+                    float speed = m_caster->GetSpeedRate(MOVE_RUN);
+                    m_caster->RemoveSpellsCausingAura(SPELL_AURA_MOUNTED);
+
+                    if (speed >= 2.0f) // 100% ground
+                        m_caster->CastSpell(m_caster, m_caster->ToPlayer()->GetTeam() == ALLIANCE ? 49379 : 43900, true);
+                    else // 60% ground
+                        m_caster->CastSpell(m_caster, m_caster->ToPlayer()->GetTeam() == ALLIANCE ? 50869 : 50870, true);
+
+                    return;
+                }
                 //case 26074:                               // Holiday Cheer
                 //    return; -- implemented at client side
                 case 28006:                                 // Arcane Cloaking
