@@ -67,9 +67,8 @@ enum LurkerEvents
     LURKER_EVENT_GEYSER         = 5,
     LURKER_EVENT_SUBMERGE       = 6,
     LURKER_EVENT_REEMERGING     = 7,
-    LURKER_EVENT_REEMERGE       = 8
-
-
+    LURKER_EVENT_REEMERGE       = 8,
+    LURKER_EVENT_SPAWN_ADDS     = 9
 };
 
 struct boss_the_lurker_belowAI : public BossAI
@@ -152,7 +151,7 @@ struct boss_the_lurker_belowAI : public BossAI
     void SummonAdds()
     {
         for (uint8 i = 0; i < 9; i++)
-            Creature *pSummon = me->SummonCreature(addPos[i][0], addPos[i][1], addPos[i][2], addPos[i][3], 0, TEMPSUMMON_DEAD_DESPAWN, 2000);
+            me->SummonCreature(addPos[i][0], addPos[i][1], addPos[i][2], addPos[i][3], 0, TEMPSUMMON_DEAD_DESPAWN, 2000);
     }
 
     void MovementInform(uint32 type, uint32 data)
@@ -282,11 +281,16 @@ struct boss_the_lurker_belowAI : public BossAI
                     me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                     me->RemoveAllAuras();
 
-                    SummonAdds();
                     m_submerged = true;
 
                     events.Reset();
+                    events.ScheduleEvent(LURKER_EVENT_SPAWN_ADDS, 5000);
                     events.ScheduleEvent(LURKER_EVENT_REEMERGING, 55000);
+                    break;
+                }
+                case LURKER_EVENT_SPAWN_ADDS:
+                {
+                    SummonAdds();
                     break;
                 }
                 case LURKER_EVENT_REEMERGING:
