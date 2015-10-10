@@ -86,6 +86,9 @@ struct npc_hogger_theAI : public ScriptedAI
             SummonMobs(5, NPC_RIVERPAW_ELITE);
             return;
         }
+
+        adsWave++;
+        spawnTimer = 3000;
     }
 
     void SummonMobs(uint8 count, uint32 entry)
@@ -130,7 +133,7 @@ struct npc_hogger_theAI : public ScriptedAI
                     if (m_creature->getVictimGUID() == stunTargetGUID && target->HasAura(SPELL_HEAD_BUTT))
                         m_creature->Kill(target);
                     stunTargetGUID = 0;
-                    stunTimer = 7100;
+                    stunTimer = 12100;
                     return; // target could be dead, avoid problems
                 }
             }
@@ -185,7 +188,7 @@ struct npc_gruff_ai : public ScriptedAI
 
 CreatureAI* GetAI_npc_gruff(Creature* c)
 {
-    return new AggressorAI(c);
+    return new npc_gruff_ai(c);
 }
 
 void AddSC_hogger_the()
