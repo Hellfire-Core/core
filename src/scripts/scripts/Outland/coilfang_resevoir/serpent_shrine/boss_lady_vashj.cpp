@@ -806,6 +806,8 @@ struct mob_toxic_sporebatAI : public ScriptedAI
 
     void UpdateAI (const uint32 diff)
     {
+        DoSpecialThings(diff, DO_PULSE_COMBAT, 300.0f);
+
         //Random movement
         if (!moving)
         {
