@@ -477,6 +477,7 @@
     <ClCompile Include="..\..\src\scripts\scripts\boss\boss_lethon.cpp" />
     <ClCompile Include="..\..\src\scripts\scripts\boss\boss_taerar.cpp" />
     <ClCompile Include="..\..\src\scripts\scripts\boss\boss_ysondre.cpp" />
+    <ClCompile Include="..\..\src\scripts\scripts\boss\HoggerThe.cpp" />
     <ClCompile Include="..\..\src\scripts\scripts\Eastern Kingdoms\gnomeregan\gnomeregan.cpp" />
     <ClCompile Include="..\..\src\scripts\scripts\special\mob_generic_creature.cpp" />
     <ClCompile Include="..\..\src\scripts\scripts\special\simple_ai.cpp" />

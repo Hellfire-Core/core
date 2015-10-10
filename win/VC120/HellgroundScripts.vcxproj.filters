@@ -1567,6 +1567,9 @@
     <ClCompile Include="..\..\src\scripts\scripts\Eastern Kingdoms\gnomeregan\gnomeregan.cpp">
       <Filter>Scripts\Eastern Kingdoms\Gnomeregan</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\scripts\scripts\boss\HoggerThe.cpp">
+      <Filter>Scripts\boss</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\scripts\scripts\Eastern Kingdoms\deadmines\def_deadmines.h">
