@@ -53,6 +53,9 @@ struct npc_hogger_theAI : public ScriptedAI
         phase = 1;
         adsWave = 0;
         summons.DespawnAll();
+        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        m_creature->SetVisibility(VISIBILITY_ON);
     }
 
     void EnterCombat(Unit* who)
@@ -175,6 +178,13 @@ struct npc_gruff_ai : public ScriptedAI
 {
     npc_gruff_ai(Creature* c) : ScriptedAI(c) {}
 
+    Timer arcaneTimer;
+
+    void Reset()
+    {
+        arcaneTimer.Reset(2000);
+    }
+
     void IsSummonedBy(Creature* hogger)
     {
         m_creature->Yell("YELL SOMETHING!!!!111",0,0);
@@ -184,6 +194,18 @@ struct npc_gruff_ai : public ScriptedAI
     {
         m_creature->Yell("Ouch, me died...", 0, 0);
     }
+
+    void UpdateAI(const uint32 diff)
+    {
+        if (!UpdateVictim())
+            return;
+        
+        if (arcaneTimer.Expired(7000))
+            DoCast(m_creature->getVictim(), SPELL_ARCANE_EXPLOSION);
+
+        DoMeleeAttackIfReady();
+    }
+
 };
 
 CreatureAI* GetAI_npc_gruff(Creature* c)
