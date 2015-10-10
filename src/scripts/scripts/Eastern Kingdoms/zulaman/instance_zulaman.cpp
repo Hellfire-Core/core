@@ -529,6 +529,8 @@ struct instance_zulaman : public ScriptedInstance
             player->SendUpdateWorldState(3104, 1);
             player->SendUpdateWorldState(3106, QuestMinute);
         }
+        else
+            player->SendUpdateWorldState(3104, 0);
     }
 
 
