@@ -261,8 +261,8 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
         data << mover->GetPackGUID();
         data << mover->GetUnitStateMgr().GetCounter(UNIT_ACTION_ROOT);
         SendPacket(&data);
-        //sLog.outLog(LOG_CHEAT, "Player %s (GUID:%u) moving when rooted, position %f %f %f %u",
-        //    _player->GetName(), _player->GetGUIDLow(), movementInfo.pos.x, movementInfo.pos.y, movementInfo.pos.z, _player->GetMapId());
+        sLog.outLog(LOG_CHEAT, "Player %s (GUID:%u) moving when rooted, position %f %f %f %u",
+            _player->GetName(), _player->GetGUIDLow(), movementInfo.pos.x, movementInfo.pos.y, movementInfo.pos.z, _player->GetMapId());
     }
 }
 
@@ -279,7 +279,12 @@ bool WorldSession::HandleMoverRelocation(MovementInfo& movementInfo)
     if (Player *plMover = mover->ToPlayer())
     {
         if (mover->hasUnitState(UNIT_STAT_ROOT))
+        {
+            if (mover->m_movementInfo.pos.x != movementInfo.pos.x ||
+                mover->m_movementInfo.pos.y != movementInfo.pos.y ||
+                mover->m_movementInfo.pos.z != movementInfo.pos.z) // allow rotating in roots
             return false;
+        }
 
         if (sWorld.getConfig(CONFIG_ENABLE_PASSIVE_ANTICHEAT) && !plMover->hasUnitState(UNIT_STAT_LOST_CONTROL | UNIT_STAT_NOT_MOVE) && !plMover->GetSession()->HasPermissions(PERM_GMT_DEV) && plMover->m_AC_timer == 0)
             sWorld.m_ac.execute(new ACRequest(plMover, plMover->m_movementInfo, movementInfo));
