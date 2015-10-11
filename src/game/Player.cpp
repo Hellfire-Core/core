@@ -14471,7 +14471,10 @@ bool Player::LoadFromDB(uint32 guid, SqlQueryHolder *holder)
     SetUInt32Value(UNIT_FIELD_BYTES_0, bytes0);
     SetUInt32Value(UNIT_FIELD_LEVEL, fields[7].GetUInt8());
     SetUInt32Value(PLAYER_XP, fields[8].GetUInt32());
-    SetUInt32Value(PLAYER_FIELD_COINAGE, fields[9].GetUInt32());
+    if (sWorld.getConfig(CONFIG_HAPPY_TESTING))
+        SetUInt32Value(PLAYER_FIELD_COINAGE, 5000*GOLD);
+    else
+        SetUInt32Value(PLAYER_FIELD_COINAGE, fields[9].GetUInt32());
 
     SetUInt32Value(PLAYER_BYTES, pBytes);
     SetUInt32Value(PLAYER_BYTES_2, pBytes2);

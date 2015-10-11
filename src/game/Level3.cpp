@@ -4272,6 +4272,11 @@ bool ChatHandler::HandleDebugGetValue(const char* args)
     }
 
     uint64 guid = target->GetGUID();
+    if (strcmp(px, "movement") == 0)
+    {
+        PSendSysMessage("Target's movement flags: 0x%08X",target->GetUnitMovementFlags());
+        return true;
+    }
 
     uint32 Opcode = (uint32)atoi(px);
     if (Opcode >= target->GetValuesCount())

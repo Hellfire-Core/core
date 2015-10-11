@@ -685,6 +685,10 @@ RealmBans = 0
 #        Disallow players to create groups while in FFA area
 #        Default: 0
 #
+#    HappyTesting
+#        No consumables/reagents used, no inventory damage, gold set to 5000g after each relog
+#        Default: 0 (false)
+#
 #    HonorPointsAfterDuel
 #        The amount of honor points the duel winner will get after a duel.
 #        Default: 0 - disable

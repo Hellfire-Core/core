@@ -12478,7 +12478,7 @@ void Unit::Kill(Unit *pVictim, bool durabilityLoss)
         playerVictim->SetPvPDeath(player != NULL);
 
         // only if not player and not controlled by player pet. And not at BG
-        if (durabilityLoss && !player && !playerVictim->InBattleGround())
+        if (durabilityLoss && !player && !playerVictim->InBattleGround() && !sWorld.getConfig(CONFIG_HAPPY_TESTING))
         {
             playerVictim->DurabilityLossAll(0.10f,false);
 

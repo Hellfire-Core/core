@@ -541,6 +541,7 @@ void World::LoadConfigSettings(bool reload)
     loadConfig(CONFIG_DISABLE_PVP, "DisablePVP", false);
     loadConfig(CONFIG_EVENT_ANNOUNCE, "EventAnnounce", 0);
     loadConfig(CONFIG_FFA_DISALLOWGROUP, "FFA.DisallowGroup", false);
+    loadConfig(CONFIG_HAPPY_TESTING, "HappyTesting", false);
     loadConfig(CONFIG_HONOR_AFTER_DUEL, "HonorPointsAfterDuel", 0);
     if (m_configs[CONFIG_HONOR_AFTER_DUEL] < 0)
         m_configs[CONFIG_HONOR_AFTER_DUEL]= 0;

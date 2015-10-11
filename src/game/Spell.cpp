@@ -3650,7 +3650,7 @@ void Spell::TakeCastItem()
         }
     }
 
-    if (expendable && withoutCharges)
+    if (expendable && withoutCharges && !sWorld.getConfig(CONFIG_HAPPY_TESTING))
     {
         uint32 count = 1;
         ((Player*)m_caster)->DestroyItemCount(m_CastItem, count, true);
