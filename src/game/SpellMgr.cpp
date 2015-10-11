@@ -279,7 +279,7 @@ uint32 SpellMgr::GetSpellCastTime(SpellEntry const* spellInfo, Spell const* spel
             castTime = int32(castTime * spell->GetCaster()->GetFloatValue(UNIT_MOD_CAST_SPEED));
         else
         {
-            if (spell->IsRangedSpell() && !spell->IsAutoRepeat())
+            if (spell->IsRangedSpell() && !spell->IsAutoRepeat() && !(spell->GetCaster()->getClassMask() & CLASSMASK_WAND_USERS))
                 castTime = int32(castTime * spell->GetCaster()->m_modAttackSpeedPct[RANGED_ATTACK]);
         }
     }
