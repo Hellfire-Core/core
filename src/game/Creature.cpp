@@ -1909,6 +1909,7 @@ void Creature::Respawn()
         AI()->JustRespawned();
     }
 
+    SendHeartBeat();
     SendMonsterStop();
 }
 
