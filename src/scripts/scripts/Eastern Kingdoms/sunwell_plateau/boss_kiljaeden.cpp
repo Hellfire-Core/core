@@ -1135,6 +1135,7 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
         if (Creature* Control = ((Creature*)Unit::GetUnit(*m_creature, pInstance->GetData64(DATA_KILJAEDEN_CONTROLLER))))
             Control->AI()->EnterEvadeMode();
 
+        Summons.DoAction(0, DECEIVER_RESET); // portal-> despawn imps
         Summons.DespawnAll();
 
     }
@@ -1220,14 +1221,16 @@ struct mob_felfire_portalAI : public Scripted_NoMovementAI
         summoned->AI()->DoZoneInCombat();
         Summons.Summon(summoned);
     }
+    void DoAction(uint32, uint32 action)
+    {
+        if (action == DECEIVER_RESET)
+            Summons.DespawnAll();
+    }
 
 
 
     void UpdateAI(const uint32 diff)
     {
-        if (!UpdateVictim())
-            return;
-
         if (SpawnFiendTimer.Expired(diff))
         {
             Creature* Fiend = DoSpawnCreature(CREATURE_VOLATILE_FELFIRE_FIEND, 0, 0, 0, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 20000);
