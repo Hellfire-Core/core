@@ -320,14 +320,110 @@ struct boss_kalecgos_kjAI : public ScriptedAI
     {
         pInstance = (c->GetInstanceData());
     }
+
     ScriptedInstance* pInstance;
     Timer FelmystOutroTimer;
+
+    GameObject* Orb[4];
+    uint8 OrbsEmpowered;
+    uint8 EmpowerCount;
+
+    bool Searched;
+
 
     void Reset()
     {
         if (pInstance->GetData(DATA_EREDAR_TWINS_EVENT) == DONE)
             me->SetVisibility(VISIBILITY_OFF);
+
+        for (uint8 i = 0; i < 4; ++i)
+            Orb[i] = NULL;
+        FindOrbs();
+
+        FelmystOutroTimer = 0;
+        OrbsEmpowered = 0;
+        EmpowerCount = 0;
+        m_creature->SetLevitate(true);
+        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        m_creature->setActive(true);
+        Searched = false;
     }
+
+
+    void FindOrbs()
+    {
+        
+        //   std::list<GameObject*> orbList;
+        //   AllOrbsInGrid check;
+        //   Cell::VisitGridObjects(me, searcher, me->GetMap()->GetVisibilityDistance());
+        //   if (orbList.empty())
+        //       return;
+        //   uint8 i = 0;
+        //   for (std::list<GameObject*>::iterator itr = orbList.begin(); itr != orbList.end(); ++itr, ++i)
+        //   {
+        //       Orb[i] = GameObject::GetGameObject(*m_creature, (*itr)->GetGUID());
+        //   }
+        //
+    }
+
+    void ResetOrbs()
+    {
+        m_creature->RemoveDynObject(SPELL_RING_OF_BLUE_FLAMES);
+        for (uint8 i = 0; i < 4; ++i)
+            if (Orb[i]) Orb[i]->SetUInt32Value(GAMEOBJECT_FACTION, 0);
+    }
+
+    void EmpowerOrb(bool all)
+    {
+        if (!Orb[OrbsEmpowered])
+            return;
+        uint8 random = rand() % 3;
+        if (all)
+        {
+            m_creature->RemoveDynObject(SPELL_RING_OF_BLUE_FLAMES);
+            for (uint8 i = 0; i < 4; ++i)
+            {
+                if (!Orb[i]) return;
+                Orb[i]->CastSpell(m_creature, SPELL_RING_OF_BLUE_FLAMES);
+                Orb[i]->SetUInt32Value(GAMEOBJECT_FACTION, 35);
+                Orb[i]->setActive(true);
+                Orb[i]->Refresh();
+            }
+        }
+        else
+        {
+            float x, y, z, dx, dy, dz;
+            Orb[random]->GetPosition(x, y, z);
+            for (uint8 i = 0; i < 4; ++i)
+            {
+                DynamicObject* Dyn = m_creature->GetDynObject(SPELL_RING_OF_BLUE_FLAMES);
+                if (Dyn)
+                {
+                    Dyn->GetPosition(dx, dy, dz);
+                    if (x == dx && dy == y && dz == z)
+                    {
+                        Dyn->RemoveFromWorld();
+                        break;
+                    }
+                }
+            }
+            Orb[random]->CastSpell(m_creature, SPELL_RING_OF_BLUE_FLAMES);
+            Orb[random]->SetUInt32Value(GAMEOBJECT_FACTION, 35);
+            Orb[random]->setActive(true);
+            Orb[random]->Refresh();
+            ++OrbsEmpowered;
+        }
+        ++EmpowerCount;
+
+        switch (EmpowerCount)
+        {
+            case 1: DoScriptText(SAY_KALEC_ORB_READY1, m_creature); break;
+            case 2: DoScriptText(SAY_KALEC_ORB_READY2, m_creature); break;
+            case 3: DoScriptText(SAY_KALEC_ORB_READY3, m_creature); break;
+            case 4: DoScriptText(SAY_KALEC_ORB_READY4, m_creature); break;
+        }
+    }
+
 
     void MovementInform(uint32 Type, uint32 Id)
     {
@@ -356,103 +452,18 @@ struct boss_kalecgos_kjAI : public ScriptedAI
             me->GetMotionMaster()->MovePoint(60, 1547, 531, 161);
             FelmystOutroTimer = 0;
         }
+
+        if (!Searched)
+        {
+            FindOrbs();
+            Searched = true;
+        }
+
+        if (OrbsEmpowered == 4) OrbsEmpowered = 0;
     }
-    // to be rewritten later
-    /*
-        GameObject* Orb[4];
-        uint8 OrbsEmpowered;
-        uint8 EmpowerCount;
 
-        bool Searched;
 
-        void InitializeAI(){
-        for(uint8 i = 0; i < 4; ++i)
-        Orb[i] = NULL;
-        FindOrbs();
-        OrbsEmpowered = 0;
-        EmpowerCount = 0;
-        m_creature->SetLevitate(true);
-        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-        m_creature->setActive(true);
-        Searched = false;
-        FindOrbs();
-        }
 
-        void Reset(){}
-
-        void FindOrbs()
-        {
-        std::list<GameObject*> orbList;
-        AllOrbsInGrid check;
-        Hellground::GameObjectListSearcher<AllOrbsInGrid> searcher(orbList, check);
-        Cell::VisitGridObjects(me, searcher, me->GetMap()->GetVisibilityDistance());
-        if(orbList.empty())
-        return;
-        uint8 i = 0;
-        for(std::list<GameObject*>::iterator itr = orbList.begin(); itr != orbList.end(); ++itr, ++i){
-        Orb[i] = GameObject::GetGameObject(*m_creature, (*itr)->GetGUID());
-        }
-        }
-
-        void ResetOrbs(){
-        m_creature->RemoveDynObject(SPELL_RING_OF_BLUE_FLAMES);
-        for(uint8 i = 0; i < 4; ++i)
-        if(Orb[i]) Orb[i]->SetUInt32Value(GAMEOBJECT_FACTION, 0);
-        }
-
-        void EmpowerOrb(bool all)
-        {
-        if(!Orb[OrbsEmpowered])
-        return;
-        uint8 random = rand()%3;
-        if(all){
-        m_creature->RemoveDynObject(SPELL_RING_OF_BLUE_FLAMES);
-        for(uint8 i = 0; i < 4; ++i){
-        if(!Orb[i]) return;
-        Orb[i]->CastSpell(m_creature, SPELL_RING_OF_BLUE_FLAMES);
-        Orb[i]->SetUInt32Value(GAMEOBJECT_FACTION, 35);
-        Orb[i]->setActive(true);
-        Orb[i]->Refresh();
-        }
-        }else{
-        float x,y,z, dx,dy,dz;
-        Orb[random]->GetPosition(x,y,z);
-        for(uint8 i = 0; i < 4; ++i){
-        DynamicObject* Dyn = m_creature->GetDynObject(SPELL_RING_OF_BLUE_FLAMES);
-        if(Dyn){
-        Dyn->GetPosition(dx,dy,dz);
-        if(x == dx && dy == y && dz == z){
-        Dyn->RemoveFromWorld();
-        break;
-        }
-        }
-        }
-        Orb[random]->CastSpell(m_creature, SPELL_RING_OF_BLUE_FLAMES);
-        Orb[random]->SetUInt32Value(GAMEOBJECT_FACTION, 35);
-        Orb[random]->setActive(true);
-        Orb[random]->Refresh();
-        ++OrbsEmpowered;
-        }
-        ++EmpowerCount;
-
-        switch(EmpowerCount){
-        case 1: DoScriptText(SAY_KALEC_ORB_READY1, m_creature); break;
-        case 2: DoScriptText(SAY_KALEC_ORB_READY2, m_creature); break;
-        case 3: DoScriptText(SAY_KALEC_ORB_READY3, m_creature); break;
-        case 4: DoScriptText(SAY_KALEC_ORB_READY4, m_creature); break;
-        }
-        }
-
-        void UpdateAI(const uint32 diff)
-        {
-        if(!Searched)
-        {
-        FindOrbs();
-        Searched = true;
-        }
-
-        if(OrbsEmpowered == 4) OrbsEmpowered = 0;
-        }*/
 };
 
 CreatureAI* GetAI_boss_kalecgos_kj(Creature *_Creature)
