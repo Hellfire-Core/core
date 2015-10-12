@@ -300,6 +300,8 @@ struct boss_brutallusAI : public ScriptedAI
                 break;
             case 16:
                 DoScriptText(YELL_MADR_DEATH, pMadrigosa);
+                pMadrigosa->setHover(false);
+                pMadrigosa->SetFlying(false);
                 pMadrigosa->SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_FEIGN_DEATH);
                 pMadrigosa->SetFlag(UNIT_DYNAMIC_FLAGS, (UNIT_DYNFLAG_DEAD | UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_PACIFIED));
                 pMadrigosa->CombatStop();
