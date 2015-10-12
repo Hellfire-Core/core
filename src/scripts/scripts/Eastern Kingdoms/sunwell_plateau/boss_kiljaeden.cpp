@@ -970,7 +970,9 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
 
         if (!SummonedAnveena)
         {
-            DoSpawnCreature(CREATURE_ANVEENA, 0, 0, 40, 0, TEMPSUMMON_DEAD_DESPAWN, 0);
+            Unit* Anveena = DoSpawnCreature(CREATURE_ANVEENA, 0, 0, 40, 0, TEMPSUMMON_DEAD_DESPAWN, 0);
+            if (Anveena)
+                Anveena->setHover(true);
             DoCast(m_creature, SPELL_ANVEENA_ENERGY_DRAIN);
             SummonedAnveena = true;
         }
