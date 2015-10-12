@@ -352,25 +352,30 @@ struct boss_kalecgos_kjAI : public ScriptedAI
 
     void FindOrbs()
     {
-        
-        //   std::list<GameObject*> orbList;
-        //   AllOrbsInGrid check;
-        //   Cell::VisitGridObjects(me, searcher, me->GetMap()->GetVisibilityDistance());
-        //   if (orbList.empty())
-        //       return;
-        //   uint8 i = 0;
-        //   for (std::list<GameObject*>::iterator itr = orbList.begin(); itr != orbList.end(); ++itr, ++i)
-        //   {
-        //       Orb[i] = GameObject::GetGameObject(*m_creature, (*itr)->GetGUID());
-        //   }
-        //
+     // std::list<GameObject*> orbList;
+        std::list<GameObject*> orbList2;
+        AllOrbsInGrid check;
+        Hellground::AllGameObjectsInRange objects(me, 100.0f);
+    //  Hellground::ObjectListSearcher<GameObject, Hellground::AllGameObjectsInRange> searcher(orbList, objects);
+        Hellground::ObjectListSearcher<GameObject, AllOrbsInGrid> searcher(orbList2, check);
+        Cell::VisitGridObjects(me, searcher, me->GetMap()->GetVisibilityDistance()); 
+
+        if (orbList2.empty())
+             return;
+        uint8 i = 0;
+        for (std::list<GameObject*>::iterator itr = orbList2.begin(); itr != orbList2.end(); ++itr, ++i)
+        {
+            Orb[i] = GameObject::GetGameObject(*me, (*itr)->GetGUID());
+
+        }
     }
 
     void ResetOrbs()
     {
         m_creature->RemoveDynObject(SPELL_RING_OF_BLUE_FLAMES);
         for (uint8 i = 0; i < 4; ++i)
-            if (Orb[i]) Orb[i]->SetUInt32Value(GAMEOBJECT_FACTION, 0);
+            if (Orb[i])
+                Orb[i]->SetUInt32Value(GAMEOBJECT_FACTION, 0);
     }
 
     void EmpowerOrb(bool all)
@@ -380,11 +385,11 @@ struct boss_kalecgos_kjAI : public ScriptedAI
         uint8 random = rand() % 3;
         if (all)
         {
-            m_creature->RemoveDynObject(SPELL_RING_OF_BLUE_FLAMES);
+            me->RemoveDynObject(SPELL_RING_OF_BLUE_FLAMES);
             for (uint8 i = 0; i < 4; ++i)
             {
                 if (!Orb[i]) return;
-                Orb[i]->CastSpell(m_creature, SPELL_RING_OF_BLUE_FLAMES);
+                Orb[i]->CastSpell(me, SPELL_RING_OF_BLUE_FLAMES);
                 Orb[i]->SetUInt32Value(GAMEOBJECT_FACTION, 35);
                 Orb[i]->setActive(true);
                 Orb[i]->Refresh();
@@ -396,7 +401,7 @@ struct boss_kalecgos_kjAI : public ScriptedAI
             Orb[random]->GetPosition(x, y, z);
             for (uint8 i = 0; i < 4; ++i)
             {
-                DynamicObject* Dyn = m_creature->GetDynObject(SPELL_RING_OF_BLUE_FLAMES);
+                DynamicObject* Dyn = me->GetDynObject(SPELL_RING_OF_BLUE_FLAMES);
                 if (Dyn)
                 {
                     Dyn->GetPosition(dx, dy, dz);
@@ -407,7 +412,7 @@ struct boss_kalecgos_kjAI : public ScriptedAI
                     }
                 }
             }
-            Orb[random]->CastSpell(m_creature, SPELL_RING_OF_BLUE_FLAMES);
+            Orb[random]->CastSpell(me, SPELL_RING_OF_BLUE_FLAMES);
             Orb[random]->SetUInt32Value(GAMEOBJECT_FACTION, 35);
             Orb[random]->setActive(true);
             Orb[random]->Refresh();
