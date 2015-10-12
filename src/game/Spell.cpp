@@ -590,7 +590,7 @@ void Spell::prepareDataForTriggerSystem()
     // can spell trigger another or not (m_canTrigger)
     // Create base triggers flags for Attacker and Victim (m_procAttacker and m_procVictim)
     //==========================================================================================
-
+    // SPELL_CAN_TRIGGER_OR_NOT
     // Fill flag can spell trigger or not
     if (!IsTriggeredSpell())
         m_canTrigger = true;          // Normal cast - can trigger

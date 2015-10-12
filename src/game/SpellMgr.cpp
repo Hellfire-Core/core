@@ -686,7 +686,7 @@ bool SpellMgr::IsPositiveEffect(uint32 spellId, uint32 effIndex)
     // should this work fine?
     if (spellproto->Attributes & SPELL_ATTR_NEGATIVE_1)
         return false;
-
+    // SPELL_CHECK_POSITIVE
     switch (spellId)
     {
         case 23333:                                         // BG spell
@@ -3999,7 +3999,7 @@ bool SpellMgr::IsSpellAllowedInLocation(SpellEntry const *spellInfo,uint32 map_i
         }
     }
 
-    // special cases zone check (maps checked by multimap common id)
+    // special cases zone check (maps checked by multimap common id) SPELL_CHECK_ARENA_AND_OR_ZONE
     switch (spellInfo->Id)
     {
         case 45403:
