@@ -997,26 +997,10 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
                 CheckDeceivers = 0;
             }
         }
-        if (me->isInCombat() && me->getThreatManager().isThreatListEmpty())
-            EnterEvadeMode(); // somehow it was getting stuck in this mode :o combat with noone (theatlist and hostilelist empty)
 
-        // if (Phase == PHASE_DECEIVERS && DeceiversStatus != 3)
-        // {
-        //     if (DeceiverDeathTimer <= diff)
-        //     {
-        //         std::for_each(deceivers.begin(), deceivers.end(),
-        //                       [this](uint64& guid)
-        //         {
-        //             if (Creature* c = pInstance->GetCreature(guid))
-        //                 if (c->isDead())
-        //                     c->Respawn();
-        //         }
-        //         );
-        //         DeceiversStatus = 3;
-        //     }
-        //     else
-        //         DeceiverDeathTimer -= diff;
-        // }
+            if (me->getThreatManager().isThreatListEmpty() && me->isInCombat())
+                EnterEvadeMode(); // we use this instead of UpdateVictim()
+
 
     }
 
