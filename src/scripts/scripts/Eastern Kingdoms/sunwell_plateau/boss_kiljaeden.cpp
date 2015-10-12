@@ -1018,6 +1018,8 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
         {
             if (Creature* c = pInstance->GetCreature(guid))
             {
+                c->AI()->DoAction(DECEIVER_RESET); // Deceiver-> despawn portals; portals->despawn imps
+
                 if (c->isAlive())
                     c->DisappearAndDie();
                 
@@ -1061,7 +1063,6 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
     SummonList Summons;
     Position homepos;
     Position pos;
-    //Timer DeceiverReviveTimer;
 
 
     void Reset()
@@ -1069,7 +1070,6 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
         me->CastSpell(me, SPELL_SHADOW_CHANNELING, false);
         ShadowBoltVolleyTimer.Reset(1000 + urand(0, 3000)); // So they don't all cast it in the same moment.
         FelfirePortalTimer.Reset(20000);
-        //DeceiverReviveTimer = 10000;
     }
 
     void JustSummoned(Creature* summoned)
@@ -1118,16 +1118,24 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
         m_creature->InterruptNonMeleeSpells(true);
     }
 
+    void DoAction(const int32 action)
+    {
+        if (action == DECEIVER_RESET)
+        {
+            Summons.DoAction(0, DECEIVER_RESET);
+            Summons.DespawnAll();
+        }
+
+    }
+
     void EnterEvadeMode()
     {
 
-        ScriptedAI::EnterEvadeMode();
-
         if (Creature* Control = ((Creature*)Unit::GetUnit(*m_creature, pInstance->GetData64(DATA_KILJAEDEN_CONTROLLER))))
+        {
+            Control->AI()->DoAction(DECEIVER_RESET);
             Control->AI()->EnterEvadeMode();
-
-        Summons.DoAction(0, DECEIVER_RESET); // portal-> despawn imps
-        Summons.DespawnAll();
+        }
 
     }
 
@@ -1212,7 +1220,7 @@ struct mob_felfire_portalAI : public Scripted_NoMovementAI
         summoned->AI()->DoZoneInCombat();
         Summons.Summon(summoned);
     }
-    void DoAction(uint32, uint32 action)
+    void DoAction(const int32 action)
     {
         if (action == DECEIVER_RESET)
             Summons.DespawnAll();
@@ -1266,7 +1274,7 @@ struct mob_volatile_felfire_fiendAI : public ScriptedAI
             DoZoneInCombat(100.0f);
         }
 
-        if (!WaitTimer.Passed() || !UpdateVictim())
+        if ((WaitTimer.GetInterval() && !WaitTimer.Passed()) || !UpdateVictim())
             return;
 
 
@@ -1280,9 +1288,9 @@ struct mob_volatile_felfire_fiendAI : public ScriptedAI
             }
         }
 
-        if (ExplodeTimer.Expired(diff) || m_creature->IsWithinDistInMap(m_creature->getVictim(), 3)) // Explode if it's close enough to it's target
+        if (ExplodeTimer.Expired(diff) || me->GetDistance(me->getVictim()) < 9.0f) // Explode if it's close enough to it's target
         {
-            DoCast(m_creature->getVictim(), SPELL_FELFIRE_FISSION);
+            DoCast(m_creature->getVictim(), SPELL_FELFIRE_FISSION, true);
             me->DisappearAndDie();
         }
     }
