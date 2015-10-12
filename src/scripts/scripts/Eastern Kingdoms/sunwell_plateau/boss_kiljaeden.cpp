@@ -321,7 +321,7 @@ struct boss_kalecgos_kjAI : public ScriptedAI
         pInstance = (c->GetInstanceData());
     }
     ScriptedInstance* pInstance;
-    uint32 FelmystOutroTimer;
+    Timer FelmystOutroTimer;
 
     void Reset()
     {
@@ -337,7 +337,7 @@ struct boss_kalecgos_kjAI : public ScriptedAI
             {
                 case 50: // felmyst outro speach
                     DoScriptText(YELL_KALECGOS, me);
-                    FelmystOutroTimer = 10000;
+                    FelmystOutroTimer.Reset(10000);
                     break;
                 case 60: // on starting phase 2
                     me->DisappearAndDie();
@@ -350,16 +350,11 @@ struct boss_kalecgos_kjAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (FelmystOutroTimer)
+        if (FelmystOutroTimer.Expired(diff))
         {
-            if (FelmystOutroTimer <= diff)
-            {
-                me->SetSpeed(MOVE_FLIGHT, 2.5);
-                me->GetMotionMaster()->MovePoint(60, 1547, 531, 161);
-                FelmystOutroTimer = 0;
-            }
-            else
-                FelmystOutroTimer -= diff;
+            me->SetSpeed(MOVE_FLIGHT, 2.5);
+            me->GetMotionMaster()->MovePoint(60, 1547, 531, 161);
+            FelmystOutroTimer = 0;
         }
     }
     // to be rewritten later
@@ -629,12 +624,8 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
         //DoCast(m_creature, SPELL_SINISTER_REFLECTION, true);
         float x, y, z;
         Unit* target;
-        //for (uint8 z = 0; z < 6; ++z)
-        //{
+
         target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true);
-        //  if (target && !target->HasAura(SPELL_VENGEANCE_OF_THE_BLUE_FLIGHT, 0))
-        //    break;
-        //}
         for (uint8 i = 0; i < 4; i++)
         {
             target->GetPosition(x, y, z);
@@ -702,13 +693,8 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
 
                     case TIMER_LEGION_LIGHTNING:
                     {
-                        for (uint8 z = 0; z < 6; ++z)
-                        {
-                            randomPlayer = NULL;
-                            randomPlayer = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true);
-                            if (randomPlayer && !randomPlayer->HasAura(SPELL_VENGEANCE_OF_THE_BLUE_FLIGHT, 0))
-                                break;
-                        }
+                        randomPlayer = NULL;
+                        randomPlayer = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true);
                         if (randomPlayer)
                             AddSpellToCast(randomPlayer, SPELL_LEGION_LIGHTNING, false, true);
                         else
@@ -784,17 +770,20 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
 
                             DoScriptText(RAND(SAY_KJ_DARKNESS1, SAY_KJ_DARKNESS2, SAY_KJ_DARKNESS3), m_creature);
                         }
-                        _Timer[TIMER_SOUL_FLAY] = 9000;
+                        _Timer[TIMER_SOUL_FLAY].Reset(9000);
                     }
                     break;
 
                     case TIMER_ORBS_EMPOWER:
                     {
-                        /*if(Phase == PHASE_SACRIFICE)
-                        {
-                        if(Kalec)((boss_kalecgos_kjAI*)Kalec->AI())->EmpowerOrb(true);
-                        }else if(Kalec)((boss_kalecgos_kjAI*)Kalec->AI())->EmpowerOrb(false);*/
+                    //   if(Phase == PHASE_SACRIFICE)
+                    //   {
+                    //       if (Kalec)((boss_kalecgos_kjAI*)Kalec->AI())->EmpowerOrb(true);
+                    //   }
+                    //   else if (Kalec)((boss_kalecgos_kjAI*)Kalec->AI())->EmpowerOrb(false);
+
                         _Timer[TIMER_ORBS_EMPOWER] = (Phase == PHASE_SACRIFICE) ? 45000 : 35000;
+
                         OrbActivated = true;
                         TimerIsDeactiveted[TIMER_ORBS_EMPOWER] = true;
                     }
