@@ -101,10 +101,7 @@ enum SpellIds
     SPELL_SUNWELL_KNOCKBACK                             = 40191, // 10 yd aoe knockback, no damage
 
     SPELL_SINISTER_REFLECTION                           = 45785, // Summon shadow copies of 5 raid members that fight against KJ's enemies
-    SPELL_COPY_WEAPON                                   = 41055, // }
-    SPELL_COPY_WEAPON2                                  = 41054, // }
-    SPELL_COPY_OFFHAND                                  = 45206, // }- Spells used in Sinister Reflection creation
-    SPELL_COPY_OFFHAND_WEAPON                           = 45205, // }
+    SPELL_SINISTER_REFLECTION_ENLARGE                   = 45893, // increases size by 50%
 
     SPELL_SHADOW_SPIKE                                  = 46680, // Bombard random raid members with Shadow Spikes (Very similar to Void Reaver orbs)
     SPELL_FLAME_DART                                    = 45737, // Bombards the raid with flames every 3(?) seconds
@@ -227,11 +224,12 @@ float DeceiverLocations[3][3] =
     {1694.170, 612.272, 1.416},
 };
 
-enum HandOfDeceiverAction
+enum Actions
 {
     DECEIVER_ENTER_COMBAT = 0,
     DECEIVER_DIED         = 1,
-    DECEIVER_RESET        = 2
+    DECEIVER_RESET        = 2,
+    KALEC_RESET_ORBS      = 3
 };
 
 // Locations, where Shield Orbs will spawn
@@ -289,11 +287,10 @@ bool GOUse_go_orb_of_the_blue_flight(Player *plr, GameObject* go)
     {
         ScriptedInstance* pInstance = (go->GetInstanceData());
         float x, y, z, dx, dy, dz;
-        go->SummonCreature(CREATURE_POWER_OF_THE_BLUE_DRAGONFLIGHT, plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), 0.0f, TEMPSUMMON_TIMED_DESPAWN, 121000);
-        plr->CastSpell(plr, SPELL_VENGEANCE_OF_THE_BLUE_FLIGHT, true);
+        Unit* dragon = go->SummonCreature(CREATURE_POWER_OF_THE_BLUE_DRAGONFLIGHT, plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), 0.0f, TEMPSUMMON_TIMED_DESPAWN, 121000);
+        if (dragon) plr->CastSpell(dragon, SPELL_VENGEANCE_OF_THE_BLUE_FLIGHT, true);
         go->SetUInt32Value(GAMEOBJECT_FACTION, 0);
         Unit* Kalec = ((Creature*)Unit::GetUnit(*plr, pInstance->GetData64(DATA_KALECGOS_KJ)));
-        //Kalec->RemoveDynObject(SPELL_RING_OF_BLUE_FLAMES);
         go->GetPosition(x, y, z);
         for (uint8 i = 0; i < 4; ++i)
         {
@@ -372,7 +369,7 @@ struct boss_kalecgos_kjAI : public ScriptedAI
 
     void ResetOrbs()
     {
-        m_creature->RemoveDynObject(SPELL_RING_OF_BLUE_FLAMES);
+        me->RemoveDynObject(SPELL_RING_OF_BLUE_FLAMES);
         for (uint8 i = 0; i < 4; ++i)
             if (Orb[i])
                 Orb[i]->SetUInt32Value(GAMEOBJECT_FACTION, 0);
@@ -427,6 +424,11 @@ struct boss_kalecgos_kjAI : public ScriptedAI
             case 3: DoScriptText(SAY_KALEC_ORB_READY3, m_creature); break;
             case 4: DoScriptText(SAY_KALEC_ORB_READY4, m_creature); break;
         }
+    }
+    void DoAction(const int32 action)
+    {
+        if (action == KALEC_RESET_ORBS)
+            ResetOrbs();
     }
 
 
@@ -617,6 +619,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
     {
         Scripted_NoMovementAI::EnterEvadeMode();
         Summons.DespawnAll();
+        Kalec->AI()->DoAction(KALEC_RESET_ORBS);
 
         // Reset the controller
         if (pInstance)
@@ -630,28 +633,24 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
     void EnterCombat(Unit* who)
     {
         DoZoneInCombat();
-        DoScriptText(SAY_KJ_EMERGE, m_creature);
     }
 
     void CastSinisterReflection()
     {
         DoScriptText(RAND(SAY_KJ_REFLECTION1, SAY_KJ_REFLECTION2), m_creature);
-
-        //DoCast(m_creature, SPELL_SINISTER_REFLECTION, true);
         float x, y, z;
         Unit* target;
 
         target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true);
+        target->GetPosition(x, y, z);
         for (uint8 i = 0; i < 4; i++)
         {
-            target->GetPosition(x, y, z);
-            Creature* SinisterReflection = m_creature->SummonCreature(CREATURE_SINISTER_REFLECTION, x, y, z, 0, TEMPSUMMON_CORPSE_DESPAWN, 0);
+            Creature* SinisterReflection = m_creature->SummonCreature(CREATURE_SINISTER_REFLECTION, x + irand(-5, 5), y + irand(-5, 5), z, 0, TEMPSUMMON_CORPSE_DESPAWN, 0);
             if (SinisterReflection)
             {
                 SinisterReflection->setFaction(me->getFaction());
                 SinisterReflection->SetFacingToObject(target);
-                target->CastSpell(SinisterReflection, SPELL_SINISTER_REFLECTION, true);
-                //SinisterReflection->CastCustomSpell(SPELL_SINISTER_REFLECTION, SPELLVALUE_MAX_TARGETS, 1, target);
+                SinisterReflection->Attack(target, false);
 
             }
         }
@@ -666,6 +665,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
             Emerging = 0;
             IsEmerging = false;
             me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            DoScriptText(SAY_KJ_EMERGE, me);
         }
 
         if (Phase < PHASE_NORMAL || IsEmerging || !UpdateVictim())
@@ -792,11 +792,11 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
 
                     case TIMER_ORBS_EMPOWER:
                     {
-                    //   if(Phase == PHASE_SACRIFICE)
-                    //   {
-                    //       if (Kalec)((boss_kalecgos_kjAI*)Kalec->AI())->EmpowerOrb(true);
-                    //   }
-                    //   else if (Kalec)((boss_kalecgos_kjAI*)Kalec->AI())->EmpowerOrb(false);
+                        if (Phase == PHASE_SACRIFICE)
+                        {
+                            if (Kalec)((boss_kalecgos_kjAI*)Kalec->AI())->EmpowerOrb(true);
+                        }
+                        else if (Kalec)((boss_kalecgos_kjAI*)Kalec->AI())->EmpowerOrb(false);
 
                         _Timer[TIMER_ORBS_EMPOWER] = (Phase == PHASE_SACRIFICE) ? 45000 : 35000;
 
@@ -814,12 +814,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
 
                     case TIMER_ARMAGEDDON:
                     {
-                        Unit* target;
-                        for (uint8 z = 0; z < 6; ++z)
-                        {
-                            target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true);
-                            if (target && !target->HasAura(SPELL_VENGEANCE_OF_THE_BLUE_FLIGHT, 0)) break;
-                        }
+                        Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true);
                         if (target)
                         {
                             float x, y, z;
@@ -1448,8 +1443,11 @@ struct mob_sinster_reflectionAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
+        
         if (Class == 0 && me->getVictim())
         {
+            me->CastSpell(me, SPELL_SINISTER_REFLECTION_ENLARGE, true);
+            me->getVictim()->CastCustomSpell(SPELL_SINISTER_REFLECTION, SPELLVALUE_MAX_TARGETS, 1, me, true);
             Class = m_creature->getVictim()->getClass();
             switch (Class)
             {
@@ -1477,10 +1475,11 @@ struct mob_sinster_reflectionAI : public ScriptedAI
             }
         }
 
-        if (!Wait.Expired(diff))
-            return;
         if (!UpdateVictim())
             return;
+        if (!Wait.Expired(diff))
+            return;
+
 
         switch (Class)
         {
