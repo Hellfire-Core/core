@@ -145,6 +145,7 @@ struct boss_kalecgosAI : public ScriptedAI
     bool isFriendly;
     bool isEnraged;
     bool isBanished;
+    bool TalkingDone;
 
     TimeTrackerSmall stateCheckTimer;
 
@@ -169,6 +170,7 @@ struct boss_kalecgosAI : public ScriptedAI
         TalkTimer = 0;
         TalkSequence = 0;
         isFriendly = false;
+        TalkingDone = false;
         isEnraged = false;
         isBanished = false;
 
@@ -247,6 +249,7 @@ struct boss_kalecgosAI : public ScriptedAI
             break;
         case 7:
             me->SetVisibility(VISIBILITY_OFF);
+            TalkingDone = true;
             TalkTimer = 0;
             break;
         default:
@@ -409,6 +412,7 @@ struct boss_kalecgosAI : public ScriptedAI
                             instance->SetData(DATA_KALECGOS_PHASE, PHASE_BANISH);
                     }
                 }
+
                 if (instance->GetData(DATA_KALECGOS_PHASE) == PHASE_KALEC_DEAD)
                 {
                     TalkTimer = 1;
@@ -416,7 +420,7 @@ struct boss_kalecgosAI : public ScriptedAI
                     isFriendly = false;
                     return;
                 }
-                if (instance->GetData(DATA_KALECGOS_EVENT) == DONE)
+                if (instance->GetData(DATA_KALECGOS_EVENT) == DONE && !TalkingDone)
                 {
                     TalkTimer = 1;
                     TalkSequence = 0;
