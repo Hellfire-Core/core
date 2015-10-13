@@ -650,7 +650,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
         target->GetPosition(x, y, z);
         for (uint8 i = 0; i < 4; i++)
         {
-            Creature* SinisterReflection = m_creature->SummonCreature(CREATURE_SINISTER_REFLECTION, x + irand(-5, 5), y + irand(-5, 5), z, 0, TEMPSUMMON_CORPSE_DESPAWN, 0);
+            Creature* SinisterReflection = m_creature->SummonCreature(CREATURE_SINISTER_REFLECTION, x - sinf(M_PI/2*i), y - cosf(M_PI/2*i), z, 0, TEMPSUMMON_CORPSE_DESPAWN, 0);
             if (SinisterReflection)
             {
                 SinisterReflection->setFaction(me->getFaction());
@@ -658,6 +658,8 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                 SinisterReflection->Attack(target, false);
 
             }
+            if (i == 3)
+                target->CastSpell(SinisterReflection, SPELL_SINISTER_REFLECTION, true);
         }
 
 
@@ -1476,7 +1478,6 @@ struct mob_sinster_reflectionAI : public ScriptedAI
         if (Class == 0 && me->getVictim())
         {
             me->CastSpell(me, SPELL_SINISTER_REFLECTION_ENLARGE, true);
-            me->getVictim()->CastCustomSpell(SPELL_SINISTER_REFLECTION, SPELLVALUE_MAX_TARGETS, 1, me, true);
             Class = m_creature->getVictim()->getClass();
             switch (Class)
             {
