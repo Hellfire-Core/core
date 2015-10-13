@@ -322,21 +322,37 @@ class EventMap : private std::map<uint32, uint32>
     public:
         EventMap() : m_phase(0), m_time(0) {}
 
-        uint32 GetTimer() const { return m_time; }
+        uint32 GetTimer() const
+        {
+            return m_time;
+        }
 
-        void Reset() { clear(); m_time = 0; m_phase = 0; }
+        EventMap& Reset() {
+            clear();
+            m_time = 0;
+            m_phase = 0;
+            return *this;
+        }
 
-        void Update(uint32 time) { m_time += time; }
+        EventMap& Update(uint32 time)
+        {
+            m_time += time;
+            return *this;
+        }
 
-        void SetPhase(uint32 phase)
+        EventMap& SetPhase(uint32 phase)
         {
             if (phase && phase < 9)
                 m_phase = (1 << (phase + 24));
+            return *this;
         }
 
-        uint32 GetPhase() { return m_phase; }
+        uint32 GetPhase() const
+        {
+            return m_phase;
+        }
 
-        void ScheduleEvent(uint32 eventId, uint32 time, uint32 gcd = 0, uint32 phase = 0)
+        EventMap& ScheduleEvent(uint32 eventId, uint32 time, uint32 gcd = 0, uint32 phase = 0)
         {
             time += m_time;
             if (gcd && gcd < 9)
@@ -350,18 +366,20 @@ class EventMap : private std::map<uint32, uint32>
                 itr = find(time);
             }
             insert(std::make_pair(time, eventId));
+            return *this;
         }
 
-        void RescheduleEvent(uint32 eventId, uint32 time, uint32 gcd = 0, uint32 phase = 0)
+        EventMap& RescheduleEvent(uint32 eventId, uint32 time, uint32 gcd = 0, uint32 phase = 0)
         {
             CancelEvent(eventId);
             ScheduleEvent(eventId, time, gcd, phase);
+            return *this;
         }
 
-        void RepeatEvent(uint32 time)
+        EventMap& RepeatEvent(uint32 time)
         {
             if (empty())
-                return;
+                return *this;
             uint32 eventId = begin()->second;
             erase(begin());
             time += m_time;
@@ -372,9 +390,10 @@ class EventMap : private std::map<uint32, uint32>
                 itr = find(time);
             }
             insert(std::make_pair(time, eventId));
+            return *this;
         }
 
-        void PopEvent()
+        EventMap& PopEvent()
         {
             erase(begin());
         }
@@ -413,7 +432,7 @@ class EventMap : private std::map<uint32, uint32>
             return 0;
         }
 
-        void DelayEvents(uint32 time, uint32 gcd)
+        EventMap& DelayEvents(uint32 time, uint32 gcd)
         {
             time += m_time;
             gcd = (1 << (gcd + 16));
@@ -429,9 +448,10 @@ class EventMap : private std::map<uint32, uint32>
                 else
                     ++itr;
             }
+            return *this;
         }
 
-        void CancelEvent(uint32 eventId)
+        EventMap& CancelEvent(uint32 eventId)
         {
             for (iterator itr = begin(); itr != end();)
             {
@@ -440,9 +460,10 @@ class EventMap : private std::map<uint32, uint32>
                 else
                     ++itr;
             }
+            return *this;
         }
 
-        void CancelEventsByGCD(uint32 gcd)
+        EventMap& CancelEventsByGCD(uint32 gcd)
         {
             for (iterator itr = begin(); itr != end();)
             {
@@ -451,6 +472,7 @@ class EventMap : private std::map<uint32, uint32>
                 else
                     ++itr;
             }
+            return *this;
         }
 };
 
