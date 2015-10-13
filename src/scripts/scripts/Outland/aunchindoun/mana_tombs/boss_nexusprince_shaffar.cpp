@@ -60,7 +60,7 @@ EndContentData */
 
 struct boss_nexusprince_shaffarAI : public ScriptedAI
 {
-    boss_nexusprince_shaffarAI(Creature *c) : ScriptedAI(c)
+    boss_nexusprince_shaffarAI(Creature *c) : ScriptedAI(c), Summons(c)
     {
         pInstance = c->GetInstanceData();    
     }
@@ -73,6 +73,7 @@ struct boss_nexusprince_shaffarAI : public ScriptedAI
     Timer FireBall_Timer;
     Timer Frostbolt_Timer;
     Timer FrostNova_Timer;
+    SummonList Summons;
 
     Creature* Beacon[NR_INITIAL_BEACONS];
 
@@ -117,16 +118,7 @@ struct boss_nexusprince_shaffarAI : public ScriptedAI
 
     void EnterEvadeMode()
     {
-        //Despawn still living initial beacons.
-        for(uint8 i = 0; i < NR_INITIAL_BEACONS; i++)
-        {
-            if(Beacon[i] && Beacon[i]->isAlive())
-            {
-                Beacon[i]->RemoveAllAuras();
-                Beacon[i]->CombatStop();
-                Beacon[i]->Kill(Beacon[i]);
-            }
-        }
+        Summons.DespawnAll();
         ScriptedAI::EnterEvadeMode();
     }
 
@@ -174,6 +166,7 @@ struct boss_nexusprince_shaffarAI : public ScriptedAI
             if( Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0, 60, true) )
                 summoned->AI()->AttackStart(target);
         }
+        Summons.Summon(summoned);
     }
 
     void KilledUnit(Unit* victim)
@@ -300,6 +293,8 @@ struct mob_ethereal_beaconAI : public ScriptedAI
     void JustSummoned(Creature *summoned)
     {
         summoned->AI()->AttackStart(m_creature->getVictim());
+        if (me->GetOwner())
+            me->GetOwner()->ToCreature()->AI()->JustSummoned(summoned);
     }
 
     void JustDied(Unit* Killer)
