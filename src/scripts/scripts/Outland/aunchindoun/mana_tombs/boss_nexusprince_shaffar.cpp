@@ -293,8 +293,6 @@ struct mob_ethereal_beaconAI : public ScriptedAI
     void JustSummoned(Creature *summoned)
     {
         summoned->AI()->AttackStart(m_creature->getVictim());
-        if (me->GetOwner())
-            me->GetOwner()->ToCreature()->AI()->JustSummoned(summoned);
     }
 
     void JustDied(Unit* Killer)
