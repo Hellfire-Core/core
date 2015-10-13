@@ -316,11 +316,11 @@ const T& RAND(const T& v1, const T& v2, const T& v3, const T& v4, const T& v5, c
 }
 
 class EventMap : private std::map<uint32, uint32>
-{                                                //TODO / FIXME: handle with [Timer] 
+{
     private:
         uint32 m_time, m_phase;
     public:
-        explicit EventMap() : m_phase(0), m_time(0) {}
+        EventMap() : m_phase(0), m_time(0) {}
 
         uint32 GetTimer() const { return m_time; }
 
