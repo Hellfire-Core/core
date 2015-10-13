@@ -494,6 +494,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
 
     uint8 Phase;
     uint8 ActiveTimers;
+    uint8 SpikesLeft; // he releases 9 spikes while casting Shadow Spikes
 
     Timer _Timer[10];
     Timer WaitTimer;
@@ -506,6 +507,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
     bool IsWaiting;
     bool OrbActivated;
     bool IsEmerging;
+    bool IsCastingSpikes;
 
     void Reset()
     {
@@ -536,11 +538,14 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
         Emerging.Reset(10000);
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
 
-        IsKalecJoined = false;
-        IsInDarkness  = false;
-        IsWaiting     = false;
-        OrbActivated  = false;
-        IsEmerging    = true;
+        IsKalecJoined   = false;
+        IsInDarkness    = false;
+        IsWaiting       = false;
+        OrbActivated    = false;
+        IsEmerging      = true;
+
+        IsCastingSpikes = false;
+        SpikesLeft      = 9;
 
         Kalec = ((Creature*)Unit::GetUnit(*m_creature, pInstance->GetData64(DATA_KALECGOS_KJ)));
         ChangeTimers(false, 0);
@@ -750,10 +755,34 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
 
                     case TIMER_SHADOW_SPIKE:
                     {
-                        AddSpellToCast(SPELL_SHADOW_SPIKE, CAST_NULL);
-                        _Timer[TIMER_SHADOW_SPIKE] = 0;
-                        TimerIsDeactiveted[TIMER_SHADOW_SPIKE] = true;
-                        ChangeTimers(true, 30000);
+                        if (!IsCastingSpikes)
+                        {
+                            AddSpellToCast(SPELL_SHADOW_SPIKE, CAST_NULL);
+                            ChangeTimers(true, 30000);
+                            _Timer[TIMER_SHADOW_SPIKE].Reset(3000);
+                            IsCastingSpikes = true;
+                        }
+                        else
+                        {
+                            if (SpikesLeft)
+                            {
+                                Unit* random = SelectUnit(SELECT_TARGET_RANDOM, 0, 100.0f);
+                                if (random)
+                                    DoSummon(CREATURE_SPIKE_TARGET1, random, 0, 2800, TEMPSUMMON_TIMED_DESPAWN);
+                                SpikesLeft--;
+                                _Timer[TIMER_SHADOW_SPIKE] = 3000;
+                                me->SetIgnoreVictimSelection(true);
+                                me->SetSelection(0);
+                            }
+                            else
+                            {
+                                me->SetIgnoreVictimSelection(false);
+                                SpikesLeft = 9;
+                                _Timer[TIMER_SHADOW_SPIKE] = 0;
+                                TimerIsDeactiveted[TIMER_SHADOW_SPIKE] = true; 
+                            }
+
+                        }
                     }
                     break;
 
