@@ -154,7 +154,6 @@ class HELLGROUND_IMPORT_EXPORT InstanceData : public ZoneScript
         std::vector<BossInfo> bosses;
         DoorInfoMap doors;
 
-
         virtual void OnObjectCreate(GameObject *) {}
         virtual void OnCreatureCreate(Creature *, uint32 entry) {}
 };
@@ -226,7 +225,7 @@ public:
                     guild_id = mitr->first;
                     break;
                 }
-            }          
+            }
             if (guild_id)
             {   // to get the last record before inserting our result
                 QueryResultAutoPtr record = RealmDataDatabase.PQuery(
@@ -269,7 +268,6 @@ public:
                     kill_id,m_map->GetInstanceId());
                 RealmDataDatabase.CommitTransaction();
 
-                
                 if (record) //TODO: add disable/enable to config
                 {
                     uint32 last_record = record->Fetch()[0].GetUInt32();
@@ -282,8 +280,8 @@ public:
                         {
                             std::string message = "New server record: " + secsToTimeString(time(NULL) - m_timer) + " seconds (last record: "
                                 + std::to_string(last_record) + " seconds) for boss " + names->Fetch()[1].GetCppString()
-                                + " by guild <|cFFFFFFFF" + names->Fetch()[0].GetCppString() + "|r> of " + (side ? "|cFF0000FFAlliance|r." : "|CFFFF0000Horde|r.");
-                            
+                                + " by guild <|cffffffff" + names->Fetch()[0].GetCppString() + "|r> of " + (side ? "|cff4954e8Alliance|r." : "|cffe50c11Horde|r.");
+
                             sLog.outLog(LOG_SERVER_RECORDS, message.c_str());
                             sWorld.SendServerMessage(SERVER_MSG_STRING, message.c_str());
                         }
