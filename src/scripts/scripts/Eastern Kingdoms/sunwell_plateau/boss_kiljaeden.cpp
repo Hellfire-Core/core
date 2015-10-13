@@ -552,7 +552,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
             return;
         Creature* caster = me->SummonCreature(12999, me->GetPositionX(), me->GetPositionY(), 28.540001, 0, TEMPSUMMON_TIMED_DESPAWN, 1); // we use invisible trigger to avoid animation break
         if (caster)                                                                                                                      // on KJ; can't use controller because he has no skin
-            if (me->GetExactDist2d(who->GetPositionX(), who->GetPositionY()) <= 14.0f)                                                   // which causes wrong-cast-height problem (0yd kb)
+            if (me->GetExactDist2d(who->GetPositionX(), who->GetPositionY()) <= 12.0f)                                                   // which causes wrong-cast-height problem (0yd kb)
             {
                 if (!IsEmerging)
                 {
