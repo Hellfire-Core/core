@@ -78,9 +78,9 @@ enum Spells
 };
 
 #define MADRI_FLY_X        1476.3
-#define MADRI_FLY_Y           649
-#define MADRI_FLY_Z          21.5
-
+#define MADRI_FLY_Y           649               
+#define MADRI_FLY_Z          21.5                  
+                                                   
 #define MOB_DEATH_CLOUD 25703
 #define FELMYST 25038
 
@@ -105,6 +105,8 @@ struct boss_brutallusAI : public ScriptedAI
     Timer IntroFrostBoltTimer;
     bool Enraged;
 
+    Creature* pMadrigosa;
+
     void Reset()
     {
         SlashTimer.Reset(11000);
@@ -116,12 +118,13 @@ struct boss_brutallusAI : public ScriptedAI
 
         IntroPhase = 0;
         IntroPhaseTimer.Reset(1);
-        IntroFrostBoltTimer.Reset(1);
+        IntroFrostBoltTimer=0;
         Enraged = false;
 
         ForceSpellCast(me, SPELL_DUAL_WIELD, INTERRUPT_AND_CAST_INSTANTLY);
         pInstance->SetData(DATA_BRUTALLUS_EVENT, NOT_STARTED);
         me->CombatStop();
+        pMadrigosa = 0;
     }
 
     void EnterCombat(Unit* /*pWho*/)
@@ -163,43 +166,41 @@ struct boss_brutallusAI : public ScriptedAI
 
     void DoIntro()
     {
-        Creature *pMadrigosa = (Creature*)me->GetUnit(pInstance->GetData64(DATA_MADRIGOSA));
 
         if (!pMadrigosa)
             return;
 
         switch (IntroPhase)
         {
+            float x, y, z;
             case 0:
                 DoScriptText(YELL_MADR_ICE_BARRIER, pMadrigosa);
                 pMadrigosa->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                for (uint8 i = 0; i < 8;++i)
+                pMadrigosa->SetReactState(REACT_PASSIVE);
+                for (uint8 i = 0; i < 8; ++i)
                     pMadrigosa->SetSpeed(UnitMoveType(i), 2.5);
 
                 pMadrigosa->GetMotionMaster()->MovePoint(1, MADRI_FLY_X, MADRI_FLY_Y, MADRI_FLY_Z);
+                me->SetInFront(pMadrigosa);
                 IntroPhaseTimer = 6500;
+                pMadrigosa->SetIgnoreVictimSelection(false);
                 ++IntroPhase;
                 break;
             case 1:
                 pInstance->SetData(DATA_BRUTALLUS_INTRO_EVENT, IN_PROGRESS);
                 pMadrigosa->SetLevitate(false);
-                pMadrigosa->SetWalk(true);
+                pMadrigosa->setHover(false);
                 pMadrigosa->HandleEmoteCommand(EMOTE_ONESHOT_LAND);
                 IntroPhaseTimer = 2500;
                 ++IntroPhase;
                 break;
             case 2:
-                pMadrigosa->SendHeartBeat();
                 DoScriptText(YELL_MADR_INTRO, pMadrigosa);
                 IntroPhaseTimer = 5000;
                 ++IntroPhase;
                 break;
             case 3:
-                float x, y, z;
-                pMadrigosa->GetMap()->CreatureRelocation((Creature*)pMadrigosa, MADRI_FLY_X, MADRI_FLY_Y, MADRI_FLY_Z, me->GetOrientation());
-                me->SetInFront(pMadrigosa);
-                pMadrigosa->SetInFront(me);
                 DoScriptText(YELL_INTRO, me);
                 IntroPhaseTimer = 6000;
                 ++IntroPhase;
@@ -208,136 +209,117 @@ struct boss_brutallusAI : public ScriptedAI
                 pMadrigosa->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                 me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                 DoStartMovement(pMadrigosa);
-                pMadrigosa->GetMotionMaster()->MoveChase(me);
                 me->Attack(pMadrigosa, true);
                 pMadrigosa->Attack(me, true);
                 IntroPhaseTimer = 7000;
                 ++IntroPhase;
                 break;
             case 5:
-                pMadrigosa->CastSpell(me, SPELL_INTRO_FROST_BREATH, false);
-                me->CastSpell(me, SPELL_INTRO_FROST_BREATH, true);
+                pMadrigosa->CastSpell(me, SPELL_INTRO_FROST_BREATH, false, 0, 0, me->GetGUID());
                 IntroPhaseTimer = 2500;
                 ++IntroPhase;
                 break;
             case 6:
+                me->AttackStop();
                 me->GetMotionMaster()->MoveIdle();
+
+                pMadrigosa->GetMotionMaster()->MoveIdle();
+                pMadrigosa->AttackStop();
                 pMadrigosa->SetLevitate(true);
-                pMadrigosa->GetPosition(x, y, z);
-                pMadrigosa->GetMotionMaster()->MovePoint(2, x, y, z+15);
                 pMadrigosa->setHover(true);
-                IntroPhaseTimer = 4500;
+
+                IntroPhaseTimer = 4000;
                 ++IntroPhase;
                 break;
             case 7:
-                pMadrigosa->SetInFront(me);
                 pMadrigosa->CastSpell(me, SPELL_INTRO_FROST_BLAST, false);
-                me->CastSpell(me, SPELL_INTRO_FROST_BLAST, true);
                 DoScriptText(YELL_MADR_ICE_BLOCK, pMadrigosa);
                 IntroFrostBoltTimer = 500;
-                IntroPhaseTimer = 10000;
+                IntroPhaseTimer = 9000;
                 ++IntroPhase;
                 break;
             case 8:
                 DoScriptText(YELL_INTRO_BREAK_ICE, me);
+
                 IntroPhaseTimer = 2000;
                 ++IntroPhase;
                 break;
             case 9:
-                me->GetMotionMaster()->MoveIdle();
-                me->AttackStop();
                 pMadrigosa->setHover(false);
                 pMadrigosa->SetLevitate(false);
-                pMadrigosa->SetWalk(true);
-                pMadrigosa->HandleEmoteCommand(EMOTE_ONESHOT_LAND);
-                pMadrigosa->SendHeartBeat();
-                IntroPhaseTimer = 1000;
+                IntroPhaseTimer = 6500;
                 ++IntroPhase;
                 break;
             case 10:
-                pMadrigosa->GetMotionMaster()->MoveIdle();
-                IntroPhaseTimer = 2500;
-                ++IntroPhase;
-                break;
-            case 11:
-                pMadrigosa->GetMap()->CreatureRelocation((Creature*)pMadrigosa, MADRI_FLY_X, MADRI_FLY_Y, MADRI_FLY_Z, me->GetOrientation());
-                pMadrigosa->GetMotionMaster()->MoveIdle();
-                IntroPhaseTimer = 2000;
-                ++IntroPhase;
-                break;
-            case 12:
                 me->GetMotionMaster()->MoveIdle();
                 pMadrigosa->CastSpell(me, SPELL_INTRO_ENCAPSULATE, false);
                 DoScriptText(YELL_MADR_TRAP, pMadrigosa);
                 IntroPhaseTimer = 1000;
                 ++IntroPhase;
                 break;
-            case 13:
+            case 11:
                 me->GetPosition(x, y, z);
-                me->GetMotionMaster()->MovePoint(1, x-6, y-15, z+10);
+                me->GetMotionMaster()->MovePoint(1, x - 6, y - 15, z + 10);
                 me->SetInFront(pMadrigosa);
                 IntroPhaseTimer = 8000;
                 ++IntroPhase;
                 break;
-            case 14:
+            case 12:
                 me->RemoveAurasDueToSpell(44883);
                 pMadrigosa->InterruptNonMeleeSpells(false);
-                pMadrigosa->GetMotionMaster()->MoveIdle();
                 DoScriptText(YELL_INTRO_CHARGE, me);
-                me->SetInFront(pMadrigosa);
-                me->GetPosition(x, y, z);
                 me->GetMotionMaster()->MoveFall();
                 IntroPhaseTimer = 3500;
                 ++IntroPhase;
                 break;
-            case 15:
-                for(uint8 i = 0; i < 8;++i)
-                    me->SetSpeed(UnitMoveType(i), 10.0);
-                me->GetMotionMaster()->MoveCharge(MADRI_FLY_X-5, MADRI_FLY_Y-15, MADRI_FLY_Z);
-                AddSpellToCast((Unit*)NULL, SPELL_INTRO_CHARGE);
+            case 13:
+                me->CastSpell(pMadrigosa, SPELL_INTRO_CHARGE, false);
                 IntroPhaseTimer = 1000;
                 ++IntroPhase;
                 break;
-            case 16:
+            case 14:
+                me->GetMotionMaster()->MoveIdle();
+                me->InterruptNonMeleeSpells(true);
+                me->UpdateVisibilityAndView();
+                me->SendHeartBeat();
                 DoScriptText(YELL_MADR_DEATH, pMadrigosa);
                 pMadrigosa->setHover(false);
                 pMadrigosa->SetFlying(false);
                 pMadrigosa->SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_FEIGN_DEATH);
-                pMadrigosa->SetFlag(UNIT_DYNAMIC_FLAGS, (UNIT_DYNFLAG_DEAD | UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_PACIFIED));
+                pMadrigosa->SetFlag(UNIT_DYNAMIC_FLAGS, (UNIT_DYNFLAG_DEAD | UNIT_FLAG_NON_ATTACKABLE));
                 pMadrigosa->CombatStop();
                 pMadrigosa->DeleteThreatList();
                 pMadrigosa->setFaction(35);
                 me->CombatStop();
-                me->RemoveFlag(UNIT_FIELD_FLAGS, (UNIT_FLAG_PET_IN_COMBAT | UNIT_FLAG_PVP_ATTACKABLE));
                 IntroPhaseTimer = 4000;
                 ++IntroPhase;
                 break;
-            case 17:
-                if(pInstance)
-                    me->SetFacingToObject(GameObject::GetGameObject(*me, pInstance->GetData64(DATA_BRUTALLUS_TRIGGER)));
-                for(uint8 i = 0; i < 8;++i)
-                    me->SetSpeed(UnitMoveType(i), 2.0);
-                IntroPhaseTimer = 6000;
+            case 15:
+                if (pInstance)
+                    me->SetInFront(me->GetUnit(pInstance->GetData64(DATA_BRUTALLUS_INTRO_EVENT)));
+                me->SendHeartBeat();
+                IntroPhaseTimer = 2000;
                 ++IntroPhase;
                 break;
-            case 18:
+            case 16:
                 DoScriptText(YELL_INTRO_KILL_MADRIGOSA, me);
                 IntroPhaseTimer = 8000;
                 ++IntroPhase;
                 break;
-            case 19:
+            case 17:
                 DoScriptText(YELL_INTRO_TAUNT, me);
-                AddSpellToCast(me, SPELL_INTRO_BREAK_ICE);
-                if(pInstance)
+                me->CastSpell(me, SPELL_INTRO_BREAK_ICE, false);
+                if (pInstance)
                     pInstance->SetData(DATA_BRUTALLUS_INTRO_EVENT, DONE);
                 else
                     return;
-                if(Unit *pTrigger = me->GetUnit(pInstance->GetData64(DATA_BRUTALLUS_TRIGGER)))
-                    pTrigger->CastSpell((Unit*)NULL, SPELL_INTRO_BREAK_ICE_KNOCKBACK, false);
+                if (Unit *pTrigger = me->GetUnit(pInstance->GetData64(DATA_BRUTALLUS_TRIGGER)))
+                    pTrigger->CastSpell(pTrigger, SPELL_INTRO_BREAK_ICE_KNOCKBACK, false);
                 IntroPhaseTimer = 2000;
                 ++IntroPhase;
                 break;
-            case 20:
+            case 18:
+                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                 EnterEvadeMode();
                 IntroPhaseTimer = 0;
                 ++IntroPhase;
@@ -353,9 +335,19 @@ struct boss_brutallusAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (pInstance->GetData(DATA_BRUTALLUS_INTRO_EVENT) == SPECIAL || pInstance->GetData(DATA_BRUTALLUS_INTRO_EVENT) == IN_PROGRESS || IntroPhase == 20)
+        if (pInstance->GetData(DATA_BRUTALLUS_INTRO_EVENT) == SPECIAL || pInstance->GetData(DATA_BRUTALLUS_INTRO_EVENT) == IN_PROGRESS || IntroPhase == 18)
         {
-            if (IntroPhase < 12 && IntroPhase > 14)
+            if (!pMadrigosa)
+            {
+                pMadrigosa = (Creature*)me->GetUnit(pInstance->GetData64(DATA_MADRIGOSA));
+                return;
+            }
+
+            if (IntroPhase < 14 && pMadrigosa->GetSelection() == 0)       //ye, we spam it every tick, this bitch has special needs... :)
+            {                                                             //still, with this, we have 2-3 moments where she sets her sel on null, but it's enough for now...
+                pMadrigosa->SetSelection(me->GetGUID());
+            }
+            if (IntroPhase < 10 && IntroPhase > 12)
             {
                 if (CheckGroundTimer.Expired(diff))
                 {
@@ -363,7 +355,7 @@ struct boss_brutallusAI : public ScriptedAI
                     me->GetPosition(x, y, z);
                     float ground_z = me->GetTerrain()->GetHeight(x, y, MAX_HEIGHT, true);
                     if(z > ground_z)
-                    me->GetMap()->CreatureRelocation(me, x, y, z, me->GetOrientation());
+                        me->GetMap()->CreatureRelocation(me, x, y, z, me->GetOrientation());
                     CheckGroundTimer = 500;
                 }
             }
@@ -371,16 +363,19 @@ struct boss_brutallusAI : public ScriptedAI
             if (IntroPhaseTimer.Expired(diff))
                 DoIntro();
 
-            if (IntroPhase >= 7 && IntroPhase <= 9)
+            if (IntroPhase >= 4 && IntroPhase <= 9)
             {
+                Creature *pMadrigosa = me->GetCreature(pInstance->GetData64(DATA_MADRIGOSA));
                 if (IntroFrostBoltTimer.Expired(diff))
                 {
-                    if(Unit *pMadrigosa = me->GetUnit(pInstance->GetData64(DATA_MADRIGOSA)))
+                    if(pMadrigosa)
                     {
                         pMadrigosa->CastSpell(me, SPELL_INTRO_FROSTBOLT, false);
                         IntroFrostBoltTimer = 2000;
                     }
                 }
+                else
+                    pMadrigosa->AI()->DoMeleeAttackIfReady();
             }
 
             DoMeleeAttackIfReady();
