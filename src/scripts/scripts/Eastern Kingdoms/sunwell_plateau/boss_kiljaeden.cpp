@@ -782,6 +782,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                                 SpikesLeft = 9;
                                 _Timer[TIMER_SHADOW_SPIKE] = 0;
                                 TimerIsDeactiveted[TIMER_SHADOW_SPIKE] = true; 
+                                IsCastingSpikes = false;
                             }
 
                         }
