@@ -928,6 +928,23 @@ namespace Hellground
             bool _equals;
     };
 
+    class ObjectEntryCheck
+    {
+    public:                            //Set to true to remove given entry, set to false to remove all but this entry
+        ObjectEntryCheck(uint32 entry, bool RemoveOrLeave) : _entry(entry), _RemoveOrLeave(RemoveOrLeave) {}
+        bool operator()(WorldObject* object)
+        {
+            if (_RemoveOrLeave)
+                return object->GetEntry() == _entry;
+            else
+                return object->GetEntry() != _entry;
+        }
+
+    private:
+        uint32 _entry;
+        bool _RemoveOrLeave;
+    };
+
     class ObjectIsTotemCheck
     {
         public:
