@@ -2897,6 +2897,13 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 8690: // hearthstone - no haste bonus
                     spellInfo->Attributes |= SPELL_ATTR_TRADESPELL;
                     break;
+                case 7620: // fishing - no haste bonus
+                case 7731:
+                case 7732:
+                case 18248:
+                case 33095:
+                    spellInfo->Attributes |= SPELL_ATTR_TRADESPELL;
+                    break;
                 case 44586: // NPC prayer of mending
                     spellInfo->procFlags &= ~PROC_FLAG_SUCCESSFUL_POSITIVE_SPELL;
                     break;
