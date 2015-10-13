@@ -280,7 +280,7 @@ public:
                             "WHERE kill_id = %u", kill_id);
                         if (names)
                         {
-                            std::string message = "New server record: " + std::to_string(uint32(time(NULL) - m_timer)) + " seconds (last record: "
+                            std::string message = "New server record: " + secsToTimeString(time(NULL) - m_timer) + " seconds (last record: "
                                 + std::to_string(last_record) + " seconds) for boss " + names->Fetch()[1].GetCppString()
                                 + " by guild <|cFFFFFFFF" + names->Fetch()[0].GetCppString() + "|r> of " + (side ? "|cFF0000FFAlliance|r." : "|CFFFF0000Horde|r.");
                             
