@@ -2229,7 +2229,7 @@ void Spell::SetTargetMap(uint32 i, uint32 cur)
 
             if (GetSpellEntry()->AttributesEx & SPELL_ATTR_EX_CANT_TARGET_SELF)
                 unitList.remove_if(Hellground::ObjectGUIDCheck(m_caster->GetGUID()));
-
+            //SPELL_CHECK_TARGETS_STUFF
             switch (GetSpellEntry()->Id)
             {
                 case 37433:
@@ -2276,6 +2276,9 @@ void Spell::SetTargetMap(uint32 i, uint32 cur)
                     break;
                 case 45248:     // Shadow Blades
                     unitList.remove_if([=](Unit* unit)->bool {return fabs(m_caster->GetPositionZ() - unit->GetPositionZ()) > 5.0; });
+                    break;
+                case 45785: // KJ: sinister reflection  - copy model
+                    unitList.remove_if((Hellground::ObjectEntryCheck(25708, false)));   //allow to transform only sinister reflections instead of everything nearby
                     break;
                 default:
                     break;
