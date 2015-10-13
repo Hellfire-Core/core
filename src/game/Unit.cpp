@@ -2216,7 +2216,7 @@ void Unit::AttackerStateUpdate (Unit *pVictim, WeaponAttackType attType, bool ex
         }
     }
 
-    MeleeDamageLog damageInfo(this, pVictim, GetMeleeDamageSchoolMask(), attType);
+    MeleeDamageLog damageInfo(this, pVictim, this->GetMeleeDamageSchoolMask(), attType);
     CalculateMeleeDamage(&damageInfo);
 
     DealMeleeDamage(&damageInfo, true);
@@ -9054,7 +9054,7 @@ void Unit::MeleeDamageBonus(Unit *pVictim, uint32 *pdamage,WeaponAttackType attT
     }
 
     // ..taken
-    TakenFlatBenefit += pVictim->GetTotalAuraModifierByMiscMask(SPELL_AURA_MOD_DAMAGE_TAKEN, GetMeleeDamageSchoolMask());
+    TakenFlatBenefit += pVictim->GetTotalAuraModifierByMiscMask(SPELL_AURA_MOD_DAMAGE_TAKEN, this->GetMeleeDamageSchoolMask());
 
     if (attType!=RANGED_ATTACK)
         TakenFlatBenefit += pVictim->GetTotalAuraModifier(SPELL_AURA_MOD_MELEE_DAMAGE_TAKEN);
@@ -9069,7 +9069,7 @@ void Unit::MeleeDamageBonus(Unit *pVictim, uint32 *pdamage,WeaponAttackType attT
     // SPELL_AURA_MOD_DAMAGE_PERCENT_DONE included in weapon damage. BUT for other spellschools than physical - must be applied. (example - paladins seal of command + sanctity aura)
     // SPELL_AURA_MOD_OFFHAND_DAMAGE_PCT  included in weapon damage
 
-    if (spellProto && (SpellMgr::GetSpellSchoolMask(spellProto) & GetMeleeDamageSchoolMask()) == 0)
+    if (spellProto && (SpellMgr::GetSpellSchoolMask(spellProto) & this->GetMeleeDamageSchoolMask()) == 0)
     {
         AuraList const& mModDamagePercentDone = GetAurasByType(SPELL_AURA_MOD_DAMAGE_PERCENT_DONE);
         for (AuraList::const_iterator i = mModDamagePercentDone.begin(); i != mModDamagePercentDone.end(); ++i)
@@ -9105,7 +9105,7 @@ void Unit::MeleeDamageBonus(Unit *pVictim, uint32 *pdamage,WeaponAttackType attT
     // ..taken
     AuraList const& mModDamagePercentTaken = pVictim->GetAurasByType(SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN);
     for (AuraList::const_iterator i = mModDamagePercentTaken.begin(); i != mModDamagePercentTaken.end(); ++i)
-        if ((*i)->GetModifier()->m_miscvalue & GetMeleeDamageSchoolMask())
+        if ((*i)->GetModifier()->m_miscvalue & this->GetMeleeDamageSchoolMask())
             TakenTotalMod *= ((*i)->GetModifierValue()+100.0f)/100.0f;
 
     // .. taken pct: dummy auras
