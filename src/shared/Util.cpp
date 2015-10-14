@@ -169,7 +169,7 @@ std::string secsToTimeString(uint32 timeInSecs, bool shortText, bool hoursOnly)
     if (hours || hoursOnly)
     {
         if (hours == 1)
-        ss << hours << (shortText ? "h" : " Hours ");
+            ss << hours << (shortText ? "h" : " Hour ");
         else
             ss << hours << (shortText ? "h" : " Hours ");
     }
