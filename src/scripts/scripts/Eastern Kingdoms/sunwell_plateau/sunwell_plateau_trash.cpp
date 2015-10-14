@@ -785,8 +785,11 @@ struct mob_shadowsword_assassinAI : public ScriptedAI
 
     void EnterCombat(Unit* who)
     {
-        if(pInstance->GetData(DATA_FELMYST_EVENT) != DONE)
+        if (pInstance->GetData(DATA_FELMYST_EVENT) != DONE)
+        {
+            EnterEvadeMode();
             return;
+        }
         DoZoneInCombat(80.0f);
         DoRandomShadowstep(who);
     }
