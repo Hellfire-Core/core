@@ -216,6 +216,7 @@ struct boss_kalecgosAI : public ScriptedAI
         switch (TalkSequence)
         {
         case 1:
+            me->SetStandState(PLAYER_STATE_NONE);
             me->setFaction(35);
             TalkTimer = 8000;
             break;
@@ -309,6 +310,9 @@ struct boss_kalecgosAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
+        if (TalkingDone)
+            return;
+
         stateCheckTimer.Update(diff);
         if (stateCheckTimer.Passed())
         {
