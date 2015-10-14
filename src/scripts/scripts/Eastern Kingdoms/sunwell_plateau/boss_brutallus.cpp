@@ -235,7 +235,7 @@ struct boss_brutallusAI : public ScriptedAI
                 pMadrigosa->CastSpell(me, SPELL_INTRO_FROST_BLAST, false);
                 DoScriptText(YELL_MADR_ICE_BLOCK, pMadrigosa);
                 IntroFrostBoltTimer = 500;
-                IntroPhaseTimer = 9000;
+                IntroPhaseTimer = 11000;
                 ++IntroPhase;
                 break;
             case 8:
