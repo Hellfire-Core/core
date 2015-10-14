@@ -278,9 +278,9 @@ public:
                             "WHERE kill_id = %u", kill_id);
                         if (names)
                         {
-                            std::string message = "New server record: " + secsToTimeString(time(NULL) - m_timer) + " seconds (last record: "
-                                + std::to_string(last_record) + " seconds) for boss " + names->Fetch()[1].GetCppString()
-                                + " by guild <|cffffffff" + names->Fetch()[0].GetCppString() + "|r> of " + (side ? "|cff4954e8Alliance|r." : "|cffe50c11Horde|r.");
+                            std::string message = "New server record: " + secsToTimeString(time(NULL) - m_timer) + " (last record: "
+                                + secsToTimeString(last_record) + ") for boss " + names->Fetch()[1].GetCppString()
+                                + " by guild <|cffffffff" + names->Fetch()[0].GetCppString() + "|r> of " + (side ? "|cffe50c11Horde|r." : "|cff4954e8Alliance|r.");
 
                             sLog.outLog(LOG_SERVER_RECORDS, message.c_str());
                             sWorld.SendServerMessage(SERVER_MSG_STRING, message.c_str());
