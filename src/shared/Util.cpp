@@ -162,32 +162,32 @@ std::string secsToTimeString(uint32 timeInSecs, bool shortText, bool hoursOnly)
     if (days)
     {
         if (days == 1)
-            ss << days << (shortText ? "d" : " Day ");
+            ss << days << (shortText ? "d" : " day ");
         else
-            ss << days << (shortText ? "d" : " Days ");
+            ss << days << (shortText ? "d" : " days ");
     }
     if (hours || hoursOnly)
     {
         if (hours == 1)
-            ss << hours << (shortText ? "h" : " Hour ");
+            ss << hours << (shortText ? "h" : " hour ");
         else
-            ss << hours << (shortText ? "h" : " Hours ");
+            ss << hours << (shortText ? "h" : " hours ");
     }
     if(!hoursOnly)
     {
         if (minutes)
         { 
             if (minutes == 1)
-                ss << minutes << (shortText ? "m" : " Minute ");
+                ss << minutes << (shortText ? "m" : " minute ");
             else
-                ss << minutes << (shortText ? "m" : " Minutes ");
+                ss << minutes << (shortText ? "m" : " minutes ");
         }
         if (secs || (!days && !hours && !minutes))
         {
             if (secs == 1)
-                ss << secs << (shortText ? "s" : " Second.");
+                ss << secs << (shortText ? "s" : " second");
             else 
-                ss << secs << (shortText ? "s" : " Seconds.");
+                ss << secs << (shortText ? "s" : " seconds");
         }
     }
 
