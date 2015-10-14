@@ -50,7 +50,7 @@ const char* logToStr[LOG_MAX_FILES][3] =
     { "RaceChangeLogFile",      "a", NULL },                // LOG_RACE_CHANGE
     { "ExploitsCheatsLogFile",  "a", NULL },                // LOG_EXPLOITS_AND_CHEATS
     { "RaidBindsLogFile",       "a", NULL },                // LOG_RAID_BINDS
-    { "ServerRecordsLogFile",   "a", "LogTimestamp"}        // LOG_SERVER_RECORDS
+    { "ServerRecordsLogFile",   "a", NULL }                 // LOG_SERVER_RECORDS
 };
 
 const char* chatLogFilenames[LOG_CHAT_MAX] =
