@@ -856,6 +856,8 @@ void WorldSession::HandleBattleGroundReportAFK(WorldPacket & recv_data)
         return;
     }
 
+    std::string message = "Player " + std::string(reportedPlayer->GetName()) + " has been reported by " + std::string(_player->GetName()) + " for AFK.";
+    _player->GetBattleGround()->SendMessageToTeam(_player->GetBattleGround()->GetPlayerTeam(_player->GetGUID()), message.c_str());
     sLog.outDebug("WorldSession::HandleBattleGroundReportAFK: %s reported %s", _player->GetName(), reportedPlayer->GetName());
 
     reportedPlayer->ReportedAfkBy(_player);
