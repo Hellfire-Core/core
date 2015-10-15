@@ -325,6 +325,8 @@ struct npc_volcanoAI : public Scripted_NoMovementAI
     void Reset()
     {
         CastTimer.Reset(1000);
+        me->SetIgnoreVictimSelection(true);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_ROTATE);
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
     }
