@@ -3484,6 +3484,7 @@ void SpellMgr::LoadSpellCustomAttr()
                 spellInfo->EffectBasePoints[1] = 1;
             case 46038:
             case 46039:
+            case 45661:
                 spellInfo->AttributesEx2 |= SPELL_ATTR_EX2_IGNORE_LOS;
                 break;
             case 21358: // Aqual Quintessence / Eternal Quintessence
