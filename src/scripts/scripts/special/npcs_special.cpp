@@ -2648,7 +2648,7 @@ bool GossipSelect_npc_combatstop(Player* player, Creature* _Creature, uint32 sen
 {
     if (action == GOSSIP_ACTION_INFO_DEF + 1)
     {
-        _Creature->MonsterWhisper("Remember to move minimum 40 yards away from nearest combat dummy to loose combat!", player->GetGUID());
+        _Creature->MonsterWhisper("Remember to move minimum 40 yards away from nearest combat dummy to lose combat!", player->GetGUID());
         player->CombatStop(true);
     }
 
