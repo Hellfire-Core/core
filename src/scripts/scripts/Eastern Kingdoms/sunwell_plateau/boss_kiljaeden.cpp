@@ -1394,6 +1394,8 @@ struct mob_shield_orbAI : public ScriptedAI
 
     void InitializeAI()
     {
+        me->SetIgnoreVictimSelection(true);
+        me->SetSelection(0);
         m_creature->SetLevitate(true);
         PointReached = true;
         _Timer.Reset(500 + rand() % 500);
@@ -1402,10 +1404,7 @@ struct mob_shield_orbAI : public ScriptedAI
         c = 0;
         mx = ShieldOrbLocations[0][0];
         my = ShieldOrbLocations[0][1];
-        if (rand() % 2 == 0)
-            Clockwise = true;
-        else
-            Clockwise = false;
+        Clockwise = false;
     }
 
     void Reset()
