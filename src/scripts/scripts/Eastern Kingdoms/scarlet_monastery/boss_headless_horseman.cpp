@@ -510,7 +510,7 @@ struct boss_headless_horsemanAI : public ScriptedAI
     void SaySound(int32 textEntry, Unit *target = 0)
     {
         DoScriptText(textEntry, m_creature, target);
-        laugh += 4000;
+        laugh = 4000;
     }
 
     Player* SelectRandomPlayer(float range = 0.0f, bool checkLoS = true)
