@@ -857,8 +857,13 @@ void WorldSession::HandleBattleGroundReportAFK(WorldPacket & recv_data)
     }
 
     std::string message = "Player " + std::string(reportedPlayer->GetName()) + " has been reported by " + std::string(_player->GetName()) + " for AFK.";
-    _player->GetBattleGround()->SendMessageToTeam(_player->GetBattleGround()->GetPlayerTeam(_player->GetGUID()), message.c_str());
-    sLog.outDebug("WorldSession::HandleBattleGroundReportAFK: %s reported %s", _player->GetName(), reportedPlayer->GetName());
+    uint8 type = _player->GetTeamId() ? CHAT_MSG_BG_SYSTEM_ALLIANCE : CHAT_MSG_BG_SYSTEM_HORDE;
+    WorldPacket data;
+    ChatHandler::FillMessageData(&data, NULL, type, LANG_UNIVERSAL, NULL, 0, message.c_str(), NULL);
+    _player->GetBattleGround()->SendPacketToAll(&data);
+    message += "BattleGround GUID: %u";
+
+    sLog.outLog(LOG_DEFAULT, message.c_str(), _player->GetBattleGroundId());
 
     reportedPlayer->ReportedAfkBy(_player);
 }
