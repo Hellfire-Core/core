@@ -141,6 +141,71 @@ bool GossipSelect_npc_innkeeper(Player *player, Creature *_Creature, uint32 send
     return false;  // no player selection
 }
 
+enum
+{
+    FLEX_NPC_H      = 6929,
+    FLEX_QUEST_H    = 8359,
+    DANCE_NPC_H     = 6746,
+    DANCE_QUEST_H   = 8360,
+    TRAIN_NPC_H     = 11814,
+    TRAIN_QUEST_H   = 8358,
+    CHICKEN_NPC_H   = 6741,
+    CHICKEN_QUEST_H = 8354,
+
+    TRAIN_NPC_A     = 6826,
+    TRAIN_QUEST_A   = 8355,
+    CHICKEN_NPC_A   = 5111,
+    CHICKEN_QUEST_A = 8353,
+    FLEX_NPC_A      = 6740,
+    FLEX_QUEST_A    = 8356,
+    DANCE_NPC_A     = 6735,
+    DANCE_QUEST_A   = 8357,
+};
+
+bool ReceiveEmote_npc_innkeeper(Player* plr, Creature* c, uint32 type)
+{
+    if (!isEventActive())
+        return;
+
+    switch (c->GetEntry())
+    {
+    case FLEX_NPC_H:
+        if (type == TEXTEMOTE_FLEX)
+            plr->AreaExploredOrEventHappens(FLEX_QUEST_H);
+        break;
+    case FLEX_NPC_A:
+        if (type == TEXTEMOTE_FLEX)
+            plr->AreaExploredOrEventHappens(FLEX_QUEST_A);
+        break;
+    case DANCE_NPC_H:
+        if (type == TEXTEMOTE_DANCE)
+            plr->AreaExploredOrEventHappens(DANCE_QUEST_H);
+        break;
+    case DANCE_NPC_A:
+        if (type == TEXTEMOTE_DANCE)
+            plr->AreaExploredOrEventHappens(DANCE_QUEST_A);
+        break;
+        /* core has no support for sending non-text emotes to script
+    case TRAIN_NPC_H:
+        //if (type == TEXTEMOTE_?)
+            plr->AreaExploredOrEventHappens(TRAIN_QUEST_H);
+        break;
+    case TRAIN_NPC_A:
+        //if (type == TEXTEMOTE_?)
+            plr->AreaExploredOrEventHappens(TRAIN_QUEST_A);
+        break;
+        */
+    case CHICKEN_NPC_H:
+        if (type == TEXTEMOTE_CHICKEN)
+            plr->AreaExploredOrEventHappens(CHICKEN_QUEST_H);
+        break;
+    case CHICKEN_NPC_A:
+        if (type == TEXTEMOTE_CHICKEN)
+            plr->AreaExploredOrEventHappens(CHICKEN_QUEST_A);
+        break;
+    }
+}
+
 void AddSC_npc_innkeeper()
 {
     Script *newscript;
@@ -148,6 +213,7 @@ void AddSC_npc_innkeeper()
     newscript->Name="npc_innkeeper";
     newscript->pGossipHello = &GossipHello_npc_innkeeper;
     newscript->pGossipSelect = &GossipSelect_npc_innkeeper;
+    newscript->pReceiveEmote = &ReceiveEmote_npc_innkeeper;
     newscript->RegisterSelf();
 }
 
