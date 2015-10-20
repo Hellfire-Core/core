@@ -214,7 +214,7 @@ int32 DoLearnCost(Player *player)                           //tailor, alchemy
     return 200000;
 }
 
-int32 DoHighUnlearnCost(Player *player)                     //tailor, alchemy
+int32 DoHighUnlearnCost(Player *player)                     //tailor, alchemy, engineering
 {
     return 1500000;
 }
@@ -361,6 +361,49 @@ void ProfessionUnlearnSpells(Player *player, uint32 type)
             player->removeSpell(26756);                     // Frozen Shadoweave Shoulders
             player->removeSpell(26757);                     // Frozen Shadoweave Boots
             player->removeSpell(26758);                     // Frozen Shadoweave Robe
+            break;
+        case 20219:                                         // Gnomish engineer
+            player->removeSpell(10713);
+            player->removeSpell(11826);
+            player->removeSpell(10716);
+            player->removeSpell(10545);
+            player->removeSpell(10720);
+            player->removeSpell(10721);
+            player->removeSpell(10724);
+            player->removeSpell(10725);
+            player->removeSpell(10726);
+            player->removeSpell(10645);
+            player->removeSpell(18660);
+            player->removeSpell(18986);
+            player->removeSpell(18645);
+            player->removeSpell(23841);
+            player->removeSpell(23835);
+            player->removeSpell(30544);
+            player->removeSpell(23825);
+            player->removeSpell(23829);
+            player->removeSpell(23828);
+                break;
+        case 20222:                                         // Goblin engineer
+            player->removeSpell(10577);
+            player->removeSpell(10644);
+            player->removeSpell(11825);
+            player->removeSpell(10646);
+            player->removeSpell(10543);
+            player->removeSpell(10542);
+            player->removeSpell(10577);
+            player->removeSpell(7189);
+            player->removeSpell(10587);
+            player->removeSpell(10586);
+            player->removeSpell(10727);
+            player->removeSpell(10588);
+            player->removeSpell(18984);
+            player->removeSpell(18587);
+            player->removeSpell(23826);
+            player->removeSpell(23827);
+            player->removeSpell(30542);
+            player->removeSpell(23836);
+            player->removeSpell(23838);
+            player->removeSpell(23839);
             break;
     }
 }
@@ -1305,11 +1348,11 @@ void SendActionMenu_go_soothsaying_for_dummies(Player *player, GameObject* go, u
         case GOSSIP_ACTION_INFO_DEF+6:
             if(EquippedOk(player,20219)) // Gnomish Engineer
             {
-                if(player->GetMoney() >= DoLowUnlearnCost(player))
+                if(player->GetMoney() >= DoHighUnlearnCost(player))
                 {
                     player->removeSpell(20219);
                     ProfessionUnlearnSpells(player, 20219);
-                    player->ModifyMoney(-DoLowUnlearnCost(player));
+                    player->ModifyMoney(-DoHighUnlearnCost(player));
                 }
                 else
                     player->SendBuyError(BUY_ERR_NOT_ENOUGHT_MONEY, NULL, 0, 0);
@@ -1321,11 +1364,11 @@ void SendActionMenu_go_soothsaying_for_dummies(Player *player, GameObject* go, u
         case GOSSIP_ACTION_INFO_DEF+7:
             if(EquippedOk(player,20222)) // Gnomish Engineer
             {
-                if(player->GetMoney() >= DoLowUnlearnCost(player))
+                if(player->GetMoney() >= DoHighUnlearnCost(player))
                 {
                     player->removeSpell(20222);
                     ProfessionUnlearnSpells(player, 20222);
-                    player->ModifyMoney(-DoLowUnlearnCost(player));
+                    player->ModifyMoney(-DoHighUnlearnCost(player));
                 }
                 else
                     player->SendBuyError(BUY_ERR_NOT_ENOUGHT_MONEY, NULL, 0, 0);
