@@ -165,7 +165,7 @@ enum
 bool ReceiveEmote_npc_innkeeper(Player* plr, Creature* c, uint32 type)
 {
     if (!isEventActive())
-        return;
+        return false;
 
     switch (c->GetEntry())
     {
@@ -204,6 +204,7 @@ bool ReceiveEmote_npc_innkeeper(Player* plr, Creature* c, uint32 type)
             plr->AreaExploredOrEventHappens(CHICKEN_QUEST_A);
         break;
     }
+    return true;
 }
 
 void AddSC_npc_innkeeper()
