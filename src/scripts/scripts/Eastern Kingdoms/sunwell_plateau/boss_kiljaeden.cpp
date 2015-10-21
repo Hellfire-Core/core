@@ -760,7 +760,10 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                         if (!IsCastingSpikes)
                         {
                             AddSpellToCast(SPELL_SHADOW_SPIKE, CAST_NULL);
-                            ChangeTimers(true, 30000);
+                            _Timer[SPELL_FLAME_DART].Delay(30000);
+                            _Timer[SPELL_SOUL_FLAY].Delay(30000);
+                            _Timer[SPELL_FIRE_BLOOM].Delay(30000);
+                            _Timer[SPELL_LEGION_LIGHTNING].Delay(30000);
                             _Timer[TIMER_SHADOW_SPIKE].Reset(3000);
                             IsCastingSpikes = true;
                         }
@@ -769,8 +772,12 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                             if (SpikesLeft)
                             {
                                 Unit* random = SelectUnit(SELECT_TARGET_RANDOM, 0, 100.0f);
+                                Position pos;
                                 if (random)
-                                    DoSummon(CREATURE_SPIKE_TARGET1, random, 0, 2800, TEMPSUMMON_TIMED_DESPAWN);
+                                {
+                                    random->GetPosition(pos);
+                                    me->SummonCreature(CREATURE_SPIKE_TARGET1, pos.x, pos.y, pos.z, 0, TEMPSUMMON_TIMED_DESPAWN, 2800);
+                                }
                                 SpikesLeft--;
                                 _Timer[TIMER_SHADOW_SPIKE] = 3000;
                                 me->SetIgnoreVictimSelection(true);
@@ -1171,8 +1178,6 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
         if (!pInstance)
             return;
 
-        Summons.DespawnAll();
-
         if (!me->GetMap()->GetCreatureById(CREATURE_HAND_OF_THE_DECEIVER, GET_ALIVE_CREATURE_GUID))
         {
             pInstance->SetData(DATA_HAND_OF_DECEIVER_COUNT, 0);
@@ -1404,7 +1409,7 @@ struct mob_shield_orbAI : public ScriptedAI
         c = 0;
         mx = ShieldOrbLocations[0][0];
         my = ShieldOrbLocations[0][1];
-        Clockwise = false;
+        Clockwise = true;
     }
 
     void Reset()
@@ -1412,6 +1417,8 @@ struct mob_shield_orbAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
+        if (me->GetSelection())
+            me->SetSelection(0);
         if (PointReached)
         {
             if (Clockwise)
