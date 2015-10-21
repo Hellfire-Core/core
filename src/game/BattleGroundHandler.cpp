@@ -861,7 +861,7 @@ void WorldSession::HandleBattleGroundReportAFK(WorldPacket & recv_data)
     WorldPacket data;
     ChatHandler::FillMessageData(&data, NULL, type, LANG_UNIVERSAL, NULL, 0, message.c_str(), NULL);
     _player->GetBattleGround()->SendPacketToAll(&data);
-    message += "BattleGround GUID: %u";
+    message = "[BATTLEGROUND] " + message + " BattleGround GUID: %u";
 
     sLog.outLog(LOG_DEFAULT, message.c_str(), _player->GetBattleGroundId());
 
