@@ -480,7 +480,7 @@ struct boss_illidan_stormrageAI : public BossAI
 
                             DoModifyThreatPercent(pAkama, -101);
 
-
+                            pAkama->GetMotionMaster()->MoveIdle();
                             pAkama->AI()->DoAction(8); // EVENT_AKAMA_MINIONS_FIGHT
                         }
                     }
@@ -867,9 +867,9 @@ struct boss_illidan_stormrageAI : public BossAI
         if (Creature *pAkama = instance->GetCreature(instance->GetData64(DATA_AKAMA)))
         {
             pAkama->AI()->EnterEvadeMode();
-            pAkama->GetMotionMaster()->Clear(false); // need reset waypoint movegen, to test
+            pAkama->GetMotionMaster()->Clear(false, true); // need reset waypoint movegen, to test
             pAkama->AI()->Reset();
-            pAkama->GetMotionMaster()->MoveTargetedHome();
+            pAkama->GetMotionMaster()->MovePath(2109, false); // PATH_AKAMA_DOOR_EVERNT_AFTER
         }
 
         BossAI::EnterEvadeMode();
@@ -1079,6 +1079,8 @@ struct boss_illidan_akamaAI : public BossAI
         doorEvent = false;
 
         m_pathId = 0;
+
+        me->SetByteValue(UNIT_FIELD_BYTES_2, 0, SHEATH_STATE_UNARMED);
 
         SetAutocast(SPELL_AKAMA_CHAIN_LIGHTNING, 10000, false, CAST_TANK);
 
@@ -1307,7 +1309,7 @@ struct boss_illidan_akamaAI : public BossAI
                 else
                 {
                     me->SetWalk(false);
-                    me->GetMotionMaster()->MovePoint(0, 728.379f, 314.462f, 352.996f);
+                    me->GetMotionMaster()->MovePoint(0, 744.116f, 304.922f, 352.996f);
                 }
                 break;
             }
@@ -1315,10 +1317,10 @@ struct boss_illidan_akamaAI : public BossAI
             {
                 StopAutocast();
                 me->InterruptNonMeleeSpells(true);
+                me->ClearInCombat();
 
                 m_pathId = PATH_AKAMA_MINION_EVENT;
 
-                me->GetMotionMaster()->Clear(false);
                 me->GetMotionMaster()->MovePath(PATH_AKAMA_MINION_EVENT, false);
                 break;
             }
@@ -1327,8 +1329,9 @@ struct boss_illidan_akamaAI : public BossAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (!allowUpdate && !UpdateVictim())
-            return;
+        if (me->GetMotionMaster()->GetCurrentMovementGeneratorType() != WAYPOINT_MOTION_TYPE)
+            if (!allowUpdate && !UpdateVictim())
+                return;
 
         events.Update(diff);
 
@@ -1348,9 +1351,6 @@ struct boss_illidan_akamaAI : public BossAI
                     {
                         me->SetSelection(pIllidan->GetGUID());
                         pIllidan->SetSelection(me->GetGUID());
-                        pIllidan->HandleEmoteCommand(EMOTE_ONESHOT_LIFTOFF);
-                        pIllidan->setHover(true);
-                        pIllidan->SetLevitate(true);
                         pIllidan->RemoveAurasDueToSpell(SPELL_ILLIDAN_KNEEL_INTRO);
                         me->SetFacingToObject(pIllidan);
                         DoScriptText(SAY_ILLIDAN_NO1, pIllidan);
@@ -1368,12 +1368,7 @@ struct boss_illidan_akamaAI : public BossAI
                 case EVENT_AKAMA_TALK_SEQUENCE_NO3:
                 {
                     if (Creature *pIllidan = instance->GetCreature(instance->GetData64(DATA_ILLIDANSTORMRAGE)))
-                    {
-                        pIllidan->HandleEmoteCommand(EMOTE_ONESHOT_LAND);
-                        pIllidan->setHover(false);
-                        pIllidan->SetFlying(false);
                         DoScriptText(SAY_ILLIDAN_NO2, pIllidan);
-                    }
 
                     events.ScheduleEvent(EVENT_AKAMA_TALK_SEQUENCE_NO4, 7000);
                     return;
@@ -1382,6 +1377,8 @@ struct boss_illidan_akamaAI : public BossAI
                 {
                     DoScriptText(SAY_AKAMA_NO2, me);
                     events.ScheduleEvent(EVENT_AKAMA_ILLIDAN_FIGHT, 4500);
+                    me->SetByteValue(UNIT_FIELD_BYTES_2, 0, SHEATH_STATE_MELEE);
+                    me->HandleEmoteCommand(EMOTE_ONESHOT_ROAR);
                     return;
                 }
                 case EVENT_AKAMA_ILLIDAN_FIGHT:
