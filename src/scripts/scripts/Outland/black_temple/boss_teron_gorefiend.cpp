@@ -87,6 +87,7 @@ struct mob_doom_blossomAI : public NullCreatureAI
             m_creature->setFaction(Teron->getFaction());
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_ROTATE);
         m_creature->SetLevitate(true);
 
         float newX, newY, newZ;
