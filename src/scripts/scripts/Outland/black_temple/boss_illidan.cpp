@@ -1087,17 +1087,20 @@ struct boss_illidan_akamaAI : public BossAI
 
         if (instance->GetData(EVENT_ILLIDARIDOOR) == DONE)
             me->SetVisibility(VISIBILITY_ON);
+            me->SetHomePosition(757.588f, 239.638f, 353.281f, 1.85f); //normal pos before illidan fight
+        }
         else
         {
             me->SetVisibility(VISIBILITY_OFF);
             me->DestroyForNearbyPlayers();
+            float x, y, z;
+            me->GetRespawnCoord(x, y, z);
+            me->SetHomePosition(x, y, z, 2.53f);
         }
 
         me->SetReactState(REACT_PASSIVE);
 
-        float x,y,z;
-        me->GetRespawnCoord(x,y,z);
-        me->SetHomePosition(x,y,z, 2.53f);
+
     }
 
     void MoveInLineOfSight(Unit *pWho)
