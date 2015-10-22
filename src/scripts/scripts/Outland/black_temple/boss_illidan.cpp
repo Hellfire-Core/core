@@ -1090,7 +1090,7 @@ struct boss_illidan_akamaAI : public BossAI
         if (instance->GetData(EVENT_ILLIDARIDOOR) == DONE)
         {
             me->SetVisibility(VISIBILITY_ON);
-            me->SetHomePosition(757.588f, 239.638f, 353.281f, 1.85f); //normal pos before illidan fight
+            me->SetHomePosition(746.506f, 232.543f, 352.996f, 1.85f); //normal pos before illidan fight
         }
         else
         {
