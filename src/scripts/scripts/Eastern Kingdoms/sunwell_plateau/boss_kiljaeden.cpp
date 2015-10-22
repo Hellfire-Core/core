@@ -1345,6 +1345,7 @@ struct mob_armageddonAI : public Scripted_NoMovementAI
     {
         Spell = 0;
         Timer = 0;
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_ROTATE);
     }
 
     void UpdateAI(const uint32 diff)
@@ -1400,6 +1401,7 @@ struct mob_shield_orbAI : public ScriptedAI
     void InitializeAI()
     {
         me->SetIgnoreVictimSelection(true);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_ROTATE);
         me->SetSelection(0);
         m_creature->SetLevitate(true);
         PointReached = true;
