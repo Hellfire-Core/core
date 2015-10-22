@@ -427,6 +427,38 @@ struct boss_illidan_stormrageAI : public BossAI
         }
     }
 
+    void RespawnGlaiveTargets()
+    {
+        GlaiveTargetRespawner respawner;
+        Hellground::ObjectWorker<Creature, GlaiveTargetRespawner> worker(respawner);
+        Cell::VisitGridObjects(me, worker, 200.0f);
+    }
+
+    void CastEyeBlast()
+    {
+        Locations initial = EyeBlast[urand(0,4)];
+        if (Creature* pTrigger = me->SummonTrigger(initial.x, initial.y, initial.z, 0, 13000))
+        {
+            RespawnGlaiveTargets();
+
+            if (Creature *pGlaive = GetClosestCreatureWithEntry(pTrigger, GLAIVE_TARGET, 70.0f, true))
+            {
+                WorldLocation final;
+                pTrigger->GetNearPoint(final.coord_x, final.coord_y, final.coord_z, 80.0f, false, pTrigger->GetAngle(pGlaive));
+                final.coord_z = 354.519f;
+                pTrigger->SetSpeed(MOVE_RUN, 1.0f);
+                pTrigger->GetMotionMaster()->MovePoint(0, final.coord_x, final.coord_y, final.coord_z, true, UNIT_ACTION_CONTROLLED);
+
+                pTrigger->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+
+                m_hoverPoint = urand(0,3);
+                me->GetMotionMaster()->MovePoint(1, HoverPosition[m_hoverPoint].x, HoverPosition[m_hoverPoint].y, HoverPosition[m_hoverPoint].z);
+
+                ForceSpellCastWithScriptText(pTrigger, SPELL_ILLIDAN_EYE_BLAST, YELL_ILLIDAN_EYE_BLAST, INTERRUPT_AND_CAST_INSTANTLY, false, true);
+            }
+        }
+    }
+
     bool PhaseOneThreeFive()
     {
         while (uint32 eventId = events.ExecuteEvent())
@@ -448,7 +480,7 @@ struct boss_illidan_stormrageAI : public BossAI
 
                             DoModifyThreatPercent(pAkama, -101);
 
-                            
+
                             pAkama->AI()->DoAction(8); // EVENT_AKAMA_MINIONS_FIGHT
                         }
                     }
@@ -496,7 +528,7 @@ struct boss_illidan_stormrageAI : public BossAI
                 }
                 case EVENT_ILLIDAN_AGONIZING_FLAMES:
                 {
-                    if (Unit *pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0 , 250.0f, true, 0, 15.0f))
+                    if (Unit *pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0, 250.0f, true, 0, 15.0f))
                         AddSpellToCast(pTarget, SPELL_ILLIDAN_AGONIZING_FLAMES, false, true);
 
                     events.ScheduleEvent(EVENT_ILLIDAN_AGONIZING_FLAMES, urand(30000, 35000), m_phase);
@@ -512,44 +544,12 @@ struct boss_illidan_stormrageAI : public BossAI
                     if (Creature *pMaiev = GetClosestCreatureWithEntry(me, 23197, 200.0f))
                         pMaiev->AI()->DoAction(5); // Force to place trap
 
-                    events.ScheduleEvent(EVENT_ILLIDAN_CAGE_TRAP, urand(20000,30000), m_phase);
+                    events.ScheduleEvent(EVENT_ILLIDAN_CAGE_TRAP, urand(20000, 30000), m_phase);
                     break;
                 }
             }
         }
         return true;
-    }
-
-    void RespawnGlaiveTargets()
-    {
-        GlaiveTargetRespawner respawner;
-        Hellground::ObjectWorker<Creature, GlaiveTargetRespawner> worker(respawner);
-        Cell::VisitGridObjects(me, worker, 200.0f);
-    }
-
-    void CastEyeBlast()
-    {
-        Locations initial = EyeBlast[urand(0,4)];
-        if (Creature* pTrigger = me->SummonTrigger(initial.x, initial.y, initial.z, 0, 13000))
-        {
-            RespawnGlaiveTargets();
-
-            if (Creature *pGlaive = GetClosestCreatureWithEntry(pTrigger, GLAIVE_TARGET, 70.0f, true))
-            {
-                WorldLocation final;
-                pTrigger->GetNearPoint(final.coord_x, final.coord_y, final.coord_z, 80.0f, false, pTrigger->GetAngle(pGlaive));
-                final.coord_z = 354.519f;
-                pTrigger->SetSpeed(MOVE_RUN, 1.0f);
-                pTrigger->GetMotionMaster()->MovePoint(0, final.coord_x, final.coord_y, final.coord_z, true, UNIT_ACTION_CONTROLLED);
-
-                pTrigger->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-
-                m_hoverPoint = urand(0,3);
-                me->GetMotionMaster()->MovePoint(1, HoverPosition[m_hoverPoint].x, HoverPosition[m_hoverPoint].y, HoverPosition[m_hoverPoint].z);
-
-                ForceSpellCastWithScriptText(pTrigger, SPELL_ILLIDAN_EYE_BLAST, YELL_ILLIDAN_EYE_BLAST, INTERRUPT_AND_CAST_INSTANTLY, false, true);
-            }
-        }
     }
 
     bool PhaseTwo()
