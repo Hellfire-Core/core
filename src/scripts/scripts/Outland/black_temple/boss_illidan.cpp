@@ -1139,15 +1139,18 @@ struct boss_illidan_akamaAI : public BossAI
             {
                 if (m_pathId == PATH_AKAMA_MINION_EVENT)
                 {
-                   if (data == 0)
-                       DoScriptText(YELL_AKAMA_FIGHT_MINIONS, me);
+                    if (data == 0)
+                        DoScriptText(YELL_AKAMA_FIGHT_MINIONS, me);
 
-                   if (data == 9)
-                   {
-                       m_pathId = 0;
-                       events.ScheduleEvent(EVENT_AKAMA_SUMMON_ELITE, 1000);
-                   }
+                    if (data == 9)
+                    {
+                        m_pathId = 0;
+                        events.ScheduleEvent(EVENT_AKAMA_SUMMON_ELITE, 1000);
+                    }
                 }
+                else
+                    if (data == 17)
+                        me->DisappearAndDie();
             }
         }
 
