@@ -1347,6 +1347,7 @@ struct boss_illidan_akamaAI : public BossAI
                     {
                         me->SetSelection(pIllidan->GetGUID());
                         pIllidan->SetSelection(me->GetGUID());
+                        pIllidan->HandleEmoteCommand(EMOTE_ONESHOT_LIFTOFF);
                         pIllidan->setHover(true);
                         pIllidan->SetLevitate(true);
                         pIllidan->RemoveAurasDueToSpell(SPELL_ILLIDAN_KNEEL_INTRO);
@@ -1379,7 +1380,7 @@ struct boss_illidan_akamaAI : public BossAI
                 case EVENT_AKAMA_TALK_SEQUENCE_NO4:
                 {
                     DoScriptText(SAY_AKAMA_NO2, me);
-                    events.ScheduleEvent(EVENT_AKAMA_ILLIDAN_FIGHT, 5000);
+                    events.ScheduleEvent(EVENT_AKAMA_ILLIDAN_FIGHT, 4500);
                     return;
                 }
                 case EVENT_AKAMA_ILLIDAN_FIGHT:
