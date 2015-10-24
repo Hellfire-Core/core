@@ -27,21 +27,6 @@ EndScriptData */
 #include "precompiled.h"
 #include "def_karazhan.h"
 
-//phase 1
-#define SPELL_BELLOWING_ROAR        39427
-#define SPELL_CHARRED_EARTH         30129
-#define SPELL_DISTRACTING_ASH       30130
-#define SPELL_SMOLDERING_BREATH     30210
-#define SPELL_TAIL_SWEEP            25653
-#define SPELL_CLEAVE                30131
-//phase 2
-#define SPELL_RAIN_OF_BONES         37098
-#define SPELL_RAIN_OF_BONES_EFFECT  37091
-#define SPELL_SMOKING_BLAST         37057
-#define SPELL_FIREBALL_BARRAGE      30282
-#define SPELL_SEARING_CINDERS       30127
-#define SPELL_SUMMON_SKELETON       30170
-
 #define EMOTE_SUMMON                "An ancient being awakens in the distance..."
 #define YELL_AGGRO                  "What fools! I shall bring a quick end to your suffering!"
 #define YELL_FLY_PHASE              "Miserable vermin. I shall exterminate you from the air!"
@@ -71,16 +56,31 @@ struct boss_nightbaneAI : public ScriptedAI
         Summoned = true;
     }
 
+    enum Spells
+    {
+        //phase 1
+        SPELL_BELLOWING_ROAR        = 39427,
+        SPELL_CHARRED_EARTH         = 30129,
+        SPELL_DISTRACTING_ASH       = 30130,
+        SPELL_SMOLDERING_BREATH     = 30210,
+        SPELL_TAIL_SWEEP            = 25653,
+        SPELL_CLEAVE                = 30131,
+
+        //phase 2
+        SPELL_RAIN_OF_BONES         = 37098,
+        SPELL_RAIN_OF_BONES_EFFECT  = 37091,
+        SPELL_SMOKING_BLAST         = 37057,
+        SPELL_FIREBALL_BARRAGE      = 30282,
+        SPELL_SEARING_CINDERS       = 30127,
+        SPELL_SUMMON_SKELETON       = 30170
+    };
+
     ScriptedInstance* pInstance;
 
     enum {
         PHASE_GROUND,
         PHASE_FLIGHT
     } Phase;
-
-    bool Summoned;
-    bool RainBones;
-    bool Skeletons;
 
     Timer BellowingRoarTimer;
     Timer CharredEarthTimer;
@@ -96,12 +96,13 @@ struct boss_nightbaneAI : public ScriptedAI
     uint32 FlyCount;
     Timer FlyTimer;
 
+    int32 MovePhase;
+    Timer WaitTimer;
+
+    bool Summoned;
     bool Intro;
     bool Flying;
     bool Movement;
-
-    Timer WaitTimer;
-    int32 MovePhase;
 
     void Reset()
     {
@@ -116,17 +117,20 @@ struct boss_nightbaneAI : public ScriptedAI
                 pInstance->SetData64(DATA_NIGHTBANE, m_creature->GetGUID());
         }
 
-        BellowingRoarTimer.Reset(30000);
-        CharredEarthTimer.Reset(15000);
-        DistractingAshTimer.Reset(20000);
-        SmolderingBreathTimer.Reset(10000);
-        TailSweepTimer.Reset(12000);
-        RainofBonesTimer.Reset(5000);
-        SmokingBlastTimer.Reset(20000);
-        FireballBarrageTimer.Reset(13000);
+        // ground phase timers
+        BellowingRoarTimer.Reset(urand(20000, 30000));
+        CharredEarthTimer.Reset(urand(10000, 15000));
+        SmolderingBreathTimer.Reset(urand(9000, 13000));
+        TailSweepTimer.Reset(urand(12000, 15000));
+        Cleave_Timer.Reset(urand(4000, 8000));
+
+        // flight phase timers
+        DistractingAshTimer.Reset(urand(10000, 12000));
+        RainofBonesTimer = 0;
+        SmokingBlastTimer = 0;
+        FireballBarrageTimer.Reset(10000);
         SearingCindersTimer.Reset(14000);
         WaitTimer.Reset(1000);
-        Cleave_Timer.Reset(6000);
 
         Phase = PHASE_GROUND;
         FlyCount = 0;
@@ -230,27 +234,23 @@ struct boss_nightbaneAI : public ScriptedAI
 
         if (Flying)
         {
-            if (id == 0)
+            switch (id)
             {
-                DoTextEmote(EMOTE_BREATH, NULL, true);
-                Flying = true;
-                Phase = PHASE_FLIGHT;
-                return;
-            }
+                case 0:
+                {
+                    DoTextEmote(EMOTE_BREATH, NULL, true);
+                    Flying = true;
+                    break;
+                }
+                case 8:
+                {
+                    DoResetThreat();
 
-            if (id == 3)
-            {
-                MovePhase = 4;
-                WaitTimer = 1;
-                return;
-            }
-
-            if (id == 8)
-            {
-                Flying = false;
-                Phase = PHASE_GROUND;
-                Movement = true;
-                return;
+                    Flying = false;
+                    Phase = PHASE_GROUND;
+                    Movement = true;
+                    return;
+                }
             }
 
             WaitTimer = 1;
@@ -288,16 +288,16 @@ struct boss_nightbaneAI : public ScriptedAI
         m_creature->SetLevitate(true);
         m_creature->GetMotionMaster()->Clear(false);
         m_creature->GetMotionMaster()->MovePoint(0, IntroWay[2][0], IntroWay[2][1], IntroWay[2][2]);
-        DistractingAshTimer.Delay(10000); // wrong, just to not cast while flying up
 
+        Phase = PHASE_FLIGHT;
+        MovePhase = 1;
         Flying = true;
-
-        FlyTimer.Reset(45000 + rand() % 15000); //timer wrong between 45 and 60 seconds
         ++FlyCount;
 
-        RainofBonesTimer.Reset(5000); //timer wrong (maybe)
-        RainBones = false;
-        Skeletons = false;
+        FlyTimer.Reset(45000 + rand() % 15000); //timer wrong between 45 and 60 seconds
+        DistractingAshTimer.Delay(10000); // wrong, just to not cast while flying up
+        RainofBonesTimer = 5000;
+        SmokingBlastTimer = 0;
     }
 
     void UpdateAI(const uint32 diff)
@@ -356,26 +356,26 @@ struct boss_nightbaneAI : public ScriptedAI
             if (BellowingRoarTimer.Expired(diff))
             {
                 DoCast(m_creature->getVictim(), SPELL_BELLOWING_ROAR);
-                BellowingRoarTimer = 30000 + rand() % 10000; //Timer
+                BellowingRoarTimer = urand(20000, 30000);
             }
 
             if (SmolderingBreathTimer.Expired(diff))
             {
                 DoCast(m_creature->getVictim(), SPELL_SMOLDERING_BREATH);
-                SmolderingBreathTimer = 20000;//timer
+                SmolderingBreathTimer = urand(14000, 20000);
             }
 
             if (Cleave_Timer.Expired(diff))
             {
                 DoCast(m_creature->getVictim(), SPELL_CLEAVE);
-                Cleave_Timer = 6000 + rand() % 6000;
+                Cleave_Timer = urand(6000, 12000);
             }
 
             if (CharredEarthTimer.Expired(diff))
             {
                 if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_CHARRED_EARTH), true))
                     DoCast(target, SPELL_CHARRED_EARTH);
-                CharredEarthTimer = 20000; //timer
+                CharredEarthTimer = urand(25000, 35000);
             }
 
             if (TailSweepTimer.Expired(diff))
@@ -383,22 +383,7 @@ struct boss_nightbaneAI : public ScriptedAI
                 if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_TAIL_SWEEP), true))
                     if (!m_creature->HasInArc(M_PI, target))
                         DoCast(target, SPELL_TAIL_SWEEP);
-                TailSweepTimer = 15000;//timer
-            }
-
-            if (SearingCindersTimer.Expired(diff))
-            {
-                if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_SEARING_CINDERS), true))
-                    DoCast(target, SPELL_SEARING_CINDERS);
-                SearingCindersTimer = 10000; //timer
-            }
-
-            if (DistractingAshTimer.Expired(diff))
-            {
-                if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_DISTRACTING_ASH), true))
-                    m_creature->AddAura(SPELL_DISTRACTING_ASH, target);
-
-                DistractingAshTimer = 2000;//timer wrong
+                TailSweepTimer = urand(14000, 20000);
             }
 
             if (HealthBelowPct((3 - FlyCount) * 25))
@@ -409,37 +394,46 @@ struct boss_nightbaneAI : public ScriptedAI
 
         else if (Phase == PHASE_FLIGHT)
         {
-            if (!RainBones)
+            if (RainofBonesTimer.Expired(diff)) // only once at the beginning of phase 2
             {
-                if (RainofBonesTimer.Expired(diff)) // only once at the beginning of phase 2
+                if (Unit* target = SelectCastTarget(SPELL_RAIN_OF_BONES, CAST_RANDOM))
                 {
-                    if (Unit* target = SelectCastTarget(SPELL_RAIN_OF_BONES, CAST_RANDOM))
-                    {
-                        m_creature->CastSpell(target, SPELL_RAIN_OF_BONES, false);
+                    m_creature->CastSpell(target, SPELL_RAIN_OF_BONES, false);
 
-                        for (int i = 0; i < 5; ++i)
-                            DoCast(target, SPELL_SUMMON_SKELETON, true);
-                    }
-
-                    RainBones = true;
-                    RainofBonesTimer = 0;
-                    SmokingBlastTimer.Reset(15000);
+                    for (int i = 0; i < 5; ++i)
+                        DoCast(target, SPELL_SUMMON_SKELETON, true);
                 }
+
+                RainofBonesTimer = 0;
+                SmokingBlastTimer = urand(10000, 12000);
             }
-            else
+
+            if (DistractingAshTimer.Expired(diff))
             {
-                if (SmokingBlastTimer.Expired(diff))
-                {
-                    DoCast(m_creature->getVictim(), SPELL_SMOKING_BLAST);
-                    SmokingBlastTimer = 1000;
-                }
+                if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_DISTRACTING_ASH), true))
+                    m_creature->AddAura(SPELL_DISTRACTING_ASH, target);
+
+                DistractingAshTimer = urand(7000, 13000);
+            }
+
+            if (SmokingBlastTimer.Expired(diff))
+            {
+                DoCast(m_creature->getVictim(), SPELL_SMOKING_BLAST);
+                SmokingBlastTimer = urand(1000, 3000);
+            }
+
+            if (SearingCindersTimer.Expired(diff))
+            {
+                if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_SEARING_CINDERS), true))
+                    DoCast(target, SPELL_SEARING_CINDERS);
+                SearingCindersTimer = urand(10000, 13000);
             }
 
             if (FireballBarrageTimer.Expired(diff))
             {
                 if (Unit* target = SelectUnit(SELECT_TARGET_FARTHEST, 0, GetSpellMaxRange(SPELL_FIREBALL_BARRAGE), true, uint64(0), 40.0f))
                     DoCast(target, SPELL_FIREBALL_BARRAGE);
-                FireballBarrageTimer = 5000; //Timer
+                FireballBarrageTimer = urand(3000, 6000);
             }
 
             if (FlyTimer.Expired(diff)) //landing
@@ -449,7 +443,6 @@ struct boss_nightbaneAI : public ScriptedAI
                 else
                     DoYell(YELL_LAND_PHASE_2, LANG_UNIVERSAL, NULL);
 
-                DoResetThreat();
                 m_creature->GetMotionMaster()->Clear(false);
                 m_creature->GetMotionMaster()->MovePoint(3, IntroWay[3][0], IntroWay[3][1], IntroWay[3][2]);
 
