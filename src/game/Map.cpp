@@ -2447,7 +2447,7 @@ void InstanceMap::PermBindAllPlayers(Player *player)
             group->BindToInstance(save, true);
     }
     if (IsRaid())
-        sLog.outLog(LOG_RAID_BINDS, str.str().c_str());
+        sLog.outLog(LOG_RAID_BINDS, "%s", str.str().c_str());
 }
 
 void InstanceMap::UnloadAll()

@@ -282,7 +282,7 @@ public:
                                 + secsToTimeString(last_record) + ") for boss " + names->Fetch()[1].GetCppString()
                                 + " by guild <|cffffffff" + names->Fetch()[0].GetCppString() + "|r> of " + (side == HORDE ? "|cffe50c11Horde|r." : "|cff4954e8Alliance|r.");
 
-                            sLog.outLog(LOG_SERVER_RECORDS, message.c_str());
+                            sLog.outLog(LOG_SERVER_RECORDS, "%s", message.c_str());
                             sWorld.SendServerMessage(SERVER_MSG_STRING, message.c_str());
                         }
                     }

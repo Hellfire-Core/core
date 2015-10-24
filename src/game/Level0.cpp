@@ -53,7 +53,6 @@ bool ChatHandler::HandleAccountXPToggleCommand(const char* args)
                 session->AddAccountFlag(ACC_BLIZZLIKE_RATES);
                 PSendSysMessage("Now your rates are blizzlike: x1.");
             }
-            PSendSysMessage("");
             PSendSysMessage("You have to RELOG before the command takes effect!");
         }
     }

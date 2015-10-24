@@ -106,7 +106,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket & recv_data)
         str << " Entry " << GUID_ENPART(lguid) << " LowGUID " << GUID_LOPART(lguid) << "but he is not alowed to do so.\n";
         str << "MapID: " << player->GetMapId() << " InstanceID: " << player->GetInstanceId() << " position X: ";
         str << player->GetPositionX() << " Y: " << player->GetPositionY() << " Z: " << player->GetPositionZ();
-        sLog.outLog(LOG_EXPLOITS_CHEATS, str.str().c_str());
+        sLog.outLog(LOG_EXPLOITS_CHEATS, "%s", str.str().c_str());
         player->SendLootRelease(lguid);
         return;
     }
