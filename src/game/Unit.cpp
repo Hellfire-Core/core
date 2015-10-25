@@ -7630,7 +7630,7 @@ bool Unit::Attack(Unit *victim, bool meleeAttack)
     }
 
     // remove SPELL_AURA_MOD_UNATTACKABLE at attack (in case non-interruptible spells stun aura applied also that not let attack)
-    if (HasAuraType(SPELL_AURA_MOD_UNATTACKABLE) && !HasAura(40282) && !HasAura(17624, 0))    // do not remove Possess Spirit Immune aura when attacking
+    if (HasAuraType(SPELL_AURA_MOD_UNATTACKABLE) && !HasAura(40282) && !HasAura(17624))    // do not remove Possess Spirit Immune aura when attacking
         RemoveSpellsCausingAura(SPELL_AURA_MOD_UNATTACKABLE);                                 // same for Flask of petrification
                                                                                               // TODO/FIXME: do not remove any auras that cause any form of LOST_CONTROL
     if (m_attacking)
