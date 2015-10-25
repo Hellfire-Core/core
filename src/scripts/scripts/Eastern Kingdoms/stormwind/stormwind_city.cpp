@@ -250,7 +250,7 @@ struct npc_highlord_bolvar_fordragonAI : public ScriptedAI
 {
     npc_highlord_bolvar_fordragonAI(Creature *c) : ScriptedAI(c) {}
 
-    int32 speechTimer;
+    Timer speechTimer;
     uint8 step;
 
     void Reset()
@@ -289,9 +289,9 @@ struct npc_highlord_bolvar_fordragonAI : public ScriptedAI
                 return 6000;
             case 6:
                 me->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER);
-                return 0;
+                return 1;
             default:
-                return 0;
+                return 1;
         }
     }
 
@@ -299,15 +299,12 @@ struct npc_highlord_bolvar_fordragonAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(speechTimer)
+        if (speechTimer.Expired(diff))
         {
-            speechTimer -= diff;
-            if(speechTimer <= diff)
-            {
-                speechTimer += DoSpeech(step);
-                step++;
-            }          
+            speechTimer = DoSpeech(step);
+            step++;
         }
+
 
         if(!UpdateVictim())
             return;
