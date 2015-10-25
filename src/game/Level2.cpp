@@ -4779,6 +4779,6 @@ bool ChatHandler::HandleNpcDebugAICommand(const char* args)
         SendSysMessage(LANG_DONE);
     }
     else
-        SendSysMessage(ai->GetDebugInfo().c_str());
+        ai->GetDebugInfo(*this);
     return true;
 }

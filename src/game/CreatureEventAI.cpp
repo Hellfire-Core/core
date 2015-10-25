@@ -30,6 +30,7 @@
 #include "GridNotifiersImpl.h"
 #include "InstanceData.h"
 #include "SpellMgr.h"
+#include "Chat.h"
 #include "CreatureAIImpl.h"
 
 bool CreatureEventAIHolder::UpdateRepeatTimer(Creature* creature, uint32 repeatMin, uint32 repeatMax)
@@ -1484,7 +1485,7 @@ bool CreatureEventAI::SpawnedEventConditionsCheck(CreatureEventAI_Event const& e
     return false;
 }
 
-std::string CreatureEventAI::GetDebugInfo()
+void CreatureEventAI::GetDebugInfo(ChatHandler& reader)
 {
     std::ostringstream str;
     str << "Debug info for EventAI of " << me->GetName() << "(" << me->GetEntry() << " : " << me->GetGUIDLow();
@@ -1495,5 +1496,5 @@ std::string CreatureEventAI::GetDebugInfo()
         str << (i->Enabled ? " enabled\n" : " disabled\n");
     }
 
-    return str.str();
+    reader.SendSysMessage(str.str().c_str());
 }

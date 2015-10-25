@@ -23,6 +23,7 @@
 #include "Creature.h"
 #include "World.h"
 #include "SpellMgr.h"
+#include "Chat.h"
 
 void CreatureAI::OnCharmed(bool apply)
 {
@@ -124,6 +125,11 @@ void CreatureAI::EnterEvadeMode()
 void CreatureAI::JustReachedHome()
 {
     me->GetMotionMaster()->Initialize();
+}
+
+void CreatureAI::GetDebugInfo(ChatHandler& reader)
+{
+    reader.SendSysMessage("This AI does not support debugging.");
 }
 
 void CreatureAI::SendDebug(const char* fmt, ...)

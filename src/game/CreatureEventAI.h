@@ -627,7 +627,7 @@ class HELLGROUND_IMPORT_EXPORT CreatureEventAI : public CreatureAI
         void UpdateAI(const uint32 diff);
         void ReceiveEmote(Player* pPlayer, uint32 text_emote);
         static int Permissible(const Creature *);
-        std::string GetDebugInfo();
+        void GetDebugInfo(ChatHandler& reader);
 
         bool ProcessEvent(CreatureEventAIHolder& pHolder, Unit* pActionInvoker = NULL);
         void ProcessAction(CreatureEventAI_Action const& action, uint32 rnd, uint32 EventId, Unit* pActionInvoker);

@@ -30,6 +30,7 @@ class Player;
 class Aura;
 struct SpellEntry;
 class WorldObject;
+class ChatHandler;
 
 #define TIME_INTERVAL_LOOK   5000
 #define VISIBILITY_RANGE    10000
@@ -156,7 +157,8 @@ class HELLGROUND_IMPORT_EXPORT CreatureAI : public UnitAI
         virtual void ReceiveScriptText(WorldObject *pSource, int32 iTextEntry) {}
 
         // For debugging AI
-        virtual std::string GetDebugInfo() { return std::string("This AI does not support debugging"); }
+        virtual void GetDebugInfo(ChatHandler& reader);
+
         void ToggleDebug(uint64 target) { m_debugInfoReceiver = target; };
         void SendDebug(const char* fmt, ...);
 
