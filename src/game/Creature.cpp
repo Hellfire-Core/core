@@ -586,6 +586,13 @@ void Creature::Update(uint32 update_diff, uint32 diff)
                 i_AI->UpdateAI(diff);
                 m_AI_locked = false;
             }
+
+            // Trentone says: Some scripts make creatures kill themself - and then they're not in combat - thus dynamicflags are set to normal - which should not happen
+            // creature can be dead after UpdateAI call (example: Kalecgos / Illidan)
+            // CORPSE/DEAD state will processed at next tick (in other case death timer will be updated unexpectedly)
+            if (!isAlive())
+                break;
+
             if (m_regenTimer > 0)
             {
                 if (update_diff >= m_regenTimer)
