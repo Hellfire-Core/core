@@ -5235,6 +5235,10 @@ SpellCastResult Spell::CheckItems()
     {
         switch (GetSpellEntry()->Effect[i])
         {
+            case SPELL_EFFECT_APPLY_AURA:                   //}
+                if (GetSpellEntry()->Id == 17624)           //}}
+                    GetCaster()->RemoveAllAurasOnDeath();   //}}} FIXME: HACK: i have absolutely NO IDEA where to put this. But it works.
+                break;                                      //}
             case SPELL_EFFECT_CREATE_ITEM:
             {
                 if (!IsTriggeredSpell() && GetSpellEntry()->EffectItemType[i])
