@@ -5176,7 +5176,7 @@ bool ChatHandler::HandleBanHelper(BanMode mode, const char* args)
     if (mode != BAN_EMAIL)
     {
         duration = strtok (NULL," ");
-        if (!duration || !atoi(duration))
+        if (!duration || !atoi(duration) || (atoi(duration)>0 && !TimeStringToSecs(duration)))
             return false;
     }
 
