@@ -87,6 +87,38 @@ bool GossipSelect_npc_spirit_of_olum(Player* player, Creature* _Creature, uint32
     return true;
 }
 
+bool GossipHello_npc_spirit_of_udalo(Player* player, Creature* _Creature)
+{
+    ScriptedInstance* pInstance = (_Creature->GetInstanceData());
+
+    if (pInstance)
+    {
+        if (pInstance->GetData(EVENT_ILLIDARICOUNCIL) >= DONE)
+        {
+            player->ADD_GOSSIP_ITEM(0, GOSSIP_ILLIDARI, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
+            player->SEND_GOSSIP_MENU(TELEPORT_GOSSIP, _Creature->GetGUID());
+        }
+        else
+            player->SEND_GOSSIP_MENU(WELCOME_GOSSIP, _Creature->GetGUID());
+    }
+    return true;
+}
+
+bool GossipSelect_npc_spirit_of_udalo(Player* player, Creature* _Creature, uint32 sender, uint32 action)
+{
+    switch (action)
+    {
+    case (GOSSIP_ACTION_INFO_DEF + 2) :
+        player->InterruptNonMeleeSpells(false);
+        player->CastSpell(player, SPELL_TELEPORT_ILLIDARI, false);
+        player->CLOSE_GOSSIP_MENU();
+        break;
+    default:
+        break;
+    }
+    return true;
+}
+
 void AddSC_black_temple()
 {
     Script *newscript;
@@ -95,6 +127,12 @@ void AddSC_black_temple()
     newscript->Name = "npc_spirit_of_olum";
     newscript->pGossipHello = &GossipHello_npc_spirit_of_olum;
     newscript->pGossipSelect = &GossipSelect_npc_spirit_of_olum;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_spirit_of_udalo";
+    newscript->pGossipHello = &GossipHello_npc_spirit_of_udalo;
+    newscript->pGossipSelect = &GossipSelect_npc_spirit_of_udalo;
     newscript->RegisterSelf();
 }
 
