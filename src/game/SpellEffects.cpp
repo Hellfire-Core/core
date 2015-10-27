@@ -1818,6 +1818,33 @@ void Spell::EffectDummy(uint32 i)
                     }
                     break;
                 }
+                case 42339: // water bucket lands (hallow's end event)
+                {
+                    struct checker
+                    {
+                        bool operator()(WorldObject* object)
+                        {
+                            return (object->GetTypeId() == TYPEID_PLAYER) ||
+                                (object->GetTypeId() == TYPEID_UNIT && object->GetEntry() == 23537); // Fire NPC
+                        }
+                    } check;
+                    std::list<Unit*> list;
+                    Hellground::UnitListSearcher<checker> searcher(list, check);
+                    Cell::VisitWorldObjects(m_targets.m_destX, m_targets.m_destY, m_caster->GetMap(), searcher, 5.0f);
+                    if (list.empty())
+                        return;
+
+                    list.sort(Hellground::ObjectDistanceOrder(m_caster));
+                    if (list.front()->GetTypeId() == TYPEID_PLAYER)
+                    {
+                        m_caster->CastSpell(list.front(), 42349, true);
+                    }
+                    else
+                    {
+                        m_caster->Kill(list.front());
+                    }
+                    break;
+                }
             }
 
             //All IconID Check in there

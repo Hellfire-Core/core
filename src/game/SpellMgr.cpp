@@ -2928,6 +2928,10 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 35331:
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_BLOCK_STEALTH;
                     break;
+                case 45275:
+                case 42336: // bucket/torch visuals duration 60sec
+                    spellInfo->DurationIndex = 3;
+                    break;
                 }
                 if (spellInfo->SpellIconID == 184 && spellInfo->Attributes == 4259840)
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
