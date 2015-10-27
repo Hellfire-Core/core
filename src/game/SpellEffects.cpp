@@ -1837,7 +1837,7 @@ void Spell::EffectDummy(uint32 i)
                     list.sort(Hellground::ObjectDistanceOrder(m_caster));
                     if (list.front()->GetTypeId() == TYPEID_PLAYER)
                     {
-                        m_caster->CastSpell(list.front(), 42349, true);
+                        list.front()->CastSpell(list.front(), 42349, true);
                     }
                     else
                     {

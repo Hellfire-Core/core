@@ -2859,6 +2859,8 @@ void Spell::_handle_immediate_phase()
         }
         else if (sSpellMgr.EffectTargetType[GetSpellEntry()->Effect[j]] == SPELL_REQUIRE_NONE)
             HandleEffects(m_originalCaster, NULL, NULL, j);
+        else if (GetSpellEntry()->Id == 42339) // hallow's end missile with dummy ground effect, i dont see better way to do it now
+            HandleEffects(m_originalCaster, NULL, NULL, j);
     }
 }
 
