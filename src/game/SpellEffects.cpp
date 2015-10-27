@@ -1822,12 +1822,18 @@ void Spell::EffectDummy(uint32 i)
                 {
                     struct checker
                     {
+                        checker(float x, float y, float z) : mx(x), my(y), mz(z) {};
                         bool operator()(WorldObject* object)
                         {
+                            if (!object->IsWithinDist3d(mx, my, mz, 5.0f))
+                                return false;
+
                             return (object->GetTypeId() == TYPEID_PLAYER) ||
                                 (object->GetTypeId() == TYPEID_UNIT && object->GetEntry() == 23537); // Fire NPC
                         }
-                    } check;
+
+                        float mx, my, mz;
+                    } check(m_targets.m_destX, m_targets.m_destY, m_targets.m_destZ);
                     std::list<Unit*> list;
                     Hellground::UnitListSearcher<checker> searcher(list, check);
                     Cell::VisitWorldObjects(m_targets.m_destX, m_targets.m_destY, m_caster->GetMap(), searcher, 5.0f);
@@ -1835,11 +1841,11 @@ void Spell::EffectDummy(uint32 i)
                         return;
 
                     list.sort(Hellground::ObjectDistanceOrder(m_caster));
-                    if (list.front()->GetTypeId() == TYPEID_PLAYER)
+                    if (list.front()->GetTypeId() == TYPEID_PLAYER && list.front() != m_caster)
                     {
                         list.front()->CastSpell(list.front(), 42349, true);
                     }
-                    else
+                    else if (list.front()->GetTypeId() == TYPEID_UNIT)
                     {
                         m_caster->Kill(list.front());
                     }
