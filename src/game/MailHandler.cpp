@@ -685,8 +685,7 @@ void WorldSession::HandleGetMail(WorldPacket & recv_data)
 
     for (PlayerMails::iterator itr = _player->GetmailBegin(); itr != _player->GetmailEnd(); ++itr)
     {
-        // packet send mail count as uint8, prevent overflow
-        if (mailsCount >= 254)
+        if (mailsCount >= 100) // client have problems with many mails
             break;
 
         // skip deleted or not delivered (deliver delay not expired) mails
