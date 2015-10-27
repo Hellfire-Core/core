@@ -1150,7 +1150,7 @@ struct boss_illidan_akamaAI : public BossAI
                 }
                 else
                     if (data == 17)
-                        me->DisappearAndDie();
+                        me->Respawn();
             }
         }
 
