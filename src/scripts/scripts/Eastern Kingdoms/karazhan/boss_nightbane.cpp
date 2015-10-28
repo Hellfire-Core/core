@@ -432,7 +432,7 @@ struct boss_nightbaneAI : public ScriptedAI
             if (FireballBarrageTimer.Expired(diff))
             {
                 if (Unit* target = SelectUnit(SELECT_TARGET_FARTHEST, 0, 1000.0f, true))
-                    if (!target->IsWithinDist(me, 40.0f, false))
+                    if (!target->IsWithinLOSInMap(me))
                         DoCast(m_creature->getVictim(), SPELL_FIREBALL_BARRAGE);
                 FireballBarrageTimer = urand(3000, 6000);
             }
