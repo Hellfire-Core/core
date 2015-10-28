@@ -23,7 +23,8 @@
 #define ENCOUNTERS              10
 #define GO_GONG_OF_BETHEKK      180526
 
-enum InstanceZulGurub {
+enum InstanceZulGurub
+{
     DATA_JEKLIKEVENT            = 1,
     DATA_VENOXISEVENT           = 2,
     DATA_MARLIEVENT             = 3,
@@ -41,7 +42,8 @@ enum InstanceZulGurub {
     DATA_THEKALFAKEDEATH        = 15,
     DATA_LORKHANISDEAD          = 16,
     DATA_ZATHISDEAD             = 17,
-    DATA_OHGAN                  = 18
+    DATA_OHGAN                  = 18,
+    DATA_MANDOKIR               = 19
 };
 
 #endif

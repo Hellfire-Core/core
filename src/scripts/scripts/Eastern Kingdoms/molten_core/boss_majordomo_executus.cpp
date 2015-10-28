@@ -62,16 +62,16 @@ EndScriptData */
 
 #define CACHE_OF_THE_FIRELORD       179703
 
-float AddLocations[8][4]=
+float AddLocations[8][4] =
 {
-    {753.044,    -1186.86,    -118.333,   2.54516},
-    {755.028,    -1172.57,    -118.636,   3.3227},
-    {748.181,    -1161.33,    -118.807,   3.99422},
-    {742.781,    -1197.79,    -118.008,   1.91291},
-    {752.798,    -1166.29,    -118.766,   3.63844},
-    {743.136,    -1157.67,    -119.021,   4.16779},
-    {748.553,    -1193.14,    -118.099,   2.22158},
-    {736.539,    -1199.47,    -118.334,   1.69143}
+    { 753.044, -1186.86, -118.333, 2.54516 },
+    { 755.028, -1172.57, -118.636, 3.3227  },
+    { 748.181, -1161.33, -118.807, 3.99422 },
+    { 742.781, -1197.79, -118.008, 1.91291 },
+    { 752.798, -1166.29, -118.766, 3.63844 },
+    { 743.136, -1157.67, -119.021, 4.16779 },
+    { 748.553, -1193.14, -118.099, 2.22158 },
+    { 736.539, -1199.47, -118.334, 1.69143 }
 };
 
 struct boss_majordomoAI : public BossAI
@@ -94,7 +94,7 @@ struct boss_majordomoAI : public BossAI
 
     void Reset()
     {
-        MagicReflection_Timer =  45000;                     //Damage reflection first so we alternate
+        MagicReflection_Timer = 45000;                     //Damage reflection first so we alternate
         DamageReflection_Timer = 15000;
         Blastwave_Timer = 10000;
         TeleportVisual_Timer = 30000;
@@ -117,7 +117,7 @@ struct boss_majordomoAI : public BossAI
 
     void KilledUnit(Unit* victim)
     {
-        if (rand()%5)
+        if (rand() % 5)
             return;
 
         DoScriptText(SAY_SLAY, m_creature);
@@ -129,10 +129,10 @@ struct boss_majordomoAI : public BossAI
             return;
 
         DoZoneInCombat();
-        for(uint8 i = 0; i < 8; ++i)
+        for (uint8 i = 0; i < 8; ++i)
         {
-            Creature* Temp = Unit::GetCreature((*m_creature),AddGUID[i]);
-            if(Temp && Temp->isAlive())
+            Creature* Temp = Unit::GetCreature((*m_creature), AddGUID[i]);
+            if (Temp && Temp->isAlive())
             {
                 Temp->SetReactState(REACT_AGGRESSIVE);
                 Temp->AI()->AttackStart(m_creature->getVictim());
@@ -163,9 +163,9 @@ struct boss_majordomoAI : public BossAI
                 me->SetReactState(REACT_AGGRESSIVE);
                 me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
 
-                for(uint8 i = 0; i < 8; ++i)
+                for (uint8 i = 0; i < 8; ++i)
                 {
-                    if(Creature* add = Unit::GetCreature((*m_creature),AddGUID[i]))
+                    if (Creature* add = Unit::GetCreature((*m_creature), AddGUID[i]))
                     {
                         add->SetVisibility(VISIBILITY_ON);
                     }
@@ -183,7 +183,7 @@ struct boss_majordomoAI : public BossAI
                 pInstance->SetData(DATA_MAJORDOMO_EXECUTUS_EVENT, DONE);
                 EnterEvadeMode();
                 DoScriptText(SAY_DEFEAT, m_creature);
-                
+
                 break;
             }
             case 4:
@@ -207,16 +207,16 @@ struct boss_majordomoAI : public BossAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(pInstance->GetData(DATA_RUNES) != RUNES_COMPLETE)
+        if (pInstance->GetData(DATA_RUNES) != RUNES_COMPLETE)
             return;
 
-        if(pInstance->GetData(DATA_RUNES) == RUNES_COMPLETE && pInstance->GetData(DATA_MAJORDOMO_EXECUTUS_EVENT) == NOT_STARTED && me->GetVisibility() == VISIBILITY_OFF)
+        if (pInstance->GetData(DATA_RUNES) == RUNES_COMPLETE && pInstance->GetData(DATA_MAJORDOMO_EXECUTUS_EVENT) == NOT_STARTED && me->GetVisibility() == VISIBILITY_OFF)
         {
             DoAction(1);
             return;
         }
 
-        if(pInstance->GetData(DATA_MAJORDOMO_EXECUTUS_EVENT) == DONE && pInstance->GetData(DATA_SUMMON_RAGNAROS) == NOT_STARTED)
+        if (pInstance->GetData(DATA_MAJORDOMO_EXECUTUS_EVENT) == DONE && pInstance->GetData(DATA_SUMMON_RAGNAROS) == NOT_STARTED)
         {
             TeleportVisual_Timer -= diff;
             if (TeleportVisual_Timer <= diff)
@@ -227,7 +227,7 @@ struct boss_majordomoAI : public BossAI
             return;
         }
 
-        if(pInstance->GetData(DATA_MAJORDOMO_EXECUTUS_EVENT) == DONE && pInstance->GetData(DATA_SUMMON_RAGNAROS) == IN_PROGRESS)
+        if (pInstance->GetData(DATA_MAJORDOMO_EXECUTUS_EVENT) == DONE && pInstance->GetData(DATA_SUMMON_RAGNAROS) == IN_PROGRESS)
         {
             SummonRag_Timer -= diff;
             if (SummonRag_Timer <= diff)
@@ -241,34 +241,33 @@ struct boss_majordomoAI : public BossAI
         if (!UpdateVictim())
             return;
 
-        if(pInstance->GetData(DATA_MAJORDOMO_EXECUTUS_EVENT) == IN_PROGRESS)
+        if (pInstance->GetData(DATA_MAJORDOMO_EXECUTUS_EVENT) == IN_PROGRESS)
         {
-            if(AddsKilled())
+            if (AddsKilled())
             {
                 me->getVictim()->SummonGameObject(CACHE_OF_THE_FIRELORD, 752.492, -1188.51, -118.296, 2.4288, 0, 0, 0.93716, 0.348899, 0);
                 DoAction(3);
                 return;
             }
         }
- 
+
         //Cast Ageis if less than 50% hp
-        if (m_creature->GetHealth()*100 / m_creature->GetMaxHealth() < 50)
+        if (m_creature->GetHealth() * 100 / m_creature->GetMaxHealth() < 50)
         {
-            DoCast(m_creature,SPELL_AEGIS);
+            DoCast(m_creature, SPELL_AEGIS);
         }
 
         Teleport_Timer -= diff;
         if (Teleport_Timer <= diff)
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_TELEPORT), true))
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_TELEPORT), true))
             {
                 ForceSpellCast(target, SPELL_TELEPORT, DONT_INTERRUPT, false, true);
                 target->SetPosition(736.767456, -1176.591797, -118.948753, 0, true);
-                ((Player*)target)->TeleportTo(me->GetMapId(), 736.767456, -1176.591797, -118.948753, 0);
+                ((Player*) target)->TeleportTo(me->GetMapId(), 736.767456, -1176.591797, -118.948753, 0);
                 Teleport_Timer += 20000;
             }
         }
-        
 
         MagicReflection_Timer -= diff;
         if (MagicReflection_Timer <= diff)
@@ -290,7 +289,6 @@ struct boss_majordomoAI : public BossAI
             AddSpellToCast(m_creature, SPELL_BLASTWAVE, false);
             Blastwave_Timer += 10000;
         }
-        
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
@@ -298,10 +296,10 @@ struct boss_majordomoAI : public BossAI
 
     bool AddsKilled()
     {
-        for(uint8 i = 0; i < 8; ++i)
+        for (uint8 i = 0; i < 8; ++i)
         {
-            Unit* add = Unit::GetUnit((*m_creature),AddGUID[i]);
-            if(add && add->isAlive())
+            Unit* add = Unit::GetUnit((*m_creature), AddGUID[i]);
+            if (add && add->isAlive())
                 return false;
         }
         return true;
@@ -309,14 +307,15 @@ struct boss_majordomoAI : public BossAI
 
     void SpawnAdds()
     {
-        for(uint8 i = 0; i < 8; ++i)
+        for (uint8 i = 0; i < 8; ++i)
         {
             Creature *pCreature = (Unit::GetCreature((*m_creature), AddGUID[i]));
-            if(!pCreature || !pCreature->isAlive())
+            if (!pCreature || !pCreature->isAlive())
             {
-                if(pCreature) pCreature->setDeathState(DEAD);
+                if (pCreature)
+                    pCreature->setDeathState(DEAD);
                 pCreature = me->SummonCreature(i < 4 ? ENTRY_FLAMEWALKER_HEALER : ENTRY_FLAMEWALKER_ELITE, AddLocations[i][0], AddLocations[i][1], AddLocations[i][2], AddLocations[i][3], TEMPSUMMON_DEAD_DESPAWN, 0);
-                if(pCreature) 
+                if (pCreature)
                 {
                     AddGUID[i] = pCreature->GetGUID();
                 }
@@ -327,11 +326,11 @@ struct boss_majordomoAI : public BossAI
             }
         }
     }
-
 };
+
 CreatureAI* GetAI_boss_majordomo(Creature *_Creature)
 {
-    return new boss_majordomoAI (_Creature);
+    return new boss_majordomoAI(_Creature);
 }
 
 struct MCflamewakerAI : public ScriptedAI
@@ -359,10 +358,10 @@ struct MCflamewakerAI : public ScriptedAI
 
     void AttackStart(Unit *who)
     {
-        if(me->GetReactState() == REACT_AGGRESSIVE)
+        if (me->GetReactState() == REACT_AGGRESSIVE)
             ScriptedAI::AttackStart(who);
-        else if(me->GetReactState() == REACT_PASSIVE && owner && who)
-            ((Creature*)owner)->AI()->AttackStart(who);
+        else if (me->GetReactState() == REACT_PASSIVE && owner && who)
+            ((Creature*) owner)->AI()->AttackStart(who);
 
     }
 
@@ -370,18 +369,18 @@ struct MCflamewakerAI : public ScriptedAI
     {
         owner = summoner;
     }
-
 };
+
 CreatureAI* GetAI_MCflamewaker(Creature *_Creature)
 {
-    return new MCflamewakerAI (_Creature);
+    return new MCflamewakerAI(_Creature);
 }
 
-
-struct flamewaker_healerAI : public MCflamewakerAI
+struct flamewaker_healerAI: public MCflamewakerAI
 {
     flamewaker_healerAI(Creature *c) : MCflamewakerAI(c)
-    {}
+    {
+    }
 
     int32 ShadownBolt_Timer;
     int32 ShadownShock_Timer;
@@ -395,19 +394,18 @@ struct flamewaker_healerAI : public MCflamewakerAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!me->getVictim())
+        if (!me->getVictim())
             return;
 
         ShadownBolt_Timer -= diff;
         if (ShadownBolt_Timer <= diff)
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_SHADOW_BOLT), true))
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_SHADOW_BOLT), true))
             {
                 AddSpellToCast(target, SPELL_SHADOW_BOLT, false);
                 ShadownBolt_Timer += 2000;
             }
         }
-        
 
         ShadownShock_Timer -= diff;
         if (ShadownShock_Timer <= diff)
@@ -415,23 +413,22 @@ struct flamewaker_healerAI : public MCflamewakerAI
             AddSpellToCast(m_creature, SPELL_SHADOW_SHOCK, false);
             ShadownShock_Timer += 9000;
         }
-        
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
     }
-
 };
+
 CreatureAI* GetAI_flamewaker_healer(Creature *_Creature)
 {
-    return new flamewaker_healerAI (_Creature);
+    return new flamewaker_healerAI(_Creature);
 }
 
-
-struct flamewaker_eliteAI : public MCflamewakerAI
+struct flamewaker_eliteAI: public MCflamewakerAI
 {
     flamewaker_eliteAI(Creature *c) : MCflamewakerAI(c)
-    {}
+    {
+    }
 
     int32 BlastWave_Timer;
     int32 FireBlast_Timer;
@@ -447,7 +444,7 @@ struct flamewaker_eliteAI : public MCflamewakerAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!me->getVictim())
+        if (!me->getVictim())
             return;
 
         BlastWave_Timer -= diff;
@@ -456,7 +453,6 @@ struct flamewaker_eliteAI : public MCflamewakerAI
             AddSpellToCast(m_creature, SPELL_BLASTWAVE, false);
             BlastWave_Timer += 12000;
         }
-        
 
         FireBlast_Timer -= diff;
         if (FireBlast_Timer <= diff)
@@ -464,40 +460,39 @@ struct flamewaker_eliteAI : public MCflamewakerAI
             AddSpellToCast(m_creature->getVictim(), SPELL_FIRE_BLAST, false);
             FireBlast_Timer += 15000;
         }
-        
+
         Fireball_Timer -= diff;
         if (Fireball_Timer <= diff)
         {
             AddSpellToCast(m_creature->getVictim(), SPELL_FIREBALL, false);
             Fireball_Timer += 8000;
         }
-        
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
     }
-
 };
+
 CreatureAI* GetAI_flamewaker_elite(Creature *_Creature)
 {
-    return new flamewaker_eliteAI (_Creature);
+    return new flamewaker_eliteAI(_Creature);
 }
 
 void AddSC_boss_majordomo()
 {
     Script *newscript;
     newscript = new Script;
-    newscript->Name="boss_majordomo";
+    newscript->Name = "boss_majordomo";
     newscript->GetAI = &GetAI_boss_majordomo;
     newscript->RegisterSelf();
 
     newscript = new Script;
-    newscript->Name="flamewaker_healer";
+    newscript->Name = "flamewaker_healer";
     newscript->GetAI = &GetAI_flamewaker_healer;
     newscript->RegisterSelf();
 
     newscript = new Script;
-    newscript->Name="flamewaker_elite";
+    newscript->Name = "flamewaker_elite";
     newscript->GetAI = &GetAI_flamewaker_elite;
     newscript->RegisterSelf();
 }
