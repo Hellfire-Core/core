@@ -85,9 +85,6 @@ struct boss_kelidan_the_breakerAI : public ScriptedAI
     Timer BurningNova_Timer;
     Timer Firenova_Timer;
     Timer Corruption_Timer;
-    Timer check_Timer;
-
-    bool Firenova;
     bool addYell;
 
     uint64 Channelers[5];
@@ -97,13 +94,11 @@ struct boss_kelidan_the_breakerAI : public ScriptedAI
         ShadowVolley_Timer.Reset(1000);
         BurningNova_Timer.Reset(15000);
         Corruption_Timer.Reset(5000);
-        check_Timer = 1;
-        Firenova = false;
+        Firenova_Timer = 0;
         addYell = false;
 
         if (pInstance)
             pInstance->SetData(DATA_KELIDANEVENT, NOT_STARTED);
-        EnterEvadeMode();
     }
 
     void EnterCombat(Unit *who)
@@ -152,7 +147,7 @@ struct boss_kelidan_the_breakerAI : public ScriptedAI
         }
 
         if(killer)
-            m_creature->AI()->AttackStart(killer);
+            AttackStart(killer);
     }
 
     void SummonChannelers()
@@ -214,17 +209,14 @@ struct boss_kelidan_the_breakerAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (Firenova)
+        if (Firenova_Timer.Expired(diff))
         {
-            if (Firenova_Timer.Expired(diff))
-            {
-                ForceSpellCast(me, SPELL_FIRE_NOVA, INTERRUPT_AND_CAST_INSTANTLY);
-                Firenova = false;
-                ShadowVolley_Timer = 2000;
-            }
-
-            return;
+            ForceSpellCast(me, SPELL_FIRE_NOVA, INTERRUPT_AND_CAST_INSTANTLY);
+            ShadowVolley_Timer = 2000;
+            Firenova_Timer = 0;
         }
+        if (Firenova_Timer.GetInterval())
+            return;
 
         if (ShadowVolley_Timer.Expired(diff))
         {
@@ -261,8 +253,7 @@ struct boss_kelidan_the_breakerAI : public ScriptedAI
             }
 
             BurningNova_Timer = urand(20000, 28000);
-            Firenova_Timer= 5000;
-            Firenova = true;
+            Firenova_Timer.Reset(5000);
         }
 
         CastNextSpellIfAnyAndReady();
@@ -294,17 +285,15 @@ struct mob_shadowmoon_channelerAI : public ScriptedAI
 
     Timer ShadowBolt_Timer;
     Timer MarkOfShadow_Timer;
-    Timer check_Timer;
 
     void Reset()
     {
         ShadowBolt_Timer.Reset(urand(1000, 2000));
         MarkOfShadow_Timer.Reset(urand(5000, 7000));
-        check_Timer = 0;
         if (m_creature->IsNonMeleeSpellCast(false))
             m_creature->InterruptNonMeleeSpells(true);
-        if (Unit* Kelidan = GetClosestCreatureWithEntry(me, ENTRY_KELIDAN, 500.0f))
-            Kelidan->ToCreature()->AI()->Reset();
+        if (Creature* Kelidan = GetClosestCreatureWithEntry(me, ENTRY_KELIDAN, 500.0f))
+            Kelidan->AI()->EnterEvadeMode();
     }
 
     void EnterCombat(Unit* who)
@@ -320,8 +309,8 @@ struct mob_shadowmoon_channelerAI : public ScriptedAI
 
     void JustDied(Unit* Killer)
     {
-       if(Creature *Kelidan = (Creature *)FindCreature(ENTRY_KELIDAN, 100, m_creature))
-           ((boss_kelidan_the_breakerAI*)Kelidan->AI())->ChannelerDied(Killer);
+        if(Creature *Kelidan = (Creature *)FindCreature(ENTRY_KELIDAN, 100, m_creature))
+            ((boss_kelidan_the_breakerAI*)Kelidan->AI())->ChannelerDied(Killer);
     }
 
     void UpdateAI(const uint32 diff)
