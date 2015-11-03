@@ -1349,10 +1349,6 @@ void GameObject::Use(Unit* user)
             }
 
             spellId = info->spellcaster.spellId;
-
-            AddUse();
-            if(info->spellcaster.charges && m_usetimes >= info->spellcaster.charges)
-                m_lootState = GO_JUST_DEACTIVATED;
             break;
         }
         case GAMEOBJECT_TYPE_MEETINGSTONE:                  // 23
@@ -1470,7 +1466,12 @@ void GameObject::Use(Unit* user)
     // spell target is user of GO
     SpellCastTargets targets;
     targets.setUnitTarget(user);
-
+    if (GetGoType() == GAMEOBJECT_TYPE_SPELLCASTER && spell->CheckCast(true) == SPELL_CAST_OK)
+    {
+        AddUse();
+        if (GetGOInfo()->spellcaster.charges && m_usetimes >= GetGOInfo()->spellcaster.charges)
+            m_lootState = GO_JUST_DEACTIVATED;
+    }
     spell->prepare(&targets);
 }
 
