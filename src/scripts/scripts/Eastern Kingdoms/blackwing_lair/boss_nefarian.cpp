@@ -27,223 +27,241 @@ EndScriptData */
 #include "precompiled.h"
 #include "def_blackwing_lair.h"
 
-#define SAY_AGGRO               -1469007
-#define SAY_XHEALTH             -1469008
-#define SAY_SHADOWFLAME         -1469009
-#define SAY_RAISE_SKELETONS     -1469010
-#define SAY_SLAY                -1469011
-#define SAY_DEATH               -1469012
-
-#define SAY_MAGE                -1469013
-#define SAY_WARRIOR             -1469014
-#define SAY_DRUID               -1469015
-#define SAY_PRIEST              -1469016
-#define SAY_PALADIN             -1469017
-#define SAY_SHAMAN              -1469018
-#define SAY_WARLOCK             -1469019
-#define SAY_HUNTER              -1469020
-#define SAY_ROGUE               -1469021
-
-#define SPELL_SHADOWFLAME_INITIAL   22972
-#define SPELL_SHADOWFLAME           22539
-#define SPELL_BELLOWINGROAR         22686
-#define SPELL_VEILOFSHADOW          7068
-#define SPELL_CLEAVE                20691
-#define SPELL_TAILLASH              23364
-#define SPELL_BONECONTRUST          23363                   //23362, 23361
-
-#define SPELL_MAGE                  23410                   //wild magic
-#define SPELL_WARRIOR               23397                   //beserk
-#define SPELL_DRUID                 23398                   // cat form
-#define SPELL_PRIEST                23401                   // corrupted healing
-#define SPELL_PALADIN               23418                   //syphon blessing
-#define SPELL_SHAMAN                23425                   //totems
-#define SPELL_WARLOCK               23427                   //infernals
-#define SPELL_HUNTER                23436                   //bow broke
-#define SPELL_ROGUE                 23414                   //Paralise
-
 struct boss_nefarianAI : public ScriptedAI
 {
-    boss_nefarianAI(Creature *c) : ScriptedAI(c)
+    boss_nefarianAI(Creature* c) : ScriptedAI(c)
     {
-        pInstance = (ScriptedInstance*)c->GetInstanceData();
+        instance = c->GetInstanceData();
     }
 
-    ScriptedInstance * pInstance;
-    int32 ShadowFlame_Timer;
-    int32 BellowingRoar_Timer;
-    int32 VeilOfShadow_Timer;
-    int32 Cleave_Timer;
-    int32 TailLash_Timer;
-    int32 ClassCall_Timer;
-    bool Phase3;
+    ScriptedInstance* instance;
+    EventMap events;
 
-    int32 DespawnTimer;
-
-    void Reset()
+    enum Events
     {
-        ShadowFlame_Timer = 12000;                          //These times are probably wrong
-        BellowingRoar_Timer = 30000;
-        VeilOfShadow_Timer = 15000;
-        Cleave_Timer = 7000;
-        TailLash_Timer = 10000;
-        ClassCall_Timer = 35000;                            //35-40 seconds
-        Phase3 = false;
+        EVENT_CAST_SHADOW_FLAME = 1,
+        EVENT_CAST_BELLOWING_ROAR,
+        EVENT_CAST_VEIL_OF_SHADOW,
+        EVENT_CAST_CLEAVE,
+        EVENT_CAST_TAIL_LASH,
+        EVENT_CAST_CLASS_CALL,
+        EVENT_RISE_SKELETONS
+    };
 
-        DespawnTimer = 5000;
+    enum Spells
+    {
+        SPELL_SHADOWFLAME_INITIAL   = 22972,
+        SPELL_SHADOWFLAME           = 22539,
+        SPELL_BELLOWINGROAR         = 22686,
+        SPELL_VEILOFSHADOW          = 7068 ,
+        SPELL_CLEAVE                = 20691,
+        SPELL_TAILLASH              = 23364,
+        SPELL_BONECONTRUST          = 23363,                   //23362, 23361
 
-        if (pInstance && pInstance->GetData(DATA_NEFARIAN_EVENT) != DONE)
-            pInstance->SetData(DATA_NEFARIAN_EVENT, NOT_STARTED);
+        SPELL_MAGE                  = 23410,                   //wild magic
+        SPELL_WARRIOR               = 23397,                   //beserk
+        SPELL_DRUID                 = 23398,                   // cat form
+        SPELL_PRIEST                = 23401,                   // corrupted healing
+        SPELL_PALADIN               = 23418,                   //syphon blessing
+        SPELL_SHAMAN                = 23425,                   //totems
+        SPELL_WARLOCK               = 23427,                   //infernals
+        SPELL_HUNTER                = 23436,                   //bow broke
+        SPELL_ROGUE                 = 23414,                   //Paralise
+    };
+
+    enum Texts
+    {
+        SAY_AGGRO                   = -1469007,
+        SAY_XHEALTH                 = -1469008,
+        SAY_SHADOWFLAME             = -1469009,
+        SAY_RAISE_SKELETONS         = -1469010,
+        SAY_SLAY                    = -1469011,
+        SAY_DEATH                   = -1469012,
+
+        SAY_MAGE                    = -1469013,
+        SAY_WARRIOR                 = -1469014,
+        SAY_DRUID                   = -1469015,
+        SAY_PRIEST                  = -1469016,
+        SAY_PALADIN                 = -1469017,
+        SAY_SHAMAN                  = -1469018,
+        SAY_WARLOCK                 = -1469019,
+        SAY_HUNTER                  = -1469020,
+        SAY_ROGUE                   = -1469021,
+    };
+
+    void IsSummonedBy(Unit *summoner)
+    {
+        me->SetLevitate(true);
+        me->SetWalk(false);
+
+        me->SetHomePosition(-7493.8f, -1260.0f, 476.8f, 0.0f);
+        me->GetMotionMaster()->Clear();
+        me->GetMotionMaster()->MovePoint(0, -7493.8f, -1260.0f, 476.8f);
+    }
+
+    void MovementInform(uint32 type, uint32 id)
+    {
+        if (type != POINT_MOTION_TYPE)
+            return;
+
+        if (id == 0)
+        {
+            DoZoneInCombat();
+            AttackStart(SelectUnit(SELECT_TARGET_RANDOM, 0));
+        }
+    }
+
+    void EnterCombat(Unit *who)
+    {
+        DoZoneInCombat();
+
+        me->SetLevitate(false);
+        me->SetWalk(true);
+        me->HandleEmoteCommand(EMOTE_ONESHOT_LAND);
+
+        DoCast(who,SPELL_SHADOWFLAME_INITIAL);
+        DoScriptText(RAND(SAY_XHEALTH, SAY_AGGRO, SAY_SHADOWFLAME), me);
+
+        events.Reset()
+              .ScheduleEvent(EVENT_CAST_SHADOW_FLAME, 12000)
+              .ScheduleEvent(EVENT_CAST_BELLOWING_ROAR, 30000)
+              .ScheduleEvent(EVENT_CAST_VEIL_OF_SHADOW, 15000)
+              .ScheduleEvent(EVENT_CAST_CLEAVE, 7000)
+              .ScheduleEvent(EVENT_CAST_TAIL_LASH, 10000)
+              .ScheduleEvent(EVENT_CAST_CLASS_CALL, 35000);
     }
 
     void KilledUnit(Unit* Victim)
     {
-        if (rand()%5)
-            return;
-
-        DoScriptText(SAY_SLAY, m_creature, Victim);
+        if (rand()%5 == 0)
+            DoScriptText(SAY_SLAY, m_creature, Victim);
     }
 
     void JustDied(Unit* Killer)
     {
         DoScriptText(SAY_DEATH, m_creature);
 
-        if (pInstance)
-            pInstance->SetData(DATA_NEFARIAN_EVENT, DONE);
-    }
-
-    void EnterCombat(Unit *who)
-    {
-        DoScriptText(RAND(SAY_XHEALTH, SAY_AGGRO, SAY_SHADOWFLAME), m_creature);
-
-        DoCast(who,SPELL_SHADOWFLAME_INITIAL);
-        DoZoneInCombat();
-
-        if (pInstance)
-            pInstance->SetData(DATA_NEFARIAN_EVENT, IN_PROGRESS);
+        if (instance)
+            instance->SetData(DATA_NEFARIAN_EVENT, DONE);
     }
 
     void UpdateAI(const uint32 diff)
     {
-        DespawnTimer -= diff;
-        if(DespawnTimer <= diff)
-        {
-            if(!UpdateVictim())
-            {
-                m_creature->SetHealth(0);
-                m_creature->setDeathState(JUST_DIED);
-                m_creature->RemoveCorpse();
-            }
-            DespawnTimer += 5000;
-        }
-        
-
-        if (!UpdateVictim() )
+        if (me->GetMotionMaster()->GetCurrentMovementGeneratorType() == POINT_MOTION_TYPE)
             return;
 
-        ShadowFlame_Timer -= diff;
-        if (ShadowFlame_Timer <= diff)
+        if (!UpdateVictim())
+            return;
+
+        DoSpecialThings(diff, DO_EVERYTHING);
+
+        events.Update(diff);
+        while (uint32 eventId = events.ExecuteEvent())
         {
-            DoCast(m_creature->getVictim(),SPELL_SHADOWFLAME);
-            ShadowFlame_Timer += 12000;
-        }
-        
-
-        BellowingRoar_Timer -= diff;
-        if (BellowingRoar_Timer <= diff)
-        {
-            DoCast(m_creature->getVictim(), SPELL_BELLOWINGROAR);
-            BellowingRoar_Timer += 30000;
-        }
-           
-
-            VeilOfShadow_Timer -= diff;
-        if (VeilOfShadow_Timer <= diff)
-        {
-            DoCast(m_creature->getVictim(),SPELL_VEILOFSHADOW);
-            VeilOfShadow_Timer += 15000;
-        }
-        
-
-        Cleave_Timer -= diff;
-        if (Cleave_Timer <= diff)
-        {
-            DoCast(m_creature->getVictim(),SPELL_CLEAVE);
-            Cleave_Timer += 7000;
-        }
-        
-
-        TailLash_Timer -= diff;
-        if (TailLash_Timer <= diff)
-        {
-            //Cast NYI since we need a better check for behind target
-            //DoCast(m_creature->getVictim(),SPELL_TAILLASH);
-
-            TailLash_Timer += 10000;
-        }
-        
-
-        ClassCall_Timer -= diff;
-        if (ClassCall_Timer <= diff)
-        {
-            //Cast a random class call
-            //On official it is based on what classes are currently on the hostil list
-            //but we can't do that yet so just randomly call one
-
-            switch (rand()%9)
+            switch (eventId)
             {
-                case 0:
-                    DoScriptText(SAY_MAGE, m_creature);
-                    DoCast(m_creature,SPELL_MAGE);
+                case EVENT_CAST_SHADOW_FLAME:
+                {
+                    DoCast(m_creature->getVictim(),SPELL_SHADOWFLAME);
+                    events.ScheduleEvent(EVENT_CAST_SHADOW_FLAME, 12000);
                     break;
-                case 1:
-                    DoScriptText(SAY_WARRIOR, m_creature);
-                    DoCast(m_creature,SPELL_WARRIOR);
+                }
+                case EVENT_CAST_BELLOWING_ROAR:
+                {
+                    DoCast(m_creature->getVictim(), SPELL_BELLOWINGROAR);
+                    events.ScheduleEvent(EVENT_CAST_BELLOWING_ROAR, 30000);
                     break;
-                case 2:
-                    DoScriptText(SAY_DRUID, m_creature);
-                    DoCast(m_creature,SPELL_DRUID);
+                }
+                case EVENT_CAST_VEIL_OF_SHADOW:
+                {
+                    DoCast(m_creature->getVictim(),SPELL_VEILOFSHADOW);
+                    events.ScheduleEvent(EVENT_CAST_VEIL_OF_SHADOW, 15000);
                     break;
-                case 3:
-                    DoScriptText(SAY_PRIEST, m_creature);
-                    DoCast(m_creature,SPELL_PRIEST);
+                }
+                case EVENT_CAST_CLEAVE:
+                {
+                    DoCast(m_creature->getVictim(),SPELL_CLEAVE);
+                    events.ScheduleEvent(EVENT_CAST_CLEAVE, 7000);
                     break;
-                case 4:
-                    DoScriptText(SAY_PALADIN, m_creature);
-                    DoCast(m_creature,SPELL_PALADIN);
+                }
+                case EVENT_CAST_TAIL_LASH:
+                {
+                    DoCast(m_creature->getVictim(),SPELL_TAILLASH); // TODO: test whether Tail Lash works correctly
+                    events.ScheduleEvent(EVENT_CAST_TAIL_LASH, 10000);
                     break;
-                case 5:
-                    DoScriptText(SAY_SHAMAN, m_creature);
-                    DoCast(m_creature,SPELL_SHAMAN);
+                }
+                case EVENT_CAST_CLASS_CALL:
+                {
+                    if (Unit* player = SelectUnit(SELECT_TARGET_RANDOM, 0, 300.0f, true))
+                    {
+                        // switch (urand(1, 11)) // debug only
+                        switch (player->getClass())
+                        {
+                            //
+                            // working
+                            //
+
+                            case CLASS_DRUID: // force Cat Form
+                                DoScriptText(SAY_DRUID, m_creature);
+                                DoCast(m_creature,SPELL_DRUID);
+                                break;
+                            case CLASS_HUNTER: // destroy ranged weapon
+                                DoScriptText(SAY_HUNTER, m_creature);
+                                DoCast(m_creature,SPELL_HUNTER);
+                                break;
+                            case CLASS_WARRIOR: // force Berserker Stance
+                                DoScriptText(SAY_WARRIOR, m_creature);
+                                DoCast(m_creature,SPELL_WARRIOR);
+                                break;
+                            case CLASS_ROGUE: // paralyze
+                                DoScriptText(SAY_ROGUE, m_creature);
+                                DoCast(m_creature,SPELL_ROGUE);
+                                // TODO: teleport player in front of boss
+                                break;
+
+                            //
+                            // not working
+                            //
+
+                            case CLASS_MAGE: // Wild Polymorph
+                                DoScriptText(SAY_MAGE, m_creature);
+                                DoCast(m_creature,SPELL_MAGE);
+                                break;
+                            case CLASS_PRIEST: // DoT on direct heals
+                                DoScriptText(SAY_PRIEST, m_creature);
+                                DoCast(m_creature,SPELL_PRIEST);
+                                break;
+                            case CLASS_PALADIN: // melee bubble
+                                DoScriptText(SAY_PALADIN, m_creature);
+                                DoCast(m_creature,SPELL_PALADIN);
+                                break;
+                            case CLASS_SHAMAN: // totems for Nefarian
+                                DoScriptText(SAY_SHAMAN, m_creature);
+                                DoCast(m_creature,SPELL_SHAMAN);
+                                break;
+                            case CLASS_WARLOCK: // infernals (14668)
+                                DoScriptText(SAY_WARLOCK, m_creature);
+                                DoCast(m_creature,SPELL_WARLOCK);
+                                break;
+                        }
+                    }
+        
+                    events.ScheduleEvent(EVENT_CAST_CLASS_CALL, urand(35000, 40000));
                     break;
-                case 6:
-                    DoScriptText(SAY_WARLOCK, m_creature);
-                    DoCast(m_creature,SPELL_WARLOCK);
+                }
+                case EVENT_RISE_SKELETONS:
+                {
+                    DoScriptText(SAY_RAISE_SKELETONS, m_creature);
+                    // TODO: implement phase 3 at 20% health
                     break;
-                case 7:
-                    DoScriptText(SAY_HUNTER, m_creature);
-                    DoCast(m_creature,SPELL_HUNTER);
-                    break;
-                case 8:
-                    DoScriptText(SAY_ROGUE, m_creature);
-                    DoCast(m_creature,SPELL_ROGUE);
-                    break;
+                }
             }
-
-            ClassCall_Timer += 35000 + (rand() % 5000);
-        }
-
-
-        //Phase3 begins when we are below X health
-        if (!Phase3 && (m_creature->GetHealth()*100 / m_creature->GetMaxHealth()) < 20)
-        {
-            Phase3 = true;
-            DoScriptText(SAY_RAISE_SKELETONS, m_creature);
         }
 
         DoMeleeAttackIfReady();
     }
 };
+
 CreatureAI* GetAI_boss_nefarian(Creature *_Creature)
 {
     return new boss_nefarianAI (_Creature);
@@ -257,4 +275,3 @@ void AddSC_boss_nefarian()
     newscript->GetAI = &GetAI_boss_nefarian;
     newscript->RegisterSelf();
 }
-

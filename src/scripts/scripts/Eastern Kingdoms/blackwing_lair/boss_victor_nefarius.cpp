@@ -1,7 +1,7 @@
-/* 
+/*
  * Copyright (C) 2006-2008 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -25,6 +25,7 @@ SDCategory: Blackwing Lair
 EndScriptData */
 
 #include "precompiled.h"
+#include "def_blackwing_lair.h"
 
 #define SAY_GAMESBEGIN_1        -1469004
 #define SAY_GAMESBEGIN_2        -1469005
@@ -34,20 +35,12 @@ EndScriptData */
 #define GOSSIP_ITEM_2           "You have lost your mind, Nefarius. You speak in riddles."
 #define GOSSIP_ITEM_3           "Please do."
 
-#define CREATURE_BRONZE_DRAKANOID       14263
-#define CREATURE_BLUE_DRAKANOID         14261
-#define CREATURE_RED_DRAKANOID          14264
-#define CREATURE_GREEN_DRAKANOID        14262
-#define CREATURE_BLACK_DRAKANOID        14265
-
-#define CREATURE_CHROMATIC_DRAKANOID    14302
-#define CREATURE_NEFARIAN               11583
-
 #define ADD_X1 -7591.151855
-#define ADD_X2 -7514.598633
 #define ADD_Y1 -1204.051880
-#define ADD_Y2 -1150.448853
 #define ADD_Z1 476.800476
+
+#define ADD_X2 -7514.598633
+#define ADD_Y2 -1150.448853
 #define ADD_Z2 476.796570
 
 #define NEF_X   -7445
@@ -57,9 +50,6 @@ EndScriptData */
 #define HIDE_X  -7592
 #define HIDE_Y  -1264
 #define HIDE_Z  481
-
-#define SPELL_SHADOWBOLT        21077
-#define SPELL_FEAR              26070
 
 //This script is complicated
 //Instead of morphing Victor Nefarius we will have him control phase 1
@@ -72,222 +62,171 @@ EndScriptData */
 
 struct boss_victor_nefariusAI : public ScriptedAI
 {
-    boss_victor_nefariusAI(Creature *c) : ScriptedAI(c)
+    boss_victor_nefariusAI(Creature *c) : ScriptedAI(c), summons(me), SpawnedAdds(0), NefarianGUID(0)
     {
-        NefarianGUID = 0;
-        srand(time(NULL));
-        switch (rand()%20)
-        {
-            case 0:
-                DrakType1 = CREATURE_BRONZE_DRAKANOID;
-                DrakType2 = CREATURE_BLUE_DRAKANOID;
-                break;
-            case 1:
-                DrakType1 = CREATURE_BRONZE_DRAKANOID;
-                DrakType2 = CREATURE_RED_DRAKANOID;
-                break;
-            case 2:
-                DrakType1 = CREATURE_BRONZE_DRAKANOID;
-                DrakType2 = CREATURE_GREEN_DRAKANOID;
-                break;
-            case 3:
-                DrakType1 = CREATURE_BRONZE_DRAKANOID;
-                DrakType2 = CREATURE_BLACK_DRAKANOID;
-                break;
-            case 4:
-                DrakType1 = CREATURE_BLUE_DRAKANOID;
-                DrakType2 = CREATURE_BRONZE_DRAKANOID;
-                break;
-            case 5:
-                DrakType1 = CREATURE_BLUE_DRAKANOID;
-                DrakType2 = CREATURE_RED_DRAKANOID;
-                break;
-            case 6:
-                DrakType1 = CREATURE_BLUE_DRAKANOID;
-                DrakType2 = CREATURE_GREEN_DRAKANOID;
-                break;
-            case 7:
-                DrakType1 = CREATURE_BLUE_DRAKANOID;
-                DrakType2 = CREATURE_BLACK_DRAKANOID;
-                break;
-            case 8:
-                DrakType1 = CREATURE_RED_DRAKANOID;
-                DrakType2 = CREATURE_BRONZE_DRAKANOID;
-                break;
-            case 9:
-                DrakType1 = CREATURE_RED_DRAKANOID;
-                DrakType2 = CREATURE_BLUE_DRAKANOID;
-                break;
-            case 10:
-                DrakType1 = CREATURE_RED_DRAKANOID;
-                DrakType2 = CREATURE_GREEN_DRAKANOID;
-                break;
-            case 11:
-                DrakType1 = CREATURE_RED_DRAKANOID;
-                DrakType2 = CREATURE_BLACK_DRAKANOID;
-                break;
-            case 12:
-                DrakType1 = CREATURE_GREEN_DRAKANOID;
-                DrakType2 = CREATURE_BRONZE_DRAKANOID;
-                break;
-            case 13:
-                DrakType1 = CREATURE_GREEN_DRAKANOID;
-                DrakType2 = CREATURE_BLUE_DRAKANOID;
-                break;
-            case 14:
-                DrakType1 = CREATURE_GREEN_DRAKANOID;
-                DrakType2 = CREATURE_RED_DRAKANOID;
-                break;
-            case 15:
-                DrakType1 = CREATURE_GREEN_DRAKANOID;
-                DrakType2 = CREATURE_BLACK_DRAKANOID;
-                break;
-            case 16:
-                DrakType1 = CREATURE_BLACK_DRAKANOID;
-                DrakType2 = CREATURE_BRONZE_DRAKANOID;
-                break;
-            case 17:
-                DrakType1 = CREATURE_BLACK_DRAKANOID;
-                DrakType2 = CREATURE_BLUE_DRAKANOID;
-                break;
-            case 18:
-                DrakType1 = CREATURE_BLACK_DRAKANOID;
-                DrakType2 = CREATURE_GREEN_DRAKANOID;
-                break;
-            case 19:
-                DrakType1 = CREATURE_BLACK_DRAKANOID;
-                DrakType2 = CREATURE_RED_DRAKANOID;
-                break;
-        }
+        instance = c->GetInstanceData();
+
+        std::random_shuffle(drakTypes.begin(), drakTypes.end());
     }
 
+    ScriptedInstance* instance;
+    EventMap events;
+    SummonList summons;
     uint32 SpawnedAdds;
-    int32 AddSpawnTimer;
-    int32 ShadowBoltTimer;
-    int32 FearTimer;
-    int32 MindControlTimer;
-    int32 ResetTimer;
-    uint32 DrakType1;
-    uint32 DrakType2;
     uint64 NefarianGUID;
-    int32 NefCheckTime;
+    Timer NefarianCheckTimer;
+
+    enum Spawns
+    {
+        CREATURE_BRONZE_DRAKANOID       = 14263,
+        CREATURE_BLUE_DRAKANOID         = 14261,
+        CREATURE_RED_DRAKANOID          = 14264,
+        CREATURE_GREEN_DRAKANOID        = 14262,
+        CREATURE_BLACK_DRAKANOID        = 14265,
+
+        CREATURE_CHROMATIC_DRAKANOID    = 14302,
+        CREATURE_NEFARIAN               = 11583,
+    };
+
+    enum Spells
+    {
+        SPELL_SHADOWBOLT    = 21077,
+        SPELL_FEAR          = 26070,
+    };
+
+    enum Events
+    {
+        EVENT_SPAWN_ADDS = 1,
+        EVENT_SPAWN_NEFARIAN,
+        EVENT_CAST_SHADOWBOLT,
+        EVENT_CAST_FEAR,
+        EVENT_CAST_MIND_CONTROL,
+    };
+
+    std::vector<uint32> drakTypes =
+    {
+        CREATURE_BRONZE_DRAKANOID,
+        CREATURE_BLUE_DRAKANOID,
+        CREATURE_RED_DRAKANOID,
+        CREATURE_GREEN_DRAKANOID,
+        CREATURE_BLACK_DRAKANOID
+    };
 
     void Reset()
     {
-        SpawnedAdds = 0;
-        AddSpawnTimer = 10000;
-        ShadowBoltTimer = 5000;
-        FearTimer = 8000;
-        ResetTimer = 900000;                                //On official it takes him 15 minutes(900 seconds) to reset. We are only doing 1 minute to make testing easier
+        summons.DespawnAll();
+        NefarianCheckTimer = 0;
         NefarianGUID = 0;
-        NefCheckTime = 2000;
+        SpawnedAdds = 0;
 
         m_creature->SetUInt32Value(UNIT_NPC_FLAGS,1);
         m_creature->setFaction(35);
         m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+
+        if (instance)
+            instance->SetData(DATA_NEFARIAN_EVENT, NOT_STARTED);
     }
 
     void BeginEvent(Player* target)
     {
+        events.Reset()
+              .ScheduleEvent(EVENT_SPAWN_ADDS, 10000)
+              .ScheduleEvent(EVENT_CAST_SHADOWBOLT, 5000)
+              .ScheduleEvent(EVENT_CAST_FEAR, 8000);
+
         DoScriptText(SAY_GAMESBEGIN_2, m_creature);
+        DoZoneInCombat();
 
         m_creature->SetUInt32Value(UNIT_NPC_FLAGS,0);
         m_creature->setFaction(103);
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+
         AttackStart(target);
     }
 
     void EnterCombat(Unit *who)
     {
+        if (instance)
+            instance->SetData(DATA_NEFARIAN_EVENT, IN_PROGRESS);
     }
 
-    void MoveInLineOfSight(Unit *who)
+    void JustSummoned(Creature* summon)
     {
-        //We simply use this function to find players until we can use Map->GetPlayers()
+        summons.Summon(summon);
+        summon->setFaction(103);
 
-        if (who && who->GetTypeId() == TYPEID_PLAYER && m_creature->IsHostileTo(who))
-        {
-            //Add them to our threat list
-            m_creature->AddThreat(who,0.0f);
-        }
+        if (summon->GetEntry() != CREATURE_NEFARIAN)
+            summon->AI()->AttackStart(SelectUnit(SELECT_TARGET_RANDOM, 0));
     }
 
     void UpdateAI(const uint32 diff)
     {
-        if (!UpdateVictim() )
+        if (NefarianCheckTimer.Expired(diff))
+        {
+            if (NefarianGUID)
+                if (Unit* Nefarian = me->GetUnit(NefarianGUID))
+                {
+                    if (!Nefarian->ToCreature()->isAlive())
+                        me->DisappearAndDie();
+                    else if (!Nefarian->ToCreature()->isInCombat())
+                        EnterEvadeMode();
+                }
+
+            NefarianCheckTimer = 1000;
+        }
+
+        if (!UpdateVictim() || SpawnedAdds >= 42)
             return;
 
-        //Only do this if we haven't spawned nef yet
-        if (SpawnedAdds < 42)
+        events.Update(diff);
+        while (uint32 eventId = events.ExecuteEvent())
         {
-            ShadowBoltTimer -= diff;
-            if (ShadowBoltTimer <= diff)
+            switch (eventId)
             {
-                Unit* target = NULL;
-                target = SelectUnit(SELECT_TARGET_RANDOM,0);
-                if (target)
-                    DoCast(target,SPELL_SHADOWBOLT);
-
-                ShadowBoltTimer += 3000 + (rand()%7000);
-            }
-
-            FearTimer -= diff;
-            if (FearTimer <= diff)
-            {
-                Unit* target = NULL;
-                target = SelectUnit(SELECT_TARGET_RANDOM,0);
-                if (target)
-                    DoCast(target,SPELL_FEAR);
-
-                FearTimer += 10000 + (rand()%10000);
-            }
-
-            AddSpawnTimer -= diff;
-            if (AddSpawnTimer <= diff)
-            {
-                //Spawn 2 random types of creatures at the 2 locations
-                uint32 CreatureID;
-                Creature* Spawned = NULL;
-                Unit* target = NULL;
-
-                //1 in 3 chance it will be a chromatic
-                if (rand()%3 == 0)
-                    CreatureID = CREATURE_CHROMATIC_DRAKANOID;
-                else CreatureID = DrakType1;
-
-                SpawnedAdds++;
-
-                //Spawn creature and force it to start attacking a random target
-                Spawned = m_creature->SummonCreature(CreatureID,ADD_X1,ADD_Y1,ADD_Z1,5.000,TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT,5000);
-                target = SelectUnit(SELECT_TARGET_RANDOM,0);
-                if (target && Spawned)
+                case EVENT_CAST_SHADOWBOLT:
                 {
-                    Spawned->AI()->AttackStart(target);
-                    Spawned->setFaction(103);
+                    if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0))
+                        DoCast(target, SPELL_SHADOWBOLT);
+
+                    events.ScheduleEvent(EVENT_CAST_SHADOWBOLT, urand(3000, 10000));
+                    break;
                 }
-
-                //1 in 3 chance it will be a chromatic
-                if (rand()%3 == 0)
-                    CreatureID = CREATURE_CHROMATIC_DRAKANOID;
-                else CreatureID = DrakType2;
-
-                SpawnedAdds++;
-
-                target = NULL;
-                Spawned = NULL;
-                Spawned = m_creature->SummonCreature(CreatureID,ADD_X2,ADD_Y2,ADD_Z2,5.000,TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT,5000);
-                target = SelectUnit(SELECT_TARGET_RANDOM,0);
-                if (target && Spawned)
+                case EVENT_CAST_FEAR:
                 {
-                    Spawned->AI()->AttackStart(target);
-                    Spawned->setFaction(103);
+                    if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0))
+                        DoCast(target, SPELL_FEAR);
+
+                    events.ScheduleEvent(EVENT_CAST_FEAR, urand(10000, 20000));
+                    break;
                 }
-
-                //Begin phase 2 by spawning Nefarian and what not
-                if (SpawnedAdds >= 42)
+// FIXME: Implement Mind Control
+//              case EVENT_CAST_MIND_CONTROL:
+//              {
+//                  break;
+//              }
+                case EVENT_SPAWN_ADDS:
                 {
-                    //Teleport Victor Nefarius way out of the map
-                    //sMapMgr.GetMap(m_creature->GetMapId(), m_creature)->CreatureRelocation(m_creature,0,0,-5000,0);
+                    //Spawn 2 random types of creatures at the 2 locations
+                    //Spawn creature and force it to start attacking a random target
+                    //1 in 3 chance it will be a chromatic
+
+                    uint32 CreatureID = (rand() % 3 == 0) ? CREATURE_CHROMATIC_DRAKANOID : drakTypes[0];
+                    m_creature->SummonCreature(CreatureID, ADD_X1, ADD_Y1, ADD_Z1, 5.000, TEMPSUMMON_CORPSE_DESPAWN, 0);
+
+                    CreatureID = (rand() % 3 == 0) ? CREATURE_CHROMATIC_DRAKANOID : drakTypes[1];
+                    m_creature->SummonCreature(CreatureID, ADD_X2, ADD_Y2, ADD_Z2, 5.000, TEMPSUMMON_CORPSE_DESPAWN, 0);
+
+                    SpawnedAdds += 2;
+
+                    if (SpawnedAdds < 42)
+                    {
+                        events.ScheduleEvent(EVENT_SPAWN_ADDS, 4000);
+                        break;
+                    }
+                }
+                case EVENT_SPAWN_NEFARIAN:
+                {
+                    //Begin phase 2 by spawning Nefarian and what not
 
                     //Inturrupt any spell casting
                     m_creature->InterruptNonMeleeSpells(false);
@@ -302,40 +241,19 @@ struct boss_victor_nefariusAI : public ScriptedAI
                     DoTeleportTo(HIDE_X,HIDE_Y,HIDE_Z);
                     m_creature->addUnitState(UNIT_STAT_FLEEING);
 
-                    //Spawn nef and have him attack a random target
-                    Creature* Nefarian = NULL;
-                    Nefarian = m_creature->SummonCreature(CREATURE_NEFARIAN,NEF_X,NEF_Y,NEF_Z,0,TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT,120000);
-                    target = NULL;
-                    target = SelectUnit(SELECT_TARGET_RANDOM,0);
-                    if (target && Nefarian)
+                    //Spawn Nefarian
+                    if (Creature* Nefarian = m_creature->SummonCreature(CREATURE_NEFARIAN, NEF_X, NEF_Y, NEF_Z, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 900000))
                     {
-                        Nefarian->AI()->AttackStart(target);
-                        Nefarian->setFaction(103);
                         NefarianGUID = Nefarian->GetGUID();
+                        NefarianCheckTimer = 30000;
                     }
-                    else error_log("TSCR: Blackwing Lair: Unable to spawn nefarian properly.");
+                    else
+                    {
+                        error_log("TSCR: Blackwing Lair: Unable to spawn Nefarian properly.");
+                        EnterEvadeMode();
+                    }
+                    break;
                 }
-
-                AddSpawnTimer += 4000;
-            } 
-        }
-        else if (NefarianGUID)
-        {
-            NefCheckTime -= diff;
-            if (NefCheckTime <= diff)
-            {
-                Unit* Nefarian = NULL;
-                Nefarian = Unit::GetUnit((*m_creature), NefarianGUID);
-
-                //If nef is dead then we die to so the players get out of combat
-                //and cannot repeat the event
-                if (!Nefarian || !Nefarian->isAlive())
-                {
-                    NefarianGUID = 0;
-                    m_creature->DealDamage(m_creature, m_creature->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
-                }
-
-                NefCheckTime += 2000;
             }
         }
     }
@@ -385,4 +303,3 @@ void AddSC_boss_victor_nefarius()
     newscript->pGossipSelect = &GossipSelect_boss_victor_nefarius;
     newscript->RegisterSelf();
 }
-

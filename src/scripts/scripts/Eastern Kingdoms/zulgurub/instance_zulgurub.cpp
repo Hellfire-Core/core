@@ -51,6 +51,7 @@ struct instance_zulgurub : public ScriptedInstance
     uint64 ZathGUID;
     uint64 ThekalGUID;
     uint64 JindoGUID;
+    uint64 MandokirGUID;
     uint64 OhganGUID;
     uint64 GongGUID;
     uint64 GahzrankaGUID;
@@ -114,6 +115,10 @@ struct instance_zulgurub : public ScriptedInstance
                 JindoGUID = creature->GetGUID();
                 break;
 
+            case 11382:
+                MandokirGUID = creature->GetGUID();
+                break;
+
             case 14988:
                 OhganGUID = creature->GetGUID();
                 break;
@@ -138,6 +143,7 @@ struct instance_zulgurub : public ScriptedInstance
         ZathGUID        = 0;
         ThekalGUID      = 0;
         JindoGUID       = 0;
+        MandokirGUID    = 0;
         OhganGUID       = 0;
         GongGUID        = 0;
         GahzrankaGUID   = 0;
@@ -217,6 +223,9 @@ struct instance_zulgurub : public ScriptedInstance
 
             case DATA_JINDO:
                 return JindoGUID;
+
+            case DATA_MANDOKIR:
+                return MandokirGUID;
 
             case DATA_OHGAN:
                 return OhganGUID;

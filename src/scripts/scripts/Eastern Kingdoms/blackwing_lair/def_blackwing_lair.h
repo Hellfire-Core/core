@@ -17,17 +17,33 @@
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 */
 
-#ifndef DEF_BLACKWING_LIAR_H
-#define DEF_BLACKWING_LIAR_H
+#ifndef DEF_BLACKWING_LAIR_H
+#define DEF_BLACKWING_LAIR_H
 
-#define DATA_RAZORGORE_THE_UNTAMED_EVENT    0
-#define DATA_VAELASTRASZ_THE_CORRUPT_EVENT  1
-#define DATA_BROODLORD_LASHLAYER_EVENT      2
-#define DATA_FIREMAW_EVENT                  3
-#define DATA_EBONROC_EVENT                  4
-#define DATA_FLAMEGOR_EVENT                 5
-#define DATA_CHROMAGGUS_EVENT               6
-#define DATA_NEFARIAN_EVENT                 7
+enum BlackwingLair_Events
+{
+    DATA_RAZORGORE_THE_UNTAMED_EVENT,
+    DATA_VAELASTRASZ_THE_CORRUPT_EVENT,
+    DATA_BROODLORD_LASHLAYER_EVENT,
+    DATA_FIREMAW_EVENT,
+    DATA_EBONROC_EVENT,
+    DATA_FLAMEGOR_EVENT,
+    DATA_CHROMAGGUS_EVENT,
+    DATA_NEFARIAN_EVENT,
+    NUM_ENCOUNTERS
+};
+
+enum BlackwingLair_NPCs
+{
+    NPC_RAZORGORE               = 12435,
+    NPC_VAELASTRASZ             = 13020,
+    NPC_BROODLORD_LASHLAYER     = 12017,
+    NPC_FIREMAW                 = 11983,
+    NPC_EBONROC                 = 14601,
+    NPC_FLAMEGOR                = 11981,
+    NPC_CHROMAGGUS              = 14020,
+    NPC_NEFARIAN                = 11583,
+    NPC_VICTOR_NEFARIUS         = 10162
+};
 
 #endif
-

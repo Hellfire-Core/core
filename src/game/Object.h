@@ -87,9 +87,10 @@ typedef UNORDERED_MAP<Player*, UpdateData> UpdateDataMapType;
 struct Position
 {
     Position() : x(0.0f), y(0.0f), z(0.0f), o(0.0f) {}
+    Position(float x, float y, float z, float o = 0.0f) : x(x), y(y), z(z), o(o) {}
     float x, y, z, o;
 
-    bool operator!=(Position &b) { return (x != b.x || y != b.y || z != b.z/* || o != b.o*/); }
+    bool operator!=(const Position &b) const { return x != b.x || y != b.y || z != b.z/* || o != b.o*/; }
 };
 
 struct WorldLocation
