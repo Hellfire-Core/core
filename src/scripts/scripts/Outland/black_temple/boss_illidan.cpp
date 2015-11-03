@@ -1259,7 +1259,7 @@ struct boss_illidan_akamaAI : public BossAI
 
     void KilledUnit(Unit *pWho)
     {
-        if (summons.isEmpty())
+        if (summons.empty())
             return;
 
         if (Unit *pUnit = GetClosestCreatureWithEntry(me, 23226, 40.0f))

@@ -138,7 +138,7 @@ struct boss_nothAI : public BossAI
         BossAI::SummonedCreatureDespawn(summoned);
 
         // if all summons was killed we should teleport back
-        if (checkSummons && m_creature->isAlive() && events.GetPhase() == NOTH_PHASE_BALCONY && summons.isEmpty())
+        if (checkSummons && m_creature->isAlive() && events.GetPhase() == NOTH_PHASE_BALCONY && summons.empty())
             events.RescheduleEvent(EVENT_TELEPORT_BACK, 1000, 0, NOTH_PHASE_BALCONY);
     }
 

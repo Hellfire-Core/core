@@ -39,18 +39,17 @@
 
 class ScriptedInstance;
 
-class SummonList : std::list<uint64>
+class SummonList : public std::set<uint64>
 {
 public:
     SummonList(Creature* creature) : m_creature(creature) {}
-    void Summon(Creature *summon) {push_back(summon->GetGUID());}
+    void Summon(Creature *summon) { insert(summon->GetGUID()); }
     void Despawn(Creature *summon);
     void DespawnEntry(uint32 entry);
     void DespawnAll();
-    bool isEmpty() const;
-    void AuraOnEntry(uint32 entry, uint32 spellId, bool apply) const;
     void DoAction(uint32 entry, uint32 info) const;
     void Cast(uint32 entry, uint32 spell, Unit* target) const;
+    void CastAuraOnEntry(uint32 entry, uint32 spellId, bool apply) const;
 private:
     Creature *m_creature;
 };

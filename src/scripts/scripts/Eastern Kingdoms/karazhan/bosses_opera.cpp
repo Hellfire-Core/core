@@ -1695,7 +1695,7 @@ struct npc_barnesAI : public ScriptedAI
         {
             if (WipeTimer.Expired(diff))
             {
-                if (operaAdds.isEmpty())
+                if (operaAdds.empty())
                     EnterEvadeMode();
 
                 WipeTimer = 2000;

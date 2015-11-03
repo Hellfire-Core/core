@@ -33,32 +33,26 @@ struct TSpellSummary
 
 void SummonList::DoAction(uint32 entry, uint32 info) const
 {
-    for (const_iterator i = begin(); i != end(); )
-    {
-         Creature *summon = Unit::GetCreature(*m_creature, *i);
-         i++;
-         if(summon && summon->IsAIEnabled && (!entry || summon->GetEntry() == entry))
-             summon->AI()->DoAction(info);
-    }
+    for (const_iterator i = begin(); i != end(); ++i)
+        if (Creature *summon = m_creature->GetCreature(*i))
+            if (summon->IsAIEnabled && (!entry || summon->GetEntry() == entry))
+                summon->AI()->DoAction(info);
 }
 
 void SummonList::Cast(uint32 entry, uint32 spell, Unit* target) const
 {
-    for (const_iterator i = begin(); i != end(); )
-    {
-         Creature *summon = Unit::GetCreature(*m_creature, *i);
-         i++;
-         if(summon && (!entry || summon->GetEntry() == entry))
-             summon->CastSpell(target, spell, true);
-    }
+    for (const_iterator i = begin(); i != end(); ++i)
+        if (Creature *summon = m_creature->GetCreature(*i))
+            if (!entry || summon->GetEntry() == entry)
+                summon->CastSpell(target, spell, true);
 }
 
 void SummonList::Despawn(Creature *summon)
 {
     uint64 guid = summon->GetGUID();
-    for(iterator i = begin(); i != end(); ++i)
+    for (iterator i = begin(); i != end(); ++i)
     {
-        if(*i == guid)
+        if (*i == guid)
         {
             erase(i);
             return;
@@ -68,35 +62,33 @@ void SummonList::Despawn(Creature *summon)
 
 void SummonList::DespawnEntry(uint32 entry)
 {
-    for(iterator i = begin(); i != end(); ++i)
+    for (iterator i = begin(); i != end(); )
     {
-        if(Creature *summon = Unit::GetCreature(*m_creature, *i))
+        if (Creature *summon = m_creature->GetCreature(*i))
         {
-            if(summon->GetEntry() == entry)
+            if (summon->GetEntry() == entry)
             {
                 summon->setDeathState(JUST_DIED);
                 summon->RemoveCorpse();
                 i = erase(i);
-                --i;
             }
+            else
+                ++i;
         }
         else
-        {
             i = erase(i);
-            --i;
-        }
     }
 }
 
-void SummonList::AuraOnEntry(uint32 entry, uint32 spellId, bool apply) const
+void SummonList::CastAuraOnEntry(uint32 entry, uint32 spellId, bool apply) const
 {
-    for(const_iterator i = begin(); i != end(); ++i)
+    for (const_iterator i = begin(); i != end(); ++i)
     {
-        if(Creature *summon = Unit::GetCreature(*m_creature, *i))
+        if (Creature *summon = m_creature->GetCreature(*i))
         {
-            if(summon->GetEntry() == entry)
+            if (summon->GetEntry() == entry)
             {
-                if(apply)
+                if (apply)
                     summon->AddAura(spellId, summon);
                 else
                     summon->RemoveAurasDueToSpell(spellId);
@@ -107,9 +99,9 @@ void SummonList::AuraOnEntry(uint32 entry, uint32 spellId, bool apply) const
 
 void SummonList::DespawnAll()
 {
-    for(iterator i = begin(); i != end(); ++i)
+    for (iterator i = begin(); i != end(); ++i)
     {
-        if(Creature *summon = Unit::GetCreature(*m_creature, *i))
+        if (Creature *summon = m_creature->GetCreature(*i))
         {
             summon->setDeathState(JUST_DIED);
             summon->RemoveCorpse();
@@ -117,12 +109,6 @@ void SummonList::DespawnAll()
     }
     clear();
 }
-
-bool SummonList::isEmpty() const
-{
-    return empty();
-}
-
 
 ScriptedAI::ScriptedAI(Creature* pCreature) :
 CreatureAI(pCreature), m_creature(pCreature), IsFleeing(false), m_bCombatMovement(true), m_uiEvadeCheckCooldown(2500),

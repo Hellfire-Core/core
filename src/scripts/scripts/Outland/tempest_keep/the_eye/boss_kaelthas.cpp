@@ -1212,7 +1212,7 @@ struct boss_kaelthasAI : public ScriptedAI
                                     }
                                 }
 
-                                summons.AuraOnEntry(PHOENIX,SPELL_BANISH,true);
+                                summons.CastAuraOnEntry(PHOENIX,SPELL_BANISH,true);
                                 m_creature->GetMotionMaster()->Clear();
 
                                 //Cast nether vapor summoning
@@ -1244,7 +1244,7 @@ struct boss_kaelthasAI : public ScriptedAI
                             case 3:
                                 m_creature->RemoveAurasDueToSpell(SPELL_NETHER_VAPOR);
                                 m_creature->GetUnitStateMgr().DropAction(UNIT_ACTION_STUN);
-                                summons.AuraOnEntry(PHOENIX,SPELL_BANISH,false);
+                                summons.CastAuraOnEntry(PHOENIX,SPELL_BANISH,false);
                                 if(pInstance)
                                     pInstance->SetData(DATA_KAELTHASEVENT, 4);    // after Gravity Lapse set back state 4 of KaelthasPhaseEvent
 

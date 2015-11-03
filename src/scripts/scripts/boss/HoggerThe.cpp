@@ -163,7 +163,7 @@ struct npc_hogger_theAI : public ScriptedAI
 
         if (phase == 2)
         {
-            if (summons.isEmpty() && spawnTimer.Expired(diff))
+            if (summons.empty() && spawnTimer.Expired(diff))
                 SummonAds();
         }
     }
