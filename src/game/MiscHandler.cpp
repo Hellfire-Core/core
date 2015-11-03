@@ -1489,7 +1489,7 @@ void WorldSession::HandleDungeonDifficultyOpcode(WorldPacket & recv_data)
     {
         if (pGroup->isRaidGroup())
         {
-            sLog.outLog(LOG_DEFAULT, "ERROR: WorldSession::HandleDungeonDifficultyOpcode: player %d tried to change difficulty while in raid group!", _player->GetGUIDLow());
+            sLog.outDebug("ERROR: WorldSession::HandleDungeonDifficultyOpcode: player %d tried to change difficulty while in raid group!", _player->GetGUIDLow());
             ChatHandler(this).SendSysMessage(LANG_CHANGE_DIFFICULTY_RAID);
             return;
         }
@@ -1504,14 +1504,14 @@ void WorldSession::HandleDungeonDifficultyOpcode(WorldPacket & recv_data)
                 const MapEntry *mapEntry = sMapStore.LookupEntry(pl->GetMapId());
                 if (mapEntry->IsDungeon())
                 {
-                    sLog.outLog(LOG_DEFAULT, "ERROR: WorldSession::HandleDungeonDifficultyOpcode: player %d tried to change difficulty while player %d inside the instance!", _player->GetGUIDLow(), pl->GetGUIDLow());
+                    sLog.outDebug("ERROR: WorldSession::HandleDungeonDifficultyOpcode: player %d tried to change difficulty while player %d inside the instance!", _player->GetGUIDLow(), pl->GetGUIDLow());
                     ChatHandler(this).SendSysMessage(LANG_CHANGE_DIFFICULTY_INSIDE);
                     return;
                 }
             }
             else
             {
-                sLog.outLog(LOG_DEFAULT, "ERROR: WorldSession::HandleDungeonDifficultyOpcode: player %d tried to change difficulty while player %lu offline!", _player->GetGUIDLow(), citr->guid);
+                sLog.outDebug("ERROR: WorldSession::HandleDungeonDifficultyOpcode: player %d tried to change difficulty while player %lu offline!", _player->GetGUIDLow(), citr->guid);
                 ChatHandler(this).SendSysMessage(LANG_CHANGE_DIFFICULTY_OFFLINE);
                 return;
             }
