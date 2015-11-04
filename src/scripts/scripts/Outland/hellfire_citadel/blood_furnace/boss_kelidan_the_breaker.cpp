@@ -206,16 +206,14 @@ struct boss_kelidan_the_breakerAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (!UpdateVictim())
-            return;
-
         if (Firenova_Timer.Expired(diff))
         {
             ForceSpellCast(me, SPELL_FIRE_NOVA, INTERRUPT_AND_CAST_INSTANTLY);
             ShadowVolley_Timer = 2000;
             Firenova_Timer = 0;
         }
-        if (Firenova_Timer.GetInterval())
+
+        if (!UpdateVictim())
             return;
 
         if (ShadowVolley_Timer.Expired(diff))
