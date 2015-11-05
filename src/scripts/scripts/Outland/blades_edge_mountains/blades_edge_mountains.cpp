@@ -2055,8 +2055,7 @@ struct npc_gargromAI : public ScriptedAI
         if (type == POINT_MOTION_TYPE)
         {
             me->setDeathState(JUST_DIED);
-            me->SummonGameObject(GO_TEMP, sum[1].x, sum[1].y, sum[1].z, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 25);
-            me->SummonGameObject(GO_TEMP, sum[1].x-(rand()%4), sum[1].y-(rand()%4), sum[1].z, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 25);
+            me->SummonGameObject(GO_TEMP, sum[1].x, sum[1].y, sum[1].z, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 300);
         }
     }
 };
