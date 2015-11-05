@@ -1266,6 +1266,7 @@ inline int32 CreatureEventAI::GetRandActionParam(uint32 rnd, int32 param1, int32
 
 inline Unit* CreatureEventAI::GetTargetByType(uint32 Target, Unit* pActionInvoker)
 {
+    Unit* target;
     switch (Target)
     {
         case TARGET_T_SELF:
@@ -1273,13 +1274,17 @@ inline Unit* CreatureEventAI::GetTargetByType(uint32 Target, Unit* pActionInvoke
         case TARGET_T_HOSTILE:
             return m_creature->getVictim();
         case TARGET_T_HOSTILE_SECOND_AGGRO:
-            return SelectUnit(SELECT_TARGET_TOPAGGRO, 1);
+            target = SelectUnit(SELECT_TARGET_TOPAGGRO, 1);
+            break;
         case TARGET_T_HOSTILE_LAST_AGGRO:
-            return SelectUnit(SELECT_TARGET_BOTTOMAGGRO, 0);
+            target = SelectUnit(SELECT_TARGET_BOTTOMAGGRO, 0);
+            break;
         case TARGET_T_HOSTILE_RANDOM:
-            return SelectUnit(SELECT_TARGET_RANDOM, 0);
+            target = SelectUnit(SELECT_TARGET_RANDOM, 0);
+            break;
         case TARGET_T_HOSTILE_RANDOM_NOT_TOP:
-            return SelectUnit(SELECT_TARGET_RANDOM, 1);
+            target = SelectUnit(SELECT_TARGET_RANDOM, 1);
+            break;
         case TARGET_T_ACTION_INVOKER:
             return pActionInvoker;
         case TARGET_T_ACTION_INVOKER_NOT_PLAYER:
@@ -1288,6 +1293,11 @@ inline Unit* CreatureEventAI::GetTargetByType(uint32 Target, Unit* pActionInvoke
         default:
             return NULL;
     };
+
+    // ensure we have hostile creature (dont target self by accident)
+    if (target && target->IsFriendlyTo(m_creature))
+        return NULL;
+    return target;
 }
 
 Unit* CreatureEventAI::SelectLowestHpFriendly(float range, uint32 MinHPDiff)
