@@ -855,6 +855,8 @@ void WorldSession::HandleBattleGroundReportAFK(WorldPacket & recv_data)
         sLog.outDebug("WorldSession::HandleBattleGroundReportAFK: player not found");
         return;
     }
+    if (!_player->GetBattleGround())
+        return;
 
     std::string message = "Player " + std::string(reportedPlayer->GetName()) + " has been reported by " + std::string(_player->GetName()) + " for AFK.";
     _player->GetBattleGround()->SendMessageToTeam(_player->GetTeam(), message.c_str());
