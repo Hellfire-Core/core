@@ -66,7 +66,8 @@ struct boss_victor_nefariusAI : public ScriptedAI
     {
         instance = c->GetInstanceData();
 
-        std::random_shuffle(drakTypes.begin(), drakTypes.end());
+        drakTypes[0] = urand(0, 4);
+        drakTypes[1] = (drakTypes[0] + urand(0, 3)) % 5;
     }
 
     ScriptedInstance* instance;
@@ -74,14 +75,15 @@ struct boss_victor_nefariusAI : public ScriptedAI
     SummonList summons;
     uint32 SpawnedAdds;
     uint64 NefarianGUID;
+    uint8 drakTypes[2];
     Timer NefarianCheckTimer;
 
     enum Spawns
     {
-        CREATURE_BRONZE_DRAKANOID       = 14263,
         CREATURE_BLUE_DRAKANOID         = 14261,
-        CREATURE_RED_DRAKANOID          = 14264,
         CREATURE_GREEN_DRAKANOID        = 14262,
+        CREATURE_BRONZE_DRAKANOID       = 14263,
+        CREATURE_RED_DRAKANOID          = 14264,
         CREATURE_BLACK_DRAKANOID        = 14265,
 
         CREATURE_CHROMATIC_DRAKANOID    = 14302,
@@ -101,15 +103,6 @@ struct boss_victor_nefariusAI : public ScriptedAI
         EVENT_CAST_SHADOWBOLT,
         EVENT_CAST_FEAR,
         EVENT_CAST_MIND_CONTROL,
-    };
-
-    std::vector<uint32> drakTypes =
-    {
-        CREATURE_BRONZE_DRAKANOID,
-        CREATURE_BLUE_DRAKANOID,
-        CREATURE_RED_DRAKANOID,
-        CREATURE_GREEN_DRAKANOID,
-        CREATURE_BLACK_DRAKANOID
     };
 
     void Reset()
@@ -210,10 +203,10 @@ struct boss_victor_nefariusAI : public ScriptedAI
                     //Spawn creature and force it to start attacking a random target
                     //1 in 3 chance it will be a chromatic
 
-                    uint32 CreatureID = (rand() % 3 == 0) ? CREATURE_CHROMATIC_DRAKANOID : drakTypes[0];
+                    uint32 CreatureID = (rand() % 3 == 0) ? CREATURE_CHROMATIC_DRAKANOID : drakTypes[0] + CREATURE_BLUE_DRAKANOID;
                     m_creature->SummonCreature(CreatureID, ADD_X1, ADD_Y1, ADD_Z1, 5.000, TEMPSUMMON_CORPSE_DESPAWN, 0);
 
-                    CreatureID = (rand() % 3 == 0) ? CREATURE_CHROMATIC_DRAKANOID : drakTypes[1];
+                    CreatureID = (rand() % 3 == 0) ? CREATURE_CHROMATIC_DRAKANOID : drakTypes[1] + CREATURE_BLUE_DRAKANOID;
                     m_creature->SummonCreature(CreatureID, ADD_X2, ADD_Y2, ADD_Z2, 5.000, TEMPSUMMON_CORPSE_DESPAWN, 0);
 
                     SpawnedAdds += 2;
