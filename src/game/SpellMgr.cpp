@@ -2917,6 +2917,7 @@ void SpellMgr::LoadSpellCustomAttr()
                     spellInfo->rangeIndex = 6;
                     break;
                 case 18818: // skullflame shield flamestrike
+                case 7712:  // blazefury medalion
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
                     break;
                 case 9806: // faerie-fire-alikes
