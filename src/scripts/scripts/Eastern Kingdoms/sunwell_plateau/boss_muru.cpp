@@ -379,6 +379,7 @@ struct npc_muru_portalAI : public Scripted_NoMovementAI
         TransformTimer = 0;
         CheckTimer.Reset(1000);
         me->SetReactState(REACT_PASSIVE);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_ROTATE);
     }
 
     void EnterCombat(Unit *who) {}
