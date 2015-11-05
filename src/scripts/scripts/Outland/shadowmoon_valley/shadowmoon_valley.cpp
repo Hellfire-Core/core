@@ -1559,7 +1559,6 @@ struct npc_lord_illidan_stormrageAI : public ScriptedAI
     {
         uint8 count = WavesInfo[WaveCount].SpawnCount;
         uint8 locIndex = WavesInfo[WaveCount].UsedSpawnPoint;
-        srand(time(NULL));//initializing random seed
         uint8 FelguardCount = 0;
         uint8 DreadlordCount = 0;
 
@@ -1571,25 +1570,25 @@ struct npc_lord_illidan_stormrageAI : public ScriptedAI
             float Z = SpawnLocation[locIndex + i].z;
             float O = SpawnLocation[locIndex + i].o;
             Spawn = m_creature->SummonCreature(WavesInfo[WaveCount].CreatureId, X, Y, Z, O, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 60000);
-            ++LiveCount;
 
             if(Spawn)
             {
+                ++LiveCount;
                 Spawn->LoadCreaturesAddon();
 
                 if(WaveCount == 0)//1 Wave
                 {
-                    if(rand()%3 == 1 && FelguardCount<2)
+                    if (!urand(0, 2) && FelguardCount < 2)
                     {
                         Spawn->SetUInt32Value(UNIT_FIELD_DISPLAYID,18654);
                         ++FelguardCount;
                     }
-                    else if(DreadlordCount < 3)
+                    else if (DreadlordCount < 3)
                     {
                         Spawn->SetUInt32Value(UNIT_FIELD_DISPLAYID,19991);
                         ++DreadlordCount;
                     }
-                    else if(FelguardCount<2)
+                    else if (FelguardCount < 2)
                     {
                         Spawn->SetUInt32Value(UNIT_FIELD_DISPLAYID,18654);
                         ++FelguardCount;
