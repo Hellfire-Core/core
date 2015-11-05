@@ -232,7 +232,7 @@ public:
                     "SELECT `length` FROM boss_fights WHERE mob_id = %u ORDER BY LENGTH ASC LIMIT 1", uint32(m_encounter));
 
                 RealmDataDatabase.DirectPExecute("INSERT INTO boss_fights VALUES (NULL,%u,%u,%u,%u,SYSDATE())",
-                    uint32(m_encounter), m_map->GetInstanceId(), guild_id, uint32(time(NULL) - m_timer));
+                    uint32(m_encounter), m_map->GetInstanceId(), guild_id, WorldTimer::getMSTimeDiffToNow(m_timer));
                 QueryResultAutoPtr result = RealmDataDatabase.PQuery(
                     "SELECT kill_id, MAX('date') FROM boss_fights WHERE instance_id = %u AND mob_id = %u",
                     m_map->GetInstanceId(), uint32(m_encounter));
@@ -271,15 +271,16 @@ public:
                 if (record) //TODO: add disable/enable to config
                 {
                     uint32 last_record = record->Fetch()[0].GetUInt32();
-                    if (last_record > uint32(time(NULL) - m_timer))
+                    uint32 new_time = WorldTimer::getMSTimeDiffToNow(m_timer);
+                    if (last_record > new_time)
                     {
                         QueryResultAutoPtr names = RealmDataDatabase.PQuery(
                             "SELECT g.name, n.boss_name FROM boss_fights f JOIN guild g ON g.guildid = f.guild_id JOIN boss_id_names n ON n.boss_id = f.mob_id "
                             "WHERE kill_id = %u", kill_id);
                         if (names)
                         {
-                            std::string message = "New server record: " + secsToTimeString(time(NULL) - m_timer) + " (last record: "
-                                + secsToTimeString(last_record) + ") for boss " + names->Fetch()[1].GetCppString()
+                            std::string message = "New server record: " + msToTimeString(new_time) + " (last record: "
+                                + msToTimeString(last_record) + ") for boss " + names->Fetch()[1].GetCppString()
                                 + " by guild <|cffffffff" + names->Fetch()[0].GetCppString() + "|r> of " + (side == HORDE ? "|cffe50c11Horde|r." : "|cff4954e8Alliance|r.");
 
                             sLog.outLog(LOG_SERVER_RECORDS, "%s", message.c_str());
@@ -314,12 +315,12 @@ public:
             return; // combat in progress anyway, just dance
 
         m_encounter = encounter;
-        m_timer = time(NULL);
+        m_timer = WorldTimer::getMSTime();
     }
 
 private:
     GBK_Encounters m_encounter;
-    time_t m_timer;
+    uint32 m_timer;
     std::map<uint32, GBKStats> stats;
     Map* m_map;
 };

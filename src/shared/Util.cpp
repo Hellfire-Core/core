@@ -151,6 +151,13 @@ void stripLineInvisibleChars(std::string &str)
         str.erase(wpos,str.size());
 }
 
+std::string msToTimeString(uint32 ms)
+{
+    std::ostringstream ss;
+    ss << secsToTimeString(ms / 1000) << " " << uint32(ms % 1000) << " ms";
+    return ss.str();
+}
+
 std::string secsToTimeString(uint32 timeInSecs, bool shortText, bool hoursOnly)
 {
     uint32 secs    = timeInSecs % MINUTE;
