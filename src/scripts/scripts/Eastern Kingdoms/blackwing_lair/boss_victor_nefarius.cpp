@@ -67,7 +67,7 @@ struct boss_victor_nefariusAI : public ScriptedAI
         instance = c->GetInstanceData();
 
         drakTypes[0] = urand(0, 4);
-        drakTypes[1] = (drakTypes[0] + urand(0, 3)) % 5;
+        drakTypes[1] = (drakTypes[0] + urand(1, 4)) % 5;
     }
 
     ScriptedInstance* instance;
