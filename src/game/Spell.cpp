@@ -5651,7 +5651,7 @@ bool Spell::CheckTarget(Unit* target, uint32 eff)
     {
         Unit::AuraList list = target->GetAurasByType(SPELL_AURA_MOD_DECREASE_SPEED);
         for (Unit::AuraList::const_iterator itr = list.begin(); itr != list.end(); itr++)
-            if ((*itr)->GetBasePoints() > CalculateDamage(eff,target))
+            if ((*itr)->GetBasePoints() < CalculateDamage(eff,target)) // they are negative!
                 return false;
     }
 
