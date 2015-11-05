@@ -388,8 +388,8 @@ struct npc_muru_portalAI : public Scripted_NoMovementAI
         if (summoned->GetEntry() == 25782)  // Void Summoner
             DoCast(summoned, SPELL_SUMMON_VOID_SENTINEL_SUMMONER_VISUAL);
 
-        if( Unit* Muru = me->GetUnit(pInstance->GetData64(DATA_MURU)))
-            ((boss_muruAI*)Muru)->JustSummoned(summoned);
+        if (Creature* Muru = me->GetCreature(pInstance->GetData64(DATA_MURU)))
+            Muru->ToCreature()->AI()->JustSummoned(summoned);
     }
 
     void SpellHit(Unit* caster, const SpellEntry* Spell)
@@ -456,8 +456,14 @@ struct npc_void_summonerAI : public Scripted_NoMovementAI
 
     void JustSummoned(Creature* summoned)
     {
-        if( Unit* Muru = me->GetUnit(pInstance->GetData64(DATA_MURU)))
-            ((boss_muruAI*)Muru)->JustSummoned(summoned);
+        if (Creature* Muru = me->GetCreature(pInstance->GetData64(DATA_MURU)))
+            Muru->ToCreature()->AI()->JustSummoned(summoned);
+    }
+
+    void IsSummonedBy(Unit*)
+    {
+        if (Creature* Muru = me->GetCreature(pInstance->GetData64(DATA_MURU)))
+            Muru->ToCreature()->AI()->JustSummoned(me);
     }
 
     void UpdateAI(const uint32 diff)
@@ -505,9 +511,9 @@ struct npc_dark_fiendAI : public ScriptedAI
         me->DisappearAndDie();
     }
     
-    void IsSummonedBy(Unit* summoner)
+    void IsSummonedBy(Unit*)
     {
-        if(Unit* Muru = me->GetUnit(pInstance->GetData64(DATA_MURU)))
+        if (Creature* Muru = me->GetCreature(pInstance->GetData64(DATA_MURU)))
             Muru->ToCreature()->AI()->JustSummoned(me);
     }
     
@@ -608,6 +614,12 @@ struct npc_void_sentinelAI : public ScriptedAI
         me->DisappearAndDie();
     }
 
+    void IsSummonedBy(Unit*)
+    {
+        if (Creature* Muru = me->GetCreature(pInstance->GetData64(DATA_MURU)))
+            Muru->ToCreature()->AI()->JustSummoned(me);
+    }
+
     void DamageTaken(Unit*, uint32 &damage)
     {
         if(damage >= me->GetHealth())
@@ -615,7 +627,7 @@ struct npc_void_sentinelAI : public ScriptedAI
             damage = 0;
             for(uint8 i = 0; i < 8; ++i)
                 DoCast(me, SPELL_SUMMON_VOID_SPAWN, true);
-            me->Kill(me, false);
+            me->DisappearAndDie();
         }
     }
 
@@ -667,9 +679,9 @@ struct mob_void_spawnAI : public ScriptedAI
         me->DisappearAndDie();
     }
     
-    void IsSummonedBy(Unit* summoner)
+    void IsSummonedBy(Unit*)
     {
-        if(Unit* Muru = me->GetUnit(pInstance->GetData64(DATA_MURU)))
+        if (Creature* Muru = me->GetCreature(pInstance->GetData64(DATA_MURU)))
             Muru->ToCreature()->AI()->JustSummoned(me);
     }
     
@@ -759,6 +771,9 @@ struct npc_blackholeAI : public ScriptedAI
 
     void IsSummonedBy(Unit*)
     {
+        if (Creature* Muru = me->GetCreature(pInstance->GetData64(DATA_MURU)))
+            Muru->ToCreature()->AI()->JustSummoned(me);
+
         DoCast(me, SPELL_BLACK_HOLE_SUMMON_VISUAL, true);
     }
 
@@ -841,6 +856,12 @@ struct npc_darknessAI : public Scripted_NoMovementAI
         DoCast(me, SPELL_VOID_ZONE_PRE_EFFECT_VISUAL, true);
         VoidZoneTimer.Reset(3000);
         CheckTimer.Reset(1000);
+    }
+
+    void IsSummonedBy(Unit*)
+    {
+        if (Creature* Muru = me->GetCreature(pInstance->GetData64(DATA_MURU)))
+            Muru->ToCreature()->AI()->JustSummoned(me);
     }
 
     void UpdateAI(const uint32 diff)
@@ -934,6 +955,12 @@ struct mob_shadowsword_fury_mageAI : public ScriptedAI
         }
     }
 
+    void IsSummonedBy(Unit*)
+    {
+        if (Creature* Muru = me->GetCreature(pInstance->GetData64(DATA_MURU)))
+            Muru->ToCreature()->AI()->JustSummoned(me);
+    }
+
     void UpdateAI(const uint32 diff)
     {
         if (me->GetMotionMaster()->GetCurrentMovementGeneratorType() == POINT_MOTION_TYPE)
@@ -1013,6 +1040,11 @@ struct mob_shadowsword_berserkerAI : public ScriptedAI
             DoZoneInCombat(400.0f);
         DoCast(me, SPELL_DUAL_WIELD, true);
         Flurry.Reset(urand(16000, 20000));
+    }
+    void IsSummonedBy(Unit*)
+    {
+        if (Creature* Muru = me->GetCreature(pInstance->GetData64(DATA_MURU)))
+            Muru->ToCreature()->AI()->JustSummoned(me);
     }
 
     void MovementInform(uint32 Type, uint32 Id)
