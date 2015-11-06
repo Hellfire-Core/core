@@ -87,6 +87,7 @@ struct boss_gruulAI : public ScriptedAI
 
     Timer Growth_Timer;
     Timer CaveIn_Timer;
+    uint32 CaveIn_StaticTimer;
     Timer GroundSlamTimer;
     Timer ShatterTimer;
     uint32 PerformingGroundSlam;
@@ -97,7 +98,8 @@ struct boss_gruulAI : public ScriptedAI
     void Reset()
     {
         Growth_Timer.Reset(30000);
-        CaveIn_Timer = 40000;
+        CaveIn_Timer.Reset(27000);
+        CaveIn_StaticTimer = 30000;
         GroundSlamTimer.Reset(35000);
         ShatterTimer = 0;
         HurtfulStrike_Timer.Reset(8000);
@@ -202,7 +204,10 @@ struct boss_gruulAI : public ScriptedAI
                 if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100.0f, true))
                     AddSpellToCast(target, SPELL_CAVE_IN);
 
-                CaveIn_Timer = 20000;
+                if (CaveIn_StaticTimer >= 4000)
+                    CaveIn_StaticTimer -= 2000;
+
+                CaveIn_Timer = CaveIn_StaticTimer;
             }
 
             // Ground Slam, Gronn Lord's Grasp, Stoned, Shatter
