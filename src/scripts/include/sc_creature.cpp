@@ -49,15 +49,7 @@ void SummonList::Cast(uint32 entry, uint32 spell, Unit* target) const
 
 void SummonList::Despawn(Creature *summon)
 {
-    uint64 guid = summon->GetGUID();
-    for (iterator i = begin(); i != end(); ++i)
-    {
-        if (*i == guid)
-        {
-            erase(i);
-            return;
-        }
-    }
+    erase(summon->GetGUID());
 }
 
 void SummonList::DespawnEntry(uint32 entry)
@@ -72,6 +64,22 @@ void SummonList::DespawnEntry(uint32 entry)
                 summon->RemoveCorpse();
                 i = erase(i);
             }
+            else
+                ++i;
+        }
+        else
+            i = erase(i);
+    }
+}
+
+void SummonList::RemoveByEntry(uint32 entry)
+{
+    for (iterator i = begin(); i != end(); )
+    {
+        if (Creature *summon = m_creature->GetCreature(*i))
+        {
+            if (summon->GetEntry() == entry)
+                i = erase(i);
             else
                 ++i;
         }
@@ -276,7 +284,6 @@ void ScriptedAI::CheckShooterNoMovementInRange(uint32 diff, float maxrange)
 
         casterTimer = 3000;
     }
-    
 }
 
 void ScriptedAI::DoStopAttack()
