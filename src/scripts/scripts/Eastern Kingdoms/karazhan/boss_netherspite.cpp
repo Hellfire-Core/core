@@ -1,6 +1,6 @@
-/* 
+/*
  * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -23,23 +23,26 @@
  SDCategory: Karazhan
  EndScriptData */
 
- #include "precompiled.h"
- #include "def_karazhan.h"
+#include "precompiled.h"
+#include "def_karazhan.h"
 
- #define EMOTE_PHASE_PORTAL          -1532089
- #define EMOTE_PHASE_BANISH          -1532090
+#define EMOTE_PHASE_PORTAL          -1532089
+#define EMOTE_PHASE_BANISH          -1532090
 
-#define SPELL_NETHERBURN_AURA       30522
-#define SPELL_VOIDZONE              37063
-#define SPELL_NETHER_INFUSION       38688
-#define SPELL_NETHERBREATH          38523
-#define SPELL_BANISH_VISUAL         39833
-#define SPELL_BANISH_ROOT           42716
-#define SPELL_EMPOWERMENT           38549
-#define SPELL_NETHERSPITE_ROAR      38684
-#define SPELL_VOID_ZONE_EFFECT      46264
+enum
+{
+    SPELL_NETHERBURN_AURA       = 30522,
+    SPELL_VOIDZONE              = 37063,
+    SPELL_NETHER_INFUSION       = 38688,
+    SPELL_NETHERBREATH          = 38523,
+    SPELL_BANISH_VISUAL         = 39833,
+    SPELL_BANISH_ROOT           = 42716,
+    SPELL_EMPOWERMENT           = 38549,
+    SPELL_NETHERSPITE_ROAR      = 38684,
+    SPELL_VOID_ZONE_EFFECT      = 46264,
 
-#define NETHER_PATROL_PATH          15689
+    NETHER_PATROL_PATH          = 15689,
+};
 
 const float PortalCoord[3][3] =
 {
@@ -50,17 +53,17 @@ const float PortalCoord[3][3] =
 
 enum Netherspite_Portal
 {
-    RED_PORTAL = 0, // Perseverence
-    GREEN_PORTAL = 1, // Serenity
-    BLUE_PORTAL = 2 // Dominance
+    RED_PORTAL,     // Perseverence
+    GREEN_PORTAL,   // Serenity
+    BLUE_PORTAL     // Dominance
 };
 
-const uint32 PortalID[3] = {17369, 17367, 17368};
-const uint32 PortalVisual[3] = {30487,30490,30491};
-const uint32 PortalBeam[3] = {30465,30464,30463};
-const uint32 PlayerBuff[3] = {30421,30422,30423};
-const uint32 NetherBuff[3] = {30466,30467,30468};
-const uint32 PlayerDebuff[3] = {38637,38638,38639};
+const uint32 PortalID[3]        = {17369,17367,17368};
+const uint32 PortalVisual[3]    = {30487,30490,30491};
+const uint32 PortalBeam[3]      = {30465,30464,30463};
+const uint32 PlayerBuff[3]      = {30421,30422,30423};
+const uint32 NetherBuff[3]      = {30466,30467,30468};
+const uint32 PlayerDebuff[3]    = {38637,38638,38639};
 
 struct boss_netherspiteAI : public ScriptedAI
 {
@@ -207,6 +210,7 @@ struct boss_netherspiteAI : public ScriptedAI
         EmpowermentTimer = 10000;
         DoScriptText(EMOTE_PHASE_PORTAL,m_creature);
         AttackStart(m_creature->getVictim());
+        DoResetThreat();
     }
 
     void SwitchToBanishPhase()
@@ -270,37 +274,29 @@ struct boss_netherspiteAI : public ScriptedAI
 
             VoidZoneTimer = 15000;
         }
-        
 
-        
         if (!Berserk && NetherInfusionTimer.Expired(diff))
         {
             m_creature->AddAura(SPELL_NETHER_INFUSION, m_creature);
             ForceSpellCast(m_creature, SPELL_NETHERSPITE_ROAR, INTERRUPT_AND_CAST_INSTANTLY);
             Berserk = true;
         }
-        
 
         if(PortalPhase) // PORTAL PHASE
         {
-            
             if (PortalTimer.Expired(diff))
             {
                 UpdatePortals();
                 PortalTimer = 1000;
             }
-            
 
-            
             if (EmpowermentTimer.Expired(diff))
             {
                 ForceSpellCast(m_creature, SPELL_EMPOWERMENT);
                 m_creature->AddAura(SPELL_NETHERBURN_AURA, m_creature);
                 EmpowermentTimer = 90000;
             }
-            
 
-            
             if (PhaseTimer.Expired(diff))
             {
                 if(!m_creature->IsNonMeleeSpellCast(false))
@@ -309,7 +305,6 @@ struct boss_netherspiteAI : public ScriptedAI
                     return;
                 }
             }
-            
 
             DoMeleeAttackIfReady();
         }
@@ -321,7 +316,6 @@ struct boss_netherspiteAI : public ScriptedAI
                 m_creature->GetMotionMaster()->MoveIdle();
             }
 
-           
             if (NetherbreathTimer.Expired(diff))
             {
                 if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0,GetSpellMaxRange(SPELL_NETHERBREATH),true))
@@ -329,8 +323,7 @@ struct boss_netherspiteAI : public ScriptedAI
 
                 NetherbreathTimer = 5000+rand()%2000;
             }
-            
-            
+
             if (PhaseTimer.Expired(diff))
             {
                 if(!m_creature->IsNonMeleeSpellCast(false))
@@ -340,6 +333,7 @@ struct boss_netherspiteAI : public ScriptedAI
                 }
             }
         }
+
         CastNextSpellIfAnyAndReady();
     }
 };
@@ -373,7 +367,6 @@ struct mob_void_zoneAI : public Scripted_NoMovementAI
 
     void UpdateAI(const uint32 diff)
     {
-        
         if (checkTimer.Expired(diff))
         {
             if (pInstance && pInstance->GetData(DATA_NETHERSPITE_EVENT) == DONE)
@@ -381,11 +374,11 @@ struct mob_void_zoneAI : public Scripted_NoMovementAI
                 m_creature->Kill(m_creature, false);
                 m_creature->RemoveCorpse();
             }
+
             const int32 dmg = frand(1000, 1500);    //workaround here, no proper spell known
             m_creature->CastCustomSpell(NULL, SPELL_VOID_ZONE_EFFECT, &dmg, NULL, NULL, false);
             checkTimer = 2000;
         }
-        
 
         if (dieTimer.Expired(diff))
         {
@@ -393,9 +386,9 @@ struct mob_void_zoneAI : public Scripted_NoMovementAI
             m_creature->RemoveCorpse();
             dieTimer = 25000;
         }
-        
     }
 };
+
 CreatureAI* GetAI_mob_void_zone(Creature *_Creature)
 {
     return new mob_void_zoneAI(_Creature);
