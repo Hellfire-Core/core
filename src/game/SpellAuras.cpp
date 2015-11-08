@@ -2984,7 +2984,7 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
                     if (caster)
                         // prevent double apply bonuses
                         if (m_target->GetTypeId()!=TYPEID_PLAYER || !((Player*)m_target)->GetSession()->PlayerLoading())
-                            m_modifier.m_amount = caster->SpellHealingBonus(GetSpellProto(), m_modifier.m_amount, SPELL_DIRECT_DAMAGE, m_target);
+                            m_modifier.m_amount = caster->SpellHealingBonus(GetSpellProto(), 600, SPELL_DIRECT_DAMAGE, m_target);
                 }
                 // Do final heal for real !apply
                 else if (Real)
