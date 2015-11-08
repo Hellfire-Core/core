@@ -5646,20 +5646,28 @@ bool Spell::CheckTarget(Unit* target, uint32 eff)
     if (IsTriggeredSpell() && (!sWorld.getConfig(CONFIG_VMAP_TOTEM) || !m_caster->ToTotem()))
         return true;
 
-    //Do not apply daze if target has any
-    if (GetSpellEntry()->Effect[eff] == SPELL_EFFECT_APPLY_AURA && GetSpellEntry()->EffectApplyAuraName[eff] == SPELL_AURA_MOD_DECREASE_SPEED)
-    {
-        Unit::AuraList list = target->GetAurasByType(SPELL_AURA_MOD_DECREASE_SPEED);
-        for (Unit::AuraList::const_iterator itr = list.begin(); itr != list.end(); itr++)
-            if ((*itr)->GetModifierValue() < CalculateDamage(eff,target)) // they are negative!
-                return false;
-    }
-
     //Check targets for LOS visibility (except spells without range limitations)
     switch (GetSpellEntry()->Effect[eff])
     {
         case SPELL_EFFECT_FRIEND_SUMMON:
         case SPELL_EFFECT_SUMMON_PLAYER:                    // from anywhere
+            break;
+        case SPELL_EFFECT_APPLY_AURA:
+            if (GetSpellEntry()->EffectApplyAuraName[eff] == SPELL_AURA_MOD_DECREASE_SPEED)
+            {
+                Unit::AuraList list = target->GetAurasByType(SPELL_AURA_MOD_DECREASE_SPEED);
+                for (Unit::AuraList::const_iterator itr = list.begin(); itr != list.end(); itr++)
+                    if ((*itr)->GetModifierValue() < CalculateDamage(eff, target)) // they are negative!
+                        return false;
+            }
+            else if (GetSpellEntry()->EffectApplyAuraName[eff] == SPELL_AURA_MOD_STAT)
+            {
+                Unit::AuraList list = target->GetAurasByType(SPELL_AURA_MOD_STAT);
+                for (Unit::AuraList::const_iterator itr = list.begin(); itr != list.end(); itr++)
+                    if ((*itr)->GetMiscValue() == GetSpellEntry()->EffectMiscValue[eff] &&
+                        (*itr)->GetModifierValue() > CalculateDamage(eff, target))
+                        return false; // do not replace better buffs
+            }
             break;
         case SPELL_EFFECT_DUMMY:
             if (GetSpellEntry()->Id != 20577)                      // Cannibalize
