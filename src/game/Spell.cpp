@@ -5652,15 +5652,6 @@ bool Spell::CheckTarget(Unit* target, uint32 eff)
         case SPELL_EFFECT_FRIEND_SUMMON:
         case SPELL_EFFECT_SUMMON_PLAYER:                    // from anywhere
             break;
-        case SPELL_EFFECT_APPLY_AURA:
-            if (GetSpellEntry()->EffectApplyAuraName[eff] == SPELL_AURA_MOD_DECREASE_SPEED)
-            {
-                Unit::AuraList list = target->GetAurasByType(SPELL_AURA_MOD_DECREASE_SPEED);
-                for (Unit::AuraList::const_iterator itr = list.begin(); itr != list.end(); itr++)
-                    if ((*itr)->GetModifierValue() < CalculateDamage(eff, target)) // they are negative!
-                        return false;
-            }
-            break;
         case SPELL_EFFECT_DUMMY:
             if (GetSpellEntry()->Id != 20577)                      // Cannibalize
                 break;

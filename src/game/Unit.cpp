@@ -4019,6 +4019,15 @@ bool Unit::RemoveNoStackAurasDueToAura(Aura *Aur)
                 return false; // unit already has better one
         }
     }
+
+    if (spellProto->EffectApplyAuraName[0] == SPELL_AURA_MOD_DECREASE_SPEED)
+    {
+        Unit::AuraList list = GetAurasByType(SPELL_AURA_MOD_DECREASE_SPEED);
+        for (Unit::AuraList::const_iterator itr = list.begin(); itr != list.end(); itr++)
+            if ((*itr)->GetModifierValue() < Aur->GetModifierValue()) // they are negative!
+                return false;
+    }
+
     for (i = m_Auras.begin(); i != m_Auras.end(); i = next)
     {
         next = i;
