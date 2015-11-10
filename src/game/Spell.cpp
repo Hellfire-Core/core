@@ -5660,14 +5660,6 @@ bool Spell::CheckTarget(Unit* target, uint32 eff)
                     if ((*itr)->GetModifierValue() < CalculateDamage(eff, target)) // they are negative!
                         return false;
             }
-            else if (GetSpellEntry()->EffectApplyAuraName[eff] == SPELL_AURA_MOD_STAT && SpellMgr::IsPositiveEffect(GetSpellEntry()->Id,eff))
-            {
-                Unit::AuraList list = target->GetAurasByType(SPELL_AURA_MOD_STAT);
-                for (Unit::AuraList::const_iterator itr = list.begin(); itr != list.end(); itr++)
-                    if ((*itr)->GetModifierValue() > CalculateDamage(eff, target) &&
-                        SpellMgr::IsNoStackSpellDueToSpell(GetSpellEntry()->Id,(*itr)->GetId(),false))
-                        return false; // do not replace better buffs
-            }
             break;
         case SPELL_EFFECT_DUMMY:
             if (GetSpellEntry()->Id != 20577)                      // Cannibalize

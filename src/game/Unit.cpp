@@ -4011,6 +4011,14 @@ bool Unit::RemoveNoStackAurasDueToAura(Aura *Aur)
     SpellSpecific spellId_spec = SpellMgr::GetSpellSpecific(spellId);
 
     AuraMap::iterator i,next;
+    if (sSpellMgr.GetSpellRank(spellId)) // check for higher rank auras
+    {
+        for (i = m_Auras.begin(); i != m_Auras.end(); i = next)
+        {
+            if (sSpellMgr.IsHighRankOfSpell(i->second->GetId(), spellId))
+                return false; // unit already has better one
+        }
+    }
     for (i = m_Auras.begin(); i != m_Auras.end(); i = next)
     {
         next = i;
