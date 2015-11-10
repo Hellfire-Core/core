@@ -122,16 +122,14 @@ struct boss_archaedasAI : public ScriptedAI
         if (wakingUp)
         {
             Awaken_Timer -= diff;
-            return;        // dont do anything until we are done
-
             if (Awaken_Timer <= diff)
             {
                 wakingUp = false;
                 m_creature->setFaction(14);
                 m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                 m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_MOVE);
-                return;     // dont want to continue until we finish the AttackStart method
             }
+            return;
         }
 
         //Return since we have no target

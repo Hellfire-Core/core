@@ -328,12 +328,11 @@ struct instance_uldaman : public ScriptedInstance
                 if (Encounters[1] == DONE)
                     return;
 
-                Encounters[1] = data;
                 if (data == NOT_STARTED)
                 {
                     instance->GetGameObject(altarOfArcheadas)->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_IN_USE);
                 }
-                if (data == IN_PROGRESS)
+                if (data == IN_PROGRESS && Encounters[1] != IN_PROGRESS)
                 {
                     ActivateArchaedas();
                 }
@@ -342,6 +341,7 @@ struct instance_uldaman : public ScriptedInstance
                     SetDoor(archaedasTempleDoor, true); //re open enter door
                     SetDoor(ancientVaultDoor, true);
                 }
+                Encounters[1] = data;
                 break;
 
             case DATA_IRONAYA_DOOR:
