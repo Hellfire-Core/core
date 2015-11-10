@@ -105,8 +105,6 @@ struct boss_brutallusAI : public ScriptedAI
     Timer IntroFrostBoltTimer;
     bool Enraged;
 
-    Creature* pMadrigosa;
-
     void Reset()
     {
         SlashTimer.Reset(11000);
@@ -124,7 +122,6 @@ struct boss_brutallusAI : public ScriptedAI
         ForceSpellCast(me, SPELL_DUAL_WIELD, INTERRUPT_AND_CAST_INSTANTLY);
         pInstance->SetData(DATA_BRUTALLUS_EVENT, NOT_STARTED);
         me->CombatStop();
-        pMadrigosa = 0;
     }
 
     void EnterCombat(Unit* /*pWho*/)
@@ -166,7 +163,7 @@ struct boss_brutallusAI : public ScriptedAI
 
     void DoIntro()
     {
-
+        Creature* pMadrigosa = me->GetCreature(pInstance->GetData64(DATA_MADRIGOSA));
         if (!pMadrigosa)
             return;
 
@@ -337,11 +334,9 @@ struct boss_brutallusAI : public ScriptedAI
     {
         if (pInstance->GetData(DATA_BRUTALLUS_INTRO_EVENT) == SPECIAL || pInstance->GetData(DATA_BRUTALLUS_INTRO_EVENT) == IN_PROGRESS || IntroPhase == 18)
         {
+            Creature* pMadrigosa = me->GetCreature(pInstance->GetData64(DATA_MADRIGOSA));
             if (!pMadrigosa)
-            {
-                pMadrigosa = (Creature*)me->GetUnit(pInstance->GetData64(DATA_MADRIGOSA));
                 return;
-            }
 
             if (IntroPhase < 14 && pMadrigosa->GetSelection() == 0)       //ye, we spam it every tick, this bitch has special needs... :)
             {                                                             //still, with this, we have 2-3 moments where she sets her sel on null, but it's enough for now...
@@ -365,14 +360,10 @@ struct boss_brutallusAI : public ScriptedAI
 
             if (IntroPhase >= 4 && IntroPhase <= 9)
             {
-                Creature *pMadrigosa = me->GetCreature(pInstance->GetData64(DATA_MADRIGOSA));
                 if (IntroFrostBoltTimer.Expired(diff))
                 {
-                    if(pMadrigosa)
-                    {
-                        pMadrigosa->CastSpell(me, SPELL_INTRO_FROSTBOLT, false);
-                        IntroFrostBoltTimer = 2000;
-                    }
+                    pMadrigosa->CastSpell(me, SPELL_INTRO_FROSTBOLT, false);
+                    IntroFrostBoltTimer = 2000;
                 }
                 else
                     pMadrigosa->AI()->DoMeleeAttackIfReady();
