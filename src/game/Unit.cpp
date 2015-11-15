@@ -8020,8 +8020,10 @@ uint32 Unit::SpellDamageBonus(Unit *pVictim, SpellEntry const *spellProto, uint3
     // Damage Done
     uint32 CastingTime = !SpellMgr::IsChanneledSpell(spellProto) ? SpellMgr::GetSpellBaseCastTime(spellProto) : SpellMgr::GetSpellDuration(spellProto);
 
+    uint32 creatureTypeMask = pVictim->GetCreatureTypeMask();
     // Taken/Done fixed damage bonus auras
     int32 DoneAdvertisedBenefit  = SpellBaseDamageBonus(SpellMgr::GetSpellSchoolMask(spellProto))+BonusDamage;
+    DoneAdvertisedBenefit += GetTotalAuraModifierByMiscMask(SPELL_AURA_MOD_FLAT_SPELL_DAMAGE_VERSUS, creatureTypeMask);
     if (casterModifiers)
     {
         if (casterModifiers->Apply)
@@ -8093,7 +8095,6 @@ uint32 Unit::SpellDamageBonus(Unit *pVictim, SpellEntry const *spellProto, uint3
         }
     }
 
-    uint32 creatureTypeMask = pVictim->GetCreatureTypeMask();
     AuraList const& mDamageDoneVersus = GetAurasByType(SPELL_AURA_MOD_DAMAGE_DONE_VERSUS);
     for (AuraList::const_iterator i = mDamageDoneVersus.begin();i != mDamageDoneVersus.end(); ++i)
         if (creatureTypeMask & uint32((*i)->GetModifier()->m_miscvalue))
@@ -8436,17 +8437,6 @@ uint32 Unit::SpellDamageBonus(Unit *pVictim, SpellEntry const *spellProto, uint3
         DoneTotalMod = 1.0;
 
     float tmpDamage = (float(pdamage)+DoneActualBenefit)*DoneTotalMod;
-
-    // Add flat bonus from spell damage versus
-    int32 flatSpellDamageVersus = GetTotalAuraModifierByMiscMask(SPELL_AURA_MOD_FLAT_SPELL_DAMAGE_VERSUS, creatureTypeMask);
-    if (casterModifiers)
-    {
-        if (casterModifiers->Apply)
-            flatSpellDamageVersus = casterModifiers->FlatDamageVersus;
-        else
-            casterModifiers->FlatDamageVersus = flatSpellDamageVersus;
-    }
-    tmpDamage += flatSpellDamageVersus;
 
     // apply spellmod to Done damage
     if (Player* modOwner = GetSpellModOwner())

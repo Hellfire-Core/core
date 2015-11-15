@@ -37,8 +37,6 @@ struct CasterModifiers
     int32 AdvertisedBenefit;
     float DamagePercentDone;
     float CoefficientPtc;
-    int32 FlatDamageVersus;
-    SpellModList SpellModDot;
     bool Apply;
 };
 
