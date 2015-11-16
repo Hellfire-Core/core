@@ -2933,6 +2933,9 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 42336: // bucket/torch visuals duration 60sec
                     spellInfo->DurationIndex = 3;
                     break;
+                case 44969: // energize crystal ward
+                    spellInfo->RequiresSpellFocus = 1483;
+                    break;
                 }
                 if (spellInfo->SpellIconID == 184 && spellInfo->Attributes == 4259840)
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
