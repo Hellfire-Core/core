@@ -2556,29 +2556,6 @@ void Spell::cast(bool skipCheck)
             SetExecutedCurrently(false);
             return;
         }
-
-        // proc item enchantment spell cast for Blessed Weapon Coating enchantment, not needed more general method for now
-        if (m_caster->GetTypeId() == TYPEID_PLAYER)
-        {
-            if (roll_chance_f(3))
-            {
-                Player* plr = m_caster->ToPlayer();
-                if (plr->getPowerType() == POWER_MANA)
-                {
-                    // should off-hand procs be implemented in future? no hidden cooldown core support for this procs, so ignore it for now
-                    Item * item = plr->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND);
-                    if (item && !item->IsBroken())
-                    {
-                        if (uint32 enchant_id = item->GetEnchantmentId(EnchantmentSlot(TEMP_ENCHANTMENT_SLOT)))
-                        {
-                            SpellItemEnchantmentEntry const *pEnchant = sSpellItemEnchantmentStore.LookupEntry(enchant_id);
-                            if (pEnchant && pEnchant->ID == 3265) // Blessed Weapon Coating
-                                plr->CastSpell(plr, 45403, true, item); // Blessedness spell proc
-                        }
-                    }
-                }
-            }
-        }
     }
 
     // triggered cast called from Spell::prepare where it was already checked
