@@ -4011,8 +4011,8 @@ bool Unit::RemoveNoStackAurasDueToAura(Aura *Aur)
     SpellSpecific spellId_spec = SpellMgr::GetSpellSpecific(spellId);
 
     AuraMap::iterator i,next;
-
-    if (spellProto->EffectApplyAuraName[0] == SPELL_AURA_MOD_DECREASE_SPEED)
+    
+    if (Aur->GetModifier()->m_auraname == SPELL_AURA_MOD_DECREASE_SPEED)
     {
         Unit::AuraList list = GetAurasByType(SPELL_AURA_MOD_DECREASE_SPEED);
         for (Unit::AuraList::const_iterator itr = list.begin(); itr != list.end(); itr++)
