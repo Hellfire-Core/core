@@ -80,33 +80,6 @@ float World::m_VisibleObjectGreyDistance      = 0;
 int32 World::m_activeObjectUpdateDistanceOnContinents = DEFAULT_VISIBILITY_DISTANCE;
 int32 World::m_activeObjectUpdateDistanceInInstances = DEFAULT_VISIBILITY_DISTANCE;
 
-void MapUpdateDiffInfo::InitializeMapData()
-{
-    for(MapManager::MapMapType::const_iterator map = sMapMgr.Maps().begin(); map != sMapMgr.Maps().end(); ++map)
-    {
-        if (_cumulativeDiffInfo.find(map->first.nMapId) == _cumulativeDiffInfo.end())
-        {
-            _cumulativeDiffInfo[map->first.nMapId] = new atomic_uint[DIFF_MAX_CUMULATIVE_INFO];
-            for (int i = DIFF_SESSION_UPDATE; i < DIFF_MAX_CUMULATIVE_INFO; i++)
-                _cumulativeDiffInfo[map->first.nMapId][i] = 0;
-        }
-    }
-}
-
-void MapUpdateDiffInfo::PrintCumulativeMapUpdateDiff()
-{
-    for (CumulativeDiffMap::iterator itr = _cumulativeDiffInfo.begin(); itr != _cumulativeDiffInfo.end(); ++itr)
-    {
-        for (int i = DIFF_SESSION_UPDATE; i < DIFF_MAX_CUMULATIVE_INFO; i++)
-        {
-            uint32 diff = itr->second[i].value();
-            if (diff >= sWorld.getConfig(CONFIG_MIN_LOG_UPDATE))
-                sLog.outLog(LOG_DIFF, "Map[%u] diff for: %i - %u", itr->first, i, diff);
-        }
-    }
-    ClearDiffInfo();
-}
-
 /// World constructor
 World::World()
 {
@@ -504,7 +477,6 @@ void World::LoadConfigSettings(bool reload)
     if (m_configs[CONFIG_NUMTHREADS] < 1)
         m_configs[CONFIG_NUMTHREADS] = 1;
     loadConfig(CONFIG_MAPUPDATE_MAXVISITORS, "MapUpdate.UpdateVisitorsMax", 0);
-    loadConfig(CONFIG_CUMULATIVE_LOG_METHOD, "MapUpdate.CumulativeLogMethod", 0);
 
     sessionThreads = sConfig.GetIntDefault("SessionUpdate.Threads", 0);
     loadConfig(CONFIG_SESSION_UPDATE_MAX_TIME, "SessionUpdate.MaxTime", 1000);
@@ -1589,13 +1561,10 @@ void World::Update(uint32 diff)
     if (getConfig(CONFIG_COREBALANCER_ENABLED))
         _coreBalancer.Update(diff);
 
-    bool accumulateMapDiff = getConfig(CONFIG_CUMULATIVE_LOG_METHOD) == 1 ? true : false;
     if (getConfig(CONFIG_INTERVAL_LOG_UPDATE))
     {
         if (m_updateTimeSum > getConfig(CONFIG_INTERVAL_LOG_UPDATE))
         {
-            accumulateMapDiff = true;
-
             m_curAvgUpdateTime = m_updateTimeSum/m_updateTimeCount;   // from last log time
             m_serverUpdateTimeSum += m_updateTimeSum;
             m_serverUpdateTimeCount += m_updateTimeCount;
@@ -1782,17 +1751,8 @@ void World::Update(uint32 diff)
     }
 
     /// <li> Handle all other objects
-    ///- Update objects when the timer has passed (maps, transport, creatures,...)
-    MAP_UPDATE_DIFF(MapUpdateDiff().InitializeMapData())
-
     sMapMgr.Update(diff);                // As interval = 0
-
     diffRecorder.RecordTimeFor("MapManager::update");
-
-    if (accumulateMapDiff)
-    {
-        MAP_UPDATE_DIFF(MapUpdateDiff().PrintCumulativeMapUpdateDiff())
-    }
 
     sBattleGroundMgr.Update(diff);
     diffRecorder.RecordTimeFor("UpdateBattleGroundMgr");

@@ -116,7 +116,6 @@ enum WorldConfigs
 
     CONFIG_NUMTHREADS,
     CONFIG_MAPUPDATE_MAXVISITORS,
-    CONFIG_CUMULATIVE_LOG_METHOD,
 
     CONFIG_SESSION_UPDATE_MAX_TIME,
     CONFIG_SESSION_UPDATE_OVERTIME_METHOD,
@@ -568,60 +567,7 @@ struct CliCommandHolder
 typedef tbb::concurrent_hash_map<uint32, std::list<uint64> > LfgContainerType;
 typedef UNORDERED_MAP<uint32, WorldSession*> SessionMap;
 
-enum CumulateMapDiff
-{
-    DIFF_SESSION_UPDATE          = 0,
-    DIFF_PLAYER_UPDATE           = 1,
-    DIFF_CREATURE_UPDATE         = 2,
-    DIFF_PET_UPDATE              = 3,
-
-    DIFF_PLAYER_GRID_VISIT       = 4,
-    DIFF_ACTIVEUNIT_GRID_VISIT   = 5,
-
-    DIFF_SEND_OBJECTS_UPDATE     = 6,
-    DIFF_PROCESS_SCRIPTS         = 7,
-    DIFF_MOVE_CREATURES_IN_LIST  = 8,
-
-    DIFF_PROCESS_RELOCATION      = 9,
-
-    DIFF_MAP_SPECIAL_DATA_UPDATE = 10,
-
-    DIFF_MAX_CUMULATIVE_INFO     = 11
-};
-
 typedef ACE_Atomic_Op<ACE_Thread_Mutex, uint32> atomic_uint;
-
-struct MapUpdateDiffInfo
-{
-
-    ~MapUpdateDiffInfo()
-    {
-        for (CumulativeDiffMap::iterator itr = _cumulativeDiffInfo.begin(); itr != _cumulativeDiffInfo.end(); ++itr)
-            delete itr->second;
-    }
-
-    void InitializeMapData();
-
-    void ClearDiffInfo()
-    {
-        for (CumulativeDiffMap::iterator itr = _cumulativeDiffInfo.begin(); itr != _cumulativeDiffInfo.end(); ++itr)
-        {
-            for (int i = DIFF_SESSION_UPDATE; i < DIFF_MAX_CUMULATIVE_INFO; i++)
-                itr->second[i] = 0;
-        }
-    }
-
-    void CumulateDiffFor(CumulateMapDiff type, uint32 diff, uint32 mapid)
-    {
-        _cumulativeDiffInfo[mapid][type] += diff;
-    }
-
-    void PrintCumulativeMapUpdateDiff();
-
-    typedef std::map<uint32, atomic_uint*> CumulativeDiffMap;
-
-    CumulativeDiffMap _cumulativeDiffInfo;
-};
 
 enum CBTresholds
 {
@@ -896,9 +842,6 @@ class HELLGROUND_EXPORT World
         LfgContainerType lfgAllyContainer;
 
         CBTresholds GetCoreBalancerTreshold();
-
-        MAP_UPDATE_DIFF(MapUpdateDiffInfo& MapUpdateDiff() { return m_mapUpdateDiffInfo; })
-
     protected:
         void _UpdateGameTime();
         void InitDailyQuestResetTime();
@@ -926,8 +869,6 @@ class HELLGROUND_EXPORT World
         uint32 m_updateTime, m_updateTimeSum, m_avgUpdateTime, m_curAvgUpdateTime;
 
         uint32 m_updateTimeCount;
-
-        MAP_UPDATE_DIFF(MapUpdateDiffInfo m_mapUpdateDiffInfo)
         uint64 m_serverUpdateTimeSum, m_serverUpdateTimeCount;
 
         CoreBalancer _coreBalancer;
