@@ -1587,7 +1587,7 @@ void World::Update(uint32 diff)
         }
     }
 
-    DiffRecorder diffRecorder(__FUNCTION__, getConfig(CONFIG_MIN_LOG_UPDATE));
+    DiffRecorder diffRecorder(getConfig(CONFIG_MIN_LOG_UPDATE));
 
     ///- Update the different timers
     for (int i = 0; i < WUPDATE_COUNT; i++)
@@ -1598,12 +1598,12 @@ void World::Update(uint32 diff)
             m_timers[i].SetCurrent(0);
     }
 
-    diffRecorder.RecordTimeFor("UpdateTimers");
+    diffRecorder.RecordTimeFor("UpdateTimers", 2);
 
     ///- Update the game time and check for shutdown time
     _UpdateGameTime();
 
-    diffRecorder.RecordTimeFor("UpdateGameTime");
+    diffRecorder.RecordTimeFor("UpdateGameTime", 2);
 
     /// Handle daily quests reset time
     if (m_gameTime > m_NextDailyQuestReset)
@@ -1611,7 +1611,7 @@ void World::Update(uint32 diff)
         ResetDailyQuests();
         m_NextDailyQuestReset += DAY;
 
-        diffRecorder.RecordTimeFor("ResetDailyQuests");
+        diffRecorder.RecordTimeFor("ResetDailyQuests", 5);
     }
     /// <ul><li> Handle auctions when the timer has passed
     if (m_timers[WUPDATE_OLDMAILS].Passed())
@@ -1634,7 +1634,7 @@ void World::Update(uint32 diff)
                 break;
         }
 
-        diffRecorder.RecordTimeFor("ReturnOldMails");
+        diffRecorder.RecordTimeFor("ReturnOldMails", 5);
     }
 
     /// <ul><li> Handle auctions when the timer has passed
@@ -1644,7 +1644,7 @@ void World::Update(uint32 diff)
 
         ///-Handle expired auctions
         sAuctionMgr.Update();
-        diffRecorder.RecordTimeFor("UpdateAuctions");
+        diffRecorder.RecordTimeFor("UpdateAuctions", 10);
     }
 
     /// <li> Handle session updates when the timer has passed
@@ -1660,14 +1660,14 @@ void World::Update(uint32 diff)
         for (ObjectMgr::GroupSet::iterator itr = sObjectMgr.GetGroupSetBegin(); itr != sObjectMgr.GetGroupSetEnd(); ++itr)
             (*itr)->Update(diff);
 
-        diffRecorder.RecordTimeFor("UpdateGroups");
+        diffRecorder.RecordTimeFor("UpdateGroups", 10);
 
         sObjectMgr.UpdateRolls(diff);
-        diffRecorder.RecordTimeFor("UpdateRolls");
+        diffRecorder.RecordTimeFor("UpdateRolls", 10);
     }
 
     sWorldEventProcessor.ExecuteEvents();
-    diffRecorder.RecordTimeFor("ExecuteWorldEvents");
+    diffRecorder.RecordTimeFor("ExecuteWorldEvents", 10);
 
     /// <li> Handle weather updates when the timer has passed
     if (m_timers[WUPDATE_WEATHERS].Passed())
@@ -1690,7 +1690,7 @@ void World::Update(uint32 diff)
             }
         }
 
-        diffRecorder.RecordTimeFor("UpdateWeathers");
+        diffRecorder.RecordTimeFor("UpdateWeathers", 5);
     }
 
     /// <li> Update uptime table
@@ -1703,7 +1703,7 @@ void World::Update(uint32 diff)
         RealmDataDatabase.PExecute("UPDATE uptime SET uptime = %d, maxplayers = %d WHERE starttime = " UI64FMTD, tmpDiff, maxClientsNum, uint64(m_startTime));
     }
 
-    diffRecorder.ResetDiff();
+    diffRecorder.RecordTimeFor("UpdateUptime", 2);
 
     if (sWorld.getConfig(CONFIG_AUTOBROADCAST_INTERVAL))
     {
@@ -1722,7 +1722,7 @@ void World::Update(uint32 diff)
             sWorld.SendWorldText(LANG_AUTO_ANN, ACC_DISABLED_BROADCAST, msg.c_str());
         }
 
-        diffRecorder.RecordTimeFor("Send Autobroadcast");
+        diffRecorder.RecordTimeFor("Send Autobroadcast", 2);
     }
 
     ///- send guild announces every one minute
@@ -1747,7 +1747,7 @@ void World::Update(uint32 diff)
             m_GuildAnnounces[1].pop_front();
         }
 
-        diffRecorder.RecordTimeFor("Send Guild announce");
+        diffRecorder.RecordTimeFor("Send Guild announce", 2);
     }
 
     /// <li> Handle all other objects
@@ -1758,19 +1758,19 @@ void World::Update(uint32 diff)
     diffRecorder.RecordTimeFor("UpdateBattleGroundMgr");
 
     sOutdoorPvPMgr.Update(diff);
-    diffRecorder.RecordTimeFor("UpdateOutdoorPvPMgr");
+    diffRecorder.RecordTimeFor("UpdateOutdoorPvPMgr", 10);
 
     ///- Delete all characters which have been deleted X days before
     if (m_timers[WUPDATE_DELETECHARS].Passed())
     {
         m_timers[WUPDATE_DELETECHARS].Reset();
         CleanupDeletedChars();
-        diffRecorder.RecordTimeFor("CleanupDeletedChars");
+        diffRecorder.RecordTimeFor("CleanupDeletedChars", 2);
     }
 
     // execute callbacks from sql queries that were queued recently
     UpdateResultQueue();
-    diffRecorder.RecordTimeFor("UpdateResultQueue");
+    diffRecorder.RecordTimeFor("UpdateResultQueue", 10);
 
     ///- Erase corpses once every 20 minutes
     if (m_timers[WUPDATE_CORPSES].Passed())
@@ -1778,7 +1778,7 @@ void World::Update(uint32 diff)
         m_timers[WUPDATE_CORPSES].Reset();
 
         sObjectAccessor.RemoveOldCorpses();
-        diffRecorder.RecordTimeFor("RemoveOldCorpses");
+        diffRecorder.RecordTimeFor("RemoveOldCorpses", 5);
     }
 
     ///- Process Game events when necessary
@@ -1788,21 +1788,21 @@ void World::Update(uint32 diff)
         uint32 nextGameEvent = sGameEventMgr.Update();
         m_timers[WUPDATE_EVENTS].SetInterval(nextGameEvent);
         m_timers[WUPDATE_EVENTS].Reset();
-        diffRecorder.RecordTimeFor("UpdateGameEvents");
+        diffRecorder.RecordTimeFor("UpdateGameEvents", 5);
     }
     /// </ul>
 
     // update the instance reset times
     sInstanceSaveManager.Update();
-    diffRecorder.RecordTimeFor("UpdateSaveMGR");
+    diffRecorder.RecordTimeFor("UpdateSaveMGR", 10);
 
     // And last, but not least handle the issued cli commands
     ProcessCliCommands();
-    diffRecorder.RecordTimeFor("UpdateProcessCLI");
+    diffRecorder.RecordTimeFor("UpdateProcessCLI", 5);
 
     //cleanup unused GridMap objects as well as VMaps
     sTerrainMgr.Update(diff);
-    diffRecorder.RecordTimeFor("UpdateTerrainMGR");
+    diffRecorder.RecordTimeFor("UpdateTerrainMGR", 5);
 }
 
 void World::UpdateSessions(const uint32 & diff)
