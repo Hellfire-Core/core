@@ -1836,7 +1836,7 @@ bool ChatHandler::HandleKickPlayerCommand(const char *args)
             return false;
         }
 
-        if (player == m_session->GetPlayer() || player->GetSession()->GetPermissions() > m_session->GetPermissions())
+        if (m_session && (player == m_session->GetPlayer() || player->GetSession()->GetPermissions() > m_session->GetPermissions()))
         {
             SendSysMessage(LANG_COMMAND_KICKSELF);
             SetSentErrorMessage(true);
@@ -1957,7 +1957,8 @@ bool ChatHandler::HandlePInfoCommand(const char* args)
     uint8 Class;
 
     // get additional information from Player object
-    if (target && target->GetSession()->HasPermissions(PERM_GMT) && !m_session->HasPermissions(sWorld.getConfig(CONFIG_GM_TRUSTED_LEVEL)))
+    if (target && target->GetSession()->HasPermissions(PERM_GMT) &&
+        (m_session && !m_session->HasPermissions(sWorld.getConfig(CONFIG_GM_TRUSTED_LEVEL))))
         return false;
     if (target)
     {

@@ -637,18 +637,18 @@ ChatCommand * ChatHandler::getCommandTable()
 
     static ChatCommand ticketCommandTable[] =
     {
-        { "assign",         PERM_GMT,       PERM_CONSOLE, false,  &ChatHandler::HandleGMTicketAssignToCommand,    "", NULL },
-        { "close",          PERM_GMT,       PERM_CONSOLE, false,  &ChatHandler::HandleGMTicketCloseByIdCommand,   "", NULL },
-        { "closedlist",     PERM_GMT,       PERM_CONSOLE, false,  &ChatHandler::HandleGMTicketListClosedCommand,  "", NULL },
-        { "comment",        PERM_GMT,       PERM_CONSOLE, false,  &ChatHandler::HandleGMTicketCommentCommand,     "", NULL },
-        { "delete",         PERM_ADM,       PERM_CONSOLE, false,  &ChatHandler::HandleGMTicketDeleteByIdCommand,  "", NULL },
-        { "history",        PERM_GMT,       PERM_CONSOLE, false,  &ChatHandler::HandleGMTicketHistoryCommand,     "", NULL },
-        { "list",           PERM_GMT,       PERM_CONSOLE, false,  &ChatHandler::HandleGMTicketListCommand,        "", NULL },
-        { "onlinelist",     PERM_GMT,       PERM_CONSOLE, false,  &ChatHandler::HandleGMTicketListOnlineCommand,  "", NULL },
-        { "response",       PERM_GMT,       PERM_CONSOLE, false,  &ChatHandler::HandleGMTicketResponseCommand,    "", NULL },
-        { "unassign",       PERM_GMT,       PERM_CONSOLE, false,  &ChatHandler::HandleGMTicketUnAssignCommand,    "", NULL },
-        { "viewid",         PERM_GMT,       PERM_CONSOLE, false,  &ChatHandler::HandleGMTicketGetByIdCommand,     "", NULL },
-        { "viewname",       PERM_GMT,       PERM_CONSOLE, false,  &ChatHandler::HandleGMTicketGetByNameCommand,   "", NULL },
+        { "assign",         PERM_GMT,       PERM_CONSOLE, true,   &ChatHandler::HandleGMTicketAssignToCommand,    "", NULL },
+        { "close",          PERM_GMT,       PERM_CONSOLE, true,   &ChatHandler::HandleGMTicketCloseByIdCommand,   "", NULL },
+        { "closedlist",     PERM_GMT,       PERM_CONSOLE, true,   &ChatHandler::HandleGMTicketListClosedCommand,  "", NULL },
+        { "comment",        PERM_GMT,       PERM_CONSOLE, true,   &ChatHandler::HandleGMTicketCommentCommand,     "", NULL },
+        { "delete",         PERM_ADM,       PERM_CONSOLE, true,   &ChatHandler::HandleGMTicketDeleteByIdCommand,  "", NULL },
+        { "history",        PERM_GMT,       PERM_CONSOLE, true,   &ChatHandler::HandleGMTicketHistoryCommand,     "", NULL },
+        { "list",           PERM_GMT,       PERM_CONSOLE, true,   &ChatHandler::HandleGMTicketListCommand,        "", NULL },
+        { "onlinelist",     PERM_GMT,       PERM_CONSOLE, true,   &ChatHandler::HandleGMTicketListOnlineCommand,  "", NULL },
+        { "response",       PERM_GMT,       PERM_CONSOLE, true,   &ChatHandler::HandleGMTicketResponseCommand,    "", NULL },
+        { "unassign",       PERM_GMT,       PERM_CONSOLE, true,   &ChatHandler::HandleGMTicketUnAssignCommand,    "", NULL },
+        { "viewid",         PERM_GMT,       PERM_CONSOLE, true,   &ChatHandler::HandleGMTicketGetByIdCommand,     "", NULL },
+        { "viewname",       PERM_GMT,       PERM_CONSOLE, true,   &ChatHandler::HandleGMTicketGetByNameCommand,   "", NULL },
         { NULL,             0,              0,            false,  NULL,                                           "", NULL }
     };
 
@@ -700,7 +700,7 @@ ChatCommand * ChatHandler::getCommandTable()
         { "send",           PERM_GMT,       PERM_CONSOLE, true,   NULL,                                           "", sendCommandTable },
         { "server",         PERM_ADM,       PERM_CONSOLE, true,   NULL,                                           "", serverCommandTable },
         { "tele",           PERM_GMT_DEV,   PERM_CONSOLE, true,   NULL,                                           "", teleCommandTable },
-        { "ticket",         PERM_GMT,       PERM_CONSOLE, false,  NULL,                                           "", ticketCommandTable },
+        { "ticket",         PERM_GMT,       PERM_CONSOLE, true,   NULL,                                           "", ticketCommandTable },
         { "unban",          PERM_GMT,       PERM_CONSOLE, true,   NULL,                                           "", unbanCommandTable },
         { "wp",             PERM_GMT_DEV,   PERM_CONSOLE, false,  NULL,                                           "", wpCommandTable },
 
@@ -776,7 +776,7 @@ ChatCommand * ChatHandler::getCommandTable()
         { "unpossess",      PERM_ADM,       PERM_CONSOLE, false,  &ChatHandler::HandleUnPossessCommand,           "", NULL },
         { "waterwalk",      PERM_ADM,       PERM_CONSOLE, false,  &ChatHandler::HandleWaterwalkCommand,           "", NULL },
         { "wchange",        PERM_ADM,       PERM_CONSOLE, false,  &ChatHandler::HandleChangeWeather,              "", NULL },
-        { "weather",        PERM_PLAYER,    PERM_CONSOLE, true,   &ChatHandler::HandleAccountWeatherCommand,      "", NULL },
+        { "weather",        PERM_PLAYER,    PERM_CONSOLE, false,  &ChatHandler::HandleAccountWeatherCommand,      "", NULL },
         { "whispers",       PERM_GMT,       PERM_CONSOLE, false,  &ChatHandler::HandleWhispersCommand,            "", NULL },
 
         { NULL,             0,              0,            false,  NULL,                                           "", NULL }
@@ -863,6 +863,12 @@ bool ChatHandler::hasStringAbbr(const char* name, const char* part)
 
 void ChatHandler::SendSysMessage(const char *str)
 {
+    if (!m_session)
+    {
+        UTF8PRINTF(stdout, str, );
+        return;
+    }
+
     WorldPacket data;
 
     // need copy to prevent corruption by strtok call in LineFromMessage original string
