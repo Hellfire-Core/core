@@ -1295,7 +1295,7 @@ inline Unit* CreatureEventAI::GetTargetByType(uint32 Target, Unit* pActionInvoke
     };
 
     // ensure we have hostile creature (dont target self by accident)
-    if (target && target->IsFriendlyTo(m_creature))
+    if (target && m_creature->IsFriendlyTo(target))
         return NULL;
     return target;
 }
