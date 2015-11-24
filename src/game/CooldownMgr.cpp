@@ -261,7 +261,7 @@ void CooldownMgr::SaveToDB(uint32 playerguid)
         uint32 diff = WorldTimer::getMSTimeDiff(now, itr->second.start);
         if (diff >= itr->second.duration)
             m_SpellCooldowns.erase(itr++);
-        else if ((itr->second.duration - diff) > 30 * IN_MILISECONDS) // skip shorter than 30sec
+        else if ((itr->second.duration - diff) > 7 * IN_MILISECONDS) // skip shorter than 7sec
         {
             RealmDataDatabase.PExecute("INSERT INTO character_spell_cooldown (guid,spell,item,time) VALUES ('%u', '%u', '%u', '" UI64FMTD "')",
                 playerguid, itr->first, 0, curTime + uint64((itr->second.duration - diff)/1000)); // store just seconds
@@ -275,7 +275,7 @@ void CooldownMgr::SaveToDB(uint32 playerguid)
         uint32 diff = WorldTimer::getMSTimeDiff(now, itr->second.start);
         if (diff >= itr->second.duration)
             m_ItemCooldowns.erase(itr++);
-        else if ((itr->second.duration - diff) > 30 * IN_MILISECONDS) // skip shorter than 30sec
+        else if ((itr->second.duration - diff) > 7 * IN_MILISECONDS) // skip shorter than 7sec
         {
             RealmDataDatabase.PExecute("INSERT INTO character_spell_cooldown (guid,spell,item,time) VALUES ('%u', '%u', '%u', '" UI64FMTD "')",
                 playerguid, 0, itr->first, curTime + uint64((itr->second.duration - diff) / 1000)); // store just seconds
