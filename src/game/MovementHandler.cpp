@@ -253,7 +253,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
     WorldPacket data(opcode, recv_data.size());
     data << mover->GetPackGUID();                 // write guid
     movementInfo.Write(data);                     // write data
-    mover->BroadcastPacketExcept(&data, _player);
+    mover->BroadcastPacketExcept(&data, result ? _player : NULL); // if should not move send him his last pos
 
     if (!result)
     {
@@ -268,6 +268,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
 
 bool WorldSession::HandleMoverRelocation(MovementInfo& movementInfo)
 {
+    bool movingGood = true;
     uint32 mstime = WorldTimer::getMSTime();
     if ( m_clientTimeDelay == 0 )
         m_clientTimeDelay = mstime - movementInfo.time;
@@ -283,7 +284,12 @@ bool WorldSession::HandleMoverRelocation(MovementInfo& movementInfo)
             if (mover->m_movementInfo.pos.x != movementInfo.pos.x ||
                 mover->m_movementInfo.pos.y != movementInfo.pos.y ||
                 mover->m_movementInfo.pos.z != movementInfo.pos.z) // allow rotating in roots
-            return false;
+            {
+                movementInfo.pos.x = mover->m_movementInfo.pos.x;
+                movementInfo.pos.y = mover->m_movementInfo.pos.y;
+                movementInfo.pos.z = mover->m_movementInfo.pos.z;
+                movingGood = false;
+            }
         }
 
         if (sWorld.getConfig(CONFIG_ENABLE_PASSIVE_ANTICHEAT) && !plMover->hasUnitState(UNIT_STAT_LOST_CONTROL | UNIT_STAT_NOT_MOVE) && !plMover->GetSession()->HasPermissions(PERM_GMT_DEV) && plMover->m_AC_timer == 0)
@@ -324,7 +330,7 @@ bool WorldSession::HandleMoverRelocation(MovementInfo& movementInfo)
 
     if (mover->GetObjectGuid().IsPlayer())
         mover->ToPlayer()->HandleFallUnderMap(movementInfo.GetPos()->z);
-    return true;
+    return movingGood;
 }
 
 void WorldSession::HandleForceSpeedChangeAck(WorldPacket &recv_data)
