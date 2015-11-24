@@ -42,6 +42,7 @@ struct GM_Ticket
     uint64 closed;
     uint64 assignedToGM;
     std::string comment;
+    std::string response;
 };
 
 // Map Typedef

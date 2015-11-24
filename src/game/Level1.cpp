@@ -456,9 +456,11 @@ bool ChatHandler::HandleGMTicketGetByIdCommand(const char* args)
     }
     ss <<  PGetParseString(LANG_COMMAND_TICKETLISTMESSAGE, ticket->message.c_str());
     if (ticket->comment != "")
-    {
         ss <<  PGetParseString(LANG_COMMAND_TICKETLISTCOMMENT, ticket->comment.c_str());
-    }
+    
+    if (ticket->response != "")
+        ss << PGetParseString(LANG_COMMAND_TICKETLISTRESPONSE, ticket->response.c_str());
+
     SendSysMessage(ss.str().c_str());
     return true;
 }
@@ -621,6 +623,9 @@ bool ChatHandler::HandleGMTicketResponseCommand(const char* args)
 
     if (!msgText)
         return false;
+
+    ticket->response = msgText;
+    sTicketMgr.UpdateGMTicket(ticket);
 
     if (!SendGMMail(ticket->name.c_str(), "Ticket", msgText))
         return false;
