@@ -517,7 +517,7 @@ void Unit::UpdateSplineMovement(uint32 t_diff)
         POSITION_UPDATE_DELAY = 400,
     };
 
-    if (IsStopped() || (isInRoots() && !GetUnitStateMgr().GetAction(UnitActionPriority(UNIT_ACTION_EFFECT))))
+    if (IsStopped() || isInRoots())
         return;
 
     movespline->updateState(t_diff);
@@ -531,6 +531,12 @@ void Unit::UpdateSplineMovement(uint32 t_diff)
     {
         m_movesplineTimer.Reset(POSITION_UPDATE_DELAY);
         Movement::Location loc = movespline->ComputePosition();
+        if (!GetUnitStateMgr().GetAction(UnitActionPriority(UNIT_ACTION_EFFECT)))
+        {
+            loc.x = GetPositionX();
+            loc.y = GetPositionY();
+            loc.z = GetPositionZ();
+        }
 
         if (GetTypeId() == TYPEID_PLAYER)
             ToPlayer()->SetPosition(loc.x,loc.y,loc.z,loc.orientation);
