@@ -23,7 +23,7 @@
 
 #define WITHDRAW_MONEY_UNLIMITED    0xFFFFFFFF
 #define WITHDRAW_SLOT_UNLIMITED     0xFFFFFFFF
-#define MAX_ROSTER_MEMBERS 400
+#define MAX_ROSTER_MEMBERS 499
 
 #include "Item.h"
 #include "ObjectAccessor.h"

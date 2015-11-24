@@ -825,6 +825,9 @@ void WorldSession::HandleGuildEventLogOpcode(WorldPacket& /* recvPacket */)
     if (!pGuild)
         return;
 
+    pGuild->UnloadGuildEventlog();
+    pGuild->RenumGuildEventlog();
+    pGuild->LoadGuildEventLogFromDB();
     pGuild->DisplayGuildEventlog(this);
 }
 

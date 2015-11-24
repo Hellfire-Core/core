@@ -1002,7 +1002,15 @@ void Guild::LogGuildEvent(uint8 EventType, uint32 PlayerGuid1, uint32 PlayerGuid
 {
     GuildEventlogEntry *NewEvent = new GuildEventlogEntry;
     // Fill entry
-    NewEvent->LogGuid = GuildEventlogMaxGuid++;
+
+    QueryResultAutoPtr result = RealmDataDatabase.PQuery("SELECT Max(LogGuid) FROM guild_eventlog WHERE guildid = %u", Id);
+    if (!result)
+        return;
+
+    Field *fields = result->Fetch();
+    GuildEventlogMaxGuid = fields[0].GetUInt32() + 1;
+
+    NewEvent->LogGuid = GuildEventlogMaxGuid;
     NewEvent->EventType = EventType;
     NewEvent->PlayerGuid1 = PlayerGuid1;
     NewEvent->PlayerGuid2 = PlayerGuid2;
