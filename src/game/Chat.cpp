@@ -34,7 +34,6 @@
 #include "GridNotifiersImpl.h"
 #include "CellImpl.h"
 #include "TicketMgr.h"
-#include "Unit.h"
 
 bool ChatHandler::load_command_table = true;
 
@@ -866,7 +865,7 @@ void ChatHandler::SendSysMessage(const char *str)
 {
     if (!m_session)
     {
-        UTF8PRINTF(stdout, str,);
+        printf(str);
         return;
     }
 
