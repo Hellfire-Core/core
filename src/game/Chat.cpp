@@ -865,7 +865,7 @@ void ChatHandler::SendSysMessage(const char *str)
 {
     if (!m_session)
     {
-        UTF8PRINTF(stdout, str, );
+        UTF8PRINTF(stdout, str);
         return;
     }
 
