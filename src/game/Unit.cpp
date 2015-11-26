@@ -4012,11 +4012,11 @@ bool Unit::RemoveNoStackAurasDueToAura(Aura *Aur)
 
     AuraMap::iterator i,next;
     
-    if (Aur->GetModifier()->m_auraname == SPELL_AURA_MOD_DECREASE_SPEED)
+    if (Aur->GetModifier()->m_auraname == SPELL_AURA_MOD_DECREASE_SPEED && !Aur->IsAreaAura())
     {
         Unit::AuraList list = GetAurasByType(SPELL_AURA_MOD_DECREASE_SPEED);
         for (Unit::AuraList::const_iterator itr = list.begin(); itr != list.end(); itr++)
-            if ((*itr)->GetModifierValue() < Aur->GetModifierValue()) // they are negative!
+            if ((*itr)->GetModifierValue() < Aur->GetModifierValue() && !(*itr)->IsAreaAura()) // they are negative!
                 return false;
     }
 
