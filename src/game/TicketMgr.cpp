@@ -190,8 +190,10 @@ void TicketMgr::RemoveGMTicketByPlayer(uint64 playerGuid, uint64 GMguid)
 
 void TicketMgr::SaveGMTicket(GM_Ticket* ticket)
 {
-    std::string msg = ticket->message;
+    std::string msg = ticket->message, comment = ticket->comment, response = ticket->response;
     RealmDataDatabase.escape_string(msg);
+    RealmDataDatabase.escape_string(comment);
+    RealmDataDatabase.escape_string(response);
     std::stringstream ss;
     ss << "REPLACE INTO `gm_tickets` (`guid`, `playerGuid`, `name`, `message`, `createtime`, `map`, `posX`, `posY`, `posZ`, `timestamp`, `closed`, `assignedto`, `comment`, `response`) VALUES('";
     ss << ticket->guid << "', '";
@@ -206,8 +208,8 @@ void TicketMgr::SaveGMTicket(GM_Ticket* ticket)
     ss << ticket->timestamp << "', '";
     ss << ticket->closed << "', '";
     ss << ticket->assignedToGM << "', '";
-    ss << ticket->comment << "', '";
-    ss << ticket->response << "');";
+    ss << comment << "', '";
+    ss << response << "');";
 
     RealmDataDatabase.BeginTransaction();
     RealmDataDatabase.Execute(ss.str().c_str());
