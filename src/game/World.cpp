@@ -563,6 +563,7 @@ void World::LoadConfigSettings(bool reload)
     if (m_configs[CONFIG_QUEST_HIGH_LEVEL_HIDE_DIFF] > MAX_LEVEL)
         m_configs[CONFIG_QUEST_HIGH_LEVEL_HIDE_DIFF] = MAX_LEVEL;
 
+    m_forbiddenMapIds.clear();
     std::string forbiddenmaps = sConfig.GetStringDefault("ForbiddenMaps", "");
     char * forbiddenMaps = new char[forbiddenmaps.length() + 1];
     forbiddenMaps[forbiddenmaps.length()] = 0;
