@@ -409,13 +409,11 @@ void GameObject::Update(uint32 update_diff, uint32 p_time)
                     }
                     break;
                 case GAMEOBJECT_TYPE_CHEST:
-                    if(loot.isLooted())
-                    {
-                        // there are some questitems in loot (and isLooted() can be in that case true),
-                        // and someone is still viewing loot window, don't close chest yet.
-                        if (!loot.quest_items.empty() && loot.HasLooters())
-                            break;
+                    if (loot.HasLooters())
+                        break;
 
+                    if(loot.isLooted() || (m_cooldownTime < time(NULL)))
+                    {
                         if ((GetUseCount() >= GetGOInfo()->chest.maxSuccessOpens) ||
                             ((GetUseCount() >= GetGOInfo()->chest.minSuccessOpens) && (GetUseCount() >= irand(GetGOInfo()->chest.minSuccessOpens, GetGOInfo()->chest.maxSuccessOpens))))
                         {
@@ -1053,6 +1051,7 @@ void GameObject::Use(Unit* user)
             pPlayer->SendLoot(GetGUID(), LOOT_SKINNING);
             //SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_IN_USE);
             SetLootState(GO_ACTIVATED);
+            m_cooldownTime = time(NULL) + 80000;
             AddUse();
 
             if (GetGOInfo()->chest.eventId)

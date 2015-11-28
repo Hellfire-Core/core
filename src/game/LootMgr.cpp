@@ -630,7 +630,7 @@ void Loot::saveLootToDB(Player *owner)
             continue;
 
         ItemPrototype const *item_proto = ObjectMgr::GetItemPrototype(item->itemid);
-        if (!item_proto || item_proto->Flags & ITEM_FLAGS_PARTY_LOOT)
+        if (!item_proto || item->freeforall)
             continue;
 
         if (item_proto->Quality >= ITEM_QUALITY_RARE)
