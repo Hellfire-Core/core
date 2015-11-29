@@ -10988,7 +10988,6 @@ void Player::RemoveItem(uint8 bag, uint8 slot, bool update)
         if (IsInWorld() && update)
             pItem->SendCreateUpdateToPlayer(this);
     }
-    SaveInventoryAndGoldToDB();
 }
 
 // Common operation need to remove item from inventory without delete in trade, auction, guild bank, mail....
@@ -13074,7 +13073,7 @@ void Player::ModifyMoney(int32 d)
     // "At Gold Limit"
     if (GetMoney() >= MAX_MONEY_AMOUNT)
         SendEquipError(EQUIP_ERR_TOO_MUCH_GOLD,NULL,NULL);
-    SaveGoldToDB();
+    SaveInventoryAndGoldToDB();
 }
 
 void Player::RewardDNDQuest(uint32 questId)
