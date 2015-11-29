@@ -3238,7 +3238,6 @@ void Player::learnSpell(uint32 spell_id)
     if (!learning)
         return;
 
-    SaveToDB();
     WorldPacket data(SMSG_LEARNED_SPELL, 4);
     data << uint32(spell_id);
     SendPacketToSelf(&data);
@@ -5185,7 +5184,6 @@ bool Player::UpdateSkill(uint32 skill_id, uint32 step)
             new_value = max;
 
         SetUInt32Value(PLAYER_SKILL_VALUE_INDEX(i),MAKE_SKILL_VALUE(new_value,max));
-        SaveToDB();
         return true;
     }
 
@@ -5231,7 +5229,6 @@ bool Player::UpdateCraftSkill(uint32 spellid)
                 (_spell_idx->second->max_value + _spell_idx->second->min_value)/2,
                 _spell_idx->second->min_value),
                 craft_skill_gain);
-            SaveToDB();
         }
     }
     return false;
@@ -5507,7 +5504,7 @@ void Player::SetSkill(uint32 id, uint16 currVal, uint16 maxVal)
                     }
                 }
             }
-        } 
+        }
     }
     else if (currVal)                                        //add
     {
@@ -5544,9 +5541,9 @@ void Player::SetSkill(uint32 id, uint16 currVal, uint16 maxVal)
 
             // Learn all spells for skill
             learnSkillRewardedSpells(id);
+            return;
         }
     }
-    SaveToDB();
 }
 
 bool Player::HasSkill(uint32 skill) const
@@ -10618,6 +10615,7 @@ Item* Player::StoreItem(ItemPosCountVec const& dest, Item* pItem, bool update)
 
         lastItem = _StoreItem(pos,pItem,count,true,update);
     }
+
     return lastItem;
 }
 
@@ -13073,7 +13071,6 @@ void Player::ModifyMoney(int32 d)
     // "At Gold Limit"
     if (GetMoney() >= MAX_MONEY_AMOUNT)
         SendEquipError(EQUIP_ERR_TOO_MUCH_GOLD,NULL,NULL);
-    SaveInventoryAndGoldToDB();
 }
 
 void Player::RewardDNDQuest(uint32 questId)
@@ -19376,7 +19373,6 @@ void Player::learnSkillRewardedSpells(uint32 skill_id)
             learnSpell(pAbility->spellId);
         }
     }
-    SaveToDB();
 }
 
 void Player::learnSkillRewardedSpells()
