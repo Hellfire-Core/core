@@ -10618,7 +10618,6 @@ Item* Player::StoreItem(ItemPosCountVec const& dest, Item* pItem, bool update)
 
         lastItem = _StoreItem(pos,pItem,count,true,update);
     }
-    SaveInventoryAndGoldToDB();
     return lastItem;
 }
 
@@ -10727,7 +10726,6 @@ Item* Player::_StoreItem(uint16 pos, Item *pItem, uint32 count, bool clone, bool
         //item is in this place already ... for me its WTF but it does happens for bugged items when picking them from mail
         return pItem2;
     }
-    SaveInventoryAndGoldToDB();
 }
 
 Item* Player::EquipNewItem(uint16 pos, uint32 item, bool update)
