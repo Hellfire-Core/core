@@ -1265,9 +1265,6 @@ struct mob_felfire_portalAI : public Scripted_NoMovementAI
         if (SpawnFiendTimer.Expired(diff))
         {
             Creature* Fiend = DoSpawnCreature(CREATURE_VOLATILE_FELFIRE_FIEND, 0, 0, 0, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 20000);
-            if (Fiend)
-                if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM))
-                    Fiend->AddThreat(target, 100000.0f);
             SpawnFiendTimer = 3000;
         }
     }
