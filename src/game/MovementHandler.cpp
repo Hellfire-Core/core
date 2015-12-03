@@ -253,7 +253,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
     WorldPacket data(opcode, recv_data.size());
     data << mover->GetPackGUID();                 // write guid
     movementInfo.Write(data);                     // write data
-    mover->BroadcastPacketExcept(&data, result ? _player : NULL); // if should not move send him his last pos
+    mover->BroadcastPacketExcept(&data, _player);
 
     /*if (!result)
     {
