@@ -21075,7 +21075,7 @@ bool Player::CheckRAFConditions()
             if (!IsReferAFriendLinked(member))
                 continue;
 
-            if (GetDistance(member) < 100 && (getLevel() <= member->getLevel() + 4))
+            if (GetDistance(member) < 100 && (getLevel() <= member->getLevel() + 9))
                 return true;
         }
     }
