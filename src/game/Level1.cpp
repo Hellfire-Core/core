@@ -2485,7 +2485,10 @@ bool ChatHandler::HandleWhispersCommand(const char* args)
         return true;
     }
     
-    std::string secondpart = strtok(NULL, " ");
+    const char* sd = strtok(NULL, " ");
+    if (!sd)
+        return false;
+    std::string secondpart = sd;
     if (secondpart.empty())
         return false;
     
