@@ -184,7 +184,7 @@ void BattleGroundQueue::AddPlayer(Player *plr, GroupQueueInfo *ginfo)
 }
 
 //remove player from queue and from group info, if group info is empty then remove it too
-void BattleGroundQueue::RemovePlayer(const uint64& guid, bool decreaseInvitedCount, uint8 from)
+void BattleGroundQueue::RemovePlayer(const uint64& guid, bool decreaseInvitedCount)
 {
     //Player *plr = sObjectMgr.GetPlayer(guid);
 
@@ -195,7 +195,7 @@ void BattleGroundQueue::RemovePlayer(const uint64& guid, bool decreaseInvitedCou
     itr = m_QueuedPlayers.find(guid);
     if (itr == m_QueuedPlayers.end())
     {
-        sLog.outLog(LOG_DEFAULT, "ERROR: BattleGroundQueue: couldn't find player to remove GUID: %u, called from: %u", GUID_LOPART(guid), from);
+        sLog.outLog(LOG_DEFAULT, "ERROR: BattleGroundQueue: couldn't find player to remove GUID: %u", GUID_LOPART(guid));
         return;
     }
 
@@ -281,7 +281,7 @@ void BattleGroundQueue::RemovePlayer(const uint64& guid, bool decreaseInvitedCou
             plr2->SendPacketToSelf(&data);
         }
         // then actually delete, this may delete the group as well!
-        RemovePlayer(group->Players.begin()->first, decreaseInvitedCount, (from >= 5 ? from++ : 5));
+        RemovePlayer(group->Players.begin()->first, decreaseInvitedCount);
     }
 }
 
@@ -376,7 +376,7 @@ void BattleGroundQueue::BGEndedRemoveInvites(BattleGround *bg)
                     {
                         plr->RemoveBattleGroundQueueId(bgQueueTypeId);
                         // remove player from queue, this might delete the ginfo as well! don't use that pointer after this!
-                        RemovePlayer(itr2->first, true, 3);
+                        RemovePlayer(itr2->first, true);
                         WorldPacket data;
                         sBattleGroundMgr.BuildBattleGroundStatusPacket(&data, bg, team, queueSlot, STATUS_NONE, 0, 0);
                         plr->SendPacketToSelf(&data);
@@ -1037,7 +1037,7 @@ bool BGQueueRemoveEvent::Execute(uint64 /*e_time*/, uint32 /*p_time*/)
                 }
             }
             plr->RemoveBattleGroundQueueId(bgQueueTypeId);
-            sBattleGroundMgr.m_BattleGroundQueues[bgQueueTypeId].RemovePlayer(m_PlayerGuid, true, 4);
+            sBattleGroundMgr.m_BattleGroundQueues[bgQueueTypeId].RemovePlayer(m_PlayerGuid, true);
             sBattleGroundMgr.ScheduleQueueUpdate(bgQueueTypeId, bg->GetTypeID(), bg->GetBracketId());
             WorldPacket data;
             sBattleGroundMgr.BuildBattleGroundStatusPacket(&data, bg, m_PlayersTeam, queueSlot, STATUS_NONE, 0, 0);

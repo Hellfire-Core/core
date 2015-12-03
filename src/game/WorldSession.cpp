@@ -568,9 +568,13 @@ void WorldSession::LogoutPlayer(bool Save)
             _player->RemoveCharmAuras();
         }
 
+        BattleGroundQueueTypeId bgqti_in = BATTLEGROUND_QUEUE_NONE;
         //drop a flag if player is carrying it
         if (BattleGround *bg = _player->GetBattleGround())
+        {
             bg->EventPlayerLoggedOut(_player);
+            bgqti_in = BattleGroundMgr::BGQueueTypeId(bg->GetTypeID(), bg->GetArenaType());
+        }
 
         sOutdoorPvPMgr.HandlePlayerLeave(_player);
 
@@ -578,8 +582,10 @@ void WorldSession::LogoutPlayer(bool Save)
         {
             if (BattleGroundQueueTypeId bgTypeId = _player->GetBattleGroundQueueTypeId(i))
             {
+                if (bgTypeId == bgqti_in)
+                    continue;
                 _player->RemoveBattleGroundQueueId(bgTypeId);
-                sBattleGroundMgr.m_BattleGroundQueues[ bgTypeId ].RemovePlayer(_player->GetGUID(), true, 0);
+                sBattleGroundMgr.m_BattleGroundQueues[ bgTypeId ].RemovePlayer(_player->GetGUID(), true);
             }
         }
 
