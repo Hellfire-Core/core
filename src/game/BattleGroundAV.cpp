@@ -1227,7 +1227,7 @@ WorldSafeLocsEntry const* BattleGroundAV::GetClosestGraveYard(float x, float y, 
         }
     }
     // If not, place ghost on starting location
-    if (!good_entry)
+    if (!good_entry || GetStatus() != STATUS_IN_PROGRESS)
         good_entry = sWorldSafeLocsStore.LookupEntry(BG_AV_GraveyardIds[GetTeamIndexByTeamId(team)+7]);
 
     return good_entry;
