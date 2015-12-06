@@ -347,6 +347,8 @@ struct mob_rizzle_sprysprocketAI : public ScriptedAI
                 m_creature->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
                 m_creature->setFaction(35);
                 m_creature->RemoveAurasDueToSpell(SPELL_PERIODIC_DEPTH_CHARGE);
+                me->ClearInCombat();
+                player->ClearInCombat();
                 Reached = true;
             }
 
