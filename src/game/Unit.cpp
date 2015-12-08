@@ -1856,13 +1856,13 @@ void Unit::CalcAbsorbResist(Unit *pVictim, SpellSchoolMask schoolMask, DamageEff
             victimResistance = 0.0f;
         if (victimResistance > 0.75f)
             victimResistance = 0.75f;
-        uint32 ran = urand(0, 100);
-        uint32 faq[4] = {24,6,4,6};
+        float ran = (float)rand_norm();
+        uint32 faq[4] = {1,4,6,4};
         uint8 m = 0;
         float Binom = 0.0f;
         for (uint8 i = 0; i < 4; i++)
         {
-            Binom += 2400 *(powf(victimResistance, i) * powf((1-victimResistance), (4-i)))/faq[i];
+            Binom += (powf(victimResistance, i) * powf((1-victimResistance), (4-i)))*faq[i];
             if (ran > Binom)
                 ++m;
             else
@@ -2162,8 +2162,8 @@ bool Unit::CalcBinaryResist(Unit *pVictim, SpellSchoolMask schoolMask) {
         if (effectiveResistance > 0.75f)
             effectiveResistance = 0.75f;
 
-        int32 ran = irand(0, 100);
-        return ran < effectiveResistance * 100;
+        float ran = (float)rand_norm();
+        return ran < effectiveResistance;
     }
 
     return false;
