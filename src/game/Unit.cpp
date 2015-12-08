@@ -5741,7 +5741,7 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
                 // Vampiric Embrace
                 case 15286:
                 {
-                    if (!pVictim || pVictim->isDead())
+                    if (!pVictim || !pVictim->isAlive())
                         return false;
 
                     // pVictim is caster of aura
