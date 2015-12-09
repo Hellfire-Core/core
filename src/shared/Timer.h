@@ -252,7 +252,7 @@ class DiffRecorder
 
             _prevTime = WorldTimer::getMSTime();
 
-            if ((diffTime >= _diffTresholdForFile) || (shorter && diffTime >= shorter))
+            if ((diffTime >= _diffTresholdForFile) || (shorter && diffTime > shorter))
             {
                 sLog.outLog(LOG_DIFF, "%s [diff: %u].", str, diffTime);
             }
