@@ -18714,6 +18714,9 @@ bool Player::canSeeOrDetect(Unit const* u, WorldObject const* viewPoint, bool de
             : (_map.GetVisibilityDistance(const_cast<Unit*>(u), const_cast<Player*>(this)) + (inVisibleList ? World::GetVisibleObjectGreyDistance() : 0.0f))
             , is3dDistance))
             return false;
+
+        if (u->ToCreature()->isTrigger() && !isGameMaster())
+            return false;
     }
 
     if (u->GetVisibility() == VISIBILITY_OFF)
