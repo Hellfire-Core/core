@@ -2291,19 +2291,21 @@ void Aura::TriggerSpell()
             // Charge Rage & Deadly Strike random targeting
             case 39575:
             case 41480:
+                // also Kil'jaedens Shadow Spike missile
+            case 45689:
             {
                 if (caster->CanHaveThreatList())
                 {
-                    std::list<HostileReference*>& m_threatlist = caster->getThreatManager().getThreatList();
-                    std::list<HostileReference*>::iterator i = m_threatlist.begin();
-                    while (m_threatlist.size())
+                    std::list<HostileReference*> possible_targets = caster->getThreatManager().getThreatList();
+                    std::list<HostileReference*>::iterator i = possible_targets.begin();
+                    while (possible_targets.size())
                     {
-                        i = m_threatlist.begin();
-                        advance(i, rand()%m_threatlist.size());
+                        i = possible_targets.begin();
+                        advance(i, rand()% possible_targets.size());
                         target = Unit::GetUnit(*caster,(*i)->getUnitGuid());
                         if (!target || !target->isAlive() || target->GetTypeId() != TYPEID_PLAYER)
                         {
-                            m_threatlist.erase(i);
+                            possible_targets.erase(i);
                         }
                         else
                            break;
