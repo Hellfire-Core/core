@@ -255,7 +255,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
     movementInfo.Write(data);                     // write data
     mover->BroadcastPacketExcept(&data, _player);
 
-    /*if (!result)
+    if (!result)
     {
         WorldPacket data(SMSG_FORCE_MOVE_ROOT, mover->GetPackGUID().size() + 4);
         data << mover->GetPackGUID();
@@ -263,7 +263,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
         SendPacket(&data);
        // sLog.outLog(LOG_CHEAT, "Player %s (GUID:%u) moving when rooted, position %f %f %f %u",
        //     _player->GetName(), _player->GetGUIDLow(), movementInfo.pos.x, movementInfo.pos.y, movementInfo.pos.z, _player->GetMapId());
-    }*/
+    }
 }
 
 bool WorldSession::HandleMoverRelocation(MovementInfo& movementInfo)
