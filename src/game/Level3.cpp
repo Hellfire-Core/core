@@ -5273,6 +5273,7 @@ bool ChatHandler::HandleUnBanHelper(BanMode mode, const char* args)
 
     char* cnameIPOrMail = strtok ((char*)args, " ");
 
+
     if (!cnameIPOrMail)
         return false;
 
@@ -5287,6 +5288,7 @@ bool ChatHandler::HandleUnBanHelper(BanMode mode, const char* args)
                 SetSentErrorMessage(true);
                 return false;
             }
+
             break;
         case BAN_CHARACTER:
             if (!normalizePlayerName(nameIPOrMail))
@@ -5301,6 +5303,44 @@ bool ChatHandler::HandleUnBanHelper(BanMode mode, const char* args)
                 return false;
             break;
     }
+
+    if (m_session && m_session->GetPermissions() <= PERM_GM_HELPER && mode == BAN_ACCOUNT || mode == BAN_CHARACTER)
+    {
+        uint32 account = 0;
+        if (mode == BAN_ACCOUNT)
+            account = AccountMgr::GetId(nameIPOrMail);
+        else if (mode == BAN_CHARACTER)
+            account = sObjectMgr.GetPlayerAccountIdByPlayerName(nameIPOrMail);
+
+        if (!account)
+        {
+            PSendSysMessage(LANG_UNBAN_ERROR, nameIPOrMail.c_str());
+            return false;
+        }
+
+        QueryResultAutoPtr result = AccountsDatabase.PQuery("SELECT punished_by FROM account_punishment WHERE account_id = '%u' AND punishment_type_id = 2 AND active = 1 LIMIT 1", account);
+        if (result)
+        {
+            Field *fields = result->Fetch();
+            std::string punished_by = fields[0].GetString();
+            if (punished_by == "[CONSOLE]")
+            {
+                m_session->SendNotification(LANG_YOU_NOT_HAVE_PERMISSION);
+                return false;
+            }
+
+            if (uint32 punished_by_acc = sObjectMgr.GetPlayerAccountIdByPlayerName(punished_by))
+                if (AccountMgr::GetPermissions(punished_by_acc) > m_session->GetPermissions())
+                {
+                    m_session->SendNotification(LANG_YOU_NOT_HAVE_PERMISSION);
+                    return false;
+                }
+
+        }
+
+
+    }
+
 
     if (sWorld.RemoveBanAccount(mode,nameIPOrMail))
         PSendSysMessage(LANG_UNBAN_UNBANNED,nameIPOrMail.c_str());
