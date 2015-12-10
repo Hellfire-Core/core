@@ -1756,7 +1756,7 @@ void World::Update(uint32 diff)
     diffRecorder.RecordTimeFor("Map manager");
 
     sBattleGroundMgr.Update(diff);
-    diffRecorder.RecordTimeFor("BattleGround manager");
+    diffRecorder.RecordTimeFor("BattleGround manager", 50);
 
     sOutdoorPvPMgr.Update(diff);
     diffRecorder.RecordTimeFor("OutdoorPvP manager", 10);
@@ -1771,7 +1771,7 @@ void World::Update(uint32 diff)
 
     // execute callbacks from sql queries that were queued recently
     UpdateResultQueue();
-    diffRecorder.RecordTimeFor("Delayed SQL results", 30);
+    diffRecorder.RecordTimeFor("Delayed SQL results");
 
     ///- Erase corpses once every 20 minutes
     if (m_timers[WUPDATE_CORPSES].Passed())
