@@ -2011,7 +2011,7 @@ bool ChatHandler::HandlePInfoCommand(const char* args)
         Field* fields = result->Fetch();
         username = fields[0].GetCppString();
         permissions = fields[1].GetUInt32();
-        if ((permissions & PERM_GMT) && !m_session->HasPermissions(sWorld.getConfig(CONFIG_GM_TRUSTED_LEVEL)))
+        if ((permissions & PERM_GMT) && m_session && !m_session->HasPermissions(sWorld.getConfig(CONFIG_GM_TRUSTED_LEVEL)))
             return false;
 
         if (email.empty())
