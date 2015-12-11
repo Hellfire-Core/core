@@ -264,6 +264,9 @@ void WorldSession::moveItems(Item* myItems[], Item* hisItems[])
 
 void WorldSession::HandleAcceptTradeOpcode(WorldPacket& /*recvPacket*/)
 {
+    if (_player->isGameMaster())
+        return;
+
     Item *myItems[TRADE_SLOT_TRADED_COUNT]  = { NULL, NULL, NULL, NULL, NULL, NULL };
     Item *hisItems[TRADE_SLOT_TRADED_COUNT] = { NULL, NULL, NULL, NULL, NULL, NULL };
     bool myCanCompleteTrade=true,hisCanCompleteTrade=true;
@@ -517,6 +520,9 @@ void WorldSession::HandleBeginTradeOpcode(WorldPacket& /*recvPacket*/)
     if (!_player->pTrader)
         return;
 
+    if (_player->isGameMaster())
+        return;
+
     _player->pTrader->GetSession()->SendTradeStatus(TRADE_STATUS_OPEN_WINDOW);
     _player->pTrader->ClearTrade();
 
@@ -539,6 +545,8 @@ void WorldSession::HandleCancelTradeOpcode(WorldPacket& /*recvPacket*/)
 void WorldSession::HandleInitiateTradeOpcode(WorldPacket& recvPacket)
 {
     CHECK_PACKET_SIZE(recvPacket,8);
+    if (_player->isGameMaster())
+        return;
 
     if (GetPlayer()->pTrader)
         return;

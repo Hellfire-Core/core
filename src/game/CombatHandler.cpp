@@ -28,6 +28,9 @@
 
 void WorldSession::HandleAttackSwingOpcode(WorldPacket & recv_data)
 {
+    if (_player->isGameMaster())
+        return;
+
     uint64 guid;
     recv_data >> guid;
 
