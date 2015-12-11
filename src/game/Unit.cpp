@@ -8968,8 +8968,10 @@ bool Unit::IsImmunedToSpell(SpellEntry const* spellInfo, bool useCharges)
 
     SpellImmuneList const& stateList = m_spellImmune[IMMUNITY_STATE];
     for (SpellImmuneList::const_iterator itr = stateList.begin(); itr != stateList.end(); ++itr)
-        for (uint32 i = 0; i < 3; ++i)
-            if (itr->type == spellInfo->EffectApplyAuraName[i])
+            if ((itr->type == spellInfo->EffectApplyAuraName[0] || spellInfo->EffectApplyAuraName[0] == SPELL_AURA_NONE) &&
+                (itr->type == spellInfo->EffectApplyAuraName[1] || spellInfo->EffectApplyAuraName[1] == SPELL_AURA_NONE) &&
+                (itr->type == spellInfo->EffectApplyAuraName[2] || spellInfo->EffectApplyAuraName[2] == SPELL_AURA_NONE) &&
+                spellInfo->HasApplyAura(itr->type)) // to be immune to spell unit needs to be immune to all auras
                 return true;
 
     if (!(spellInfo->AttributesEx & SPELL_ATTR_EX_UNAFFECTED_BY_SCHOOL_IMMUNE) &&         // unaffected by school immunity
