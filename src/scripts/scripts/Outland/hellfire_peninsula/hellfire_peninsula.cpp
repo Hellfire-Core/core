@@ -2014,6 +2014,9 @@ struct npc_pathaleon_imageAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
+        if (m_creature->GetDistance(S[0].x, S[0].y, S[0].z) > 200)
+            return; // this npc is also summoned in netherstorm
+
         if (StepsTimer.Expired(diff))
         {
             if (Event)
