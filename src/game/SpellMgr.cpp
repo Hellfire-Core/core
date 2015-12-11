@@ -1869,6 +1869,9 @@ bool SpellMgr::IsNoStackSpellDueToSpell(uint32 spellId_1, uint32 spellId_2, bool
             return false;
     }
 
+    if (spellInfo_1->HasApplyAura(SPELL_AURA_MOD_DECREASE_SPEED) && spellInfo_2->HasApplyAura(SPELL_AURA_MOD_DECREASE_SPEED))
+        return true;
+
     if (!sameCaster)
     {
         for (uint32 i = 0; i < 3; ++i)
