@@ -40,6 +40,7 @@ go_maghar_prison
 npc_maghar_prisoner
 npc_warmaul_pyre
 npc_fel_cannon
+npc_rethhedron_the_subduer
 EndContentData */
 
 #include "precompiled.h"
@@ -1580,11 +1581,68 @@ struct npc_fel_cannonAI : public ScriptedAI
         return;
     }
 };
+
 CreatureAI* GetAI_npc_fel_cannon(Creature *creature)
 {
     return new npc_fel_cannonAI (creature);
 }
 
+#define QUEST_SUBDUE_THE_SUBDUER 11090
+#define SPELL_SOUL_CANNON 41291
+
+struct npc_rethhedron_the_subduerAI : public ScriptedAI
+{
+    npc_rethhedron_the_subduerAI(Creature* c) : ScriptedAI(c) {};
+
+    uint8 doing_event;
+    uint64 player;
+
+    void Reset()
+    {
+        doing_event = 0;
+        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        player = 0;
+    }
+
+    void DamageTaken(Unit *done_by, uint32 &damage)
+    {
+        if (doing_event && (m_creature->GetHealth() - damage) * 100 < m_creature->GetMaxHealth())
+        {
+            damage = m_creature->GetHealth() - m_creature->GetMaxHealth() / 100;
+            if (doing_event == 1)
+            {
+                player = done_by->GetCharmerOrOwnerOrOwnGUID();
+                m_creature->Yell("I'll be back!", LANG_UNIVERSAL, 0);
+                doing_event = 2;
+                m_creature->GetMotionMaster()->MovePoint(666, -1527.0f, 9790.0f, 199.0f);
+                m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            }
+        }
+    }
+
+    void MovementInform(uint32 type, uint32 id)
+    {
+        if (type == POINT_MOTION_TYPE && id == 666)
+        {
+            if (Player* ppl = m_creature->GetPlayer(player))
+                ppl->SendQuestComplete(QUEST_SUBDUE_THE_SUBDUER);
+            m_creature->DisappearAndDie();
+        }
+    }
+
+    void SpellHit(Unit* caster, const SpellEntry* se)
+    {
+        if (doing_event == 0 && se->Id == SPELL_SOUL_CANNON)
+            doing_event = 1;
+    }
+
+    // TODO: UpdateAI, combat is not scripted at all
+};
+
+CreatureAI* GetAI_npc_rethhedron_the_subduer(Creature *creature)
+{
+    return new npc_rethhedron_the_subduerAI(creature);
+}
 
 void AddSC_nagrand()
 {
@@ -1676,4 +1734,10 @@ void AddSC_nagrand()
     newscript->Name="npc_fel_cannon";
     newscript->GetAI = &GetAI_npc_fel_cannon;
     newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name="npc_rethhedron_the_subduer";
+    newscript->GetAI = &GetAI_npc_rethhedron_the_subduer;
+    newscript->RegisterSelf();
+    
 }
