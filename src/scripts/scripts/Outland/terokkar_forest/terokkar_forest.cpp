@@ -50,6 +50,7 @@ npc_empoor
 npc_captive_child
 go_veil_skith_cage
 npc_skywing
+npc_lady_dena_kennedy
 EndContentData */
 
 #include "precompiled.h"
@@ -2497,6 +2498,13 @@ CreatureAI* GetAI_npc_skywing(Creature* creature)
     return new npc_skywingAI(creature);
 }
 
+bool ReceiveEmote_Dena_Kennedy(Player*, Creature* cr, uint32 emote)
+{
+    if (emote == TEXTEMOTE_FLEX)
+        cr->TextEmote("is not impressed.", 0);
+    return true;
+}
+
 void AddSC_terokkar_forest()
 {
     Script *newscript;
@@ -2637,5 +2645,10 @@ void AddSC_terokkar_forest()
     newscript->Name = "npc_skywing";
     newscript->GetAI = &GetAI_npc_skywing;
     newscript->pQuestAcceptNPC = &QuestAccept_npc_skywing;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_lady_dena_kennedy";
+    newscript->pReceiveEmote = &ReceiveEmote_Dena_Kennedy;
     newscript->RegisterSelf();
 }
