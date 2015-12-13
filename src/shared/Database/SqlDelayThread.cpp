@@ -23,12 +23,14 @@
 
 SqlDelayThread::SqlDelayThread(Database* db, SqlConnection* conn) : m_dbEngine(db), m_dbConnection(conn), m_running(true)
 {
+    m_dbEngine->ThreadStart();
 }
 
 SqlDelayThread::~SqlDelayThread()
 {
     //process all requests which might have been queued while thread was stopping
     ProcessRequests();
+    m_dbEngine->ThreadEnd();
 }
 
 void SqlDelayThread::run()
