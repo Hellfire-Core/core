@@ -2487,9 +2487,9 @@ void Player::GiveXP(uint32 xp, Unit* victim)
         bool ReferAFriend = true;
         bonus_xp = xp * (sWorld.getConfig(CONFIG_FLOAT_RATE_RAF_XP) - 1);
     }
-    else
-        // XP resting bonus for kill
-        bonus_xp = victim ? GetXPRestBonus(xp) : 0;
+
+    // XP resting bonus for kill
+    bonus_xp = victim ? GetXPRestBonus(xp) : 0;
 
     SendLogXPGain(xp, victim, bonus_xp, ReferAFriend);
 
@@ -21075,7 +21075,7 @@ bool Player::CheckRAFConditions()
             if (!IsReferAFriendLinked(member))
                 continue;
 
-            if (GetDistance(member) < 100 && (getLevel() <= member->getLevel() + 4))
+            if (GetDistance(member) < 100 && (getLevel() <= member->getLevel() + 9))
                 return true;
         }
     }
