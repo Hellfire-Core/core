@@ -4694,7 +4694,7 @@ void Aura::HandleModMechanicImmunity(bool apply, bool Real)
             SpellEntry const *spell = iter->second->GetSpellProto();
             if (!(spell->Attributes & SPELL_ATTR_UNAFFECTED_BY_INVULNERABILITY)   // spells unaffected by invulnerability
                 && !iter->second->IsPositive()                                    // only remove negative spells
-                && spell->Id != GetId())
+                && spell->Id != GetId() && !iter->second->IsInUse())
             {
                 //check for mechanic mask
                 if (SpellMgr::GetSpellMechanicMask(spell) & mechanic)
