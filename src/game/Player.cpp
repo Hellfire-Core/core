@@ -2465,6 +2465,8 @@ void Player::GiveXP(uint32 xp, Unit* victim)
     for (Unit::AuraList::const_iterator i = ModXPPctAuras.begin();i != ModXPPctAuras.end(); ++i)
         xp = uint32(xp*(1.0f + (*i)->GetModifierValue() / 100.0f));
 
+
+    uint32 bonus_xp = 0;
     if (uint32 goodEntry = sWorld.getConfig(CONFIG_XP_RATE_MODIFY_ITEM_ENTRY))
     {
         for (int i = EQUIPMENT_SLOT_START; i < EQUIPMENT_SLOT_END; i++)
@@ -2472,24 +2474,23 @@ void Player::GiveXP(uint32 xp, Unit* victim)
             Item *pItem = GetItemByPos(INVENTORY_SLOT_BAG_0, i);
             if (pItem && pItem->GetEntry() == goodEntry)
             {
-                xp = uint32(xp*(1.0f + sWorld.getConfig(CONFIG_XP_RATE_MODIFY_ITEM_PCT) / 100.0f));
+                bonus_xp = uint32(xp*sWorld.getConfig(CONFIG_XP_RATE_MODIFY_ITEM_PCT) / 100.0f);
                 break;
             }
         }
     }
 
     // XP resting bonus for kill
-    uint32 bonus_xp = 0;
     bool ReferAFriend = false;
     if (CheckRAFConditions())
     {
         // RAF bonus exp don't decrease rest exp
         bool ReferAFriend = true;
-        bonus_xp = xp * (sWorld.getConfig(CONFIG_FLOAT_RATE_RAF_XP) - 1);
+        bonus_xp += xp * (sWorld.getConfig(CONFIG_FLOAT_RATE_RAF_XP) - 1);
     }
 
     // XP resting bonus for kill
-    bonus_xp = victim ? GetXPRestBonus(xp) : 0;
+    bonus_xp += victim ? GetXPRestBonus(xp) : 0;
 
     SendLogXPGain(xp, victim, bonus_xp, ReferAFriend);
 
