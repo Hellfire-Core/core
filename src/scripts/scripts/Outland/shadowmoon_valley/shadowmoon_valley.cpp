@@ -3479,6 +3479,43 @@ bool GossipSelect_npc_thane_yoregar(Player *player, Creature *_Creature, uint32 
     return true;
 }
 
+/*####
+# npc_restore_spectrecles
+####*/
+
+#define GOSSIP_RESTORE_SPECTRECLES "Restore Spectrecles."
+#define ITEM_SPECTRECLES 30719
+
+bool GossipHello_npc_restore_spectrecles(Player *player, Creature *_Creature)
+{
+    if (_Creature->isQuestGiver())
+        player->PrepareQuestMenu(_Creature->GetGUID());
+
+    if ((player->GetQuestStatus(10643) || player->GetQuestStatus(10625)) && !player->HasItemCount(ITEM_SPECTRECLES, 1, true))
+        player->ADD_GOSSIP_ITEM(0, GOSSIP_RESTORE_SPECTRECLES, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+    player->SEND_GOSSIP_MENU(_Creature->GetNpcTextId(), _Creature->GetGUID());
+    return true;
+}
+
+bool GossipSelect_npc_restore_spectrecles(Player *player, Creature *_Creature, uint32 sender, uint32 action)
+{
+    if (action == GOSSIP_ACTION_INFO_DEF + 1 && (player->GetQuestStatus(10643) || player->GetQuestStatus(10625)) && !player->HasItemCount(ITEM_SPECTRECLES, 1, true))
+    {
+        ItemPosCountVec dest;
+        uint8 msg = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_SPECTRECLES, 1);
+        if (msg == EQUIP_ERR_OK)
+        {
+            Item* item = player->StoreNewItem(dest, ITEM_SPECTRECLES, true);
+            player->SendNewItem(item, 1, true, false, true);
+        }
+    }
+    return true;
+}
+
+/*####
+# go_forged_illidari_bane
+####*/
+
 bool GOUse_go_forged_illidari_bane(Player *pPlayer, GameObject *pGo)
 {
     ItemPosCountVec dest;
@@ -3675,5 +3712,11 @@ void AddSC_shadowmoon_valley()
     newscript = new Script;
     newscript->Name="go_forged_illidari_bane";
     newscript->pGOUse = &GOUse_go_forged_illidari_bane;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_restore_spectrecles";
+    newscript->pGossipHello = &GossipHello_npc_restore_spectrecles;
+    newscript->pGossipSelect = &GossipSelect_npc_restore_spectrecles;
     newscript->RegisterSelf();
 }
