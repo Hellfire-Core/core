@@ -3138,7 +3138,8 @@ void Spell::SendCastResult(SpellCastResult result)
 {
     if (m_caster->GetTypeId() == TYPEID_UNIT && m_caster->IsAIEnabled)
     {
-        m_caster->ToCreature()->AI()->SendDebug("Spell cast result of spell %u : %u",GetSpellEntry()->Id,uint8(result));
+        if (m_caster->IsInWorld())
+            m_caster->ToCreature()->AI()->SendDebug("Spell cast result of spell %u : %u",GetSpellEntry()->Id,uint8(result));
         return;
     }
     if (m_caster->GetTypeId() != TYPEID_PLAYER)
