@@ -207,15 +207,15 @@ bool ChatHandler::HandleUnmuteCommand(const char* args)
 
     if (chr)
     {
-        chr->GetSession()->m_trollmuteTime = 0;
-        chr->GetSession()->m_trollmuteReason = "";
-        if (chr->CanSpeak())
+        if (chr->CanSpeak() && !chr->IsTrollmuted())
         {
             SendSysMessage(LANG_CHAT_ALREADY_ENABLED);
             SetSentErrorMessage(true);
             return false;
         }
 
+        chr->GetSession()->m_trollmuteTime = 0;
+        chr->GetSession()->m_trollmuteReason = "";
         chr->GetSession()->m_muteTime = 0;
         chr->GetSession()->m_muteReason = "";
         ChatHandler(chr).PSendSysMessage(LANG_YOUR_CHAT_ENABLED);
