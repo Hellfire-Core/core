@@ -6737,15 +6737,6 @@ void Aura::HandleAuraAoeCharm(bool apply, bool Real)
 
 void Aura::CleanupTriggeredSpells()
 {
-    if (sSpellMgr.GetSpellElixirMask(m_spellProto->Id) & (ELIXIR_UNSTABLE_MASK | ELIXIR_SHATTRATH_MASK))
-    {
-        if (m_spellProto->EffectTriggerSpell[1])
-            m_target->RemoveAurasDueToSpell(m_spellProto->EffectTriggerSpell[1]);  // remove triggered effect of flask on remove
-        if (m_spellProto->EffectTriggerSpell[2])
-            m_target->RemoveAurasDueToSpell(m_spellProto->EffectTriggerSpell[2]);  // remove triggered effect of flask on remove
-        return;
-    }
-
     // Check if Shadow Embrace should be removed
     if (m_spellProto->SpellFamilyName == SPELLFAMILY_WARLOCK && m_spellProto->SpellFamilyFlags & 0x0000001100000402LL)
     {

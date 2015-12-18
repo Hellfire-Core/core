@@ -4623,6 +4623,17 @@ void Unit::RemoveAura(AuraMap::iterator &i, AuraRemoveMode mode)
         }
     }
 
+    if (sSpellMgr.GetSpellElixirMask(Aur->GetId()) & (ELIXIR_UNSTABLE_MASK | ELIXIR_SHATTRATH_MASK))
+    {
+        if (Unit* target = Aur->GetTarget())
+        {
+            if (AurSpellEntry->EffectTriggerSpell[1])
+                target->RemoveAurasDueToSpell(AurSpellEntry->EffectTriggerSpell[1]);  // remove triggered effect of flask on remove
+            if (AurSpellEntry->EffectTriggerSpell[2])
+                target->RemoveAurasDueToSpell(AurSpellEntry->EffectTriggerSpell[2]);  // remove triggered effect of flask on remove
+        }
+    }
+
     if (!stack)
     {
         // Remove all triggered by aura spells vs unlimited duration
