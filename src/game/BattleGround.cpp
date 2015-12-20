@@ -636,12 +636,6 @@ void BattleGround::EndBattleGround(uint32 winner)
                 {
                     if (Player* player = sObjectMgr.GetPlayer(itr->first))
                         sLog.outLog(LOG_ARENA, "Statistics for %s (GUID: " UI64FMTD ", Team: %d, IP: %s): %u damage, %u healing, %u killing blows", player->GetName(), itr->first, player->GetArenaTeamId(m_ArenaType == 5 ? 2 : m_ArenaType == 3), player->GetSession()->GetRemoteAddress().c_str(), itr->second->DamageDone, itr->second->HealingDone, itr->second->KillingBlows);
-                    else
-                    {
-                        std::string lookName;
-                        sObjectMgr.GetPlayerNameByGUID(itr->first, lookName);
-                        sLog.outLog(LOG_ARENA, "Statistics for %s (OFFLINE) (GUID: " UI64FMTD "): %u damage, %u healing, %u killing blows", lookName.c_str(), itr->first, itr->second->DamageDone, itr->second->HealingDone, itr->second->KillingBlows);
-                    }
                 }
 
             if (sWorld.getConfig(CONFIG_ARENA_EXPORT_RESULTS))
@@ -972,11 +966,12 @@ void BattleGround::RemovePlayerAtLeave(uint64 guid, bool Transport, bool SendPac
         if (winner_arena_team && loser_arena_team)
             loser_arena_team->MemberLost(plr, winner_arena_team->GetRating(),
             winner_arena_team->GetAverageMMR(GetBgRaid(team == HORDE ? ALLIANCE : HORDE)),&persRating,&persDiff);
-        sLog.outLog(LOG_ARENA, "Player %s (team id:%u) left arena (against team %u) before it ended",
-            plr->GetName(), loser_arena_team->GetId(), winner_arena_team->GetId());
+
+        BattleGroundScore* score = m_PlayerScores[guid];
+        sLog.outLog(LOG_ARENA, "[Early left] Statistics for %s (GUID: " UI64FMTD ", Team: %d, IP: %s): %u damage, %u healing, %u killing blows",
+            plr->GetName(), guid, plr->GetArenaTeamId(m_ArenaType == 5 ? 2 : m_ArenaType == 3), plr->GetSession()->GetRemoteAddress().c_str(), score->DamageDone, score->HealingDone, score->KillingBlows);
         if (sWorld.getConfig(CONFIG_ARENA_EXPORT_RESULTS))
         {
-            BattleGroundScore* score = m_PlayerScores[guid];
             RealmDataDatabase.PExecute("INSERT INTO arena_fights_detailed VALUES (%u, " UI64FMTD", %u, %u, %u, %u, %u, %i);",
                 GetInstanceID(), guid, loser_arena_team->GetId(),
                 score->DamageDone, score->HealingDone, score->KillingBlows, persRating, persDiff);
