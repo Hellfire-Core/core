@@ -161,8 +161,6 @@ bool ACRequest::DetectSpeedHack(Player *pPlayer)
     if (clientSpeedRate <= speedRate * sWorld.getConfig(CONFIG_ANTICHEAT_SPEEDHACK_TOLERANCE))
         return false;
 
-    pPlayer->m_AC_timer = IN_MILISECONDS;   // 1 sek
-
     sWorld.SendGMText(LANG_ANTICHEAT_SPEEDHACK, pPlayer->GetName(), pPlayer->GetName(), 0, speedRate, clientSpeedRate);
     sLog.outLog(LOG_CHEAT, "Player %s (GUID: %u / ACCOUNT_ID: %u) moved for distance %f with server speed "
         ": %f (client speed: %f, time diff %u). MapID: %u, player's coord before X:%f Y:%f Z:%f."
