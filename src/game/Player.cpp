@@ -17302,11 +17302,14 @@ void Player::RemoveGuardians()
 
 bool Player::HasGuardianWithEntry(uint32 entry)
 {
-    // pet guid middle part is entry (and creature also)
+    // pet guid middle part is pet_entry, IT IS NOT creature_template entry!
     // and in guardian list must be guardians with same entry _always_
     for (GuardianPetList::const_iterator itr = m_guardianPets.begin(); itr != m_guardianPets.end(); ++itr)
-        if (GUID_ENPART(*itr)==entry)
-            return true;
+    {
+        if (Unit* guardian = Unit::GetUnit(*this,*itr))
+            if (guardian->GetEntry()==entry)
+                return true;
+    }
 
     return false;
 }
