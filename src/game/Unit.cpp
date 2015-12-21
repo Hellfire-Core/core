@@ -9590,7 +9590,7 @@ void Unit::ModSpellCastTime(SpellEntry const* spellProto, int32 & castTime, Spel
 
      if (spellProto->Attributes & SPELL_ATTR_RANGED && !(spellProto->AttributesEx2 & SPELL_ATTR_EX2_AUTOREPEAT_FLAG))
             castTime = int32 (float(castTime) * m_modAttackSpeedPct[RANGED_ATTACK]);
-     else // it seems all channeled spells should be affected by haste
+     else if (!(spellProto->Attributes & SPELL_ATTR_TRADESPELL)) // no haste bonus for tradespells (eg fishing)
         castTime = int32(float(castTime) * GetFloatValue(UNIT_MOD_CAST_SPEED));
 }
 
