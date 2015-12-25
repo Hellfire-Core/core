@@ -2953,6 +2953,7 @@ struct npc_bad_santaAI : public ScriptedAI
     Timer Armor_Timer;
     Timer Nova_Timer;
     Timer IceBolt_Timer;
+    Timer Enrage_Timer;
 
     void Reset()
     {
@@ -2967,7 +2968,7 @@ struct npc_bad_santaAI : public ScriptedAI
         Armor_Timer.Reset(30000);
         Nova_Timer.Reset(10000);
         IceBolt_Timer.Reset(45000);
-        StopAutocast();
+        Enrage_Timer.Reset(1000*60*15);
     }
 
     void EnterEvadeMode()
@@ -2982,8 +2983,6 @@ struct npc_bad_santaAI : public ScriptedAI
         me->MonsterSay("YOU WILL FREEZE TO DEATH!", 0, 0);
         me->HandleEmoteCommand(EMOTE_ONESHOT_ROAR);
         AddSpellToCast(me->getVictim(), SPELL_FROSTBOLT_VOLLEY);
-        SetAutocast(SPELL_ENRAGE, 1000*60*15, true, CAST_SELF);
-        StartAutocast();
     }
 
     void SpellHitTarget(Unit* who, const SpellEntry* SpellID)
@@ -3086,6 +3085,12 @@ struct npc_bad_santaAI : public ScriptedAI
                   }
                   else
                       Weakness_Timer = 1000;
+          }
+
+          if (Enrage_Timer.Expired(diff))
+          {
+              AddSpellToCast(SPELL_ENRAGE, CAST_SELF);
+              Enrage_Timer = 1000*60*15;
           }
 
           CastNextSpellIfAnyAndReady();
