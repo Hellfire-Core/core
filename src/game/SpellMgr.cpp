@@ -3703,6 +3703,22 @@ void SpellMgr::LoadSpellCustomAttr()
             case 30834: // Infernal Relay
                 spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_TARGET_ANY;
                 break;
+            // exploited quiver/ammo pouch spells for incredible ranged attack speed bug
+            case 14824:
+            case 14825:
+            case 14826:
+            case 14827:
+            case 14828:
+            case 14829:
+            case 29413:
+            case 29414:
+            case 29415:
+            case 29416:
+            case 29417:
+            case 29418:
+            case 44972:
+                spellInfo->speed = 0;
+                break;
             default:
                 break;
         }
