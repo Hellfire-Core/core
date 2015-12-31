@@ -242,6 +242,27 @@ bool ChatHandler::HandleAccountWeatherCommand(const char* args)
     return true;
 }
 
+bool ChatHandler::HandleAccountFreerespecsCommand(const char*)
+{
+    QueryResultAutoPtr result = RealmDataDatabase.PQuery("SELECT expiration_time FROM character_freerespecs WHERE guid = %u", m_session->GetPlayer()->GetGUID());
+    if (result)
+    {
+        Field* field = result->Fetch();
+        uint32 expiration_time = field[0].GetInt32();
+
+        if (expiration_time > sWorld.GetGameTime())
+        {
+            std::string msg = "Free respecs for this character will end in " + secsToTimeString(expiration_time - sWorld.GetGameTime) + ".";
+            SendSysMessage(msg.c_str());
+        }
+        return true;
+    }
+    else
+        SendSysMessage("Free respecs for this character are not active.");
+    return false;
+
+}
+
 bool ChatHandler::HandleArenaReadyCommand(const char* args)
 {
     Player* player = m_session->GetPlayer();

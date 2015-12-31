@@ -80,6 +80,7 @@ ChatCommand * ChatHandler::getCommandTable()
         { "bgann",          PERM_PLAYER,    PERM_CONSOLE, false,  &ChatHandler::HandleAccountBattleGroundAnnCommand, "", NULL },
         { "bgmarks",        PERM_PLAYER,    PERM_CONSOLE, false,  &ChatHandler::HandleAccountBGMarksCommand,      "", NULL },
         { "delete",         PERM_CONSOLE,   PERM_CONSOLE, true,   &ChatHandler::HandleAccountDeleteCommand,       "", NULL },
+        { "freerespecs",    PERM_PLAYER,    PERM_CONSOLE, false,  &ChatHandler::HandleAccountFreerespecsCommand,  "", NULL },
         { "friend",         PERM_ADM,       PERM_CONSOLE, true,   NULL,                                           "", accountFriendCommandTable },
         { "gann",           PERM_PLAYER,    PERM_CONSOLE, false,  &ChatHandler::HandleAccountGuildAnnToggleCommand, "", NULL },
         { "bones",          PERM_PLAYER,    PERM_CONSOLE, false,  &ChatHandler::HandleAccountBonesHideCommand,    "", NULL },
