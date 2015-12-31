@@ -2292,7 +2292,7 @@ void Aura::TriggerSpell()
             case 39575:
             case 41480:
                 // also Kil'jaedens Shadow Spike missile
-            case 45689:
+            case 46589:
             {
                 if (caster->CanHaveThreatList())
                 {
