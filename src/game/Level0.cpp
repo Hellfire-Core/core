@@ -252,7 +252,7 @@ bool ChatHandler::HandleAccountFreerespecsCommand(const char*)
 
         if (expiration_time > sWorld.GetGameTime())
         {
-            std::string msg = "Free respecs for this character will end in " + secsToTimeString(expiration_time - sWorld.GetGameTime) + ".";
+            std::string msg = "Free respecs for this character will end in " + secsToTimeString(expiration_time - (uint32)(sWorld.GetGameTime())) + ".";
             SendSysMessage(msg.c_str());
         }
         return true;
