@@ -777,7 +777,7 @@ struct mob_shadowsword_assassinAI : public ScriptedAI
 
     void MoveInLineOfSight(Unit *who)
     {
-        if(!me->isAlive())
+        if (!me->isAlive() || pInstance->GetData(DATA_FELMYST_EVENT) != DONE)
             return;
         if(me->IsWithinLOSInMap(who) && !me->isInCombat())
             DoRandomShadowstep(who);
