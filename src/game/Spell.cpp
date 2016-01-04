@@ -3997,6 +3997,8 @@ SpellCastResult Spell::CheckCast(bool strict)
             if (m_spellInfo->Id == 3411 && !target->isAlive())
                 return SPELL_FAILED_BAD_TARGETS;
         }
+        else if (target->GetCharmerOrOwnerPlayerOrPlayerItself() && target->isInSanctuary())
+            return SPELL_FAILED_TARGET_FRIENDLY; // player-sourced negative spells in sanctuary
 
         //Must be behind the target.
         if ((GetSpellEntry()->AttributesEx2 & SPELL_ATTR_EX2_FROM_BEHIND) && (GetSpellEntry()->AttributesEx & SPELL_ATTR_EX_UNK9) && target->HasInArc(M_PI, m_caster)
