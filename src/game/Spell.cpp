@@ -3997,8 +3997,6 @@ SpellCastResult Spell::CheckCast(bool strict)
             if (m_spellInfo->Id == 3411 && !target->isAlive())
                 return SPELL_FAILED_BAD_TARGETS;
         }
-        else if (target->GetCharmerOrOwnerPlayerOrPlayerItself() && target->isInSanctuary())
-            return SPELL_FAILED_TARGET_FRIENDLY; // player-sourced negative spells in sanctuary
 
         //Must be behind the target.
         if ((GetSpellEntry()->AttributesEx2 & SPELL_ATTR_EX2_FROM_BEHIND) && (GetSpellEntry()->AttributesEx & SPELL_ATTR_EX_UNK9) && target->HasInArc(M_PI, m_caster)
@@ -5565,6 +5563,9 @@ bool Spell::CanIgnoreNotAttackableFlags()
 
 bool Spell::CheckTarget(Unit* target, uint32 eff)
 {
+    if (target->GetCharmerOrOwnerPlayerOrPlayerItself() && !sSpellMgr.IsPositiveEffect(GetSpellEntry()->Id, 0) && target->isInSanctuary())
+        return false;
+
     if (GetSpellEntry()->Effect[eff] == SPELL_EFFECT_APPLY_AURA && (GetSpellEntry()->EffectImplicitTargetA[eff] == TARGET_UNIT_PARTY_TARGET ||
         GetSpellEntry()->EffectImplicitTargetA[eff] == TARGET_UNIT_CLASS_TARGET) && target->getLevel() < GetSpellEntry()->spellLevel)
         return false;
