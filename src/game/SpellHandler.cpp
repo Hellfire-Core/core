@@ -149,6 +149,8 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
                 targets.setUnitTarget(pUser);
         }
     }
+    if (!targets.getUnitTarget())
+        return; // no valid target found
 
     //Note: If script stop casting it must send appropriate data to client to prevent stuck item in gray state.
     if (!sScriptMgr.OnItemUse(pUser, pItem, targets))
