@@ -1838,7 +1838,8 @@ bool SpellMgr::IsNoStackSpellDueToSpell(uint32 spellId_1, uint32 spellId_2, bool
     if (SpellMgr::IsSpecialNoStackCase(spellInfo_1, spellInfo_2, sameCaster))
         return true;
 
-    if (spellInfo_1->HasApplyAura(SPELL_AURA_MOD_DECREASE_SPEED) && spellInfo_2->HasApplyAura(SPELL_AURA_MOD_DECREASE_SPEED))
+    if (spellInfo_1->HasApplyAura(SPELL_AURA_MOD_DECREASE_SPEED) && spellInfo_2->HasApplyAura(SPELL_AURA_MOD_DECREASE_SPEED)
+        && !spellInfo_1->HasEffect(SPELL_EFFECT_PERSISTENT_AREA_AURA) && !spellInfo_2->HasEffect(SPELL_EFFECT_PERSISTENT_AREA_AURA))
         return true;
 
     SpellSpecific spellId_spec_1 = SpellMgr::GetSpellSpecific(spellId_1);
