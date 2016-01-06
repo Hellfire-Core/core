@@ -1618,7 +1618,7 @@ struct npc_lord_illidan_stormrageAI : public ScriptedAI
         Player* pPlayer = Unit::GetPlayer(PlayerGUID);
 
         if(!pPlayer)
-            return;
+            return true;
 
         if(Group *EventGroup = pPlayer->GetGroup())
         {

@@ -12551,7 +12551,7 @@ void Unit::Kill(Unit *pVictim, bool durabilityLoss)
                     std::stringstream ss;
                     ss << "BossEntry: " << creatureVictim->GetEntry() << " " << creatureVictim->GetName() << " InstanceId: " << creatureVictim->GetInstanceId()
                         << " MapId: " << m->GetId() << " " << m->GetMapName() << " Players in instance: ";
-                    for (MapRefManager::const_iterator itr = m->GetPlayers().begin(); itr != m->GetPlayers().end(); itr++)
+                    for (MapRefManager::const_iterator itr = m->GetPlayers().begin(); itr != m->GetPlayers().end(); ++itr)
                     {
                         if (Player* ininstance = itr->getSource())
                             ss << ininstance->GetName() << ":(" << ininstance->GetGUIDLow() << ") ";

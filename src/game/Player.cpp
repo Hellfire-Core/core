@@ -10427,14 +10427,14 @@ uint8 Player::CanUseItem(Item *pItem, bool not_loading) const
         if (pItem->IsBindedNotWith(GetGUID()))
             return EQUIP_ERR_DONT_OWN_THAT_ITEM;
 
+        if (pItem->GetSkill() != 0 && GetSkillValue(pItem->GetSkill()) == 0)
+            return EQUIP_ERR_NO_REQUIRED_PROFICIENCY;
+
         ItemPrototype const *pProto = pItem->GetProto();
         if (pProto)
         {
             if ((pProto->AllowableClass & getClassMask()) == 0 || (pProto->AllowableRace & getRaceMask()) == 0)
                 return EQUIP_ERR_YOU_CAN_NEVER_USE_THAT_ITEM;
-
-            if (pProto->GetSkill() != 0 && GetSkillValue(pProto->GetSkill()) == 0)
-                return EQUIP_ERR_NO_REQUIRED_PROFICIENCY;
 
             if (pProto->RequiredSkill != 0 )
             {
