@@ -310,7 +310,7 @@ Player* Group::GetInvited(const std::string& name) const
 
 bool Group::AddMember(const uint64 &guid, const char* name, bool lfg)
 {
-    if (!_addMember(guid, name))
+    if (IsMember(guid) || !_addMember(guid, name))
         return false;
 
     SendUpdate();
