@@ -1240,16 +1240,16 @@ static Location SpawnLocation[]=
 struct WaveData
 {
     uint8 SpawnCount, UsedSpawnPoint;
-    uint32 CreatureId, SpawnTimer,YellTimer;
+    uint32 CreatureId;
     int32 WaveTextId;
 };
 
 static WaveData WavesInfo[]=
 {
-    {9, 0, 22075, 10000, 7000, -1000371},   //Illidari Soldier
-    {2, 9, 22074, 10000, 7000, -1000372},   //Illidari Mind Breaker
-    {4, 11, 19797, 10000, 7000, -1000373},  //Illidari Highlord
-    {1, 15, 22076, 10000, 7000, -1000374}   //Torloth The Magnificent
+    {9, 0, 22075, -1000371},   //Illidari Soldier
+    {2, 9, 22074, -1000372},   //Illidari Mind Breaker
+    {4, 11, 19797, -1000373},  //Illidari Highlord
+    {1, 15, 22076, -1000374}   //Torloth The Magnificent
 };
 
 struct SpawnSpells
@@ -1533,8 +1533,6 @@ struct npc_lord_illidan_stormrageAI : public ScriptedAI
     uint8 WaveCount;
 
     bool EventStarted;
-    bool Announced;
-    bool Failed;
 
     void Reset()
     {
@@ -1546,9 +1544,6 @@ struct npc_lord_illidan_stormrageAI : public ScriptedAI
         WaveCount = 0;
 
         EventStarted = false;
-        Announced = false;
-        Failed = false;
-
         m_creature->SetVisibility(VISIBILITY_OFF);
     }
 
@@ -1616,11 +1611,9 @@ struct npc_lord_illidan_stormrageAI : public ScriptedAI
             }
         }
         ++WaveCount;
-        WaveTimer = WavesInfo[WaveCount].SpawnTimer;
-        AnnounceTimer = WavesInfo[WaveCount].YellTimer;
     }
 
-    void CheckEventFail()
+    bool CheckEventFail()
     {
         Player* pPlayer = Unit::GetPlayer(PlayerGUID);
 
@@ -1658,7 +1651,7 @@ struct npc_lord_illidan_stormrageAI : public ScriptedAI
 
             if(GroupMemberCount == FailedMemberCount)
             {
-                Failed = true;
+                return true;
             }
 
             if(GroupMemberCount == DeadMemberCount)
@@ -1673,47 +1666,49 @@ struct npc_lord_illidan_stormrageAI : public ScriptedAI
                         GroupMember->SetQuestStatus(QUEST_BATTLE_OF_THE_CRIMSON_WATCH, QUEST_STATUS_NONE);
                     }
                 }
-                Failed = true;
+                return true;
             }
         }else if (pPlayer->isDead() || !pPlayer->IsWithinDistInMap(m_creature, EVENT_AREA_RADIUS))
         {
             pPlayer->FailQuest(QUEST_BATTLE_OF_THE_CRIMSON_WATCH);
-            Failed = true;
+            return true;
         }
+        return false;
     }
 
     void LiveCounter()
     {
         --LiveCount;
-        if(!LiveCount)
-            Announced = false;
+        if (!LiveCount)
+        {
+            WaveTimer = 10000;
+            AnnounceTimer = 7000;
+        }
     }
 
     void UpdateAI(const uint32 diff)
     {
         //there are checks bellow that *SHOULD* check for fail etc etc but i don't have time to read that wall of text
-        if (Player *range = me->GetPlayer(PlayerGUID))
-            if (me->GetDistance(range) >= 100.0f)
-                EnterEvadeMode();
-
-        if(!PlayerGUID || !EventStarted)
+        if (!PlayerGUID || !EventStarted)
             return;
+
+        Player *range = me->GetPlayer(PlayerGUID);
+        if (!range || me->GetDistance(range) >= 100.0f)
+            EnterEvadeMode();
 
         if(!LiveCount && WaveCount < 4)
         {
-            if(!Announced && AnnounceTimer.Expired(diff))
+            if(AnnounceTimer.Expired(diff))
             {
                 DoScriptText(WavesInfo[WaveCount].WaveTextId, m_creature);
-                Announced = true;
+                AnnounceTimer = 0;
             }
 
             if(WaveTimer.Expired(diff))
                 SummonNextWave();
         }
 
-        CheckEventFail();
-
-        if(Failed)
+        if(CheckEventFail())
             EnterEvadeMode();
     }
 };
