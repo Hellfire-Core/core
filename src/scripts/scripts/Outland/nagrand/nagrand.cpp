@@ -1606,9 +1606,12 @@ struct npc_rethhedron_the_subduerAI : public ScriptedAI
 
     void DamageTaken(Unit *done_by, uint32 &damage)
     {
-        if (doing_event && (m_creature->GetHealth() - damage) * 100 < m_creature->GetMaxHealth())
+        if (doing_event && (m_creature->GetHealth() - damage) * 100 <= m_creature->GetMaxHealth())
         {
-            damage = m_creature->GetHealth() - m_creature->GetMaxHealth() / 100;
+            if (damage >= m_creature->GetHealth())
+                damage = 0;
+            else
+                damage = m_creature->GetHealth() - m_creature->GetMaxHealth() / 100;
             if (doing_event == 1)
             {
                 player = done_by->GetCharmerOrOwnerOrOwnGUID();
