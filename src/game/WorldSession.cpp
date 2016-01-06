@@ -352,8 +352,7 @@ bool WorldSession::Update(uint32 diff, PacketFilter& updater)
     {
         if (!m_inQueue && !m_playerLoading && (!_player || !_player->IsInWorld()))
         {
-            _kickTimer.Update(diff);
-            if (_kickTimer.Passed())
+            if (_kickTimer.Expired(diff))
                 KickPlayer();
         }
         else
@@ -361,11 +360,10 @@ bool WorldSession::Update(uint32 diff, PacketFilter& updater)
 
         if (GetPlayer() && GetPlayer()->IsInWorld())
         {
-            _mailSendTimer.Update(diff);
-            if (_mailSendTimer.Passed())
+            if (_mailSendTimer.Expired(diff))
             {
                 SendExternalMails();
-                _mailSendTimer.Reset(sWorld.getConfig(CONFIG_EXTERNAL_MAIL_INTERVAL)*MINUTE*IN_MILISECONDS);
+                _mailSendTimer = sWorld.getConfig(CONFIG_EXTERNAL_MAIL_INTERVAL)*MINUTE*IN_MILISECONDS;
             }
         }
 

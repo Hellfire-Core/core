@@ -178,7 +178,7 @@ struct TimeTrackerSmall
         void Update(uint32 diff) { diff < i_expiryTime ? i_expiryTime -= diff : i_expiryTime = 0; }
         bool Passed(void) const { return (i_expiryTime <= 0); }
         void Reset(uint32 interval) { i_expiryTime = interval; }
-        bool Expired(uint32 diff) {}
+        bool Expired(uint32 diff) { Update(diff); return Passed(); }
         int32 GetExpiry(void) const { return i_expiryTime; }
 
     private:

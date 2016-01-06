@@ -264,7 +264,7 @@ class HELLGROUND_IMPORT_EXPORT WorldSession
 
         // External Mail
         void SendExternalMails();
-        TimeTrackerSmall _mailSendTimer;
+        Timer _mailSendTimer;
 
         //auction
         void SendAuctionHello(Unit *unit);

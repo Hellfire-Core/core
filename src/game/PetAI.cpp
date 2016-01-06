@@ -259,12 +259,8 @@ void PetAI::UpdateAI(const uint32 diff)
     if (me->GetEntry() == 24922 && me->isCharmed() && !me->isInCombat())
         me->NeedChangeAI = true;
 
-    updateAlliesTimer.Update(diff);
-    if (updateAlliesTimer.Passed())
+    if (updateAlliesTimer.Expired(diff))
         UpdateAllies();
-
-
-
 
     if (me->getVictim())
     {
@@ -412,11 +408,8 @@ void ImpAI::UpdateAI(const uint32 diff)
 
     m_owner = me->GetCharmerOrOwner();
 
-    updateAlliesTimer.Update(diff);
-    if (updateAlliesTimer.Passed())
+    if (updateAlliesTimer.Expired(diff))
         UpdateAllies();
-
-
 
     // me->getVictim() can't be used for check in case stop fighting, me->getVictim() clear at Unit death etc.
     if (Unit *target = me->getVictim())
@@ -521,11 +514,8 @@ void WaterElementalAI::UpdateAI(const uint32 diff)
 
     m_owner = me->GetCharmerOrOwner();
 
-    updateAlliesTimer.Update(diff);
-    if (updateAlliesTimer.Passed())
+    if (updateAlliesTimer.Expired(diff))
         UpdateAllies();
-
-
 
     if (Unit *target = me->getVictim())
     {

@@ -2871,8 +2871,7 @@ void CoreBalancer::Update(const uint32 diff)
     _diffSum += diff;
     ++_diffCount;
 
-    _balanceTimer.Update(diff);
-    if (_balanceTimer.Passed())
+    if (_balanceTimer.Expired(diff))
     {
         uint32 diffAvg = _diffSum / _diffCount;;
         if (diffAvg > sWorld.getConfig(CONFIG_COREBALANCER_PLAYABLE_DIFF))

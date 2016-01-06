@@ -526,8 +526,7 @@ void Unit::UpdateSplineMovement(uint32 t_diff)
     if (arrived)
         DisableSpline();
 
-    m_movesplineTimer.Update(t_diff);
-    if (m_movesplineTimer.Passed() || arrived)
+    if (m_movesplineTimer.Expired(t_diff) || arrived)
     {
         m_movesplineTimer.Reset(POSITION_UPDATE_DELAY);
         Movement::Location loc = movespline->ComputePosition();
