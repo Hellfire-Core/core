@@ -12543,26 +12543,19 @@ void Unit::Kill(Unit *pVictim, bool durabilityLoss)
         if (creatureVictim->GetInstanceId())
         {
             Map* m = creatureVictim->GetMap();
-            Player *creditedPlayer = m->GetPlayers().begin() != m->GetPlayers().end() ? m->GetPlayers().begin()->getSource() : NULL;
 
-            if (m->IsDungeon() && creditedPlayer)
+            if (m->IsDungeon() && m->GetPlayers().getSize())
             {
                 // log boss kills
                 if (creatureVictim->GetCreatureInfo()->rank == CREATURE_ELITE_WORLDBOSS)
                 {
                     std::stringstream ss;
                     ss << "BossEntry: " << creatureVictim->GetEntry() << " " << creatureVictim->GetName() << " InstanceId: " << creatureVictim->GetInstanceId()
-                        << " MapId: " << m->GetId() << " " << m->GetMapName() << " Players: ";
-                    if (Group *group = creditedPlayer->GetGroup())
+                        << " MapId: " << m->GetId() << " " << m->GetMapName() << " Players in instance: ";
+                    for (MapRefManager::const_iterator itr = m->GetPlayers().begin(); itr != m->GetPlayers().end(); itr++)
                     {
-                        for (GroupReference *i = group->GetFirstMember(); true; i = i->next())
-                        {
-                            if (Player *member = i->getSource())
-                                ss << member->GetName() << ":(" << member->GetGUIDLow() << ") ";
-
-                            if (!i->hasNext())
-                                break;
-                        }
+                        if (Player* ininstance = itr->getSource())
+                            ss << ininstance->GetName() << ":(" << ininstance->GetGUIDLow() << ") ";
                     }
                     sLog.outLog(LOG_BOSS, "%s", ss.str().c_str());
                 }
@@ -12570,7 +12563,7 @@ void Unit::Kill(Unit *pVictim, bool durabilityLoss)
                 if (m->IsRaid() || m->IsHeroic())
                 {
                     if (creatureVictim->GetCreatureInfo()->flags_extra & CREATURE_FLAG_EXTRA_INSTANCE_BIND)
-                        ((InstanceMap *)m)->PermBindAllPlayers(creditedPlayer);
+                        ((InstanceMap *)m)->PermBindAllPlayers(m->GetPlayers().begin()->getSource());
                 }
                 else
                 {
