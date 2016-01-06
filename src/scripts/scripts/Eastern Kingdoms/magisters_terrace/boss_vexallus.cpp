@@ -62,7 +62,7 @@ struct boss_vexallusAI : public ScriptedAI
     int32 SpawnAddInterval;
     int32 AlreadySpawnedAmount;
 
-    TimeTrackerSmall evadeTimer;
+    Timer evadeTimer;
 
     SummonList summons;
 
@@ -136,15 +136,14 @@ struct boss_vexallusAI : public ScriptedAI
     {
         if (me->isInCombat() && !me->IsInEvadeMode())
         {
-            evadeTimer.Update(diff);
-            if (evadeTimer.Passed())
+            if (evadeTimer.Expired(diff))
             {
                 if (me->GetMap()->GetAlivePlayersCountExceptGMs() == 0)
                 {
                     EnterEvadeMode();
                     return false;
                 }
-                evadeTimer.Reset(2000);
+                evadeTimer = 2000;
             }
         }
 

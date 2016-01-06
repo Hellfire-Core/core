@@ -880,7 +880,7 @@ struct npc_trackerAI : public ScriptedAI
 {
     npc_trackerAI(Creature* creature) : ScriptedAI(creature) {}
 
-    TimeTrackerSmall CheckTimer;
+    Timer CheckTimer;
 
     void Reset()
     {
@@ -914,9 +914,7 @@ struct npc_trackerAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        CheckTimer.Update(diff);
-
-        if (CheckTimer.Passed())
+        if (CheckTimer.Expired(diff))
         {
             if (Creature* Matis = GetClosestCreatureWithEntry(me, NPC_MATIS, 35.0f))
             {
@@ -939,7 +937,7 @@ struct npc_trackerAI : public ScriptedAI
                        Matis->setFaction(1701);
                }
 
-            CheckTimer.Reset(1000);
+            CheckTimer = 1000;
         }
 
         if (!UpdateVictim())

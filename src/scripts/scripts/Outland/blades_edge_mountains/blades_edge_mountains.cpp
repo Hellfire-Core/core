@@ -1349,7 +1349,7 @@ struct npc_orb_attracterAI : public Scripted_NoMovementAI
 {
     npc_orb_attracterAI(Creature* creature) : Scripted_NoMovementAI(creature) {}
 
-    TimeTrackerSmall attractTimer;
+    Timer attractTimer;
 
     void Reset()
     {
@@ -1360,14 +1360,12 @@ struct npc_orb_attracterAI : public Scripted_NoMovementAI
 
     void UpdateAI(const uint32 diff)
     {
-        attractTimer.Update(diff);
-
-        if (attractTimer.Passed())
+        if (attractTimer.Expired(diff))
         {
             std::list<Creature*> orbs = FindAllCreaturesWithEntry(NPC_LIGHT_ORB, 35.0f);
             std::for_each(orbs.begin(), orbs.end(), AttractOrbs(me));
 
-            attractTimer.Reset(1000);
+            attractTimer = 1000;
         }
     }
 };

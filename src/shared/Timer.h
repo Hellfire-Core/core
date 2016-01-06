@@ -158,8 +158,6 @@ struct ShortIntervalTimer
     }
 };
 
-typedef ShortIntervalTimer Timer;
-
 struct TimeTracker
 {
     public:
@@ -176,15 +174,21 @@ struct TimeTracker
 struct TimeTrackerSmall
 {
     public:
-        TimeTrackerSmall(int32 expiry =0) : i_expiryTime(expiry) {}
-        void Update(int32 diff) { i_expiryTime -= diff; }
+        TimeTrackerSmall(uint32 expiry =0) : i_expiryTime(expiry) {}
+        void Update(uint32 diff) { diff < i_expiryTime ? i_expiryTime -= diff : i_expiryTime = 0; }
         bool Passed(void) const { return (i_expiryTime <= 0); }
-        void Reset(int32 interval) { i_expiryTime = interval; }
+        void Reset(uint32 interval) { i_expiryTime = interval; }
+        bool Expired(uint32 diff) {}
         int32 GetExpiry(void) const { return i_expiryTime; }
 
     private:
-        int32 i_expiryTime;
+        uint32 i_expiryTime;
 };
+
+// for periodic events
+typedef ShortIntervalTimer Timer;
+// for single events
+typedef TimeTrackerSmall Countdown;
 
 struct PeriodicTimer
 {

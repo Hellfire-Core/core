@@ -147,7 +147,7 @@ struct boss_kalecgosAI : public ScriptedAI
     bool isBanished;
     bool TalkingDone;
 
-    TimeTrackerSmall stateCheckTimer;
+    Timer stateCheckTimer;
 
     void Reset()
     {
@@ -313,10 +313,9 @@ struct boss_kalecgosAI : public ScriptedAI
         if (TalkingDone)
             return;
 
-        stateCheckTimer.Update(diff);
-        if (stateCheckTimer.Passed())
+        if (stateCheckTimer.Expired(diff))
         {
-            stateCheckTimer.Reset(2000);
+            stateCheckTimer = 2000;
             if (!EncounterInProgressCheck())
                 return;
         }
