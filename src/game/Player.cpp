@@ -10424,18 +10424,18 @@ uint8 Player::CanUseItem(Item *pItem, bool not_loading) const
             return EQUIP_ERR_YOU_ARE_DEAD;
         //if(isStunned())
         //    return EQUIP_ERR_YOU_ARE_STUNNED;
+        if (pItem->IsBindedNotWith(GetGUID()))
+            return EQUIP_ERR_DONT_OWN_THAT_ITEM;
+
         ItemPrototype const *pProto = pItem->GetProto();
         if (pProto)
         {
-            if (pItem->IsBindedNotWith(GetGUID()))
-                return EQUIP_ERR_DONT_OWN_THAT_ITEM;
             if ((pProto->AllowableClass & getClassMask()) == 0 || (pProto->AllowableRace & getRaceMask()) == 0)
                 return EQUIP_ERR_YOU_CAN_NEVER_USE_THAT_ITEM;
-            if (pItem->GetSkill() != 0 )
-            {
-                if (GetSkillValue(pItem->GetSkill()) == 0)
-                    return EQUIP_ERR_NO_REQUIRED_PROFICIENCY;
-            }
+
+            if (pProto->GetSkill() != 0 && GetSkillValue(pProto->GetSkill()) == 0)
+                return EQUIP_ERR_NO_REQUIRED_PROFICIENCY;
+
             if (pProto->RequiredSkill != 0 )
             {
                 if (GetSkillValue(pProto->RequiredSkill) == 0)
@@ -10445,8 +10445,10 @@ uint8 Player::CanUseItem(Item *pItem, bool not_loading) const
             }
             if (pProto->RequiredSpell != 0 && !HasSpell(pProto->RequiredSpell))
                 return EQUIP_ERR_NO_REQUIRED_PROFICIENCY;
+
             if (pProto->RequiredReputationFaction && uint32(GetReputationMgr().GetRank(pProto->RequiredReputationFaction)) < pProto->RequiredReputationRank)
                 return EQUIP_ERR_CANT_EQUIP_REPUTATION;
+
             if (getLevel() < pProto->RequiredLevel)
                 return EQUIP_ERR_CANT_EQUIP_LEVEL_I;
             return EQUIP_ERR_OK;
@@ -10458,49 +10460,47 @@ uint8 Player::CanUseItem(Item *pItem, bool not_loading) const
 bool Player::CanUseItem(ItemPrototype const *pProto)
 {
     // Used by group, function NeedBeforeGreed, to know if a prototype can be used by a player
+    // and by AH sorting
 
-    if (pProto)
+    if (!pProto)
+        return false;
+
+    if ((pProto->AllowableClass & getClassMask()) == 0 || (pProto->AllowableRace & getRaceMask()) == 0)
+        return false;
+
+    if (pProto->RequiredSkill != 0 )
     {
-        if ((pProto->AllowableClass & getClassMask()) == 0 || (pProto->AllowableRace & getRaceMask()) == 0)
+        if (GetSkillValue(pProto->RequiredSkill) == 0)
             return false;
-
-        if (pProto->RequiredSkill != 0 )
-        {
-            if (GetSkillValue(pProto->RequiredSkill) == 0)
-                return false;
-            else if (GetSkillValue(pProto->RequiredSkill) < pProto->RequiredSkillRank)
-                return false;
-        }
-
-        if (pProto->RequiredSpell != 0 && !HasSpell(pProto->RequiredSpell))
+        else if (GetSkillValue(pProto->RequiredSkill) < pProto->RequiredSkillRank)
             return false;
-
-        if (getLevel() < pProto->RequiredLevel)
-            return false;
-
-        if (pProto->Class == ITEM_CLASS_RECIPE)
-        {
-            if (pProto->Spells[0].SpellId == SPELL_ID_GENERIC_LEARN)
-            {
-                if (HasSpell(pProto->Spells[1].SpellId))
-                    return false;
-            }
-            else
-            {
-                SpellEntry const * spellInfo = GetSpellStore()->LookupEntry(pProto->Spells[0].SpellId);
-
-                if (spellInfo)
-                    for (uint8 i = 0; i < 3; ++i)
-                        if (spellInfo->Effect[i] == SPELL_EFFECT_LEARN_SPELL)
-                            if (HasSpell(spellInfo->EffectTriggerSpell[i]))
-                                return false;
-            }
-        }
-
-        return true;
     }
 
-    return false;
+    if (pProto->RequiredSpell != 0 && !HasSpell(pProto->RequiredSpell))
+        return false;
+
+    if (getLevel() < pProto->RequiredLevel)
+        return false;
+
+    if (pProto->Class == ITEM_CLASS_RECIPE)
+    {
+        if (pProto->Spells[0].SpellId == SPELL_ID_GENERIC_LEARN)
+        {
+            if (HasSpell(pProto->Spells[1].SpellId))
+                return false;
+        }
+        else
+        {
+            SpellEntry const * spellInfo = GetSpellStore()->LookupEntry(pProto->Spells[0].SpellId);
+
+            if (spellInfo)
+                for (uint8 i = 0; i < 3; ++i)
+                    if (spellInfo->Effect[i] == SPELL_EFFECT_LEARN_SPELL)
+                        if (HasSpell(spellInfo->EffectTriggerSpell[i]))
+                            return false;
+        }
+    }
+    return true;
 }
 
 uint8 Player::CanUseAmmo(uint32 item) const

@@ -248,8 +248,7 @@ class HELLGROUND_IMPORT_EXPORT Item : public Object
         bool IsInBag() const { return m_container != NULL; }
         bool IsEquipped() const;
 
-        uint32 GetSkill();
-        uint32 GetSpell();
+        uint32 GetSkill() { return GetProto()->GetSkill(); };
 
         // RandomPropertyId (signed but stored as unsigned)
         int32 GetItemRandomPropertyId() const { return GetInt32Value(ITEM_FIELD_RANDOM_PROPERTIES_ID); }
