@@ -2940,6 +2940,10 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 44969: // energize crystal ward
                     spellInfo->RequiresSpellFocus = 1483;
                     break;
+                case 44999: // conversions on ioqd, set guardians duration to 12 sec and let them spawn multiple times
+                    spellInfo->DurationIndex = 29;
+                    spellInfo->RecoveryTime = 1;
+                    break;
                 }
                 if (spellInfo->SpellIconID == 184 && spellInfo->Attributes == 4259840)
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
