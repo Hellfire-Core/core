@@ -19,23 +19,24 @@
 #include "precompiled.h"
 #include "def_sethekk_halls.h"
 
+enum Anzu
+{
+    SPELL_SPELL_BOMB                = 40303,
+    SPELL_CYCLONE_OF_FEATHERS       = 40321,
+    SPELL_PARALYZING_SCREECH        = 40184,
+    SPELL_BANISH                    = 42354,   // probably completely wrong spell
 
-#define SPELL_SPELL_BOMB                40303
-#define SPELL_CYCLONE_OF_FEATHERS       40321
-#define SPELL_PARALYZING_SCREECH        40184
-#define SPELL_BANISH                    42354   // probably completly wrong spell
+    SPELL_PROTECTION_OF_THE_HAWK    = 40237,
+    SPELL_SPITE_OF_THE_EAGLE        = 40240,
+    SPELL_SPEED_OF_THE_FALCON       = 40241,
 
-#define SPELL_PROTECTION_OF_THE_HAWK    40237
-#define SPELL_SPITE_OF_THE_EAGLE        40240
-#define SPELL_SPEED_OF_THE_FALCON       40241
+    NPC_HAWK_SPIRIT                 = 23134,
+    NPC_EAGLE_SPIRIT                = 23136,
+    NPC_FALCON_SPIRIT               = 23135,
+    NPC_BROOD_OF_ANZU               = 23132,
 
-#define NPC_HAWK_SPIRIT                 23134
-#define NPC_EAGLE_SPIRIT                23136
-#define NPC_FALCON_SPIRIT               23135
-
-#define NPC_BROOD_OF_ANZU               23132
-
-#define GO_RAVENS_CLAW                   185554
+    GO_RAVENS_CLAW                  = 185554
+};
 
 uint32 AnzuSpirits[] = { NPC_HAWK_SPIRIT, NPC_EAGLE_SPIRIT, NPC_FALCON_SPIRIT };
 
@@ -55,7 +56,6 @@ struct boss_anzuAI : public ScriptedAI
     SummonList summons;
     ScriptedInstance* pInstance;
 
-    bool Banished;
     Timer Banish_Timer;
     Timer SpellBomb_Timer;
     Timer CycloneOfFeathers_Timer;
@@ -68,7 +68,6 @@ struct boss_anzuAI : public ScriptedAI
         ClearCastQueue();
         summons.DespawnAll();
 
-        Banished = false;
         Banish_Timer = 0;
         SpellBomb_Timer.Reset(22000);
         CycloneOfFeathers_Timer.Reset(5000);
@@ -81,12 +80,8 @@ struct boss_anzuAI : public ScriptedAI
 
     void IsSummonedBy(Unit *summoner)
     {
-        GameObject* go = FindGameObject(GO_RAVENS_CLAW, 20, me);
-        if (go)
-        {
+        if (GameObject* go = FindGameObject(GO_RAVENS_CLAW, 20, me))
             go->Delete();
-        }
-
     }
 
     void JustSummoned(Creature *summon)
@@ -101,11 +96,10 @@ struct boss_anzuAI : public ScriptedAI
 
     void SummonedCreatureDespawn(Creature *summon)
     {
-        if (summon->GetEntry() == NPC_BROOD_OF_ANZU)
+        if (summon->GetEntry() == NPC_BROOD_OF_ANZU && BroodCount > 0)
             BroodCount--;
         summons.Despawn(summon);
     }
-
 
     void SummonSpirits()
     {
@@ -138,22 +132,21 @@ struct boss_anzuAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (Banished)
+        if (Banish_Timer.GetInterval())
         {
             if (BroodCount == 0 || Banish_Timer.Expired(diff))
             {
-                Banished = false;
+                Banish_Timer = 0;
                 me->RemoveAurasDueToSpell(SPELL_BANISH);
             }
         }
-        else {
-
+        else
+        {
             if (ParalyzingScreech_Timer.Expired(diff))
             {
                 AddSpellToCast(me, SPELL_PARALYZING_SCREECH);
                 ParalyzingScreech_Timer = 26000;
             }
-
 
             if (SpellBomb_Timer.Expired(diff))
             {
@@ -162,27 +155,25 @@ struct boss_anzuAI : public ScriptedAI
                 SpellBomb_Timer = 30000;
             }
 
-
             if (CycloneOfFeathers_Timer.Expired(diff))
             {
-                if (Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 1, 45.0f, true))
+                if (Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 1, 45.0f, true, me->getVictimGUID()))
                     AddSpellToCast(target, SPELL_CYCLONE_OF_FEATHERS);
                 CycloneOfFeathers_Timer = 21000;
             }
-            
 
             if (HealthBelowPct(33 * BanishedTimes))
             {
                 BanishedTimes--;
-                Banished = true;
                 Banish_Timer = 45000;
-                ForceSpellCast(me, SPELL_BANISH, INTERRUPT_AND_CAST_INSTANTLY, true);
+                ForceSpellCast(me, SPELL_BANISH, INTERRUPT_AND_CAST, true);
                 SummonBrood();
             }
         }
 
         CastNextSpellIfAnyAndReady();
-        if (!Banished)
+
+        if (!Banish_Timer.GetInterval())
             DoMeleeAttackIfReady();
     }
 };

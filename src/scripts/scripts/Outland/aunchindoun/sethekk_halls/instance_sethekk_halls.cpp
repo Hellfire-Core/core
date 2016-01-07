@@ -50,10 +50,12 @@ struct instance_sethekk_halls : public ScriptedInstance
     LakkaStatus Lakka;
 
     uint64 IkissDoorGUID;
+    uint64 AnzuGUID;
 
     void Initialize()
     {
         IkissDoorGUID = 0;
+        AnzuGUID = 0;
         Lakka = LAKKA_NOT_SUMMONED;
 
         for(uint8 i = 0; i < ENCOUNTERS; i++)
@@ -82,11 +84,10 @@ struct instance_sethekk_halls : public ScriptedInstance
         switch(entry)
         {
             case 23035:
-                if(GetData(DATA_ANZUEVENT) == DONE)
-                {
-                    creature->Kill(creature);
-                    creature->RemoveCorpse();
-                }
+                if (GetData(DATA_ANZUEVENT) == DONE || AnzuGUID)
+                    creature->DisappearAndDie();
+                else
+                    AnzuGUID = creature->GetGUID();
                 break;
         }
     }
