@@ -866,7 +866,7 @@ void ChatHandler::SendSysMessage(const char *str)
 {
     if (!m_session)
     {
-        printf(str);
+        puts(str);
         return;
     }
 

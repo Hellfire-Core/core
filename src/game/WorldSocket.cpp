@@ -956,7 +956,7 @@ int WorldSocket::HandlePing(WorldPacket& recvPacket)
                 if (m_Session && !m_Session->HasPermissions(PERM_GMT))
                 {
                     sLog.outLog(LOG_DEFAULT, "ERROR: WorldSocket::HandlePing: Player kicked for "
-                                    "overspeeded pings address = %s diff %u",
+                                    "overspeeded pings address = %s diff %lu",
                                     GetRemoteAddress().c_str(), diff_time.msec());
 
                     return -1;

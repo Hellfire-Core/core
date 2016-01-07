@@ -244,7 +244,7 @@ bool ChatHandler::HandleAccountWeatherCommand(const char* args)
 
 bool ChatHandler::HandleAccountFreerespecsCommand(const char*)
 {
-    QueryResultAutoPtr result = RealmDataDatabase.PQuery("SELECT expiration_time FROM character_freerespecs WHERE guid = %u", m_session->GetPlayer()->GetGUID());
+    QueryResultAutoPtr result = RealmDataDatabase.PQuery("SELECT expiration_time FROM character_freerespecs WHERE guid = %lu", m_session->GetPlayer()->GetGUID());
     if (result)
     {
         Field* field = result->Fetch();
