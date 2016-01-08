@@ -903,9 +903,9 @@ int32 GauntletWP[][3] =
 {
     { 226, 1492, 26 },
     { 227, 1439, 26 },
-    { 227, 1369, 48 },
+    { 227, 1383, 45 },
+    { 245, 1373, 50 },
     { 284, 1379, 49 },
-    { 301, 1385, 58 },
 };
 
 struct npc_amanishi_lookoutAI : public ScriptedAI
@@ -933,6 +933,7 @@ struct npc_amanishi_lookoutAI : public ScriptedAI
         me->SetReactState(REACT_AGGRESSIVE);
         me->SetVisibility(VISIBILITY_ON);
         me->setActive(true);
+        me->SetSpeed(MOVE_RUN, 1.15f); // not reset correctly after EnterEvadeMode()
         EventStarted = false;
         warriorsTimer.Reset(40000);
         eaglesTimer.Reset(1000);
@@ -967,6 +968,9 @@ struct npc_amanishi_lookoutAI : public ScriptedAI
 
     void JustSummoned(Creature* summoned)
     {
+        if (summoned->GetEntry() == NPC_AMANISHI_WARRIOR || summoned->GetEntry() == NPC_AMANISHI_EAGLE)
+            summoned->AI()->AttackStart(summoned->SelectNearestTarget(300.0f));
+
         Summons.Summon(summoned);
     }
 
