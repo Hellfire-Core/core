@@ -475,11 +475,12 @@ struct mob_sunblade_scoutAI : public ScriptedAI
         DoCast(me, SPELL_STEALTH_DETECT, true);
 
         SinisterStrike.Reset(urand(3000, 10000));
+        me->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_MOD_FEAR, true);
     }
 
     bool ActivateProtector(Unit* who)
     {
-        if(Unit* Protector = GetClosestCreatureWithEntry(me, 25507, 100, true, true))
+        if(Unit* Protector = GetClosestCreatureWithEntry(me, 25507, 300, true, true))
         {
             if(Protector->GetMotionMaster()->GetCurrentMovementGeneratorType() == IDLE_MOTION_TYPE)
             {
