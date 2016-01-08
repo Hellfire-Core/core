@@ -268,7 +268,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket & recv_data)
         return;
     }
 
-    if (!HasPermissions(PERM_GMT) && sObjectMgr.IsReservedName(name))
+    if (!HasPermissions(PERM_GMT) && sObjectMgr.IsReservedName(name,GetAccountId()))
     {
         data << uint8(CHAR_NAME_RESERVED);
         SendPacket(&data);
@@ -907,7 +907,7 @@ void WorldSession::HandleChangePlayerNameOpcode(WorldPacket& recv_data)
     }
 
     // check name limitations
-    if (!HasPermissions(PERM_GMT) && sObjectMgr.IsReservedName(newname))
+    if (!HasPermissions(PERM_GMT) && sObjectMgr.IsReservedName(newname, GetAccountId()))
     {
         WorldPacket data(SMSG_CHAR_RENAME, 1);
         data << uint8(CHAR_NAME_RESERVED);

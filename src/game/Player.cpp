@@ -14407,7 +14407,7 @@ bool Player::LoadFromDB(uint32 guid, SqlQueryHolder *holder)
     m_name = fields[3].GetCppString();
 
     // check name limitations
-    if (!ObjectMgr::IsValidName(m_name) || !GetSession()->HasPermissions(PERM_GMT) && sObjectMgr.IsReservedName(m_name))
+    if (!ObjectMgr::IsValidName(m_name) || !GetSession()->HasPermissions(PERM_GMT) && sObjectMgr.IsReservedName(m_name, dbAccountId))
     {
         RealmDataDatabase.PExecute("UPDATE characters SET at_login = at_login | '%u' WHERE guid ='%u'", uint32(AT_LOGIN_RENAME),guid);
         return false;

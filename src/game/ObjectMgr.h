@@ -690,9 +690,14 @@ class ObjectMgr
 
         // reserved names
         void LoadReservedPlayersNames();
-        bool IsReservedName(const std::string& name) const
+        bool IsReservedName(const std::string& name, uint32 accid = 0) const
         {
-            return m_ReservedNames.find(name) != m_ReservedNames.end();
+            for (ReservedNamesMap::iterator itr = m_ReservedNames.begin(); itr != m_ReservedNames.end(); itr++)
+            {
+                if (itr->first == name && (itr->second != accid || accid == 0))
+                    return true;
+            }
+            return false;
         }
 
         // name with valid structure and symbols
@@ -809,7 +814,7 @@ class ObjectMgr
         PetCreateSpellMap       mPetCreateSpell;
 
         //character reserved names
-        typedef std::set<std::string> ReservedNamesMap;
+        typedef std::set<std::pair<std::string,uint32>> ReservedNamesMap;
         ReservedNamesMap        m_ReservedNames;
 
         std::set<uint32>        m_DisabledPlayerSpells;

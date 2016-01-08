@@ -5541,7 +5541,7 @@ void ObjectMgr::LoadReservedPlayersNames()
 {
     m_ReservedNames.clear();                                // need for reload case
 
-    QueryResultAutoPtr result = RealmDataDatabase.Query("SELECT name FROM reserved_name");
+    QueryResultAutoPtr result = RealmDataDatabase.Query("SELECT name, accid FROM reserved_name");
 
     uint32 count = 0;
 
@@ -5563,9 +5563,10 @@ void ObjectMgr::LoadReservedPlayersNames()
         bar.step();
         fields = result->Fetch();
         std::string name= fields[0].GetCppString();
+        uint32 accid = fields[1].GetUInt32();
         if (normalizePlayerName(name))
         {
-            m_ReservedNames.insert(name);
+            m_ReservedNames.insert(std::pair<std::string,uint32>(name,accid));
             ++count;
         }
     } while (result->NextRow());
