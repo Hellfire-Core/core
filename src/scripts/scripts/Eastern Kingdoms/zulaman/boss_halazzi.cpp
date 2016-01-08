@@ -193,7 +193,7 @@ struct boss_halazziAI : public ScriptedAI
             break;
         case PHASE_HUMAN:
             //DoCast(m_creature, SPELL_SUMMON_LYNX, true);
-            DoSpawnCreature(MOB_SPIRIT_LYNX, 5,5,0,0, TEMPSUMMON_CORPSE_DESPAWN, 0);
+            DoSpawnCreature(MOB_SPIRIT_LYNX, 0,0,5,0, TEMPSUMMON_CORPSE_DESPAWN, 0);
             m_creature->SetMaxHealth(400000);
             m_creature->SetHealth(400000);
             ShockTimer = 10000;
