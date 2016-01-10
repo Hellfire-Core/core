@@ -2767,7 +2767,7 @@ void SpellMgr::LoadSpellCustomAttr()
                 case SPELL_AURA_MOD_ROOT:
                 case SPELL_AURA_MOD_DECREASE_SPEED:
                     // Creature daze exception
-                    if (spellInfo->Id == 1604) 
+                    if (spellInfo->Id == 1604)
                         break;
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_MOVEMENT_IMPAIR;
                     break;
@@ -2856,7 +2856,7 @@ void SpellMgr::LoadSpellCustomAttr()
             }
         }
         // this is done for the reason that mechanic is already worked out as SPELL mechanic. Leaving effect mechanic the same will cause double-effect on spell
-        
+
         if (spellInfo->SpellIconID == 109 && spellInfo->SpellVisual == 192)
             spellInfo->AttributesCu |= SPELL_ATTR_CU_BLOCK_STEALTH;
 
@@ -2944,6 +2944,9 @@ void SpellMgr::LoadSpellCustomAttr()
                     spellInfo->DurationIndex = 29;
                     spellInfo->RecoveryTime = 1;
                     break;
+                case 26194: // FIXME: pretbc spell scaling does not work with resistance correctly
+                    spellInfo->Attributes &= ~SPELL_ATTR_LEVEL_DAMAGE_CALCULATION;
+                    break;
                 }
                 if (spellInfo->SpellIconID == 184 && spellInfo->Attributes == 4259840)
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
@@ -2976,7 +2979,7 @@ void SpellMgr::LoadSpellCustomAttr()
                 if (spellInfo->Id == 16368)
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
                 else if (spellInfo->SpellFamilyFlags & 0x800000LL) // wf attack
-                    spellInfo->AttributesEx2 |= SPELL_ATTR_EX2_TRIGGERED_CAN_TRIGGER; 
+                    spellInfo->AttributesEx2 |= SPELL_ATTR_EX2_TRIGGERED_CAN_TRIGGER;
                 break;
             }
             case SPELLFAMILY_PALADIN:
@@ -3074,7 +3077,7 @@ void SpellMgr::LoadSpellCustomAttr()
                 // Death Coil
                 else if (spellInfo->SpellVisual == 9152)
                     spellInfo->Attributes |= SPELL_ATTR_CANT_CANCEL;
-                
+
                 if (spellInfo->SpellFamilyFlags & 0x0000800000000000LL) // Seed of corruption (proc one from another)
                     spellInfo->AttributesEx2 |= SPELL_ATTR_EX2_TRIGGERED_CAN_TRIGGER;
                 break;
@@ -3702,7 +3705,7 @@ void SpellMgr::LoadSpellCustomAttr()
             case 30195: // Felguard Intercept Stun rank 2
             case 30197: // Felguard Intercept Stun rank 3
             case 25999: // Boar Charge Immobilize
-                // Feral charge? - unaffected    
+                // Feral charge? - unaffected
                 spellInfo->AttributesCu |= SPELL_ATTR_CU_FAKE_DELAY;
                 break;
             case 30834: // Infernal Relay
@@ -4532,7 +4535,7 @@ DiminishingGroup SpellMgr::GetDiminishingReturnsGroupForSpell(SpellEntry const* 
             // Nature's Grasp trigger
             if (spellproto->SpellFamilyFlags & 0x00000000200LL && spellproto->Attributes == 0x49010000)
                 return DIMINISHING_CONTROL_ROOT;
-            // feral charge effect should not be in any dr 
+            // feral charge effect should not be in any dr
             if (spellproto->Id == 45334)
                 return DIMINISHING_NONE;
             break;
@@ -4568,7 +4571,7 @@ DiminishingGroup SpellMgr::GetDiminishingReturnsGroupForSpell(SpellEntry const* 
         for (uint8 i=0;i<3;++i)
         {
             if (mech = SpellMgr::GetEffectMechanic(spellproto, i))
-                break; // found something            
+                break; // found something
         }
     }
 
