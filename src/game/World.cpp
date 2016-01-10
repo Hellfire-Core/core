@@ -1655,7 +1655,7 @@ void World::Update(uint32 diff)
 
         UpdateSessions(diff);
 
-        diffRecorder.RecordTimeFor("Sessions");
+        diffRecorder.RecordTimeFor("Sessions",120);
 
         // Update groups
         for (ObjectMgr::GroupSet::iterator itr = sObjectMgr.GetGroupSetBegin(); itr != sObjectMgr.GetGroupSetEnd(); ++itr)
@@ -1753,7 +1753,8 @@ void World::Update(uint32 diff)
 
     /// <li> Handle all other objects
     sMapMgr.Update(diff);                // As interval = 0
-    diffRecorder.RecordTimeFor("Map manager");
+    //diffRecorder.RecordTimeFor("Map manager"); done inside mapmgr
+    diffRecorder.reset();
 
     sBattleGroundMgr.Update(diff);
     diffRecorder.RecordTimeFor("BattleGround manager", 50);
@@ -1803,7 +1804,7 @@ void World::Update(uint32 diff)
 
     //cleanup unused GridMap objects as well as VMaps
     sTerrainMgr.Update(diff);
-    diffRecorder.RecordTimeFor("Terrain manager", 30);
+    diffRecorder.RecordTimeFor("Terrain manager", 40);
 }
 
 void World::UpdateSessions(const uint32 & diff)

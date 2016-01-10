@@ -262,6 +262,11 @@ class DiffRecorder
             }
         }
 
+        inline void reset()
+        {
+            _prevTime = WorldTimer::getMSTime();
+        }
+
     private:
         uint32 _prevTime;
         uint32 _diffTresholdForFile;

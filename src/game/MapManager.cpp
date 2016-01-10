@@ -228,6 +228,7 @@ void MapManager::DeleteInstance(uint32 mapid, uint32 instanceId)
 typedef std::list<std::pair<Map*, uint32> > DelayedMapList;
 void MapManager::Update(uint32 diff)
 {
+    DiffRecorder dr(sWorld.getConfig(CONFIG_MIN_LOG_UPDATE));
     DelayedMapList delayedUpdate;
     for (MapMapType::iterator iter=i_maps.begin(); iter != i_maps.end();)
     {
@@ -247,17 +248,20 @@ void MapManager::Update(uint32 diff)
             ++iter;
         }
     }
+    dr.RecordTimeFor("MapManager-general");
     m_updater.wait();
+    dr.RecordTimeFor("MapManager - wait");
 
     for (DelayedMapList::iterator iter = delayedUpdate.begin(); iter != delayedUpdate.end(); ++iter)
         iter->first->DelayedUpdate(iter->second);
     delayedUpdate.clear();
-
+    dr.RecordTimeFor("MapManager-delayed");
     for (TransportSet::iterator iter = m_Transports.begin(); iter != m_Transports.end(); ++iter)
     {
         WorldObject::UpdateHelper helper(*iter);
         helper.Update(diff);
     }
+    dr.RecordTimeFor("MapManager-transports", 10);
 }
 
 bool MapManager::ExistMap(uint32 mapid, float x,float y)
