@@ -1740,6 +1740,10 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
 
     SetSemaphoreTeleport(true);
 
+    // prevent anticheat from bein an asshole
+    m_movementInfo.pos.x = x;
+    m_movementInfo.pos.y = y;
+    m_movementInfo.pos.z = z;
     m_AC_timer = 3000;
 
     // The player was ported to another map and looses the duel immediatly.

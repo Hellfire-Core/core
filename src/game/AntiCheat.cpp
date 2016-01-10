@@ -112,7 +112,7 @@ bool ACRequest::DetectFlyHack(Player *pPlayer)
 
 bool ACRequest::DetectWaterWalkHack(Player *pPlayer)
 {
-    if (!GetLastMovementInfo().HasMovementFlag(MOVEFLAG_WATERWALKING))
+    if (!GetNewMovementInfo().HasMovementFlag(MOVEFLAG_WATERWALKING))
         return false;
 
     // if we are a ghost we can walk on water

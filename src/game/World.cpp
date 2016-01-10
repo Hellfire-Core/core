@@ -833,7 +833,7 @@ void World::LoadConfigSettings(bool reload)
     loadConfig(CONFIG_WARDEN_MEM_CHECK_MAX, "Warden.MemCheckMax",3);
     loadConfig(CONFIG_WARDEN_RANDOM_CHECK_MAX, "Warden.RandomCheckMax",5);
     loadConfig(CONFIG_ENABLE_PASSIVE_ANTICHEAT, "AntiCheat.Enable", 1); 
-    loadConfig(CONFIG_ANTICHEAT_CUMULATIVE_DELAY, "AntiCheat.CumulativeDelay",5* IN_MILISECONDS);
+    loadConfig(CONFIG_ANTICHEAT_CUMULATIVE_DELAY, "AntiCheat.CumulativeDelay");
     loadConfig(CONFIG_ANTICHEAT_SPEEDHACK_TOLERANCE, "AntiCheat.SpeedhackTolerance",1.00f);
     loadConfig(CONFIG_GOBJECT_USE_EXPLOIT_RANGE, "AntiCheat.GobjectUseExploitRange", 3 * INTERACTION_DISTANCE);
 
