@@ -50,10 +50,10 @@ struct boss_nefarianAI : public ScriptedAI
 
     enum Spells
     {
-        SPELL_SHADOWFLAME_INITIAL   = 22972,
+        SPELL_SHADOWFLAME_INITIAL   = 22992,
         SPELL_SHADOWFLAME           = 22539,
         SPELL_BELLOWINGROAR         = 22686,
-        SPELL_VEILOFSHADOW          = 7068 ,
+        SPELL_VEILOFSHADOW          = 22687,
         SPELL_CLEAVE                = 20691,
         SPELL_TAILLASH              = 23364,
         SPELL_BONECONTRUST          = 23363,                   //23362, 23361
