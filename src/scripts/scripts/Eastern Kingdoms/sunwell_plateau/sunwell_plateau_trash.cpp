@@ -475,7 +475,6 @@ struct mob_sunblade_scoutAI : public ScriptedAI
         DoCast(me, SPELL_STEALTH_DETECT, true);
 
         SinisterStrike.Reset(urand(3000, 10000));
-        me->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_MOD_FEAR, true);
     }
 
     bool ActivateProtector(Unit* who)
