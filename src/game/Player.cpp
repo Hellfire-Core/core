@@ -1744,7 +1744,7 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
     m_movementInfo.pos.x = x;
     m_movementInfo.pos.y = y;
     m_movementInfo.pos.z = z;
-    m_AC_timer = 3000;
+    m_AC_timer = 5000;
 
     // The player was ported to another map and looses the duel immediatly.
     // We have to perform this check before the teleport, otherwise the
@@ -21326,7 +21326,7 @@ void Player::CumulativeACReport(AnticheatChecks check)
         return;
 
     ++m_AC_cumulative_count[check];
-    if (m_AC_cumulative_timer[check] > time(NULL))
+    if (m_AC_cumulative_timer[check] < time(NULL))
     {
         m_AC_cumulative_timer[check] = time(NULL) + sWorld.getConfig(CONFIG_ANTICHEAT_CUMULATIVE_DELAY);
         uint32 report = 0;
