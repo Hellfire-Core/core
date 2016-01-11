@@ -7522,7 +7522,19 @@ bool ChatHandler::HandleAccountFriendDeleteCommand(const char* args)
 // List friends for account
 bool ChatHandler::HandleAccountFriendListCommand(const char* args)
 {
-    return false;
+    uint32 targetAccountId = atoi(args);
+    if (!targetAccountId)
+        return false;
+
+    std::vector<uint32> listed = AccountMgr::GetRAFAccounts(targetAccountId);
+    for (uint32 i = 0; i < listed.size(); i++)
+        PSendSysMessage("%u was reffered to %u", targetAccountId, listed[i]);
+    
+    listed = AccountMgr::GetRAFAccounts(targetAccountId, false);
+    for (uint32 i = 0; i < listed.size(); i++)
+        PSendSysMessage("%u was reffered to %u", listed[i], targetAccountId);
+
+    return true;
 }
 
 bool ChatHandler::HandleServerKickallCommand(const char* args)
