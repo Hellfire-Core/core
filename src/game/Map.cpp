@@ -449,6 +449,7 @@ bool Map::loaded(const GridPair &p) const
 void Map::Update(const uint32 &t_diff)
 {
     volatile uint32 debug_map_id = GetId();
+    uint32 startTime = WorldTimer::getMSTime();
 
     /// update worldsessions for existing players
     for (m_mapRefIter = m_mapRefManager.begin(); m_mapRefIter != m_mapRefManager.end(); ++m_mapRefIter)
@@ -563,6 +564,9 @@ void Map::Update(const uint32 &t_diff)
     }
 
     MoveAllCreaturesInMoveList();
+
+    if (WorldTimer::getMSTimeDiffToNow(startTime) > 100)
+        sLog.outLog(LOG_DIFF,"Long map update (%u ms) : %u", WorldTimer::getMSTimeDiffToNow(startTime), GetId());
 }
 
 void Map::CheckHostileRefFor(Player* plr)
