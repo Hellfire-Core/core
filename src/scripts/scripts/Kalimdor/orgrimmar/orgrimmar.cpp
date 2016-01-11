@@ -73,6 +73,8 @@ bool GossipSelect_npc_neeru_fireblade(Player *player, Creature *_Creature, uint3
 ## npc_shenthul
 ######*/
 
+#define RESTORE_ITEM_WHISTLE "I've misplaced my whistle."
+#define ITEM_WHISTLE 8066
 #define QUEST_2460  2460
 
 struct npc_shenthulAI : public ScriptedAI
@@ -150,6 +152,34 @@ bool ReciveEmote_npc_shenthul(Player *player, Creature *_Creature, uint32 emote)
     {
         player->AreaExploredOrEventHappens(QUEST_2460);
         ((npc_shenthulAI*)_Creature->AI())->Reset();
+    }
+    return true;
+}
+
+bool GossipHello_npc_shenthul(Player *player, Creature *_Creature)
+{
+    if (_Creature->isQuestGiver())
+        player->PrepareQuestMenu(_Creature->GetGUID());
+
+    if (player->GetQuestStatus(2458) == QUEST_STATUS_COMPLETE && !player->HasItemCount(ITEM_WHISTLE,1,true))
+        player->ADD_GOSSIP_ITEM(0, RESTORE_ITEM_WHISTLE, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+
+    player->SEND_GOSSIP_MENU(_Creature->GetNpcTextId(), _Creature->GetGUID());
+    return true;
+}
+
+bool GossipSelect_npc_shenthul(Player *player, Creature *_Creature, uint32 sender, uint32 action)
+{
+    if (action == GOSSIP_ACTION_INFO_DEF + 1 &&
+        player->GetQuestStatus(2458) == QUEST_STATUS_COMPLETE &&
+        !player->HasItemCount(ITEM_WHISTLE, 1, true))
+    {
+        ItemPosCountVec dest;
+        if (player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_WHISTLE, 1) == EQUIP_ERR_OK)
+        {
+            Item* item = player->StoreNewItem(dest, ITEM_WHISTLE, true);
+            player->SendNewItem(item, 1, true, false);
+        }
     }
     return true;
 }
@@ -343,6 +373,8 @@ void AddSC_orgrimmar()
     newscript->GetAI = &GetAI_npc_shenthul;
     newscript->pQuestAcceptNPC =  &QuestAccept_npc_shenthul;
     newscript->pReceiveEmote = &ReciveEmote_npc_shenthul;
+    newscript->pGossipHello = &GossipHello_npc_shenthul;
+    newscript->pGossipSelect = &GossipSelect_npc_shenthul;
     newscript->RegisterSelf();
 
     newscript = new Script;
