@@ -1607,8 +1607,8 @@ class HELLGROUND_IMPORT_EXPORT Unit : public WorldObject
         float GetDeterminativeSize() const;
 
         Player* GetGMToSendCombatStats() const { return m_GMToSendCombatStats ? GetPlayer(m_GMToSendCombatStats) : NULL; }
-        void SetGMToSendCombatStats(uint64 guid) { m_GMToSendCombatStats = guid; }
-        void SendCombatStats(const char* str, Unit *pVictim, ...) const;
+        void SetGMToSendCombatStats(uint64 guid, uint32 flag) { m_GMToSendCombatStats = guid; m_CombatStatsFlag = flag; }
+        void SendCombatStats(uint32 flag, const char* str, Unit *pVictim, ...) const;
 
         bool RollPRD(float baseChance, float extraChance, uint32 spellId);
 
@@ -1710,6 +1710,7 @@ class HELLGROUND_IMPORT_EXPORT Unit : public WorldObject
         uint32 m_procDeep;
 
         uint64 m_GMToSendCombatStats;
+        uint32 m_CombatStatsFlag;
         UNORDERED_MAP<uint32, uint32> m_PRDMap;
 
         void UpdateSplineMovement(uint32 t_diff);

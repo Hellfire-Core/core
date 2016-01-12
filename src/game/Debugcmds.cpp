@@ -1017,14 +1017,21 @@ bool ChatHandler::HandleDebugShowCombatStats(const char* args)
     if(!target)
         return false;
 
-    if(strcmp(args, "on") == 0)
+    uint32 flags = atoi(args);
+
+    if (flags)
     {
-        target->SetGMToSendCombatStats(m_session->GetPlayer()->GetGUID());
+        target->SetGMToSendCombatStats(m_session->GetPlayer()->GetGUID(), flags);
+        PSendSysMessage("Combat stats for unit %s (%lu) enabled with 0x%08X flags", target->GetName(), target->GetGUID(), flags);
+    }
+    else if(strcmp(args, "on") == 0)
+    {
+        target->SetGMToSendCombatStats(m_session->GetPlayer()->GetGUID(), -1);
         PSendSysMessage("Combat stats for unit %s (%lu) enabled", target->GetName(), target->GetGUID());
     }
     else if(strcmp(args, "off") == 0)
     {
-        target->SetGMToSendCombatStats(0);
+        target->SetGMToSendCombatStats(0, 0);
         PSendSysMessage("Combat stats for unit %s (%lu) disabled", target->GetName(), target->GetGUID());
     }
     else

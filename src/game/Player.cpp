@@ -5386,7 +5386,7 @@ void Player::UpdateCombatSkills(Unit *pVictim, WeaponAttackType attType, bool de
     chance = chance < 1.0f ? 1.0f : chance;                 //minimum chance to increase skill is 1%
 
     if (!defence)
-        SendCombatStats("Weapon skill update [ skill: %u, chance %f, skilldif: %u ]", pVictim, attType, chance, skilldif);
+        SendCombatStats(128, "Weapon skill update [ skill: %u, chance %f, skilldif: %u ]", pVictim, attType, chance, skilldif);
 
     if (roll_chance_f(chance))
     {

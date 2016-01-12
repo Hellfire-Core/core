@@ -3157,7 +3157,7 @@ void Spell::SendCastResult(SpellCastResult result)
         return;
     }
 
-    m_caster->SendCombatStats("Cast %u failed, result %u",NULL,GetSpellEntry()->Id,result);
+    m_caster->SendCombatStats(64, "Cast %u failed, result %u",NULL,GetSpellEntry()->Id,result);
 
     WorldPacket data(SMSG_CAST_FAILED, (4 + 1 + 1));
     data << uint32(GetSpellEntry()->Id);
@@ -3495,6 +3495,7 @@ void Spell::SendChannelUpdate(uint32 time)
     {
         m_caster->SetUInt64Value(UNIT_FIELD_CHANNEL_OBJECT, 0);
         m_caster->SetUInt32Value(UNIT_CHANNEL_SPELL, 0);
+        m_caster->SendCombatStats(32, "Channeled spell end (%u)", NULL, GetSpellEntry()->Id);
     }
 
     WorldPacket data(MSG_CHANNEL_UPDATE, 8 + 4);
@@ -3542,7 +3543,7 @@ void Spell::SendChannelStart(uint32 duration)
     data << m_caster->GetPackGUID();
     data << uint32(GetSpellEntry()->Id);
     data << uint32(duration);
-
+    m_caster->SendCombatStats(32, "Channeled spell start (%u, %u)", NULL, GetSpellEntry()->Id, duration);
     m_caster->BroadcastPacket(&data, true);
 
     m_timer = duration;
