@@ -2589,6 +2589,18 @@ enum GBK_Encounters
     GBK_ANTISPAMINLOGSINATOR    = 50
 };
 
+enum CombatStatsType
+{
+    COMBAT_STATS_MAGIC_RESULT,      // 0
+    COMBAT_STATS_MELEE_RESULT,      // 1
+    COMBAT_STATS_MELEE_ROLL,        // 2
+    COMBAT_STATS_CRIT_CHANCE,       // 3
+    COMBAT_STATS_DISPEL_CHANCE,     // 4
+    COMBAT_STATS_CHANNEL_UPDATE,    // 5
+    COMBAT_STATS_FAILED_CAST,       // 6
+    COMBAT_STATS_WEAPON_SKILL,      // 7
+};
+
 #define CONTACT_DISTANCE            0.5f
 #define INTERACTION_DISTANCE        5.0f
 #define MAX_VISIBILITY_DISTANCE     500.0f      // max distance for visible object show, limited in 500 yards

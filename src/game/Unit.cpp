@@ -786,7 +786,7 @@ void Unit::RemoveSpellbyDamageTaken(uint32 damage, uint32 spell)
         }
     }
 
-    SendCombatStats(16, "Unit::RemoveSpellbyDamageTaken dispell chance %f; removing %u auras (dispelable %u, total %u)", 0, chance, aurasToRemove.size(), dispelable, m_ccAuras.size());
+    SendCombatStats(1<<COMBAT_STATS_DISPEL_CHANCE, "Unit::RemoveSpellbyDamageTaken dispell chance %f; removing %u auras (dispelable %u, total %u)", 0, chance, aurasToRemove.size(), dispelable, m_ccAuras.size());
     for (std::list<std::pair<uint32, uint64> >::iterator i = aurasToRemove.begin(); i != aurasToRemove.end(); ++i)
         RemoveAurasByCasterSpell(i->first, i->second);
 }
@@ -1597,7 +1597,7 @@ void Unit::CalculateMeleeDamage(MeleeDamageLog *damageInfo)
     damageInfo->rageDamage = damageInfo->damage;
     RollMeleeHit(damageInfo);
 
-    SendCombatStats(4, "RollMeleeHit: rageDamage = %d", damageInfo->target, damageInfo->rageDamage);
+    SendCombatStats(1<<COMBAT_STATS_MELEE_ROLL, "RollMeleeHit: rageDamage = %d", damageInfo->target, damageInfo->rageDamage);
 
     // Calculate absorb resist
     if (int32(damageInfo->damage) > 0)
@@ -2293,7 +2293,7 @@ void Unit::RollMeleeHit(MeleeDamageLog *damageInfo, int32 crit_chance, int32 mis
         roll, miss_chance, dodge_chance, parry_chance, block_chance, crit_chance);
 
     sum += miss_chance;
-    SendCombatStats(4, "RollMeleeHit: miss chance = %d", pVictim, miss_chance);
+    SendCombatStats(1<<COMBAT_STATS_MELEE_ROLL, "RollMeleeHit: miss chance = %d", pVictim, miss_chance);
 
     if (roll < sum)
     {
@@ -2348,7 +2348,7 @@ void Unit::RollMeleeHit(MeleeDamageLog *damageInfo, int32 crit_chance, int32 mis
         dodge_chance += GetTotalAuraModifier(SPELL_AURA_MOD_ENEMY_DODGE) * 100;
         if (dodge_chance > 0)
         {
-            SendCombatStats(4, "RollMeleeHit: dodge chance = %d", pVictim, dodge_chance);
+            SendCombatStats(1<<COMBAT_STATS_MELEE_ROLL, "RollMeleeHit: dodge chance = %d", pVictim, dodge_chance);
             sum += dodge_chance;
             if (roll < sum)
             {
@@ -2366,7 +2366,7 @@ void Unit::RollMeleeHit(MeleeDamageLog *damageInfo, int32 crit_chance, int32 mis
         parry_chance -= expertise_reduction + skillParryBonus;
         if (parry_chance > 0)
         {
-            SendCombatStats(4, "RollMeleeHit: parry chance = %d", pVictim, parry_chance);
+            SendCombatStats(1<<COMBAT_STATS_MELEE_ROLL, "RollMeleeHit: parry chance = %d", pVictim, parry_chance);
             sum += parry_chance;
             if (roll < sum)
             {
@@ -2391,7 +2391,7 @@ void Unit::RollMeleeHit(MeleeDamageLog *damageInfo, int32 crit_chance, int32 mis
 
         int32 glancing_chance = (10 + (victimDefenseSkill - skill)) * 100;
         glancing_chance = glancing_chance > 4000 ? 4000 : glancing_chance;
-        SendCombatStats(4, "RollMeleeHit: glancing chance = %d", pVictim, glancing_chance);
+        SendCombatStats(1<<COMBAT_STATS_MELEE_ROLL, "RollMeleeHit: glancing chance = %d", pVictim, glancing_chance);
         sum += glancing_chance;
         if (roll < sum)
         {
@@ -2422,7 +2422,7 @@ void Unit::RollMeleeHit(MeleeDamageLog *damageInfo, int32 crit_chance, int32 mis
         block_chance -= skillBonus;
         if (block_chance > 0)
         {
-            SendCombatStats(4, "RollMeleeHit: block chance = %d", pVictim, block_chance);
+            SendCombatStats(1<<COMBAT_STATS_MELEE_ROLL, "RollMeleeHit: block chance = %d", pVictim, block_chance);
             sum += block_chance;
             if (roll < sum)
             {
@@ -2450,7 +2450,7 @@ void Unit::RollMeleeHit(MeleeDamageLog *damageInfo, int32 crit_chance, int32 mis
         crit_chance += skillCritBonus;
         if (crit_chance > 0)
         {
-            SendCombatStats(4, "RollMeleeHit: crit chance = %d", pVictim, crit_chance);
+            SendCombatStats(1<<COMBAT_STATS_MELEE_ROLL, "RollMeleeHit: crit chance = %d", pVictim, crit_chance);
             sum += crit_chance;
             if (roll < sum)
             {
@@ -2500,7 +2500,7 @@ void Unit::RollMeleeHit(MeleeDamageLog *damageInfo, int32 crit_chance, int32 mis
         {
             // add 2% chance per lacking skill point, min. is 15%
             crushing_chance = crushing_chance * 200 - 1500;
-            SendCombatStats(4, "RollMeleeHit: crushing chance = %d", pVictim, crushing_chance);
+            SendCombatStats(1<<COMBAT_STATS_MELEE_ROLL, "RollMeleeHit: crushing chance = %d", pVictim, crushing_chance);
             sum += crushing_chance;
             if (roll < sum)
             {
@@ -2764,7 +2764,7 @@ SpellMissInfo Unit::MeleeSpellHitResult(Unit *pVictim, SpellEntry const *spell, 
     {
         uint32 missChance = uint32(MeleeSpellMissChance(pVictim, attType, fullSkillDiff, spell->Id)*100.0f);
 
-        SendCombatStats(2, "MeleeSpellHitResult (id=%d): miss chance = %d", pVictim, spell->Id, missChance);
+        SendCombatStats(1<<COMBAT_STATS_MELEE_RESULT, "MeleeSpellHitResult (id=%d): miss chance = %d", pVictim, spell->Id, missChance);
         // Roll miss
         tmp += missChance;
         if (roll < tmp)
@@ -2773,7 +2773,7 @@ SpellMissInfo Unit::MeleeSpellHitResult(Unit *pVictim, SpellEntry const *spell, 
 
     // Chance resist mechanic
     int32 resist_chance = pVictim->GetSpellMechanicResistChance(spell)*100;
-    SendCombatStats(2, "MeleeSpellHitResult (id=%d): mechanic resist chance = %d", pVictim, spell->Id, resist_chance);
+    SendCombatStats(1<<COMBAT_STATS_MELEE_RESULT, "MeleeSpellHitResult (id=%d): mechanic resist chance = %d", pVictim, spell->Id, resist_chance);
     tmp += resist_chance;
     if (roll < tmp)
         return SPELL_MISS_RESIST;
@@ -2833,7 +2833,7 @@ SpellMissInfo Unit::MeleeSpellHitResult(Unit *pVictim, SpellEntry const *spell, 
         if (dodgeChance < 0)
             dodgeChance = 0;
 
-        SendCombatStats(2, "MeleeSpellHitResult (id=%d): dodge chance = %d", pVictim, spell->Id, dodgeChance);
+        SendCombatStats(1<<COMBAT_STATS_MELEE_RESULT, "MeleeSpellHitResult (id=%d): dodge chance = %d", pVictim, spell->Id, dodgeChance);
         tmp += (int32)dodgeChance;
         if (roll < tmp)
             return SPELL_MISS_DODGE;
@@ -2849,7 +2849,7 @@ SpellMissInfo Unit::MeleeSpellHitResult(Unit *pVictim, SpellEntry const *spell, 
         if (parryChance < 0)
             parryChance = 0;
 
-        SendCombatStats(2, "MeleeSpellHitResult (id=%d): parry chance = %d", pVictim, spell->Id, parryChance);
+        SendCombatStats(1<<COMBAT_STATS_MELEE_RESULT, "MeleeSpellHitResult (id=%d): parry chance = %d", pVictim, spell->Id, parryChance);
         tmp += (int32)parryChance;
         if (roll < tmp)
             return SPELL_MISS_PARRY;
@@ -2861,7 +2861,7 @@ SpellMissInfo Unit::MeleeSpellHitResult(Unit *pVictim, SpellEntry const *spell, 
         if (blockChance < 0)
             blockChance = 0;
 
-        SendCombatStats(2, "MeleeSpellHitResult (id=%d): block chance = %d", pVictim, spell->Id, blockChance);
+        SendCombatStats(1<<COMBAT_STATS_MELEE_RESULT, "MeleeSpellHitResult (id=%d): block chance = %d", pVictim, spell->Id, blockChance);
         tmp += (int32)blockChance;
         if (roll < tmp)
             return SPELL_MISS_BLOCK;
@@ -2933,17 +2933,17 @@ SpellMissInfo Unit::MagicSpellHitResult(Unit *pVictim, SpellEntry const *spell)
     uint32 rand = urand(0,10000);
     if (rand > HitChance)
     {
-        SendCombatStats(1, "MagicSpellHitResult (id=%d): hit chance = %d - missed!", pVictim, spell->Id, HitChance);
+        SendCombatStats(1<<COMBAT_STATS_MAGIC_RESULT, "MagicSpellHitResult (id=%d): hit chance = %d - missed!", pVictim, spell->Id, HitChance);
         return SPELL_MISS_RESIST;
     }
 
     // binary resist spells
     if (SpellMgr::IsBinaryResistable(spell) && CalcBinaryResist(pVictim, schoolMask))
     {
-        SendCombatStats(1, "MagicSpellHitResult (id=%d): hit chance = %d - resisted!", pVictim, spell->Id, HitChance);
+        SendCombatStats(1<<COMBAT_STATS_MAGIC_RESULT, "MagicSpellHitResult (id=%d): hit chance = %d - resisted!", pVictim, spell->Id, HitChance);
         return SPELL_MISS_RESIST;
     }
-    SendCombatStats(1, "MagicSpellHitResult (id=%d): hit chance = %d - hit!", pVictim, spell->Id, HitChance);
+    SendCombatStats(1<<COMBAT_STATS_MAGIC_RESULT, "MagicSpellHitResult (id=%d): hit chance = %d - hit!", pVictim, spell->Id, HitChance);
     return SPELL_MISS_NONE;
 }
 
@@ -8608,7 +8608,7 @@ bool Unit::isSpellCrit(Unit *pVictim, SpellEntry const *spellProto, SpellSchoolM
             return false;
     }
     baseChance += spellExtraChance;
-    SendCombatStats(8, "isSpellCrit (id=%d): baseChance = %f (spellExtraChance = %f) extraChance = %f totalChance = %f", pVictim, spellProto->Id, baseChance, spellExtraChance, extraChance, baseChance + extraChance);
+    SendCombatStats(1<<COMBAT_STATS_CRIT_CHANCE, "isSpellCrit (id=%d): baseChance = %f (spellExtraChance = %f) extraChance = %f totalChance = %f", pVictim, spellProto->Id, baseChance, spellExtraChance, extraChance, baseChance + extraChance);
     return RollPRD(baseChance/100, extraChance/100, spellProto->Id);
 }
 
