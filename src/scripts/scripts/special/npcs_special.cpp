@@ -2424,6 +2424,42 @@ CreatureAI* GetAI_npc_land_mine(Creature* pCreature)
     return new npc_land_mineAI(pCreature);
 }
 
+#define SPELL_ARCANITE_DRAGONLING 9658
+struct npc_arcanite_dragonlingAI : public ScriptedAI
+{
+    npc_arcanite_dragonlingAI(Creature *c) : ScriptedAI(c)
+    {
+        Reset();
+    }
+
+    Timer spellTimer;
+
+    void Reset()
+    {
+        spellTimer.Reset(25000);
+        me->GetMotionMaster()->MoveFollow(me->GetOwner(), 2.0, M_PI / 2);
+    }
+
+    void UpdateAI(const uint32 diff)
+    {
+        if (!UpdateVictim())
+            return;
+
+        if (spellTimer.Expired(diff))
+        {
+            DoCast(me->getVictim(), SPELL_ARCANITE_DRAGONLING);
+            spellTimer = 25000;
+        }
+
+        DoMeleeAttackIfReady();
+    }
+};
+
+CreatureAI* GetAI_npc_arcanite_dragonling(Creature* pCreature)
+{
+    return new npc_arcanite_dragonlingAI(pCreature);
+}
+
 enum MiniPetsInfo
 {
     NPC_PANDA                   = 11325,
@@ -3553,5 +3589,10 @@ void AddSC_npcs_special()
     newscript->Name = "npc_arena_ready";
     newscript->pGossipHello = &GossipHello_npc_arenaready;
     newscript->pGossipSelect = &GossipSelect_npc_arenaready;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_arcanite_dragonling";
+    newscript->GetAI = &GetAI_npc_arcanite_dragonling;
     newscript->RegisterSelf();
 }
