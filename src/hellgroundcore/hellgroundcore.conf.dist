@@ -1146,6 +1146,9 @@ ChatFlood.MuteTime = 10
 #        Permission mask needed to access additional player data
 #        Default: 14336 (hgms/admins)
 #
+#    EnableCrashtest
+#        If enabled allows devs to perform crahtests
+#
 #    CommandLogPermission
 #        Permission mask for logging commands
 #        Default: 16130 (devs/gms/admins)
@@ -1180,6 +1183,7 @@ GM.StartLevel     = 70
 GM.AllowInvite    = 0
 GM.AllowFriend    = 0
 GM.TrustedLevel   = 14336
+EnableCrashtest   = 0
 
 CommandLogPermission = 16130
 InstantLogout = 16130

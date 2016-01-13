@@ -2599,6 +2599,7 @@ enum CombatStatsType
     COMBAT_STATS_CHANNEL_UPDATE,    // 5
     COMBAT_STATS_FAILED_CAST,       // 6
     COMBAT_STATS_WEAPON_SKILL,      // 7
+    COMBAT_STATS_CRAHSTEST,         // 8
 };
 
 #define CONTACT_DISTANCE            0.5f

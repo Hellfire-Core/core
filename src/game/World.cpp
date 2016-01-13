@@ -622,6 +622,7 @@ void World::LoadConfigSettings(bool reload)
     loadConfig(CONFIG_ALLOW_GM_GROUP, "GM.AllowInvite", false);
     loadConfig(CONFIG_ALLOW_GM_FRIEND, "GM.AllowFriend", false);
     loadConfig(CONFIG_GM_TRUSTED_LEVEL, "GM.TrustedLevel", PERM_HIGH_GMT);
+    loadConfig(CONFIG_ENABLE_CRASHTEST, "EnableCrashtest", false);
 
     loadConfig(CONFIG_COMMAND_LOG_PERMISSION, "CommandLogPermission", PERM_GMT_DEV);
     loadConfig(CONFIG_INSTANT_LOGOUT, "InstantLogout", PERM_GMT_DEV);
