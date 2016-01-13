@@ -291,7 +291,7 @@ void CharmInfo::HandleAttackCommand(uint64 targetGUID)
     if (!pTarget)
         return;
 
-    if (!m_unit->canAttack(pTarget))
+    if (!m_unit->canAttack(pTarget, true))
          return;
 
     // Not let attack through obstructions
