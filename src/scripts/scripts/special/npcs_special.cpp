@@ -2451,7 +2451,14 @@ struct npc_arcanite_dragonlingAI : public ScriptedAI
             spellTimer = 25000;
         }
 
-        DoMeleeAttackIfReady();
+        if (m_creature->isAttackReady())
+        {
+            if (m_creature->IsWithinMeleeRange(m_creature->getVictim()))
+            {
+                m_creature->AttackerStateUpdate(m_creature->getVictim());
+                m_creature->resetAttackTimer();
+            }
+        }
     }
 };
 
