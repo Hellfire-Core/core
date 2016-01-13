@@ -11472,6 +11472,7 @@ void Unit::SendPetCastFail(uint32 spellid, SpellCastResult msg)
     if (!owner || owner->GetTypeId() != TYPEID_PLAYER)
         return;
 
+    SendCombatStats(1 << COMBAT_STATS_FAILED_CAST, "Pet cast %u failed, result %u", NULL,spellid, msg);
     WorldPacket data(SMSG_PET_CAST_FAILED, (4+1));
     data << uint32(spellid);
     data << uint8(msg);
