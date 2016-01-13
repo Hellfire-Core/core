@@ -435,6 +435,7 @@ void GameObject::Update(uint32 update_diff, uint32 p_time)
                         {
                             Unit* caster = Unit::GetUnit(*this, uint64(*i));
                             if (!(caster && caster->GetCurrentSpell(CURRENT_CHANNELED_SPELL)))
+                                // if someone is stoped channeling deactivate
                             {
                                 m_lootState = GO_JUST_DEACTIVATED;
                                 break;
@@ -484,6 +485,7 @@ void GameObject::Update(uint32 update_diff, uint32 p_time)
                             }
                         }
                     }
+                    m_unique_users.clear();
                     break;
                 }
             }
