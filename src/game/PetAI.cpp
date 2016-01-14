@@ -295,8 +295,9 @@ void PetAI::UpdateAI(const uint32 diff)
 
             }
 
-            // we still do NOT have target, if follow command were appliend and we are NOT followin, reapply movegen :P
-            if (!me->getVictim() && me->GetCharmInfo()->HasCommandState(COMMAND_FOLLOW) && !me->hasUnitState(UNIT_STAT_FOLLOW))
+            // we still do NOT have target, if follow command were appliend and we are NOT followin or casting, reapply movegen :P
+            if (!me->getVictim() && me->GetCharmInfo()->HasCommandState(COMMAND_FOLLOW) &&
+                !me->hasUnitState(UNIT_STAT_FOLLOW | UNIT_STAT_CASTING))
                 me->GetMotionMaster()->MoveFollow(m_owner, PET_FOLLOW_DIST,PET_FOLLOW_ANGLE);
         }
     }

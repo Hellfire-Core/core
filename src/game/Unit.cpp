@@ -9652,6 +9652,10 @@ bool Unit::canDetectInvisibilityOf(Unit const* u, WorldObject const* viewPoint) 
     if (m_invisibilityMask & u->m_invisibilityMask) // same group
         return true;
 
+    Unit* owner = GetCharmerOrOwner();
+    if (owner && owner != this)
+        return owner->canDetectInvisibilityOf(u, viewPoint);
+
     if(m_invisibilityMask == 1) // normal invisibility
     {
         uint32 invLevel = 0;
