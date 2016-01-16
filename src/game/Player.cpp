@@ -2372,8 +2372,6 @@ void Player::SetGMVisible(bool on)
     else
     {
         m_ExtraFlags |= PLAYER_EXTRA_GM_INVISIBLE;          //add flag
-
-        SetAcceptWhispers(false);
         SetGameMaster(true);
 
         SetVisibility(VISIBILITY_OFF);
