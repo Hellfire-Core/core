@@ -305,6 +305,7 @@ struct mob_rizzle_sprysprocketAI : public ScriptedAI
                 DoCast(m_creature, SPELL_PERIODIC_DEPTH_CHARGE);
                 m_creature->SetLevitate(true);
                 m_creature->SetSpeed(MOVE_RUN, 0.85f, true);
+                m_creature->SetSpeed(MOVE_FLIGHT, 0.85f, true);
                 m_creature->GetMotionMaster()->MovementExpired();
                 m_creature->GetMotionMaster()->MovePoint(CurrWP, WPs[CurrWP][0], WPs[CurrWP][1], WPs[CurrWP][2]);
                 Escape = true;
@@ -341,18 +342,18 @@ struct mob_rizzle_sprysprocketAI : public ScriptedAI
                 return;
             }
 
-            if (((me->GetDistance(player) < 3) || (me->GetDistance(player) < 10 && me->GetPositionX() - 3 < player->GetPositionX())) && !Reached)
+            if (((me->GetDistance(player) < 5) || (me->GetDistance(player) < 15 && me->GetPositionX() - 3 < player->GetPositionX())) && !Reached)
             {
                 DoScriptText(SAY_RIZZLE_FINAL, m_creature);
                 m_creature->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
                 m_creature->setFaction(35);
                 m_creature->RemoveAurasDueToSpell(SPELL_PERIODIC_DEPTH_CHARGE);
-                me->ClearInCombat();
-                player->ClearInCombat();
+                me->CombatStop();
+                player->CombatStop();
                 Reached = true;
             }
 
-            Check_Timer = 1000;
+            Check_Timer = 500;
         } 
 
     }
