@@ -4606,6 +4606,10 @@ void Spell::EffectSummonPossessed(uint32 i)
 
     pet->SetUInt32Value(UNIT_CREATED_BY_SPELL, GetSpellEntry()->Id);
     pet->SetCharmedOrPossessedBy(m_caster, true);
+
+    // hack for dream vision
+    if (entry = 7863)
+        pet->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
 }
 
 void Spell::EffectTeleUnitsFaceCaster(uint32 i)
@@ -4990,10 +4994,6 @@ void Spell::EffectSummonPet(uint32 i)
     // this enables popup window (pet dismiss, cancel), hunter pet additional flags set later
     pet->SetUInt32Value(UNIT_FIELD_FLAGS,UNIT_FLAG_PVP_ATTACKABLE);
     pet->SetUInt32Value(UNIT_FIELD_PET_NAME_TIMESTAMP, time(NULL));
-
-    // hack for dream vision
-    if (petentry = 7863)
-        pet->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
 
     // generate new name for summon pet
     std::string new_name=sObjectMgr.GeneratePetName(petentry);
