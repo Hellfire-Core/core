@@ -1775,6 +1775,7 @@ void Spell::SetTargetMap(uint32 i, uint32 cur)
                     if (!target->IsFriendlyTo(m_caster) && GetSpellEntry()->Effect[i] == SPELL_EFFECT_DISPEL)
                     {
                         SelectMagnetTarget();
+                        pushType = PUSH_CHAIN;
                         break;
                     }
                 case TARGET_UNIT_TARGET_ALLY:
