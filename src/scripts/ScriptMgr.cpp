@@ -482,6 +482,7 @@ CreatureAI* GetCreatureAI(Creature* pCreature)
 
     CreatureAI* ai = pTempScript->GetAI(pCreature);
     ai->m_AIName = pCreature->GetScriptName();
+    return ai;
 }
 
 HELLGROUND_DLL_EXPORT
