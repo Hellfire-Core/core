@@ -480,7 +480,8 @@ CreatureAI* GetCreatureAI(Creature* pCreature)
     if (!pTempScript || !pTempScript->GetAI)
         return NULL;
 
-    return pTempScript->GetAI(pCreature);
+    CreatureAI* ai = pTempScript->GetAI(pCreature);
+    ai->m_AIName = pCreature->GetScriptName();
 }
 
 HELLGROUND_DLL_EXPORT
