@@ -327,9 +327,9 @@ struct npc_theramore_combat_dummyAI : public Scripted_NoMovementAI
 
         if (Check_Timer.Expired(diff))
         {
-            Unit* target;
+            Player* target;
             Hellground::AnyPlayerInObjectRangeCheck u_check(m_creature, 12.0f);
-            Hellground::UnitSearcher<Hellground::AnyPlayerInObjectRangeCheck> searcher(target,u_check);
+            Hellground::ObjectSearcher<Player,Hellground::AnyPlayerInObjectRangeCheck> searcher(target,u_check);
             Cell::VisitAllObjects(me, searcher, 12.0f);
             if(!target)
                 EnterEvadeMode();
