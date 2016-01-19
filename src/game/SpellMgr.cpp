@@ -2951,6 +2951,9 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 26194: // FIXME: pretbc spell scaling does not work with resistance correctly
                     spellInfo->Attributes &= ~SPELL_ATTR_LEVEL_DAMAGE_CALCULATION;
                     break;
+                case 46648: // no pull for cosmetic spell
+                    spellInfo->AttributesEx3 |= SPELL_ATTR_EX3_NO_INITIAL_AGGRO;
+                    break;
                 }
                 if (spellInfo->SpellIconID == 184 && spellInfo->Attributes == 4259840)
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
@@ -3094,9 +3097,12 @@ void SpellMgr::LoadSpellCustomAttr()
                     spellInfo->Effect[1] = 0;
                 else if (spellInfo->Id == 13810) // frost trap effect ignore los
                     spellInfo->AttributesEx2 |= SPELL_ATTR_EX2_IGNORE_LOS;
-                else if (spellInfo->Id == 1543 || spellInfo->Id == 28822)
+                else if (spellInfo->Id == 1543 || spellInfo->Id == 28822) // flares
+                {
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_BLOCK_STEALTH;
-
+                    spellInfo->speed = 15;
+                    spellInfo->AttributesEx3 |= SPELL_ATTR_EX3_NO_INITIAL_AGGRO;
+                }
                 if (spellInfo->SpellFamilyFlags & 0x0000200000000014LL) // trap effects
                     spellInfo->AttributesEx2 |= SPELL_ATTR_EX2_TRIGGERED_CAN_TRIGGER;
                 spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
@@ -3216,10 +3222,6 @@ void SpellMgr::LoadSpellCustomAttr()
                 break;
             /* WARLOCK CUSTOM ATTRIBUTES */
             /* HUNTER CUSTOM ATTRIBUTES */
-            case 1543:                      // Flare no longer produces combat
-                spellInfo->AttributesEx3 |= SPELL_ATTR_EX3_NO_INITIAL_AGGRO;
-                spellInfo->speed = 15;
-                break;
             /* WARRIOR CUSTOM ATTRIBUTES */
             case 12721: // Deep Wounds
                 spellInfo->AttributesEx3 |= SPELL_ATTR_EX3_NO_DONE_BONUS;
