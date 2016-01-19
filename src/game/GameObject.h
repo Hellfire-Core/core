@@ -642,6 +642,7 @@ class HELLGROUND_IMPORT_EXPORT GameObject : public WorldObject
 
         float GetDeterminativeSize() const;
         void Reset();
+        int32 GetCooldownTimeLeft() { return (time(NULL) - m_cooldownTime); }
 
     protected:
         uint32      m_charges;                              // Spell charges for GAMEOBJECT_TYPE_SPELLCASTER (22)

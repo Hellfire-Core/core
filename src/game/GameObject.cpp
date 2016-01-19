@@ -1053,7 +1053,7 @@ void GameObject::Use(Unit* user)
             pPlayer->SendLoot(GetGUID(), LOOT_SKINNING);
             //SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_IN_USE);
             SetLootState(GO_ACTIVATED);
-            m_cooldownTime = time(NULL) + 80000;
+            m_cooldownTime = time(NULL) + 80;
             AddUse();
 
             if (GetGOInfo()->chest.eventId)

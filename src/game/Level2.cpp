@@ -409,7 +409,7 @@ bool ChatHandler::HandleGameObjectTargetCommand(const char* args)
 
         PSendSysMessage(LANG_COMMAND_RAWPAWNTIMES, defRespawnDelayStr.c_str(),curRespawnDelayStr.c_str());
         const uint32 GOflags = target->GetUInt32Value(GAMEOBJECT_FLAGS);
-        PSendSysMessage("Selected GameObject flags: %u, Loot state: %u, HasLooters: %u, isLooted %u", GOflags, target->getLootState(), target->loot.HasLooters(), target->loot.isLooted());
+        PSendSysMessage("Selected GameObject flags: %u, Loot state: %u, HasLooters: %u, isLooted %u, internal timer %i", GOflags, target->getLootState(), target->loot.HasLooters(), target->loot.isLooted(), target->GetCooldownTimeLeft());
     }
     return true;
 }
