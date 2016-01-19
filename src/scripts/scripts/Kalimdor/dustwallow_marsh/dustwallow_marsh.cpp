@@ -302,21 +302,17 @@ struct npc_theramore_combat_dummyAI : public Scripted_NoMovementAI
     npc_theramore_combat_dummyAI(Creature *c) : Scripted_NoMovementAI(c)
     {
     }
-
-    uint64 AttackerGUID;
-    int32 Check_Timer;
+    Timer Check_Timer;
 
     void Reset()
     {
         m_creature->SetNoCallAssistance(true);
         m_creature->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_MOD_STUN, true);
-        AttackerGUID = 0;
-        Check_Timer = 0;
+        Check_Timer.Reset(3000);
     }
 
     void EnterCombat(Unit* who)
     {
-        AttackerGUID = ((Player*)who)->GetGUID();
         m_creature->GetUnitStateMgr().PushAction(UNIT_ACTION_STUN, UNIT_ACTION_PRIORITY_END);
     }
 
@@ -326,18 +322,19 @@ struct npc_theramore_combat_dummyAI : public Scripted_NoMovementAI
 
     void UpdateAI(const uint32 diff)
     {
-        Player* attacker = Player::GetPlayer(AttackerGUID);
-
         if (!UpdateVictim())
             return;
 
-        Check_Timer -= diff;
-        if (attacker && Check_Timer <= diff)
+        if (Check_Timer.Expired(diff))
         {
-            if(m_creature->GetDistance2d(attacker) > 12.0f)
+            Unit* target;
+            Hellground::AnyPlayerInObjectRangeCheck u_check(m_creature, 12.0f);
+            Hellground::UnitSearcher<Hellground::AnyPlayerInObjectRangeCheck> searcher(target,u_check);
+            Cell::VisitAllObjects(me, searcher, 12.0f);
+            if(!target)
                 EnterEvadeMode();
 
-            Check_Timer += 3000;
+            Check_Timer = 3000;
         }
     }
 };
