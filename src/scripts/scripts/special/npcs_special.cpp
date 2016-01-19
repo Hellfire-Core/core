@@ -2427,23 +2427,29 @@ CreatureAI* GetAI_npc_land_mine(Creature* pCreature)
 #define SPELL_ARCANITE_DRAGONLING 9658
 struct npc_arcanite_dragonlingAI : public ScriptedAI
 {
-    npc_arcanite_dragonlingAI(Creature *c) : ScriptedAI(c)
-    {
-        Reset();
-    }
+    npc_arcanite_dragonlingAI(Creature *c) : ScriptedAI(c) {}
 
     Timer spellTimer;
 
     void Reset()
     {
         spellTimer.Reset(25000);
-        me->GetMotionMaster()->MoveFollow(me->GetOwner(), 2.0, M_PI / 2);
+    }
+
+    void EnterEvadeMode()
+    {
+        me->SendCombatStats(1 << COMBAT_STATS_TEST, "evading", NULL);
+        CreatureAI::EnterEvadeMode();
     }
 
     void UpdateAI(const uint32 diff)
     {
         if (!UpdateVictim())
+        {
+            if (me->GetMotionMaster()->GetCurrentMovementGeneratorType() != FOLLOW_MOTION_TYPE)
+                me->GetMotionMaster()->MoveFollow(me->GetOwner(), 2.0, M_PI / 2);
             return;
+        }
 
         if (spellTimer.Expired(diff))
         {

@@ -12014,8 +12014,7 @@ bool Unit::IsTriggeredAtSpellProcEvent(Aura* aura, SpellEntry const* procSpell, 
 
     // Get proc Event Entry
     spellProcEvent = sSpellMgr.GetSpellProcEvent(spellProto->Id);
-    if (spellProto->Id == 30302 && isVictim)
-        SendCombatStats(1 << COMBAT_STATS_TEST, "istriggeredatspellprocevent %u %u %u", NULL, procSpell ? procSpell->Id : 0, procFlag, procExtra);
+
     // Aura info stored here
     Modifier *mod = aura->GetModifier();
     // Skip this auras

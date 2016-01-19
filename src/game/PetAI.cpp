@@ -266,7 +266,6 @@ void PetAI::UpdateAI(const uint32 diff)
     {
         if (_needToStop())
         {
-            me->SendCombatStats(1 << COMBAT_STATS_TEST, "pet ai need to stop", NULL);
             _stopAttack();
             return;
         }
