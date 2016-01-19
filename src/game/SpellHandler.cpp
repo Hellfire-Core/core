@@ -36,9 +36,6 @@
 
 void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
 {
-    if (_player->isGameMaster())
-        return;
-
     Player* pUser = _player;
     uint8 bagIndex, slot;
     uint8 spell_count;                                      // number of spells at item, not used
@@ -330,9 +327,6 @@ void WorldSession::HandleGameObjectUseOpcode(WorldPacket & recv_data)
 
 void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
 {
-    if (_player->isGameMaster())
-        return;
-
     CHECK_PACKET_SIZE(recvPacket,4+1+2);
 
     uint32 spellId;
