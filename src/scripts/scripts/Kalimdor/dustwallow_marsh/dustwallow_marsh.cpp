@@ -332,7 +332,7 @@ struct npc_theramore_combat_dummyAI : public Scripted_NoMovementAI
             Hellground::ObjectSearcher<Player,Hellground::AnyPlayerInObjectRangeCheck> searcher(target,u_check);
             Cell::VisitAllObjects(me, searcher, 12.0f);
             if(!target)
-                EnterEvadeMode();
+                m_creature->CombatStop();
 
             Check_Timer = 3000;
         }
