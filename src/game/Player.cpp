@@ -17713,9 +17713,11 @@ void Player::RestoreSpellMods(Spell const* spell)
 
 void Player::RemoveSpellMods(Spell const* spell)
 {
-    SendCombatStats(1 << COMBAT_STATS_TEST, "Remove spell mods %u %u", NULL, m_SpellModRemoveCount, (spell ? spell->GetSpellEntry()->Id : 0));
     if (!spell || (m_SpellModRemoveCount == 0))
         return;
+
+    if (spell->GetSpellEntry()->AttributesEx2 & SPELL_ATTR_EX2_AUTOREPEAT_FLAG) // use main spell, not triggered one
+        spell = m_currentSpells[CURRENT_AUTOREPEAT_SPELL];
 
     for (int i=0;i<MAX_SPELLMOD;++i)
     {
