@@ -1522,14 +1522,14 @@ struct mob_torloth_the_magnificentAI : public ScriptedAI
 
 struct npc_lord_illidan_stormrageAI : public ScriptedAI
 {
-    npc_lord_illidan_stormrageAI(Creature* c) : ScriptedAI(c) {}
+    npc_lord_illidan_stormrageAI(Creature* c) : ScriptedAI(c), summons(c) {}
 
     uint64 PlayerGUID;
 
     Timer WaveTimer;
     Timer AnnounceTimer;
 
-    int8 LiveCount;
+    SummonList summons;
     uint8 WaveCount;
 
     bool EventStarted;
@@ -1540,7 +1540,7 @@ struct npc_lord_illidan_stormrageAI : public ScriptedAI
 
         WaveTimer.Reset(10000);
         AnnounceTimer.Reset(7000);
-        LiveCount = 0;
+        summons.DespawnAll();
         WaveCount = 0;
 
         EventStarted = false;
@@ -1568,7 +1568,7 @@ struct npc_lord_illidan_stormrageAI : public ScriptedAI
 
             if(Spawn)
             {
-                ++LiveCount;
+                summons.Summon(Spawn);
                 Spawn->LoadCreaturesAddon();
 
                 if(WaveCount == 0)//1 Wave
@@ -1611,6 +1611,9 @@ struct npc_lord_illidan_stormrageAI : public ScriptedAI
             }
         }
         ++WaveCount;
+
+        WaveTimer = 10000;
+        AnnounceTimer = 7000;
     }
 
     bool CheckEventFail()
@@ -1623,10 +1626,7 @@ struct npc_lord_illidan_stormrageAI : public ScriptedAI
         if(Group *EventGroup = pPlayer->GetGroup())
         {
             Player* GroupMember;
-
-            uint8 GroupMemberCount = 0;
-            uint8 DeadMemberCount = 0;
-            uint8 FailedMemberCount = 0;
+            bool failed = true;
 
             const Group::MemberSlotList members = EventGroup->GetMemberSlots();
 
@@ -1635,26 +1635,12 @@ struct npc_lord_illidan_stormrageAI : public ScriptedAI
                 GroupMember = (Unit::GetPlayer(itr->guid));
                 if(!GroupMember)
                     continue;
-                if(!GroupMember->IsWithinDistInMap(m_creature, EVENT_AREA_RADIUS) && GroupMember->GetQuestStatus(QUEST_BATTLE_OF_THE_CRIMSON_WATCH) == QUEST_STATUS_INCOMPLETE)
-                {
-                    GroupMember->FailQuest(QUEST_BATTLE_OF_THE_CRIMSON_WATCH);
-                    GroupMember->SetQuestStatus(QUEST_BATTLE_OF_THE_CRIMSON_WATCH, QUEST_STATUS_NONE);
-                    ++FailedMemberCount;
-                }
-                ++GroupMemberCount;
 
-                if(GroupMember->isDead())
-                {
-                    ++DeadMemberCount;
-                }
+                if(GroupMember->IsWithinDistInMap(m_creature, EVENT_AREA_RADIUS) && GroupMember->isAlive())
+                    failed = false;
             }
 
-            if(GroupMemberCount == FailedMemberCount)
-            {
-                return true;
-            }
-
-            if(GroupMemberCount == DeadMemberCount)
+            if(failed)
             {
                 for(Group::member_citerator itr = members.begin(); itr!= members.end(); itr++)
                 {
@@ -1668,7 +1654,8 @@ struct npc_lord_illidan_stormrageAI : public ScriptedAI
                 }
                 return true;
             }
-        }else if (pPlayer->isDead() || !pPlayer->IsWithinDistInMap(m_creature, EVENT_AREA_RADIUS))
+        }
+        else if (pPlayer->isDead() || !pPlayer->IsWithinDistInMap(m_creature, EVENT_AREA_RADIUS))
         {
             pPlayer->FailQuest(QUEST_BATTLE_OF_THE_CRIMSON_WATCH);
             return true;
@@ -1676,14 +1663,9 @@ struct npc_lord_illidan_stormrageAI : public ScriptedAI
         return false;
     }
 
-    void LiveCounter()
+    void SummonedCreatureDespawn(Creature* despawned)
     {
-        --LiveCount;
-        if (!LiveCount)
-        {
-            WaveTimer = 10000;
-            AnnounceTimer = 7000;
-        }
+        summons.Despawn(despawned);
     }
 
     void UpdateAI(const uint32 diff)
@@ -1692,11 +1674,11 @@ struct npc_lord_illidan_stormrageAI : public ScriptedAI
         if (!PlayerGUID || !EventStarted)
             return;
 
-        Player *range = me->GetPlayer(PlayerGUID);
-        if (!range || me->GetDistance(range) >= 100.0f)
+        if (CheckEventFail())
             EnterEvadeMode();
 
-        if(!LiveCount && WaveCount < 4)
+
+        if(summons.empty() && WaveCount < 4)
         {
             if(AnnounceTimer.Expired(diff))
             {
@@ -1707,19 +1689,8 @@ struct npc_lord_illidan_stormrageAI : public ScriptedAI
             if(WaveTimer.Expired(diff))
                 SummonNextWave();
         }
-
-        if(CheckEventFail())
-            EnterEvadeMode();
     }
 };
-
-void mob_illidari_spawnAI::JustDied(Unit *slayer)
-{
-    m_creature->RemoveCorpse();
-    if(Creature* LordIllidan = (Unit::GetCreature(*m_creature, LordIllidanGUID)))
-        if(LordIllidan)
-            ((npc_lord_illidan_stormrageAI*)LordIllidan->AI())->LiveCounter();
-}
 
 /*#####
 # go_crystal_prison
@@ -1735,7 +1706,6 @@ bool GOQuestAccept_GO_crystal_prison(Player* plr, GameObject* go, Quest const* q
         {
             ((npc_lord_illidan_stormrageAI*)((Creature*)Illidan)->AI())->Reset();
             ((npc_lord_illidan_stormrageAI*)((Creature*)Illidan)->AI())->PlayerGUID = plr->GetGUID();
-            ((npc_lord_illidan_stormrageAI*)((Creature*)Illidan)->AI())->LiveCount = 0;
             ((npc_lord_illidan_stormrageAI*)((Creature*)Illidan)->AI())->EventStarted=true;
         }
     }
