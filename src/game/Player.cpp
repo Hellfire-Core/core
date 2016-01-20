@@ -17713,6 +17713,7 @@ void Player::RestoreSpellMods(Spell const* spell)
 
 void Player::RemoveSpellMods(Spell const* spell)
 {
+    SendCombatStats(1 << COMBAT_STATS_TEST, "Remove spell mods %u %u", NULL, m_SpellModRemoveCount, (spell ? spell->GetSpellEntry()->Id : 0));
     if (!spell || (m_SpellModRemoveCount == 0))
         return;
 
