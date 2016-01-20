@@ -3217,6 +3217,12 @@ void Spell::SendCastResult(SpellCastResult result)
             break;
     }
     ((Player*)m_caster)->SendPacketToSelf(&data);
+
+
+    // this is hack for spells like shadowform, client should prevent player from casting this when not ready
+    // but if it fails client will show spell icon like inactive. This should help, but will give extra cd if this happens
+    if (result == SPELL_FAILED_NOT_READY && GetSpellEntry()->Attributes & SPELL_ATTR_DISABLED_WHILE_ACTIVE)
+        m_caster->ToPlayer()->SendCooldownEvent(GetSpellEntry());
 }
 
 void Spell::SendSpellStart()
