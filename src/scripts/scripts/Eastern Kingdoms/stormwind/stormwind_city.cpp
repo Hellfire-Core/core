@@ -748,117 +748,105 @@ bool QuestAccept_npc_tyrion(Player* pPlayer, Creature* pCreature, Quest const *p
 
 #define REGINALD_SPAWN_COORDS       -9179.8, 308.65, 78.92
 
-struct npc_squire_roweAI : public npc_escortAI
+struct npc_squire_roweAI : public ScriptedAI
 {
-    npc_squire_roweAI(Creature *c) : npc_escortAI(c)
+    npc_squire_roweAI(Creature *c) : ScriptedAI(c)
     {
         c->GetPosition(wLoc);
     }
 
     WorldLocation wLoc;
-    uint8 event;
-    int32 eventTimer;
-    uint32 resetTimer;
+    uint8 eventStage;
+    Timer eventTimer;
+    uint64 playerGUID;
 
     void WaypointReached(uint32 i)
     {
-        Player* player = GetPlayerForEscort();
-        if(!player)
-            return;
-
         switch(i)
         {
-            case 1:
-                event = 1;
-                SetEscortPaused(true);
-            break;
+        case 1:
+            m_creature->GetMotionMaster()->MovePoint(2, -9086, 419.0, 92.4);
+        break;
+        case 2:
+            eventStage = 2;
+            eventTimer = 2000;
+        break;
+        case 3:
+            m_creature->SetOrientation(2.23f);
+            Reset();
         }
     }
 
     void Reset()
     {
         me->setActive(true);
-        event = 0;
-        eventTimer = 2000;
-        resetTimer = 0;
-    }
-
-    bool inProgress()
-    {
-        return event || resetTimer;
+        eventStage = 0;
+        eventTimer = 0;
+        playerGUID = 0;
     }
 
     void EnterCombat(Unit* who){}
 
     void JustDied(Unit *slayer){}
 
+    void StartEvent(uint64 plGUID)
+    {
+        if (!plGUID)
+            return;
+        playerGUID = plGUID;
+        eventStage = 1;
+        m_creature->GetMotionMaster()->MovePoint(1, -9057, 441.2, 93.1);
+    }
+
     void UpdateAI(const uint32 diff)
     {
-        Player* player = GetPlayerForEscort();
-        npc_escortAI::UpdateAI(diff);
-
-        if(!player || (!event && !resetTimer))
+        if(!eventStage)
             return;
 
-        if (resetTimer)
-        {
-            resetTimer -= diff;
-            if (resetTimer <= diff)
-            {
-                resetTimer = 0;
-                SetEscortPaused(false);
-            }
-            return;
-        }
+        Player* player = m_creature->GetPlayer(playerGUID);
 
-        eventTimer -= diff;
-        if (eventTimer <= diff)
+        if (eventTimer.Expired(diff))
         {
-            switch(event)
+            switch(eventStage)
             {
-                case 1:
-                {
-                    m_creature->SetStandState(PLAYER_STATE_KNEEL);
-                }
-                break;
                 case 2:
                 {
+                    m_creature->SetStandState(PLAYER_STATE_KNEEL);
+                    eventStage++;
+                    eventTimer = 4000;
+                }
+                break;
+                case 3:
+                {
                     m_creature->SetStandState(PLAYER_STATE_NONE);
-                    event = 0;
                     Creature* pUnit = m_creature->SummonCreature(NPC_REGINAL_WINDSOR, REGINALD_SPAWN_COORDS, 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 900);
                     if (pUnit)
                     {
                         ((npc_escortAI*)pUnit->AI())->Start(false, true, player->GetGUID());
                         ((npc_escortAI*)pUnit->AI())->SetMaxPlayerDistance(200);
                     }
-
-                    m_creature->StopMoving();
-                    m_creature->GetMotionMaster()->Clear();
-                    m_creature->GetMotionMaster()->MoveTargetedHome();
-                    resetTimer = MINUTE*10*1000;
+                    eventStage++;
+                    eventTimer = 4000;
+                }
+                case 4:
+                {
+                    eventTimer = 0;
+                    m_creature->GetMotionMaster()->MovePoint(3, -9042, 434.2, 93.4);
                 }
                 break;
             }
-            eventTimer += 4000;
-            event++;
         }
     }
 };
 
 CreatureAI* GetAI_npc_squire_rowe(Creature *_Creature)
 {
-    npc_squire_roweAI* squire_roweAI = new npc_squire_roweAI(_Creature);
-
-    squire_roweAI->AddWaypoint(0, -9057, 441.2, 93.1, 0);
-    squire_roweAI->AddWaypoint(1, -9086, 419.0, 92.4, 0);
-    squire_roweAI->AddWaypoint(2, -9042, 434.2, 93.4, 0);
-
-    return (CreatureAI*)squire_roweAI;
+    return new npc_squire_roweAI(_Creature);
 }
 
 bool GossipHello_npc_squire_rowe(Player *player, Creature *_Creature)
 {
-    if (((npc_squire_roweAI*)_Creature->AI())->inProgress())
+    if (((npc_squire_roweAI*)_Creature->AI())->eventStage)
         return false;
 
     if ((player->GetQuestStatus(QUEST_STORMWIND_RENDEZVOUS)
@@ -879,8 +867,7 @@ bool GossipSelect_npc_squire_rowe(Player *player, Creature *_Creature, uint32 se
     switch (action)
     {
         case GOSSIP_ACTION_INFO_DEF:
-            ((npc_squire_roweAI*)_Creature->AI())->Start(false, true, player->GetGUID(), NULL, true);
-            ((npc_squire_roweAI*)_Creature->AI())->SetMaxPlayerDistance(10000);
+            ((npc_squire_roweAI*)_Creature->AI())->StartEvent(player->GetGUID());
             break;
     }
     return true;
