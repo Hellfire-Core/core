@@ -1053,11 +1053,10 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
             if (Creature* c = pInstance->GetCreature(guid))
             {
                 c->AI()->DoAction(DECEIVER_RESET); // Deceiver-> despawn portals; portals->despawn imps
-
                 if (c->isAlive())
-                    c->DisappearAndDie();
-                
-                c->Respawn();
+                    c->AI()->Reset();
+                else
+                    c->Respawn();
             }
         }
         );
