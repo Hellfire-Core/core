@@ -1103,6 +1103,7 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
         me->CastSpell(me, SPELL_SHADOW_CHANNELING, false);
         ShadowBoltVolleyTimer.Reset(1000 + urand(0, 3000)); // So they don't all cast it in the same moment.
         FelfirePortalTimer.Reset(20000);
+        
     }
 
     void JustSummoned(Creature* summoned)
@@ -1170,6 +1171,7 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
             Control->AI()->EnterEvadeMode();
         }
 
+        m_creature->GetMotionMaster()->MoveTargetedHome();
     }
 
     void JustDied(Unit* killer)
