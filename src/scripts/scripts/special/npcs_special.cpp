@@ -2430,40 +2430,51 @@ struct npc_arcanite_dragonlingAI : public ScriptedAI
     npc_arcanite_dragonlingAI(Creature *c) : ScriptedAI(c) {}
 
     Timer spellTimer;
+    Unit* m_owner;
 
     void Reset()
     {
-        spellTimer.Reset(25000);
     }
 
-    void EnterEvadeMode()
+    Unit* selectTarget()
     {
-        me->SendCombatStats(1 << COMBAT_STATS_TEST, "evading", NULL);
-        CreatureAI::EnterEvadeMode();
+        if (m_owner->getVictim())
+            return m_owner->getVictim();
+        if (!m_owner->getAttackers().empty())
+            return m_owner->getAttackerForHelper();
+        if (!me->getAttackers().empty())
+            return me->getAttackerForHelper();
+        return NULL;
     }
 
     void UpdateAI(const uint32 diff)
     {
-        if (!UpdateVictim())
+        m_owner = me->GetCharmerOrOwner();
+
+        Unit* victim = me->getVictim();
+        if (!victim || !me->canAttack(victim))
         {
-            if (me->GetMotionMaster()->GetCurrentMovementGeneratorType() != FOLLOW_MOTION_TYPE)
-                me->GetMotionMaster()->MoveFollow(me->GetOwner(), 2.0, M_PI / 2);
-            return;
+            if (Unit* newvictim = selectTarget())
+            {
+                AttackStart(newvictim);
+                victim = newvictim;
+            }
+            else if (victim || me->GetMotionMaster()->GetCurrentMovementGeneratorType() != FOLLOW_MOTION_TYPE)
+            {
+                me->CombatStop();
+                me->GetMotionMaster()->MoveFollow(m_owner, 2.0f, M_PI * 3 / 4);
+                spellTimer.Reset(25000);
+            }
+            else
+                return; // there was no victim and there is no new one
         }
+
+        DoMeleeAttackIfReady();
 
         if (spellTimer.Expired(diff))
         {
-            DoCast(me->getVictim(), SPELL_ARCANITE_DRAGONLING);
+            DoCast(victim, SPELL_ARCANITE_DRAGONLING);
             spellTimer = 25000;
-        }
-
-        if (m_creature->isAttackReady())
-        {
-            if (m_creature->IsWithinMeleeRange(m_creature->getVictim()))
-            {
-                m_creature->AttackerStateUpdate(m_creature->getVictim());
-                m_creature->resetAttackTimer();
-            }
         }
     }
 };
