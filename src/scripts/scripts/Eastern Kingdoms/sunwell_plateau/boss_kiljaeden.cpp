@@ -1073,7 +1073,6 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
     mob_hand_of_the_deceiverAI(Creature* c) : ScriptedAI(c), Summons(m_creature)
     {
         pInstance = (c->GetInstanceData());
-        me->GetHomePosition(homepos.x, homepos.y, homepos.z, homepos.o);
     }
 
     ScriptedInstance* pInstance;
@@ -1081,16 +1080,12 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
     Timer ShadowBoltVolleyTimer;
     Timer FelfirePortalTimer;
     SummonList Summons;
-    Position homepos;
-    Position pos;
-
 
     void Reset()
     {
         me->CastSpell(me, SPELL_SHADOW_CHANNELING, false);
         ShadowBoltVolleyTimer.Reset(1000 + urand(0, 3000)); // So they don't all cast it in the same moment.
         FelfirePortalTimer.Reset(20000);
-        
     }
 
     void JustSummoned(Creature* summoned)
@@ -1131,9 +1126,9 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
     {
         if (action == DECEIVER_RESET)
         {
-            m_creature->GetMotionMaster()->MoveTargetedHome();
-            _EnterEvadeMode();
-            Reset();
+            if (!m_creature->isAlive())
+                m_creature->Respawn();
+            CreatureAI::EnterEvadeMode();
             Summons.DoAction(0, DECEIVER_RESET);
             Summons.DespawnAll();
         }
