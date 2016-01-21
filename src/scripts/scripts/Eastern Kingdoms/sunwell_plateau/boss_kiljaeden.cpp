@@ -931,13 +931,12 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
 
     bool SummonedAnveena;
     bool KiljaedenDeath;
-    std::list<uint64> deceivers;
 
     Timer RandomSayTimer;
     Timer CheckDeceivers;
 
     uint32 Phase;
-   // uint32 DeceiverDeathTimer;
+
 
     void InitializeAI()
     {
@@ -949,7 +948,6 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
 
     void Reset()
     {
-        deceivers = pInstance->instance->GetCreaturesGUIDList(CREATURE_HAND_OF_THE_DECEIVER);
         pInstance->SetData(DATA_KILJAEDEN_EVENT, NOT_STARTED);
         pInstance->SetData(DATA_HAND_OF_DECEIVER_COUNT, 1);
         Phase = PHASE_DECEIVERS;
@@ -960,7 +958,6 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
         RandomSayTimer.Reset(30000);
         CheckDeceivers.Reset(1000);
         Summons.DespawnAll();
-        ResetDeceivers();
         me->SetReactState(REACT_AGGRESSIVE);
     }
 
@@ -1034,19 +1031,6 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
 
 
     }
-
-    void ResetDeceivers()
-    {
-        std::for_each(deceivers.begin(), deceivers.end(),
-                      [this](uint64& guid)
-        {
-            if (Unit* c = m_creature->GetUnit(guid))
-            {
-                c->ToCreature()->AI()->EnterEvadeMode(); // Deceiver-> despawn portals; portals->despawn imps
-            }
-        }
-        );
-    }
 };
 
 CreatureAI* GetAI_mob_kiljaeden_controller(Creature *_Creature)
@@ -1081,11 +1065,6 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
         summoned->SetLevel(m_creature->getLevel());
         summoned->AI()->DoZoneInCombat();
         Summons.Summon(summoned);
-    }
-
-    void JustRespawned()
-    {
-        pInstance->SetData(DATA_HAND_OF_DECEIVER_COUNT, 1);
     }
 
     void JustReachedHome()

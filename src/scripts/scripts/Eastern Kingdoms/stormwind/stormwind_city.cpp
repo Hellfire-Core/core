@@ -758,8 +758,11 @@ struct npc_squire_roweAI : public ScriptedAI
     Timer eventTimer;
     uint64 playerGUID;
 
-    void WaypointReached(uint32 i)
+    void MovementInform(uint32 type, uint32 i)
     {
+        if (type != POINT_MOTION_TYPE)
+            return;
+
         switch(i)
         {
         case 1:
@@ -805,8 +808,6 @@ struct npc_squire_roweAI : public ScriptedAI
         if(!eventStage)
             return;
 
-        Player* player = m_creature->GetPlayer(playerGUID);
-
         if (eventTimer.Expired(diff))
         {
             switch(eventStage)
@@ -830,7 +831,7 @@ struct npc_squire_roweAI : public ScriptedAI
                     Creature* pUnit = m_creature->SummonCreature(NPC_REGINAL_WINDSOR, REGINALD_SPAWN_COORDS, 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 900);
                     if (pUnit)
                     {
-                        ((npc_escortAI*)pUnit->AI())->Start(false, true, player->GetGUID());
+                        ((npc_escortAI*)pUnit->AI())->Start(false, true, playerGUID);
                         ((npc_escortAI*)pUnit->AI())->SetMaxPlayerDistance(200);
                     }
                     eventStage++;
@@ -841,8 +842,10 @@ struct npc_squire_roweAI : public ScriptedAI
                 {
                     eventTimer = 0;
                     m_creature->GetMotionMaster()->MovePoint(3, -9042, 434.2, 93.4);
+                    break;
                 }
-                break;
+                default:
+                    break;
             }
         }
     }
