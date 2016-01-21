@@ -752,10 +752,8 @@ struct npc_squire_roweAI : public ScriptedAI
 {
     npc_squire_roweAI(Creature *c) : ScriptedAI(c)
     {
-        c->GetPosition(wLoc);
     }
 
-    WorldLocation wLoc;
     uint8 eventStage;
     Timer eventTimer;
     uint64 playerGUID;
@@ -765,15 +763,19 @@ struct npc_squire_roweAI : public ScriptedAI
         switch(i)
         {
         case 1:
-            m_creature->GetMotionMaster()->MovePoint(2, -9086, 419.0, 92.4);
-        break;
-        case 2:
             eventStage = 2;
+            eventTimer = 1;
+            break;
+        case 2:
+            eventStage = 3;
             eventTimer = 2000;
-        break;
+            break;
         case 3:
             m_creature->SetOrientation(2.23f);
             Reset();
+            break;
+        default:
+            break;
         }
     }
 
@@ -811,12 +813,18 @@ struct npc_squire_roweAI : public ScriptedAI
             {
                 case 2:
                 {
+                    m_creature->GetMotionMaster()->MovePoint(2, -9086, 419.0, 92.4);
+                    eventTimer = 0;
+                    break;
+                }
+                case 3:
+                {
                     m_creature->SetStandState(PLAYER_STATE_KNEEL);
                     eventStage++;
                     eventTimer = 4000;
+                    break;
                 }
-                break;
-                case 3:
+                case 4:
                 {
                     m_creature->SetStandState(PLAYER_STATE_NONE);
                     Creature* pUnit = m_creature->SummonCreature(NPC_REGINAL_WINDSOR, REGINALD_SPAWN_COORDS, 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 900);
@@ -827,8 +835,9 @@ struct npc_squire_roweAI : public ScriptedAI
                     }
                     eventStage++;
                     eventTimer = 4000;
+                    break;
                 }
-                case 4:
+                case 5:
                 {
                     eventTimer = 0;
                     m_creature->GetMotionMaster()->MovePoint(3, -9042, 434.2, 93.4);
