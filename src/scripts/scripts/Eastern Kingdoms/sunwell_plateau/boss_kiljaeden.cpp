@@ -1040,25 +1040,12 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
         std::for_each(deceivers.begin(), deceivers.end(),
                       [this](uint64& guid)
         {
-            if (Creature* c = pInstance->GetCreature(guid))
+            if (Unit* c = m_creature->GetUnit(guid))
             {
-                c->AI()->DoAction(DECEIVER_RESET); // Deceiver-> despawn portals; portals->despawn imps
+                c->ToCreature()->AI()->EnterEvadeMode(); // Deceiver-> despawn portals; portals->despawn imps
             }
         }
         );
-    }
-
-
-    void DoAction(const int32 param)
-    {
-        switch (param)
-        {
-            case DECEIVER_RESET:
-                ResetDeceivers();
-                EnterEvadeMode();
-            default:
-                break;
-        }
     }
 };
 
@@ -1122,25 +1109,14 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
         m_creature->InterruptNonMeleeSpells(true);
     }
 
-    void DoAction(const int32 action)
-    {
-        if (action == DECEIVER_RESET)
-        {
-            if (!m_creature->isAlive())
-                m_creature->Respawn();
-            CreatureAI::EnterEvadeMode();
-            Summons.DoAction(0, DECEIVER_RESET);
-            Summons.DespawnAll();
-        }
-
-    }
-
     void EnterEvadeMode()
     {
-        if (Creature* Control = ((Creature*)Unit::GetUnit(*m_creature, pInstance->GetData64(DATA_KILJAEDEN_CONTROLLER))))
-        {
-            Control->AI()->DoAction(DECEIVER_RESET);
-        }
+        float x, y, z, o;
+        m_creature->GetRespawnCoord(x, y, z, &o);
+        m_creature->SetHomePosition(x, y, z, o);
+        CreatureAI::EnterEvadeMode(); // those are in formation
+        Summons.DoAction(0, DECEIVER_RESET);
+        Summons.DespawnAll();
     }
 
     void JustDied(Unit* killer)
