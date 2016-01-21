@@ -947,10 +947,6 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
         m_creature->addUnitState(UNIT_STAT_STUNNED);
     }
 
-   //void JustRespawned()
-   //{
-   //}
-
     void Reset()
     {
         deceivers = pInstance->instance->GetCreaturesGUIDList(CREATURE_HAND_OF_THE_DECEIVER);
@@ -973,12 +969,6 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
         pInstance->SetData(DATA_KILJAEDEN_EVENT, IN_PROGRESS);
         DoZoneInCombat(1000.0f);
     }
-
-  //  void EnterEvadeMode()
-  //  {
-  //      ResetDeceivers();
-  //      ScriptedAI::EnterEvadeMode();
-  //  }
 
     void JustSummoned(Creature* summoned)
     {
@@ -1039,8 +1029,8 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
             }
         }
 
-            if (me->getThreatManager().isThreatListEmpty() && me->isInCombat())
-                EnterEvadeMode(); // we use this instead of UpdateVictim()
+        if (me->getThreatManager().isThreatListEmpty() && me->isInCombat())
+            EnterEvadeMode(); // we use this instead of UpdateVictim()
 
 
     }
@@ -1053,10 +1043,6 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
             if (Creature* c = pInstance->GetCreature(guid))
             {
                 c->AI()->DoAction(DECEIVER_RESET); // Deceiver-> despawn portals; portals->despawn imps
-                if (c->isAlive())
-                    c->AI()->Reset();
-                else
-                    c->Respawn();
             }
         }
         );
@@ -1069,6 +1055,7 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
         {
             case DECEIVER_RESET:
                 ResetDeceivers();
+                EnterEvadeMode();
             default:
                 break;
         }
@@ -1119,21 +1106,9 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
         pInstance->SetData(DATA_HAND_OF_DECEIVER_COUNT, 1);
     }
 
-    void CheckPosition()
+    void JustReachedHome()
     {
-        if (Creature* controler = (Creature*)Unit::GetUnit(*m_creature, pInstance->GetData64(DATA_KILJAEDEN_CONTROLLER)))
-            if (!controler->HasAura(SPELL_ANVEENA_ENERGY_DRAIN))
-                controler->AI()->EnterEvadeMode();   // idk why there is 80% chance that anveena won't be summoned, aura won't be applied after entering the instance
-                                                     // FIXME: fix this and remove this crazy thing :P
-
-        me->GetPosition(pos);
-        if (pos != homepos)
-        {
-            EnterEvadeMode();
-            return;
-        }
-        else if (!me->IsNonMeleeSpellCast(false))
-            me->CastSpell(me, SPELL_SHADOW_CHANNELING, false);
+        me->CastSpell(me, SPELL_SHADOW_CHANNELING, false);
     }
 
     void EnterCombat(Unit* who)
@@ -1156,6 +1131,9 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
     {
         if (action == DECEIVER_RESET)
         {
+            m_creature->GetMotionMaster()->MoveTargetedHome();
+            _EnterEvadeMode();
+            Reset();
             Summons.DoAction(0, DECEIVER_RESET);
             Summons.DespawnAll();
         }
@@ -1164,14 +1142,10 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
 
     void EnterEvadeMode()
     {
-
         if (Creature* Control = ((Creature*)Unit::GetUnit(*m_creature, pInstance->GetData64(DATA_KILJAEDEN_CONTROLLER))))
         {
             Control->AI()->DoAction(DECEIVER_RESET);
-            Control->AI()->EnterEvadeMode();
         }
-
-        m_creature->GetMotionMaster()->MoveTargetedHome();
     }
 
     void JustDied(Unit* killer)
@@ -1188,10 +1162,6 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (!me->isInCombat())
-        {
-            CheckPosition();
-        }
         if (!UpdateVictim())
             return;
 
