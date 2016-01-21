@@ -1289,7 +1289,6 @@ struct mob_illidari_spawnAI : public ScriptedAI
     }
 
     void EnterCombat(Unit* who) {}
-    void JustDied(Unit* slayer);
 
     void UpdateAI(const uint32 diff)
     {
