@@ -14640,7 +14640,7 @@ bool Player::LoadFromDB(uint32 guid, SqlQueryHolder *holder)
             {
                 MapEntry const* transMapEntry = sMapStore.LookupEntry((*iter)->GetMapId());
                 // client without expansion support
-                if(GetSession()->Expansion() < transMapEntry->Expansion())
+                if(!transMapEntry || GetSession()->Expansion() < transMapEntry->Expansion())
                 {
                     sLog.outDebug("Player %s using client without required expansion tried login at transport at non accessible map %u", GetName(), (*iter)->GetMapId());
                     break;
