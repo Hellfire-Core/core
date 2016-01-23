@@ -105,6 +105,13 @@ void WorldSession::HandleGroupInviteOpcode(WorldPacket & recv_data)
         return;
     }
 
+    // OK result but not send invite
+    if (player->GetSocial()->HasIgnore(GetPlayer()->GetGUIDLow()))
+    {
+        SendPartyResult(PARTY_OP_INVITE, membername, PARTY_RESULT_TARGET_IGNORE_YOU);
+        return;
+    }
+
     Group *group = GetPlayer()->GetGroup();
     if (group && group->isBGGroup())
         group = GetPlayer()->GetOriginalGroup();

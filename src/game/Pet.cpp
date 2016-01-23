@@ -395,7 +395,7 @@ void Pet::SavePetToDB(PetSaveMode mode)
             break;
     }
 
-    pet->RemoveCharmAuras(); // it is in save, not in RemovePet, cause pet could be saved as current without removal
+    RemoveCharmAuras(); // it is in save, not in RemovePet, cause pet could be saved as current without removal
 
     //save pet's data as one single transaction
     RealmDataDatabase.BeginTransaction();
