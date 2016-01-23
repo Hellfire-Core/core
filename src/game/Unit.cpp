@@ -6003,9 +6003,7 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
                         break;
                     case 1:
                     {
-                        // damage
-                        damage += CalculateDamage(BASE_ATTACK, false) * 35 / 100; // add spell damage from prev effect (35%)
-                        basepoints0 =  triggeredByAura->GetModifier()->m_amount * damage / 100;
+                        basepoints0 = triggeredByAura->GetModifier()->m_amount/*10%*/ * damage * 35/*from seal of blood damage done*/ / 10000;
 
                         target = this;
 
