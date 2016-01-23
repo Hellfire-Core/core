@@ -4209,19 +4209,22 @@ void Aura::HandleModStealth(bool apply, bool Real)
     }
 
     // Master of Subtlety
-    Unit::AuraList const& mDummyAuras = pTarget->GetAurasByType(SPELL_AURA_DUMMY);
-    for (Unit::AuraList::const_iterator i = mDummyAuras.begin();i != mDummyAuras.end(); ++i)
+    if (Real && (apply || !pTarget->HasAuraType(SPELL_AURA_MOD_STEALTH))) // remove only when there are no more stealth auras on a player.
     {
-        if ((*i)->GetSpellProto()->SpellIconID == 2114 && Real)
+        Unit::AuraList const& mDummyAuras = pTarget->GetAurasByType(SPELL_AURA_DUMMY);
+        for (Unit::AuraList::const_iterator i = mDummyAuras.begin();i != mDummyAuras.end(); ++i)
         {
-            if (apply)
+            if ((*i)->GetSpellProto()->SpellIconID == 2114)
             {
-                int32 bp = (*i)->GetModifier()->m_amount;
-                pTarget->CastCustomSpell(pTarget,31665,&bp,NULL,NULL,true);
+                if (apply)
+                {
+                    int32 bp = (*i)->GetModifier()->m_amount;
+                    pTarget->CastCustomSpell(pTarget,31665,&bp,NULL,NULL,true);
+                }
+                else
+                    pTarget->CastSpell(pTarget,31666,true);
+                break;
             }
-            else
-                pTarget->CastSpell(pTarget,31666,true);
-            break;
         }
     }
 }
