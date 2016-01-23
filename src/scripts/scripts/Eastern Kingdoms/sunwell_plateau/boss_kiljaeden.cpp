@@ -236,9 +236,9 @@ enum Actions
 float ShieldOrbLocations[4][2] =
 {
     {1698.900, 627.870},  //middle pont of Sunwell
-    {12, 3.14},     // First one spawns northeast of KJ
-    {12, 3.14/0.7}, // Second one spawns southeast
-    {12, 3.14*3.8}  // Third one spawns (?)
+    {3.14 * 0.75, 17 }, 
+    {3.14 * 1.75, 17 },
+    {3.14 * 1.25, 17 }
 };
 
 float OrbLocations[4][5] = {
@@ -730,7 +730,10 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
 
                     case TIMER_FIRE_BLOOM:
                     {
-                        AddSpellToCast(SPELL_FIRE_BLOOM, CAST_NULL);
+                        randomPlayer = NULL;
+                        randomPlayer = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true);
+                        if (randomPlayer)
+                            AddSpellToCast(randomPlayer, SPELL_FIRE_BLOOM);
                         _Timer[TIMER_FIRE_BLOOM] = (Phase == PHASE_SACRIFICE) ? 25000 : 20000; // 25 seconds in PHASE_SACRIFICE
 
                     }
@@ -741,9 +744,11 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                         for (uint8 i = 1; i < Phase; ++i)
                         {
                             float sx, sy;
-                            sx = ShieldOrbLocations[0][0] + sin(ShieldOrbLocations[i][0]);
-                            sy = ShieldOrbLocations[0][1] + sin(ShieldOrbLocations[i][1]);
+                            sx = ShieldOrbLocations[0][0] + ShieldOrbLocations[i][1]*sin(ShieldOrbLocations[i][0]);
+                            sy = ShieldOrbLocations[0][1] + ShieldOrbLocations[i][1]*cos(ShieldOrbLocations[i][0]);
                             m_creature->SummonCreature(CREATURE_SHIELD_ORB, sx, sy, SHIELD_ORB_Z, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 45000);
+                            if (m_creature)
+                                m_creature->AI()->DoAction(i);
                         }
                         _Timer[TIMER_SUMMON_SHILEDORB] = 30000 + rand() % 30 * 1000; // 30-60seconds cooldown
                     }
@@ -764,7 +769,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                             _Timer[SPELL_SOUL_FLAY].Delay(30000);
                             _Timer[SPELL_FIRE_BLOOM].Delay(30000);
                             _Timer[SPELL_LEGION_LIGHTNING].Delay(30000);
-                            _Timer[TIMER_SHADOW_SPIKE].Reset(3000);
+                            _Timer[TIMER_SHADOW_SPIKE].Reset(2500);
                             IsCastingSpikes = true;
                         }
                         else
@@ -824,6 +829,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                             DoCastAOE(SPELL_DARKNESS_OF_A_THOUSAND_SOULS_DAMAGE);
 
                             DoScriptText(RAND(SAY_KJ_DARKNESS1, SAY_KJ_DARKNESS2, SAY_KJ_DARKNESS3), m_creature);
+                            SendDebug("Casting aoe darkness");
                         }
                         _Timer[TIMER_SOUL_FLAY].Reset(9000);
                     }
@@ -831,6 +837,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
 
                     case TIMER_ORBS_EMPOWER:
                     {
+                        SendDebug("Sending orbs empower");
                         if (Phase == PHASE_SACRIFICE)
                         {
                             if (Kalec)((boss_kalecgos_kjAI*)Kalec->AI())->EmpowerOrb(true);
@@ -909,6 +916,16 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
 
         CastNextSpellIfAnyAndReady();
 
+    }
+
+    void GetDebugInfo(ChatHandler& reader)
+    {
+        std::ostringstream str;
+        str << "KJD Debugai, phase " << Phase << "; OrbActivated " << OrbActivated << "; ActiveTimers " << ActiveTimers << "\n";
+        for (uint8 i = 0; i < 10; i++)
+            str << "Timer " << i << " : " << _Timer[i].GetTimeLeft() << "\n";
+        str << "WaitTimer : " << WaitTimer.GetTimeLeft();
+        reader.SendSysMessage(str.str().c_str());
     }
 };
 
@@ -1054,9 +1071,13 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
 
     void Reset()
     {
-        me->CastSpell(me, SPELL_SHADOW_CHANNELING, false);
+        if (!me->IsInEvadeMode())
+            me->CastSpell(me, SPELL_SHADOW_CHANNELING, false);
+
         ShadowBoltVolleyTimer.Reset(1000 + urand(0, 3000)); // So they don't all cast it in the same moment.
         FelfirePortalTimer.Reset(20000);
+        Summons.DoAction(0, DECEIVER_RESET);
+        Summons.DespawnAll();
     }
 
     void JustSummoned(Creature* summoned)
@@ -1089,13 +1110,15 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
     }
 
     void EnterEvadeMode()
-    {
+    {        
+        if (!_EnterEvadeMode())
+            return;
+
         float x, y, z, o;
         m_creature->GetRespawnCoord(x, y, z, &o);
         m_creature->SetHomePosition(x, y, z, o);
-        CreatureAI::EnterEvadeMode(); // those are in formation
-        Summons.DoAction(0, DECEIVER_RESET);
-        Summons.DespawnAll();
+        me->GetMotionMaster()->MoveTargetedHome();
+        Reset();
     }
 
     void JustDied(Unit* killer)
@@ -1325,8 +1348,6 @@ struct mob_shield_orbAI : public ScriptedAI
         PointReached = true;
         _Timer.Reset(500 + rand() % 500);
         CheckTimer.Reset(1000);
-        r = 17;
-        c = 0;
         mx = ShieldOrbLocations[0][0];
         my = ShieldOrbLocations[0][1];
         Clockwise = true;
@@ -1334,6 +1355,13 @@ struct mob_shield_orbAI : public ScriptedAI
 
     void Reset()
     {}
+
+    void DoAction(const int32 act)
+    {
+        c = ShieldOrbLocations[act][0];
+        r = ShieldOrbLocations[act][1];
+        if (act == 1) Clockwise = false;
+    }
 
     void UpdateAI(const uint32 diff)
     {
