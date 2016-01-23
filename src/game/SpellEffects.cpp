@@ -4930,9 +4930,6 @@ void Spell::EffectSummonPet(uint32 i)
             if (OldSummon->isDead())
                 return;
 
-            OldSummon->GetMap()->Remove((Creature*)OldSummon,false);
-            OldSummon->SetMapId(owner->GetMapId());
-
             float px, py, pz;
 
             if (m_targets.HasDst())
@@ -4944,8 +4941,15 @@ void Spell::EffectSummonPet(uint32 i)
             else
                 owner->GetNearPoint(px, py, pz, OldSummon->GetObjectSize());
 
-            OldSummon->Relocate(px, py, pz, OldSummon->GetOrientation());
-            owner->GetMap()->Add((Creature*)OldSummon);
+            if (!OldSummon->IsInMap(owner))
+            {
+                OldSummon->GetMap()->Remove((Creature*)OldSummon,false);
+                OldSummon->SetMapId(owner->GetMapId());
+                OldSummon->Relocate(px, py, pz, OldSummon->GetOrientation());
+                owner->GetMap()->Add((Creature*)OldSummon);
+            }
+            else
+                OldSummon->NearTeleportTo(px, py, pz, OldSummon->GetOrientation());
 
             if (owner->GetTypeId() == TYPEID_PLAYER && OldSummon->isControlled())
             {
