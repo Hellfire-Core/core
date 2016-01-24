@@ -3072,7 +3072,6 @@ void Spell::EffectApplyAura(uint32 i)
         Player* targetpl = unitTarget->GetCharmerOrOwnerPlayerOrPlayerItself();
         if (duration > 10000 && casterpl && targetpl && casterpl->IsHostileTo(targetpl))
             duration = 10000;
-        SendChannelStart(duration);
     }
 
     // if Aura removed and deleted, do not continue.
