@@ -3061,7 +3061,17 @@ void Spell::EffectApplyAura(uint32 i)
     //mod duration of channeled aura by spell haste
     if (SpellMgr::IsChanneledSpell(spellInfo))
     {
-        caster->ModSpellCastTime(spellInfo, duration, this);
+        //apply haste mods
+        m_caster->ModSpellCastTime(GetSpellEntry(), duration, this);
+        // Apply duration mod
+        if (Player* modOwner = m_caster->GetSpellModOwner())
+            modOwner->ApplySpellMod(GetSpellEntry()->Id, SPELLMOD_DURATION, duration);
+
+        // channels in pvp duration
+        Player* casterpl = m_caster->GetCharmerOrOwnerPlayerOrPlayerItself();
+        Player* targetpl = unitTarget->GetCharmerOrOwnerPlayerOrPlayerItself();
+        if (duration > 10000 && casterpl && targetpl && casterpl != targetpl && !sSpellMgr.IsPositiveEffect(spellInfo->Id, i))
+            duration = 10000;
         SendChannelStart(duration);
     }
 
