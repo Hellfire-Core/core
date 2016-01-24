@@ -3070,7 +3070,7 @@ void Spell::EffectApplyAura(uint32 i)
         // channels in pvp duration
         Player* casterpl = m_caster->GetCharmerOrOwnerPlayerOrPlayerItself();
         Player* targetpl = unitTarget->GetCharmerOrOwnerPlayerOrPlayerItself();
-        if (duration > 10000 && casterpl && targetpl && casterpl != targetpl && !sSpellMgr.IsPositiveEffect(spellInfo->Id, i))
+        if (duration > 10000 && casterpl && targetpl && casterpl->IsHostileTo(targetpl))
             duration = 10000;
         SendChannelStart(duration);
     }
