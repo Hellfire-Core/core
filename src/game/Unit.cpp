@@ -2972,7 +2972,7 @@ SpellMissInfo Unit::SpellHitResult(Unit *pVictim, SpellEntry const *spell, bool 
     // All positive spells + dispels on friendly target can`t miss
     // TODO: client not show miss log for this spells - so need find info for this in dbc and use it!
     if ((SpellMgr::IsPositiveSpell(spell->Id) || SpellMgr::IsDispel(spell))
-        &&(!IsHostileTo(pVictim)))  //prevent from affecting enemy by "positive" spell
+        &&(IsFriendlyTo(pVictim)))  //prevent from affecting enemy by "positive" spell
         return SPELL_MISS_NONE;
 
     // Spells of Vengeful Spirit (Teron fight) can't miss
@@ -4015,9 +4015,15 @@ bool Unit::RemoveNoStackAurasDueToAura(Aura *Aur)
     if (Aur->GetModifier()->m_auraname == SPELL_AURA_MOD_DECREASE_SPEED && !Aur->IsPersistent())
     {
         Unit::AuraList list = GetAurasByType(SPELL_AURA_MOD_DECREASE_SPEED);
-        for (Unit::AuraList::const_iterator itr = list.begin(); itr != list.end(); itr++)
+        for (Unit::AuraList::const_iterator itr = list.begin(); itr != list.end();)
+        {
             if ((*itr)->GetModifierValue() < Aur->GetModifierValue() && !(*itr)->IsPersistent()) // they are negative!
-                return false;
+                return false; // new one is weaker, do not apply
+            else if ((*itr)->GetModifierValue() > Aur->GetModifierValue() && !(*itr)->IsPersistent())
+                itr = list.erase(itr); // new one is stronger, remove old (only this effect)
+            else
+                itr++; // persistent, just skip
+        }
     }
 
     for (i = m_Auras.begin(); i != m_Auras.end(); i = next)

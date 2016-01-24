@@ -1959,14 +1959,6 @@ bool SpellMgr::IsSpecialNoStackCase(SpellEntry const *spellInfo_1, SpellEntry co
 {
     // put here all spells that should NOT stack, but accoriding to rules in method IsNoStackSpellDueToSpell stack
 
-    if (spellInfo_1->HasApplyAura(SPELL_AURA_MOD_DECREASE_SPEED) // two slow spells
-        && spellInfo_2->HasApplyAura(SPELL_AURA_MOD_DECREASE_SPEED)
-        && !spellInfo_1->HasApplyAura(SPELL_AURA_MOD_STEALTH) // which are not stealth
-        && !spellInfo_2->HasApplyAura(SPELL_AURA_MOD_STEALTH)
-        && !spellInfo_1->HasEffect(SPELL_EFFECT_PERSISTENT_AREA_AURA) // and not aoe
-        && !spellInfo_2->HasEffect(SPELL_EFFECT_PERSISTENT_AREA_AURA))
-        return true; // do not stack
-
     // Sunder Armor effect doesn't stack with Expose Armor
     if (spellInfo_1->SpellFamilyName == SPELLFAMILY_WARRIOR && spellInfo_1->SpellFamilyFlags & 0x4000L
         && spellInfo_2->SpellFamilyName == SPELLFAMILY_ROGUE && spellInfo_2->SpellFamilyFlags & 0x80000L)
