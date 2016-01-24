@@ -4015,7 +4015,7 @@ bool Unit::RemoveNoStackAurasDueToAura(Aura *Aur)
     if (Aur->GetModifier()->m_auraname == SPELL_AURA_MOD_DECREASE_SPEED && !Aur->IsPersistent())
     {
         Unit::AuraList list = GetAurasByType(SPELL_AURA_MOD_DECREASE_SPEED);
-        for (Unit::AuraList::const_iterator itr = list.begin(); itr != list.end();)
+        for (Unit::AuraList::iterator itr = list.begin(); itr != list.end();)
         {
             if ((*itr)->GetModifierValue() < Aur->GetModifierValue() && !(*itr)->IsPersistent()) // they are negative!
                 return false; // new one is weaker, do not apply
