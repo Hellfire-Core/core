@@ -576,6 +576,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
 
     void ChangeTimers(bool status, uint32 WTimer)
     {
+        SendDebug("KJD: Change timers %u %u", status, WTimer);
         for (uint8 i = 0; i < 10; ++i)
             TimerIsDeactiveted[i] = status;
         TimerIsDeactiveted[TIMER_KALEC_JOIN] = IsKalecJoined;
@@ -675,6 +676,15 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
             IsEmerging = false;
             me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
             DoScriptText(SAY_KJ_EMERGE, me);
+        }
+
+        if (Phase == PHASE_SACRIFICE)
+        {
+            if (StunTimer.Expired(diff))
+            {
+                m_creature->clearUnitState(UNIT_STAT_STUNNED);
+                StunTimer = 0;
+            }
         }
 
         if (Phase < PHASE_NORMAL || IsEmerging || !UpdateVictim())
@@ -787,12 +797,10 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                                 }
                                 SpikesLeft--;
                                 _Timer[TIMER_SHADOW_SPIKE] = 3000;
-                                me->SetIgnoreVictimSelection(true);
                                 me->SetSelection(0);
                             }
                             else
                             {
-                                me->SetIgnoreVictimSelection(false);
                                 SpikesLeft = 9;
                                 _Timer[TIMER_SHADOW_SPIKE] = 0;
                                 TimerIsDeactiveted[TIMER_SHADOW_SPIKE] = true; 
@@ -817,7 +825,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                         {
                             SendDebug("Channeling darkness");
                             DoScriptText(EMOTE_KJ_DARKNESS, m_creature);
-                            DoCastAOE(SPELL_DARKNESS_OF_A_THOUSAND_SOULS, false);
+                            DoCast(m_creature, SPELL_DARKNESS_OF_A_THOUSAND_SOULS, false);
                             ChangeTimers(true, 9000);
                             _Timer[TIMER_DARKNESS] = 8750;
                             TimerIsDeactiveted[TIMER_DARKNESS] = false;
@@ -829,7 +837,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                         {
                             _Timer[TIMER_DARKNESS] = (Phase == PHASE_SACRIFICE) ? 20000 + rand() % 15000 : 40000 + rand() % 30000;
                             IsInDarkness = false;
-                            DoCastAOE(SPELL_DARKNESS_OF_A_THOUSAND_SOULS_DAMAGE);
+                            DoCast(NULL, SPELL_DARKNESS_OF_A_THOUSAND_SOULS_DAMAGE);
 
                             DoScriptText(RAND(SAY_KJ_DARKNESS1, SAY_KJ_DARKNESS2, SAY_KJ_DARKNESS3), m_creature);
                             SendDebug("Casting aoe darkness");
@@ -912,15 +920,6 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
             SendDebug("Entering phase 5");
         }
 
-        if (Phase == PHASE_SACRIFICE)
-        {
-            if (StunTimer.Expired(diff))
-            {
-                m_creature->clearUnitState(UNIT_STAT_STUNNED);
-                StunTimer = 0;
-            }
-        }
-
         CastNextSpellIfAnyAndReady();
 
     }
@@ -961,17 +960,13 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
 
     uint32 Phase;
 
-
-    void InitializeAI()
+    void Reset()
     {
         KalecKJ = Unit::GetCreature((*m_creature), pInstance->GetData64(DATA_KALECGOS_KJ));
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
         m_creature->addUnitState(UNIT_STAT_STUNNED);
-    }
 
-    void Reset()
-    {
         pInstance->SetData(DATA_KILJAEDEN_EVENT, NOT_STARTED);
         pInstance->SetData(DATA_HAND_OF_DECEIVER_COUNT, 1);
         Phase = PHASE_DECEIVERS;
@@ -1041,7 +1036,7 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
         if (CheckDeceivers.Expired(diff))
         {
             CheckDeceivers = 1000;
-            if (pInstance->GetData(DATA_HAND_OF_DECEIVER_COUNT) == 0 && pInstance->GetData(DATA_KILJAEDEN_EVENT) != DONE && Phase == PHASE_DECEIVERS)
+            if (pInstance->GetData(DATA_HAND_OF_DECEIVER_COUNT) == 0 && pInstance->GetData(DATA_KILJAEDEN_EVENT) == IN_PROGRESS && Phase == PHASE_DECEIVERS)
             {
                 m_creature->RemoveAurasDueToSpell(SPELL_ANVEENA_ENERGY_DRAIN);
                 Phase = PHASE_NORMAL;
@@ -1183,18 +1178,12 @@ struct mob_felfire_portalAI : public Scripted_NoMovementAI
 
     SummonList Summons;
 
-    void InitializeAI()
+    void Reset()
     {
         SpawnFiendTimer = 3000;
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
     }
-
-    // TODO: Timers
-    // void Reset()
-    // {
-    //
-    // }
 
     void JustSummoned(Creature* summoned)
     {
@@ -1346,7 +1335,7 @@ struct mob_shield_orbAI : public ScriptedAI
     ScriptedInstance* pInstance;
     float x, y, r, c, mx, my;
 
-    void InitializeAI()
+    void Reset()
     {
         me->SetIgnoreVictimSelection(true);
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_ROTATE);
@@ -1359,9 +1348,6 @@ struct mob_shield_orbAI : public ScriptedAI
         my = ShieldOrbLocations[0][1];
         Clockwise = true;
     }
-
-    void Reset()
-    {}
 
     void DoAction(const int32 act)
     {

@@ -115,6 +115,7 @@ struct instance_sunwell_plateau : public ScriptedInstance
         KilJaedenController     = 0;
         Anveena                 = 0;
         KalecgosKJ              = 0;
+        HandOfDeceiverCount     = 1;
 
         /*** GameObjects ***/
         ForceField  = 0;
