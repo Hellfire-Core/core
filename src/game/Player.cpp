@@ -17326,6 +17326,13 @@ void Player::Uncharm()
         && ((Pet*)charm)->getPetType() == POSSESSED_PET)
     {
         ((Pet*)charm)->Remove(PET_SAVE_AS_DELETED);
+        if (((Player*)this)->GetTemporaryUnsummonedPetNumber())
+        {
+            Pet* NewPet = new Pet;
+            if (!NewPet->LoadPetFromDB(this, 0, ((Player*)this)->GetTemporaryUnsummonedPetNumber(), true))
+                delete NewPet;
+            ((Player*)this)->SetTemporaryUnsummonedPetNumber(0);
+        }
     }
     else
     {

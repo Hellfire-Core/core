@@ -4596,9 +4596,9 @@ void Unit::RemoveAura(AuraMap::iterator &i, AuraRemoveMode mode)
                 for (int i = 0; i < 3; ++i)
                 {
                     if (AurSpellEntry->Effect[i] == SPELL_EFFECT_SUMMON &&
-                        (AurSpellEntry->EffectMiscValueB[i] == SUMMON_TYPE_POSESSED ||
-                         AurSpellEntry->EffectMiscValueB[i] == SUMMON_TYPE_POSESSED2 ||
-                         AurSpellEntry->EffectMiscValueB[i] == SUMMON_TYPE_POSESSED3))
+                        (AurSpellEntry->EffectMiscValueB[i] == SUMMON_TYPE_POSESSED)
+                         //AurSpellEntry->EffectMiscValueB[i] == SUMMON_TYPE_POSESSED2 ||
+                         //AurSpellEntry->EffectMiscValueB[i] == SUMMON_TYPE_POSESSED3))
                     {
                         ((Player*)caster)->StopCastingCharm();
                         break;

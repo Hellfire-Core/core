@@ -628,7 +628,7 @@ enum SpellEffects
     SPELL_EFFECT_PULL                      = 70,
     SPELL_EFFECT_PICKPOCKET                = 71,
     SPELL_EFFECT_ADD_FARSIGHT              = 72,
-    SPELL_EFFECT_SUMMON_POSSESSED          = 73,
+    SPELL_EFFECT_SUMMON_POSSESSED          = 73, // unused explicitly (only by effect summon, miscvalb = 65)
     SPELL_EFFECT_SUMMON_TOTEM              = 74,
     SPELL_EFFECT_HEAL_MECHANICAL           = 75,
     SPELL_EFFECT_SUMMON_OBJECT_WILD        = 76,
@@ -2375,8 +2375,8 @@ enum SummonType
     SUMMON_TYPE_CRITTER2    = 407,
     SUMMON_TYPE_CRITTER3    = 307,
     SUMMON_TYPE_UNKNOWN5    = 409,
-    SUMMON_TYPE_POSESSED3   = 427,
-    SUMMON_TYPE_POSESSED2   = 428
+    //SUMMON_TYPE_POSESSED3   = 427,  UNUSED
+    //SUMMON_TYPE_POSESSED2   = 428   UNUSED
 };
 
 enum EventId

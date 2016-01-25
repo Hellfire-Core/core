@@ -4426,8 +4426,11 @@ SpellCastResult Spell::CheckCast(bool strict)
                 switch (GetSpellEntry()->EffectMiscValueB[i])
                 {
                     case SUMMON_TYPE_POSESSED:
-                    case SUMMON_TYPE_POSESSED2:
-                    case SUMMON_TYPE_POSESSED3:
+                        if (m_caster->GetCharmGUID())
+                            return SPELL_FAILED_ALREADY_HAVE_CHARM;
+                        break; // temp summon of possesed creature, can have normal pet
+                    //case SUMMON_TYPE_POSESSED2:
+                    //case SUMMON_TYPE_POSESSED3:
                     case SUMMON_TYPE_DEMON:
                     case SUMMON_TYPE_SUMMON:
                     {

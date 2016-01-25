@@ -4053,8 +4053,8 @@ void Spell::EffectSummonType(uint32 i)
             EffectSummonGuardian(i);
             break;
         case SUMMON_TYPE_POSESSED:
-        case SUMMON_TYPE_POSESSED2:
-        case SUMMON_TYPE_POSESSED3:
+        //case SUMMON_TYPE_POSESSED2:
+        //case SUMMON_TYPE_POSESSED3:
             EffectSummonPossessed(i);
             break;
         case SUMMON_TYPE_WILD:
@@ -4609,6 +4609,17 @@ void Spell::EffectSummonPossessed(uint32 i)
 
     int32 duration = SpellMgr::GetSpellDuration(GetSpellEntry());
 
+    Pet* oldpet = m_caster->GetPet();
+    if (oldpet)
+    {
+        if (oldpet->isControlled())
+        {
+            ((Player*)this)->SetTemporaryUnsummonedPetNumber(oldpet->GetCharmInfo()->GetPetNumber());
+            ((Player*)this)->SetOldPetSpell(oldpet->GetUInt32Value(UNIT_CREATED_BY_SPELL));
+        }
+        ((Player*)this)->RemovePet(NULL, PET_SAVE_NOT_IN_SLOT);
+    }
+
     Pet* pet = ((Player*)m_caster)->SummonPet(entry, x, y, z + 0.5f, m_caster->GetOrientation(), POSSESSED_PET, duration);
     if (!pet)
         return;
@@ -4616,8 +4627,8 @@ void Spell::EffectSummonPossessed(uint32 i)
     pet->SetUInt32Value(UNIT_CREATED_BY_SPELL, GetSpellEntry()->Id);
     pet->SetCharmedOrPossessedBy(m_caster, true);
 
-    // hack for dream vision
-    if (entry = 7863)
+    // hack for dream vision and eye of kilrog
+    if (entry == 7863 || entry == 4277)
         pet->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
 }
 
