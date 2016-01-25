@@ -498,6 +498,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
 
     Timer _Timer[10];
     Timer WaitTimer;
+    Timer StunTimer;
     Timer Emerging;   // we don't want to damage players when emerging, we do this when the fight starts
 
     /* Boolean */
@@ -532,6 +533,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
 
         ActiveTimers = 5;
         WaitTimer.Reset(1);
+        StunTimer.Reset(5000);
 
         Phase = PHASE_DECEIVERS;
 
@@ -581,7 +583,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
         if (WTimer > 0)
         {
             IsWaiting = true;
-            WaitTimer = WTimer;
+            WaitTimer.Reset(WTimer);
         }
 
         if (OrbActivated)
@@ -813,6 +815,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                         // Begins to channel for 8 seconds, then deals 50'000 damage to all raid members.
                         if (!IsInDarkness)
                         {
+                            SendDebug("Channeling darkness");
                             DoScriptText(EMOTE_KJ_DARKNESS, m_creature);
                             DoCastAOE(SPELL_DARKNESS_OF_A_THOUSAND_SOULS, false);
                             ChangeTimers(true, 9000);
@@ -876,41 +879,45 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
         }
 
         //Phase 3
-        if (Phase <= PHASE_NORMAL)
+        if (Phase == PHASE_NORMAL && ((m_creature->GetHealth() * 100 / m_creature->GetMaxHealth()) < 85))
         {
-            if (Phase == PHASE_NORMAL && ((m_creature->GetHealth() * 100 / m_creature->GetMaxHealth()) < 85))
-            {
-                CastSinisterReflection();
-                DoScriptText(SAY_KJ_PHASE3, m_creature);
-                Phase = PHASE_DARKNESS;
-                OrbActivated = false;
-                ActiveTimers = 9;
-            }
+            CastSinisterReflection();
+            DoScriptText(SAY_KJ_PHASE3, m_creature);
+            Phase = PHASE_DARKNESS;
+            OrbActivated = false;
+            ActiveTimers = 9;
+            SendDebug("Entering phase 3");
         }
 
         //Phase 4
-        if (Phase <= PHASE_DARKNESS)
+        if (Phase == PHASE_DARKNESS && ((m_creature->GetHealth() * 100 / m_creature->GetMaxHealth()) < 55))
         {
-            if (Phase == PHASE_DARKNESS && ((m_creature->GetHealth() * 100 / m_creature->GetMaxHealth()) < 55))
-            {
-                DoScriptText(SAY_KJ_PHASE4, m_creature);
-                Phase = PHASE_ARMAGEDDON;
-                OrbActivated = false;
-                ActiveTimers = 10;
-            }
+            DoScriptText(SAY_KJ_PHASE4, m_creature);
+            Phase = PHASE_ARMAGEDDON;
+            OrbActivated = false;
+            ActiveTimers = 10;
+            SendDebug("Entering phase 4");
         }
 
         //Phase 5 specific spells all we can
-        if (Phase <= PHASE_ARMAGEDDON)
+        if (Phase == PHASE_ARMAGEDDON && ((m_creature->GetHealth() * 100 / m_creature->GetMaxHealth()) < 25))
         {
-            if (Phase == PHASE_ARMAGEDDON && ((m_creature->GetHealth() * 100 / m_creature->GetMaxHealth()) < 25))
+            Phase = PHASE_SACRIFICE;
+            Creature* Anveena = Unit::GetCreature((*m_creature), pInstance->GetData64(DATA_ANVEENA));
+            if (Anveena)
+                Anveena->CastSpell(m_creature, SPELL_SACRIFICE_OF_ANVEENA, false);
+            OrbActivated = false;
+            ChangeTimers(true, 10000);// He shouldn't cast spells for ~10 seconds after Anveena's sacrifice. This will be done within Anveena's script
+            m_creature->addUnitState(UNIT_STAT_STUNNED);
+            SendDebug("Entering phase 5");
+        }
+
+        if (Phase == PHASE_SACRIFICE)
+        {
+            if (StunTimer.Expired(diff))
             {
-                Phase = PHASE_SACRIFICE;
-                Creature* Anveena = Unit::GetCreature((*m_creature), pInstance->GetData64(DATA_ANVEENA));
-                if (Anveena)
-                    Anveena->CastSpell(m_creature, SPELL_SACRIFICE_OF_ANVEENA, false);
-                OrbActivated = false;
-                ChangeTimers(true, 10000);// He shouldn't cast spells for ~10 seconds after Anveena's sacrifice. This will be done within Anveena's script
+                m_creature->clearUnitState(UNIT_STAT_STUNNED);
+                StunTimer = 0;
             }
         }
 
@@ -921,10 +928,10 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
     void GetDebugInfo(ChatHandler& reader)
     {
         std::ostringstream str;
-        str << "KJD Debugai, phase " << Phase << "; OrbActivated " << OrbActivated << "; ActiveTimers " << ActiveTimers << "\n";
+        str << "KJD Debugai, phase " << (int)Phase << "; OrbActivated " << (int)OrbActivated << "; ActiveTimers " << (int)ActiveTimers << "\n";
         for (uint8 i = 0; i < 10; i++)
-            str << "Timer " << i << " : " << _Timer[i].GetTimeLeft() << "\n";
-        str << "WaitTimer : " << WaitTimer.GetTimeLeft();
+            str << "Timer " << (int)i << " : " << (int)_Timer[i].GetTimeLeft() << "\n";
+        str << "WaitTimer : " << (int)WaitTimer.GetTimeLeft();
         reader.SendSysMessage(str.str().c_str());
     }
 };
@@ -1369,21 +1376,19 @@ struct mob_shield_orbAI : public ScriptedAI
             me->SetSelection(0);
         if (PointReached)
         {
-            if (Clockwise)
-            {
-                y = my - r * cos(c);
-                x = mx - r * sin(c);
-            }
-            else
-            {
-                y = my + r * cos(c);
-                x = mx + r * sin(c);
-            }
+            y = my + r * cos(c);
+            x = mx + r * sin(c);
             PointReached = false;
             m_creature->GetMotionMaster()->MovePoint(1, x, y, SHIELD_ORB_Z);
-            c += 3.1415926535 / 120;
-            if (c > 2 * 3.1415926535)
-                c = 0;
+            if (Clockwise)
+                c -= M_PI / 50;
+            else
+                c += M_PI / 50;
+
+            if (c > 2 * M_PI)
+                c -= 2 * M_PI;
+            if (c < 0)
+                c += 2 * M_PI;
         }
 
         
@@ -1425,6 +1430,8 @@ struct mob_sinster_reflectionAI : public ScriptedAI
         _Timer[2].Reset(1);
         Wait.Reset(5000);
         Class = 0;
+        m_creature->addUnitState(UNIT_STAT_CANNOT_AUTOATTACK);
+        m_creature->addUnitState(UNIT_STAT_NOT_MOVE);
     }
 
     void UpdateAI(const uint32 diff)
@@ -1460,11 +1467,18 @@ struct mob_sinster_reflectionAI : public ScriptedAI
             }
         }
 
-        if (!UpdateVictim())
-            return;
-        if (!Wait.Expired(diff))
+        if (Wait.Expired(diff))
+        {
+            m_creature->clearUnitState(UNIT_STAT_CANNOT_AUTOATTACK);
+            m_creature->clearUnitState(UNIT_STAT_NOT_MOVE);
+            Wait = 0;
+        }
+
+        if (Wait.GetTimeLeft())
             return;
 
+        if (!UpdateVictim())
+            return;
 
         switch (Class)
         {
