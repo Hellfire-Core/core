@@ -2862,6 +2862,9 @@ void SpellMgr::LoadSpellCustomAttr()
             {
                 switch (spellInfo->Id)
                 {
+                case 126: //Eye of Kilrog -> no haste to duration
+                    spellInfo->Attributes |= SPELL_ATTR_TRADESPELL;
+                    break;
                 case 52009: // Goblin Rocket Launcher
                     spellInfo->EffectMiscValue[0] = 20865;
                     break;
@@ -4509,7 +4512,7 @@ DiminishingGroup SpellMgr::GetDiminishingReturnsGroupForSpell(SpellEntry const* 
             if (spellproto->SpellFamilyFlags & 0x00000080000LL)
                 return DIMINISHING_DEATHCOIL;
             // Seduction
-            else if (spellproto->SpellFamilyFlags & 0x00040000000LL)
+            else if (spellproto->Id == 6358)
                 return DIMINISHING_FEAR;
             // Fear
             //else if (spellproto->SpellFamilyFlags & 0x40840000000LL)

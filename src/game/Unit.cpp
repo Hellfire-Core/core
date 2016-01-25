@@ -11258,6 +11258,8 @@ void Unit::ProcDamageAndSpellfor (bool isVictim, Unit * pTarget, uint32 procFlag
         if (!IsTriggeredAtSpellProcEvent(itr->second, procSpell, procFlag, procExtra, attType, isVictim, active, spellProcEvent))
            continue;
 
+        if (itr->second->GetSpellProto()->Id == 30302)
+            SendCombatStats(1 << COMBAT_STATS_TEST, "30302 proced from %u %u %u %u", NULL, procSpell ? procSpell->Id : 0, procFlag, procExtra, isVictim);
         procTriggered.push_back(ProcTriggeredData(spellProcEvent, itr->second));
     }
     // Handle effects proceed this time
