@@ -907,7 +907,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
         std::ostringstream str;
         str << "KJD Debugai, phase " << (int)Phase << "; OrbActivated " << (int)OrbActivated << "; ActiveTimers " << (int)ActiveTimers << "\n";
         for (uint8 i = 0; i < 10; i++)
-            str << "Timer " << (int)i << " : " << (int)_Timer[i].GetTimeLeft() << "\n";
+            str << "Timer " << (int)i << " : " << (int)_Timer[i].GetTimeLeft() << " " << (int)TimerIsDeactiveted[i] << "\n";
         str << "WaitTimer : " << (int)WaitTimer.GetTimeLeft();
         reader.SendSysMessage(str.str().c_str());
     }
@@ -1370,6 +1370,13 @@ struct mob_shield_orbAI : public ScriptedAI
             return;
 
         PointReached = true;
+    }
+
+    void GetDebugInfo(ChatHandler& reader)
+    {
+        std::ostringstream str;
+        str << "shield orb" << c << " " << r << " " << mx << " " << my << " " << x << " " << y;
+        reader.SendSysMessage(str.str().c_str());
     }
 };
 
