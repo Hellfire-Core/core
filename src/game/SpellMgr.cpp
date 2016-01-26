@@ -1608,6 +1608,18 @@ bool SpellMgr::IsSpellProcEventCanTriggeredBy(SpellProcEventEntry const * spellP
     }
     else // Passive spells hits here only if resist/reflect/immune/evade
     {
+        if (procEvent_procEx & PROC_EX_NETHER_PROTECTION)
+        {
+            if (procSpell == NULL)
+                return true;
+            if (procSpell->Id == 2096 || procSpell->Id == 10909 || // mind vision
+                procSpell->Effect[0] == SPELL_EFFECT_ENVIRONMENTAL_DAMAGE)
+                return false;
+            if (procExtra & PROC_EX_NORMAL_HIT)
+                return true;
+
+            return false;
+        }
         // Exist req for PROC_EX_EX_TRIGGER_ALWAYS
         if (procEvent_procEx & PROC_EX_EX_TRIGGER_ALWAYS)
             return true;

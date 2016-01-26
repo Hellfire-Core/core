@@ -934,6 +934,12 @@ void Spell::DoAllEffectOnTarget(TargetInfo *target)
             DoSpellHitOnUnit(m_caster, mask);
     }
 
+    if (unitTarget == caster)
+    {
+        procVictim &= ~PROC_FLAG_TAKEN_NEGATIVE_SPELL_HIT;
+        procAttacker &= ~PROC_FLAG_SUCCESSFUL_NEGATIVE_SPELL_HIT;
+    }
+
     // All calculated do it!
     // Do healing and triggers
     if (m_healing > 0)
