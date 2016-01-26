@@ -689,9 +689,8 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                             IsKalecJoined = true;
                             TimerIsDeactiveted[TIMER_KALEC_JOIN] = true;
                         }
+                        break;
                     }
-                    break;
-
                     case TIMER_SOUL_FLAY:
                     {
                         if (me->IsNonMeleeSpellCast(false))
@@ -700,10 +699,8 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                         AddSpellToCast(me->getVictim(), SPELL_SOUL_FLAY);
 
                         _Timer[TIMER_SOUL_FLAY] = 4000;
-                        
+                        break;
                     }
-                    break;
-
                     case TIMER_LEGION_LIGHTNING:
                     {
                         randomPlayer = NULL;
@@ -715,9 +712,8 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
 
                         _Timer[TIMER_LEGION_LIGHTNING] = (Phase == PHASE_SACRIFICE) ? 18000 : urand(13000, 17000); // 18 seconds in PHASE_SACRIFICE
                         _Timer[TIMER_SOUL_FLAY].Reset(3500);
+                        break;
                     }
-                    break;
-
                     case TIMER_FIRE_BLOOM:
                     {
                         randomPlayer = NULL;
@@ -725,10 +721,8 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                         if (randomPlayer)
                             AddSpellToCast(randomPlayer, SPELL_FIRE_BLOOM);
                         _Timer[TIMER_FIRE_BLOOM] = (Phase == PHASE_SACRIFICE) ? 25000 : 20000; // 25 seconds in PHASE_SACRIFICE
-
+                        break;
                     }
-                    break;
-
                     case TIMER_SUMMON_SHILEDORB:
                     {
                         for (uint8 i = 1; i < Phase; ++i)
@@ -741,10 +735,8 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                                 shieldorb->AI()->DoAction(i);
                         }
                         _Timer[TIMER_SUMMON_SHILEDORB] = 30000 + rand() % 30 * 1000; // 30-60seconds cooldown
+                        break;
                     }
-                    break;
-
-
                     /*$$$$$$$$$$$$$$$$$$$$$$$$$$$
                               Phase 3
                     $$$$$$$$$$$$$$$$$$$$$$$$$$$$*/
@@ -766,10 +758,11 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                         {
                             if (SpikesLeft)
                             {
-                                Unit* random = SelectUnit(SELECT_TARGET_RANDOM, 0, 100.0f);
+                                Unit* random = SelectUnit(SELECT_TARGET_RANDOM, 0, 100.0f, true);
                                 Position pos;
                                 if (random)
                                 {
+                                    SendDebug("spike on %N", random->GetName());
                                     random->GetPosition(pos);
                                     me->SummonCreature(CREATURE_SPIKE_TARGET1, pos.x, pos.y, pos.z, 0, TEMPSUMMON_TIMED_DESPAWN, 2800);
                                 }
@@ -786,16 +779,14 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                             }
 
                         }
+                        break;
                     }
-                    break;
-
                     case TIMER_FLAME_DART:
                     {
                         AddSpellToCast(SPELL_FLAME_DART, CAST_NULL);
                         _Timer[TIMER_FLAME_DART] = urand(18000, 22000);
+                        break;
                     }
-                    break;
-
                     case TIMER_DARKNESS:
                     {
                         // Begins to channel for 8 seconds, then deals 50'000 damage to all raid members.
@@ -821,8 +812,9 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                             SendDebug("Casting aoe darkness");
                         }
                         _Timer[TIMER_SOUL_FLAY].Reset(9000);
+                        ClearCastQueue();
+                        break;
                     }
-                    break;
 
                     case TIMER_ORBS_EMPOWER:
                     {

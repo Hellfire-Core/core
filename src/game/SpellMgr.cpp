@@ -3301,7 +3301,10 @@ void SpellMgr::LoadSpellCustomAttr()
             case 45665:
                 spellInfo->AttributesCu &= ~SPELL_ATTR_CU_MOVEMENT_IMPAIR;
                 break;
-            case  45680: // Kil'jaeden orbs shadowbolts
+            case 45680: // Kil'jaeden orbs shadowbolts
+                spellInfo->EffectImplicitTargetB[0] = TARGET_UNIT_AREA_ENEMY_DST;
+                spellInfo->MaxAffectedTargets = 1;
+                break;
             case 39042: // Rampant Infection
                 spellInfo->MaxAffectedTargets = 1;
                 break;
