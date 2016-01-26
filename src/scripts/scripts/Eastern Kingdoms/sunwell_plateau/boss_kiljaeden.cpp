@@ -216,14 +216,6 @@ enum KilJaedenTimers
 };
 
 
-// Locations of the Hand of Deceiver adds
-float DeceiverLocations[3][3] =
-{
-    {1682.045, 631.299, 5.936},
-    {1684.099, 618.848, 0.589},
-    {1694.170, 612.272, 1.416},
-};
-
 enum Actions
 {
     DECEIVER_ENTER_COMBAT = 0,
@@ -236,16 +228,9 @@ enum Actions
 float ShieldOrbLocations[4][2] =
 {
     {1698.900, 627.870},  //middle pont of Sunwell
-    {3.14 * 0.75, 17 }, 
-    {3.14 * 1.75, 17 },
-    {3.14 * 1.25, 17 }
-};
-
-float OrbLocations[4][5] = {
-    (1694.48, 674.29,  28.0502, 4.86985),
-    (1745.68, 621.823, 28.0505, 2.93777),
-    (1704.14, 583.591, 28.1696, 1.59003),
-    (1653.12, 635.41,  28.0932, 0.0977725),
+    {(3.14f * 0.75f), 17.0f }, 
+    {(3.14f * 1.75f), 17.0f },
+    {(3.14f * 1.25f), 17.0f }
 };
 
 struct Speech
@@ -505,7 +490,6 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
     bool IsKalecJoined;
     bool IsInDarkness;
     bool TimerIsDeactiveted[10];
-    bool IsWaiting;
     bool OrbActivated;
     bool IsEmerging;
     bool IsCastingSpikes;
@@ -542,7 +526,6 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
 
         IsKalecJoined   = false;
         IsInDarkness    = false;
-        IsWaiting       = false;
         OrbActivated    = false;
         IsEmerging      = true;
 
@@ -581,11 +564,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
             TimerIsDeactiveted[i] = status;
         TimerIsDeactiveted[TIMER_KALEC_JOIN] = IsKalecJoined;
 
-        if (WTimer > 0)
-        {
-            IsWaiting = true;
-            WaitTimer.Reset(WTimer);
-        }
+        WaitTimer.Reset(WTimer); // if Wtimer -> sets it, if ==0 then disables it
 
         if (OrbActivated)
             TimerIsDeactiveted[TIMER_ORBS_EMPOWER] = true;
@@ -692,7 +671,6 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
 
         if (WaitTimer.Expired(diff))
         {
-            IsWaiting = false;
             ChangeTimers(false, 0);
         }
 
