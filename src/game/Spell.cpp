@@ -362,7 +362,7 @@ Spell::Spell(Unit* Caster, SpellEntry const *info, bool triggered, uint64 origin
     // determine reflection
     m_canReflect = GetSpellEntry()->DmgClass == SPELL_DAMAGE_CLASS_MAGIC && !(GetSpellEntry()->Attributes & SPELL_ATTR_ABILITY)
         && !(GetSpellEntry()->AttributesEx & SPELL_ATTR_EX_CANT_BE_REFLECTED) && !(GetSpellEntry()->Attributes & SPELL_ATTR_UNAFFECTED_BY_INVULNERABILITY)
-        && !SpellMgr::IsPassiveSpell(GetSpellEntry()) && !SpellMgr::IsPositiveSpell(GetSpellEntry()->Id);
+        && !SpellMgr::IsPassiveSpell(GetSpellEntry());
 
     CleanupTargetList();
 }
