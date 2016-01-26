@@ -736,9 +736,9 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                             float sx, sy;
                             sx = ShieldOrbLocations[0][0] + ShieldOrbLocations[i][1]*sin(ShieldOrbLocations[i][0]);
                             sy = ShieldOrbLocations[0][1] + ShieldOrbLocations[i][1]*cos(ShieldOrbLocations[i][0]);
-                            m_creature->SummonCreature(CREATURE_SHIELD_ORB, sx, sy, SHIELD_ORB_Z, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 45000);
-                            if (m_creature)
-                                m_creature->AI()->DoAction(i);
+                            Creature* shieldorb = m_creature->SummonCreature(CREATURE_SHIELD_ORB, sx, sy, SHIELD_ORB_Z, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 45000);
+                            if (shieldorb)
+                                shieldorb->AI()->DoAction(i);
                         }
                         _Timer[TIMER_SUMMON_SHILEDORB] = 30000 + rand() % 30 * 1000; // 30-60seconds cooldown
                     }
@@ -860,7 +860,6 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                     }
                     break;
                 }
-                break;
             }
         }
 
