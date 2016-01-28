@@ -4614,13 +4614,13 @@ void Spell::EffectSummonPossessed(uint32 i)
     {
         if (oldpet->isControlled())
         {
-            ((Player*)this)->SetTemporaryUnsummonedPetNumber(oldpet->GetCharmInfo()->GetPetNumber());
-            ((Player*)this)->SetOldPetSpell(oldpet->GetUInt32Value(UNIT_CREATED_BY_SPELL));
+            m_caster->ToPlayer()->SetTemporaryUnsummonedPetNumber(oldpet->GetCharmInfo()->GetPetNumber());
+            m_caster->ToPlayer()->SetOldPetSpell(oldpet->GetUInt32Value(UNIT_CREATED_BY_SPELL));
         }
-        ((Player*)this)->RemovePet(NULL, PET_SAVE_NOT_IN_SLOT);
+        m_caster->ToPlayer()->RemovePet(oldpet, PET_SAVE_NOT_IN_SLOT);
     }
 
-    Pet* pet = ((Player*)m_caster)->SummonPet(entry, x, y, z + 0.5f, m_caster->GetOrientation(), POSSESSED_PET, duration);
+    Pet* pet = m_caster->ToPlayer()->SummonPet(entry, x, y, z + 0.5f, m_caster->GetOrientation(), POSSESSED_PET, duration);
     if (!pet)
         return;
 

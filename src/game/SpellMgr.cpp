@@ -1611,9 +1611,8 @@ bool SpellMgr::IsSpellProcEventCanTriggeredBy(SpellProcEventEntry const * spellP
         if (procEvent_procEx & PROC_EX_NETHER_PROTECTION)
         {
             if (procSpell == NULL)
-                return true;
-            if (procSpell->Id == 2096 || procSpell->Id == 10909 || // mind vision
-                procSpell->Effect[0] == SPELL_EFFECT_ENVIRONMENTAL_DAMAGE)
+                return false;
+            if (procSpell->Effect[0] == SPELL_EFFECT_ENVIRONMENTAL_DAMAGE)
                 return false;
             if (procExtra & PROC_EX_NORMAL_HIT)
                 return true;
