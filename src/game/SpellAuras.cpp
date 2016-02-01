@@ -6472,14 +6472,14 @@ void Aura::HandleShapeshiftBoosts(bool apply)
                     continue;
 
                 if (spellInfo->Stances & (1<<form))
-                    m_target->CastSpell(m_target, itr->first, true, NULL, this);
+                    m_target->CastSpell(m_target, itr->first, true, NULL, this, m_target->GetGUID());
             }
             //LotP
             if (((Player*)m_target)->HasSpell(17007))
             {
                 SpellEntry const *spellInfo = sSpellStore.LookupEntry(24932);
                 if (spellInfo && spellInfo->Stances & (1<<form))
-                    m_target->CastSpell(m_target, 24932, true, NULL, this);
+                    m_target->CastSpell(m_target, 24932, true, NULL, this, m_target->GetGUID());
             }
             // HotW
             if (HotWSpellId)
@@ -6493,7 +6493,7 @@ void Aura::HandleShapeshiftBoosts(bool apply)
                         if (GetModifier()->m_miscvalue == FORM_CAT)
                             HotWMod /= 2;
 
-                        m_target->CastCustomSpell(m_target, HotWSpellId, &HotWMod, NULL, NULL, true, NULL, this);
+                        m_target->CastCustomSpell(m_target, HotWSpellId, &HotWMod, NULL, NULL, true, NULL, this, m_target->GetGUID());
                         break;
                     }
                 }
@@ -6501,10 +6501,10 @@ void Aura::HandleShapeshiftBoosts(bool apply)
         }
 
         if (spellId)
-            m_target->CastSpell(m_target, spellId, true, NULL, this);
+            m_target->CastSpell(m_target, spellId, true, NULL, this, m_target->GetGUID());
 
         if (spellId2)
-            m_target->CastSpell(m_target, spellId2, true, NULL, this);
+            m_target->CastSpell(m_target, spellId2, true, NULL, this, m_target->GetGUID());
     }
     else
     {
