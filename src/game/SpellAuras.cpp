@@ -440,7 +440,7 @@ m_periodicTimer(0), m_amplitude(0), m_PeriodicEventId(0), m_AuraDRGroup(DIMINISH
     m_isRemovedOnShapeLost = (m_caster_guid==m_target->GetGUID() && m_spellProto->Stances &&
                             !(m_spellProto->AttributesEx2 & SPELL_ATTR_EX2_NOT_NEED_SHAPESHIFT) &&
                             !(m_spellProto->Attributes & SPELL_ATTR_NOT_SHAPESHIFT) &&
-                            m_spellProto->Id != 6788 && m_spellProto->Id != 123828);
+                            m_spellProto->Id != 6788 && m_spellProto->Id != 12328);
 }
 
 Aura::~Aura()
