@@ -4532,7 +4532,7 @@ DiminishingGroup SpellMgr::GetDiminishingReturnsGroupForSpell(SpellEntry const* 
             //else if (spellproto->SpellFamilyFlags & 0x40840000000LL)
             //    return DIMINISHING_WARLOCK_FEAR;
             // Curses/etc
-            else if (spellproto->SpellFamilyFlags & 0x00080000000LL)
+            else if ((spellproto->SpellFamilyFlags & 0x00080000000LL) && (spellproto->SpellIconID == 692))
                 return DIMINISHING_LIMITONLY;
             // Unstable Affliction dispel silence
             else if (spellproto->Id == 31117)
