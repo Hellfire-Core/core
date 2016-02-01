@@ -348,7 +348,7 @@ void SpellMgr::ApplySpellThreatModifiers(SpellEntry const *spellInfo, float &thr
         threat *= 1.75f;
 }
 
-uint32 SpellMgr::CalculatePowerCost(SpellEntry const * spellInfo, Unit const * caster, SpellSchoolMask schoolMask)
+uint32 SpellMgr::CalculatePowerCost(SpellEntry const * spellInfo, Unit const * caster, SpellSchoolMask schoolMask, Spell* spell)
 {
     // Spell drain all exist power on cast (Only paladin lay of Hands)
     if (spellInfo->AttributesEx & SPELL_ATTR_EX_DRAIN_ALL_POWER)
@@ -397,7 +397,7 @@ uint32 SpellMgr::CalculatePowerCost(SpellEntry const * spellInfo, Unit const * c
         powerCost += caster->GetAttackTime(OFF_ATTACK)/100;
     // Apply cost mod by spell
     if (Player* modOwner = caster->GetSpellModOwner())
-        modOwner->ApplySpellMod(spellInfo->Id, SPELLMOD_COST, powerCost);
+        modOwner->ApplySpellMod(spellInfo->Id, SPELLMOD_COST, powerCost, spell);
 
     if (spellInfo->Attributes & SPELL_ATTR_LEVEL_DAMAGE_CALCULATION)
         powerCost = int32(powerCost/ (1.117f* spellInfo->spellLevel / caster->getLevel() -0.1327f));

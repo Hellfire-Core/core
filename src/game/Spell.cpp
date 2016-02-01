@@ -2351,7 +2351,7 @@ void Spell::prepare(SpellCastTargets * targets, Aura* triggeredByAura)
     {
         // fill extra crit chance from mods
         // no mod gives pct chance for spell crit (surge of light is also taken as flat in spellmgr::loadspellcustomattr
-        mod_owner->ApplySpellMod(GetSpellEntry()->Id, SPELLMOD_CRITICAL_CHANCE, m_extraCrit);
+        mod_owner->ApplySpellMod(GetSpellEntry()->Id, SPELLMOD_CRITICAL_CHANCE, m_extraCrit, this);
     }
 
     if (m_caster->GetTypeId() == TYPEID_PLAYER)
@@ -2383,7 +2383,7 @@ void Spell::prepare(SpellCastTargets * targets, Aura* triggeredByAura)
         }
     }
     // Fill cost data
-    m_powerCost = m_CastItem ? 0 : SpellMgr::CalculatePowerCost(GetSpellEntry(), m_caster, m_spellSchoolMask);
+    m_powerCost = m_CastItem ? 0 : SpellMgr::CalculatePowerCost(GetSpellEntry(), m_caster, m_spellSchoolMask, this);
 
     SpellCastResult result = CheckCast(true);
     if (result != SPELL_CAST_OK && !IsAutoRepeat())          //always cast autorepeat dummy for triggering
