@@ -219,8 +219,8 @@ struct npc_taskmaster_fizzuleAI : public ScriptedAI
             m_creature->DeleteThreatList();
             m_creature->CombatStop();
 
-            if (++FlareCount >= 2)
-                m_creature->setFaction(FACTION_FRIENDLY_F);
+            ++FlareCount;
+                
         }
     }
 
@@ -256,6 +256,8 @@ bool ReciveEmote_npc_taskmaster_fizzule(Player *player, Creature *_Creature, uin
         {
             _Creature->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER);
             _Creature->HandleEmoteCommand(EMOTE_ONESHOT_SALUTE);
+            _Creature->setFaction(FACTION_FRIENDLY_F);
+            _Creature->ResetGossipOptions();
         }
     }
     return true;
