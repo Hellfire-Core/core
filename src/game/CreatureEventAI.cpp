@@ -1418,7 +1418,7 @@ bool CreatureEventAI::CanCast(Unit* Target, SpellEntry const *Spell, bool Trigge
         return false;
 
     //Check for power
-    if (!Triggered && me->GetPower((Powers)Spell->powerType) < SpellMgr::CalculatePowerCost(Spell, me, SpellMgr::GetSpellSchoolMask(Spell)))
+    if (!Triggered && me->GetPower((Powers)Spell->powerType) < SpellMgr::CalculatePowerCost(Spell, me, SpellMgr::GetSpellSchoolMask(Spell), NULL))
         return false;
 
     SpellRangeEntry const *TempRange = NULL;
