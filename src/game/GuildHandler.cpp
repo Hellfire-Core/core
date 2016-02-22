@@ -962,12 +962,6 @@ void WorldSession::HandleGuildBankDeposit(WorldPacket & recv_data)
 
     RealmDataDatabase.CommitTransaction();
 
-    if (_player->GetSession()->IsAccountFlagged(ACC_SPECIAL_LOG))
-    {
-        sLog.outLog(LOG_SPECIAL, "Player %s (Account: %u) deposit money (Amount: %u) to guild bank (Guild ID %u)",
-            _player->GetName(),_player->GetSession()->GetAccountId(),money,GuildId);
-    }
-
     // logging money
     if (_player->GetSession()->HasPermissions(PERM_GMT) && sWorld.getConfig(CONFIG_GM_LOG_TRADE))
     {
@@ -1383,14 +1377,6 @@ void WorldSession::HandleGuildBankDepositItem(WorldPacket & recv_data)
                             pItemChar->GetProto()->Name1,pItemChar->GetEntry(),pItemChar->GetCount(),
                             GuildId);
                     }
-
-                    if (_player->GetSession()->IsAccountFlagged(ACC_SPECIAL_LOG))
-                    {
-                        sLog.outLog(LOG_SPECIAL, "Player %s (Account: %u) deposit item: %s (Entry: %d Count: %u) to guild bank (Guild ID: %u)",
-                            _player->GetName(),_player->GetSession()->GetAccountId(),
-                            pItemChar->GetProto()->Name1,pItemChar->GetEntry(),pItemChar->GetCount(),
-                            GuildId);
-                    }
                 }
 
                 RealmDataDatabase.BeginTransaction();
@@ -1460,13 +1446,6 @@ void WorldSession::HandleGuildBankDepositItem(WorldPacket & recv_data)
                 pItemChar->GetProto()->Name1,pItemChar->GetEntry(),SplitedAmount,GuildId);
         }
 
-        if (_player->GetSession()->IsAccountFlagged(ACC_SPECIAL_LOG))
-        {
-            sLog.outLog(LOG_SPECIAL, "Player %s (Account: %u) deposit item: %s (Entry: %d Count: %u) to guild bank (Guild ID: %u)",
-                _player->GetName(),_player->GetSession()->GetAccountId(),
-                pItemChar->GetProto()->Name1,pItemChar->GetEntry(),SplitedAmount,GuildId);
-        }
-
         RealmDataDatabase.BeginTransaction();
         pGuild->LogBankEvent(GUILD_BANK_LOG_DEPOSIT_ITEM, BankTab, pl->GetGUIDLow(), pItemChar->GetEntry(), SplitedAmount);
 
@@ -1489,14 +1468,6 @@ void WorldSession::HandleGuildBankDepositItem(WorldPacket & recv_data)
             if (_player->GetSession()->HasPermissions(PERM_GMT) && sWorld.getConfig(CONFIG_GM_LOG_TRADE))
             {
                 sLog.outCommand(_player->GetSession()->GetAccountId(),"GM %s (Account: %u) deposit item: %s (Entry: %d Count: %u) to guild bank (Guild ID: %u)",
-                    _player->GetName(),_player->GetSession()->GetAccountId(),
-                    pItemChar->GetProto()->Name1,pItemChar->GetEntry(),pItemChar->GetCount(),
-                    GuildId);
-            }
-
-            if (_player->GetSession()->IsAccountFlagged(ACC_SPECIAL_LOG))
-            {
-                sLog.outLog(LOG_SPECIAL, "Player %s (Account: %u) deposit item: %s (Entry: %d Count: %u) to guild bank (Guild ID: %u)",
                     _player->GetName(),_player->GetSession()->GetAccountId(),
                     pItemChar->GetProto()->Name1,pItemChar->GetEntry(),pItemChar->GetCount(),
                     GuildId);
@@ -1547,14 +1518,6 @@ void WorldSession::HandleGuildBankDepositItem(WorldPacket & recv_data)
             if (_player->GetSession()->HasPermissions(PERM_GMT) && sWorld.getConfig(CONFIG_GM_LOG_TRADE))
             {
                 sLog.outCommand(_player->GetSession()->GetAccountId(),"GM %s (Account: %u) deposit item: %s (Entry: %d Count: %u) to guild bank (Guild ID: %u)",
-                    _player->GetName(),_player->GetSession()->GetAccountId(),
-                    pItemChar->GetProto()->Name1,pItemChar->GetEntry(),pItemChar->GetCount(),
-                    GuildId);
-            }
-
-            if (_player->GetSession()->IsAccountFlagged(ACC_SPECIAL_LOG))
-            {
-                sLog.outLog(LOG_SPECIAL, "Player %s (Account: %u) deposit item: %s (Entry: %d Count: %u) to guild bank (Guild ID: %u)",
                     _player->GetName(),_player->GetSession()->GetAccountId(),
                     pItemChar->GetProto()->Name1,pItemChar->GetEntry(),pItemChar->GetCount(),
                     GuildId);

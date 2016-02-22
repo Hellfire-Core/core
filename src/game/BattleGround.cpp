@@ -586,6 +586,8 @@ void BattleGround::EndBattleGround(uint32 winner)
     {
         SetWinner(3);
     }
+    if (!isArena())
+        sLog.outLog(LOG_SPECIAL,"Battleground %u ended, winner %s", GetTypeID(), winner == ALLIANCE ? "Alliance" : (winner == HORDE ? "Horde" : "None"));
 
     SetStatus(STATUS_WAIT_LEAVE);
     m_EndTime = 0;

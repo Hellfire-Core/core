@@ -393,7 +393,7 @@ bool WorldSession::Update(uint32 diff, PacketFilter& updater)
     }
     catch (...)
     {
-        sLog.outLog(LOG_SPECIAL, "WPE NOOB: packet doesn't contains required data, %s(%u), acc: %u", GetPlayer()->GetName(), GetPlayer()->GetGUIDLow(), GetAccountId());
+        sLog.outLog(LOG_WARDEN, "WPE NOOB: packet doesn't contains required data, %s(%u), acc: %u", GetPlayer()->GetName(), GetPlayer()->GetGUIDLow(), GetAccountId());
         KickPlayer();
     }
 

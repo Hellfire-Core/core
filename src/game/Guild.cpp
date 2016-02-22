@@ -65,8 +65,6 @@ bool Guild::create(uint64 lGuid, std::string gname)
     if (sGuildMgr.GetGuildByName(gname))
         return false;
 
-    sLog.outLog(LOG_SPECIAL, "GUILD: creating guild %s to leader: %u", gname.c_str(), GUID_LOPART(lGuid));
-
     leaderGuid = lGuid;
     name = gname;
     GINFO = "";

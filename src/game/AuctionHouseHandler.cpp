@@ -327,12 +327,6 @@ void WorldSession::HandleAuctionSellItem(WorldPacket & recv_data)
         sLog.outCommand(GetAccountId(),"GM %s (Account: %u) create auction: %s (Entry: %u Count: %u)",
             GetPlayerName(), GetAccountId(), it->GetProto()->Name1, it->GetEntry(), it->GetCount());
     }
-
-    if (_player->GetSession()->IsAccountFlagged(ACC_SPECIAL_LOG))
-    {
-        sLog.outLog(LOG_SPECIAL, "Player %s (Account: %u) create auction: %s (Entry: %u Count: %u)",
-            GetPlayerName(), GetAccountId(), it->GetProto()->Name1, it->GetEntry(), it->GetCount());
-    }
 /*  else
     {
         sLog.outLog(LOG_AUCTION, "Player %s (Account: %u) create auction: %s (Entry: %u Count: %u)",

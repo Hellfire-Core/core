@@ -341,12 +341,6 @@ void WorldSession::HandleSendMail(WorldPacket & recv_data)
                     GetPlayerName(), GetAccountId(), money, receiver.c_str(), rc_account);
             }
 
-            if (_player->GetSession()->IsAccountFlagged(ACC_SPECIAL_LOG))
-            {
-                sLog.outLog(LOG_SPECIAL, "Player %s (Account: %u) mail money: %u to player: %s (Account: %u)",
-                    GetPlayerName(), GetAccountId(), money, receiver.c_str(), rc_account);
-            }
-
             sLog.outLog(LOG_TRADE, "Player %s (Account: %u) mail money: %u to player: %s (Account: %u)",
                 GetPlayerName(), GetAccountId(), money, receiver.c_str(), rc_account);
         }

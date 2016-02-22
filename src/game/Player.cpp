@@ -14471,7 +14471,7 @@ bool Player::LoadFromDB(uint32 guid, SqlQueryHolder *holder)
 
                 m_atLoginFlags = m_atLoginFlags & ~AT_LOGIN_DISPLAY_CHANGE;
                 RealmDataDatabase.PExecute("UPDATE characters SET at_login = at_login & ~ %u WHERE guid ='%u'", uint32(AT_LOGIN_DISPLAY_CHANGE), GetGUIDLow());
-                sLog.outLog(LOG_SPECIAL, "Player: %s [%u] changed character display successfully.", GetName(), GetGUIDLow());
+                sLog.outLog(LOG_RACE_CHANGE, "Player: %s [%u] changed character display successfully.", GetName(), GetGUIDLow());
             }
         }
     }
@@ -16517,8 +16517,6 @@ void Player::_SaveInventory()
                 //continue;
 
                 AccountsDatabase.BeginTransaction();
-                if (!GetSession()->IsAccountFlagged(ACC_SPECIAL_LOG))
-                    GetSession()->AddAccountFlag(ACC_SPECIAL_LOG);
 
                 stmt = AccountsDatabase.CreateStatement(insertBan, "INSERT INTO account_punishment VALUES (?, ?, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), '[CONSOLE]', 'Cheat CON-01', 1)");
                 stmt.PExecute(GetSession()->GetAccountId(), uint32(PUNISHMENT_BAN));
@@ -16538,9 +16536,6 @@ void Player::_SaveInventory()
 
                 SqlStatement stmt = AccountsDatabase.CreateStatement(insertBan, "INSERT INTO account_punishment VALUES (?, ?, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), '[CONSOLE]', 'Cheat CON-02', 1)");
                 stmt.PExecute(GetSession()->GetAccountId(), uint32(PUNISHMENT_BAN));
-
-                if (!GetSession()->IsAccountFlagged(ACC_SPECIAL_LOG))
-                    GetSession()->AddAccountFlag(ACC_SPECIAL_LOG);
 
                 AccountsDatabase.CommitTransaction();
                 GetSession()->KickPlayer();
