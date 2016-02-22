@@ -6710,7 +6710,7 @@ void Spell::EffectScriptEffect(uint32 effIndex)
                             int32 chance = (*i)->GetModifier()->m_amount;
                             if (roll_chance_i(chance))
                             {
-                                int32 mana = SpellMgr::CalculatePowerCost(spellInfo, m_caster, SPELL_SCHOOL_MASK_NONE);
+                                int32 mana = SpellMgr::CalculatePowerCost(spellInfo, m_caster, SPELL_SCHOOL_MASK_NONE, this);
                                 mana = int32(mana* 0.8f);
                                 m_caster->CastCustomSpell(m_caster,31930,&mana,NULL,NULL,true,NULL,*i);
                             }
