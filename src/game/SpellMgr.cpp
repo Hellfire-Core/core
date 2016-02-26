@@ -4712,6 +4712,26 @@ bool SpellMgr::CanSpellCrit(const SpellEntry* spellInfo)
     if (spellInfo->AttributesEx2 & SPELL_ATTR_EX2_CANT_CRIT)
         return false;
 
+    switch (spellInfo->DmgClass)
+    {
+        case SPELL_DAMAGE_CLASS_NONE:
+            switch (spellInfo->Id)// We need more spells to find a general way (if there is any)
+            {
+                case 379:   // Earth Shield
+                case 33778: // Lifebloom
+                case 45064: // Vessel of the Naaru
+                    break;
+                default:
+                    return false;
+            } // fall through to break
+        case SPELL_DAMAGE_CLASS_MAGIC:
+        case SPELL_DAMAGE_CLASS_MELEE:
+        case SPELL_DAMAGE_CLASS_RANGED:
+            break;
+        default:
+            return false;
+    }
+
     for (uint8 eff=0; eff<3; ++eff)
         switch(spellInfo->Effect[eff])
         {

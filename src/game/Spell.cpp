@@ -2347,12 +2347,15 @@ void Spell::prepare(SpellCastTargets * targets, Aura* triggeredByAura)
         return;
     }
 
-    if (Player* mod_owner = m_caster->GetSpellModOwner())
+    if (SpellMgr::CanSpellCrit(GetSpellEntry())) // only if spell can crit
     {
-        // fill extra crit chance from mods
-        // no mod gives pct chance for spell crit (surge of light is also taken as flat in spellmgr::loadspellcustomattr
-        mod_owner->ApplySpellMod(GetSpellEntry()->Id, SPELLMOD_CRITICAL_CHANCE, m_extraCrit, this);
-    }
+        if (Player* mod_owner = m_caster->GetSpellModOwner())
+        {
+            // fill extra crit chance from mods
+            // no mod gives pct chance for spell crit (surge of light is also taken as flat in spellmgr::loadspellcustomattr
+            mod_owner->ApplySpellMod(GetSpellEntry()->Id, SPELLMOD_CRITICAL_CHANCE, m_extraCrit, this);
+        }
+     }
 
     if (m_caster->GetTypeId() == TYPEID_PLAYER)
     {

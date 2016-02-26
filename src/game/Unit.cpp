@@ -8546,16 +8546,7 @@ bool Unit::isSpellCrit(Unit *pVictim, SpellEntry const *spellProto, SpellSchoolM
     float extraChance = 0.0f;
     switch (spellProto->DmgClass)
     {
-        case SPELL_DAMAGE_CLASS_NONE:
-            switch (spellProto->Id)// We need more spells to find a general way (if there is any)
-            {
-                case 379:   // Earth Shield
-                case 33778: // Lifebloom
-                case 45064: // Vessel of the Naaru
-                    break;
-                default:
-                    return false;
-            }
+        case SPELL_DAMAGE_CLASS_NONE: // spells that should not be affected by crit are filtered in CanSpellCrit already
         case SPELL_DAMAGE_CLASS_MAGIC:
         {
             if (schoolMask & SPELL_SCHOOL_MASK_NORMAL)
@@ -8609,7 +8600,7 @@ bool Unit::isSpellCrit(Unit *pVictim, SpellEntry const *spellProto, SpellSchoolM
             break;
         }
         default:
-            return false;
+            return false; // already done in CanSpellCrit. Just in case leave it here too
     }
     baseChance += spellExtraChance;
     SendCombatStats(1<<COMBAT_STATS_CRIT_CHANCE, "isSpellCrit (id=%d): baseChance = %f (spellExtraChance = %f) extraChance = %f totalChance = %f", pVictim, spellProto->Id, baseChance, spellExtraChance, extraChance, baseChance + extraChance);
