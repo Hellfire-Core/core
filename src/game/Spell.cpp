@@ -2758,12 +2758,8 @@ void Spell::handle_immediate()
 
 uint64 Spell::handle_delayed(uint64 t_offset)
 {
-    if (!UpdatePointers()) 
-    { 
-        // finish the spell if UpdatePointers() returned false, something wrong happened there 
-        finish(false); 
-        return 0;
-    }
+    UpdatePointers();
+
     uint64 next_time = 0;
 
     if (!m_immediateHandled)
@@ -2977,12 +2973,7 @@ void Spell::SendSpellCooldown()
 void Spell::update(uint32 difftime)
 {
     // update pointers based at it's GUIDs
-    if (!UpdatePointers()) 
-    { 
-        // finish the spell if UpdatePointers() returned false, something wrong happened there 
-        finish(false); 
-        return;
-    }
+    UpdatePointers();
 
     if (m_targets.getUnitTargetGUID() && !m_targets.getUnitTarget())
     {
