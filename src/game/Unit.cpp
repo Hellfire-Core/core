@@ -13216,7 +13216,7 @@ void Unit::SendCombatStats(uint32 flag, const char* format, Unit *pVictim, ...) 
         return;
 
     {
-        if (sWorld.getConfig(CONFIG_ENABLE_CRASHTEST) && target->GetSession()->HasPermissions(PERM_DEVELOPER) && flag == (1 << COMBAT_STATS_CRAHSTEST))
+        if (sWorld.getConfig(CONFIG_ENABLE_CRASHTEST) && target->GetSession()->HasPermissions(PERM_DEVELOPER) && flag == (1 << COMBAT_STATS_CRASHTEST))
             *((uint32 volatile*)NULL) = 0;
     }
 
