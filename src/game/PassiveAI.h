@@ -57,7 +57,7 @@ class HELLGROUND_IMPORT_EXPORT NullCreatureAI : public CreatureAI
     public:
         explicit NullCreatureAI(Creature *c);
 
-        bool IsVisible() { return !m_creature->isTrigger(); }
+        bool IsVisible();
         void MoveInLineOfSight(Unit *) {}
         void AttackStart(Unit *) {}
         void UpdateAI(const uint32) {}
