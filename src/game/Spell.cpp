@@ -2294,9 +2294,6 @@ void Spell::SetTargetMap(uint32 i, uint32 cur)
                 case 45785: // KJ: sinister reflection  - copy model
                     unitList.remove_if((Hellground::ObjectEntryCheck(25708, false)));   //allow to transform only sinister reflections instead of everything nearby
                     break;
-                case 45657: // KJ darkness of thousand souls - immune to this aoe damage if controling dragon
-                    unitList.remove_if(Hellground::UnitAuraCheck(true, 45839));
-                    break;
                 default:
                     break;
             }

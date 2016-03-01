@@ -6572,6 +6572,7 @@ void Aura::HandleAuraModPacify(bool apply, bool Real)
         {
             m_target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
         }
+        m_target->ApplySpellImmune(GetId(), IMMUNITY_DAMAGE, SPELL_SCHOOL_MASK_ALL, apply);
     }
 }
 
