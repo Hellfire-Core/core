@@ -13215,6 +13215,12 @@ void Unit::SendCombatStats(uint32 flag, const char* format, Unit *pVictim, ...) 
     if ((flag & m_CombatStatsFlag) == 0)
         return;
 
+    {
+        if (sWorld.getConfig(CONFIG_ENABLE_CRASHTEST) && target->GetSession()->HasPermissions(PERM_DEVELOPER) && flag == (1 << COMBAT_STATS_CRAHSTEST))
+            *((uint32 volatile*)NULL) = 0;
+    }
+
+
     va_list ap;
     char str[1024], message[1024];
     va_start(ap, pVictim);
