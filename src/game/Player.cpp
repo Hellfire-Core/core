@@ -18666,7 +18666,7 @@ bool Player::canSeeOrDetect(Unit const* u, WorldObject const* viewPoint, bool de
     if (u == this)
         return true;
 
-    if (u->GetObjectGuid().IsAnyTypeCreature() && u->ToCreature()->IsAIEnabled && !u->ToCreature()->AI()->IsVisible())
+    if (u->GetObjectGuid().IsAnyTypeCreature() && u->ToCreature()->IsAIEnabled && !u->ToCreature()->AI()->IsVisible() && !isGameMaster())
         return false;
 
     // player visible for other player if not logout and at same transport
