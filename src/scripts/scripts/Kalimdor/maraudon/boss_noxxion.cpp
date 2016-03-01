@@ -146,6 +146,16 @@ CreatureAI* GetAI_boss_noxxion(Creature *_Creature)
     return new boss_noxxionAI (_Creature);
 }
 
+bool GOUse_vylestem_vine(Player*, GameObject* object)
+{
+    object->SummonCreature(13696, object->GetPositionX(), object->GetPositionY(), object->GetPositionZ(), 0, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 30000);
+    object->SummonCreature(13696, object->GetPositionX(), object->GetPositionY(), object->GetPositionZ(), 0, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 30000);
+    if (urand(0,1))
+    object->SummonCreature(13696, object->GetPositionX(), object->GetPositionY(), object->GetPositionZ(), 0, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 30000);
+    return true;
+}
+
+
 void AddSC_boss_noxxion()
 {
     Script *newscript;
@@ -153,5 +163,11 @@ void AddSC_boss_noxxion()
     newscript->Name="boss_noxxion";
     newscript->GetAI = &GetAI_boss_noxxion;
     newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "gobject_vylestem_vine";
+    newscript->pGOUse = &GOUse_vylestem_vine;
+    newscript->RegisterSelf();
+
 }
 
