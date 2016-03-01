@@ -504,7 +504,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
         _Timer[TIMER_SOUL_FLAY].Reset(3000);
         _Timer[TIMER_LEGION_LIGHTNING].Reset(10000);
         _Timer[TIMER_FIRE_BLOOM].Reset(13000);
-        _Timer[TIMER_SUMMON_SHILEDORB].Reset(12000);
+        _Timer[TIMER_SUMMON_SHILEDORB].Reset(urand(10000,16000));
 
         //Phase 3 Timer
         _Timer[TIMER_SHADOW_SPIKE].Reset(4000);
@@ -734,7 +734,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                             if (shieldorb)
                                 shieldorb->AI()->DoAction(i);
                         }
-                        _Timer[TIMER_SUMMON_SHILEDORB] = 30000 + rand() % 30 * 1000; // 30-60seconds cooldown
+                        _Timer[TIMER_SUMMON_SHILEDORB] = urand(30000,40000); // 30-40seconds cooldown
                         break;
                     }
                     /*$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -863,6 +863,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
             Phase = PHASE_DARKNESS;
             OrbActivated = false;
             ActiveTimers = 9;
+            _Timer[TIMER_SUMMON_SHILEDORB].Reset(urand(45000, 60000));
             SendDebug("Entering phase 3");
         }
 
