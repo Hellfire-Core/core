@@ -696,7 +696,10 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                         if (me->IsNonMeleeSpellCast(false))
                             break;
 
-                        AddSpellToCast(me->getVictim(), SPELL_SOUL_FLAY);
+                        Unit* target = SelectUnit(SELECT_TARGET_TOPAGGRO, 0,
+                            [this](Unit* u) {return !u->IsImmunedToDamage(SPELL_SCHOOL_MASK_SHADOW); });
+                        if (target)
+                            AddSpellToCast(target, SPELL_SOUL_FLAY);
 
                         _Timer[TIMER_SOUL_FLAY] = 4000;
                         break;
