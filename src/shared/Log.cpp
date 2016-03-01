@@ -70,7 +70,9 @@ const char* chatLogFilenames[LOG_CHAT_MAX] =
     "chatlog_bgA.log",
     "chatlog_bgH.log",
     "chatlog_tradeA.log",
-    "chatlog_tradeH.log"
+    "chatlog_tradeH.log",
+    "chatlog_guildA.log",
+    "chatlog_guildH.log",
 };
 
 Log::Log() : m_includeTime(false), m_gmlog_per_account(false)

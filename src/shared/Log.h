@@ -80,6 +80,8 @@ enum ChatLogs
     LOG_CHAT_BG_H       = 13,
     LOG_CHAT_TRADE_A    = 14,
     LOG_CHAT_TRADE_H    = 15,
+    LOG_CHAT_GUILD_A    = 16,
+    LOG_CHAT_GUILD_H    = 17,
 
     LOG_CHAT_MAX
 };
