@@ -3526,7 +3526,6 @@ void Spell::SendChannelUpdate(uint32 time)
         m_caster->SetUInt64Value(UNIT_FIELD_CHANNEL_OBJECT, 0);
         m_caster->SetUInt32Value(UNIT_CHANNEL_SPELL, 0);
         m_caster->SendCombatStats(1<<COMBAT_STATS_CHANNEL_UPDATE, "Channeled spell end (%u)", NULL, GetSpellEntry()->Id);
-        if (GetSpellEntry()->Id == 30465) m_caster->SendCombatStats(1 << COMBAT_STATS_CRASHTEST, "bang",NULL);
     }
 
     WorldPacket data(MSG_CHANNEL_UPDATE, 8 + 4);
