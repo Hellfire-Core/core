@@ -9488,7 +9488,7 @@ bool Unit::isTargetableForAttack() const
     return !IsTaxiFlying();
 }
 
-bool Unit::canAttack(Unit const* target, bool force) const
+bool Unit::canAttack(Unit const* target, bool force, bool alsostealth) const
 {
     ASSERT(target);
 
@@ -9514,7 +9514,7 @@ bool Unit::canAttack(Unit const* target, bool force) const
     if ((m_invisibilityMask || target->m_invisibilityMask) && !canDetectInvisibilityOf(target, this))
         return false;
 
-    if (target->GetVisibility() == VISIBILITY_GROUP_STEALTH && !canDetectStealthOf(target, this, GetDistance(target)))
+    if (alsostealth && target->GetVisibility() == VISIBILITY_GROUP_STEALTH && !canDetectStealthOf(target, this, GetDistance(target)))
         return false;
 
     return true;

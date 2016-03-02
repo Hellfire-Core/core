@@ -86,7 +86,13 @@ bool PetAI::_needToStop()
         return true;
 
     // also should stop if cannot attack
-    if (!me->canAttack(me->getVictim()))
+    if (!me->canAttack(me->getVictim(), true, false))
+        return true;
+
+    // check for stealthed manually
+    if (!me->HasReactState(REACT_AGGRESSIVE) &&
+        me->getVictim()->GetVisibility() == VISIBILITY_GROUP_STEALTH
+        && !me->canDetectStealthOf(me->getVictim(), me, me->GetDistance(me->getVictim())))
         return true;
 
     if (targetHasInterruptableAura(me->getVictim()))
@@ -287,8 +293,11 @@ void PetAI::UpdateAI(const uint32 diff)
                         AttackStart(m_owner->getAttackerForHelper());
                     else if (!me->getAttackers().empty())
                         AttackStart(me->getAttackerForHelper());
-                    else if (Unit* target = FindValidTarget())
-                        AttackStart(target);
+                    else if (me->HasReactState(REACT_AGGRESSIVE))
+                    {
+                        if (Unit* target = FindValidTarget())
+                            AttackStart(target);
+                    }
                        
 
                 }
@@ -461,6 +470,9 @@ void ImpAI::UpdateAI(const uint32 diff)
 
         AutocastPreparedSpells();
     }
+
+    if (!me->hasUnitState(UNIT_STAT_CASTING))
+        DoMeleeAttackIfReady();
 }
 
 int FelhunterAI::Permissible(const Creature *creature)
