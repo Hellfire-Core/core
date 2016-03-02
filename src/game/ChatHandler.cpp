@@ -372,9 +372,11 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
                 Guild *guild = sGuildMgr.GetGuildById(GetPlayer()->GetGuildId());
                 if (guild)
                     guild->BroadcastToGuild(this, msg, lang == LANG_ADDON ? LANG_ADDON : LANG_UNIVERSAL);
-
-                std::string widename = std::string(_player->GetName()) + " " + guild->GetName();
-                sLog.outChat(LOG_CHAT_GUILD_A, team, widename.c_str(), msg.c_str());
+                if (lang != LANG_ADDON)
+                {
+                    std::string widename = std::string(_player->GetName()) + " " + guild->GetName();
+                    sLog.outChat(LOG_CHAT_GUILD_A, team, widename.c_str(), msg.c_str());
+                }
             }
             
             break;
@@ -398,8 +400,11 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
                 if (guild)
                     guild->BroadcastToOfficers(this, msg, lang == LANG_ADDON ? LANG_ADDON : LANG_UNIVERSAL);
 
-                std::string widename = std::string(_player->GetName()) + " oficer " + guild->GetName();
-                sLog.outChat(LOG_CHAT_GUILD_A, team, widename.c_str(), msg.c_str());
+                if (lang != LANG_ADDON)
+                {
+                    std::string widename = std::string(_player->GetName()) + " oficer " + guild->GetName();
+                    sLog.outChat(LOG_CHAT_GUILD_A, team, widename.c_str(), msg.c_str());
+                }
             }
             break;
         }
