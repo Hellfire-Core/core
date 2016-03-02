@@ -4961,14 +4961,9 @@ SpellCastResult Spell::CheckRange(bool strict)
     if (GetSpellEntry()->rangeIndex == 1)
         return SPELL_CAST_OK;
 
-    // i do not know why we need this
-    /*if (strict)                                             //add radius of caster
-        range_mod = 1.25;
-        else                                                    //add radius of caster and ~5 yds "give"
-        range_mod = 6.25;*/
-
     SpellRangeEntry const* srange = sSpellRangeStore.LookupEntry(GetSpellEntry()->rangeIndex);
-    float max_range = SpellMgr::GetSpellMaxRange(srange); // + range_mod;
+    float max_range = SpellMgr::GetSpellMaxRange(srange);
+    if (!strict) max_range += 4.0f; // additional 4 yds of range if spell was started in range
     float min_range = SpellMgr::GetSpellMinRange(srange);
     uint32 range_type = SpellMgr::GetSpellRangeType(srange);
 
