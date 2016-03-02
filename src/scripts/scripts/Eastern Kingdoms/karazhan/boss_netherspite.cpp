@@ -125,7 +125,7 @@ struct boss_netherspiteAI : public ScriptedAI
                 PortalGUID[i] = portal->GetGUID();
                 BeamTarget[i] = me->GetGUID();
                 portal->CastSpell(portal, PortalVisual[i], true);
-                portal->CastSpell(me, PortalBeam[i], false);
+                portal->CastSpell(me, PortalBeam[i], true);
             }
         }
     }
@@ -183,12 +183,12 @@ struct boss_netherspiteAI : public ScriptedAI
 
                 if(target != current)
                 {
-                    portal->InterruptSpell(CURRENT_CHANNELED_SPELL);
+                    portal->InterruptNonMeleeSpells(true);
 
                     if (current->GetTypeId() == TYPEID_PLAYER)
-                        portal->CastSpell(current, PlayerDebuff[j], true);
+                        current->CastSpell(current, PlayerDebuff[j], true);
 
-                    portal->CastSpell(target, PortalBeam[j], false);
+                    portal->CastSpell(target, PortalBeam[j], true);
                     BeamTarget[j] = target->GetGUID();
                 }
 
@@ -204,10 +204,10 @@ struct boss_netherspiteAI : public ScriptedAI
         m_creature->RemoveAurasDueToSpell(SPELL_BANISH_ROOT);
         m_creature->RemoveAurasDueToSpell(SPELL_BANISH_VISUAL);
         SummonPortals();
-        PhaseTimer = 60000;
+        PhaseTimer.Reset(60000);
         PortalPhase = true;
-        PortalTimer = 10000;
-        EmpowermentTimer = 10000;
+        PortalTimer.Reset(10000);
+        EmpowermentTimer.Reset(10000);
         DoScriptText(EMOTE_PHASE_PORTAL,m_creature);
         AttackStart(m_creature->getVictim());
         DoResetThreat();
@@ -220,7 +220,7 @@ struct boss_netherspiteAI : public ScriptedAI
         DoCast(m_creature,SPELL_BANISH_VISUAL,true);
         DoCast(m_creature,SPELL_BANISH_ROOT,true);
         DestroyPortals();
-        PhaseTimer = 30000;
+        PhaseTimer.Reset(30000);
         PortalPhase = false;
         DoScriptText(EMOTE_PHASE_BANISH,m_creature);
 
