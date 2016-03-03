@@ -1045,6 +1045,7 @@ struct boss_julianneAI : public boss_operaAI
     {
         DoScriptText(SAY_JULIANNE_DEATH02, m_creature);
         pInstance->SetData(DATA_OPERA_EVENT, evade ? NOT_STARTED : DONE);
+        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
     }
 
     void KilledUnit(Unit* victim)
@@ -1116,6 +1117,7 @@ struct boss_romuloAI : public boss_operaAI
 
         if (pInstance)
             pInstance->SetData(DATA_OPERA_EVENT, evade ? NOT_STARTED : DONE);
+        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
     }
 
     void KilledUnit(Unit* victim)
