@@ -2378,10 +2378,15 @@ void Aura::TriggerSpell()
                 }
                 break;
             }
-            //KJ: shadow spike target by normal way (by creature entry)
+            //KJ: shadow spike target by creature entry
             case 46680:
             {
-                target = NULL;
+                Creature *p_Creature = NULL;
+
+                Hellground::NearestCreatureEntryWithLiveStateInObjectRangeCheck u_check(*caster, 30598, true, 100, false);
+                Hellground::ObjectLastSearcher<Creature, Hellground::NearestCreatureEntryWithLiveStateInObjectRangeCheck> searcher(p_Creature, u_check);
+                Cell::VisitAllObjects(caster, searcher, 100);
+                target = p_Creature;
                 break;
             }
         }
