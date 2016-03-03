@@ -2367,15 +2367,23 @@ void Aura::TriggerSpell()
             }
             // Self Repair
             case 44994:
-                if(caster->GetTypeId() != TYPEID_UNIT)
+            {
+                if (caster->GetTypeId() != TYPEID_UNIT)
                     return;
 
-                if(100*caster->GetHealth()/caster->GetMaxHealth() >= 92)
+                if (100 * caster->GetHealth() / caster->GetMaxHealth() >= 92)
                 {
                     caster->SetHealth(0.95*caster->GetMaxHealth());
                     caster->RemoveAurasDueToSpell(44994);
                 }
                 break;
+            }
+            //KJ: shadow spike target by normal way (by creature entry)
+            case 46680:
+            {
+                target = NULL;
+                break;
+            }
         }
     }
     if (!SpellMgr::GetSpellMaxRange(sSpellRangeStore.LookupEntry(triggeredSpellEntry->rangeIndex)))
