@@ -1162,11 +1162,7 @@ void boss_julianneAI::DamageTaken(Unit* done_by, uint32 &damage)
             if (Creature* Romulo = ((Creature*)Unit::GetUnit((*m_creature), RomuloGUID)))
             {
                 Romulo->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                Romulo->GetMotionMaster()->Clear();
-                Romulo->setDeathState(JUST_DIED);
-                Romulo->CombatStop();
-                Romulo->DeleteThreatList();
-                Romulo->SetUInt32Value(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_LOOTABLE);
+                done_by->Kill(Romulo);
             }
 
             return;
@@ -1215,11 +1211,7 @@ void boss_romuloAI::DamageTaken(Unit* done_by, uint32 &damage)
             if (Creature* Julianne = ((Creature*)Unit::GetUnit((*m_creature), JulianneGUID)))
             {
                 Julianne->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                Julianne->GetMotionMaster()->Clear();
-                Julianne->setDeathState(JUST_DIED);
-                Julianne->CombatStop();
-                Julianne->DeleteThreatList();
-                Julianne->SetUInt32Value(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_LOOTABLE);
+                done_by->Kill(Julianne);
             }
             return;
         }
