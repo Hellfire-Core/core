@@ -26,173 +26,122 @@ EndScriptData */
 
 #include "precompiled.h"
 
-#define SPELL_CORROSIVEACID      20667
-#define SPELL_FREEZE             18763
-#define SPELL_FLAMEBREATH        20712
+enum
+{
+    PHASE_NONE      = 0,
+    PHASE_WAVE_1    = 1,
+    PHASE_WAVE_4    = 4,
+    PHASE_WAVE_5    = 5,
+    PHASE_WAIT      = 6,
+    PHASE_COMBAT    = 7,
+    PHASE_REND      = 8,
+
+    SPELL_CORROSIVEACID     = 20667,
+    SPELL_FREEZE            = 18763,
+    SPELL_FLAMEBREATH       = 20712,
+};
 
 struct boss_gythAI : public ScriptedAI
 {
     boss_gythAI(Creature *c) : ScriptedAI(c) {}
 
-    int32 Aggro_Timer;
-    int32 Dragons_Timer;
-    int32 Orc_Timer;
-    int32 CorrosiveAcid_Timer;
-    int32 Freeze_Timer;
-    int32 Flamebreath_Timer;
-    uint32 Line1Count;
-    uint32 Line2Count;
-
-    bool Event;
-    bool SummonedDragons;
-    bool SummonedOrcs;
-    bool SummonedRend;
-    bool bAggro;
-    bool RootSelf;
-    Creature *SummonedCreature;
+    Timer CorrosiveAcidTimer;
+    Timer FreezeTimer;
+    Timer FlamebreathTimer;
+    Timer wavesTimer;
+    uint8 phase;
+    
 
     void Reset()
     {
-        Dragons_Timer = 3000;
-        Orc_Timer = 60000;
-        Aggro_Timer = 60000;
-        CorrosiveAcid_Timer = 8000;
-        Freeze_Timer = 11000;
-        Flamebreath_Timer = 4000;
-        Event = false;
-        SummonedDragons = false;
-        SummonedOrcs= false;
-        SummonedRend = false;
-        bAggro = false;
-        RootSelf = false;
-
-        // how many times should the two lines of summoned creatures be spawned
-        // min 2 x 2, max 7 lines of attack in total
-        Line1Count = rand() % 4 + 2;
-        if (Line1Count < 5)
-            Line2Count = rand() % (5 - Line1Count) + 2;
-        else
-            Line2Count = 2;
+        CorrosiveAcidTimer.Reset(8000);
+        FreezeTimer.Reset(11000);
+        FlamebreathTimer.Reset(4000);
+        wavesTimer.Reset(3000);
+        phase = PHASE_NONE;
 
         //Invisible for event start
         m_creature->SetUInt32Value(UNIT_FIELD_DISPLAYID, 11686);
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
     }
 
-    void EnterCombat(Unit *who)
+    void MoveInLineOfSight(Unit *who)
     {
+        if (phase == PHASE_NONE && me->canStartAttack(who))
+            phase = PHASE_WAVE_1;
+        if (phase >= PHASE_COMBAT)
+            ScriptedAI::MoveInLineOfSight(who);
     }
 
     void SummonCreatureWithRandomTarget(uint32 creatureId)
     {
-        Unit* Summoned = m_creature->SummonCreature(creatureId, m_creature->GetPositionX(), m_creature->GetPositionY(), m_creature->GetPositionZ(), 0, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 240000);
+        Creature* Summoned = m_creature->SummonCreature(creatureId, m_creature->GetPositionX(), m_creature->GetPositionY(), m_creature->GetPositionZ(), 0, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 240000);
         if (Summoned)
-        {
-            Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0);
-            if (target)
-                Summoned->AddThreat(target, 1.0f);
-        }
+            Summoned->AI()->DoZoneInCombat();
     }
 
     void UpdateAI(const uint32 diff)
     {
-        //char buf[200];
+        if (phase >= PHASE_WAVE_1 && phase <= PHASE_WAVE_5)
+        {
+            if (wavesTimer.Expired(diff))
+            {
+                SummonCreatureWithRandomTarget(phase >= PHASE_WAVE_4 ? 10447: 10372);
+                SummonCreatureWithRandomTarget(phase >= PHASE_WAVE_4 ? 10317 : 10372);
+                SummonCreatureWithRandomTarget(10442);
+                SummonCreatureWithRandomTarget(10442);
+                SummonCreatureWithRandomTarget(10442);
+                wavesTimer = 60000;
+                phase++;
+            }
+        }
 
-        //Return since we have no target
-        if (!UpdateVictim() )
+        if (phase == PHASE_WAIT && wavesTimer.Expired(diff))
+        {
+            m_creature->SetUInt32Value(UNIT_FIELD_DISPLAYID, 9723);
+            m_creature->setFaction(14);
+            m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            phase++;
+        }
+
+        if (phase < PHASE_COMBAT)
             return;
 
-        if (!RootSelf)
+        //Return since we have no target
+        if (!UpdateVictim())
+            return;
+
+        if (CorrosiveAcidTimer.Expired(diff))
         {
-            //m_creature->m_canMove = true;
-            DoCast(m_creature, 33356);
-            RootSelf = true;
+            DoCast(m_creature->getVictim(), SPELL_CORROSIVEACID);
+            CorrosiveAcidTimer = 7000;
+        } 
+
+        if (FreezeTimer.Expired(diff))
+        {
+            DoCast(m_creature->getVictim(), SPELL_FREEZE);
+            FreezeTimer = 16000;
+        } 
+
+        if (FlamebreathTimer.Expired(diff))
+        {
+            DoCast(m_creature->getVictim(),SPELL_FLAMEBREATH);
+            FlamebreathTimer = 10500;
+        } 
+
+        //Summon Rend
+        if (phase == PHASE_COMBAT && HealthBelowPct(11))
+        {
+            //summon Rend and Change model to normal Gyth
+            //Inturrupt any spell casting
+            m_creature->InterruptNonMeleeSpells(false);
+            //Gyth model
+            m_creature->SetUInt32Value(UNIT_FIELD_DISPLAYID, 9806);
+            m_creature->SummonCreature(10429, m_creature->GetPositionX(), m_creature->GetPositionY(), m_creature->GetPositionZ(), 0, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 900000);
+            phase = PHASE_REND;
         }
 
-        if (!bAggro && Line1Count == 0 && Line2Count == 0)
-        {
-            Aggro_Timer -= diff;
-            if (Aggro_Timer <= diff)
-            {
-                bAggro = true;
-                // Visible now!
-                m_creature->SetUInt32Value(UNIT_FIELD_DISPLAYID, 9723);
-                m_creature->setFaction(14);
-                m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-            } 
-        }
-
-        // Summon Dragon pack. 2 Dragons and 3 Whelps
-        if (!bAggro && !SummonedRend && Line1Count > 0)
-        {
-            Dragons_Timer -= diff;
-            if (Dragons_Timer <= diff)
-            {
-                SummonCreatureWithRandomTarget(10372);
-                SummonCreatureWithRandomTarget(10372);
-                SummonCreatureWithRandomTarget(10442);
-                SummonCreatureWithRandomTarget(10442);
-                SummonCreatureWithRandomTarget(10442);
-                Line1Count = Line1Count - 1;
-                Dragons_Timer += 60000;
-            } 
-        }
-
-        //Summon Orc pack. 1 Orc Handler 1 Elite Dragonkin and 3 Whelps
-        if (!bAggro && !SummonedRend && Line1Count == 0 && Line2Count > 0)
-        {
-            Orc_Timer -= diff;
-            if (Orc_Timer <= diff)
-            {
-                SummonCreatureWithRandomTarget(10447);
-                SummonCreatureWithRandomTarget(10317);
-                SummonCreatureWithRandomTarget(10442);
-                SummonCreatureWithRandomTarget(10442);
-                SummonCreatureWithRandomTarget(10442);
-                Line2Count = Line2Count - 1;
-                Orc_Timer += 60000;
-            } 
-        }
-
-        // we take part in the fight
-        if (bAggro)
-        {
-            CorrosiveAcid_Timer -= diff;
-            if (CorrosiveAcid_Timer <= diff)
-            {
-                DoCast(m_creature->getVictim(), SPELL_CORROSIVEACID);
-                CorrosiveAcid_Timer += 7000;
-            } 
-
-            Freeze_Timer -= diff;
-            if (Freeze_Timer <= diff)
-            {
-                DoCast(m_creature->getVictim(), SPELL_FREEZE);
-                Freeze_Timer += 16000;
-            } 
-
-            Flamebreath_Timer -= diff;
-            if (Flamebreath_Timer <= diff)
-            {
-                DoCast(m_creature->getVictim(),SPELL_FLAMEBREATH);
-                Flamebreath_Timer += 10500;
-            } 
-
-            //Summon Rend
-            if (!SummonedRend && m_creature->GetHealth()*100 / m_creature->GetMaxHealth() < 11
-                && m_creature->GetHealth() > 0 )
-            {
-                //summon Rend and Change model to normal Gyth
-                //Inturrupt any spell casting
-                m_creature->InterruptNonMeleeSpells(false);
-                //Gyth model
-                m_creature->SetUInt32Value(UNIT_FIELD_DISPLAYID, 9806);
-                m_creature->SummonCreature(10429, m_creature->GetPositionX(), m_creature->GetPositionY(), m_creature->GetPositionZ(), 0, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 900000);
-                SummonedRend = true;
-            }
-
-            DoMeleeAttackIfReady();
-        }                                                   // end if Aggro
+        DoMeleeAttackIfReady();
     }
 };
 
