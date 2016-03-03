@@ -796,6 +796,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                         if (!IsInDarkness)
                         {
                             SendDebug("Channeling darkness");
+                            me->InterruptNonMeleeSpells(true);
                             DoScriptText(EMOTE_KJ_DARKNESS, m_creature);
                             DoCast(m_creature, SPELL_DARKNESS_OF_A_THOUSAND_SOULS, false);
                             ChangeTimers(true, 9000);
