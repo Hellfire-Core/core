@@ -85,6 +85,7 @@ struct boss_netherspiteAI : public ScriptedAI
     Timer PortalTimer; // timer for beam checking
     uint64 PortalGUID[3]; // guid's of portals
     uint64 BeamTarget[3]; // guid's of portals' current targets
+    bool PortalCasting[3];
 
     void Reset()
     {
@@ -102,6 +103,7 @@ struct boss_netherspiteAI : public ScriptedAI
         {
             PortalGUID[i] = 0;
             BeamTarget[i] = 0;
+            PortalCasting[i] = false;
         }
 
         m_creature->GetMotionMaster()->MovePath(NETHER_PATROL_PATH, true);
@@ -125,7 +127,8 @@ struct boss_netherspiteAI : public ScriptedAI
                 PortalGUID[i] = portal->GetGUID();
                 BeamTarget[i] = me->GetGUID();
                 portal->CastSpell(portal, PortalVisual[i], true);
-                portal->CastSpell(me, PortalBeam[i], true);
+                portal->CastSpell(me, PortalBeam[i], false);
+                PortalCasting[i] = true;
             }
         }
     }
@@ -179,7 +182,7 @@ struct boss_netherspiteAI : public ScriptedAI
                 if(target->GetTypeId() == TYPEID_PLAYER)
                     target->AddAura(PlayerBuff[j], target);
                 else
-                    target->AddAura(NetherBuff[j], target);
+                    target->AddAura(NetherBuff[j], target);    
 
                 if(target != current)
                 {
@@ -188,7 +191,8 @@ struct boss_netherspiteAI : public ScriptedAI
                     if (current->GetTypeId() == TYPEID_PLAYER)
                         current->CastSpell(current, PlayerDebuff[j], true);
 
-                    portal->CastSpell(target, PortalBeam[j], true);
+                    //portal->CastSpell(target, PortalBeam[j], false);
+                    PortalCasting[j] = false; // cast next update
                     BeamTarget[j] = target->GetGUID();
                 }
 
@@ -284,6 +288,18 @@ struct boss_netherspiteAI : public ScriptedAI
 
         if(PortalPhase) // PORTAL PHASE
         {
+            for (uint8 j = 0; j < 3; j++)
+            {
+                if (!PortalCasting[j]) //first tick after target change
+                {
+                    Creature* portal = Unit::GetCreature(*m_creature, PortalGUID[j]);
+                    Unit* target = Unit::GetUnit(*portal, BeamTarget[j]);
+                    if (target && portal)
+                        portal->CastSpell(target, PortalBeam[j], false);
+                    PortalCasting[j] = true;
+                }
+            }
+
             if (PortalTimer.Expired(diff))
             {
                 UpdatePortals();
