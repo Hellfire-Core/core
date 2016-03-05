@@ -2960,6 +2960,10 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 46648: // no pull for cosmetic spell
                     spellInfo->AttributesEx3 |= SPELL_ATTR_EX3_NO_INITIAL_AGGRO;
                     break;
+                case 45885: // KJ shadow spike
+                    spellInfo->EffectImplicitTargetB[0] = TARGET_UNIT_AREA_ENEMY_DST;
+                    spellInfo->EffectImplicitTargetB[1] = TARGET_UNIT_AREA_ENEMY_DST;
+                    break;
                 }
                 if (spellInfo->SpellIconID == 184 && spellInfo->Attributes == 4259840)
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
