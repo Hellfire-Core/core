@@ -810,7 +810,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                         {
                             _Timer[TIMER_DARKNESS] = (Phase == PHASE_SACRIFICE) ? 20000 + rand() % 15000 : 40000 + rand() % 30000;
                             IsInDarkness = false;
-                            DoCastAOE(SPELL_DARKNESS_OF_A_THOUSAND_SOULS_DAMAGE);
+                            DoCastAOE(SPELL_DARKNESS_OF_A_THOUSAND_SOULS_DAMAGE, true);
 
                             DoScriptText(RAND(SAY_KJ_DARKNESS1, SAY_KJ_DARKNESS2, SAY_KJ_DARKNESS3), m_creature);
                             SendDebug("Casting aoe darkness");
