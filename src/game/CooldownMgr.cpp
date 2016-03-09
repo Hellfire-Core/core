@@ -49,14 +49,12 @@ void CooldownMgr::CancelGlobalCooldown(uint32 id)
 
 bool CooldownMgr::HasSpellCooldown(uint32 id) const
 {
-    if (id == 5019)
-        return false; // temp hack for wands, to check if this is the case
     if (id)
     {
         CooldownList::const_iterator itr = m_SpellCooldowns.find(id);
         // cooldown timer and autocast timer can be 1ms off due to rounding, for safety +2
         if (itr != m_SpellCooldowns.end() &&
-            WorldTimer::getMSTimeDiff(WorldTimer::getMSTime(), itr->second.start) + 2 < itr->second.duration)
+            WorldTimer::getMSTimeDiff(WorldTimer::getMSTime(), itr->second.start) + 5 < itr->second.duration)
             return true;
     }
     return false;
