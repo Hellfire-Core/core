@@ -962,17 +962,7 @@ void WorldSession::HandleGuildBankDeposit(WorldPacket & recv_data)
 
     RealmDataDatabase.CommitTransaction();
 
-    // logging money
-    if (_player->GetSession()->HasPermissions(PERM_GMT) && sWorld.getConfig(CONFIG_GM_LOG_TRADE))
-    {
-        sLog.outCommand(_player->GetSession()->GetAccountId(),"GM %s (Account: %u) deposit money (Amount: %u) to guild bank (Guild ID %u)",
-            _player->GetName(),_player->GetSession()->GetAccountId(),money,GuildId);
-    }
-
-    // log
     pGuild->LogBankEvent(GUILD_BANK_LOG_DEPOSIT_MONEY, uint8(0), GetPlayer()->GetGUIDLow(), money);
-    sLog.outLog(LOG_TRADE, "Player %s (Account: %u) deposited %u money in guild bank (Guild %u)",
-        _player->GetName(),GetAccountId(),money, GuildId);
     pGuild->DisplayGuildBankTabsInfo(this);
     pGuild->DisplayGuildBankContent(this, 0);
     pGuild->DisplayGuildBankMoneyUpdate();
@@ -1027,9 +1017,6 @@ void WorldSession::HandleGuildBankWithdraw(WorldPacket & recv_data)
 
     // Log
     pGuild->LogBankEvent(GUILD_BANK_LOG_WITHDRAW_MONEY, uint8(0), GetPlayer()->GetGUIDLow(), money);
-    sLog.outLog(LOG_TRADE, "Player %s (Account: %u) withdraw %u money from guild bank (Guild %u)",
-        _player->GetName(), GetAccountId(), money, GuildId);
-
     pGuild->SendMoneyInfo(this, GetPlayer()->GetGUIDLow());
     pGuild->DisplayGuildBankTabsInfo(this);
     pGuild->DisplayGuildBankContent(this, 0);
@@ -1367,18 +1354,6 @@ void WorldSession::HandleGuildBankDepositItem(WorldPacket & recv_data)
                 if (remRight <= 0)
                     return;
 
-                if (pItemChar)
-                {
-                    // logging item move to bank
-                    if (_player->GetSession()->HasPermissions(PERM_GMT) && sWorld.getConfig(CONFIG_GM_LOG_TRADE))
-                    {
-                        sLog.outCommand(_player->GetSession()->GetAccountId(),"GM %s (Account: %u) deposit item: %s (Entry: %d Count: %u) to guild bank (Guild ID: %u)",
-                            _player->GetName(),_player->GetSession()->GetAccountId(),
-                            pItemChar->GetProto()->Name1,pItemChar->GetEntry(),pItemChar->GetCount(),
-                            GuildId);
-                    }
-                }
-
                 RealmDataDatabase.BeginTransaction();
                 pGuild->LogBankEvent(GUILD_BANK_LOG_WITHDRAW_ITEM, BankTab, pl->GetGUIDLow(), pItemBank->GetEntry(), pItemBank->GetCount());
                 if (pItemChar)
@@ -1438,14 +1413,6 @@ void WorldSession::HandleGuildBankDepositItem(WorldPacket & recv_data)
             return;
         }
 
-        // logging item move to bank (before items merge
-        if (_player->GetSession()->HasPermissions(PERM_GMT) && sWorld.getConfig(CONFIG_GM_LOG_TRADE))
-        {
-            sLog.outCommand(_player->GetSession()->GetAccountId(),"GM %s (Account: %u) deposit item: %s (Entry: %d Count: %u) to guild bank (Guild ID: %u)",
-                _player->GetName(),_player->GetSession()->GetAccountId(),
-                pItemChar->GetProto()->Name1,pItemChar->GetEntry(),SplitedAmount,GuildId);
-        }
-
         RealmDataDatabase.BeginTransaction();
         pGuild->LogBankEvent(GUILD_BANK_LOG_DEPOSIT_ITEM, BankTab, pl->GetGUIDLow(), pItemChar->GetEntry(), SplitedAmount);
 
@@ -1464,15 +1431,6 @@ void WorldSession::HandleGuildBankDepositItem(WorldPacket & recv_data)
         uint8 msg = pGuild->CanStoreItem(BankTab,BankTabSlot,dest,pItemChar->GetCount(),pItemChar,false);
         if (msg == EQUIP_ERR_OK)                           // merge
         {
-            // logging item move to bank
-            if (_player->GetSession()->HasPermissions(PERM_GMT) && sWorld.getConfig(CONFIG_GM_LOG_TRADE))
-            {
-                sLog.outCommand(_player->GetSession()->GetAccountId(),"GM %s (Account: %u) deposit item: %s (Entry: %d Count: %u) to guild bank (Guild ID: %u)",
-                    _player->GetName(),_player->GetSession()->GetAccountId(),
-                    pItemChar->GetProto()->Name1,pItemChar->GetEntry(),pItemChar->GetCount(),
-                    GuildId);
-            }
-
             RealmDataDatabase.BeginTransaction();
             pGuild->LogBankEvent(GUILD_BANK_LOG_DEPOSIT_ITEM, BankTab, pl->GetGUIDLow(), pItemChar->GetEntry(), pItemChar->GetCount());
 
@@ -1512,15 +1470,6 @@ void WorldSession::HandleGuildBankDepositItem(WorldPacket & recv_data)
                 uint32 remRight = pGuild->GetMemberSlotWithdrawRem(pl->GetGUIDLow(), BankTab);
                 if (remRight <= 0)
                     return;
-            }
-
-            // logging item move to bank
-            if (_player->GetSession()->HasPermissions(PERM_GMT) && sWorld.getConfig(CONFIG_GM_LOG_TRADE))
-            {
-                sLog.outCommand(_player->GetSession()->GetAccountId(),"GM %s (Account: %u) deposit item: %s (Entry: %d Count: %u) to guild bank (Guild ID: %u)",
-                    _player->GetName(),_player->GetSession()->GetAccountId(),
-                    pItemChar->GetProto()->Name1,pItemChar->GetEntry(),pItemChar->GetCount(),
-                    GuildId);
             }
 
             RealmDataDatabase.BeginTransaction();

@@ -1746,6 +1746,26 @@ void Guild::LogBankEvent(uint8 LogEntry, uint8 TabId, uint32 PlayerGuidLow, uint
     }
     RealmDataDatabase.PExecute("INSERT INTO guild_bank_eventlog (guildid,LogGuid,LogEntry,TabId,PlayerGuid,ItemOrMoney,ItemStackCount,DestTabId,TimeStamp) VALUES ('%u','%u','%u','%u','%u','%u','%u','%u','" UI64FMTD "')",
         Id, NewEvent->LogGuid, uint32(NewEvent->LogEntry), uint32(TabId), NewEvent->PlayerGuid, NewEvent->ItemOrMoney, uint32(NewEvent->ItemStackCount), uint32(NewEvent->DestTabId), NewEvent->TimeStamp);
+
+    switch (LogEntry)
+    {
+    case GUILD_BANK_LOG_DEPOSIT_ITEM:
+        sLog.outLog(LOG_TRADE,"Player guid %u deposit item %u (amount %u) to %s guildbank",
+            PlayerGuidLow, ItemOrMoney, ItemStackCount, GetName().c_str());
+        break;
+    case GUILD_BANK_LOG_WITHDRAW_ITEM:
+        sLog.outLog(LOG_TRADE, "Player guid %u withdraw item %u (amount %u) from %s guildbank",
+            PlayerGuidLow, ItemOrMoney, ItemStackCount, GetName().c_str());
+        break;
+    case GUILD_BANK_LOG_DEPOSIT_MONEY:
+        sLog.outLog(LOG_TRADE, "Player guid %u deposit %u money to %s guildbank",
+            PlayerGuidLow, ItemOrMoney, GetName().c_str());
+        break;
+    case GUILD_BANK_LOG_WITHDRAW_MONEY:
+        sLog.outLog(LOG_TRADE, "Player guid %u withdraw money %u from %s guildbank",
+            PlayerGuidLow, ItemOrMoney, GetName().c_str());
+        break;
+    }
 }
 
 // This will renum guids used at load to prevent always going up until infinit
