@@ -10889,28 +10889,6 @@ void Unit::ApplyPowerMod(Powers power, uint32 val, bool apply)
     }
 }
 
-void Unit::ApplyMaxPowerMod(Powers power, uint32 val, bool apply)
-{
-    ApplyModUInt32Value(UNIT_FIELD_MAXPOWER1+power, val, apply);
-
-    // group update
-    if (GetTypeId() == TYPEID_PLAYER)
-    {
-        if (((Player*)this)->GetGroup())
-            ((Player*)this)->SetGroupUpdateFlag(GROUP_UPDATE_FLAG_MAX_POWER);
-    }
-    else if (((Creature*)this)->isPet())
-    {
-        Pet *pet = ((Pet*)this);
-        if (pet->isControlled())
-        {
-            Unit *owner = GetOwner();
-            if (owner && (owner->GetTypeId() == TYPEID_PLAYER) && ((Player*)owner)->GetGroup())
-                ((Player*)owner)->SetGroupUpdateFlag(GROUP_UPDATE_FLAG_PET_MAX_POWER);
-        }
-    }
-}
-
 void Unit::ApplyAuraProcTriggerDamage(Aura* aura, bool apply)
 {
     AuraList& tAuraProcTriggerDamage = m_modAuras[SPELL_AURA_PROC_TRIGGER_DAMAGE];
@@ -13208,7 +13186,7 @@ void Unit::SetFacingToObject(WorldObject* pObject)
 
 void Unit::SendCombatStats(uint32 flag, const char* format, Unit *pVictim, ...) const
 {
-    Player *target = GetGMToSendCombatStats();
+    Player *target = m_GMToSendCombatStats ? GetPlayer(m_GMToSendCombatStats) : NULL;
     if(!target)
         return;
 

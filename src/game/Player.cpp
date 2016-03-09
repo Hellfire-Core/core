@@ -7827,13 +7827,8 @@ void Player::SendLoot(uint64 guid, LootType loot_type)
                     permission = NONE_PERMISSION;
             }
         }
-        if (Player* debugReciver = creature->GetGMToSendCombatStats())
-        {
-            ChatHandler(debugReciver).PSendSysMessage(
-                "Player::SendLoot for %s (%u): looted creature Guid %lu; loot_type %u; permission %u",
-                GetName(),GetGUIDLow(),guid,loot_type,permission);
-        }
-
+        creature->SendCombatStats(1 << COMBAT_STATS_LOOTING, "Player::SendLoot for %s (%u): looted creature Guid %lu; loot_type %u; permission %u",
+            NULL, GetName(), GetGUIDLow(), guid, loot_type, permission);
     }
 
     if (permission == NONE_PERMISSION)

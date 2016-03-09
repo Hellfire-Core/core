@@ -1606,7 +1606,6 @@ class HELLGROUND_IMPORT_EXPORT Unit : public WorldObject
 
         float GetDeterminativeSize() const;
 
-        Player* GetGMToSendCombatStats() const { return m_GMToSendCombatStats ? GetPlayer(m_GMToSendCombatStats) : NULL; }
         void SetGMToSendCombatStats(uint64 guid, uint32 flag) { m_GMToSendCombatStats = guid; m_CombatStatsFlag = flag; }
         void SendCombatStats(uint32 flag, const char* str, Unit *pVictim, ...) const;
 
