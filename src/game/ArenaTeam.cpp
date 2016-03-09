@@ -562,6 +562,8 @@ int32 ArenaTeam::WonAgainst(uint32 againstRating)
     // calculate the rating modification (ELO system with k=32)
     int32 mod = (int32)floor((float)sWorld.getConfig(CONFIG_ARENA_ELO_COEFFICIENT) * (1.0f - chance));
     // modify the team stats accordingly
+    if (mod < 5) mod = 5;
+    if (mod > 27) mod = 27;
     stats.rating += mod;
     stats.games_week += 1;
     stats.wins_week += 1;
@@ -587,6 +589,8 @@ int32 ArenaTeam::LostAgainst(uint32 againstRating)
     float chance = GetChanceAgainst(stats.rating, againstRating);
     // calculate the rating modification (ELO system with k=32)
     int32 mod = (int32)ceil((float)sWorld.getConfig(CONFIG_ARENA_ELO_COEFFICIENT) * (0.0f - chance));
+    if (mod < -27) mod = -27;
+    if (mod > -5) mod = -5;
     // modify the team stats accordingly
     stats.rating += mod;
     stats.games_week += 1;
@@ -622,6 +626,8 @@ void ArenaTeam::MemberLost(Player * plr, uint32 againstRating, uint32 againstHid
                 if (againstRating + 150 < againstHiddenRating)
                     mod /= 2;
             }
+            if (mod < -27) mod = -27;
+            if (mod > -5) mod = -5;
 
             if (persDiff && persRating)
             {
@@ -658,6 +664,8 @@ void ArenaTeam::MemberWon(Player * plr, uint32 againstRating, uint32 againstHidd
             // update personal rating
             float chance = GetChanceAgainst(itr->personal_rating, againstRating);
             int32 mod = (int32)floor((float)sWorld.getConfig(CONFIG_ARENA_ELO_COEFFICIENT) * (1.0f - chance));
+            if (mod < 5) mod = 5;
+            if (mod > 27) mod = 27;
             if (persDiff && persRating)
             {
                 *persDiff = mod;
