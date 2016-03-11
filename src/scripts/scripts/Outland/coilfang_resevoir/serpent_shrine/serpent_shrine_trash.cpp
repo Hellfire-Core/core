@@ -398,7 +398,7 @@ struct mob_ssc_elementalAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (!UpdateVictim)
+        if (!UpdateVictim())
             return;
 
         if (VolleyTimer.Expired(diff))
