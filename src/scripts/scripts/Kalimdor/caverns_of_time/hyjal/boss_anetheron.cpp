@@ -181,7 +181,8 @@ struct boss_anetheronAI : public hyjal_trashAI
         InfernoTimer.Update(diff);
 
         // do not update victim when casting
-        if (m_creature->IsNonMeleeSpellCast(true)  || !UpdateVictim())
+        if (m_creature->IsNonMeleeSpellCast(true) || !UpdateVictim())
+            return;
 
         if (SwarmTimer.Passed())
         {
@@ -203,8 +204,6 @@ struct boss_anetheronAI : public hyjal_trashAI
                 }
             }
         }
-        
-
 
         if (SleepTimer.Passed())
         {
