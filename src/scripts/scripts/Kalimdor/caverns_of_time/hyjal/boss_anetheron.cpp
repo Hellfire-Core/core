@@ -166,26 +166,24 @@ struct boss_anetheronAI : public hyjal_trashAI
             }
         }
 
-        //back to victim target facing
-        if (!UpdateVictim())
+        if (!m_creature->isInCombat())
             return;
 
-        
         if (CheckTimer.Expired(diff))
         {
             DoZoneInCombat();
-            if(!m_creature->IsNonMeleeSpellCast(true))
-            {
-                if(m_creature->GetSelection() != m_creature->getVictimGUID())
-                    m_creature->SetSelection(m_creature->getVictimGUID());
-            }
             m_creature->SetSpeed(MOVE_RUN, 3.0);
             CheckTimer = 2000;
         }
-        
 
+        SwarmTimer.Update(diff);
+        SleepTimer.Update(diff);
+        InfernoTimer.Update(diff);
 
-        if (SwarmTimer.Expired(diff))
+        // do not update victim when casting
+        if (m_creature->IsNonMeleeSpellCast(true)  || !UpdateVictim())
+
+        if (SwarmTimer.Passed())
         {
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0,65,true))
             {
@@ -208,7 +206,7 @@ struct boss_anetheronAI : public hyjal_trashAI
         
 
 
-        if (SleepTimer.Expired(diff))
+        if (SleepTimer.Passed())
         {
             DoCast(m_creature, SPELL_SLEEP, true);
 
@@ -228,7 +226,7 @@ struct boss_anetheronAI : public hyjal_trashAI
         }
         
 
-        if (InfernoTimer.Expired(diff))
+        if (InfernoTimer.Passed())
         {
             if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0,200,true))
             {
