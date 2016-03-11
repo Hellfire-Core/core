@@ -377,7 +377,60 @@ CreatureAI* GetAI_mob_serpentshrine_parasite(Creature *_Creature)
     return new mob_serpentshrine_parasiteAI(_Creature);
 }
 
+struct mob_ssc_elementalAI : public ScriptedAI
+{
+    mob_ssc_elementalAI(Creature *c) : ScriptedAI(c) {}
 
+    uint64 OwnerGUID;
+    Timer VolleyTimer;
+    Timer NovaTimer;
+
+    void Reset()
+    {
+        OwnerGUID = 0;
+        VolleyTimer.Reset(2400);
+    }
+
+    void IsSummonedBy(Unit* summoner)
+    {
+        OwnerGUID = summoner->GetGUID();
+    }
+
+    void UpdateAI(const uint32 diff)
+    {
+        if (!UpdateVictim)
+            return;
+
+        if (VolleyTimer.Expired(diff))
+        {
+            DoCast(me->getVictim(), 38623);
+            VolleyTimer = urand(17000, 24000);
+        }
+
+        if (NovaTimer.Expired(diff))
+        {
+            DoCast(me->getVictim(), 39035);
+            VolleyTimer = urand(20000, 30000);
+        }
+
+        if (OwnerGUID)
+        {
+            Unit* owner = me->GetMap()->GetCreature(OwnerGUID);
+            if (!owner || owner->isDead())
+            {
+                me->ForcedDespawn();
+                return;
+            }
+        }
+
+        DoMeleeAttackIfReady();
+    }
+};
+
+CreatureAI* GetAI_mob_ssc_elemental(Creature *_Creature)
+{
+    return new mob_ssc_elementalAI(_Creature);
+}
 
 void AddSC_serpent_shrine_trash()
 {
@@ -396,5 +449,10 @@ void AddSC_serpent_shrine_trash()
     newscript = new Script;
     newscript->Name = "mob_serpentshrine_parasite";
     newscript->GetAI = &GetAI_mob_serpentshrine_parasite;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "mob_ssc_elemental";
+    newscript->GetAI = &GetAI_mob_ssc_elemental;
     newscript->RegisterSelf();
 }
