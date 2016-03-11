@@ -765,7 +765,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                                 Position pos;
                                 if (random)
                                 {
-                                    SendDebug("spike on %N", random->GetName());
+                                    SendDebug("spike on %s", random->GetName());
                                     random->GetPosition(pos);
                                     me->SummonCreature(CREATURE_SPIKE_TARGET1, pos.x, pos.y, pos.z, 0, TEMPSUMMON_TIMED_DESPAWN, 2800);
                                 }
@@ -943,6 +943,12 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
 
         pInstance->SetData(DATA_KILJAEDEN_EVENT, NOT_STARTED);
         pInstance->SetData(DATA_HAND_OF_DECEIVER_COUNT, 1);
+        std::list<uint64> hands = m_creature->GetMap()->GetCreaturesGUIDList(CREATURE_HAND_OF_THE_DECEIVER, GET_FIRST_CREATURE_GUID, 3);
+        for (std::list<uint64>::iterator itr = hands.begin(); itr != hands.end(); itr++)
+        {
+            if (Creature* oneHand = m_creature->GetMap()->GetCreature(*itr))
+                oneHand->Respawn();
+        }
         Phase = PHASE_DECEIVERS;
         //if(KalecKJ)((boss_kalecgos_kjAI*)KalecKJ->AI())->ResetOrbs();
         //DeceiverDeathTimer = 0;
