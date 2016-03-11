@@ -5717,6 +5717,8 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
                 case 37381:
                 {
                     target = GetPet();
+                    if (!target)
+                        target = GetCharm();
                     if (!target || !target->isAlive())
                         return false;
 
