@@ -1851,6 +1851,31 @@ void Spell::EffectDummy(uint32 i)
                     }
                     break;
                 }
+                case 35686: // electro-shock therapy
+                {
+                    Creature* creatureTarget = unitTarget->ToCreature();
+                    if (!creatureTarget)
+                        return;
+
+                    uint8 count = urand(5, 9);
+                    if (creatureTarget->GetEntry() == 20501)
+                    {
+                        creatureTarget->UpdateEntry(20806, HORDE);    
+                        for (uint8 i = 0; i < count; i++)
+                            m_caster->SummonCreature(20806, creatureTarget->GetPositionX(), creatureTarget->GetPositionY(),
+                                creatureTarget->GetPositionZ(), creatureTarget->GetOrientation(),
+                                TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 60000);
+                    }
+                    else if (creatureTarget->GetEntry() == 20778)
+                    {
+                        creatureTarget->UpdateEntry(20805, HORDE);
+                        for (uint8 i = 0; i < count; i++)
+                            m_caster->SummonCreature(20805, creatureTarget->GetPositionX(), creatureTarget->GetPositionY(),
+                                creatureTarget->GetPositionZ(), creatureTarget->GetOrientation(),
+                                TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 60000);
+                    }
+                    return;
+                }
             }
 
             //All IconID Check in there
