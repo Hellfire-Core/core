@@ -1162,6 +1162,7 @@ void boss_julianneAI::DamageTaken(Unit* done_by, uint32 &damage)
             if (Creature* Romulo = ((Creature*)Unit::GetUnit((*m_creature), RomuloGUID)))
             {
                 Romulo->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                Romulo->SetHealth(1);
                 done_by->Kill(Romulo);
             }
 
@@ -1211,6 +1212,7 @@ void boss_romuloAI::DamageTaken(Unit* done_by, uint32 &damage)
             if (Creature* Julianne = ((Creature*)Unit::GetUnit((*m_creature), JulianneGUID)))
             {
                 Julianne->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                Julianne->SetHealth(1);
                 done_by->Kill(Julianne);
             }
             return;
