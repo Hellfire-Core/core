@@ -1754,6 +1754,11 @@ void Spell::SetTargetMap(uint32 i, uint32 cur)
                 case TARGET_UNIT_PET:
                     if (Pet* pet = m_caster->GetPet())
                         AddUnitTarget(pet, i);
+                    else if (m_caster->GetTypeId() == TYPEID_PLAYER && m_caster->getClass() == CLASS_WARLOCK)
+                    { // enslaved demons
+                        if (Unit* charm = m_caster->GetCharm())
+                            AddUnitTarget(charm, i);
+                    }
                     break;
                 case TARGET_UNIT_PARTY_CASTER:
                 case TARGET_UNIT_RAID_CASTER:
