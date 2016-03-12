@@ -184,9 +184,9 @@ struct boss_the_lurker_belowAI : public BossAI
         if (m_submerged || m_rotating || m_emoting)
             return;
 
-        if (me->GetSelection() && me->GetDistance(me->GetUnit(me->GetSelection())) <= 1.5f)
+        if (me->GetDistance(me->getVictim()) <= 1.5f)
         {
-            me->Attack(me->GetUnit(me->GetSelection()), true);
+            me->Attack(me->getVictim(), true);
             UnitAI::DoMeleeAttackIfReady();
             return;
         }
