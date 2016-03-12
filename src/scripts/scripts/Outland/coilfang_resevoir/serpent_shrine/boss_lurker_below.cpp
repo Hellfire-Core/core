@@ -158,7 +158,7 @@ struct boss_the_lurker_belowAI : public BossAI
     {
     }
 
-    bool FindPlayers()
+    bool SelectTarget()
     {
         std::list<HostileReference*>& m_threatlist = me->getThreatManager().getThreatList();
         if (m_threatlist.empty())
@@ -167,16 +167,19 @@ struct boss_the_lurker_belowAI : public BossAI
         for (std::list<HostileReference*>::iterator itr = m_threatlist.begin(); itr != m_threatlist.end(); ++itr)
         {
             Unit* pUnit = Unit::GetUnit((*me), (*itr)->getUnitGuid());
-            if (pUnit && pUnit->isAlive() && pUnit->isInCombat() && me->canAttack(pUnit) && pUnit->IsWithinDistInMap(me, 100.0f))
-                return true;
+            if (pUnit && pUnit->isAlive())
+            {
+                if (me->GetDistance(pUnit) > 1.5f)
+                    (*itr)->setThreat(0.0f);
+            }
         }
-        return false;
+        return UpdateVictim();
     }
 
     void DoMeleeAttackIfReady()
     {
-        if (!FindPlayers())
-            EnterEvadeMode();
+        if (!SelectTarget())
+            return;
 
         if (m_submerged || m_rotating || m_emoting)
             return;
@@ -187,13 +190,10 @@ struct boss_the_lurker_belowAI : public BossAI
             UnitAI::DoMeleeAttackIfReady();
             return;
         }
-
-        if (Unit *melee = me->SelectNearestTarget(1.5f))
-            me->SetSelection(melee->GetGUID());
         else if (me->isAttackReady())
         {
             me->SetSelection(0);
-            ForceSpellCast(SPELL_WATERBOLT, CAST_RANDOM, INTERRUPT_AND_CAST_INSTANTLY, true);
+            ForceSpellCast(SPELL_WATERBOLT, CAST_RANDOM, INTERRUPT_AND_CAST_INSTANTLY);
             me->resetAttackTimer();
         }
 
