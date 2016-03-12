@@ -989,7 +989,6 @@ struct npc_amanishi_lookoutAI : public ScriptedAI
 
         if (me->canStartAttack(who))
         {
-            AttackStart(who);
             who->CombatStart(me);
             StartEvent();
             if(pInstance)
@@ -1016,7 +1015,6 @@ struct npc_amanishi_lookoutAI : public ScriptedAI
 
     void AttackStart(Unit *pWho)
     {
-        me->Attack(pWho, true);
     }
 
     void UpdateAI(const uint32 diff)
