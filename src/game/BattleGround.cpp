@@ -593,7 +593,7 @@ void BattleGround::EndBattleGround(uint32 winner)
     m_EndTime = 0;
 
     // arena rating calculation
-    if (isArena() && isRated())
+    if (isArena() && isRated() && !sWorld.IsStopped())
     {
         if (winner == ALLIANCE)
         {
@@ -693,7 +693,7 @@ void BattleGround::EndBattleGround(uint32 winner)
         if (!team) team = plr->GetTeam();
 
         // per player calculation
-        if (isArena() && isRated() && winner_arena_team && loser_arena_team)
+        if (isArena() && isRated() && winner_arena_team && loser_arena_team && !sWorld.IsStopped())
         {
             uint32 persRating;
             int32 persDiff;
@@ -956,7 +956,7 @@ void BattleGround::RemovePlayerAtLeave(uint64 guid, bool Transport, bool SendPac
         plr->SpawnCorpseBones();
     }
 
-    if (plr && participant && isArena() && isRated() && GetStatus() == STATUS_IN_PROGRESS)
+    if (plr && participant && isArena() && isRated() && GetStatus() == STATUS_IN_PROGRESS && !sWorld.IsStopped())
     {
         //left a rated match while the encounter was in progress, consider as loser
         //need to be done before RemovePlayer which can cause EndBattleground and last removed player rating wont be updated
