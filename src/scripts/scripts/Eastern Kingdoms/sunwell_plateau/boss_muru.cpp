@@ -147,14 +147,12 @@ struct boss_muruAI : public Scripted_NoMovementAI
 
     void EnterEvadeMode()
     {
-        CreatureAI::EnterEvadeMode();
-        pInstance->SetData(DATA_MURU_EVENT, NOT_STARTED);
+        CreatureAI::_EnterEvadeMode();
         me->SetVisibility(VISIBILITY_OFF);
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
         Summons.DespawnAll();
-        HumanoidStart = 10000;
-        ResetTimer = 30000;
+        ResetTimer.Reset(30000);
     }
 
     void EnterCombat(Unit *who)
@@ -197,10 +195,7 @@ struct boss_muruAI : public Scripted_NoMovementAI
 
         if (ResetTimer.Expired(diff))
         {
-            me->SetVisibility(VISIBILITY_ON);
-            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-            ResetTimer = 0;
+            Reset();
         }
         
 
