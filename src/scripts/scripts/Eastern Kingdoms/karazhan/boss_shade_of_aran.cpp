@@ -564,8 +564,8 @@ struct circular_blizzardAI : public ScriptedAI
         pInstance = c->GetInstanceData();
     }
 
-    uint16 currentWaypoint;
-    int16 waypointTimer;
+    uint8 currentWaypoint, startWaypoint;
+    Timer waypointTimer;
     WorldLocation wLoc;
     ScriptedInstance *pInstance;
     float blizzardWaypoints[2][8];
@@ -577,23 +577,6 @@ struct circular_blizzardAI : public ScriptedAI
         currentWaypoint = 0;
         waypointTimer = 0;
         SetBlizzardWaypoints();
-    }
-
-    void ChangeBlizzardWaypointsOrder(uint16 change)
-    {
-        float temp[2] = {0, 0};
-        for (int16 i = 0; i < change; i++)
-        {
-            temp[0] = blizzardWaypoints[0][0];
-            temp[1] = blizzardWaypoints[1][0];
-            for (int16 j = 0; j < 7; j++)
-            {
-                blizzardWaypoints[0][j] = blizzardWaypoints[0][j + 1];
-                blizzardWaypoints[1][j] = blizzardWaypoints[1][j + 1];
-            }
-            blizzardWaypoints[0][7] = temp[0];
-            blizzardWaypoints[1][7] = temp[1];
-        }
     }
 
 
@@ -619,17 +602,15 @@ struct circular_blizzardAI : public ScriptedAI
             if(pInstance)
                 AranGUID = pInstance->GetData64(DATA_ARAN);
             me->CastSpell(me, SPELL_CIRCULAR_BLIZZARD, false, 0, 0, AranGUID);
-
-            ChangeBlizzardWaypointsOrder(urand(0, 7));
-
-            wLoc.coord_x = blizzardWaypoints[0][0];
-            wLoc.coord_y = blizzardWaypoints[1][0];
+            startWaypoint = urand(0, 7);
+            wLoc.coord_x = blizzardWaypoints[0][startWaypoint];
+            wLoc.coord_y = blizzardWaypoints[1][startWaypoint];
             wLoc.coord_z = me->GetPositionZ();
 
             DoTeleportTo(wLoc.coord_x, wLoc.coord_y, wLoc.coord_z);
 
             currentWaypoint = 0;
-            waypointTimer = 0;
+            waypointTimer.Reset(1);
             move = true;
         }
     }
@@ -639,8 +620,7 @@ struct circular_blizzardAI : public ScriptedAI
         if (!move)
             return;
 
-        waypointTimer -= diff;
-        if (waypointTimer <= diff)
+        if (waypointTimer.Expired(diff))
         {
             if (currentWaypoint < 7)
                 ++currentWaypoint;
@@ -650,11 +630,11 @@ struct circular_blizzardAI : public ScriptedAI
                 move = false;
             }
 
-            wLoc.coord_x = blizzardWaypoints[0][currentWaypoint];
-            wLoc.coord_y = blizzardWaypoints[1][currentWaypoint];
+            wLoc.coord_x = blizzardWaypoints[0][(startWaypoint + currentWaypoint) % 8];
+            wLoc.coord_y = blizzardWaypoints[1][(startWaypoint + currentWaypoint) % 8];
 
             m_creature->GetMotionMaster()->MovePoint(currentWaypoint, wLoc.coord_x, wLoc.coord_y, wLoc.coord_z);
-            waypointTimer += 3000;
+            waypointTimer = 3000;
         }
     }
 };
