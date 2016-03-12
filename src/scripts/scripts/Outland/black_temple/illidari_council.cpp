@@ -125,7 +125,8 @@ enum malandeSpells
 enum verasSpells
 {
     SPELL_DEADLY_POISON     = 41480,
-    SPELL_VANISH            = 41476
+    SPELL_VANISH            = 41476,
+    SPELL_SNEAK             = 8218, // surely not this one but works
     // Spell Envenom triggered by Deadly Poison in Aura::HandlePeriodicDamage
 };
 
@@ -806,6 +807,7 @@ struct boss_veras_darkshadowAI : public illidari_council_baseAI
     WorldLocation wLoc;
 
     Timer m_vanishTimer;
+    Timer m_sneakTimer;
 
     void Reset()
     {
@@ -813,16 +815,20 @@ struct boss_veras_darkshadowAI : public illidari_council_baseAI
 
         m_vanishTimer.Reset(urand(15000, 25000));
         m_checkTimer.Reset(1000);
+        m_sneakTimer.Reset(0);
     }
 
     void OnAuraRemove(Aura* aur, bool stackRemove)
     {
         if (aur->GetId() == SPELL_VANISH)
         {
+            ForceSpellCast(me, SPELL_SNEAK, INTERRUPT_AND_CAST_INSTANTLY);
+            m_sneakTimer.Reset(2000);
             me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_STUN, false);
             DoResetThreat();
-            DoStartMovement(me->getVictim());
         }
+        if (aur->GetId() == SPELL_SNEAK)
+            me->SetIgnoreVictimSelection(false);
     }
 
 
@@ -831,6 +837,13 @@ struct boss_veras_darkshadowAI : public illidari_council_baseAI
     {
         if (!UpdateVictim())
             return;
+
+        if (m_sneakTimer.Expired(diff))
+        {
+            m_sneakTimer = 0;
+            me->RemoveAurasDueToSpell(SPELL_SNEAK);
+            DoStartMovement(me->getVictim());
+        }
 
         if (m_checkTimer.Expired(diff))
         {
@@ -846,7 +859,7 @@ struct boss_veras_darkshadowAI : public illidari_council_baseAI
             SharedRule(damage);
             me->SetSpeed(MOVE_RUN, 2.0);
             // move always after stun recovery
-            if (!me->hasUnitState(UNIT_STAT_STUNNED) && !me->HasAura(SPELL_VANISH, 1))
+            if (!me->hasUnitState(UNIT_STAT_STUNNED) && !me->HasAura(SPELL_VANISH, 1) && !me->HasAura(SPELL_SNEAK, 0))
                 DoStartMovement(me->getVictim());
             m_checkTimer = 1000;
         }
@@ -875,12 +888,12 @@ struct boss_veras_darkshadowAI : public illidari_council_baseAI
 
             // drop movement :P
             me->GetMotionMaster()->MoveIdle();
-
+            me->SetIgnoreVictimSelection(true);
             m_vanishTimer = 60000;
         }
         
 
-        if (me->HasAura(SPELL_VANISH, 1))
+        if (me->HasAura(SPELL_VANISH, 1) || me->HasAura(SPELL_SNEAK, 0))
             return;
 
         DoMeleeAttackIfReady();
