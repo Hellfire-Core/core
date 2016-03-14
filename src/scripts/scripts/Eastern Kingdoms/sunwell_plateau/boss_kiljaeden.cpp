@@ -750,9 +750,9 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                         if (!IsCastingSpikes)
                         {
                             AddSpellToCast(SPELL_SHADOW_SPIKE, CAST_NULL);
-                            _Timer[SPELL_FLAME_DART].Delay(30000);
+                            _Timer[SPELL_FLAME_DART].Delay(45000);
                             _Timer[SPELL_SOUL_FLAY].Delay(30000);
-                            _Timer[SPELL_FIRE_BLOOM].Delay(30000);
+                            _Timer[SPELL_FIRE_BLOOM].Delay(45000);
                             _Timer[SPELL_LEGION_LIGHTNING].Delay(30000);
                             _Timer[TIMER_SHADOW_SPIKE].Reset(2500);
                             IsCastingSpikes = true;
