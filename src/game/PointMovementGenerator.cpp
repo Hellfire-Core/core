@@ -121,6 +121,7 @@ void EffectMovementGenerator::Finalize(Unit &unit)
     if (EffectId() == EVENT_CHARGE)
         unit.clearUnitState(UNIT_STAT_CHARGING);
 
+    unit.SendCombatStats(1 << COMBAT_STATS_TEST, "finishing charge", NULL);
     if (unit.GetTypeId() != TYPEID_UNIT)
         return;
 
@@ -134,4 +135,5 @@ void EffectMovementGenerator::Initialize(Unit &unit)
 {
     if (EffectId() == EVENT_CHARGE)
         unit.addUnitState(UNIT_STAT_CHARGING);
+    unit.SendCombatStats(1 << COMBAT_STATS_TEST, "starting charge", NULL);
 }
