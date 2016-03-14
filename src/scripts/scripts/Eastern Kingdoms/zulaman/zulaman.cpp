@@ -1055,7 +1055,7 @@ struct npc_amanishi_lookoutAI : public ScriptedAI
             me->Kill(me, false);
         }
 
-        if(EventStarted && !me->SelectNearestTarget(300.0f))
+        if(EventStarted && !me->GetMap()->GetAlivePlayersCountExceptGMs())
         {
             EnterEvadeMode();
             EventStarted = false;
