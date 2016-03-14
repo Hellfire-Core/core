@@ -3964,6 +3964,8 @@ SpellCastResult Spell::CheckCast(bool strict)
             {
                 target = m_caster->GetPet();
                 if (!target)
+                    target = m_caster->GetCharm();
+                if (!target)
                 {
                     if (m_triggeredByAuraSpell)              // not report pet not existence for triggered spells
                         return SPELL_FAILED_DONT_REPORT;
