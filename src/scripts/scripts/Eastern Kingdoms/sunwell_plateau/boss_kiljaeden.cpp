@@ -276,6 +276,10 @@ bool GOUse_go_orb_of_the_blue_flight(Player *plr, GameObject* go)
         if (dragon) plr->CastSpell(dragon, SPELL_VENGEANCE_OF_THE_BLUE_FLIGHT, true);
         go->SetUInt32Value(GAMEOBJECT_FACTION, 0);
         Unit* Kalec = ((Creature*)Unit::GetUnit(*plr, pInstance->GetData64(DATA_KALECGOS_KJ)));
+
+        if (!Kalec)
+            return;
+
         go->GetPosition(x, y, z);
         for (uint8 i = 0; i < 4; ++i)
         {
@@ -474,8 +478,6 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
 
     ScriptedInstance* pInstance;
     SummonList Summons;
-    Creature*  Kalec;
-    Unit*      randomPlayer;
 
     uint8 Phase;
     uint8 ActiveTimers;
@@ -532,7 +534,6 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
         IsCastingSpikes = false;
         SpikesLeft      = 9;
 
-        Kalec = ((Creature*)Unit::GetUnit(*m_creature, pInstance->GetData64(DATA_KALECGOS_KJ)));
         ChangeTimers(false, 0);
     }
 
@@ -606,7 +607,9 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
     {
         Scripted_NoMovementAI::EnterEvadeMode();
         Summons.DespawnAll();
-        Kalec->AI()->DoAction(KALEC_RESET_ORBS);
+        
+        if (Creature* Kalec = Unit::GetCreature(*m_creature, pInstance->GetData64(DATA_KALECGOS_KJ)))
+            Kalec->AI()->DoAction(KALEC_RESET_ORBS);
 
         // Reset the controller
         if (pInstance)
@@ -683,7 +686,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                 {
                     case TIMER_KALEC_JOIN:
                     {
-                        if (Kalec)
+                        if (Creature* Kalec = Unit::GetCreature(*m_creature, pInstance->GetData64(DATA_KALECGOS_KJ)))
                         {
                             DoScriptText(SAY_KALECGOS_JOIN, Kalec);
                             IsKalecJoined = true;
@@ -706,8 +709,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                     }
                     case TIMER_LEGION_LIGHTNING:
                     {
-                        randomPlayer = NULL;
-                        randomPlayer = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true);
+                        Unit* randomPlayer = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true);
                         if (randomPlayer)
                             AddSpellToCast(randomPlayer, SPELL_LEGION_LIGHTNING, false, true);
                         else
@@ -719,8 +721,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                     }
                     case TIMER_FIRE_BLOOM:
                     {
-                        randomPlayer = NULL;
-                        randomPlayer = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true);
+                        Unit* randomPlayer = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true);
                         if (randomPlayer)
                             AddSpellToCast(randomPlayer, SPELL_FIRE_BLOOM);
                         _Timer[TIMER_FIRE_BLOOM] = (Phase == PHASE_SACRIFICE) ? 25000 : 20000; // 25 seconds in PHASE_SACRIFICE
@@ -819,25 +820,19 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                         ClearCastQueue();
                         break;
                     }
-
                     case TIMER_ORBS_EMPOWER:
                     {
+                        Creature* Kalec = Unit::GetCreature(*m_creature, pInstance->GetData64(DATA_KALECGOS_KJ));
+                        if (Kalec)
+                            ((boss_kalecgos_kjAI*)Kalec->AI())->EmpowerOrb(Phase == PHASE_SACRIFICE);
                         SendDebug("Sending orbs empower");
-                        if (Phase == PHASE_SACRIFICE)
-                        {
-                            if (Kalec)((boss_kalecgos_kjAI*)Kalec->AI())->EmpowerOrb(true);
-                        }
-                        else if (Kalec)((boss_kalecgos_kjAI*)Kalec->AI())->EmpowerOrb(false);
 
                         _Timer[TIMER_ORBS_EMPOWER] = (Phase == PHASE_SACRIFICE) ? 45000 : 35000;
 
                         OrbActivated = true;
                         TimerIsDeactiveted[TIMER_ORBS_EMPOWER] = true;
+                        break; 
                     }
-                    break;
-
-
-
                     /*$$$$$$$$$$$$$$$$$$$$$$$$$$$
                              Phase 4
                     $$$$$$$$$$$$$$$$$$$$$$$$$$$$*/
