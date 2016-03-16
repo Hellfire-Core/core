@@ -278,7 +278,7 @@ bool GOUse_go_orb_of_the_blue_flight(Player *plr, GameObject* go)
         Unit* Kalec = ((Creature*)Unit::GetUnit(*plr, pInstance->GetData64(DATA_KALECGOS_KJ)));
 
         if (!Kalec)
-            return;
+            return true;
 
         go->GetPosition(x, y, z);
         for (uint8 i = 0; i < 4; ++i)
