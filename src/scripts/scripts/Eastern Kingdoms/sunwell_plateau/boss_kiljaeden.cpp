@@ -751,10 +751,6 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                         if (!IsCastingSpikes)
                         {
                             AddSpellToCast(SPELL_SHADOW_SPIKE, CAST_NULL);
-                            _Timer[SPELL_FLAME_DART].Delay(45000);
-                            _Timer[SPELL_SOUL_FLAY].Delay(30000);
-                            _Timer[SPELL_FIRE_BLOOM].Delay(45000);
-                            _Timer[SPELL_LEGION_LIGHTNING].Delay(30000);
                             _Timer[TIMER_SHADOW_SPIKE].Reset(2500);
                             IsCastingSpikes = true;
                         }
@@ -855,9 +851,16 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
         }
 
         //Phase 3
-        if (Phase == PHASE_NORMAL && ((m_creature->GetHealth() * 100 / m_creature->GetMaxHealth()) < 85))
+        if (Phase == PHASE_NORMAL && !me->IsNonMeleeSpellCast(true) && ((m_creature->GetHealth() * 100 / m_creature->GetMaxHealth()) < 85))
         {
+            // nothing should be cast before shadow spike ends
+            ClearCastQueue();
+            _Timer[TIMER_FLAME_DART].Reset(57000);
+            _Timer[TIMER_SOUL_FLAY].Delay(34000);
+            _Timer[TIMER_FIRE_BLOOM].Reset(67000);
+            _Timer[TIMER_LEGION_LIGHTNING].Reset(47000);
             CastSinisterReflection();
+
             DoScriptText(SAY_KJ_PHASE3, m_creature);
             Phase = PHASE_DARKNESS;
             OrbActivated = false;
@@ -867,8 +870,15 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
         }
 
         //Phase 4
-        if (Phase == PHASE_DARKNESS && ((m_creature->GetHealth() * 100 / m_creature->GetMaxHealth()) < 55))
+        if (Phase == PHASE_DARKNESS && !me->IsNonMeleeSpellCast(true) && ((m_creature->GetHealth() * 100 / m_creature->GetMaxHealth()) < 55))
         {
+            ClearCastQueue();
+            _Timer[TIMER_FLAME_DART].Reset(57000);
+            _Timer[TIMER_SOUL_FLAY].Delay(34000);
+            _Timer[TIMER_FIRE_BLOOM].Reset(67000);
+            _Timer[TIMER_LEGION_LIGHTNING].Reset(47000);
+            CastSinisterReflection();
+
             DoScriptText(SAY_KJ_PHASE4, m_creature);
             Phase = PHASE_ARMAGEDDON;
             OrbActivated = false;
@@ -877,8 +887,15 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
         }
 
         //Phase 5 specific spells all we can
-        if (Phase == PHASE_ARMAGEDDON && ((m_creature->GetHealth() * 100 / m_creature->GetMaxHealth()) < 25))
+        if (Phase == PHASE_ARMAGEDDON && !me->IsNonMeleeSpellCast(true) && ((m_creature->GetHealth() * 100 / m_creature->GetMaxHealth()) < 25))
         {
+            ClearCastQueue();
+            _Timer[TIMER_FLAME_DART].Reset(57000);
+            _Timer[TIMER_SOUL_FLAY].Delay(34000);
+            _Timer[TIMER_FIRE_BLOOM].Reset(67000);
+            _Timer[TIMER_LEGION_LIGHTNING].Reset(47000);
+            CastSinisterReflection();
+
             Phase = PHASE_SACRIFICE;
             Creature* Anveena = Unit::GetCreature((*m_creature), pInstance->GetData64(DATA_ANVEENA));
             if (Anveena)
