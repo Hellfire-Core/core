@@ -368,7 +368,7 @@ struct boss_kalecgos_kjAI : public ScriptedAI
     {
         if (!Orb[OrbsEmpowered])
             return;
-        uint8 random = rand() % 3;
+        
         if (all)
         {
             me->RemoveDynObject(SPELL_RING_OF_BLUE_FLAMES);
@@ -383,6 +383,7 @@ struct boss_kalecgos_kjAI : public ScriptedAI
         }
         else
         {
+            uint8 random = urand(0, 3);
             float x, y, z, dx, dy, dz;
             Orb[random]->GetPosition(x, y, z);
             for (uint8 i = 0; i < 4; ++i)
@@ -776,6 +777,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                                 _Timer[TIMER_SHADOW_SPIKE] = 0;
                                 TimerIsDeactiveted[TIMER_SHADOW_SPIKE] = true; 
                                 IsCastingSpikes = false;
+                                _Timer[TIMER_DARKNESS].Reset(45000);
                             }
 
                         }
@@ -1338,14 +1340,13 @@ struct mob_shield_orbAI : public ScriptedAI
         CheckTimer.Reset(1000);
         mx = ShieldOrbLocations[0][0];
         my = ShieldOrbLocations[0][1];
-        Clockwise = true;
+        Clockwise = false;
     }
 
     void DoAction(const int32 act)
     {
         c = ShieldOrbLocations[act][0];
         r = ShieldOrbLocations[act][1];
-        if (act == 1) Clockwise = false;
     }
 
     void UpdateAI(const uint32 diff)
