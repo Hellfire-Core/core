@@ -5019,6 +5019,8 @@ SpellCastResult Spell::CheckRange(bool strict)
                     return SPELL_FAILED_NOT_INFRONT;
                 break;
             case GAMEOBJECT_TYPE_CHEST:
+            case GAMEOBJECT_TYPE_GOOBER:
+            case GAMEOBJECT_TYPE_BUTTON:
                 if (dist > max_range)
                     return SPELL_FAILED_OUT_OF_RANGE;
                 break;
