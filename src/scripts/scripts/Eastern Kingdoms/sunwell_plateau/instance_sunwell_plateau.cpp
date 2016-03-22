@@ -173,15 +173,10 @@ struct instance_sunwell_plateau : public ScriptedInstance
 
     void HandleGameObject(uint64 guid, uint32 state)
     {
-        Player *player = GetPlayerInMap();
-
-        if (!player || !guid)
-        {
-            debug_log("TSCR: Sunwell Plateau: HandleGameObject fail");
+        if (!guid)
             return;
-        }
-
-        if (GameObject *go = GameObject::GetGameObject(*player,guid))
+        
+        if (GameObject *go = instance->GetGameObject(guid))
             go->SetGoState(GOState(state));
     }
 
