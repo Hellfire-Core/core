@@ -399,6 +399,8 @@ void WorldSession::HandleLootMethodOpcode(WorldPacket & recv_data)
     group->SetLooterGuid(lootMaster);
     group->SetLootThreshold((ItemQualities)lootThreshold);
     group->SendUpdate();
+    if (group->isRaidGroup() && lootMethod == MASTER_LOOT)
+        sLog.outLog(LOG_BOSS, "Master looter set, leader %s %u looter %u", GetPlayer()->GetName(), GetPlayer()->GetGUID(), lootMaster);
 }
 
 void WorldSession::HandleLootRoll(WorldPacket &recv_data)
