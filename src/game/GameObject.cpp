@@ -1177,8 +1177,6 @@ void GameObject::Use(Unit* user)
                 m_cooldownTime = time(NULL) + info->goober.cooldown;
             }
 
-            GetMap()->ScriptsStart(sGameObjectScripts, GetDBTableGUIDLow(), pPlayer, this);
-
             if (uint32 trapEntry = info->goober.linkedTrapId)
                 TriggeringLinkedGameObject(trapEntry, user);
 
