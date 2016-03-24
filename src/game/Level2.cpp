@@ -1867,7 +1867,7 @@ bool ChatHandler::HandleKickPlayerCommand(const char *args)
             return false;
         }
 
-        Player* player = sObjectMgr.GetPlayer(kickName);
+        Player* player = sObjectMgr.GetPlayer(name.c_str());
         if (!player)
         {
             SendSysMessage(LANG_PLAYER_NOT_FOUND);
