@@ -738,8 +738,6 @@ void Spell::AddUnitTarget(Unit* pVictim, uint32 effIndex, bool redirected)
     {
         bool canMiss = m_triggeredByAuraSpell || !IsTriggeredSpell() || IsAutoShootSpell();
         target.missCondition = m_originalCaster->SpellHitResult(pVictim, GetSpellEntry(), m_canReflect, canMiss);
-        if (GetSpellEntry()->Id == 27277)
-            m_originalCaster->SendCombatStats(1 << COMBAT_STATS_TEST, "27277 hitresult %u %u %u", NULL, target.missCondition, m_canReflect, canMiss);
         if (m_skipCheck && target.missCondition != SPELL_MISS_IMMUNE)
             target.missCondition = SPELL_MISS_NONE;
     }
