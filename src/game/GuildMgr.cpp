@@ -179,12 +179,12 @@ void GuildMgr::UpdateWeek()
     RealmDataDatabase.Execute("UPDATE guild SET CurrentPoints = 0");
 }
 
-uint32 GuildMgr::BossKilled(GBK_Encounters boss, uint32 guildid, uint32 mstime)
+uint32 GuildMgr::BossKilled(uint32 boss, uint32 guildid, uint32 mstime)
 {
     if (!guildid)
         return m_bosskill++;
 
-    bossrecord& br = m_bossrecords[uint32(boss)];
+    bossrecord& br = m_bossrecords[boss];
     if (mstime < br.record)
     {
         std::string message = "New server record: " + msToTimeString(mstime) + " (last record: "

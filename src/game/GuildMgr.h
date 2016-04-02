@@ -54,7 +54,7 @@ class GuildMgr
 
         // GBK stuff
         void UpdateWeek();
-        uint32 BossKilled(GBK_Encounters boss, uint32 guildid, uint32 mstime);
+        uint32 BossKilled(uint32 boss, uint32 guildid, uint32 mstime);
 
 
         time_t GetGuildAnnCooldown(uint32 guild_id) { return m_guildCooldownTimes[guild_id]; }
