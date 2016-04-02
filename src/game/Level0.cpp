@@ -36,6 +36,8 @@
 #include "GameEvent.h"
 #include "BattleGroundMgr.h"
 #include "ObjectMgr.h"
+#include "GuildMgr.h"
+#include "Guild.h"
 
 bool ChatHandler::HandleAccountXPToggleCommand(const char* args)
 {
@@ -602,5 +604,119 @@ bool ChatHandler::HandleAccountBGMarksCommand(const char* /*args*/)
         SendSysMessage("Battleground Marks of Honor restriction has been enabled for this account.");
     }
 
+    return true;
+}
+
+bool ChatHandler::HandleGuildAnnounceCommand(const char *args)
+{
+    if (!*args)
+        return false;
+
+    std::string msg = args;
+
+    SetSentErrorMessage(true);
+
+    uint32 gId = m_session->GetPlayer()->GetGuildId();
+    if (!gId)
+    {
+        PSendSysMessage("You need to be in guild to append guild announce.");
+        return false;
+    }
+
+    if (sGuildMgr.GetGuildAnnCooldown(gId) > time(NULL))
+    {
+        PSendSysMessage("Please wait before guild announce cooldown expires in %s", secsToTimeString(uint32(sGuildMgr.GetGuildAnnCooldown(gId) - time(NULL))).c_str());
+        return false;
+    }
+
+    if (msg.size() > sWorld.getConfig(CONFIG_GUILD_ANN_LENGTH))
+    {
+        PSendSysMessage("Your message is to long, limit: %i chars", sWorld.getConfig(CONFIG_GUILD_ANN_LENGTH));
+        return false;
+    }
+
+    Guild * pGuild = sGuildMgr.GetGuildById(gId);
+    if (!pGuild)
+    {
+        PSendSysMessage("Error occured while sending guild announce.");
+        return false;
+    }
+
+    if (pGuild->IsFlagged(GUILD_FLAG_DISABLE_ANN))
+    {
+        PSendSysMessage("Guild announce system has been blocked for your guild.");
+        return false;
+    }
+
+    if (!pGuild->HasRankRight(m_session->GetPlayer()->GetRank(), GR_RIGHT_OFFCHATLISTEN))
+    {
+        PSendSysMessage("Your guild rank is to low to use that command.");
+        return false;
+    }
+
+    if (pGuild->GetMemberSize() < 10)
+    {
+        PSendSysMessage("Your guild is too small, you need at least 10 members to send guild announce.");
+        return false;
+    }
+
+    if (ContainsNotAllowedSigns(msg, true))
+    {
+        PSendSysMessage("Your message contains not allowed symbols, it will not be posted.");
+        return false;
+    }
+
+    PSendSysMessage("Your message has been queued and will be displayed soon. Please wait %s before sending another one.", secsToTimeString(sWorld.getConfig(CONFIG_GUILD_ANN_COOLDOWN)).c_str());
+
+    sGuildMgr.SaveGuildAnnCooldown(gId);
+    sLog.outLog(LOG_GUILD_ANN, "Player %s (" UI64FMTD ") - guild: %s (%u) append guild announce: %s", m_session->GetPlayer()->GetName(), m_session->GetPlayer()->GetGUID(), pGuild->GetName().c_str(), gId, msg.c_str());
+    sWorld.QueueGuildAnnounce(gId, m_session->GetPlayer()->GetTeam(), msg);
+
+    if (!pGuild->IsFlagged(GUILD_FLAG_ADVERT_SET))
+    {
+        RealmDataDatabase.escape_string(msg);
+        RealmDataDatabase.PExecute("UPDATE guild SET ShortAdvert='%s' WHERE guildid='%u'", msg.c_str(), gId);
+    }
+    return true;
+}
+
+bool ChatHandler::HandleGuildAdvertCommand(const char *args)
+{
+    if (!*args)
+        return false;
+
+    std::string msg = args;
+
+    SetSentErrorMessage(true);
+
+    uint32 gId = m_session->GetPlayer()->GetGuildId();
+    if (!gId)
+    {
+        PSendSysMessage("You are not in a guild.");
+        return false;
+    }
+
+    if (msg.size() > 100)
+    {
+        PSendSysMessage("Your message is to long, limit: 100 chars.");
+        return false;
+    }
+
+    Guild * pGuild = sGuildMgr.GetGuildById(gId);
+    if (!pGuild)
+    {
+        PSendSysMessage("You are not in a guild.");
+        return false;
+    }
+
+    if (pGuild->GetLeader() != m_session->GetPlayer()->GetGUID())
+    {
+        PSendSysMessage("You need to be guild master to use this command.");
+        return false;
+    }
+
+    RealmDataDatabase.escape_string(msg);
+    RealmDataDatabase.PExecute("UPDATE guild SET ShortAdvert='%s' WHERE guildid='%u'", msg.c_str(), gId);
+    pGuild->AddFlag(GUILD_FLAG_ADVERT_SET);
     return true;
 }

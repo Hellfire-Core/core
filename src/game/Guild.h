@@ -32,7 +32,8 @@ class Item;
 
 enum GuildFlags
 {
-    GUILD_FLAG_DISABLE_ANN      = 0x01      // disables guild announce system for guild
+    GUILD_FLAG_DISABLE_ANN      = 0x01,     // disables guild announce system for guild
+    GUILD_FLAG_ADVERT_SET       = 0x02,     // wont use guild announces to replace advert
 };
 
 enum GuildDefaultRanks

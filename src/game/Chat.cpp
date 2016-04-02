@@ -433,6 +433,7 @@ ChatCommand * ChatHandler::getCommandTable()
 
     static ChatCommand guildCommandTable[] =
     {
+        { "advert",         PERM_PLAYER,    PERM_CONSOLE, false,  &ChatHandler::HandleGuildAdvertCommand,         "", NULL },
         { "ann",            PERM_PLAYER,    PERM_CONSOLE, false,  &ChatHandler::HandleGuildAnnounceCommand,       "", NULL },
         { "create",         PERM_HIGH_GMT,  PERM_CONSOLE, true,   &ChatHandler::HandleGuildCreateCommand,         "", NULL },
         { "delete",         PERM_HIGH_GMT,  PERM_CONSOLE, true,   &ChatHandler::HandleGuildDeleteCommand,         "", NULL },
