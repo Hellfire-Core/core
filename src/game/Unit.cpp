@@ -11230,6 +11230,8 @@ void Unit::ProcDamageAndSpellfor (bool isVictim, Unit * pTarget, uint32 procFlag
            continue;
 
         procTriggered.push_back(ProcTriggeredData(spellProcEvent, itr->second));
+        SendCombatStats(1 << COMBAT_STATS_PROC, "aura %u is procing from spell %u; %u %u %u", pTarget,
+            itr->first.first, procFlag, procExtra, isVictim);
     }
     // Handle effects proceed this time
     for (ProcTriggeredList::iterator i = procTriggered.begin(); i != procTriggered.end(); ++i)
@@ -11250,14 +11252,7 @@ void Unit::ProcDamageAndSpellfor (bool isVictim, Unit * pTarget, uint32 procFlag
                 }
             }
             if (!found)
-            {
-//                sLog.outDebug("Spell aura %u (id:%u effect:%u) has been deleted before call spell proc event handler", i->triggeredByAura->GetModifier()->m_auraname, i->triggeredByAura_SpellPair.first, i->triggeredByAura_SpellPair.second);
-//                sLog.outDebug("It can be deleted one from early proccesed auras:");
-//                for (ProcTriggeredList::iterator i2 = procTriggered.begin(); i != i2; ++i2)
-//                    sLog.outDebug("     Spell aura %u (id:%u effect:%u)", i->triggeredByAura->GetModifier()->m_auraname,i2->triggeredByAura_SpellPair.first,i2->triggeredByAura_SpellPair.second);
-//                    sLog.outDebug("     <end of list>");
                 continue;
-            }
         }
 
         SpellProcEventEntry const *spellProcEvent = i->spellProcEvent;

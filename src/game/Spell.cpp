@@ -3179,7 +3179,7 @@ void Spell::SendCastResult(SpellCastResult result)
         return;
     }
 
-    m_caster->SendCombatStats(1<<COMBAT_STATS_FAILED_CAST, "Cast %u failed, result %u",NULL,GetSpellEntry()->Id,result);
+    m_caster->SendCombatStats(1 << COMBAT_STATS_FAILED_CAST, "Cast %u failed, result %u", NULL, GetSpellEntry()->Id, result);
 
     WorldPacket data(SMSG_CAST_FAILED, (4 + 1 + 1));
     data << uint32(GetSpellEntry()->Id);

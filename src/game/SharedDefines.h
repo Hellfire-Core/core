@@ -2585,6 +2585,7 @@ enum GBK_Encounters
     GBK_HOT_EREDAR_CHICKS       = 31,
     GBK_MURU                    = 32,
     GBK_KILJAEDEN               = 33,
+    GBK_TOTAL                   = 34,
 
     GBK_ANTISPAMINLOGSINATOR    = 50
 };
@@ -2602,6 +2603,7 @@ enum CombatStatsType
     COMBAT_STATS_TEST,              // 256
     COMBAT_STATS_CRASHTEST,         // 512
     COMBAT_STATS_LOOTING,           // 1024
+    COMBAT_STATS_PROC,              // 2048
 };
 
 #define CONTACT_DISTANCE            0.5f
