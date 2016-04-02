@@ -487,7 +487,7 @@ struct boss_alarAI : public ScriptedAI
 
         Unit *temp = m_creature->getVictim();
 
-        if (!temp && !(temp = SelectUnit(SELECT_TARGET_TOPAGGRO,0)))
+        if (!temp && !(temp = SelectUnit(SELECT_TARGET_TOPAGGRO, 0, 5.0f, true)))
             return;
 
         if (WaitEvent == WE_PLATFORM || WaitEvent == WE_QUILL || WaitEvent == WE_DUMMY)
