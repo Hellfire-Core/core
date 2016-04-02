@@ -29,6 +29,7 @@ class Guild;
 typedef UNORDERED_MAP< uint32, Guild * >    GuildMap;
 typedef std::vector< uint32 >               GuildBankTabPriceMap;
 typedef UNORDERED_MAP<uint32,time_t>        GuildCooldowns;
+struct bossrecord {uint32 record; std::string name; };
 
 class GuildMgr
 {
@@ -50,7 +51,11 @@ class GuildMgr
         void RemoveGuild( const uint32 & Id );
 
         void LoadGuilds();
-        void LoadGuildAnnCooldowns();
+
+        // GBK stuff
+        void UpdateWeek();
+        uint32 BossKilled(GBK_Encounters boss, uint32 guildid, uint32 mstime);
+
 
         time_t GetGuildAnnCooldown(uint32 guild_id) { return m_guildCooldownTimes[guild_id]; }
         void SaveGuildAnnCooldown(uint32 guild_id);
@@ -63,6 +68,8 @@ class GuildMgr
         GuildMap                m_guildsMap;
         GuildCooldowns          m_guildCooldownTimes;
         GuildBankTabPriceMap    m_guildBankTabPrices;
+        std::vector<bossrecord> m_bossrecords;
+        uint32                  m_bosskill;
 
 };
 

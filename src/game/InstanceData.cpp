@@ -29,6 +29,7 @@
 #include "MapReference.h"
 #include "Language.h"
 #include "Player.h"
+#include "GuildMgr.h"
 
 void InstanceData::SaveToDB()
 {
@@ -249,4 +250,94 @@ void InstanceData::LogPossibleCheaters(const char* cheatName)
     
         sWorld.SendGMText(LANG_POSSIBLE_CHEAT, cheatName, pPlayer->GetName(),playerlist.c_str());
     }
+}
+
+void GBK_handler::StopCombat(GBK_Encounters encounter, bool win)
+{
+    if (m_encounter == GBK_ANTISPAMINLOGSINATOR)
+        return;
+
+    if (win)
+    {
+        if (m_encounter == GBK_NONE || m_encounter != encounter)
+        {
+            sLog.outLog(LOG_DEFAULT, "GBK_handler: problems in StopCombat(%u,%u), m_encouter %u Map %u InstanceId %u",
+                uint32(encounter), win, uint32(m_encounter), m_map->GetId(), m_map->GetInstanceId());
+            m_timer = 0;
+            stats.clear();
+            m_encounter = GBK_ANTISPAMINLOGSINATOR;
+            return;
+        }
+
+        uint32 guild_id = 0;
+        uint32 totalcount = 0;
+        std::map<uint32, uint32> guilds;
+        Map::PlayerList const& list = m_map->GetPlayers();
+        for (Map::PlayerList::const_iterator i = list.begin(); i != list.end(); ++i)
+        {
+            if (Player* plr = i->getSource())
+                if (plr->GetSession() && plr->GetSession()->GetPermissions() == PERM_PLAYER)
+                {
+                    guilds[plr->GetGuildId()]++;
+                    totalcount++;
+                }
+        }
+        for (std::map<uint32, uint32>::iterator mitr = guilds.begin(); mitr != guilds.end(); mitr++)
+        {
+            if (mitr->second >= GBK_REQUIRED_AMOUNT * totalcount)
+            {
+                guild_id = mitr->first;
+                break;
+            }
+        }
+        if (guild_id)
+        {
+            uint32 kill_id = sGuildMgr.BossKilled(encounter, guild_id, m_timer);
+            RealmDataDatabase.BeginTransaction();
+            RealmDataDatabase.DirectPExecute("INSERT INTO boss_fights VALUES (%u,%u,%u,%u,%u,SYSDATE())",
+                kill_id, uint32(m_encounter), m_map->GetInstanceId(), guild_id, WorldTimer::getMSTimeDiffToNow(m_timer));
+            for (Map::PlayerList::const_iterator i = list.begin(); i != list.end(); ++i)
+            {
+                if (Player* plr = i->getSource())
+                {
+                    if (plr->GetGuildId() == guild_id)
+                    {
+                        RealmDataDatabase.PExecute("INSERT INTO boss_fights_detailed VALUES (%u,%u,%u,%u,%u)",
+                            kill_id, plr->GetGUIDLow(), stats[plr->GetGUIDLow()].damage,
+                            stats[plr->GetGUIDLow()].healing, stats[plr->GetGUIDLow()].deaths);
+                    }
+                }
+            }
+            RealmDataDatabase.PExecute("INSERT INTO boss_fights_loot "
+                "(SELECT \"%u\", itemId, SUM(itemCount) FROM group_saved_loot WHERE instanceId = %u GROUP BY itemId);",
+                kill_id, m_map->GetInstanceId());
+            RealmDataDatabase.CommitTransaction();
+        }
+    }
+
+    if (m_encounter == encounter) //do not reset timers when some boss is just spamming not_started
+    {
+        m_encounter = GBK_NONE;
+        m_timer = 0;
+        stats.clear();
+    }
+}
+
+void GBK_handler::StartCombat(GBK_Encounters encounter)
+{
+    if (m_encounter != GBK_NONE && m_encounter != encounter)
+    {
+        if (m_encounter != GBK_ANTISPAMINLOGSINATOR)
+        {
+            sLog.outLog(LOG_DEFAULT, "GBK_handler: StartCombat(%u) while already in combat(%u) Map %u InstanceId %u",
+                encounter, m_encounter, m_map->GetId(), m_map->GetInstanceId());
+            m_encounter = GBK_ANTISPAMINLOGSINATOR;
+        }
+        return;
+    }
+    else if (m_encounter == encounter)
+        return; // combat in progress anyway, just dance
+
+    m_encounter = encounter;
+    m_timer = WorldTimer::getMSTime();
 }

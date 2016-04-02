@@ -160,7 +160,7 @@ class HELLGROUND_IMPORT_EXPORT InstanceData : public ZoneScript
 
 #define GBK_REQUIRED_AMOUNT (float)0.75
 
-class GBK_handler
+class HELLGROUND_IMPORT_EXPORT GBK_handler
 {
     struct GBKStats
     {
@@ -188,135 +188,8 @@ public:
             stats[guid].deaths++;
     };
 
-    void StopCombat(GBK_Encounters encounter, bool win)
-    {
-        if (m_encounter == GBK_ANTISPAMINLOGSINATOR)
-            return;
-
-        if (win)
-        {
-            if (m_encounter == GBK_NONE || m_encounter != encounter)
-            {
-                sLog.outLog(LOG_DEFAULT, "GBK_handler: problems in StopCombat(%u,%u), m_encouter %u Map %u InstanceId %u",
-                    uint32(encounter), win, uint32(m_encounter), m_map->GetId(), m_map->GetInstanceId());
-                m_timer = 0;
-                stats.clear();
-                m_encounter = GBK_ANTISPAMINLOGSINATOR;
-                return;
-            }
-
-            uint32 guild_id = 0;
-            uint32 totalcount = 0;
-            std::map<uint32, uint32> guilds;
-            Map::PlayerList const& list = m_map->GetPlayers();
-            for (Map::PlayerList::const_iterator i = list.begin(); i != list.end(); ++i)
-            {
-                if (Player* plr = i->getSource())
-                    if (plr->GetSession() && plr->GetSession()->GetPermissions() == PERM_PLAYER)
-                    {
-                        guilds[plr->GetGuildId()]++;
-                        totalcount++;
-                    }
-            }
-            for (std::map<uint32, uint32>::iterator mitr = guilds.begin(); mitr != guilds.end(); mitr++)
-            {
-                if (mitr->second >= GBK_REQUIRED_AMOUNT * totalcount)
-                {
-                    guild_id = mitr->first;
-                    break;
-                }
-            }
-            if (guild_id)
-            {   // to get the last record before inserting our result
-                QueryResultAutoPtr record = RealmDataDatabase.PQuery(
-                    "SELECT `length` FROM boss_fights WHERE mob_id = %u ORDER BY LENGTH ASC LIMIT 1", uint32(m_encounter));
-
-                RealmDataDatabase.DirectPExecute("INSERT INTO boss_fights VALUES (NULL,%u,%u,%u,%u,SYSDATE())",
-                    uint32(m_encounter), m_map->GetInstanceId(), guild_id, WorldTimer::getMSTimeDiffToNow(m_timer));
-                QueryResultAutoPtr result = RealmDataDatabase.PQuery(
-                    "SELECT kill_id, MAX('date') FROM boss_fights WHERE instance_id = %u AND mob_id = %u",
-                    m_map->GetInstanceId(), uint32(m_encounter));
-                if (!result)
-                {
-                    sLog.outLog(LOG_DEFAULT,"GBK_handler: StopCombat - problem getting kill id, guild %u Map %u InstanceId %u",
-                        guild_id,m_map->GetId(),m_map->GetInstanceId());
-                    m_encounter = GBK_NONE;
-                    m_timer = 0;
-                    stats.clear();
-                    return;
-                }
-                uint32 side;
-                uint32 kill_id = result->Fetch()[0].GetUInt32();
-                RealmDataDatabase.BeginTransaction();
-                for (Map::PlayerList::const_iterator i = list.begin(); i != list.end(); ++i)
-                {
-                    if (Player* plr = i->getSource())
-                    {
-
-                        side = plr->GetTeam();
-
-                        if (plr->GetGuildId() == guild_id)
-                        {
-                            RealmDataDatabase.PExecute("INSERT INTO boss_fights_detailed VALUES (%u,%u,%u,%u,%u)",
-                                kill_id, plr->GetGUIDLow(), stats[plr->GetGUIDLow()].damage,
-                                stats[plr->GetGUIDLow()].healing, stats[plr->GetGUIDLow()].deaths);
-                        }
-                    }
-                }
-                RealmDataDatabase.PExecute("INSERT INTO boss_fights_loot "
-                    "(SELECT \"%u\", itemId, SUM(itemCount) FROM group_saved_loot WHERE instanceId = %u GROUP BY itemId);",
-                    kill_id,m_map->GetInstanceId());
-                RealmDataDatabase.CommitTransaction();
-
-                if (record) //TODO: add disable/enable to config
-                {
-                    uint32 last_record = record->Fetch()[0].GetUInt32();
-                    uint32 new_time = WorldTimer::getMSTimeDiffToNow(m_timer);
-                    if (last_record > new_time)
-                    {
-                        QueryResultAutoPtr names = RealmDataDatabase.PQuery(
-                            "SELECT g.name, n.boss_name FROM boss_fights f JOIN guild g ON g.guildid = f.guild_id JOIN boss_id_names n ON n.boss_id = f.mob_id "
-                            "WHERE kill_id = %u", kill_id);
-                        if (names)
-                        {
-                            std::string message = "New server record: " + msToTimeString(new_time) + " (last record: "
-                                + msToTimeString(last_record) + ") for boss " + names->Fetch()[1].GetCppString()
-                                + " by guild <|cffffffff" + names->Fetch()[0].GetCppString() + "|r> of " + (side == HORDE ? "|cffe50c11Horde|r." : "|cff4954e8Alliance|r.");
-
-                            sLog.outLog(LOG_SERVER_RECORDS, "%s", message.c_str());
-                            sWorld.SendServerMessage(SERVER_MSG_STRING, message.c_str());
-                        }
-                    }
-                }
-            }
-        }
-
-        if (m_encounter == encounter) //do not reset timers when some boss is just spamming not_started
-        {
-            m_encounter = GBK_NONE;
-            m_timer = 0;
-            stats.clear();
-        }
-    }
-
-    void StartCombat(GBK_Encounters encounter)
-    {
-        if (m_encounter != GBK_NONE && m_encounter != encounter)
-        {
-            if (m_encounter != GBK_ANTISPAMINLOGSINATOR)
-            {
-                sLog.outLog(LOG_DEFAULT, "GBK_handler: StartCombat(%u) while already in combat(%u) Map %u InstanceId %u",
-                    encounter, m_encounter, m_map->GetId(), m_map->GetInstanceId());
-                m_encounter = GBK_ANTISPAMINLOGSINATOR;
-            }
-            return;
-        }
-        else if (m_encounter == encounter)
-            return; // combat in progress anyway, just dance
-
-        m_encounter = encounter;
-        m_timer = WorldTimer::getMSTime();
-    }
+    void StopCombat(GBK_Encounters encounter, bool win);
+    void StartCombat(GBK_Encounters encounter);
 
 private:
     GBK_Encounters m_encounter;

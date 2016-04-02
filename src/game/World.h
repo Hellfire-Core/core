@@ -913,6 +913,7 @@ class HELLGROUND_EXPORT World
 
         // next daily quests reset time
         time_t m_NextDailyQuestReset;
+        time_t m_NextWeekReset;
 
         // Player Queue
         Queue m_QueuedPlayer;

@@ -109,43 +109,6 @@ uint32 GuildMgr::GetGuildBankTabPrice( const uint8 & Index ) const
     return Index < GUILD_BANK_MAX_TABS ? m_guildBankTabPrices[Index] : 0;
 }
 
-void GuildMgr::LoadGuildAnnCooldowns()
-{
-    uint32 count = 0;
-
-    QueryResultAutoPtr result = RealmDataDatabase.Query("SELECT guild_id, cooldown_end FROM guild_announce_cooldown");
-
-    if (!result)
-    {
-        BarGoLink bar(1);
-
-        bar.step();
-
-        sLog.outString();
-        sLog.outString(">> Loaded 0 guildann_cooldowns.");
-        return;
-    }
-
-    BarGoLink bar(result->GetRowCount());
-
-    do
-    {
-        Field *fields = result->Fetch();
-        bar.step();
-
-        uint32 guild_id       = fields[0].GetUInt32();
-        uint64 respawn_time = fields[1].GetUInt64();
-
-        m_guildCooldownTimes[guild_id] = time_t(respawn_time);
-
-        ++count;
-    } while (result->NextRow());
-
-    sLog.outString(">> Loaded %lu guild ann cooldowns.", m_guildCooldownTimes.size());
-    sLog.outString();
-}
-
-
 void GuildMgr::LoadGuilds()
 {
     Guild *newguild;
@@ -193,6 +156,49 @@ void GuildMgr::LoadGuilds()
 
     sLog.outString();
     sLog.outString(">> Loaded %u guild definitions, next guild ID: %u", count, m_guildId);
+
+    result = RealmDataDatabase.Query("SELECT max(kill_id) FROM boss_fights");
+    if (result) m_bosskill = (*result)[0].GetUInt32() + 1;
+
+    result = RealmDataDatabase.Query("SELECT mob_id, boss_name, min(length) FROM boss_id_names JOIN boss_fights ON mob_id = boss_id GROUP BY mob_id");
+    if (!result)
+        return; // shouldnt happen in any way
+    m_bossrecords.resize(GBK_TOTAL);
+    do
+    {
+        Field* fields = result->Fetch();
+        m_bossrecords[fields[0].GetUInt32()].name = fields[1].GetCppString();
+        m_bossrecords[fields[0].GetUInt32()].record = fields[2].GetUInt32();
+    }
+    while (result->NextRow());
+}
+
+void GuildMgr::UpdateWeek()
+{
+    RealmDataDatabase.Execute("UPDATE guild SET LastPoints = (LastPoints * 2 + CurrentPoints)/3");
+    RealmDataDatabase.Execute("UPDATE guild SET CurrentPoints = 0");
+}
+
+uint32 GuildMgr::BossKilled(GBK_Encounters boss, uint32 guildid, uint32 mstime)
+{
+    if (!guildid)
+        return m_bosskill++;
+
+    bossrecord& br = m_bossrecords[uint32(boss)];
+    if (mstime < br.record)
+    {
+        std::string message = "New server record: " + msToTimeString(mstime) + " (last record: "
+            + msToTimeString(br.record) + ") for boss " + br.name
+            + " by guild <|cffffffff" + GetGuildNameById(guildid) + "|r>";
+
+        sLog.outLog(LOG_SERVER_RECORDS, "%s", message.c_str());
+        sWorld.SendServerMessage(SERVER_MSG_STRING, message.c_str());
+    }
+
+    uint32 points = 10;
+    RealmDataDatabase.PExecute("UPDATE guild SET CurrentPoints = CurrentPoints + %u WHERE guildid = %u", points, guildid);
+
+    return m_bosskill++;
 }
 
 
@@ -210,5 +216,4 @@ void GuildMgr::SaveGuildAnnCooldown(uint32 guild_id)
 {
     time_t tmpTime = time_t(time(NULL) + sWorld.getConfig(CONFIG_GUILD_ANN_COOLDOWN));
     m_guildCooldownTimes[guild_id] = tmpTime;
-    RealmDataDatabase.PExecute("REPLACE INTO guild_announce_cooldown VALUES ('%u', '" UI64FMTD "')", guild_id, uint64(tmpTime));
 }

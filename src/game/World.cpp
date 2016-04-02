@@ -93,6 +93,7 @@ World::World()
     m_maxActiveSessionCount = 0;
     m_maxQueuedSessionCount = 0;
     m_NextDailyQuestReset = 0;
+    m_NextWeekReset = 0;
     m_scheduledScripts = 0;
 
     m_defaultDbcLocale = LOCALE_enUS;
@@ -1806,6 +1807,14 @@ void World::Update(uint32 diff)
     //cleanup unused GridMap objects as well as VMaps
     sTerrainMgr.Update(diff);
     diffRecorder.RecordTimeFor("Terrain manager", 40);
+
+    // raid week has passed (wednesday 7am)
+    if (m_NextWeekReset && time(NULL) > m_NextWeekReset)
+    {
+        sGuildMgr.UpdateWeek();
+        m_NextWeekReset += 7*DAY;
+        RealmDataDatabase.PExecute("INSERT INTO saved_variables (NextWeekReset) VALUES ('" UI64FMTD "')", m_NextWeekReset);
+    }
 }
 
 void World::UpdateSessions(const uint32 & diff)
@@ -2526,6 +2535,15 @@ void World::InitDailyQuestResetTime()
         // plan next reset time
         m_NextDailyQuestReset = (curTime >= curDayResetTime) ? curDayResetTime + DAY : curDayResetTime;
     }
+
+    QueryResultAutoPtr result = RealmDataDatabase.Query("SELECT NextWeekReset FROM saved_variables");
+    if (!result)
+    {
+        sLog.outString("cannot get NextWeekReset value from saved_variables");
+        m_NextWeekReset = 0;
+    }
+    else
+        m_NextWeekReset = (*result)[0].GetUInt64();
 }
 
 void World::UpdateRequiredPermissions()
