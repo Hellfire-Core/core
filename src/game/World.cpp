@@ -2536,7 +2536,7 @@ void World::InitDailyQuestResetTime()
         m_NextDailyQuestReset = (curTime >= curDayResetTime) ? curDayResetTime + DAY : curDayResetTime;
     }
 
-    QueryResultAutoPtr result = RealmDataDatabase.Query("SELECT NextWeekReset FROM saved_variables");
+    result = RealmDataDatabase.Query("SELECT NextWeekReset FROM saved_variables");
     if (!result)
     {
         sLog.outString("cannot get NextWeekReset value from saved_variables");
