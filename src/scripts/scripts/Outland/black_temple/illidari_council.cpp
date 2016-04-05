@@ -816,13 +816,14 @@ struct boss_veras_darkshadowAI : public illidari_council_baseAI
         m_vanishTimer.Reset(urand(15000, 25000));
         m_checkTimer.Reset(1000);
         m_sneakTimer.Reset(0);
+        me->RemoveAurasDueToSpell(SPELL_SNEAK);
     }
 
     void OnAuraRemove(Aura* aur, bool stackRemove)
     {
         if (aur->GetId() == SPELL_VANISH)
         {
-            ForceSpellCast(me, SPELL_SNEAK, INTERRUPT_AND_CAST_INSTANTLY);
+            ForceSpellCast(me, SPELL_SNEAK, INTERRUPT_AND_CAST_INSTANTLY, true);
             m_sneakTimer.Reset(2000);
             me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_STUN, false);
             DoResetThreat();
@@ -893,7 +894,7 @@ struct boss_veras_darkshadowAI : public illidari_council_baseAI
         }
         
 
-        if (me->HasAura(SPELL_VANISH, 1) || me->HasAura(SPELL_SNEAK, 0))
+        if (me->HasAura(SPELL_VANISH) || me->HasAura(SPELL_SNEAK))
             return;
 
         DoMeleeAttackIfReady();
