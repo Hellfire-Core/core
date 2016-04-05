@@ -11132,6 +11132,8 @@ uint32 createProcExtendMask(SpellDamageLog *damageInfo, SpellMissInfo missCondit
 
 void Unit::ProcDamageAndSpellfor (bool isVictim, Unit * pTarget, uint32 procFlag, uint32 procExtra, WeaponAttackType attType, SpellEntry const * procSpell, uint32 damage)
 {
+    SendCombatStats(1 << COMBAT_STATS_TEST, "pdasf;%u %u %u %u", pTarget,
+        procSpell ? procSpell->Id : 0, procFlag, procExtra, isVictim);
     ++m_procDeep;
     if (m_procDeep > 5)
     {
@@ -11231,7 +11233,7 @@ void Unit::ProcDamageAndSpellfor (bool isVictim, Unit * pTarget, uint32 procFlag
 
         procTriggered.push_back(ProcTriggeredData(spellProcEvent, itr->second));
         SendCombatStats(1 << COMBAT_STATS_PROC, "aura %u is procing from spell %u; %u %u %u", pTarget,
-            itr->first.first, procFlag, procExtra, isVictim);
+            itr->first.first, procSpell ? procSpell->Id : 0, procFlag, procExtra, isVictim);
     }
     // Handle effects proceed this time
     for (ProcTriggeredList::iterator i = procTriggered.begin(); i != procTriggered.end(); ++i)
