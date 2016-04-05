@@ -153,7 +153,8 @@ enum SpellIds
     /*** Other Spells (used by players, etc) ***/
     SPELL_VENGEANCE_OF_THE_BLUE_FLIGHT                  = 45839, // Possess the blue dragon from the orb to help the raid.
     SPELL_ENTROPIUS_BODY                                = 46819, // Visual for Entropius at the Epilogue
-    SPELL_RING_OF_BLUE_FLAMES                           = 45825  //Cast this spell when the go is activated
+    SPELL_RING_OF_BLUE_FLAMES                           = 45825, //Cast this spell when the go is activated
+    SPELL_POSSESS_DRAKE_IMMUNE                          = 45838  //
 };
 
 enum CreatureIds
@@ -273,7 +274,11 @@ bool GOUse_go_orb_of_the_blue_flight(Player *plr, GameObject* go)
         ScriptedInstance* pInstance = (go->GetInstanceData());
         float x, y, z, dx, dy, dz;
         Unit* dragon = go->SummonCreature(CREATURE_POWER_OF_THE_BLUE_DRAGONFLIGHT, plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), 0.0f, TEMPSUMMON_TIMED_DESPAWN, 121000);
-        if (dragon) plr->CastSpell(dragon, SPELL_VENGEANCE_OF_THE_BLUE_FLIGHT, true);
+        if (dragon)
+        {
+            plr->CastSpell(dragon, SPELL_VENGEANCE_OF_THE_BLUE_FLIGHT, true);
+            plr->CastSpell(plr, SPELL_POSSESS_DRAKE_IMMUNE, true);
+        }
         go->SetUInt32Value(GAMEOBJECT_FACTION, 0);
         Unit* Kalec = ((Creature*)Unit::GetUnit(*plr, pInstance->GetData64(DATA_KALECGOS_KJ)));
 
@@ -1235,21 +1240,13 @@ struct mob_volatile_felfire_fiendAI : public ScriptedAI
             WaitTimer = 0;
             me->SetReactState(REACT_AGGRESSIVE);
             DoZoneInCombat(100.0f);
-        }
-
-        if ((WaitTimer.GetInterval() && !WaitTimer.Passed()) || !UpdateVictim())
-            return;
-
-
-        if (!LockedTarget)
-        {
-            Unit* random = SelectUnit(SELECT_TARGET_RANDOM, 0, 28.0f, true, false);
+            Unit* random = SelectUnit(SELECT_TARGET_RANDOM, 0, 28.0f, true);
             if (random)
-            {
-                me->AddThreat(random, 10000.0f);
-                LockedTarget = true;
-            }
+                AttackStart(random);
         }
+
+        if (!WaitTimer.Passed())
+            return;
 
         if (ExplodeTimer.Expired(diff) || me->GetDistance(me->getVictim()) < 9.0f) // Explode if it's close enough to it's target
         {
