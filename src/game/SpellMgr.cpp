@@ -1998,6 +1998,9 @@ bool SpellMgr::IsSpecialNoStackCase(SpellEntry const *spellInfo_1, SpellEntry co
             return true;
     }
 
+    if (spellInfo_1->Id == 45848 && (spellInfo_2->Id == 45737 || spellInfo_2->Id == 45641))
+        return true; // shield of the blue removes fire bloom and flame dart
+
     if (recur)
         return SpellMgr::IsSpecialNoStackCase(spellInfo_2, spellInfo_1, sameCaster, false);
 
