@@ -290,29 +290,24 @@ void GBK_handler::StopCombat(GBK_Encounters encounter, bool win)
                 break;
             }
         }
-        if (guild_id)
+
+        uint32 kill_id = sGuildMgr.BossKilled(encounter, guild_id, WorldTimer::getMSTimeDiffToNow(m_timer));
+        RealmDataDatabase.BeginTransaction();
+        RealmDataDatabase.DirectPExecute("INSERT INTO boss_fights VALUES (%u,%u,%u,%u,%u,SYSDATE())",
+            kill_id, uint32(m_encounter), m_map->GetInstanceId(), guild_id, WorldTimer::getMSTimeDiffToNow(m_timer));
+        for (Map::PlayerList::const_iterator i = list.begin(); i != list.end(); ++i)
         {
-            uint32 kill_id = sGuildMgr.BossKilled(encounter, guild_id, m_timer);
-            RealmDataDatabase.BeginTransaction();
-            RealmDataDatabase.DirectPExecute("INSERT INTO boss_fights VALUES (%u,%u,%u,%u,%u,SYSDATE())",
-                kill_id, uint32(m_encounter), m_map->GetInstanceId(), guild_id, WorldTimer::getMSTimeDiffToNow(m_timer));
-            for (Map::PlayerList::const_iterator i = list.begin(); i != list.end(); ++i)
+            if (Player* plr = i->getSource())
             {
-                if (Player* plr = i->getSource())
-                {
-                    if (plr->GetGuildId() == guild_id)
-                    {
-                        RealmDataDatabase.PExecute("INSERT INTO boss_fights_detailed VALUES (%u,%u,%u,%u,%u)",
-                            kill_id, plr->GetGUIDLow(), stats[plr->GetGUIDLow()].damage,
-                            stats[plr->GetGUIDLow()].healing, stats[plr->GetGUIDLow()].deaths);
-                    }
-                }
+                RealmDataDatabase.PExecute("INSERT INTO boss_fights_detailed VALUES (%u,%u,%u,%u,%u)",
+                    kill_id, plr->GetGUIDLow(), stats[plr->GetGUIDLow()].damage,
+                    stats[plr->GetGUIDLow()].healing, stats[plr->GetGUIDLow()].deaths);
             }
-            RealmDataDatabase.PExecute("INSERT INTO boss_fights_loot "
-                "(SELECT \"%u\", itemId, SUM(itemCount) FROM group_saved_loot WHERE instanceId = %u GROUP BY itemId);",
-                kill_id, m_map->GetInstanceId());
-            RealmDataDatabase.CommitTransaction();
         }
+        RealmDataDatabase.PExecute("INSERT INTO boss_fights_loot "
+            "(SELECT \"%u\", itemId, SUM(itemCount) FROM group_saved_loot WHERE instanceId = %u GROUP BY itemId);",
+            kill_id, m_map->GetInstanceId());
+        RealmDataDatabase.CommitTransaction();
     }
 
     if (m_encounter == encounter) //do not reset timers when some boss is just spamming not_started

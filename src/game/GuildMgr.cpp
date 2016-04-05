@@ -193,6 +193,7 @@ uint32 GuildMgr::BossKilled(uint32 boss, uint32 guildid, uint32 mstime)
 
         sLog.outLog(LOG_SERVER_RECORDS, "%s", message.c_str());
         sWorld.SendServerMessage(SERVER_MSG_STRING, message.c_str());
+        br.record = mstime;
     }
 
     uint32 points = 10;
