@@ -153,8 +153,9 @@ enum SpellIds
     /*** Other Spells (used by players, etc) ***/
     SPELL_VENGEANCE_OF_THE_BLUE_FLIGHT                  = 45839, // Possess the blue dragon from the orb to help the raid.
     SPELL_ENTROPIUS_BODY                                = 46819, // Visual for Entropius at the Epilogue
-    SPELL_RING_OF_BLUE_FLAMES                           = 45825, //Cast this spell when the go is activated
-    SPELL_POSSESS_DRAKE_IMMUNE                          = 45838  //
+    SPELL_RING_OF_BLUE_FLAMES                           = 45825, // Cast this spell when the go is activated
+    SPELL_POSSESS_DRAKE_IMMUNE                          = 45838, // Gives immunity to dragon controller
+    SPELL_KILL_DRAKES                                   = 46707, // Used on wipe to kill remaining drakes
 };
 
 enum CreatureIds
@@ -848,7 +849,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                         {
                             float x, y, z;
                             target->GetPosition(x, y, z);
-                            m_creature->SummonCreature(CREATURE_ARMAGEDDON_TARGET, x, y, z, 0, TEMPSUMMON_TIMED_DESPAWN, 15000);
+                            m_creature->SummonCreature(CREATURE_ARMAGEDDON_TARGET, x, y, z + 20, 0, TEMPSUMMON_TIMED_DESPAWN, 15000);
                         }
                         _Timer[TIMER_ARMAGEDDON] = 2000; // No, I'm not kidding
                     }
@@ -977,6 +978,7 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
         CheckDeceivers.Reset(1000);
         Summons.DespawnAll();
         me->SetReactState(REACT_AGGRESSIVE);
+        DoCastAOE(SPELL_KILL_DRAKES);
     }
 
     void EnterCombat(Unit* who)
@@ -1245,7 +1247,7 @@ struct mob_volatile_felfire_fiendAI : public ScriptedAI
                 AttackStart(random);
         }
 
-        if (!WaitTimer.Passed())
+        if (WaitTimer.GetTimeLeft())
             return;
 
         if (ExplodeTimer.Expired(diff) || me->GetDistance(me->getVictim()) < 9.0f) // Explode if it's close enough to it's target
@@ -1283,16 +1285,22 @@ struct mob_armageddonAI : public Scripted_NoMovementAI
             switch (Spell)
             {
                 case 0:
-                    DoCast(m_creature, SPELL_ARMAGEDDON_VISUAL, true);
+                    //DoCast(m_creature, SPELL_ARMAGEDDON_VISUAL, true);
+                    m_creature->CastSpell(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ() - 20,
+                        SPELL_ARMAGEDDON_VISUAL, true);
                     ++Spell;
                     break;
                 case 1:
-                    DoCast(m_creature, SPELL_ARMAGEDDON_VISUAL2, true);
-                    Timer = 9000;
+                    //DoCast(m_creature, SPELL_ARMAGEDDON_VISUAL2, true);
+                    m_creature->CastSpell(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ() - 20,
+                        SPELL_ARMAGEDDON_VISUAL2, true);
+                    Timer = 8000;
                     ++Spell;
                     break;
                 case 2:
-                    DoCast(m_creature, SPELL_ARMAGEDDON_TRIGGER, true);
+                    //DoCast(m_creature, SPELL_ARMAGEDDON_TRIGGER, true);
+                    m_creature->CastSpell(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ() - 20,
+                        SPELL_ARMAGEDDON_TRIGGER, true);
                     ++Spell;
                     Timer = 5000;
                     break;
@@ -1344,6 +1352,8 @@ struct mob_shield_orbAI : public ScriptedAI
     {
         c = ShieldOrbLocations[act][0];
         r = ShieldOrbLocations[act][1];
+        if (act == 0 || act == 2)
+            Clockwise = true;
     }
 
     void UpdateAI(const uint32 diff)
