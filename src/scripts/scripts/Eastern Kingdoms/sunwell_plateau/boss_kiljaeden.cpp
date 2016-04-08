@@ -849,7 +849,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                         {
                             float x, y, z;
                             target->GetPosition(x, y, z);
-                            m_creature->SummonCreature(CREATURE_ARMAGEDDON_TARGET, x, y, z + 20, 0, TEMPSUMMON_TIMED_DESPAWN, 15000);
+                            m_creature->SummonCreature(CREATURE_ARMAGEDDON_TARGET, x, y, z, 0, TEMPSUMMON_TIMED_DESPAWN, 15000);
                         }
                         _Timer[TIMER_ARMAGEDDON] = 2000; // No, I'm not kidding
                     }
@@ -1285,15 +1285,12 @@ struct mob_armageddonAI : public Scripted_NoMovementAI
             switch (Spell)
             {
                 case 0:
-                    //DoCast(m_creature, SPELL_ARMAGEDDON_VISUAL, true);
-                    m_creature->CastSpell(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ() - 20,
-                        SPELL_ARMAGEDDON_VISUAL, true);
+                    DoCast(m_creature, SPELL_ARMAGEDDON_VISUAL, true);
                     ++Spell;
                     break;
                 case 1:
-                    //DoCast(m_creature, SPELL_ARMAGEDDON_VISUAL2, true);
-                    m_creature->CastSpell(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ() - 20,
-                        SPELL_ARMAGEDDON_VISUAL2, true);
+                    DoCast(m_creature, SPELL_ARMAGEDDON_VISUAL2, true);
+                    me->Relocate(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ() + 20);
                     Timer = 8000;
                     ++Spell;
                     break;
@@ -1345,15 +1342,15 @@ struct mob_shield_orbAI : public ScriptedAI
         CheckTimer.Reset(1000);
         mx = ShieldOrbLocations[0][0];
         my = ShieldOrbLocations[0][1];
-        Clockwise = false;
+        Clockwise = true;
     }
 
     void DoAction(const int32 act)
     {
         c = ShieldOrbLocations[act][0];
         r = ShieldOrbLocations[act][1];
-        if (act == 0 || act == 2)
-            Clockwise = true;
+        if (act == 1 || act == 3)
+            Clockwise = false;
     }
 
     void UpdateAI(const uint32 diff)
@@ -1367,9 +1364,9 @@ struct mob_shield_orbAI : public ScriptedAI
             PointReached = false;
             m_creature->GetMotionMaster()->MovePoint(1, x, y, SHIELD_ORB_Z);
             if (Clockwise)
-                c -= M_PI / 50;
-            else
                 c += M_PI / 50;
+            else
+                c -= M_PI / 50;
 
             if (c > 2 * M_PI)
                 c -= 2 * M_PI;
