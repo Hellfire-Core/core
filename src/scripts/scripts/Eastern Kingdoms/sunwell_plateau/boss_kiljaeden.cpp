@@ -731,7 +731,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                         Unit* randomPlayer = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true);
                         if (randomPlayer)
                             AddSpellToCast(randomPlayer, SPELL_FIRE_BLOOM);
-                        _Timer[TIMER_FIRE_BLOOM] = (Phase == PHASE_SACRIFICE) ? 25000 : 20000; // 25 seconds in PHASE_SACRIFICE
+                        _Timer[TIMER_FIRE_BLOOM] = (Phase == PHASE_SACRIFICE) ? 25000 : urand(35000, 40000); // 25 seconds in PHASE_SACRIFICE
                         break;
                     }
                     case TIMER_SUMMON_SHILEDORB:
@@ -867,13 +867,13 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
             _Timer[TIMER_SOUL_FLAY].Delay(34000);
             _Timer[TIMER_FIRE_BLOOM].Reset(67000);
             _Timer[TIMER_LEGION_LIGHTNING].Reset(47000);
+            _Timer[TIMER_SUMMON_SHILEDORB].Reset(urand(45000, 60000));
             CastSinisterReflection();
 
             DoScriptText(SAY_KJ_PHASE3, m_creature);
             Phase = PHASE_DARKNESS;
             OrbActivated = false;
             ActiveTimers = 9;
-            _Timer[TIMER_SUMMON_SHILEDORB].Reset(urand(45000, 60000));
             SendDebug("Entering phase 3");
         }
 
@@ -885,11 +885,16 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
             _Timer[TIMER_SOUL_FLAY].Delay(34000);
             _Timer[TIMER_FIRE_BLOOM].Reset(67000);
             _Timer[TIMER_LEGION_LIGHTNING].Reset(47000);
+            _Timer[TIMER_SUMMON_SHILEDORB].Reset(urand(45000, 60000));
+            _Timer[TIMER_SHADOW_SPIKE].Reset(4000);
+            _Timer[TIMER_DARKNESS].Reset(45000);
+            _Timer[TIMER_ORBS_EMPOWER].Reset(35000);
             CastSinisterReflection();
 
             DoScriptText(SAY_KJ_PHASE4, m_creature);
             Phase = PHASE_ARMAGEDDON;
             OrbActivated = false;
+            TimerIsDeactiveted[TIMER_ORBS_EMPOWER] = false;
             ActiveTimers = 10;
             SendDebug("Entering phase 4");
         }
@@ -902,6 +907,9 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
             _Timer[TIMER_SOUL_FLAY].Delay(34000);
             _Timer[TIMER_FIRE_BLOOM].Reset(67000);
             _Timer[TIMER_LEGION_LIGHTNING].Reset(47000);
+            _Timer[TIMER_SHADOW_SPIKE].Reset(4000);
+            _Timer[TIMER_DARKNESS].Reset(45000);
+            _Timer[TIMER_ORBS_EMPOWER].Reset(35000);
             CastSinisterReflection();
 
             Phase = PHASE_SACRIFICE;
@@ -909,6 +917,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
             if (Anveena)
                 Anveena->CastSpell(m_creature, SPELL_SACRIFICE_OF_ANVEENA, false);
             OrbActivated = false;
+            TimerIsDeactiveted[TIMER_ORBS_EMPOWER] = false;
             ChangeTimers(true, 10000);// He shouldn't cast spells for ~10 seconds after Anveena's sacrifice. This will be done within Anveena's script
             m_creature->addUnitState(UNIT_STAT_STUNNED);
             SendDebug("Entering phase 5");

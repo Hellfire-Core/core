@@ -2970,6 +2970,9 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 38112: // vashj shield generator
                     spellInfo->Attributes |= SPELL_ATTR_UNAFFECTED_BY_INVULNERABILITY;
                     break;
+                case 45915: // KJ armageddon damage
+                    spellInfo->EffectImplicitTargetA[0] = TARGET_DEST_DEST;
+                    break;
                 }
                 if (spellInfo->SpellIconID == 184 && spellInfo->Attributes == 4259840)
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
