@@ -1258,6 +1258,14 @@ struct mob_volatile_felfire_fiendAI : public ScriptedAI
 
         if (WaitTimer.GetTimeLeft())
             return;
+        
+        if (!me->getVictim())
+        {
+            Unit* random = SelectUnit(SELECT_TARGET_RANDOM, 0, 28.0f, true);
+            if (random)
+                AttackStart(random);
+            return;
+        }
 
         if (ExplodeTimer.Expired(diff) || me->GetDistance(me->getVictim()) < 9.0f) // Explode if it's close enough to it's target
         {
