@@ -2972,6 +2972,7 @@ void SpellMgr::LoadSpellCustomAttr()
                     break;
                 case 45915: // KJ armageddon damage
                     spellInfo->EffectImplicitTargetA[0] = TARGET_DEST_DEST;
+                    spellInfo->EffectImplicitTargetB[0] = 0;
                     break;
                 }
                 if (spellInfo->SpellIconID == 184 && spellInfo->Attributes == 4259840)
