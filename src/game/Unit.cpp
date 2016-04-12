@@ -9508,9 +9508,8 @@ bool Unit::canAttack(Unit const* target, bool force, bool alsostealth) const
     // feign dead case
     if (target->HasFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_FEIGN_DEATH))
     {
-        if ((GetTypeId() != TYPEID_PLAYER && !GetOwner()) || (GetOwner() && GetOwner()->GetTypeId() != TYPEID_PLAYER))
+        if (!GetCharmerOrOwnerPlayerOrPlayerItself() && !isGuard() && !IsContestedGuard())
             return false;
-        // if this == player or owner == player check other conditions
     }
 
     if ((m_invisibilityMask || target->m_invisibilityMask) && !canDetectInvisibilityOf(target, this))
@@ -11132,8 +11131,6 @@ uint32 createProcExtendMask(SpellDamageLog *damageInfo, SpellMissInfo missCondit
 
 void Unit::ProcDamageAndSpellfor (bool isVictim, Unit * pTarget, uint32 procFlag, uint32 procExtra, WeaponAttackType attType, SpellEntry const * procSpell, uint32 damage)
 {
-    SendCombatStats(1 << COMBAT_STATS_TEST, "pdasf;%u %u %u %u", pTarget,
-        procSpell ? procSpell->Id : 0, procFlag, procExtra, isVictim);
     ++m_procDeep;
     if (m_procDeep > 5)
     {
@@ -12005,7 +12002,8 @@ bool Unit::IsTriggeredAtSpellProcEvent(Aura* aura, SpellEntry const* procSpell, 
     // Continue if no trigger exist
     if (!EventProcFlag)
         return false;
-
+    if (spellProto->Id == 22620 || spellProto->Id == 22618)
+        SendCombatStats(1 << COMBAT_STATS_TEST, "itaspe:%u,%u,%u,%u,%u", NULL, spellProto->Id, EventProcFlag, procFlag, procExtra, active);
     // Check spellProcEvent data requirements
     if (!SpellMgr::IsSpellProcEventCanTriggeredBy(spellProcEvent, EventProcFlag, procSpell, procFlag, procExtra, active))
         return false;

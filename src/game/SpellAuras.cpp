@@ -4087,6 +4087,7 @@ void Aura::HandleFeignDeath(bool apply, bool Real)
 
             if (modHitChance <  1) modHitChance =  1;
             if (modHitChance > 99) modHitChance = 99;
+            if (target->IsContestedGuard() || target->isGuard()) modHitChance = -1; // 100% resist
 
             uint32 rand = urand(0,100);
             if(rand <= modHitChance) // hit
