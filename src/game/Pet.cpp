@@ -32,6 +32,7 @@
 #include "CreatureAI.h"
 #include "Unit.h"
 #include "Util.h"
+#include "CooldownMgr.h"
 
 char const* petTypeSuffix[MAX_PET_TYPE] =
 {
@@ -1876,7 +1877,7 @@ void Pet::ProhibitSpellSchool(SpellSchoolMask idSchoolMask, uint32 unTimeMs)
         {
             data << unSpellId;
             data << unTimeMs;                               // in m.secs
-            //owner->AddSpellCooldown(unSpellId, 0, curTime + unTimeMs/1000);
+            owner->GetCooldownMgr().AddSpellCooldown(unSpellId, unTimeMs);
         }
     }
     owner->SendPacketToSelf(&data);
