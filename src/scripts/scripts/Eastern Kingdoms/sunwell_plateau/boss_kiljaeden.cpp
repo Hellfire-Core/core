@@ -541,7 +541,8 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
         IsCastingSpikes = false;
         SpikesLeft      = 9;
 
-        ChangeTimers(false, 0);
+        for (uint8 i = 0; i < 10; ++i)
+            TimerIsDeactiveted[i] = false;
     }
 
     void MoveInLineOfSight(Unit* who)
@@ -564,23 +565,6 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
 
     void SpellHitTarget(Unit* target, const SpellEntry* spell)
     {    }
-
-    void ChangeTimers(bool status, uint32 WTimer)
-    {
-        SendDebug("KJD: Change timers %u %u", status, WTimer);
-        for (uint8 i = 0; i < 10; ++i)
-            TimerIsDeactiveted[i] = status;
-        TimerIsDeactiveted[TIMER_KALEC_JOIN] = IsKalecJoined;
-
-        WaitTimer.Reset(WTimer); // if Wtimer -> sets it, if ==0 then disables it
-
-        if (OrbActivated)
-            TimerIsDeactiveted[TIMER_ORBS_EMPOWER] = true;
-        if (_Timer[TIMER_SHADOW_SPIKE].GetInterval() == 0)
-            TimerIsDeactiveted[TIMER_SHADOW_SPIKE] = true;
-        if (Phase == PHASE_SACRIFICE) 
-            TimerIsDeactiveted[TIMER_SUMMON_SHILEDORB] = true;
-    }
 
     void JustSummoned(Creature* summoned)
     {
@@ -679,9 +663,10 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
         if (Phase < PHASE_NORMAL || IsEmerging || !UpdateVictim())
             return;
 
-        if (WaitTimer.Expired(diff))
+        if (WaitTimer.GetTimeLeft())
         {
-            ChangeTimers(false, 0);
+            WaitTimer.Update(diff);
+            return;
         }
 
 
@@ -797,6 +782,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                     }
                     case TIMER_DARKNESS:
                     {
+                        ClearCastQueue();
                         // Begins to channel for 8 seconds, then deals 50'000 damage to all raid members.
                         if (!IsInDarkness)
                         {
@@ -804,8 +790,8 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                             me->InterruptNonMeleeSpells(true);
                             DoScriptText(EMOTE_KJ_DARKNESS, m_creature);
                             DoCast(m_creature, SPELL_DARKNESS_OF_A_THOUSAND_SOULS, false);
-                            ChangeTimers(true, 9000);
-                            _Timer[TIMER_DARKNESS] = 8750;
+                            WaitTimer.Reset(8000);
+                            _Timer[TIMER_DARKNESS] = 1;
                             TimerIsDeactiveted[TIMER_DARKNESS] = false;
                             if (Phase == PHASE_SACRIFICE)
                                 TimerIsDeactiveted[TIMER_ARMAGEDDON] = false;
@@ -819,9 +805,9 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
 
                             DoScriptText(RAND(SAY_KJ_DARKNESS1, SAY_KJ_DARKNESS2, SAY_KJ_DARKNESS3), m_creature);
                             SendDebug("Casting aoe darkness");
+                            _Timer[TIMER_SOUL_FLAY].Delay(3000);
                         }
-                        _Timer[TIMER_SOUL_FLAY].Reset(9000);
-                        ClearCastQueue();
+                        
                         break;
                     }
                     case TIMER_ORBS_EMPOWER:
@@ -918,7 +904,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                 Anveena->CastSpell(m_creature, SPELL_SACRIFICE_OF_ANVEENA, false);
             OrbActivated = false;
             TimerIsDeactiveted[TIMER_ORBS_EMPOWER] = false;
-            ChangeTimers(true, 10000);// He shouldn't cast spells for ~10 seconds after Anveena's sacrifice. This will be done within Anveena's script
+            WaitTimer.Reset(10000);// He shouldn't cast spells for ~10 seconds after Anveena's sacrifice. This will be done within Anveena's script
             m_creature->addUnitState(UNIT_STAT_STUNNED);
             SendDebug("Entering phase 5");
         }
@@ -1267,7 +1253,7 @@ struct mob_volatile_felfire_fiendAI : public ScriptedAI
             return;
         }
 
-        if (ExplodeTimer.Expired(diff) || me->GetDistance(me->getVictim()) < 9.0f) // Explode if it's close enough to it's target
+        if (ExplodeTimer.Expired(diff) || me->GetDistance(me->getVictim()) < 5.0f) // Explode if it's close enough to it's target
         {
             DoCast(m_creature->getVictim(), SPELL_FELFIRE_FISSION, true);
             me->DisappearAndDie();
@@ -1408,12 +1394,6 @@ struct mob_shield_orbAI : public ScriptedAI
         PointReached = true;
     }
 
-    void GetDebugInfo(ChatHandler& reader)
-    {
-        std::ostringstream str;
-        str << "shield orb" << c << " " << r << " " << mx << " " << my << " " << x << " " << y;
-        reader.SendSysMessage(str.str().c_str());
-    }
 };
 
 CreatureAI* GetAI_mob_shield_orb(Creature *_Creature)
@@ -1567,7 +1547,7 @@ struct mob_sinster_reflectionAI : public ScriptedAI
                     DoCast(m_creature->getVictim(), SPELL_SR_HOLY_SMITE, false);
                     _Timer[1] = 5000;
                 }
-                if (_Timer[2].Expired(diff))
+                if (_Timer[2].Expired(diff) && (me->GetHealth()*2 < me->GetMaxHealth()))
                 {
                     DoCast(m_creature, SPELL_SR_RENEW, false);
                     _Timer[2] = 7000;
