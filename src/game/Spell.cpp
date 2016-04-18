@@ -3851,7 +3851,7 @@ SpellCastResult Spell::CheckCast(bool strict)
             return SPELL_FAILED_NOT_READY;
     }
 
-    if (!IsTriggeredSpell && m_caster->ToCreature())
+    if (!IsTriggeredSpell() && m_caster->ToCreature())
     {
         if (m_caster->ToCreature()->isSchoolProhibited((SpellSchoolMask)GetSpellEntry()->SchoolMask))
             return SPELL_FAILED_NOT_READY;
