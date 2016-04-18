@@ -211,7 +211,7 @@ bool InstanceSave::UnloadIfEmpty()
         return true;
 }
 
-void InstanceSaveManager::_DelHelper(DatabaseType &db, const char *fields, const char *table, const char *queryTail, bool distinct,...)
+void InstanceSaveManager::_DelHelper(DatabaseType &db, const char *fields, const char *table, const char *queryTail, ...)
 {
     Tokens fieldTokens = StrSplit(fields, ", ");
     ASSERT(fieldTokens.size() != 0);
@@ -223,10 +223,7 @@ void InstanceSaveManager::_DelHelper(DatabaseType &db, const char *fields, const
     va_end(ap);
 
     QueryResultAutoPtr result;
-    if (distinct)
-        result = db.PQuery("SELECT DISTINCT %s FROM %s %s", fields, table, szQueryTail);
-    else
-        result = db.PQuery("SELECT %s FROM %s %s", fields, table, szQueryTail);
+    result = db.PQuery("SELECT %s FROM %s %s", fields, table, szQueryTail);
 
     if (result)
     {
@@ -259,7 +256,7 @@ void InstanceSaveManager::CleanupInstances()
     // clean character/group - instance binds with invalid group/characters
     _DelHelper(RealmDataDatabase, "character_instance.guid, instance", "character_instance", "LEFT JOIN characters ON character_instance.guid = characters.guid WHERE characters.guid IS NULL");
     _DelHelper(RealmDataDatabase, "group_instance.leaderGuid, instance", "group_instance", "LEFT JOIN characters ON group_instance.leaderGuid = characters.guid LEFT JOIN groups ON group_instance.leaderGuid = groups.leaderGuid WHERE characters.guid IS NULL OR groups.leaderGuid IS NULL");
-    _DelHelper(RealmDataDatabase, "group_saved_loot.instanceId", "group_saved_loot", "LEFT JOIN instance ON group_saved_loot.instanceId = instance.id WHERE instance.id IS NULL", true);
+    _DelHelper(RealmDataDatabase, "group_saved_loot.instanceId", "group_saved_loot", "LEFT JOIN instance ON group_saved_loot.instanceId = instance.id WHERE instance.id IS NULL");
 
     // clean instances that do not have any players or groups bound to them
     _DelHelper(RealmDataDatabase, "id, map, difficulty", "instance", "LEFT JOIN character_instance ON character_instance.instance = id LEFT JOIN group_instance ON group_instance.instance = id WHERE character_instance.instance IS NULL AND group_instance.instance IS NULL");
