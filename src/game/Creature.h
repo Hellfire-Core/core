@@ -489,6 +489,9 @@ class HELLGROUND_IMPORT_EXPORT Creature : public Unit
                                                             // redefine Unit::IsImmunedToSpell
         bool IsImmunedToSpellEffect(uint32 effect, uint32 mechanic) const;
                                                             // redefine Unit::IsImmunedToSpellEffect
+        void ProhibitSpellSchool(SpellSchoolMask idSchoolMask, uint32 unTimeMs);
+        bool isSchoolProhibited(SpellSchoolMask idSchoolMask) const;
+
         bool isElite() const
         {
             if (isPet())
@@ -784,6 +787,7 @@ class HELLGROUND_IMPORT_EXPORT Creature : public Unit
         bool m_tempSummon;
 
     private:
+        Countdown m_schoolCooldowns[MAX_SPELL_SCHOOL];
         //WaypointMovementGenerator vars
         uint32 m_waypointID;
         uint32 m_path_id;

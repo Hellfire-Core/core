@@ -632,6 +632,9 @@ void Creature::Update(uint32 update_diff, uint32 diff)
     }
     else
         m_aiReinitializeCheckTimer -= update_diff;
+
+    for (uint8 i = SPELL_SCHOOL_NORMAL; i < MAX_SPELL_SCHOOL; i++)
+        m_schoolCooldowns[i].Update(diff);
 }
 
 void Creature::RegenerateMana()
@@ -1954,6 +1957,27 @@ bool Creature::IsImmunedToSpellEffect(uint32 effect, uint32 mechanic) const
         return true;
 
     return Unit::IsImmunedToSpellEffect(effect, mechanic);
+}
+
+void Creature::ProhibitSpellSchool(SpellSchoolMask idSchoolMask, uint32 unTimeMs)
+{
+    for (uint8 i = SPELL_SCHOOL_NORMAL; i < MAX_SPELL_SCHOOL; i++)
+    {
+        if (idSchoolMask & (1 << i) && m_schoolCooldowns[i].GetExpiry() < unTimeMs)
+            m_schoolCooldowns[i].Reset(unTimeMs);
+    }
+}
+
+bool Creature::isSchoolProhibited(SpellSchoolMask idSchoolMask) const
+{
+    if (idSchoolMask == SPELL_SCHOOL_MASK_NONE)
+        return false;
+    for (uint8 i = SPELL_SCHOOL_NORMAL; i < MAX_SPELL_SCHOOL; i++)
+    {
+        if (idSchoolMask & (1 << i) && !m_schoolCooldowns[i].Passed())
+            return true;
+    }
+    return false;
 }
 
 SpellEntry const *Creature::reachWithSpellAttack(Unit *pVictim)
