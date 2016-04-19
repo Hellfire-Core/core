@@ -498,8 +498,6 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
     /* Boolean */
     bool IsKalecJoined;
     bool IsInDarkness;
-    bool TimerIsDeactiveted[10];
-    bool OrbActivated;
     bool IsEmerging;
     bool IsCastingSpikes;
 
@@ -519,7 +517,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
         _Timer[TIMER_SHADOW_SPIKE].Reset(4000);
         _Timer[TIMER_FLAME_DART].Reset(urand(18000, 22000));
         _Timer[TIMER_DARKNESS].Reset(45000);
-        _Timer[TIMER_ORBS_EMPOWER].Reset(35000);
+        _Timer[TIMER_ORBS_EMPOWER].Reset(0);
 
         //Phase 4 Timer
         _Timer[TIMER_ARMAGEDDON].Reset(2000);
@@ -535,14 +533,10 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
 
         IsKalecJoined   = false;
         IsInDarkness    = false;
-        OrbActivated    = false;
         IsEmerging      = true;
 
         IsCastingSpikes = false;
         SpikesLeft      = 9;
-
-        for (uint8 i = 0; i < 10; ++i)
-            TimerIsDeactiveted[i] = false;
     }
 
     void MoveInLineOfSight(Unit* who)
@@ -672,7 +666,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
 
         for (uint8 t = 0; t < ActiveTimers; t++)
         {
-            if (!TimerIsDeactiveted[t] && _Timer[t].Expired(diff))
+            if (_Timer[t].Expired(diff))
             {
                 switch (t)
                 {
@@ -682,7 +676,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                         {
                             DoScriptText(SAY_KALECGOS_JOIN, Kalec);
                             IsKalecJoined = true;
-                            TimerIsDeactiveted[TIMER_KALEC_JOIN] = true;
+                            _Timer[TIMER_KALEC_JOIN] = 0;
                         }
                         break;
                     }
@@ -766,7 +760,6 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                             {
                                 SpikesLeft = 9;
                                 _Timer[TIMER_SHADOW_SPIKE] = 0;
-                                TimerIsDeactiveted[TIMER_SHADOW_SPIKE] = true; 
                                 IsCastingSpikes = false;
                                 _Timer[TIMER_DARKNESS].Reset(45000);
                             }
@@ -792,9 +785,6 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                             DoCast(m_creature, SPELL_DARKNESS_OF_A_THOUSAND_SOULS, false);
                             WaitTimer.Reset(8000);
                             _Timer[TIMER_DARKNESS] = 1;
-                            TimerIsDeactiveted[TIMER_DARKNESS] = false;
-                            if (Phase == PHASE_SACRIFICE)
-                                TimerIsDeactiveted[TIMER_ARMAGEDDON] = false;
                             IsInDarkness = true;
                         }
                         else
@@ -815,21 +805,15 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                         Creature* Kalec = Unit::GetCreature(*m_creature, pInstance->GetData64(DATA_KALECGOS_KJ));
                         if (Kalec)
                             ((boss_kalecgos_kjAI*)Kalec->AI())->EmpowerOrb(Phase == PHASE_SACRIFICE);
-                        SendDebug("Sending orbs empower");
 
-                        _Timer[TIMER_ORBS_EMPOWER] = (Phase == PHASE_SACRIFICE) ? 45000 : 35000;
-
-                        OrbActivated = true;
-                        TimerIsDeactiveted[TIMER_ORBS_EMPOWER] = true;
+                        _Timer[TIMER_ORBS_EMPOWER] = 0;
                         break; 
                     }
-                    /*$$$$$$$$$$$$$$$$$$$$$$$$$$$
-                             Phase 4
-                    $$$$$$$$$$$$$$$$$$$$$$$$$$$$*/
-
-
                     case TIMER_ARMAGEDDON:
                     {
+                        if (IsInDarkness && Phase != PHASE_SACRIFICE)
+                            break; // dont cast armageddon during DTS
+
                         Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true);
                         if (target)
                         {
@@ -837,9 +821,9 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                             target->GetPosition(x, y, z);
                             m_creature->SummonCreature(CREATURE_ARMAGEDDON_TARGET, x, y, z, 0, TEMPSUMMON_TIMED_DESPAWN, 15000);
                         }
-                        _Timer[TIMER_ARMAGEDDON] = 2000; // No, I'm not kidding
+                        _Timer[TIMER_ARMAGEDDON] = 2000;
+                        break;
                     }
-                    break;
                 }
             }
         }
@@ -854,11 +838,11 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
             _Timer[TIMER_FIRE_BLOOM].Reset(67000);
             _Timer[TIMER_LEGION_LIGHTNING].Reset(47000);
             _Timer[TIMER_SUMMON_SHILEDORB].Reset(urand(45000, 60000));
+            _Timer[TIMER_ORBS_EMPOWER].Reset(35000);
             CastSinisterReflection();
 
             DoScriptText(SAY_KJ_PHASE3, m_creature);
             Phase = PHASE_DARKNESS;
-            OrbActivated = false;
             ActiveTimers = 9;
             SendDebug("Entering phase 3");
         }
@@ -879,8 +863,6 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
 
             DoScriptText(SAY_KJ_PHASE4, m_creature);
             Phase = PHASE_ARMAGEDDON;
-            OrbActivated = false;
-            TimerIsDeactiveted[TIMER_ORBS_EMPOWER] = false;
             ActiveTimers = 10;
             SendDebug("Entering phase 4");
         }
@@ -902,8 +884,6 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
             Creature* Anveena = Unit::GetCreature((*m_creature), pInstance->GetData64(DATA_ANVEENA));
             if (Anveena)
                 Anveena->CastSpell(m_creature, SPELL_SACRIFICE_OF_ANVEENA, false);
-            OrbActivated = false;
-            TimerIsDeactiveted[TIMER_ORBS_EMPOWER] = false;
             WaitTimer.Reset(10000);// He shouldn't cast spells for ~10 seconds after Anveena's sacrifice. This will be done within Anveena's script
             m_creature->addUnitState(UNIT_STAT_STUNNED);
             SendDebug("Entering phase 5");
@@ -916,9 +896,9 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
     void GetDebugInfo(ChatHandler& reader)
     {
         std::ostringstream str;
-        str << "KJD Debugai, phase " << (int)Phase << "; OrbActivated " << (int)OrbActivated << "; ActiveTimers " << (int)ActiveTimers << "\n";
+        str << "KJD Debugai, phase " << (int)Phase << "; ActiveTimers " << (int)ActiveTimers << "\n";
         for (uint8 i = 0; i < 10; i++)
-            str << "Timer " << (int)i << " : " << (int)_Timer[i].GetTimeLeft() << " " << (int)TimerIsDeactiveted[i] << "\n";
+            str << "Timer " << (int)i << " : " << (int)_Timer[i].GetTimeLeft()  << "\n";
         str << "WaitTimer : " << (int)WaitTimer.GetTimeLeft();
         reader.SendSysMessage(str.str().c_str());
     }
@@ -1279,6 +1259,7 @@ struct mob_armageddonAI : public Scripted_NoMovementAI
         Spell = 0;
         Timer = 0;
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_ROTATE);
+        me->SetFloatValue(OBJECT_FIELD_SCALE_X, 4.0f);
     }
 
     void UpdateAI(const uint32 diff)
@@ -1293,13 +1274,13 @@ struct mob_armageddonAI : public Scripted_NoMovementAI
                     break;
                 case 1:
                     DoCast(m_creature, SPELL_ARMAGEDDON_VISUAL2, true);
-                    me->Relocate(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ() + 20);
+                    //me->Relocate(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ() + 20);
                     Timer = 8000;
                     ++Spell;
                     break;
                 case 2:
                     //DoCast(m_creature, SPELL_ARMAGEDDON_TRIGGER, true);
-                    m_creature->CastSpell(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ() - 20,
+                    m_creature->CastSpell(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(),
                         SPELL_ARMAGEDDON_TRIGGER, true);
                     ++Spell;
                     Timer = 5000;

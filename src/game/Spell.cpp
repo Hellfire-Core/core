@@ -754,7 +754,7 @@ void Spell::AddUnitTarget(Unit* pVictim, uint32 effIndex, bool redirected)
     {
         // calculate spell incoming interval
         // TODO: this is a hack
-        float dist = m_caster->GetDistance(pVictim->GetPositionX(), pVictim->GetPositionY(), pVictim->GetPositionZ());
+        float dist = sqrt(m_caster->GetDistanceSq(pVictim->GetPositionX(), pVictim->GetPositionY(), pVictim->GetPositionZ()));
 
         if (dist < 5.0f)
             dist = 5.0f;
