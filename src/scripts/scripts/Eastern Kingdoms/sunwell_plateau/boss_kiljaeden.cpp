@@ -231,8 +231,8 @@ float ShieldOrbLocations[4][2] =
 {
     {1698.900, 627.870},  //middle pont of Sunwell
     {(3.14f * 0.75f), 17.0f }, 
-    {(3.14f * 1.75f), 17.0f },
-    {(3.14f * 1.25f), 17.0f }
+    {(3.14f * 1.25f), 17.0f },
+    {(3.14f * 1.75f), 17.0f }
 };
 
 struct Speech
@@ -520,7 +520,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
         _Timer[TIMER_ORBS_EMPOWER].Reset(0);
 
         //Phase 4 Timer
-        _Timer[TIMER_ARMAGEDDON].Reset(2000);
+        _Timer[TIMER_ARMAGEDDON].Reset(10000);
 
         ActiveTimers = 5;
         WaitTimer.Reset(1);
@@ -821,7 +821,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                             target->GetPosition(x, y, z);
                             m_creature->SummonCreature(CREATURE_ARMAGEDDON_TARGET, x, y, z, 0, TEMPSUMMON_TIMED_DESPAWN, 15000);
                         }
-                        _Timer[TIMER_ARMAGEDDON] = 2000;
+                        _Timer[TIMER_ARMAGEDDON] = 3000;
                         break;
                     }
                 }
@@ -1217,7 +1217,7 @@ struct mob_volatile_felfire_fiendAI : public ScriptedAI
             WaitTimer = 0;
             me->SetReactState(REACT_AGGRESSIVE);
             DoZoneInCombat(100.0f);
-            Unit* random = SelectUnit(SELECT_TARGET_RANDOM, 0, 28.0f, true);
+            Unit* random = SelectUnit(SELECT_TARGET_RANDOM, 0, 100.0f, true);
             if (random)
                 AttackStart(random);
         }
@@ -1227,7 +1227,7 @@ struct mob_volatile_felfire_fiendAI : public ScriptedAI
         
         if (!me->getVictim())
         {
-            Unit* random = SelectUnit(SELECT_TARGET_RANDOM, 0, 28.0f, true);
+            Unit* random = SelectUnit(SELECT_TARGET_RANDOM, 0, 100.0f, true);
             if (random)
                 AttackStart(random);
             return;
