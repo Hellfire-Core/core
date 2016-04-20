@@ -29,7 +29,7 @@ class Guild;
 typedef UNORDERED_MAP< uint32, Guild * >    GuildMap;
 typedef std::vector< uint32 >               GuildBankTabPriceMap;
 typedef UNORDERED_MAP<uint32,time_t>        GuildCooldowns;
-struct bossrecord {uint32 record; std::string name; };
+struct bossrecord { uint32 record; std::string name; uint32 points; };
 
 class GuildMgr
 {

@@ -160,7 +160,7 @@ void GuildMgr::LoadGuilds()
     result = RealmDataDatabase.Query("SELECT max(kill_id) FROM boss_fights");
     if (result) m_bosskill = (*result)[0].GetUInt32() + 1;
 
-    result = RealmDataDatabase.Query("SELECT mob_id, boss_name, min(length) FROM boss_id_names JOIN boss_fights ON mob_id = boss_id GROUP BY mob_id");
+    result = RealmDataDatabase.Query("SELECT mob_id, boss_name, min(length), boss_points FROM boss_id_names JOIN boss_fights ON mob_id = boss_id GROUP BY mob_id");
     if (!result)
         return; // shouldnt happen in any way
     m_bossrecords.resize(GBK_TOTAL);
@@ -169,14 +169,16 @@ void GuildMgr::LoadGuilds()
         Field* fields = result->Fetch();
         m_bossrecords[fields[0].GetUInt32()].name = fields[1].GetCppString();
         m_bossrecords[fields[0].GetUInt32()].record = fields[2].GetUInt32();
+        m_bossrecords[fields[0].GetUInt32()].points = fields[3].GetUInt32();
     }
     while (result->NextRow());
 }
 
 void GuildMgr::UpdateWeek()
 {
-    RealmDataDatabase.Execute("UPDATE guild SET LastPoints = (LastPoints * 2 + CurrentPoints)/3");
+    RealmDataDatabase.Execute("UPDATE guild SET LastPoints = (LastPoints + CurrentPoints)/2");
     RealmDataDatabase.Execute("UPDATE guild SET CurrentPoints = 0");
+    RealmDataDatabase.Execute("UPDATE guild SET LastPoints = 0 WHERE LastPoints < 20");
 }
 
 uint32 GuildMgr::BossKilled(uint32 boss, uint32 guildid, uint32 mstime)
@@ -196,8 +198,7 @@ uint32 GuildMgr::BossKilled(uint32 boss, uint32 guildid, uint32 mstime)
         br.record = mstime;
     }
 
-    uint32 points = 10;
-    RealmDataDatabase.PExecute("UPDATE guild SET CurrentPoints = CurrentPoints + %u WHERE guildid = %u", points, guildid);
+    RealmDataDatabase.PExecute("UPDATE guild SET CurrentPoints = CurrentPoints + %u WHERE guildid = %u", br.points, guildid);
 
     return m_bosskill++;
 }
