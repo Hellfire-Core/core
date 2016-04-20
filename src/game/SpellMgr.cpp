@@ -2970,6 +2970,10 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 38112: // vashj shield generator
                     spellInfo->Attributes |= SPELL_ATTR_UNAFFECTED_BY_INVULNERABILITY;
                     break;
+                case 45839: // KJ drake control, no haste
+                case 45838:
+                    spellInfo->Attributes |= SPELL_ATTR_TRADESPELL;
+                    break;
                 }
                 if (spellInfo->SpellIconID == 184 && spellInfo->Attributes == 4259840)
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
