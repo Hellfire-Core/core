@@ -3426,7 +3426,7 @@ void Unit::InterruptSpell(uint32 spellType, bool withDelayed, bool withInstant)
             ToPlayer()->SendAutoRepeatCancel();
 
         if (spell->getState() != SPELL_STATE_FINISHED)
-            spell->cancel();
+            spell->cancel(SPELL_FAILED_INT_TRUE_INTERRUPT);
 
         m_currentSpells[spellType] = NULL;
         spell->SetReferencedFromCurrent(false);
