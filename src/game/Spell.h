@@ -360,7 +360,7 @@ class Spell
         ~Spell();
 
         void prepare(SpellCastTargets * targets, Aura* triggeredByAura = NULL);
-        void cancel();
+        void cancel(SpellCastResult reason);
         void update(uint32 difftime);
         void cast(bool skipCheck = false);
         void finish(bool ok = true);

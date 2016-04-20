@@ -884,6 +884,18 @@ enum SpellCastResult
     SPELL_FAILED_TARGET_LOCKED_TO_RAID_INSTANCE = 0xA7,
     SPELL_FAILED_UNKNOWN                        = 0xA8,
 
+    SPELL_FAILED_DEBUG_START                    = 0xB0,
+    SPELL_FAILED_INT_LOST_TARGET                = 0xB0,
+    SPELL_FAILED_INT_CASTER_MOVED               = 0xB1,
+    SPELL_FAILED_INT_DESTROY_SPELLEVENT         = 0xB2,
+    SPELL_FAILED_INT_BY_OTHER_CAST              = 0xB3,
+    SPELL_FAILED_INT_CHANNEL_RANGE              = 0xB4,
+    SPELL_FAILED_INT_ABORT_SPELLEVENT           = 0xB5,
+    SPELL_FAILED_INT_SILENCED                   = 0xB7,
+    SPELL_FAILED_INT_AURA_TICK                  = 0xB8,
+    SPELL_FAILED_INT_TRUE_INTERRUPT             = 0xB9,
+    SPELL_FAILED_INT_AURA_REMOVED               = 0xBA,
+    SPELL_FAILED_DEBUG_END                      = 0xC0,
     SPELL_CAST_OK                               = 0xFF      //custom value, don't must be send to client
 };
 

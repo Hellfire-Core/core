@@ -754,7 +754,7 @@ void Spell::AddUnitTarget(Unit* pVictim, uint32 effIndex, bool redirected)
     {
         // calculate spell incoming interval
         // TODO: this is a hack
-        float dist = sqrt(m_caster->GetDistanceSq(pVictim->GetPositionX(), pVictim->GetPositionY(), pVictim->GetPositionZ()));
+        float dist = m_caster->GetDistance(pVictim->GetPositionX(), pVictim->GetPositionY(), pVictim->GetPositionZ());
 
         if (dist < 5.0f)
             dist = 5.0f;
@@ -2454,7 +2454,7 @@ void Spell::prepare(SpellCastTargets * targets, Aura* triggeredByAura)
     }
 }
 
-void Spell::cancel()
+void Spell::cancel(SpellCastResult reason)
 {
     if (m_spellState == SPELL_STATE_FINISHED)
         return;
@@ -2470,7 +2470,7 @@ void Spell::cancel()
         case SPELL_STATE_DELAYED:
         {
             SendInterrupted(0);
-            SendCastResult(SPELL_FAILED_INTERRUPTED);
+            SendCastResult(reason);
             break;
         }
         case SPELL_STATE_CASTING:
@@ -2495,7 +2495,7 @@ void Spell::cancel()
             if (!SpellMgr::IsChanneledSpell(GetSpellEntry()))
             {
                 SendInterrupted(0);
-                SendCastResult(SPELL_FAILED_INTERRUPTED);
+                SendCastResult(reason);
             }
             break;
         }
@@ -2559,7 +2559,7 @@ void Spell::cast(bool skipCheck)
     // cancel at lost main target unit
     if (!m_targets.getUnitTarget() && m_targets.getUnitTargetGUID() && m_targets.getUnitTargetGUID() != m_caster->GetGUID())
     {
-        cancel();
+        cancel(SPELL_FAILED_INT_LOST_TARGET);
         SetExecutedCurrently(false);
         return;
     }
@@ -2977,7 +2977,7 @@ void Spell::update(uint32 difftime)
 
     if (m_targets.getUnitTargetGUID() && !m_targets.getUnitTarget())
     {
-        cancel();
+        cancel(SPELL_FAILED_INT_LOST_TARGET);
         return;
     }
 
@@ -2995,7 +2995,7 @@ void Spell::update(uint32 difftime)
             Position casterPos;
             m_caster->GetPosition(casterPos);
             if (m_cast != casterPos)
-                cancel();
+                cancel(SPELL_FAILED_INT_CASTER_MOVED);
         }
     }
 
@@ -3017,7 +3017,7 @@ void Spell::update(uint32 difftime)
                 {
                     // check if player has jumped before the channeling finished
                     if (m_caster->hasUnitState(UNIT_STAT_CASTING_NOT_MOVE) && m_caster->HasUnitMovementFlag(MOVEFLAG_FALLING))
-                        cancel();
+                        cancel(SPELL_FAILED_INT_CASTER_MOVED);
                 }
 
                 // check if there are alive targets left
@@ -3032,7 +3032,7 @@ void Spell::update(uint32 difftime)
                     float max_range = SpellMgr::GetSpellMaxRange(sSpellRangeStore.LookupEntry(GetSpellEntry()->rangeIndex));
 
                     if (!m_targets.getUnitTarget() || !m_caster->IsWithinDistInMap(m_targets.getUnitTarget(), max_range + 3.0))
-                        cancel();
+                        cancel(SPELL_FAILED_INTERRUPTED);
                 }
 
                 if (m_timer.Expired(difftime))
@@ -3169,6 +3169,9 @@ void Spell::SendCastResult(SpellCastResult result)
 
     if (((Player*)m_caster)->GetSession()->PlayerLoading())  // don't send cast results at loading time
         return;
+
+    if (result >= SPELL_FAILED_DEBUG_START && result <= SPELL_FAILED_DEBUG_END)
+        result = SPELL_FAILED_INTERRUPTED;
 
     if (result == SPELL_CAST_OK)
     {
@@ -5835,7 +5838,7 @@ SpellEvent::SpellEvent(Spell* spell) : BasicEvent()
 SpellEvent::~SpellEvent()
 {
     if (m_Spell->getState() != SPELL_STATE_FINISHED)
-        m_Spell->cancel();
+        m_Spell->cancel(SPELL_FAILED_INT_DESTROY_SPELLEVENT);
 
     if (m_Spell->IsDeletable())
     {
@@ -5883,11 +5886,11 @@ bool SpellEvent::Execute(uint64 e_time, uint32 p_time)
                     if (m_Spell->GetCaster()->IsNonMeleeSpellCast(false, true, true))
                     {
                         // another non-melee non-delayed spell is cast now, abort
-                        m_Spell->cancel();
+                        m_Spell->cancel(SPELL_FAILED_INT_BY_OTHER_CAST);
                     }
                     // Check if target of channeled spell still in range
                     else if (m_Spell->CheckRange(false))
-                        m_Spell->cancel();
+                        m_Spell->cancel(SPELL_FAILED_INT_CHANNEL_RANGE);
                     else
                     {
                         // do the action (pass spell to channeling state)
@@ -5936,7 +5939,7 @@ void SpellEvent::Abort(uint64 /*e_time*/)
 {
     // oops, the spell we try to do is aborted
     if (m_Spell->getState() != SPELL_STATE_FINISHED)
-        m_Spell->cancel();
+        m_Spell->cancel(SPELL_FAILED_INT_ABORT_SPELLEVENT);
 }
 
 bool SpellEvent::IsDeletable() const
