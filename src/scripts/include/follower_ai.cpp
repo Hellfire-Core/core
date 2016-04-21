@@ -45,7 +45,7 @@ void FollowerAI::AttackStart(Unit* pWho)
 {
     if (!pWho)
         return;
-
+    SendDebug("FollowerAI: attack start");
     if (me->Attack(pWho, true))
     {
         me->AddThreat(pWho, 0.0f);
@@ -134,6 +134,7 @@ void FollowerAI::JustDied(Unit* /*pKiller*/)
 {
     if (!HasFollowState(STATE_FOLLOW_INPROGRESS) || !m_uiLeaderGUID || !m_pQuestForFollow)
         return;
+    SendDebug("FollowerAI: just died");
 
     //TODO: need a better check for quests with time limit.
     if (Player* pPlayer = GetLeaderForFollower())
@@ -172,6 +173,7 @@ void FollowerAI::JustRespawned()
 
 void FollowerAI::EnterEvadeMode()
 {
+    SendDebug("FollowerAI: enter evade");
     me->RemoveAllAuras();
     me->DeleteThreatList();
     me->CombatStop(true);
@@ -184,12 +186,16 @@ void FollowerAI::EnterEvadeMode()
             float fPosX, fPosY, fPosZ;
             me->GetPosition(fPosX, fPosY, fPosZ);
             me->GetMotionMaster()->MovePoint(POINT_COMBAT_START, fPosX, fPosY, fPosZ);
+            SendDebug("FollowerAI: point combat start");
         }
     }
     else
     {
         if (me->hasUnitState(UNIT_STAT_CHASE))
+        {
             me->GetMotionMaster()->MoveTargetedHome();
+            SendDebug("FollowerAI: move targeted home");
+        }
     }
 
     Reset();
@@ -217,6 +223,7 @@ void FollowerAI::UpdateAI(const uint32 uiDiff)
 
                     RemoveFollowState(STATE_FOLLOW_RETURNING);
                     me->GetMotionMaster()->MoveFollow(pPlayer, PET_FOLLOW_DIST, PET_FOLLOW_ANGLE);
+                    SendDebug("FollowerAI: returning to follow");
                     return;
                 }
 
@@ -244,6 +251,7 @@ void FollowerAI::UpdateAI(const uint32 uiDiff)
             {
               //  sLog.outDebug("OSCR: FollowerAI failed because player/group was to far away or not found");
                 me->ForcedDespawn();
+                SendDebug("FollowerAI: out of range, forcing despawn");
                 return;
             }
 
@@ -271,6 +279,7 @@ void FollowerAI::MovementInform(uint32 uiMotionType, uint32 uiPointId)
 
     if (uiPointId == POINT_COMBAT_START)
     {
+        SendDebug("FollowerAI: movement inform point combat start");
         if (GetLeaderForFollower())
         {
             if (!HasFollowState(STATE_FOLLOW_PAUSED))
@@ -283,6 +292,7 @@ void FollowerAI::MovementInform(uint32 uiMotionType, uint32 uiPointId)
 
 void FollowerAI::StartFollow(Player* pLeader, uint32 uiFactionForFollower, const Quest* pQuest)
 {
+    SendDebug("FollowerAI: start follow");
     if (me->getVictim())
     {
         //sLog.outDebug("OSCR: FollowerAI attempt to StartFollow while in combat.");
@@ -347,6 +357,7 @@ Player* FollowerAI::GetLeaderForFollower()
 
 void FollowerAI::SetFollowComplete(bool bWithEndEvent)
 {
+    SendDebug("FollowerAI: follow complete");
     if (me->hasUnitState(UNIT_STAT_FOLLOW))
     {
         me->clearUnitState(UNIT_STAT_FOLLOW);
@@ -367,6 +378,7 @@ void FollowerAI::SetFollowComplete(bool bWithEndEvent)
 
 void FollowerAI::SetFollowPaused(bool bPaused)
 {
+    SendDebug("FollowerAI: follow paused");
     if (!HasFollowState(STATE_FOLLOW_INPROGRESS) || HasFollowState(STATE_FOLLOW_COMPLETE))
         return;
 
