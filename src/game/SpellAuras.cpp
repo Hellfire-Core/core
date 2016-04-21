@@ -2386,7 +2386,7 @@ void Aura::TriggerSpell()
                 Hellground::NearestCreatureEntryWithLiveStateInObjectRangeCheck u_check(*caster, 30598, true, 100, false);
                 Hellground::ObjectLastSearcher<Creature, Hellground::NearestCreatureEntryWithLiveStateInObjectRangeCheck> searcher(p_Creature, u_check);
                 Cell::VisitAllObjects(caster, searcher, 100);
-                m_target->CastSpell(p_Creature->GetPositionX(), p_Creature->GetPositionY(), p_Creature->GetPositionZ(), triggeredSpellEntry, true, 0, this, originalCasterGUID);
+                m_target->CastSpell(p_Creature->GetPositionX(), p_Creature->GetPositionY(), p_Creature->GetPositionZ(), triggeredSpellEntry->Id, true, 0, this, originalCasterGUID);
                 return;
             }
         }
