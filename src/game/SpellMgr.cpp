@@ -2967,6 +2967,9 @@ void SpellMgr::LoadSpellCustomAttr()
                     spellInfo->EffectImplicitTargetB[0] = TARGET_UNIT_AREA_ENEMY_DST;
                     spellInfo->EffectImplicitTargetB[1] = TARGET_UNIT_AREA_ENEMY_DST;
                     break;
+                case 46589:
+                    spellInfo->EffectImplicitTargetA[0] = TARGET_DST_NEARBY_ENTRY;
+                    break;
                 case 38112: // vashj shield generator
                     spellInfo->Attributes |= SPELL_ATTR_UNAFFECTED_BY_INVULNERABILITY;
                     break;
