@@ -4467,6 +4467,8 @@ bool ChatHandler::HandleListAurasCommand (const char* args)
     int i = 0;
     if (id && id < TOTAL_AURAS)
         i = id;
+    else if (id)
+        return true;
 
     for (; i < TOTAL_AURAS; i++)
     {
