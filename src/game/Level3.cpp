@@ -4420,7 +4420,7 @@ bool ChatHandler::HandleTeleDelCommand(const char * args)
     return true;
 }
 
-bool ChatHandler::HandleListAurasCommand (const char * /*args*/)
+bool ChatHandler::HandleListAurasCommand (const char* args)
 {
     Unit *unit = getSelectedUnit();
     if (!unit)
@@ -4429,7 +4429,7 @@ bool ChatHandler::HandleListAurasCommand (const char * /*args*/)
         SetSentErrorMessage(true);
         return false;
     }
-
+    uint32 id = atoi(args);
     char const* talentStr = GetHellgroundString(LANG_TALENT);
     char const* passiveStr = GetHellgroundString(LANG_PASSIVE);
 
@@ -4437,6 +4437,8 @@ bool ChatHandler::HandleListAurasCommand (const char * /*args*/)
     PSendSysMessage(LANG_COMMAND_TARGET_LISTAURAS, uAuras.size());
     for (Unit::AuraMap::const_iterator itr = uAuras.begin(); itr != uAuras.end(); ++itr)
     {
+        if (id && itr->first.first != id)
+            continue;
         bool talent = GetTalentSpellCost(itr->second->GetId()) > 0;
 
         char const* name = itr->second->GetSpellProto()->SpellName[m_session->GetSessionDbcLocale()];
@@ -4461,7 +4463,12 @@ bool ChatHandler::HandleListAurasCommand (const char * /*args*/)
                 IS_PLAYER_GUID(itr->second->GetCasterGUID()) ? "player" : "creature",GUID_LOPART(itr->second->GetCasterGUID()));
         }
     }
-    for (int i = 0; i < TOTAL_AURAS; i++)
+
+    int i = 0;
+    if (id && id < TOTAL_AURAS)
+        i = id;
+
+    for (; i < TOTAL_AURAS; i++)
     {
         Unit::AuraList const& uAuraList = unit->GetAurasByType(AuraType(i));
         if (uAuraList.empty()) continue;
@@ -4488,6 +4495,7 @@ bool ChatHandler::HandleListAurasCommand (const char * /*args*/)
                     IS_PLAYER_GUID((*itr)->GetCasterGUID()) ? "player" : "creature",GUID_LOPART((*itr)->GetCasterGUID()));
             }
         }
+        if (i == id) break;
     }
     return true;
 }
