@@ -44,6 +44,7 @@ void FollowerAI::AttackStart(Unit* pWho)
     if (me->Attack(pWho, true))
     {
         SendDebug("FollowerAI: attack start");
+        me->SetHomePosition(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), 0);
         me->AddThreat(pWho, 0.0f);
         me->SetInCombatWith(pWho);
         pWho->SetInCombatWith(me);

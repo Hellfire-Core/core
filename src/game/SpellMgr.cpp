@@ -1937,6 +1937,9 @@ bool SpellMgr::IsSpecialStackCase(SpellEntry const *spellInfo_1, SpellEntry cons
     if (spellId_1 == 33649 && spellId_2 == 20572)
         return true;
 
+    if (spellId_1 == 22620 && spellId_2 == 22618)
+        return true; // force reactive disc
+
     // Sextant of Unstable Currents, Shiffar's Nexus-Hornand, Scryer's Bloodgem and Band of the Ethernal Sage stacks with each other
     if ((spellId_1 == 38348 || spellId_1 == 34321 || spellId_1 == 35084 || spellId_1 == 35337) &&
             (spellId_2 == 38348 || spellId_2 == 34321 || spellId_2 == 35084 || spellId_2 == 35337) &&
@@ -2969,7 +2972,7 @@ void SpellMgr::LoadSpellCustomAttr()
                     break;
                 case 46589: // Shadow spike, target destination set in aura::triggerspell
                     spellInfo->EffectImplicitTargetA[0] = TARGET_DEST_DEST;
-                    spellInfo->speed = 10;
+                    spellInfo->speed = 8;
                     break;
                 case 38112: // vashj shield generator
                     spellInfo->Attributes |= SPELL_ATTR_UNAFFECTED_BY_INVULNERABILITY;

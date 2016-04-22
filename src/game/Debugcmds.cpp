@@ -1216,7 +1216,7 @@ bool ChatHandler::HandleDebugJoinBG(const char* args)
     _player->SetBattleGroundEntryPoint(_player->GetMapId(), _player->GetPositionX(), _player->GetPositionY(), _player->GetPositionZ(), _player->GetOrientation());
     WorldPacket data;
     // send status packet (in queue)
-    sBattleGroundMgr.BuildBattleGroundStatusPacket(&data, bg, _player->GetTeam(), queueSlot, STATUS_WAIT_QUEUE, 0, 0);
+    sBattleGroundMgr.BuildBattleGroundStatusPacket(&data, bg, team, queueSlot, STATUS_WAIT_QUEUE, 0, 0);
     m_session->SendPacket(&data);
 
     GroupQueueInfo * ginfo = sBattleGroundMgr.m_BattleGroundQueues[bgQueueTypeId].AddGroup(_player, type, bgBracketId, 0, false, false, 0, 0);
