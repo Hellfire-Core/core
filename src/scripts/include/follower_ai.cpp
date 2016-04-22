@@ -200,8 +200,9 @@ void FollowerAI::UpdateAI(const uint32 uiDiff)
             Player* pPlayer = GetLeaderForFollower();
             if (pPlayer)
             {
-                if (me->GetMotionMaster()->GetCurrentMovementGeneratorType() != FOLLOW_MOTION_TYPE)
+                if (me->GetMotionMaster()->GetCurrentMovementGeneratorType() != FOLLOW_MOTION_TYPE && !me->hasUnitState(UNIT_STAT_LOST_CONTROL))
                 {
+                    me->GetMotionMaster()->Clear();
                     me->GetMotionMaster()->MoveFollow(pPlayer, PET_FOLLOW_DIST, PET_FOLLOW_ANGLE);
                     SendDebug("FollowerAI: returning to follow");
                     return;
