@@ -288,6 +288,7 @@ ChatCommand * ChatHandler::getCommandTable()
         { "getvalue",       PERM_ADM,       PERM_CONSOLE, false,  &ChatHandler::HandleDebugGetValue,                  "", NULL },
         { "hostilelist",    PERM_GMT_DEV,   PERM_CONSOLE, false,  &ChatHandler::HandleDebugHostileRefList,            "", NULL },
         { "lootrecipient",  PERM_GMT_DEV,   PERM_CONSOLE, false,  &ChatHandler::HandleDebugGetLootRecipient,          "", NULL },
+        { "joinbg",         PERM_GMT_DEV,   PERM_CONSOLE, false,  &ChatHandler::HandleDebugJoinBG,                    "", NULL },
         { "Mod32Value",     PERM_ADM,       PERM_CONSOLE, false,  &ChatHandler::HandleDebugMod32Value,                "", NULL },
         { "play",           PERM_DEVELOPER, PERM_CONSOLE, false,  NULL,                                               "", debugPlayCommandTable },
         { "poolstats",      PERM_GMT_DEV,   PERM_CONSOLE, false,  &ChatHandler::HandleGetPoolObjectStatsCommand,      "", NULL },

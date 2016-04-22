@@ -40,6 +40,7 @@
 #include "GridNotifiersImpl.h"
 #include "CellImpl.h"
 #include "vmap/VMapFactory.h"
+#include "BattleGroundMgr.h"
 
 bool ChatHandler::HandleWPToFileCommand(const char* args)
 {
@@ -1164,5 +1165,63 @@ bool ChatHandler::HandleDebugCooldownsCommand(const char* args)
     }
     PSendSysMessage("Cooldowns for player %s:",plr->GetName());
     SendSysMessage(plr->GetCooldownMgr().SendCooldownsDebug().c_str());
+    return true;
+}
+
+bool ChatHandler::HandleDebugJoinBG(const char* args)
+{
+    if (!args)
+        return false;
+
+    std::string typestr = strtok((char*)args, " ");
+    char* sidestr = strtok(NULL, " ");
+
+    if (!sidestr)
+        return false;
+
+    uint32 team;
+
+    if (sidestr[0] == 'A' || sidestr[0] == 'a')
+        team = ALLIANCE;
+    else
+        team = HORDE;
+
+    BattleGroundTypeId type = BATTLEGROUND_TYPE_NONE;
+    if (typestr == "AV")
+        type = BATTLEGROUND_AV;
+    else if (typestr == "AB")
+        type = BATTLEGROUND_AB;
+    else if (typestr == "WS" || typestr == "WSG")
+        type = BATTLEGROUND_WS;
+    else if (typestr == "EY" || typestr == "EOTS")
+        type = BATTLEGROUND_EY;
+
+    if (type == BATTLEGROUND_TYPE_NONE)
+        return false;
+
+    Player* _player = m_session->GetPlayer();
+    BattleGroundQueueTypeId bgQueueTypeId = BattleGroundMgr::BGQueueTypeId(type, 0);
+    BattleGroundBracketId bgBracketId = _player->GetBattleGroundBracketIdFromLevel(type);
+    BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(type);
+    if (!bg)
+        return false;
+    // check if already in queue
+    if (_player->GetBattleGroundQueueIndex(bgQueueTypeId) < PLAYER_MAX_BATTLEGROUND_QUEUES)
+        return false;
+    // check if has free queue slots
+    if (!_player->HasFreeBattleGroundQueueId())
+        return false;
+
+    uint32 queueSlot = _player->AddBattleGroundQueueId(bgQueueTypeId);
+    _player->SetBattleGroundEntryPoint(_player->GetMapId(), _player->GetPositionX(), _player->GetPositionY(), _player->GetPositionZ(), _player->GetOrientation());
+    WorldPacket data;
+    // send status packet (in queue)
+    sBattleGroundMgr.BuildBattleGroundStatusPacket(&data, bg, _player->GetTeam(), queueSlot, STATUS_WAIT_QUEUE, 0, 0);
+    m_session->SendPacket(&data);
+
+    GroupQueueInfo * ginfo = sBattleGroundMgr.m_BattleGroundQueues[bgQueueTypeId].AddGroup(_player, type, bgBracketId, 0, false, false, 0, 0);
+    sBattleGroundMgr.m_BattleGroundQueues[bgQueueTypeId].AddPlayer(_player, ginfo);
+    sBattleGroundMgr.ScheduleQueueUpdate(bgQueueTypeId, type, bgBracketId);
+
     return true;
 }
