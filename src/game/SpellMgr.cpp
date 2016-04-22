@@ -2969,6 +2969,7 @@ void SpellMgr::LoadSpellCustomAttr()
                     break;
                 case 46589: // Shadow spike, target destination set in aura::triggerspell
                     spellInfo->EffectImplicitTargetA[0] = TARGET_DEST_DEST;
+                    spellInfo->speed = 10;
                     break;
                 case 38112: // vashj shield generator
                     spellInfo->Attributes |= SPELL_ATTR_UNAFFECTED_BY_INVULNERABILITY;

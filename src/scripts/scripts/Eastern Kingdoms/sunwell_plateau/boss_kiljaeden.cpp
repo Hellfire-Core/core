@@ -511,7 +511,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
         _Timer[TIMER_SOUL_FLAY].Reset(3000);
         _Timer[TIMER_LEGION_LIGHTNING].Reset(10000);
         _Timer[TIMER_FIRE_BLOOM].Reset(13000);
-        _Timer[TIMER_SUMMON_SHILEDORB].Reset(urand(10000,16000));
+        _Timer[TIMER_SUMMON_SHILEDORB].Reset(0);
 
         //Phase 3 Timer
         _Timer[TIMER_SHADOW_SPIKE].Reset(4000);
@@ -724,7 +724,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                             if (shieldorb)
                                 shieldorb->AI()->DoAction(i);
                         }
-                        _Timer[TIMER_SUMMON_SHILEDORB] = urand(30000,40000); // 30-40seconds cooldown
+                        _Timer[TIMER_SUMMON_SHILEDORB] = 0;
                         break;
                     }
                     /*$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -761,6 +761,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                                 SpikesLeft = 9;
                                 _Timer[TIMER_SHADOW_SPIKE] = 0;
                                 IsCastingSpikes = false;
+                                _Timer[TIMER_SUMMON_SHILEDORB].Reset(urand(15000,20000));
                                 _Timer[TIMER_DARKNESS].Reset(45000);
                             }
 
@@ -786,6 +787,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                             WaitTimer.Reset(8000);
                             _Timer[TIMER_DARKNESS] = 1;
                             IsInDarkness = true;
+                            _Timer[TIMER_ARMAGEDDON] = 0;
                         }
                         else
                         {
@@ -796,6 +798,8 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                             DoScriptText(RAND(SAY_KJ_DARKNESS1, SAY_KJ_DARKNESS2, SAY_KJ_DARKNESS3), m_creature);
                             SendDebug("Casting aoe darkness");
                             _Timer[TIMER_SOUL_FLAY].Delay(3000);
+                            _Timer[TIMER_ORBS_EMPOWER].Reset(5000);
+                            _Timer[TIMER_ARMAGEDDON].Reset(3000);
                         }
                         
                         break;
@@ -811,9 +815,6 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                     }
                     case TIMER_ARMAGEDDON:
                     {
-                        if (IsInDarkness && Phase != PHASE_SACRIFICE)
-                            break; // dont cast armageddon during DTS
-
                         Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true);
                         if (target)
                         {
