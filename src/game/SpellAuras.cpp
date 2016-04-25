@@ -1338,8 +1338,11 @@ void Aura::HandleAddModifier(bool apply, bool Real)
     // reapply some passive spells after add/remove related spellmods
     if (spellInfo->SpellFamilyName==SPELLFAMILY_WARRIOR && (spellFamilyMask & 0x0000100000000000LL))
     {
-        m_target->RemoveAurasDueToSpell(45471);
+        // defiance, if reseting talents remove expertise
+        if (!((Player*)m_target)->HasSpell(12303))
+            m_target->RemoveAurasDueToSpell(45471);
 
+        // if going to defensive stance recast
         if (apply)
             m_target->CastSpell(m_target,45471,true);
     }
