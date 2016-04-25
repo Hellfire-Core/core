@@ -724,7 +724,8 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                             if (shieldorb)
                                 shieldorb->AI()->DoAction(i);
                         }
-                        _Timer[TIMER_SUMMON_SHILEDORB] = urand(30000,38000);
+                        _Timer[TIMER_SUMMON_SHILEDORB] = (Phase == PHASE_NORMAL) ? urand(30000,38000) : 0;
+                        
                         break;
                     }
                     /*$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -798,6 +799,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                             SendDebug("Casting aoe darkness");
                             _Timer[TIMER_SOUL_FLAY].Delay(3000);
                             _Timer[TIMER_ARMAGEDDON].Reset(3000);
+                            _Timer[TIMER_SUMMON_SHILEDORB].Reset(5000);
                         }
                         
                         break;
