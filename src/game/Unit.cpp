@@ -11937,6 +11937,11 @@ void Unit::AddPetAura(PetAura const* petSpell)
     m_petAuras.insert(petSpell);
     if (Pet* pet = GetPet())
         pet->CastPetAura(petSpell);
+    else if (GetTypeId() == TYPEID_PLAYER && getClass() == CLASS_WARLOCK)
+    { // enslaved demons
+        if (Unit* charm = GetCharm())
+            charm->CastSpell(charm, petSpell->GetAura(0), true);
+    }
 }
 
 void Unit::RemovePetAura(PetAura const* petSpell)
@@ -11944,6 +11949,11 @@ void Unit::RemovePetAura(PetAura const* petSpell)
     m_petAuras.erase(petSpell);
     if (Pet* pet = GetPet())
         pet->RemoveAurasDueToSpell(petSpell->GetAura(pet->GetEntry()));
+    else if (GetTypeId() == TYPEID_PLAYER && getClass() == CLASS_WARLOCK)
+    { // enslaved demons
+        if (Unit* charm = GetCharm())
+            charm->RemoveAurasDueToSpell(petSpell->GetAura(0));
+    }
 }
 
 Pet* Unit::CreateTamedPetFrom(Creature* creatureTarget,uint32 spell_id)
