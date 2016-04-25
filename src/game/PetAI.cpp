@@ -86,13 +86,7 @@ bool PetAI::_needToStop()
         return true;
 
     // also should stop if cannot attack
-    if (!me->canAttack(me->getVictim(), true, false))
-        return true;
-
-    // check for stealthed manually
-    if (!me->HasReactState(REACT_AGGRESSIVE) &&
-        me->getVictim()->GetVisibility() == VISIBILITY_GROUP_STEALTH
-        && !me->canDetectStealthOf(me->getVictim(), me, me->GetDistance(me->getVictim())))
+    if (!me->canAttack(me->getVictim()))
         return true;
 
     if (targetHasInterruptableAura(me->getVictim()))

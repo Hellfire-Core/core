@@ -1106,7 +1106,7 @@ class HELLGROUND_IMPORT_EXPORT Unit : public WorldObject
 
         bool isTargetableForAttack() const;
         bool isAttackableByAOE() const;
-        bool canAttack(Unit const* target, bool force = true, bool alsostealth = true) const;
+        bool canAttack(Unit const* target, bool force = true) const;
         virtual bool IsInWater() const;
         virtual bool IsUnderWater() const;
         bool isInAccessiblePlacefor (Creature const* c) const;
