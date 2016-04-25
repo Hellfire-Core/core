@@ -20,6 +20,7 @@
 #include "Database/SqlDelayThread.h"
 #include "Database/SqlOperations.h"
 #include "DatabaseEnv.h"
+#include "../Timer.h"
 
 SqlDelayThread::SqlDelayThread(Database* db, SqlConnection* conn) : m_dbEngine(db), m_dbConnection(conn), m_running(true)
 {
@@ -40,8 +41,8 @@ void SqlDelayThread::run()
     #endif
 
     const uint32 loopSleepms = 10;
-
     const uint32 pingEveryLoop = m_dbEngine->GetPingInterval() / loopSleepms;
+    static uint32 lastPing = WorldTimer::getMSTime();
 
     uint32 loopCounter = 0;
     while (m_running)
@@ -54,8 +55,10 @@ void SqlDelayThread::run()
 
         if((loopCounter++) >= pingEveryLoop)
         {
+            volatile uint32 diff = WorldTimer::getMSTimeDiffToNow(lastPing);
             loopCounter = 0;
             m_dbEngine->Ping();
+            lastPing = WorldTimer::getMSTime();
         }
     }
 
