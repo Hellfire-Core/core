@@ -163,7 +163,7 @@ void WorldSession::HandleBattleGroundJoinOpcode(WorldPacket & recv_data )
     if (joinAsGroup)
     {
         DEBUG_LOG("Battleground: the following players are joining as group:");
-        GroupQueueInfo * ginfo = sBattleGroundMgr.m_BattleGroundQueues[bgQueueTypeId].AddGroup(_player, bgTypeId, bgBracketId, 0, false, isPremade, 0, 0);
+        GroupQueueInfo * ginfo = sBattleGroundMgr.m_BattleGroundQueues[bgQueueTypeId].AddGroup(_player, bgTypeId, bgBracketId, 0, false, isPremade, 0, 0, 0, _player->GetTeam());
         for (GroupReference *itr = grp->GetFirstMember(); itr != NULL; itr = itr->next())
         {
             Player *member = itr->getSource();
@@ -198,7 +198,7 @@ void WorldSession::HandleBattleGroundJoinOpcode(WorldPacket & recv_data )
         sBattleGroundMgr.BuildBattleGroundStatusPacket(&data, bg, _player->GetTeam(), queueSlot, STATUS_WAIT_QUEUE, 0, 0);
         SendPacket(&data);
 
-        GroupQueueInfo * ginfo = sBattleGroundMgr.m_BattleGroundQueues[bgQueueTypeId].AddGroup(_player, bgTypeId, bgBracketId, 0, false, false, 0, 0);
+        GroupQueueInfo * ginfo = sBattleGroundMgr.m_BattleGroundQueues[bgQueueTypeId].AddGroup(_player, bgTypeId, bgBracketId, 0, false, false, 0, 0, 0, _player->GetTeam());
         sBattleGroundMgr.m_BattleGroundQueues[bgQueueTypeId].AddPlayer(_player, ginfo);
         sBattleGroundMgr.ScheduleQueueUpdate(bgQueueTypeId, bgTypeId, _player->GetBattleGroundBracketIdFromLevel(bgTypeId));
         DEBUG_LOG("Battleground: player joined queue for bg queue type %u bg type %u: GUID %u, NAME %s",bgQueueTypeId,bgTypeId,_player->GetGUIDLow(), _player->GetName());
@@ -798,7 +798,7 @@ void WorldSession::HandleBattleGroundArenaJoin(WorldPacket & recv_data)
 
     if (asGroup)
     {
-        GroupQueueInfo * ginfo = sBattleGroundMgr.m_BattleGroundQueues[bgQueueTypeId].AddGroup(_player, bgTypeId, bgBracketId, arenatype, isRated, false, arenaRating, hiddenRating, ateamId);
+        GroupQueueInfo * ginfo = sBattleGroundMgr.m_BattleGroundQueues[bgQueueTypeId].AddGroup(_player, bgTypeId, bgBracketId, arenatype, isRated, false, arenaRating, hiddenRating, ateamId, _player->GetTeam());
         DEBUG_LOG("Battleground: arena join as group start");
         if (isRated)
             DEBUG_LOG("Battleground: arena team id %u, leader %s queued with rating %u for type %u",_player->GetArenaTeamId(arenaslot),_player->GetName(),arenaRating,arenatype);
@@ -835,7 +835,7 @@ void WorldSession::HandleBattleGroundArenaJoin(WorldPacket & recv_data)
         // send status packet (in queue)
         sBattleGroundMgr.BuildBattleGroundStatusPacket(&data, bg, _player->GetTeam(), queueSlot, STATUS_WAIT_QUEUE, 0, 0, arenatype, isRated);
         SendPacket(&data);
-        GroupQueueInfo * ginfo = sBattleGroundMgr.m_BattleGroundQueues[bgQueueTypeId].AddGroup(_player, bgTypeId, bgBracketId, arenatype, isRated, false, arenaRating, hiddenRating);
+        GroupQueueInfo * ginfo = sBattleGroundMgr.m_BattleGroundQueues[bgQueueTypeId].AddGroup(_player, bgTypeId, bgBracketId, arenatype, isRated, false, arenaRating, hiddenRating, 0, _player->GetTeam());
         sBattleGroundMgr.m_BattleGroundQueues[bgQueueTypeId].AddPlayer(_player, ginfo);
         sBattleGroundMgr.m_BattleGroundQueues[bgQueueTypeId].Update(bgTypeId, _player->GetBattleGroundBracketIdFromLevel(bgTypeId), arenatype, isRated, arenaRating, hiddenRating);
         DEBUG_LOG("Battleground: player joined queue for arena, skirmish, bg queue type %u bg type %u: GUID %u, NAME %s",bgQueueTypeId,bgTypeId,_player->GetGUIDLow(), _player->GetName());

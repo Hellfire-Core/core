@@ -133,7 +133,7 @@ bool BattleGroundQueue::SelectionPool::AddGroup(GroupQueueInfo *ginfo, uint32 de
 }
 
 // add group to bg queue with the given leader and bg specifications
-GroupQueueInfo * BattleGroundQueue::AddGroup(Player *leader, BattleGroundTypeId BgTypeId, BattleGroundBracketId bracketId, uint8 ArenaType, bool isRated, bool isPremade, uint32 arenaRating, uint32 hiddenRating, uint32 arenateamid)
+GroupQueueInfo * BattleGroundQueue::AddGroup(Player *leader, BattleGroundTypeId BgTypeId, BattleGroundBracketId bracketId, uint8 ArenaType, bool isRated, bool isPremade, uint32 arenaRating, uint32 hiddenRating, uint32 arenateamid, uint32 faction)
 {
     // create new ginfo
     // cannot use the method like in addplayer, because that could modify an in-queue group's stats
@@ -145,7 +145,7 @@ GroupQueueInfo * BattleGroundQueue::AddGroup(Player *leader, BattleGroundTypeId 
     ginfo->IsRated                   = isRated;
     ginfo->IsInvitedToBGInstanceGUID = 0;
     ginfo->JoinTime                  = WorldTimer::getMSTime();
-    ginfo->Team                      = leader->GetTeam();
+    ginfo->Team                      = faction; // leader->GetTeam();
     ginfo->ArenaTeamRating           = arenaRating;
     ginfo->HiddenRating              = hiddenRating;
     ginfo->OpponentsTeamRating       = 0;

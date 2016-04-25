@@ -1748,7 +1748,7 @@ bool BattleGround::HandlePlayerUnderMap(Player * plr, float z)
 
     EventPlayerDroppedFlag(plr);
 
-    WorldSafeLocsEntry const *graveyard = GetClosestGraveYard(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), plr->GetTeam());
+    WorldSafeLocsEntry const *graveyard = GetClosestGraveYard(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), plr->GetBGTeam());
     if (graveyard)
     {
         plr->NearTeleportTo(graveyard->x, graveyard->y, graveyard->z, plr->GetOrientation());
@@ -1832,7 +1832,7 @@ void BattleGround::HandleKillPlayer(Player *player, Player *killer)
             if (!plr || plr == killer)
                 continue;
 
-            if (plr->GetTeam() == killer->GetTeam() && plr->IsAtGroupRewardDistance(player) && !player->ToUnit()->WorthHonor)
+            if (plr->GetBGTeam() == killer->GetBGTeam() && plr->IsAtGroupRewardDistance(player) && !player->ToUnit()->WorthHonor)
                 UpdatePlayerScore(plr, SCORE_HONORABLE_KILLS, 1);
         }
     }

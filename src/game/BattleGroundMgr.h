@@ -89,7 +89,7 @@ class BattleGroundQueue
         bool CheckPremadeMatch(BattleGroundBracketId bracket_id, uint32 MaxPlayersPerTeam, uint32 MinPlayersPerTeam);
         bool CheckNormalMatch(BattleGround* bg_template, BattleGroundBracketId bracket_id, uint32 minPlayers, uint32 maxPlayers);
         bool CheckSkirmishForSameFaction(BattleGroundBracketId bracket_id, uint32 minPlayersPerTeam);
-        GroupQueueInfo * AddGroup(Player* leader, BattleGroundTypeId bgTypeId, BattleGroundBracketId bracket_id, uint8 ArenaType, bool isRated, bool isPremade, uint32 ArenaRating, uint32 hiddenRating, uint32 ArenaTeamId = 0);
+        GroupQueueInfo * AddGroup(Player* leader, BattleGroundTypeId bgTypeId, BattleGroundBracketId bracket_id, uint8 ArenaType, bool isRated, bool isPremade, uint32 ArenaRating, uint32 hiddenRating, uint32 ArenaTeamId, uint32 faction);
         void AddPlayer(Player *plr, GroupQueueInfo *ginfo);
         void RemovePlayer(const uint64& guid, bool decreaseInvitedCount);
         void DecreaseGroupLength(uint32 queueId, uint32 AsGroup);

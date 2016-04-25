@@ -1219,7 +1219,7 @@ bool ChatHandler::HandleDebugJoinBG(const char* args)
     sBattleGroundMgr.BuildBattleGroundStatusPacket(&data, bg, team, queueSlot, STATUS_WAIT_QUEUE, 0, 0);
     m_session->SendPacket(&data);
 
-    GroupQueueInfo * ginfo = sBattleGroundMgr.m_BattleGroundQueues[bgQueueTypeId].AddGroup(_player, type, bgBracketId, 0, false, false, 0, 0);
+    GroupQueueInfo * ginfo = sBattleGroundMgr.m_BattleGroundQueues[bgQueueTypeId].AddGroup(_player, type, bgBracketId, 0, false, false, 0, 0, 0, team);
     sBattleGroundMgr.m_BattleGroundQueues[bgQueueTypeId].AddPlayer(_player, ginfo);
     sBattleGroundMgr.ScheduleQueueUpdate(bgQueueTypeId, type, bgBracketId);
 

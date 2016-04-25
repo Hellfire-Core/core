@@ -429,7 +429,7 @@ void BattleGroundAB::_NodeDeOccupied(uint8 node)
             if (!plr)
                 continue;
             if (!ClosestGrave)
-                ClosestGrave = GetClosestGraveYard(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), plr->GetTeam());
+                ClosestGrave = GetClosestGraveYard(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), plr->GetBGTeam());
 
             plr->NearTeleportTo(ClosestGrave->x, ClosestGrave->y, ClosestGrave->z, plr->GetOrientation());
         }
@@ -462,7 +462,7 @@ void BattleGroundAB::EventPlayerClickedOnFlag(Player *source, GameObject* /*targ
         return;
     }
 
-    uint8 teamIndex = GetTeamIndexByTeamId(source->GetTeam());
+    uint8 teamIndex = GetTeamIndexByTeamId(source->GetBGTeam());
 
     // Message to chatlog
     char buf[256];
