@@ -742,7 +742,7 @@ void BattleGround::EndBattleGround(uint32 winner)
         plr->SendPacketToSelf(&data);
 
         BattleGroundQueueTypeId bgQueueTypeId = BattleGroundMgr::BGQueueTypeId(GetTypeID(), GetArenaType());
-        sBattleGroundMgr.BuildBattleGroundStatusPacket(&data, this, plr->GetTeam(), plr->GetBattleGroundQueueIndex(bgQueueTypeId), STATUS_IN_PROGRESS, TIME_TO_AUTOREMOVE, GetStartTime());
+        sBattleGroundMgr.BuildBattleGroundStatusPacket(&data, this, team, plr->GetBattleGroundQueueIndex(bgQueueTypeId), STATUS_IN_PROGRESS, TIME_TO_AUTOREMOVE, GetStartTime());
         plr->SendPacketToSelf(&data);
     }
 
@@ -1858,30 +1858,6 @@ bool BattleGround::IsPlayerInBattleGround(uint64 guid)
     if (itr!=m_Players.end())
         return true;
     return false;
-}
-
-void BattleGround::PlayerRelogin(uint64 guid)
-{
-    if (GetStatus() != STATUS_WAIT_LEAVE)
-        return;
-
-    Player *plr = sObjectMgr.GetPlayer(guid);
-    if (!plr)
-    {
-        sLog.outLog(LOG_DEFAULT, "ERROR: BattleGround: Player " UI64FMTD " not found!", guid);
-        return;
-    }
-
-    WorldPacket data;
-    BattleGroundQueueTypeId bgQueueTypeId = BattleGroundMgr::BGQueueTypeId(GetTypeID(), GetArenaType());
-
-    BlockMovement(plr);
-
-    sBattleGroundMgr.BuildPvpLogDataPacket(&data, this);
-    plr->SendPacketToSelf(&data);
-
-    sBattleGroundMgr.BuildBattleGroundStatusPacket(&data, this, plr->GetTeam(), plr->GetBattleGroundQueueIndex(bgQueueTypeId), STATUS_IN_PROGRESS, TIME_TO_AUTOREMOVE, GetStartTime());
-    plr->SendPacketToSelf(&data);
 }
 
 uint32 BattleGround::GetAlivePlayersCountByTeam(uint32 Team) const

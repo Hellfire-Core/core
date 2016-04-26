@@ -2510,7 +2510,7 @@ void Player::GiveXP(uint32 xp, Unit* victim)
             GiveLevel(level + 1);
             level = getLevel();
             // Refer-A-Friend
-            if (GetAccountLinkedState() == STATE_REFERRAL || GetAccountLinkedState() == STATE_DUAL)
+            if (GetAccountLinkedState() != STATE_NOT_LINKED)
             {
                 if (level < sWorld.getConfig(CONFIG_UINT32_RAF_MAXGRANTLEVEL))
                 {
@@ -6513,7 +6513,7 @@ void Player::UpdateArea(uint32 newArea)
 
     AreaTableEntry const* area = GetAreaEntryByAreaID(newArea);
 
-    if (area && (area->flags & AREA_FLAG_ARENA))
+    if (area && ((area->flags & AREA_FLAG_ARENA) || InBattleGround()))
     {
         if (!isGameMaster())
             SetFFAPvP(true);
@@ -6522,7 +6522,7 @@ void Player::UpdateArea(uint32 newArea)
     {
         // remove ffa flag only if not ffapvp realm
         // removal in sanctuaries and capitals is handled in zone update
-        if (IsFFAPvP() && !sWorld.IsFFAPvPRealm())
+        if (IsFFAPvP() && !sWorld.IsFFAPvPRealm() && !InBattleGround())
             SetFFAPvP(false);
     }
 

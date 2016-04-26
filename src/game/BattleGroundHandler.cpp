@@ -245,14 +245,14 @@ void WorldSession::HandleBattleGroundPlayerPositionsOpcode(WorldPacket & /*recv_
         if (ap)
         {
             // Horde team can always track alliance flag picker
-            if (_player->GetTeam() == HORDE)
+            if (_player->GetBGTeam() == HORDE)
             {
                 data << (uint64)ap->GetGUID();
                 data << (float)ap->GetPositionX();
                 data << (float)ap->GetPositionY();
             }
 
-            if (_player->GetTeam() == ALLIANCE)
+            if (_player->GetBGTeam() == ALLIANCE)
             {
                 if (BG_WS_FLAG_UPDATE_TIME < (time(NULL) - ((BattleGroundWS*)bg)->m_AllianceFlagUpdate))
                 {
@@ -265,14 +265,14 @@ void WorldSession::HandleBattleGroundPlayerPositionsOpcode(WorldPacket & /*recv_
         if (hp)
         {
             // Alliance team can always track horde flag picker
-            if (_player->GetTeam() == ALLIANCE)
+            if (_player->GetBGTeam() == ALLIANCE)
             {
                 data << (uint64)hp->GetGUID();
                 data << (float)hp->GetPositionX();
                 data << (float)hp->GetPositionY();
             }
 
-            if (_player->GetTeam() == HORDE)
+            if (_player->GetBGTeam() == HORDE)
             {
                 if (BG_WS_FLAG_UPDATE_TIME < (time(NULL) - ((BattleGroundWS*)bg)->m_HordeFlagUpdate))
                 {
@@ -616,6 +616,7 @@ void WorldSession::HandleBattlefieldStatusOpcode(WorldPacket & /*recv_data*/)
             {
                 arenatype = itrPlayerStatus->second.GroupInfo->ArenaType;
                 isRated = itrPlayerStatus->second.GroupInfo->IsRated;
+                team = itrPlayerStatus->second.GroupInfo->Team;
             }
             if (bg)
             {

@@ -496,7 +496,6 @@ class HELLGROUND_IMPORT_EXPORT BattleGround
         uint32 GetPlayerTeam(uint64 guid);
         static uint32 GetOtherTeam(uint32 team){ return team ? ((team == ALLIANCE) ? HORDE : ALLIANCE) : TEAM_NONE; }
         bool IsPlayerInBattleGround(uint64 guid);
-        void PlayerRelogin(uint64 guid);
 
         void SetDeleteThis(){ m_SetDeleteThis = true; }
 
