@@ -1344,7 +1344,10 @@ void Aura::HandleAddModifier(bool apply, bool Real)
 
         // if going to defensive stance recast
         if (apply)
-            m_target->CastSpell(m_target,45471,true);
+        {
+            m_target->RemoveAurasDueToSpell(45471);
+            m_target->CastSpell(m_target, 45471, true);
+        }
     }
 
     if (spellInfo->SpellFamilyName==SPELLFAMILY_PALADIN && (spellFamilyMask & 0x0000100000000000LL)) // Spiritual Attunement
