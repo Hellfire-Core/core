@@ -520,7 +520,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
         _Timer[TIMER_ORBS_EMPOWER].Reset(0);
 
         //Phase 4 Timer
-        _Timer[TIMER_ARMAGEDDON].Reset(10000);
+        _Timer[TIMER_ARMAGEDDON].Reset(0);
 
         ActiveTimers = 5;
         WaitTimer.Reset(1);
@@ -815,14 +815,20 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                     }
                     case TIMER_ARMAGEDDON:
                     {
-                        Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true);
+                        Unit* target = NULL;
+                        while (!target)
+                        {
+                            target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true);
+                            if (target->HasAura(SPELL_VENGEANCE_OF_THE_BLUE_FLIGHT))
+                                target = NULL;
+                        }
                         if (target)
                         {
                             float x, y, z;
                             target->GetPosition(x, y, z);
                             m_creature->SummonCreature(CREATURE_ARMAGEDDON_TARGET, x, y, z, 0, TEMPSUMMON_TIMED_DESPAWN, 15000);
                         }
-                        _Timer[TIMER_ARMAGEDDON] = 3000;
+                        _Timer[TIMER_ARMAGEDDON] = (Phase == PHASE_ARMAGEDDON) ? 3500 : 2200;
                         break;
                     }
                 }
@@ -860,6 +866,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
             _Timer[TIMER_SHADOW_SPIKE].Reset(4000);
             _Timer[TIMER_DARKNESS].Reset(45000);
             _Timer[TIMER_ORBS_EMPOWER].Reset(35000);
+            _Timer[TIMER_ARMAGEDDON].Reset(50000);
             CastSinisterReflection();
 
             DoScriptText(SAY_KJ_PHASE4, m_creature);
