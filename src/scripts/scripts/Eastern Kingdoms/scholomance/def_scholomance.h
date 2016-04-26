@@ -27,5 +27,6 @@
 #define DATA_LORDALEXEIBAROV_DEATH          5
 #define DATA_LOREKEEPERPOLKELT_DEATH        6
 #define DATA_THERAVENIAN_DEATH              7
+#define DATA_KIRTONOS_THE_HERALD            8
 #endif
 

@@ -33,6 +33,7 @@ struct instance_scholomance : public ScriptedInstance
 
     //Lord Alexei Barov, Doctor Theolen Krastinov, The Ravenian, Lorekeeper Polkelt, Instructor Malicia and the Lady Illucia Barov.
     bool IsBossDied[6];
+    uint64 kirtonosGate;
 
     void Initialize()
     {
@@ -57,6 +58,14 @@ struct instance_scholomance : public ScriptedInstance
                 return 1;
 
         return 0;
+    }
+
+    void OnObjectCreate(GameObject *go)
+    {
+        switch (go->GetEntry())
+        {
+        case 175570: kirtonosGate = go->GetGUID(); break;
+        }
     }
 
     void SetData(uint32 type, uint32 data)
@@ -85,6 +94,13 @@ struct instance_scholomance : public ScriptedInstance
 
             case DATA_LADYILLUCIABAROV_DEATH:
                 IsBossDied[5] = true;
+                break;
+
+            case DATA_KIRTONOS_THE_HERALD:
+                if (data == DONE || data == NOT_STARTED)
+                    HandleGameObject(kirtonosGate, true);
+                if (data == IN_PROGRESS)
+                    HandleGameObject(kirtonosGate, false);
                 break;
         }
     }
