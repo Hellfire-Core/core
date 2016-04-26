@@ -1339,7 +1339,7 @@ void Aura::HandleAddModifier(bool apply, bool Real)
     if (spellInfo->SpellFamilyName==SPELLFAMILY_WARRIOR && (spellFamilyMask & 0x0000100000000000LL))
     {
         // defiance, if reseting talents remove expertise
-        if (!((Player*)m_target)->HasSpell(12303))
+        if (!((Player*)m_target)->HasSpell(12303) && !((Player*)m_target)->HasSpell(12788) && !((Player*)m_target)->HasSpell(12789))
             m_target->RemoveAurasDueToSpell(45471);
 
         // if going to defensive stance recast
