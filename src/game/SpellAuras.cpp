@@ -3987,7 +3987,10 @@ void Aura::HandleModCharm(bool apply, bool Real)
         m_target->SetCharmedOrPossessedBy(caster, false);
     }
     else
+    {
         m_target->RemoveCharmedOrPossessedBy(caster);
+        m_target->RemoveAurasDueToSpell(25228);
+    }
 }
 
 void Aura::HandleModConfuse(bool apply, bool Real)
