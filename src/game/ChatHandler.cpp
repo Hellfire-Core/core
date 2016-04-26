@@ -167,6 +167,10 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
                         if (sWorld.getConfig(CONFIG_ALLOW_TWO_SIDE_INTERACTION_GUILD))
                             lang = LANG_UNIVERSAL;
                         break;
+                    case CHAT_MSG_BATTLEGROUND:
+                    case CHAT_MSG_BATTLEGROUND_LEADER:
+                        lang = LANG_UNIVERSAL;
+                        break;
                 }
             }
 
