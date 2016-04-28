@@ -789,18 +789,14 @@ struct npc_living_flareAI : public FollowerAI
 
     void MorphToUnstable()
     {
-        if(me->GetEntry() != NPC_UNSTABLE_LIVING_FLARE)
-        {
-            DoCast(me, SPELL_FEL_FLAREUP);
-            me->UpdateEntry(NPC_UNSTABLE_LIVING_FLARE);
-        }
-        else
+        if (me->GetEntry() == NPC_UNSTABLE_LIVING_FLARE)
             return;
+        DoCast(me, SPELL_FEL_FLAREUP);
+        me->UpdateEntry(NPC_UNSTABLE_LIVING_FLARE);
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
         if(Unit* owner = me->GetOwner())
             me->setFaction(owner->getFaction());
-        if(me->HasAura(SPELL_LIVING_FLARE_COSMETIC, 0))
-            me->RemoveAurasDueToSpell(SPELL_LIVING_FLARE_COSMETIC);
+        me->RemoveAurasDueToSpell(SPELL_LIVING_FLARE_COSMETIC);
         DoCast(me, SPELL_LIVING_FLARE_TO_UNSTABLE);
         DoCast(me, SPELL_UNSTABLE_LIVING_FLARE_COSMETIC);
     }
