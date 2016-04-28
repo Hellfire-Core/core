@@ -915,49 +915,47 @@ struct npc_private_hendelAI : public ScriptedAI
 
     void UpdateAI(const uint32 uiDiff)
     {
-        if (!UpdateVictim() && m_uiPhase)
+        if (!UpdateVictim() && m_uiPhase == PHASE_ATTACK)
         {
-            switch(m_uiPhase)
-            {
-            case PHASE_ATTACK:
-                DoAttackPlayer();
-                break;
-
-            case PHASE_COMPLETE:
-                m_uiEventTimer -= uiDiff;
-                if (m_uiEventTimer <= uiDiff)
-                {
-                    m_uiEventTimer += 5000;
-
-                    switch (m_uiPhaseCounter)
-                    {
-                    case 0:
-                        DoScriptText(EMOTE_SURRENDER, me);
-                        break;
-                    case 1:
-                        if (Creature* pTervosh = GetClosestCreatureWithEntry(me, NPC_TERVOSH, 10.0f))
-                            DoScriptText(SAY_PROGRESS_1_TER, pTervosh);
-                        break;
-                    case 2:
-                        DoScriptText(SAY_PROGRESS_2_HEN, me);
-                        break;
-                    case 3:
-                        if (Creature* pTervosh = GetClosestCreatureWithEntry(me, NPC_TERVOSH, 10.0f))
-                            DoScriptText(SAY_PROGRESS_3_TER, pTervosh);
-                        break;
-                    case 4:
-                        if (Creature* pTervosh = GetClosestCreatureWithEntry(me, NPC_TERVOSH, 10.0f))
-                                DoScriptText(SAY_PROGRESS_4_TER, pTervosh);
-                        if (Player* pPlayer = Unit::GetPlayer(PlayerGUID))
-                            pPlayer->GroupEventHappens(QUEST_MISSING_DIPLO_PT16, me);
-                        Reset();
-                        break;
-                    }
-                    ++m_uiPhaseCounter;
-                }
-            }
+            DoAttackPlayer();
+            return;
         }
-        return;
+        if (m_uiPhase == PHASE_COMPLETE)
+        {
+            m_uiEventTimer -= uiDiff;
+            if (m_uiEventTimer <= uiDiff)
+            {
+                m_uiEventTimer += 5000;
+
+                switch (m_uiPhaseCounter)
+                {
+                case 0:
+                    DoScriptText(EMOTE_SURRENDER, me);
+                    break;
+                case 1:
+                    if (Creature* pTervosh = GetClosestCreatureWithEntry(me, NPC_TERVOSH, 10.0f))
+                        DoScriptText(SAY_PROGRESS_1_TER, pTervosh);
+                    break;
+                case 2:
+                    DoScriptText(SAY_PROGRESS_2_HEN, me);
+                    break;
+                case 3:
+                    if (Creature* pTervosh = GetClosestCreatureWithEntry(me, NPC_TERVOSH, 10.0f))
+                        DoScriptText(SAY_PROGRESS_3_TER, pTervosh);
+                    break;
+                case 4:
+                    if (Creature* pTervosh = GetClosestCreatureWithEntry(me, NPC_TERVOSH, 10.0f))
+                            DoScriptText(SAY_PROGRESS_4_TER, pTervosh);
+                    if (Player* pPlayer = Unit::GetPlayer(PlayerGUID))
+                        pPlayer->GroupEventHappens(QUEST_MISSING_DIPLO_PT16, me);
+                    Reset();
+                    break;
+                }
+                ++m_uiPhaseCounter;
+            }
+            return;
+        }
+        DoMeleeAttackIfReady();
     }
 
     void DamageTaken(Unit* pDoneBy, uint32 &uiDamage)
