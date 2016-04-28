@@ -2984,6 +2984,9 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 45072: // Arcane charges ignore los
                     spellInfo->AttributesEx2 |= SPELL_ATTR_EX2_IGNORE_LOS;
                     break;
+                case 38544: // coax mamrot
+                    spellInfo->EffectMiscValueB[0] = SUMMON_TYPE_POSESSED;
+                    break;
                 }
                 if (spellInfo->SpellIconID == 184 && spellInfo->Attributes == 4259840)
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
