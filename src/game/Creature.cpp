@@ -2260,7 +2260,7 @@ bool Creature::IsOutOfThreatArea(Unit* pVictim) const
 
     // evade if owner is out of threat area
     if (pVictim->GetCharmerOrOwnerPlayerOrPlayerItself())
-        pVictim = GetCharmerOrOwnerPlayerOrPlayerItself();
+        pVictim = pVictim->GetCharmerOrOwnerPlayerOrPlayerItself();
 
     if (!pVictim->IsInMap(this))
         return true;
