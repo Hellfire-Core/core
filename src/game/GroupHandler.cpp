@@ -105,6 +105,12 @@ void WorldSession::HandleGroupInviteOpcode(WorldPacket & recv_data)
         return;
     }
 
+    if (player->InBattleGround()) // bg players have ffa pvp
+    {
+        SendPartyResult(PARTY_OP_INVITE, membername, PARTY_RESULT_ALREADY_IN_GROUP);
+        return;
+    }
+
     // OK result but not send invite
     if (player->GetSocial()->HasIgnore(GetPlayer()->GetGUIDLow()))
     {
