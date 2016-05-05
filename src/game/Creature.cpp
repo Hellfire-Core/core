@@ -2275,6 +2275,11 @@ bool Creature::IsOutOfThreatArea(Unit* pVictim) const
     uint32 distToHome = std::max(AttackDist, sWorld.getConfig(CONFIG_EVADE_HOMEDIST));
     uint32 distToTarget = std::max(AttackDist, sWorld.getConfig(CONFIG_EVADE_TARGETDIST));
 
+    if (pVictim->GetPet() && !IsOutOfThreatArea(pVictim->GetPet()))
+        return false;
+    if (pVictim->GetCharm() && !IsOutOfThreatArea(pVictim->GetCharm()))
+        return false;
+
     if (!IsWithinDistInMap(&homeLocation, distToHome))
         return true;
 
@@ -2284,7 +2289,7 @@ bool Creature::IsOutOfThreatArea(Unit* pVictim) const
     if (!pVictim->IsWithinDistInMap(&homeLocation, distToHome))
         return true;
 
-    return  false;
+    return false;
 }
 
 CreatureDataAddon const* Creature::GetCreatureAddon() const
