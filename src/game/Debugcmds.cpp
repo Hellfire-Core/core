@@ -1170,6 +1170,14 @@ bool ChatHandler::HandleDebugCooldownsCommand(const char* args)
 
 bool ChatHandler::HandleDebugJoinBG(const char* args)
 {
+    Player* plr = getSelectedPlayer();
+    if (!plr)
+    {
+        SendSysMessage(LANG_NO_PLAYER);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
     if (!args)
         return false;
 
