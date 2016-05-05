@@ -518,10 +518,10 @@ void BattleGround::RewardReputationToTeam(uint32 faction_id, uint32 Reputation, 
             continue;
         }
 
-        uint32 team = itr->second.Team;//GetPlayerTeam(plr->GetGUID());
+        uint32 team = itr->second.Team;
         if (!team) team = plr->GetTeam();
 
-        if (team == TeamID)
+        if (team == TeamID && team == plr->GetTeam())
         {
             int32 rep = plr->CalculateReputationGain(REPUTATION_SOURCE_BG, Reputation, faction_id);
             plr->GetReputationMgr().ModifyReputation(factionEntry, Reputation);
