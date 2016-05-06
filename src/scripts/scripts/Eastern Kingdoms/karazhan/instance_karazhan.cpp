@@ -478,10 +478,13 @@ void instance_karazhan::Update(uint32 diff)
             if (!found)
             {
                 Creature* boss = GetCreature(AnimalBossGUID[urand(0, 2)]);
-                boss->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                boss->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                boss->SetVisibility(VISIBILITY_ON);
-                boss->SetReactState(REACT_AGGRESSIVE);
+                if (boss && boss->isAlive())
+                {
+                    boss->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                    boss->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                    boss->SetVisibility(VISIBILITY_ON);
+                    boss->SetReactState(REACT_AGGRESSIVE);
+                }
                 AnimalBossCheck = 0;
             }
         }
