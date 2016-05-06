@@ -356,6 +356,7 @@ Spell::Spell(Unit* Caster, SpellEntry const *info, bool triggered, uint64 origin
     m_powerCost = 0;                                        // setup to correct value in Spell::prepare, don't must be used before.
     m_casttime = 0;                                         // setup to correct value in Spell::prepare, don't must be used before.
     m_timer = 0;                                            // will set to castime in prepare
+    m_autocastDelayTimer = 0;
     m_extraCrit = 0.0f;
     m_needAliveTargetMask = 0;
 
@@ -2438,7 +2439,13 @@ void Spell::prepare(SpellCastTargets * targets, Aura* triggeredByAura)
         // test for #541, ranged spells should be delayed by autoshot
         if (IsRangedSpell() && m_caster->getAttackTimer(RANGED_ATTACK) && m_casttime)
         {
-            m_timer.Reset(m_caster->getAttackTimer(RANGED_ATTACK));
+            m_autocastDelayTimer.Reset(m_caster->getAttackTimer(RANGED_ATTACK));
+            m_timer.Delay(m_caster->getAttackTimer(RANGED_ATTACK));
+
+            m_caster->SetCurrentCastSpell(this);
+            m_selfContainer = &(m_caster->m_currentSpells[GetCurrentContainer()]);
+            TriggerGlobalCooldown();
+            return;
         }
 
         // stealth must be removed at cast starting (at show channel bar)
@@ -2448,7 +2455,7 @@ void Spell::prepare(SpellCastTargets * targets, Aura* triggeredByAura)
 
         m_caster->SetCurrentCastSpell(this);
         m_selfContainer = &(m_caster->m_currentSpells[GetCurrentContainer()]);
-
+        
         SendSpellStart();
 
         TriggerGlobalCooldown();
@@ -3009,6 +3016,11 @@ void Spell::update(uint32 difftime)
     {
         case SPELL_STATE_PREPARING:
         {
+            if (m_autocastDelayTimer.Expired(difftime))
+            {
+                SendSpellStart();
+                m_autocastDelayTimer = 0;
+            }
             if (m_timer.Expired(difftime))
                 m_timer = 0;
 

@@ -632,6 +632,7 @@ class Spell
 
         uint32 m_spellState;
         Timer m_timer;
+        Timer m_autocastDelayTimer;
 
         Position m_cast;
 
