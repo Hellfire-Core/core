@@ -378,8 +378,22 @@ void WorldSession::DoLootRelease(uint64 lguid)
             player->DestroyItemCount(pItem, count, true);
         }
         else
+        {
             // FIXME: item don't must be deleted in case not fully looted state. But this pre-request implement loot saving in DB at item save. Or checting possible.
-            player->DestroyItem(pItem->GetBagSlot(),pItem->GetSlot(), true);
+            // for now autoloot first item
+            if (!loot->isLooted())
+            {
+                LootItem* li = loot->LootItemInSlot(0);
+                if (li)
+                {
+                    ItemPosCountVec dest;
+                    uint8 msg = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, li->itemid, li->count);
+                    if (!li->is_looted && !li->is_blocked && msg == EQUIP_ERR_OK)
+                        player->StoreNewItem(dest, li->itemid, true, li->randomPropertyId);
+                }
+            }
+            player->DestroyItem(pItem->GetBagSlot(), pItem->GetSlot(), true);
+        }
         return;                                             // item can be looted only single player
     }
     else
