@@ -365,7 +365,7 @@ void WorldSession::DoLootRelease(uint64 lguid)
         Item *pItem = player->GetItemByGuid(lguid);
         if (!pItem)
             return;
-        loot - &pItem->loot;
+        loot = &pItem->loot;
 
         ItemPrototype const* proto = pItem->GetProto();
         // destroy only 5 items from stack in case prospecting and milling
