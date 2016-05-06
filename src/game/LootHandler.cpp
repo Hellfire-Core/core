@@ -288,6 +288,8 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket & recv_data)
     // use internal stored guid
     //uint64   lguid;
     //recv_data >> lguid;
+    GetPlayer()->SendCombatStats(1 << COMBAT_STATS_LOOTING, "received loot release opcode", NULL);
+
 
     if (uint64 lguid = GetPlayer()->GetLootGUID())
         DoLootRelease(lguid);

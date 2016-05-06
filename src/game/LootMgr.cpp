@@ -1066,7 +1066,7 @@ ByteBuffer& operator<<(ByteBuffer& b, LootView const& lv)
 
     //update number of items shown
     b.put<uint8>(count_pos,itemsShown);
-
+    lv.viewer->SendCombatStats(1 << COMBAT_STATS_LOOTING, "sending lootview with %u items", NULL, itemsShown);
     return b;
 }
 
