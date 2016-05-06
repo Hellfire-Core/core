@@ -47,6 +47,10 @@ void instance_karazhan::Initialize()
     AranGUID            = 0;
     BlizzardGUID        = 0;
     BarnesGUID          = 0;
+    AnimalBossGUID[0]   = 0;
+    AnimalBossGUID[1]   = 0;
+    AnimalBossGUID[2]   = 0;
+    AnimalBossCheck.Reset(10000);
 
     NightbaneGUID       = 0;
 
@@ -165,6 +169,16 @@ void instance_karazhan::OnCreatureCreate(Creature *creature, uint32 entry)
             break;
         case 16812:
             BarnesGUID = creature->GetGUID();
+            break;
+        case 16179: case 16180: case 16181:
+            AnimalBossGUID[creature->GetEntry() - 16179] = creature->GetGUID();
+            creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            creature->SetVisibility(VISIBILITY_OFF);
+            creature->SetReactState(REACT_PASSIVE);
+            break;
+        case 16170: case 16171: case 16173: case 16174: case 16175: case 16176: case 16177: case 16178:
+            animalBossTrashList.push_back(creature->GetGUID());
             break;
     }
 
@@ -445,6 +459,34 @@ void instance_karazhan::Load(const char* in)
 
 void instance_karazhan::Update(uint32 diff)
 {
+    if (Encounters[3] != DONE)
+    {
+        if (AnimalBossCheck.Expired(diff))
+        {
+            AnimalBossCheck = 10000;
+            bool found = false;
+            for (std::list<uint64>::iterator itr = animalBossTrashList.begin(); itr != animalBossTrashList.end(); itr++)
+            {
+                Creature* tcre = GetCreature(*itr);
+                if (tcre && tcre->isAlive())
+                {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found)
+            {
+                Creature* boss = GetCreature(AnimalBossGUID[urand(0, 2)]);
+                boss->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                boss->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                boss->SetVisibility(VISIBILITY_ON);
+                boss->SetReactState(REACT_AGGRESSIVE);
+                AnimalBossCheck = 0;
+            }
+        }
+    }
+
     if(GetData(DATA_TERESTIAN_EVENT) == IN_PROGRESS)
     {
      

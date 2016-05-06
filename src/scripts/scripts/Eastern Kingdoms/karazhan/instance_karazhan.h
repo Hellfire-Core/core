@@ -72,8 +72,11 @@ struct instance_karazhan : public ScriptedInstance
     uint64 MedivhGUID;
     uint64 BarnesGUID;
     uint64 BlizzardGUID;
-    Timer CheckTimer;
+    uint64 AnimalBossGUID[3];
 
+    Timer CheckTimer;
+    Timer AnimalBossCheck;
+    std::list<uint64> animalBossTrashList;
     std::list<uint64> forChessList;
 
     bool needRespawn;
