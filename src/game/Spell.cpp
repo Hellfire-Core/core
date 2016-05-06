@@ -2435,6 +2435,12 @@ void Spell::prepare(SpellCastTargets * targets, Aura* triggeredByAura)
         cast(true);
     else
     {
+        // test for #541, ranged spells should be delayed by autoshot
+        if (IsRangedSpell() && m_caster->getAttackTimer(RANGED_ATTACK) && m_casttime)
+        {
+            m_timer.Reset(m_caster->getAttackTimer(RANGED_ATTACK));
+        }
+
         // stealth must be removed at cast starting (at show channel bar)
         // skip triggered spell (item equip spell casting and other not explicit character casts/item uses)
         if (SpellMgr::isSpellBreakStealth(GetSpellEntry()))
