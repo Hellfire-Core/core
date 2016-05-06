@@ -2437,7 +2437,7 @@ void Spell::prepare(SpellCastTargets * targets, Aura* triggeredByAura)
     else
     {
         // test for #541, ranged spells should be delayed by autoshot
-        if (IsRangedSpell() && m_caster->getAttackTimer(RANGED_ATTACK) < 500 && m_casttime)
+        if (IsRangedSpell() && m_caster->getAttackTimer(RANGED_ATTACK) && m_caster->getAttackTimer(RANGED_ATTACK) < 500 && m_casttime)
         {
             m_autocastDelayTimer.Reset(m_caster->getAttackTimer(RANGED_ATTACK));
             m_timer.Delay(m_caster->getAttackTimer(RANGED_ATTACK));
