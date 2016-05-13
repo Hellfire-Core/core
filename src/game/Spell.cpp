@@ -4177,7 +4177,7 @@ SpellCastResult Spell::CheckCast(bool strict)
         {
             case SPELL_EFFECT_DUMMY:
             {
-                if (GetSpellEntry()->SpellIconID == 1648)        // Execute
+                if (GetSpellEntry()->SpellIconID == 1648 || GetSpellEntry()->Id == 16053)        // Execute, dominion of soul 20% hp
                 {
                     if (!m_targets.getUnitTarget() || m_targets.getUnitTarget()->GetHealth() > m_targets.getUnitTarget()->GetMaxHealth()*0.2)
                         return SPELL_FAILED_BAD_TARGETS;
