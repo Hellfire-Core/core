@@ -333,6 +333,8 @@ struct npc_muglashAI : public npc_escortAI
 
     void JustSummoned(Creature* pSummoned)
     {
+        pSummoned->SetHomePosition(m_creature->GetPositionX(), m_creature->GetPositionY(), m_creature->GetPositionZ(), 0);
+        pSummoned->SetAggroRange(50.0f);
         pSummoned->AI()->AttackStart(m_creature);
     }
 
