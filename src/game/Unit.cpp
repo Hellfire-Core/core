@@ -3309,28 +3309,27 @@ void Unit::_UpdateAutoRepeatSpell()
 
     m_AutoRepeatFirstCast = false;
 
-    //castroutine
     if (isAttackReady(RANGED_ATTACK))
+        TriggerAutocastSpell();
+}
+
+void Unit::TriggerAutocastSpell()
+{
+    // Check if able to cast
+    if (m_currentSpells[CURRENT_AUTOREPEAT_SPELL]->CheckCast(true) != SPELL_CAST_OK)
     {
-        SendCombatStats(1 << COMBAT_STATS_TEST, "RAT ready", NULL);
-        // Check if able to cast
-        if (m_currentSpells[CURRENT_AUTOREPEAT_SPELL]->CheckCast(true) != SPELL_CAST_OK)
-        {
-            InterruptSpell(CURRENT_AUTOREPEAT_SPELL);
-            return;
-        }
-
-        // we want to shoot
-        Spell* spell = new Spell(this, m_currentSpells[CURRENT_AUTOREPEAT_SPELL]->GetSpellEntry(), true, 0);
-        spell->prepare(&(m_currentSpells[CURRENT_AUTOREPEAT_SPELL]->m_targets));
-
-        if (!IsStandState())
-            SetStandState(PLAYER_STATE_NONE);
-
-        // all went good, reset attack
-        resetAttackTimer(RANGED_ATTACK);
-        SendCombatStats(1 << COMBAT_STATS_TEST, "RAT reset by autoshoot trigger", NULL);
+        InterruptSpell(CURRENT_AUTOREPEAT_SPELL);
+        return;
     }
+
+    Spell* spell = new Spell(this, m_currentSpells[CURRENT_AUTOREPEAT_SPELL]->GetSpellEntry(), true, 0);
+    spell->prepare(&(m_currentSpells[CURRENT_AUTOREPEAT_SPELL]->m_targets));
+
+    if (!IsStandState())
+        SetStandState(PLAYER_STATE_NONE);
+
+    resetAttackTimer(RANGED_ATTACK);
+    SendCombatStats(1 << COMBAT_STATS_TEST, "RAT reset by autoshoot trigger", NULL);
 }
 
 void Unit::SetCurrentCastSpell(Spell* spell)

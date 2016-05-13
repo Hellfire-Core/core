@@ -3021,6 +3021,8 @@ void Spell::update(uint32 difftime)
             {
                 SendSpellStart();
                 m_autocastDelayTimer = 0;
+                if (m_caster->GetCurrentSpell[CURRENT_AUTOREPEAT_SPELL])
+                    m_caster->TriggerAutocastSpell();
             }
             if (m_timer.Expired(difftime))
                 m_timer = 0;

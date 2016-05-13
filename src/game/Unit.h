@@ -1615,6 +1615,8 @@ class HELLGROUND_IMPORT_EXPORT Unit : public WorldObject
         Movement::MoveSpline * movespline;
         MovementInfo m_movementInfo;
 
+        void TriggerAutocastSpell();
+
     protected:
         explicit Unit ();
 
