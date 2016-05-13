@@ -3302,13 +3302,17 @@ void Unit::_UpdateAutoRepeatSpell()
 
     //apply delay
     if (m_AutoRepeatFirstCast && getAttackTimer(RANGED_ATTACK) < 500)
-        setAttackTimer(RANGED_ATTACK,500);
+    {
+        setAttackTimer(RANGED_ATTACK, 500);
+        SendCombatStats(1 << COMBAT_STATS_TEST, "RAT delayed by autocast start", NULL);
+    }
 
     m_AutoRepeatFirstCast = false;
 
     //castroutine
     if (isAttackReady(RANGED_ATTACK))
     {
+        SendCombatStats(1 << COMBAT_STATS_TEST, "RAT ready", NULL);
         // Check if able to cast
         if (m_currentSpells[CURRENT_AUTOREPEAT_SPELL]->CheckCast(true) != SPELL_CAST_OK)
         {
@@ -3325,6 +3329,7 @@ void Unit::_UpdateAutoRepeatSpell()
 
         // all went good, reset attack
         resetAttackTimer(RANGED_ATTACK);
+        SendCombatStats(1 << COMBAT_STATS_TEST, "RAT reset by autoshoot trigger", NULL);
     }
 }
 
@@ -12012,8 +12017,6 @@ bool Unit::IsTriggeredAtSpellProcEvent(Aura* aura, SpellEntry const* procSpell, 
     // Continue if no trigger exist
     if (!EventProcFlag)
         return false;
-    if (spellProto->Id == 22620 || spellProto->Id == 22618)
-        SendCombatStats(1 << COMBAT_STATS_TEST, "itaspe:%u,%u,%u,%u,%u", NULL, spellProto->Id, EventProcFlag, procFlag, procExtra, active);
     // Check spellProcEvent data requirements
     if (!SpellMgr::IsSpellProcEventCanTriggeredBy(spellProcEvent, EventProcFlag, procSpell, procFlag, procExtra, active))
         return false;
