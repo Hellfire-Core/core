@@ -3363,6 +3363,21 @@ bool ChatHandler::HandleEventActiveListCommand(const char* args)
     return true;
 }
 
+bool ChatHandler::HandleEventAwardCommand(const char* args)
+{
+    std::ostringstream ostr;
+    ostr << "List of players that would get award: ";
+    Unit* me = m_session->GetPlayer();
+    for (HostileReference* ref = me->getHostileRefManager().getFirst(); ref; ref = ref->next())
+    {
+        Unit* target = ref->getSource()->getOwner();
+        if (target && target->GetTypeId == TYPEID_PLAYER)
+            ostr << target->GetName() << " ";
+    }
+    SendSysMessage(ostr.str().c_str());
+    return true;
+}
+
 bool ChatHandler::HandleEventInfoCommand(const char* args)
 {
     if (!*args)

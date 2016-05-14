@@ -310,6 +310,7 @@ ChatCommand * ChatHandler::getCommandTable()
     static ChatCommand eventCommandTable[] =
     {
         { "activelist",     PERM_GMT_DEV,   PERM_CONSOLE, true,   &ChatHandler::HandleEventActiveListCommand,     "", NULL },
+        { "award",          PERM_GMT,       PERM_CONSOLE, true,   &ChatHandler::HandleEventAwardCommand,          "", NULL },
         { "start",          PERM_HIGH_GMT,  PERM_CONSOLE, true,   &ChatHandler::HandleEventStartCommand,          "", NULL },
         { "stop",           PERM_HIGH_GMT,  PERM_CONSOLE, true,   &ChatHandler::HandleEventStopCommand,           "", NULL },
         { "",               PERM_GMT_DEV,   PERM_CONSOLE, true,   &ChatHandler::HandleEventInfoCommand,           "", NULL },
