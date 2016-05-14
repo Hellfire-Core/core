@@ -687,7 +687,6 @@ struct npc_remulosAI : public npc_escortAI
             EventTimer = 0;
             uiPhase = 0;
             FindVictimTimer = 2000;
-            DeadPhantasmsCount = 0;
             StarfireTimer = urand(7000, 10000);
             HealingTouchTimer = 4000;
             RegrowthTimer = urand(5000, 10000);
@@ -781,13 +780,12 @@ struct npc_remulosAI : public npc_escortAI
                     if (!pPhantasm->isAlive())
                     {
                         PhantasmsList.erase(itr);
-                        DeadPhantasmsCount++;
                         break;
                     }
                 }
             }
         }
-        if (DeadPhantasmsCount >=15)
+        if (PhantasmsList.empty())
         {
             PhantasmsList.clear();
             EventTimer = 10000;
