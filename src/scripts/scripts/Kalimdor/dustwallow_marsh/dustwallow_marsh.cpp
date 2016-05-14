@@ -845,8 +845,6 @@ struct npc_private_hendelAI : public ScriptedAI
 {
     npc_private_hendelAI(Creature* pCreature) : ScriptedAI(pCreature) { Reset(); }
 
-    std::list<Creature*> lCreatureList;
-
     uint32 m_uiPhaseCounter;
     int32 m_uiEventTimer;
     uint32 m_uiPhase;
@@ -858,7 +856,6 @@ struct npc_private_hendelAI : public ScriptedAI
         m_uiPhase = 0;
         m_uiEventTimer = 0;
         m_uiPhaseCounter = 0;
-        lCreatureList.clear();
     }
 
     void AttackedBy(Unit* pAttacker)
@@ -898,17 +895,14 @@ struct npc_private_hendelAI : public ScriptedAI
         me->setFaction(FACTION_HOSTILE);
         me->AI()->AttackStart(pPlayer);
 
-        lCreatureList = FindAllCreaturesWithEntry(NPC_SENTRY, 20);
+        std::list<Creature*> lCreatureList = FindAllCreaturesWithEntry(NPC_SENTRY, 20);
 
-        if (!lCreatureList.empty())
+        for(std::list<Creature*>::iterator itr = lCreatureList.begin(); itr != lCreatureList.end(); ++itr)
         {
-            for(std::list<Creature*>::iterator itr = lCreatureList.begin(); itr != lCreatureList.end(); ++itr)
+            if ((*itr)->isAlive())
             {
-                if ((*itr)->isAlive())
-                {
-                    (*itr)->setFaction(FACTION_HOSTILE);
-                    (*itr)->AI()->AttackStart(pPlayer);
-                }
+                (*itr)->setFaction(FACTION_HOSTILE);
+                (*itr)->AI()->AttackStart(pPlayer);
             }
         }
     }
@@ -971,32 +965,18 @@ struct npc_private_hendelAI : public ScriptedAI
             me->DeleteThreatList();
             me->CombatStop(true);
             me->SetWalk(false);
-            me->SetHomePosition(-2892.28f,-3347.81f,31.8609f,0.160719f);
-            me->GetMotionMaster()->MoveTargetedHome();
+            me->GetMotionMaster()->MovePoint(-2892.28f, -3347.81f, 31.8609f, 0.160719f);
 
             if (Player* pPlayer = Unit::GetPlayer(PlayerGUID))
                 pPlayer->CombatStop(true);
 
-            if (!lCreatureList.empty())
-            {
-                uint16 N = -1;
+            std::list<Creature*> lCreatureList = FindAllCreaturesWithEntry(NPC_SENTRY, 20);
 
-                for(std::list<Creature*>::iterator itr = lCreatureList.begin(); itr != lCreatureList.end(); ++itr)
-                {
-                    if ((*itr)->isAlive())
-                    {
-                        N = N + 1;
-                        (*itr)->RestoreFaction();
-                        (*itr)->RemoveAllAuras();
-                        (*itr)->DeleteThreatList();
-                        (*itr)->CombatStop(true);
-                        (*itr)->SetWalk(false);
-                        (*itr)->GetMotionMaster()->MovePoint(0, m_afEventMoveTo[N].m_fX,  m_afEventMoveTo[N].m_fY,  m_afEventMoveTo[N].m_fZ);
-                        (*itr)->ForcedDespawn(5000);
-                    }
-                }
+            for(std::list<Creature*>::iterator itr = lCreatureList.begin(); itr != lCreatureList.end(); ++itr)
+            {
+                (*itr)->RestoreFaction();
+                (*itr)->AI()->EnterEvadeMode();
             }
-            lCreatureList.clear();
 
             me->ForcedDespawn(60000);
             me->SummonCreature(NPC_TERVOSH, -2876.66f, -3346.96f, 35.6029f, 0.0f, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 60000);
