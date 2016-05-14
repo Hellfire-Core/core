@@ -3371,7 +3371,7 @@ bool ChatHandler::HandleEventAwardCommand(const char* args)
     for (HostileReference* ref = me->getHostileRefManager().getFirst(); ref; ref = ref->next())
     {
         Unit* target = ref->getSource()->getOwner();
-        if (target && target->GetTypeId == TYPEID_PLAYER)
+        if (target && target->GetTypeId() == TYPEID_PLAYER)
             ostr << target->GetName() << " ";
     }
     SendSysMessage(ostr.str().c_str());

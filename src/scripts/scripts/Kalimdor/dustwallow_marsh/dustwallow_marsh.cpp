@@ -965,7 +965,7 @@ struct npc_private_hendelAI : public ScriptedAI
             me->DeleteThreatList();
             me->CombatStop(true);
             me->SetWalk(false);
-            me->GetMotionMaster()->MovePoint(-2892.28f, -3347.81f, 31.8609f, 0.160719f);
+            me->GetMotionMaster()->MovePoint(0, -2892.28f, -3347.81f, 31.8609f);
 
             if (Player* pPlayer = Unit::GetPlayer(PlayerGUID))
                 pPlayer->CombatStop(true);
