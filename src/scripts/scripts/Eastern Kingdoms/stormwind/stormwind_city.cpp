@@ -349,6 +349,7 @@ enum eLordGregorLescovar
     NPC_MARZON_BLADE         = 1755,
     NPC_LORD_GREGOR_LESCOVAR = 1754,
     NPC_TYRION               = 7766,
+    NPC_TYRION_SPYBOT        = 8856,
 
     QUEST_THE_ATTACK    = 434
 };
@@ -469,8 +470,8 @@ struct npc_lord_gregor_lescovarAI : public npc_escortAI
                         break;
                     case 4:
                         DoScriptText(SAY_LESCOVAR_3, me);
-                        uiTimer = 0;
-                        uiPhase = 0;
+                        uiTimer = 5000;
+                        uiPhase = 5;
                         break;
                     case 5:
                         if (Creature *pMarzon = Unit::GetCreature(*me, MarzonGUID))
@@ -480,8 +481,6 @@ struct npc_lord_gregor_lescovarAI : public npc_escortAI
                         break;
                     case 6:
                         DoScriptText(SAY_LESCOVAR_4, me);
-                        if (Player* pPlayer = GetPlayerForEscort())
-                            pPlayer->AreaExploredOrEventHappens(QUEST_THE_ATTACK);
                         uiTimer = 2000;
                         uiPhase = 7;
                         break;
@@ -530,7 +529,7 @@ struct npc_marzon_silent_bladeAI : public ScriptedAI
         if (Creature* pLord = GetClosestCreatureWithEntry(me, NPC_LORD_GREGOR_LESCOVAR, 30.0f))
         {
             if (pLord && pLord->isAlive() && !pLord->isInCombat())
-                CAST_CRE(pLord)->AI()->AttackStart(pWho);
+                pLord->AI()->AttackStart(pWho);
         }
     }
 
@@ -541,19 +540,7 @@ struct npc_marzon_silent_bladeAI : public ScriptedAI
         if (Creature* pLord = GetClosestCreatureWithEntry(me, NPC_LORD_GREGOR_LESCOVAR, 30.0f))
         {
             if (pLord && pLord->isAlive())
-                CAST_CRE(pLord)->DisappearAndDie();
-        }
-    }
-
-    void MovementInform(uint32 uiType, uint32 /*uiId*/)
-    {
-        if (uiType != POINT_MOTION_TYPE)
-            return;
-
-        if (Creature* pLord = GetClosestCreatureWithEntry(me, NPC_LORD_GREGOR_LESCOVAR, 30.0f))
-        {
-            CAST_AI(npc_lord_gregor_lescovarAI, CAST_CRE(pLord)->AI())->uiTimer = 2000;
-            CAST_AI(npc_lord_gregor_lescovarAI, CAST_CRE(pLord)->AI())->uiPhase = 5;
+                pLord->DisappearAndDie();
         }
     }
 
@@ -716,11 +703,6 @@ CreatureAI* GetAI_npc_tyrion_spybot(Creature* pCreature)
 /*######
 ## npc_tyrion
 ######*/
-
-enum eTyrion
-{
-    NPC_TYRION_SPYBOT = 8856
-};
 
 bool QuestAccept_npc_tyrion(Player* pPlayer, Creature* pCreature, Quest const *pQuest)
 {
