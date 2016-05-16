@@ -1880,7 +1880,7 @@ void Spell::EffectDummy(uint32 i)
                 {
                     if (!unitTarget || !unitTarget->ToCreature())
                         return;
-                    m_caster->CastSpell(unitTarget, 12941, true);
+                    unitTarget->CastSpell(unitTarget, 12941, true);
                 }
             }
 
