@@ -11487,7 +11487,6 @@ void Player::SwapItem(uint16 src, uint16 dst)
         resetAttackTimer(BASE_ATTACK);
         resetAttackTimer(OFF_ATTACK);
         resetAttackTimer(RANGED_ATTACK);
-        SendCombatStats(1 << COMBAT_STATS_TEST, "RAT reset by swap item", NULL);
     }
 
     // DST checks

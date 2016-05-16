@@ -2439,7 +2439,7 @@ void Spell::prepare(SpellCastTargets * targets, Aura* triggeredByAura)
         // test for #541, ranged spells should be delayed by autoshot
         if (IsRangedSpell() && m_caster->getAttackTimer(RANGED_ATTACK) && m_caster->getAttackTimer(RANGED_ATTACK) < 500 && m_casttime)
         {
-            m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "Autocast delay %u", NULL, m_caster->getAttackTimer(RANGED_ATTACK));
+            m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "Autocast delay %u %u", NULL, m_caster->getAttackTimer(RANGED_ATTACK), m_casttime);
             m_autocastDelayTimer.Reset(m_caster->getAttackTimer(RANGED_ATTACK));
             m_timer.Delay(m_caster->getAttackTimer(RANGED_ATTACK));
 
@@ -3019,10 +3019,10 @@ void Spell::update(uint32 difftime)
         {
             if (m_autocastDelayTimer.Expired(difftime))
             {
-                SendSpellStart();
                 m_autocastDelayTimer = 0;
                 if (m_caster->GetCurrentSpell(CURRENT_AUTOREPEAT_SPELL))
                     m_caster->TriggerAutocastSpell();
+                SendSpellStart();
             }
             if (m_timer.Expired(difftime))
                 m_timer = 0;
@@ -3164,10 +3164,7 @@ void Spell::finish(bool ok)
             m_caster->resetAttackTimer(OFF_ATTACK);
 
         if (!(GetSpellEntry()->AttributesEx2 & SPELL_ATTR_EX2_NOT_RESET_AUTOSHOT))
-        {
             m_caster->resetAttackTimer(RANGED_ATTACK);
-            m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "RAT reset by spell finish", NULL);
-        }
     }
 
     // call triggered spell only at successful cast (after clear combo points -> for add some if need)
