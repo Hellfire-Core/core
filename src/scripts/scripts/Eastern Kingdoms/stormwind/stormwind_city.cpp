@@ -817,7 +817,7 @@ struct npc_squire_roweAI : public ScriptedAI
                         ((npc_escortAI*)pUnit->AI())->SetMaxPlayerDistance(200);
                     }
                     eventStage++;
-                    eventTimer = 4000;
+                    eventTimer = 10000;
                     break;
                 }
                 case 5:
@@ -843,8 +843,7 @@ bool GossipHello_npc_squire_rowe(Player *player, Creature *_Creature)
     if (((npc_squire_roweAI*)_Creature->AI())->eventStage)
         return false;
 
-    if ((player->GetQuestStatus(QUEST_STORMWIND_RENDEZVOUS)
-         == QUEST_STATUS_COMPLETE)
+    if (player->GetQuestStatus(QUEST_STORMWIND_RENDEZVOUS)
         && !player->IsActiveQuest(QUEST_THE_GREAT_THE_MASQUERADE))
     {
         player->ADD_GOSSIP_ITEM(0, GOSSIP_SQUIRE_ROWE_REGINALD, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF);
@@ -1043,10 +1042,6 @@ struct npc_reginald_windsorAI : public npc_escortAI
 
         switch(i)
         {
-            /*case 0:
-                m_creature->Mount(305);
-                m_creature->SetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 305);
-            break;*/
             case 3:
                 event = EVENT_STORMWIND;
                 eventPhase = 0;
@@ -1159,13 +1154,32 @@ struct npc_reginald_windsorAI : public npc_escortAI
 
     void SpawnGuards()
     {
-        Creature * tmpCreature;
-        Map * tmpMap = m_creature->GetMap();
-        event = EVENT_NONE;
+        SetEscortPaused(false);
+        SetRun(false);
+        SetMaxPlayerDistance(30);
+        m_creature->SetUInt64Value(UNIT_FIELD_TARGET, 0);
+        m_creature->Yell(SAY_REGINALD_1_3, LANG_UNIVERSAL, 0);
+        Map* tmpMap = m_creature->GetMap();
+        Creature* tmpCreature = tmpMap->GetCreatureById(NPC_MAJESTY_ID);
+
+
+        if (tmpCreature)
+        {
+            if (!tmpCreature->isAlive())
+                tmpCreature->Respawn();
+            tmpCreature->SetVisibility(VISIBILITY_ON);
+        }
+
+        if (tmpCreature = tmpMap->GetCreatureById(NPC_LADY_KATRANA_ID))
+        {
+            if (!tmpCreature->isAlive())
+                tmpCreature->Respawn();
+            tmpCreature->SetVisibility(VISIBILITY_ON);
+        }
 
         if (tmpMap)
         {
-            tmpCreature = tmpMap->GetCreature(tmpMap->GetCreatureGUID(NPC_MARCUS_ID));
+            tmpCreature = tmpMap->GetCreatureById(NPC_MARCUS_ID);
             if (tmpCreature)
             {
                 tmpCreature->Unmount();
@@ -1183,6 +1197,9 @@ struct npc_reginald_windsorAI : public npc_escortAI
             else
                 npcLeft[i - 3] = tmpCreature->GetGUID();
         }
+
+        event = EVENT_NONE;
+        phaseTimer = 60000; // dont let despawn, event will be changed on waypointreached
     }
 
     void SpellHit(Unit * caster, const SpellEntry * spell)
@@ -1789,27 +1806,7 @@ bool QuestAccept_npc_reginald_windsor(Player * player, Creature * creature, Ques
     {
         creature->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
         creature->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER);
-        ((npc_reginald_windsorAI*)creature->AI())->SetEscortPaused(false);
-        ((npc_reginald_windsorAI*)creature->AI())->SetRun(false);
         ((npc_reginald_windsorAI*)creature->AI())->SpawnGuards();
-        ((npc_reginald_windsorAI*)creature->AI())->SetMaxPlayerDistance(15);
-        creature->SetUInt64Value(UNIT_FIELD_TARGET, 0);
-        creature->Yell(SAY_REGINALD_1_3, LANG_UNIVERSAL, 0);
-        Creature * tmpC = creature->GetMap()->GetCreature(creature->GetMap()->GetCreatureGUID(NPC_MAJESTY_ID));
-
-        if (tmpC)
-        {
-            if (!tmpC->isAlive())
-                tmpC->Respawn();
-            tmpC->SetVisibility(VISIBILITY_ON);
-        }
-
-        if (tmpC = creature->GetMap()->GetCreature(creature->GetMap()->GetCreatureGUID(NPC_LADY_KATRANA_ID)))
-        {
-            if (!tmpC->isAlive())
-                tmpC->Respawn();
-            tmpC->SetVisibility(VISIBILITY_ON);
-        }
     }
 
     return true;
