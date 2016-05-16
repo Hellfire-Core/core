@@ -1876,6 +1876,12 @@ void Spell::EffectDummy(uint32 i)
                     }
                     return;
                 }
+                case 12938: // fel curse (blasted lands quest)
+                {
+                    if (!unitTarget || !unitTarget->ToCreature())
+                        return;
+                    m_caster->CastSpell(unitTarget, 12941, true);
+                }
             }
 
             //All IconID Check in there
