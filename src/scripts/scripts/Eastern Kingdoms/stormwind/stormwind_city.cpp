@@ -1034,6 +1034,11 @@ struct npc_reginald_windsorAI : public npc_escortAI
     uint64 npcRight[3];
     std::list<uint64> npcSay;
 
+    void GetDebugInfo(ChatHandler& reader)
+    {
+        reader.PSendSysMessage("Event %u Phase %u Timer %u", event, eventPhase, phaseTimer);
+    }
+
     void WaypointReached(uint32 i)
     {
         Player* player = GetPlayerForEscort();
@@ -1331,7 +1336,7 @@ struct npc_reginald_windsorAI : public npc_escortAI
                     if (!(tmpMap = m_creature->GetMap()))
                         break;
 
-                    if (!(marcus = tmpMap->GetCreature(tmpMap->GetCreatureGUID(NPC_MARCUS_ID))))
+                    if (!(marcus = tmpMap->GetCreatureById(NPC_MARCUS_ID)))
                         break;
 
                     switch (eventPhase)
