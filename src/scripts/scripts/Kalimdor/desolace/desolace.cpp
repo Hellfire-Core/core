@@ -431,6 +431,50 @@ bool GossipSelect_npc_rokaro(Player *player, Creature *_Creature, uint32 sender,
     return true;
 }
 
+struct npc_magram_spectreAI : public ScriptedAI
+{
+    npc_magram_spectreAI(Creature* c) : ScriptedAI(c) {}
+    
+    Timer checker;
+
+    void Reset()
+    {
+        m_creature->SetWalk(true);
+        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        m_creature->SetVisibility(VISIBILITY_OFF);
+        checker = 60000;
+        checker.SetCurrent(urand(0, 60000));
+    }
+
+    void UpdateAI(const uint32 diff)
+    {
+        if (!UpdateVictim() && checker.Expired(diff))
+        {
+            checker = 60000;
+            GameObject* gob = NULL;
+            Hellground::NearestGameObjectEntryInObjectRangeCheck check(*m_creature,177746,50.0f);
+            Hellground::ObjectSearcher<GameObject, Hellground::NearestGameObjectEntryInObjectRangeCheck> checker(gob,check);
+
+            Cell::VisitGridObjects(m_creature, checker, 50);
+            if (gob)
+            {
+                m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                m_creature->SetVisibility(VISIBILITY_ON);
+                float x, y, z;
+                gob->GetNearPoint(x, y, z, 10, 0, frand(0, 2 * M_PI));
+                m_creature->GetMotionMaster()->MovePoint(0, x, y, z);
+            }
+            return;
+        }
+        DoMeleeAttackIfReady();
+    }
+};
+
+CreatureAI* GetAI_npc_magram_spectre(Creature* crea)
+{
+    return new npc_magram_spectreAI(crea);
+}
+
 void AddSC_desolace()
 {
     Script *newscript;
@@ -463,5 +507,10 @@ void AddSC_desolace()
     newscript->Name="npc_rokaro";
     newscript->pGossipHello = &GossipHello_npc_rokaro;
     newscript->pGossipSelect = &GossipSelect_npc_rokaro;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_magram_spectre";
+    newscript->GetAI = &GetAI_npc_magram_spectre;
     newscript->RegisterSelf();
 }
