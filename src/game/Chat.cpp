@@ -180,6 +180,7 @@ ChatCommand * ChatHandler::getCommandTable()
         { "energy",         PERM_GMT,       PERM_CONSOLE, false,  &ChatHandler::HandleModifyEnergyCommand,        "", NULL },
         { "faction",        PERM_GMT,       PERM_CONSOLE, false,  &ChatHandler::HandleModifyFactionCommand,       "", NULL },
         { "fly",            PERM_GMT,       PERM_CONSOLE, false,  &ChatHandler::HandleModifyFlyCommand,           "", NULL },
+        { "forceac",        PERM_GMT,       PERM_CONSOLE, false,  &ChatHandler::HandleModForceACCommand,          "", NULL },
         { "gender",         PERM_ADM,       PERM_CONSOLE, false,  &ChatHandler::HandleModifyGenderCommand,        "", NULL },
         { "honor",          PERM_ADM,       PERM_CONSOLE, false,  &ChatHandler::HandleModifyHonorCommand,         "", NULL },
         { "hp",             PERM_GMT,       PERM_CONSOLE, false,  &ChatHandler::HandleModifyHPCommand,            "", NULL },

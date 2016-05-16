@@ -3067,3 +3067,28 @@ bool ChatHandler::HandleModifyAwardTitleCommand(const char* args)
     SendSysMessage("Command accepted");
     return true;
 }
+
+bool ChatHandler::HandleModForceACCommand(const char* args)
+{
+    std::string string = args;
+    if (string.empty())
+        return false;
+
+    Player* target = getSelectedPlayer();
+    if (!target || target == m_session->GetPlayer())
+        return false;
+    
+    if (string == "on")
+    {
+        target->setForcedAC(true);
+        PSendSysMessage("Forced Anticheat checks enabled for %s", target->GetName());
+        return true;
+    }
+
+    if (string == "off")
+    {
+        target->setForcedAC(false);
+        PSendSysMessage("Forced Anticheat checks disabled for %s", target->GetName());
+        return true;
+    }
+}

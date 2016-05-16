@@ -565,6 +565,7 @@ enum PlayerExtraFlags
     PLAYER_EXTRA_TAXICHEAT          = 0x0008,
     PLAYER_EXTRA_GM_INVISIBLE       = 0x0010,
     PLAYER_EXTRA_GM_CHAT            = 0x0020,               // Show GM badge in chat messages
+    PLAYER_EXTRA_AGGRESIVE_AC       = 0x0040,
 
     // other states
     PLAYER_EXTRA_PVP_DEATH          = 0x0100,               // store PvP death status until corpse creating.
@@ -1053,6 +1054,8 @@ class HELLGROUND_EXPORT Player : public Unit
         bool isArenaSpectating() const { return m_ExtraFlags & PLAYER_EXTRA_ARENA_SPECTATING; }
         void SpectateArena(uint32 arenaMap);
         void UnspectateArena(const bool teleport);
+        bool isForcedAC() const { return m_ExtraFlags & PLAYER_EXTRA_AGGRESIVE_AC; }
+        void setForcedAC(bool set) { if (set) m_ExtraFlags |= PLAYER_EXTRA_AGGRESIVE_AC; else m_ExtraFlags &= ~PLAYER_EXTRA_AGGRESIVE_AC; }
 
         void GiveXP(uint32 xp, Unit* victim);
         void GiveLevel(uint32 level);
