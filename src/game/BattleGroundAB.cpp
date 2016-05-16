@@ -205,6 +205,14 @@ void BattleGroundAB::Update(uint32 diff)
                     (team == BG_TEAM_ALLIANCE) ? RewardHonorToTeam(20, ALLIANCE) : RewardHonorToTeam(20, HORDE);
                     m_HonorScoreTics[team] -= BG_AB_HonorScoreTicks[m_HonorMode];
                 }
+
+                if (m_TeamScores[team] > 2000)
+                    m_TeamScores[team] = 2000;
+                if (team == BG_TEAM_ALLIANCE)
+                    UpdateWorldState(BG_AB_OP_RESOURCES_ALLY, m_TeamScores[team]);
+                if (team == BG_TEAM_HORDE)
+                    UpdateWorldState(BG_AB_OP_RESOURCES_HORDE, m_TeamScores[team]);
+
                 if (!m_IsInformedNearVictory && m_TeamScores[team] > 1800)
                 {
                     if (team == BG_TEAM_ALLIANCE)
@@ -214,13 +222,6 @@ void BattleGroundAB::Update(uint32 diff)
                     PlaySoundToAll(SOUND_NEAR_VICTORY);
                     m_IsInformedNearVictory = true;
                 }
-
-                if (m_TeamScores[team] > 2000)
-                    m_TeamScores[team] = 2000;
-                if (team == BG_TEAM_ALLIANCE)
-                    UpdateWorldState(BG_AB_OP_RESOURCES_ALLY, m_TeamScores[team]);
-                if (team == BG_TEAM_HORDE)
-                    UpdateWorldState(BG_AB_OP_RESOURCES_HORDE, m_TeamScores[team]);
             }
         }
 
