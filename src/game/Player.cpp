@@ -6513,7 +6513,7 @@ void Player::UpdateArea(uint32 newArea)
 
     AreaTableEntry const* area = GetAreaEntryByAreaID(newArea);
 
-    if (area && ((area->flags & AREA_FLAG_ARENA) || InBattleGround()))
+    if (area && ((area->flags & AREA_FLAG_ARENA) /*|| InBattleGround()*/))
     {
         if (!isGameMaster())
             SetFFAPvP(true);
@@ -6522,7 +6522,7 @@ void Player::UpdateArea(uint32 newArea)
     {
         // remove ffa flag only if not ffapvp realm
         // removal in sanctuaries and capitals is handled in zone update
-        if (IsFFAPvP() && !sWorld.IsFFAPvPRealm() && !InBattleGround())
+        if (IsFFAPvP() && !sWorld.IsFFAPvPRealm() /*&& !InBattleGround()*/)
             SetFFAPvP(false);
     }
 
