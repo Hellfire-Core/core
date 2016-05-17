@@ -3378,21 +3378,21 @@ bool ChatHandler::HandleEventAwardCommand(const char* args)
     std::ostringstream ostr;
     ostr << "List of players that get award: ";
     Unit* me = m_session->GetPlayer();
-    std::list<Unit*> targets;
+    std::list<Player*> targets;
     Hellground::AnyPlayerInObjectRangeCheck check(me, 50);
-    Hellground::UnitListSearcher<Hellground::AnyPlayerInObjectRangeCheck> searcher(targets, check);
+    Hellground::ObjectListSearcher<Player, Hellground::AnyPlayerInObjectRangeCheck> searcher(targets, check);
     Cell::VisitAllObjects(me, searcher, 50);
-    for (std::list<Unit*>::iterator itr = targets.begin(); itr != targets.end(); itr++)
+    for (std::list<Player*>::iterator itr = targets.begin(); itr != targets.end(); itr++)
     {
         ostr << (*itr)->GetName() << " ";
         if (entry && count)
         {
             ItemPosCountVec dest;
-            uint8 msg = (*itr)->ToPlayer()->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, entry, count);
+            uint8 msg = (*itr)->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, entry, count);
             if (msg == EQUIP_ERR_OK)
             {
-                Item* item = (*itr)->ToPlayer()->StoreNewItem(dest, entry, true);
-                (*itr)->ToPlayer()->SendNewItem(item, count, true, false, true);
+                Item* item = (*itr)->StoreNewItem(dest, entry, true);
+                (*itr)->SendNewItem(item, count, true, false, true);
             }
         }
     }
