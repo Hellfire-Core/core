@@ -152,7 +152,7 @@ bool ACRequest::DetectSpeedHack(Player *pPlayer)
 
     // time passed between reading movement infos
     uint32 timeDiff = WorldTimer::getMSTimeDiff(GetLastMovementInfo().time, GetNewMovementInfo().time);
-    if (timeDiff < 2)
+    if (timeDiff < 5 && exact2dDist < 25.0f)
         return false;
 
     //client-side speed, traveled distance div by movement time.
