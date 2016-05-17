@@ -97,6 +97,7 @@ struct npc_escortAI : public ScriptedAI
         void SetCanAttack(bool attack) { IsActiveAttacker = attack; }
         uint64 GetEventStarterGUID() { return PlayerGUID; }
         void SetClearWaypoints(bool clear) { ClearWaypoints = clear; }
+        virtual void GetDebugInfo(ChatHandler& reader);
 
     protected:
         Player* GetPlayerForEscort() { return (Player*)Unit::GetUnit(*m_creature, PlayerGUID); }

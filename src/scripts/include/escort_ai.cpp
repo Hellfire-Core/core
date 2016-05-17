@@ -499,3 +499,10 @@ void npc_escortAI::SetEscortPaused(bool bPaused)
     else
         RemoveEscortState(STATE_ESCORT_PAUSED);
 }
+
+void npc_escortAI::GetDebugInfo(ChatHandler& reader)
+{
+    std::ostringstream str;
+    str << "WP timer " << WPWaitTimer << " Escort state " << EscortState << " In combat " << me->isInCombat();
+    reader.SendSysMessage(str.str().c_str());
+}
