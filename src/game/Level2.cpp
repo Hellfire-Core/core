@@ -47,6 +47,7 @@
 #include "CreatureAI.h"
 #include "ChannelMgr.h"
 #include "GuildMgr.h"
+#include "GridNotifiers.h"
 
 #include "TargetedMovementGenerator.h"                      // for HandleNpcUnFollowCommand
 #include "MoveMap.h"                                        // for mmap manager
@@ -3365,15 +3366,35 @@ bool ChatHandler::HandleEventActiveListCommand(const char* args)
 
 bool ChatHandler::HandleEventAwardCommand(const char* args)
 {
-    std::ostringstream ostr;
-    ostr << "List of players that would get award: ";
-    Unit* me = m_session->GetPlayer();
-    for (HostileReference* ref = me->getHostileRefManager().getFirst(); ref; ref = ref->next())
+    uint32 entry = 0;
+    uint32 count = 0;
+    if (strcmp(args, "bojs!") == 0)
     {
-        Unit* target = ref->getSource()->getOwner();
-        if (target && target->GetTypeId() == TYPEID_PLAYER)
-            ostr << target->GetName() << " ";
+        entry = 29434;
+        count = 2;
     }
+    std::ostringstream ostr;
+    ostr << "List of players that get award: ";
+    Unit* me = m_session->GetPlayer();
+    std::list<Unit*> targets;
+    Hellground::AnyPlayerInObjectRangeCheck check(me, 50);
+    Hellground::UnitListSearcher<Hellground::AnyPlayerInObjectRangeCheck> searcher(targets, check);
+    Cell::VisitAllObjects(me, searcher, 50);
+    for (std::list<Unit*>::iterator itr = targets.begin(); itr != targets.end(); itr++)
+    {
+        ostr << (*itr)->GetName() << " ";
+        if (entry && count)
+        {
+            ItemPosCountVec dest;
+            uint8 msg = (*itr)->ToPlayer()->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, entry, count);
+            if (msg == EQUIP_ERR_OK)
+            {
+                Item* item = (*itr)->ToPlayer()->StoreNewItem(dest, entry, true);
+                (*itr)->ToPlayer()->SendNewItem(item, count, true, false, true);
+            }
+        }
+    }
+
     SendSysMessage(ostr.str().c_str());
     return true;
 }
