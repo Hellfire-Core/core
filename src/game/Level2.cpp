@@ -48,6 +48,7 @@
 #include "ChannelMgr.h"
 #include "GuildMgr.h"
 #include "GridNotifiers.h"
+#include "CellImpl.h"
 
 #include "TargetedMovementGenerator.h"                      // for HandleNpcUnFollowCommand
 #include "MoveMap.h"                                        // for mmap manager
