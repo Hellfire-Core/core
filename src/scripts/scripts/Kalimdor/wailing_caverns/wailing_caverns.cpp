@@ -85,7 +85,6 @@ struct npc_disciple_of_naralexAI : public npc_escortAI
         eventTimer = 0;
         currentEvent = 0;
         eventProgress = 0;
-        Point = 0;
         me->setActive(true);
     }
 
@@ -94,7 +93,6 @@ struct npc_disciple_of_naralexAI : public npc_escortAI
     uint32 eventProgress;
     Timer sleepTimer;
     Timer potionTimer;
-    uint32 Point;
     bool potCooldown;
     ScriptedInstance *pInstance;
 
@@ -117,7 +115,6 @@ struct npc_disciple_of_naralexAI : public npc_escortAI
             break;
             case 11:
                 eventTimer.Reset(1);
-                Point = i;
                 eventProgress = 1;
                 currentEvent = TYPE_NARALEX_PART2;
                 pInstance->SetData(TYPE_NARALEX_PART2, IN_PROGRESS);
@@ -127,7 +124,6 @@ struct npc_disciple_of_naralexAI : public npc_escortAI
             break;
             case 24:
                 eventTimer.Reset(1);
-                Point = i;
                 eventProgress = 1;
                 currentEvent = TYPE_NARALEX_PART3;
                 pInstance->SetData(TYPE_NARALEX_PART3, IN_PROGRESS);
@@ -150,7 +146,7 @@ struct npc_disciple_of_naralexAI : public npc_escortAI
     void EnterEvadeMode()
     {
         // Do not stop casting
-        if (Point == 11 || Point == 24)
+        if (eventTimer.GetInterval())
         {
             m_creature->SetLootRecipient(NULL);
             m_creature->DeleteThreatList();
@@ -263,6 +259,7 @@ struct npc_disciple_of_naralexAI : public npc_escortAI
                             me->SummonCreature(NPC_NIGHTMARE_ECTOPLASM, 101.216, 260.543, -99.718, 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 15000);
                             break;
                         case 5:
+                            eventTimer = 3000;
                             if (Creature* naralex = pInstance->instance->GetCreature(pInstance->GetData64(DATA_NARALEX)))
                                 DoScriptText(EMOTE_HORRENDOUS_VISION, naralex);
                             me->SummonCreature(NPC_MUTANUS_THE_DEVOURER, 144.752, 243.089, -100.219, 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 300000);
