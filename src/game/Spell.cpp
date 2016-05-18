@@ -1016,7 +1016,8 @@ void Spell::DoAllEffectOnTarget(TargetInfo *target)
             caster != unitTarget && unitTarget->isAlive())
         {
             // Redirect damage to caster if victim alive
-            m_caster->CastCustomSpell(m_caster, 32409, &m_damage, NULL, NULL, true);
+            int32 truedmg = damageInfo.damage;
+            m_caster->CastCustomSpell(m_caster, 32409, &truedmg, NULL, NULL, true);
         }
         // Judgement of Blood
         else if (GetSpellEntry()->SpellFamilyName == SPELLFAMILY_PALADIN && GetSpellEntry()->SpellFamilyFlags & 0x0000000800000000LL && GetSpellEntry()->SpellIconID == 153)
