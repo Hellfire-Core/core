@@ -1528,6 +1528,12 @@ bool SpellMgr::IsSpellProcEventCanTriggeredBy(SpellProcEventEntry const * spellP
 
     */
 
+    if (EventProcFlag & PROC_FLAG_ON_DO_PERIODIC) // rare case, only 7 spells that should trigger ONLY from tick
+    {
+        if (!(procFlags & PROC_FLAG_ON_DO_PERIODIC))
+            return false;
+    }
+
     if (procFlags & PROC_FLAG_ON_DO_PERIODIC)
     {
         if (EventProcFlag & PROC_FLAG_SUCCESSFUL_NEGATIVE_SPELL_HIT)
