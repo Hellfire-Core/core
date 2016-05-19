@@ -22,6 +22,7 @@
 #include "ModelInstance.h"
 #include "VMapManager2.h"
 #include "VMapDefinitions.h"
+#include "VMapFactory.h"
 
 #include <string>
 #include <sstream>
@@ -39,7 +40,11 @@ namespace VMAP
             MapRayCallback(ModelInstance *val,bool debug = false): prims(val), hit(false), m_debug(debug) {}
             bool operator()(const G3D::Ray& ray, uint32 entry, float& distance, bool pStopAtFirstHit=true)
             {
-                bool result = prims[entry].intersectRay(ray, distance, pStopAtFirstHit,m_debug);
+                bool result = prims[entry].intersectRay(ray, distance, pStopAtFirstHit);
+                if (m_debug && result)
+                {
+                    VMapFactory::createOrGetVMapManager()->SetHitModelName(prims[entry].name, entry);
+                }
                 if (result)
                     hit = true;
                 return result;

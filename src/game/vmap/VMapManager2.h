@@ -112,7 +112,11 @@ namespace VMAP
             }
             virtual bool existsMap(const char* pBasePath, unsigned int pMapId, int x, int y);
 
-            void SetHitModelName(std::string name) { hitModelName = name; };
+            void SetHitModelName(std::string name, uint32 entry) {
+                char buf[200];
+                sprintf(buf, "%s : %u", name.c_str(), entry);
+                hitModelName = buf;
+            };
             const char* GetHitModelName() {return hitModelName.c_str();};
 #ifdef MMAP_GENERATOR
         public:

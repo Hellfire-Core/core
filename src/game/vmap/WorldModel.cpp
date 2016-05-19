@@ -425,7 +425,7 @@ namespace VMAP
         bool   hit;
     };
 
-    bool WorldModel::IntersectRay(const G3D::Ray &ray, float &distance, bool stopAtFirstHit, bool debug) const
+    bool WorldModel::IntersectRay(const G3D::Ray &ray, float &distance, bool stopAtFirstHit) const
     {
         // small M2 workaround, maybe better make separate class with virtual intersection funcs
         // in any case, there's no need to use a bound tree if we only have one submodel
@@ -439,12 +439,6 @@ namespace VMAP
             groupTree.intersectRay(ray, isc, distance, stopAtFirstHit);
             hit = isc.hit;
             hitID = isc.hitID;
-        }
-        if (debug && hit)
-        {
-            char name[200];
-            sprintf(name, "%s : %u", ModelFilename.c_str(), hitID);
-            VMAP::VMapFactory::createOrGetVMapManager()->SetHitModelName(std::string(name));
         }
         return hit;
     }
@@ -585,7 +579,6 @@ namespace VMAP
         }
 
         fclose(rf);
-        ModelFilename = filename;
         return result;
     }
 }
