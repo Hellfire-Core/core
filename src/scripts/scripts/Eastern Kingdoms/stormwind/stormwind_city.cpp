@@ -1036,7 +1036,9 @@ struct npc_reginald_windsorAI : public npc_escortAI
 
     void GetDebugInfo(ChatHandler& reader)
     {
-        reader.PSendSysMessage("Event %u Phase %u Timer %u %u", event, eventPhase, phaseTimer.GetTimeLeft(), phaseTimer.GetInterval());
+        std::ostringstream str;
+        str << "Event " << event << " Phase " << eventPhase << " Timer " << phaseTimer.GetTimeLeft() << " " << phaseTimer.GetInterval();
+        reader.SendSysMessage(str.str().c_str());
     }
 
     void WaypointReached(uint32 i)
