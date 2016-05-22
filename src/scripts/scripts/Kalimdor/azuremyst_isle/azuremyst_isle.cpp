@@ -880,15 +880,17 @@ struct npc_trackerAI : public ScriptedAI
 {
     npc_trackerAI(Creature* creature) : ScriptedAI(creature) {}
 
-    Timer CheckTimer;
+    uint64 matisguid;
 
     void Reset()
     {
-        CheckTimer.Reset(2000);
         DoScriptText(SAY_1, me);
         me->setFaction(1700);
         if (Creature* Matis = GetClosestCreatureWithEntry(me, NPC_MATIS, 35.0f))
+        {
             me->AI()->AttackStart(Matis);
+            matisguid = Matis->GetGUID();
+        }
     }
 
     void Credit()
@@ -914,30 +916,20 @@ struct npc_trackerAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (CheckTimer.Expired(diff))
+        if (Creature* Matis = me->GetCreature(matisguid))
         {
-            if (Creature* Matis = GetClosestCreatureWithEntry(me, NPC_MATIS, 35.0f))
+            if ((Matis->GetHealth())*100 / Matis->GetMaxHealth() < 10)
             {
-                if ((Matis->GetHealth())*100 / Matis->GetMaxHealth() < 10)
-                {
-                    me->AI()->EnterEvadeMode();
-                    Matis->setFaction(35);
-                    Matis->CombatStop();
-                    Matis->DeleteThreatList();
-                    Matis->SetHealth(Matis->GetMaxHealth());
-                    DoScriptText(SAY_2, me);
-                    Credit();
-                    Matis->ForcedDespawn(30000);
-                    me->ForcedDespawn(35000);
-                }
+                me->AI()->EnterEvadeMode();
+                Matis->setFaction(35);
+                Matis->CombatStop();
+                Matis->DeleteThreatList();
+                Matis->SetHealth(Matis->GetMaxHealth());
+                DoScriptText(SAY_2, me);
+                Credit();
+                Matis->ForcedDespawn(30000);
+                me->ForcedDespawn(35000);
             }
-            else
-               {
-                   if (Creature* Matis = GetClosestCreatureWithEntry(me, NPC_MATIS, 55.0f, false))
-                       Matis->setFaction(1701);
-               }
-
-            CheckTimer = 1000;
         }
 
         if (!UpdateVictim())
