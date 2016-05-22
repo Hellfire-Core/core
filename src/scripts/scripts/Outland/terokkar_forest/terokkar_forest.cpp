@@ -2466,6 +2466,25 @@ bool ReceiveEmote_Dena_Kennedy(Player*, Creature* cr, uint32 emote)
     return true;
 }
 
+enum who_are_they
+{
+    QUEST_HORDE     = 10041,
+    QUEST_ALLIANCE  = 10040,
+    SPELL_DISGUISE  = 32756,
+    SPELL_MALE      = 38080,
+    SPELL_FEMALE    = 38081
+};
+
+bool QuestAccept_npc_who_are_they(Player* player, Creature* creature, const Quest* quest)
+{
+    if (quest->GetQuestId() == QUEST_HORDE || quest->GetQuestId() == QUEST_ALLIANCE)
+    {
+        player->CastSpell(player, SPELL_DISGUISE, true);
+        player->CastSpell(player, player->getGender() ? SPELL_FEMALE : SPELL_MALE, true);
+    }
+    return true;
+}
+
 void AddSC_terokkar_forest()
 {
     Script *newscript;
@@ -2606,5 +2625,10 @@ void AddSC_terokkar_forest()
     newscript = new Script;
     newscript->Name = "npc_lady_dena_kennedy";
     newscript->pReceiveEmote = &ReceiveEmote_Dena_Kennedy;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_who_are_they";
+    newscript->pQuestAcceptNPC = &QuestAccept_npc_who_are_they;
     newscript->RegisterSelf();
 }
