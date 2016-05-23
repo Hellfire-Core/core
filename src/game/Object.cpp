@@ -1572,8 +1572,6 @@ Creature* WorldObject::SummonCreature(uint32 id, float x, float y, float z, floa
         delete pCreature;
         return NULL;
     }
-    if (GetTypeId() == TYPEID_UNIT)
-        pCreature->setFaction(ToUnit()->getFaction());
 
     pCreature->SetHomePosition(x, y, z, ang);
     pCreature->Summon(spwtype, despwtime);

@@ -4479,10 +4479,14 @@ void Spell::EffectSummonWild(uint32 i)
 
         TemporarySummonType summonType = (duration == 0) ? TEMPSUMMON_DEAD_DESPAWN : TEMPSUMMON_TIMED_DESPAWN;
 
+        Creature* summoned = NULL;
         if (m_originalCaster)
-            m_originalCaster->SummonCreature(creature_entry,px,py,pz,m_caster->GetOrientation(),summonType,duration);
+            summoned = m_originalCaster->SummonCreature(creature_entry,px,py,pz,m_caster->GetOrientation(),summonType,duration);
         else
-            m_caster->SummonCreature(creature_entry,px,py,pz,m_caster->GetOrientation(),summonType,duration);
+            summoned = m_caster->SummonCreature(creature_entry,px,py,pz,m_caster->GetOrientation(),summonType,duration);
+
+        if (summoned && GetSpellEntry()->Effect[i] == SPELL_EFFECT_SUMMON_PET)
+            summoned->setFaction(m_caster->getFaction());
     }
 }
 
