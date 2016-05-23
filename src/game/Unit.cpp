@@ -3296,6 +3296,8 @@ void Unit::_UpdateAutoRepeatSpell()
         // cancel wand shoot
         if (m_currentSpells[CURRENT_AUTOREPEAT_SPELL]->GetSpellEntry()->Category == 351)
             InterruptSpell(CURRENT_AUTOREPEAT_SPELL);
+        SendCombatStats(1 << COMBAT_STATS_TEST, "autorepeat spell interrupt by movement %u %u %u", NULL,
+            ((Player*)this)->isMoving(), IsNonMeleeSpellCast(false, true, true), IsNonMeleeSpellCast(false, false, true));
         m_AutoRepeatFirstCast = true;
         return;
     }
@@ -3430,10 +3432,7 @@ void Unit::InterruptSpell(uint32 spellType, bool withDelayed, bool withInstant)
             ToPlayer()->SendAutoRepeatCancel();
 
         if (spell->getState() != SPELL_STATE_FINISHED)
-        {
             spell->cancel(SPELL_FAILED_INT_TRUE_INTERRUPT);
-            SendCombatStats(1 << COMBAT_STATS_CRASHTEST, "Bang! interrupt!", NULL);
-        }
 
         m_currentSpells[spellType] = NULL;
         spell->SetReferencedFromCurrent(false);
