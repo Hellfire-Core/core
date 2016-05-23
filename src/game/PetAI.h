@@ -40,17 +40,8 @@ class PetAI : public CreatureAI
         void UpdateAI(const uint32);
         static int Permissible(const Creature *);
 
-        void ForcedAttackStart(Unit* target)
-        {
-            forced_attack = true;
-            CreatureAI::AttackStart(target);
-        }
-
-        void AttackStart(Unit* target)
-        {
-            forced_attack = false; // on change not by owners order we stop forced attacks
-            CreatureAI::AttackStart(target);
-        }
+        void ForcedAttackStart(Unit* target);
+        void AttackStart(Unit* target);
 
         virtual void PrepareSpellForAutocast(uint32 spellId);
         virtual void AddSpellForAutocast(uint32 spellId, Unit* target);

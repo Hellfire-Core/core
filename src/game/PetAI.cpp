@@ -43,6 +43,20 @@ int PetAI::Permissible(const Creature *creature)
     return PERMIT_BASE_NO;
 }
 
+void PetAI::ForcedAttackStart(Unit* target)
+{
+    forced_attack = true;
+    if (me->Attack(target, true) && !me->hasUnitState(UNIT_STAT_LOST_CONTROL))
+        me->GetMotionMaster()->MoveChase(target);
+}
+
+void PetAI::AttackStart(Unit* target)
+{
+    forced_attack = false; // on change not by owners order we stop forced attacks
+    if (me->Attack(target, true) && !me->hasUnitState(UNIT_STAT_LOST_CONTROL))
+        me->GetMotionMaster()->MoveChase(target);
+}
+
 PetAI::PetAI(Creature *c) : CreatureAI(c), i_tracker(TIME_INTERVAL_LOOK), forced_attack(false) 
 {
     m_AllySet.clear();
@@ -278,24 +292,20 @@ void PetAI::UpdateAI(const uint32 diff)
         {
             if (!me->HasReactState(REACT_PASSIVE) && !me->GetCharmInfo()->HasCommandState(COMMAND_STAY))
             {
-
+                Unit* target = NULL;
                 if (m_owner->getVictim())
-                    AttackStart(m_owner->getVictim());
+                    target = m_owner->getVictim();
                 else
                 {
                     if (!m_owner->getAttackers().empty())
-                        AttackStart(m_owner->getAttackerForHelper());
+                        target = m_owner->getAttackerForHelper();
                     else if (!me->getAttackers().empty())
-                        AttackStart(me->getAttackerForHelper());
+                        target = me->getAttackerForHelper();
                     else if (me->HasReactState(REACT_AGGRESSIVE))
-                    {
-                        if (Unit* target = FindValidTarget())
-                            AttackStart(target);
-                    }
-                       
-
+                        target = FindValidTarget();
                 }
 
+                AttackStart(target);
             }
 
             // we still do NOT have target, if follow command were appliend and we are NOT followin or casting, reapply movegen :P
