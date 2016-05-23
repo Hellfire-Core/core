@@ -69,7 +69,7 @@ class HELLGROUND_IMPORT_EXPORT EffectMovementGenerator : public MovementGenerato
         explicit EffectMovementGenerator(uint32 Id) : m_Id(Id) {}
         void Initialize(Unit &);
         void Finalize(Unit &);
-        void Interrupt(Unit &u) { Finalize(u); u.SendCombatStats(1 << COMBAT_STATS_TEST, "effect movement interrupted", NULL); }
+        void Interrupt(Unit &u);
         void Reset(Unit &) {}
         bool Update(Unit &, const uint32 &);
 
