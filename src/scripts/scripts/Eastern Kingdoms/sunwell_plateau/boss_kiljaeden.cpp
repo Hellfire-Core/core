@@ -27,233 +27,9 @@ EndScriptData */
 //TODO rewrite Amagedon
 //TODO Remove blue visual from Orbs on reset and if it is used
 
-#include "precompiled.h"
+#include "boss_kiljaeden.h"
 #include "def_sunwell_plateau.h"
 #include <math.h>
-
-/*** Speech and sounds***/
-enum Speeches
-{
-    // Felmyst outro
-    YELL_KALECGOS       = -1580043, //after felmyst's death spawned and say this
-
-    // These are used throughout Sunwell and Magisters(?). Players can hear this while running through the instances.
-    SAY_KJ_OFFCOMBAT1   = -1580066,
-    SAY_KJ_OFFCOMBAT2   = -1580067,
-    SAY_KJ_OFFCOMBAT3   = -1580068,
-    SAY_KJ_OFFCOMBAT4   = -1580069,
-    SAY_KJ_OFFCOMBAT5   = -1580070,
-
-    // Encounter speech and sounds
-    SAY_KJ_EMERGE       = -1580071,
-    SAY_KJ_SLAY1        = -1580072,
-    SAY_KJ_SLAY2        = -1580073,
-    SAY_KJ_REFLECTION1  = -1580074,
-    SAY_KJ_REFLECTION2  = -1580075,
-    SAY_KJ_DARKNESS1    = -1580076,
-    SAY_KJ_DARKNESS2    = -1580077,
-    SAY_KJ_DARKNESS3    = -1580078,
-    SAY_KJ_PHASE3       = -1580079,
-    SAY_KJ_PHASE4       = -1580080,
-    SAY_KJ_PHASE5       = -1580081,
-    SAY_KJ_DEATH        = -1580093,
-    EMOTE_KJ_DARKNESS   = -1580094,
-
-    /*** Kalecgos - Anveena speech at the beginning of Phase 5; Anveena's sacrifice ***/
-    SAY_KALECGOS_AWAKEN     = -1580082,
-    SAY_ANVEENA_IMPRISONED  = -1580083,
-    SAY_KALECGOS_LETGO      = -1580084,
-    SAY_ANVEENA_LOST        = -1580085,
-    SAY_KALECGOS_FOCUS      = -1580086,
-    SAY_ANVEENA_KALEC       = -1580087,
-    SAY_KALECGOS_FATE       = -1580088,
-    SAY_ANVEENA_GOODBYE     = -1580089,
-    SAY_KALECGOS_GOODBYE    = -1580090,
-    SAY_KALECGOS_ENCOURAGE  = -1580091,
-
-    /*** Kalecgos says throughout the fight ***/
-    SAY_KALECGOS_JOIN       = -1580092,
-    SAY_KALEC_ORB_READY1    = -1580095,
-    SAY_KALEC_ORB_READY2    = -1580096,
-    SAY_KALEC_ORB_READY3    = -1580097,
-    SAY_KALEC_ORB_READY4    = -1580098
-};
-
-/*** Spells used during the encounter ***/
-enum SpellIds
-{
-    /* Hand of the Deceiver's spells and cosmetics */
-    SPELL_SHADOW_BOLT_VOLLEY                            = 45770, // aoe + increases shadow damage taken by 750 for 6s
-    SPELL_SHADOW_INFUSION                               = 45772, // They gain this at 20% - Immunity to Stun/Silence and makes them look angry!
-    SPELL_FELFIRE_PORTAL                                = 46875, // Creates a portal that spawns Felfire Fiends (LIVE FOR THE SWARM!1 FOR THE OVERMIND!)
-    SPELL_SHADOW_CHANNELING                             = 46757, // Channeling animation out of combat
-
-    /* Volatile Felfire Fiend's spells */
-    SPELL_FELFIRE_FISSION                               = 45779, // Felfire Fiends explode when they die or get close to target.
-
-    /* Kil'Jaeden's spells and cosmetics */
-    SPELL_TRANS                                         = 23188, // Surprisingly, this seems to be the right spell.. (Where is it used?)
-    SPELL_REBIRTH                                       = 44200, // Emerge from the Sunwell
-    SPELL_SOUL_FLAY                                     = 45442, // 9k Shadow damage over 3 seconds. Spammed throughout all the fight.
-    SPELL_SOUL_FLAY_SLOW                                = 47106,
-    SPELL_LEGION_LIGHTNING                              = 45664, // Chain Lightning, 4 targets, ~3k Shadow damage, 1.5k mana burn
-    SPELL_FIRE_BLOOM                                    = 45641, // Places a debuff on 5 raid members, which causes them to deal 2k Fire damage to nearby allies and selves. MIGHT NOT WORK
-    SPELL_SUNWELL_KNOCKBACK                             = 40191, // 10 yd aoe knockback, no damage
-
-    SPELL_SINISTER_REFLECTION                           = 45785, // Summon shadow copies of 5 raid members that fight against KJ's enemies
-    SPELL_SINISTER_REFLECTION_ENLARGE                   = 45893, // increases size by 50%
-
-    SPELL_SHADOW_SPIKE                                  = 46680, // Bombard random raid members with Shadow Spikes (Very similar to Void Reaver orbs)
-    SPELL_FLAME_DART                                    = 45737, // Bombards the raid with flames every 3(?) seconds
-    SPELL_DARKNESS_OF_A_THOUSAND_SOULS                  = 46605, // Begins a 8-second channeling, after which he will deal 50'000 damage to the raid
-    SPELL_DARKNESS_OF_A_THOUSAND_SOULS_DAMAGE           = 45657,
-
-    /* Armageddon spells wrong visual */
-    SPELL_ARMAGEDDON_TRIGGER                            = 45909, // Meteor spell trigger missile should cast creature on himself
-    SPELL_ARMAGEDDON_VISUAL                             = 45911, // Does the hellfire visual to indicate where the meteor missle lands
-    SPELL_ARMAGEDDON_VISUAL2                            = 45914, // Does the light visual to indicate where the meteor missle lands
-    SPELL_ARMAGEDDON_VISUAL3                            = 24207, // This shouldn't correct but same as seen on the movie
-    SPELL_ARMAGEDDON_SUMMON_TRIGGER                     = 45921, // Summons the triggers that cast the spells on himself need random target select
-    SPELL_ARMAGEDDON_DAMAGE                             = 45915, // This does the area damage
-
-    /* Shield Orb Spells*/
-    SPELL_SHADOW_BOLT                                   = 45680, //45679 would be correct but triggers to often //TODO fix console error
-
-
-    /* Anveena's spells and cosmetics (Or, generally, everything that has "Anveena" in name) */
-    SPELL_ANVEENA_PRISON                                = 46367, // She hovers locked within a bubble
-    SPELL_ANVEENA_ENERGY_DRAIN                          = 46410, // Sunwell energy glow animation (Control mob uses this)
-    SPELL_SACRIFICE_OF_ANVEENA                          = 46474, // This is cast on Kil'Jaeden when Anveena sacrifices herself into the Sunwell
-
-    /* Sinister Reflection Spells */
-    SPELL_SR_CURSE_OF_AGONY                             = 46190,
-    SPELL_SR_SHADOW_BOLT                                = 47076,
-
-    SPELL_SR_EARTH_SHOCK                                = 47071,
-
-    SPELL_SR_FIREBALL                                   = 47074,
-
-    SPELL_SR_HEMORRHAGE                                 = 45897,
-
-    SPELL_SR_HOLY_SHOCK                                 = 38921,
-    SPELL_SR_HAMMER_OF_JUSTICE                          = 37369,
-
-    SPELL_SR_HOLY_SMITE                                 = 47077,
-    SPELL_SR_RENEW                                      = 47079,
-
-    SPELL_SR_SHOOT                                      = 16496,
-    SPELL_SR_MULTI_SHOT                                 = 48098,
-    SPELL_SR_WING_CLIP                                  = 40652,
-
-    SPELL_SR_WHIRLWIND                                  = 17207,
-
-    SPELL_SR_MOONFIRE                                   = 47072,
-    //SPELL_SR_PLAGU STRIKE                             = 58843, Dk Spell!
-
-    /*** Other Spells (used by players, etc) ***/
-    SPELL_VENGEANCE_OF_THE_BLUE_FLIGHT                  = 45839, // Possess the blue dragon from the orb to help the raid.
-    SPELL_ENTROPIUS_BODY                                = 46819, // Visual for Entropius at the Epilogue
-    SPELL_RING_OF_BLUE_FLAMES                           = 45825, // Cast this spell when the go is activated
-    SPELL_POSSESS_DRAKE_IMMUNE                          = 45838, // Gives immunity to dragon controller
-    SPELL_KILL_DRAKES                                   = 46707, // Used on wipe to kill remaining drakes
-};
-
-enum CreatureIds
-{
-    CREATURE_ANVEENA                        = 26046, // Embodiment of the Sunwell
-    CREATURE_KALECGOS                       = 25319, // Helps the raid throughout the fight
-    CREATURE_PROPHET                        = 26246, // Outro
-    CREATURE_KILJAEDEN                      = 25315, // Give it to 'em KJ!
-    CREATURE_HAND_OF_THE_DECEIVER           = 25588, // Adds found before KJ emerges
-    CREATURE_FELFIRE_PORTAL                 = 25603, // Portal spawned be Hand of the Deceivers
-    CREATURE_VOLATILE_FELFIRE_FIEND         = 25598, // Fiends spawned by the above portal
-    CREATURE_ARMAGEDDON_TARGET              = 25735, // This mob casts meteor on itself.. I think
-    CREATURE_SHIELD_ORB                     = 25502, // Shield orbs circle the room raining shadow bolts on raid
-    CREATURE_THE_CORE_OF_ENTROPIUS          = 26262, // Used in the ending cinematic?
-    CREATURE_POWER_OF_THE_BLUE_DRAGONFLIGHT = 25653, // NPC that players possess when using the Orb of the Blue Dragonflight
-    CREATURE_SPIKE_TARGET1                  = 30598, // Should summon these under Shadow Spike Channel on targets place
-    CREATURE_SPIKE_TARGET2                  = 30614,
-    CREATURE_SINISTER_REFLECTION            = 25708, // Sinister Relection spawnd on Phase swichtes
-    CREATURE_KILJAEDEN_CONTROLLER           = 25608  // controller mob
-};
-
-/*** GameObjects ***/
-#define GAMEOBJECT_ORB_OF_THE_BLUE_DRAGONFLIGHT 188415
-
-/*** Error messages ***/
-#define ERROR_KJ_NOT_SUMMONED "TSCR ERROR: Unable to summon Kil'Jaeden for some reason"
-
-/*** Others ***/
-#define FLOOR_Z 28.050388
-#define SHIELD_ORB_Z 45.000
-
-enum Phase
-{
-    PHASE_DECEIVERS     = 1, // Fight 3 adds
-    PHASE_NORMAL        = 2, // Kil'Jaeden emerges from the sunwell
-    PHASE_DARKNESS      = 3, // At 85%, he gains few abilities; Kalecgos joins the fight
-    PHASE_ARMAGEDDON    = 4, // At 55%, he gains even more abilities
-    PHASE_SACRIFICE     = 5, // At 25%, Anveena sacrifices herself into the Sunwell; at this point he becomes enraged and has *significally* shorter cooldowns.
-};
-
-//Timers
-enum KilJaedenTimers
-{
-    TIMER_KALEC_JOIN        = 0,
-    TIMER_SOUL_FLAY         = 1,
-    TIMER_LEGION_LIGHTNING  = 2,
-    TIMER_FIRE_BLOOM        = 3,
-    TIMER_SUMMON_SHILEDORB  = 4,
-
-    TIMER_SHADOW_SPIKE      = 5,
-    TIMER_FLAME_DART        = 6,
-    TIMER_DARKNESS          = 7,
-    TIMER_ORBS_EMPOWER      = 8,
-
-    TIMER_ARMAGEDDON        = 9,
-    TIMER_ANVEENA_SPEECH    = 10,
-
-    TIMER_KJ_MAX
-};
-
-
-enum Actions
-{
-    DECEIVER_ENTER_COMBAT = 0,
-    DECEIVER_DIED         = 1,
-    DECEIVER_RESET        = 2,
-    KALEC_RESET_ORBS      = 3
-};
-
-// Locations, where Shield Orbs will spawn
-float ShieldOrbLocations[4][2] =
-{
-    {1698.900, 627.870},  //middle pont of Sunwell
-    {(3.14f * 0.75f), 17.0f }, 
-    {(3.14f * 1.25f), 17.0f },
-    {(3.14f * 1.75f), 17.0f }
-};
-
-struct Speech
-{
-    int32 textid;
-    uint32 creature, timer;
-};
-// TODO: Timers
-static Speech Sacrifice[] =
-{
-    {SAY_KALECGOS_AWAKEN,       CREATURE_KALECGOS,  5000},
-    {SAY_ANVEENA_IMPRISONED,    CREATURE_ANVEENA,   5000},
-    {SAY_KALECGOS_LETGO,        CREATURE_KALECGOS,  8000},
-    {SAY_ANVEENA_LOST,          CREATURE_ANVEENA,   5000},
-    {SAY_KALECGOS_FOCUS,        CREATURE_KALECGOS,  7000},
-    {SAY_ANVEENA_KALEC,         CREATURE_ANVEENA,   2000},
-    {SAY_KALECGOS_FATE,         CREATURE_KALECGOS,  3000},
-    {SAY_ANVEENA_GOODBYE,       CREATURE_ANVEENA,   6000},
-    {SAY_KALECGOS_GOODBYE,      CREATURE_KALECGOS,  12000},
-    {SAY_KJ_PHASE5,             CREATURE_KILJAEDEN, 8000},
-    {SAY_KALECGOS_ENCOURAGE,    CREATURE_KALECGOS,  5000}
-};
 
 class AllOrbsInGrid
 {
@@ -420,12 +196,6 @@ struct boss_kalecgos_kjAI : public ScriptedAI
             case 4: DoScriptText(SAY_KALEC_ORB_READY4, m_creature); break;
         }
     }
-    void DoAction(const int32 action)
-    {
-        if (action == KALEC_RESET_ORBS)
-            ResetOrbs();
-    }
-
 
     void MovementInform(uint32 Type, uint32 Id)
     {
@@ -576,7 +346,12 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
         DoScriptText(SAY_KJ_DEATH, m_creature);
 
         if (pInstance)
+        {
             pInstance->SetData(DATA_KILJAEDEN_EVENT, DONE);
+            Creature* Control = pInstance->instance->GetCreatureById(CREATURE_KILJAEDEN_CONTROLLER);
+            if (Control)
+                Control->Kill(Control);
+        }
     }
 
     void KilledUnit(Unit* victim)
@@ -590,7 +365,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
         Summons.DespawnAll();
         
         if (Creature* Kalec = pInstance->instance->GetCreatureById(CREATURE_KALECGOS))
-            Kalec->AI()->DoAction(KALEC_RESET_ORBS);
+            CAST_AI(boss_kalecgos_kjAI, Kalec->AI())->ResetOrbs();
 
         // Reset the controller
         if (pInstance)
@@ -808,7 +583,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
 
                         _Timer[TIMER_ORBS_EMPOWER] = 0;
                         if (Phase == PHASE_SACRIFICE)
-                            _Timer[TIMER_ARMAGEDDON].Reset(2000);
+                            _Timer[TIMER_ARMAGEDDON].Reset(10000);
                         break; 
                     }
                     case TIMER_ARMAGEDDON:
@@ -831,15 +606,14 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                     }
                     case TIMER_ANVEENA_SPEECH:
                     {
-                        if (SpeechPhase == 11)
+
+                        if (SpeechPhase == 9)
                         {
-                            _Timer[TIMER_ANVEENA_SPEECH] = 0;
                             Creature* Anveena = pInstance->instance->GetCreatureById(CREATURE_ANVEENA);
                             if (Anveena)
                                 Anveena->CastSpell(m_creature, SPELL_SACRIFICE_OF_ANVEENA, false);
-                            WaitTimer.Reset(5000);// He shouldn't cast spells for ~5 seconds after Anveena's sacrifice.
+                            StunTimer.Reset(5000);// He shouldn't cast spells for ~5 seconds after Anveena's sacrifice.
                             m_creature->addUnitState(UNIT_STAT_STUNNED);
-                            break;
                         }
 
                         Unit* speaker = pInstance->instance->GetCreatureById(Sacrifice[SpeechPhase].creature);
@@ -1080,7 +854,6 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
 
         ShadowBoltVolleyTimer.Reset(1000 + urand(0, 3000)); // So they don't all cast it in the same moment.
         FelfirePortalTimer.Reset(20000);
-        Summons.DoAction(0, DECEIVER_RESET);
         Summons.DespawnAll();
     }
 
@@ -1101,14 +874,9 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
     {
         if (pInstance)
         {
-            //pInstance->SetData(DATA_KILJAEDEN_EVENT, IN_PROGRESS);
             Creature* Control = pInstance->instance->GetCreatureById(CREATURE_KILJAEDEN_CONTROLLER);
             if (Control)
-            {
                 Control->AI()->EnterCombat(who);
-                Control->AddThreat(who, 0.0f);
-                Control->AI()->DoZoneInCombat();
-            }
         }
         m_creature->InterruptNonMeleeSpells(true);
     }
@@ -1174,34 +942,30 @@ CreatureAI* GetAI_mob_hand_of_the_deceiver(Creature *_Creature)
 //AI for Felfire Portal
 struct mob_felfire_portalAI : public Scripted_NoMovementAI
 {
-    mob_felfire_portalAI(Creature* c) : Scripted_NoMovementAI(c), Summons(m_creature) {}
+    mob_felfire_portalAI(Creature* c) : Scripted_NoMovementAI(c) {}
 
     Timer SpawnFiendTimer;
-
-    SummonList Summons;
+    uint64 myOwnerGUID;
 
     void Reset()
     {
+        myOwnerGUID =0;
         SpawnFiendTimer = 3000;
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
     }
+    
+    void IsSummonedBy(Unit* owner)
+    {
+        myOwnerGUID = owner->GetGUID();
+    }
 
     void JustSummoned(Creature* summoned)
     {
-        summoned->setFaction(m_creature->getFaction());
-        summoned->SetLevel(m_creature->getLevel());
-        summoned->AI()->DoZoneInCombat();
-        Summons.Summon(summoned);
+        Creature* owner = me->GetCreature(myOwnerGUID);
+            owner->AI()->JustSummoned(summoned);
     }
-    void DoAction(const int32 action)
-    {
-        if (action == DECEIVER_RESET)
-            Summons.DespawnAll();
-    }
-
-
-
+    
     void UpdateAI(const uint32 diff)
     {
         if (SpawnFiendTimer.Expired(diff))

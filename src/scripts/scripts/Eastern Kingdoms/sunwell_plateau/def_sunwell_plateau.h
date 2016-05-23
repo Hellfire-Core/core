@@ -57,9 +57,6 @@
 #define DATA_EREDAR_TWINS_INTRO     31
 #define DATA_HAND_OF_DECEIVER_COUNT 32
 
-#define DATA_KJ_TESTING_COUNTER     50
-#define DATA_KJ_TESTING             51
-
 #define SISTER_DEATH                1
 
 #endif
