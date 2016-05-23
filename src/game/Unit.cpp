@@ -3430,7 +3430,10 @@ void Unit::InterruptSpell(uint32 spellType, bool withDelayed, bool withInstant)
             ToPlayer()->SendAutoRepeatCancel();
 
         if (spell->getState() != SPELL_STATE_FINISHED)
+        {
             spell->cancel(SPELL_FAILED_INT_TRUE_INTERRUPT);
+            SendCombatStats(1 << COMBAT_STATS_CRASHTEST, "Bang! interrupt!", NULL);
+        }
 
         m_currentSpells[spellType] = NULL;
         spell->SetReferencedFromCurrent(false);

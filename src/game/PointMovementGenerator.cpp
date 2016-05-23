@@ -121,8 +121,6 @@ void EffectMovementGenerator::Finalize(Unit &unit)
     if (EffectId() == EVENT_CHARGE)
         unit.clearUnitState(UNIT_STAT_CHARGING);
 
-    unit.SendCombatStats(1 << COMBAT_STATS_TEST, "effect movement finalized(or interrupted)", NULL);
-
     if (unit.GetTypeId() != TYPEID_UNIT)
         return;
 
@@ -135,7 +133,6 @@ void EffectMovementGenerator::Finalize(Unit &unit)
 void EffectMovementGenerator::Interrupt(Unit& unit)
 {
     Finalize(unit);
-    unit.SendCombatStats(1 << COMBAT_STATS_TEST, "effect movement interrupted", NULL);
 }
 
 void EffectMovementGenerator::Initialize(Unit &unit)
