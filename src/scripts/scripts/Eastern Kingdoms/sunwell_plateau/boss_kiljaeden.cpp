@@ -199,22 +199,21 @@ enum Phase
 //Timers
 enum KilJaedenTimers
 {
-    TIMER_KALEC_JOIN = 0,
+    TIMER_KALEC_JOIN        = 0,
+    TIMER_SOUL_FLAY         = 1,
+    TIMER_LEGION_LIGHTNING  = 2,
+    TIMER_FIRE_BLOOM        = 3,
+    TIMER_SUMMON_SHILEDORB  = 4,
 
-    //Phase 2 Timer
-    TIMER_SOUL_FLAY        = 1,
-    TIMER_LEGION_LIGHTNING = 2,
-    TIMER_FIRE_BLOOM       = 3,
-    TIMER_SUMMON_SHILEDORB = 4,
+    TIMER_SHADOW_SPIKE      = 5,
+    TIMER_FLAME_DART        = 6,
+    TIMER_DARKNESS          = 7,
+    TIMER_ORBS_EMPOWER      = 8,
 
-    //Phase 3 Timer
-    TIMER_SHADOW_SPIKE     = 5,
-    TIMER_FLAME_DART       = 6,
-    TIMER_DARKNESS         = 7,
-    TIMER_ORBS_EMPOWER     = 8,
+    TIMER_ARMAGEDDON        = 9,
+    TIMER_ANVEENA_SPEECH    = 10,
 
-    //Phase 4 Timer
-    TIMER_ARMAGEDDON       = 9
+    TIMER_KJ_MAX
 };
 
 
@@ -281,7 +280,7 @@ bool GOUse_go_orb_of_the_blue_flight(Player *plr, GameObject* go)
             plr->CastSpell(plr, SPELL_POSSESS_DRAKE_IMMUNE, true);
         }
         go->SetUInt32Value(GAMEOBJECT_FACTION, 0);
-        Unit* Kalec = ((Creature*)Unit::GetUnit(*plr, pInstance->GetData64(DATA_KALECGOS_KJ)));
+        Unit* Kalec = pInstance->instance->GetCreatureById(CREATURE_KALECGOS);
 
         if (!Kalec)
             return true;
@@ -487,10 +486,10 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
     SummonList Summons;
 
     uint8 Phase;
-    uint8 ActiveTimers;
     uint8 SpikesLeft; // he releases 9 spikes while casting Shadow Spikes
+    uint8 SpeechPhase;
 
-    Timer _Timer[10];
+    Timer _Timer[TIMER_KJ_MAX];
     Timer WaitTimer;
     Timer StunTimer;
     Timer Emerging;   // we don't want to damage players when emerging, we do this when the fight starts
@@ -504,29 +503,26 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
     void Reset()
     {
         Summons.DespawnAll();
-        // TODO: Fix timers
-        _Timer[TIMER_KALEC_JOIN].Reset(26000);
-
         //Phase 2 Timer
+        _Timer[TIMER_KALEC_JOIN].Reset(26000);
         _Timer[TIMER_SOUL_FLAY].Reset(3000);
         _Timer[TIMER_LEGION_LIGHTNING].Reset(10000);
         _Timer[TIMER_FIRE_BLOOM].Reset(13000);
         _Timer[TIMER_SUMMON_SHILEDORB].Reset(urand(10000,16000));
 
-        //Phase 3 Timer
-        _Timer[TIMER_SHADOW_SPIKE].Reset(4000);
-        _Timer[TIMER_FLAME_DART].Reset(urand(18000, 22000));
-        _Timer[TIMER_DARKNESS].Reset(45000);
+        //other phases - inactive
+        _Timer[TIMER_SHADOW_SPIKE].Reset(0);
+        _Timer[TIMER_FLAME_DART].Reset(0);
+        _Timer[TIMER_DARKNESS].Reset(0);
         _Timer[TIMER_ORBS_EMPOWER].Reset(0);
-
-        //Phase 4 Timer
         _Timer[TIMER_ARMAGEDDON].Reset(0);
+        _Timer[TIMER_ANVEENA_SPEECH].Reset(0);
 
-        ActiveTimers = 5;
         WaitTimer.Reset(1);
         StunTimer.Reset(5000);
 
         Phase = PHASE_DECEIVERS;
+        SpeechPhase = 0;
 
         Emerging.Reset(10000);
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
@@ -593,13 +589,13 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
         Scripted_NoMovementAI::EnterEvadeMode();
         Summons.DespawnAll();
         
-        if (Creature* Kalec = Unit::GetCreature(*m_creature, pInstance->GetData64(DATA_KALECGOS_KJ)))
+        if (Creature* Kalec = pInstance->instance->GetCreatureById(CREATURE_KALECGOS))
             Kalec->AI()->DoAction(KALEC_RESET_ORBS);
 
         // Reset the controller
         if (pInstance)
         {
-            Creature* Control = ((Creature*)Unit::GetUnit(*m_creature, pInstance->GetData64(DATA_KILJAEDEN_CONTROLLER)));
+            Creature* Control = pInstance->instance->GetCreatureById(CREATURE_KILJAEDEN_CONTROLLER);
             if (Control)
                 ((Scripted_NoMovementAI*)Control->AI())->EnterEvadeMode();
         }
@@ -664,7 +660,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
         }
 
 
-        for (uint8 t = 0; t < ActiveTimers; t++)
+        for (uint8 t = 0; t < TIMER_KJ_MAX; t++)
         {
             if (_Timer[t].Expired(diff))
             {
@@ -672,7 +668,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                 {
                     case TIMER_KALEC_JOIN:
                     {
-                        if (Creature* Kalec = Unit::GetCreature(*m_creature, pInstance->GetData64(DATA_KALECGOS_KJ)))
+                        if (Creature* Kalec = pInstance->instance->GetCreatureById(CREATURE_KALECGOS))
                         {
                             DoScriptText(SAY_KALECGOS_JOIN, Kalec);
                             IsKalecJoined = true;
@@ -791,7 +787,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                         }
                         else
                         {
-                            _Timer[TIMER_DARKNESS] = (Phase == PHASE_SACRIFICE) ? 20000 + rand() % 15000 : 40000 + rand() % 30000;
+                            _Timer[TIMER_DARKNESS] = (Phase == PHASE_SACRIFICE) ? urand(25000,30000) :urand(43000,48000);
                             IsInDarkness = false;
                             DoCastAOE(SPELL_DARKNESS_OF_A_THOUSAND_SOULS_DAMAGE, true);
 
@@ -806,11 +802,13 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                     }
                     case TIMER_ORBS_EMPOWER:
                     {
-                        Creature* Kalec = Unit::GetCreature(*m_creature, pInstance->GetData64(DATA_KALECGOS_KJ));
+                        Creature* Kalec = pInstance->instance->GetCreatureById(CREATURE_KALECGOS);
                         if (Kalec)
                             ((boss_kalecgos_kjAI*)Kalec->AI())->EmpowerOrb(Phase == PHASE_SACRIFICE);
 
                         _Timer[TIMER_ORBS_EMPOWER] = 0;
+                        if (Phase == PHASE_SACRIFICE)
+                            _Timer[TIMER_ARMAGEDDON].Reset(2000);
                         break; 
                     }
                     case TIMER_ARMAGEDDON:
@@ -831,6 +829,26 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                         _Timer[TIMER_ARMAGEDDON] = (Phase == PHASE_ARMAGEDDON) ? 3500 : 2200;
                         break;
                     }
+                    case TIMER_ANVEENA_SPEECH:
+                    {
+                        if (SpeechPhase == 11)
+                        {
+                            _Timer[TIMER_ANVEENA_SPEECH] = 0;
+                            Creature* Anveena = pInstance->instance->GetCreatureById(CREATURE_ANVEENA);
+                            if (Anveena)
+                                Anveena->CastSpell(m_creature, SPELL_SACRIFICE_OF_ANVEENA, false);
+                            WaitTimer.Reset(5000);// He shouldn't cast spells for ~5 seconds after Anveena's sacrifice.
+                            m_creature->addUnitState(UNIT_STAT_STUNNED);
+                            break;
+                        }
+
+                        Unit* speaker = pInstance->instance->GetCreatureById(Sacrifice[SpeechPhase].creature);
+                        if (speaker)
+                            DoScriptText(Sacrifice[SpeechPhase].textid, speaker);
+                        _Timer[TIMER_ANVEENA_SPEECH] = Sacrifice[SpeechPhase].timer;
+                        SpeechPhase++;
+                        break;
+                    }
                 }
             }
         }
@@ -840,17 +858,19 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
         {
             // nothing should be cast before shadow spike ends
             ClearCastQueue();
-            _Timer[TIMER_FLAME_DART].Reset(57000);
+            
             _Timer[TIMER_SOUL_FLAY].Delay(34000);
-            _Timer[TIMER_FIRE_BLOOM].Reset(67000);
             _Timer[TIMER_LEGION_LIGHTNING].Reset(47000);
+            _Timer[TIMER_FIRE_BLOOM].Reset(67000);
             _Timer[TIMER_SUMMON_SHILEDORB].Reset(urand(45000, 60000));
+            _Timer[TIMER_SHADOW_SPIKE].Reset(4000);
+            _Timer[TIMER_FLAME_DART].Reset(57000);
+            _Timer[TIMER_DARKNESS].Reset(45000);
             _Timer[TIMER_ORBS_EMPOWER].Reset(35000);
             CastSinisterReflection();
 
             DoScriptText(SAY_KJ_PHASE3, m_creature);
             Phase = PHASE_DARKNESS;
-            ActiveTimers = 9;
             SendDebug("Entering phase 3");
         }
 
@@ -858,12 +878,13 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
         if (Phase == PHASE_DARKNESS && !me->IsNonMeleeSpellCast(true) && ((m_creature->GetHealth() * 100 / m_creature->GetMaxHealth()) < 55))
         {
             ClearCastQueue();
-            _Timer[TIMER_FLAME_DART].Reset(57000);
+            
             _Timer[TIMER_SOUL_FLAY].Delay(34000);
-            _Timer[TIMER_FIRE_BLOOM].Reset(67000);
             _Timer[TIMER_LEGION_LIGHTNING].Reset(47000);
+            _Timer[TIMER_FIRE_BLOOM].Reset(67000);
             _Timer[TIMER_SUMMON_SHILEDORB].Reset(urand(45000, 60000));
             _Timer[TIMER_SHADOW_SPIKE].Reset(4000);
+            _Timer[TIMER_FLAME_DART].Reset(57000);
             _Timer[TIMER_DARKNESS].Reset(45000);
             _Timer[TIMER_ORBS_EMPOWER].Reset(35000);
             _Timer[TIMER_ARMAGEDDON].Reset(50000);
@@ -871,7 +892,6 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
 
             DoScriptText(SAY_KJ_PHASE4, m_creature);
             Phase = PHASE_ARMAGEDDON;
-            ActiveTimers = 10;
             SendDebug("Entering phase 4");
         }
 
@@ -879,22 +899,19 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
         if (Phase == PHASE_ARMAGEDDON && !me->IsNonMeleeSpellCast(true) && ((m_creature->GetHealth() * 100 / m_creature->GetMaxHealth()) < 25))
         {
             ClearCastQueue();
-            _Timer[TIMER_FLAME_DART].Reset(57000);
             _Timer[TIMER_SOUL_FLAY].Delay(34000);
-            _Timer[TIMER_FIRE_BLOOM].Reset(67000);
             _Timer[TIMER_LEGION_LIGHTNING].Reset(47000);
+            _Timer[TIMER_FIRE_BLOOM].Reset(67000);
             _Timer[TIMER_SUMMON_SHILEDORB].Reset(urand(45000, 60000));
             _Timer[TIMER_SHADOW_SPIKE].Reset(4000);
+            _Timer[TIMER_FLAME_DART].Reset(57000);
             _Timer[TIMER_DARKNESS].Reset(45000);
             _Timer[TIMER_ORBS_EMPOWER].Reset(35000);
+            _Timer[TIMER_ARMAGEDDON].Reset(0);
+            _Timer[TIMER_ANVEENA_SPEECH].Reset(1);
             CastSinisterReflection();
 
             Phase = PHASE_SACRIFICE;
-            Creature* Anveena = Unit::GetCreature((*m_creature), pInstance->GetData64(DATA_ANVEENA));
-            if (Anveena)
-                Anveena->CastSpell(m_creature, SPELL_SACRIFICE_OF_ANVEENA, false);
-            WaitTimer.Reset(10000);// He shouldn't cast spells for ~10 seconds after Anveena's sacrifice. This will be done within Anveena's script
-            m_creature->addUnitState(UNIT_STAT_STUNNED);
             SendDebug("Entering phase 5");
         }
 
@@ -905,7 +922,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
     void GetDebugInfo(ChatHandler& reader)
     {
         std::ostringstream str;
-        str << "KJD Debugai, phase " << (int)Phase << "; ActiveTimers " << (int)ActiveTimers << "\n";
+        str << "KJD Debugai, phase " << (int)Phase << "\n";
         for (uint8 i = 0; i < 10; i++)
             str << "Timer " << (int)i << " : " << (int)_Timer[i].GetTimeLeft()  << "\n";
         str << "WaitTimer : " << (int)WaitTimer.GetTimeLeft();
@@ -940,7 +957,7 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
 
     void Reset()
     {
-        KalecKJ = Unit::GetCreature((*m_creature), pInstance->GetData64(DATA_KALECGOS_KJ));
+        KalecKJ = pInstance->instance->GetCreatureById(CREATURE_KALECGOS);
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
         m_creature->addUnitState(UNIT_STAT_STUNNED);
@@ -1085,7 +1102,7 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
         if (pInstance)
         {
             //pInstance->SetData(DATA_KILJAEDEN_EVENT, IN_PROGRESS);
-            Creature* Control = ((Creature*)Unit::GetUnit(*m_creature, pInstance->GetData64(DATA_KILJAEDEN_CONTROLLER)));
+            Creature* Control = pInstance->instance->GetCreatureById(CREATURE_KILJAEDEN_CONTROLLER);
             if (Control)
             {
                 Control->AI()->EnterCombat(who);
@@ -1331,7 +1348,7 @@ struct mob_shield_orbAI : public ScriptedAI
         me->SetSelection(0);
         m_creature->SetLevitate(true);
         PointReached = true;
-        _Timer.Reset(500 + rand() % 500);
+        _Timer.Reset(urand(500,1000));
         CheckTimer.Reset(1000);
         mx = ShieldOrbLocations[0][0];
         my = ShieldOrbLocations[0][1];

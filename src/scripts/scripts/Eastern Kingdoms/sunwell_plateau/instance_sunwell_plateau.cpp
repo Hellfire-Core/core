@@ -111,10 +111,6 @@ struct instance_sunwell_plateau : public ScriptedInstance
         Alythess                = 0;
         Sacrolash               = 0;
         Muru                    = 0;
-        KilJaeden               = 0;
-        KilJaedenController     = 0;
-        Anveena                 = 0;
-        KalecgosKJ              = 0;
         HandOfDeceiverCount     = 1;
 
         /*** GameObjects ***/
@@ -255,10 +251,6 @@ struct instance_sunwell_plateau : public ScriptedInstance
             case 25166: Alythess            = creature->GetGUID(); break;
             case 25165: Sacrolash           = creature->GetGUID(); break;
             case 25741: Muru                = creature->GetGUID(); break;
-            case 25315: KilJaeden           = creature->GetGUID(); break;
-            case 25608: KilJaedenController = creature->GetGUID(); break;
-            case 26046: Anveena             = creature->GetGUID(); break;
-            case 25319: KalecgosKJ          = creature->GetGUID(); break;
             case 25038: Felmyst             = creature->GetGUID(); break;
             case 24895:
                 Madrigosa = creature->GetGUID();
@@ -387,10 +379,6 @@ struct instance_sunwell_plateau : public ScriptedInstance
             case DATA_ALYTHESS:             return Alythess;
             case DATA_SACROLASH:            return Sacrolash;
             case DATA_MURU:                 return Muru;
-            case DATA_KILJAEDEN:            return KilJaeden;
-            case DATA_KILJAEDEN_CONTROLLER: return KilJaedenController;
-            case DATA_ANVEENA:              return Anveena;
-            case DATA_KALECGOS_KJ:          return KalecgosKJ;
             case DATA_PLAYER_GUID:
                 if (Player* Target = GetPlayerInMap())
                     return Target->GetGUID();

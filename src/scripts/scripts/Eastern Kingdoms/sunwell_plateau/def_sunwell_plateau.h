@@ -40,10 +40,6 @@
 #define DATA_ALYTHESS               15
 #define DATA_SACROLASH              16
 #define DATA_MURU                   17
-#define DATA_KILJAEDEN              18
-#define DATA_KILJAEDEN_CONTROLLER   19
-#define DATA_ANVEENA                20
-#define DATA_KALECGOS_KJ            21
 
 /*** GameObjects ***/
 #define DATA_GO_FORCEFIELD          21
