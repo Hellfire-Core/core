@@ -3192,9 +3192,6 @@ void Spell::SendCastResult(SpellCastResult result)
     if (((Player*)m_caster)->GetSession()->PlayerLoading())  // don't send cast results at loading time
         return;
 
-    if (result >= SPELL_FAILED_DEBUG_START && result <= SPELL_FAILED_DEBUG_END)
-        result = SPELL_FAILED_INTERRUPTED;
-
     if (result == SPELL_CAST_OK)
     {
         WorldPacket data(SMSG_CLEAR_EXTRA_AURA_INFO, (8 + 4));
@@ -3205,6 +3202,9 @@ void Spell::SendCastResult(SpellCastResult result)
     }
 
     m_caster->SendCombatStats(1 << COMBAT_STATS_FAILED_CAST, "Cast %u failed, result %u", NULL, GetSpellEntry()->Id, result);
+
+    if (result >= SPELL_FAILED_DEBUG_START && result <= SPELL_FAILED_DEBUG_END)
+        result = SPELL_FAILED_INTERRUPTED;
 
     WorldPacket data(SMSG_CAST_FAILED, (4 + 1 + 1));
     data << uint32(GetSpellEntry()->Id);
