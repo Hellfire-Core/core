@@ -3317,9 +3317,8 @@ void Unit::TriggerAutocastSpell()
 {
     // Check if able to cast
     SpellCastResult result = m_currentSpells[CURRENT_AUTOREPEAT_SPELL]->CheckCast(true);
-    if (result != SPELL_CAST_OK)
+    if (result != SPELL_CAST_OK && result != SPELL_FAILED_NOT_READY) // ignore normal cooldowns, we handle timers in autocast mechanic
     {
-        SendCombatStats(1 << COMBAT_STATS_TEST, "triger autorepeat failed %u", NULL, result);
         InterruptSpell(CURRENT_AUTOREPEAT_SPELL);
         return;
     }
