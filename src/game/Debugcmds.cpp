@@ -296,6 +296,7 @@ bool ChatHandler::HandleDebugSendPetSpellInitCommand(const char* args)
     Player* plr = getSelectedPlayer();
     if (plr)
         plr->PetSpellInitialize();
+    return true;
 }
 
 bool ChatHandler::HandleDebugUpdateWorldStateCommand(const char* args)
