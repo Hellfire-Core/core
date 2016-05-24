@@ -3296,8 +3296,7 @@ void Unit::_UpdateAutoRepeatSpell()
         // cancel wand shoot
         if (m_currentSpells[CURRENT_AUTOREPEAT_SPELL]->GetSpellEntry()->Category == 351)
             InterruptSpell(CURRENT_AUTOREPEAT_SPELL);
-        SendCombatStats(1 << COMBAT_STATS_TEST, "autorepeat spell interrupt by movement %u %u %u", NULL,
-            ((Player*)this)->isMoving(), IsNonMeleeSpellCast(false, true, true), IsNonMeleeSpellCast(false, false, true));
+
         m_AutoRepeatFirstCast = true;
         return;
     }
@@ -3306,7 +3305,6 @@ void Unit::_UpdateAutoRepeatSpell()
     if (m_AutoRepeatFirstCast && getAttackTimer(RANGED_ATTACK) < 500)
     {
         setAttackTimer(RANGED_ATTACK, 500);
-        SendCombatStats(1 << COMBAT_STATS_TEST, "RAT delayed by autocast start", NULL);
     }
 
     m_AutoRepeatFirstCast = false;
@@ -3318,8 +3316,10 @@ void Unit::_UpdateAutoRepeatSpell()
 void Unit::TriggerAutocastSpell()
 {
     // Check if able to cast
-    if (m_currentSpells[CURRENT_AUTOREPEAT_SPELL]->CheckCast(true) != SPELL_CAST_OK)
+    SpellCastResult result = m_currentSpells[CURRENT_AUTOREPEAT_SPELL]->CheckCast(true);
+    if (result != SPELL_CAST_OK)
     {
+        SendCombatStats(1 << COMBAT_STATS_TEST, "triger autorepeat failed %u", NULL, result);
         InterruptSpell(CURRENT_AUTOREPEAT_SPELL);
         return;
     }
@@ -3331,7 +3331,6 @@ void Unit::TriggerAutocastSpell()
         SetStandState(PLAYER_STATE_NONE);
 
     resetAttackTimer(RANGED_ATTACK);
-    SendCombatStats(1 << COMBAT_STATS_TEST, "RAT reset by autoshoot trigger", NULL);
 }
 
 void Unit::SetCurrentCastSpell(Spell* spell)

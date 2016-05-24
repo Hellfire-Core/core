@@ -1738,6 +1738,9 @@
     <ClInclude Include="..\..\src\scripts\system\system.h">
       <Filter>System</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\scripts\scripts\Eastern Kingdoms\sunwell_plateau\boss_kiljaeden.h">
+      <Filter>Scripts\Eastern Kingdoms\Sunwell Plateau</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\src\scripts\hellgroundscripts.rc" />

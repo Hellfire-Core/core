@@ -872,6 +872,7 @@
     <ClInclude Include="..\..\src\scripts\scripts\Eastern Kingdoms\blackwing_lair\def_blackwing_lair.h" />
     <ClInclude Include="..\..\src\scripts\scripts\Eastern Kingdoms\karazhan\instance_karazhan.h" />
     <ClInclude Include="..\..\src\scripts\scripts\Eastern Kingdoms\naxxramas\def_naxxramas.h" />
+    <ClInclude Include="..\..\src\scripts\scripts\Eastern Kingdoms\sunwell_plateau\boss_kiljaeden.h" />
     <ClInclude Include="..\..\src\scripts\scripts\Eastern Kingdoms\uldaman\def_uldaman.h" />
     <ClInclude Include="..\..\src\scripts\scripts\Kalimdor\ruins_of_ahnqiraj\def_ruins_of_ahnqiraj.h" />
     <ClInclude Include="..\..\src\scripts\scripts\Outland\hellfire_citadel\hellfire_ramparts\hellfire_ramparts.h" />
