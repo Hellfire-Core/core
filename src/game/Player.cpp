@@ -402,6 +402,7 @@ Player::Player (WorldSession *session): Unit(), m_reputationMgr(this), m_camera(
     //when dying/logging out
     m_oldpetspell = 0;
     m_lastpetnumber = 0;
+    m_refreshPetSpells = false;
 
     ////////////////////Rest System/////////////////////
     time_inn_enter=0;
@@ -1195,6 +1196,12 @@ void Player::Update(uint32 update_diff, uint32 p_time)
     updateMutex.acquire();
 
     _preventUpdate = true;
+
+    if (m_refreshPetSpells) // must be before spells update
+    {
+        PetSpellInitialize();
+        m_refreshPetSpells = false;
+    }
 
     if (m_AC_timer)
     {

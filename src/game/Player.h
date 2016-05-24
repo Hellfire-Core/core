@@ -1490,6 +1490,7 @@ class HELLGROUND_EXPORT Player : public Unit
         void CharmAI(bool enable = true);
 
         void PetSpellInitialize();
+        void DelayedPetSpellInitialize() { m_refreshPetSpells = true; };
         void CharmSpellInitialize();
         void PossessSpellInitialize();
         bool HasSpell(uint32 spell) const;
@@ -2484,6 +2485,7 @@ class HELLGROUND_EXPORT Player : public Unit
 
         // last used pet number (for BG's)
         uint32 m_lastpetnumber;
+        bool m_refreshPetSpells;
 
         // Player summoning
         time_t m_summon_expire;

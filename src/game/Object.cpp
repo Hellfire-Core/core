@@ -1707,7 +1707,7 @@ Pet* Player::SummonPet(uint32 entry, float x, float y, float z, float ang, PetTy
             pet->InitPetCreateSpells();
             pet->SavePetToDB(PET_SAVE_AS_CURRENT);
             SetPet(pet);
-            PetSpellInitialize();
+            DelayedPetSpellInitialize();
             break;
     }
     if (GetTypeId() == TYPEID_PLAYER && (getClass() == CLASS_HUNTER || getClass() == CLASS_WARLOCK) && pet->isControlled() && !pet->isTemporarySummoned() && (petType == SUMMON_PET || petType == HUNTER_PET))

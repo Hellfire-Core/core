@@ -344,7 +344,7 @@ void BattleGround::RestorePet(Player* plr)
         ThePet->SetHealth(ThePet->GetMaxHealth());
         ThePet->SetPower(POWER_HAPPINESS, ThePet->GetMaxPower(POWER_HAPPINESS));
         ThePet->RemoveAllAurasButPermanent();
-        plr->PetSpellInitialize();
+        plr->DelayedPetSpellInitialize();
     }
     else if (plr->GetLastPetNumber()) // we're sure it is warlock
     {

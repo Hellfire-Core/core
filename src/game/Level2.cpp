@@ -3951,7 +3951,7 @@ bool ChatHandler::HandleCreatePetCommand(const char* args)
 
      player->SetPet(pet);
      pet->SavePetToDB(PET_SAVE_AS_CURRENT);
-     player->PetSpellInitialize();
+     player->DelayedPetSpellInitialize();
 
     return true;
 }
