@@ -562,7 +562,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                         }
                         else
                         {
-                            _Timer[TIMER_DARKNESS] = (Phase == PHASE_SACRIFICE) ? urand(25000,30000) :urand(43000,48000);
+                            _Timer[TIMER_DARKNESS] = (Phase == PHASE_SACRIFICE) ? urand(17000,22000) :urand(35000,40000); // from end of one to begining of another
                             IsInDarkness = false;
                             DoCastAOE(SPELL_DARKNESS_OF_A_THOUSAND_SOULS_DAMAGE, true);
 
@@ -613,7 +613,10 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                         {
                             Creature* Anveena = pInstance->instance->GetCreatureById(CREATURE_ANVEENA);
                             if (Anveena)
+                            {
                                 Anveena->CastSpell(m_creature, SPELL_SACRIFICE_OF_ANVEENA, false);
+                                Anveena->Kill(Anveena);
+                            }
                             StunTimer.Reset(5000);// He shouldn't cast spells for ~5 seconds after Anveena's sacrifice.
                             m_creature->addUnitState(UNIT_STAT_STUNNED);
                         }
@@ -1066,12 +1069,10 @@ struct mob_armageddonAI : public Scripted_NoMovementAI
                     break;
                 case 1:
                     DoCast(m_creature, SPELL_ARMAGEDDON_VISUAL2, true);
-                    //me->Relocate(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ() + 20);
                     Timer = 8000;
                     ++Spell;
                     break;
                 case 2:
-                    //DoCast(m_creature, SPELL_ARMAGEDDON_TRIGGER, true);
                     m_creature->CastSpell(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(),
                         SPELL_ARMAGEDDON_TRIGGER, true);
                     ++Spell;
