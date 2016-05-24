@@ -267,6 +267,7 @@ ChatCommand * ChatHandler::getCommandTable()
         { "chatmessage",    PERM_ADM,       PERM_CONSOLE, false, &ChatHandler::HandleDebugSendChatMsgCommand,         "", NULL },
         { "equiperror",     PERM_ADM,       PERM_CONSOLE, false, &ChatHandler::HandleDebugSendEquipErrorCommand,      "", NULL },
         { "opcode",         PERM_ADM,       PERM_CONSOLE, false, &ChatHandler::HandleDebugSendOpcodeCommand,          "", NULL },
+        { "petspellinit",   PERM_ADM,       PERM_CONSOLE, false, &ChatHandler::HandleDebugSendPetSpellInitCommand,    "", NULL },
         { "poi",            PERM_ADM,       PERM_CONSOLE, false, &ChatHandler::HandleDebugSendPoiCommand,             "", NULL },
         { "qpartymsg",      PERM_ADM,       PERM_CONSOLE, false, &ChatHandler::HandleDebugSendQuestPartyMsgCommand,   "", NULL },
         { "qinvalidmsg",    PERM_ADM,       PERM_CONSOLE, false, &ChatHandler::HandleDebugSendQuestInvalidMsgCommand, "", NULL },

@@ -291,6 +291,13 @@ bool ChatHandler::HandleDebugSendOpcodeCommand(const char* /*args*/)
     return true;
 }
 
+bool ChatHandler::HandleDebugSendPetSpellInitCommand(const char* args)
+{
+    Player* plr = getSelectedPlayer();
+    if (plr)
+        plr->PetSpellInitialize();
+}
+
 bool ChatHandler::HandleDebugUpdateWorldStateCommand(const char* args)
 {
     char* w = strtok((char*)args, " ");

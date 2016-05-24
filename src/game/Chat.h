@@ -175,6 +175,7 @@ class ChatHandler
         bool HandleDebugSendChatMsgCommand(const char* args);
         bool HandleDebugSendEquipErrorCommand(const char* args);
         bool HandleDebugSendOpcodeCommand(const char* args);
+        bool HandleDebugSendPetSpellInitCommand(const char* args);
         bool HandleDebugSendPoiCommand(const char* args);
         bool HandleDebugSendQuestPartyMsgCommand(const char* args);
         bool HandleDebugSendQuestInvalidMsgCommand(const char* args);
