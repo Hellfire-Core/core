@@ -670,6 +670,8 @@ class MovementInfo
         float   j_velocity, j_sinAngle, j_cosAngle, j_xyspeed;
         // spline
         float   u_unk1;
+
+        uint16 opcode;
 };
 
 inline ByteBuffer& operator<< (ByteBuffer& buf, MovementInfo const& mi)
