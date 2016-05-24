@@ -569,8 +569,10 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
                             DoScriptText(RAND(SAY_KJ_DARKNESS1, SAY_KJ_DARKNESS2, SAY_KJ_DARKNESS3), m_creature);
                             SendDebug("Casting aoe darkness");
                             _Timer[TIMER_SOUL_FLAY].Delay(3000);
-                            _Timer[TIMER_ARMAGEDDON].Reset(3000);
-                            _Timer[TIMER_SUMMON_SHILEDORB].Reset(5000);
+                            if (Phase >= PHASE_ARMAGEDDON)
+                                _Timer[TIMER_ARMAGEDDON].Reset(3000);
+                            if (Phase != PHASE_SACRIFICE)
+                                _Timer[TIMER_SUMMON_SHILEDORB].Reset(5000);
                         }
                         
                         break;
@@ -676,7 +678,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
             _Timer[TIMER_SOUL_FLAY].Delay(34000);
             _Timer[TIMER_LEGION_LIGHTNING].Reset(47000);
             _Timer[TIMER_FIRE_BLOOM].Reset(67000);
-            _Timer[TIMER_SUMMON_SHILEDORB].Reset(urand(45000, 60000));
+            _Timer[TIMER_SUMMON_SHILEDORB].Reset(0);
             _Timer[TIMER_SHADOW_SPIKE].Reset(4000);
             _Timer[TIMER_FLAME_DART].Reset(57000);
             _Timer[TIMER_DARKNESS].Reset(45000);
