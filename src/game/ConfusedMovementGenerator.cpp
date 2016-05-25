@@ -105,7 +105,7 @@ bool ConfusedMovementGenerator<UNIT>::Update(UNIT &unit, const uint32 &diff)
                 init.MovebyPath(path.getPath());
         }
         init.SetWalk(true);
-        init.Launch();
+        init.Launch(1);
 
         static_cast<MovementGenerator*>(this)->_recalculateTravel = false;
         _nextMoveTime.Reset(urand(0, 2000));

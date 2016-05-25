@@ -54,7 +54,7 @@ void HomeMovementGenerator<Creature>::_setTargetLocation(Creature & owner)
 
     init.MoveTo(x,y,z);
     init.SetWalk(false);
-    init.Launch();
+    init.Launch(3);
 
     arrived = false;
     owner.clearUnitState(UNIT_STAT_ALL_STATE);

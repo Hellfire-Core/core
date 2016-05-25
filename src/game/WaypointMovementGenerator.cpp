@@ -119,7 +119,7 @@ bool WaypointMovementGenerator<Creature>::tryToMove(Creature &creature)
     else
         init.SetWalk(node->moveType != M_RUN);
 
-    init.Launch();
+    init.Launch(13);
 
     //Call for creature group update
     if (creature.IsFormationLeader())
@@ -207,7 +207,7 @@ void FlightPathMovementGenerator::_Reset(Player & player)
     init.SetFirstPointId(GetCurrentNode());
     init.SetFly();
     init.SetVelocity(32.0f);
-    init.Launch();
+    init.Launch(14);
 }
 
 void FlightPathMovementGenerator::_Interrupt(Player & player)

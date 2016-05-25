@@ -498,7 +498,7 @@ void Unit::MonsterMoveWithSpeed(float x, float y, float z, float speed, bool tim
     init.MoveTo(x,y,z, generatePath, forceDestination);
     if (speed)
         init.SetVelocity(speed);
-    init.Launch();
+    init.Launch(10);
 }
 
 void Unit::SendMonsterStop()
@@ -11542,7 +11542,7 @@ void Unit::StopMoving()
 
     Movement::MoveSplineInit init(*this);
     init.SetFacing(GetOrientation());
-    init.Launch();
+    init.Launch(11);
 }
 
 bool Unit::IsStopped() const
@@ -13181,7 +13181,7 @@ void Unit::SetFacingTo(float ori)
 {
     Movement::MoveSplineInit init(*this);
     init.SetFacing(ori);
-    init.Launch();
+    init.Launch(12);
 }
 
 void Unit::SetFacingToObject(WorldObject* pObject)

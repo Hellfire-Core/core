@@ -42,7 +42,7 @@ void RandomMovementGenerator<Creature>::_setRandomLocation(Creature &creature)
     Movement::MoveSplineInit init(creature);
     init.MoveTo(dest.x, dest.y, dest.z);
     init.SetWalk(true);
-    init.Launch();
+    init.Launch(8);
 
     static_cast<MovementGenerator*>(this)->_recalculateTravel = false;
     i_nextMoveTime.Reset(urand(500, 10000));
