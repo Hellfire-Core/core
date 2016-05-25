@@ -1703,7 +1703,7 @@ bool Creature::canSeeOrDetect(Unit const* u, WorldObject const* viewPoint, bool 
         return false;
 
     // invisible aura
-    if ((m_invisibilityMask || u->m_invisibilityMask) && !canDetectInvisibilityOf(u, viewPoint))
+    if ((m_invisibilityMask || u->m_invisibilityMask) && !canDetectInvisibilityOf(u) && !u->canDetectInvisibilityOf(this))
         return false;
 
     // unit got in stealth in this moment and must ignore old detected state

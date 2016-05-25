@@ -761,7 +761,7 @@ namespace Hellground
                 if (!itr->getSource()->isAlive() || (itr->getSource()->GetTypeId() == TYPEID_PLAYER && ((Player*)itr->getSource())->IsTaxiFlying()))
                     continue;
 
-                if (itr->getSource()->m_invisibilityMask && itr->getSource()->m_invisibilityMask & (1 << 10) && !i_caster->canDetectInvisibilityOf(itr->getSource(), i_caster))
+                if (itr->getSource()->m_invisibilityMask && itr->getSource()->m_invisibilityMask & (1 << 10) && !i_caster->canDetectInvisibilityOf(itr->getSource()))
                     continue;
 
                 switch (i_TargetType)

@@ -9517,7 +9517,7 @@ bool Unit::canAttack(Unit const* target, bool force) const
             return false;
     }
 
-    if ((m_invisibilityMask || target->m_invisibilityMask) && !canDetectInvisibilityOf(target, this))
+    if ((m_invisibilityMask || target->m_invisibilityMask) && !canDetectInvisibilityOf(target) && !target->canDetectInvisibilityOf(this))
         return false;
 
     if (target->GetVisibility() == VISIBILITY_GROUP_STEALTH && !canDetectStealthOf(target, this, GetDistance(target)))
@@ -9648,7 +9648,7 @@ bool Unit::canSeeOrDetect(Unit const*, WorldObject const*, bool, bool, bool) con
     return true;
 }
 
-bool Unit::canDetectInvisibilityOf(Unit const* u, WorldObject const* viewPoint) const
+bool Unit::canDetectInvisibilityOf(Unit const* u) const
 {
     if (m_invisibilityMask & u->m_invisibilityMask) // same group
         return true;
@@ -9657,7 +9657,7 @@ bool Unit::canDetectInvisibilityOf(Unit const* u, WorldObject const* viewPoint) 
     if (owner && owner != this)
     {
         if (owner->m_invisibilityMask || u->m_invisibilityMask)
-            return owner->canDetectInvisibilityOf(u, viewPoint);
+            return owner->canDetectInvisibilityOf(u);
         else
             return true;
     }

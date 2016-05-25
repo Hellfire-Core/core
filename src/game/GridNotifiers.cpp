@@ -237,7 +237,7 @@ bool AnyUnfriendlyUnitInObjectRangeCheck::operator()(Unit* u)
             return false; // pets should be able to attack stealthed unit if only player detected them
     }
     else if (u->m_invisibilityMask && u->m_invisibilityMask & (1 << 10) &&
-        !u->canDetectInvisibilityOf(i_unit, u))
+        !u->canDetectInvisibilityOf(i_unit))
         return false;
 
     if (u->isAlive() && i_unit->IsWithinDistInMap(u, i_range) && !i_unit->IsFriendlyTo(u))

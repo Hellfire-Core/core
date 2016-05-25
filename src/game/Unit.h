@@ -1386,7 +1386,7 @@ class HELLGROUND_IMPORT_EXPORT Unit : public WorldObject
         // common function for visibility checks for player/creatures with detection code
         virtual bool canSeeOrDetect(Unit const* u, WorldObject const*, bool detect, bool inVisibleList = false, bool is3dDistance = true) const;
 
-        bool canDetectInvisibilityOf(Unit const* u, WorldObject const*) const;
+        bool canDetectInvisibilityOf(Unit const* u) const;
         bool canDetectStealthOf(Unit const* u, WorldObject const*, float distance) const;
 
         // virtual functions for all world objects types

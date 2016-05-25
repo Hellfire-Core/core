@@ -18754,11 +18754,11 @@ bool Player::canSeeOrDetect(Unit const* u, WorldObject const* viewPoint, bool de
         }
 
         // why do we need this?
-        if (u->GetTypeId() == TYPEID_PLAYER && u->canDetectInvisibilityOf(this, ((Player*)u)->GetCamera().GetBody()))
+        if (u->GetTypeId() == TYPEID_PLAYER && u->canDetectInvisibilityOf(this))
             return true;
 
         // player see other player with stealth/invisibility only if he in same group or raid or same team (raid/team case dependent from conf setting)
-        if (!canDetectInvisibilityOf(u, viewPoint))
+        if (!canDetectInvisibilityOf(u))
             if (!(u->GetTypeId()==TYPEID_PLAYER && !IsHostileTo(u) && IsGroupVisiblefor (((Player*)u))))
                 return false;
     }
