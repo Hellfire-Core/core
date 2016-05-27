@@ -357,7 +357,7 @@ struct instance_uldaman : public ScriptedInstance
                 {
                     case NOT_STARTED:
                         if (Encounters[0] == DONE) //if players opened the doors 
-                                SetDoor(archaedasTempleDoor, true);
+                            SetDoor(archaedasTempleDoor, true);
 
                         RespawnMinions();
                         break;
@@ -389,14 +389,12 @@ struct instance_uldaman : public ScriptedInstance
                 break;
 
             case 7309:    // Earthen Custodian
-                archaedasWallMinions.push_back(creature->GetGUID());
-                break;
-
             case 7077:    // Earthen Hallshaper
                 archaedasWallMinions.push_back(creature->GetGUID());
                 break;
 
             case 7076:    // Earthen Guardian
+                SetFrozenState(creature);
                 earthenGuardian.push_back(creature->GetGUID());
                 break;
 
@@ -408,6 +406,7 @@ struct instance_uldaman : public ScriptedInstance
                 break;
 
             case 10120:    // Vault Walker
+                SetFrozenState(creature);
                 vaultWalker.push_back(creature->GetGUID());
                 break;
 

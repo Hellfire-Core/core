@@ -272,15 +272,13 @@ struct mob_archaedas_minionsAI : public ScriptedAI
         if (wakingUp)
         {
             Awaken_Timer -= diff;
-            return;        // dont do anything until we are done
-
             if (Awaken_Timer <= 0)
             {
                 wakingUp = false;
                 amIAwake = true;
                 AttackStart(me->GetCreature(pInstance->GetData64(0))->getVictim());
-                return;     // dont want to continue until we finish the AttackStart method
             }
+            return;
         }
 
         //Return since we have no target
