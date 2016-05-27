@@ -224,7 +224,6 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
 
     MovementInfo movementInfo;
     recv_data >> movementInfo;
-    movementInfo.opcode = opcode;
     /*----------------*/
     if (recv_data.size() != recv_data.rpos())
     {

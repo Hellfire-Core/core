@@ -64,6 +64,7 @@ enum AnticheatChecks
 {
     ANTICHEAT_CHECK_FLYHACK,
     ANTICHEAT_CHECK_WATERWALKHACK,
+    ANTICHEAT_CHECK_SPEEDHACK,
 
     ANTICHEAT_CHECK_MAX
 };
@@ -1842,7 +1843,7 @@ class HELLGROUND_EXPORT Player : public Unit
         /*********************************************************/
         /***                 ANTICHEAT SYSTEM                  ***/
         /*********************************************************/
-        void CumulativeACReport(AnticheatChecks check);
+        uint32 CumulativeACReport(AnticheatChecks check);
         uint32 m_AC_timer;
         uint32 m_AC_NoFall_count;
 

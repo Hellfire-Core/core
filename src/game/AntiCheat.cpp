@@ -42,7 +42,8 @@ int ACRequest::call()
         sLog.outLog(LOG_CHEAT, "Player %s (GUID: %u / ACCOUNT_ID: %u) - possible Fly Cheat. MapId: %u, coords: X: %f, Y: %f, Z: %f. MOVEMENTFLAGS: %u LATENCY: %u. BG/Arena: %s",
             pPlayer->GetName(), pPlayer->GetGUIDLow(), pPlayer->GetSession()->GetAccountId(), pPlayer->GetMapId(), GetNewMovementInfo().pos.x, GetNewMovementInfo().pos.y, GetNewMovementInfo().pos.z, GetNewMovementInfo().GetMovementFlags(), latency, pPlayer->GetMap() ? (pPlayer->GetMap()->IsBattleGroundOrArena() ? "Yes" : "No") : "No");
         
-        pPlayer->CumulativeACReport(ANTICHEAT_CHECK_FLYHACK);
+        if (uint32 count = pPlayer->CumulativeACReport(ANTICHEAT_CHECK_FLYHACK))
+            sWorld.SendGMText(LANG_ANTICHEAT_FLY, pPlayer->GetName(), pPlayer->GetName(), count);
         pPlayer->SetFlying(false);
         return -1;
     }
@@ -55,7 +56,8 @@ int ACRequest::call()
         sLog.outLog(LOG_CHEAT, "Player %s (GUID: %u / ACCOUNT_ID: %u) - possible water walk Cheat. MapId: %u, coords: %f %f %f. MOVEMENTFLAGS: %u LATENCY: %u. BG/Arena: %s",
             pPlayer->GetName(), pPlayer->GetGUIDLow(), pPlayer->GetSession()->GetAccountId(), pPlayer->GetMapId(), GetNewMovementInfo().pos.x, GetNewMovementInfo().pos.y, GetNewMovementInfo().pos.z, GetNewMovementInfo().GetMovementFlags(), latency, pPlayer->GetMap() ? (pPlayer->GetMap()->IsBattleGroundOrArena() ? "Yes" : "No") : "No");
 
-        pPlayer->CumulativeACReport(ANTICHEAT_CHECK_WATERWALKHACK);
+        if (uint32 count = pPlayer->CumulativeACReport(ANTICHEAT_CHECK_WATERWALKHACK))
+            sWorld.SendGMText(LANG_ANTICHEAT_WATERWALK, pPlayer->GetName(), pPlayer->GetName(), count);
         pPlayer->SetMovement(MOVE_LAND_WALK); 
         return -1;
     }
@@ -152,8 +154,11 @@ bool ACRequest::DetectSpeedHack(Player *pPlayer)
 
     // time passed between reading movement infos
     uint32 timeDiff = WorldTimer::getMSTimeDiff(GetLastMovementInfo().time, GetNewMovementInfo().time);
-    if (timeDiff < 5 && exact2dDist < 25.0f)
+    if (timeDiff <= 5 && exact2dDist < speedRate * 0.55 && pPlayer->CumulativeACReport(ANTICHEAT_CHECK_SPEEDHACK) == 1)
+    {
+        //if ==1 this was only occurence so ignore; returned value 0 means there was a report recently
         return false;
+    }
 
     //client-side speed, traveled distance div by movement time.
     float clientSpeedRate = exact2dDist * 1000 / timeDiff;
@@ -164,11 +169,11 @@ bool ACRequest::DetectSpeedHack(Player *pPlayer)
     sWorld.SendGMText(LANG_ANTICHEAT_SPEEDHACK, pPlayer->GetName(), pPlayer->GetName(), 0, speedRate, clientSpeedRate);
     sLog.outLog(LOG_CHEAT, "Player %s (GUID: %u / ACCOUNT_ID: %u) moved for distance %f with server speed "
         ": %f (client speed: %f, time diff %u). MapID: %u, player's coord before X:%f Y:%f Z:%f."
-        " Player's coord now X:%f Y:%f Z:%f. MOVEMENTFLAGS: %u LATENCY: %u. BG/Arena: %s Opcode %u",
+        " Player's coord now X:%f Y:%f Z:%f. MOVEMENTFLAGS: %u LATENCY: %u. BG/Arena: %s",
         pPlayer->GetName(), pPlayer->GetGUIDLow(), pPlayer->GetSession()->GetAccountId(), exact2dDist, speedRate,
         clientSpeedRate, timeDiff, pPlayer->GetMapId(), GetLastMovementInfo().pos.x, GetLastMovementInfo().pos.y, GetLastMovementInfo().pos.z,
         GetNewMovementInfo().pos.x, GetNewMovementInfo().pos.y, GetNewMovementInfo().pos.z,
         GetNewMovementInfo().GetMovementFlags(), pPlayer->GetSession()->GetLatency(),
-        pPlayer->GetMap() ? (pPlayer->GetMap()->IsBattleGroundOrArena() ? "Yes" : "No") : "No", GetNewMovementInfo().opcode);
+        pPlayer->GetMap() ? (pPlayer->GetMap()->IsBattleGroundOrArena() ? "Yes" : "No") : "No");
     return true;
 }

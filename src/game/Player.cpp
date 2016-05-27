@@ -1751,7 +1751,7 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
     m_movementInfo.pos.x = x;
     m_movementInfo.pos.y = y;
     m_movementInfo.pos.z = z;
-    m_AC_timer = 10000;
+    m_AC_timer = (GetMapId() == mapid) ? 15000 : 3000; //lets give him some time if its far teleport on same map
 
     // The player was ported to another map and looses the duel immediatly.
     // We have to perform this check before the teleport, otherwise the
@@ -21325,31 +21325,18 @@ bool Player::isInSanctuary()
     return HasFlag(PLAYER_FLAGS,PLAYER_FLAGS_SANCTUARY);
 }
 
-void Player::CumulativeACReport(AnticheatChecks check)
+uint32 Player::CumulativeACReport(AnticheatChecks check)
 {
     if(check >= ANTICHEAT_CHECK_MAX)
         return;
-
-    ++m_AC_cumulative_count[check];
+    uint32 toreturn = ++m_AC_cumulative_count[check];
     if (m_AC_cumulative_timer[check] < time(NULL))
     {
         m_AC_cumulative_timer[check] = time(NULL) + sWorld.getConfig(CONFIG_ANTICHEAT_CUMULATIVE_DELAY);
-        uint32 report = 0;
-        switch (check)
-        {
-        case ANTICHEAT_CHECK_FLYHACK:
-            report = LANG_ANTICHEAT_FLY; break;
-        case ANTICHEAT_CHECK_WATERWALKHACK:
-            report = LANG_ANTICHEAT_WATERWALK; break;
-        default:
-            break;
-        }
-        if (report)
-            sWorld.SendGMText(report,GetName(),GetName(),m_AC_cumulative_count[check]);
-
         m_AC_cumulative_count[check] = 0;
+        return toreturn;
     }
-
+    return 0;
 }
 
 void Player::SpectateArena(uint32 arenaMap)
