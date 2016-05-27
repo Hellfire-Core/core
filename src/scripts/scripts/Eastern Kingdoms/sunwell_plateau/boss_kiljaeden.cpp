@@ -1030,7 +1030,7 @@ struct mob_volatile_felfire_fiendAI : public ScriptedAI
 
         if (ExplodeTimer.Expired(diff) || me->GetDistance(me->getVictim()) < 5.0f) // Explode if it's close enough to it's target
         {
-            DoCast(m_creature->getVictim(), SPELL_FELFIRE_FISSION, true);
+            me->CastCustomSpell(SPELL_FELFIRE_FISSION, SPELLVALUE_BASE_POINT0, 4000, m_creature->getVictim(), true);
             me->DisappearAndDie();
         }
     }
