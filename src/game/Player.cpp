@@ -21328,7 +21328,7 @@ bool Player::isInSanctuary()
 uint32 Player::CumulativeACReport(AnticheatChecks check)
 {
     if(check >= ANTICHEAT_CHECK_MAX)
-        return;
+        return 0;
     uint32 toreturn = ++m_AC_cumulative_count[check];
     if (m_AC_cumulative_timer[check] < time(NULL))
     {
