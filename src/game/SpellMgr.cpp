@@ -3441,10 +3441,13 @@ void SpellMgr::LoadSpellCustomAttr()
             case 41625: // Fel Rage 3
                 spellInfo->Stances = 0;
                 break;
+            case 45641: // Fire Bloom
+                spellInfo->MaxAffectedTargets = 5;
+                spellInfo->DmgClass = SPELL_DAMAGE_CLASS_MAGIC; // dispelable by cloak
+                break;
             case 38296: // Spitfire Totem
             case 37676: // Insidious Whisper
             case 46008: // Negative Energy
-            case 45641: // Fire Bloom
             case 46771: // Flame Sear
                 spellInfo->MaxAffectedTargets = 5;
                 break;
