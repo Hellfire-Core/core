@@ -283,27 +283,27 @@ void MotionMaster::MoveFall()
     if (fabs(m_owner->GetPositionZ() - tz) < 0.1f)
         return;
 
+    Mutate(new EffectMovementGenerator(0), UNIT_ACTION_EFFECT);
     Movement::MoveSplineInit init(*m_owner);
     init.MoveTo(m_owner->GetPositionX(),m_owner->GetPositionY(),tz);
     init.SetFall();
     init.Launch();
-    Mutate(new EffectMovementGenerator(0), UNIT_ACTION_EFFECT);
 }
 
 void MotionMaster::MoveCharge(float x, float y, float z, float speed /*= SPEED_CHARGE*/)
 {
+    Mutate(new EffectMovementGenerator(EVENT_CHARGE), UNIT_ACTION_EFFECT);
     Movement::MoveSplineInit init(*m_owner);
     init.MoveTo(x,y,z);
     init.SetVelocity(speed);
     init.Launch();
-    Mutate(new EffectMovementGenerator(EVENT_CHARGE), UNIT_ACTION_EFFECT);
 }
 
 void MotionMaster::MoveCharge(PathFinder path, float speed /*= SPEED_CHARGE*/)
 {
+    Mutate(new EffectMovementGenerator(EVENT_CHARGE), UNIT_ACTION_EFFECT);
     Movement::MoveSplineInit init(*m_owner);
     init.MovebyPath(path.getPath());
     init.SetVelocity(speed);
     init.Launch();
-    Mutate(new EffectMovementGenerator(EVENT_CHARGE), UNIT_ACTION_EFFECT);
 }
