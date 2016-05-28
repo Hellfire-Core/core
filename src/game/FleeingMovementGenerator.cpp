@@ -47,7 +47,7 @@ void FleeingMovementGenerator<UNIT>::_moveToNextLocation(UNIT &unit)
         init.MovebyPath(path.getPath());
 
     init.SetWalk(false);
-    init.Launch(2);
+    init.Launch();
 
     static_cast<MovementGenerator*>(this)->_recalculateTravel = false;
     _nextCheckTime.Reset(urand(500,1000));

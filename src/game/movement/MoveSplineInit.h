@@ -37,7 +37,7 @@ namespace Movement
 
         /*  Final pass of initialization that launches spline movement.
          */
-        int32 Launch(uint8 from);
+        int32 Launch();
 
         /* Adds final facing animation
          * sets unit's facing to specified point/angle after all path done

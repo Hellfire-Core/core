@@ -51,7 +51,7 @@ namespace Movement
         return MOVE_RUN;
     }
 
-    int32 MoveSplineInit::Launch(uint8 from)
+    int32 MoveSplineInit::Launch()
     {
         MoveSpline& move_spline = *unit.movespline;
 
@@ -93,7 +93,7 @@ namespace Movement
         data << unit.GetPackGUID();
         PacketBuilder::WriteMonsterMove(move_spline, data);
         unit.BroadcastPacket(&data,true);
-        unit.SendCombatStats(1 << COMBAT_STATS_TEST, "spline launch %f %u", NULL, args.velocity, from);
+        unit.SendCombatStats(1 << COMBAT_STATS_TEST, "spline launch", NULL);
 
         return move_spline.Duration();
     }

@@ -45,7 +45,7 @@ void PointMovementGenerator<UNIT>::Initialize(UNIT &unit)
     }
 
     init.MoveTo(_x, _y, _z, _generatePath);
-    init.Launch(7);
+    init.Launch();
 
     static_cast<MovementGenerator*>(this)->_recalculateTravel = false;
 }
