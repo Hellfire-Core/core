@@ -157,7 +157,7 @@ bool ACRequest::DetectSpeedHack(Player *pPlayer)
     if (!exact2dDist)
         return false;
 
-    if (timeDiff <= 5 && exact2dDist < speedRate * 0.55 && pPlayer->CumulativeACReport(ANTICHEAT_CHECK_SPEEDHACK) == 1)
+    if (timeDiff <= 25 && exact2dDist < speedRate * 0.55 && pPlayer->CumulativeACReport(ANTICHEAT_CHECK_SPEEDHACK) == 1)
     {
         //if ==1 this was only occurence so ignore; returned value 0 means there was a report recently
         return false;
