@@ -785,9 +785,6 @@ void World::LoadConfigSettings(bool reload)
     loadConfig(CONFIG_VMAP_LOS_ENABLED, "vmap.enableLOS", true);
     sLog.outString("WORLD: vmap los %sabled", getConfig(CONFIG_VMAP_LOS_ENABLED) ? "en" : "dis");
 
-    std::string ignoreSpellIds = sConfig.GetStringDefault("vmap.ignoreSpellIds", "");
-    VMAP::VMapFactory::preventSpellsFromBeingTestedForLoS(ignoreSpellIds.c_str());
-
     loadConfig(CONFIG_VMAP_INDOOR_CHECK, "vmap.enableIndoorCheck", true);
     loadConfig(CONFIG_PET_LOS, "vmap.petLOS", false);
     loadConfig(CONFIG_VMAP_TOTEM, "vmap.totem", false);
@@ -900,6 +897,9 @@ void World::LoadConfigSettings(bool reload)
             sLog.outLog(LOG_DEFAULT, "ERROR: MaxPlayerLevel (%i) must be in range 1..%u. Set to %u.",m_configs[CONFIG_MAX_PLAYER_LEVEL],MAX_LEVEL,MAX_LEVEL);
             m_configs[CONFIG_MAX_PLAYER_LEVEL] = MAX_LEVEL;
         }
+
+        std::string ignoremodels = sConfig.GetStringDefault("vmap.ignoremodels", "");
+        VMAP::VMapFactory::disableCertainModels(ignoremodels);
     }
 
     // === Warns section ===

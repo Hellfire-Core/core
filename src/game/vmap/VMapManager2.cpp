@@ -92,13 +92,6 @@ namespace VMAP
     }
 
     //=========================================================
-    /**
-    Block maps from being used.
-    parameter: String of map ids. Delimiter = ","
-    e.g.: "0,1,590"
-    */
-
-    //=========================================================
 
     VMAPLoadResult VMapManager2::loadMap(const char* pBasePath, unsigned int pMapId, int x, int y)
     {

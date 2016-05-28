@@ -395,8 +395,16 @@ namespace VMAP
                             continue;
                         }
 #endif
-                        iTreeValues[referencedVal] = ModelInstance(spawn, model);
-                        iLoadedSpawns[referencedVal] = 1;
+                        if (VMapFactory::isValidModel(iMapID,referencedVal))
+                        {
+                            iTreeValues[referencedVal] = ModelInstance(spawn, model);
+                            iLoadedSpawns[referencedVal] = 1;
+                        }
+                        else
+                        {
+                            iTreeValues[referencedVal] = ModelInstance(spawn, NULL);
+                            iLoadedSpawns[referencedVal] = 1;
+                        }
                     }
                     else
                     {

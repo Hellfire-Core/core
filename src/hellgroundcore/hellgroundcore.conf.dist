@@ -1718,10 +1718,9 @@ BattleGround.WSGEndAfter.AlwaysDraw = 0
 #        Default: 0 (false)
 #                 1 (true)
 #
-#    vmap.ignoreSpellIds
-#        These spells are ignored for LoS calculation
-#        List of ids with delimiter ','
-#        Default: "7720" - ritual of summoning effect
+#    vmap.ignoremodels
+#        pairs "map modelid" excluded from LoS calculation
+#        delimiter ',' between pairs
 #
 #    vmap.enableIndoorCheck
 #        Enables checking indoor/outdoor state
@@ -1761,7 +1760,7 @@ BattleGround.WSGEndAfter.AlwaysDraw = 0
 ###################################################################################################################
 
 vmap.enableLOS = 0
-vmap.ignoreSpellIds = "7720"
+vmap.ignoremodels = ""
 vmap.enableIndoorCheck = 1
 vmap.petLOS = 0
 vmap.totem = 0

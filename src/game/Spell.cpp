@@ -3969,7 +3969,7 @@ SpellCastResult Spell::CheckCast(bool strict)
             if (target->IsTaxiFlying() && m_caster->GetTypeId() == TYPEID_PLAYER && !SpellMgr::IsPositiveSpell(GetSpellEntry()->Id))
                 return SPELL_FAILED_BAD_TARGETS;
 
-            if ((!IsTriggeredSpell() || IsAutoShootSpell()) && !SpellMgr::SpellIgnoreLOS(GetSpellEntry(), 0) && VMAP::VMapFactory::checkSpellForLoS(GetSpellEntry()->Id) && !m_caster->IsWithinLOSInMap(target))
+            if ((!IsTriggeredSpell() || IsAutoShootSpell()) && !SpellMgr::SpellIgnoreLOS(GetSpellEntry(), 0) && !m_caster->IsWithinLOSInMap(target))
                 return SPELL_FAILED_LINE_OF_SIGHT;
 
             // auto selection spell rank implemented in WorldSession::HandleCastSpellOpcode

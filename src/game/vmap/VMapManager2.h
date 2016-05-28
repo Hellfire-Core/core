@@ -68,11 +68,8 @@ namespace VMAP
             // Tree to check collision
             ModelFileMap iLoadedModelFiles;
             InstanceTreeMap iInstanceMapTrees;
-            // UNORDERED_MAP<unsigned int , bool> iMapsSplitIntoTiles;
-            // UNORDERED_MAP<unsigned int , bool> iIgnoreMapIds;
 
             bool _loadMap(uint32 pMapId, const std::string &basePath, uint32 tileX, uint32 tileY);
-            /* void _unloadMap(uint32 pMapId, uint32 x, uint32 y); */
             std::string hitModelName;
         public:
             // public for debug
@@ -85,8 +82,6 @@ namespace VMAP
 
             VMAPLoadResult loadMap(const char* pBasePath, unsigned int pMapId, int x, int y);
 
-            void setLOSonmaps(const char* pMapIdString);
-
             void unloadMap(unsigned int pMapId, int x, int y);
             void unloadMap(unsigned int pMapId);
 
@@ -98,7 +93,6 @@ namespace VMAP
             bool getObjectHitPos(unsigned int pMapId, float x1, float y1, float z1, float x2, float y2, float z2, float& rx, float &ry, float& rz, float pModifyDist);
             float getHeight(unsigned int pMapId, float x, float y, float z, float maxSearchDist);
 
-            void preventMapsFromBeingUsed(const char* pMapIdString);
             bool getAreaInfo(unsigned int pMapId, float x, float y, float &z, uint32 &flags, int32 &adtId, int32 &rootId, int32 &groupId) const;
             bool GetLiquidLevel(uint32 pMapId, float x, float y, float z, uint8 ReqLiquidType, float &level, float &floor, uint32 &type) const;
 

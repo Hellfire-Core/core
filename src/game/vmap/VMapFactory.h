@@ -35,9 +35,8 @@ namespace VMAP
         public:
             static IVMapManager* createOrGetVMapManager();
             static void clear();
-
-            static void preventSpellsFromBeingTestedForLoS(const char* pSpellIdString);
-            static bool checkSpellForLoS(unsigned int pSpellId);
+            static void disableCertainModels(std::string models);
+            static bool isValidModel(uint32 map, uint32 model);
     };
 
 }

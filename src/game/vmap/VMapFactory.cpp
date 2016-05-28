@@ -25,89 +25,35 @@ using namespace G3D;
 
 namespace VMAP
 {
-    void chompAndTrim(std::string& str)
-    {
-        while(str.length() >0)
-        {
-            char lc = str[str.length()-1];
-            if(lc == '\r' || lc == '\n' || lc == ' ' || lc == '"' || lc == '\'')
-            {
-                str = str.substr(0,str.length()-1);
-            }
-            else
-            {
-                break;
-            }
-        }
-        while(str.length() >0)
-        {
-            char lc = str[0];
-            if(lc == ' ' || lc == '"' || lc == '\'')
-            {
-                str = str.substr(1,str.length()-1);
-            }
-            else
-            {
-                break;
-            }
-        }
-    }
 
     IVMapManager *gVMapManager = 0;
-    Table<unsigned int , bool>* iIgnoreSpellIds=0;
+    std::list<std::pair<uint32, uint32>> disabledModels;
 
-    //===============================================
-    // result false, if no more id are found
-
-    bool getNextId(const std::string& pString, unsigned int& pStartPos, unsigned int& pId)
+    void VMapFactory::disableCertainModels(std::string models)
     {
-        bool result = false;
-        unsigned int i;
-        for(i=pStartPos;i<pString.size(); ++i)
+        size_t space = models.find(' ');
+        size_t delim = models.find(',');
+        while (space != models.npos)
         {
-            if(pString[i] == ',')
-            {
-                break;
-            }
-        }
-        if(i>pStartPos)
-        {
-            std::string idString = pString.substr(pStartPos, i-pStartPos);
-            pStartPos = i+1;
-            chompAndTrim(idString);
-            pId = atoi(idString.c_str());
-            result = true;
-        }
-        return(result);
-    }
-
-    //===============================================
-    /**
-    parameter: String of map ids. Delimiter = ","
-    */
-
-    void VMapFactory::preventSpellsFromBeingTestedForLoS(const char* pSpellIdString)
-    {
-        if(!iIgnoreSpellIds)
-            iIgnoreSpellIds = new Table<unsigned int , bool>();
-        if(pSpellIdString != NULL)
-        {
-            unsigned int pos =0;
-            unsigned int id;
-            std::string confString(pSpellIdString);
-            chompAndTrim(confString);
-            while(getNextId(confString, pos, id))
-            {
-                iIgnoreSpellIds->set(id, true);
-            }
+            uint32 map = atoi(models.substr(0, space).c_str());
+            uint32 model = atoi(models.substr(space).c_str());
+            disabledModels.push_back(std::pair<uint32, uint32>(map, model));
+            if (delim != models.npos)
+                models = models.substr(delim + 1);
+            size_t space = models.find(' ');
+            size_t delim = models.find(',');
         }
     }
 
-    //===============================================
-
-    bool VMapFactory::checkSpellForLoS(unsigned int pSpellId)
+    bool VMapFactory::isValidModel(uint32 map, uint32 model)
     {
-        return(!iIgnoreSpellIds->containsKey(pSpellId));
+        // will require some optimization someday
+        for (std::list<std::pair<uint32, uint32>>::iterator i = disabledModels.begin(); i != disabledModels.end(); i++)
+        {
+            if (i->first == map && i->first == model)
+                return false;
+        }
+        return true;
     }
 
     //===============================================
@@ -123,10 +69,10 @@ namespace VMAP
     // delete all internal data structures
     void VMapFactory::clear()
     {
-        delete iIgnoreSpellIds;
-        iIgnoreSpellIds = NULL;
+        disabledModels.clear();
 
-        delete gVMapManager;
+        if (gVMapManager)
+            delete gVMapManager;
         gVMapManager = NULL;
     }
 }
