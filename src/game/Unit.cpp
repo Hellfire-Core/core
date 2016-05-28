@@ -11543,7 +11543,6 @@ void Unit::StopMoving()
     Movement::MoveSplineInit init(*this);
     init.SetFacing(GetOrientation());
     init.Launch();
-    SendCombatStats(1 << COMBAT_STATS_CRASHTEST, "bang, stopmoving", NULL);
 }
 
 bool Unit::IsStopped() const

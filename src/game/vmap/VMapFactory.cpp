@@ -20,6 +20,7 @@
 #include <sys/types.h>
 #include "VMapFactory.h"
 #include "VMapManager2.h"
+#include <list>
 
 using namespace G3D;
 
