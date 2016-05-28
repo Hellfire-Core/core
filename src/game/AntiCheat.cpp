@@ -154,6 +154,9 @@ bool ACRequest::DetectSpeedHack(Player *pPlayer)
 
     // time passed between reading movement infos
     uint32 timeDiff = WorldTimer::getMSTimeDiff(GetLastMovementInfo().time, GetNewMovementInfo().time);
+    if (!exact2dDist)
+        return false;
+
     if (timeDiff <= 5 && exact2dDist < speedRate * 0.55 && pPlayer->CumulativeACReport(ANTICHEAT_CHECK_SPEEDHACK) == 1)
     {
         //if ==1 this was only occurence so ignore; returned value 0 means there was a report recently
