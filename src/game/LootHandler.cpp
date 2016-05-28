@@ -381,11 +381,11 @@ void WorldSession::DoLootRelease(uint64 lguid)
         else
         {
             // FIXME: item don't must be deleted in case not fully looted state. But this pre-request implement loot saving in DB at item save. Or checting possible.
-            // for now autoloot first item
+            // for now autoloot first item if its quest one
             if (!loot->isLooted())
             {
                 LootItem* li = loot->LootItemInSlot(0);
-                if (li)
+                if (li && ObjectMgr::GetItemPrototype(li->itemid)->Class == ITEM_CLASS_QUEST)
                 {
                     ItemPosCountVec dest;
                     uint8 msg = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, li->itemid, li->count);
