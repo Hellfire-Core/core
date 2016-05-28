@@ -142,15 +142,6 @@ struct instance_uldaman : public ScriptedInstance
         }
     }
 
-    void SetFrozenState(Creature *creature)
-    {
-        creature->setFaction(35);
-        creature->RemoveAllAuras();
-        //creature->RemoveFlag (UNIT_FIELD_FLAGS,UNIT_FLAG_ANIMATION_FROZEN);
-        creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-        creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_MOVE);
-    }
-
     void SetDoor(uint64 guid, bool open)
     {
         GameObject *go = instance->GetGameObject(guid);
@@ -267,7 +258,6 @@ struct instance_uldaman : public ScriptedInstance
             {
                 target->Respawn();
                 target->GetMotionMaster()->MoveTargetedHome();
-                SetFrozenState(target);
             }
         }
 
@@ -279,7 +269,6 @@ struct instance_uldaman : public ScriptedInstance
             {
                 target->Respawn();
                 target->GetMotionMaster()->MoveTargetedHome();
-                SetFrozenState(target);
             }
         }
 
@@ -291,7 +280,6 @@ struct instance_uldaman : public ScriptedInstance
             {
                 target->Respawn();
                 target->GetMotionMaster()->MoveTargetedHome();
-                SetFrozenState(target);
             }
         }
     }
@@ -384,7 +372,6 @@ struct instance_uldaman : public ScriptedInstance
         switch (creature_entry)
         {
             case 4857:    // Stone Keeper
-                SetFrozenState(creature);
                 stoneKeeper.push_back(creature->GetGUID());
                 break;
 
@@ -394,19 +381,14 @@ struct instance_uldaman : public ScriptedInstance
                 break;
 
             case 7076:    // Earthen Guardian
-                SetFrozenState(creature);
                 earthenGuardian.push_back(creature->GetGUID());
                 break;
 
             case 7228:   // Ironaya
                 ironayaGUID = creature->GetGUID();
-
-                if (Encounters[2] != DONE)
-                    SetFrozenState(creature);
                 break;
 
             case 10120:    // Vault Walker
-                SetFrozenState(creature);
                 vaultWalker.push_back(creature->GetGUID());
                 break;
 

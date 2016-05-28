@@ -128,6 +128,7 @@ struct boss_archaedasAI : public ScriptedAI
                 m_creature->setFaction(14);
                 m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                 m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_MOVE);
+                m_creature->RemoveAllAuras();
             }
             return;
         }
@@ -239,16 +240,8 @@ struct mob_archaedas_minionsAI : public ScriptedAI
         m_creature->setFaction(35);
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_MOVE);
-        m_creature->RemoveAllAuras();
     }
 
-    void EnterCombat(Unit *who)
-    {
-        m_creature->setFaction(14);
-        m_creature->RemoveAllAuras();
-        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_MOVE);
-    }
 
     void SpellHit(Unit* caster, const SpellEntry *spell)
     {
@@ -276,6 +269,11 @@ struct mob_archaedas_minionsAI : public ScriptedAI
             {
                 wakingUp = false;
                 amIAwake = true;
+
+                m_creature->setFaction(14);
+                m_creature->RemoveAllAuras();
+                m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_MOVE);
                 AttackStart(me->GetCreature(pInstance->GetData64(0))->getVictim());
             }
             return;
@@ -320,7 +318,6 @@ struct mob_stonekeepersAI : public ScriptedAI
         m_creature->setFaction(35);
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_MOVE);
-        m_creature->RemoveAllAuras();
     }
 
     void EnterCombat(Unit *who)
@@ -328,6 +325,7 @@ struct mob_stonekeepersAI : public ScriptedAI
         m_creature->setFaction(14);
         m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_MOVE);
+        m_creature->RemoveAllAuras();
     }
 
     void UpdateAI(const uint32 diff)
