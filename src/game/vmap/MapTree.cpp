@@ -395,7 +395,7 @@ namespace VMAP
                             continue;
                         }
 #endif
-                        iTreeValues[referencedVal] = ModelInstance(spawn, NULL);
+                        iTreeValues[referencedVal] = ModelInstance(spawn, model);
                         iLoadedSpawns[referencedVal] = 1;
                     }
                     else
