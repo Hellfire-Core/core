@@ -157,10 +157,12 @@ bool ACRequest::DetectSpeedHack(Player *pPlayer)
     if (!exact2dDist)
         return false;
 
-    if (timeDiff <= 25 && exact2dDist < speedRate * 0.55 && pPlayer->CumulativeACReport(ANTICHEAT_CHECK_SPEEDHACK) == 1)
+    uint32 count = 0;
+    if (timeDiff <= 50 && exact2dDist < speedRate * 0.55)
     {
-        //if ==1 this was only occurence so ignore; returned value 0 means there was a report recently
-        return false;
+        count = pPlayer->CumulativeACReport(ANTICHEAT_CHECK_SPEEDHACK);
+        if (count == 1 || count == 2) //ignore one or two occurences; returned value 0 means there was a report recently
+            return false;
     }
 
     //client-side speed, traveled distance div by movement time.
@@ -169,14 +171,14 @@ bool ACRequest::DetectSpeedHack(Player *pPlayer)
     if (clientSpeedRate <= speedRate * sWorld.getConfig(CONFIG_ANTICHEAT_SPEEDHACK_TOLERANCE))
         return false;
 
-    sWorld.SendGMText(LANG_ANTICHEAT_SPEEDHACK, pPlayer->GetName(), pPlayer->GetName(), 0, speedRate, clientSpeedRate);
+    sWorld.SendGMText(LANG_ANTICHEAT_SPEEDHACK, pPlayer->GetName(), pPlayer->GetName(), count, speedRate, clientSpeedRate);
     sLog.outLog(LOG_CHEAT, "Player %s (GUID: %u / ACCOUNT_ID: %u) moved for distance %f with server speed "
         ": %f (client speed: %f, time diff %u). MapID: %u, player's coord before X:%f Y:%f Z:%f."
-        " Player's coord now X:%f Y:%f Z:%f. MOVEMENTFLAGS: %u LATENCY: %u. BG/Arena: %s",
+        " Player's coord now X:%f Y:%f Z:%f. MOVEMENTFLAGS: %u LATENCY: %u. BG/Arena: %s, occurences count %u",
         pPlayer->GetName(), pPlayer->GetGUIDLow(), pPlayer->GetSession()->GetAccountId(), exact2dDist, speedRate,
         clientSpeedRate, timeDiff, pPlayer->GetMapId(), GetLastMovementInfo().pos.x, GetLastMovementInfo().pos.y, GetLastMovementInfo().pos.z,
         GetNewMovementInfo().pos.x, GetNewMovementInfo().pos.y, GetNewMovementInfo().pos.z,
         GetNewMovementInfo().GetMovementFlags(), pPlayer->GetSession()->GetLatency(),
-        pPlayer->GetMap() ? (pPlayer->GetMap()->IsBattleGroundOrArena() ? "Yes" : "No") : "No");
+        pPlayer->GetMap() ? (pPlayer->GetMap()->IsBattleGroundOrArena() ? "Yes" : "No") : "No", count);
     return true;
 }
