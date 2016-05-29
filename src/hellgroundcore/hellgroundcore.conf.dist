@@ -1760,7 +1760,6 @@ BattleGround.WSGEndAfter.AlwaysDraw = 0
 ###################################################################################################################
 
 vmap.enableLOS = 0
-vmap.ignoremodels = ""
 vmap.enableIndoorCheck = 1
 vmap.petLOS = 0
 vmap.totem = 0

@@ -897,9 +897,6 @@ void World::LoadConfigSettings(bool reload)
             sLog.outLog(LOG_DEFAULT, "ERROR: MaxPlayerLevel (%i) must be in range 1..%u. Set to %u.",m_configs[CONFIG_MAX_PLAYER_LEVEL],MAX_LEVEL,MAX_LEVEL);
             m_configs[CONFIG_MAX_PLAYER_LEVEL] = MAX_LEVEL;
         }
-
-        std::string ignoremodels = sConfig.GetStringDefault("vmap.ignoremodels", "");
-        VMAP::VMapFactory::disableCertainModels(ignoremodels);
     }
 
     // === Warns section ===
