@@ -4557,7 +4557,7 @@ void Spell::EffectSummonGuardian(uint32 i)
     // Search old Guardian only for players (if cast spell not have duration or cooldown)
     // FIXME: some guardians have control spell applied and controlled by player and anyway player can't summon in this time
     //        so this code hack in fact
-    if (duration <= 0 || SpellMgr::GetSpellRecoveryTime(GetSpellEntry())==0)
+    if ((duration <= 0 || SpellMgr::GetSpellRecoveryTime(GetSpellEntry())==0) && !m_CastItem) //items has their own cd
         if (caster->HasGuardianWithEntry(pet_entry))
             return;                                        // find old guardian, ignore summon
 
