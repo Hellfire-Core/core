@@ -80,6 +80,93 @@ bool GossipSelect_npcs_riverbreeze_and_silversky(Player *player, Creature *_Crea
     return true;
 }
 
+enum
+{
+    QUEST_CORRUPTED_SABERS = 4506,
+    NPC_KITTEN = 9937,
+    NPC_SABER = 10657,
+    GOB_MOONWELL = 300025,
+};
+
+struct npc_winnas_kittenAI : public ScriptedAI
+{
+    npc_winnas_kittenAI(Creature* c) : ScriptedAI(c) {}
+
+    uint8 status;
+    Timer timer;
+
+    void Reset()
+    {
+        status = 0;
+        timer.Reset(1000);
+    }
+
+    void UpdateAI(uint32 diff)
+    {
+        if (timer.Expired(diff))
+        {
+            switch (status)
+            {
+                case 0: // look for moonwell
+                {
+                    GameObject* ok = NULL;
+                    Hellground::AllGameObjectsWithEntryInGrid go_check(GOB_MOONWELL);
+                    Hellground::ObjectSearcher<GameObject, Hellground::AllGameObjectsWithEntryInGrid> checker(ok, go_check);
+
+                    Cell::VisitGridObjects(m_creature, checker, 10.0f);
+                    if (ok)
+                    {
+                        status++;
+                        timer = 500;
+                        break;
+                    }
+                    timer = 3000;
+                    break;
+                }
+                case 1: // emote
+                {
+                    DoTextEmote("jumps into moonwell and goes underwater.", m_creature);
+                    timer = 2000;
+                    status++;
+                    break;
+                }
+                case 2: // change
+                {
+                    m_creature->UpdateEntry(NPC_SABER);
+                    DoTextEmote("follows %T obediently.", m_creature->GetCharmerOrOwnerPlayerOrPlayerItself());
+                    m_creature->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+                    timer = 0;
+                    status++;
+                    break;
+                }
+
+            }
+        }
+    }
+};
+
+CreatureAI* GetAI_winnas_kitten(Creature* c)
+{
+    return new npc_winnas_kittenAI(c);
+}
+
+bool GossipHello_npc_winnas_kitten(Player* plr, Creature* creature)
+{
+    plr->ADD_GOSSIP_ITEM(0, "I want to release the corrupted saber to Winna", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+    plr->SEND_GOSSIP_MENU(creature->GetNpcTextId(), creature->GetGUID());
+}
+
+bool GossipSelect_npc_winnas_kitten(Player* plr, Creature* c, uint32 sender, uint32 action)
+{
+    if (action == GOSSIP_ACTION_INFO_DEF + 1)
+    {
+        plr->CLOSE_GOSSIP_MENU();
+        plr->GroupEventHappens(QUEST_CORRUPTED_SABERS, c);
+        c->ForcedDespawn(100);
+    }
+    return true;
+}
+
 void AddSC_felwood()
 {
     Script *newscript;
@@ -88,6 +175,13 @@ void AddSC_felwood()
     newscript->Name="npcs_riverbreeze_and_silversky";
     newscript->pGossipHello = &GossipHello_npcs_riverbreeze_and_silversky;
     newscript->pGossipSelect = &GossipSelect_npcs_riverbreeze_and_silversky;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npcs_winnas_kitten";
+    newscript->GetAI = &GetAI_winnas_kitten;
+    newscript->pGossipHello = &GossipHello_npc_winnas_kitten;
+    newscript->pGossipSelect = &GossipSelect_npc_winnas_kitten;
     newscript->RegisterSelf();
 }
 
