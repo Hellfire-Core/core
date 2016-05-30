@@ -1882,6 +1882,22 @@ void Spell::EffectDummy(uint32 i)
                         return;
                     unitTarget->CastSpell(unitTarget, 12941, true);
                 }
+                case 37867: // frankly it makes no sense
+                case 37892:
+                case 37894:
+                {
+                    struct frankly_check
+                    {
+                        bool operator() (Unit*u)
+                        {return (u->ToCreature() && u->GetEntry() == 21909 && u->isAlive() && !u->HasAuraType(SPELL_AURA_MOD_POSSESS));}
+                    } my_check;
+                    Unit* any;
+                    Hellground::UnitSearcher<frankly_check> searcher(any, my_check);
+                    Cell::VisitGridObjects(m_caster, searcher, 30.0f);
+                    if (!any)
+                        return;
+                    m_caster->CastSpell(any, 37868, true);
+                }
             }
 
             //All IconID Check in there

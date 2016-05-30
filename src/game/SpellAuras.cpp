@@ -3943,6 +3943,14 @@ void Aura::HandleModPossess(bool apply, bool Real)
 
         m_target->RemoveCharmedOrPossessedBy(caster);
     }
+
+    if (GetId() == 37868) //frankly it makes no sense
+    {
+        if (apply)
+            m_target->RestoreFaction();
+        else
+            m_target->ToCreature()->AI()->EnterEvadeMode();
+    }
 }
 
 void Aura::HandleModPossessPet(bool apply, bool Real)
