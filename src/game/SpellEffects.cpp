@@ -1891,7 +1891,7 @@ void Spell::EffectDummy(uint32 i)
                         bool operator() (Unit*u)
                         {return (u->ToCreature() && u->GetEntry() == 21909 && u->isAlive() && !u->HasAuraType(SPELL_AURA_MOD_POSSESS));}
                     } my_check;
-                    Unit* any;
+                    Unit* any = NULL;
                     Hellground::UnitSearcher<frankly_check> searcher(any, my_check);
                     Cell::VisitGridObjects(m_caster, searcher, 30.0f);
                     if (!any)
