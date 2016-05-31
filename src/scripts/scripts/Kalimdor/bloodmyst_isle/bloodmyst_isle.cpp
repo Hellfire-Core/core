@@ -33,6 +33,7 @@ go_princess_stillpine_cage
 EndContentData */
 
 #include "precompiled.h"
+#include "escort_ai.h"
 
 /*######
 ## mob_webbed_creature
@@ -212,6 +213,170 @@ bool GOUse_go_princess_stillpine_cage(Player* pPlayer, GameObject* pGO)
     return false;
 }
 
+// Ending their world
+enum
+{
+    QUEST_ENDING_THEIR_WORLD = 9759,
+
+    TEXTS_START = -1000800,
+};
+
+struct npc_demolitionist_legosoAI : public npc_escortAI
+{
+    npc_demolitionist_legosoAI(Creature* c) : npc_escortAI(c) {};
+
+    uint8 phase;
+    Timer timer;
+
+    void Reset()
+    {
+        phase = 0;
+        timer = 0;
+    }
+
+    void WaypointReached(uint32 point)
+    {
+        switch (point)
+        {
+        case 1:
+            DoScriptText(TEXTS_START - 1, m_creature, GetPlayerForEscort());
+            break;
+        case 11:
+            DoScriptText(TEXTS_START - 2, m_creature, GetPlayerForEscort());
+            break;
+        case 12:
+            SetEscortPaused(true);
+            SetCanAttack(false);
+            phase = 1;
+            timer.Reset(5000);
+            m_creature->HandleEmoteCommand(EMOTE_ONESHOT_KNEEL);
+            DoScriptText(TEXTS_START - 3, m_creature, GetPlayerForEscort());
+            break;
+        case 13:
+            SetEscortPaused(true);
+            timer.Reset(2000);
+            break;
+        case 16:
+            DoScriptText(TEXTS_START - 10, m_creature, GetPlayerForEscort());
+            break;
+        case 17:
+            DoScriptText(TEXTS_START - 11, m_creature, GetPlayerForEscort());
+            break;
+        case 18:
+            DoScriptText(TEXTS_START - 12, m_creature, GetPlayerForEscort());
+            break;
+        case 19:
+            DoScriptText(TEXTS_START - 13, m_creature, GetPlayerForEscort());
+            break;
+        case 20:
+            SetEscortPaused(true);
+            SetCanAttack(false);
+            timer.Reset(5000);
+            m_creature->HandleEmoteCommand(EMOTE_ONESHOT_KNEEL);
+            break;
+        case 21:
+            SetEscortPaused(true);
+            timer.Reset(2000);
+            break;
+        default:
+            return;
+        }
+    }
+
+    void UpdateEscortAI(uint32 diff)
+    {
+        if (!UpdateVictim)
+        {
+            if (timer.Expired(diff))
+            {
+                switch (phase)
+                {
+                case 1:
+                    DoScriptText(TEXTS_START - 4, m_creature, GetPlayerForEscort());
+                    timer = 5000;
+                    break;
+                case 2:
+                    DoScriptText(TEXTS_START - 5, m_creature, GetPlayerForEscort());
+                    timer = 0;
+                    m_creature->HandleEmoteCommand(EMOTE_ONESHOT_NONE);
+                    SetEscortPaused(false);
+                    SetCanAttack(true);
+                    break;
+                case 3:
+                case 9:
+                    DoScriptText(TEXTS_START - 6, m_creature, GetPlayerForEscort());
+                    timer = 1000;
+                    break;
+                case 4:
+                case 10:
+                    DoScriptText(TEXTS_START - 7, m_creature, GetPlayerForEscort());
+                    timer = 1000;
+                    break;
+                case 5:
+                case 11:
+                    DoScriptText(TEXTS_START - 8, m_creature, GetPlayerForEscort());
+                    timer = 5000;
+                    break;
+                case 6:
+                    DoScriptText(TEXTS_START - 9, m_creature, GetPlayerForEscort());
+                    timer = 0;
+                    SetEscortPaused(false);
+                    break;
+                case 7:
+                    DoScriptText(TEXTS_START - 14, m_creature, GetPlayerForEscort());
+                    timer = 5000;
+                    break;
+                case 8:
+                    DoScriptText(TEXTS_START - 15, m_creature, GetPlayerForEscort());
+                    timer = 0;
+                    m_creature->HandleEmoteCommand(EMOTE_ONESHOT_NONE);
+                    SetEscortPaused(false);
+                    SetCanAttack(true);
+                    break;
+                case 12:
+                    DoScriptText(TEXTS_START - 16, m_creature, GetPlayerForEscort());
+                    SetCanAttack(true);
+                    timer = 10000;
+                    break;
+                case 13:
+                    DoScriptText(TEXTS_START - 17, m_creature, GetPlayerForEscort());
+                    timer = 3000;
+                    break;
+                case 14:
+                    DoScriptText(TEXTS_START - 18, m_creature, GetPlayerForEscort());
+                    timer = 0;
+                    m_creature->ForcedDespawn(1000);
+                    if (Player* plr = GetPlayerForEscort())
+                        plr->GroupEventHappens(QUEST_ENDING_THEIR_WORLD, m_creature);
+                    break;
+                }
+
+                phase++;
+
+            }
+            return;
+        }
+
+        DoMeleeAttackIfReady();
+
+    }
+};
+
+CreatureAI* GetAI_npc_demolitionist_legoso(Creature* c)
+{
+    return new npc_demolitionist_legosoAI(c);
+}
+
+bool QuestAccept_demolitionist_legoso(Player* plr, Creature* creature, const Quest* quest)
+{
+    if (quest->GetQuestId() == QUEST_ENDING_THEIR_WORLD)
+    {
+        if (npc_escortAI* pEscortAI = CAST_AI(npc_demolitionist_legosoAI, creature->AI()))
+            pEscortAI->Start(true, true, plr->GetGUID(), quest);
+    }
+    return true;
+}
+
 void AddSC_bloodmyst_isle()
 {
     Script *newscript;
@@ -241,6 +406,12 @@ void AddSC_bloodmyst_isle()
     newscript = new Script;
     newscript->Name = "go_princess_stillpine_cage";
     newscript->pGOUse = &GOUse_go_princess_stillpine_cage;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_demolitionist_legoso";
+    newscript->GetAI = &GetAI_npc_demolitionist_legoso;
+    newscript->pQuestAcceptNPC = &QuestAccept_demolitionist_legoso;
     newscript->RegisterSelf();
 }
 
