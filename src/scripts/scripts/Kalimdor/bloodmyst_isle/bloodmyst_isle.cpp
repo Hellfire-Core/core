@@ -285,7 +285,7 @@ struct npc_demolitionist_legosoAI : public npc_escortAI
 
     void UpdateEscortAI(uint32 diff)
     {
-        if (!UpdateVictim)
+        if (!UpdateVictim())
         {
             if (timer.Expired(diff))
             {
