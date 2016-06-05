@@ -794,6 +794,10 @@ void WorldSession::HandleAreaTriggerOpcode(WorldPacket & recv_data)
     // check if player in the range of areatrigger
     Player* pl = GetPlayer();
 
+    pl->SendCombatStats(1 << COMBAT_STATS_AREA_TRIGGER, "CMSG_AREATRIGGER player pos %f %f %f at %u (%f %f %f %f|%f %f %f %f)", NULL,
+        pl->GetPositionX(), pl->GetPositionY(), pl->GetPositionZ(), Trigger_ID, atEntry->x, atEntry->y, atEntry->z, atEntry->radius,
+        atEntry->box_orientation, atEntry->box_x, atEntry->box_y, atEntry->box_z);
+
     if (atEntry->radius > 0)
     {
         // if we have radius check it
