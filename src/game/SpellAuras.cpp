@@ -3947,9 +3947,12 @@ void Aura::HandleModPossess(bool apply, bool Real)
     if (GetId() == 37868) //frankly it makes no sense
     {
         if (apply)
-            m_target->RestoreFaction();
+            m_target->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
         else
+        {
             m_target->ToCreature()->AI()->EnterEvadeMode();
+            m_target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        }
     }
 }
 

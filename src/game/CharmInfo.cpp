@@ -113,6 +113,7 @@ void CharmInfo::InitPossessCreateSpells()
         45848
     };
 
+
     if (m_unit->GetEntry() == 23109)     //HACK to allow proper spells for Vengeful Spirit
     {
         InitEmptyActionBar(false);
@@ -134,6 +135,17 @@ void CharmInfo::InitPossessCreateSpells()
             uint32 spellid = BlueDrakeID[i];
             AddSpellToActionBar(0, spellid, ACT_CAST);
         }
+        return;
+    }
+    if (m_unit->GetEntry() == 21909) //arcano-scoop
+    {
+        InitEmptyActionBar();
+        PetActionBar[5].SpellOrAction = 36919;
+        PetActionBar[6].SpellOrAction = 36918;
+        PetActionBar[9].SpellOrAction = 37851;
+        PetActionBar[5].Type = ACT_CAST;
+        PetActionBar[6].Type = ACT_CAST;
+        PetActionBar[9].Type = ACT_CAST;
         return;
     }
 
