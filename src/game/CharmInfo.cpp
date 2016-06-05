@@ -140,9 +140,9 @@ void CharmInfo::InitPossessCreateSpells()
     if (m_unit->GetEntry() == 21909) //arcano-scoop
     {
         InitEmptyActionBar();
-        PetActionBar[5].SpellOrAction = 36919;
-        PetActionBar[6].SpellOrAction = 36918;
-        PetActionBar[9].SpellOrAction = 37851;
+        PetActionBar[5].SpellOrAction = 37919;
+        PetActionBar[6].SpellOrAction = 37918;
+        PetActionBar[3].SpellOrAction = 37851;
         PetActionBar[5].Type = ACT_CAST;
         PetActionBar[6].Type = ACT_CAST;
         PetActionBar[9].Type = ACT_CAST;

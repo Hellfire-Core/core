@@ -8266,6 +8266,7 @@ void Spell::EffectStealBeneficialBuff(uint32 i)
 
 void Spell::EffectKillCredit(uint32 i)
 {
+    unitTarget->SendCombatStats(1 << COMBAT_STATS_TEST, "Kill credit %u", NULL, GetSpellEntry()->EffectMiscValue[i]);
     if (!unitTarget || unitTarget->GetTypeId() != TYPEID_PLAYER)
         return;
 
