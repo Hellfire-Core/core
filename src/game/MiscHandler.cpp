@@ -818,8 +818,8 @@ void WorldSession::HandleAreaTriggerOpcode(WorldPacket & recv_data)
         double es = sin(atEntry->box_orientation);
         double ec = cos(atEntry->box_orientation);
         // calc rotated vector based on extent axis
-        double rotateDx = dx*ec - dy*es;
-        double rotateDy = dx*es + dy*ec;
+        double rotateDx = dx*ec + dy*es;
+        double rotateDy = dx*es - dy*ec;
 
         if ((fabs(rotateDx) > atEntry->box_x/2 + delta) ||
             (fabs(rotateDy) > atEntry->box_y/2 + delta) ||
