@@ -887,7 +887,7 @@ void Spell::DoAllEffectOnTarget(TargetInfo *target)
     if (GetSpellEntry()->Id > MAX_SPELL_ID)
         return;
 
-    if (!target || target == (TargetInfo*)0x10 || target->processed)    // Check target
+    if (!target || target == (TargetInfo*)0x10 || target->processed)    // Check target WTF?
         return;
 
     target->processed = true;                               // Target checked in apply effects procedure
@@ -3308,8 +3308,7 @@ void Spell::SendSpellGo()
         return;
 
     sLog.outDebug("Sending SMSG_SPELL_GO id=%u", GetSpellEntry()->Id);
-
-    Unit *target = m_targets.getUnitTarget() ? m_targets.getUnitTarget() : m_caster;
+    m_caster->SendCombatStats(1 << COMBAT_STATS_FAILED_CAST, "Spell %u go! target lowguid %u", NULL, GetSpellEntry()->Id, GUID_LOPART(m_targets.getUnitTargetGUID()));
 
     uint32 castFlags = CAST_FLAG_UNKNOWN9;
 

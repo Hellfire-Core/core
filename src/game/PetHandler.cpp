@@ -50,7 +50,7 @@ void WorldSession::HandlePetAction(WorldPacket & recv_data)
 
     // used also for charmed creature
     Unit* pCharm = pPlayer->GetUnit(charmGUID);
-    _player->SendCombatStats(1 << COMBAT_STATS_TEST, "pet action", NULL);
+    
     if (!pCharm || (charmGUID != pPlayer->GetPetGUID() && charmGUID != pPlayer->GetCharmGUID()))
     {
         sLog.outLog(LOG_DEFAULT, "ERROR: PetHandler:: charm(%u), player doesn't have such pet/charm.", uint32(GUID_LOPART(charmGUID)));
@@ -78,8 +78,8 @@ void WorldSession::HandlePetAction(WorldPacket & recv_data)
     switch (flag)
     {
         case ACT_COMMAND:                                   //0x0700
-            // Possessed or shared vision pets are only able to attack
-            if ((pCharm->isPossessed() || pCharm->HasAuraType(SPELL_AURA_BIND_SIGHT)) && spellId != COMMAND_ATTACK)
+            // Possessed or shared vision pets are only able to attack or be abandoned
+            if ((pCharm->isPossessed() || pCharm->HasAuraType(SPELL_AURA_BIND_SIGHT)) && spellId != COMMAND_ATTACK && spellId != COMMAND_ABANDON)
                 return;
 
             switch (spellId)
@@ -344,7 +344,7 @@ void WorldSession::HandlePetAbandon(WorldPacket & recv_data)
 
     if (!_player->IsInWorld())
         return;
-    _player->SendCombatStats(1 << COMBAT_STATS_TEST, "pet abandon", NULL);
+    
     // pet/charmed
     Creature* pet = _player->GetMap()->GetCreatureOrPet(guid);
     if (pet)
