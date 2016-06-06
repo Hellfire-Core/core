@@ -373,6 +373,7 @@ bool QuestAccept_demolitionist_legoso(Player* plr, Creature* creature, const Que
     {
         if (npc_escortAI* pEscortAI = CAST_AI(npc_demolitionist_legosoAI, creature->AI()))
             pEscortAI->Start(true, true, plr->GetGUID(), quest);
+        creature->SetSpeed(MOVE_RUN, 0.7);
     }
     return true;
 }
