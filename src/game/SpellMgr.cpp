@@ -2997,6 +2997,9 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 7720: // summon effect
                     spellInfo->AttributesEx2 |= SPELL_ATTR_EX2_IGNORE_LOS;
                     break;
+                case 37851:
+                    spellInfo->EffectImplicitTargetA[1] = TARGET_UNIT_MASTER;
+                    break;
                 }
                 if (spellInfo->SpellIconID == 184 && spellInfo->Attributes == 4259840)
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;

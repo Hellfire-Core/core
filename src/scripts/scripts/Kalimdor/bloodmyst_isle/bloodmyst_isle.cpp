@@ -248,7 +248,7 @@ struct npc_demolitionist_legosoAI : public npc_escortAI
             SetEscortPaused(true);
             SetCanAttack(false);
             phase = 1;
-            timer.Reset(5000);
+            timer.Reset(10000);
             m_creature->HandleEmoteCommand(EMOTE_ONESHOT_KNEEL);
             DoScriptText(TEXTS_START - 3, m_creature, GetPlayerForEscort());
             break;
@@ -271,7 +271,7 @@ struct npc_demolitionist_legosoAI : public npc_escortAI
         case 20:
             SetEscortPaused(true);
             SetCanAttack(false);
-            timer.Reset(5000);
+            timer.Reset(10000);
             m_creature->HandleEmoteCommand(EMOTE_ONESHOT_KNEEL);
             break;
         case 21:
@@ -293,7 +293,7 @@ struct npc_demolitionist_legosoAI : public npc_escortAI
                 {
                 case 1:
                     DoScriptText(TEXTS_START - 4, m_creature, GetPlayerForEscort());
-                    timer = 5000;
+                    timer = 10000;
                     break;
                 case 2:
                     DoScriptText(TEXTS_START - 5, m_creature, GetPlayerForEscort());
@@ -324,7 +324,7 @@ struct npc_demolitionist_legosoAI : public npc_escortAI
                     break;
                 case 7:
                     DoScriptText(TEXTS_START - 14, m_creature, GetPlayerForEscort());
-                    timer = 5000;
+                    timer = 10000;
                     break;
                 case 8:
                     DoScriptText(TEXTS_START - 15, m_creature, GetPlayerForEscort());
@@ -371,9 +371,10 @@ bool QuestAccept_demolitionist_legoso(Player* plr, Creature* creature, const Que
 {
     if (quest->GetQuestId() == QUEST_ENDING_THEIR_WORLD)
     {
+        creature->GetMotionMaster()->Clear();
         if (npc_escortAI* pEscortAI = CAST_AI(npc_demolitionist_legosoAI, creature->AI()))
             pEscortAI->Start(true, true, plr->GetGUID(), quest);
-        creature->SetSpeed(MOVE_RUN, 0.7);
+        creature->SetSpeed(MOVE_RUN, 0.9);
     }
     return true;
 }

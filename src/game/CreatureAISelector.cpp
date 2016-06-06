@@ -34,8 +34,8 @@ namespace FactorySelector
         const CreatureAICreator *ai_factory = NULL;
         CreatureAIRegistry &ai_registry(*CreatureAIRepository::instance());
 
-        //script name in db
-        if ((!creature->isPet() || !((Pet*)creature)->isControlled()) && !creature->isCharmed())
+        //script name in db. 9937 - hack for winnas kitten
+        if ((!creature->isPet() || !((Pet*)creature)->isControlled() || creature->GetEntry() == 9937) && !creature->isCharmed())
             if (CreatureAI* scriptedAI = sScriptMgr.GetCreatureAI(creature))
                 return scriptedAI;
 
@@ -63,10 +63,6 @@ namespace FactorySelector
                         break;
                     case 510:
                         ai_factory = ai_registry.GetRegistryItem("WaterElementalAI");
-                        break;
-                    case 9937: // winnas kitten
-                        if (CreatureAI* scriptedAI = sScriptMgr.GetCreatureAI(creature))
-                            return scriptedAI;
                         break;
                     default:
                         ai_factory = ai_registry.GetRegistryItem("PetAI");
