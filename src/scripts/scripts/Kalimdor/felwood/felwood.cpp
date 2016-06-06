@@ -29,6 +29,7 @@ npcs_riverbreeze_and_silversky
 EndContentData */
 
 #include "precompiled.h"
+#include "follower_ai.h"
 
 /*######
 ## npcs_riverbreeze_and_silversky
@@ -88,9 +89,9 @@ enum
     GOB_MOONWELL = 300025,
 };
 
-struct npc_winnas_kittenAI : public ScriptedAI
+struct npc_winnas_kittenAI : public FollowerAI
 {
-    npc_winnas_kittenAI(Creature* c) : ScriptedAI(c) {}
+    npc_winnas_kittenAI(Creature* c) : FollowerAI(c) {}
 
     uint8 status;
     Timer timer;
@@ -101,7 +102,13 @@ struct npc_winnas_kittenAI : public ScriptedAI
         timer.Reset(1000);
     }
 
-    void UpdateAI(uint32 diff)
+    void IsSummonedBy(Unit* owner)
+    {
+        if (owner->GetTypeId() == TYPEID_PLAYER)
+            StartFollow(owner->ToPlayer());
+    }
+
+    void UpdateFollowerAI(uint32 diff)
     {
         if (timer.Expired(diff))
         {
@@ -142,6 +149,11 @@ struct npc_winnas_kittenAI : public ScriptedAI
 
             }
         }
+
+        if (!UpdateVictim())
+            return;
+
+        DoMeleeAttackIfReady();
     }
 };
 

@@ -64,6 +64,10 @@ namespace FactorySelector
                     case 510:
                         ai_factory = ai_registry.GetRegistryItem("WaterElementalAI");
                         break;
+                    case 9937: // winnas kitten
+                        if (CreatureAI* scriptedAI = sScriptMgr.GetCreatureAI(creature))
+                            return scriptedAI;
+                        break;
                     default:
                         ai_factory = ai_registry.GetRegistryItem("PetAI");
                         break;
