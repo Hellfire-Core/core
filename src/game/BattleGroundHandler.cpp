@@ -503,7 +503,7 @@ void WorldSession::HandleBattleGroundPlayerPortOpcode(WorldPacket &recv_data)
                 DEBUG_LOG("Battleground: player %s (%u) joined battle for bg %u, bgtype %u, queue type %u.",_player->GetName(),_player->GetGUIDLow(),bg->GetInstanceID(),bg->GetTypeID(),bgQueueTypeId);
                 
                 // remove queues on bg join 
-                for (uint8 i = 0; i < MAX_BATTLEGROUND_QUEUES; i++)
+                for (uint8 i = 0; i < PLAYER_MAX_BATTLEGROUND_QUEUES; i++)
                 {
                     if (i == queueSlot)
                         continue;
