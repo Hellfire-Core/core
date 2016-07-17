@@ -11263,6 +11263,9 @@ void Unit::ProcDamageAndSpellfor (bool isVictim, Unit * pTarget, uint32 procFlag
         Aura *triggeredByAura = i->triggeredByAura;
         Modifier *auraModifier = triggeredByAura->GetModifier();
         SpellEntry const *spellInfo = triggeredByAura->GetSpellProto();
+        ASSERT(spellInfo);
+        if (!spellInfo)
+            continue; // it happens (for some reason) that triggeredByAura is not a valid Aura pointer, then everything fucks up
         uint32 effIndex = triggeredByAura->GetEffIndex();
         bool useCharges = triggeredByAura->m_procCharges > 0;
         // For players set spell cooldown if need

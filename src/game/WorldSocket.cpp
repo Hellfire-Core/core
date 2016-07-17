@@ -786,7 +786,7 @@ int WorldSocket::HandleAuthSession(WorldPacket& recvPacket)
     }
 
     // Check locked state for server
-    sWorld.UpdateRequiredPermissions();
+    //sWorld.UpdateRequiredPermissions();
     uint64 minimumPermissions = sWorld.GetMinimumPermissionMask();
     sLog.outDebug("Allowed permission mask: %lu Player permission mask: %lu", minimumPermissions, permissionMask);
     if (!(permissionMask & minimumPermissions))
