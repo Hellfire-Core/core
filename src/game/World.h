@@ -105,6 +105,7 @@ enum WorldConfigs
     CONFIG_ADDON_CHANNEL,
     CONFIG_SAVE_RESPAWN_TIME_IMMEDIATELY,
     CONFIG_GRID_UNLOAD,
+    CONFIG_WORLD_SLEEP,
 
     CONFIG_SOCKET_SELECTTIME,
     CONFIG_INTERVAL_GRIDCLEAN,
@@ -867,7 +868,7 @@ class HELLGROUND_EXPORT World
         IntervalTimer m_timers[WUPDATE_COUNT];
         uint32 mail_timer;
         uint32 mail_timer_expires;
-        uint32 m_updateTime, m_updateTimeSum, m_avgUpdateTime, m_curAvgUpdateTime;
+        uint32 m_updateTime, m_updateTimeSum;
 
         uint32 m_updateTimeCount;
         uint64 m_serverUpdateTimeSum, m_serverUpdateTimeCount;

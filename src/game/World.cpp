@@ -883,6 +883,7 @@ void World::LoadConfigSettings(bool reload)
     {
         loadConfig(CONFIG_PORT_WORLD, "WorldServerPort", DEFAULT_WORLDSERVER_PORT);
         // Performance settings
+        loadConfig(CONFIG_WORLD_SLEEP, "WorldSleep", 50);
         loadConfig(CONFIG_SOCKET_SELECTTIME, "SocketSelectTime", DEFAULT_SOCKET_SELECT_TIME);
 
         // Server settings
@@ -1565,17 +1566,17 @@ void World::Update(uint32 diff)
     {
         if (m_updateTimeSum > getConfig(CONFIG_INTERVAL_LOG_UPDATE))
         {
-            m_curAvgUpdateTime = m_updateTimeSum/m_updateTimeCount;   // from last log time
+            float curAvgUpdateTime = m_updateTimeSum/m_updateTimeCount;   // from last log time
             m_serverUpdateTimeSum += m_updateTimeSum;
             m_serverUpdateTimeCount += m_updateTimeCount;
 
-            m_avgUpdateTime = m_serverUpdateTimeSum/m_serverUpdateTimeCount; // from server start
+            float avgUpdateTime = m_serverUpdateTimeSum/m_serverUpdateTimeCount; // from server start
 
-            sLog.outLog(LOG_DEFAULT, "[Diff]: Update time diff: %u, avg: %u. Players online: %u.", m_curAvgUpdateTime, m_avgUpdateTime, GetActiveSessionCount());
-            sLog.outLog(LOG_DIFF, "Update time diff: %u, avg: %u. Players online: %u.", m_curAvgUpdateTime, m_avgUpdateTime, GetActiveSessionCount());
-            sLog.outLog(LOG_STATUS, "%u %u %u %u %u %u %s %u %u %u %u %ld",
+            sLog.outLog(LOG_DEFAULT, "[Diff]: Update time diff: %.2f, avg: %.2f. Players online: %u.", curAvgUpdateTime, avgUpdateTime, GetActiveSessionCount());
+            sLog.outLog(LOG_DIFF, "Update time diff: %.2f, avg: %.2f. Players online: %u.", curAvgUpdateTime, avgUpdateTime, GetActiveSessionCount());
+            sLog.outLog(LOG_STATUS, "%u %u %u %u %u %u %s %.2f %.2f %u %u %ld",
                         GetUptime(), GetActiveSessionCount(), GetMaxActiveSessionCount(), GetQueuedSessionCount(), GetMaxQueuedSessionCount(),
-                        m_playerLimit, _REVISION, m_curAvgUpdateTime, m_avgUpdateTime, loggedInAlliances.value(), loggedInHordes.value(), sWorld.GetGameTime());
+                        m_playerLimit, _REVISION, curAvgUpdateTime, avgUpdateTime, loggedInAlliances.value(), loggedInHordes.value(), sWorld.GetGameTime());
 
             m_updateTimeSum = m_updateTime;
             m_updateTimeCount = 1;
