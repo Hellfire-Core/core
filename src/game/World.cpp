@@ -1566,15 +1566,15 @@ void World::Update(uint32 diff)
     {
         if (m_updateTimeSum > getConfig(CONFIG_INTERVAL_LOG_UPDATE))
         {
-            float curAvgUpdateTime = m_updateTimeSum/m_updateTimeCount;   // from last log time
+            float curAvgUpdateTime = (float)m_updateTimeSum / (float)m_updateTimeCount;   // from last log time
             m_serverUpdateTimeSum += m_updateTimeSum;
             m_serverUpdateTimeCount += m_updateTimeCount;
 
-            float avgUpdateTime = m_serverUpdateTimeSum/m_serverUpdateTimeCount; // from server start
+            float avgUpdateTime = (float)m_serverUpdateTimeSum/ (float)m_serverUpdateTimeCount; // from server start
 
-            sLog.outLog(LOG_DEFAULT, "[Diff]: Update time diff: %.2f, avg: %.2f. Players online: %u.", curAvgUpdateTime, avgUpdateTime, GetActiveSessionCount());
-            sLog.outLog(LOG_DIFF, "Update time diff: %.2f, avg: %.2f. Players online: %u.", curAvgUpdateTime, avgUpdateTime, GetActiveSessionCount());
-            sLog.outLog(LOG_STATUS, "%u %u %u %u %u %u %s %.2f %.2f %u %u %ld",
+            sLog.outLog(LOG_DEFAULT, "[Diff]: Update time diff: %.3f, avg: %.3f. Players online: %u.", curAvgUpdateTime, avgUpdateTime, GetActiveSessionCount());
+            sLog.outLog(LOG_DIFF, "Update time diff: %.3f, avg: %.3f. Players online: %u.", curAvgUpdateTime, avgUpdateTime, GetActiveSessionCount());
+            sLog.outLog(LOG_STATUS, "%u %u %u %u %u %u %s %.3f %.3f %u %u %ld",
                         GetUptime(), GetActiveSessionCount(), GetMaxActiveSessionCount(), GetQueuedSessionCount(), GetMaxQueuedSessionCount(),
                         m_playerLimit, _REVISION, curAvgUpdateTime, avgUpdateTime, loggedInAlliances.value(), loggedInHordes.value(), sWorld.GetGameTime());
 
