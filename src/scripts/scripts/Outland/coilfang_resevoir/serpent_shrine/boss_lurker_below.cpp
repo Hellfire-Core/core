@@ -179,7 +179,10 @@ struct boss_the_lurker_belowAI : public BossAI
     void DoMeleeAttackIfReady()
     {
         if (!SelectTarget())
+        {
+            EnterEvadeMode();
             return;
+        }
 
         if (m_submerged || m_rotating || m_emoting)
             return;
