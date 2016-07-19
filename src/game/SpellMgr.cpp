@@ -3149,6 +3149,8 @@ void SpellMgr::LoadSpellCustomAttr()
                     spellInfo->speed = 15;
                     spellInfo->AttributesEx3 |= SPELL_ATTR_EX3_NO_INITIAL_AGGRO;
                 }
+                else if (spellInfo->Id == 3045 || spellInfo->Id == 36828) // Rapid Fire
+                    spellInfo->speed = 0;
                 if (spellInfo->SpellFamilyFlags & 0x0000200000000014LL) // trap effects
                     spellInfo->AttributesEx2 |= SPELL_ATTR_EX2_TRIGGERED_CAN_TRIGGER;
                 spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
