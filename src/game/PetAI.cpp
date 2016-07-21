@@ -475,8 +475,9 @@ void ImpAI::UpdateAI(const uint32 diff)
         AutocastPreparedSpells();
     }
 
+    /*
     if (!me->hasUnitState(UNIT_STAT_CASTING))
-        DoMeleeAttackIfReady();
+        DoMeleeAttackIfReady();*/ // Imps should not have melee attacks. Leaving it here for the note
 }
 
 int FelhunterAI::Permissible(const Creature *creature)
