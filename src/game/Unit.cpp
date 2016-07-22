@@ -519,7 +519,7 @@ void Unit::UpdateSplineMovement(uint32 t_diff)
         POSITION_UPDATE_DELAY = 400,
     };
 
-    if (IsStopped() || (isInRoots() && !GetUnitStateMgr().GetAction(UnitActionPriority(UNIT_ACTION_EFFECT))))
+    if (IsStopped() || (CantMove() && !GetUnitStateMgr().GetAction(UnitActionPriority(UNIT_ACTION_EFFECT))))
         return;
 
     movespline->updateState(t_diff);
@@ -12694,7 +12694,7 @@ void Unit::SetCharmedOrPossessedBy(Unit* charmer, bool possess)
     if (Creature* thisCreature = ToCreature())
     {
         thisCreature->AI()->OnCharmed(true);
-        GetMotionMaster()->MoveIdle();
+        GetMotionMaster()->StopControlledMovement();
 
         // pets already have initialized charm info
         initCharmInfo = !GetObjectGuid().IsPet();

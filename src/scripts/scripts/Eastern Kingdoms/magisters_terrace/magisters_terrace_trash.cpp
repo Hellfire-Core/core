@@ -1024,7 +1024,7 @@ struct mob_ethereum_smugglerAI : public ScriptedAI
                 target->GetPosition(x, y, z);
                 DoTeleportTo(x, y, z);
                 me->setHover(true);
-                me->GetMotionMaster()->MoveIdle();
+                me->GetMotionMaster()->StopControlledMovement();
                 for (uint8 i = 0; i < 3; ++i)
                   AddSpellToCast(SPELL_ARCANE_EXPLOSION, CAST_NULL);
                 Check_Timer = 2500;

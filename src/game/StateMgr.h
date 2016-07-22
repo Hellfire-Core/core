@@ -97,6 +97,7 @@ public:
     void DropActionHigherThen(UnitActionPriority priority);
 
     void DropAllStates();
+    void DropAllControlledStates();
 
     void PushAction(UnitActionId actionId);
     void PushAction(UnitActionId actionId, UnitActionPriority priority);

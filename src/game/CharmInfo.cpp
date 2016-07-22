@@ -275,7 +275,7 @@ void CharmInfo::HandleStayCommand()
     m_unit->AttackStop();
     m_unit->InterruptNonMeleeSpells(false);
 
-    m_unit->GetMotionMaster()->MoveIdle();
+    m_unit->GetMotionMaster()->StopControlledMovement();
 }
 
 void CharmInfo::HandleFollowCommand()

@@ -117,7 +117,7 @@ void MotionMaster::MoveFollow(Unit* target, float dist, float angle)
     if (!target || m_owner->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_MOVE))
         return;
 
-    m_owner->GetMotionMaster()->MovementExpired();
+    m_owner->GetMotionMaster()->StopControlledMovement();
 
     if (m_owner->GetTypeId() == TYPEID_PLAYER)
         Mutate(new FollowMovementGenerator<Player>(*target,dist,angle), UNIT_ACTION_DOWAYPOINTS);
@@ -232,13 +232,18 @@ MotionMaster::MotionMaster(Unit *unit) : m_owner(unit)
 {
 }
 
-/** Does nothing */
+/** Drops all states */
 void MotionMaster::Clear(bool reset /*= true*/, bool all /*= false*/)
 {
     if (all)
         impl()->InitDefaults();
     else if (reset)
         impl()->DropAllStates();
+}
+
+void MotionMaster::StopControlledMovement()
+{
+    impl()->DropAllControlledStates();
 }
 
 MovementGenerator* MotionMaster::top()

@@ -194,7 +194,7 @@ void ScriptedAI::DoStartNoMovement(Unit* pVictim, movementCheckType type)
             break;
     }
 
-    m_creature->GetMotionMaster()->MoveIdle();
+    m_creature->GetMotionMaster()->StopControlledMovement();
 }
 
 void ScriptedAI::CheckCasterNoMovementInRange(uint32 diff, float maxrange)
@@ -229,7 +229,7 @@ void ScriptedAI::CheckCasterNoMovementInRange(uint32 diff, float maxrange)
             return;
         }
         else
-            me->GetMotionMaster()->MoveIdle();
+            me->GetMotionMaster()->StopControlledMovement();
 
         casterTimer = 2000;
     }
@@ -266,7 +266,7 @@ void ScriptedAI::CheckShooterNoMovementInRange(uint32 diff, float maxrange)
             }
         }
         else if (me->hasUnitState(UNIT_STAT_CHASE))
-            me->GetMotionMaster()->MoveIdle();
+            me->GetMotionMaster()->StopControlledMovement();
 
         // when victim is in distance, stop and shoot
         if (!me->IsWithinDistInMap(me->getVictim(), maxrange) || !me->IsWithinLOSInMap(me->getVictim()))
@@ -280,7 +280,7 @@ void ScriptedAI::CheckShooterNoMovementInRange(uint32 diff, float maxrange)
             return;
         }
         else
-            me->GetMotionMaster()->MoveIdle();
+            me->GetMotionMaster()->StopControlledMovement();
 
         casterTimer = 3000;
     }

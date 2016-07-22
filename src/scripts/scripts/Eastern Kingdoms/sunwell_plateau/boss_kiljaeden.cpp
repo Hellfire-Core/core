@@ -27,6 +27,7 @@ EndScriptData */
 //TODO rewrite Amagedon
 //TODO Remove blue visual from Orbs on reset and if it is used
 
+#include "precompiled.h"
 #include "boss_kiljaeden.h"
 #include "def_sunwell_plateau.h"
 #include <math.h>

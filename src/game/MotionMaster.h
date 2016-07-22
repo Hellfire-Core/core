@@ -51,8 +51,9 @@ class HELLGROUND_IMPORT_EXPORT MotionMaster
         ~MotionMaster();
 
         void Initialize();
-        void Clear(bool reset = true, bool all = false);
-        void MovementExpired(bool reset = true) { Clear(); }
+        void Clear(bool reset = true, bool all = false); // if reset true and all false - same as MoveIdle() - drops all states
+        void MovementExpired() { Clear(); } // drops ALL states! just like MoveIdle();
+        void StopControlledMovement();
 
         void MoveIdle();
         void MoveRandom(float spawndist = 0.0f);

@@ -691,7 +691,7 @@ void CreatureEventAI::ProcessAction(CreatureEventAI_Action const& action, uint32
                         m_creature->SendMeleeAttackStop(victim->GetGUID());
 
                 if (!m_creature->hasUnitState(UNIT_STAT_LOST_CONTROL))
-                    m_creature->GetMotionMaster()->MoveIdle();
+                    m_creature->GetMotionMaster()->StopControlledMovement();
             }
             break;
         case ACTION_T_COMBAT_STOP:

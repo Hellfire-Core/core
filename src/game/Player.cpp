@@ -1185,7 +1185,7 @@ void Player::CharmAI(bool apply)
     if (IsAIEnabled = apply)
         AI()->Reset();
 
-    GetMotionMaster()->MovementExpired();
+    GetMotionMaster()->StopControlledMovement();
 }
 
 void Player::Update(uint32 update_diff, uint32 p_time)

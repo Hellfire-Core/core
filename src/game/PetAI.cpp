@@ -116,7 +116,7 @@ void PetAI::_stopAttack()
     {
         DEBUG_LOG("Creature stoped attacking cuz his dead [guid=%u]", me->GetGUIDLow());
 
-        me->GetMotionMaster()->MoveIdle();
+        me->GetMotionMaster()->StopControlledMovement();
         me->CombatStop();
         me->getHostileRefManager().deleteReferences();
 
@@ -133,7 +133,7 @@ void PetAI::UpdateMotionMaster()
     if (m_owner && me->GetCharmInfo() && me->GetCharmInfo()->HasCommandState(COMMAND_FOLLOW))
         me->GetMotionMaster()->MoveFollow(m_owner,PET_FOLLOW_DIST,PET_FOLLOW_ANGLE);
     else
-        me->GetMotionMaster()->MoveIdle();
+        me->GetMotionMaster()->StopControlledMovement();
 }
 
 void PetAI::PrepareSpellForAutocast(uint32 spellID)
@@ -438,7 +438,7 @@ void ImpAI::UpdateAI(const uint32 diff)
         if (dist < 30 && m_chasing)
         {
             me->clearUnitState(UNIT_STAT_FOLLOW);
-            me->GetMotionMaster()->MoveIdle();
+            me->GetMotionMaster()->StopControlledMovement();
             m_chasing = false;
         }
         if (dist > 30 && !m_chasing)

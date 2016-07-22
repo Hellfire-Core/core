@@ -530,6 +530,13 @@ void UnitStateMgr::DropAllStates()
     PushAction(UNIT_ACTION_IDLE);
 }
 
+void UnitStateMgr::DropAllControlledStates() // drops states that we can control - such as chase, follow etc.
+{
+    for (int32 i = UNIT_ACTION_PRIORITY_IDLE + 1; i != UNIT_ACTION_PRIORITY_CONTROLLED + 1/*controlled gets removed too*/; ++i)
+        DropAction(UnitActionPriority(i));
+    PushAction(UNIT_ACTION_IDLE);
+}
+
 std::string const UnitStateMgr::GetOwnerStr() 
 {
     return GetOwner()->IsInWorld() ? GetOwner()->GetGuidStr() : "<Uninitialized>"; 

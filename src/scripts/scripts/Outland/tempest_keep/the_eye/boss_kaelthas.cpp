@@ -299,7 +299,7 @@ struct advisorbase_ai : public ScriptedAI
                 m_creature->SetHealth(1);
                 m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                 m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                m_creature->GetMotionMaster()->MovementExpired(false);
+                m_creature->GetMotionMaster()->MovementExpired();
                 m_creature->GetMotionMaster()->MoveIdle();
                 m_creature->SetUInt32Value(UNIT_FIELD_BYTES_1,PLAYER_STATE_DEAD);
 

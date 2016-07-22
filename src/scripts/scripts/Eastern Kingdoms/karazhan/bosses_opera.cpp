@@ -952,7 +952,7 @@ void PretendToDie(Creature* _Creature)
     _Creature->RemoveAllAuras();
     _Creature->SetHealth(0);
     _Creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-    _Creature->GetMotionMaster()->MovementExpired(false);
+    _Creature->GetMotionMaster()->MovementExpired();
     _Creature->GetMotionMaster()->MoveIdle();
     _Creature->SetUInt32Value(UNIT_FIELD_BYTES_1,PLAYER_STATE_DEAD);
 };
