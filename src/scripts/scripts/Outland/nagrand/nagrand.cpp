@@ -627,7 +627,7 @@ struct mob_sparrowhawkAI : public ScriptedAI
                 }
                 else if(fleeing)
                 {
-                    me->GetMotionMaster()->MovementExpired(false);
+                    me->GetMotionMaster()->MovementExpired();
                     PlayerGUID = 0;
                     fleeing = false;
                 }

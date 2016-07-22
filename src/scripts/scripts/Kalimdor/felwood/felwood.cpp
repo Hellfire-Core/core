@@ -166,6 +166,7 @@ bool GossipHello_npc_winnas_kitten(Player* plr, Creature* creature)
 {
     plr->ADD_GOSSIP_ITEM(0, "I want to release the corrupted saber to Winna", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
     plr->SEND_GOSSIP_MENU(creature->GetNpcTextId(), creature->GetGUID());
+    return true;
 }
 
 bool GossipSelect_npc_winnas_kitten(Player* plr, Creature* c, uint32 sender, uint32 action)
