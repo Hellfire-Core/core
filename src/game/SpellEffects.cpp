@@ -1881,6 +1881,7 @@ void Spell::EffectDummy(uint32 i)
                     if (!unitTarget || !unitTarget->ToCreature())
                         return;
                     unitTarget->CastSpell(unitTarget, 12941, true);
+                    return;
                 }
                 case 37867: // frankly it makes no sense
                 case 37892:
@@ -1897,6 +1898,7 @@ void Spell::EffectDummy(uint32 i)
                     if (!any)
                         return;
                     m_caster->CastSpell(any, 37868, true);
+                    return;
                 }
             }
 
