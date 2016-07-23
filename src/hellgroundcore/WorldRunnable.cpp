@@ -42,24 +42,20 @@ void WorldRunnable::run()
     sWorld.InitResultQueue();
 
     WorldTimer::tick(); //initialize world timer
-    uint32 prevSleepTime = 0;                               // used for balanced full tick time length near WORLD_SLEEP_CONST
     uint32 desiredTickTime = sWorld.getConfig(CONFIG_WORLD_SLEEP);
     ///- While we have not World::m_stopEvent, update the world
     while (!World::IsStopped())
     {
         ++World::m_worldLoopCounter;
         uint32 diff = WorldTimer::tick();
-        if (diff < desiredTickTime + prevSleepTime)
+        if (diff < desiredTickTime)
         {
-            prevSleepTime = desiredTickTime + prevSleepTime - diff;
-            ACE_Based::Thread::Sleep(prevSleepTime);
+            ACE_Based::Thread::Sleep(desiredTickTime - diff);
+            WorldTimer::tickTimeRenew(); // need to update current time after sleep
             sWorld.Update(desiredTickTime);
         }
         else
-        {
-            sWorld.Update(diff - prevSleepTime);
-            prevSleepTime = 0;
-        }
+            sWorld.Update(diff);
     }
 
     sWorld.m_ac.deactivate();                               // Stop Anticheat Delay Executor
