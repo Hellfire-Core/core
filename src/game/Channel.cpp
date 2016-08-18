@@ -64,7 +64,7 @@ void Channel::Join(uint64 p, const char *pass)
 
     Player *plr = sObjectMgr.GetPlayer(p);
 
-    if ((!plr || !plr->isGameMaster()) && !IsConstant() && m_name != "world" && m_name != "engworld" && m_name != "handel")
+    if ((!plr || !plr->isGameMaster()) && !IsConstant() && m_name != "world" && m_name != "engworld" && m_name != "handel" && m_name != "LookingForGroup")
     {
         uint32 limitCount = sWorld.getConfig(CONFIG_PRIVATE_CHANNEL_LIMIT);
 
