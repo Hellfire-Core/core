@@ -20,9 +20,11 @@
 
 enum
 {
-    SPELL_HEAD_BUTT		= 11650,
-    SPELL_PIERCE_ARMOUR	= 6016,
-    SPELL_ARCANE_EXPLOSION = 37106,
+    SPELL_HEAD_BUTT		    = 11650,
+    SPELL_PIERCE_ARMOUR	    = 6016,
+    SPELL_ARCANE_EXPLOSION  = 37106,
+    SPELL_AVOIDANCE         = 35698,
+    SPELL_FEL_FLAMESTRIKE   = 39139,
 
     NPC_HOGGER          = 66716,
     NPC_GRUFF           = 66717,
@@ -37,17 +39,21 @@ struct npc_hogger_theAI : public ScriptedAI
     Timer pierceTimer;
     Timer stunTimer;
     Timer spawnTimer;
+    Timer felFireTimer;
     uint8 pierceCounter;
     uint64 stunTargetGUID;
+    uint32 combatTime;
     uint8 phase; // 1,3 - tank and spank, 2 - ads
     uint8 adsWave;
     SummonList summons;
 
     void Reset()
     {
+        combatTime = 0;
         pierceTimer.Reset(3000);
         stunTimer.Reset(5000);
         spawnTimer.Reset(3000);
+        felFireTimer.Reset(10000);
         pierceCounter = 0;
         stunTargetGUID = 0;
         phase = 1;
@@ -60,6 +66,7 @@ struct npc_hogger_theAI : public ScriptedAI
 
     void EnterCombat(Unit* who)
     {
+        combatTime = 0;
         m_creature->Yell("Heroes must die!!",0,0);
     }
 
@@ -105,6 +112,12 @@ struct npc_hogger_theAI : public ScriptedAI
                 summons.Summon(imp);
                 if (Unit* target = imp->SelectNearbyTarget(30.0f))
                     imp->CombatStart(target);
+                int32 pct = -30;
+                if (entry == NPC_RIVERPAW_ELITE)
+                    pct = -95;
+                else if (entry == NPC_IMP)
+                    pct = -70;
+                imp->CastCustomSpell(imp, SPELL_AVOIDANCE, &pct, NULL, NULL, true);
             }
         }
     }
@@ -114,8 +127,17 @@ struct npc_hogger_theAI : public ScriptedAI
         summons.Despawn(spawn);
     }
 
+    void JustDied(Unit* killer)
+    {
+        m_creature->Yell("Imbecile mortals...", 0, 0);
+        std::ostringstream str;
+        str << "was killed after " << combatTime << " ms";
+        m_creature->TextEmote(str.str().c_str(), 0);
+    }
+
     void UpdateAI(const uint32 diff)
     {
+        combatTime += diff;
         if (!UpdateVictim())
             return;
 
@@ -127,7 +149,7 @@ struct npc_hogger_theAI : public ScriptedAI
             {
                 if (!stunTargetGUID)
                 {
-                    DoCast(target, SPELL_HEAD_BUTT);
+                    DoCast(target, SPELL_HEAD_BUTT, true);
                     stunTargetGUID = target->GetGUID();
                     stunTimer = 2900;
                 }
@@ -154,7 +176,7 @@ struct npc_hogger_theAI : public ScriptedAI
                 phase = 2;
 
                 m_creature->Yell("Enough of this!",0,0);
-                DoCast(NULL, SPELL_ARCANE_EXPLOSION, true);
+                DoCast(m_creature->getVictim(), SPELL_ARCANE_EXPLOSION, true);
                 m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                 m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                 m_creature->SetVisibility(VISIBILITY_OFF);
@@ -165,6 +187,13 @@ struct npc_hogger_theAI : public ScriptedAI
         {
             if (summons.empty() && spawnTimer.Expired(diff))
                 SummonAds();
+            if (felFireTimer.Expired(diff))
+            {
+                Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 50.0f);
+                if (target)
+                    DoCast(target, SPELL_FEL_FLAMESTRIKE, false);
+                felFireTimer = urand(20000, 40000);
+            }
         }
     }
 };
@@ -178,16 +207,11 @@ struct npc_gruff_ai : public ScriptedAI
 {
     npc_gruff_ai(Creature* c) : ScriptedAI(c) {}
 
-    Timer arcaneTimer;
+    Timer castTimer;
 
     void Reset()
     {
-        arcaneTimer.Reset(2000);
-    }
-
-    void IsSummonedBy(Creature* hogger)
-    {
-        m_creature->Yell("YELL SOMETHING!!!!111",0,0);
+        castTimer.Reset(2000);
     }
 
     void JustDied(Unit* killer)
@@ -200,8 +224,11 @@ struct npc_gruff_ai : public ScriptedAI
         if (!UpdateVictim())
             return;
         
-        if (arcaneTimer.Expired(7000))
+        if (castTimer.Expired(diff))
+        {
             DoCast(m_creature->getVictim(), SPELL_ARCANE_EXPLOSION);
+            castTimer = 4500;
+        }
 
         DoMeleeAttackIfReady();
     }
