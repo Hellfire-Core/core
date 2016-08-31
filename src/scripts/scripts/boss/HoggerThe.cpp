@@ -40,6 +40,7 @@ struct npc_hogger_theAI : public ScriptedAI
     Timer stunTimer;
     Timer spawnTimer;
     Timer felFireTimer;
+    Timer checkTimer;
     uint8 pierceCounter;
     uint64 stunTargetGUID;
     uint32 combatTime;
@@ -50,10 +51,11 @@ struct npc_hogger_theAI : public ScriptedAI
     void Reset()
     {
         combatTime = 0;
+        checkTimer.Reset(3000);
         pierceTimer.Reset(3000);
         stunTimer.Reset(5000);
         spawnTimer.Reset(3000);
-        felFireTimer.Reset(10000);
+        felFireTimer.Reset(30000);
         pierceCounter = 0;
         stunTargetGUID = 0;
         phase = 1;
@@ -106,11 +108,12 @@ struct npc_hogger_theAI : public ScriptedAI
         for (uint8 i = 0; i < count; i++)
         {
             Position pos;
-            m_creature->GetValidPointInAngle(pos, frand(1.0f, 20.0f), frand(0.0f, 2 * M_PI), true);
+            m_creature->GetHomePosition(pos.x, pos.y, pos.z, pos.o);
+            m_creature->GetValidPointInAngle(pos, frand(1.0f, 20.0f), frand(0.0f, 2 * M_PI), false);
             if (Creature* imp = m_creature->SummonCreature(entry, pos.x, pos.y, pos.z, pos.o, TEMPSUMMON_CORPSE_DESPAWN, 1000))
             {
                 summons.Summon(imp);
-                if (Unit* target = imp->SelectNearbyTarget(30.0f))
+                if (Unit* target = imp->SelectNearbyTarget(40.0f))
                     imp->CombatStart(target);
                 int32 pct = -30;
                 if (entry == NPC_RIVERPAW_ELITE)
@@ -140,6 +143,12 @@ struct npc_hogger_theAI : public ScriptedAI
         combatTime += diff;
         if (!UpdateVictim())
             return;
+        
+        if (checkTimer.Expired(diff))
+        {
+            DoZoneInCombat(50.0f);
+            checkTimer = 3000;
+        }
 
         Unit* target = m_creature->getVictim();
 
@@ -158,7 +167,7 @@ struct npc_hogger_theAI : public ScriptedAI
                     if (m_creature->getVictimGUID() == stunTargetGUID && target->HasAura(SPELL_HEAD_BUTT))
                         m_creature->Kill(target);
                     stunTargetGUID = 0;
-                    stunTimer = 12100;
+                    stunTimer = 7100;
                     return; // target could be dead, avoid problems
                 }
             }
@@ -191,8 +200,11 @@ struct npc_hogger_theAI : public ScriptedAI
             {
                 Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 50.0f);
                 if (target)
-                    DoCast(target, SPELL_FEL_FLAMESTRIKE, false);
-                felFireTimer = urand(20000, 40000);
+                    DoCast(target, SPELL_FEL_FLAMESTRIKE, true);
+                if (felFireTimer.GetInterval() > 6000)
+                    felFireTimer = felFireTimer.GetInterval() - 2000;
+                else
+                    felFireTimer = 6000;
             }
         }
     }
@@ -227,7 +239,7 @@ struct npc_gruff_ai : public ScriptedAI
         if (castTimer.Expired(diff))
         {
             DoCast(m_creature->getVictim(), SPELL_ARCANE_EXPLOSION);
-            castTimer = 4500;
+            castTimer = 6000;
         }
 
         DoMeleeAttackIfReady();
