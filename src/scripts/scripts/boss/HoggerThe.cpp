@@ -25,6 +25,8 @@ enum
     SPELL_ARCANE_EXPLOSION  = 37106,
     SPELL_AVOIDANCE         = 35698,
     SPELL_FEL_FLAMESTRIKE   = 39139,
+    SPELL_DEATH_BLAST       = 40736,
+    SPELL_BLAZING_SPEED     = 31643,
 
     NPC_HOGGER          = 66716,
     NPC_GRUFF           = 66717,
@@ -146,7 +148,33 @@ struct npc_hogger_theAI : public ScriptedAI
         
         if (checkTimer.Expired(diff))
         {
-            DoZoneInCombat(50.0f);
+            //manual dozoneincombat
+            Player* plr = me->getVictim()->GetCharmerOrOwnerPlayerOrPlayerItself();
+            Group* grp = NULL;
+            if (plr)
+                grp = plr->GetGroup();
+            if (grp)
+            {
+                for (GroupReference *itr = grp->GetFirstMember(); itr != NULL; itr = itr->next())
+                {
+                    plr = itr->getSource();
+                    if (!plr || plr->isGameMaster() || !plr->isAlive())
+                        continue;
+
+                    WorldLocation center = m_creature->GetHomePosition();
+                    if (plr->IsWithinDistInMap(&center, 40.0f))
+                    {
+                        me->SetInCombatWith(plr);
+                        plr->SetInCombatWith(me);
+                        me->AddThreat(plr, 0.0f);
+                    }
+                    else
+                    {
+                        m_creature->Yell("Going somewhere??", 0, 0);
+                        m_creature->Kill(plr);
+                    }
+                }
+            }
             checkTimer = 3000;
         }
 
@@ -158,14 +186,20 @@ struct npc_hogger_theAI : public ScriptedAI
             {
                 if (!stunTargetGUID)
                 {
-                    DoCast(target, SPELL_HEAD_BUTT, true);
+                    const SpellEntry* spellInfo = sSpellStore.LookupEntry(SPELL_HEAD_BUTT);
+                    Aura *Aur = CreateAura(spellInfo, 0, NULL, target);
+                    target->AddAura(Aur);
                     stunTargetGUID = target->GetGUID();
                     stunTimer = 2900;
+                    m_creature->Yell("Bash...!", 0, 0);
                 }
                 else
                 {
                     if (m_creature->getVictimGUID() == stunTargetGUID && target->HasAura(SPELL_HEAD_BUTT))
+                    {
                         m_creature->Kill(target);
+                        m_creature->Yell("And crush!", 0, 0);
+                    }
                     stunTargetGUID = 0;
                     stunTimer = 7100;
                     return; // target could be dead, avoid problems
@@ -177,14 +211,17 @@ struct npc_hogger_theAI : public ScriptedAI
                 DoCast(target, SPELL_PIERCE_ARMOUR);
                 pierceTimer = 6000;
             }
-
+            if (!m_creature->IsWithinMeleeRange(m_creature->getVictim()) && !m_creature->HasAura(SPELL_BLAZING_SPEED))
+            {
+                DoCast(m_creature, SPELL_BLAZING_SPEED, true);
+            }
             DoMeleeAttackIfReady();
 
             if (phase == 1 && m_creature->HealthBelowPct(10))
             {
                 phase = 2;
 
-                m_creature->Yell("Enough of this!",0,0);
+                m_creature->Yell("Enough of this!", 0, 0);
                 DoCast(m_creature->getVictim(), SPELL_ARCANE_EXPLOSION, true);
                 m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                 m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
@@ -220,10 +257,12 @@ struct npc_gruff_ai : public ScriptedAI
     npc_gruff_ai(Creature* c) : ScriptedAI(c) {}
 
     Timer castTimer;
+    bool triggered;
 
     void Reset()
     {
         castTimer.Reset(2000);
+        triggered = false;
     }
 
     void JustDied(Unit* killer)
@@ -238,8 +277,21 @@ struct npc_gruff_ai : public ScriptedAI
         
         if (castTimer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(), SPELL_ARCANE_EXPLOSION);
-            castTimer = 6000;
+            if (m_creature->HasAuraType(SPELL_AURA_HASTE_SPELLS))
+            {
+                if (!triggered)
+                {
+                    m_creature->Yell("Demonish? I speak that language very well! That was not a good idea!", 0, 0);
+                    triggered = true;
+                }
+                DoCast(m_creature->getVictim(), SPELL_DEATH_BLAST);
+                castTimer = 1000;
+            }
+            else
+            {
+                DoCast(m_creature->getVictim(), SPELL_ARCANE_EXPLOSION);
+                castTimer = 6000;
+            }
         }
 
         DoMeleeAttackIfReady();
