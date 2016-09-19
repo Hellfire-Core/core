@@ -191,24 +191,6 @@ there is no difference here (except that default text is chosen with `gameobject
 # formulas to calculate unlearning cost
 ###*/
 
-void RemoveProffesionQuest(uint32 entry, Player *player)
-{
-    for(uint8 slot = 0; slot < MAX_QUEST_LOG_SIZE; ++slot )
-    {
-        uint32 quest = player->GetQuestSlotQuestId(slot);
-        if(quest == entry)
-        {
-            player->SetQuestSlot(slot,0);
-
-            // we ignore unequippable quest items in this case, its' still be equipped
-            player->TakeQuestSourceItem( quest, false );
-        }
-     }
-
-     player->SetQuestStatus( entry, QUEST_STATUS_NONE);
-     player->getQuestStatusMap()[entry].m_rewarded = false;
-}
-
 int32 DoLearnCost(Player *player)                           //tailor, alchemy
 {
     return 200000;
@@ -509,8 +491,6 @@ void SendActionMenu_npc_prof_alchemy(Player *player, Creature *_Creature, uint32
             {
                 _Creature->CastSpell(player, S_UNLEARN_TRANSMUTE, true);
                 player->ModifyMoney(-DoHighUnlearnCost(player));
-                RemoveProffesionQuest(10899, player);
-                RemoveProffesionQuest(10907, player);
                 player->SaveToDB();
             }
             else
@@ -522,8 +502,6 @@ void SendActionMenu_npc_prof_alchemy(Player *player, Creature *_Creature, uint32
             {
                 _Creature->CastSpell(player, S_UNLEARN_ELIXIR, true);
                 player->ModifyMoney(-DoHighUnlearnCost(player));
-                RemoveProffesionQuest(10902, player);
-                RemoveProffesionQuest(10906, player);
                 player->SaveToDB();
             }
             else
@@ -535,8 +513,6 @@ void SendActionMenu_npc_prof_alchemy(Player *player, Creature *_Creature, uint32
             {
                 _Creature->CastSpell(player, S_UNLEARN_POTION, true);
                 player->ModifyMoney(-DoHighUnlearnCost(player));
-                RemoveProffesionQuest(10897, player);
-                RemoveProffesionQuest(10905, player);
                 player->SaveToDB();
             }
             else
@@ -729,8 +705,6 @@ void SendActionMenu_npc_prof_blacksmith(Player *player, Creature *_Creature, uin
                     ProfessionUnlearnSpells(player, S_UNLEARN_WEAPON);
                     player->ModifyMoney(-DoLowUnlearnCost(player));
                     _Creature->CastSpell(player, S_REP_ARMOR, true);
-                    RemoveProffesionQuest(player->GetTeam() == ALLIANCE ? 5284 : 5302, player);
-
                     player->SaveToDB();
                 }
                 else
@@ -748,7 +722,6 @@ void SendActionMenu_npc_prof_blacksmith(Player *player, Creature *_Creature, uin
                     player->CastSpell(player, S_UNLEARN_ARMOR, true);
                     ProfessionUnlearnSpells(player, S_UNLEARN_ARMOR);
                     player->ModifyMoney(-DoLowUnlearnCost(player));
-                    RemoveProffesionQuest(player->GetTeam() == ALLIANCE ? 5283 : 5301, player);
                     _Creature->CastSpell(player, S_REP_WEAPON, true);
                     player->SaveToDB();
                 }
@@ -971,7 +944,6 @@ void SendActionMenu_npc_prof_leather(Player *player, Creature *_Creature, uint32
                     player->CastSpell(player, S_UNLEARN_DRAGON, true);
                     ProfessionUnlearnSpells(player, S_UNLEARN_DRAGON);
                     player->ModifyMoney(-DoMedUnlearnCost(player));
-                    RemoveProffesionQuest(player->GetTeam() == ALLIANCE ? 5141 : 5145, player);
                     player->SaveToDB();
                 }
                 else
@@ -990,7 +962,6 @@ void SendActionMenu_npc_prof_leather(Player *player, Creature *_Creature, uint32
                     player->CastSpell(player, S_UNLEARN_ELEMENTAL, true);
                     ProfessionUnlearnSpells(player, S_UNLEARN_ELEMENTAL);
                     player->ModifyMoney(-DoMedUnlearnCost(player));
-                    RemoveProffesionQuest(player->GetTeam() == ALLIANCE ? 5144 : 5146, player);
                     player->SaveToDB();
                 }
                 else
@@ -1008,7 +979,6 @@ void SendActionMenu_npc_prof_leather(Player *player, Creature *_Creature, uint32
                     player->CastSpell(player, S_UNLEARN_TRIBAL, true);
                     ProfessionUnlearnSpells(player, S_UNLEARN_TRIBAL);
                     player->ModifyMoney(-DoMedUnlearnCost(player));
-                    RemoveProffesionQuest(player->GetTeam() == ALLIANCE ? 5143 : 5148, player);
                     player->SaveToDB();
                 }
                 else
@@ -1165,7 +1135,6 @@ void SendActionMenu_npc_prof_tailor(Player *player, Creature *_Creature, uint32 
                     player->CastSpell(player, S_UNLEARN_SPELLFIRE, true);
                     ProfessionUnlearnSpells(player, S_UNLEARN_SPELLFIRE);
                     player->ModifyMoney(-DoHighUnlearnCost(player));
-                    RemoveProffesionQuest(10832, player);
                     player->SaveToDB();
                 }
                 else
@@ -1183,7 +1152,6 @@ void SendActionMenu_npc_prof_tailor(Player *player, Creature *_Creature, uint32 
                     player->CastSpell(player, S_UNLEARN_MOONCLOTH, true);
                     ProfessionUnlearnSpells(player, S_UNLEARN_MOONCLOTH);
                     player->ModifyMoney(-DoHighUnlearnCost(player));
-                    RemoveProffesionQuest(10831, player);
                     player->SaveToDB();
                 }
                 else
@@ -1201,7 +1169,6 @@ void SendActionMenu_npc_prof_tailor(Player *player, Creature *_Creature, uint32 
                     player->CastSpell(player, S_UNLEARN_SHADOWEAVE, true);
                     ProfessionUnlearnSpells(player, S_UNLEARN_SHADOWEAVE);
                     player->ModifyMoney(-DoHighUnlearnCost(player));
-                    RemoveProffesionQuest(10833, player);
                     player->SaveToDB();
                 }
                 else
@@ -1296,13 +1263,18 @@ bool GossipHello_go_soothsaying_for_dummies(Player *player, GameObject* go)
 {
     if (player->HasSkill(SKILL_LEATHERWORKING) && player->GetBaseSkillValue(SKILL_LEATHERWORKING) >= 225 && player->getLevel() > 39)
     {
-        if (!HasLeatherSpec(player))
+        if (player->GetQuestRewardStatus(5141) || player->GetQuestRewardStatus(5145) || player->GetQuestRewardStatus(5144) ||
+            player->GetQuestRewardStatus(5146) || player->GetQuestRewardStatus(5143) || player->GetQuestRewardStatus(5148))
         {
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_LEARN_DRAGON, GOSSIP_SENDER_CHECK, GOSSIP_ACTION_INFO_DEF+1);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_LEARN_ELEMENTAL, GOSSIP_SENDER_CHECK, GOSSIP_ACTION_INFO_DEF+2);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_LEARN_TRIBAL, GOSSIP_SENDER_CHECK, GOSSIP_ACTION_INFO_DEF+3);
-            player->SEND_GOSSIP_MENU(8326, go->GetGUID());
-            return true;
+
+            if (!HasLeatherSpec(player))
+            {
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_LEARN_DRAGON, GOSSIP_SENDER_CHECK, GOSSIP_ACTION_INFO_DEF + 1);
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_LEARN_ELEMENTAL, GOSSIP_SENDER_CHECK, GOSSIP_ACTION_INFO_DEF + 2);
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_LEARN_TRIBAL, GOSSIP_SENDER_CHECK, GOSSIP_ACTION_INFO_DEF + 3);
+                player->SEND_GOSSIP_MENU(8326, go->GetGUID());
+                return true;
+            }
         }
     }
 
