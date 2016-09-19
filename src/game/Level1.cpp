@@ -3091,4 +3091,5 @@ bool ChatHandler::HandleModForceACCommand(const char* args)
         PSendSysMessage("Forced Anticheat checks disabled for %s", target->GetName());
         return true;
     }
+    return false;
 }

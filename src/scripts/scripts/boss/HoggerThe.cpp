@@ -186,9 +186,7 @@ struct npc_hogger_theAI : public ScriptedAI
             {
                 if (!stunTargetGUID)
                 {
-                    const SpellEntry* spellInfo = sSpellStore.LookupEntry(SPELL_HEAD_BUTT);
-                    Aura *Aur = CreateAura(spellInfo, 0, NULL, target);
-                    target->AddAura(Aur);
+                    m_creature->AddAura(SPELL_HEAD_BUTT, target);
                     stunTargetGUID = target->GetGUID();
                     stunTimer = 2900;
                     m_creature->Yell("Bash...!", 0, 0);
@@ -261,6 +259,7 @@ struct npc_gruff_ai : public ScriptedAI
 
     void Reset()
     {
+        m_creature->ApplySpellImmune(0, IMMUNITY_DISPEL, DISPEL_POISON, true);
         castTimer.Reset(2000);
         triggered = false;
     }
@@ -284,7 +283,7 @@ struct npc_gruff_ai : public ScriptedAI
                     m_creature->Yell("Demonish? I speak that language very well! That was not a good idea!", 0, 0);
                     triggered = true;
                 }
-                DoCast(m_creature->getVictim(), SPELL_DEATH_BLAST);
+                DoCast(m_creature->getVictim(), SPELL_DEATH_BLAST, true);
                 castTimer = 1000;
             }
             else

@@ -5629,7 +5629,7 @@ bool Spell::CanIgnoreNotAttackableFlags()
 bool Spell::CheckTarget(Unit* target, uint32 eff)
 {
     if (target->GetCharmerOrOwnerPlayerOrPlayerItself() && !sSpellMgr.IsPositiveEffect(GetSpellEntry()->Id, 0) &&
-        target->isInSanctuary() && !GetSpellEntry()->Id == 8326 && !GetSpellEntry()->Id == 20584) // no non-positive spells in sanctuary, except ghost
+        target->isInSanctuary() && GetSpellEntry()->Id != 8326 && GetSpellEntry()->Id != 20584) // no non-positive spells in sanctuary, except ghost
         return false;
 
     if (GetSpellEntry()->Effect[eff] == SPELL_EFFECT_APPLY_AURA && (GetSpellEntry()->EffectImplicitTargetA[eff] == TARGET_UNIT_PARTY_TARGET ||
