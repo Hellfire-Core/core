@@ -652,6 +652,8 @@ void World::LoadConfigSettings(bool reload)
     loadConfig(RATE_XP_QUEST, "Rate.XP.Quest", 1.0f);
     loadConfig(RATE_XP_EXPLORE, "Rate.XP.Explore", 1.0f);
     loadConfig(RATE_XP_PAST_70, "Rate.XP.PastLevel70", 1.0f);
+    loadConfig(RATE_XP_HORDE_MULTIPLIER, "Rate.XP.Horde", 1.0f);
+    loadConfig(RATE_XP_ALIANCE_MULTIPLIER, "Rate.XP.Ally", 1.0f);
 
     loadConfig(RATE_REST_INGAME, "Rate.Rest.InGame", 1.0f);
     loadConfig(RATE_REST_OFFLINE_IN_TAVERN_OR_CITY, "Rate.Rest.Offline.InTavernOrCity", 1.0f);

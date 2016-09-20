@@ -20947,7 +20947,7 @@ float Player::GetXPRate(Rates rate)
     if (sWorld.getConfig(CONFIG_ENABLE_CUSTOM_XP_RATES) && GetSession()->IsAccountFlagged(ACC_BLIZZLIKE_RATES))
         return 1.0f;
     else
-        return sWorld.getConfig(Rates(rate));
+        return sWorld.getConfig(Rates(rate))*sWorld.getConfig(GetTeam() == HORDE ? RATE_XP_HORDE_MULTIPLIER : RATE_XP_ALIANCE_MULTIPLIER);
 }
 
 uint32 Player::CalculateTalentsPoints() const
