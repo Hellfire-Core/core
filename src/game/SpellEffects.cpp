@@ -1249,8 +1249,8 @@ void Spell::EffectDummy(uint32 i)
                         SpellEntry const *spellInfo = sSpellStore.LookupEntry(classspell);
 
                         if (spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE &&
-                            (spellInfo->SpellFamilyFlags & 0x26000000860LL) &&
-                            m_caster->ToPlayer()->GetCooldownMgr().HasSpellCooldown(classspell))
+                            (spellInfo->SpellFamilyFlags & 0x26000000860LL))
+                            //m_caster->ToPlayer()->GetCooldownMgr().HasSpellCooldown(classspell))
                             ((Player*)m_caster)->RemoveSpellCooldown(classspell, true);
                     }
                     return;
@@ -2793,6 +2793,13 @@ void Spell::EffectTriggerSpell(uint32 i)
         // Explosion from Flame Wreath (Shade of Aran)
         case 29950:
             m_caster->RemoveAurasDueToSpell(29947);
+            return;
+            // diemetradon tag kill credit
+        case 37907:
+            Player* plr = m_caster->GetCharmerOrOwnerPlayerOrPlayerItself();
+            if (plr)
+                plr->CastSpell(plr, 37907, true);
+            m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "diemetradon kill credit casting", plr);
             return;
     }
 

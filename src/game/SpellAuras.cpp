@@ -3953,7 +3953,7 @@ void Aura::HandleModPossess(bool apply, bool Real)
             m_target->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
         else
         {
-            m_target->ToCreature()->AI()->EnterEvadeMode();
+            m_target->ToCreature()->GetMotionMaster()->MoveTargetedHome();
             m_target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
         }
     }

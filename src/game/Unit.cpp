@@ -509,7 +509,6 @@ void Unit::SendMonsterStop()
     data << WorldTimer::getMSTime();
     data << uint8(1);
     BroadcastPacket(&data, true);
-    SendCombatStats(1 << COMBAT_STATS_TEST, "monster stop", NULL);
 }
 
 void Unit::UpdateSplineMovement(uint32 t_diff)

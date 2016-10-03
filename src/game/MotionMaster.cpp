@@ -42,7 +42,6 @@ void MotionMaster::Initialize()
 {
     // stop current move
     m_owner->StopMoving();
-    m_owner->SendCombatStats(1 << COMBAT_STATS_CRASHTEST, "mm init", NULL);
 
     // set new default movement generator
     if (Creature* creature = m_owner->ToCreature())
