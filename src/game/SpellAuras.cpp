@@ -2620,6 +2620,15 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
                 }
                 return;
             }
+            case 37851: // tag greater diemetradon
+            {
+                if (Unit* caster = GetCaster())
+                {
+                    Player* plr = caster->GetCharmerOrOwnerPlayerOrPlayerItself();
+                    if (plr)
+                        plr->KilledMonster(21924, 0);
+                }
+            }
         }
 
         // Earth Shield

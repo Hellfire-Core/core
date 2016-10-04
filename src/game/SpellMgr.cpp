@@ -1530,12 +1530,6 @@ bool SpellMgr::IsSpellProcEventCanTriggeredBy(SpellProcEventEntry const * spellP
 
     */
 
-    if (EventProcFlag & PROC_FLAG_ON_DO_PERIODIC) // rare case, only 7 spells that should trigger ONLY from tick
-    {
-        if (!(procFlags & PROC_FLAG_ON_DO_PERIODIC))
-            return false;
-    }
-
     if (procFlags & PROC_FLAG_ON_DO_PERIODIC)
     {
         if (EventProcFlag & PROC_FLAG_SUCCESSFUL_NEGATIVE_SPELL_HIT)
@@ -2998,8 +2992,8 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 7720: // summon effect
                     spellInfo->AttributesEx2 |= SPELL_ATTR_EX2_IGNORE_LOS;
                     break;
-                case 37851:
-                    spellInfo->EffectImplicitTargetA[1] = TARGET_UNIT_MASTER;
+                case 37851: // tag diemetradon, frankly it makes no sense, done manually in apply dummy aura
+                    spellInfo->Effect[1] = 0;
                     break;
                 }
                 if (spellInfo->SpellIconID == 184 && spellInfo->Attributes == 4259840)

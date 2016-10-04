@@ -4981,7 +4981,6 @@ void Unit::ProcDamageAndSpell(Unit *pVictim, uint32 procAttacker, uint32 procVic
 
 void Unit::SendSpellMiss(Unit *target, uint32 spellID, SpellMissInfo missInfo)
 {
-    if (spellID == 37907 && missInfo == SPELL_MISS_EVADE) target->SendCombatStats(1 << COMBAT_STATS_CRASHTEST, "bang", NULL);
     WorldPacket data(SMSG_SPELLLOGMISS, (4+8+1+4+8+1));
     data << uint32(spellID);
     data << uint64(GetGUID());
