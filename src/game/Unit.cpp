@@ -4981,6 +4981,7 @@ void Unit::ProcDamageAndSpell(Unit *pVictim, uint32 procAttacker, uint32 procVic
 
 void Unit::SendSpellMiss(Unit *target, uint32 spellID, SpellMissInfo missInfo)
 {
+    if (spellID == 37907 && missInfo == SPELL_MISS_EVADE) target->SendCombatStats(1 << COMBAT_STATS_CRASHTEST, "bang", NULL);
     WorldPacket data(SMSG_SPELLLOGMISS, (4+8+1+4+8+1));
     data << uint32(spellID);
     data << uint64(GetGUID());
@@ -11225,6 +11226,8 @@ void Unit::ProcDamageAndSpellfor (bool isVictim, Unit * pTarget, uint32 procFlag
     RemoveSpellList removedSpells;
     ProcTriggeredList procTriggered;
     // Fill procTriggered list
+    SendCombatStats(1 << COMBAT_STATS_PROC, "proc damage and spell for spell %u, PF %x PE %x IV %u", pTarget,
+        procSpell ? procSpell->Id : 0, procFlag, procExtra, isVictim);
     for (AuraMap::const_iterator itr = GetAuras().begin(); itr!= GetAuras().end(); ++itr)
     {
         SpellProcEventEntry const* spellProcEvent = NULL;
@@ -11233,8 +11236,7 @@ void Unit::ProcDamageAndSpellfor (bool isVictim, Unit * pTarget, uint32 procFlag
            continue;
 
         procTriggered.push_back(ProcTriggeredData(spellProcEvent, itr->second));
-        SendCombatStats(1 << COMBAT_STATS_PROC, "aura %u is procing from spell %u; %u %u %u", pTarget,
-            itr->first.first, procSpell ? procSpell->Id : 0, procFlag, procExtra, isVictim);
+        SendCombatStats(1 << COMBAT_STATS_PROC, "aura %u is procing", pTarget,itr->first.first);
     }
     // Handle effects proceed this time
     for (ProcTriggeredList::iterator i = procTriggered.begin(); i != procTriggered.end(); ++i)

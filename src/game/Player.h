@@ -1540,6 +1540,7 @@ class HELLGROUND_EXPORT Player : public Unit
         void RemoveSpellCooldown(uint32 spell_id, bool update = false);
         void RemoveArenaSpellCooldowns();
         void RemoveAllSpellCooldown();
+        void RemoveCooldownsByCategory(uint32 category);
 
         void setResurrectRequestData(uint64 guid, uint32 mapId, float X, float Y, float Z, uint32 health, uint32 mana)
         {

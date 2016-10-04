@@ -579,7 +579,7 @@ struct npc_arcatraz_sentinelAI : public ScriptedAI
             }
         }
         else if (Suicide_Timer.Expired(diff))
-            me->Kill(me, false);
+            me->getVictim()->Kill(me, false);
 
         DoMeleeAttackIfReady();
     }

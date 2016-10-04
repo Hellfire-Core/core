@@ -3508,6 +3508,21 @@ void Player::RemoveAllSpellCooldown()
     }
 }
 
+void Player::RemoveCooldownsByCategory(uint32 category)
+{
+    for (CooldownMgr::CooldownList::iterator itr = m_CooldownMgr.m_SpellCooldowns.begin(); itr != m_CooldownMgr.m_SpellCooldowns.end(); ++itr)
+    {
+        SpellEntry const *sEntry = sSpellStore.LookupEntry(itr->first);
+        if (!sEntry || sEntry->Category != category)
+            continue;
+        WorldPacket data(SMSG_CLEAR_COOLDOWN, (4 + 8));
+        data << uint32(itr->first);
+        data << uint64(GetGUID());
+        SendPacketToSelf(&data);
+        itr->second.duration = 0;
+    }
+}
+
 uint32 Player::resetTalentsCost() const
 {
     if (m_freeTalentRespecTime > sWorld.GetGameTime())
