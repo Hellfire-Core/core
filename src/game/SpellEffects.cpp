@@ -1248,8 +1248,9 @@ void Spell::EffectDummy(uint32 i)
                         uint32 classspell = itr->first;
                         SpellEntry const *spellInfo = sSpellStore.LookupEntry(classspell);
 
-                        if (spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE &&
-                            (spellInfo->SpellFamilyFlags & 0x26000000860LL))
+                        if ((spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE &&
+                            (spellInfo->SpellFamilyFlags & 0x26000000860LL)) ||
+                            spellInfo->Category == 44 || spellInfo->Category == 66 || spellInfo->Category == 39)
                             //m_caster->ToPlayer()->GetCooldownMgr().HasSpellCooldown(classspell))
                             ((Player*)m_caster)->RemoveSpellCooldown(classspell, true);
                     }
