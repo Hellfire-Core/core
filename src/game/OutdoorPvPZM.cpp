@@ -252,9 +252,6 @@ OPvPCapturePointZM_GraveYard::OPvPCapturePointZM_GraveYard(OutdoorPvP *pvp)
     m_BothControllingFaction = 0;
     m_GraveYardState = ZM_GRAVEYARD_N;
     m_FlagCarrierGUID = 0;
-    // add field scouts here
-    AddCreature(ZM_ALLIANCE_FIELD_SCOUT,ZM_AllianceFieldScout.entry,ZM_AllianceFieldScout.teamval,ZM_AllianceFieldScout.map,ZM_AllianceFieldScout.x,ZM_AllianceFieldScout.y,ZM_AllianceFieldScout.z,ZM_AllianceFieldScout.o);
-    AddCreature(ZM_HORDE_FIELD_SCOUT,ZM_HordeFieldScout.entry,ZM_HordeFieldScout.teamval,ZM_HordeFieldScout.map,ZM_HordeFieldScout.x,ZM_HordeFieldScout.y,ZM_HordeFieldScout.z,ZM_HordeFieldScout.o);
     // add neutral banner
     AddObject(0,ZM_Banner_N.entry,0,ZM_Banner_N.map,ZM_Banner_N.x,ZM_Banner_N.y,ZM_Banner_N.z,ZM_Banner_N.o,ZM_Banner_N.rot0,ZM_Banner_N.rot1,ZM_Banner_N.rot2,ZM_Banner_N.rot3);
 }
@@ -330,53 +327,43 @@ void OPvPCapturePointZM_GraveYard::SetBeaconState(uint32 controlling_faction)
 
 bool OPvPCapturePointZM_GraveYard::CanTalkTo(Player * plr, Creature * c, GossipOption & gso)
 {
-    uint64 guid = c->GetGUID();
-    std::map<uint64,uint32>::iterator itr = m_CreatureTypes.find(guid);
-    if (itr != m_CreatureTypes.end())
+    if (c->GetEntry() == ALLIANCE_FIELD_SCOUT && plr->GetTeam() == ALLIANCE && m_BothControllingFaction == ALLIANCE && !m_FlagCarrierGUID && m_GraveYardState != ZM_GRAVEYARD_A)
     {
-        if (itr->second == ZM_ALLIANCE_FIELD_SCOUT && plr->GetTeam() == ALLIANCE && m_BothControllingFaction == ALLIANCE && !m_FlagCarrierGUID && m_GraveYardState != ZM_GRAVEYARD_A)
-        {
-            gso.OptionText.assign(sObjectMgr.GetHellgroundStringForDBCLocale(LANG_OPVP_ZM_GOSSIP_ALLIANCE));
-            return true;
-        }
-        else if (itr->second == ZM_HORDE_FIELD_SCOUT && plr->GetTeam() == HORDE && m_BothControllingFaction == HORDE && !m_FlagCarrierGUID && m_GraveYardState != ZM_GRAVEYARD_H)
-        {
-            gso.OptionText.assign(sObjectMgr.GetHellgroundStringForDBCLocale(LANG_OPVP_ZM_GOSSIP_HORDE));
-            return true;
-        }
+        gso.OptionText.assign(sObjectMgr.GetHellgroundStringForDBCLocale(LANG_OPVP_ZM_GOSSIP_ALLIANCE));
+        return true;
+    }
+    else if (c->GetEntry() == HORDE_FIELD_SCOUT && plr->GetTeam() == HORDE && m_BothControllingFaction == HORDE && !m_FlagCarrierGUID && m_GraveYardState != ZM_GRAVEYARD_H)
+    {
+        gso.OptionText.assign(sObjectMgr.GetHellgroundStringForDBCLocale(LANG_OPVP_ZM_GOSSIP_HORDE));
+        return true;
     }
     return false;
 }
 
 bool OPvPCapturePointZM_GraveYard::HandleGossipOption(Player *plr, uint64 guid, uint32 /*gossipid*/)
 {
-    std::map<uint64,uint32>::iterator itr = m_CreatureTypes.find(guid);
-    if (itr != m_CreatureTypes.end())
-    {
-        if (!m_PvP->GetMap())
-            return false;
+    if (!m_PvP->GetMap())
+        return false;
 
-        Creature * cr = m_PvP->GetMap()->GetCreature(guid);
-        if (!cr)
-            return true;
-        // if the flag is already taken, then return
-        if (m_FlagCarrierGUID)
-            return true;
-        if (itr->second == ZM_ALLIANCE_FIELD_SCOUT)
-        {
-            cr->CastSpell(plr,ZM_BATTLE_STANDARD_A,true);
-            m_FlagCarrierGUID = plr->GetGUID();
-        }
-        else if (itr->second == ZM_HORDE_FIELD_SCOUT)
-        {
-            cr->CastSpell(plr,ZM_BATTLE_STANDARD_H,true);
-            m_FlagCarrierGUID = plr->GetGUID();
-        }
-        UpdateTowerState();
-        plr->PlayerTalkClass->CloseGossip();
+    Creature * cr = m_PvP->GetMap()->GetCreature(guid);
+    if (!cr)
         return true;
+    // if the flag is already taken, then return
+    if (m_FlagCarrierGUID)
+        return true;
+    if (cr->GetEntry() == ALLIANCE_FIELD_SCOUT)
+    {
+        cr->CastSpell(plr,ZM_BATTLE_STANDARD_A,true);
+        m_FlagCarrierGUID = plr->GetGUID();
     }
-    return false;
+    else if (cr->GetEntry() == HORDE_FIELD_SCOUT)
+    {
+        cr->CastSpell(plr,ZM_BATTLE_STANDARD_H,true);
+        m_FlagCarrierGUID = plr->GetGUID();
+    }
+    UpdateTowerState();
+    plr->PlayerTalkClass->CloseGossip();
+    return true;
 }
 
 bool OPvPCapturePointZM_GraveYard::HandleDropFlag(Player * /*plr*/, uint32 spellId)

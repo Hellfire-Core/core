@@ -39,6 +39,8 @@ GuardAI::GuardAI(Creature *c) : CreatureAI(c), i_victimGuid(0), i_state(STATE_NO
 
 void GuardAI::MoveInLineOfSight(Unit *u)
 {
+    if (m_creature->HasFlag(UNIT_FIELD_FLAGS,UNIT_FLAG_NON_ATTACKABLE)) // mainly for halaa guards when they are invisible
+        return;
     // Ignore Z for flying creatures
     if (!m_creature->CanFly() && m_creature->GetDistanceZ(u) > CREATURE_Z_ATTACK_RANGE)
         return;

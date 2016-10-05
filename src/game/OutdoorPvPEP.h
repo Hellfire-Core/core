@@ -60,15 +60,6 @@ enum OutdoorPvPEPWorldStates{
     EP_UI_TOWER_COUNT_H = 2328
 };
 
-enum EP_Summons {
-    EP_EWT_COMMANDER = 0,
-    EP_EWT_SOLDIER1,
-    EP_EWT_SOLDIER2,
-    EP_EWT_SOLDIER3,
-    EP_EWT_SOLDIER4,
-    EP_PWT_FLIGHTMASTER,
-};
-
 enum EP_GoSummons {
     EP_NPT_SHRINE = EP_TOWER_NUM,
     EP_NPT_SHRINE_AURA,
@@ -95,34 +86,13 @@ const go_type EPTowerFlags[EP_TOWER_NUM*2] = {
 const uint32 EPTowerPlayerEnterEvents[EP_TOWER_NUM] = {10705,10691,10699,10701};
 const uint32 EPTowerPlayerLeaveEvents[EP_TOWER_NUM] = {10704,10692,10698,10700};
 
-const uint32 EP_NUM_CREATURES = 6;
-const uint32 EP_EWT_NUM_CREATURES = 5;
-
-// one lordaeron commander, 4 soldiers
-// should be spawned at EWT and follow a path, but trans-grid pathing isn't safe, so summon them directly at NPT
-const creature_type EP_EWT_Summons_A[EP_EWT_NUM_CREATURES] = {
-    {17635,469,0, 3167.61,-4352.09,138.20,4.5811},
-    {17647,469,0, 3172.74,-4352.99,139.14,4.9873},
-    {17647,469,0, 3165.89,-4354.46,138.67,3.7244},
-    {17647,469,0, 3164.65,-4350.26,138.22,2.4794},
-    {17647,469,0, 3169.91,-4349.68,138.37,0.7444}
-};
-
-const creature_type EP_EWT_Summons_H[EP_EWT_NUM_CREATURES] = {
-    {17995,67,0, 3167.61,-4352.09,138.20,4.5811},
-    {17996,67,0, 3172.74,-4352.99,139.14,4.9873},
-    {17996,67,0, 3165.89,-4354.46,138.67,3.7244},
-    {17996,67,0, 3164.65,-4350.26,138.22,2.4794},
-    {17996,67,0, 3169.91,-4349.68,138.37,0.7444}
-};
-
 enum EP_TowerStates {
     EP_TS_N = 1,
     EP_TS_A = 32,
     EP_TS_H = 64
 };
 
-const creature_type EP_PWT_FlightMaster = {17209,0,0,2987.5,-3049.11,120.126,5.75959};
+#define PWT_FLIGHT_MASTER 17209
 const uint32 EP_PWT_FlightMasterAura = 36725;
 
 const go_type EP_NPT_LordaeronShrine = {181682,0,3167.72,-4355.91,138.785,1.69297,0,0,0.748956,0.66262};

@@ -81,35 +81,11 @@ void OPvPCapturePoint::AddGO(uint32 type, uint32 guid, uint32 entry)
     m_ObjectTypes[m_Objects[type]]=type;
 }
 
-void OPvPCapturePoint::AddCre(uint32 type, uint32 guid, uint32 entry)
-{
-    if (!entry)
-    {
-        const CreatureData *data = sObjectMgr.GetCreatureData(guid);
-        if (!data)
-            return;
-        entry = data->id;
-    }
-    m_Creatures[type] = MAKE_NEW_GUID(guid, entry, HIGHGUID_UNIT);
-    m_CreatureTypes[m_Creatures[type]] = type;
-}
-
 bool OPvPCapturePoint::AddObject(uint32 type, uint32 entry, uint32 artKit, uint32 map, float x, float y, float z, float o, float rotation0, float rotation1, float rotation2, float rotation3)
 {
     if (uint32 guid = sObjectMgr.AddGOData(entry, artKit, map, x, y, z, o, 0, rotation0, rotation1, rotation2, rotation3))
     {
         AddGO(type, guid, entry);
-        return true;
-    }
-
-    return false;
-}
-
-bool OPvPCapturePoint::AddCreature(uint32 type, uint32 entry, uint32 team, uint32 map, float x, float y, float z, float o, uint32 spawntimedelay)
-{
-    if (uint32 guid = sObjectMgr.AddCreData(entry, team, map, x, y, z, o, spawntimedelay))
-    {
-        AddCre(type, guid, entry);
         return true;
     }
 
@@ -138,46 +114,6 @@ bool OPvPCapturePoint::SetCapturePointData(uint32 entry, uint32 map, float x, fl
     m_neutralValuePct = goinfo->capturePoint.neutralPercent;
     m_minValue = m_maxValue * goinfo->capturePoint.neutralPercent / 100;
 
-    return true;
-}
-
-bool OPvPCapturePoint::DelCreature(uint32 type)
-{
-    if (!m_Creatures[type])
-    {
-        sLog.outDebug("opvp creature type %u was already deleted",type);
-        return false;
-    }
-
-    if (!m_PvP->GetMap())
-    {
-        sLog.outLog(LOG_DEFAULT, "ERROR: opvp couldn't get map to find creature");
-        return false;
-    }
-
-    Creature *cr = m_PvP->GetMap()->GetCreature(m_Creatures[type]);
-    if (!cr)
-    {
-        // can happen when closing the core
-        m_Creatures[type] = 0;
-        return false;
-    }
-    sLog.outDebug("deleting opvp creature type %u",type);
-    uint32 guid = cr->GetDBTableGUIDLow();
-    // Don't save respawn time
-    cr->SetRespawnTime(0);
-    cr->RemoveCorpse();
-    // explicit removal from map
-    // beats me why this is needed, but with the recent removal "cleanup" some creatures stay in the map if "properly" deleted
-    // so this is a big fat workaround, if AddObjectToRemoveList and DoDelayedMovesAndRemoves worked correctly, this wouldn't be needed
-    if (Map * map = sMapMgr.FindMap(cr->GetMapId()))
-        map->Remove(cr,false);
-    // delete respawn time for this creature
-    RealmDataDatabase.PExecute("DELETE FROM creature_respawn WHERE guid = '%u'", guid);
-    cr->AddObjectToRemoveList();
-    sObjectMgr.DeleteCreatureData(guid);
-    m_CreatureTypes[m_Creatures[type]] = 0;
-    m_Creatures[type] = 0;
     return true;
 }
 
@@ -225,8 +161,6 @@ void OPvPCapturePoint::DeleteSpawns()
 {
     for (std::map<uint32,uint64>::iterator i = m_Objects.begin(); i != m_Objects.end(); ++i)
         DelObject(i->first);
-    for (std::map<uint32,uint64>::iterator i = m_Creatures.begin(); i != m_Creatures.end(); ++i)
-        DelCreature(i->first);
     DelCapturePoint();
 }
 

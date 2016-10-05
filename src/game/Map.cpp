@@ -2750,12 +2750,14 @@ void Map::VisibilityOfCreatureEntry(uint32 entry, bool hide)
         {
             mob->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             mob->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            mob->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PASSIVE);
             mob->SetVisibility(VISIBILITY_OFF);
         }
         else
         {
             mob->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             mob->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            mob->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PASSIVE);
             mob->SetVisibility(VISIBILITY_ON);
         }
     }

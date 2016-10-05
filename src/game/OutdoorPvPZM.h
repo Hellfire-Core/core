@@ -50,16 +50,12 @@ const go_type ZM_Banner_A = { 182527,530,253.54,7083.81,36.7728,-0.017453,0,0,0.
 const go_type ZM_Banner_H = { 182528,530,253.54,7083.81,36.7728,-0.017453,0,0,0.008727,-0.999962 };
 const go_type ZM_Banner_N = { 182529,530,253.54,7083.81,36.7728,-0.017453,0,0,0.008727,-0.999962 };
 
+#define HORDE_FIELD_SCOUT 18564
+#define ALLIANCE_FIELD_SCOUT 18581
 // horde field scout spawn data
 const creature_type ZM_HordeFieldScout = {18564,67,530,296.625,7818.4,42.6294,5.18363};
 // alliance field scout spawn data
 const creature_type ZM_AllianceFieldScout = {18581,469,530,374.395,6230.08,22.8351,0.593412};
-
-enum ZMCreatureTypes{
-    ZM_ALLIANCE_FIELD_SCOUT = 0,
-    ZM_HORDE_FIELD_SCOUT,
-    ZM_CREATURE_NUM
-};
 
 struct zm_beacon {
     uint32 slider_disp;

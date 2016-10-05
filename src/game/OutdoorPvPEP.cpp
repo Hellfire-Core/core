@@ -408,24 +408,30 @@ void OPvPCapturePointEP::SummonSupportUnits(uint32 team)
     if (EP_TOWER_EVENT_TEAM[EP_TOWER_EASTWALL] != team)
     {
         EP_TOWER_EVENT_TEAM[EP_TOWER_EASTWALL] = team;
-        const creature_type * ct = NULL;
         if (team == ALLIANCE)
-            ct=EP_EWT_Summons_A;
-        else
-            ct=EP_EWT_Summons_H;
-
-        for (uint8 i = 0; i < EP_EWT_NUM_CREATURES; ++i)
         {
-            DelCreature(i);
-            AddCreature(i,ct[i].entry,ct[i].teamval,ct[i].map,ct[i].x,ct[i].y,ct[i].z,ct[i].o,1000000);
+            m_PvP->GetMap()->VisibilityOfCreatureEntry(17635, false);
+            m_PvP->GetMap()->VisibilityOfCreatureEntry(17647, false);
+            m_PvP->GetMap()->VisibilityOfCreatureEntry(17995, true);
+            m_PvP->GetMap()->VisibilityOfCreatureEntry(17996, true);
         }
+        else
+        {
+            m_PvP->GetMap()->VisibilityOfCreatureEntry(17635, true);
+            m_PvP->GetMap()->VisibilityOfCreatureEntry(17647, true);
+            m_PvP->GetMap()->VisibilityOfCreatureEntry(17995, false);
+            m_PvP->GetMap()->VisibilityOfCreatureEntry(17996, false);
+        }
+
     }
 }
 
 void OPvPCapturePointEP::UnsummonSupportUnits()
 {
-    for (uint8 i = 0; i < EP_EWT_NUM_CREATURES; ++i)
-        DelCreature(i);
+    m_PvP->GetMap()->VisibilityOfCreatureEntry(17635, true);
+    m_PvP->GetMap()->VisibilityOfCreatureEntry(17647, true);
+    m_PvP->GetMap()->VisibilityOfCreatureEntry(17995, true);
+    m_PvP->GetMap()->VisibilityOfCreatureEntry(17996, true);
     EP_TOWER_EVENT_TEAM[EP_TOWER_EASTWALL] = 0;
 }
 
@@ -458,9 +464,8 @@ void OPvPCapturePointEP::SummonFlightMaster(uint32 team)
     if (EP_TOWER_EVENT_TEAM[EP_TOWER_PLAGUEWOOD] != team)
     {
         EP_TOWER_EVENT_TEAM[EP_TOWER_PLAGUEWOOD] = team;
-        DelCreature(EP_PWT_FLIGHTMASTER);
-        AddCreature(EP_PWT_FLIGHTMASTER,EP_PWT_FlightMaster.entry,team,EP_PWT_FlightMaster.map,EP_PWT_FlightMaster.x,EP_PWT_FlightMaster.y,EP_PWT_FlightMaster.z,EP_PWT_FlightMaster.o);
-        Creature * c = m_PvP->GetMap()->GetCreature(m_Creatures[EP_PWT_FLIGHTMASTER]);
+        m_PvP->GetMap()->VisibilityOfCreatureEntry(PWT_FLIGHT_MASTER, false);
+        Creature * c = m_PvP->GetMap()->GetCreatureById(PWT_FLIGHT_MASTER);
         if (c)
         {
             // Change the flightmasters's faction to horde if required
@@ -489,43 +494,37 @@ void OPvPCapturePointEP::SummonFlightMaster(uint32 team)
 
 void OPvPCapturePointEP::UnsummonFlightMaster()
 {
-    DelCreature(EP_PWT_FLIGHTMASTER);
+    m_PvP->GetMap()->VisibilityOfCreatureEntry(PWT_FLIGHT_MASTER, true);
     EP_TOWER_EVENT_TEAM[EP_TOWER_PLAGUEWOOD] = 0;
 }
 
 bool OPvPCapturePointEP::CanTalkTo(Player * p, Creature * c, GossipOption &gso)
 {
     if (p->GetTeam() == EP_TOWER_EVENT_TEAM[EP_TOWER_PLAGUEWOOD] &&
-        c->GetGUID() == m_Creatures[EP_PWT_FLIGHTMASTER] &&
-        gso.Id == 50)
+        c->GetEntry() == PWT_FLIGHT_MASTER && gso.Id == 50)
         return true;
     return false;
 }
 
 bool OPvPCapturePointEP::HandleGossipOption(Player *plr, uint64 guid, uint32 gossipid)
 {
-    std::map<uint64,uint32>::iterator itr = m_CreatureTypes.find(guid);
-    if (itr != m_CreatureTypes.end())
-    {
-        Creature * cr = m_PvP->GetMap()->GetCreature(guid);
-        if (!cr)
-            return true;
-        if (itr->second == EP_PWT_FLIGHTMASTER)
-        {
-            uint32 src = EP_TAXI_NODE[0];
-            uint32 dst = EP_TAXI_NODE[gossipid+1];
-
-            std::vector<uint32> nodes;
-            nodes.resize(2);
-            nodes[0] = src;
-            nodes[1] = dst;
-
-            plr->PlayerTalkClass->CloseGossip();
-            plr->ActivateTaxiPathTo(nodes, 0, cr);
-            // leave the opvp, seems like moveinlineofsight isn't called when entering a taxi
-            HandlePlayerLeave(plr);
-        }
+    Creature * cr = m_PvP->GetMap()->GetCreature(guid);
+    if (!cr)
         return true;
+    if (cr->GetEntry() == PWT_FLIGHT_MASTER)
+    {
+        uint32 src = EP_TAXI_NODE[0];
+        uint32 dst = EP_TAXI_NODE[gossipid+1];
+
+        std::vector<uint32> nodes;
+        nodes.resize(2);
+        nodes[0] = src;
+        nodes[1] = dst;
+
+        plr->PlayerTalkClass->CloseGossip();
+        plr->ActivateTaxiPathTo(nodes, 0, cr);
+        // leave the opvp, seems like moveinlineofsight isn't called when entering a taxi
+        HandlePlayerLeave(plr);
     }
-    return false;
+    return true;
 }
