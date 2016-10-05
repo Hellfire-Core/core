@@ -2001,6 +2001,11 @@ bool SpellMgr::IsSpecialNoStackCase(SpellEntry const *spellInfo_1, SpellEntry co
     if (spellInfo_1->Id == 45848 && (spellInfo_2->Id == 45737 || spellInfo_2->Id == 45641))
         return true; // shield of the blue removes fire bloom and flame dart
 
+    // blood fury and wound poison
+    if (spellInfo_1->SpellFamilyName == SPELLFAMILY_ROGUE && spellInfo_1->SpellFamilyFlags == 0x10000000 &&
+        spellInfo_2->Id == 23230)
+        return true;
+
     if (recur)
         return SpellMgr::IsSpecialNoStackCase(spellInfo_2, spellInfo_1, sameCaster, false);
 

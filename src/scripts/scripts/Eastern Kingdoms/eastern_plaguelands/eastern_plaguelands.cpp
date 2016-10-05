@@ -449,8 +449,8 @@ bool GossipHello_npc_betinabigglezink(Player *player, Creature *_Creature)
 {
     if (_Creature->isQuestGiver())
         player->PrepareQuestMenu(_Creature->GetGUID());
-
-    if (player->GetQuestStatus(5213) == QUEST_STATUS_COMPLETE && !player->HasItemCount(19812, 1) && !player->HasItemCount(13209,1))
+    
+    if (player->GetQuestRewardStatus(5213) && !player->HasItemCount(19812, 1) && !player->HasItemCount(13209,1))
     {
         player->ADD_GOSSIP_ITEM(0, GOSSIP_BETINA_RUNE, GOSSIP_SENDER_MAIN, GOSSIP_SENDER_INFO);
         player->ADD_GOSSIP_ITEM(0, GOSSIP_BETINA_SEAL, GOSSIP_SENDER_MAIN, GOSSIP_SENDER_INFO + 1);
