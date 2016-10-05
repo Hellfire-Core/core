@@ -1423,8 +1423,46 @@ CreatureAI* Getnpc_anachronos_the_ancientAI(Creature* pCreature)
 }
 
 /*###
-##
+## silithus glyphed crystals (quest Glyph Chasing 8309)
 ####*/
+
+enum glyphchasing
+{
+    TRANSCRIPTION_KIT = 20453,
+    ZORA_ITEM = 20454,
+    ASHI_ITEM = 20455,
+    REGAL_ITEM = 20456,
+
+    REGAL_OBJECT = 180453,
+    ASHI_OBJECT = 180454,
+    ZORA_OBJECT = 180455
+};
+
+bool GOUse_go_silithus_glyph(Player* plr, GameObject* gob)
+{
+    if (!plr->HasItemCount(TRANSCRIPTION_KIT, 1))
+        return true;
+
+    uint32 entry = 0;
+    switch (gob->GetEntry())
+    {
+    case REGAL_OBJECT: entry = REGAL_ITEM; break;
+    case ASHI_OBJECT: entry = ASHI_ITEM; break;
+    case ZORA_OBJECT: entry = ZORA_ITEM; break;
+    }
+    if (!entry)
+        return true;
+
+    ItemPosCountVec dest;
+    uint8 msg = plr->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, entry, 1);
+    if (msg == EQUIP_ERR_OK)
+    {
+        Item* item = plr->StoreNewItem(dest, entry, true);
+        plr->SendNewItem(item, 1, true, false, true);
+    }
+
+    return true;
+}
 
 void AddSC_silithus()
 {
@@ -1504,5 +1542,11 @@ void AddSC_silithus()
     newscript->Name = "npc_anachronos_the_ancient";
     newscript->GetAI = Getnpc_anachronos_the_ancientAI;
     newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "gob_silithus_glyph";
+    newscript->pGOUse = &GOUse_go_silithus_glyph;
+    newscript->RegisterSelf();
+    
 }
 

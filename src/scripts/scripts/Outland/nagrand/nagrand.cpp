@@ -1628,7 +1628,7 @@ struct npc_rethhedron_the_subduerAI : public ScriptedAI
         if (type == POINT_MOTION_TYPE && id == 666)
         {
             if (Player* ppl = m_creature->GetPlayer(player))
-                ppl->SendQuestComplete(QUEST_SUBDUE_THE_SUBDUER);
+                ppl->GroupEventHappens(QUEST_SUBDUE_THE_SUBDUER,me);
             m_creature->DisappearAndDie();
         }
     }
