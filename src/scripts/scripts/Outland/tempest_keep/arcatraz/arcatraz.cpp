@@ -554,6 +554,7 @@ struct npc_arcatraz_sentinelAI : public ScriptedAI
         me->SetUInt32Value(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_NONE);
         me->SetUInt32Value(UNIT_FIELD_BYTES_1, PLAYER_STATE_NONE);
         me->SetHealth(me->GetMaxHealth() * 40 / 100);
+        me->ResetPlayerDamageReq();
     }
 
     void UpdateAI(const uint32 diff)
@@ -579,10 +580,7 @@ struct npc_arcatraz_sentinelAI : public ScriptedAI
             }
         }
         else if (Suicide_Timer.Expired(diff))
-        {
-            me->LowerPlayerDamageReq(me->GetMaxHealth());
             me->getVictim()->Kill(me, false);
-        }
 
         DoMeleeAttackIfReady();
     }

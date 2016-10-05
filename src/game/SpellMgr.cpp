@@ -1960,11 +1960,6 @@ bool SpellMgr::IsSpecialStackCase(SpellEntry const *spellInfo_1, SpellEntry cons
     if(spellId_1 == 40466 && spellId_2 == 38430)
         return true;
 
-    // wound poison & blood fury
-    if (spellInfo_1->SpellFamilyName == SPELLFAMILY_ROGUE && spellInfo_1->SpellFamilyFlags == 268435456 &&
-        spellInfo_2->SpellVisual == 47 && spellInfo_2->SpellIconID == 1662)
-        return true;
-
     if (recur)
         return SpellMgr::IsSpecialStackCase(spellInfo_2, spellInfo_1, sameCaster, false);
 

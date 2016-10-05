@@ -4832,11 +4832,6 @@ SpellCastResult Spell::CheckPetCast(Unit* target)
         if (m_caster->GetCharmerOrOwnerPlayerOrPlayerItself() &&
             m_caster->GetCharmerOrOwnerPlayerOrPlayerItself()->GetCooldownMgr().HasSpellCooldown(GetSpellEntry()->Id))
             return SPELL_FAILED_NOT_READY;
-        // dash & dive dont use when near
-        if (target && m_caster->isInCombat() && GetSpellEntry()->Effect[0] == SPELL_EFFECT_APPLY_AURA &&
-            GetSpellEntry()->EffectApplyAuraName[0] == SPELL_AURA_MOD_INCREASE_SPEED &&
-            GetSpellEntry()->SpellVisual == 2276 && m_caster->IsWithinMeleeRange(target))
-            return SPELL_FAILED_TOO_CLOSE;
     }
 
     return CheckCast(true);
@@ -4944,6 +4939,7 @@ SpellCastResult Spell::CheckCasterAuras() const
 
 bool Spell::CanAutoCast(Unit* target)
 {
+    // null is not passed to this function
     uint64 targetguid = target->GetGUID();
 
     for (uint32 j = 0; j < 3; j++)
@@ -4967,6 +4963,12 @@ bool Spell::CanAutoCast(Unit* target)
                 return false;
         }
     }
+
+    // dash & dive dont use when near or not in combat
+    if (GetSpellEntry()->Effect[0] == SPELL_EFFECT_APPLY_AURA &&
+        GetSpellEntry()->EffectApplyAuraName[0] == SPELL_AURA_MOD_INCREASE_SPEED &&
+        GetSpellEntry()->SpellVisual == 2276 && (m_caster->IsWithinMeleeRange(target) || !m_caster->isInCombat()))
+        return false;
 
     SpellCastResult result = CheckPetCast(target);
 

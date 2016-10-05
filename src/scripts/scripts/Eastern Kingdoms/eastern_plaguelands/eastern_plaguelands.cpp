@@ -438,6 +438,50 @@ CreatureAI* GetAI_mobs_plagued_peasant(Creature *_Creature)
     return new mobs_plagued_peasantAI (_Creature);
 }
 
+/*######
+## npc_betinabigglezink
+######*/
+
+#define GOSSIP_BETINA_RUNE "Betina, I'd like replacement Rune of the Dawn please!"
+#define GOSSIP_BETINA_SEAL "Betina, I'd like replacement Seal of the Dawn please!"
+
+bool GossipHello_npc_betinabigglezink(Player *player, Creature *_Creature)
+{
+    if (_Creature->isQuestGiver())
+        player->PrepareQuestMenu(_Creature->GetGUID());
+
+    if (player->GetQuestStatus(5213) == QUEST_STATUS_COMPLETE && !player->HasItemCount(19812, 1) && !player->HasItemCount(13209,1))
+    {
+        player->ADD_GOSSIP_ITEM(0, GOSSIP_BETINA_RUNE, GOSSIP_SENDER_MAIN, GOSSIP_SENDER_INFO);
+        player->ADD_GOSSIP_ITEM(0, GOSSIP_BETINA_SEAL, GOSSIP_SENDER_MAIN, GOSSIP_SENDER_INFO + 1);
+    }
+
+    player->SEND_GOSSIP_MENU(_Creature->GetNpcTextId(), _Creature->GetGUID());
+    return true;
+}
+
+bool GossipSelect_npc_betinabigglezink(Player *player, Creature *_Creature, uint32 sender, uint32 action)
+{
+    uint32 entry = 0;
+    if (action == GOSSIP_SENDER_INFO)
+        entry = 19812;
+    else if (action == GOSSIP_SENDER_INFO + 1)
+        entry = 13209;
+
+    if (entry != 0)
+    {
+        ItemPosCountVec dest;
+        uint8 msg = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, entry, 1);
+        if (msg == EQUIP_ERR_OK)
+        {
+            Item* item = player->StoreNewItem(dest, entry, true);
+            player->SendNewItem(item, 1, true, false, true);
+        }
+        player->CLOSE_GOSSIP_MENU();
+    }
+    return true;
+}
+
 void AddSC_eastern_plaguelands()
 {
     Script *newscript;
@@ -488,5 +532,11 @@ void AddSC_eastern_plaguelands()
     newscript = new Script;
     newscript->Name="trigger_epic_staff";
     newscript->GetAI = &GetAI_trigger_epic_staff;
+    newscript->RegisterSelf();
+    newscript = new Script;
+
+    newscript->Name="npc_betinabigglezink";
+    newscript->pGossipHello = &GossipHello_npc_betinabigglezink;
+    newscript->pGossipSelect = &GossipSelect_npc_betinabigglezink;
     newscript->RegisterSelf();
 }

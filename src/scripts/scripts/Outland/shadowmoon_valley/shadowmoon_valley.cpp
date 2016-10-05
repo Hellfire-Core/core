@@ -69,6 +69,7 @@ struct mob_azalothAI : public ScriptedAI
     Timer rain_timer;
     Timer warstomp_timer;
     Timer banish_timer;
+    Timer warlock_check_timer;
 
     void JustRespawned()
     {
@@ -90,6 +91,7 @@ struct mob_azalothAI : public ScriptedAI
         cripple_timer.Reset(18000);
         rain_timer.Reset(15000);
         warstomp_timer.Reset(10000);
+        warlock_check_timer.Reset(5000);
         banish_timer.Reset(TIME_TO_BANISH);
     }
 
@@ -97,16 +99,22 @@ struct mob_azalothAI : public ScriptedAI
     {
         if (banish_timer.Passed())
         {
-            DoCast(m_creature,SPELL_BANISH);
-            banish_timer  = TIME_TO_BANISH;
+            DoCast(m_creature, SPELL_BANISH);
+            banish_timer = TIME_TO_BANISH;
         }
 
-        std::list<Creature*> warlocks = FindAllCreaturesWithEntry(21503, 20.0f);
-        for (std::list<Creature*>::iterator itr = warlocks.begin(); itr != warlocks.end(); ++itr)
+        if (warlock_check_timer.Expired(diff))
         {
-            (*itr)->GetMotionMaster()->Clear(false);
-            (*itr)->StopMoving();
-            (*itr)->CastSpell(me,SPELL_VISUAL_BANISH, false);
+            std::list<Creature*> warlocks = FindAllCreaturesWithEntry(21503, 20.0f);
+            for (std::list<Creature*>::iterator itr = warlocks.begin(); itr != warlocks.end(); ++itr)
+            {
+                if ((*itr)->isInCombat())
+                    continue;
+                (*itr)->GetMotionMaster()->Clear(false);
+                (*itr)->StopMoving();
+                (*itr)->CastSpell(me, SPELL_VISUAL_BANISH, false);
+            }
+            warlock_check_timer = 5000;
         }
 
         if (!UpdateVictim())

@@ -2227,6 +2227,7 @@ struct pet_AleMugDrinkerAI : public ScriptedAI
         wait = 0;
         aleMug_drink = false;
         me->GetMotionMaster()->MoveFollow(me->GetOwner(), 2.0, M_PI/2);
+        me->CastSpell(me, 25163, false);
     }
 
     void SpellHit(Unit * caster, const SpellEntry * spell)
