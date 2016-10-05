@@ -2732,6 +2732,37 @@ Object* Map::GetObjectByTypeMask(Player const &p, uint64 guid, uint32 typemask)
     return NULL;
 }
 
+void Map::VisibilityOfCreatureEntry(uint32 entry, bool hide)
+{
+    CreatureIdToGuidListMapType::const_accessor a;
+    if (!creatureIdToGuidMap.find(a, entry))
+        return;
+
+    std::list<uint64> tmpList = a->second;
+    for (std::list<uint64>::iterator itr = tmpList.begin(); itr != tmpList.end(); itr++)
+    {
+        Creature* mob = GetCreature(*itr);
+        if (!mob)
+            continue;
+        mob->CombatStop();
+        mob->Respawn();
+        if (hide)
+        {
+            mob->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            mob->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            mob->SetVisibility(VISIBILITY_OFF);
+        }
+        else
+        {
+            mob->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            mob->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            mob->SetVisibility(VISIBILITY_ON);
+        }
+    }
+
+}
+
+
 std::list<uint64> Map::GetCreaturesGUIDList(uint32 id, GetCreatureGuidType type , uint32 max)
 {
     std::list<uint64> returnList;

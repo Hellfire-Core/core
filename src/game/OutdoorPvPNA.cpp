@@ -46,66 +46,32 @@ void OutdoorPvPNA::HandleKillImpl(Player *plr, Unit * killed)
 
 uint32 OPvPCapturePointNA::GetAliveGuardsCount()
 {
+    
     uint32 cnt = 0;
-    for (std::map<uint32, uint64>::iterator itr = m_Creatures.begin(); itr != m_Creatures.end(); ++itr)
-    {
-        switch (itr->first)
-        {
-        case NA_NPC_GUARD_01:
-        case NA_NPC_GUARD_02:
-        case NA_NPC_GUARD_03:
-        case NA_NPC_GUARD_04:
-        case NA_NPC_GUARD_05:
-        case NA_NPC_GUARD_06:
-        case NA_NPC_GUARD_07:
-        case NA_NPC_GUARD_08:
-        case NA_NPC_GUARD_09:
-        case NA_NPC_GUARD_10:
-        case NA_NPC_GUARD_11:
-        case NA_NPC_GUARD_12:
-        case NA_NPC_GUARD_13:
-        case NA_NPC_GUARD_14:
-        case NA_NPC_GUARD_15:
-            {
-                if (!m_PvP->GetMap())
-                    return false;
+   
+    if (!m_PvP->GetMap())
+        return 0;
                 
-                if (Creature * cr = m_PvP->GetMap()->GetCreature(itr->second))
-                {
-                    if (cr->isAlive())
-                        ++cnt;
-                }
-                else if (CreatureData const * cd = sObjectMgr.GetCreatureData(GUID_LOPART(itr->second)))
-                {
-                    if (!cd->is_dead)
-                        ++cnt;
-                }
-            }
-            break;
-        default:
-            break;
+    std::list<uint64> tmpList = m_PvP->GetMap()->GetCreaturesGUIDList(m_ControllingFaction == HORDE ? HordeCreatureEntries[5] : AllyCreatureEntries[5]);
+    for (std::list<uint64>::iterator itr = tmpList.begin(); itr != tmpList.end(); itr++)
+    {
+        if (Creature * cr = m_PvP->GetMap()->GetCreature(*itr))
+        {
+            if (cr->isAlive())
+                ++cnt;
         }
     }
+    
     return cnt;
 }
 
 void OPvPCapturePointNA::SpawnNPCsForTeam(uint32 team)
 {
-    const creature_type * creatures = NULL;
-    if (team == ALLIANCE)
-        creatures=AllianceControlNPCs;
-    else if (team == HORDE)
-        creatures=HordeControlNPCs;
-    else
-        return;
-    for (int i = 0; i < NA_CONTROL_NPC_NUM; ++i)
-        AddCreature(i,creatures[i].entry,creatures[i].teamval,creatures[i].map,creatures[i].x,creatures[i].y,creatures[i].z,creatures[i].o,1000000);
-}
-
-void OPvPCapturePointNA::DeSpawnNPCs()
-{
-    for (int i = 0; i < NA_CONTROL_NPC_NUM; ++i)
-        DelCreature(i);
+    for (uint8 i = 0; i < 6; i++)
+    {
+        m_PvP->GetMap()->VisibilityOfCreatureEntry(team == HORDE ? AllyCreatureEntries[i] : HordeCreatureEntries[i], true);
+        m_PvP->GetMap()->VisibilityOfCreatureEntry(team == HORDE ? HordeCreatureEntries[i] : AllyCreatureEntries[i], false);
+    }
 }
 
 void OPvPCapturePointNA::SpawnGOsForTeam(uint32 team)
@@ -153,7 +119,6 @@ void OPvPCapturePointNA::FactionTakeOver(uint32 team)
     if (m_ControllingFaction)
         sObjectMgr.AddGraveYardLink(NA_HALAA_GRAVEYARD,NA_HALAA_GRAVEYARD_ZONE,m_ControllingFaction,false);
     DeSpawnGOs();
-    DeSpawnNPCs();
     SpawnGOsForTeam(team);
     SpawnNPCsForTeam(team);
     m_GuardsAlive = NA_GUARDS_MAX;

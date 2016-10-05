@@ -174,6 +174,9 @@ enum ControlNPCTypes{
     NA_CONTROL_NPC_NUM
 };
 
+const uint32 HordeCreatureEntries[] = { 18816, 18821, 21474, 21484, 21483, 18192 };
+const uint32 AllyCreatureEntries[] = { 18817, 18822, 21485, 21487, 21488, 18256 };
+
 const creature_type HordeControlNPCs[NA_CONTROL_NPC_NUM] = {
     {18816,67,530,-1523.92,7951.76,-17.6942,3.51172},
     {18821,67,530,-1527.75,7952.46,-17.6948,3.99317},
@@ -257,7 +260,6 @@ protected:
     // called when a faction takes control
     void FactionTakeOver(uint32 team);
 
-    void DeSpawnNPCs();
     void DeSpawnGOs();
     void SpawnNPCsForTeam(uint32 team);
     void SpawnGOsForTeam(uint32 team);

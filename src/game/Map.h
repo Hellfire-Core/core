@@ -259,6 +259,7 @@ class HELLGROUND_IMPORT_EXPORT Map : public GridRefManager<NGridType>
         Unit* GetUnit(uint64 guid);
 
         Object* GetObjectByTypeMask(Player const &p, uint64 guid, uint32 typemask);
+        void VisibilityOfCreatureEntry(uint32 entry, bool hide);
 
         std::list<uint64> GetCreaturesGUIDList(uint32 id, GetCreatureGuidType type = GET_FIRST_CREATURE_GUID, uint32 max = 0);
         uint64 GetCreatureGUID(uint32 id, GetCreatureGuidType type = GET_FIRST_CREATURE_GUID);
