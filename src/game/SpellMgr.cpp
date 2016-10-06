@@ -2995,6 +2995,9 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 37851: // tag diemetradon, frankly it makes no sense, done manually in apply dummy aura
                     spellInfo->Effect[1] = 0;
                     break;
+                case 42338: // raptor bait, target quest credit
+                    spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_NEARBY_ENTRY;
+                    break;
                 }
                 if (spellInfo->SpellIconID == 184 && spellInfo->Attributes == 4259840)
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
