@@ -1148,7 +1148,7 @@ struct erozion_imageAI : public ScriptedAI
         me->CastSpell(me, SPELL_TELEPORT, false);
         Intro = true;
         Steps = 0;
-        StepsTimer = 0;
+        StepsTimer = 1;
     }
 
     int32 NextStep(uint32 Steps)
@@ -1158,7 +1158,7 @@ struct erozion_imageAI : public ScriptedAI
        if (!tmpMap)
            return true;
 
-       if (Creature* Thrall = tmpMap->GetCreature(tmpMap->GetCreatureGUID(NPC_THRALL)))
+       if (Creature* Thrall = tmpMap->GetCreature(pInstance->GetData64(DATA_THRALL)))
        {
            switch (Steps)
            {
@@ -1172,20 +1172,17 @@ struct erozion_imageAI : public ScriptedAI
                    if (pInstance)
                    {
                        if (pInstance->GetData(TYPE_THRALL_PART1) == NOT_STARTED)
-                           me->SummonCreature(NPC_THRALL, 2231.51f, 119.84f, 82.297f, 4.15f,TEMPSUMMON_DEAD_DESPAWN,15000);
+                           Thrall->Relocate(2231.51f, 119.84f, 82.297f, 4.15f);
 
                        if (pInstance->GetData(TYPE_THRALL_PART1) == DONE && pInstance->GetData(TYPE_THRALL_PART2) == NOT_STARTED)
-                       {
-                           me->SummonCreature(NPC_THRALL, 2063.40f, 229.512f, 64.488f, 2.18f,TEMPSUMMON_DEAD_DESPAWN,15000);
-                           me->SummonCreature(NPC_SKARLOC_MOUNT,2047.90f, 254.85f, 62.822f, 5.94f, TEMPSUMMON_DEAD_DESPAWN, 15000);
-                       }
+                           Thrall->Relocate(2063.40f, 229.512f, 64.488f, 2.18f);
 
                        if (pInstance->GetData(TYPE_THRALL_PART2) == DONE && pInstance->GetData(TYPE_THRALL_PART3) == NOT_STARTED)
-                           me->SummonCreature(NPC_THRALL, 2486.91f, 626.357f, 58.076f, 4.66f,TEMPSUMMON_DEAD_DESPAWN,15000);
+                           Thrall->Relocate(2486.91f, 626.357f, 58.076f, 4.66f);
 
                        if (pInstance->GetData(TYPE_THRALL_PART3) == DONE && pInstance->GetData(TYPE_THRALL_PART4) == NOT_STARTED)
                        {
-                           me->SummonCreature(NPC_THRALL, 2660.48f, 659.409f, 61.937f, 5.83f,TEMPSUMMON_DEAD_DESPAWN,15000);
+                           Thrall->Relocate(2660.48f, 659.409f, 61.937f, 5.83f);
                            if (uint64 TarethaGUID = pInstance->GetData64(DATA_TARETHA))
                            {
                                if (Unit *Taretha = me->GetUnit(TarethaGUID))
@@ -1195,6 +1192,7 @@ struct erozion_imageAI : public ScriptedAI
                     }
                     return 5000;
                 case 4:
+                    Thrall->Respawn();
                     DoScriptText(SAY_IMAGE_2, me);
                     return 15000;
                  case 5:

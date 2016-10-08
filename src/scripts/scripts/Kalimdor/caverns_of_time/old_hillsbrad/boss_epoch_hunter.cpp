@@ -97,12 +97,13 @@ struct boss_epoch_hunterAI : public ScriptedAI
         if (!tmpMap)
             return;
 
-        if (Creature* Thrall = tmpMap->GetCreature(tmpMap->GetCreatureGUID(NPC_THRALL)))
+        if (Creature* Thrall = tmpMap->GetCreature(pInstance->GetData64(DATA_THRALL)))
             ThrallGUID = Thrall->GetGUID();
     }
 
     void EnterCombat(Unit *who)
     {
+        pInstance->SetData(DATA_EPOCH_DEATH, IN_PROGRESS);
         DoScriptText(RAND(SAY_AGGRO1, SAY_AGGRO2), me);
     }
 

@@ -96,7 +96,7 @@ struct boss_captain_skarlocAI : public ScriptedAI
         if (!tmpMap)
             return;
 
-        if (Creature* Thrall = tmpMap->GetCreature(tmpMap->GetCreatureGUID(NPC_THRALL)))
+        if (Creature* Thrall = tmpMap->GetCreature(pInstance->GetData64(DATA_THRALL)))
             ThrallinGUID = Thrall->GetGUID();
     }
 
@@ -186,7 +186,7 @@ struct boss_captain_skarlocAI : public ScriptedAI
 
     void EnterCombat(Unit *who)
     {
-
+        pInstance->SetData(DATA_SKARLOC_DEATH, IN_PROGRESS);
         DoScriptText(SAY_TAUNT1, me);
         DoScriptText(SAY_TAUNT2, me);
     }
@@ -208,7 +208,7 @@ struct boss_captain_skarlocAI : public ScriptedAI
         if (!tmpMap)
             return;
 
-        if (Creature* mount = tmpMap->GetCreature(tmpMap->GetCreatureGUID(SKARLOC_MOUNT)))
+        if (Creature* mount = tmpMap->GetCreatureById(SKARLOC_MOUNT))
             mount->ForcedDespawn();
     }
 
