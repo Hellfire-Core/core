@@ -1733,11 +1733,11 @@ void Spell::SetTargetMap(uint32 i, uint32 cur)
                     //AddUnitTarget(m_caster, i);
                     float min_dis = SpellMgr::GetSpellMinRange(sSpellRangeStore.LookupEntry(GetSpellEntry()->rangeIndex));
                     float max_dis = SpellMgr::GetSpellMaxRange(sSpellRangeStore.LookupEntry(GetSpellEntry()->rangeIndex));
-                    float dis = rand_norm() * (max_dis - min_dis) + min_dis;
+                    float dis = frand(min_dis, max_dis);
 
                     Position pos;
                     m_caster->GetPosition(pos);
-                    float angle = frand(-0.6f, 0.6f);
+                    float angle = m_caster->GetOrientation() + frand(-0.6f, 0.6f);
                     pos.x += dis * cos(angle);
                     pos.y += dis * sin(angle);
                     //m_caster->GetValidPointInAngle(pos, dis + DEFAULT_WORLD_OBJECT_SIZE, frand(-0.6, 0.6), true, max_dis);
