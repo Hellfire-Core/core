@@ -38,7 +38,7 @@ enum LazyPeon
 {
     SAY_SPELL_HIT             = -1000622,
 
-    MIN_TIME_TO_GO_ASLEEP     = 30000,        // 30 to 60 sec
+    MIN_TIME_TO_GO_ASLEEP     = 30000,        // 30 to 60 sec, buff has 120 sec max duration
     MAX_TIME_TO_GO_ASLEEP     = 60000,
 
     QUEST_LAZY_PEONS          = 5441,
@@ -56,7 +56,7 @@ struct npc_lazy_peonAI : public ScriptedAI
 
     void Reset ()
     {
-        m_uiRebuffTimer.Reset(urand(MIN_TIME_TO_GO_ASLEEP, MAX_TIME_TO_GO_ASLEEP));         //Rebuff agian in 1-10 minutes
+        m_uiRebuffTimer.Reset(urand(MIN_TIME_TO_GO_ASLEEP, MAX_TIME_TO_GO_ASLEEP));
         work = false;
     }
 
@@ -76,7 +76,7 @@ struct npc_lazy_peonAI : public ScriptedAI
         {
             DoScriptText(SAY_SPELL_HIT, me, caster);
             me->RemoveAllAuras();
-            m_uiRebuffTimer = urand(MIN_TIME_TO_GO_ASLEEP, MAX_TIME_TO_GO_ASLEEP);
+            m_uiRebuffTimer.Reset(urand(MIN_TIME_TO_GO_ASLEEP, MAX_TIME_TO_GO_ASLEEP)); // refresh the buff
             if (GameObject* Lumberpile = FindGameObject(GO_LUMBERPILE, 20, me))
                 me->GetMotionMaster()->MovePoint(1,Lumberpile->GetPositionX()-1,Lumberpile->GetPositionY(),Lumberpile->GetPositionZ());
         }
@@ -90,7 +90,7 @@ struct npc_lazy_peonAI : public ScriptedAI
         if (m_uiRebuffTimer.Expired(uiDiff))
         {
             DoCast(me, SPELL_BUFF_SLEEP);
-            m_uiRebuffTimer = 0;
+            m_uiRebuffTimer = MAX_TIME_TO_GO_ASLEEP; // refresh the buff
         }
 
         if (!UpdateVictim())

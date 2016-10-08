@@ -1734,11 +1734,17 @@ void Spell::SetTargetMap(uint32 i, uint32 cur)
                     float min_dis = SpellMgr::GetSpellMinRange(sSpellRangeStore.LookupEntry(GetSpellEntry()->rangeIndex));
                     float max_dis = SpellMgr::GetSpellMaxRange(sSpellRangeStore.LookupEntry(GetSpellEntry()->rangeIndex));
                     float dis = rand_norm() * (max_dis - min_dis) + min_dis;
+
                     Position pos;
-                    m_caster->GetValidPointInAngle(pos, dis + DEFAULT_WORLD_OBJECT_SIZE, frand(-0.6, 0.6), true, max_dis);
+                    m_caster->GetPosition(pos);
+                    float angle = frand(-0.6f, 0.6f);
+                    pos.x += dis * cos(angle);
+                    pos.y += dis * sin(angle);
+                    //m_caster->GetValidPointInAngle(pos, dis + DEFAULT_WORLD_OBJECT_SIZE, frand(-0.6, 0.6), true, max_dis);
                     float liquidLevel = m_caster->GetMap()->GetTerrain()->GetWaterOrGroundLevel(pos.x, pos.y, pos.z);
                     m_targets.setDestination(pos.x, pos.y, liquidLevel);
-                    if (!m_caster->GetTerrain()->IsInWater(pos.x, pos.y, liquidLevel))
+                    if (!m_caster->IsWithinLOS(pos.x, pos.y, liquidLevel) ||
+                        !m_caster->GetTerrain()->IsInWater(pos.x, pos.y, liquidLevel))
                     {
                         SendCastResult(SPELL_FAILED_NOT_HERE);
                         SendChannelUpdate(0);
