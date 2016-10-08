@@ -1544,7 +1544,7 @@ void AddSC_silithus()
     newscript->RegisterSelf();
 
     newscript = new Script;
-    newscript->Name = "gob_silithus_glyph";
+    newscript->Name = "go_silithus_glyph";
     newscript->pGOUse = &GOUse_go_silithus_glyph;
     newscript->RegisterSelf();
     

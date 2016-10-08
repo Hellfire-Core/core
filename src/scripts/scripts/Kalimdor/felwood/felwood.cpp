@@ -191,7 +191,7 @@ void AddSC_felwood()
     newscript->RegisterSelf();
 
     newscript = new Script;
-    newscript->Name = "npcs_winnas_kitten";
+    newscript->Name = "npc_winnas_kitten";
     newscript->GetAI = &GetAI_winnas_kitten;
     newscript->pGossipHello = &GossipHello_npc_winnas_kitten;
     newscript->pGossipSelect = &GossipSelect_npc_winnas_kitten;

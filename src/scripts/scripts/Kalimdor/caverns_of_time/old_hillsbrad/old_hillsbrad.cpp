@@ -1169,6 +1169,8 @@ struct erozion_imageAI : public ScriptedAI
                    DoScriptText(SAY_IMAGE_1, me);
                    return 15000;
                case 3:
+                   Thrall->Respawn();
+
                    if (pInstance)
                    {
                        if (pInstance->GetData(TYPE_THRALL_PART1) == NOT_STARTED)
@@ -1192,7 +1194,6 @@ struct erozion_imageAI : public ScriptedAI
                     }
                     return 5000;
                 case 4:
-                    Thrall->Respawn();
                     DoScriptText(SAY_IMAGE_2, me);
                     return 15000;
                  case 5:

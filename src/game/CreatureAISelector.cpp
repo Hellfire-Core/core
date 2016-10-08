@@ -34,8 +34,7 @@ namespace FactorySelector
         const CreatureAICreator *ai_factory = NULL;
         CreatureAIRegistry &ai_registry(*CreatureAIRepository::instance());
 
-        //script name in db. 9937 - hack for winnas kitten
-        if ((!creature->isPet() || !((Pet*)creature)->isControlled() || creature->GetEntry() == 9937) && !creature->isCharmed())
+        if ((!creature->isPet() || !((Pet*)creature)->isControlled()) && !creature->isCharmed())
             if (CreatureAI* scriptedAI = sScriptMgr.GetCreatureAI(creature))
                 return scriptedAI;
 
