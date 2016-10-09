@@ -920,7 +920,7 @@ struct npc_trackerAI : public ScriptedAI
     {
         if (Creature* Matis = me->GetCreature(matisguid))
         {
-            if (!said && ((Matis->GetHealth())*100 / Matis->GetMaxHealth() < 10()
+            if (!said && ((Matis->GetHealth())*100 / Matis->GetMaxHealth() < 10))
             {
                 me->AI()->EnterEvadeMode();
                 Matis->setFaction(35);
