@@ -50,7 +50,7 @@ EndScriptData */
 #define C_YSIDA                 16031
 #define C_ACOLYTE               10399
 
-#define ENCOUNTERS              6
+#define ENCOUNTERS              7
 
 struct instance_stratholme : public ScriptedInstance
 {
@@ -401,6 +401,10 @@ struct instance_stratholme : public ScriptedInstance
                     c->Kill(c,false);
                 SetData(TYPE_PALLID,DONE);
             }
+            break;
+        case TYPE_POSTBOXES:
+            Encounter[6] = data;
+            break;
         }
     }
 
@@ -424,6 +428,8 @@ struct instance_stratholme : public ScriptedInstance
               return Encounter[4];
           case TYPE_BARON:
               return Encounter[5];
+          case TYPE_POSTBOXES:
+              return Encounter[6];
           }
           return 0;
     }

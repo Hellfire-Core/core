@@ -27,6 +27,7 @@
 #define TYPE_RAMSTEIN           5
 #define TYPE_BARON              6
 #define TYPE_GAUNTLET_MOB       7
+#define TYPE_POSTBOXES          8
 
 #define DATA_BARON              10
 #define DATA_YSIDA_TRIGGER      11

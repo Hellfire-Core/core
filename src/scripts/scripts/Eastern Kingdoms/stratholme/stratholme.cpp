@@ -261,6 +261,50 @@ bool ReciveEmote_mobs_spectral_ghostly_citizen(Player *player, Creature *_Creatu
     return true;
 }
 
+bool GOUse_go_stratholme_postbox(Player* plr, GameObject* gob)
+{
+    ScriptedInstance* pInstance = gob->GetInstanceData();
+    if (!pInstance)
+        return true;
+    // data in instance stored as uint32
+    // (2 bits for how many boxes open)
+    // (6 bits for each postbox)
+    // (3 lowest bits as usual, in progress/done)
+
+    uint32 mask;
+    switch (gob->GetEntry())
+    {
+    case 176346: mask = 0x08; break;
+    case 176349: mask = 0x10; break;
+    case 176350: mask = 0x20; break;
+    case 176351: mask = 0x40; break;
+    case 176352: mask = 0x80; break;
+    case 176353: mask = 0x100; break;
+    }
+    uint32 current = pInstance->GetData(TYPE_POSTBOXES);
+    uint8 count = ((current & 0x600) >> 9);
+    if (count == 3 || (current & 0x7) == IN_PROGRESS || (current & 0x7) == DONE || (current & mask))
+        return true; // boss spawned, fighting boss, boss done, this box already open
+    
+    switch (count)
+    {
+    case 0: // first box, spawn some shit
+        break;
+    case 1: // second box, spawn more shit
+        break; 
+    case 2: // third box, get MALOWNED
+        Position pos;
+        plr->GetValidPointInAngle(pos, 10.0f, frand(0, 2 * M_PI), true);
+        gob->SummonCreature(11143, pos.x, pos.y, pos.z, pos.o, TEMPSUMMON_DEAD_DESPAWN, 1200 * IN_MILISECONDS);
+        break;
+    }
+    count++;
+
+    pInstance->SetData(TYPE_POSTBOXES, (count << 9) | (current & 0x1F8));
+
+    return true;
+}
+
 void AddSC_stratholme()
 {
     Script *newscript;
@@ -284,6 +328,11 @@ void AddSC_stratholme()
     newscript->Name = "mobs_spectral_ghostly_citizen";
     newscript->GetAI = &GetAI_mobs_spectral_ghostly_citizen;
     newscript->pReceiveEmote = &ReciveEmote_mobs_spectral_ghostly_citizen;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "go_stratholme_postbox";
+    newscript->pGOUse = &GOUse_go_stratholme_postbox;
     newscript->RegisterSelf();
 }
 

@@ -25,6 +25,7 @@ SDCategory: Stratholme
 EndScriptData */
 
 #include "precompiled.h"
+#include "def_stratholme.h"
 
 //Spell ID to summon this guy is 24627 "Summon Postmaster Malown"
 //He should be spawned along with three other elites once the third postbox has been opened
@@ -39,7 +40,9 @@ EndScriptData */
 
 struct boss_postmaster_malownAI : public ScriptedAI
 {
-    boss_postmaster_malownAI(Creature *c) : ScriptedAI(c) {}
+    boss_postmaster_malownAI(Creature *c) : ScriptedAI(c) { pInstance = c->GetInstanceData(); }
+
+    ScriptedInstance* pInstance;
 
     int32 WailingDead_Timer;
     int32 Backhand_Timer;
@@ -50,6 +53,8 @@ struct boss_postmaster_malownAI : public ScriptedAI
 
     void Reset()
     {
+        if (pInstance)
+            pInstance->SetData(TYPE_POSTBOXES, 0x7F8);//dont allow opening postboxes
         WailingDead_Timer = 19000; //lasts 6 sec
         Backhand_Timer = 8000; //2 sec stun
         CurseOfWeakness_Timer = 20000; //lasts 2 mins
@@ -60,6 +65,14 @@ struct boss_postmaster_malownAI : public ScriptedAI
 
     void EnterCombat(Unit *who)
     {
+        if (pInstance)
+            pInstance->SetData(TYPE_POSTBOXES, IN_PROGRESS);
+    }
+
+    void JustDied(Unit* Killer)
+    {
+        if (pInstance)
+            pInstance->SetData(TYPE_POSTBOXES, DONE);
     }
 
     void UpdateAI(const uint32 diff)
