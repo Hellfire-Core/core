@@ -881,6 +881,7 @@ struct npc_trackerAI : public ScriptedAI
     npc_trackerAI(Creature* creature) : ScriptedAI(creature) {}
 
     uint64 matisguid;
+    bool said;
 
     void Reset()
     {
@@ -891,6 +892,7 @@ struct npc_trackerAI : public ScriptedAI
             me->AI()->AttackStart(Matis);
             matisguid = Matis->GetGUID();
         }
+        said = false;
     }
 
     void Credit()
@@ -918,7 +920,7 @@ struct npc_trackerAI : public ScriptedAI
     {
         if (Creature* Matis = me->GetCreature(matisguid))
         {
-            if ((Matis->GetHealth())*100 / Matis->GetMaxHealth() < 10)
+            if (!said && ((Matis->GetHealth())*100 / Matis->GetMaxHealth() < 10()
             {
                 me->AI()->EnterEvadeMode();
                 Matis->setFaction(35);
@@ -929,6 +931,7 @@ struct npc_trackerAI : public ScriptedAI
                 Credit();
                 Matis->ForcedDespawn(30000);
                 me->ForcedDespawn(35000);
+                said = true;
             }
         }
 

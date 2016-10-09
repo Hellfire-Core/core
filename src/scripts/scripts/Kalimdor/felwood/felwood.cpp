@@ -102,12 +102,6 @@ struct npc_winnas_kittenAI : public FollowerAI
         timer.Reset(1000);
     }
 
-    void IsSummonedBy(Unit* owner)
-    {
-        if (owner->GetTypeId() == TYPEID_PLAYER)
-            StartFollow(owner->ToPlayer());
-    }
-
     void UpdateFollowerAI(uint32 diff)
     {
         if (timer.Expired(diff))
@@ -140,7 +134,8 @@ struct npc_winnas_kittenAI : public FollowerAI
                 case 2: // change
                 {
                     m_creature->UpdateEntry(NPC_SABER);
-                    DoTextEmote("follows %T obediently.", m_creature->GetCharmerOrOwnerPlayerOrPlayerItself());
+                    DoTextEmote("follows obediently.", m_creature->GetCharmerOrOwnerPlayerOrPlayerItself());
+                    StartFollow(m_creature->GetCharmerOrOwnerPlayerOrPlayerItself());
                     m_creature->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
                     timer = 0;
                     status++;
