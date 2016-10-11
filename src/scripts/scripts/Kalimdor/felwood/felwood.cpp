@@ -86,6 +86,7 @@ enum
     QUEST_CORRUPTED_SABERS = 4506,
     NPC_KITTEN = 9937,
     NPC_SABER = 10657,
+    NPC_WINNA = 9996,
     GOB_MOONWELL = 300025,
 };
 
@@ -99,7 +100,8 @@ struct npc_winnas_kittenAI : public FollowerAI
     void Reset()
     {
         status = 0;
-        timer.Reset(1000);
+        if (me->GetEntry() == NPC_KITTEN)
+            timer.Reset(1000);
     }
 
     void UpdateFollowerAI(uint32 diff)
@@ -137,11 +139,21 @@ struct npc_winnas_kittenAI : public FollowerAI
                     DoTextEmote("follows obediently.", m_creature->GetCharmerOrOwnerPlayerOrPlayerItself());
                     StartFollow(m_creature->GetCharmerOrOwnerPlayerOrPlayerItself());
                     m_creature->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
-                    timer = 0;
+                    timer = 1000;
                     status++;
                     break;
                 }
-
+                case 3: // check for quest completion, not blizzlike
+                {
+                    Creature* questgiver = m_creature->GetMap()->GetCreatureById(NPC_WINNA);
+                    if (questgiver && questgiver->IsWithinDist(m_creature, 20.0f))
+                    {
+                        m_creature->GetCharmerOrOwnerPlayerOrPlayerItself()->CompleteQuest(QUEST_CORRUPTED_SABERS);
+                        m_creature->ForcedDespawn(1000);
+                    }
+                    timer = 2000;
+                    break;
+                }
             }
         }
 
@@ -157,24 +169,6 @@ CreatureAI* GetAI_winnas_kitten(Creature* c)
     return new npc_winnas_kittenAI(c);
 }
 
-bool GossipHello_npc_winnas_kitten(Player* plr, Creature* creature)
-{
-    plr->ADD_GOSSIP_ITEM(0, "I want to release the corrupted saber to Winna", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-    plr->SEND_GOSSIP_MENU(creature->GetNpcTextId(), creature->GetGUID());
-    return true;
-}
-
-bool GossipSelect_npc_winnas_kitten(Player* plr, Creature* c, uint32 sender, uint32 action)
-{
-    if (action == GOSSIP_ACTION_INFO_DEF + 1)
-    {
-        plr->CLOSE_GOSSIP_MENU();
-        plr->GroupEventHappens(QUEST_CORRUPTED_SABERS, c);
-        c->ForcedDespawn(100);
-    }
-    return true;
-}
-
 void AddSC_felwood()
 {
     Script *newscript;
@@ -188,8 +182,6 @@ void AddSC_felwood()
     newscript = new Script;
     newscript->Name = "npc_winnas_kitten";
     newscript->GetAI = &GetAI_winnas_kitten;
-    newscript->pGossipHello = &GossipHello_npc_winnas_kitten;
-    newscript->pGossipSelect = &GossipSelect_npc_winnas_kitten;
     newscript->RegisterSelf();
 }
 

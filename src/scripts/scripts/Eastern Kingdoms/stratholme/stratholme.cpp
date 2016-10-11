@@ -300,7 +300,7 @@ bool GOUse_go_stratholme_postbox(Player* plr, GameObject* gob)
     }
     count++;
 
-    pInstance->SetData(TYPE_POSTBOXES, (count << 9) | (current & 0x1F8));
+    pInstance->SetData(TYPE_POSTBOXES, (count << 9) | (current & 0x1F8) | mask);
 
     return true;
 }
