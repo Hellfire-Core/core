@@ -242,6 +242,7 @@ void npc_escortAI::UpdateAI(const uint32 uiDiff)
             {
                 if (DespawnAtEnd)
                 {
+                    SendDebug("EscortAI despawning at far end");
                     if (CanReturnToStart)
                     {
                         float fRetX, fRetY, fRetZ;
@@ -302,7 +303,7 @@ void npc_escortAI::UpdateAI(const uint32 uiDiff)
             if (DespawnAtFar && !IsPlayerOrGroupInRange())
             {
                 debug_log("TSCR: EscortAI failed because player/group was to far away or not found");
-
+                SendDebug("EscortAI escort failed, too far away");
                 if (CanInstantRespawn)
                 {
                     me->setDeathState(JUST_DIED);
@@ -336,6 +337,7 @@ void npc_escortAI::MovementInform(uint32 uiMoveType, uint32 uiPointId)
     if (uiMoveType != POINT_MOTION_TYPE || !HasEscortState(STATE_ESCORT_ESCORTING) || me->isInCombat())
         return;
 
+    SendDebug("EscortAI MovementInform(%u %u), currentwp %u", uiMoveType, uiPointId, CurrentWP->id);
     //Combat start position reached, continue waypoint movement
     if (uiPointId == POINT_LAST_POINT)
     {

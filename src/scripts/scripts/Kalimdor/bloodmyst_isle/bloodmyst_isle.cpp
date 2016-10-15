@@ -345,9 +345,9 @@ struct npc_demolitionist_legosoAI : public npc_escortAI
                 case 14:
                     DoScriptText(TEXTS_START - 18, m_creature, GetPlayerForEscort());
                     timer = 0;
-                    m_creature->ForcedDespawn(1000);
                     if (Player* plr = GetPlayerForEscort())
                         plr->GroupEventHappens(QUEST_ENDING_THEIR_WORLD, m_creature);
+                    m_creature->ForcedDespawn(1000);
                     break;
                 }
 
@@ -373,7 +373,10 @@ bool QuestAccept_demolitionist_legoso(Player* plr, Creature* creature, const Que
     {
         creature->GetMotionMaster()->Clear();
         if (npc_escortAI* pEscortAI = CAST_AI(npc_demolitionist_legosoAI, creature->AI()))
+        {
             pEscortAI->Start(true, true, plr->GetGUID(), quest);
+            pEscortAI->SetDespawnAtEnd(false);
+        }
         creature->SetSpeed(MOVE_RUN, 0.9);
     }
     return true;
