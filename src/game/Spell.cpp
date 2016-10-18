@@ -5822,18 +5822,22 @@ Unit* Spell::SelectMagnetTarget() // Grounding totem | Intervene
 
 void Spell::CheckForReflects()
 {
+    if (SpellMgr::IsPositiveSpell(GetSpellEntry()->Id))
+        return;
+
     for (std::list<TargetInfo>::iterator ihit = m_UniqueTargetInfo.begin(); ihit != m_UniqueTargetInfo.end(); ++ihit)
     {
         if (ihit->deleted)
             continue;
 
-        if (ihit->missCondition != SPELL_MISS_NONE)        // Add only miss
+        if (ihit->missCondition != SPELL_MISS_NONE)
             continue;
 
         Unit* itrtarget = m_caster->GetUnit(ihit->targetGUID);
 
         if (!itrtarget)
             continue;
+
         ihit->missCondition = itrtarget->SpellReflectCheck(GetSpellEntry());
         if (ihit->missCondition == SPELL_MISS_NONE)
             continue;
