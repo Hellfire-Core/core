@@ -248,14 +248,14 @@ void Database::Ping()
 {
     {
         SqlConnection::Lock guard(m_pAsyncConn);
-        if (!guard->Ping())
+        if (guard->Ping())
             abort();
     }
 
     for (int i = 0; i < m_nQueryConnPoolSize; ++i)
     {
         SqlConnection::Lock guard(m_pQueryConnections[i]);
-        if (!guard->Ping())
+        if (guard->Ping())
             abort();
     }
 }
