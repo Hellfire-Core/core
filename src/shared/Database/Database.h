@@ -214,7 +214,7 @@ class Database
         bool CheckMinLogTime(uint32 time);
 
         //function to ping database connections
-        virtual void Ping();
+        void Ping();
 
         //set this to allow async transactions
         //you should call it explicitly after your server successfully started up

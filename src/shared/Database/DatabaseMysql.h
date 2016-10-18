@@ -108,8 +108,6 @@ class DatabaseMysql : public Database
         void ThreadStart();
         // must be call before finish thread run
         void ThreadEnd();
-
-        void Ping();
     protected:
         virtual SqlConnection * CreateConnection();
 
