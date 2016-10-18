@@ -73,6 +73,12 @@ MySQLConnection::~MySQLConnection()
     mysql_close(mMysql);
 }
 
+bool MySQLConnection::Ping()
+{
+    return mysql_ping(mMysql);
+}
+
+
 bool MySQLConnection::Initialize(const char *infoString)
 {
     MYSQL * mysqlInit = mysql_init(NULL);

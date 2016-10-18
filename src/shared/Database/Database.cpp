@@ -246,18 +246,16 @@ bool Database::CheckMinLogTime(uint32 time)
 
 void Database::Ping()
 {
-    const char * sql = "SELECT 1";
-
     {
         SqlConnection::Lock guard(m_pAsyncConn);
-        if (!guard->Query(sql))
+        if (!guard->Ping())
             abort();
     }
 
     for (int i = 0; i < m_nQueryConnPoolSize; ++i)
     {
         SqlConnection::Lock guard(m_pQueryConnections[i]);
-        if (!guard->Query(sql))
+        if (!guard->Ping())
             abort();
     }
 }

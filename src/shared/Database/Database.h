@@ -60,7 +60,7 @@ class SqlConnection
         virtual bool CommitTransaction() { return true; }
         // can't rollback without transaction support
         virtual bool RollbackTransaction() { return true; }
-
+        virtual bool Ping() {};
         //methods to work with prepared statements
         bool ExecuteStmt(int nIndex, const SqlStmtParameters& id);
 
@@ -214,7 +214,7 @@ class Database
         bool CheckMinLogTime(uint32 time);
 
         //function to ping database connections
-        void Ping();
+        virtual void Ping();
 
         //set this to allow async transactions
         //you should call it explicitly after your server successfully started up
