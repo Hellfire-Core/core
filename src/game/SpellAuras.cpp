@@ -129,7 +129,7 @@ pAuraHandler AuraHandler[TOTAL_AURAS]=
     &Aura::HandleModSpellCritChanceShool,                   // 71 SPELL_AURA_MOD_SPELL_CRIT_CHANCE_SCHOOL
     &Aura::HandleModPowerCostPCT,                           // 72 SPELL_AURA_MOD_POWER_COST_SCHOOL_PCT
     &Aura::HandleModPowerCost,                              // 73 SPELL_AURA_MOD_POWER_COST_SCHOOL
-    &Aura::HandleAuraReflectSpellSchool,                    // 74 SPELL_AURA_REFLECT_SPELLS_SCHOOL  implemented in Unit::SpellHitResult
+    &Aura::HandleAuraReflectSpellSchool,                    // 74 SPELL_AURA_REFLECT_SPELLS_SCHOOL  implemented in Unit::SpellReflectCheck
     &Aura::HandleNoImmediateEffect,                         // 75 SPELL_AURA_MOD_LANGUAGE
     &Aura::HandleFarSight,                                  // 76 SPELL_AURA_FAR_SIGHT
     &Aura::HandleModMechanicImmunity,                       // 77 SPELL_AURA_MECHANIC_IMMUNITY
@@ -6880,10 +6880,6 @@ void Aura::PeriodicTick()
             if (!pCaster)
                 return;
 
-            // tick resisting probably in wotlk
-            //if (GetSpellProto()->Effect[GetEffIndex()]==SPELL_EFFECT_PERSISTENT_AREA_AURA && pCaster->SpellHitResult(m_target,GetSpellProto(),false)!=SPELL_MISS_NONE)
-            //    return;
-
             // Check for immune (not use charges)
             if (m_target->IsImmunedToDamage(SpellMgr::GetSpellSchoolMask(GetSpellProto())))
                 return;
@@ -7119,10 +7115,6 @@ void Aura::PeriodicTick()
             if (!pCaster->isAlive())
                 return;
 
-            // tick resisting introduced probably in wotlk
-            //if (GetSpellProto()->Effect[GetEffIndex()]==SPELL_EFFECT_PERSISTENT_AREA_AURA && pCaster->SpellHitResult(m_target,GetSpellProto(),false) != SPELL_MISS_NONE)
-            //    return;
-
             // Check for immune (not use charges)
             if (m_target->IsImmunedToDamage(SpellMgr::GetSpellSchoolMask(GetSpellProto())))
                 return;
@@ -7337,10 +7329,6 @@ void Aura::PeriodicTick()
 
             if (!pCaster->isAlive())
                 return;
-
-            // tick resisting introduced probably in wotlk
-            //if (GetSpellProto()->Effect[GetEffIndex()]==SPELL_EFFECT_PERSISTENT_AREA_AURA && pCaster->SpellHitResult(m_target,GetSpellProto(),false)!=SPELL_MISS_NONE)
-            //    return;
 
             // Check for immune (not use charges)
             if (m_target->IsImmunedToDamage(SpellMgr::GetSpellSchoolMask(GetSpellProto())))

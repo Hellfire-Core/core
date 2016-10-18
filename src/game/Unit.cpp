@@ -1755,7 +1755,7 @@ void Unit::DealMeleeDamage(MeleeDamageLog *damageInfo, bool durabilityLoss)
                if (!spellProto)
                    continue;
 
-               SpellMissInfo missInfo = pVictim->SpellHitResult(this, spellProto, false, true);
+               SpellMissInfo missInfo = pVictim->SpellHitResult(this, spellProto, true);
                if(missInfo != SPELL_MISS_NONE)
                {
                    pVictim->SendSpellMiss(this, spellProto->Id, missInfo);
@@ -2955,11 +2955,11 @@ SpellMissInfo Unit::MagicSpellHitResult(Unit *pVictim, SpellEntry const *spell)
 //   Parry
 // For spells
 //   Resist
-SpellMissInfo Unit::SpellHitResult(Unit *pVictim, SpellEntry const *spell, bool CanReflect, bool canMiss)
+SpellMissInfo Unit::SpellHitResult(Unit *pVictim, SpellEntry const *spell, bool canMiss)
 {
     if (ToCreature() && ToCreature()->isTotem())
         if (Unit *owner = GetOwner())
-            return owner->SpellHitResult(pVictim, spell, CanReflect, canMiss);
+            return owner->SpellHitResult(pVictim, spell, canMiss);
 
     // Return evade for units in evade mode
     if (pVictim->GetTypeId()==TYPEID_UNIT && ((Creature*)pVictim)->IsInEvadeMode() && this != pVictim)
@@ -2991,23 +2991,6 @@ SpellMissInfo Unit::SpellHitResult(Unit *pVictim, SpellEntry const *spell, bool 
     if (this == pVictim)
         return SPELL_MISS_NONE;
 
-    // Try victim reflect spell
-    if (CanReflect)
-    {
-        int32 reflectchance = pVictim->GetTotalAuraModifier(SPELL_AURA_REFLECT_SPELLS);
-        Unit::AuraList const& mReflectSpellsSchool = pVictim->GetAurasByType(SPELL_AURA_REFLECT_SPELLS_SCHOOL);
-        for (Unit::AuraList::const_iterator i = mReflectSpellsSchool.begin(); i != mReflectSpellsSchool.end(); ++i)
-            if ((*i)->GetModifier()->m_miscvalue & SpellMgr::GetSpellSchoolMask(spell))
-                reflectchance += (*i)->GetModifierValue();
-
-        if (reflectchance > 0 && roll_chance_i(reflectchance))
-        {
-            // Start triggers for remove charges if need (trigger only for victim, and mark as active spell)
-            //ProcDamageAndSpell(pVictim, PROC_FLAG_NONE, PROC_FLAG_TAKEN_NEGATIVE_SPELL_HIT, PROC_EX_REFLECT, 1, BASE_ATTACK, spell);
-            return SPELL_MISS_REFLECT;
-        }
-    }
-
     switch (spell->DmgClass)
     {
         case SPELL_DAMAGE_CLASS_RANGED:
@@ -3022,6 +3005,21 @@ SpellMissInfo Unit::SpellHitResult(Unit *pVictim, SpellEntry const *spell, bool 
             else
                 return MagicSpellHitResult(pVictim, spell);
         }
+    }
+    return SPELL_MISS_NONE;
+}
+
+SpellMissInfo Unit::SpellReflectCheck(SpellEntry const * spell)
+{
+    int32 reflectchance = GetTotalAuraModifier(SPELL_AURA_REFLECT_SPELLS);
+    Unit::AuraList const& mReflectSpellsSchool = GetAurasByType(SPELL_AURA_REFLECT_SPELLS_SCHOOL);
+    for (Unit::AuraList::const_iterator i = mReflectSpellsSchool.begin(); i != mReflectSpellsSchool.end(); ++i)
+        if ((*i)->GetModifier()->m_miscvalue & SpellMgr::GetSpellSchoolMask(spell))
+            reflectchance += (*i)->GetModifierValue();
+
+    if (reflectchance > 0 && roll_chance_i(reflectchance))
+    {
+        return SPELL_MISS_REFLECT;
     }
     return SPELL_MISS_NONE;
 }
@@ -11286,7 +11284,7 @@ void Unit::ProcDamageAndSpellfor (bool isVictim, Unit * pTarget, uint32 procFlag
             case SPELL_AURA_PROC_TRIGGER_DAMAGE:
             {
                 sLog.outDebug("ProcDamageAndSpell: doing %u damage from spell id %u (triggered by %s aura of spell %u)", auraModifier->m_amount, spellInfo->Id, (isVictim?"a victim's":"an attacker's"), triggeredByAura->GetId());
-                SpellMissInfo missInfo = SpellHitResult(pTarget, spellInfo, false, true);
+                SpellMissInfo missInfo = SpellHitResult(pTarget, spellInfo, true);
                 if (missInfo != SPELL_MISS_NONE) // yes it can miss, this will also prevent damaging immune targets
                 {
                     SendSpellMiss(pTarget, spellInfo->Id, missInfo);

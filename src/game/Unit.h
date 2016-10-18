@@ -1021,7 +1021,8 @@ class HELLGROUND_IMPORT_EXPORT Unit : public WorldObject
         float MeleeSpellMissChance(const Unit *pVictim, WeaponAttackType attType, int32 skillDiff, uint32 spellId) const;
         SpellMissInfo MeleeSpellHitResult(Unit *pVictim, SpellEntry const *spell, bool cMiss = true);
         SpellMissInfo MagicSpellHitResult(Unit *pVictim, SpellEntry const *spell);
-        SpellMissInfo SpellHitResult(Unit *pVictim, SpellEntry const *spell, bool canReflect = false, bool canMiss = true);
+        SpellMissInfo SpellHitResult(Unit *pVictim, SpellEntry const *spell, bool canMiss = true);
+        SpellMissInfo SpellReflectCheck(SpellEntry const* spell);
 
         float GetUnitDodgeChance()    const;
         float GetUnitParryChance()    const;

@@ -401,6 +401,7 @@ class Spell
         void SetTargetMap(uint32 i, uint32 cur);
 
         Unit* SelectMagnetTarget();
+        void CheckForReflects(); // reflects are checked in moment spell finishes
 
         void HandleHitTriggerAura();
         bool CheckTarget(Unit* target, uint32 eff);

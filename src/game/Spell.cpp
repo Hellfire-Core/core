@@ -738,7 +738,7 @@ void Spell::AddUnitTarget(Unit* pVictim, uint32 effIndex, bool redirected)
     if (m_originalCaster)
     {
         bool canMiss = m_triggeredByAuraSpell || !IsTriggeredSpell() || IsAutoShootSpell();
-        target.missCondition = m_originalCaster->SpellHitResult(pVictim, GetSpellEntry(), m_canReflect, canMiss);
+        target.missCondition = m_originalCaster->SpellHitResult(pVictim, GetSpellEntry(), canMiss);
         if (m_skipCheck && target.missCondition != SPELL_MISS_IMMUNE)
             target.missCondition = SPELL_MISS_NONE;
     }
@@ -774,20 +774,7 @@ void Spell::AddUnitTarget(Unit* pVictim, uint32 effIndex, bool redirected)
     else
         target.timeDelay = 0LL;
 
-    // If target reflect spell back to caster
-    if (target.missCondition == SPELL_MISS_REFLECT)
-    {
-        // Calculate reflected spell result on caster
-        target.reflectResult = m_caster->SpellHitResult(m_caster, GetSpellEntry(), m_canReflect);
-
-        if (target.reflectResult == SPELL_MISS_REFLECT)     // Impossible reflect again, so simply deflect spell
-            target.reflectResult = SPELL_MISS_PARRY;
-
-        // Increase time interval for reflected spells by 1.5
-        target.timeDelay += target.timeDelay >> 1;
-    }
-    else
-        target.reflectResult = SPELL_MISS_NONE;
+    target.reflectResult = SPELL_MISS_NONE;
 
     // Add target to list
     m_UniqueTargetInfo.push_back(target);
@@ -2615,6 +2602,10 @@ void Spell::cast(bool skipCheck)
     // do NOT fill again spell target map if there are already some targets defined
     if (m_UniqueTargetInfo.empty())
         FillTargetMap();
+
+    // check for reflects
+    if (m_canReflect)
+        CheckForReflects();
 
     if (m_spellState == SPELL_STATE_FINISHED)                // stop cast if spell marked as finish somewhere in Take*/FillTargetMap
     {
@@ -5827,6 +5818,37 @@ Unit* Spell::SelectMagnetTarget() // Grounding totem | Intervene
         }
     }
     return target;
+}
+
+void Spell::CheckForReflects()
+{
+    for (std::list<TargetInfo>::iterator ihit = m_UniqueTargetInfo.begin(); ihit != m_UniqueTargetInfo.end(); ++ihit)
+    {
+        if (ihit->deleted)
+            continue;
+
+        if (ihit->missCondition != SPELL_MISS_NONE)        // Add only miss
+            continue;
+
+        Unit* itrtarget = m_caster->GetUnit(ihit->targetGUID);
+
+        if (!itrtarget)
+            continue;
+        ihit->missCondition = itrtarget->SpellReflectCheck(GetSpellEntry());
+        if (ihit->missCondition == SPELL_MISS_NONE)
+            continue;
+
+        m_countOfHit--;
+        m_countOfMiss++;
+
+        ihit->reflectResult = m_caster->SpellHitResult(m_caster, GetSpellEntry());
+
+        if (ihit->reflectResult == SPELL_MISS_REFLECT)     // Impossible reflect again, so simply deflect spell
+            ihit->reflectResult = SPELL_MISS_PARRY;
+
+        // Increase time interval for reflected spells by 1.5
+        ihit->timeDelay += ihit->timeDelay >> 1;
+    }
 }
 
 bool Spell::IsNeedSendToClient() const
