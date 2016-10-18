@@ -347,7 +347,8 @@ struct npc_demolitionist_legosoAI : public npc_escortAI
                     timer = 0;
                     if (Player* plr = GetPlayerForEscort())
                         plr->GroupEventHappens(QUEST_ENDING_THEIR_WORLD, m_creature);
-                    m_creature->ForcedDespawn(1000);
+                    m_creature->setDeathState(JUST_DIED);
+                    m_creature->Respawn();
                     break;
                 }
 

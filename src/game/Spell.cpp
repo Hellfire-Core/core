@@ -4973,9 +4973,12 @@ bool Spell::CanAutoCast(Unit* target)
     // dash & dive dont use when near or not in combat
     if (GetSpellEntry()->Effect[0] == SPELL_EFFECT_APPLY_AURA &&
         GetSpellEntry()->EffectApplyAuraName[0] == SPELL_AURA_MOD_INCREASE_SPEED &&
-        GetSpellEntry()->SpellVisual == 2276 && (m_caster->IsWithinMeleeRange(target) || !m_caster->isInCombat()))
-        return false;
-
+        GetSpellEntry()->SpellVisual == 2276)
+    {
+        if (m_caster->IsWithinMeleeRange(target) || !m_caster->isInCombat())
+            return false;
+        m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "can cast dash/dive", NULL);
+    }
     SpellCastResult result = CheckPetCast(target);
 
     if (result == SPELL_CAST_OK || result == SPELL_FAILED_UNIT_NOT_INFRONT)
