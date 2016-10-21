@@ -4968,7 +4968,6 @@ bool Spell::CanAutoCast(Unit* target)
     {
         if (!m_caster->getVictim() || m_caster->IsWithinMeleeRange(m_caster->getVictim()) || !m_caster->isInCombat())
             return false;
-        m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "can cast dash/dive %u target %u", NULL, (uint32)CheckPetCast(target), target->GetGUIDLow());
     }
     SpellCastResult result = CheckPetCast(target);
 

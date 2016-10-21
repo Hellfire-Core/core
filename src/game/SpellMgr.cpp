@@ -3530,12 +3530,6 @@ void SpellMgr::LoadSpellCustomAttr()
             case 40334:
                 spellInfo->procFlags = PROC_FLAG_SUCCESSFUL_MELEE_HIT;
                 break;
-            case 30015: // Summon Naias cooldown
-                spellInfo->RecoveryTime = 300000;
-                break;
-            case 35413: // Summon Goliathon cooldown
-                spellInfo->RecoveryTime = 300000;
-                break;
             case 13278: // Gnomish Death Ray
                 spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_TARGET_ENEMY;
                 break;
@@ -3825,6 +3819,7 @@ void SpellMgr::LoadCustomSpellCooldowns(SpellEntry* spellInfo)
             spellInfo->RecoveryTime = 8000;
             break;
         // 10 sec cooldown
+        case 21885:     // heal vylestem vine
         case 44518:     // Immolate
         case 46042:     // Immolate
         case 44479:     // holy Light
@@ -3856,10 +3851,10 @@ void SpellMgr::LoadCustomSpellCooldowns(SpellEntry* spellInfo)
             spellInfo->RecoveryTime = 24000;
             break;
         // 30 sec cooldown
-        case 44475:
+        case 44475:     // magic dampening field
             spellInfo->RecoveryTime = 30000;
             break;
-        // 3 min cooldown
+        // 5 min cooldown
         case 30015: // Summon Naias
         case 35413: // Summon Goliathon
             spellInfo->RecoveryTime = 300000;
