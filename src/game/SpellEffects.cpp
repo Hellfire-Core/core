@@ -1823,6 +1823,7 @@ void Spell::EffectDummy(uint32 i)
                 }
                 case 42339: // water bucket lands (hallow's end event)
                 {
+                    m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "Bucket lands!", NULL);
                     struct checker
                     {
                         checker(float x, float y, float z) : mx(x), my(y), mz(z) {};
@@ -1841,16 +1842,21 @@ void Spell::EffectDummy(uint32 i)
                     Hellground::UnitListSearcher<checker> searcher(list, check);
                     Cell::VisitWorldObjects(m_targets.m_destX, m_targets.m_destY, m_caster->GetMap(), searcher, 5.0f);
                     if (list.empty())
+                    {
+                        m_caster->CastSpell(m_targets.m_destX, m_targets.m_destY, m_targets.m_destZ, 42348, true); // splash!
                         return;
+                    }
 
                     list.sort(Hellground::ObjectDistanceOrder(m_caster));
                     if (list.front()->GetTypeId() == TYPEID_PLAYER && list.front() != m_caster)
                     {
                         list.front()->CastSpell(list.front(), 42349, true);
+                        // no splash :<
                     }
                     else if (list.front()->GetTypeId() == TYPEID_UNIT)
                     {
                         m_caster->Kill(list.front());
+                        m_caster->CastSpell(m_targets.m_destX, m_targets.m_destY, m_targets.m_destZ, 42348, true); // splash!
                     }
                     break;
                 }

@@ -31,8 +31,6 @@ void IdleMovementGenerator::Reset(Unit& /*owner*/)
 void RotateMovementGenerator::Interrupt(Unit& unit)
 {
     unit.clearUnitState(UNIT_STAT_ROTATING);
-    if (unit.GetEntry() == 21217)
-        unit.SendCombatStats(1 << COMBAT_STATS_CRASHTEST, "Bang!", NULL);
 }
 
 void RotateMovementGenerator::Initialize(Unit& owner)

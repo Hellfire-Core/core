@@ -3389,6 +3389,26 @@ bool GossipSelect_npc_arenaready(Player* player, Creature* _Creature, uint32 sen
     return true;
 }
 
+struct npc_headless_horseman_fireAI : public CreatureAI
+{
+    npc_headless_horseman_fireAI(Creature* c) : CreatureAI(c) {}
+    void Reset()
+    { // cast visual auras
+        m_creature->CastSpell(m_creature, 42971, true);
+        m_creature->CastSpell(m_creature, 43184, true);
+    }
+    
+    void MoveInLineOfSight(Unit *) {}
+    void AttackStart(Unit *) {}
+    void UpdateAI(const uint32) {}
+    void EnterEvadeMode() { Reset(); }
+    void OnCharmed(bool apply) {}
+};
+
+CreatureAI* GetAI_npc_headless_horseman_fire(Creature* c)
+{
+    return new npc_headless_horseman_fireAI(c);
+}
 
 void AddSC_npcs_special()
 {
@@ -3620,4 +3640,10 @@ void AddSC_npcs_special()
     newscript->Name = "npc_arcanite_dragonling";
     newscript->GetAI = &GetAI_npc_arcanite_dragonling;
     newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_headless_horseman_fire";
+    newscript->GetAI = &GetAI_npc_headless_horseman_fire;
+    newscript->RegisterSelf();
+    
 }

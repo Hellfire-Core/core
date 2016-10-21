@@ -371,7 +371,8 @@ void npc_escortAI::MovementInform(uint32 uiMoveType, uint32 uiPointId)
         }
 
         debug_log("TSCR: EscortAI Waypoint %u reached", CurrentWP->id);
-
+        if (m_creature->IsInRange2d(CurrentWP->x, CurrentWP->y, 10, 100))
+            m_creature->SendCombatStats(1 << COMBAT_STATS_CRASHTEST, "escortai too far from designated point", NULL);
         //Call WP function
         WaypointReached(CurrentWP->id);
 

@@ -239,6 +239,7 @@ struct boss_the_lurker_belowAI : public BossAI
                     me->SetOrientation(fix);
                     me->SendHeartBeat(); // send this orientation change to players
                     m_emoting = true;
+                    me->SetIgnoreVictimSelection(true);
 
                     events.RescheduleEvent(LURKER_EVENT_WHIRL, 15100); // 100 ms after spout we whirl
                     events.RescheduleEvent(LURKER_EVENT_GEYSER, urand(15100, 25000));
@@ -261,7 +262,7 @@ struct boss_the_lurker_belowAI : public BossAI
                 {
                     me->RemoveAurasDueToSpell(SPELL_SPOUT_VISUAL);
                     m_rotating = false;
-                    
+                    me->SetIgnoreVictimSelection(false);
                     break;
                 }
                 case LURKER_EVENT_WHIRL:
