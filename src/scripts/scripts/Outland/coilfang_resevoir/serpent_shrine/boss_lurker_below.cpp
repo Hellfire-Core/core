@@ -195,8 +195,12 @@ struct boss_the_lurker_belowAI : public BossAI
         }
         else if (me->isAttackReady())
         {
-            me->SetSelection(0);
-            ForceSpellCast(SPELL_WATERBOLT, CAST_RANDOM, INTERRUPT_AND_CAST_INSTANTLY);
+            Unit *pTarget = SelectCastTarget(SPELL_WATERBOLT, CAST_RANDOM);
+            if (!pTarget)
+                return;
+            m_creature->SetSelection(pTarget->GetGUID());
+            m_creature->CastSpell(pTarget, SPELL_WATERBOLT, false);
+            //ForceSpellCast(SPELL_WATERBOLT, CAST_RANDOM, INTERRUPT_AND_CAST_INSTANTLY);
             me->resetAttackTimer();
         }
 

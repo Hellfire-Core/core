@@ -1823,7 +1823,7 @@ void Spell::EffectDummy(uint32 i)
                 }
                 case 42339: // water bucket lands (hallow's end event)
                 {
-                    m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "Bucket lands!", NULL);
+                    m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "Bucket lands! %f %f %f", NULL, m_targets.m_destX, m_targets.m_destY, m_targets.m_destZ);
                     struct checker
                     {
                         checker(float x, float y, float z) : mx(x), my(y), mz(z) {};
@@ -1843,6 +1843,7 @@ void Spell::EffectDummy(uint32 i)
                     Cell::VisitWorldObjects(m_targets.m_destX, m_targets.m_destY, m_caster->GetMap(), searcher, 5.0f);
                     if (list.empty())
                     {
+                        m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "list empty", NULL);
                         m_caster->CastSpell(m_targets.m_destX, m_targets.m_destY, m_targets.m_destZ, 42348, true); // splash!
                         return;
                     }
@@ -1850,13 +1851,19 @@ void Spell::EffectDummy(uint32 i)
                     list.sort(Hellground::ObjectDistanceOrder(m_caster));
                     if (list.front()->GetTypeId() == TYPEID_PLAYER && list.front() != m_caster)
                     {
+                        m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "found player", NULL);
                         list.front()->CastSpell(list.front(), 42349, true);
                         // no splash :<
                     }
                     else if (list.front()->GetTypeId() == TYPEID_UNIT)
                     {
+                        m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "found npc", NULL);
                         m_caster->Kill(list.front());
                         m_caster->CastSpell(m_targets.m_destX, m_targets.m_destY, m_targets.m_destZ, 42348, true); // splash!
+                    }
+                    else
+                    {
+                        m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "else", NULL);
                     }
                     break;
                 }
