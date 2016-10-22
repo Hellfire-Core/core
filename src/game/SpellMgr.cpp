@@ -2998,6 +2998,9 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 42338: // raptor bait, target quest credit
                     spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_NEARBY_ENTRY;
                     break;
+                case 42339: // water bucket throw
+                    spellInfo->EffectImplicitTargetA[0] = TARGET_DEST_DEST;
+                    break;
                 }
                 if (spellInfo->SpellIconID == 184 && spellInfo->Attributes == 4259840)
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
