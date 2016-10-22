@@ -124,7 +124,7 @@ struct boss_the_lurker_belowAI : public BossAI
             return;
 
         if (m_creature->Attack(pWho, true))
-            DoStartNoMovement(pWho);
+            {} //DoStartNoMovement(pWho);
     }
 
     void MoveInLineOfSight(Unit *pWho)

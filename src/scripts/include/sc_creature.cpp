@@ -182,11 +182,11 @@ void ScriptedAI::DoStartNoMovement(Unit* pVictim, movementCheckType type)
 
     switch(type)
     {
-        case 1:
+        case CHECK_TYPE_CASTER:
             me->SetWalk(false);
             casterTimer = 2000;
             break;
-        case 2:
+        case CHECK_TYPE_SHOOTER:
             me->SetWalk(false);
             casterTimer = 3000;
             break;
