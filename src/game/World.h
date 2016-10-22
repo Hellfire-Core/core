@@ -776,7 +776,7 @@ class HELLGROUND_EXPORT World
         void KickAll();
         void KickAllWithoutPermissions(uint64 perms);
         BanReturn BanAccount(BanMode mode, std::string nameIPOrMail, std::string duration, std::string reason, std::string author);
-        bool RemoveBanAccount(BanMode mode, std::string nameIPOrMail);
+        bool RemoveBanAccount(BanMode mode, std::string nameIPOrMail, uint32 unbanner);
 
         uint32 IncreaseScheduledScriptsCount() { return (uint32)++m_scheduledScripts; }
         uint32 DecreaseScheduledScriptCount() { return (uint32)--m_scheduledScripts; }

@@ -5352,7 +5352,7 @@ bool ChatHandler::HandleUnBanHelper(BanMode mode, const char* args)
     }
 
 
-    if (sWorld.RemoveBanAccount(mode,nameIPOrMail))
+    if (sWorld.RemoveBanAccount(mode, nameIPOrMail, m_session ? m_session->GetAccountId() : 0))
         PSendSysMessage(LANG_UNBAN_UNBANNED,nameIPOrMail.c_str());
     else
         PSendSysMessage(LANG_UNBAN_ERROR,nameIPOrMail.c_str());

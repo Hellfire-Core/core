@@ -2307,13 +2307,13 @@ BanReturn World::BanAccount(BanMode mode, std::string nameIPOrMail, std::string 
 }
 
 /// Remove a ban from an account or IP address
-bool World::RemoveBanAccount(BanMode mode, std::string nameIPOrMail)
+bool World::RemoveBanAccount(BanMode mode, std::string nameIPOrMail, uint32 unbanner)
 {
     switch (mode)
     {
         case BAN_IP:
             AccountsDatabase.escape_string(nameIPOrMail);
-            AccountsDatabase.PExecute("UPDATE ip_banned set active = 0 WHERE ip = '%s'",nameIPOrMail.c_str());
+            AccountsDatabase.PExecute("UPDATE ip_banned SET active = 0, reason = CONCAT(reason, ' UNBANNED: ', %u, ' ', NOW()) WHERE ip = '%s' AND active = 1", unbanner, nameIPOrMail.c_str());
             break;
         case BAN_EMAIL:
             AccountsDatabase.escape_string(nameIPOrMail);
@@ -2331,7 +2331,8 @@ bool World::RemoveBanAccount(BanMode mode, std::string nameIPOrMail)
                 return false;
 
             //NO SQL injection as account is uint32
-            AccountsDatabase.PExecute("UPDATE account_punishment SET active = '0' WHERE account_id = '%u' AND punishment_type_id = '%u'", account, PUNISHMENT_BAN);
+            AccountsDatabase.PExecute("UPDATE account_punishment SET active = 0, reason = CONCAT(reason, ' UNBANNED: ', %u, ' ', NOW()) "
+                "WHERE account_id = '%u' AND punishment_type_id = '%u' AND active = 1", unbanner, account, PUNISHMENT_BAN);
 
             break;
     }
