@@ -3440,10 +3440,17 @@ struct npc_headless_horseman_matronAI : public CreatureAI
         {
             if (time(NULL) > startEvent)
             {
-                struct {
-                    void Visit(WorldObject* u)
-                    { if (u->GetTypeId() == TYPEID_UNIT && u->GetEntry() == NPC_HEADLESS_FIRE) u->ToCreature()->Respawn(); }
-                } worker;
+                struct firerespawner{
+                    void operator()(Creature* u) const
+                    {
+                        if (u->GetEntry() == NPC_HEADLESS_FIRE)
+                            u->Respawn();
+                     }
+                    void operator()(GameObject* u) const {}
+                    void operator()(WorldObject*) const {}
+                    void operator()(Corpse*) const {}
+                } resp;
+                Hellground::ObjectWorker<Creature, firerespawner> worker(resp);
                 Cell::VisitGridObjects(m_creature, worker, 100.0f);
                 burning.Reset(600000); //10 minutes
                 startEvent += 3600; // next time in hour
