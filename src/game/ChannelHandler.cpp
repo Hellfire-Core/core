@@ -45,7 +45,7 @@ void WorldSession::HandleChannelJoin(WorldPacket& recvPacket)
         channelname = "Trade";
     
     if (ChannelMgr* cMgr = channelMgr(_player->GetTeam()))
-        if (Channel *chn = cMgr->GetJoinChannel(channelname, 0))
+        if (Channel *chn = cMgr->GetJoinChannel(channelname))
             chn->Join(_player->GetGUID(), pass.c_str());
 }
 

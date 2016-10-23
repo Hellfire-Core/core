@@ -1990,6 +1990,14 @@ bool SpellMgr::IsSpecialNoStackCase(SpellEntry const *spellInfo_1, SpellEntry co
         }
     }
 
+    if (spellInfo_1->Id == 46302) // kiru song of victory
+    {
+        if (spellInfo_2->SpellFamilyName == SPELLFAMILY_PRIEST && spellInfo_2->SpellFamilyFlags & 8)// priest stamina
+            return true;
+        if (spellInfo_2->SpellFamilyName == SPELLFAMILY_MAGE && spellInfo_2->SpellFamilyFlags & 1024)// mage intelect
+            return true;
+    }
+
     // Scrolls no stack case
     if (spellInfo_1->AttributesCu & SPELL_ATTR_CU_NO_SCROLL_STACK && spellInfo_2->AttributesCu & SPELL_ATTR_CU_NO_SCROLL_STACK)
     {
