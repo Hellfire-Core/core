@@ -3441,7 +3441,7 @@ struct npc_headless_horseman_matronAI : public CreatureAI
             if (time(NULL) > startEvent)
             {
                 struct {
-                    void operator()(WorldObject* u)
+                    void Visit(WorldObject* u)
                     { if (u->GetTypeId() == TYPEID_UNIT && u->GetEntry() == NPC_HEADLESS_FIRE) u->ToCreature()->Respawn(); }
                 } worker;
                 Cell::VisitGridObjects(m_creature, worker, 100.0f);
