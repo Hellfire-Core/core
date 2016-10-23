@@ -1589,7 +1589,7 @@ class HELLGROUND_EXPORT Player : public Unit
         void UpdatePvpTitles();
         void UpdateBgTitle();
 
-        void UpdateZoneDependentAuras(uint32 zone_id);    // zones
+        void UpdateZoneDependentAuras(uint32 oldZone, uint32 zone_id);    // zones
         void UpdateAreaDependentAuras(uint32 area_id);    // subzones
 
         void UpdateAfkReport(time_t currTime);

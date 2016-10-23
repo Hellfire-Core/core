@@ -895,6 +895,7 @@ enum SpellCastResult
     SPELL_FAILED_INT_AURA_TICK                  = 0xB8,
     SPELL_FAILED_INT_TRUE_INTERRUPT             = 0xB9,
     SPELL_FAILED_INT_AURA_REMOVED               = 0xBA,
+    SPELL_FAILED_INT_CASTER_JUMPED              = 0xBB,
     SPELL_FAILED_DEBUG_END                      = 0xC0,
     SPELL_CAST_OK                               = 0xFF      //custom value, don't must be send to client
 };

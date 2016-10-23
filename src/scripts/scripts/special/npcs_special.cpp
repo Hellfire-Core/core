@@ -3389,6 +3389,8 @@ bool GossipSelect_npc_arenaready(Player* player, Creature* _Creature, uint32 sen
     return true;
 }
 
+#define NPC_HEADLESS_FIRE 23537
+
 struct npc_headless_horseman_fireAI : public CreatureAI
 {
     npc_headless_horseman_fireAI(Creature* c) : CreatureAI(c) {}
@@ -3412,6 +3414,68 @@ struct npc_headless_horseman_fireAI : public CreatureAI
 CreatureAI* GetAI_npc_headless_horseman_fire(Creature* c)
 {
     return new npc_headless_horseman_fireAI(c);
+}
+
+struct npc_headless_horseman_matronAI : public CreatureAI
+{
+    npc_headless_horseman_matronAI(Creature* c) : CreatureAI(c)
+    {
+        startEvent = time(NULL) + urand(600, 3600); //first time 10-60 min after spawn
+    }
+
+    Countdown burning;
+    time_t startEvent;
+    Timer checkTimer;
+    bool inProgress;
+
+    void Reset()
+    {
+        checkTimer.Reset(10000);
+        inProgress = false;
+    }
+
+    void UpdateAI(const uint32 diff)
+    {
+        if (checkTimer.Expired(diff))
+        {
+            if (time(NULL) > startEvent)
+            {
+                struct {
+                    void operator()(WorldObject* u)
+                    { if (u->GetTypeId() == TYPEID_UNIT && u->GetEntry() == NPC_HEADLESS_FIRE) u->ToCreature()->Respawn(); }
+                } worker;
+                Cell::VisitGridObjects(m_creature, worker, 100.0f);
+                burning.Reset(600000); //10 minutes
+                startEvent += 3600; // next time in hour
+                inProgress = true;
+            }
+
+            if (inProgress)
+            {
+                //check for fires
+            }
+            checkTimer = 10000;
+        }
+        if (inProgress)
+        {
+            if (burning.Expired(diff))
+            {
+                // failed
+                inProgress = false;
+            }
+        }
+    }
+
+    void DoAction(int32 what)
+    {
+        if (what = 66)
+            startEvent = time(NULL);
+    }
+};
+
+CreatureAI* GetAI_npc_headless_horseman_matron(Creature* c)
+{
+    return new npc_headless_horseman_matronAI(c);
 }
 
 void AddSC_npcs_special()
@@ -3650,4 +3714,8 @@ void AddSC_npcs_special()
     newscript->GetAI = &GetAI_npc_headless_horseman_fire;
     newscript->RegisterSelf();
     
+    newscript = new Script;
+    newscript->Name = "npc_headless_horseman_matron";
+    newscript->GetAI = &GetAI_npc_headless_horseman_matron;
+    newscript->RegisterSelf();
 }

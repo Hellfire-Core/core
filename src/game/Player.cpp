@@ -6682,7 +6682,7 @@ void Player::UpdateZone(uint32 newZone)
     if (GetGroup())
         SetGroupUpdateFlag(GROUP_UPDATE_FLAG_ZONE);
 
-    UpdateZoneDependentAuras(newZone);
+    UpdateZoneDependentAuras(oldZoneId,newZone);
 }
 
 //If players are too far way of duel flag... then player loose the duel
@@ -12719,6 +12719,7 @@ bool Player::CanAddQuest(Quest const *pQuest, bool msg)
 
 bool Player::CanCompleteQuest(uint32 quest_id)
 {
+    SendCombatStats(1 << COMBAT_STATS_TEST, "checking for completion quest %u", NULL, quest_id);
     if (quest_id)
     {
         QuestStatusData& q_status = mQuestStatus[quest_id];
@@ -13719,6 +13720,7 @@ void Player::GroupEventHappens(uint32 questId, WorldObject const* pEventObject)
 
 void Player::ItemAddedQuestCheck(uint32 entry, uint32 count)
 {
+    SendCombatStats(1 << COMBAT_STATS_TEST, "item added quest check %u %u", NULL, entry, count);
     for (int i = 0; i < MAX_QUEST_LOG_SIZE; ++i)
     {
         uint32 questid = GetQuestSlotQuestId(i);
@@ -20046,7 +20048,7 @@ void Player::SetClientControl(Unit* target, uint8 allowMove)
     SendPacketToSelf(&data);
 }
 
-void Player::UpdateZoneDependentAuras(uint32 newZone)
+void Player::UpdateZoneDependentAuras(uint32 oldZone, uint32 newZone)
 {
     // remove new continent flight forms
     if (!isGameMaster() &&
@@ -20071,6 +20073,16 @@ void Player::UpdateZoneDependentAuras(uint32 newZone)
 
         if (spellid && !HasAura(spellid,0))
             CastSpell(this,spellid,true);
+    }
+    else if (newZone == 4080 || newZone == 4075 || newZone == 4131) // isle,swp,mgt
+    {
+        if (!HasAura(46302))
+            CastSpell(this, 46302, true);
+    }
+
+    if ((oldZone == 4080 || oldZone == 4075 || oldZone == 4131) && (newZone != 4080 && newZone !=4075 && newZone != 4131))
+    {
+        RemoveAurasDueToSpellByCancel(46302);
     }
 }
 

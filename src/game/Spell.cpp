@@ -3035,7 +3035,7 @@ void Spell::update(uint32 difftime)
                 {
                     // check if player has jumped before the channeling finished
                     if (m_caster->hasUnitState(UNIT_STAT_CASTING_NOT_MOVE) && m_caster->HasUnitMovementFlag(MOVEFLAG_FALLING))
-                        cancel(SPELL_FAILED_INT_CASTER_MOVED);
+                        cancel(SPELL_FAILED_INT_CASTER_JUMPED);
                 }
 
                 // check if there are alive targets left
