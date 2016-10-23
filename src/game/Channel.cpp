@@ -30,7 +30,7 @@ Channel::Channel(const std::string& name)
     // DO NOT TRUST channel ids send from client!!
     if (name == "world")
     {
-        m_channelId = 7;
+        m_channelId = 0;
         m_flags = CHANNEL_FLAG_WORLD;
     }
     else if (name.substr(0, 7) == "General")
@@ -47,22 +47,22 @@ Channel::Channel(const std::string& name)
     else if (name.substr(0, 12) == "LocalDefense")
     {
         m_flags = CHANNEL_FLAG_ZONE;
-        m_channelId = 3;
+        m_channelId = 22;
     }
     else if (name.substr(0, 12) == "WorldDefense")
     {
         m_flags = CHANNEL_FLAG_NONE;
-        m_channelId = 4;
+        m_channelId = 23;
     }
     else if (name.substr(0, 16) == "GuildRecruitment")
     {
         m_flags = CHANNEL_FLAG_ZONE;
-        m_channelId = 5;
+        m_channelId = 25;
     }
     else if (name == "LookingForGroup")
     {
         m_flags = CHANNEL_FLAG_LFG;
-        m_channelId = 6;
+        m_channelId = 26;
     }
     else                                                 // it's custom channel
     {
@@ -86,7 +86,7 @@ void Channel::Join(uint64 p, const char *pass)
 
     Player *plr = sObjectMgr.GetPlayer(p);
 
-    if ((!plr || !plr->isGameMaster()) && !IsConstant())
+    if ((!plr || !plr->isGameMaster()) && !IsConstant() && m_flags != CHANNEL_FLAG_WORLD)
     {
         uint32 limitCount = sWorld.getConfig(CONFIG_PRIVATE_CHANNEL_LIMIT);
 
