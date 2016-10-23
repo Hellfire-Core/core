@@ -24,28 +24,50 @@
 #include "SocialMgr.h"
 #include "Chat.h"
 
-Channel::Channel(const std::string& name, uint32 channel_id)
-: m_announce(false), m_moderate(false), m_name(name), m_flags(0), m_ownerGUID(0)
+Channel::Channel(const std::string& name)
+: m_announce(false), m_moderate(false), m_name(name), m_ownerGUID(0)
 {
-    // set special flags if built-in channel
-    ChatChannelsEntry const* ch = GetChannelEntryFor(channel_id);
-    if (ch)
+    // DO NOT TRUST channel ids send from client!!
+    if (name == "world")
     {
-        m_channelId = ch->ChannelID;                        // built-in channel
-
-        if (ch->flags & CHANNEL_DBC_FLAG_TRADE)             // for trade channel
-            m_flags |= CHANNEL_FLAG_TRADE;
-
-        if (ch->flags & CHANNEL_DBC_FLAG_LFG)               // for LFG channel
-            m_flags |= CHANNEL_FLAG_LFG;
+        m_channelId = 7;
+        m_flags = CHANNEL_FLAG_WORLD;
     }
-    else                                                    // it's custom channel
+    else if (name.substr(0, 7) == "General")
     {
-        m_flags |= CHANNEL_FLAG_CUSTOM;
+        m_flags = CHANNEL_FLAG_ZONE;
+        m_channelId = 1;
+    }
+    else if (name.substr(0, 5) == "Trade")
+    {
+        m_flags = CHANNEL_FLAG_TRADE;
+        m_channelId = 2;
+    }
+    
+    else if (name.substr(0, 12) == "LocalDefense")
+    {
+        m_flags = CHANNEL_FLAG_ZONE;
+        m_channelId = 3;
+    }
+    else if (name.substr(0, 12) == "WorldDefense")
+    {
+        m_flags = CHANNEL_FLAG_NONE;
+        m_channelId = 4;
+    }
+    else if (name.substr(0, 16) == "GuildRecruitment")
+    {
+        m_flags = CHANNEL_FLAG_ZONE;
+        m_channelId = 5;
+    }
+    else if (name == "LookingForGroup")
+    {
+        m_flags = CHANNEL_FLAG_LFG;
+        m_channelId = 6;
+    }
+    else                                                 // it's custom channel
+    {
+        m_flags = CHANNEL_FLAG_CUSTOM;
         m_channelId = 0;
-
-        if (name == "world")
-            m_flags = CHANNEL_FLAG_WORLD;                  // world not marked as custom
     }
 }
 
@@ -64,7 +86,7 @@ void Channel::Join(uint64 p, const char *pass)
 
     Player *plr = sObjectMgr.GetPlayer(p);
 
-    if ((!plr || !plr->isGameMaster()) && !IsConstant() && m_name != "world" && m_name != "engworld" && m_name != "handel" && m_name != "LookingForGroup")
+    if ((!plr || !plr->isGameMaster()) && !IsConstant())
     {
         uint32 limitCount = sWorld.getConfig(CONFIG_PRIVATE_CHANNEL_LIMIT);
 

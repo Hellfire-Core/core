@@ -59,7 +59,7 @@ DBCStorage <BankBagSlotPricesEntry> sBankBagSlotPricesStore(BankBagSlotPricesEnt
 DBCStorage <BattlemasterListEntry> sBattlemasterListStore(BattlemasterListEntryfmt);
 DBCStorage <CharStartOutfitEntry> sCharStartOutfitStore(CharStartOutfitEntryfmt);
 DBCStorage <CharTitlesEntry> sCharTitlesStore(CharTitlesEntryfmt);
-DBCStorage <ChatChannelsEntry> sChatChannelsStore(ChatChannelsEntryfmt);
+//DBCStorage <ChatChannelsEntry> sChatChannelsStore(ChatChannelsEntryfmt);
 DBCStorage <ChrClassesEntry> sChrClassesStore(ChrClassesEntryfmt);
 DBCStorage <ChrRacesEntry> sChrRacesStore(ChrRacesEntryfmt);
 DBCStorage <CinematicSequencesEntry> sCinematicSequencesStore(CinematicSequencesEntryfmt);
@@ -707,18 +707,6 @@ ContentLevels GetContentLevelsForMapAndZone(uint32 mapid, uint32 zoneId)
         case 1:  return CONTENT_61_70;
         case 2:  return CONTENT_71_80;
     }
-}
-
-ChatChannelsEntry const* GetChannelEntryFor(uint32 channel_id)
-{
-    // not sorted, numbering index from 0
-    for(uint32 i = 0; i < sChatChannelsStore.GetNumRows(); ++i)
-    {
-        ChatChannelsEntry const* ch = sChatChannelsStore.LookupEntry(i);
-        if(ch && ch->ChannelID == channel_id)
-            return ch;
-    }
-    return NULL;
 }
 
 bool IsTotemCategoryCompatiableWith(uint32 itemTotemCategoryId, uint32 requiredTotemCategoryId)

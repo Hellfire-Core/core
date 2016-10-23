@@ -55,8 +55,6 @@ enum ContentLevels
 };
 ContentLevels GetContentLevelsForMapAndZone(uint32 mapid, uint32 zoneId);
 
-ChatChannelsEntry const* GetChannelEntryFor(uint32 channel_id);
-
 bool IsTotemCategoryCompatiableWith(uint32 itemTotemCategoryId, uint32 requiredTotemCategoryId);
 
 void Zone2MapCoordinates(float& x,float& y,uint32 zone);

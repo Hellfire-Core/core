@@ -42,11 +42,11 @@ class ChannelMgr
             channels.clear();
         }
 
-        Channel *GetJoinChannel(const std::string& name, uint32 channel_id)
+        Channel *GetJoinChannel(const std::string& name)
         {
             if (channels.find(name) == channels.end())
             {
-                Channel *nchan = new Channel(name,channel_id);
+                Channel *nchan = new Channel(name);
                 channels[name] = nchan;
             }
             return channels[name];

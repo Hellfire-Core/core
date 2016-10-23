@@ -4734,20 +4734,29 @@ void Player::UpdateLocalChannels(uint32 newZone)
         if (!(*i)->IsConstant())
             continue;
 
-        ChatChannelsEntry const* ch = GetChannelEntryFor((*i)->GetChannelId());
-        if (!ch)
+        if (!((*i)->GetFlags() & CHANNEL_FLAG_ZONE))
             continue;
 
-        if (ch->flags & CHANNEL_DBC_FLAG_GLOBAL)//Global channels
+        std::string pattern;
+        switch ((*i)->GetChannelId())
+        {
+        case 1:
+            pattern = "Global - %s";
+            break;
+        case 3:
+            pattern = "LocalDefense - %s";
+            break;
+        case 5:
+            pattern = "GuildRecruitment - %s";
+            break;
+        default:
             continue;
-
-        if ((ch->flags & CHANNEL_DBC_FLAG_TRADE) && sWorld.getConfig(CONFIG_GLOBAL_TRADE_CHANNEL))//trade channel
-            continue;
+        }
 
         //  new channel
         char new_channel_name_buf[100];
-        snprintf(new_channel_name_buf,100,ch->pattern[m_session->GetSessionDbcLocale()],current_zone_name.c_str());
-        Channel* new_channel = cMgr->GetJoinChannel(new_channel_name_buf,ch->ChannelID);
+        snprintf(new_channel_name_buf, 100, pattern.c_str(), current_zone_name.c_str());
+        Channel* new_channel = cMgr->GetJoinChannel(new_channel_name_buf);
 
         if ((*i)!=new_channel)
         {
@@ -4790,10 +4799,6 @@ void Player::JoinLFGChannel()
     for (JoinedChannelsList::iterator i = m_channels.begin(); i != m_channels.end(); ++i)
         if ((*i)->IsLFG())
             return;
-
-    /*if (ChannelMgr* cMgr = channelMgr(GetTeam()))
-        if (Channel *chn = cMgr->GetJoinChannel("LookingForGroup", 26))
-            chn->Invite(GetGUID(), GetName());*/
 
     WorldPacket data;
 

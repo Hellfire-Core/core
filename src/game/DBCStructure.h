@@ -123,7 +123,7 @@ struct CharTitlesEntry
     uint32      bit_index;                                  // 36 used in PLAYER_CHOSEN_TITLE and 1<<index in PLAYER__FIELD_KNOWN_TITLES
 };
 
-struct ChatChannelsEntry
+/*struct ChatChannelsEntry
 {
     uint32      ChannelID;                                  // 0
     uint32      flags;                                      // 1
@@ -131,7 +131,7 @@ struct ChatChannelsEntry
                                                             // 19 string flags, unused
     //char*       name[16];                                 // 20-35 unused
                                                             // 36 string flag, unused
-};
+};*/
 
 struct ChrClassesEntry
 {

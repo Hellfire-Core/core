@@ -31,20 +31,6 @@
 #include <map>
 #include <string>
 
-enum ChannelDBCFlags
-    {
-        CHANNEL_DBC_FLAG_NONE       = 0x00000,
-        CHANNEL_DBC_FLAG_INITIAL    = 0x00001,              // General, Trade, LocalDefense, LFG
-        CHANNEL_DBC_FLAG_ZONE_DEP   = 0x00002,              // General, Trade, LocalDefense, GuildRecruitment
-        CHANNEL_DBC_FLAG_GLOBAL     = 0x00004,              // WorldDefense
-        CHANNEL_DBC_FLAG_TRADE      = 0x00008,              // Trade
-        CHANNEL_DBC_FLAG_CITY_ONLY  = 0x00010,              // Trade, GuildRecruitment
-        CHANNEL_DBC_FLAG_CITY_ONLY2 = 0x00020,              // Trade, GuildRecruitment
-        CHANNEL_DBC_FLAG_DEFENSE    = 0x10000,              // LocalDefense, WorldDefense
-        CHANNEL_DBC_FLAG_GUILD_REQ  = 0x20000,              // GuildRecruitment
-        CHANNEL_DBC_FLAG_LFG        = 0x40000               // LookingForGroup
-    };
-
 enum ChannelFlags
     {
         CHANNEL_FLAG_NONE       = 0x00,
@@ -52,6 +38,7 @@ enum ChannelFlags
         CHANNEL_FLAG_TRADE      = 0x04,
         CHANNEL_FLAG_WORLD      = 0x08,
         CHANNEL_FLAG_LFG        = 0x10,
+        CHANNEL_FLAG_ZONE       = 0x20,
     };
 
 class Channel
@@ -235,7 +222,7 @@ class Channel
         }
 
     public:
-        Channel(const std::string& name, uint32 channel_id);
+        Channel(const std::string& name);
         std::string GetName() const { return m_name; }
         uint32 GetChannelId() const { return m_channelId; }
         bool IsConstant() const { return m_channelId != 0; }

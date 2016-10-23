@@ -31,7 +31,7 @@ void WorldSession::HandleChannelJoin(WorldPacket& recvPacket)
     uint8 unknown1, unknown2;
     std::string channelname, pass;
 
-    recvPacket >> channel_id >> unknown1 >> unknown2;
+    recvPacket >> channel_id >> unknown1 >> unknown2; // WARNING! do not use in any way, this can be modified by clients and cause problems
     recvPacket >> channelname;
 
     if (channelname.empty())
@@ -45,7 +45,7 @@ void WorldSession::HandleChannelJoin(WorldPacket& recvPacket)
         channelname = "Trade";
     
     if (ChannelMgr* cMgr = channelMgr(_player->GetTeam()))
-        if (Channel *chn = cMgr->GetJoinChannel(channelname, channel_id))
+        if (Channel *chn = cMgr->GetJoinChannel(channelname, 0))
             chn->Join(_player->GetGUID(), pass.c_str());
 }
 
