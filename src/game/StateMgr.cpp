@@ -526,7 +526,6 @@ ActionInfo* UnitStateMgr::CurrentState()
 
 void UnitStateMgr::DropAllStates()
 {
-    GetOwner()->SendCombatStats(1 << COMBAT_STATS_CRASHTEST, "drop all states", NULL);
     DropActionHigherThen(UNIT_ACTION_PRIORITY_IDLE);
     PushAction(UNIT_ACTION_IDLE);
 }

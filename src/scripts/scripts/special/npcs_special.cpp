@@ -3403,6 +3403,10 @@ struct npc_headless_horseman_fireAI : public CreatureAI
     void UpdateAI(const uint32) {}
     void EnterEvadeMode() { Reset(); }
     void OnCharmed(bool apply) {}
+    void JustDied(Unit* who)
+    {
+        m_creature->RemoveAllAuras();
+    }
 };
 
 CreatureAI* GetAI_npc_headless_horseman_fire(Creature* c)

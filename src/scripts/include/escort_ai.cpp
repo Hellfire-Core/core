@@ -348,7 +348,7 @@ void npc_escortAI::MovementInform(uint32 uiMoveType, uint32 uiPointId)
         else if (!IsRunning && !me->IsWalking())
             me->SetWalk(true);
 
-        me->GetUnitStateMgr().InitDefaults(false);
+        me->GetUnitStateMgr().InitDefaults(true);
         RemoveEscortState(STATE_ESCORT_INCOMBAT);
 
         if (!WPWaitTimer)

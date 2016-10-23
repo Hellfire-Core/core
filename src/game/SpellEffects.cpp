@@ -1840,7 +1840,8 @@ void Spell::EffectDummy(uint32 i)
                     } check(m_targets.m_destX, m_targets.m_destY, m_targets.m_destZ);
                     std::list<Unit*> list;
                     Hellground::UnitListSearcher<checker> searcher(list, check);
-                    Cell::VisitWorldObjects(m_targets.m_destX, m_targets.m_destY, m_caster->GetMap(), searcher, 5.0f);
+                    Cell::VisitWorldObjects(m_targets.m_destX, m_targets.m_destY, m_caster->GetMap(), searcher, 5.0f); // check players
+                    Cell::VisitGridObjects(m_targets.m_destX, m_targets.m_destY, m_caster->GetMap(), searcher, 5.0f); // check npcs
                     if (list.empty())
                     {
                         m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "list empty", NULL);
