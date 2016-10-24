@@ -379,7 +379,7 @@ void WorldSession::HandleChannelInfoQuery(WorldPacket &recvPacket)
         {
             WorldPacket data(SMSG_CHANNEL_MEMBER_COUNT, chn->GetName().size()+1+1+4);
             data << chn->GetName();
-            data << uint8(chn->GetFlags());
+            data << uint8(0);
             data << uint32(chn->GetNumPlayers());
             SendPacket(&data);
         }
