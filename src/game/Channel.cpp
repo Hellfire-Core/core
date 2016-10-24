@@ -29,46 +29,21 @@ Channel::Channel(const std::string& name)
 {
     // DO NOT TRUST channel ids send from client!!
     if (name == "world")
-    {
-        m_channelId = 0;
-        m_flags = CHANNEL_FLAG_WORLD;
-    }
+        m_channelId = CHANNEL_ID_WORLD;
     else if (name.substr(0, 7) == "General")
-    {
-        m_flags = CHANNEL_FLAG_ZONE;
-        m_channelId = 1;
-    }
+        m_channelId = CHANNEL_ID_GENERAL;
     else if (name.substr(0, 5) == "Trade")
-    {
-        m_flags = CHANNEL_FLAG_TRADE;
-        m_channelId = 2;
-    }
-    
+        m_channelId = CHANNEL_ID_TRADE;
     else if (name.substr(0, 12) == "LocalDefense")
-    {
-        m_flags = CHANNEL_FLAG_ZONE;
-        m_channelId = 22;
-    }
-    else if (name.substr(0, 12) == "WorldDefense")
-    {
-        m_flags = CHANNEL_FLAG_NONE;
-        m_channelId = 23;
-    }
+        m_channelId = CHANNEL_ID_LOCALDEFENSE;
+    else if (name == "WorldDefense")
+        m_channelId = CHANNEL_ID_WORLDDEFENSE;
     else if (name.substr(0, 16) == "GuildRecruitment")
-    {
-        m_flags = CHANNEL_FLAG_ZONE;
-        m_channelId = 25;
-    }
+        m_channelId = CHANNEL_ID_GUILDRECRUITMENT;
     else if (name == "LookingForGroup")
-    {
-        m_flags = CHANNEL_FLAG_LFG;
-        m_channelId = 26;
-    }
+        m_channelId = CHANNEL_ID_LFG;
     else                                                 // it's custom channel
-    {
-        m_flags = CHANNEL_FLAG_CUSTOM;
-        m_channelId = 0;
-    }
+        m_channelId = CHANNEL_ID_CUSTOM;
 }
 
 void Channel::Join(uint64 p, const char *pass)
@@ -86,7 +61,7 @@ void Channel::Join(uint64 p, const char *pass)
 
     Player *plr = sObjectMgr.GetPlayer(p);
 
-    if ((!plr || !plr->isGameMaster()) && !IsConstant() && m_flags != CHANNEL_FLAG_WORLD)
+    if ((!plr || !plr->isGameMaster()) && !IsConstant())
     {
         uint32 limitCount = sWorld.getConfig(CONFIG_PRIVATE_CHANNEL_LIMIT);
 
@@ -578,7 +553,7 @@ void Channel::Say(uint64 p, const char *what, uint32 lang)
 {
     if (!what)
         return;
-    if (!HasFlag(CHANNEL_FLAG_CUSTOM) && ChatHandler::ContainsNotAllowedSigns(what,true))
+    if (IsConstant() && ChatHandler::ContainsNotAllowedSigns(what,true))
         return;
 
     if (sWorld.getConfig(CONFIG_ALLOW_TWO_SIDE_INTERACTION_CHANNEL))
@@ -624,8 +599,8 @@ void Channel::Say(uint64 p, const char *what, uint32 lang)
 
         if (!plr || !plr->IsTrollmuted())
         {
-            // exclude LFG from two-side channels
-            if (sWorld.getConfig(CONFIG_ALLOW_TWO_SIDE_INTERACTION_CHANNEL) && HasFlag(CHANNEL_FLAG_LFG | CHANNEL_FLAG_TRADE) && plr)
+            // exclude LFG and Trade from two-side channels
+            if (sWorld.getConfig(CONFIG_ALLOW_TWO_SIDE_INTERACTION_CHANNEL) && (IsLFG() || m_channelId == CHANNEL_ID_TRADE) && plr)
             {
                 uint32 fromteam = plr->GetTeam();
                 for (PlayerList::iterator i = players.begin(); i != players.end(); ++i)
@@ -647,14 +622,23 @@ void Channel::Say(uint64 p, const char *what, uint32 lang)
         if (lang == LANG_ADDON)
             return;
 
-        if (HasFlag(CHANNEL_FLAG_LFG))
+        switch (m_channelId)
+        {
+        case CHANNEL_ID_LFG:
             sLog.outChat(LOG_CHAT_LFG_A, plr->GetTeam(), plr->GetName(), what);
-        else if (HasFlag(CHANNEL_FLAG_TRADE))
+            break;
+        case CHANNEL_ID_TRADE:
             sLog.outChat(LOG_CHAT_TRADE_A, plr->GetTeam(), plr->GetName(), what);
-        else if (HasFlag(CHANNEL_FLAG_WORLD))
+            break;
+        case CHANNEL_ID_WORLD:
             sLog.outChat(LOG_CHAT_WORLD_A, plr->GetTeam(), plr->GetName(), what);
-        else if (!HasFlag(CHANNEL_FLAG_CUSTOM))
+            break;
+        case CHANNEL_ID_CUSTOM:
+            break;
+        default: // general, localdefense, worlddefense, guildrecruitment
             sLog.outChat(LOG_CHAT_LOCAL_A, plr->GetTeam(), plr->GetName(), what);
+            break;
+        }
     }
 }
 

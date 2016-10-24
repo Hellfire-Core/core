@@ -4734,19 +4734,16 @@ void Player::UpdateLocalChannels(uint32 newZone)
         if (!(*i)->IsConstant())
             continue;
 
-        if (!((*i)->GetFlags() & CHANNEL_FLAG_ZONE))
-            continue;
-
         std::string pattern;
         switch ((*i)->GetChannelId())
         {
-        case 1:
-            pattern = "Global - %s";
+        case CHANNEL_ID_GENERAL:
+            pattern = "General - %s";
             break;
-        case 3:
+        case CHANNEL_ID_LOCALDEFENSE:
             pattern = "LocalDefense - %s";
             break;
-        case 5:
+        case CHANNEL_ID_GUILDRECRUITMENT:
             pattern = "GuildRecruitment - %s";
             break;
         default:

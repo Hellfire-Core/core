@@ -41,7 +41,7 @@ void WorldSession::HandleChannelJoin(WorldPacket& recvPacket)
     CHECK_PACKET_SIZE(recvPacket, 4+1+1+(channelname.size()+1)+1);
 
     recvPacket >> pass;
-    if(channel_id == 2 && sWorld.getConfig(CONFIG_GLOBAL_TRADE_CHANNEL)) //magic number - trade channel id from DBC
+    if(channel_id == CHANNEL_ID_TRADE && sWorld.getConfig(CONFIG_GLOBAL_TRADE_CHANNEL))
         channelname = "Trade";
     
     if (ChannelMgr* cMgr = channelMgr(_player->GetTeam()))
