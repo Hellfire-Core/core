@@ -105,9 +105,6 @@ void Channel::Join(uint64 p, const char *pass)
             return;
         }
 
-        if (plr->GetGuildId() && (GetFlags() == 0x38))
-            return;
-
         plr->JoinedChannel(this);
     }
 
@@ -455,7 +452,7 @@ void Channel::List(Player* player)
         WorldPacket data(SMSG_CHANNEL_LIST, 1+(GetName().size()+1)+1+4+players.size()*(8+1));
         data << uint8(1);                                   // channel type?
         data << GetName();                                  // channel name
-        data << uint8(GetFlags());                          // channel flags?
+        data << uint8(0);                          // channel flags?
 
         size_t pos = data.wpos();
         data << uint32(0);                                  // size of list, placeholder
@@ -789,7 +786,7 @@ void Channel::MakeLeft(WorldPacket *data, uint64 guid)
 void Channel::MakeYouJoined(WorldPacket *data)
 {
     MakeNotifyPacket(data, CHAT_YOU_JOINED_NOTICE);
-    *data << uint8(GetFlags());
+    *data << uint8(0);
     *data << uint32(GetChannelId());
     *data << uint32(0);
 }
@@ -1034,7 +1031,7 @@ void Channel::JoinNotify(uint64 guid)
 
     data << uint64(guid);
     data << uint8(GetPlayerFlags(guid));
-    data << uint8(GetFlags());
+    data << uint8(0);
     data << uint32(GetNumPlayers());
     data << GetName();
     SendToAll(&data);
@@ -1044,7 +1041,7 @@ void Channel::LeaveNotify(uint64 guid)
 {
     WorldPacket data(SMSG_USERLIST_REMOVE, 8+1+4+GetName().size()+1);
     data << uint64(guid);
-    data << uint8(GetFlags());
+    data << uint8(0);
     data << uint32(GetNumPlayers());
     data << GetName();
     SendToAll(&data);
