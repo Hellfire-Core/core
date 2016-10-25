@@ -3389,26 +3389,61 @@ bool GossipSelect_npc_arenaready(Player* player, Creature* _Creature, uint32 sen
     return true;
 }
 
-#define NPC_HEADLESS_FIRE 23537
+enum headless_horseman
+{
+    HH_NPC_FIRE             = 23537,
+
+    HH_SPELL_FIRE_VISUAL    = 42074,
+    HH_SPELL_FIRE_SMALL     = 42096,
+    HH_SPELL_FIRE_NORMAL    = 42091,
+    HH_SPELL_FIRE_BIG       = 43148,
+
+    HH_QUEST_HORDE          = 11219,
+    HH_QUEST_ALLY           = 11131,
+};
 
 struct npc_headless_horseman_fireAI : public CreatureAI
 {
     npc_headless_horseman_fireAI(Creature* c) : CreatureAI(c) {}
-    void Reset()
+    
+    Timer updateSize;
+
+    void JustRespawned()
     { // cast visual auras
-        m_creature->CastSpell(m_creature, 42971, true);
-        m_creature->CastSpell(m_creature, 43184, true);
+        m_creature->CastSpell(m_creature, HH_SPELL_FIRE_VISUAL, true);
+        m_creature->CastSpell(m_creature, HH_SPELL_FIRE_SMALL, true);
+        updateSize.Reset(30000);
+    }
+
+    void UpdateAI(const uint32 diff)
+    {
+        if (updateSize.Expired(diff))
+        {
+            if (m_creature->HasAura(HH_SPELL_FIRE_SMALL))
+            {
+                m_creature->RemoveAurasDueToSpell(HH_SPELL_FIRE_SMALL);
+                m_creature->CastSpell(m_creature, HH_SPELL_FIRE_NORMAL, true);
+                updateSize = 30000;
+            }
+            else if (m_creature->HasAura(HH_SPELL_FIRE_NORMAL))
+            {
+                m_creature->RemoveAurasDueToSpell(HH_SPELL_FIRE_NORMAL);
+                m_creature->CastSpell(m_creature, HH_SPELL_FIRE_BIG, true);
+                updateSize = 0;
+            }
+        }
     }
     
-    void MoveInLineOfSight(Unit *) {}
-    void AttackStart(Unit *) {}
-    void UpdateAI(const uint32) {}
-    void EnterEvadeMode() { Reset(); }
-    void OnCharmed(bool apply) {}
     void JustDied(Unit* who)
     {
         m_creature->RemoveAllAuras();
     }
+
+    void EnterEvadeMode() { Reset(); }
+    void OnCharmed(bool apply) {}
+    void MoveInLineOfSight(Unit *) {}
+    void AttackStart(Unit *) {}
+    void Reset() {};
 };
 
 CreatureAI* GetAI_npc_headless_horseman_fire(Creature* c)
@@ -3427,11 +3462,13 @@ struct npc_headless_horseman_matronAI : public CreatureAI
     time_t startEvent;
     Timer checkTimer;
     bool inProgress;
+    std::list<uint64> fireGuids;
 
     void Reset()
     {
         checkTimer.Reset(10000);
         inProgress = false;
+        fireGuids.clear();
     }
 
     void UpdateAI(const uint32 diff)
@@ -3440,26 +3477,58 @@ struct npc_headless_horseman_matronAI : public CreatureAI
         {
             if (time(NULL) > startEvent)
             {
+                fireGuids.clear();
+
                 struct firerespawner{
                     void operator()(Creature* u) const
                     {
-                        if (u->GetEntry() == NPC_HEADLESS_FIRE)
+                        if (u->GetEntry() == HH_NPC_FIRE)
                             u->Respawn();
                      }
                     void operator()(GameObject* u) const {}
                     void operator()(WorldObject*) const {}
                     void operator()(Corpse*) const {}
+                    std::list<uint64> m_fireGuids;
                 } resp;
+
                 Hellground::ObjectWorker<Creature, firerespawner> worker(resp);
                 Cell::VisitGridObjects(m_creature, worker, 100.0f);
-                burning.Reset(600000); //10 minutes
+                fireGuids = resp.m_fireGuids;
+                SendDebug("Starting event, %u fires",fireGuids.size());
+                burning.Reset(900000); //15 minutes
                 startEvent += 3600; // next time in hour
                 inProgress = true;
             }
 
             if (inProgress)
             {
-                //check for fires
+                uint32 allCount, aliveCount;
+                for (std::list<uint64>::iterator itr = fireGuids.begin(); itr != fireGuids.end(); itr++)
+                {
+                    if (Creature* fire = m_creature->GetCreature(*itr))
+                    {
+                        allCount++;
+                        if (fire->isAlive())
+                            aliveCount++;
+                        // respawn some fires?
+                    }
+                }
+                SendDebug("Checking fires, %u %u", allCount, aliveCount);
+                if (aliveCount == 0)
+                {
+                    std::list<Player*> targets;
+                    Hellground::AnyPlayerInObjectRangeCheck check(me, 90);
+                    Hellground::ObjectListSearcher<Player, Hellground::AnyPlayerInObjectRangeCheck> searcher(targets, check);
+                    Cell::VisitAllObjects(me, searcher, 100);
+                    for (std::list<Player*>::iterator itr = targets.begin(); itr != targets.end(); itr++)
+                    {
+                        (*itr)->AreaExploredOrEventHappens(HH_QUEST_HORDE);
+                        (*itr)->AreaExploredOrEventHappens(HH_QUEST_ALLY);
+                    }
+                    inProgress = false;
+                    SendDebug("Event completed");
+                    // spawn horseman
+                }
             }
             checkTimer = 10000;
         }
@@ -3467,8 +3536,15 @@ struct npc_headless_horseman_matronAI : public CreatureAI
         {
             if (burning.Expired(diff))
             {
+                for (std::list<uint64>::iterator itr = fireGuids.begin(); itr != fireGuids.end(); itr++)
+                {
+                    if (Creature* fire = m_creature->GetCreature(*itr))
+                        fire->Kill(fire);
+                }
                 // failed
+                SendDebug("Event failed");
                 inProgress = false;
+                burning = 0;
             }
         }
     }
