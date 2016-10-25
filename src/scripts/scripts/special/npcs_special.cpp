@@ -3475,15 +3475,17 @@ struct npc_headless_horseman_matronAI : public CreatureAI
     {
         if (checkTimer.Expired(diff))
         {
+            SendDebug("Checking... %u %u", time(NULL), startEvent);
             if (time(NULL) > startEvent)
             {
                 fireGuids.clear();
 
                 struct firerespawner{
-                    void operator()(Creature* u) const
+                    void operator()(Creature* u)
                     {
                         if (u->GetEntry() == HH_NPC_FIRE)
                             u->Respawn();
+                        m_fireGuids.push_back(u->GetGUID());
                      }
                     void operator()(GameObject* u) const {}
                     void operator()(WorldObject*) const {}
@@ -3502,7 +3504,7 @@ struct npc_headless_horseman_matronAI : public CreatureAI
 
             if (inProgress)
             {
-                uint32 allCount, aliveCount;
+                uint32 allCount = 0, aliveCount = 0;
                 for (std::list<uint64>::iterator itr = fireGuids.begin(); itr != fireGuids.end(); itr++)
                 {
                     if (Creature* fire = m_creature->GetCreature(*itr))
@@ -3514,7 +3516,7 @@ struct npc_headless_horseman_matronAI : public CreatureAI
                     }
                 }
                 SendDebug("Checking fires, %u %u", allCount, aliveCount);
-                if (aliveCount == 0)
+                if (aliveCount == 0 && allCount > 0)
                 {
                     std::list<Player*> targets;
                     Hellground::AnyPlayerInObjectRangeCheck check(me, 90);
