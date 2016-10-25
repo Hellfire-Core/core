@@ -3458,7 +3458,7 @@ struct npc_headless_horseman_matronAI : public CreatureAI
         startEvent = time(NULL) + urand(600, 3600); //first time 10-60 min after spawn
     }
 
-    Countdown burning;
+    time_t endEvent;
     time_t startEvent;
     Timer checkTimer;
     bool inProgress;
@@ -3475,8 +3475,8 @@ struct npc_headless_horseman_matronAI : public CreatureAI
     {
         if (checkTimer.Expired(diff))
         {
-            SendDebug("Checking... %u %u", time(NULL), startEvent);
-            if (time(NULL) > startEvent)
+            SendDebug("Checking... %u %u %u %u", time(NULL), startEvent, endEvent, inProgress);
+            if (!inProgress && time(NULL) > startEvent)
             {
                 fireGuids.clear();
 
@@ -3484,8 +3484,11 @@ struct npc_headless_horseman_matronAI : public CreatureAI
                     void operator()(Creature* u)
                     {
                         if (u->GetEntry() == HH_NPC_FIRE)
-                            u->Respawn();
-                        m_fireGuids.push_back(u->GetGUID());
+                        {
+                            u->setDeathState(JUST_ALIVED);
+                            u->AI()->JustRespawned();
+                            m_fireGuids.push_back(u->GetGUID());
+                        }
                      }
                     void operator()(GameObject* u) const {}
                     void operator()(WorldObject*) const {}
@@ -3497,9 +3500,21 @@ struct npc_headless_horseman_matronAI : public CreatureAI
                 Cell::VisitGridObjects(m_creature, worker, 100.0f);
                 fireGuids = resp.m_fireGuids;
                 SendDebug("Starting event, %u fires",fireGuids.size());
-                burning.Reset(900000); //15 minutes
+                endEvent = time(NULL) + 900; // 15 min
                 startEvent += 3600; // next time in hour
                 inProgress = true;
+            }
+            
+            if (inProgress && time(NULL) > endEvent)
+            {
+                for (std::list<uint64>::iterator itr = fireGuids.begin(); itr != fireGuids.end(); itr++)
+                {
+                    if (Creature* fire = m_creature->GetCreature(*itr))
+                        fire->Kill(fire);
+                }
+                // failed
+                SendDebug("Event failed");
+                inProgress = false;
             }
 
             if (inProgress)
@@ -3533,21 +3548,6 @@ struct npc_headless_horseman_matronAI : public CreatureAI
                 }
             }
             checkTimer = 10000;
-        }
-        if (inProgress)
-        {
-            if (burning.Expired(diff))
-            {
-                for (std::list<uint64>::iterator itr = fireGuids.begin(); itr != fireGuids.end(); itr++)
-                {
-                    if (Creature* fire = m_creature->GetCreature(*itr))
-                        fire->Kill(fire);
-                }
-                // failed
-                SendDebug("Event failed");
-                inProgress = false;
-                burning = 0;
-            }
         }
     }
 
