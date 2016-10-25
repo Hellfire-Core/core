@@ -1252,6 +1252,7 @@ class HELLGROUND_IMPORT_EXPORT Unit : public WorldObject
         void RemoveAuraTypeByCaster(AuraType auraType, uint64 casterGUID);
         void RemoveRankAurasDueToSpell(uint32 spellId);
         bool RemoveNoStackAurasDueToAura(Aura *Aur);
+        bool CheckForStrongerAuras(Aura* Aur);
         void RemoveAurasWithAttribute(uint32 flags, bool notPassiveOnly = false);
         void RemoveAurasWithInterruptFlags(uint32 flags, uint32 except = 0, bool PositiveOnly = false);
         void RemoveAurasWithDispelType(DispelType type);

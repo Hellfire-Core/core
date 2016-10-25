@@ -3796,6 +3796,13 @@ bool Unit::AddAura(Aura *Aur)
         return false;
     }
 
+    // check before removing any other auras
+    if ((!Aur->IsPassive() || !IsPassiveStackableSpell(Aur->GetId())) && CheckForStrongerAuras(Aur))
+    {
+        delete Aur;
+        return false;
+    }
+
     SpellEntry const* aurSpellEntry = Aur->GetSpellProto();
 
     spellEffectPair spair = spellEffectPair(Aur->GetId(), Aur->GetEffIndex());
@@ -3889,7 +3896,7 @@ bool Unit::AddAura(Aura *Aur)
         if (!RemoveNoStackAurasDueToAura(Aur))
         {
             delete Aur;
-            return false;                                   // couldn't remove conflicting aura with higher rank
+            return false;
         }
     }
 
@@ -3998,6 +4005,34 @@ void Unit::RemoveRankAurasDueToSpell(uint32 spellId)
     }
 }
 
+bool Unit::CheckForStrongerAuras(Aura* Aur)
+{
+    SpellEntry const* spellProto = Aur->GetSpellProto();
+    if (Aur->GetModifier()->m_auraname == SPELL_AURA_MOD_DECREASE_SPEED && !Aur->IsPersistent())
+    {
+        Unit::AuraList list = GetAurasByType(SPELL_AURA_MOD_DECREASE_SPEED);
+        for (Unit::AuraList::iterator itr = list.begin(); itr != list.end(); itr++)
+        {
+            if ((*itr)->GetModifierValue() < Aur->GetModifierValue() && !(*itr)->IsPersistent()) // they are negative!
+                return true;
+        }
+    }
+
+    if (Aur->GetModifier()->m_auraname == SPELL_AURA_MOD_STAT  && spellProto->SpellIconID &&
+        Aur->GetModifierValue() > 0) // positive pure stat buff
+    {
+        Unit::AuraList list = GetAurasByType(SPELL_AURA_MOD_STAT);
+        for (Unit::AuraList::iterator itr = list.begin(); itr != list.end(); itr++)
+        {
+            if ((*itr)->GetMiscValue() == Aur->GetMiscValue() && (*itr)->GetModifierValue() > Aur->GetModifierValue()
+                && SpellMgr::IsNoStackSpellDueToSpell(Aur->GetId(), (*itr)->GetId(), (Aur->GetCasterGUID() == (*itr)->GetCasterGUID())))
+                return true;
+
+        }
+    }
+    return false;
+}
+
 bool Unit::RemoveNoStackAurasDueToAura(Aura *Aur)
 {
     if (!Aur)
@@ -4014,28 +4049,6 @@ bool Unit::RemoveNoStackAurasDueToAura(Aura *Aur)
 
     AuraMap::iterator i,next;
     
-    if (Aur->GetModifier()->m_auraname == SPELL_AURA_MOD_DECREASE_SPEED && !Aur->IsPersistent())
-    {
-        Unit::AuraList list = GetAurasByType(SPELL_AURA_MOD_DECREASE_SPEED);
-        for (Unit::AuraList::iterator itr = list.begin(); itr != list.end(); itr++)
-        {
-            if ((*itr)->GetModifierValue() < Aur->GetModifierValue() && !(*itr)->IsPersistent()) // they are negative!
-                return false; // new one is weaker, do not apply
-        }
-    }
-
-    if (Aur->GetModifier()->m_auraname == SPELL_AURA_MOD_STAT  && spellProto->SpellIconID &&
-        Aur->GetModifierValue() > 0) // positive pure stat buff
-    {
-        Unit::AuraList list = GetAurasByType(SPELL_AURA_MOD_STAT);
-        for (Unit::AuraList::iterator itr = list.begin(); itr != list.end(); itr++)
-        {
-            if ((*itr)->GetMiscValue() == Aur->GetMiscValue() && (*itr)->GetModifierValue() > Aur->GetModifierValue())
-                return false; // new one is weaker, do not apply
-            
-        }
-    }
-
     for (i = m_Auras.begin(); i != m_Auras.end(); i = next)
     {
         next = i;
