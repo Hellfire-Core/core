@@ -4017,14 +4017,22 @@ bool Unit::RemoveNoStackAurasDueToAura(Aura *Aur)
     if (Aur->GetModifier()->m_auraname == SPELL_AURA_MOD_DECREASE_SPEED && !Aur->IsPersistent())
     {
         Unit::AuraList list = GetAurasByType(SPELL_AURA_MOD_DECREASE_SPEED);
-        for (Unit::AuraList::iterator itr = list.begin(); itr != list.end();)
+        for (Unit::AuraList::iterator itr = list.begin(); itr != list.end(); itr++)
         {
             if ((*itr)->GetModifierValue() < Aur->GetModifierValue() && !(*itr)->IsPersistent()) // they are negative!
                 return false; // new one is weaker, do not apply
-            else if ((*itr)->GetModifierValue() > Aur->GetModifierValue() && !(*itr)->IsPersistent())
-                itr = list.erase(itr); // new one is stronger, remove old (only this effect)
-            else
-                itr++; // persistent, just skip
+        }
+    }
+
+    if (Aur->GetModifier()->m_auraname == SPELL_AURA_MOD_STAT  && spellProto->SpellIconID &&
+        Aur->GetModifierValue() > 0) // positive pure stat buff
+    {
+        Unit::AuraList list = GetAurasByType(SPELL_AURA_MOD_STAT);
+        for (Unit::AuraList::iterator itr = list.begin(); itr != list.end(); itr++)
+        {
+            if ((*itr)->GetMiscValue() == Aur->GetMiscValue() && (*itr)->GetModifierValue() > Aur->GetModifierValue())
+                return false; // new one is weaker, do not apply
+            
         }
     }
 
@@ -4097,10 +4105,9 @@ bool Unit::RemoveNoStackAurasDueToAura(Aura *Aur)
             continue;
 
         bool sameCaster = Aur->GetCasterGUID() == (*i).second->GetCasterGUID();
+
         if (SpellMgr::IsNoStackSpellDueToSpell(spellId, i_spellId, sameCaster))
         {
-            if (SpellMgr::IsPositiveSpell(spellId) && SpellMgr::IsPositiveSpell(i_spellId) && i->second->GetModifierValue() > Aur->GetModifierValue())
-                return false; // cannot replace stronger positive aura TEST
 
             // Its a parent aura (create this aura in ApplyModifier)
             if ((*i).second->IsInUse())
