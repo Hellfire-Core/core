@@ -4099,6 +4099,9 @@ bool Unit::RemoveNoStackAurasDueToAura(Aura *Aur)
         bool sameCaster = Aur->GetCasterGUID() == (*i).second->GetCasterGUID();
         if (SpellMgr::IsNoStackSpellDueToSpell(spellId, i_spellId, sameCaster))
         {
+            if (SpellMgr::IsPositiveSpell(spellId) && SpellMgr::IsPositiveSpell(i_spellId) && i->second->GetModifierValue() > Aur->GetModifierValue())
+                return false; // cannot replace stronger positive aura TEST
+
             // Its a parent aura (create this aura in ApplyModifier)
             if ((*i).second->IsInUse())
             {
