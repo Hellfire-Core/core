@@ -3409,10 +3409,20 @@ struct npc_headless_horseman_fireAI : public CreatureAI
     Timer updateSize;
 
     void JustRespawned()
-    { // cast visual auras
-        m_creature->CastSpell(m_creature, HH_SPELL_FIRE_VISUAL, true);
-        m_creature->CastSpell(m_creature, HH_SPELL_FIRE_SMALL, true);
-        updateSize.Reset(30000);
+    {
+        if (m_creature->GetRespawnDelay() < 10)
+            DoAction(1);
+    }
+
+    void DoAction(int32 what)
+    {
+        if (what == 1)
+        {
+            m_creature->RemoveAllAuras();
+            m_creature->CastSpell(m_creature, HH_SPELL_FIRE_VISUAL, true);
+            m_creature->CastSpell(m_creature, HH_SPELL_FIRE_SMALL, true);
+            updateSize.Reset(30000);
+        }
     }
 
     void UpdateAI(const uint32 diff)
@@ -3485,8 +3495,8 @@ struct npc_headless_horseman_matronAI : public CreatureAI
                     {
                         if (u->GetEntry() == HH_NPC_FIRE)
                         {
-                            u->setDeathState(JUST_ALIVED);
-                            u->AI()->JustRespawned();
+                            u->Respawn();
+                            u->AI()->DoAction(1);
                             m_fireGuids.push_back(u->GetGUID());
                         }
                      }
@@ -3531,7 +3541,7 @@ struct npc_headless_horseman_matronAI : public CreatureAI
                     }
                 }
                 SendDebug("Checking fires, %u %u", allCount, aliveCount);
-                if (aliveCount == 0 && allCount > 0)
+                if (aliveCount <= 3 && allCount > 3)
                 {
                     std::list<Player*> targets;
                     Hellground::AnyPlayerInObjectRangeCheck check(me, 90);
