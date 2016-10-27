@@ -3410,7 +3410,7 @@ struct npc_headless_horseman_fireAI : public CreatureAI
 
     void JustRespawned()
     {
-        if (m_creature->GetRespawnDelay() < 10)
+        if (m_creature->GetRespawnDelay() < 10) // training fires
             DoAction(1);
     }
 
@@ -3465,7 +3465,14 @@ struct npc_headless_horseman_matronAI : public CreatureAI
 {
     npc_headless_horseman_matronAI(Creature* c) : CreatureAI(c)
     {
-        startEvent = time(NULL) + urand(600, 3600); //first time 10-60 min after spawn
+        time_t curTime = time(NULL);
+        tm localTm = *localtime(&curTime);
+        localTm.tm_hour = int(localTm.tm_hour / 4) * 4;
+        localTm.tm_min = 0;
+        localTm.tm_sec = 0;
+
+        startEvent = mktime(&localTm);
+        startEvent += 14400;// event will start on next 4hour interval
     }
 
     time_t endEvent;
@@ -3493,7 +3500,7 @@ struct npc_headless_horseman_matronAI : public CreatureAI
                 struct firerespawner{
                     void operator()(Creature* u)
                     {
-                        if (u->GetEntry() == HH_NPC_FIRE)
+                        if (u->GetEntry() == HH_NPC_FIRE && u->GetRespawnDelay() > 10)
                         {
                             u->Respawn();
                             u->AI()->DoAction(1);
@@ -3511,7 +3518,7 @@ struct npc_headless_horseman_matronAI : public CreatureAI
                 fireGuids = resp.m_fireGuids;
                 SendDebug("Starting event, %u fires",fireGuids.size());
                 endEvent = time(NULL) + 900; // 15 min
-                startEvent += 3600; // next time in hour
+                startEvent += 14400; // next time in 4 hours
                 inProgress = true;
             }
             
@@ -3535,13 +3542,13 @@ struct npc_headless_horseman_matronAI : public CreatureAI
                     if (Creature* fire = m_creature->GetCreature(*itr))
                     {
                         allCount++;
-                        if (fire->isAlive())
+                        if (fire->isAlive() && fire->HasAura(HH_SPELL_FIRE_VISUAL))// some could be respawned after kiling, but not initialized
                             aliveCount++;
                         // respawn some fires?
                     }
                 }
                 SendDebug("Checking fires, %u %u", allCount, aliveCount);
-                if (aliveCount <= 3 && allCount > 3)
+                if (aliveCount ==0 && allCount > 1)
                 {
                     std::list<Player*> targets;
                     Hellground::AnyPlayerInObjectRangeCheck check(me, 90);
@@ -3564,7 +3571,7 @@ struct npc_headless_horseman_matronAI : public CreatureAI
     void DoAction(int32 what)
     {
         if (what = 66)
-            startEvent = time(NULL);
+            startEvent -= 14400; //count backwards 4 hours to make event start now
     }
 };
 
