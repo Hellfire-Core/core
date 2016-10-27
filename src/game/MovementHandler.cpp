@@ -256,6 +256,8 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
 
     if (!result)
     {
+        data.SetOpcode(MSG_MOVE_STOP);
+        SendPacket(&data); // test for 1127
         WorldPacket data(SMSG_FORCE_MOVE_ROOT, mover->GetPackGUID().size() + 4);
         data << mover->GetPackGUID();
         data << mover->GetUnitStateMgr().GetCounter(UNIT_ACTION_ROOT);

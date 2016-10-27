@@ -3796,13 +3796,6 @@ bool Unit::AddAura(Aura *Aur)
         return false;
     }
 
-    // check before removing any other auras
-    if ((!Aur->IsPassive() || !IsPassiveStackableSpell(Aur->GetId())) && CheckForStrongerAuras(Aur))
-    {
-        delete Aur;
-        return false;
-    }
-
     SpellEntry const* aurSpellEntry = Aur->GetSpellProto();
 
     spellEffectPair spair = spellEffectPair(Aur->GetId(), Aur->GetEffIndex());
@@ -4040,6 +4033,9 @@ bool Unit::RemoveNoStackAurasDueToAura(Aura *Aur)
 
     SpellEntry const* spellProto = Aur->GetSpellProto();
     if (!spellProto)
+        return false;
+
+    if (CheckForStrongerAuras(Aur))
         return false;
 
     uint32 spellId = Aur->GetId();
