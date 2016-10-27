@@ -1092,7 +1092,7 @@ float ethereum_NPC[2][7] =
 bool GOUse_go_ethereum_prison(Player* player, GameObject* go)
 {
     if (go->getLootState() != GO_READY)
-        return;
+        return true;
 
     uint32 entry;
     switch(rand()%2)
