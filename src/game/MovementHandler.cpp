@@ -256,8 +256,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
 
     if (!result)
     {
-        data.SetOpcode(MSG_MOVE_STOP);
-        SendPacket(&data); // test for 1127
+        mover->SendCombatStats(1 << COMBAT_STATS_TEST, "tries to move in root", NULL);
         WorldPacket data(SMSG_FORCE_MOVE_ROOT, mover->GetPackGUID().size() + 4);
         data << mover->GetPackGUID();
         data << mover->GetUnitStateMgr().GetCounter(UNIT_ACTION_ROOT);

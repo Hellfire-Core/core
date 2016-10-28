@@ -3392,14 +3392,27 @@ bool GossipSelect_npc_arenaready(Player* player, Creature* _Creature, uint32 sen
 enum headless_horseman
 {
     HH_NPC_FIRE             = 23537,
+    HH_NPC_SHADE            = 23543,
 
     HH_SPELL_FIRE_VISUAL    = 42074,
     HH_SPELL_FIRE_SMALL     = 42096,
     HH_SPELL_FIRE_NORMAL    = 42091,
     HH_SPELL_FIRE_BIG       = 43148,
+    HH_SPELL_INVISIBILITY   = 32754,
+    HH_SPELL_SUMMON_LOOT    = 44255,
+    HH_SPELL_DO_LOOT        = 44242,
+    HH_SPELL_ALREADY_LOOTED = 44246,
 
     HH_QUEST_HORDE          = 11219,
     HH_QUEST_ALLY           = 11131,
+
+    // need to find sound ids first
+    HH_SPEECH_1             = 0,
+    HH_SPEECH_2             = 0,
+    HH_SPEECH_3             = 0,
+    HH_SPEECH_4             = 0,
+    HH_SPEECH_5             = 0,
+    HH_SPEECH_6             = 0,
 };
 
 struct npc_headless_horseman_fireAI : public CreatureAI
@@ -3480,12 +3493,14 @@ struct npc_headless_horseman_matronAI : public CreatureAI
     Timer checkTimer;
     bool inProgress;
     std::list<uint64> fireGuids;
+    uint64 horsemanGuid;
 
     void Reset()
     {
         checkTimer.Reset(10000);
         inProgress = false;
         fireGuids.clear();
+        horsemanGuid = 0;
     }
 
     void UpdateAI(const uint32 diff)
@@ -3520,6 +3535,11 @@ struct npc_headless_horseman_matronAI : public CreatureAI
                 endEvent = time(NULL) + 900; // 15 min
                 startEvent += 14400; // next time in 4 hours
                 inProgress = true;
+
+                Position pos;
+                me->GetValidPointInAngle(pos, 20, 0, true);
+                if (Creature* shade = me->SummonCreature(HH_NPC_SHADE, pos.x, pos.y, pos.z, 0, TEMPSUMMON_MANUAL_DESPAWN, 0))
+                    horsemanGuid = shade->GetGUID();
             }
             
             if (inProgress && time(NULL) > endEvent)
@@ -3530,8 +3550,13 @@ struct npc_headless_horseman_matronAI : public CreatureAI
                         fire->Kill(fire);
                 }
                 // failed
+
+                if (Creature* shade = me->GetCreature(horsemanGuid))
+                    shade->ForcedDespawn(0);
+
                 SendDebug("Event failed");
                 inProgress = false;
+                horsemanGuid = 0;
             }
 
             if (inProgress)
@@ -3561,7 +3586,8 @@ struct npc_headless_horseman_matronAI : public CreatureAI
                     }
                     inProgress = false;
                     SendDebug("Event completed");
-                    // spawn horseman
+                    if (Creature* shade = me->GetCreature(horsemanGuid))
+                        shade->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2 | UNIT_FLAG_PASSIVE);
                 }
             }
             checkTimer = 10000;
@@ -3578,6 +3604,72 @@ struct npc_headless_horseman_matronAI : public CreatureAI
 CreatureAI* GetAI_npc_headless_horseman_matron(Creature* c)
 {
     return new npc_headless_horseman_matronAI(c);
+}
+
+struct npc_headless_horseman_shadeAI : public ScriptedAI
+{
+    npc_headless_horseman_shadeAI(Creature* c) : ScriptedAI(c) {}
+
+    Timer sayTimer;
+    uint8 phase;
+    void Reset()
+    {
+        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2 | UNIT_FLAG_PASSIVE);
+        //DoScriptText(HH_SPEECH_1, me);
+        sayTimer.Reset(120000);
+        phase = 1;
+    }
+
+    void EnterCombat(Unit*)
+    {
+        //DoScriptText(HH_SPEECH_4, me);
+    }
+
+    void UpdateAI(const uint32 diff)
+    {
+        if (sayTimer.Expired(diff))
+        {
+            switch (phase)
+            {
+            case 1:
+                //DoScriptText(HH_SPEECH_2, me);
+                sayTimer = 150000;
+                phase++;
+                break;
+            case 2:
+                //DoScriptText(HH_SPEECH_3, me);
+                sayTimer = 0;
+                phase++;
+                break;
+
+            }
+        }
+
+        if (!UpdateVictim())
+            return;
+        DoMeleeAttackIfReady();
+    }
+
+    void JustDied(Unit* who)
+    {
+        //DoScriptText(HH_SPEECH_6, me);
+        m_creature->CastSpell(m_creature, HH_SPELL_SUMMON_LOOT, true);
+    }
+};
+
+CreatureAI* GetAI_npc_headless_horseman_shade(Creature* c)
+{
+    return new npc_headless_horseman_shadeAI(c);
+}
+
+bool GO_use_large_jack_o_lantern(Player* who, GameObject* what)
+{
+    if (!who->HasAura(HH_SPELL_ALREADY_LOOTED))
+    {
+        who->CastSpell(who, HH_SPELL_DO_LOOT, true);
+        who->CastSpell(who, HH_SPELL_ALREADY_LOOTED, true);
+    }
+    return true;
 }
 
 void AddSC_npcs_special()
@@ -3819,5 +3911,15 @@ void AddSC_npcs_special()
     newscript = new Script;
     newscript->Name = "npc_headless_horseman_matron";
     newscript->GetAI = &GetAI_npc_headless_horseman_matron;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_headless_horseman_shade";
+    newscript->GetAI = &GetAI_npc_headless_horseman_shade;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "go_large_jack_o_lantern";
+    newscript->pGOUse = &GO_use_large_jack_o_lantern;
     newscript->RegisterSelf();
 }
