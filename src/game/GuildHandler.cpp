@@ -49,13 +49,7 @@ void WorldSession::HandleGuildQueryOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (!guild->Query(this))
-    {
-        sLog.outLog(LOG_DEFAULT, "player account %u queried broken guild %u", GetAccountId(), guildId);
-        SendGuildCommandResult(GUILD_CREATE_S, "", GUILD_PLAYER_NOT_IN_GUILD);
-        sGuildMgr.RemoveGuild(guildId);
-        return;
-    }
+    guild->Query(this);
 }
 
 void WorldSession::HandleGuildInviteOpcode(WorldPacket& recvPacket)

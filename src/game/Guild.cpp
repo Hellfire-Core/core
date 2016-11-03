@@ -48,7 +48,6 @@ Guild::Guild()
     CreatedMonth = 0;
     CreatedDay = 0;
     m_guildFlags = 0;
-    m_guildloaded = false;
 }
 
 Guild::~Guild()
@@ -181,47 +180,27 @@ void Guild::SetGINFO(std::string ginfo)
     RealmDataDatabase.PExecute("UPDATE guild SET info='%s' WHERE guildid='%u'", ginfo.c_str(), Id);
 }
 
-bool Guild::LoadGuildFromDB(uint32 GuildId, bool fullload)
+bool Guild::LoadGuildFromDB(uint32 GuildId)
 {
-    if (fullload)
+    if (!LoadRanksFromDB(GuildId))
+        return false;
+
+    if (!LoadMembersFromDB(GuildId))
+        return false;
+
+    QueryResultAutoPtr result = RealmDataDatabase.PQuery("SELECT MAX(TabId) FROM guild_bank_tab WHERE guildid='%u'", GuildId);
+    if (result)
     {
-        if (m_guildloaded)
-            return false;
-
-        if (!LoadRanksFromDB(GuildId))
-            return false;
-
-        if (!LoadMembersFromDB(GuildId))
-            return false;
-
-        QueryResultAutoPtr result = RealmDataDatabase.PQuery("SELECT MAX(TabId) FROM guild_bank_tab WHERE guildid='%u'", GuildId);
-        if (result)
-        {
-            Field *fields = result->Fetch();
-            purchased_tabs = fields[0].GetUInt8() + 1;            // Because TabId begins at 0
-        }
-        else
-            purchased_tabs = 0;
-
-        LoadBankRightsFromDB(GuildId);                          // Must be after LoadRanksFromDB because it populates rank struct
-
-
-                                                                // If the leader does not exist attempt to promote another member
-        if (!sObjectMgr.GetPlayerAccountIdByGUID(leaderGuid))
-        {
-            DelMember(leaderGuid);
-
-            // check no members case (disbanded)
-            if (members.empty())
-                return false;
-        }
-        m_guildloaded = true;
-        return true; // rest is already loaded
-
+        Field *fields = result->Fetch();
+        purchased_tabs = fields[0].GetUInt8()+1;            // Because TabId begins at 0
     }
-    // load called from guildmgr at server start, only basic stuff
-    //                                                           0        1     2           3            4            5           6
-    QueryResultAutoPtr result = RealmDataDatabase.PQuery("SELECT guildid, name, leaderguid, EmblemStyle, EmblemColor, BorderStyle, BorderColor,"
+    else
+        purchased_tabs = 0;
+
+    LoadBankRightsFromDB(GuildId);                          // Must be after LoadRanksFromDB because it populates rank struct
+
+    //                                        0        1     2           3            4            5           6
+    result = RealmDataDatabase.PQuery("SELECT guildid, name, leaderguid, EmblemStyle, EmblemColor, BorderStyle, BorderColor,"
     //   7                8     9     10          11          12
         "BackgroundColor, info, motd, createdate, BankMoney, flags FROM guild WHERE guildid = '%u'", GuildId);
 
@@ -250,7 +229,16 @@ bool Guild::LoadGuildFromDB(uint32 GuildId, bool fullload)
     CreatedMonth = (dTime/100)%100;
     CreatedYear  = (dTime/10000)%10000;
 
-    
+    // If the leader does not exist attempt to promote another member
+    if (!sObjectMgr.GetPlayerAccountIdByGUID(leaderGuid))
+    {
+        DelMember(leaderGuid);
+
+        // check no members case (disbanded)
+        if (members.empty())
+            return false;
+    }
+
     sLog.outDebug("Guild %u Creation time Loaded day: %u, month: %u, year: %u", GuildId, CreatedDay, CreatedMonth, CreatedYear);
     m_bankloaded = false;
     m_eventlogloaded = false;
@@ -841,11 +829,8 @@ void Guild::Roster(WorldSession *session)
     sLog.outDebug("WORLD: Sent (SMSG_GUILD_ROSTER)");
 }
 
-bool Guild::Query(WorldSession *session)
+void Guild::Query(WorldSession *session)
 {
-    if (!m_guildloaded && !LoadGuildFromDB(GetId(), true)) //guild is queried first time when one of its members is on loading screen
-        return false;
-
     WorldPacket data(SMSG_GUILD_QUERY_RESPONSE, (8*32+200));// we can only guess size
 
     data << Id;
@@ -867,7 +852,6 @@ bool Guild::Query(WorldSession *session)
 
     session->SendPacket(&data);
     sLog.outDebug("WORLD: Sent (SMSG_GUILD_QUERY_RESPONSE)");
-    return true;
 }
 
 void Guild::SetEmblem(uint32 emblemStyle, uint32 emblemColor, uint32 borderStyle, uint32 borderColor, uint32 backgroundColor)
