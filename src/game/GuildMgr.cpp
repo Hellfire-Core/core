@@ -138,7 +138,7 @@ void GuildMgr::LoadGuilds()
         ++count;
 
         newguild = new Guild;
-        if ( !newguild->LoadGuildFromDB( fields[0].GetUInt32() ) )
+        if (!newguild->LoadGuildFromDB(fields[0].GetUInt32(), false));
         {
             newguild->Disband();
             delete newguild;
@@ -147,7 +147,7 @@ void GuildMgr::LoadGuilds()
         AddGuild(newguild);
 
     }
-    while ( result->NextRow( ));
+    while (result->NextRow());
 
 
     result = RealmDataDatabase.Query("SELECT MAX(guildid) FROM guild");

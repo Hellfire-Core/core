@@ -323,7 +323,7 @@ class Guild
         uint32 GetMemberSize() const { return members.size(); }
         uint32 GetAccountsCount() const { return AccountsCount; }
 
-        bool LoadGuildFromDB(uint32 GuildId);
+        bool LoadGuildFromDB(uint32 GuildId, bool fullload);
         bool LoadRanksFromDB(uint32 GuildId);
         bool LoadMembersFromDB(uint32 GuildId);
 
@@ -375,7 +375,7 @@ class Guild
         }
 
         void Roster(WorldSession *session);
-        void Query(WorldSession *session);
+        bool Query(WorldSession *session);
 
         void UpdateLogoutTime(uint64 guid);
         // Guild eventlog
@@ -476,6 +476,7 @@ class Guild
         GuildBankEventLog m_GuildBankEventLog_Money;
         GuildBankEventLog m_GuildBankEventLog_Item[GUILD_BANK_MAX_TABS];
 
+        bool m_guildloaded;
         bool m_bankloaded;
         bool m_eventlogloaded;
         uint32 m_onlinemembers;
