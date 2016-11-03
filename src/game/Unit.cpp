@@ -4017,7 +4017,7 @@ bool Unit::CheckForStrongerAuras(Aura* Aur)
         Unit::AuraList list = GetAurasByType(SPELL_AURA_MOD_STAT);
         for (Unit::AuraList::iterator itr = list.begin(); itr != list.end(); itr++)
         {
-            if ((*itr)->GetMiscValue() == Aur->GetMiscValue() && (*itr)->GetModifierValue() > Aur->GetModifierValue()
+            if ((*itr)->GetMiscValue() == Aur->GetMiscValue() && (*itr)->GetModifierValue() >= Aur->GetModifierValue()
                 && SpellMgr::IsNoStackSpellDueToSpell(Aur->GetId(), (*itr)->GetId(), (Aur->GetCasterGUID() == (*itr)->GetCasterGUID())))
                 return true;
 
