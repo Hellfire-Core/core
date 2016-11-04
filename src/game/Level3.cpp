@@ -3285,6 +3285,8 @@ bool ChatHandler::HandleGuildRankCommand(const char *args)
         return false;
 
     targetGuild->ChangeRank (plGuid,newrank);
+    if (newrank == GR_GUILDMASTER)
+        targetGuild->SetLeader(plGuid);
 
     return true;
 }
