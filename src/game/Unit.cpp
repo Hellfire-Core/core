@@ -4018,7 +4018,7 @@ bool Unit::CheckForStrongerAuras(Aura* Aur)
         for (Unit::AuraList::iterator itr = list.begin(); itr != list.end(); itr++)
         {
             if ((*itr)->GetMiscValue() == Aur->GetMiscValue() && (*itr)->GetModifierValue() > Aur->GetModifierValue()
-                && SpellMgr::IsNoStackSpellDueToSpell(Aur->GetId(), (*itr)->GetId(), (Aur->GetCasterGUID() == (*itr)->GetCasterGUID())))
+                && SpellMgr::IsNoStackSpellDueToSpell(spellProto, (*itr)->GetSpellProto(), (Aur->GetCasterGUID() == (*itr)->GetCasterGUID()), Aur->GetEffIndex()))
                 return true;
 
         }
@@ -4115,7 +4115,7 @@ bool Unit::RemoveNoStackAurasDueToAura(Aura *Aur)
 
         bool sameCaster = Aur->GetCasterGUID() == (*i).second->GetCasterGUID();
 
-        if (SpellMgr::IsNoStackSpellDueToSpell(spellId, i_spellId, sameCaster))
+        if (uint8 noStack = SpellMgr::IsNoStackSpellDueToSpell(spellProto, i_spellProto, sameCaster, Aur->GetEffIndex()))
         {
 
             // Its a parent aura (create this aura in ApplyModifier)
@@ -4126,13 +4126,17 @@ bool Unit::RemoveNoStackAurasDueToAura(Aura *Aur)
             }
 
             uint64 caster = (*i).second->GetCasterGUID();
-            // Remove all auras by aura caster
-            for (uint8 a=0;a<3;++a)
+
+            // Remove auras by aura caster
+            for (uint8 a = 0; a < 3; ++a)
             {
+                if (((1 << a) & noStack) == 0) // flag not set, do not remove
+                    continue;
+
                 spellEffectPair spair = spellEffectPair(i_spellId, a);
                 for (AuraMap::iterator iter = m_Auras.lower_bound(spair); iter != m_Auras.upper_bound(spair);)
                 {
-                    if (iter->second->GetCasterGUID()==caster)
+                    if (iter->second->GetCasterGUID() == caster)
                     {
                         RemoveAura(iter, AURA_REMOVE_BY_STACK);
                         iter = m_Auras.lower_bound(spair);
@@ -7002,7 +7006,7 @@ bool Unit::HandleProcTriggerSpell(Unit *pVictim, uint32 damage, Aura* triggeredB
         if (SpellMgr::IsPassiveSpell(aura_id) || aura_id == trigger_spell_id || aura_id == triggeredByAura->GetSpellProto()->Id)
             continue;
 
-        if (SpellMgr::IsNoStackSpellDueToSpell(trigger_spell_id, (*i).second->GetSpellProto()->Id, ((*i).second->GetCasterGUID() == GetGUID())))
+        if (SpellMgr::IsNoStackSpellDueToSpell(triggerEntry, (*i).second->GetSpellProto(), ((*i).second->GetCasterGUID() == GetGUID())))
             return false;
     }
 

@@ -568,7 +568,7 @@ class HELLGROUND_IMPORT_EXPORT SpellMgr
         bool IsRankSpellDueToSpell(SpellEntry const *spellInfo_1,uint32 spellId_2) const;
 
         static bool canStackSpellRanks(SpellEntry const *spellInfo);
-        static bool IsNoStackSpellDueToSpell(uint32 spellId_1, uint32 spellId_2, bool sameCaster);
+        static uint8 IsNoStackSpellDueToSpell(SpellEntry const* newSpell, SpellEntry const* oldSpell, bool sameCaster, uint8 effect = 3);
         static bool IsSpecialStackCase(SpellEntry const *spellInfo_1, SpellEntry const *spellInfo_2, bool sameCaster, bool recur = true);
         static bool IsSpecialNoStackCase(SpellEntry const *spellInfo_1, SpellEntry const *spellInfo_2, bool sameCaster, bool recur = true);
 
@@ -666,6 +666,7 @@ class HELLGROUND_IMPORT_EXPORT SpellMgr
         // Different spell properties
         static uint32 GetSpellCastTime(SpellEntry const* spellInfo, Spell const* spell = NULL);
         static SpellSpecific GetSpellSpecific(uint32);
+        static SpellSpecific GetSpellSpecific(SpellEntry const*);
 
         static float GetSpellRadiusForHostile(SpellRadiusEntry const*);
         static float GetSpellRadiusForFriend(SpellRadiusEntry const*);

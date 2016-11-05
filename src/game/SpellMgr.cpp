@@ -424,6 +424,11 @@ int32 SpellMgr::CompareAuraRanks(uint32 spellId_1, uint32 effIndex_1, uint32 spe
 SpellSpecific SpellMgr::GetSpellSpecific(uint32 spellId)
 {
     SpellEntry const *spellInfo = sSpellStore.LookupEntry(spellId);
+    return GetSpellSpecific(spellInfo);
+}
+
+SpellSpecific SpellMgr::GetSpellSpecific(SpellEntry const* spellInfo)
+{
     if (!spellInfo)
         return SPELL_NORMAL;
 
@@ -969,7 +974,7 @@ bool SpellMgr::IsSingleTargetSpell(SpellEntry const *spellInfo)
         return true;
 
     // TODO - need found Judgements rule
-    switch (SpellMgr::GetSpellSpecific(spellInfo->Id))
+    switch (SpellMgr::GetSpellSpecific(spellInfo))
     {
         case SPELL_JUDGEMENT:
             return true;
@@ -993,13 +998,13 @@ bool SpellMgr::IsSingleTargetSpells(SpellEntry const *spellInfo1, SpellEntry con
         return true;
 
     // TODO - need found Judgements rule
-    SpellSpecific spec1 = SpellMgr::GetSpellSpecific(spellInfo1->Id);
+    SpellSpecific spec1 = SpellMgr::GetSpellSpecific(spellInfo1);
     // spell with single target specific types
     switch (spec1)
     {
         case SPELL_JUDGEMENT:
         case SPELL_MAGE_POLYMORPH:
-            if (SpellMgr::GetSpellSpecific(spellInfo2->Id) == spec1)
+            if (SpellMgr::GetSpellSpecific(spellInfo2) == spec1)
                 return true;
             break;
     }
@@ -1835,36 +1840,48 @@ bool SpellMgr::canStackSpellRanks(SpellEntry const *spellInfo)
     return true;
 }
 
-bool SpellMgr::IsNoStackSpellDueToSpell(uint32 spellId_1, uint32 spellId_2, bool sameCaster)
+uint8 SpellMgr::IsNoStackSpellDueToSpell(SpellEntry const* spellInfo_1, SpellEntry const* spellInfo_2, bool sameCaster, uint8 effect)
 {
-    //if(spellId_1 == spellId_2) // auras due to the same spell
-    //    return false;
-    SpellEntry const *spellInfo_1 = sSpellStore.LookupEntry(spellId_1);
-    SpellEntry const *spellInfo_2 = sSpellStore.LookupEntry(spellId_2);
-
+    // this funcion returns flag describing which effect of spellInfo_2 must be removed when applying (spellInfo_1,effect)
     if (!spellInfo_1 || !spellInfo_2)
-        return false;
+        return 0;
 
     if (SpellMgr::IsSpecialStackCase(spellInfo_1, spellInfo_2, sameCaster))
-        return false;
+        return 0;
 
     if (SpellMgr::IsSpecialNoStackCase(spellInfo_1, spellInfo_2, sameCaster))
-        return true;
+        return 0x7;
 
-    SpellSpecific spellId_spec_1 = SpellMgr::GetSpellSpecific(spellId_1);
-    SpellSpecific spellId_spec_2 = SpellMgr::GetSpellSpecific(spellId_2);
+    // kiru song of victory, its special no stack, but uses effectid and returns other values than 0x7
+    if (spellInfo_1->Id == 46302) // song is a new spell
+    {
+        if (effect == 1 && spellInfo_2->SpellFamilyName == SPELLFAMILY_PRIEST && spellInfo_2->SpellFamilyFlags & 8)// stamina
+            return 0x7;
+        if (effect == 0 && spellInfo_2->SpellFamilyName == SPELLFAMILY_MAGE && spellInfo_2->SpellFamilyFlags & 1024)// intelect
+            return 0x7;
+    }
+    if (spellInfo_2->Id == 46302) // song is old spell, remove only proper effect
+    {
+        if (spellInfo_1->SpellFamilyName == SPELLFAMILY_PRIEST && spellInfo_1->SpellFamilyFlags & 8)// stamina
+            return 0x2;
+        if (spellInfo_1->SpellFamilyName == SPELLFAMILY_MAGE && spellInfo_1->SpellFamilyFlags & 1024)// intelect
+            return 0x1;
+    }
+
+    SpellSpecific spellId_spec_1 = SpellMgr::GetSpellSpecific(spellInfo_1);
+    SpellSpecific spellId_spec_2 = SpellMgr::GetSpellSpecific(spellInfo_2);
     if (spellId_spec_1 && spellId_spec_2)
         if (SpellMgr::IsSingleFromSpellSpecificPerTarget(spellId_spec_1, spellId_spec_2)
             ||(SpellMgr::IsSingleFromSpellSpecificPerCaster(spellId_spec_1, spellId_spec_2) && sameCaster) ||
             (SpellMgr::IsSingleFromSpellSpecificRanksPerTarget(spellId_spec_1, spellId_spec_2) && sSpellMgr.IsRankSpellDueToSpell(spellInfo_1, spellId_spec_2)))
-            return true;
+            return 0x7;
 
     // spells with different specific always stack
     if (spellId_spec_1 != spellId_spec_2)
-        return false;
+        return 0;
 
     if (spellInfo_1->SpellFamilyName != spellInfo_2->SpellFamilyName)
-        return false;
+        return 0;
 
     // generic spells
     if (!spellInfo_1->SpellFamilyName)
@@ -1872,14 +1889,14 @@ bool SpellMgr::IsNoStackSpellDueToSpell(uint32 spellId_1, uint32 spellId_2, bool
         if (!spellInfo_1->SpellIconID
             || spellInfo_1->SpellIconID == 1
             || spellInfo_1->SpellIconID != spellInfo_2->SpellIconID)
-            return false;
+            return 0;
     }
 
     // check for class spells
     else
     {
         if (spellInfo_1->SpellFamilyFlags != spellInfo_2->SpellFamilyFlags)
-            return false;
+            return 0;
     }
 
     if (!sameCaster)
@@ -1900,24 +1917,24 @@ bool SpellMgr::IsNoStackSpellDueToSpell(uint32 spellId_1, uint32 spellId_2, bool
                     case SPELL_AURA_POWER_BURN_MANA:
                     case SPELL_AURA_OBS_MOD_MANA:
                     case SPELL_AURA_OBS_MOD_HEALTH:
-                        return false;
+                        return 0;
                     default:
                         break;
                 }
     }
 
     //use data of highest rank spell(needed for spells which ranks have different effects)
-    spellInfo_1=sSpellStore.LookupEntry(sSpellMgr.GetLastSpellInChain(spellId_1));
-    spellInfo_2=sSpellStore.LookupEntry(sSpellMgr.GetLastSpellInChain(spellId_2));
+    spellInfo_1=sSpellStore.LookupEntry(sSpellMgr.GetLastSpellInChain(spellInfo_1->Id));
+    spellInfo_2=sSpellStore.LookupEntry(sSpellMgr.GetLastSpellInChain(spellInfo_2->Id));
 
     //if spells have exactly the same effect they cannot stack
     for (uint32 i = 0; i < 3; ++i)
         if (spellInfo_1->Effect[i] != spellInfo_2->Effect[i]
             || spellInfo_1->EffectApplyAuraName[i] != spellInfo_2->EffectApplyAuraName[i]
             || spellInfo_1->EffectMiscValue[i] != spellInfo_2->EffectMiscValue[i]) // paladin resist aura
-            return false; // need itemtype check? need an example to add that check
+            return 0; // need itemtype check? need an example to add that check
 
-    return true;
+    return 0x7;
 }
 
 bool SpellMgr::IsSpecialStackCase(SpellEntry const *spellInfo_1, SpellEntry const *spellInfo_2, bool sameCaster, bool recur)
@@ -1988,14 +2005,6 @@ bool SpellMgr::IsSpecialNoStackCase(SpellEntry const *spellInfo_1, SpellEntry co
             case 2825:
                 return true;
         }
-    }
-
-    if (spellInfo_1->Id == 46302) // kiru song of victory
-    {
-        if (spellInfo_2->SpellFamilyName == SPELLFAMILY_PRIEST && spellInfo_2->SpellFamilyFlags & 8)// priest stamina
-            return true;
-        if (spellInfo_2->SpellFamilyName == SPELLFAMILY_MAGE && spellInfo_2->SpellFamilyFlags & 1024)// mage intelect
-            return true;
     }
 
     // Scrolls no stack case

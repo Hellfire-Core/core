@@ -421,6 +421,11 @@ void WorldSession::SendExternalMails()
     if (!sWorld.getConfig(CONFIG_EXTERNAL_MAIL))
         return;
 
+    Player *receiver = GetPlayer();
+
+    if (!receiver)
+        return;
+
     QueryResultAutoPtr result = RealmDataDatabase.PQuery("SELECT id, subject, message, money, item, item_count FROM mail_external WHERE receiver = %u", GetPlayer()->GetGUIDLow());
     if (result)
     {
@@ -434,31 +439,32 @@ void WorldSession::SendExternalMails()
             uint32 ItemID = fields[4].GetUInt32();
             uint32 ItemCount = fields[5].GetUInt32();
 
-            Player *receiver = GetPlayer();
+            sLog.outDebug("EXTERNAL MAIL> Sending mail to %u, Item:%u", receiver->GetGUIDLow(), ItemID);
+            uint32 itemTextId = !message.empty() ? sObjectMgr.CreateItemText(message) : 0;
 
-            if (receiver != 0)
+            RealmDataDatabase.PExecute("DELETE FROM mail_external WHERE id=%u", id);
+
+ 
+            if (ItemID != 0)
             {
-                sLog.outDebug("EXTERNAL MAIL> Sending mail to %u, Item:%u", receiver->GetGUIDLow(), ItemID);
-                uint32 itemTextId = !message.empty() ? sObjectMgr.CreateItemText(message) : 0;
-
-                RealmDataDatabase.PExecute("DELETE FROM mail_external WHERE id=%u", id);
-
-                if (ItemID != 0)
+                while (ItemCount)
                 {
+
                     Item* ToMailItem = Item::CreateItem(ItemID, ItemCount, receiver);
-                    ToMailItem -> SaveToDB();
+                    ItemCount -= ToMailItem->GetCount();
+                    ToMailItem->SaveToDB();
 
                     MailDraft(subject, itemTextId)
                         .AddItem(ToMailItem)
                         .SetMoney(money)
                         .SendMailTo(MailReceiver(receiver), MailSender(MAIL_NORMAL, uint32(0), MAIL_STATIONERY_GM), MAIL_CHECK_MASK_RETURNED);
                 }
-                else
-                {
-                    MailDraft(subject, itemTextId)
-                        .SetMoney(money)
-                        .SendMailTo(MailReceiver(receiver), MailSender(MAIL_NORMAL, uint32(0), MAIL_STATIONERY_GM), MAIL_CHECK_MASK_RETURNED);
-                }
+            }
+            else
+            {
+                MailDraft(subject, itemTextId)
+                    .SetMoney(money)
+                    .SendMailTo(MailReceiver(receiver), MailSender(MAIL_NORMAL, uint32(0), MAIL_STATIONERY_GM), MAIL_CHECK_MASK_RETURNED);
             }
         }
         while(result -> NextRow());
