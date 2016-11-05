@@ -449,8 +449,8 @@ void WorldSession::SendExternalMails()
             {
                 while (ItemCount)
                 {
-
-                    Item* ToMailItem = Item::CreateItem(ItemID, ItemCount, receiver);
+                    uint32 currentCount = ItemCount;
+                    Item* ToMailItem = Item::CreateItem(ItemID, currentCount, receiver);
                     ItemCount -= ToMailItem->GetCount();
                     ToMailItem->SaveToDB();
 

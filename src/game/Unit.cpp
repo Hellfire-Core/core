@@ -4126,7 +4126,7 @@ bool Unit::RemoveNoStackAurasDueToAura(Aura *Aur)
             }
 
             uint64 caster = (*i).second->GetCasterGUID();
-
+            bool removed = false;
             // Remove auras by aura caster
             for (uint8 a = 0; a < 3; ++a)
             {
@@ -4140,11 +4140,14 @@ bool Unit::RemoveNoStackAurasDueToAura(Aura *Aur)
                     {
                         RemoveAura(iter, AURA_REMOVE_BY_STACK);
                         iter = m_Auras.lower_bound(spair);
+                        removed = true;
                     }
                     else
                         ++iter;
                 }
             }
+            if (!removed) // no aura was removed in this pass, just go for next one
+                continue;
 
             if (m_Auras.empty())
                 break;
