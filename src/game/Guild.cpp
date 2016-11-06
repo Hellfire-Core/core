@@ -666,6 +666,9 @@ std::string Guild::GetRankName(uint32 rankId)
 
 uint32 Guild::GetRankRights(uint32 rankId)
 {
+    if (rankId == GR_GUILDMASTER)
+        return GR_RIGHT_ALL;
+
     if (rankId >= m_ranks.size())
         return 0;
 
@@ -1253,6 +1256,9 @@ void Guild::CreateBankRightForTab(uint32 rankId, uint8 TabId)
 
 uint32 Guild::GetBankRights(uint32 rankId, uint8 TabId) const
 {
+    if (rankId == GR_GUILDMASTER)
+        return GUILD_BANK_RIGHT_FULL;
+
     if (rankId >= m_ranks.size() || TabId >= GUILD_BANK_MAX_TABS)
         return 0;
 
