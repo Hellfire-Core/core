@@ -256,7 +256,6 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
 
     if (!result)
     {
-        mover->SendCombatStats(1 << COMBAT_STATS_TEST, "tries to move in root %f %f", NULL, movementInfo.GetPos()->x, movementInfo.GetPos()->y);
         WorldPacket data(SMSG_FORCE_MOVE_ROOT, mover->GetPackGUID().size() + 4);
         data << mover->GetPackGUID();
         data << mover->GetUnitStateMgr().GetCounter(UNIT_ACTION_ROOT);
@@ -285,6 +284,8 @@ bool WorldSession::HandleMoverRelocation(MovementInfo& movementInfo)
                 mover->m_movementInfo.pos.y != movementInfo.pos.y ||
                 mover->m_movementInfo.pos.z != movementInfo.pos.z) // allow rotating in roots
             {
+                mover->SendCombatStats(1 << COMBAT_STATS_TEST, "tries to move in root from %f %f to %f %f", NULL,
+                    mover->m_movementInfo.pos.x, mover->m_movementInfo.pos.y, movementInfo.GetPos()->x, movementInfo.GetPos()->y);
                 movementInfo.pos.x = mover->m_movementInfo.pos.x;
                 movementInfo.pos.y = mover->m_movementInfo.pos.y;
                 movementInfo.pos.z = mover->m_movementInfo.pos.z;

@@ -20078,7 +20078,7 @@ void Player::UpdateZoneDependentAuras(uint32 oldZone, uint32 newZone)
     }
     else if (newZone == 4080 || newZone == 4075 || newZone == 4131) // isle,swp,mgt
     {
-        if (!HasAura(46302))
+        if (!HasAura(46302,0) || !HasAura(46302,1)) // if at least one aura missing try to cast it
             CastSpell(this, 46302, true);
     }
 

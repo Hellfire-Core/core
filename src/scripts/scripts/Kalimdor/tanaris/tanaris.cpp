@@ -375,7 +375,10 @@ struct npc_OOX17AI : public npc_escortAI
 {
     npc_OOX17AI(Creature *c) : npc_escortAI(c) {}
 
-    void Reset() {}
+    void Reset()
+    {
+        m_creature->SetStandState(UNIT_STAND_STATE_DEAD);
+    }
 
     void EnterCombat(Unit* /*who*/)
     {
