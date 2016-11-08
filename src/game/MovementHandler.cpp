@@ -279,11 +279,10 @@ bool WorldSession::HandleMoverRelocation(MovementInfo& movementInfo)
 
     if (Player *plMover = mover->ToPlayer())
     {
+        plMover->m_desiredPosition = movementInfo.pos;
         if (mover->hasUnitState(UNIT_STAT_ROOT))
         {
-            if (mover->m_movementInfo.pos.x != movementInfo.pos.x ||
-                mover->m_movementInfo.pos.y != movementInfo.pos.y ||
-                mover->m_movementInfo.pos.z != movementInfo.pos.z) // allow rotating in roots
+            if (mover->m_movementInfo.pos != movementInfo.pos) // allow rotating in roots
             {
                 mover->SendCombatStats(1 << COMBAT_STATS_TEST, "tries to move in root from %f %f to %f %f", NULL,
                     mover->m_movementInfo.pos.x, mover->m_movementInfo.pos.y, movementInfo.GetPos()->x, movementInfo.GetPos()->y);
@@ -291,6 +290,7 @@ bool WorldSession::HandleMoverRelocation(MovementInfo& movementInfo)
                     current->SetPossiblePos(movementInfo.pos);
                 if (Spell* current = mover->GetCurrentSpell(CURRENT_AUTOREPEAT_SPELL))
                     current->SetPossiblePos(movementInfo.pos);
+                
                 movementInfo.pos.x = mover->m_movementInfo.pos.x;
                 movementInfo.pos.y = mover->m_movementInfo.pos.y;
                 movementInfo.pos.z = mover->m_movementInfo.pos.z;

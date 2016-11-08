@@ -206,7 +206,7 @@ bool Guild::LoadGuildFromDB(uint32 GuildId)
 
     if (!result)
         return false;
-
+    
     Field *fields = result->Fetch();
 
     Id = fields[0].GetUInt32();
@@ -1631,15 +1631,15 @@ void Guild::LoadGuildBankEventLogFromDB()
     // This cases can happen only if a crash occured somewhere and table has too many log entries
     if (!m_GuildBankEventLog_Money.empty())
     {
-        RealmDataDatabase.PExecute("DELETE FROM guild_bank_eventlog WHERE guildid=%u AND LogGuid < %u",
+        RealmDataDatabase.PExecute("DELETE FROM guild_bank_eventlog WHERE guildid=%u AND LogGuid < %u AND LogEntry in (4,5,6)",
             Id, m_GuildBankEventLog_Money.front()->LogGuid);
     }
     for (int i = 0; i < GUILD_BANK_MAX_TABS; ++i)
     {
         if (!m_GuildBankEventLog_Item[i].empty())
         {
-            RealmDataDatabase.PExecute("DELETE FROM guild_bank_eventlog WHERE guildid=%u AND LogGuid < %u",
-                Id, m_GuildBankEventLog_Item[i].front()->LogGuid);
+            RealmDataDatabase.PExecute("DELETE FROM guild_bank_eventlog WHERE guildid=%u AND LogGuid < %u AND TabId = %u",
+                Id, m_GuildBankEventLog_Item[i].front()->LogGuid,i);
         }
     }
 }

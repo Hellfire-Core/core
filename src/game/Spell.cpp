@@ -2329,7 +2329,7 @@ void Spell::prepare(SpellCastTargets * targets, Aura* triggeredByAura)
         m_triggeredByAuraSpell = triggeredByAura->GetSpellProto();
 
     m_caster->GetPosition(m_cast);
-    m_caster->GetPosition(m_possiblePos);
+    m_possiblePos = (m_caster->ToPlayer()) ? m_caster->ToPlayer()->m_desiredPosition : m_cast;
 
     // create and add update event for this spell
     SpellEvent* Event = new SpellEvent(this);
@@ -3009,7 +3009,8 @@ void Spell::update(uint32 difftime)
             if (m_cast != casterPos && casterPos != m_possiblePos)
             {
                 cancel(SPELL_FAILED_INT_CASTER_MOVED);
-                m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "caster moved, %f %f %f %f", NULL, m_cast.x, m_cast.y, casterPos.x, casterPos.y);
+                m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "caster moved, %f %f %f %f %f %f", NULL,
+                    m_cast.x, m_cast.y, m_possiblePos.x, m_possiblePos.y, casterPos.x, casterPos.y);
             }
         }
     }

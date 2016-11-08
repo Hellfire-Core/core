@@ -2090,6 +2090,7 @@ class HELLGROUND_EXPORT Player : public Unit
         /***                 VARIOUS SYSTEMS                   ***/
         /*********************************************************/
 
+        Position m_desiredPosition;
         uint32 m_lastFallTime;
         float  m_lastFallZ;
         void SetFallInformation(uint32 time, float z)

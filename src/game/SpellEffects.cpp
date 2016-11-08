@@ -7541,6 +7541,7 @@ void Spell::EffectCharge(uint32 /*i*/)
     {
         Position dest;
         target->GetPosition(dest);
+        dest.z += 2.0f;//prevent falling under textures
 
         float angle = m_caster->GetAngle(target) - m_caster->GetOrientation() - M_PI;
         m_caster->GetValidPointInAngle(dest, 2.0f, angle, false);
