@@ -39,7 +39,8 @@ EndScriptData */
 //Balnazzar spells
 #define SPELL_SHADOWSHOCK    20603 //AOE 740-860dmg
 #define SPELL_PSYCHICSCREAM    15398 //One target, might want to make a code selecting random target
-#define SPELL_DEEPSLEEP    24777 //AOE, ten sec
+//#define SPELL_DEEPSLEEP    24777 //AOE, ten sec
+#define SPELL_SLEEP        12098 // one target sleep
 #define SPELL_SHADOWBOLTVOLLEY    20741 //AOE, 255-345dmg
 //#define SPELL_MINDCONTROL    15690 //core support needed
 
@@ -268,7 +269,7 @@ struct boss_dathrohan_balnazzarAI : public ScriptedAI
 
                     target = SelectUnit(SELECT_TARGET_RANDOM,0);
                     if (target)
-                    DoCast(target,SPELL_DEEPSLEEP);
+                    DoCast(target,SPELL_SLEEP);
                 }
                 //15 seconds until we should cast this again
                 DeepSleep_Timer += 15000;

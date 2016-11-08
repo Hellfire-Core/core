@@ -38,6 +38,79 @@ bool GOUse_go_kariel_remains(Player *player, GameObject* _GO)
     return true;
 }
 
+#define NPC_STOMPER_KREEG 14322
+struct instance_dire_maul : public ScriptedInstance
+{
+    instance_dire_maul(Map *map) : ScriptedInstance(map) { kingdead = false; };
+
+    bool kingdead;
+    uint64 stomperGuid;
+
+    void OnCreatureCreate(Creature *creature, uint32 creature_entry)
+    {
+        if (creature_entry == NPC_STOMPER_KREEG)
+        {
+            stomperGuid = creature->GetGUID();
+            if (kingdead)
+                creature->setFaction(35);
+        }
+    }
+
+
+    void SetData(uint32 type, uint32 data)
+    {
+        if (type == 1)
+        {
+            kingdead = (data > 0);
+            if (Creature* stomper = GetCreature(stomperGuid))
+                stomper->setFaction(kingdead ? 35 : 1374);
+            SaveToDB();
+        }
+    }
+
+    uint32 GetData(uint32 data)
+    {
+        if (data == 1)
+            return kingdead;
+        return 0;
+    }
+
+
+    std::string GetSaveData()
+    {
+        OUT_SAVE_INST_DATA;
+
+        std::ostringstream stream;
+        stream << kingdead;
+
+        OUT_SAVE_INST_DATA_COMPLETE;
+
+        return stream.str();
+    }
+
+    void Load(const char* in)
+    {
+        if (!in)
+        {
+            OUT_LOAD_INST_DATA_FAIL;
+            return;
+        }
+
+        OUT_LOAD_INST_DATA(in);
+
+        std::istringstream stream(in);
+        stream >> kingdead;
+
+        OUT_LOAD_INST_DATA_COMPLETE;
+    }
+};
+
+
+InstanceData* GetInstanceData_instance_dire_maul(Map* map)
+{
+    return new instance_dire_maul(map);
+}
+
 void AddSC_dire_maul()
 {
     Script* newscript;
@@ -45,5 +118,10 @@ void AddSC_dire_maul()
     newscript = new Script;
     newscript->Name="go_kariel_remains";
     newscript->pGOUse =  &GOUse_go_kariel_remains;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "instance_dire_maul";
+    newscript->GetInstanceData = &GetInstanceData_instance_dire_maul;
     newscript->RegisterSelf();
 }

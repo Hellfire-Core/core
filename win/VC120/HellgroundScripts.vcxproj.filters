@@ -1570,6 +1570,12 @@
     <ClCompile Include="..\..\src\scripts\scripts\boss\HoggerThe.cpp">
       <Filter>Scripts\boss</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\scripts\scripts\Kalimdor\maraudon\maraudon.cpp">
+      <Filter>Scripts\Kalimdor\Maraudon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\scripts\scripts\Eastern Kingdoms\sunken_temple\sunken_temple.cpp">
+      <Filter>Scripts\Eastern Kingdoms\Sunken Temple</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\scripts\scripts\Eastern Kingdoms\deadmines\def_deadmines.h">

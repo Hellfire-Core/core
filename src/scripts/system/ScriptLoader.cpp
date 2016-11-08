@@ -355,6 +355,7 @@ extern void AddSC_magisters_terrace_trash();
 extern void AddSC_instance_magisters_terrace();
 
 //Maraudon
+extern void AddSC_maraudon();
 extern void AddSC_boss_celebras_the_cursed();
 extern void AddSC_boss_landslide();
 extern void AddSC_boss_noxxion();
@@ -977,6 +978,7 @@ void AddScripts()
     AddSC_instance_magisters_terrace();
 
     //Maraudon
+    AddSC_maraudon();
     AddSC_boss_celebras_the_cursed();
     AddSC_boss_landslide();
     AddSC_boss_noxxion();
