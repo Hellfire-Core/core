@@ -135,11 +135,11 @@ bool GO_use_atalai_statue(Player* plr, GameObject* gob)
     return true;
 }
 
-void AddSC_dire_maul()
+void AddSC_sunken_temple()
 {
     Script* newscript;
     newscript = new Script;
-    newscript->Name = "instance_dire_maul";
+    newscript->Name = "instance_sunken_temple";
     newscript->GetInstanceData = &GetInstanceData_instance_sunken_temple;
     newscript->RegisterSelf();
 
