@@ -489,8 +489,11 @@ class Spell
         void AddTriggeredSpell(SpellEntry const* spell) { if (spell) m_TriggerSpells.push_back(spell); }
 
         void CleanupTargetList();
-
+        
         void SetSpellValue(SpellValueMod mod, int32 value);
+
+        // if player was moving when rooted client will try to continue moving after unrooting even if player is not clicking to move anymore
+        void SetPossiblePos(Position& pos) { m_possiblePos = pos; }
 
         SpellEntry const* GetSpellEntry() const { return m_spellInfo; }
 
@@ -636,6 +639,7 @@ class Spell
         Timer m_autocastDelayTimer;
 
         Position m_cast;
+        Position m_possiblePos;
 
         bool IsTriggeredSpell() const { return m_IsTriggeredSpell; }
         bool IsAutoShootSpell() const { return IsAutoRepeat() && IsRangedSpell(); }

@@ -987,15 +987,19 @@ void Guild::UnloadGuildEventlog()
 // This will renum guids used at load to prevent always going up until infinit
 void Guild::RenumGuildEventlog()
 {
-    RealmDataDatabase.PExecute("UPDATE guild_eventlog AS target INNER JOIN (SELECT *, (SELECT @COUNT := -1) FROM guild_eventlog WHERE guildid = %u ORDER BY logguid ASC) "
-                                   "AS source ON source.logguid = target.logguid AND source.guildid = target.guildid SET target.logguid = (@COUNT := @COUNT + 1);", Id);
-
     QueryResultAutoPtr result = RealmDataDatabase.PQuery("SELECT Max(LogGuid) FROM guild_eventlog WHERE guildid = %u", Id);
     if (!result)
         return;
 
     Field *fields = result->Fetch();
     GuildEventlogMaxGuid = fields[0].GetUInt32()+1;
+
+    if (GuildEventlogMaxGuid > GUILD_LOGS_MAX_GUID)
+    {
+        RealmDataDatabase.PExecute("DELETE FROM guild_eventlog WHERE guildid = %u AND LogGuid < %u", Id, (GUILD_LOGS_MAX_GUID - GUILD_EVENTLOG_MAX_ENTRIES));
+        RealmDataDatabase.PExecute("UPDATE guild_eventlog SET LogGuid = LogGuid - %u WHERE guildid = %u", GUILD_LOGS_MAX_GUID, Id);
+        GuildEventlogMaxGuid -= GUILD_LOGS_MAX_GUID;
+    }
 }
 
 // Add entry to guild eventlog
@@ -1004,14 +1008,7 @@ void Guild::LogGuildEvent(uint8 EventType, uint32 PlayerGuid1, uint32 PlayerGuid
     GuildEventlogEntry *NewEvent = new GuildEventlogEntry;
     // Fill entry
 
-    QueryResultAutoPtr result = RealmDataDatabase.PQuery("SELECT Max(LogGuid) FROM guild_eventlog WHERE guildid = %u", Id);
-    if (!result)
-        return;
-
-    Field *fields = result->Fetch();
-    GuildEventlogMaxGuid = fields[0].GetUInt32() + 1;
-
-    NewEvent->LogGuid = GuildEventlogMaxGuid;
+    NewEvent->LogGuid = GuildEventlogMaxGuid++;
     NewEvent->EventType = EventType;
     NewEvent->PlayerGuid1 = PlayerGuid1;
     NewEvent->PlayerGuid2 = PlayerGuid2;
@@ -1777,15 +1774,20 @@ void Guild::LogBankEvent(uint8 LogEntry, uint8 TabId, uint32 PlayerGuidLow, uint
 // This will renum guids used at load to prevent always going up until infinit
 void Guild::RenumBankLogs()
 {
-    RealmDataDatabase.PExecute("UPDATE guild_bank_eventlog AS target INNER JOIN (SELECT *, (SELECT @COUNT := -1) FROM guild_bank_eventlog WHERE guildid = %u ORDER BY logguid ASC) "
-                                   "AS source ON source.logguid = target.logguid AND source.guildid = target.guildid SET target.logguid = (@COUNT := @COUNT + 1);", Id);
-
     QueryResultAutoPtr result = RealmDataDatabase.PQuery("SELECT Max(LogGuid) FROM guild_bank_eventlog WHERE guildid = %u", Id);
     if (!result)
         return;
 
     Field *fields = result->Fetch();
     LogMaxGuid = fields[0].GetUInt32()+1;
+
+    if (LogMaxGuid > GUILD_LOGS_MAX_GUID)
+    {
+        //there are 7 logs stored together, so dont cut down to only GUILD_BANK_MAX_LOGS
+        RealmDataDatabase.PExecute("DELETE FROM guild_bank_eventlog WHERE guildid = %u AND LogGuid < %u", Id, (GUILD_LOGS_MAX_GUID - (GUILD_BANK_MAX_LOGS*10)));
+        RealmDataDatabase.PExecute("UPDATE guild_bank_eventlog SET LogGuid = LogGuid - %u WHERE guildid = %u", GUILD_LOGS_MAX_GUID, Id);
+        LogMaxGuid -= GUILD_LOGS_MAX_GUID;
+    }
 }
 
 bool Guild::AddGBankItemToDB(uint32 GuildId, uint32 BankTab , uint32 BankTabSlot , uint32 GUIDLow, uint32 Entry)

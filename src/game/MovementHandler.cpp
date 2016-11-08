@@ -34,6 +34,7 @@
 #include "AntiCheat.h"
 #include "ObjectMgr.h"
 #include "Language.h"
+#include "Spell.h"
 
 void WorldSession::HandleMoveWorldportAckOpcode(WorldPacket & /*recv_data*/)
 {
@@ -286,6 +287,10 @@ bool WorldSession::HandleMoverRelocation(MovementInfo& movementInfo)
             {
                 mover->SendCombatStats(1 << COMBAT_STATS_TEST, "tries to move in root from %f %f to %f %f", NULL,
                     mover->m_movementInfo.pos.x, mover->m_movementInfo.pos.y, movementInfo.GetPos()->x, movementInfo.GetPos()->y);
+                if (Spell* current = mover->GetCurrentSpell(CURRENT_GENERIC_SPELL))
+                    current->SetPossiblePos(movementInfo.pos);
+                if (Spell* current = mover->GetCurrentSpell(CURRENT_AUTOREPEAT_SPELL))
+                    current->SetPossiblePos(movementInfo.pos);
                 movementInfo.pos.x = mover->m_movementInfo.pos.x;
                 movementInfo.pos.y = mover->m_movementInfo.pos.y;
                 movementInfo.pos.z = mover->m_movementInfo.pos.z;
