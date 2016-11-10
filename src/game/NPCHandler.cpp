@@ -574,6 +574,7 @@ void WorldSession::SendStablePet(uint64 guid)
 
 void WorldSession::HandleStablePet(WorldPacket & recv_data)
 {
+    GetPlayer()->SendCombatStats(1 << COMBAT_STATS_TEST, "StableStablePet", NULL);
     CHECK_PACKET_SIZE(recv_data, 8);
 
     sLog.outDebug("WORLD: Recv CMSG_STABLE_PET");
@@ -640,6 +641,7 @@ void WorldSession::HandleStablePet(WorldPacket & recv_data)
 
 void WorldSession::HandleUnstablePet(WorldPacket & recv_data)
 {
+    GetPlayer()->SendCombatStats(1 << COMBAT_STATS_TEST, "StableUnstablePet", NULL);
     CHECK_PACKET_SIZE(recv_data, 8+4);
 
     sLog.outDebug("WORLD: Recv CMSG_UNSTABLE_PET.");
@@ -739,11 +741,13 @@ void WorldSession::HandleBuyStableSlot(WorldPacket & recv_data)
 
 void WorldSession::HandleStableRevivePet(WorldPacket &/* recv_data */)
 {
+    GetPlayer()->SendCombatStats(1 << COMBAT_STATS_TEST, "StableRevivePet", NULL);
     sLog.outDebug("HandleStableRevivePet: Not implemented");
 }
 
 void WorldSession::HandleStableSwapPet(WorldPacket & recv_data)
 {
+    GetPlayer()->SendCombatStats(1 << COMBAT_STATS_TEST, "StableSwapPet", NULL);
     CHECK_PACKET_SIZE(recv_data, 8+4);
 
     sLog.outDebug("WORLD: Recv CMSG_STABLE_SWAP_PET.");
