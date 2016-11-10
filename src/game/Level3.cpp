@@ -5753,12 +5753,28 @@ bool ChatHandler::HandleBanListEmailCommand(const char* args)
 }
 
 
-bool ChatHandler::HandleRespawnCommand(const char* /*args*/)
+bool ChatHandler::HandleRespawnCommand(const char* args)
 {
     Player* pl = m_session->GetPlayer();
 
     // accept only explicitly selected target (not implicitly self targeting case)
-    Unit* target = getSelectedUnit();
+    Unit* target = NULL;
+    if (args)
+    {
+        uint32 lowguid = atoi(args);
+        CreatureData const* data = sObjectMgr.GetCreatureData(lowguid);
+        if (data)
+            target = pl->GetMap()->GetCreature(MAKE_NEW_GUID(lowguid, data->id, HIGHGUID_UNIT));
+        if (!target)
+        {
+            PSendSysMessage(LANG_COMMAND_CREATGUIDNOTFOUND, lowguid);
+            SetSentErrorMessage(true);
+            return false;
+        }
+    }
+    else
+        target = getSelectedUnit();
+
     if (pl->GetSelection() && target)
     {
         if (target->GetTypeId()!=TYPEID_UNIT)

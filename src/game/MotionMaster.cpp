@@ -71,6 +71,9 @@ void MotionMaster::MoveRandom(float spawndist)
 
 void MotionMaster::MoveTargetedHome()
 {
+    if (m_owner->GetTypeId() == TYPEID_UNIT && m_owner->GetEntry() == 17982)
+        m_owner->SendCombatStats(1 << COMBAT_STATS_CRASHTEST, "Legoso move targetted home (and should not!)", NULL);
+
     m_owner->GetUnitStateMgr().DropActionHigherThen(UNIT_ACTION_PRIORITY_HOME);
 
     if (m_owner->GetTypeId() == TYPEID_UNIT && !((Creature*)m_owner)->GetCharmerOrOwnerGUID())
