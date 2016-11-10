@@ -574,7 +574,6 @@ void WorldSession::SendStablePet(uint64 guid)
 
 void WorldSession::HandleStablePet(WorldPacket & recv_data)
 {
-    GetPlayer()->SendCombatStats(1 << COMBAT_STATS_TEST, "StableStablePet", NULL);
     CHECK_PACKET_SIZE(recv_data, 8);
 
     sLog.outDebug("WORLD: Recv CMSG_STABLE_PET");
@@ -641,7 +640,6 @@ void WorldSession::HandleStablePet(WorldPacket & recv_data)
 
 void WorldSession::HandleUnstablePet(WorldPacket & recv_data)
 {
-    GetPlayer()->SendCombatStats(1 << COMBAT_STATS_TEST, "StableUnstablePet", NULL);
     CHECK_PACKET_SIZE(recv_data, 8+4);
 
     sLog.outDebug("WORLD: Recv CMSG_UNSTABLE_PET.");
@@ -741,13 +739,11 @@ void WorldSession::HandleBuyStableSlot(WorldPacket & recv_data)
 
 void WorldSession::HandleStableRevivePet(WorldPacket &/* recv_data */)
 {
-    GetPlayer()->SendCombatStats(1 << COMBAT_STATS_TEST, "StableRevivePet", NULL);
     sLog.outDebug("HandleStableRevivePet: Not implemented");
 }
 
 void WorldSession::HandleStableSwapPet(WorldPacket & recv_data)
 {
-    GetPlayer()->SendCombatStats(1 << COMBAT_STATS_TEST, "StableSwapPet", NULL);
     CHECK_PACKET_SIZE(recv_data, 8+4);
 
     sLog.outDebug("WORLD: Recv CMSG_STABLE_SWAP_PET.");
@@ -771,8 +767,12 @@ void WorldSession::HandleStableSwapPet(WorldPacket & recv_data)
 
     Pet* pet = _player->GetPet();
 
-    if (!pet || pet->getPetType()!=HUNTER_PET)
+    if (!pet || pet->getPetType() != HUNTER_PET || !pet->isAlive())
+    {
+        data << uint8(0x06);
+        SendPacket(&data);
         return;
+    }
 
     // find swapped pet slot in stable
     QueryResultAutoPtr result = RealmDataDatabase.PQuery("SELECT slot,entry FROM character_pet WHERE owner = '%u' AND id = '%u'",
@@ -786,7 +786,7 @@ void WorldSession::HandleStableSwapPet(WorldPacket & recv_data)
     uint32 petentry = fields[1].GetUInt32();
 
     // move alive pet to slot or delele dead pet
-    _player->RemovePet(pet,pet->isAlive() ? PetSaveMode(slot) : PET_SAVE_AS_DELETED);
+    _player->RemovePet(pet,PetSaveMode(slot));
 
     // summon unstabled pet
     Pet *newpet = new Pet;

@@ -3009,8 +3009,6 @@ void Spell::update(uint32 difftime)
             if (m_cast != casterPos && casterPos != m_possiblePos)
             {
                 cancel(SPELL_FAILED_INT_CASTER_MOVED);
-                m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "caster moved, %f %f %f %f %f %f", NULL,
-                    m_cast.x, m_cast.y, m_possiblePos.x, m_possiblePos.y, casterPos.x, casterPos.y);
             }
         }
     }

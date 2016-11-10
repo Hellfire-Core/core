@@ -284,8 +284,6 @@ bool WorldSession::HandleMoverRelocation(MovementInfo& movementInfo)
         {
             if (mover->m_movementInfo.pos != movementInfo.pos) // allow rotating in roots
             {
-                mover->SendCombatStats(1 << COMBAT_STATS_TEST, "tries to move in root from %f %f to %f %f", NULL,
-                    mover->m_movementInfo.pos.x, mover->m_movementInfo.pos.y, movementInfo.GetPos()->x, movementInfo.GetPos()->y);
                 if (Spell* current = mover->GetCurrentSpell(CURRENT_GENERIC_SPELL))
                     current->SetPossiblePos(movementInfo.pos);
                 if (Spell* current = mover->GetCurrentSpell(CURRENT_AUTOREPEAT_SPELL))

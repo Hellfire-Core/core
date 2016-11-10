@@ -71,8 +71,6 @@ void MotionMaster::MoveRandom(float spawndist)
 
 void MotionMaster::MoveTargetedHome()
 {
-    m_owner->SendCombatStats(1 << COMBAT_STATS_TEST, "Move targetted home", NULL);
-
     m_owner->GetUnitStateMgr().DropActionHigherThen(UNIT_ACTION_PRIORITY_HOME);
 
     if (m_owner->GetTypeId() == TYPEID_UNIT && !((Creature*)m_owner)->GetCharmerOrOwnerGUID())

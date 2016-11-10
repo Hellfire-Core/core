@@ -2358,6 +2358,9 @@ void Aura::TriggerSpell()
             case 13278:
                 target = m_target;
                 break;
+            case 42325: // raptor captor, catch raptor not the caster
+                target = m_target;
+                break;
             // Burn should self-damage Phoenix
             case 44197:
             {

@@ -5765,6 +5765,8 @@ bool ChatHandler::HandleRespawnCommand(const char* args)
         CreatureData const* data = sObjectMgr.GetCreatureData(lowguid);
         if (data)
             target = pl->GetMap()->GetCreature(MAKE_NEW_GUID(lowguid, data->id, HIGHGUID_UNIT));
+        if (lowguid == 0)
+            target = getSelectedUnit();
         if (!target)
         {
             PSendSysMessage(LANG_COMMAND_CREATGUIDNOTFOUND, lowguid);
