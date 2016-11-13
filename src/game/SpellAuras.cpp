@@ -1415,6 +1415,7 @@ void Aura::TriggerSpell()
     SpellEntry const *auraSpellEntry = GetSpellProto();
     uint32 auraId = auraSpellEntry->Id;
 
+    m_target->SendCombatStats(1 << COMBAT_STATS_TEST, "Aura %u is triggering, caster %u target %u", NULL, auraId, caster->GetGUIDLow(), target->GetGUIDLow());
     // specific code for cases with no trigger spell provided in field
     if (triggeredSpellEntry == NULL)
     {
@@ -1460,25 +1461,6 @@ void Aura::TriggerSpell()
                         ((Player*)caster)->ApplyEnchantment(item,TEMP_ENCHANTMENT_SLOT,true);
                         return;
                     }
-//                    // Periodic Mana Burn
-//                    case 812: break;
-//                    // Polymorphic Ray
-//                    case 6965: break;
-//                    // Fire Nova (1-7 ranks)
-//                    case 8350:
-//                    case 8508:
-//                    case 8509:
-//                    case 11312:
-//                    case 11313:
-//                    case 25540:
-//                    case 25544:
-//                        break;
-//                    // Egan's Blaster
-//                    case 17368: break;
-//                    // Haunted
-//                    case 18347: break;
-//                    // Ranshalla Waiting
-//                    case 18953: break;
                     // Inferno
                     case 19695:
                     {
@@ -1486,20 +1468,12 @@ void Aura::TriggerSpell()
                         m_target->CastCustomSpell(m_target, 19698, &damage, NULL, NULL, true, 0, this, originalCasterGUID);
                         return;
                     }
-//                    // Frostwolf Muzzle DND
-//                    case 21794: break;
-//                    // Alterac Ram Collar DND
-//                    case 21866: break;
-//                    // Celebras Waiting
-//                    case 21916: break;
                     // Brood Affliction: Bronze
                     case 23170:
                     {
                         m_target->CastSpell(m_target, 23171, true, 0, this);
                         return;
                     }
-//                    // Mark of Frost
-//                    case 23184: break;
                     // Restoration
                     case 23493:
                     {
@@ -1516,46 +1490,6 @@ void Aura::TriggerSpell()
                         }
                         break;
                     }
-//                    // Stoneclaw Totem Passive TEST
-//                    case 23792: break;
-//                    // Axe Flurry
-//                    case 24018: break;
-//                    // Mark of Arlokk
-//                    case 24210: break;
-//                    // Restoration
-//                    case 24379: break;
-//                    // Happy Pet
-//                    case 24716: break;
-//                    // Dream Fog
-//                    case 24780: break;
-//                    // Cannon Prep
-//                    case 24832: break;
-//                    // Shadow Bolt Whirl
-//                    case 24834: break;
-//                    // Stink Trap
-//                    case 24918: break;
-//                    // Mark of Nature
-//                    case 25041: break;
-//                    // Agro Drones
-//                    case 25152: break;
-//                    // Consume
-//                    case 25371: break;
-//                    // Pain Spike
-//                    case 25572: break;
-//                    // Rotate 360
-//                    case 26009: break;
-//                    // Rotate -360
-//                    case 26136: break;
-//                    // Consume
-//                    case 26196: break;
-//                    // Berserk
-//                    case 26615: break;
-//                    // Defile
-//                    case 27177: break;
-//                    // Teleport: IF/UC
-//                    case 27601: break;
-//                    // Five Fat Finger Exploding Heart Technique
-//                    case 27673: break;
                     // Nitrous Boost
                     case 27746:
                     {
@@ -1570,54 +1504,16 @@ void Aura::TriggerSpell()
                             return;
                         }
                     } break;
-//                    // Steam Tank Passive
-//                    case 27747: break;
-//                    // Frost Blast
-//                    case 27808: break;
-//                    // Detonate Mana
-//                    case 27819: break;
-//                    // Controller Timer
-//                    case 28095: break;
-//                    // Stalagg Chain
-//                    case 28096: break;
                     case 28097: // Stalagg Tesla Passive
                     case 28109: // Feugen Tesla Passive
                     {
                         // find creature in range: 16218(Tesla Coil) or specific GO :p if not do special shit ?
                         break;
                     }
-//                    // Feugen Chain
-//                    case 28111: break;
-//                    // Mark of Didier
-//                    case 28114: break;
-//                    // Communique Timer, camp
-//                    case 28346: break;
-//                    // Icebolt
-//                    case 28522: break;
-//                    // Silithyst
-//                    case 29519: break;
-//                    // Inoculate Nestlewood Owlkin
+                    // Inoculate Nestlewood Owlkin
                     case 29528: trigger_spell_id = 28713; break;
-//                    // Overload
-//                    case 29768: break;
-//                    // Return Fire
-//                    case 29788: break;
-//                    // Return Fire
-//                    case 29793: break;
-//                    // Return Fire
-//                    case 29794: break;
-//                    // Guardian of Icecrown Passive
-//                    case 29897: break;
                     // Feed Captured Animal
                     case 29917: trigger_spell_id = 29916; break;
-//                    // Flame Wreath
-//                    case 29946: break;
-//                    // Flame Wreath
-//                    case 29947: break;
-//                    // Mind Exhaustion Passive
-//                    case 30025: break;
-//                    // Nether Beam - Serenity
-//                    case 30401: break;
                     // Extract Gas
                     case 30427:
                     {
@@ -1655,19 +1551,6 @@ void Aura::TriggerSpell()
                     }
                     // Quake
                     case 30576: trigger_spell_id = 30571; break;
-//                    // Burning Maul
-//                    case 30598: break;
-//                    // Regeneration
-//                    case 30799:
-//                    case 30800:
-//                    case 30801:
-//                        break;
-//                    // Despawn Self - Smoke cloud
-//                    case 31269: break;
-//                    // Time Rift Periodic
-//                    case 31320: break;
-//                    // Corrupt Medivh
-//                    case 31326: break;
                     // Doom
                     case 31347:
                     {
@@ -1682,8 +1565,6 @@ void Aura::TriggerSpell()
                         caster->SummonCreature(17870, caster->GetPositionX(), caster->GetPositionY(), caster->GetPositionZ(), caster->GetOrientation(), TEMPSUMMON_DEAD_DESPAWN, 60000);
                         return;
                     }
-//                    // Bloodmyst Tesla
-//                    case 31611: break;
                     // Doomfire
                     case 31944:
                     {
@@ -1694,16 +1575,6 @@ void Aura::TriggerSpell()
                         m_target->CastCustomSpell(m_target, 31969, &damage, NULL, NULL, true, 0, this, originalCasterGUID);
                         return;
                     }
-//                    // Teleport Test
-//                    case 32236: break;
-//                    // Earthquake
-//                    case 32686: break;
-//                    // Possess
-//                    case 33401: break;
-//                    // Draw Shadows
-//                    case 33563: break;
-//                    // Murmur's Touch
-//                    case 33711: break;
                     // Flame Quills
                     case 34229:
                     {
@@ -1764,84 +1635,14 @@ void Aura::TriggerSpell()
                         break;
                       }
                     }
-//                    // Tornado
-//                    case 34683: break;
-//                    // Frostbite Rotate
-//                    case 34748: break;
-//                    // Arcane Flurry
-//                    case 34821: break;
-//                    // Interrupt Shutdown
-//                    case 35016: break;
-//                    // Interrupt Shutdown
-//                    case 35176: break;
-//                    // Inferno
-//                    case 35268: break;
-//                    // Salaadin's Tesla
-//                    case 35515: break;
-//                    // Ethereal Channel (Red)
-//                    case 35518: break;
-//                    // Nether Vapor
-//                    case 35879: break;
-//                    // Dark Portal Storm
-//                    case 36018: break;
-//                    // Burning Maul
-//                    case 36056: break;
-//                    // Living Grove Defender Lifespan
-//                    case 36061: break;
-//                    // Professor Dabiri Talks
-//                    case 36064: break;
-//                    // Kael Gaining Power
-//                    case 36091: break;
-//                    // They Must Burn Bomb Aura
-//                    case 36344: break;
-//                    // They Must Burn Bomb Aura (self)
-//                    case 36350: break;
-//                    // Stolen Ravenous Ravager Egg
-//                    case 36401: break;
-//                    // Activated Cannon
-//                    case 36410: break;
-//                    // Stolen Ravenous Ravager Egg
-//                    case 36418: break;
-//                    // Enchanted Weapons
-//                    case 36510: break;
-//                    // Cursed Scarab Periodic
-//                    case 36556: break;
-//                    // Cursed Scarab Despawn Periodic
-//                    case 36561: break;
-//                    // Vision Guide
-//                    case 36573: break;
-//                    // Cannon Charging (platform)
-//                    case 36785: break;
-//                    // Cannon Charging (self)
-//                    case 36860: break;
                     // Remote Toy
                     case 37027: trigger_spell_id = 37029; break;
-//                    // Mark of Death
-//                    case 37125: break;
-//                    // Arcane Flurry
-//                    case 37268: break;
                     // Spout
                     case 37429:
                     {
                         trigger_spell_id = 37433;
                         break;
                     }
-//                    // Spout
-//                    case 37430: break;
-//                    // Karazhan - Chess NPC AI, Snapshot timer
-//                    case 37440: break;
-//                    // Karazhan - Chess NPC AI, action timer
-//                    case 37504: break;
-//                    // Karazhan - Chess: Is Square OCCUPIED aura (DND)
-//                    case 39400: break;
-//                    // Banish
-//                    case 37546: break;
-//                    // Shriveling Gaze
-//                    case 37589: break;
-//                    // Fake Aggro Radius (2 yd)
-//                    case 37815: break;
-//                    // Corrupt Medivh
-//                    case 37853: break;
                     // Eye of Grillok
                     case 38495:
                     {
@@ -1863,12 +1664,6 @@ void Aura::TriggerSpell()
                         creatureTarget->SetHealth(0);       // just for nice GM-mode view
                         return;
                     }
-//                    // Magic Sucker Device timer
-//                    case 38672: break;
-//                    // Tomb Guarding Charging
-//                    case 38751: break;
-//                    // Murmur's Touch
-//                    case 38794: break;
                     // Activate Nether-wraith Beacon (31742 Nether-wraith Beacon item)
                     case 39105:
                     {
@@ -1880,13 +1675,7 @@ void Aura::TriggerSpell()
                         target->SummonCreature(22408, fX, fY, fZ, target->GetOrientation(), TEMPSUMMON_DEAD_DESPAWN, 0);
                         return;
                     }
-//                    // Drain World Tree Visual
-//                    case 39140: break;
-//                    // Quest - Dustin's Undead Dragon Visual aura
-//                    case 39259: break;
-//                    // Hellfire - The Exorcism, Jules releases darkness, aura
-//                    case 39306: break;
-//                    // Inferno - Raging Fires in Mechanar
+                    // Inferno - Raging Fires in Mechanar
                     case 39346:
                     {
                         if (caster->GetTypeId() != TYPEID_UNIT)
@@ -1897,12 +1686,6 @@ void Aura::TriggerSpell()
                         caster->CastCustomSpell((Unit*)NULL, 35283, &damage, NULL, NULL, true, 0, this, originalCasterGUID);
                         break;
                     }
-//                    // Enchanted Weapons
-//                    case 39489: break;
-//                    // Shadow Bolt Whirl
-//                    case 39630: break;
-//                    // Shadow Bolt Whirl
-//                    case 39634: break;
                     // Shadow Inferno
                     case 39645:
                     {
@@ -1912,26 +1695,6 @@ void Aura::TriggerSpell()
                     }
                     // Tear of Azzinoth Summon Channel - it's not really supposed to do anything,and this only prevents the console spam
                     case 39857: trigger_spell_id = 39856; break;
-//                    // Soulgrinder Ritual Visual (Smashed)
-//                    case 39974: break;
-//                    // Simon Game Pre-game timer
-//                    case 40041: break;
-//                    // Knockdown Fel Cannon: The Aggro Check Aura
-//                    case 40113: break;
-//                    // Spirit Lance
-//                    case 40157: break;
-//                    // Demon Transform 2
-//                    case 40398: break;
-//                    // Demon Transform 1
-//                    case 40511: break;
-//                    // Ancient Flames
-//                    case 40657: break;
-//                    // Ethereal Ring Cannon: Cannon Aura
-//                    case 40734: break;
-//                    // Cage Trap
-//                    case 40760: break;
-//                    // Random Periodic
-//                    case 40867: break;
                     // Prismatic Shield
                     case 40879:
                     {
@@ -2012,32 +1775,13 @@ void Aura::TriggerSpell()
                         else
                             trigger_spell_id = 41409;
                     }break;
-//                    // Chaos Form
-//                    case 41629: break;
-//                    // Alert Drums
-//                    case 42177: break;
-//                    // Spout
-//                    case 42581: break;
-//                    // Spout
-//                    case 42582: break;
-//                    // Return to the Spirit Realm
-//                    case 44035: break;
-//                    // Curse of Boundless Agony
-//                    case 45050: break;
                     // Open Portal Periodic
                     case 45994: trigger_spell_id = 45976; break;
 //                    // Earthquake
                     case 46240: trigger_spell_id = 46243; break;
                     // Personalized Weather
                     case 46736: trigger_spell_id = 46737; break;
-//                    // Stay Submerged
-//                    case 46981: break;
-//                    // Dragonblight Ram
-//                    case 47015: break;
-//                    // Party G.R.E.N.A.D.E.
-//                    case 51510: break;
-
-                        // Return fire
+                    // Return fire
                     case 29788:
                         trigger_spell_id = urand(0, 1) ? 29793 : 29794;
                         break;
@@ -2070,32 +1814,6 @@ void Aura::TriggerSpell()
                 }
                 break;
             }
-//            case SPELLFAMILY_WARRIOR:
-//            {
-//                switch (auraId)
-//                {
-//                    // Wild Magic
-//                    case 23410: break;
-//                    // Corrupted Totems
-//                    case 23425: break;
-//                    default:
-//                        break;
-//                }
-//                break;
-//            }
-//            case SPELLFAMILY_PRIEST:
-//            {
-//                switch (auraId)
-//                {
-//                    // Blue Beam
-//                    case 32930: break;
-//                    // Fury of the Dreghood Elders
-//                    case 35460: break;
-//                    default:
-//                        break;
-//                }
- //               break;
- //           }
             case SPELLFAMILY_DRUID:
             {
                 switch (auraId)
@@ -2160,29 +1878,6 @@ void Aura::TriggerSpell()
                                 return;
                         }
                         break;
-//                    //Rizzle's Frost Trap
-//                    case 39900:
-//                        return;
-//                    // Tame spells
-//                    case 19597:         // Tame Ice Claw Bear
-//                    case 19676:         // Tame Snow Leopard
-//                    case 19677:         // Tame Large Crag Boar
-//                    case 19678:         // Tame Adult Plainstrider
-//                    case 19679:         // Tame Prairie Stalker
-//                    case 19680:         // Tame Swoop
-//                    case 19681:         // Tame Dire Mottled Boar
-//                    case 19682:         // Tame Surf Crawler
-//                    case 19683:         // Tame Armored Scorpid
-//                    case 19684:         // Tame Webwood Lurker
-//                    case 19685:         // Tame Nightsaber Stalker
-//                    case 19686:         // Tame Strigid Screecher
-//                    case 30100:         // Tame Crazed Dragonhawk
-//                    case 30103:         // Tame Elder Springpaw
-//                    case 30104:         // Tame Mistbat
-//                    case 30647:         // Tame Barbed Crawler
-//                    case 30648:         // Tame Greater Timberstrider
-//                    case 30652:         // Tame Nightstalker
-//                        return;
                     default:
                         break;
                 }
@@ -2358,8 +2053,8 @@ void Aura::TriggerSpell()
             case 13278:
                 target = m_target;
                 break;
-            case 42325: // raptor captor, catch raptor not the caster
-                target = m_target;
+            case 42325: // raptor captor
+                target = caster;
                 break;
             // Burn should self-damage Phoenix
             case 44197:
