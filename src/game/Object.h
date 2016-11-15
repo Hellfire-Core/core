@@ -457,8 +457,6 @@ class HELLGROUND_IMPORT_EXPORT WorldObject : public Object//, public WorldLocati
         const char* GetName() const { return m_name.c_str(); }
         void SetName(const std::string& newname) { m_name=newname; }
 
-        virtual const char* GetNameForLocaleIdx(int32 /*locale_idx*/) const { return GetName(); }
-
         float GetDistance(WorldObject const* obj) const;
         float GetDistance(const float x, const float y, const float z) const;
         float GetDistanceSq(const float &x, const float &y, const float &z) const;

@@ -2620,14 +2620,6 @@ TrainerSpellData const* Creature::GetTrainerSpells() const
     return sObjectMgr.GetNpcTrainerSpells(GetEntry());
 }
 
-// overwrite WorldObject function for proper name localization
-const char* Creature::GetNameForLocaleIdx(int32 loc_idx) const
-{
-    char const* name = GetName();
-    sObjectMgr.GetCreatureLocaleStrings(GetEntry(), loc_idx, &name);
-    return name;
-}
-
 const CreatureData* Creature::GetLinkedRespawnCreatureData() const
 {
     if (!m_DBTableGuid) // only hard-spawned creatures from DB can have a linked master

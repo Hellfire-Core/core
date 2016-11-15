@@ -112,7 +112,6 @@ struct HellgroundStringLocale
 typedef std::map<uint32,uint32> CreatureLinkedRespawnMap;
 typedef UNORDERED_MAP<uint32,CreatureData> CreatureDataMap;
 typedef UNORDERED_MAP<uint32,GameObjectData> GameObjectDataMap;
-typedef UNORDERED_MAP<uint32,CreatureLocale> CreatureLocaleMap;
 typedef UNORDERED_MAP<uint32,GameObjectLocale> GameObjectLocaleMap;
 typedef UNORDERED_MAP<uint32,ItemLocale> ItemLocaleMap;
 typedef UNORDERED_MAP<uint32,QuestLocale> QuestLocaleMap;
@@ -470,7 +469,6 @@ class ObjectMgr
         bool LoadHellgroundStrings() { return LoadHellgroundStrings(GameDataDatabase,"hellground_string",MIN_HELLGROUND_STRING_ID,MAX_HELLGROUND_STRING_ID); }
 
         void LoadPetCreateSpells();
-        void LoadCreatureLocales();
         void LoadCreatureTemplates();
         void LoadCreatures();
         void LoadCreatureLinkedRespawn();
@@ -589,15 +587,6 @@ class ObjectMgr
             if (itr == mCreatureLinkedRespawnMap.end()) return 0;
             return itr->second;
         }
-
-        CreatureLocale const* GetCreatureLocale(uint32 entry) const
-        {
-            CreatureLocaleMap::const_iterator itr = mCreatureLocaleMap.find(entry);
-            if (itr==mCreatureLocaleMap.end()) return NULL;
-            return &itr->second;
-        }
-
-        void GetCreatureLocaleStrings(uint32 entry, int32 loc_idx, char const** namePtr, char const** subnamePtr = NULL) const;
 
         GameObjectLocale const* GetGameObjectLocale(uint32 entry) const
         {

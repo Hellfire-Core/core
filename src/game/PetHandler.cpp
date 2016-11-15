@@ -165,13 +165,6 @@ void WorldSession::SendPetNameQuery(uint64 petguid, uint32 petnumber)
 
     char const* name = pet->GetName();
 
-    // creature pets have localization like other creatures
-    if (!IS_PLAYER_GUID(pet->GetOwnerGUID()))
-    {
-        int loc_idx = GetSessionDbLocaleIndex();
-        sObjectMgr.GetCreatureLocaleStrings(pet->GetEntry(), loc_idx, &name);
-    }
-
     WorldPacket data(SMSG_PET_NAME_QUERY_RESPONSE, (4+4+strlen(name)+1));
     data << uint32(petnumber);
     data << name;

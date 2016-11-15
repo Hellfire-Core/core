@@ -478,9 +478,6 @@ class HELLGROUND_IMPORT_EXPORT GameObject : public WorldObject
         void Whisper(int32 textId, uint64 receiver) { MonsterWhisper(textId,receiver); }
         void YellToZone(int32 textId, uint32 language, uint64 TargetGuid) { MonsterYellToZone(textId,language,TargetGuid); }
 
-        // overwrite WorldObject function for proper name localization
-        const char* GetNameForLocaleIdx(int32 locale_idx) const;
-
         void SaveToDB();
         void SaveToDB(uint32 mapid, uint8 spawnMask);
         bool LoadFromDB(uint32 guid, Map *map);

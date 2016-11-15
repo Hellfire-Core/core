@@ -581,38 +581,6 @@ void WorldSession::HandleEmoteOpcode(WorldPacket & recv_data)
     GetPlayer()->HandleEmoteCommand(emote);
 }
 
-namespace Hellground
-{
-    class EmoteChatBuilder
-    {
-        public:
-            EmoteChatBuilder(Player const& pl, uint32 text_emote, uint32 emote_num, Unit const* target)
-                : i_player(pl), i_text_emote(text_emote), i_emote_num(emote_num), i_target(target) {}
-
-            void operator()(WorldPacket& data, int32 loc_idx)
-            {
-                char const* nam = i_target ? i_target->GetNameForLocaleIdx(loc_idx) : NULL;
-                uint32 namlen = (nam ? strlen(nam) : 0) + 1;
-
-                data.Initialize(SMSG_TEXT_EMOTE, (20+namlen));
-                data << i_player.GetGUID();
-                data << uint32(i_text_emote);
-                data << i_emote_num;
-                data << uint32(namlen);
-                if( namlen > 1 )
-                    data.append(nam, namlen);
-                else
-                    data << (uint8)0x00;
-            }
-
-        private:
-            Player const& i_player;
-            uint32        i_text_emote;
-            uint32        i_emote_num;
-            Unit const*   i_target;
-    };
-}                                                           // namespace Hellground
-
 void WorldSession::HandleTextEmoteOpcode(WorldPacket & recv_data)
 {
     Player * player = GetPlayer();
@@ -660,10 +628,22 @@ void WorldSession::HandleTextEmoteOpcode(WorldPacket & recv_data)
 
     Unit* unit = player->GetMap()->GetUnit(guid);
 
-    Hellground::EmoteChatBuilder emote_builder(*player, text_emote, emoteNum, unit);
-    Hellground::LocalizedPacketDo<Hellground::EmoteChatBuilder > emote_do(emote_builder);
-    Hellground::CameraDistWorker<Hellground::LocalizedPacketDo<Hellground::EmoteChatBuilder > > emote_worker(player, sWorld.getConfig(CONFIG_LISTEN_RANGE_TEXTEMOTE), emote_do);
-    Cell::VisitWorldObjects(player, emote_worker,  sWorld.getConfig(CONFIG_LISTEN_RANGE_TEXTEMOTE));
+    WorldPacket data;
+    char const* nam = unit ? unit->GetName() : NULL;
+    uint32 namlen = (nam ? strlen(nam) : 0) + 1;
+
+    data.Initialize(SMSG_TEXT_EMOTE, (20 + namlen));
+    data << player->GetGUID();
+    data << uint32(text_emote);
+    data << emoteNum;
+    data << uint32(namlen);
+    if (namlen > 1)
+        data.append(nam, namlen);
+    else
+        data << (uint8)0x00;
+
+    Hellground::PacketBroadcaster broadcast(*player, &data, NULL, sWorld.getConfig(CONFIG_LISTEN_RANGE_TEXTEMOTE));
+    Cell::VisitWorldObjects(player, broadcast, sWorld.getConfig(CONFIG_LISTEN_RANGE_TEXTEMOTE));
 
     //Send scripted event call
     if (unit && unit->GetTypeId() == TYPEID_UNIT)

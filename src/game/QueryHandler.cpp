@@ -157,7 +157,6 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPacket & recv_data)
 
         char const* name = ci->Name;
         char const* subName = ci->SubName;
-        sObjectMgr.GetCreatureLocaleStrings(entry, loc_idx, &name, &subName);
 
         sLog.outDetail("WORLD: CMSG_CREATURE_QUERY '%s' - Entry: %u.", ci->Name, entry);
                                                             // guess size

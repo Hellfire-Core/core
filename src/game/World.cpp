@@ -1130,7 +1130,6 @@ void World::SetInitialWorldSettings()
     //sInstanceSaveManager.PackInstances();
 
     sLog.outString("Loading Localization strings...");
-    sObjectMgr.LoadCreatureLocales();
     sObjectMgr.LoadGameObjectLocales();
     sObjectMgr.LoadItemLocales();
     sObjectMgr.LoadQuestLocales();

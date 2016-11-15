@@ -1391,8 +1391,7 @@ namespace Hellground
             void operator()(WorldPacket& data, int32 loc_idx)
             {
                 char const* text = sObjectMgr.GetHellgroundString(i_textId, loc_idx);
-                // TODO: i_object.GetName() also must be localized?
-                i_object.BuildMonsterChat(&data, i_msgtype, text, i_language, i_object.GetNameForLocaleIdx(loc_idx), i_targetGUID, i_withoutPrename);
+                i_object.BuildMonsterChat(&data, i_msgtype, text, i_language, i_object.GetName(), i_targetGUID, i_withoutPrename);
             }
 
         private:
@@ -1470,7 +1469,7 @@ void WorldObject::MonsterWhisper(int32 textId, uint64 receiver, bool IsBossWhisp
     char const* text = sObjectMgr.GetHellgroundString(textId, loc_idx);
 
     WorldPacket data(SMSG_MESSAGECHAT, 200);
-    BuildMonsterChat(&data,IsBossWhisper ? CHAT_MSG_RAID_BOSS_WHISPER : CHAT_MSG_MONSTER_WHISPER, text, LANG_UNIVERSAL, GetNameForLocaleIdx(loc_idx), receiver);
+    BuildMonsterChat(&data,IsBossWhisper ? CHAT_MSG_RAID_BOSS_WHISPER : CHAT_MSG_MONSTER_WHISPER, text, LANG_UNIVERSAL, GetName(), receiver);
 
     player->SendPacketToSelf(&data);
 }

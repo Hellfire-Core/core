@@ -210,67 +210,6 @@ CreatureInfo const* ObjectMgr::GetCreatureTemplate(uint32 id)
     return sCreatureStorage.LookupEntry<CreatureInfo>(id);
 }
 
-void ObjectMgr::LoadCreatureLocales()
-{
-    mCreatureLocaleMap.clear();                              // need for reload case
-
-    QueryResultAutoPtr result = GameDataDatabase.Query("SELECT entry,name_loc1,subname_loc1,name_loc2,subname_loc2,name_loc3,subname_loc3,name_loc4,subname_loc4,name_loc5,subname_loc5,name_loc6,subname_loc6,name_loc7,subname_loc7,name_loc8,subname_loc8 FROM locales_creature");
-
-    if (!result)
-    {
-        BarGoLink bar(1);
-
-        bar.step();
-
-        sLog.outString();
-        sLog.outString(">> Loaded 0 creature locale strings. DB table `locales_creature` is empty.");
-        return;
-    }
-
-    BarGoLink bar(result->GetRowCount());
-
-    do
-    {
-        Field *fields = result->Fetch();
-        bar.step();
-
-        uint32 entry = fields[0].GetUInt32();
-
-        CreatureLocale& data = mCreatureLocaleMap[entry];
-
-        for (int i = 1; i < MAX_LOCALE; ++i)
-        {
-            std::string str = fields[1+2*(i-1)].GetCppString();
-            if (!str.empty())
-            {
-                int idx = GetOrNewIndexForLocale(LocaleConstant(i));
-                if (idx >= 0)
-                {
-                    if (data.Name.size() <= idx)
-                        data.Name.resize(idx+1);
-
-                    data.Name[idx] = str;
-                }
-            }
-            str = fields[1+2*(i-1)+1].GetCppString();
-            if (!str.empty())
-            {
-                int idx = GetOrNewIndexForLocale(LocaleConstant(i));
-                if (idx >= 0)
-                {
-                    if (data.SubName.size() <= idx)
-                        data.SubName.resize(idx+1);
-
-                    data.SubName[idx] = str;
-                }
-            }
-        }
-    } while (result->NextRow());
-
-    sLog.outString();
-    sLog.outString(">> Loaded %lu creature locale strings", mCreatureLocaleMap.size());
-}
-
 void ObjectMgr::LoadNpcOptionLocales()
 {
     mNpcOptionLocaleMap.clear();                              // need for reload case
@@ -6749,21 +6688,6 @@ void ObjectMgr::LoadTransportEvents()
 
     sLog.outString();
     sLog.outString(">> Loaded %lu transport events", result->GetRowCount());
-}
-
-void ObjectMgr::GetCreatureLocaleStrings(uint32 entry, int32 loc_idx, char const** namePtr, char const** subnamePtr) const
-{
-    if (loc_idx >= 0)
-    {
-        if (CreatureLocale const *il = GetCreatureLocale(entry))
-        {
-            if (namePtr && il->Name.size() > size_t(loc_idx) && !il->Name[loc_idx].empty())
-                *namePtr = il->Name[loc_idx].c_str();
-
-            if (subnamePtr && il->SubName.size() > size_t(loc_idx) && !il->SubName[loc_idx].empty())
-                *subnamePtr = il->SubName[loc_idx].c_str();
-        }
-    }
 }
 
 void ObjectMgr::GetItemLocaleStrings(uint32 entry, int32 loc_idx, std::string* namePtr, std::string* descriptionPtr) const

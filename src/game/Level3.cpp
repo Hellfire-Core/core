@@ -83,7 +83,6 @@ bool ChatHandler::HandleReloadAllCommand(const char*)
     HandleReloadAllQuestCommand("");
     HandleReloadAllSpellCommand("");
     HandleReloadAllItemCommand("");
-    HandleReloadAllLocalesCommand("");
 
     HandleReloadCommandCommand("");
     HandleReloadReservedNameCommand("");
@@ -175,17 +174,6 @@ bool ChatHandler::HandleReloadAllItemCommand(const char*)
 {
     HandleReloadPageTextsCommand("a");
     HandleReloadItemEnchantementsCommand("a");
-    return true;
-}
-
-bool ChatHandler::HandleReloadAllLocalesCommand(const char* /*args*/)
-{
-    HandleReloadLocalesCreatureCommand("a");
-    HandleReloadLocalesGameobjectCommand("a");
-    HandleReloadLocalesItemCommand("a");
-    HandleReloadLocalesNpcTextCommand("a");
-    HandleReloadLocalesPageTextCommand("a");
-    HandleReloadLocalesQuestCommand("a");
     return true;
 }
 
@@ -740,54 +728,6 @@ bool ChatHandler::HandleReloadSpellDisabledCommand(const char* /*arg*/)
 
     SendGlobalGMSysMessage("DB table `spell_disabled` reloaded.");
 
-    return true;
-}
-
-bool ChatHandler::HandleReloadLocalesCreatureCommand(const char* /*arg*/)
-{
-    sLog.outString("Re-Loading Locales Creature ...");
-    sObjectMgr.LoadCreatureLocales();
-    SendGlobalGMSysMessage("DB table `locales_creature` reloaded.");
-    return true;
-}
-
-bool ChatHandler::HandleReloadLocalesGameobjectCommand(const char* /*arg*/)
-{
-    sLog.outString("Re-Loading Locales Gameobject ... ");
-    sObjectMgr.LoadGameObjectLocales();
-    SendGlobalGMSysMessage("DB table `locales_gameobject` reloaded.");
-    return true;
-}
-
-bool ChatHandler::HandleReloadLocalesItemCommand(const char* /*arg*/)
-{
-    sLog.outString("Re-Loading Locales Item ... ");
-    sObjectMgr.LoadItemLocales();
-    SendGlobalGMSysMessage("DB table `locales_item` reloaded.");
-    return true;
-}
-
-bool ChatHandler::HandleReloadLocalesNpcTextCommand(const char* /*arg*/)
-{
-    sLog.outString("Re-Loading Locales NPC Text ... ");
-    sObjectMgr.LoadNpcTextLocales();
-    SendGlobalGMSysMessage("DB table `locales_npc_text` reloaded.");
-    return true;
-}
-
-bool ChatHandler::HandleReloadLocalesPageTextCommand(const char* /*arg*/)
-{
-    sLog.outString("Re-Loading Locales Page Text ... ");
-    sObjectMgr.LoadPageTextLocales();
-    SendGlobalGMSysMessage("DB table `locales_page_text` reloaded.");
-    return true;
-}
-
-bool ChatHandler::HandleReloadLocalesQuestCommand(const char* /*arg*/)
-{
-    sLog.outString("Re-Loading Locales Quest ... ");
-    sObjectMgr.LoadQuestLocales();
-    SendGlobalGMSysMessage("DB table `locales_quest` reloaded.");
     return true;
 }
 
@@ -3019,14 +2959,9 @@ bool ChatHandler::HandleLookupCreatureCommand(const char* args)
 
         int loc_idx = m_session ? m_session->GetSessionDbLocaleIndex() : sObjectMgr.GetDBCLocaleIndex();
 
-        char const* name = "";                              // "" for avoid repeating check for default locale
-        sObjectMgr.GetCreatureLocaleStrings(id, loc_idx, &name);
-        if (!*name || !Utf8FitTo(name, wnamepart))
-        {
-            name = cInfo->Name;
-            if (!Utf8FitTo(name, wnamepart))
-                continue;
-        }
+        char const* name = cInfo->Name;
+        if (!Utf8FitTo(name, wnamepart))
+            continue;
 
         if (m_session)
             PSendSysMessage (LANG_CREATURE_ENTRY_LIST_CHAT, id, id, name);

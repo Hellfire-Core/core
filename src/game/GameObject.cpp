@@ -1531,22 +1531,6 @@ void GameObject::CastSpell(GameObject* target, uint32 spell)
     }
 }
 
-// overwrite WorldObject function for proper name localization
-const char* GameObject::GetNameForLocaleIdx(int32 loc_idx) const
-{
-    if (loc_idx >= 0)
-    {
-        GameObjectLocale const *cl = sObjectMgr.GetGameObjectLocale(GetEntry());
-        if (cl)
-        {
-            if (cl->Name.size() > loc_idx && !cl->Name[loc_idx].empty())
-                return cl->Name[loc_idx].c_str();
-        }
-    }
-
-    return GetName();
-}
-
 void GameObject::UpdateRotationFields(float rotation2 /*=0.0f*/, float rotation3 /*=0.0f*/)
 {
     SetFloatValue(GAMEOBJECT_FACING, GetOrientation());
