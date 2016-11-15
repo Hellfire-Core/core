@@ -473,7 +473,7 @@ void Map::Update(const uint32 &t_diff)
             helper.Update(t_diff);
         }
     }
-    if (WorldTimer::getMSTimeDiffToNow(startTime) > 100)
+    if (WorldTimer::getMSTimeDiffToNow(startTime) > 200)
         sLog.outLog(LOG_DIFF, "Map::Update sessions and players (%u ms) map %u", WorldTimer::getMSTimeDiffToNow(startTime), GetId());
 
     resetMarkedCells();
@@ -513,7 +513,7 @@ void Map::Update(const uint32 &t_diff)
                     cell.SetNoCreate();
                     Visit(cell, grid_object_update);
                     Visit(cell, world_object_update);
-                    if (WorldTimer::getMSTimeDiffToNow(startTime) > 20)
+                    if (WorldTimer::getMSTimeDiffToNow(startTime) > 100)
                         sLog.outLog(LOG_DIFF, "Map::Update cell %u %u (%u ms) map %u", x, y, WorldTimer::getMSTimeDiffToNow(startTime), GetId());
                 }
             }
@@ -553,7 +553,7 @@ void Map::Update(const uint32 &t_diff)
                         cell.SetNoCreate();
                         Visit(cell, grid_object_update);
                         Visit(cell, world_object_update);
-                        if (WorldTimer::getMSTimeDiffToNow(startTime) > 20)
+                        if (WorldTimer::getMSTimeDiffToNow(startTime) > 100)
                             sLog.outLog(LOG_DIFF, "Map::Update cell %u %u (%u ms) map %u", x, y, WorldTimer::getMSTimeDiffToNow(startTime), GetId());
                     }
                 }

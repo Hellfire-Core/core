@@ -2054,8 +2054,8 @@ void Aura::TriggerSpell()
                 target = m_target;
                 break;
             case 42325: // raptor captor
-                target = caster;
-                break;
+                caster->CastSpell(m_target, triggeredSpellEntry, true, 0, this, originalCasterGUID);
+                return;
             // Burn should self-damage Phoenix
             case 44197:
             {

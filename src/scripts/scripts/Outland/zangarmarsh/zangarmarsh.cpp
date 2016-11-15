@@ -31,6 +31,7 @@ npc_elder_kuruti
 npc_mortog_steamhead
 npc_kayra_longmane
 npc_baby_murloc
+npc_fhwoor
 EndContentData */
 
 #include "precompiled.h"
@@ -468,6 +469,112 @@ CreatureAI* GetAI_npc_baby_murloc(Creature* creature)
 }
 
 /*######
+## npc_fhwoor
+######*/
+
+enum fhwoorenum
+{
+    QUEST_FHWOOR        = 9729,
+    NPC_SSSLITH         = 18154,
+    NPC_FIRST_NAGA_ADD  = 18088,
+    NPC_SECOND_NAGA_ADD = 18089,
+    OBJECT_ARK          = 182082,
+
+    FHWOOR_SAY_START = -1000580,
+};
+
+struct npc_fhwoorAI : public npc_escortAI
+{
+    npc_fhwoorAI(Creature* creature) : npc_escortAI(creature) {}
+
+    uint8 summoned;
+
+    void Reset()
+    {
+        summoned = 0;
+    }
+
+    void EnterCombat(Unit* who) {}
+
+    void JustSummoned(Creature *summoned)
+    {
+        summoned->AI()->AttackStart(me);
+    }
+
+    void SummonedCreatureDespawn(Creature*)
+    {
+        summoned--;
+        if (summoned == 0)
+        {
+            SetEscortPaused(false);
+            DoScriptText(FHWOOR_SAY_START - 4, me, NULL);
+        }
+    }
+
+    void WaypointReached(uint32 i)
+    {
+        Player* player = GetPlayerForEscort();
+
+        switch (i)
+        {
+        case 7:
+            DoScriptText(FHWOOR_SAY_START -1, me, player);
+            me->SetWalk(true);
+            break;
+        case 8:
+            DoScriptText(FHWOOR_SAY_START - 2, me, player);
+            break;
+        case 15:
+            GameObject* gob = NULL;
+            Hellground::NearestGameObjectEntryInObjectRangeCheck check(*m_creature, OBJECT_ARK, 15.0f);
+            Hellground::ObjectSearcher<GameObject, Hellground::NearestGameObjectEntryInObjectRangeCheck> checker(gob, check);
+            Cell::VisitGridObjects(m_creature, checker, 15);
+            if (gob)
+                gob->Use(player);
+            break;
+        case 22:
+            DoScriptText(FHWOOR_SAY_START- 3, me, player);
+            me->SummonCreature(NPC_SSSLITH, 202.5, 8188.7, 22.12, 5.6f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 10000);
+            me->SummonCreature(NPC_FIRST_NAGA_ADD, 198.6, 8185.0, 22.6, 5.6f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 10000);
+            me->SummonCreature(NPC_SECOND_NAGA_ADD, 200.3, 8194.6, 22.0, 5.6f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 10000);
+            summoned = 3;
+            me->SetWalk(false);
+            SetEscortPaused(true);
+            break;
+        case 27:
+            me->SetWalk(true);
+            GameObject* ark = me->SummonGameObject(OBJECT_ARK, 251.0, 8485.8, 23.2, 3.2, 0, 0, 0, 0, 15000);
+            if (ark)
+                ark->SetSpawnedByDefault(false);
+            break;
+        case 28:
+            DoScriptText(FHWOOR_SAY_START -5, me, player);
+            if (player)
+                player->GroupEventHappens(QUEST_FHWOOR, me);
+            break;
+        }
+    }
+};
+
+CreatureAI* GetAI_npc_fhwoor(Creature* creature)
+{
+    return new npc_fhwoorAI(creature);
+}
+
+bool QuestAccept_npc_fhwoor(Player* player, Creature* creature, Quest const* quest)
+{
+    if (quest->GetQuestId() == QUEST_FHWOOR)
+    {
+        if (npc_escortAI* pEscortAI = CAST_AI(npc_escortAI, creature->AI()))
+        {
+            pEscortAI->Start(true, true, player->GetGUID(), quest, false, true);
+            DoScriptText(FHWOOR_SAY_START, creature, player);
+        }
+    }
+    return true;
+}
+
+/*######
 ## AddSC
 ######*/
 
@@ -509,5 +616,11 @@ void AddSC_zangarmarsh()
     newscript = new Script;
     newscript->Name = "npc_baby_murloc";
     newscript->GetAI = &GetAI_npc_baby_murloc;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_fhwoor";
+    newscript->GetAI = &GetAI_npc_fhwoor;
+    newscript->pQuestAcceptNPC = &QuestAccept_npc_fhwoor;
     newscript->RegisterSelf();
 }
