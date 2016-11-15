@@ -518,13 +518,14 @@ struct npc_fhwoorAI : public npc_escortAI
         switch (i)
         {
         case 7:
-            DoScriptText(FHWOOR_SAY_START -1, me, player);
+            DoScriptText(FHWOOR_SAY_START - 1, me, player);
             me->SetWalk(true);
             break;
         case 8:
             DoScriptText(FHWOOR_SAY_START - 2, me, player);
             break;
         case 15:
+        {
             GameObject* gob = NULL;
             Hellground::NearestGameObjectEntryInObjectRangeCheck check(*m_creature, OBJECT_ARK, 15.0f);
             Hellground::ObjectSearcher<GameObject, Hellground::NearestGameObjectEntryInObjectRangeCheck> checker(gob, check);
@@ -532,8 +533,9 @@ struct npc_fhwoorAI : public npc_escortAI
             if (gob)
                 gob->Use(player);
             break;
+        }
         case 22:
-            DoScriptText(FHWOOR_SAY_START- 3, me, player);
+            DoScriptText(FHWOOR_SAY_START - 3, me, player);
             me->SummonCreature(NPC_SSSLITH, 202.5, 8188.7, 22.12, 5.6f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 10000);
             me->SummonCreature(NPC_FIRST_NAGA_ADD, 198.6, 8185.0, 22.6, 5.6f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 10000);
             me->SummonCreature(NPC_SECOND_NAGA_ADD, 200.3, 8194.6, 22.0, 5.6f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 10000);
@@ -542,11 +544,13 @@ struct npc_fhwoorAI : public npc_escortAI
             SetEscortPaused(true);
             break;
         case 27:
+        {
             me->SetWalk(true);
             GameObject* ark = me->SummonGameObject(OBJECT_ARK, 251.0, 8485.8, 23.2, 3.2, 0, 0, 0, 0, 15000);
             if (ark)
                 ark->SetSpawnedByDefault(false);
             break;
+        }
         case 28:
             DoScriptText(FHWOOR_SAY_START -5, me, player);
             if (player)
