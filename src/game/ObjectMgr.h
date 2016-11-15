@@ -112,7 +112,6 @@ struct HellgroundStringLocale
 typedef std::map<uint32,uint32> CreatureLinkedRespawnMap;
 typedef UNORDERED_MAP<uint32,CreatureData> CreatureDataMap;
 typedef UNORDERED_MAP<uint32,GameObjectData> GameObjectDataMap;
-typedef UNORDERED_MAP<uint32,GameObjectLocale> GameObjectLocaleMap;
 typedef UNORDERED_MAP<uint32,ItemLocale> ItemLocaleMap;
 typedef UNORDERED_MAP<uint32,QuestLocale> QuestLocaleMap;
 typedef UNORDERED_MAP<uint32,NpcTextLocale> NpcTextLocaleMap;
@@ -480,7 +479,6 @@ class ObjectMgr
         void LoadCreatureAddons();
         void LoadCreatureModelInfo();
         void LoadEquipmentTemplates();
-        void LoadGameObjectLocales();
         void LoadGameobjects();
         void LoadGameobjectRespawnTimes();
         void LoadItemPrototypes();
@@ -586,13 +584,6 @@ class ObjectMgr
             CreatureLinkedRespawnMap::const_iterator itr = mCreatureLinkedRespawnMap.find(guid);
             if (itr == mCreatureLinkedRespawnMap.end()) return 0;
             return itr->second;
-        }
-
-        GameObjectLocale const* GetGameObjectLocale(uint32 entry) const
-        {
-            GameObjectLocaleMap::const_iterator itr = mGameObjectLocaleMap.find(entry);
-            if (itr==mGameObjectLocaleMap.end()) return NULL;
-            return &itr->second;
         }
 
         ItemLocale const* GetItemLocale(uint32 entry) const
@@ -846,9 +837,7 @@ class ObjectMgr
         MapObjectGuids mMapObjectGuids;
         CreatureDataMap mCreatureDataMap;
         CreatureLinkedRespawnMap mCreatureLinkedRespawnMap;
-        CreatureLocaleMap mCreatureLocaleMap;
         GameObjectDataMap mGameObjectDataMap;
-        GameObjectLocaleMap mGameObjectLocaleMap;
         ItemLocaleMap mItemLocaleMap;
         QuestLocaleMap mQuestLocaleMap;
         NpcTextLocaleMap mNpcTextLocaleMap;

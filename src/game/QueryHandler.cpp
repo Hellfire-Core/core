@@ -214,18 +214,6 @@ void WorldSession::HandleGameObjectQueryOpcode(WorldPacket & recv_data)
         Name = info->name;
         CastBarCaption = info->castBarCaption;
 
-        int loc_idx = GetSessionDbLocaleIndex();
-        if (loc_idx >= 0)
-        {
-            GameObjectLocale const *gl = sObjectMgr.GetGameObjectLocale(entryID);
-            if (gl)
-            {
-                if (gl->Name.size() > loc_idx && !gl->Name[loc_idx].empty())
-                    Name = gl->Name[loc_idx];
-                if (gl->CastBarCaption.size() > loc_idx && !gl->CastBarCaption[loc_idx].empty())
-                    CastBarCaption = gl->CastBarCaption[loc_idx];
-            }
-        }
         sLog.outDetail("WORLD: CMSG_GAMEOBJECT_QUERY '%s' - Entry: %u. ", info->name, entryID);
         WorldPacket data (SMSG_GAMEOBJECT_QUERY_RESPONSE, 150);
         data << entryID;

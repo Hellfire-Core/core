@@ -372,12 +372,6 @@ struct GameObjectInfo
     uint32 ScriptId;
 };
 
-struct GameObjectLocale
-{
-    std::vector<std::string> Name;
-    std::vector<std::string> CastBarCaption;
-};
-
 // client side GO show states
 enum GOState
 {

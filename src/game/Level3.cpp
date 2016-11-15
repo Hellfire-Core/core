@@ -2998,29 +2998,6 @@ bool ChatHandler::HandleLookupObjectCommand(const char* args)
         if (!gInfo)
             continue;
 
-        int loc_idx = m_session ? m_session->GetSessionDbLocaleIndex() : sObjectMgr.GetDBCLocaleIndex();
-        if (loc_idx >= 0)
-        {
-            GameObjectLocale const *gl = sObjectMgr.GetGameObjectLocale(id);
-            if (gl)
-            {
-                if (gl->Name.size() > loc_idx && !gl->Name[loc_idx].empty())
-                {
-                    std::string name = gl->Name[loc_idx];
-
-                    if (Utf8FitTo(name, wnamepart))
-                    {
-                        if (m_session)
-                            PSendSysMessage(LANG_GO_ENTRY_LIST_CHAT, id, id, name.c_str());
-                        else
-                            PSendSysMessage(LANG_GO_ENTRY_LIST_CONSOLE, id, name.c_str());
-                        ++counter;
-                        continue;
-                    }
-                }
-            }
-        }
-
         std::string name = gInfo->name;
         if (name.empty())
             continue;
