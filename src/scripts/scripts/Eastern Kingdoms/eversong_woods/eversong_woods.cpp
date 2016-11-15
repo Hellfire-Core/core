@@ -556,11 +556,11 @@ struct npc_apprentice_mirvedaAI : public ScriptedAI
         if(Summon)
         {
             Creature* cre = NULL;
-            cre = m_creature->SummonCreature(MOB_GHARZUL, 8745, -7134.32, 35.22, 0, TEMPSUMMON_CORPSE_DESPAWN, 4000);
+            cre = m_creature->SummonCreature(MOB_GHARZUL, 8725, -7143.32, 35.22, 0, TEMPSUMMON_CORPSE_DESPAWN, 4000);
             if (cre) cre->AI()->AttackStart(me);
-            cre = m_creature->SummonCreature(MOB_ANGERSHADE, 8745, -7134.32, 35.22, 0, TEMPSUMMON_CORPSE_DESPAWN, 4000);
+            cre = m_creature->SummonCreature(MOB_ANGERSHADE, 8725, -7143.32, 35.22, 0, TEMPSUMMON_CORPSE_DESPAWN, 4000);
             if (cre) cre->AI()->AttackStart(me);
-            cre = m_creature->SummonCreature(MOB_ANGERSHADE, 8745, -7134.32, 35.22, 0, TEMPSUMMON_CORPSE_DESPAWN, 4000);
+            cre = m_creature->SummonCreature(MOB_ANGERSHADE, 8725, -7143.32, 35.22, 0, TEMPSUMMON_CORPSE_DESPAWN, 4000);
             if (cre) cre->AI()->AttackStart(me);
             Summon = false;
         }

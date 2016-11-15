@@ -519,7 +519,7 @@ struct npc_fhwoorAI : public npc_escortAI
         {
         case 7:
             DoScriptText(FHWOOR_SAY_START - 1, me, player);
-            me->SetWalk(true);
+            SetRun(false);
             break;
         case 8:
             DoScriptText(FHWOOR_SAY_START - 2, me, player);
@@ -540,12 +540,12 @@ struct npc_fhwoorAI : public npc_escortAI
             me->SummonCreature(NPC_FIRST_NAGA_ADD, 198.6, 8185.0, 22.6, 5.6f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 10000);
             me->SummonCreature(NPC_SECOND_NAGA_ADD, 200.3, 8194.6, 22.0, 5.6f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 10000);
             summoned = 3;
-            me->SetWalk(false);
+            SetRun(true);
             SetEscortPaused(true);
             break;
         case 27:
         {
-            me->SetWalk(true);
+            SetRun(false);
             GameObject* ark = me->SummonGameObject(OBJECT_ARK, 251.0, 8485.8, 23.2, 3.2, 0, 0, 0, 0, 15000);
             if (ark)
                 ark->SetSpawnedByDefault(false);
