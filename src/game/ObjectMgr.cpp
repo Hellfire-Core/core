@@ -1259,67 +1259,6 @@ uint32 ObjectMgr::GetPlayerAccountIdByPlayerName(const std::string& name) const
     return 0;
 }
 
-void ObjectMgr::LoadItemLocales()
-{
-    mItemLocaleMap.clear();                                 // need for reload case
-
-    QueryResultAutoPtr result = GameDataDatabase.Query("SELECT entry,name_loc1,description_loc1,name_loc2,description_loc2,name_loc3,description_loc3,name_loc4,description_loc4,name_loc5,description_loc5,name_loc6,description_loc6,name_loc7,description_loc7,name_loc8,description_loc8 FROM locales_item");
-
-    if (!result)
-    {
-        BarGoLink bar(1);
-
-        bar.step();
-
-        sLog.outString();
-        sLog.outString(">> Loaded 0 Item locale strings. DB table `locales_item` is empty.");
-        return;
-    }
-
-    BarGoLink bar(result->GetRowCount());
-
-    do
-    {
-        Field *fields = result->Fetch();
-        bar.step();
-
-        uint32 entry = fields[0].GetUInt32();
-
-        ItemLocale& data = mItemLocaleMap[entry];
-
-        for (int i = 1; i < MAX_LOCALE; ++i)
-        {
-            std::string str = fields[1+2*(i-1)].GetCppString();
-            if (!str.empty())
-            {
-                int idx = GetOrNewIndexForLocale(LocaleConstant(i));
-                if (idx >= 0)
-                {
-                    if (data.Name.size() <= idx)
-                        data.Name.resize(idx+1);
-
-                    data.Name[idx] = str;
-                }
-            }
-
-            str = fields[1+2*(i-1)+1].GetCppString();
-            if (!str.empty())
-            {
-                int idx = GetOrNewIndexForLocale(LocaleConstant(i));
-                if (idx >= 0)
-                {
-                    if (data.Description.size() <= idx)
-                        data.Description.resize(idx+1);
-
-                    data.Description[idx] = str;
-                }
-            }
-        }
-    } while (result->NextRow());
-
-    sLog.outString();
-    sLog.outString(">> Loaded %lu Item locale strings", mItemLocaleMap.size());
-}
 
 struct SQLItemLoader : public SQLStorageLoaderBase<SQLItemLoader>
 {
@@ -6619,21 +6558,6 @@ void ObjectMgr::LoadTransportEvents()
 
     sLog.outString();
     sLog.outString(">> Loaded %lu transport events", result->GetRowCount());
-}
-
-void ObjectMgr::GetItemLocaleStrings(uint32 entry, int32 loc_idx, std::string* namePtr, std::string* descriptionPtr) const
-{
-    if (loc_idx >= 0)
-    {
-        if(ItemLocale const *il = GetItemLocale(entry))
-        {
-            if (namePtr && il->Name.size() > size_t(loc_idx) && !il->Name[loc_idx].empty())
-                *namePtr = il->Name[loc_idx];
-
-            if (descriptionPtr && il->Description.size() > size_t(loc_idx) && !il->Description[loc_idx].empty())
-                *descriptionPtr = il->Description[loc_idx];
-        }
-    }
 }
 
 void ObjectMgr::GetQuestLocaleStrings(uint32 entry, int32 loc_idx, std::string* titlePtr) const

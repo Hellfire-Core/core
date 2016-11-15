@@ -303,19 +303,13 @@ void WorldSession::HandleItemQuerySingleOpcode(WorldPacket & recv_data)
     ItemPrototype const *pProto = ObjectMgr::GetItemPrototype(item);
     if (pProto)
     {
-        int loc_idx = GetSessionDbLocaleIndex();
-
-        std::string name = pProto->Name1;
-        std::string description = pProto->Description;
-        sObjectMgr.GetItemLocaleStrings(pProto->ItemId, loc_idx, &name, &description);
-
                                                             // guess size
         WorldPacket data(SMSG_ITEM_QUERY_SINGLE_RESPONSE, 600);
         data << pProto->ItemId;
         data << pProto->Class;
         data << pProto->SubClass;
         data << uint32(-1);                                 // new 2.0.3, not exist in wdb cache?
-        data << name;
+        data << pProto->Name1;
         data << uint8(0x00);                                //pProto->Name2; // blizz not send name there, just uint8(0x00); <-- \0 = empty string = empty name...
         data << uint8(0x00);                                //pProto->Name3; // blizz not send name there, just uint8(0x00);
         data << uint8(0x00);                                //pProto->Name4; // blizz not send name there, just uint8(0x00);
@@ -403,7 +397,7 @@ void WorldSession::HandleItemQuerySingleOpcode(WorldPacket & recv_data)
             }
         }
         data << pProto->Bonding;
-        data << description;
+        data << pProto->Description;
         data << pProto->PageText;
         data << pProto->LanguageID;
         data << pProto->PageMaterial;
@@ -981,14 +975,10 @@ void WorldSession::HandleItemNameQueryOpcode(WorldPacket & recv_data)
     ItemPrototype const *pProto = ObjectMgr::GetItemPrototype(itemid);
     if (pProto)
     {
-        int loc_idx = GetSessionDbLocaleIndex();
-        std::string name = pProto->Name1;
-        sObjectMgr.GetItemLocaleStrings(pProto->ItemId, loc_idx, &name);
-
                                                             // guess size
         WorldPacket data(SMSG_ITEM_NAME_QUERY_RESPONSE, (4+10));
         data << uint32(pProto->ItemId);
-        data << name;
+        data << pProto->Name1;
         data << uint32(pProto->InventoryType);
         SendPacket(&data);
         return;

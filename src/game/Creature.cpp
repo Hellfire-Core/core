@@ -2656,7 +2656,8 @@ time_t Creature::GetLinkedCreatureRespawnTime() const
 
 void Creature::SetWalk(bool enable)
 {
-    SendCombatStats(1 << COMBAT_STATS_TEST, "set walk %u", NULL);
+    if (enable && GetEntry()==17877)
+        SendCombatStats(1 << COMBAT_STATS_CRASHTEST, "set walk", NULL);
     if (enable)
         AddUnitMovementFlag(MOVEFLAG_WALK_MODE);
     else

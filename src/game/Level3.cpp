@@ -2542,29 +2542,6 @@ bool ChatHandler::HandleListCreatureCommand(const char* args)
     return true;
 }
 
-void ChatHandler::ShowItemListHelper(uint32 itemId, int loc_idx)//, Player* target /*=NULL*/)
-{
-    ItemPrototype const *itemProto = sItemStorage.LookupEntry<ItemPrototype >(itemId);
-    if(!itemProto)
-        return;
-
-    std::string name = itemProto->Name1;
-    sObjectMgr.GetItemLocaleStrings(itemProto->ItemId, loc_idx, &name);
-
-/*    char const* usableStr = "";
-
-    if (target)
-    {
-        if (target->CanUseItem(itemProto))
-            usableStr = GetHellgroundString(LANG_COMMAND_ITEM_USABLE);
-    }*/
-
-    if (m_session)
-        PSendSysMessage(LANG_ITEM_LIST_CHAT, itemId, itemId, name.c_str());//, usableStr);
-    else
-        PSendSysMessage(LANG_ITEM_LIST_CONSOLE, itemId, name.c_str());//, usableStr);
-}
-
 bool ChatHandler::HandleLookupItemCommand(const char* args)
 {
     if (!*args)
@@ -2588,14 +2565,13 @@ bool ChatHandler::HandleLookupItemCommand(const char* args)
         if (!pProto)
             continue;
 
-        int loc_idx = m_session ? m_session->GetSessionDbLocaleIndex() : sObjectMgr.GetDBCLocaleIndex();
-
-        std::string name;                                   // "" for let later only single time check default locale name directly
-        sObjectMgr.GetItemLocaleStrings(id, loc_idx, &name);
-        if ((name.empty() || !Utf8FitTo(name, wnamepart)) && !Utf8FitTo(pProto->Name1, wnamepart))
+        if (!Utf8FitTo(pProto->Name1, wnamepart))
             continue;
 
-        ShowItemListHelper(id, loc_idx);
+        if (m_session)
+            PSendSysMessage(LANG_ITEM_LIST_CHAT, id, id, pProto->Name1);
+        else
+            PSendSysMessage(LANG_ITEM_LIST_CONSOLE, id, pProto->Name1);
         ++counter;
     }
 
