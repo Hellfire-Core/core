@@ -249,12 +249,6 @@ struct CreatureInfo
     }
 };
 
-struct NpcOptionLocale
-{
-    std::vector<std::string> OptionText;
-    std::vector<std::string> BoxText;
-};
-
 struct EquipmentInfo
 {
     uint32  entry;

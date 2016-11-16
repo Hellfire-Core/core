@@ -990,21 +990,8 @@ void Creature::prepareGossipMenu(Player *pPlayer,uint32 gossipid)
             //note for future dev: should have database fields for BoxMessage & BoxMoney
             if (!gso->OptionText.empty() && cantalking)
             {
-                std::string OptionText = gso->OptionText;
-                std::string BoxText = gso->BoxText;
-                int loc_idx = pPlayer->GetSession()->GetSessionDbLocaleIndex();
-                if (loc_idx >= 0)
-                {
-                    NpcOptionLocale const *no = sObjectMgr.GetNpcOptionLocale(gso->Id);
-                    if (no)
-                    {
-                        if (no->OptionText.size() > loc_idx && !no->OptionText[loc_idx].empty())
-                            OptionText=no->OptionText[loc_idx];
-                        if (no->BoxText.size() > loc_idx && !no->BoxText[loc_idx].empty())
-                            BoxText=no->BoxText[loc_idx];
-                    }
-                }
-                pm->GetGossipMenu().AddMenuItem((uint8)gso->Icon,OptionText, gossipid,gso->Action,BoxText,gso->BoxMoney,gso->Coded);
+                pm->GetGossipMenu().AddMenuItem((uint8)gso->Icon,gso->OptionText, gossipid,
+                    gso->Action,gso->BoxText,gso->BoxMoney,gso->Coded);
             }
         }
     }
@@ -2656,8 +2643,6 @@ time_t Creature::GetLinkedCreatureRespawnTime() const
 
 void Creature::SetWalk(bool enable)
 {
-    if (enable && GetEntry()==17877)
-        SendCombatStats(1 << COMBAT_STATS_CRASHTEST, "set walk", NULL);
     if (enable)
         AddUnitMovementFlag(MOVEFLAG_WALK_MODE);
     else

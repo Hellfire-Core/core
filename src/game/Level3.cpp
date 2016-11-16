@@ -2833,46 +2833,6 @@ bool ChatHandler::HandleLookupQuestCommand(const char* args)
     {
         Quest * qinfo = iter->second;
 
-        int loc_idx = m_session ? m_session->GetSessionDbLocaleIndex() : sObjectMgr.GetDBCLocaleIndex();
-        if (loc_idx >= 0)
-        {
-            QuestLocale const *il = sObjectMgr.GetQuestLocale(qinfo->GetQuestId());
-            if (il)
-            {
-                if (il->Title.size() > loc_idx && !il->Title[loc_idx].empty())
-                {
-                    std::string name = il->Title[loc_idx];
-
-                    if (Utf8FitTo(name, wnamepart))
-                    {
-                        char const* statusStr = "";
-
-                        if (target)
-                        {
-                            QuestStatus status = target->GetQuestStatus(qinfo->GetQuestId());
-
-                            if (status == QUEST_STATUS_COMPLETE)
-                            {
-                                if (target->GetQuestRewardStatus(qinfo->GetQuestId()))
-                                    statusStr = GetHellgroundString(LANG_COMMAND_QUEST_REWARDED);
-                                else
-                                    statusStr = GetHellgroundString(LANG_COMMAND_QUEST_COMPLETE);
-                            }
-                            else if (status == QUEST_STATUS_INCOMPLETE)
-                                statusStr = GetHellgroundString(LANG_COMMAND_QUEST_ACTIVE);
-                        }
-
-                        if (m_session)
-                            PSendSysMessage(LANG_QUEST_LIST_CHAT,qinfo->GetQuestId(),qinfo->GetQuestId(),name.c_str(),statusStr);
-                        else
-                            PSendSysMessage(LANG_QUEST_LIST_CONSOLE,qinfo->GetQuestId(),name.c_str(),statusStr);
-                        ++counter;
-                        continue;
-                    }
-                }
-            }
-        }
-
         std::string name = qinfo->GetName();
         if (name.empty())
             continue;

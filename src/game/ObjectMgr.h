@@ -112,11 +112,9 @@ struct HellgroundStringLocale
 typedef std::map<uint32,uint32> CreatureLinkedRespawnMap;
 typedef UNORDERED_MAP<uint32,CreatureData> CreatureDataMap;
 typedef UNORDERED_MAP<uint32,GameObjectData> GameObjectDataMap;
-typedef UNORDERED_MAP<uint32,QuestLocale> QuestLocaleMap;
 typedef UNORDERED_MAP<uint32,NpcTextLocale> NpcTextLocaleMap;
 typedef UNORDERED_MAP<uint32,PageTextLocale> PageTextLocaleMap;
 typedef UNORDERED_MAP<uint32,HellgroundStringLocale> HellgroundStringLocaleMap;
-typedef UNORDERED_MAP<uint32,NpcOptionLocale> NpcOptionLocaleMap;
 typedef UNORDERED_MAP<uint16,Timer> OpcodesCooldown;
 
 typedef std::multimap<uint32,uint32> QuestRelations;
@@ -481,10 +479,8 @@ class ObjectMgr
         void LoadGameobjects();
         void LoadGameobjectRespawnTimes();
         void LoadItemPrototypes();
-        void LoadQuestLocales();
         void LoadNpcTextLocales();
         void LoadPageTextLocales();
-        void LoadNpcOptionLocales();
         void LoadInstanceTemplate();
 
         void LoadGossipText();
@@ -584,15 +580,6 @@ class ObjectMgr
             return itr->second;
         }
 
-        QuestLocale const* GetQuestLocale(uint32 entry) const
-        {
-            QuestLocaleMap::const_iterator itr = mQuestLocaleMap.find(entry);
-            if (itr==mQuestLocaleMap.end()) return NULL;
-            return &itr->second;
-        }
-
-        void GetQuestLocaleStrings(uint32 entry, int32 loc_idx, std::string* titlePtr) const;
-
         NpcTextLocale const* GetNpcTextLocale(uint32 entry) const
         {
             NpcTextLocaleMap::const_iterator itr = mNpcTextLocaleMap.find(entry);
@@ -606,17 +593,6 @@ class ObjectMgr
             if (itr==mPageTextLocaleMap.end()) return NULL;
             return &itr->second;
         }
-
-        NpcOptionLocale const* GetNpcOptionLocale(uint32 entry) const
-        {
-            NpcOptionLocaleMap::const_iterator itr = mNpcOptionLocaleMap.find(entry);
-            if (itr==mNpcOptionLocaleMap.end()) return NULL;
-            return &itr->second;
-        }
-
-        typedef std::string NpcTextArray[MAX_GOSSIP_TEXT_OPTIONS];
-        void GetNpcTextLocaleStringsAll(uint32 entry, int32 loc_idx, NpcTextArray *text0_Ptr, NpcTextArray* text1_Ptr) const;
-        void GetNpcTextLocaleStrings0(uint32 entry, int32 loc_idx, std::string* text0_0_Ptr, std::string* text1_0_Ptr) const;
 
         GameObjectData const* GetGOData(uint32 guid) const
         {
@@ -827,11 +803,9 @@ class ObjectMgr
         CreatureDataMap mCreatureDataMap;
         CreatureLinkedRespawnMap mCreatureLinkedRespawnMap;
         GameObjectDataMap mGameObjectDataMap;
-        QuestLocaleMap mQuestLocaleMap;
         NpcTextLocaleMap mNpcTextLocaleMap;
         PageTextLocaleMap mPageTextLocaleMap;
         HellgroundStringLocaleMap mHellgroundStringLocaleMap;
-        NpcOptionLocaleMap mNpcOptionLocaleMap;
         RespawnTimes mCreatureRespawnTimes;
         RespawnTimes mGORespawnTimes;
 

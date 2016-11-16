@@ -143,19 +143,6 @@ enum __QuestFlags
     QUEST_HELLGROUND_FLAGS_TIMED                = 0x200000,     // Internal flag computed only
 };
 
-struct QuestLocale
-{
-    QuestLocale() { ObjectiveText.resize(QUEST_OBJECTIVES_COUNT); }
-
-    std::vector<std::string> Title;
-    std::vector<std::string> Details;
-    std::vector<std::string> Objectives;
-    std::vector<std::string> OfferRewardText;
-    std::vector<std::string> RequestItemsText;
-    std::vector<std::string> EndText;
-    std::vector< std::vector<std::string> > ObjectiveText;
-};
-
 // This Quest class provides a convenient way to access a few pretotaled (cached) quest details,
 // all base quest information, and any utility functions such as generating the amount of
 // xp to give

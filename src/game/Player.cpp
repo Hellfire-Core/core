@@ -12613,13 +12613,7 @@ void Player::SendPreparedQuest(uint64 guid)
             {
                 qe = gossiptext->Options[0].Emotes[0];
 
-                int loc_idx = GetSession()->GetSessionDbLocaleIndex();
-
-                std::string title0 = gossiptext->Options[0].Text_0;
-                std::string title1 = gossiptext->Options[0].Text_1;
-                sObjectMgr.GetNpcTextLocaleStrings0(textid, loc_idx, &title0, &title1);
-
-                title = !title0.empty() ? title0 : title1;
+                title = gossiptext->Options[0].Text_0.empty() ? gossiptext->Options[0].Text_1 : gossiptext->Options[0].Text_0;
             }
         }
         PlayerTalkClass->SendQuestGiverQuestList(qe, title, guid);
@@ -14174,13 +14168,9 @@ void Player::SendQuestConfirmAccept(const Quest* pQuest, Player* pReceiver)
 {
     if (pReceiver)
     {
-        int loc_idx = pReceiver->GetSession()->GetSessionDbLocaleIndex();
-        std::string name = pQuest->GetName();
-        sObjectMgr.GetQuestLocaleStrings(pQuest->GetQuestId(), loc_idx, &name);
-
         WorldPacket data(SMSG_QUEST_CONFIRM_ACCEPT, (4 + name.size() + 8));
         data << uint32(pQuest->GetQuestId());
-        data << name;
+        data << pQuest->GetName();
         data << uint64(GetGUID());
         pReceiver->SendPacketToSelf(&data);
 
