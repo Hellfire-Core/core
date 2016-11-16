@@ -238,9 +238,6 @@ void ChaseMovementGenerator<T>::Finalize(T &owner)
 
         if (creature->isPet())
             return;
-
-        if (!creature->isInCombat())
-            creature->GetMotionMaster()->MoveTargetedHome();
     }
 }
 

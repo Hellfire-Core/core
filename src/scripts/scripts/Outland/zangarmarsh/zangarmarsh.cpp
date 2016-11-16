@@ -531,7 +531,10 @@ struct npc_fhwoorAI : public npc_escortAI
             Hellground::ObjectSearcher<GameObject, Hellground::NearestGameObjectEntryInObjectRangeCheck> checker(gob, check);
             Cell::VisitGridObjects(m_creature, checker, 15);
             if (gob)
-                gob->Use(player);
+            {
+                gob->SetLootState(GO_READY);
+                gob->UseDoorOrButton(10000);
+            }
             break;
         }
         case 22:
@@ -571,7 +574,8 @@ bool QuestAccept_npc_fhwoor(Player* player, Creature* creature, Quest const* que
     {
         if (npc_escortAI* pEscortAI = CAST_AI(npc_escortAI, creature->AI()))
         {
-            pEscortAI->Start(true, true, player->GetGUID(), quest, false, true);
+            pEscortAI->Start(true, true, player->GetGUID(), quest, true, false);
+            creature->SetSelection(player->GetGUID());
             DoScriptText(FHWOOR_SAY_START, creature, player);
         }
     }
