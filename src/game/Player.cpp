@@ -14168,7 +14168,7 @@ void Player::SendQuestConfirmAccept(const Quest* pQuest, Player* pReceiver)
 {
     if (pReceiver)
     {
-        WorldPacket data(SMSG_QUEST_CONFIRM_ACCEPT, (4 + name.size() + 8));
+        WorldPacket data(SMSG_QUEST_CONFIRM_ACCEPT, (4 + pQuest->GetName().size() + 8));
         data << uint32(pQuest->GetQuestId());
         data << pQuest->GetName();
         data << uint64(GetGUID());

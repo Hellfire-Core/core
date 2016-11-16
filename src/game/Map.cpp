@@ -513,7 +513,7 @@ void Map::Update(const uint32 &t_diff)
                     cell.SetNoCreate();
                     Visit(cell, grid_object_update);
                     Visit(cell, world_object_update);
-                    if (WorldTimer::getMSTimeDiffToNow(startTime) > 100)
+                    if (WorldTimer::getMSTimeDiffToNow(startTime) > 300)
                         sLog.outLog(LOG_DIFF, "Map::Update cell %u %u (%u ms) map %u", x, y, WorldTimer::getMSTimeDiffToNow(startTime), GetId());
                 }
             }
