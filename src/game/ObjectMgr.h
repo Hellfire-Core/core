@@ -112,8 +112,6 @@ struct HellgroundStringLocale
 typedef std::map<uint32,uint32> CreatureLinkedRespawnMap;
 typedef UNORDERED_MAP<uint32,CreatureData> CreatureDataMap;
 typedef UNORDERED_MAP<uint32,GameObjectData> GameObjectDataMap;
-typedef UNORDERED_MAP<uint32,NpcTextLocale> NpcTextLocaleMap;
-typedef UNORDERED_MAP<uint32,PageTextLocale> PageTextLocaleMap;
 typedef UNORDERED_MAP<uint32,HellgroundStringLocale> HellgroundStringLocaleMap;
 typedef UNORDERED_MAP<uint16,Timer> OpcodesCooldown;
 
@@ -479,8 +477,6 @@ class ObjectMgr
         void LoadGameobjects();
         void LoadGameobjectRespawnTimes();
         void LoadItemPrototypes();
-        void LoadNpcTextLocales();
-        void LoadPageTextLocales();
         void LoadInstanceTemplate();
 
         void LoadGossipText();
@@ -578,20 +574,6 @@ class ObjectMgr
             CreatureLinkedRespawnMap::const_iterator itr = mCreatureLinkedRespawnMap.find(guid);
             if (itr == mCreatureLinkedRespawnMap.end()) return 0;
             return itr->second;
-        }
-
-        NpcTextLocale const* GetNpcTextLocale(uint32 entry) const
-        {
-            NpcTextLocaleMap::const_iterator itr = mNpcTextLocaleMap.find(entry);
-            if (itr==mNpcTextLocaleMap.end()) return NULL;
-            return &itr->second;
-        }
-
-        PageTextLocale const* GetPageTextLocale(uint32 entry) const
-        {
-            PageTextLocaleMap::const_iterator itr = mPageTextLocaleMap.find(entry);
-            if (itr==mPageTextLocaleMap.end()) return NULL;
-            return &itr->second;
         }
 
         GameObjectData const* GetGOData(uint32 guid) const
@@ -803,8 +785,6 @@ class ObjectMgr
         CreatureDataMap mCreatureDataMap;
         CreatureLinkedRespawnMap mCreatureLinkedRespawnMap;
         GameObjectDataMap mGameObjectDataMap;
-        NpcTextLocaleMap mNpcTextLocaleMap;
-        PageTextLocaleMap mPageTextLocaleMap;
         HellgroundStringLocaleMap mHellgroundStringLocaleMap;
         RespawnTimes mCreatureRespawnTimes;
         RespawnTimes mGORespawnTimes;

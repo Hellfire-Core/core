@@ -383,20 +383,7 @@ void WorldSession::HandlePageQueryOpcode(WorldPacket & recv_data)
         }
         else
         {
-            std::string Text = pPage->Text;
-
-            int loc_idx = GetSessionDbLocaleIndex();
-            if (loc_idx >= 0)
-            {
-                PageTextLocale const *pl = sObjectMgr.GetPageTextLocale(pageID);
-                if (pl)
-                {
-                    if (pl->Text.size() > loc_idx && !pl->Text[loc_idx].empty())
-                        Text = pl->Text[loc_idx];
-                }
-            }
-
-            data << Text;
+            data << pPage->Text;
             data << uint32(pPage->Next_Page);
             pageID = pPage->Next_Page;
         }

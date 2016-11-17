@@ -1129,9 +1129,7 @@ void World::SetInitialWorldSettings()
     //sLog.outString("Packing instances...");
     //sInstanceSaveManager.PackInstances();
 
-    sLog.outString("Loading Localization strings...");
-    sObjectMgr.LoadNpcTextLocales();
-    sObjectMgr.LoadPageTextLocales();
+    //sLog.outString("Loading Localization strings...");
     sObjectMgr.SetDBCLocaleIndex(GetDefaultDbcLocale());        // Get once for all the locale index of DBC language (console/broadcasts)
 
     sLog.outString("Loading Page Texts...");

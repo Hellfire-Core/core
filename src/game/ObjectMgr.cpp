@@ -3019,56 +3019,6 @@ void ObjectMgr::LoadPageTexts()
     }
 }
 
-void ObjectMgr::LoadPageTextLocales()
-{
-    mPageTextLocaleMap.clear();                             // need for reload case
-
-    QueryResultAutoPtr result = GameDataDatabase.Query("SELECT entry,text_loc1,text_loc2,text_loc3,text_loc4,text_loc5,text_loc6,text_loc7,text_loc8 FROM locales_page_text");
-    if (!result)
-    {
-        BarGoLink bar(1);
-
-        bar.step();
-
-        sLog.outString();
-        sLog.outString(">> Loaded 0 PageText locale strings. DB table `locales_page_text` is empty.");
-        return;
-    }
-
-    BarGoLink bar(result->GetRowCount());
-
-    do
-    {
-        Field *fields = result->Fetch();
-        bar.step();
-
-        uint32 entry = fields[0].GetUInt32();
-
-        PageTextLocale& data = mPageTextLocaleMap[entry];
-
-        for (int i = 1; i < MAX_LOCALE; ++i)
-        {
-            std::string str = fields[i].GetCppString();
-            if (str.empty())
-                continue;
-
-            int idx = GetOrNewIndexForLocale(LocaleConstant(i));
-            if (idx >= 0)
-            {
-                if (data.Text.size() <= idx)
-                    data.Text.resize(idx+1);
-
-                data.Text[idx] = str;
-            }
-        }
-
-    }
-    while (result->NextRow());
-
-    sLog.outString();
-    sLog.outString(">> Loaded %lu PageText locale strings", mPageTextLocaleMap.size());
-}
-
 struct SQLInstanceLoader : public SQLStorageLoaderBase<SQLInstanceLoader>
 {
     template<class D>
@@ -3184,79 +3134,6 @@ void ObjectMgr::LoadGossipText()
 
     sLog.outString();
     sLog.outString(">> Loaded %u npc texts", count);
-}
-
-void ObjectMgr::LoadNpcTextLocales()
-{
-    mNpcTextLocaleMap.clear();                              // need for reload case
-
-    QueryResultAutoPtr result = GameDataDatabase.Query("SELECT entry,"
-        "Text0_0_loc1,Text0_1_loc1,Text1_0_loc1,Text1_1_loc1,Text2_0_loc1,Text2_1_loc1,Text3_0_loc1,Text3_1_loc1,Text4_0_loc1,Text4_1_loc1,Text5_0_loc1,Text5_1_loc1,Text6_0_loc1,Text6_1_loc1,Text7_0_loc1,Text7_1_loc1,"
-        "Text0_0_loc2,Text0_1_loc2,Text1_0_loc2,Text1_1_loc2,Text2_0_loc2,Text2_1_loc2,Text3_0_loc2,Text3_1_loc1,Text4_0_loc2,Text4_1_loc2,Text5_0_loc2,Text5_1_loc2,Text6_0_loc2,Text6_1_loc2,Text7_0_loc2,Text7_1_loc2,"
-        "Text0_0_loc3,Text0_1_loc3,Text1_0_loc3,Text1_1_loc3,Text2_0_loc3,Text2_1_loc3,Text3_0_loc3,Text3_1_loc1,Text4_0_loc3,Text4_1_loc3,Text5_0_loc3,Text5_1_loc3,Text6_0_loc3,Text6_1_loc3,Text7_0_loc3,Text7_1_loc3,"
-        "Text0_0_loc4,Text0_1_loc4,Text1_0_loc4,Text1_1_loc4,Text2_0_loc4,Text2_1_loc4,Text3_0_loc4,Text3_1_loc1,Text4_0_loc4,Text4_1_loc4,Text5_0_loc4,Text5_1_loc4,Text6_0_loc4,Text6_1_loc4,Text7_0_loc4,Text7_1_loc4,"
-        "Text0_0_loc5,Text0_1_loc5,Text1_0_loc5,Text1_1_loc5,Text2_0_loc5,Text2_1_loc5,Text3_0_loc5,Text3_1_loc1,Text4_0_loc5,Text4_1_loc5,Text5_0_loc5,Text5_1_loc5,Text6_0_loc5,Text6_1_loc5,Text7_0_loc5,Text7_1_loc5,"
-        "Text0_0_loc6,Text0_1_loc6,Text1_0_loc6,Text1_1_loc6,Text2_0_loc6,Text2_1_loc6,Text3_0_loc6,Text3_1_loc1,Text4_0_loc6,Text4_1_loc6,Text5_0_loc6,Text5_1_loc6,Text6_0_loc6,Text6_1_loc6,Text7_0_loc6,Text7_1_loc6,"
-        "Text0_0_loc7,Text0_1_loc7,Text1_0_loc7,Text1_1_loc7,Text2_0_loc7,Text2_1_loc7,Text3_0_loc7,Text3_1_loc1,Text4_0_loc7,Text4_1_loc7,Text5_0_loc7,Text5_1_loc7,Text6_0_loc7,Text6_1_loc7,Text7_0_loc7,Text7_1_loc7, "
-        "Text0_0_loc8,Text0_1_loc8,Text1_0_loc8,Text1_1_loc8,Text2_0_loc8,Text2_1_loc8,Text3_0_loc8,Text3_1_loc1,Text4_0_loc8,Text4_1_loc8,Text5_0_loc8,Text5_1_loc8,Text6_0_loc8,Text6_1_loc8,Text7_0_loc8,Text7_1_loc8 "
-        " FROM locales_npc_text");
-
-    if (!result)
-    {
-        BarGoLink bar(1);
-
-        bar.step();
-
-        sLog.outString();
-        sLog.outString(">> Loaded 0 Quest locale strings. DB table `locales_npc_text` is empty.");
-        return;
-    }
-
-    BarGoLink bar(result->GetRowCount());
-
-    do
-    {
-        Field *fields = result->Fetch();
-        bar.step();
-
-        uint32 entry = fields[0].GetUInt32();
-
-        NpcTextLocale& data = mNpcTextLocaleMap[entry];
-
-        for (int i=1; i<MAX_LOCALE; ++i)
-        {
-            for (int j=0; j<8; ++j)
-            {
-                std::string str0 = fields[1+8*2*(i-1)+2*j].GetCppString();
-                if (!str0.empty())
-                {
-                    int idx = GetOrNewIndexForLocale(LocaleConstant(i));
-                    if (idx >= 0)
-                    {
-                        if (data.Text_0[j].size() <= idx)
-                            data.Text_0[j].resize(idx+1);
-
-                        data.Text_0[j][idx] = str0;
-                    }
-                }
-                std::string str1 = fields[1+8*2*(i-1)+2*j+1].GetCppString();
-                if (!str1.empty())
-                {
-                    int idx = GetOrNewIndexForLocale(LocaleConstant(i));
-                    if (idx >= 0)
-                    {
-                        if (data.Text_1[j].size() <= idx)
-                            data.Text_1[j].resize(idx+1);
-
-                        data.Text_1[j][idx] = str1;
-                    }
-                }
-            }
-        }
-    } while (result->NextRow());
-
-    sLog.outString();
-    sLog.outString(">> Loaded %lu NpcText locale strings", mNpcTextLocaleMap.size());
 }
 
 //not very fast function but it is called only once a day, or on starting-up
