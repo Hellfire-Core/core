@@ -1922,13 +1922,13 @@ void Spell::EffectDummy(uint32 i)
                 }
                 case 42492: // corrosion prevention - cast energized
                 {
-                    if (unitTarget->GetTypeId() == TYPEID_PLAYER && unitTarget->ToPlayer()->hasQuest(11147))
+                    if (unitTarget->GetTypeId() == TYPEID_PLAYER && unitTarget->ToPlayer()->hasQuest(11174))
                         spell_id = 42490;
                     break;
                 }
                 case 42489: // corrosion prevention - use item
                 {
-                    if (m_caster->HasAura(42490) && (unitTarget->GetEntry() == 4393 || unitTarget->GetEntry == 4394))
+                    if (m_caster->HasAura(42490) && (unitTarget->GetEntry() == 4393 || unitTarget->GetEntry() == 4394))
                         spell_id = 42483;
                     break;
                 }
