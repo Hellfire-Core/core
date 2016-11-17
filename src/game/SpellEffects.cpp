@@ -1936,6 +1936,8 @@ void Spell::EffectDummy(uint32 i)
                 {
                     if (m_caster->GetTypeId() == TYPEID_PLAYER)
                         m_caster->ToPlayer()->CastCreatureOrGO(23797, 0, 42485);
+                    if (unitTarget->GetEntry() == 4393 || unitTarget->GetEntry() == 4394)
+                        m_caster->Kill(unitTarget);
                     break;
                 }
             }

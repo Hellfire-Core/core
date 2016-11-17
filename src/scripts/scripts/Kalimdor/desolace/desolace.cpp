@@ -69,7 +69,6 @@ struct npc_aged_dying_ancient_kodoAI : public ScriptedAI
             if (m_creature->IsWithinDistInMap(pWho, 10.0f))
             {
                 DoScriptText(RAND(SAY_SMEED_HOME_1,SAY_SMEED_HOME_2,SAY_SMEED_HOME_3), pWho);
-                m_creature->GetMotionMaster()->MoveIdle();
                 m_creature->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
             }
         }
@@ -119,8 +118,8 @@ bool GossipHello_npc_aged_dying_ancient_kodo(Player* pPlayer, Creature* pCreatur
         pPlayer->CastCreatureOrGO(pCreature->GetEntry(), pCreature->GetGUID(), SPELL_KODO_KOMBO_GOSSIP);
 
         pPlayer->RemoveAurasDueToSpell(SPELL_KODO_KOMBO_PLAYER_BUFF);
-        pCreature->GetMotionMaster()->MoveIdle();
         pCreature->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+        pCreature->ForcedDespawn(5000);
     }
 
     pPlayer->SEND_GOSSIP_MENU(pCreature->GetNpcTextId(), pCreature->GetGUID());

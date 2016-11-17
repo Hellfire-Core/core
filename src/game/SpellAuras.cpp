@@ -2096,6 +2096,18 @@ void Aura::TriggerSpell()
                 m_target->CastSpell(p_Creature->GetPositionX(), p_Creature->GetPositionY(), p_Creature->GetPositionZ(), triggeredSpellEntry->Id, true, 0, this, originalCasterGUID);
                 return;
             }
+            // corrosion prevention energize
+            case 42491: 
+            {
+                Player* pPlayer = NULL;
+                Hellground::AnyPlayerInObjectRangeCheck p_check(m_target, 30.0f);
+                Hellground::ObjectSearcher<Player, Hellground::AnyPlayerInObjectRangeCheck> searcher(pPlayer, p_check);
+
+                Cell::VisitAllObjects(m_target, searcher, 30.0f);
+                if (pPlayer)
+                    m_target->CastSpell(pPlayer, triggeredSpellEntry, true, 0, this, originalCasterGUID);
+                return;
+            }
         }
     }
     if (!SpellMgr::GetSpellMaxRange(sSpellRangeStore.LookupEntry(triggeredSpellEntry->rangeIndex)))
