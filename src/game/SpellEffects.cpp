@@ -1935,7 +1935,7 @@ void Spell::EffectDummy(uint32 i)
                 case 42485: // corrosion prevention - quest credit
                 {
                     if (m_caster->GetTypeId() == TYPEID_PLAYER)
-                        m_caster->ToPlayer()->CastCreatureOrGO(23797, 0, 42485);
+                        m_caster->ToPlayer()->CastCreatureOrGO(23797, MAKE_NEW_GUID(0,23797,HIGHGUID_UNIT), 42485);
                     if (unitTarget->GetEntry() == 4393 || unitTarget->GetEntry() == 4394)
                         m_caster->Kill(unitTarget);
                     break;

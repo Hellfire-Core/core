@@ -64,13 +64,11 @@ struct npc_aged_dying_ancient_kodoAI : public ScriptedAI
 
     void MoveInLineOfSight(Unit* pWho)
     {
-        if (pWho->GetEntry() == NPC_SMEED)
+        if (pWho->GetEntry() == NPC_SMEED && !m_creature->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP) &&
+            m_creature->IsWithinDistInMap(pWho, 10.0f))
         {
-            if (m_creature->IsWithinDistInMap(pWho, 10.0f))
-            {
-                DoScriptText(RAND(SAY_SMEED_HOME_1,SAY_SMEED_HOME_2,SAY_SMEED_HOME_3), pWho);
-                m_creature->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
-            }
+            DoScriptText(RAND(SAY_SMEED_HOME_1,SAY_SMEED_HOME_2,SAY_SMEED_HOME_3), pWho);
+            m_creature->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
         }
     }
 
