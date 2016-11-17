@@ -3221,33 +3221,6 @@ void Spell::EffectUnlearnSpecialization(uint32 i)
     uint32 spellToUnlearn = GetSpellEntry()->EffectTriggerSpell[i];
 
     _player->removeSpell(spellToUnlearn);
-
-    // remove quest that gives this spec (or skill will be re-learned at relog)
-    QuestStatusMap& qsm = _player->getQuestStatusMap();
-    uint32 found = 0;
-    for (QuestStatusMap::const_iterator itr = qsm.begin(); itr != qsm.end(); ++itr)
-    {
-        if (!itr->second.m_rewarded)
-            continue;
-
-        Quest const* quest = sObjectMgr.GetQuestTemplate(itr->first);
-        if (!quest)
-            continue;
-        uint32 spell_id = quest->GetRewSpellCast();
-        if (!spell_id)
-            continue;
-        SpellEntry const *spellInfo = sSpellStore.LookupEntry(spell_id);
-        if (!spellInfo)
-            continue;
-        if (spellInfo->Effect[0] == SPELL_EFFECT_LEARN_SPELL && spellInfo->EffectTriggerSpell[0] == spellToUnlearn)
-            found = itr->first;
-    }
-    if (found)
-    {
-        _player->SetQuestStatus(found, QUEST_STATUS_NONE);
-        qsm[found].m_rewarded = false;
-    }
-
     sLog.outDebug("Spell: Player %u have unlearned spell %u from NpcGUID: %u", _player->GetGUIDLow(), spellToUnlearn, m_caster->GetGUIDLow());
 }
 

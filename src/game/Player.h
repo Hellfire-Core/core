@@ -1507,7 +1507,7 @@ class HELLGROUND_EXPORT Player : public Unit
         void resetSpells();
         void learnDefaultSpells(bool loading = false);
         void learnQuestRewardedSpells();
-        void learnQuestRewardedSpells(Quest const* quest);
+        void learnQuestRewardedSpells(Quest const* quest, bool loading = false);
 
         uint32 GetFreeTalentPoints() const { return GetUInt32Value(PLAYER_CHARACTER_POINTS1); }
         void SetFreeTalentPoints(uint32 points) { SetUInt32Value(PLAYER_CHARACTER_POINTS1,points); }

@@ -15632,7 +15632,7 @@ void Player::_LoadQuestStatus(QueryResultAutoPtr result)
                 if (questStatusData.m_rewarded)
                 {
                     // learn rewarded spell if unknown
-                    learnQuestRewardedSpells(pQuest);
+                    learnQuestRewardedSpells(pQuest, true);
 
                     // set rewarded title if any
                     if (pQuest->GetCharTitleId())
@@ -19286,7 +19286,7 @@ void Player::learnDefaultSpells(bool loading)
     }
 }
 
-void Player::learnQuestRewardedSpells(Quest const* quest)
+void Player::learnQuestRewardedSpells(Quest const* quest, bool loading)
 {
     uint32 spell_id = quest->GetRewSpellCast();
 
@@ -19317,6 +19317,7 @@ void Player::learnQuestRewardedSpells(Quest const* quest)
     uint32 learned_0 = spellInfo->EffectTriggerSpell[0];
     if (sSpellMgr.GetSpellRank(learned_0) > 1 && !HasSpell(learned_0))
     {
+        
         // not have first rank learned (unlearned prof?)
         uint32 first_spell = sSpellMgr.GetFirstSpellInChain(learned_0);
         if (!HasSpell(first_spell))
@@ -19329,6 +19330,13 @@ void Player::learnQuestRewardedSpells(Quest const* quest)
         // specialization
         if (learnedInfo->Effect[0]==SPELL_EFFECT_TRADE_SKILL && learnedInfo->Effect[1]==0)
         {
+            if (loading)
+            {
+                PlayerSpellMap::const_iterator meitr = m_spells.find(learned_0);
+                if (meitr != m_spells.end() && meitr->second.state == PLAYERSPELL_REMOVED)
+                    return; // this spell was removed (resigned from spec) do not relearn on load
+            }
+
             // search other specialization for same prof
             for (PlayerSpellMap::const_iterator itr = m_spells.begin(); itr != m_spells.end(); ++itr)
             {
