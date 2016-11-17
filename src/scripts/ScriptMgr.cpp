@@ -497,39 +497,6 @@ bool ItemUse(Player* pPlayer, Item* pItem, SpellCastTargets const& targets)
 }
 
 HELLGROUND_DLL_EXPORT
-bool EffectDummyCreature(Unit* pCaster, uint32 spellId, uint32 effIndex, Creature* pTarget)
-{
-    Script* pTempScript = m_scripts[pTarget->GetScriptId()];
-
-    if (!pTempScript || !pTempScript->pEffectDummyNPC)
-        return false;
-
-    return pTempScript->pEffectDummyNPC(pCaster, spellId, effIndex, pTarget);
-}
-
-HELLGROUND_DLL_EXPORT
-bool EffectDummyGameObject(Unit* pCaster, uint32 spellId, uint32 effIndex, GameObject* pTarget)
-{
-    Script* pTempScript = m_scripts[pTarget->GetGOInfo()->ScriptId];
-
-    if (!pTempScript || !pTempScript->pEffectDummyGO)
-        return false;
-
-    return pTempScript->pEffectDummyGO(pCaster, spellId, effIndex, pTarget);
-}
-
-HELLGROUND_DLL_EXPORT
-bool EffectDummyItem(Unit* pCaster, uint32 spellId, uint32 effIndex, Item* pTarget)
-{
-    Script* pTempScript = m_scripts[pTarget->GetProto()->ScriptId];
-
-    if (!pTempScript || !pTempScript->pEffectDummyItem)
-        return false;
-
-    return pTempScript->pEffectDummyItem(pCaster, spellId, effIndex, pTarget);
-}
-
-HELLGROUND_DLL_EXPORT
 bool AuraDummy(Aura const* pAura, bool bApply)
 {
     Script* pTempScript = m_scripts[((Creature*)pAura->GetTarget())->GetScriptId()];

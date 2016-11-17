@@ -54,8 +54,7 @@ struct Script
         pQuestAcceptNPC(NULL), pQuestAcceptGO(NULL), pQuestAcceptItem(NULL),
         pQuestRewardedNPC(NULL), pQuestRewardedGO(NULL),
         pGOUse(NULL), pItemUse(NULL), pAreaTrigger(NULL), pCompletedCinematic(NULL),
-        pProcessEventId(NULL), pReceiveEmote(NULL),
-        pEffectDummyNPC(NULL), pEffectDummyGO(NULL), pEffectDummyItem(NULL), pEffectAuraDummy(NULL),
+        pProcessEventId(NULL), pReceiveEmote(NULL), pEffectAuraDummy(NULL),
         GetAI(NULL), GetInstanceData(NULL),
 
         //spell scripts
@@ -81,9 +80,6 @@ struct Script
     bool (*pAreaTrigger             )(Player*, AreaTriggerEntry const*);
     bool (*pCompletedCinematic      )(Player*, CinematicSequencesEntry const*);
     bool (*pProcessEventId          )(uint32, Object*, Object*, bool);
-    bool (*pEffectDummyNPC          )(Unit*, uint32, uint32, Creature*);
-    bool (*pEffectDummyGO           )(Unit*, uint32, uint32, GameObject*);
-    bool (*pEffectDummyItem         )(Unit*, uint32, uint32, Item*);
     bool (*pEffectAuraDummy         )(const Aura*, bool);
 
     bool (*pReceiveEmote            )(Player*, Creature*, uint32);

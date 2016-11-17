@@ -1912,6 +1912,13 @@ void Spell::EffectDummy(uint32 i)
                     m_caster->CastSpell(any, 37868, true);
                     return;
                 }
+                case 18269: // tamed kodo return to home after time out
+                {
+                    if (m_caster->GetTypeId() == TYPEID_UNIT && m_caster->GetEntry() == 11627)
+                    {
+                        m_caster->ToCreature()->Respawn();
+                    }
+                }
             }
 
             //All IconID Check in there
@@ -2558,15 +2565,6 @@ void Spell::EffectDummy(uint32 i)
         m_caster->AddPetAura(petSpell);
         return;
     }
-
-    // Script based implementation. Must be used only for not good for implementation in core spell effects
-    // So called only for not proccessed cases
-    if (gameObjTarget)
-        sScriptMgr.OnEffectDummy(m_caster, GetSpellEntry()->Id, i, gameObjTarget);
-    else if (unitTarget && unitTarget->GetTypeId() == TYPEID_UNIT)
-        sScriptMgr.OnEffectDummy(m_caster, GetSpellEntry()->Id, i, (Creature*)unitTarget);
-    else if (itemTarget)
-        sScriptMgr.OnEffectDummy(m_caster, GetSpellEntry()->Id, i, itemTarget);
 }
 
 void Spell::EffectTriggerSpellWithValue(uint32 i)

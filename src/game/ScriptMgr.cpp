@@ -58,9 +58,6 @@ ScriptMgr::ScriptMgr() :
     m_pOnAreaTrigger(NULL),
     m_pOnCompletedCinematic(NULL),
     m_pOnProcessEvent(NULL),
-    m_pOnEffectDummyCreature(NULL),
-    m_pOnEffectDummyGO(NULL),
-    m_pOnEffectDummyItem(NULL),
     m_pOnAuraDummy(NULL),
     m_pOnReceiveEmote(NULL),
 
@@ -833,21 +830,6 @@ bool ScriptMgr::OnProcessEvent(uint32 eventId, Object* pSource, Object* pTarget,
     return m_pOnProcessEvent != NULL && m_pOnProcessEvent(eventId, pSource, pTarget, isStart);
 }
 
-bool ScriptMgr::OnEffectDummy(Unit* pCaster, uint32 spellId, uint32 effIndex, Creature* pTarget)
-{
-    return m_pOnEffectDummyCreature != NULL && m_pOnEffectDummyCreature(pCaster, spellId, effIndex, pTarget);
-}
-
-bool ScriptMgr::OnEffectDummy(Unit* pCaster, uint32 spellId, uint32 effIndex, GameObject* pTarget)
-{
-    return m_pOnEffectDummyGO != NULL && m_pOnEffectDummyGO(pCaster, spellId, effIndex, pTarget);
-}
-
-bool ScriptMgr::OnEffectDummy(Unit* pCaster, uint32 spellId, uint32 effIndex, Item* pTarget)
-{
-    return m_pOnEffectDummyItem != NULL && m_pOnEffectDummyItem(pCaster, spellId, effIndex, pTarget);
-}
-
 bool ScriptMgr::OnAuraDummy(Aura const* pAura, bool apply)
 {
     return m_pOnAuraDummy != NULL && m_pOnAuraDummy(pAura, apply);
@@ -904,9 +886,6 @@ bool ScriptMgr::LoadScriptLibrary(const char* libName)
     GetScriptHookPtr(m_pOnAreaTrigger,              "AreaTrigger");
     GetScriptHookPtr(m_pOnCompletedCinematic,       "CompletedCinematic");
     GetScriptHookPtr(m_pOnProcessEvent,             "ProcessEvent");
-    GetScriptHookPtr(m_pOnEffectDummyCreature,      "EffectDummyCreature");
-    GetScriptHookPtr(m_pOnEffectDummyGO,            "EffectDummyGameObject");
-    GetScriptHookPtr(m_pOnEffectDummyItem,          "EffectDummyItem");
     GetScriptHookPtr(m_pOnAuraDummy,                "AuraDummy");
 
     GetScriptHookPtr(m_pOnReceiveEmote,             "ReceiveEmote");
@@ -956,9 +935,6 @@ void ScriptMgr::UnloadScriptLibrary()
     m_pOnAreaTrigger            = NULL;
     m_pOnCompletedCinematic     = NULL;
     m_pOnProcessEvent           = NULL;
-    m_pOnEffectDummyCreature    = NULL;
-    m_pOnEffectDummyGO          = NULL;
-    m_pOnEffectDummyItem        = NULL;
     m_pOnAuraDummy              = NULL;
 }
 

@@ -124,9 +124,6 @@ class ScriptMgr
         bool OnAreaTrigger(Player* pPlayer, AreaTriggerEntry const* atEntry);
         bool OnCompletedCinematic(Player* pPlayer, CinematicSequencesEntry const* cinematic);
         bool OnProcessEvent(uint32 eventId, Object* pSource, Object* pTarget, bool isStart);
-        bool OnEffectDummy(Unit* pCaster, uint32 spellId, uint32 effIndex, Creature* pTarget);
-        bool OnEffectDummy(Unit* pCaster, uint32 spellId, uint32 effIndex, GameObject* pTarget);
-        bool OnEffectDummy(Unit* pCaster, uint32 spellId, uint32 effIndex, Item* pTarget);
         bool OnAuraDummy(Aura const* pAura, bool apply);
 
         bool OnReceiveEmote(Player *pPlayer, Creature *pCreature, uint32 emote);
@@ -182,9 +179,6 @@ class ScriptMgr
         bool (HELLGROUND_IMPORT* m_pOnAreaTrigger) (Player*, AreaTriggerEntry const*);
         bool (HELLGROUND_IMPORT* m_pOnCompletedCinematic) (Player*, CinematicSequencesEntry const*);
         bool (HELLGROUND_IMPORT* m_pOnProcessEvent) (uint32, Object*, Object*, bool);
-        bool (HELLGROUND_IMPORT* m_pOnEffectDummyCreature) (Unit*, uint32, uint32, Creature*);
-        bool (HELLGROUND_IMPORT* m_pOnEffectDummyGO) (Unit*, uint32, uint32, GameObject*);
-        bool (HELLGROUND_IMPORT* m_pOnEffectDummyItem) (Unit*, uint32, uint32, Item*);
         bool (HELLGROUND_IMPORT* m_pOnAuraDummy) (Aura const*, bool);
 
         bool (HELLGROUND_IMPORT* m_pOnReceiveEmote) (Player *pPlayer, Creature *pCreature, uint32 emote);
