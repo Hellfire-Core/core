@@ -397,7 +397,7 @@ CreatureAI* GetAI_npc_sunblade_lookout(Creature* _Creature)
 /*######
 ## npc_wrath_enforcer
 ######*/
-
+#define SPELL_ARCANE_CHARGE         45072
 #define SPELL_DUAL_WIELD            29651
 #define SPELL_FLAME_WAVE            33803
 #define MOB_RAVAGER                 25028
@@ -414,6 +414,13 @@ struct npc_wrath_enforcerAI : public ScriptedAI
         me->setActive(true);
         DoCast(me, 29651, true);
         FlameWave.Reset(urand(5000, 35000));
+    }
+
+    void SpellHit(Unit* caster, const SpellEntry* spell)
+    {
+        if (spell->Id == SPELL_ARCANE_CHARGE && caster->GetTypeId() == TYPEID_PLAYER)
+            caster->Kill(m_creature);
+
     }
 
     void UpdateAI(const uint32 diff)
@@ -519,6 +526,13 @@ struct npc_pit_overlordAI : public ScriptedAI
         DeathCoil.Reset(urand(3000, 8000));
     }
 
+    void SpellHit(Unit* caster, const SpellEntry* spell)
+    {
+        if (spell->Id == SPELL_ARCANE_CHARGE && caster->GetTypeId() == TYPEID_PLAYER)
+            caster->Kill(m_creature);
+
+    }
+
     void UpdateAI(const uint32 diff)
     {
         if(!me->isInCombat())
@@ -590,6 +604,13 @@ struct npc_eredar_sorcererAI : public Scripted_NoMovementAI
         SetAutocast(SPELL_FLAMES_OF_DOOM, 10000, true);
     }
 
+    void SpellHit(Unit* caster, const SpellEntry* spell)
+    {
+        if (spell->Id == SPELL_ARCANE_CHARGE && caster->GetTypeId() == TYPEID_PLAYER)
+            caster->Kill(m_creature);
+
+    }
+
     void UpdateAI(const uint32 diff)
     {
         if(!me->isInCombat())
@@ -647,8 +668,8 @@ struct npc_shattered_sun_bombardierAI : public ScriptedAI
 
     void Reset()
     {
-        me->SetVisibility(VISIBILITY_OFF);
-        me->setActive(true);
+        //me->SetVisibility(VISIBILITY_OFF);
+        //me->setActive(true);
         PlayerGUID = 0;
         yell_timer.Reset(60000000);
         PathFly = false;
@@ -668,7 +689,7 @@ struct npc_shattered_sun_bombardierAI : public ScriptedAI
             m_creature->SetLevitate(true);
             m_creature->GetMotionMaster()->MovePath(BOMBARDIER_FLY_PATH, false);
             me->SetSpeed(MOVE_WALK, 1.4*who->GetSpeed(MOVE_FLIGHT));
-            me->SetVisibility(VISIBILITY_ON);
+            //me->SetVisibility(VISIBILITY_ON);
             yell_timer = 5000;
             PathFly = true;
         }
@@ -694,8 +715,8 @@ struct npc_shattered_sun_bombardierAI : public ScriptedAI
                     yell_timer = 7000;
                     break;
                 case 2:
-                    me->DisappearAndDie();
-                    me->Respawn();
+                    //me->DisappearAndDie();
+                    //me->Respawn();
                     break;
                 default:
                     break;

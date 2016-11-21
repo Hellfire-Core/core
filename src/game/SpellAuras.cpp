@@ -1799,8 +1799,8 @@ void Aura::TriggerSpell()
                         Hellground::ObjectSearcher<Player, Hellground::AnyPlayerInObjectRangeCheck> searcher(pPlayer, p_check);
 
                         Cell::VisitAllObjects(m_target, searcher, 30.0f);
-                        if (pPlayer)
-                            m_target->CastSpell(pPlayer, triggeredSpellEntry, true, 0, this, originalCasterGUID);
+                        if (pPlayer && pPlayer->hasQuest(11174))
+                            m_target->CastSpell(pPlayer, 42490, true, 0, this, originalCasterGUID);
                         return;
                     }
                     default:
@@ -2066,6 +2066,7 @@ void Aura::TriggerSpell()
                 target = m_target;
                 break;
             case 42325: // raptor captor
+            case 42483: // corruption prevention quest credit
                 caster->CastSpell(m_target, triggeredSpellEntry, true, 0, this, originalCasterGUID);
                 return;
             // Burn should self-damage Phoenix
