@@ -419,8 +419,10 @@ struct npc_wrath_enforcerAI : public ScriptedAI
     void SpellHit(Unit* caster, const SpellEntry* spell)
     {
         if (spell->Id == SPELL_ARCANE_CHARGE && caster->GetTypeId() == TYPEID_PLAYER)
+        {
+            m_creature->LowerPlayerDamageReq(m_creature->GetMaxHealth());
             caster->Kill(m_creature);
-
+        }
     }
 
     void UpdateAI(const uint32 diff)
@@ -529,8 +531,10 @@ struct npc_pit_overlordAI : public ScriptedAI
     void SpellHit(Unit* caster, const SpellEntry* spell)
     {
         if (spell->Id == SPELL_ARCANE_CHARGE && caster->GetTypeId() == TYPEID_PLAYER)
+        {
+            m_creature->LowerPlayerDamageReq(m_creature->GetMaxHealth());
             caster->Kill(m_creature);
-
+        }
     }
 
     void UpdateAI(const uint32 diff)
@@ -607,7 +611,10 @@ struct npc_eredar_sorcererAI : public Scripted_NoMovementAI
     void SpellHit(Unit* caster, const SpellEntry* spell)
     {
         if (spell->Id == SPELL_ARCANE_CHARGE && caster->GetTypeId() == TYPEID_PLAYER)
+        {
+            m_creature->LowerPlayerDamageReq(m_creature->GetMaxHealth());
             caster->Kill(m_creature);
+        }
 
     }
 

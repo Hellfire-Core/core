@@ -2619,6 +2619,7 @@ enum CombatStatsType
     COMBAT_STATS_LOOTING,           // 1024
     COMBAT_STATS_PROC,              // 2048
     COMBAT_STATS_AREA_TRIGGER,      // 4096
+    COMBAT_STATS_DAMAGE_CALC,       // 8192
 };
 
 #define CONTACT_DISTANCE            0.5f

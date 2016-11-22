@@ -1798,8 +1798,8 @@ void Aura::TriggerSpell()
                         Hellground::AnyPlayerInObjectRangeCheck p_check(m_target, 30.0f);
                         Hellground::ObjectSearcher<Player, Hellground::AnyPlayerInObjectRangeCheck> searcher(pPlayer, p_check);
 
-                        Cell::VisitAllObjects(m_target, searcher, 30.0f);
-                        if (pPlayer && pPlayer->hasQuest(11174))
+                        Cell::VisitWorldObjects(m_target, searcher, 30.0f);
+                        if (pPlayer && pPlayer->IsActiveQuest(11174))
                             m_target->CastSpell(pPlayer, 42490, true, 0, this, originalCasterGUID);
                         return;
                     }

@@ -3672,6 +3672,53 @@ bool GO_use_large_jack_o_lantern(Player* who, GameObject* what)
     return true;
 }
 
+#define SPELL_PET_BOMB_EXPLODE 13259
+struct npc_pet_bombAI : public ScriptedAI
+{
+    npc_pet_bombAI(Creature* c) : ScriptedAI(c) {}
+
+    Timer selfdestruct;
+
+    void Reset()
+    {
+        selfdestruct.Reset(60000);
+    }
+
+    void UpdateAI(const uint32 diff)
+    {
+        if (selfdestruct.Expired(diff))
+        {
+            m_creature->CastSpell(m_creature, SPELL_PET_BOMB_EXPLODE, true);
+            m_creature->Kill(m_creature);
+        }
+
+        if (!me->getVictim() || !me->canAttack(me->getVictim()))
+        {
+            Player* owner = m_creature->GetCharmerOrOwnerPlayerOrPlayerItself();
+            if (!owner)
+                return;
+            Unit* victim = owner->getAttackerForHelper();
+            if (!victim)
+                return;
+            AttackStart(victim);
+        }
+
+
+        if (me->IsWithinMeleeRange(me->getVictim()))
+        {
+            m_creature->CastSpell(m_creature, SPELL_PET_BOMB_EXPLODE, true);
+            m_creature->Kill(m_creature);
+        }
+    }
+
+};
+
+CreatureAI* GetAI_npc_pet_bomb(Creature* c)
+{
+    return new npc_pet_bombAI(c);
+}
+
+
 void AddSC_npcs_special()
 {
     Script *newscript;
@@ -3921,5 +3968,10 @@ void AddSC_npcs_special()
     newscript = new Script;
     newscript->Name = "go_large_jack_o_lantern";
     newscript->pGOUse = &GO_use_large_jack_o_lantern;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_pet_bomb";
+    newscript->GetAI = &GetAI_npc_pet_bomb;
     newscript->RegisterSelf();
 }

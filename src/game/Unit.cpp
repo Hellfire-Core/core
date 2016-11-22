@@ -8137,14 +8137,14 @@ uint32 Unit::SpellDamageBonus(Unit *pVictim, SpellEntry const *spellProto, uint3
         if (((*i)->GetModifier()->m_miscvalue & SpellMgr::GetSpellSchoolMask(spellProto)) &&
             (GetTypeId() != TYPEID_PLAYER || ((Player*)this)->HasItemFitToSpellReqirements((*i)->GetSpellProto())))
         {
-            DoneTotalMod *= ((*i)->GetModifierValue() +100.0f)/100.0f;
+            DoneTotalMod *= ((float)(*i)->GetModifierValue() +100.0f)/100.0f;
         }
     }
 
     AuraList const& mDamageDoneVersus = GetAurasByType(SPELL_AURA_MOD_DAMAGE_DONE_VERSUS);
     for (AuraList::const_iterator i = mDamageDoneVersus.begin();i != mDamageDoneVersus.end(); ++i)
         if (creatureTypeMask & uint32((*i)->GetModifier()->m_miscvalue))
-            DoneTotalMod *= ((*i)->GetModifierValue() +100.0f)/100.0f;
+            DoneTotalMod *= ((float)(*i)->GetModifierValue() +100.0f)/100.0f;
 
     if (casterModifiers)
     {
@@ -8158,7 +8158,7 @@ uint32 Unit::SpellDamageBonus(Unit *pVictim, SpellEntry const *spellProto, uint3
     AuraList const& mModDamagePercentTaken = pVictim->GetAurasByType(SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN);
     for (AuraList::const_iterator i = mModDamagePercentTaken.begin(); i != mModDamagePercentTaken.end(); ++i)
         if ((*i)->GetModifier()->m_miscvalue & SpellMgr::GetSpellSchoolMask(spellProto))
-            TakenTotalMod *= ((*i)->GetModifierValue() +100.0f)/100.0f;
+            TakenTotalMod *= ((float)(*i)->GetModifierValue() +100.0f)/100.0f;
 
     // .. taken pct: scripted (increases damage of * against targets *)
     AuraList const& mOverrideClassScript = GetAurasByType(SPELL_AURA_OVERRIDE_CLASS_SCRIPTS);
@@ -8493,6 +8493,7 @@ uint32 Unit::SpellDamageBonus(Unit *pVictim, SpellEntry const *spellProto, uint3
     if (GetObjectGuid().IsCreature())
         tmpDamage *= ((Creature*)this)->GetSpellDamageMod(((Creature*)this)->GetCreatureInfo()->rank);
 
+    SendCombatStats(1 << COMBAT_STATS_DAMAGE_CALC, "indmg %u outdmg %u mods %f %f %f %f", NULL, pdamage, tmpDamage, DoneTotalMod, DoneActualBenefit, TakenTotalMod, TakenActualBenefit);
     return tmpDamage > 0 ? uint32(tmpDamage) : 0;
 }
 

@@ -1932,7 +1932,7 @@ void Spell::EffectDummy(uint32 i)
                         m_caster->ToPlayer()->CastCreatureOrGO(23797, MAKE_NEW_GUID(0,23797,HIGHGUID_UNIT), 42485);
                     if (unitTarget->GetEntry() == 4393 || unitTarget->GetEntry() == 4394)
                         m_caster->Kill(unitTarget);
-                    break;
+                    return;
                 }
             }
 
