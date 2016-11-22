@@ -8493,7 +8493,7 @@ uint32 Unit::SpellDamageBonus(Unit *pVictim, SpellEntry const *spellProto, uint3
     if (GetObjectGuid().IsCreature())
         tmpDamage *= ((Creature*)this)->GetSpellDamageMod(((Creature*)this)->GetCreatureInfo()->rank);
 
-    SendCombatStats(1 << COMBAT_STATS_DAMAGE_CALC, "indmg %u outdmg %u mods %f %f %f %f", NULL, pdamage, tmpDamage, DoneTotalMod, DoneActualBenefit, TakenTotalMod, TakenActualBenefit);
+    SendCombatStats(1 << COMBAT_STATS_DAMAGE_CALC, "indmg %u outdmg %f mods %f %f %f %f", NULL, pdamage, tmpDamage, DoneTotalMod, DoneActualBenefit, TakenTotalMod, TakenActualBenefit);
     return tmpDamage > 0 ? uint32(tmpDamage) : 0;
 }
 

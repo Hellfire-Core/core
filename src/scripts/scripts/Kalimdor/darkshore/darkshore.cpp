@@ -31,6 +31,7 @@ EndContentData */
 
 #include "precompiled.h"
 #include "escort_ai.h"
+#include "follower_ai.h"
 
 /*######
 ## npc_prospector_remtravel
@@ -263,6 +264,120 @@ CreatureAI* GetAI_npc_therylune(Creature *_Creature)
     return (CreatureAI*)therylune;
 }
 
+enum ekerlonian
+{
+    SPELL_REVIVE_KERLONIAN = 17536,
+    QUEST_THE_SLEEPER = 5321,
+    NPC_LILADRIS = 11219,
+    FACTION_ESCORTEE = 113
+};
+
+struct npc_kerlonianAI : public FollowerAI
+{
+    npc_kerlonianAI(Creature* pCreature) : FollowerAI(pCreature) { }
+
+    Timer m_uiFaintTimer;
+
+    void Reset()
+    {
+        m_uiFaintTimer.Reset(urand(30000, 60000));
+
+    }
+
+    void MoveInLineOfSight(Unit *pWho)
+    {
+        FollowerAI::MoveInLineOfSight(pWho);
+
+        if (!me->getVictim() && !HasFollowState(STATE_FOLLOW_COMPLETE) && pWho->GetEntry() == NPC_LILADRIS)
+        {
+            if (me->IsWithinDistInMap(pWho, INTERACTION_DISTANCE))
+            {
+                if (Player* pPlayer = GetLeaderForFollower())
+                {
+                    if (pPlayer->GetQuestStatus(QUEST_THE_SLEEPER) == QUEST_STATUS_INCOMPLETE)
+                        pPlayer->GroupEventHappens(QUEST_THE_SLEEPER, me);
+                }
+                SetFollowComplete(true);
+            }
+        }
+    }
+
+    void SpellHit(Unit* pCaster, const SpellEntry* pSpell)
+    {
+        if (HasFollowState(STATE_FOLLOW_INPROGRESS | STATE_FOLLOW_PAUSED) && pSpell->Id == SPELL_REVIVE_KERLONIAN)
+            ClearFaint();
+    }
+
+    void SetFaint()
+    {
+        if (!HasFollowState(STATE_FOLLOW_POSTEVENT))
+        {
+            SetFollowPaused(true);
+            //DoScriptText(RAND(SAY_FAINT_1, SAY_FAINT_2, SAY_FAINT_3, SAY_FAINT_4), me);
+        }
+
+        me->SetStandState(UNIT_STAND_STATE_SLEEP);
+    }
+
+    void ClearFaint()
+    {
+        me->SetStandState(UNIT_STAND_STATE_STAND);
+
+        if (HasFollowState(STATE_FOLLOW_POSTEVENT))
+            return;
+
+        //DoScriptText(RAND(SAY_WAKE_1, SAY_WAKE_2, SAY_WAKE_3, SAY_WAKE_4), me);
+
+        SetFollowPaused(false);
+    }
+
+    void UpdateFollowerAI(const uint32 uiDiff)
+    {
+        if (!UpdateVictim())
+        {
+            /*if (HasFollowState(STATE_FOLLOW_POSTEVENT))
+            {
+            }
+            else*/
+            if (HasFollowState(STATE_FOLLOW_INPROGRESS))
+            {
+                if (!HasFollowState(STATE_FOLLOW_PAUSED))
+                {
+                    if (m_uiFaintTimer.Expired(uiDiff))
+                    {
+                        SetFaint();
+                        m_uiFaintTimer = urand(60000, 120000);
+                    }
+                }
+            }
+
+            return;
+        }
+
+        DoMeleeAttackIfReady();
+    }
+};
+
+CreatureAI* GetAI_npc_kerlonian(Creature* pCreature)
+{
+    return new npc_kerlonianAI(pCreature);
+}
+
+bool QuestAccept_npc_kerlonian(Player* pPlayer, Creature* pCreature, const Quest* pQuest)
+{
+    if (pQuest->GetQuestId() == QUEST_THE_SLEEPER)
+    {
+        if (npc_kerlonianAI* pkerlonianAI = CAST_AI(npc_kerlonianAI, pCreature->AI()))
+        {
+            pCreature->SetStandState(UNIT_STAND_STATE_STAND);
+            pkerlonianAI->StartFollow(pPlayer, FACTION_ESCORTEE, pQuest);
+        }
+    }
+
+    return true;
+}
+
+
 /*######
 ## AddSC
 ######*/
@@ -281,5 +396,11 @@ void AddSC_darkshore()
     newscript->Name="npc_therylune";
     newscript->GetAI = &GetAI_npc_therylune;
     newscript->pQuestAcceptNPC = &QuestAccept_npc_therylune;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_kerlonian";
+    newscript->GetAI = &GetAI_npc_kerlonian;
+    newscript->pQuestAcceptNPC = &QuestAccept_npc_kerlonian;
     newscript->RegisterSelf();
 }

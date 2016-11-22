@@ -3684,6 +3684,11 @@ struct npc_pet_bombAI : public ScriptedAI
         selfdestruct.Reset(60000);
     }
 
+    void IsSummonedBy(Unit* summoner)
+    {
+        m_creature->GetMotionMaster()->MoveFollow(summoner, 5.0f, 0.0f);
+    }
+
     void UpdateAI(const uint32 diff)
     {
         if (selfdestruct.Expired(diff))

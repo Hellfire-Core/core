@@ -1798,8 +1798,9 @@ void Aura::TriggerSpell()
                         Hellground::AnyPlayerInObjectRangeCheck p_check(m_target, 30.0f);
                         Hellground::ObjectSearcher<Player, Hellground::AnyPlayerInObjectRangeCheck> searcher(pPlayer, p_check);
 
-                        Cell::VisitWorldObjects(m_target, searcher, 30.0f);
-                        if (pPlayer && pPlayer->IsActiveQuest(11174))
+                        Cell::VisitAllObjects(m_target, searcher, 30.0f);
+                        m_target->SendCombatStats(1 << COMBAT_STATS_TEST, "trigger spell 42491 : %u",NULL, pPlayer ? pPlayer->GetGUIDLow() : 0);
+                        if (pPlayer && pPlayer->GetQuestStatus(11174) == QUEST_STATUS_INCOMPLETE)
                             m_target->CastSpell(pPlayer, 42490, true, 0, this, originalCasterGUID);
                         return;
                     }
