@@ -442,16 +442,20 @@ struct npc_gizelton_caravanAI : public ScriptedAI
         points = pSystemMgr.GetPointMoveList(me->GetEntry());
         reached = true;
         current = points.begin();
+        me->SetWalk(true);
     }
     
     void UpdateAI(const uint32 diff)
     {
+        if (!me->IsWalking())
+            me->SetWalk(true);
         if (reached)
         {
             if (current == points.end())
                 current = points.begin();
 
             me->GetMotionMaster()->MovePoint(current->uiPointId, current->fX, current->fY, current->fZ);
+            me->SetHomePosition(current->fX, current->fY, current->fZ);
             reached = false;
             SendDebug("Starting movement to point %u (%f %f %f)", current->uiPointId, current->fX, current->fY, current->fZ);
         }

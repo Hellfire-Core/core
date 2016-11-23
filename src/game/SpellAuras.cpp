@@ -1415,7 +1415,6 @@ void Aura::TriggerSpell()
     SpellEntry const *auraSpellEntry = GetSpellProto();
     uint32 auraId = auraSpellEntry->Id;
 
-    m_target->SendCombatStats(1 << COMBAT_STATS_TEST, "Aura %u is triggering, caster %u target %u", NULL, auraId, caster->GetGUIDLow(), target->GetGUIDLow());
     // specific code for cases with no trigger spell provided in field
     if (triggeredSpellEntry == NULL)
     {
@@ -2105,7 +2104,6 @@ void Aura::TriggerSpell()
                 Hellground::ObjectSearcher<Player, Hellground::AnyPlayerInObjectRangeCheck> searcher(pPlayer, p_check);
 
                 Cell::VisitAllObjects(m_target, searcher, 30.0f);
-                m_target->SendCombatStats(1 << COMBAT_STATS_TEST, "trigger spell 42491 : %u", NULL, pPlayer ? pPlayer->GetGUIDLow() : 0);
                 if (pPlayer && pPlayer->GetQuestStatus(11174) == QUEST_STATUS_INCOMPLETE)
                     m_target->CastSpell(pPlayer, 42490, true, 0, this, originalCasterGUID);
                 return;
