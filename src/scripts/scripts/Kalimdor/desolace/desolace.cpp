@@ -429,6 +429,48 @@ CreatureAI* GetAI_npc_magram_spectre(Creature* crea)
     return new npc_magram_spectreAI(crea);
 }
 
+struct npc_gizelton_caravanAI : public ScriptedAI
+{
+    npc_gizelton_caravanAI(Creature* c) : ScriptedAI(c) {}
+
+    std::vector<ScriptPointMove> points;
+    bool reached;
+    std::vector<ScriptPointMove>::iterator current;
+
+    void Reset()
+    {
+        points = pSystemMgr.GetPointMoveList(me->GetEntry());
+        reached = true;
+        current = points.begin();
+    }
+    
+    void UpdateAI(const uint32 diff)
+    {
+        if (reached)
+        {
+            if (current == points.end())
+                current = points.begin();
+
+            me->GetMotionMaster()->MovePoint(current->uiPointId, current->fX, current->fY, current->fZ);
+            reached = false;
+            SendDebug("Starting movement to point %u (%f %f %f)", current->uiPointId, current->fX, current->fY, current->fZ);
+        }
+    }
+
+    void MovementInform(uint32 uiMoveType, uint32 uiPointId)
+    {
+        if (uiMoveType != POINT_MOTION_TYPE)
+            return;
+        reached = true;
+        current++;
+    }
+};
+
+CreatureAI* GetAI_npc_gizelton_caravan(Creature* c)
+{
+    return new npc_gizelton_caravanAI(c);
+}
+
 void AddSC_desolace()
 {
     Script *newscript;
@@ -465,5 +507,10 @@ void AddSC_desolace()
     newscript = new Script;
     newscript->Name = "npc_magram_spectre";
     newscript->GetAI = &GetAI_npc_magram_spectre;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_gizelton_caravan";
+    newscript->GetAI = &GetAI_npc_gizelton_caravan;
     newscript->RegisterSelf();
 }

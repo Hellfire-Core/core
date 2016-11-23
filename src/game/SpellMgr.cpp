@@ -3018,6 +3018,9 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 42339: // water bucket throw
                     spellInfo->EffectImplicitTargetA[0] = TARGET_DEST_DEST;
                     break;
+                case 36576: // no damage calc for shaleskin
+                    spellInfo->Attributes &= ~SPELL_ATTR_LEVEL_DAMAGE_CALCULATION;
+                    break;
                 }
                 if (spellInfo->SpellIconID == 184 && spellInfo->Attributes == 4259840)
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;

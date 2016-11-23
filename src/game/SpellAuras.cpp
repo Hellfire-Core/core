@@ -1791,19 +1791,6 @@ void Aura::TriggerSpell()
                     case 29793:
                         trigger_spell_id = urand(0, 1) ? 29788 : 29794;
                         break;
-                    // corrosion prevention energize
-                    case 42491:
-                    {
-                        Player* pPlayer = NULL;
-                        Hellground::AnyPlayerInObjectRangeCheck p_check(m_target, 30.0f);
-                        Hellground::ObjectSearcher<Player, Hellground::AnyPlayerInObjectRangeCheck> searcher(pPlayer, p_check);
-
-                        Cell::VisitAllObjects(m_target, searcher, 30.0f);
-                        m_target->SendCombatStats(1 << COMBAT_STATS_TEST, "trigger spell 42491 : %u",NULL, pPlayer ? pPlayer->GetGUIDLow() : 0);
-                        if (pPlayer && pPlayer->GetQuestStatus(11174) == QUEST_STATUS_INCOMPLETE)
-                            m_target->CastSpell(pPlayer, 42490, true, 0, this, originalCasterGUID);
-                        return;
-                    }
                     default:
                         break;
                 }
@@ -2108,6 +2095,19 @@ void Aura::TriggerSpell()
                 Hellground::ObjectLastSearcher<Creature, Hellground::NearestCreatureEntryWithLiveStateInObjectRangeCheck> searcher(p_Creature, u_check);
                 Cell::VisitAllObjects(caster, searcher, 100);
                 m_target->CastSpell(p_Creature->GetPositionX(), p_Creature->GetPositionY(), p_Creature->GetPositionZ(), triggeredSpellEntry->Id, true, 0, this, originalCasterGUID);
+                return;
+            }
+            // corrosion prevention energize
+            case 42491:
+            {
+                Player* pPlayer = NULL;
+                Hellground::AnyPlayerInObjectRangeCheck p_check(m_target, 30.0f);
+                Hellground::ObjectSearcher<Player, Hellground::AnyPlayerInObjectRangeCheck> searcher(pPlayer, p_check);
+
+                Cell::VisitAllObjects(m_target, searcher, 30.0f);
+                m_target->SendCombatStats(1 << COMBAT_STATS_TEST, "trigger spell 42491 : %u", NULL, pPlayer ? pPlayer->GetGUIDLow() : 0);
+                if (pPlayer && pPlayer->GetQuestStatus(11174) == QUEST_STATUS_INCOMPLETE)
+                    m_target->CastSpell(pPlayer, 42490, true, 0, this, originalCasterGUID);
                 return;
             }
         }

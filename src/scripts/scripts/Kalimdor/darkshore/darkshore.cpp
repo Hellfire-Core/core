@@ -267,6 +267,7 @@ CreatureAI* GetAI_npc_therylune(Creature *_Creature)
 enum ekerlonian
 {
     SPELL_REVIVE_KERLONIAN = 17536,
+    SPELL_BEAR_FORM = 18309,
     QUEST_THE_SLEEPER = 5321,
     NPC_LILADRIS = 11219,
     FACTION_ESCORTEE = 113
@@ -333,21 +334,21 @@ struct npc_kerlonianAI : public FollowerAI
 
     void UpdateFollowerAI(const uint32 uiDiff)
     {
+        if (!me->HasAura(SPELL_BEAR_FORM))
+            me->CastSpell(me, SPELL_BEAR_FORM, true);
+
         if (!UpdateVictim())
         {
             /*if (HasFollowState(STATE_FOLLOW_POSTEVENT))
             {
             }
             else*/
-            if (HasFollowState(STATE_FOLLOW_INPROGRESS))
+            if (HasFollowState(STATE_FOLLOW_INPROGRESS) && !HasFollowState(STATE_FOLLOW_PAUSED))
             {
-                if (!HasFollowState(STATE_FOLLOW_PAUSED))
+                if (m_uiFaintTimer.Expired(uiDiff))
                 {
-                    if (m_uiFaintTimer.Expired(uiDiff))
-                    {
-                        SetFaint();
-                        m_uiFaintTimer = urand(60000, 120000);
-                    }
+                    SetFaint();
+                    m_uiFaintTimer = urand(60000, 120000);
                 }
             }
 
