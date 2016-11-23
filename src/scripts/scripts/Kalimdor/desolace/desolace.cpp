@@ -455,7 +455,7 @@ struct npc_gizelton_caravanAI : public ScriptedAI
                 current = points.begin();
 
             me->GetMotionMaster()->MovePoint(current->uiPointId, current->fX, current->fY, current->fZ);
-            me->SetHomePosition(current->fX, current->fY, current->fZ);
+            me->SetHomePosition(current->fX, current->fY, current->fZ, 0);
             reached = false;
             SendDebug("Starting movement to point %u (%f %f %f)", current->uiPointId, current->fX, current->fY, current->fZ);
         }
