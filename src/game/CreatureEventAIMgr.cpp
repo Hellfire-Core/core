@@ -65,7 +65,7 @@ void CreatureEventAIMgr::LoadCreatureEventAI_Texts(bool check_entry_use)
             }
 
             // range negative (don't must be happen, loaded from same table)
-            if (!sObjectMgr.GetHellgroundStringLocale(i))
+            if (!sObjectMgr.HasHellgroundString(i))
             {
                 sLog.outLog(LOG_DB_ERR, "CreatureEventAI:  Entry %i in table `creature_ai_texts` not found",i);
                 continue;

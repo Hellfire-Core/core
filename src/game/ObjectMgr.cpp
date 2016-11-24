@@ -5184,15 +5184,15 @@ bool ObjectMgr::LoadHellgroundStrings(DatabaseType& db, char const* table, int32
     }
 
     // cleanup affected map part for reloading case
-    for (HellgroundStringLocaleMap::iterator itr = mHellgroundStringLocaleMap.begin(); itr != mHellgroundStringLocaleMap.end();)
+    for (HellgroundStringMap::iterator itr = mHellgroundStringMap.begin(); itr != mHellgroundStringMap.end();)
     {
         if (itr->first >= start_value && itr->first < end_value)
-            mHellgroundStringLocaleMap.erase(itr++);
+            mHellgroundStringMap.erase(itr++);
         else
             ++itr;
     }
 
-    QueryResultAutoPtr result = db.PQuery("SELECT entry,content_default,content_loc1,content_loc2,content_loc3,content_loc4,content_loc5,content_loc6,content_loc7,content_loc8 FROM %s",table);
+    QueryResultAutoPtr result = db.PQuery("SELECT entry,content_default FROM %s",table);
 
     if (!result)
     {
@@ -5230,36 +5230,17 @@ bool ObjectMgr::LoadHellgroundStrings(DatabaseType& db, char const* table, int32
             continue;
         }
 
-        HellgroundStringLocale& data = mHellgroundStringLocaleMap[entry];
+        std::string& data = mHellgroundStringMap[entry];
 
-        if (data.Content.size() > 0)
+        if (data.size() > 0)
         {
             sLog.outLog(LOG_DB_ERR, "Table `%s` contain data for already loaded entry  %i (from another table?), ignored.",table,entry);
             continue;
         }
 
-        data.Content.resize(1);
         ++count;
 
-        // 0 -> default, idx in to idx+1
-        data.Content[0] = fields[1].GetCppString();
-
-        for (int i = 1; i < MAX_LOCALE; ++i)
-        {
-            std::string str = fields[i+1].GetCppString();
-            if (!str.empty())
-            {
-                int idx = GetOrNewIndexForLocale(LocaleConstant(i));
-                if (idx >= 0)
-                {
-                    // 0 -> default, idx in to idx+1
-                    if (data.Content.size() <= idx+1)
-                        data.Content.resize(idx+2);
-
-                    data.Content[idx+1] = str;
-                }
-            }
-        }
+        data = fields[1].GetCppString();
     } while (result->NextRow());
 
     sLog.outString();
@@ -5273,15 +5254,9 @@ bool ObjectMgr::LoadHellgroundStrings(DatabaseType& db, char const* table, int32
 
 const char *ObjectMgr::GetHellgroundString(int32 entry, int locale_idx) const
 {
-    // locale_idx==-1 -> default, locale_idx >= 0 in to idx+1
-    // Content[0] always exist if exist HellgroundStringLocale
-    if (HellgroundStringLocale const *msl = GetHellgroundStringLocale(entry))
-    {
-        if (msl->Content.size() > locale_idx+1 && !msl->Content[locale_idx+1].empty())
-            return msl->Content[locale_idx+1].c_str();
-        else
-            return msl->Content[0].c_str();
-    }
+    HellgroundStringMap::const_iterator itr = mHellgroundStringMap.find(entry);
+    if (itr != mHellgroundStringMap.end())
+        return itr->second.c_str();
 
     if (entry > 0)
         sLog.outLog(LOG_DB_ERR, "Entry %i not found in `HELLGROUND_string` table.",entry);

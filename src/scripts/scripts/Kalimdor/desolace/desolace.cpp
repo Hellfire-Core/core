@@ -429,35 +429,95 @@ CreatureAI* GetAI_npc_magram_spectre(Creature* crea)
     return new npc_magram_spectreAI(crea);
 }
 
+/*######
+# Gizelton caravan
+# this script is supposed to deal with 300 waypoints long path, 2 defense quests, some events and stuff <3
+######*/
+
+enum eGizeltonCaravan
+{
+    NPC_RIGGER          = 11626,
+    NPC_CORK            = 11625,
+    NPC_GIZELTON_KODO   = 11564,
+
+    QUEST_GIZELTON_CARAVAN      = 5943,
+    QUEST_BODYGUARD_FOR_HIRE    = 5821,
+};
+    
+
+
 struct npc_gizelton_caravanAI : public ScriptedAI
 {
     npc_gizelton_caravanAI(Creature* c) : ScriptedAI(c) {}
 
     std::vector<ScriptPointMove> points;
-    bool reached;
     std::vector<ScriptPointMove>::iterator current;
+    Timer pointWait;
+    uint64 members[4];//rigger,kodo,gizelton,kodo
 
     void Reset()
     {
         points = pSystemMgr.GetPointMoveList(me->GetEntry());
-        reached = true;
+        pointWait.Reset(100);
         current = points.begin();
         me->SetWalk(true);
+        me->setActive(true);
+
+        if (Map* map = me->GetMap())
+        {
+            members[0] = map->GetCreatureGUID(NPC_RIGGER);
+            members[1] = map->GetCreatureGUID(NPC_GIZELTON_KODO);
+            members[2] = map->GetCreatureGUID(NPC_CORK);
+            members[3] = map->GetCreatureGUID(NPC_GIZELTON_KODO, GET_LAST_CREATURE_GUID);;
+        }
+            
     }
     
     void UpdateAI(const uint32 diff)
     {
         if (!me->IsWalking())
             me->SetWalk(true);
-        if (reached)
+        if (pointWait.Expired(diff))
         {
             if (current == points.end())
                 current = points.begin();
 
-            me->GetMotionMaster()->MovePoint(current->uiPointId, current->fX, current->fY, current->fZ);
-            me->SetHomePosition(current->fX, current->fY, current->fZ, 0);
-            reached = false;
-            SendDebug("Starting movement to point %u (%f %f %f)", current->uiPointId, current->fX, current->fY, current->fZ);
+            CaravanMovesTo(current->uiPointId, current->fX, current->fY, current->fZ);
+            pointWait.Reset(0);
+            
+        }
+    }
+
+    void CaravanMovesTo(uint32 point, float x, float y, float z)
+    {
+        SendDebug("Starting movement to point %u (%f %f %f)", point, x, y, z);
+        float pathangle = atan2(me->GetPositionY() - y, me->GetPositionX() - x);
+        me->GetMotionMaster()->MovePoint(current->uiPointId, current->fX, current->fY, current->fZ);
+        me->SetHomePosition(current->fX, current->fY, current->fZ, 0);
+        
+        for (uint8 i = 0; i < 4; i++)
+        {
+            Creature* member = me->GetCreature(members[i]);
+            if (!member || !member->isAlive())
+                continue;
+            float dx = x + cos(pathangle) * (i*5.0f + 1.0f);
+            float dy = y + sin(pathangle) * (i*5.0f + 1.0f);
+            float dz = z;
+            Hellground::NormalizeMapCoord(dx);
+            Hellground::NormalizeMapCoord(dy);
+            member->UpdateGroundPositionZ(dx, dy, dz);
+
+            if (member->IsWithinDist(me, 30.0f))
+            {
+                member->SetUnitMovementFlags(me->GetUnitMovementFlags());
+            }
+            else
+            {
+                member->NearTeleportTo(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), 0.0f);
+            }
+
+            member->GetMotionMaster()->MovePoint(0, dx, dy, dz, true, true, UNIT_ACTION_HOME);
+            member->SetHomePosition(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), pathangle);
         }
     }
 
@@ -465,7 +525,7 @@ struct npc_gizelton_caravanAI : public ScriptedAI
     {
         if (uiMoveType != POINT_MOTION_TYPE)
             return;
-        reached = true;
+        pointWait.Reset(100);
         current++;
     }
 };

@@ -285,12 +285,6 @@ struct npc_kerlonianAI : public FollowerAI
 
     }
 
-    void EnterEvadeMode()
-    {
-        FollowerAI::EnterEvadeMode();
-        m_creature->SendCombatStats(1 << COMBAT_STATS_CRASHTEST, "BANG", NULL);
-    }
-
     void MoveInLineOfSight(Unit *pWho)
     {
         FollowerAI::MoveInLineOfSight(pWho);

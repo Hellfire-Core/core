@@ -1381,82 +1381,59 @@ void Object::ForceValuesUpdateAtIndex(uint32 i)
     }
 }
 
-namespace Hellground
-{
-    class MonsterChatBuilder
-    {
-        public:
-            MonsterChatBuilder(WorldObject const& obj, ChatMsg msgtype, int32 textId, uint32 language, uint64 targetGUID, bool withoutPrename = false)
-                : i_object(obj), i_msgtype(msgtype), i_textId(textId), i_language(language), i_targetGUID(targetGUID), i_withoutPrename(withoutPrename) {}
-            void operator()(WorldPacket& data, int32 loc_idx)
-            {
-                char const* text = sObjectMgr.GetHellgroundString(i_textId, loc_idx);
-                i_object.BuildMonsterChat(&data, i_msgtype, text, i_language, i_object.GetName(), i_targetGUID, i_withoutPrename);
-            }
-
-        private:
-            WorldObject const& i_object;
-            ChatMsg i_msgtype;
-            int32 i_textId;
-            uint32 i_language;
-            uint64 i_targetGUID;
-            bool i_withoutPrename;
-    };
-}                                                           // namespace Hellground
-
 void WorldObject::MonsterSay(int32 textId, uint32 language, uint64 TargetGuid)
 {
     float range = sWorld.getConfig(CONFIG_LISTEN_RANGE_SAY);
-    Hellground::MonsterChatBuilder say_build(*this, CHAT_MSG_MONSTER_SAY, textId, language, TargetGuid);
-    Hellground::LocalizedPacketDo<Hellground::MonsterChatBuilder> say_do(say_build);
-    Hellground::CameraDistWorker<Hellground::LocalizedPacketDo<Hellground::MonsterChatBuilder> > say_worker(this, range, say_do);
-    TypeContainerVisitor<Hellground::CameraDistWorker<Hellground::LocalizedPacketDo<Hellground::MonsterChatBuilder> >, WorldTypeMapContainer > message(say_worker);
-    //cell_lock->Visit(cell_lock, message, *GetMap());
-    Cell::VisitWorldObjects(this, say_worker, range);
+
+    WorldPacket data;
+    BuildMonsterChat(&data, CHAT_MSG_MONSTER_SAY, textId, language, GetName(), TargetGuid);
+    Hellground::PacketBroadcaster visitor(*this, &data, 0, range);
+    Cell::VisitWorldObjects(this, visitor, range);
 }
 
 void WorldObject::MonsterYell(int32 textId, uint32 language, uint64 TargetGuid)
 {
     float range = sWorld.getConfig(CONFIG_LISTEN_RANGE_YELL);
-    Hellground::MonsterChatBuilder say_build(*this, CHAT_MSG_MONSTER_YELL, textId, language, TargetGuid);
-    Hellground::LocalizedPacketDo<Hellground::MonsterChatBuilder> say_do(say_build);
-    Hellground::CameraDistWorker<Hellground::LocalizedPacketDo<Hellground::MonsterChatBuilder> > say_worker(this, range, say_do);
-    Cell::VisitWorldObjects(this, say_worker, range);
+
+    WorldPacket data;
+    BuildMonsterChat(&data, CHAT_MSG_MONSTER_YELL, textId, language, GetName(), TargetGuid);
+    Hellground::PacketBroadcaster visitor(*this, &data, 0, range);
+    Cell::VisitWorldObjects(this, visitor, range);
 }
 
 void WorldObject::MonsterYellToZone(int32 textId, uint32 language, uint64 TargetGuid)
 {
-    Hellground::MonsterChatBuilder say_build(*this, CHAT_MSG_MONSTER_YELL, textId, language, TargetGuid);
-    Hellground::LocalizedPacketDo<Hellground::MonsterChatBuilder> say_do(say_build);
+    WorldPacket data;
+    BuildMonsterChat(&data, CHAT_MSG_MONSTER_YELL, textId, language, GetName(), TargetGuid);
 
     uint32 zoneid = GetZoneId();
 
     Map::PlayerList const& pList = GetMap()->GetPlayers();
     for (Map::PlayerList::const_iterator itr = pList.begin(); itr != pList.end(); ++itr)
         if (itr->getSource()->GetCachedZone()==zoneid)
-            say_do(itr->getSource());
+            itr->getSource()->SendPacketToSelf(&data);
 }
 
 void WorldObject::MonsterTextEmote(int32 textId, uint64 TargetGuid, bool IsBossEmote, bool withoutPrename)
 {
     float range = sWorld.getConfig(IsBossEmote ? CONFIG_LISTEN_RANGE_YELL : CONFIG_LISTEN_RANGE_TEXTEMOTE);
-    Hellground::MonsterChatBuilder say_build(*this, IsBossEmote ? CHAT_MSG_RAID_BOSS_EMOTE : CHAT_MSG_MONSTER_EMOTE, textId, LANG_UNIVERSAL, TargetGuid, withoutPrename);
-    Hellground::LocalizedPacketDo<Hellground::MonsterChatBuilder> say_do(say_build);
-    Hellground::CameraDistWorker<Hellground::LocalizedPacketDo<Hellground::MonsterChatBuilder> > say_worker(this, range, say_do);
-    Cell::VisitWorldObjects(this, say_worker, range);
+    WorldPacket data;
+    BuildMonsterChat(&data, IsBossEmote ? CHAT_MSG_RAID_BOSS_EMOTE : CHAT_MSG_MONSTER_EMOTE, textId, LANG_UNIVERSAL, GetName(), TargetGuid);
+    Hellground::PacketBroadcaster visitor(*this, &data, 0, range);
+    Cell::VisitWorldObjects(this, visitor, range);
 }
 
 void WorldObject::MonsterTextEmoteToZone(int32 textId, uint64 TargetGuid, bool IsBossEmote, bool withoutPrename)
 {
-    Hellground::MonsterChatBuilder say_build(*this, IsBossEmote ? CHAT_MSG_RAID_BOSS_EMOTE : CHAT_MSG_MONSTER_EMOTE, textId, LANG_UNIVERSAL, TargetGuid, withoutPrename);
-    Hellground::LocalizedPacketDo<Hellground::MonsterChatBuilder> say_do(say_build);
+    WorldPacket data;
+    BuildMonsterChat(&data, IsBossEmote ? CHAT_MSG_RAID_BOSS_EMOTE : CHAT_MSG_MONSTER_EMOTE, textId, LANG_UNIVERSAL, GetName(), TargetGuid);
 
     uint32 zoneid = GetZoneId();
 
     Map::PlayerList const& pList = GetMap()->GetPlayers();
     for (Map::PlayerList::const_iterator itr = pList.begin(); itr != pList.end(); ++itr)
-        if (itr->getSource()->GetCachedZone()==zoneid)
-            say_do(itr->getSource());
+        if (itr->getSource()->GetCachedZone() == zoneid)
+            itr->getSource()->SendPacketToSelf(&data);
 }
 
 void WorldObject::MonsterWhisper(int32 textId, uint64 receiver, bool IsBossWhisper)
@@ -1465,8 +1442,7 @@ void WorldObject::MonsterWhisper(int32 textId, uint64 receiver, bool IsBossWhisp
     if (!player || !player->GetSession())
         return;
 
-    uint32 loc_idx = player->GetSession()->GetSessionDbLocaleIndex();
-    char const* text = sObjectMgr.GetHellgroundString(textId, loc_idx);
+    char const* text = sObjectMgr.GetHellgroundStringForDBCLocale(textId);
 
     WorldPacket data(SMSG_MESSAGECHAT, 200);
     BuildMonsterChat(&data,IsBossWhisper ? CHAT_MSG_RAID_BOSS_WHISPER : CHAT_MSG_MONSTER_WHISPER, text, LANG_UNIVERSAL, GetName(), receiver);
@@ -1477,12 +1453,8 @@ void WorldObject::MonsterWhisper(int32 textId, uint64 receiver, bool IsBossWhisp
 void WorldObject::BuildMonsterChat(WorldPacket *data, uint8 msgtype, int32 iTextEntry, uint32 language, char const* name, uint64 targetGuid, bool withoutPrename) const
 {
     char const* text = 0;
-    if(GetTypeId() == TYPEID_PLAYER)
-    {
-        uint32 loc_idx = ((Player*)this)->GetSession()->GetSessionDbLocaleIndex();
-        text = sObjectMgr.GetHellgroundString(iTextEntry,loc_idx);
-    } else
-        text = sObjectMgr.GetHellgroundStringForDBCLocale(iTextEntry);
+
+    text = sObjectMgr.GetHellgroundStringForDBCLocale(iTextEntry);
     BuildMonsterChat(data, msgtype, text, language, name, targetGuid, withoutPrename);
     if(GetTypeId() == TYPEID_PLAYER)
         data->put(5, (uint64)0);  // BAD HACK

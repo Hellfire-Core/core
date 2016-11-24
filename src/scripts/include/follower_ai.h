@@ -41,6 +41,8 @@ class FollowerAI : public ScriptedAI
 
         //virtual void WaypointReached(uint32 uiPointId) = 0;
 
+        bool IsEscorted() { return HasFollowState(STATE_FOLLOW_INPROGRESS); }
+
         void MovementInform(uint32 uiMotionType, uint32 uiPointId);
 
         void AttackStart(Unit*);

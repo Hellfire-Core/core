@@ -604,24 +604,6 @@ namespace Hellground
 #pragma endregion Workers
 
 #pragma region Checks
-    // Prepare using Builder localized packets with caching and send to player
-    template<class Builder>
-    class LocalizedPacketDo
-    {
-        public:
-            explicit LocalizedPacketDo(Builder& builder) : i_builder(builder) {}
-
-            ~LocalizedPacketDo()
-            {
-                for (size_t i = 0; i < i_data_cache.size(); ++i)
-                    delete i_data_cache[i];
-            }
-            void operator()( Player* p );
-
-        private:
-            Builder& i_builder;
-            std::vector<WorldPacket*> i_data_cache;         // 0 = default, i => i-1 locale index
-    };
 
     struct AnyDeadUnitCheck
     {

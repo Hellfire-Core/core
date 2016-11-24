@@ -104,15 +104,10 @@ typedef UNORDERED_MAP<uint64/*(instance,guid) pair*/,time_t> RespawnTimes;
 #define MIN_CREATURE_AI_TEXT_STRING_ID (-1)                 // 'creature_ai_texts'
 #define MAX_CREATURE_AI_TEXT_STRING_ID (-1000000)
 
-struct HellgroundStringLocale
-{
-    std::vector<std::string> Content;                       // 0 -> default, i -> i-1 locale index
-};
-
 typedef std::map<uint32,uint32> CreatureLinkedRespawnMap;
 typedef UNORDERED_MAP<uint32,CreatureData> CreatureDataMap;
 typedef UNORDERED_MAP<uint32,GameObjectData> GameObjectDataMap;
-typedef UNORDERED_MAP<uint32,HellgroundStringLocale> HellgroundStringLocaleMap;
+typedef UNORDERED_MAP<uint32,std::string> HellgroundStringMap;
 typedef UNORDERED_MAP<uint16,Timer> OpcodesCooldown;
 
 typedef std::multimap<uint32,uint32> QuestRelations;
@@ -586,11 +581,9 @@ class ObjectMgr
         GameObjectData& NewGOData(uint32 guid) { return mGameObjectDataMap[guid]; }
         void DeleteGOData(uint32 guid);
 
-        HellgroundStringLocale const* GetHellgroundStringLocale(int32 entry) const
+        bool HasHellgroundString(int32 entry) const
         {
-            HellgroundStringLocaleMap::const_iterator itr = mHellgroundStringLocaleMap.find(entry);
-            if (itr==mHellgroundStringLocaleMap.end()) return NULL;
-            return &itr->second;
+            return mHellgroundStringMap.find(entry) != mHellgroundStringMap.end();
         }
         const char *GetHellgroundString(int32 entry, int locale_idx) const;
         const char *GetHellgroundStringForDBCLocale(int32 entry) const { return GetHellgroundString(entry,DBCLocaleIndex); }
@@ -785,7 +778,7 @@ class ObjectMgr
         CreatureDataMap mCreatureDataMap;
         CreatureLinkedRespawnMap mCreatureLinkedRespawnMap;
         GameObjectDataMap mGameObjectDataMap;
-        HellgroundStringLocaleMap mHellgroundStringLocaleMap;
+        HellgroundStringMap mHellgroundStringMap;
         RespawnTimes mCreatureRespawnTimes;
         RespawnTimes mGORespawnTimes;
 

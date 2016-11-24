@@ -1888,55 +1888,34 @@ void World::QueueGuildAnnounce(uint32 guildid, uint32 team, std::string &msg)
 
 void World::SendGuildAnnounce(uint32 team, ...)
 {
-    std::vector<std::vector<WorldPacket*> > data_cache;     // 0 = default, i => i-1 locale index
+    std::vector<WorldPacket*> data_list;
+
+    char const* text = sObjectMgr.GetHellgroundStringForDBCLocale(LANG_GUILD_ANNOUNCE);
+    char buf[1000];
+    va_list argptr;
+    va_start(argptr, team);
+    vsnprintf(buf, 1000, text, argptr);
+    va_end(argptr);
+    char* pos = &buf[0];
+
+    while (char* line = ChatHandler::LineFromMessage(pos))
+    {
+        WorldPacket* data = new WorldPacket();
+        ChatHandler::FillMessageData(data, NULL, CHAT_MSG_SYSTEM, LANG_UNIVERSAL, NULL, 0, line, NULL);
+        data_list.push_back(data);
+    }
 
     for (SessionMap::iterator itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
     {
         if (!itr->second || !itr->second->GetPlayer() || !itr->second->GetPlayer()->IsInWorld() || itr->second->GetPlayer()->GetTeam() != team || itr->second->IsAccountFlagged(ACC_DISABLED_GANN))
             continue;
 
-        uint32 loc_idx = itr->second->GetSessionDbLocaleIndex();
-        uint32 cache_idx = loc_idx+1;
-
-        std::vector<WorldPacket*>* data_list;
-
-        // create if not cached yet
-        if (data_cache.size() < cache_idx+1 || data_cache[cache_idx].empty())
-        {
-            if (data_cache.size() < cache_idx+1)
-                data_cache.resize(cache_idx+1);
-
-            data_list = &data_cache[cache_idx];
-
-            char const* text = sObjectMgr.GetHellgroundString(LANG_GUILD_ANNOUNCE,loc_idx);
-
-            char buf[1000];
-
-            va_list argptr;
-            va_start(argptr, team);
-            vsnprintf(buf,1000, text, argptr);
-            va_end(argptr);
-
-            char* pos = &buf[0];
-
-            while (char* line = ChatHandler::LineFromMessage(pos))
-            {
-                WorldPacket* data = new WorldPacket();
-                ChatHandler::FillMessageData(data, NULL, CHAT_MSG_SYSTEM, LANG_UNIVERSAL, NULL, 0, line, NULL);
-                data_list->push_back(data);
-            }
-        }
-        else
-            data_list = &data_cache[cache_idx];
-
-        for (int i = 0; i < data_list->size(); ++i)
-            itr->second->SendPacket((*data_list)[i]);
+        for (int i = 0; i < data_list.size(); ++i)
+            itr->second->SendPacket(data_list[i]);
     }
 
-    // free memory
-    for (int i = 0; i < data_cache.size(); ++i)
-        for (int j = 0; j < data_cache[i].size(); ++j)
-            delete data_cache[i][j];
+    for (int j = 0; j < data_list.size(); ++j)
+        delete data_list[j];
 }
 
 void World::SendGlobalGMMessage(WorldPacket *packet, WorldSession *self, uint32 team)
@@ -1959,62 +1938,56 @@ void World::SendGlobalGMMessage(WorldPacket *packet, WorldSession *self, uint32 
 /// Send a System Message to all players (except self if mentioned)
 void World::SendWorldText(int32 string_id, uint32 preventFlags, ...)
 {
-    std::vector<std::vector<WorldPacket*> > data_cache;     // 0 = default, i => i-1 locale index
+    std::vector<WorldPacket*> data_list;
+
+    char const* text = sObjectMgr.GetHellgroundStringForDBCLocale(string_id);
+    char buf[1000];
+    va_list argptr;
+    va_start(argptr, preventFlags);
+    vsnprintf(buf, 1000, text, argptr);
+    va_end(argptr);
+    char* pos = &buf[0];
+
+    while (char* line = ChatHandler::LineFromMessage(pos))
+    {
+        WorldPacket* data = new WorldPacket();
+        ChatHandler::FillMessageData(data, NULL, CHAT_MSG_SYSTEM, LANG_UNIVERSAL, NULL, 0, line, NULL);
+        data_list.push_back(data);
+    }
 
     for (SessionMap::iterator itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
     {
         if (!itr->second || !itr->second->GetPlayer() || !itr->second->GetPlayer()->IsInWorld() || itr->second->IsAccountFlagged(AccountFlags(preventFlags)))
             continue;
 
-        uint32 loc_idx = itr->second->GetSessionDbLocaleIndex();
-        uint32 cache_idx = loc_idx+1;
-
-        std::vector<WorldPacket*>* data_list;
-
-        // create if not cached yet
-        if (data_cache.size() < cache_idx+1 || data_cache[cache_idx].empty())
-        {
-            if (data_cache.size() < cache_idx+1)
-                data_cache.resize(cache_idx+1);
-
-            data_list = &data_cache[cache_idx];
-
-            char const* text = sObjectMgr.GetHellgroundString(string_id,loc_idx);
-
-            char buf[1000];
-
-            va_list argptr;
-            va_start(argptr, preventFlags);
-            vsnprintf(buf,1000, text, argptr);
-            va_end(argptr);
-
-            char* pos = &buf[0];
-
-            while (char* line = ChatHandler::LineFromMessage(pos))
-            {
-                WorldPacket* data = new WorldPacket();
-                ChatHandler::FillMessageData(data, NULL, CHAT_MSG_SYSTEM, LANG_UNIVERSAL, NULL, 0, line, NULL);
-                data_list->push_back(data);
-            }
-        }
-        else
-            data_list = &data_cache[cache_idx];
-
-        for (int i = 0; i < data_list->size(); ++i)
-            itr->second->SendPacket((*data_list)[i]);
+        for (int i = 0; i < data_list.size(); ++i)
+            itr->second->SendPacket(data_list[i]);
     }
 
-    // free memory
-    for (int i = 0; i < data_cache.size(); ++i)
-        for (int j = 0; j < data_cache[i].size(); ++j)
-            delete data_cache[i][j];
+    for (int j = 0; j < data_list.size(); ++j)
+        delete data_list[j];
 }
 
 // send global message for players in range <minLevel, maxLevel> which don't have account flags
 // setted in 'preventFlags'
 void World::SendWorldTextForLevels(uint32 minLevel, uint32 maxLevel, uint32 preventFlags, int32 string_id, ...)
 {
-    std::vector<std::vector<WorldPacket*> > data_cache;     // 0 = default, i => i-1 locale index
+    std::vector<WorldPacket*> data_list;
+
+    char const* text = sObjectMgr.GetHellgroundStringForDBCLocale(string_id);
+    char buf[1000];
+    va_list argptr;
+    va_start(argptr, string_id);
+    vsnprintf(buf, 1000, text, argptr);
+    va_end(argptr);
+    char* pos = &buf[0];
+
+    while (char* line = ChatHandler::LineFromMessage(pos))
+    {
+        WorldPacket* data = new WorldPacket();
+        ChatHandler::FillMessageData(data, NULL, CHAT_MSG_SYSTEM, LANG_UNIVERSAL, NULL, 0, line, NULL);
+        data_list.push_back(data);
+    }
 
     for (SessionMap::iterator itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
     {
@@ -2027,102 +2000,44 @@ void World::SendWorldTextForLevels(uint32 minLevel, uint32 maxLevel, uint32 prev
         if (itr->second->IsAccountFlagged(AccountFlags(preventFlags)))
             continue;
 
-        uint32 loc_idx = itr->second->GetSessionDbLocaleIndex();
-        uint32 cache_idx = loc_idx+1;
-
-        std::vector<WorldPacket*>* data_list;
-
-        // create if not cached yet
-        if (data_cache.size() < cache_idx+1 || data_cache[cache_idx].empty())
-        {
-            if (data_cache.size() < cache_idx+1)
-                data_cache.resize(cache_idx+1);
-
-            data_list = &data_cache[cache_idx];
-
-            char const* text = sObjectMgr.GetHellgroundString(string_id,loc_idx);
-
-            char buf[1000];
-
-            va_list argptr;
-            va_start(argptr, string_id);
-            vsnprintf(buf,1000, text, argptr);
-            va_end(argptr);
-
-            char* pos = &buf[0];
-
-            while (char* line = ChatHandler::LineFromMessage(pos))
-            {
-                WorldPacket* data = new WorldPacket();
-                ChatHandler::FillMessageData(data, NULL, CHAT_MSG_SYSTEM, LANG_UNIVERSAL, NULL, 0, line, NULL);
-                data_list->push_back(data);
-            }
-        }
-        else
-            data_list = &data_cache[cache_idx];
-
-        for (int i = 0; i < data_list->size(); ++i)
-            itr->second->SendPacket((*data_list)[i]);
+        for (int i = 0; i < data_list.size(); ++i)
+            itr->second->SendPacket(data_list[i]);
     }
 
-    // free memory
-    for (int i = 0; i < data_cache.size(); ++i)
-        for (int j = 0; j < data_cache[i].size(); ++j)
-            delete data_cache[i][j];
+    for (int j = 0; j < data_list.size(); ++j)
+        delete data_list[j];
 }
 
 void World::SendGMText(int32 string_id, ...)
 {
-    std::vector<std::vector<WorldPacket*> > data_cache;     // 0 = default, i => i-1 locale index
+    std::vector<WorldPacket*> data_list;
+
+    char const* text = sObjectMgr.GetHellgroundStringForDBCLocale(string_id);
+    char buf[1000];
+    va_list argptr;
+    va_start(argptr, string_id);
+    vsnprintf(buf, 1000, text, argptr);
+    va_end(argptr);
+    char* pos = &buf[0];
+
+    while (char* line = ChatHandler::LineFromMessage(pos))
+    {
+        WorldPacket* data = new WorldPacket();
+        ChatHandler::FillMessageData(data, NULL, CHAT_MSG_SYSTEM, LANG_UNIVERSAL, NULL, 0, line, NULL);
+        data_list.push_back(data);
+    }
 
     for (SessionMap::iterator itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
     {
-        if (!itr->second || !itr->second->GetPlayer() || !itr->second->GetPlayer()->IsInWorld())
+        if (!itr->second || !itr->second->GetPlayer() || !itr->second->GetPlayer()->IsInWorld() || !itr->second->HasPermissions(getConfig(CONFIG_MIN_GM_TEXT_LVL)))
             continue;
 
-        uint32 loc_idx = itr->second->GetSessionDbLocaleIndex();
-        uint32 cache_idx = loc_idx+1;
-
-        std::vector<WorldPacket*>* data_list;
-
-        // create if not cached yet
-        if (data_cache.size() < cache_idx+1 || data_cache[cache_idx].empty())
-        {
-            if (data_cache.size() < cache_idx+1)
-                data_cache.resize(cache_idx+1);
-
-            data_list = &data_cache[cache_idx];
-
-            char const* text = sObjectMgr.GetHellgroundString(string_id,loc_idx);
-
-            char buf[1000];
-
-            va_list argptr;
-            va_start(argptr, string_id);
-            vsnprintf(buf,1000, text, argptr);
-            va_end(argptr);
-
-            char* pos = &buf[0];
-
-            while (char* line = ChatHandler::LineFromMessage(pos))
-            {
-                WorldPacket* data = new WorldPacket();
-                ChatHandler::FillMessageData(data, NULL, CHAT_MSG_SYSTEM, LANG_UNIVERSAL, NULL, 0, line, NULL);
-                data_list->push_back(data);
-            }
-        }
-        else
-            data_list = &data_cache[cache_idx];
-
-        for (int i = 0; i < data_list->size(); ++i)
-            if (itr->second->HasPermissions(sWorld.getConfig(CONFIG_MIN_GM_TEXT_LVL)))
-                itr->second->SendPacket((*data_list)[i]);
+        for (int i = 0; i < data_list.size(); ++i)
+            itr->second->SendPacket(data_list[i]);
     }
 
-    // free memory
-    for (int i = 0; i < data_cache.size(); ++i)
-        for (int j = 0; j < data_cache[i].size(); ++j)
-            delete data_cache[i][j];
+    for (int j = 0; j < data_list.size(); ++j)
+        delete data_list[j];
 }
 
 /// Send a System Message to all players (except self if mentioned)

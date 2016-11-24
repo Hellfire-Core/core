@@ -638,6 +638,114 @@ CreatureAI* GetAI_npc_Heretic_Emisary(Creature *_Creature)
     return new npc_Heretic_EmisaryAI(_Creature);
 }
 
+const float feero_adds[][3] = {
+    { 3519.252197,219.959412,10.116269 },
+    { 3521.238037,216.784348,9.499805 },
+    { 3521.570068,210.839874,9.394688 },
+    { 3520.265625,205.178207,10.311738 },
+    { 3809.975830,132.909821,9.805327 },
+    { 3806.964844,125.293358,9.614912 },
+    { 3804.356201,122.136726,9.610646 },
+    { 4253.566406,132.063339,40.726017 },
+    { 4256.975098,126.932564,40.685898 },
+    { 4261.208496,132.154388,41.457546 }
+};
+
+enum efeero
+{
+    QUEST_SUPPLIES_TO_AUBERDINE = 976,
+    SPEECH_FEERO_START = -1000010,
+    NPC_DARK_STRAND_ASSASIN = 3876,
+    NPC_FORSAKEN_SCOUT = 3893,
+    NPC_ALIGAR = 3898,
+    NPC_BALIZAR = 3899,
+    NPC_CAEDAKAR = 3900
+};
+
+struct npc_feero_ironhandAI : public npc_escortAI
+{
+    npc_feero_ironhandAI(Creature *c) : npc_escortAI(c) {}
+
+    void Reset()
+    {
+    }
+
+    void SummonAdd(uint32 id, uint8 pos)
+    {
+        Creature* summon = m_creature->SummonCreature(id, feero_adds[pos][0], feero_adds[pos][1], feero_adds[pos][2],
+            0, TEMPSUMMON_DEAD_DESPAWN, 10000);
+        if (summon)
+        {
+            summon->AI()->AttackStart(m_creature);
+            if (pos == 8)
+                DoScriptText(SPEECH_FEERO_START - 6, summon);
+            if (pos == 4)
+                DoScriptText(SPEECH_FEERO_START - 3, summon);
+        }
+    }
+
+    void WaypointReached(uint32 i)
+    {
+        Player* pPlayer = GetPlayerForEscort();
+        if (!pPlayer)
+            return;
+
+        switch (i)
+        {
+        case 9:
+            DoScriptText(SPEECH_FEERO_START, m_creature);
+            SummonAdd(NPC_DARK_STRAND_ASSASIN, 0);
+            SummonAdd(NPC_DARK_STRAND_ASSASIN, 1);
+            SummonAdd(NPC_DARK_STRAND_ASSASIN, 2);
+            SummonAdd(NPC_DARK_STRAND_ASSASIN, 3);
+            break;
+        case 10:
+            DoScriptText(SPEECH_FEERO_START - 1, m_creature);
+            break;
+        case 18:
+            DoScriptText(SPEECH_FEERO_START - 2, m_creature);
+            SummonAdd(NPC_FORSAKEN_SCOUT, 4);
+            SummonAdd(NPC_FORSAKEN_SCOUT, 5);
+            SummonAdd(NPC_FORSAKEN_SCOUT, 6);
+            break;
+        case 19:
+            DoScriptText(SPEECH_FEERO_START - 4, m_creature);
+            break;
+        case 33:
+            DoScriptText(SPEECH_FEERO_START - 5, m_creature);
+            SummonAdd(NPC_CAEDAKAR, 7);
+            SummonAdd(NPC_BALIZAR, 8);
+            SummonAdd(NPC_ALIGAR, 9);
+            DoScriptText(SPEECH_FEERO_START - 7, m_creature);
+            break;
+        case 34:
+            DoScriptText(SPEECH_FEERO_START - 8, m_creature);
+            pPlayer->GroupEventHappens(QUEST_SUPPLIES_TO_AUBERDINE, m_creature);
+            break;
+        case 35:
+            m_creature->DisappearAndDie();
+            break;
+        }
+    }
+    
+};
+
+bool QuestAccept_npc_feero_ironhand(Player* pPlayer, Creature* pCreature, Quest const* quest)
+{
+    if (quest->GetQuestId() == QUEST_SUPPLIES_TO_AUBERDINE)
+    {
+        pCreature->setFaction(113);
+
+        if (npc_escortAI* pEscortAI = CAST_AI(npc_feero_ironhandAI, (pCreature->AI())))
+            pEscortAI->Start(true, false, pPlayer->GetGUID(), quest);
+    }
+    return true;
+}
+CreatureAI* GetAI_npc_feero_ironhand(Creature* c)
+{
+    return new npc_feero_ironhandAI(c);
+}
+
 
 void AddSC_ashenvale()
 {
@@ -676,4 +784,9 @@ void AddSC_ashenvale()
     newscript->GetAI = &GetAI_npc_Heretic_Emisary;
     newscript->RegisterSelf();
 
+    newscript = new Script;
+    newscript->Name = "npc_feero_ironhand";
+    newscript->GetAI = &GetAI_npc_feero_ironhand;
+    newscript->pQuestAcceptNPC = &QuestAccept_npc_feero_ironhand;
+    newscript->RegisterSelf();
 }
