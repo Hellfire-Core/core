@@ -468,13 +468,17 @@ struct npc_gizelton_caravanAI : public ScriptedAI
     
     void GetMembers()
     {
-        if (Map* map = me->GetMap())
-        {
+        Map* map = me->GetMap();
+        if (!map)
+            return;
             members[0] = map->GetCreatureGUID(NPC_RIGGER);
-            members[1] = map->GetCreatureGUID(NPC_GIZELTON_KODO);
             members[2] = map->GetCreatureGUID(NPC_CORK);
-            members[3] = map->GetCreatureGUID(NPC_GIZELTON_KODO, GET_LAST_CREATURE_GUID);;
-        }
+            std::list<uint64> kodos;
+            kodos = map->GetCreaturesGUIDList(NPC_GIZELTON_KODO, GET_FIRST_CREATURE_GUID, 2);
+            if (kodos.size() > 0)
+                members[1] = kodos.front();
+            if (kodos.size() > 1)
+                members[3] = *(++kodos.begin());
     }
 
     void UpdateAI(const uint32 diff)
@@ -531,7 +535,6 @@ struct npc_gizelton_caravanAI : public ScriptedAI
             return;
         pointWait.Reset(100);
         current++;
-        GetMembers();
     }
 };
 

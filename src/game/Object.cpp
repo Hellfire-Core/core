@@ -1385,7 +1385,7 @@ void WorldObject::MonsterSay(int32 textId, uint32 language, uint64 TargetGuid)
 {
     float range = sWorld.getConfig(CONFIG_LISTEN_RANGE_SAY);
 
-    WorldPacket data;
+    WorldPacket data(SMSG_MESSAGECHAT, 200);
     BuildMonsterChat(&data, CHAT_MSG_MONSTER_SAY, textId, language, GetName(), TargetGuid);
     Hellground::PacketBroadcaster visitor(*this, &data, 0, range);
     Cell::VisitWorldObjects(this, visitor, range);
@@ -1395,7 +1395,7 @@ void WorldObject::MonsterYell(int32 textId, uint32 language, uint64 TargetGuid)
 {
     float range = sWorld.getConfig(CONFIG_LISTEN_RANGE_YELL);
 
-    WorldPacket data;
+    WorldPacket data(SMSG_MESSAGECHAT, 200);
     BuildMonsterChat(&data, CHAT_MSG_MONSTER_YELL, textId, language, GetName(), TargetGuid);
     Hellground::PacketBroadcaster visitor(*this, &data, 0, range);
     Cell::VisitWorldObjects(this, visitor, range);
@@ -1403,7 +1403,7 @@ void WorldObject::MonsterYell(int32 textId, uint32 language, uint64 TargetGuid)
 
 void WorldObject::MonsterYellToZone(int32 textId, uint32 language, uint64 TargetGuid)
 {
-    WorldPacket data;
+    WorldPacket data(SMSG_MESSAGECHAT, 200);
     BuildMonsterChat(&data, CHAT_MSG_MONSTER_YELL, textId, language, GetName(), TargetGuid);
 
     uint32 zoneid = GetZoneId();
@@ -1417,7 +1417,7 @@ void WorldObject::MonsterYellToZone(int32 textId, uint32 language, uint64 Target
 void WorldObject::MonsterTextEmote(int32 textId, uint64 TargetGuid, bool IsBossEmote, bool withoutPrename)
 {
     float range = sWorld.getConfig(IsBossEmote ? CONFIG_LISTEN_RANGE_YELL : CONFIG_LISTEN_RANGE_TEXTEMOTE);
-    WorldPacket data;
+    WorldPacket data(SMSG_MESSAGECHAT, 200);
     BuildMonsterChat(&data, IsBossEmote ? CHAT_MSG_RAID_BOSS_EMOTE : CHAT_MSG_MONSTER_EMOTE, textId, LANG_UNIVERSAL, GetName(), TargetGuid);
     Hellground::PacketBroadcaster visitor(*this, &data, 0, range);
     Cell::VisitWorldObjects(this, visitor, range);
@@ -1425,7 +1425,7 @@ void WorldObject::MonsterTextEmote(int32 textId, uint64 TargetGuid, bool IsBossE
 
 void WorldObject::MonsterTextEmoteToZone(int32 textId, uint64 TargetGuid, bool IsBossEmote, bool withoutPrename)
 {
-    WorldPacket data;
+    WorldPacket data(SMSG_MESSAGECHAT, 200);
     BuildMonsterChat(&data, IsBossEmote ? CHAT_MSG_RAID_BOSS_EMOTE : CHAT_MSG_MONSTER_EMOTE, textId, LANG_UNIVERSAL, GetName(), TargetGuid);
 
     uint32 zoneid = GetZoneId();
