@@ -298,7 +298,7 @@ struct npc_kerlonianAI : public FollowerAI
                     if (pPlayer->GetQuestStatus(QUEST_THE_SLEEPER) == QUEST_STATUS_INCOMPLETE)
                         pPlayer->GroupEventHappens(QUEST_THE_SLEEPER, me);
                 }
-                SetFollowComplete(true);
+                SetFollowComplete(false);
             }
         }
     }
@@ -343,7 +343,7 @@ struct npc_kerlonianAI : public FollowerAI
             {
             }
             else*/
-            if (HasFollowState(STATE_FOLLOW_INPROGRESS) && !HasFollowState(STATE_FOLLOW_PAUSED))
+            if (HasFollowState(STATE_FOLLOW_INPROGRESS) && !HasFollowState(STATE_FOLLOW_PAUSED | STATE_FOLLOW_COMPLETE))
             {
                 if (m_uiFaintTimer.Expired(uiDiff))
                 {

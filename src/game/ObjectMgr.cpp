@@ -5238,9 +5238,9 @@ bool ObjectMgr::LoadHellgroundStrings(DatabaseType& db, char const* table, int32
             continue;
         }
 
-        ++count;
-
         data = fields[1].GetCppString();
+        if (data.size() > 0)
+            ++count;
     } while (result->NextRow());
 
     sLog.outString();

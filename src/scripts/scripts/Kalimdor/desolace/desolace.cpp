@@ -463,6 +463,11 @@ struct npc_gizelton_caravanAI : public ScriptedAI
         me->SetWalk(true);
         me->setActive(true);
 
+        GetMembers();
+    }
+    
+    void GetMembers()
+    {
         if (Map* map = me->GetMap())
         {
             members[0] = map->GetCreatureGUID(NPC_RIGGER);
@@ -470,9 +475,8 @@ struct npc_gizelton_caravanAI : public ScriptedAI
             members[2] = map->GetCreatureGUID(NPC_CORK);
             members[3] = map->GetCreatureGUID(NPC_GIZELTON_KODO, GET_LAST_CREATURE_GUID);;
         }
-            
     }
-    
+
     void UpdateAI(const uint32 diff)
     {
         if (!me->IsWalking())
@@ -527,6 +531,7 @@ struct npc_gizelton_caravanAI : public ScriptedAI
             return;
         pointWait.Reset(100);
         current++;
+        GetMembers();
     }
 };
 

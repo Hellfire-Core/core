@@ -655,7 +655,7 @@ enum efeero
 {
     QUEST_SUPPLIES_TO_AUBERDINE = 976,
     SPEECH_FEERO_START = -1000010,
-    NPC_DARK_STRAND_ASSASIN = 3876,
+    NPC_DARK_STRAND_ASSASIN = 3879,
     NPC_FORSAKEN_SCOUT = 3893,
     NPC_ALIGAR = 3898,
     NPC_BALIZAR = 3899,
@@ -737,7 +737,7 @@ bool QuestAccept_npc_feero_ironhand(Player* pPlayer, Creature* pCreature, Quest 
         pCreature->setFaction(113);
 
         if (npc_escortAI* pEscortAI = CAST_AI(npc_feero_ironhandAI, (pCreature->AI())))
-            pEscortAI->Start(true, false, pPlayer->GetGUID(), quest);
+            pEscortAI->Start(true, true, pPlayer->GetGUID(), quest);
     }
     return true;
 }
