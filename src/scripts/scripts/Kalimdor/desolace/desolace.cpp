@@ -439,30 +439,47 @@ enum eGizeltonCaravan
     NPC_RIGGER          = 11626,
     NPC_CORK            = 11625,
     NPC_GIZELTON_KODO   = 11564,
+    NPC_VENDOR_TRON     = 12245,
+    NPC_SUPER_SELLER    = 12246,
 
     QUEST_GIZELTON_CARAVAN      = 5943,
     QUEST_BODYGUARD_FOR_HIRE    = 5821,
+
+    WAYPOINT_NORTH_STOP     = 52,
+    WAYPOINT_NORTH_QUEST    = 76,
+    WAYPOINT_NORTH_WAVE1    = 84,
+    WAYPOINT_NORTH_WAVE2    = 92,
+    WAYPOINT_NORTH_WAVE3    = 100,
+    WAYPOINT_NORTH_FINISH   = 107,
+    WAYPOINT_SOUTH_STOP     = 193,
+    WAYPOINT_SOUTH_QUEST    = 207,
+    WAYPOINT_SOUTH_WAVE1    = 216,
+    WAYPOINT_SOUTH_WAVE2    = 224,
+    WAYPOINT_SOUTH_WAVE3    = 234,
+    WAYPOINT_SOUTH_FINISH   = 239,
+
 };
     
 
 
 struct npc_gizelton_caravanAI : public ScriptedAI
 {
-    npc_gizelton_caravanAI(Creature* c) : ScriptedAI(c) {}
+    npc_gizelton_caravanAI(Creature* c) : ScriptedAI(c) { me->setActive(true); }
 
     std::vector<ScriptPointMove> points;
     std::vector<ScriptPointMove>::iterator current;
     Timer pointWait;
-    uint64 members[4];//rigger,kodo,gizelton,kodo
+    uint64 members[5];//rigger,kodo,gizelton,kodo,robot
+    uint64 playerGUID;
 
     void Reset()
     {
         points = pSystemMgr.GetPointMoveList(me->GetEntry());
         pointWait.Reset(100);
         current = points.begin();
-        me->SetWalk(true);
-        me->setActive(true);
+        me->SetWalk(false);
 
+        playerGUID = 0;
         GetMembers();
     }
     
@@ -471,22 +488,36 @@ struct npc_gizelton_caravanAI : public ScriptedAI
         Map* map = me->GetMap();
         if (!map)
             return;
-            members[0] = map->GetCreatureGUID(NPC_RIGGER);
-            members[2] = map->GetCreatureGUID(NPC_CORK);
-            std::list<uint64> kodos;
-            kodos = map->GetCreaturesGUIDList(NPC_GIZELTON_KODO, GET_FIRST_CREATURE_GUID, 2);
-            if (kodos.size() > 0)
-                members[1] = kodos.front();
-            if (kodos.size() > 1)
-                members[3] = *(++kodos.begin());
+        members[0] = map->GetCreatureGUID(NPC_RIGGER);
+        members[2] = map->GetCreatureGUID(NPC_CORK);
+
+        Creature* kodo = me->SummonCreature(NPC_GIZELTON_KODO, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), 0, TEMPSUMMON_DEAD_DESPAWN, 1000);
+        if (kodo)
+            members[1] = kodo->GetGUID();    
+        kodo = me->SummonCreature(NPC_GIZELTON_KODO, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), 0, TEMPSUMMON_DEAD_DESPAWN, 1000);
+        if (kodo)
+            members[3] = kodo->GetGUID();
+
+        members[4] = 0;
     }
 
     void UpdateAI(const uint32 diff)
     {
-        if (!me->IsWalking())
-            me->SetWalk(true);
         if (pointWait.Expired(diff))
         {
+            switch (current->uiPointId)
+            {
+            case WAYPOINT_NORTH_STOP:
+            case WAYPOINT_SOUTH_STOP:
+            {
+                if (Creature* robot = me->GetCreature(members[4]))
+                    robot->ForcedDespawn();
+                members[4] = 0;
+                break;
+            }
+            }
+
+            current++;
             if (current == points.end())
                 current = points.begin();
 
@@ -521,7 +552,7 @@ struct npc_gizelton_caravanAI : public ScriptedAI
             }
             else
             {
-                member->NearTeleportTo(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), 0.0f);
+                me->GetMap()->CreatureRelocation(member, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), 0.0f);
             }
 
             member->GetMotionMaster()->MovePoint(0, dx, dy, dz, true, true, UNIT_ACTION_HOME);
@@ -533,8 +564,63 @@ struct npc_gizelton_caravanAI : public ScriptedAI
     {
         if (uiMoveType != POINT_MOTION_TYPE)
             return;
-        pointWait.Reset(100);
-        current++;
+        switch (current->uiPointId)
+        {
+        case WAYPOINT_NORTH_STOP:
+            if (Creature* robot = me->SummonCreature(NPC_VENDOR_TRON, -721, 1476, 91, 6, TEMPSUMMON_CORPSE_DESPAWN, 1000))
+                members[4] = robot->GetGUID();
+            SendDebug("reached north stop waypoint, 10 minute break");
+            pointWait.Reset(600000);
+            break;
+        case WAYPOINT_NORTH_QUEST:
+            SendDebug("reached north quest waypoint, 1 minute break");
+            pointWait.Reset(60000);
+            me->SetWalk(true);
+            break;
+        case WAYPOINT_NORTH_WAVE1:
+        case WAYPOINT_NORTH_WAVE2:
+        case WAYPOINT_NORTH_WAVE3:
+            pointWait.Reset(3000);
+            if (playerGUID)
+            {
+                SendDebug("north quest wave");
+            }
+            break;
+        case WAYPOINT_NORTH_FINISH:
+            SendDebug("north quest travel complete");
+            pointWait.Reset(100);
+            me->SetWalk(false);
+            break;
+        case WAYPOINT_SOUTH_STOP:
+            if (Creature* robot = me->SummonCreature(NPC_SUPER_SELLER, -1923, 2424, 61, 0.6, TEMPSUMMON_CORPSE_DESPAWN, 1000))
+                members[4] = robot->GetGUID();
+            SendDebug("reached south stop waypoint, 10 minute break");
+            pointWait.Reset(600000);
+            break;
+        case WAYPOINT_SOUTH_QUEST:
+            SendDebug("reached south quest waypoint, 1 minute break");
+            pointWait.Reset(60000);
+            me->SetWalk(true);
+            break;
+        case WAYPOINT_SOUTH_WAVE1:
+        case WAYPOINT_SOUTH_WAVE2:
+        case WAYPOINT_SOUTH_WAVE3:
+            pointWait.Reset(3000);
+            if (playerGUID)
+            {
+                SendDebug("south quest wave");
+            }
+            break;
+        case WAYPOINT_SOUTH_FINISH:
+            SendDebug("south quest travel complete");
+            pointWait.Reset(100);
+            me->SetWalk(false);
+            break;
+        
+        default:
+            pointWait.Reset(100);
+            break;
+        }
     }
 };
 

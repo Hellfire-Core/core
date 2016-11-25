@@ -1576,6 +1576,9 @@
     <ClCompile Include="..\..\src\scripts\scripts\Eastern Kingdoms\sunken_temple\sunken_temple.cpp">
       <Filter>Scripts\Eastern Kingdoms\Sunken Temple</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\scripts\scripts\Eastern Kingdoms\redridge\redridge.cpp">
+      <Filter>Scripts\Eastern Kingdoms\Redridge Mountains</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\scripts\scripts\Eastern Kingdoms\deadmines\def_deadmines.h">
