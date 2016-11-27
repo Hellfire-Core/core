@@ -436,6 +436,7 @@ CreatureAI* GetAI_npc_magram_spectre(Creature* crea)
 
 enum eGizeltonCaravan
 {
+    NPC_CARAVAN         = 11630,
     NPC_RIGGER          = 11626,
     NPC_CORK            = 11625,
     NPC_GIZELTON_KODO   = 11564,
@@ -460,11 +461,24 @@ enum eGizeltonCaravan
 
 };
     
+const float caravan_pos[][4] = {
+    { -721.4, 1474.2, 91.3, 5.8 },
+    { -716.8, 1467.0, 91.3, 5.6 },
+    { -715.4, 1482.1, 91.3, 5.5 },
+    { -719.8, 1480.5, 91.3, 5.6 },
+    { -721.1, 1476.2, 91.3, 6.0 },
 
+    { -1922.6, 2432.4, 60.9, 0.25 },
+    { -1919.8, 2421.7, 60.9, 0.25 },
+    { -1922.5, 2423.2, 60.9, 0.6 },
+    { -1922.4, 2434.8, 60.9, 6.1 },
+    { -1923.1, 2424.2, 60.9, 0.6 },
+    
+};
 
 struct npc_gizelton_caravanAI : public ScriptedAI
 {
-    npc_gizelton_caravanAI(Creature* c) : ScriptedAI(c) { me->setActive(true); }
+    npc_gizelton_caravanAI(Creature* c) : ScriptedAI(c) { }
 
     std::vector<ScriptPointMove> points;
     std::vector<ScriptPointMove>::iterator current;
@@ -481,6 +495,7 @@ struct npc_gizelton_caravanAI : public ScriptedAI
 
         playerGUID = 0;
         GetMembers();
+        me->setActive(true);
     }
     
     void GetMembers()
@@ -493,10 +508,16 @@ struct npc_gizelton_caravanAI : public ScriptedAI
 
         Creature* kodo = me->SummonCreature(NPC_GIZELTON_KODO, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), 0, TEMPSUMMON_DEAD_DESPAWN, 1000);
         if (kodo)
-            members[1] = kodo->GetGUID();    
+        {
+            members[1] = kodo->GetGUID();
+            kodo->setActive(true);
+        }
         kodo = me->SummonCreature(NPC_GIZELTON_KODO, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), 0, TEMPSUMMON_DEAD_DESPAWN, 1000);
         if (kodo)
+        {
             members[3] = kodo->GetGUID();
+            kodo->setActive(true);
+        }
 
         members[4] = 0;
     }
@@ -513,6 +534,24 @@ struct npc_gizelton_caravanAI : public ScriptedAI
                 if (Creature* robot = me->GetCreature(members[4]))
                     robot->ForcedDespawn();
                 members[4] = 0;
+                break;
+            }
+            case WAYPOINT_NORTH_QUEST:
+            case WAYPOINT_SOUTH_QUEST:
+            {
+                if (playerGUID)
+                {
+                    for (uint8 i = 0; i < 4; i++)
+                    {
+                        Creature* member = me->GetCreature(members[i]);
+                        if (member)
+                            member->setFaction(FACTION_ESCORT_N_NEUTRAL_PASSIVE);
+                    }
+                }
+                if (Creature* member = me->GetCreature(members[0]))
+                    member->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER);
+                if (Creature* member = me->GetCreature(members[2]))
+                    member->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER);
                 break;
             }
             }
@@ -567,14 +606,27 @@ struct npc_gizelton_caravanAI : public ScriptedAI
         switch (current->uiPointId)
         {
         case WAYPOINT_NORTH_STOP:
-            if (Creature* robot = me->SummonCreature(NPC_VENDOR_TRON, -721, 1476, 91, 6, TEMPSUMMON_CORPSE_DESPAWN, 1000))
-                members[4] = robot->GetGUID();
+        {
+            Creature* member;
+            for (uint8 i = 0; i < 4; i++)
+            {
+                member = me->GetCreature(members[i]);
+                if (member)
+                    member->Relocate(caravan_pos[i][0], caravan_pos[i][1], caravan_pos[i][2], caravan_pos[i][3]);
+            }
+
+            member = me->SummonCreature(NPC_VENDOR_TRON, caravan_pos[4][0], caravan_pos[4][1], caravan_pos[4][2], caravan_pos[4][3], TEMPSUMMON_CORPSE_DESPAWN, 1000);
+            if (member)
+                members[4] = member->GetGUID();
             SendDebug("reached north stop waypoint, 10 minute break");
             pointWait.Reset(600000);
             break;
+        }
         case WAYPOINT_NORTH_QUEST:
-            SendDebug("reached north quest waypoint, 1 minute break");
-            pointWait.Reset(60000);
+            if (Creature* member = me->GetCreature(members[2]))
+                member->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER);
+            SendDebug("reached north quest waypoint, 3 minute break");
+            pointWait.Reset(180000);
             me->SetWalk(true);
             break;
         case WAYPOINT_NORTH_WAVE1:
@@ -588,18 +640,44 @@ struct npc_gizelton_caravanAI : public ScriptedAI
             break;
         case WAYPOINT_NORTH_FINISH:
             SendDebug("north quest travel complete");
-            pointWait.Reset(100);
+            pointWait.Reset(10);
             me->SetWalk(false);
+            if (playerGUID)
+            {
+                for (uint8 i = 0; i < 4; i++)
+                {
+                    Creature* member = me->GetCreature(members[i]);
+                    if (member)
+                        member->RestoreFaction();
+                }
+                Player* plr = me->GetPlayer(playerGUID);
+                if (plr)
+                    plr->GroupEventHappens(QUEST_BODYGUARD_FOR_HIRE, me);
+                playerGUID = 0;
+            }
             break;
         case WAYPOINT_SOUTH_STOP:
-            if (Creature* robot = me->SummonCreature(NPC_SUPER_SELLER, -1923, 2424, 61, 0.6, TEMPSUMMON_CORPSE_DESPAWN, 1000))
-                members[4] = robot->GetGUID();
+        {
+            Creature* member;
+            for (uint8 i = 0; i < 4; i++)
+            {
+                member = me->GetCreature(members[i]);
+                if (member)
+                    member->Relocate(caravan_pos[5 + i][0], caravan_pos[5 + i][1], caravan_pos[5 + i][2], caravan_pos[5 + i][3]);
+            }
+
+            member = me->SummonCreature(NPC_SUPER_SELLER, caravan_pos[9][0], caravan_pos[9][1], caravan_pos[9][2], caravan_pos[9][3], TEMPSUMMON_CORPSE_DESPAWN, 1000);
+            if (member)
+                members[4] = member->GetGUID();
             SendDebug("reached south stop waypoint, 10 minute break");
             pointWait.Reset(600000);
             break;
+        }
         case WAYPOINT_SOUTH_QUEST:
-            SendDebug("reached south quest waypoint, 1 minute break");
-            pointWait.Reset(60000);
+            if (Creature* member = me->GetCreature(members[0]))
+                member->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER);
+            SendDebug("reached south quest waypoint, 3 minute break");
+            pointWait.Reset(180000);
             me->SetWalk(true);
             break;
         case WAYPOINT_SOUTH_WAVE1:
@@ -613,20 +691,57 @@ struct npc_gizelton_caravanAI : public ScriptedAI
             break;
         case WAYPOINT_SOUTH_FINISH:
             SendDebug("south quest travel complete");
-            pointWait.Reset(100);
+            pointWait.Reset(10);
             me->SetWalk(false);
+            if (playerGUID)
+            {
+                for (uint8 i = 0; i < 4; i++)
+                {
+                    Creature* member = me->GetCreature(members[i]);
+                    if (member)
+                        member->RestoreFaction();
+                }
+                Player* plr = me->GetPlayer(playerGUID);
+                if (plr)
+                    plr->GroupEventHappens(QUEST_GIZELTON_CARAVAN, me);
+                playerGUID = 0;
+            }
             break;
         
         default:
-            pointWait.Reset(100);
+            pointWait.Reset(10);
             break;
         }
+    }
+
+    void QuestAccepted(uint64 guid)
+    {
+        if (current->uiPointId != WAYPOINT_NORTH_QUEST && current->uiPointId != WAYPOINT_SOUTH_QUEST)
+            return;
+        playerGUID = guid;
     }
 };
 
 CreatureAI* GetAI_npc_gizelton_caravan(Creature* c)
 {
     return new npc_gizelton_caravanAI(c);
+}
+
+bool QuestAccept_npc_gizelton_caravan_member(Player* plr, Creature* cre, const Quest* quest)
+{
+    Creature* caravan = plr->GetMap()->GetCreatureById(NPC_CARAVAN);
+    if (caravan)
+        CAST_AI(npc_gizelton_caravanAI, caravan->AI())->QuestAccepted(plr->GetGUID());
+    return true;
+}
+
+bool GossipHello_npc_gizelton_caravan_member(Player* plr, Creature* cre)
+{
+    if (cre->isQuestGiver()) // disable/enable showing quest by seting npc flag
+        plr->PrepareQuestMenu(cre->GetGUID());
+
+    plr->SEND_GOSSIP_MENU(cre->GetNpcTextId(), cre->GetGUID());
+    return true;
 }
 
 void AddSC_desolace()
@@ -670,5 +785,11 @@ void AddSC_desolace()
     newscript = new Script;
     newscript->Name = "npc_gizelton_caravan";
     newscript->GetAI = &GetAI_npc_gizelton_caravan;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_gizelton_caravan_member";
+    newscript->pGossipHello = &GossipHello_npc_gizelton_caravan_member;
+    newscript->pQuestAcceptNPC = &QuestAccept_npc_gizelton_caravan_member;
     newscript->RegisterSelf();
 }
