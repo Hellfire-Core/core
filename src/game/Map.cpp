@@ -3212,3 +3212,15 @@ time_t Map::UpdateHelper::GetTimeElapsed() const
 {
     return m_map->m_updateTracker.timeElapsed();
 }
+
+std::string Map::getDebugData()
+{
+    std::ostringstream str;
+    str << "Map: " << GetId() << " Id: " << GetInstanceId() << " Active objects: \n";
+    for (ActiveNonPlayers::iterator itr = m_activeNonPlayers.begin(); itr != m_activeNonPlayers.end(); itr++)
+    {
+        WorldObject* obj = *itr;
+        str << obj->GetName() << " " << obj->IsInWorld() << " " << obj->GetPositionX() << " " << obj->GetPositionY() << "\n";
+    }
+    return str.str();
+}

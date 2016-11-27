@@ -153,6 +153,7 @@ class ChatHandler
         bool HandleDebugGetLootRecipient(const char * args);
         bool HandleDebugGetValue(const char* args);
         bool HandleDebugJoinBG(const char* args);
+        bool HandleDebugMap(const char* args);
         bool HandleDebugMod32Value(const char* args);
         bool HandleDebugPlayCinematicCommand(const char* args);
         bool HandleDebugPlaySoundCommand(const char* args);

@@ -1241,3 +1241,14 @@ bool ChatHandler::HandleDebugJoinBG(const char* args)
 
     return true;
 }
+
+bool ChatHandler::HandleDebugMap(const char* args)
+{
+    if (!m_session)
+        return false;
+
+    Map* map = m_session->GetPlayer()->GetMap();
+    SendSysMessage(map->getDebugData().c_str());
+
+    return true;
+}

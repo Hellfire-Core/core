@@ -96,6 +96,14 @@ struct npc_aged_dying_ancient_kodoAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
+        if (me->GetEntry() == NPC_TAMED_KODO)
+        {
+            me->CombatStop();
+            if (!me->HasAura(SPELL_KODO_KOMBO_DESPAWN_BUFF))
+                me->Respawn();
+        }
+        
+        
         if (!UpdateVictim())
             return;
 
@@ -508,16 +516,10 @@ struct npc_gizelton_caravanAI : public ScriptedAI
 
         Creature* kodo = me->SummonCreature(NPC_GIZELTON_KODO, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), 0, TEMPSUMMON_DEAD_DESPAWN, 1000);
         if (kodo)
-        {
             members[1] = kodo->GetGUID();
-            kodo->setActive(true);
-        }
         kodo = me->SummonCreature(NPC_GIZELTON_KODO, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), 0, TEMPSUMMON_DEAD_DESPAWN, 1000);
         if (kodo)
-        {
             members[3] = kodo->GetGUID();
-            kodo->setActive(true);
-        }
 
         members[4] = 0;
     }
@@ -719,6 +721,15 @@ struct npc_gizelton_caravanAI : public ScriptedAI
         if (current->uiPointId != WAYPOINT_NORTH_QUEST && current->uiPointId != WAYPOINT_SOUTH_QUEST)
             return;
         playerGUID = guid;
+    }
+    
+    void DoAction(int32 param)
+    {
+        if (param == 12)
+        {
+            me->setActive(false);
+            me->setActive(true);
+        }
     }
 };
 
