@@ -2742,7 +2742,7 @@ CreatureAI* GetAI_npc_banishing_crystal(Creature* creature)
 
 bool GossipHello_npc_sky_commander_keller(Player* plr, Creature* cre)
 {
-    if (cre->isQuestGiver)
+    if (cre->isQuestGiver())
         plr->PrepareQuestMenu(cre->GetGUID());
 
     if (plr->GetQuestRewardStatus(QUEST_TO_RULE_THE_SKIES) && plr->HasItemCount(ITEM_DEATHWING_BROOD_CLOAK, 1))
