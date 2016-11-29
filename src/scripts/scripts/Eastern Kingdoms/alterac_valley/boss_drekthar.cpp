@@ -25,16 +25,16 @@ EndScriptData */
 
 #include "precompiled.h"
 
-#define YELL_AGGRO             -2100000
+#define YELL_AGGRO             -1001000
 
-#define YELL_EVADE             -2100001
-#define YELL_RESPAWN           -2100002
+#define YELL_EVADE             -1001001
+#define YELL_RESPAWN           -1001002
 
-#define YELL_RANDOM1           -2100003
-#define YELL_RANDOM2           -2100004
-#define YELL_RANDOM3           -2100005
-#define YELL_RANDOM4           -2100006
-#define YELL_RANDOM5           -2100007
+#define YELL_RANDOM1           -1001003
+#define YELL_RANDOM2           -1001004
+#define YELL_RANDOM3           -1001005
+#define YELL_RANDOM4           -1001006
+#define YELL_RANDOM5           -1001007
 
 
 #define SPELL_WHIRLWIND        15589

@@ -2735,6 +2735,31 @@ CreatureAI* GetAI_npc_banishing_crystal(Creature* creature)
     return new npc_banishing_crystalAI (creature);
 }
 
+#define QUEST_TO_RULE_THE_SKIES 11078
+#define ITEM_DEATHWING_BROOD_CLOAK 31942
+#define GOSSIP_KELLER_CLOAK "I'd like to exchange my Deathwing Brood Cloak."
+#define SPELL_CLOAK_EXCHANGE 41412
+
+bool GossipHello_npc_sky_commander_keller(Player* plr, Creature* cre)
+{
+    if (cre->isQuestGiver)
+        plr->PrepareQuestMenu(cre->GetGUID());
+
+    if (plr->GetQuestRewardStatus(QUEST_TO_RULE_THE_SKIES) && plr->HasItemCount(ITEM_DEATHWING_BROOD_CLOAK, 1))
+        plr->ADD_GOSSIP_ITEM(0, GOSSIP_KELLER_CLOAK, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF);
+    plr->SEND_GOSSIP_MENU(cre->GetNpcTextId(), cre->GetGUID());
+    return true;
+}
+
+bool GossipSelect_npc_sky_commander_keller(Player* plr, Creature* cre, uint32 sender, uint32 action)
+{
+    if (sender == GOSSIP_SENDER_MAIN && action == GOSSIP_ACTION_INFO_DEF)
+        plr->CastSpell(plr, SPELL_CLOAK_EXCHANGE, false);
+
+    plr->CLOSE_GOSSIP_MENU();
+    return true;
+}
+
 /*######
 ## AddSC
 ######*/
@@ -2884,5 +2909,11 @@ void AddSC_blades_edge_mountains()
     newscript = new Script;
     newscript->Name="npc_banishing_crystal";
     newscript->GetAI = &GetAI_npc_banishing_crystal;
+    newscript->RegisterSelf();
+    
+    newscript = new Script;
+    newscript->Name = "npc_sky_commander_keller";
+    newscript->pGossipHello = &GossipHello_npc_sky_commander_keller;
+    newscript->pGossipSelect = &GossipSelect_npc_sky_commander_keller;
     newscript->RegisterSelf();
 }

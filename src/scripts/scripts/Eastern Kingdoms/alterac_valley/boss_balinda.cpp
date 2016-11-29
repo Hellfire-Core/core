@@ -25,8 +25,8 @@ EndScriptData */
 
 #include "precompiled.h"
 
-#define YELL_AGGRO                        -2100019
-#define YELL_EVADE                        -2100020
+#define YELL_AGGRO                        -1001019
+#define YELL_EVADE                        -1001020
 
 enum Balinda
 {

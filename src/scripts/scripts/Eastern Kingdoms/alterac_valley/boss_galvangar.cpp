@@ -25,8 +25,8 @@ EndScriptData */
 
 #include "precompiled.h"
 
-#define YELL_AGGRO                 -2100021
-#define YELL_EVADE                 -2100022
+#define YELL_AGGRO                 -1001021
+#define YELL_EVADE                 -1001022
 
 #define SPELL_CLEAVE               15284
 #define SPELL_FRIGHTENING_SHOUT    19134

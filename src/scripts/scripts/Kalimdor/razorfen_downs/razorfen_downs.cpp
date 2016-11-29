@@ -191,15 +191,8 @@ CreatureAI* GetAI_npc_tomb_creature(Creature* pCreature)
 enum belnistraszEnum
 {
     QUEST_BELNISTRASZ = 3525,
-    BELNISTRASZ_SAY_START = -2100025,
-    BELNISTRASZ_SAY_AGGRO = -2100027,/* should be "You'll rue the day you crossed me, <mob name>" no idea how to do that.
-                                           also mobs does not pull on him on the way to event */
-    BELNISTRASZ_SAY_IDOL = -2100026,
-    BELNISTRASZ_YELL_3MIN = -2100028,
-    BELNISTRASZ_YELL_2MIN = -2100029,
-    BELNISTRASZ_YELL_1MIN = -2100030,
-    BELNISTRASZ_YELL_COMPLETE = -2100031,
-    BELNISTRASZ_SAY_PLAGUEMAW = -2100032,
+    BELNISTRASZ_SAY_START = -1000170,
+
     OVEN_TARGET = 8662,
     SPELL_BELNISTRASZ_VISUAL = 12774,
     MOB_GEOMANCER = 7335,
@@ -229,7 +222,7 @@ struct npc_belnistraszAI : public npc_escortAI
     {
         if (i == 13)
         {
-            DoScriptText(BELNISTRASZ_SAY_IDOL, m_creature);
+            DoScriptText(BELNISTRASZ_SAY_START-1, m_creature);
             Unit* bunny = FindCreature(OVEN_TARGET, 50, m_creature);
             if (bunny)
                 DoCast(bunny, SPELL_BELNISTRASZ_VISUAL);
@@ -241,7 +234,7 @@ struct npc_belnistraszAI : public npc_escortAI
     void EnterCombat(Unit* who)
     {
         if (!onplace)
-        DoScriptText(BELNISTRASZ_SAY_AGGRO, m_creature, who);
+        DoScriptText(BELNISTRASZ_SAY_START -2, m_creature, who);
     }
 
     void JustSummoned(Creature* summon)
@@ -272,11 +265,11 @@ struct npc_belnistraszAI : public npc_escortAI
             waves++;
             switch (waves)
             {
-                case 3: DoScriptText(BELNISTRASZ_YELL_3MIN, m_creature); break;
-                case 5: DoScriptText(BELNISTRASZ_YELL_2MIN, m_creature); break;
-                case 7: DoScriptText(BELNISTRASZ_YELL_1MIN, m_creature); break;
-                case 9: DoScriptText(BELNISTRASZ_YELL_COMPLETE, m_creature); break;
-                case 10: DoScriptText(BELNISTRASZ_SAY_PLAGUEMAW, m_creature); break;
+                case 3: DoScriptText(BELNISTRASZ_SAY_START - 3, m_creature); break;
+                case 5: DoScriptText(BELNISTRASZ_SAY_START - 4, m_creature); break;
+                case 7: DoScriptText(BELNISTRASZ_SAY_START - 5, m_creature); break;
+                case 9: DoScriptText(BELNISTRASZ_SAY_START - 6, m_creature); break;
+                case 10: DoScriptText(BELNISTRASZ_SAY_START - 7, m_creature); break;
                 default: break;
             }
             if (waves < 9)

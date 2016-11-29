@@ -111,8 +111,8 @@ struct boss_pyroguard_emberseerAI : public BossAI
                 }
                 case EMBERSEER_EVENT_TRANSFORM:
                 {
-                    DoScriptText(-2100023, me);
-                    DoScriptText(-2100024, me);
+                    DoScriptText(-1001023, me);
+                    DoScriptText(-1001024, me);
                     me->CastSpell(me, SPELL_TRANSFORM, true);
                     me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                     me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PASSIVE);

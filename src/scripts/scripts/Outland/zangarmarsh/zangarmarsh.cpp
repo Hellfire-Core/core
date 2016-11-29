@@ -575,7 +575,6 @@ bool QuestAccept_npc_fhwoor(Player* player, Creature* creature, Quest const* que
         if (npc_escortAI* pEscortAI = CAST_AI(npc_escortAI, creature->AI()))
         {
             pEscortAI->Start(true, true, player->GetGUID(), quest, true, false);
-            creature->SetSelection(player->GetGUID());
             DoScriptText(FHWOOR_SAY_START, creature, player);
         }
     }

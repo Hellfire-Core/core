@@ -3220,7 +3220,9 @@ std::string Map::getDebugData()
     for (ActiveNonPlayers::iterator itr = m_activeNonPlayers.begin(); itr != m_activeNonPlayers.end(); itr++)
     {
         WorldObject* obj = *itr;
-        str << obj->GetName() << " " << obj->IsInWorld() << " " << obj->GetPositionX() << " " << obj->GetPositionY() << "\n";
+        if (!obj || !obj->IsInWorld() || !obj->GetName())
+            continue;
+        str << obj->GetName() << " " << obj->GetPositionX() << " " << obj->GetPositionY() << "\n";
     }
     return str.str();
 }

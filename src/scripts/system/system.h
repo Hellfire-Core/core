@@ -80,7 +80,6 @@ class SystemMgr
 
         //Database
         void LoadScriptTexts();
-        void LoadScriptTextsCustom();
         void LoadScriptWaypoints();
 
         //Retrive from storage

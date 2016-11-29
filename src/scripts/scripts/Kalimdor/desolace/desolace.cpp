@@ -467,6 +467,8 @@ enum eGizeltonCaravan
     WAYPOINT_SOUTH_WAVE3    = 234,
     WAYPOINT_SOUTH_FINISH   = 239,
 
+    GIZELTON_TEXT_BEGIN = -1000050,
+
 };
     
 const float caravan_pos[][4] = {
@@ -504,6 +506,7 @@ struct npc_gizelton_caravanAI : public ScriptedAI
         playerGUID = 0;
         GetMembers();
         me->setActive(true);
+        members[4] = 0;
     }
     
     void GetMembers()
@@ -512,16 +515,31 @@ struct npc_gizelton_caravanAI : public ScriptedAI
         if (!map)
             return;
         members[0] = map->GetCreatureGUID(NPC_RIGGER);
+        if (Creature* rigger = me->GetCreature(members[0]))
+            rigger->setActive(true);
+
         members[2] = map->GetCreatureGUID(NPC_CORK);
+        if (Creature* cork = me->GetCreature(members[2]))
+            cork->setActive(true);
 
-        Creature* kodo = me->SummonCreature(NPC_GIZELTON_KODO, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), 0, TEMPSUMMON_DEAD_DESPAWN, 1000);
-        if (kodo)
-            members[1] = kodo->GetGUID();
-        kodo = me->SummonCreature(NPC_GIZELTON_KODO, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), 0, TEMPSUMMON_DEAD_DESPAWN, 1000);
-        if (kodo)
-            members[3] = kodo->GetGUID();
-
-        members[4] = 0;
+        if (!members[1])
+        {
+            Creature* kodo = me->SummonCreature(NPC_GIZELTON_KODO, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), 0, TEMPSUMMON_DEAD_DESPAWN, 1000);
+            if (kodo)
+            {
+                members[1] = kodo->GetGUID();
+                kodo->setActive(true);
+            }
+        }
+        if (!members[3])
+        {
+            Creature* kodo = me->SummonCreature(NPC_GIZELTON_KODO, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), 0, TEMPSUMMON_DEAD_DESPAWN, 1000);
+            if (kodo)
+            {
+                members[3] = kodo->GetGUID();
+                kodo->setActive(true);
+            }
+        }
     }
 
     void UpdateAI(const uint32 diff)
@@ -531,11 +549,21 @@ struct npc_gizelton_caravanAI : public ScriptedAI
             switch (current->uiPointId)
             {
             case WAYPOINT_NORTH_STOP:
+            {
+                if (Creature* robot = me->GetCreature(members[4]))
+                    robot->ForcedDespawn();
+                members[4] = 0;
+                if (Creature* cork = me->GetCreature(members[2]))
+                    DoScriptText(GIZELTON_TEXT_BEGIN, cork);
+                break;
+            }
             case WAYPOINT_SOUTH_STOP:
             {
                 if (Creature* robot = me->GetCreature(members[4]))
                     robot->ForcedDespawn();
                 members[4] = 0;
+                if (Creature* rigger = me->GetCreature(members[0]))
+                    DoScriptText(GIZELTON_TEXT_BEGIN - 6, rigger);
                 break;
             }
             case WAYPOINT_NORTH_QUEST:
@@ -625,19 +653,43 @@ struct npc_gizelton_caravanAI : public ScriptedAI
             break;
         }
         case WAYPOINT_NORTH_QUEST:
-            if (Creature* member = me->GetCreature(members[2]))
-                member->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER);
+            if (Creature* cork = me->GetCreature(members[2]))
+            {
+                cork->YellToZone(GIZELTON_TEXT_BEGIN - 1, 0, 0);
+                cork->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER);
+            }
             SendDebug("reached north quest waypoint, 3 minute break");
             pointWait.Reset(180000);
             me->SetWalk(true);
             break;
         case WAYPOINT_NORTH_WAVE1:
+            pointWait.Reset(3000);
+            if (playerGUID)
+            {
+                if (Creature* cork = me->GetCreature(members[2]))
+                    DoScriptText(GIZELTON_TEXT_BEGIN - 2, cork);
+                SendDebug("north quest wave 1");
+                MakeWave(true);
+            }
+            break;
         case WAYPOINT_NORTH_WAVE2:
+            pointWait.Reset(3000);
+            if (playerGUID)
+            {
+                if (Creature* cork = me->GetCreature(members[2]))
+                    DoScriptText(GIZELTON_TEXT_BEGIN - 3, cork);
+                SendDebug("north quest wave 2");
+                MakeWave(true);
+            }
+            break;
         case WAYPOINT_NORTH_WAVE3:
             pointWait.Reset(3000);
             if (playerGUID)
             {
-                SendDebug("north quest wave");
+                if (Creature* cork = me->GetCreature(members[2]))
+                    DoScriptText(GIZELTON_TEXT_BEGIN - 4, cork);
+                SendDebug("north quest wave 3");
+                MakeWave(true);
             }
             break;
         case WAYPOINT_NORTH_FINISH:
@@ -646,6 +698,8 @@ struct npc_gizelton_caravanAI : public ScriptedAI
             me->SetWalk(false);
             if (playerGUID)
             {
+                if (Creature* cork = me->GetCreature(members[2]))
+                    DoScriptText(GIZELTON_TEXT_BEGIN - 5, cork);
                 for (uint8 i = 0; i < 4; i++)
                 {
                     Creature* member = me->GetCreature(members[i]);
@@ -676,19 +730,43 @@ struct npc_gizelton_caravanAI : public ScriptedAI
             break;
         }
         case WAYPOINT_SOUTH_QUEST:
-            if (Creature* member = me->GetCreature(members[0]))
-                member->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER);
+            if (Creature* rigger = me->GetCreature(members[0]))
+            {
+                rigger->YellToZone(GIZELTON_TEXT_BEGIN - 7, 0, 0);
+                rigger->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER);
+            }
             SendDebug("reached south quest waypoint, 3 minute break");
             pointWait.Reset(180000);
             me->SetWalk(true);
             break;
         case WAYPOINT_SOUTH_WAVE1:
+            pointWait.Reset(3000);
+            if (playerGUID)
+            {
+                if (Creature* rigger = me->GetCreature(members[0]))
+                    DoScriptText(GIZELTON_TEXT_BEGIN - 8, rigger);
+                SendDebug("south quest wave 1");
+                MakeWave(false);
+            }
+            break;
         case WAYPOINT_SOUTH_WAVE2:
+            pointWait.Reset(3000);
+            if (playerGUID)
+            {
+                if (Creature* rigger = me->GetCreature(members[0]))
+                    DoScriptText(GIZELTON_TEXT_BEGIN - 9, rigger);
+                SendDebug("south quest wave 2");
+                MakeWave(false);
+            }
+            break;
         case WAYPOINT_SOUTH_WAVE3:
             pointWait.Reset(3000);
             if (playerGUID)
             {
-                SendDebug("south quest wave");
+                if (Creature* rigger = me->GetCreature(members[0]))
+                    DoScriptText(GIZELTON_TEXT_BEGIN - 9, rigger);
+                SendDebug("south quest wave 3");
+                MakeWave(false);
             }
             break;
         case WAYPOINT_SOUTH_FINISH:
@@ -697,6 +775,8 @@ struct npc_gizelton_caravanAI : public ScriptedAI
             me->SetWalk(false);
             if (playerGUID)
             {
+                if (Creature* rigger = me->GetCreature(members[0]))
+                    DoScriptText(GIZELTON_TEXT_BEGIN - 10, rigger);
                 for (uint8 i = 0; i < 4; i++)
                 {
                     Creature* member = me->GetCreature(members[i]);
@@ -722,12 +802,17 @@ struct npc_gizelton_caravanAI : public ScriptedAI
             return;
         playerGUID = guid;
     }
+
+    void MakeWave(bool north)
+    {
+
+    }
     
     void DoAction(int32 param)
     {
         if (param == 12)
         {
-            me->setActive(false);
+            me->setActive(false, ACTIVE_BY_ALL);
             me->setActive(true);
         }
     }
