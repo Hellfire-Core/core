@@ -451,6 +451,12 @@ enum eGizeltonCaravan
     NPC_VENDOR_TRON     = 12245,
     NPC_SUPER_SELLER    = 12246,
 
+    NPC_KOLKAR_AMBUSHER = 12977,
+    NPC_KOLKAR_WAYLAYER = 12976,
+    NPC_NETHER_SORCERES = 4684,
+    NPC_DOOMWARDER      = 4677,
+    NPC_LESSER_INFERNAL = 4676,
+
     QUEST_GIZELTON_CARAVAN      = 5943,
     QUEST_BODYGUARD_FOR_HIRE    = 5821,
 
@@ -493,8 +499,9 @@ struct npc_gizelton_caravanAI : public ScriptedAI
     std::vector<ScriptPointMove> points;
     std::vector<ScriptPointMove>::iterator current;
     Timer pointWait;
+    Timer checkTimer;
     uint64 members[5];//rigger,kodo,gizelton,kodo,robot
-    uint64 playerGUID;
+    std::list<uint64> playerGUIDs;
 
     void Reset()
     {
@@ -503,10 +510,11 @@ struct npc_gizelton_caravanAI : public ScriptedAI
         current = points.begin();
         me->SetWalk(false);
 
-        playerGUID = 0;
+        playerGUIDs.empty();
         GetMembers();
         me->setActive(true);
         members[4] = 0;
+        checkTimer.Reset(10000);
     }
     
     void GetMembers()
@@ -522,7 +530,7 @@ struct npc_gizelton_caravanAI : public ScriptedAI
         if (Creature* cork = me->GetCreature(members[2]))
             cork->setActive(true);
 
-        if (!members[1])
+        if (!members[1] || !me->GetCreature(members[1]))
         {
             Creature* kodo = me->SummonCreature(NPC_GIZELTON_KODO, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), 0, TEMPSUMMON_DEAD_DESPAWN, 1000);
             if (kodo)
@@ -531,7 +539,7 @@ struct npc_gizelton_caravanAI : public ScriptedAI
                 kodo->setActive(true);
             }
         }
-        if (!members[3])
+        if (!members[3] || !me->GetCreature(members[3]))
         {
             Creature* kodo = me->SummonCreature(NPC_GIZELTON_KODO, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), 0, TEMPSUMMON_DEAD_DESPAWN, 1000);
             if (kodo)
@@ -569,7 +577,7 @@ struct npc_gizelton_caravanAI : public ScriptedAI
             case WAYPOINT_NORTH_QUEST:
             case WAYPOINT_SOUTH_QUEST:
             {
-                if (playerGUID)
+                if (!playerGUIDs.empty())
                 {
                     for (uint8 i = 0; i < 4; i++)
                     {
@@ -577,6 +585,7 @@ struct npc_gizelton_caravanAI : public ScriptedAI
                         if (member)
                             member->setFaction(FACTION_ESCORT_N_NEUTRAL_PASSIVE);
                     }
+                    checkTimer.Reset(1000);
                 }
                 if (Creature* member = me->GetCreature(members[0]))
                     member->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER);
@@ -592,7 +601,47 @@ struct npc_gizelton_caravanAI : public ScriptedAI
 
             CaravanMovesTo(current->uiPointId, current->fX, current->fY, current->fZ);
             pointWait.Reset(0);
-            
+        }
+
+        if (checkTimer.Expired(diff))
+        {
+            if (playerGUIDs.empty()) // not during quest every 10 sec check if we have all members
+            {
+                GetMembers();
+                checkTimer = 10000; 
+            }
+            else // during quest check every second if we are alive
+            {
+                Creature* rigger = me->GetCreature(members[0]);
+                Creature* cork = me->GetCreature(members[2]);
+                if (!rigger || !cork || !rigger->isAlive() || !cork->isAlive())
+                {
+                    for (std::list<uint64>::iterator itr = playerGUIDs.begin(); itr != playerGUIDs.end(); itr++)
+                    {
+                        Player* plr = me->GetPlayer(*itr);
+                        if (plr && plr->IsActiveQuest(QUEST_BODYGUARD_FOR_HIRE))
+                            plr->FailQuest(QUEST_BODYGUARD_FOR_HIRE);
+                        if (plr && plr->IsActiveQuest(QUEST_GIZELTON_CARAVAN))
+                            plr->FailQuest(QUEST_GIZELTON_CARAVAN);
+                    }
+                    playerGUIDs.clear();
+
+                    if (cork)
+                    {
+                        cork->CombatStop();
+                        cork->RestoreFaction();
+                        cork->Respawn();
+                    }
+
+                    if (rigger)
+                    {
+                        rigger->CombatStop();
+                        rigger->RestoreFaction();
+                        rigger->Respawn();
+                    }
+                }
+                checkTimer = 1000;
+            }
         }
     }
 
@@ -664,7 +713,7 @@ struct npc_gizelton_caravanAI : public ScriptedAI
             break;
         case WAYPOINT_NORTH_WAVE1:
             pointWait.Reset(3000);
-            if (playerGUID)
+            if (!playerGUIDs.empty())
             {
                 if (Creature* cork = me->GetCreature(members[2]))
                     DoScriptText(GIZELTON_TEXT_BEGIN - 2, cork);
@@ -674,7 +723,7 @@ struct npc_gizelton_caravanAI : public ScriptedAI
             break;
         case WAYPOINT_NORTH_WAVE2:
             pointWait.Reset(3000);
-            if (playerGUID)
+            if (!playerGUIDs.empty())
             {
                 if (Creature* cork = me->GetCreature(members[2]))
                     DoScriptText(GIZELTON_TEXT_BEGIN - 3, cork);
@@ -684,7 +733,7 @@ struct npc_gizelton_caravanAI : public ScriptedAI
             break;
         case WAYPOINT_NORTH_WAVE3:
             pointWait.Reset(3000);
-            if (playerGUID)
+            if (!playerGUIDs.empty())
             {
                 if (Creature* cork = me->GetCreature(members[2]))
                     DoScriptText(GIZELTON_TEXT_BEGIN - 4, cork);
@@ -696,7 +745,7 @@ struct npc_gizelton_caravanAI : public ScriptedAI
             SendDebug("north quest travel complete");
             pointWait.Reset(10);
             me->SetWalk(false);
-            if (playerGUID)
+            if (!playerGUIDs.empty())
             {
                 if (Creature* cork = me->GetCreature(members[2]))
                     DoScriptText(GIZELTON_TEXT_BEGIN - 5, cork);
@@ -706,10 +755,13 @@ struct npc_gizelton_caravanAI : public ScriptedAI
                     if (member)
                         member->RestoreFaction();
                 }
-                Player* plr = me->GetPlayer(playerGUID);
-                if (plr)
-                    plr->GroupEventHappens(QUEST_BODYGUARD_FOR_HIRE, me);
-                playerGUID = 0;
+                for (std::list<uint64>::iterator itr = playerGUIDs.begin(); itr != playerGUIDs.end(); itr++)
+                {
+                    Player* plr = me->GetPlayer(*itr);
+                    if (plr && plr->IsAtGroupRewardDistance(me))
+                        plr->AreaExploredOrEventHappens(QUEST_BODYGUARD_FOR_HIRE);
+                }
+                playerGUIDs.clear();
             }
             break;
         case WAYPOINT_SOUTH_STOP:
@@ -741,7 +793,7 @@ struct npc_gizelton_caravanAI : public ScriptedAI
             break;
         case WAYPOINT_SOUTH_WAVE1:
             pointWait.Reset(3000);
-            if (playerGUID)
+            if (!playerGUIDs.empty())
             {
                 if (Creature* rigger = me->GetCreature(members[0]))
                     DoScriptText(GIZELTON_TEXT_BEGIN - 8, rigger);
@@ -751,7 +803,7 @@ struct npc_gizelton_caravanAI : public ScriptedAI
             break;
         case WAYPOINT_SOUTH_WAVE2:
             pointWait.Reset(3000);
-            if (playerGUID)
+            if (!playerGUIDs.empty())
             {
                 if (Creature* rigger = me->GetCreature(members[0]))
                     DoScriptText(GIZELTON_TEXT_BEGIN - 9, rigger);
@@ -761,7 +813,7 @@ struct npc_gizelton_caravanAI : public ScriptedAI
             break;
         case WAYPOINT_SOUTH_WAVE3:
             pointWait.Reset(3000);
-            if (playerGUID)
+            if (!playerGUIDs.empty())
             {
                 if (Creature* rigger = me->GetCreature(members[0]))
                     DoScriptText(GIZELTON_TEXT_BEGIN - 9, rigger);
@@ -773,7 +825,7 @@ struct npc_gizelton_caravanAI : public ScriptedAI
             SendDebug("south quest travel complete");
             pointWait.Reset(10);
             me->SetWalk(false);
-            if (playerGUID)
+            if (!playerGUIDs.empty())
             {
                 if (Creature* rigger = me->GetCreature(members[0]))
                     DoScriptText(GIZELTON_TEXT_BEGIN - 10, rigger);
@@ -783,10 +835,14 @@ struct npc_gizelton_caravanAI : public ScriptedAI
                     if (member)
                         member->RestoreFaction();
                 }
-                Player* plr = me->GetPlayer(playerGUID);
-                if (plr)
-                    plr->GroupEventHappens(QUEST_GIZELTON_CARAVAN, me);
-                playerGUID = 0;
+
+                for (std::list<uint64>::iterator itr = playerGUIDs.begin(); itr != playerGUIDs.end(); itr++)
+                {
+                    Player* plr = me->GetPlayer(*itr);
+                    if (plr && plr->IsAtGroupRewardDistance(me))
+                        plr->AreaExploredOrEventHappens(QUEST_GIZELTON_CARAVAN);
+                }
+                playerGUIDs.clear();
             }
             break;
         
@@ -796,24 +852,42 @@ struct npc_gizelton_caravanAI : public ScriptedAI
         }
     }
 
-    void QuestAccepted(uint64 guid)
+    void QuestAccepted(Player* plr)
     {
         if (current->uiPointId != WAYPOINT_NORTH_QUEST && current->uiPointId != WAYPOINT_SOUTH_QUEST)
             return;
-        playerGUID = guid;
+
+        if (Group *pGroup = plr->GetGroup())
+        {
+            for (GroupReference *itr = pGroup->GetFirstMember(); itr != NULL; itr = itr->next())
+            {
+                if (Player* pGroupGuy = itr->getSource())
+                    playerGUIDs.push_back(pGroupGuy->GetGUID());
+            }
+        }
+        else
+            playerGUIDs.push_back(plr->GetGUID());
     }
 
     void MakeWave(bool north)
     {
-
-    }
-    
-    void DoAction(int32 param)
-    {
-        if (param == 12)
+        Creature* rigger = me->GetCreature(members[0]);
+        if (!rigger)
+            return;
+        Position pos;
+        for (uint8 i = 0; i < 4; i++)
         {
-            me->setActive(false, ACTIVE_BY_ALL);
-            me->setActive(true);
+            uint32 id;
+            switch (i)
+            {
+            case 0:
+            case 1: id = north ? NPC_KOLKAR_AMBUSHER : NPC_NETHER_SORCERES; break;
+            case 2: id = north ? NPC_KOLKAR_WAYLAYER : NPC_DOOMWARDER; break;
+            case 3: id = north ? NPC_KOLKAR_WAYLAYER : NPC_LESSER_INFERNAL; break;
+            }
+            me->GetValidPointInAngle(pos, frand(15, 25), frand(-0.5, +0.5), true);
+            if (Creature* enemy = me->SummonCreature(id, pos.x, pos.y, pos.z, 0, TEMPSUMMON_CORPSE_DESPAWN, 10000))
+                enemy->CombatStart(rigger);
         }
     }
 };
@@ -827,7 +901,7 @@ bool QuestAccept_npc_gizelton_caravan_member(Player* plr, Creature* cre, const Q
 {
     Creature* caravan = plr->GetMap()->GetCreatureById(NPC_CARAVAN);
     if (caravan)
-        CAST_AI(npc_gizelton_caravanAI, caravan->AI())->QuestAccepted(plr->GetGUID());
+        CAST_AI(npc_gizelton_caravanAI, caravan->AI())->QuestAccepted(plr);
     return true;
 }
 

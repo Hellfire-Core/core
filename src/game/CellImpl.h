@@ -79,7 +79,7 @@ inline void Cell::Visit(const CellPair &standing_cell, TypeContainerVisitor<T, C
     //lets calculate object coord offsets from cell borders.
     CellArea area = Cell::CalculateCellArea(x, y, radius);
     //if radius fits inside standing cell
-    if (!area)
+    if (area.low_bound == area.high_bound)
     {
         m.Visit(*this, visitor);
         return;
