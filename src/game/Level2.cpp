@@ -1195,15 +1195,15 @@ bool ChatHandler::HandleGameObjectRotateCommand(const char* args)
     if (!po)
         return false;
     rx = atof(po);
-    char* po = strtok(NULL, " ");
+    po = strtok(NULL, " ");
     if (!po)
         return false;
     ry = atof(po);
-    char* po = strtok(NULL, " ");
+    po = strtok(NULL, " ");
     if (!po)
         return false;
     rz = atof(po);
-    char* po = strtok(NULL, " ");
+    po = strtok(NULL, " ");
     if (!po)
         return false;
     rw = atof(po);
