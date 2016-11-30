@@ -596,7 +596,8 @@ ChatCommand * ChatHandler::getCommandTable()
         { "grid",           PERM_GMT_DEV,   PERM_CONSOLE, false,  &ChatHandler::HandleGameObjectGridCommand,      "", NULL },
         { "move",           PERM_GMT_DEV,   PERM_CONSOLE, false,  &ChatHandler::HandleGameObjectMoveCommand,      "", NULL },
         { "near",           PERM_GMT_DEV,   PERM_CONSOLE, false,  &ChatHandler::HandleGameObjectNearCommand,      "", NULL },
-        { "reset",          PERM_GMT,       PERM_CONSOLE, false,  &ChatHandler::HandleGameObjectResetCommand,      "", NULL },
+        { "reset",          PERM_GMT,       PERM_CONSOLE, false,  &ChatHandler::HandleGameObjectResetCommand,     "", NULL },
+        { "rotate",         PERM_ADM,       PERM_CONSOLE, false,  &ChatHandler::HandleGameObjectRotateCommand,    "", NULL },
         { "target",         PERM_GMT_DEV,   PERM_CONSOLE, false,  &ChatHandler::HandleGameObjectTargetCommand,    "", NULL },
         { "turn",           PERM_GMT_DEV,   PERM_CONSOLE, false,  &ChatHandler::HandleGameObjectTurnCommand,      "", NULL },
         { NULL,             0,              0,            false,  NULL,                                           "", NULL }

@@ -1165,6 +1165,69 @@ bool ChatHandler::HandleGameObjectTurnCommand(const char* args)
     return true;
 }
 
+bool ChatHandler::HandleGameObjectRotateCommand(const char* args)
+{
+    // number or [name] Shift-click form |color|Hgameobject:go_id|h[name]|h|r
+    char* cId = extractKeyFromLink((char*)args, "Hgameobject");
+    if (!cId)
+        return false;
+
+    uint32 lowguid = atoi(cId);
+    if (!lowguid)
+        return false;
+
+    GameObject* obj = NULL;
+
+    // by DB guid
+    if (GameObjectData const* go_data = sObjectMgr.GetGOData(lowguid))
+        obj = GetObjectGlobalyWithGuidOrNearWithDbGuid(lowguid, go_data->id);
+
+    if (!obj)
+    {
+        PSendSysMessage(LANG_COMMAND_OBJNOTFOUND, lowguid);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    
+    float rx,ry,rz,rw;
+    char* po = strtok(NULL, " ");
+    if (!po)
+        return false;
+    rx = atof(po);
+    char* po = strtok(NULL, " ");
+    if (!po)
+        return false;
+    ry = atof(po);
+    char* po = strtok(NULL, " ");
+    if (!po)
+        return false;
+    rz = atof(po);
+    char* po = strtok(NULL, " ");
+    if (!po)
+        return false;
+    rw = atof(po);
+
+
+
+    Map* map = obj->GetMap();
+    map->Remove(obj, false);
+
+    obj->SetFloatValue(GAMEOBJECT_ROTATION, rx);
+    obj->SetFloatValue(GAMEOBJECT_ROTATION+1, ry);
+    obj->SetFloatValue(GAMEOBJECT_ROTATION+2, rz);
+    obj->SetFloatValue(GAMEOBJECT_ROTATION+3, rw);
+
+    map->Add(obj);
+
+    obj->SaveToDB();
+    obj->Refresh();
+
+    PSendSysMessage(LANG_DONE);
+
+    return true;
+}
+
 //move selected creature
 bool ChatHandler::HandleNpcMoveCommand(const char* args)
 {

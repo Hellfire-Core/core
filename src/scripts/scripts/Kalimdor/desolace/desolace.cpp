@@ -890,6 +890,15 @@ struct npc_gizelton_caravanAI : public ScriptedAI
                 enemy->CombatStart(rigger);
         }
     }
+
+    void EnteringCombat(Unit* enemy)
+    {
+        for (uint8 i = 0; i < 4; i++)
+        {
+            if (Creature* member = me->GetCreature(members[i]))
+                member->CombatStart(enemy);
+        }
+    }
 };
 
 CreatureAI* GetAI_npc_gizelton_caravan(Creature* c)
@@ -912,6 +921,23 @@ bool GossipHello_npc_gizelton_caravan_member(Player* plr, Creature* cre)
 
     plr->SEND_GOSSIP_MENU(cre->GetNpcTextId(), cre->GetGUID());
     return true;
+}
+
+struct npc_gizelton_caravan_memberAI : public ScriptedAI
+{
+    npc_gizelton_caravan_memberAI(Creature* c) : ScriptedAI(c) {}
+
+    void EnterCombat(Unit* enemy)
+    {
+        Creature* caravan = me->GetMap()->GetCreatureById(NPC_CARAVAN);
+        if (caravan)
+            CAST_AI(npc_gizelton_caravanAI, caravan->AI())->EnteringCombat(enemy);
+    }
+};
+
+CreatureAI* GetAI_npc_gizelton_caravan_member(Creature* cre)
+{
+    return new npc_gizelton_caravan_memberAI(cre);
 }
 
 void AddSC_desolace()
@@ -959,6 +985,7 @@ void AddSC_desolace()
 
     newscript = new Script;
     newscript->Name = "npc_gizelton_caravan_member";
+    newscript->GetAI = &GetAI_npc_gizelton_caravan_member;
     newscript->pGossipHello = &GossipHello_npc_gizelton_caravan_member;
     newscript->pQuestAcceptNPC = &QuestAccept_npc_gizelton_caravan_member;
     newscript->RegisterSelf();
