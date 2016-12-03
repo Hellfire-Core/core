@@ -484,6 +484,8 @@ void Map::Update(const uint32 &t_diff)
     // for pets
     TypeContainerVisitor<Hellground::ObjectUpdater, WorldTypeMapContainer> world_object_update(updater);
 
+    uint32 alloweddiff = sWorld.getConfig(CONFIG_MIN_LOG_CELL);
+
     // the player iterator is stored in the map object
     // to make sure calls to Map::Remove don't invalidate it
     for (m_mapRefIter = m_mapRefManager.begin(); m_mapRefIter != m_mapRefManager.end(); ++m_mapRefIter)
@@ -513,15 +515,17 @@ void Map::Update(const uint32 &t_diff)
                     cell.SetNoCreate();
                     Visit(cell, grid_object_update);
                     Visit(cell, world_object_update);
-                    if (WorldTimer::getMSTimeDiffToNow(startTime) > sWorld.getConfig(CONFIG_MIN_LOG_CELL))
+                    if (WorldTimer::getMSTimeDiffToNow(startTime) > alloweddiff)
                         sLog.outLog(LOG_DIFF, "Map::Update cell %u %u (%u ms) map %u", x, y, WorldTimer::getMSTimeDiffToNow(startTime), GetId());
                 }
             }
         }
     }
 
+    float updatedistance = GetActiveObjectUpdateDistance();
+    alloweddiff = sWorld.getConfig(CONFIG_MIN_LOG_ACTIVE_CELL);
     // non-player active objects
-    if (!m_activeNonPlayers.empty())
+    if (!m_activeNonPlayers.empty() && updatedistance>=0)
     {
         for (m_activeNonPlayersIter = m_activeNonPlayers.begin(); m_activeNonPlayersIter != m_activeNonPlayers.end();)
         {
@@ -535,7 +539,7 @@ void Map::Update(const uint32 &t_diff)
             if (!obj->IsInWorld() || !obj->IsPositionValid())
                 continue;
 
-            CellArea area = Cell::CalculateCellArea(obj->GetPositionX(), obj->GetPositionY(), GetActiveObjectUpdateDistance());
+            CellArea area = Cell::CalculateCellArea(obj->GetPositionX(), obj->GetPositionY(), updatedistance);
 
             for (uint32 x = area.low_bound.x_coord; x <= area.high_bound.x_coord; ++x)
             {
@@ -547,13 +551,19 @@ void Map::Update(const uint32 &t_diff)
                     if (!isCellMarked(cell_id))
                     {
                         startTime = WorldTimer::getMSTime();
-                        markCell(cell_id);
-                        CellPair pair(x,y);
-                        Cell cell(pair);
-                        cell.SetNoCreate();
-                        Visit(cell, grid_object_update);
-                        Visit(cell, world_object_update);
-                        if (WorldTimer::getMSTimeDiffToNow(startTime) > sWorld.getConfig(CONFIG_MIN_LOG_ACTIVE_CELL))
+                        if (updatedistance > 0)
+                        {
+                            markCell(cell_id);
+                            CellPair pair(x, y);
+                            Cell cell(pair);
+                            cell.SetNoCreate();
+                            Visit(cell, grid_object_update);
+                            Visit(cell, world_object_update);
+                        }
+                        else // updateddistance == 0
+                            WorldObject::UpdateHelper(obj).Update(t_diff);
+
+                        if (WorldTimer::getMSTimeDiffToNow(startTime) > alloweddiff)
                             sLog.outLog(LOG_DIFF, "Map::Update active cell %u %u (%u ms) map %u, %s %u",x, y,
                                 WorldTimer::getMSTimeDiffToNow(startTime), GetId(), obj->GetName(), obj->GetGUIDLow());
                     }
