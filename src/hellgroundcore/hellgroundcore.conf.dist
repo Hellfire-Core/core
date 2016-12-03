@@ -402,7 +402,7 @@ EAIErrorLevel = 0
 #        >0 = Interval
 #        0 = Disable
 #
-#    MinRecordUpdateTimeDiff
+#    DiffRecord.Update
 #        only record update time diff which is greater than this value (in milliseconds)
 #        Default: 300
 #
@@ -440,7 +440,9 @@ SessionUpdate.VerboseLog = 0
 SessionUpdate.IdleKickTimer = 900000
 SessionUpdate.MinLogDiff = 25
 RecordUpdateTimeDiffInterval = 60000
-MinRecordUpdateTimeDiff = 300
+DiffRecord.Update = 300
+DiffRecord.Cell = 300
+DiffRecord.Active = 300
 Accounts.Fastboot = 0
 
 ###################################################################################################################

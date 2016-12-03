@@ -423,23 +423,13 @@ void Unit::AddEvent(BasicEvent* Event, uint64 e_time, bool set_addtime)
         GetEvents()->AddEvent(Event, e_time, set_addtime);
 }
 
-void Unit::UpdateEvents(uint32 update_diff, uint32 time)
-{
-    /*{
-        MAPLOCK_READ(this, MAP_LOCK_TYPE_DEFAULT);
-        GetEvents()->RenewEvents();
-    }*/
-
-    GetEvents()->Update(update_diff);
-}
-
-void Unit::Update(uint32 update_diff, uint32 p_time)
+void Unit::Update(uint32 update_diff, uint32 /*p_time*/)
 {
     // WARNING! Order of execution here is important, do not change.
     // Spells must be processed with event system BEFORE they go to _UpdateSpells.
     // Or else we may have some SPELL_STATE_FINISHED spells stalled in pointers, that is bad.
 
-    UpdateEvents(update_diff, p_time);
+    GetEvents()->Update(update_diff);
 
     if (!IsInWorld())
         return;
@@ -477,8 +467,8 @@ void Unit::Update(uint32 update_diff, uint32 p_time)
     ModifyAuraState(AURA_STATE_HEALTHLESS_20_PERCENT, GetHealth()*100 < GetMaxHealth()*20);
     ModifyAuraState(AURA_STATE_HEALTHLESS_35_PERCENT, GetHealth()*100 < GetMaxHealth()*35);
 
-    UpdateSplineMovement(p_time);
-    GetUnitStateMgr().Update(p_time);
+    UpdateSplineMovement(update_diff);
+    GetUnitStateMgr().Update(update_diff);
 }
 
 bool Unit::haveOffhandWeapon() const
@@ -4562,7 +4552,7 @@ void Unit::RemoveAura(AuraMap::iterator &i, AuraRemoveMode mode)
 
     SpellEntry const* AurSpellEntry = Aur->GetSpellProto();
     Unit* caster = NULL;
-    SendCombatStats(1 << COMBAT_STATS_TEST, "Remove aura %u, mode %u, %lu", NULL, AurSpellEntry->Id, mode, Aur->GetCastItemGUID());
+    
     Aur->UnregisterSingleCastAura();
 
     // remove from list before mods removing (prevent cyclic calls, mods added before including to aura list - use reverse order)

@@ -104,7 +104,7 @@ Unit* DynamicObject::GetCaster() const
     return GetMap()->GetUnit(m_casterGuid);
 }
 
-void DynamicObject::Update(uint32 update_diff, uint32 p_time)
+void DynamicObject::Update(uint32 update_diff, uint32 /*p_time*/)
 {
     // caster can be not in world at time dynamic object update, but dynamic object not yet deleted in Unit destructor
     Unit* caster = GetCaster();
@@ -116,24 +116,24 @@ void DynamicObject::Update(uint32 update_diff, uint32 p_time)
 
     bool deleteThis = false;
 
-    if (m_aliveDuration > int32(p_time))
+    if (m_aliveDuration > int32(update_diff))
     {
         if(m_updateTimer != 0)
-            m_aliveDuration -= p_time;
+            m_aliveDuration -= update_diff;
     }
     else
         deleteThis = true;
 
     if (m_effIndex < 4)
     {
-        if (m_updateTimer <= p_time)
+        if (m_updateTimer <= update_diff)
         {
             Hellground::DynamicObjectUpdater notifier(*this,caster);
             Cell::VisitAllObjects(this, notifier, m_radius);
-            m_updateTimer += 600 - p_time; // is this official-like?
+            m_updateTimer += 600 - update_diff; // is this official-like?
         }
         else
-            m_updateTimer -= p_time;
+            m_updateTimer -= update_diff;
     }
 
     if (deleteThis)

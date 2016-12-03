@@ -1336,7 +1336,6 @@ class HELLGROUND_IMPORT_EXPORT Unit : public WorldObject
         // Event handler
         EventProcessor m_Events;
         EventProcessor* GetEvents();
-        void UpdateEvents(uint32 update_diff, uint32 time);
         void KillAllEvents(bool force);
         void AddEvent(BasicEvent* Event, uint64 e_time, bool set_addtime = true);
 

@@ -486,7 +486,9 @@ void World::LoadConfigSettings(bool reload)
     loadConfig(CONFIG_SESSION_UPDATE_IDLE_KICK, "SessionUpdate.IdleKickTimer", 15*MINUTE*IN_MILISECONDS);
     loadConfig(CONFIG_SESSION_UPDATE_MIN_LOG_DIFF, "SessionUpdate.MinLogDiff", 25);
     loadConfig(CONFIG_INTERVAL_LOG_UPDATE, "RecordUpdateTimeDiffInterval", 60000);
-    loadConfig(CONFIG_MIN_LOG_UPDATE, "MinRecordUpdateTimeDiff", 10);
+    loadConfig(CONFIG_MIN_LOG_UPDATE, "DiffRecord.Update", 300);
+    loadConfig(CONFIG_MIN_LOG_CELL, "DiffRecord.Cell", 300);
+    loadConfig(CONFIG_MIN_LOG_ACTIVE_CELL, "DiffRecord.Active", 300);
     loadConfig(CONFIG_FASTBOOT, "Accounts.Fastboot", false);
 
     // Server settings

@@ -584,7 +584,7 @@ void Creature::Update(uint32 update_diff, uint32 diff)
             {
                 // do not allow the AI to be changed during update
                 m_AI_locked = true;
-                i_AI->UpdateAI(diff);
+                i_AI->UpdateAI(update_diff);
                 m_AI_locked = false;
             }
 
@@ -635,7 +635,7 @@ void Creature::Update(uint32 update_diff, uint32 diff)
         m_aiReinitializeCheckTimer -= update_diff;
 
     for (uint8 i = SPELL_SCHOOL_NORMAL; i < MAX_SPELL_SCHOOL; i++)
-        m_schoolCooldowns[i].Update(diff);
+        m_schoolCooldowns[i].Update(update_diff);
 }
 
 void Creature::RegenerateMana()

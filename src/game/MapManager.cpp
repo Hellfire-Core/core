@@ -250,7 +250,7 @@ void MapManager::Update(uint32 diff)
     }
     dr.RecordTimeFor("MapManager-general");
     m_updater.wait();
-    dr.RecordTimeFor("MapManager - wait");
+    dr.RecordTimeFor("MapManager-wait");
 
     for (DelayedMapList::iterator iter = delayedUpdate.begin(); iter != delayedUpdate.end(); ++iter)
         iter->first->DelayedUpdate(iter->second);

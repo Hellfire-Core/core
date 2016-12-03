@@ -1242,7 +1242,7 @@ void Player::Update(uint32 update_diff, uint32 p_time)
     if (IsAIEnabled)
     {
         m_AI_locked = true;
-        i_AI->UpdateAI(p_time);
+        i_AI->UpdateAI(update_diff);
         m_AI_locked = false;
     }
 
@@ -7393,6 +7393,7 @@ void Player::CastItemCombatSpell(Unit *target, WeaponAttackType attType, uint32 
             // Apply spell mods
             ApplySpellMod(spell_id,SPELLMOD_CHANCE_OF_SUCCESS,chance);
 
+            SendCombatStats(1 << COMBAT_STATS_TEST, "CastItemCombatSpell %u %u %f", NULL, item->GetEntry(), spell_id, chance);
             if (roll_chance_f(chance))
             {
                 if (SpellMgr::IsPositiveSpell(spell_id))

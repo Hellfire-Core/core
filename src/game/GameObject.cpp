@@ -207,14 +207,11 @@ bool GameObject::Create(uint32 guidlow, uint32 name_id, Map *map, float x, float
     return true;
 }
 
-void GameObject::Update(uint32 update_diff, uint32 p_time)
+void GameObject::Update(uint32 update_diff, uint32 /*p_time*/)
 {
     m_cooldownTime.Update(update_diff);
     if (IS_MO_TRANSPORT(GetGUID()))
-    {
-        //((Transport*)this)->Update(p_time);
         return;
-    }
 
     if (m_respawnTime > 0)
     {
