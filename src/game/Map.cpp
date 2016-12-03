@@ -554,7 +554,8 @@ void Map::Update(const uint32 &t_diff)
                         Visit(cell, grid_object_update);
                         Visit(cell, world_object_update);
                         if (WorldTimer::getMSTimeDiffToNow(startTime) > 300)
-                            sLog.outLog(LOG_DIFF, "Map::Update cell %u %u (%u ms) map %u", x, y, WorldTimer::getMSTimeDiffToNow(startTime), GetId());
+                            sLog.outLog(LOG_DIFF, "Map::Update active cell %u %u (%u ms) map %u, %s",x, y,
+                                WorldTimer::getMSTimeDiffToNow(startTime), GetId(), obj->GetName() ? obj->GetName() : "<noname>");
                     }
                 }
             }

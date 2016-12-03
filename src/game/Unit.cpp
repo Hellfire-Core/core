@@ -4115,8 +4115,6 @@ bool Unit::RemoveNoStackAurasDueToAura(Aura *Aur)
 
         bool sameCaster = Aur->GetCasterGUID() == (*i).second->GetCasterGUID();
 
-        if (spellId==)
-
         if (uint8 noStack = SpellMgr::IsNoStackSpellDueToSpell(spellProto, i_spellProto, sameCaster, Aur->GetEffIndex()))
         {
 
