@@ -3839,7 +3839,7 @@ bool Unit::AddAura(Aura *Aur)
                 continue;
             }
 
-            if (aurSpellEntry->Id == 28093 || aurSpellEntry->Id == 20007)       // Allow mongoose procs from different weapons stack
+            if (aurSpellEntry->Id == 28093 || aurSpellEntry->Id == 20007)       // Allow mongoose, crusader stack from different weapons
             {
                 if (Aur->GetCastItemGUID() != i2->second->GetCastItemGUID())
                 {
@@ -4114,6 +4114,8 @@ bool Unit::RemoveNoStackAurasDueToAura(Aura *Aur)
             continue;
 
         bool sameCaster = Aur->GetCasterGUID() == (*i).second->GetCasterGUID();
+
+        if (spellId==)
 
         if (uint8 noStack = SpellMgr::IsNoStackSpellDueToSpell(spellProto, i_spellProto, sameCaster, Aur->GetEffIndex()))
         {
@@ -4562,6 +4564,7 @@ void Unit::RemoveAura(AuraMap::iterator &i, AuraRemoveMode mode)
 
     SpellEntry const* AurSpellEntry = Aur->GetSpellProto();
     Unit* caster = NULL;
+    SendCombatStats(1 << COMBAT_STATS_TEST, "Remove aura %u, mode %u, %lu", NULL, AurSpellEntry->Id, mode, Aur->GetCastItemGUID());
     Aur->UnregisterSingleCastAura();
 
     // remove from list before mods removing (prevent cyclic calls, mods added before including to aura list - use reverse order)
