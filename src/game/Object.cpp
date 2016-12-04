@@ -906,7 +906,7 @@ WorldObject::WorldObject()
     m_positionX(0.0f), m_positionY(0.0f), m_positionZ(0.0f), m_orientation(0.0f),
     mSemaphoreTeleport(false)
     , m_map(NULL), m_zoneScript(NULL)
-    , m_activeBy(0), IsTempWorldObject(false)
+    , m_activeBy(0), IsTempWorldObject(false), m_updateTracker(0)
 {
     mSemaphoreTeleport  = false;
 }
