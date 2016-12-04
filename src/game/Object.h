@@ -375,16 +375,18 @@ class HELLGROUND_IMPORT_EXPORT WorldObject : public Object//, public WorldLocati
 
                 void Update(uint32 time_diff)
                 {
-                    m_obj->Update(GetTimeElapsed(), time_diff);
-                    m_obj->m_updateTracker.Reset();
+                    m_obj->Update((m_obj->m_updateTracker + time_diff), time_diff);
+                    m_obj->m_updateTracker = 0;
                 }
-
+                void NoUpdate(uint32 time_diff)
+                {
+                    m_obj->m_updateTracker += time_diff;
+                }
                 //bool ProcessUpdate();
 
                 static bool ProcessUpdate(Creature*);
                 static bool ProcessUpdate(WorldObject*);
 
-                time_t GetTimeElapsed() const { return m_obj->m_updateTracker.timeElapsed(); }
 
             private:
                 UpdateHelper& operator=(const UpdateHelper&);
@@ -608,7 +610,7 @@ class HELLGROUND_IMPORT_EXPORT WorldObject : public Object//, public WorldLocati
         const Pet* ToPet() const;
 
         ViewPoint& GetViewPoint() { return m_viewPoint; }
-        WorldUpdateCounter& GetUpdateCounter() { return m_updateTracker; }
+        uint32 GetUpdateCounter() const { return m_updateTracker; }
 
     protected:
         explicit WorldObject();
@@ -630,7 +632,7 @@ class HELLGROUND_IMPORT_EXPORT WorldObject : public Object//, public WorldLocati
         float m_orientation;
 
         bool mSemaphoreTeleport;
-        WorldUpdateCounter m_updateTracker;
+        uint32 m_updateTracker;
 
         ViewPoint m_viewPoint;
 };

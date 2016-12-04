@@ -129,8 +129,6 @@ class HELLGROUND_IMPORT_EXPORT Map : public GridRefManager<NGridType>
                 explicit UpdateHelper(Map* m) : m_map(m) {}
                 ~UpdateHelper() {}
 
-                bool ProcessUpdate() const;
-
                 void Update(DelayedMapList& delayedUpdate);
 
                 time_t GetTimeElapsed() const;

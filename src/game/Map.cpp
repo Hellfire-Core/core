@@ -561,7 +561,10 @@ void Map::Update(const uint32 &t_diff)
                             Visit(cell, world_object_update);
                         }
                         else // updateddistance == 0
-                            WorldObject::UpdateHelper(obj).Update(t_diff);
+                        {
+                            WorldObject::UpdateHelper helper(obj);
+                            helper.Update(t_diff);
+                        }
 
                         if (WorldTimer::getMSTimeDiffToNow(startTime) > alloweddiff)
                             sLog.outLog(LOG_DIFF, "Map::Update active cell %u %u (%u ms) map %u, %s %u",x, y,
@@ -3212,11 +3215,6 @@ void Map::UpdateHelper::Update( DelayedMapList& delayedUpdate )
     delayedUpdate.push_back(std::make_pair(m_map, uint32(GetTimeElapsed())));
 
     m_map->m_updateTracker.Reset();
-}
-
-bool Map::UpdateHelper::ProcessUpdate() const
-{
-    return GetTimeElapsed() >= sWorld.getConfig(CONFIG_INTERVAL_MAPUPDATE);
 }
 
 time_t Map::UpdateHelper::GetTimeElapsed() const

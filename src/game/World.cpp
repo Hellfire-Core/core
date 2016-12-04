@@ -927,13 +927,6 @@ void World::LoadConfigSettings(bool reload)
         m_configs[CONFIG_INTERVAL_GRIDCLEAN] = MIN_GRID_DELAY;
     }
 
-    loadConfig(CONFIG_INTERVAL_MAPUPDATE, "MapUpdateInterval", 100);
-    if (m_configs[CONFIG_INTERVAL_MAPUPDATE] < MIN_MAP_UPDATE_DELAY)
-    {
-        sLog.outLog(LOG_DEFAULT, "ERROR: MapUpdateInterval (%i) must be greater %u. Use this minimal value.",m_configs[CONFIG_INTERVAL_MAPUPDATE],MIN_MAP_UPDATE_DELAY);
-        m_configs[CONFIG_INTERVAL_MAPUPDATE] = MIN_MAP_UPDATE_DELAY;
-    }
-
     loadConfig(CONFIG_UPTIME_UPDATE, "UpdateUptimeInterval", 10);
     if (m_configs[CONFIG_UPTIME_UPDATE]<=0)
     {

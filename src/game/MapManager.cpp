@@ -242,8 +242,7 @@ void MapManager::Update(uint32 diff)
         else
         {
             Map::UpdateHelper helper(iter->second);
-            if (helper.ProcessUpdate())
-                helper.Update(delayedUpdate);
+            helper.Update(delayedUpdate);
 
             ++iter;
         }

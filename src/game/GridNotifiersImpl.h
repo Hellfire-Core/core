@@ -118,7 +118,7 @@ struct UpdateListSorter : public std::binary_function<Creature*, Creature*, bool
     // functor for operator ">"
     bool operator()(Creature* left, Creature* right) const
     {
-        return left->GetUpdateCounter().timeElapsed() > right->GetUpdateCounter().timeElapsed();
+        return left->GetUpdateCounter() > right->GetUpdateCounter();
     }
 };
 
@@ -127,9 +127,6 @@ inline void ObjectUpdater::Visit(CreatureMapType &m)
     UpdateList updateList;
     for (CreatureMapType::iterator iter = m.begin(); iter != m.end(); ++iter)
     {
-        if (iter->getSource()->isSpiritGuide())
-            continue;
-
         if (WorldObject::UpdateHelper::ProcessUpdate(iter->getSource()))
             updateList.push_back(iter->getSource());
     }
@@ -140,6 +137,19 @@ inline void ObjectUpdater::Visit(CreatureMapType &m)
         // sort list (objects updated old time ago will be first)
         updateList.sort(UpdateListSorter());
         updateList.resize(sWorld.getConfig(CONFIG_MAPUPDATE_MAXVISITORS), NULL); // set initial value for added elements to NULL
+        
+        for (UpdateList::iterator it = updateList.begin(); it != updateList.end(); ++it)
+        {
+            WorldObject::UpdateHelper helper(*it);
+            if (maxListSize > 0)
+            {
+                helper.Update(i_timeDiff);
+                maxListSize--;
+            }
+            else
+                helper.NoUpdate(i_timeDiff); // just tell then they wont be updated
+        }
+        return;
     }
 
     for (UpdateList::iterator it = updateList.begin(); it != updateList.end(); ++it)

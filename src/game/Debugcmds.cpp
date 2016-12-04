@@ -1242,7 +1242,7 @@ bool ChatHandler::HandleDebugJoinBG(const char* args)
     return true;
 }
 
-bool ChatHandler::HandleDebugMap(const char* args)
+bool ChatHandler::HandleDebugMapCommand(const char* args)
 {
     if (!m_session)
         return false;
@@ -1250,5 +1250,49 @@ bool ChatHandler::HandleDebugMap(const char* args)
     Map* map = m_session->GetPlayer()->GetMap();
     SendSysMessage(map->getDebugData().c_str());
 
+    return true;
+}
+
+bool ChatHandler::HandleDebugCellCommand(const char* args)
+{
+    if (!m_session)
+        return false;
+
+    Map* map = m_session->GetPlayer()->GetMap();
+    CellPair pair = Hellground::ComputeCellPair(m_session->GetPlayer()->GetPositionX(), m_session->GetPlayer()->GetPositionY()).normalize();
+    char* posx = strtok((char*)args, " ");
+    char* posy = strtok(NULL, " ");
+    if (posx && posy)
+    {
+        uint32 x, y;
+        x = atoi(posx);
+        y = atoi(posy);
+        if (x > TOTAL_NUMBER_OF_CELLS_PER_MAP || y > TOTAL_NUMBER_OF_CELLS_PER_MAP)
+            return false;
+        pair.x_coord = x;
+        pair.y_coord = y;
+    }
+    
+    struct checker
+    {
+        bool operator()(WorldObject* obj)
+        {
+            return obj->GetTypeId() == TYPEID_UNIT;
+        }
+    } Check;
+    std::list<Unit*> unitlist;
+    Hellground::UnitListSearcher<checker> searcher(unitlist, Check);
+    TypeContainerVisitor<Hellground::UnitListSearcher<checker>, GridTypeMapContainer> visitor(searcher);
+    Cell cell(pair);
+    cell.SetNoCreate();
+    map->Visit(cell, visitor);
+
+    std::ostringstream str;
+    str << "Objects on cell " << pair.x_coord << " " << pair.y_coord << ":\n";
+    for (std::list<Unit*>::iterator itr = unitlist.begin(); itr != unitlist.end(); itr++)
+    {
+        str << (*itr)->GetName() << " (" << (*itr)->GetEntry() << "," << (*itr)->GetGUIDLow() << "); ";
+    }
+    SendSysMessage(str.str().c_str());
     return true;
 }

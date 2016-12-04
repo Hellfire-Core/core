@@ -1902,10 +1902,6 @@ bool WorldObject::UpdateHelper::ProcessUpdate(Creature* creature)
 {
     if (!creature->IsInWorld() || creature->isSpiritService())
         return false;
-
-    uint32 minUpdateTime = sWorld.getConfig(CONFIG_INTERVAL_MAPUPDATE);
-
-    return creature->m_updateTracker.timeElapsed() >= minUpdateTime;
 }
 
 bool WorldObject::UpdateHelper::ProcessUpdate(WorldObject* obj)
