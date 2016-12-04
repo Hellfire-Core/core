@@ -7242,7 +7242,6 @@ void Player::UpdateEquipSpellsAtFormChange()
 
 void Player::CastItemCombatSpell(Unit *target, WeaponAttackType attType, uint32 procVictim, uint32 procEx, SpellEntry const *spellInfo)
 {
-    SendCombatStats(1 << COMBAT_STATS_TEST, "CastItemCombatSpell1 attackType: %u", NULL, (uint32)attType);
     if (spellInfo && ((spellInfo->Attributes & SPELL_ATTR_STOP_ATTACK_TARGET) ||
       (spellInfo->DmgClass == SPELL_DAMAGE_CLASS_MAGIC || spellInfo->DmgClass == SPELL_DAMAGE_CLASS_NONE)))
         return;
@@ -7291,7 +7290,6 @@ void Player::CastItemCombatSpell(Unit *target, WeaponAttackType attType, uint32 
 
 void Player::CastItemCombatSpell(Unit *target, WeaponAttackType attType, uint32 procVictim, uint32 procEx, Item *item, ItemPrototype const * proto, SpellEntry const *spell)
 {
-    SendCombatStats(1 << COMBAT_STATS_TEST, "CastItemCombatSpell2 attackType: %u", NULL, (uint32)attType);
     // Can do effect if any damage done to target
     if (procVictim & PROC_FLAG_TAKEN_ANY_DAMAGE)
     {
@@ -7395,7 +7393,6 @@ void Player::CastItemCombatSpell(Unit *target, WeaponAttackType attType, uint32 
             // Apply spell mods
             ApplySpellMod(spell_id,SPELLMOD_CHANCE_OF_SUCCESS,chance);
 
-            SendCombatStats(1 << COMBAT_STATS_TEST, "CastItemCombatSpell %u %u %f", NULL, item->GetEntry(), spell_id, chance);
             if (roll_chance_f(chance))
             {
                 if (SpellMgr::IsPositiveSpell(spell_id))

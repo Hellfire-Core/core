@@ -555,8 +555,14 @@ void Creature::Update(uint32 update_diff, uint32 diff)
                     m_deathTimer -= update_diff;
                 }
             }
-
-            Unit::Update(update_diff, diff);
+            if (GetGUIDLow() == 49125)
+            {
+                uint32 startTime = WorldTimer::getMSTime();
+                Unit::Update(update_diff, diff);
+                SendCombatStats(1 << COMBAT_STATS_TEST, "Unit update took %u ms", NULL,WorldTimer::getMSTimeDiffToNow(startTime));
+            }
+            else
+                Unit::Update(update_diff, diff);
 
             // creature can be dead after Unit::Update call
             // CORPSE/DEAD state will processed at next tick (in other case death timer will be updated unexpectedly)
