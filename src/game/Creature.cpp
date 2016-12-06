@@ -556,10 +556,7 @@ void Creature::Update(uint32 update_diff, uint32 diff)
                 }
             }
 
-            uint32 startTime = WorldTimer::getMSTime();
             Unit::Update(update_diff, diff);
-            if (WorldTimer::getMSTimeDiffToNow(startTime) >0)
-                SendCombatStats(1 << COMBAT_STATS_TEST, "Unit update took %u ms", NULL,WorldTimer::getMSTimeDiffToNow(startTime));
 
             // creature can be dead after Unit::Update call
             // CORPSE/DEAD state will processed at next tick (in other case death timer will be updated unexpectedly)
@@ -589,8 +586,6 @@ void Creature::Update(uint32 update_diff, uint32 diff)
                 m_AI_locked = true;
                 i_AI->UpdateAI(update_diff);
                 m_AI_locked = false;
-                if (WorldTimer::getMSTimeDiffToNow(startTime) > 5)
-                    SendCombatStats(1 << COMBAT_STATS_TEST, "UpdateAI %u ms", NULL, WorldTimer::getMSTimeDiffToNow(startTime));
             }
 
             // Trentone says: Some scripts make creatures kill themself - and then they're not in combat - thus dynamicflags are set to normal - which should not happen

@@ -349,10 +349,7 @@ bool GOUse_go_transportercp(Player *player, GameObject* go)
     if (!pInstance)
         return true;
 
-    if (pInstance->GetData(DATA_SHAHEENEVENT) == DONE)
-        return true;
-
-    if (!player->GetQuestRewardStatus(QUEST_HARD_WORK) && player->GetQuestRewardStatus(QUEST_SAFETY))
+    if (!player->GetQuestRewardStatus(QUEST_HARD_WORK) && player->GetQuestRewardStatus(QUEST_SAFETY) && pInstance->GetData(DATA_SHAHEENEVENT) != DONE)
     {
         pInstance->SetData(DATA_SHAHEENEVENT, DONE);
 
@@ -366,7 +363,6 @@ bool GOUse_go_transportercp(Player *player, GameObject* go)
     }
     return false;
 
-    return true;
 }
 
 void AddSC_mana_tombs()

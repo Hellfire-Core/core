@@ -428,14 +428,16 @@ void Unit::Update(uint32 update_diff, uint32 /*p_time*/)
     // WARNING! Order of execution here is important, do not change.
     // Spells must be processed with event system BEFORE they go to _UpdateSpells.
     // Or else we may have some SPELL_STATE_FINISHED spells stalled in pointers, that is bad.
-
+    uint32 startTime = WorldTimer::getMSTime();
     GetEvents()->Update(update_diff);
-
+    if (WorldTimer::getMSTimeDiffToNow(startTime) >10)
+        SendCombatStats(1 << COMBAT_STATS_TEST, "Unit updat1 %u ms", NULL, WorldTimer::getMSTimeDiffToNow(startTime));
     if (!IsInWorld())
         return;
 
     _UpdateSpells(update_diff);
-
+    if (WorldTimer::getMSTimeDiffToNow(startTime) >10)
+        SendCombatStats(1 << COMBAT_STATS_TEST, "Unit updat2 %u ms", NULL, WorldTimer::getMSTimeDiffToNow(startTime));
     // update combat timer only for players and pets
     if (isInCombat() && isCharmedOwnedByPlayerOrPlayer())
     {
@@ -448,7 +450,8 @@ void Unit::Update(uint32 update_diff, uint32 /*p_time*/)
                 m_CombatTimer -= update_diff;
         }
     }
-
+    if (WorldTimer::getMSTimeDiffToNow(startTime) >10)
+        SendCombatStats(1 << COMBAT_STATS_TEST, "Unit updat3 %u ms", NULL, WorldTimer::getMSTimeDiffToNow(startTime));
     if (!hasUnitState(UNIT_STAT_CANNOT_AUTOATTACK))
     {
         if (uint32 base_att = getAttackTimer(BASE_ATTACK))
@@ -460,15 +463,22 @@ void Unit::Update(uint32 update_diff, uint32 /*p_time*/)
 
     if (uint32 ranged_att = getAttackTimer(RANGED_ATTACK))
         setAttackTimer(RANGED_ATTACK, (update_diff >= ranged_att ? 0 : ranged_att - update_diff));
-
+    if (WorldTimer::getMSTimeDiffToNow(startTime) >10)
+        SendCombatStats(1 << COMBAT_STATS_TEST, "Unit updat4 %u ms", NULL, WorldTimer::getMSTimeDiffToNow(startTime));
     // update abilities available only for fraction of time
     UpdateReactives(update_diff);
-
+    if (WorldTimer::getMSTimeDiffToNow(startTime) >10)
+        SendCombatStats(1 << COMBAT_STATS_TEST, "Unit updat5 %u ms", NULL, WorldTimer::getMSTimeDiffToNow(startTime));
     ModifyAuraState(AURA_STATE_HEALTHLESS_20_PERCENT, GetHealth()*100 < GetMaxHealth()*20);
     ModifyAuraState(AURA_STATE_HEALTHLESS_35_PERCENT, GetHealth()*100 < GetMaxHealth()*35);
-
+    if (WorldTimer::getMSTimeDiffToNow(startTime) >10)
+        SendCombatStats(1 << COMBAT_STATS_TEST, "Unit updat6 %u ms", NULL, WorldTimer::getMSTimeDiffToNow(startTime));
     UpdateSplineMovement(update_diff);
+    if (WorldTimer::getMSTimeDiffToNow(startTime) >10)
+        SendCombatStats(1 << COMBAT_STATS_TEST, "Unit updat7 %u ms", NULL, WorldTimer::getMSTimeDiffToNow(startTime));
     GetUnitStateMgr().Update(update_diff);
+    if (WorldTimer::getMSTimeDiffToNow(startTime) >10)
+        SendCombatStats(1 << COMBAT_STATS_TEST, "Unit updat8 %u ms", NULL, WorldTimer::getMSTimeDiffToNow(startTime));
 }
 
 bool Unit::haveOffhandWeapon() const
