@@ -172,7 +172,7 @@ struct boss_gruulAI : public ScriptedAI
                 if (victim)
                 {
                     // re-chase target after 2 seconds
-                    me->m_Events.AddEvent(new ChaseEvent(me->getVictimGUID(), *me), me->m_Events.CalculateTime(2000), true);
+                    me->AddEvent(new ChaseEvent(me->getVictimGUID(), *me), 2000, true);
                     me->SetSelection(victim->GetGUID());
                 }
 

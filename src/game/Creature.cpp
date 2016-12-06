@@ -1917,7 +1917,7 @@ void Creature::ForcedDespawn(uint32 timeMSToDespawn)
     {
         ForcedDespawnDelayEvent *pEvent = new ForcedDespawnDelayEvent(*this);
 
-        m_Events.AddEvent(pEvent, m_Events.CalculateTime(timeMSToDespawn));
+        AddEvent(pEvent, timeMSToDespawn, true);
         return;
     }
 
@@ -2176,7 +2176,7 @@ void Creature::CallAssistance()
                     e->AddAssistant((*assistList.begin())->GetGUID());
                     assistList.pop_front();
                 }
-                m_Events.AddEvent(e, m_Events.CalculateTime(sWorld.getConfig(CONFIG_CREATURE_FAMILY_ASSISTANCE_DELAY)));
+                AddEvent(e, sWorld.getConfig(CONFIG_CREATURE_FAMILY_ASSISTANCE_DELAY), true);
             }
         }
     }

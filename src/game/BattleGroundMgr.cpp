@@ -1424,9 +1424,9 @@ void BattleGroundMgr::InvitePlayer(Player* plr, uint32 bgInstanceGUID, BattleGro
     // create invite events:
     //add events to player's counters ---- this is not good way - there should be something like global event processor, where we should add those events
     BGQueueInviteEvent* inviteEvent = new BGQueueInviteEvent(plr->GetGUID(), bgInstanceGUID, bgTypeId);
-    plr->m_Events.AddEvent(inviteEvent, plr->m_Events.CalculateTime(INVITATION_REMIND_TIME));
+    plr->AddEvent(inviteEvent, INVITATION_REMIND_TIME, true);
     BGQueueRemoveEvent* removeEvent = new BGQueueRemoveEvent(plr->GetGUID(), bgInstanceGUID, bgTypeId, team);
-    plr->m_Events.AddEvent(removeEvent, plr->m_Events.CalculateTime(INVITE_ACCEPT_WAIT_TIME));
+    plr->AddEvent(removeEvent, INVITE_ACCEPT_WAIT_TIME, true);
 }
 
 BattleGround * BattleGroundMgr::GetBattleGround(uint32 InstanceID, BattleGroundTypeId bgTypeId)

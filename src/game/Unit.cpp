@@ -416,12 +416,9 @@ void Unit::KillAllEvents(bool force)
 
 void Unit::AddEvent(BasicEvent* Event, uint64 e_time, bool set_addtime)
 {
-    SendCombatStats(1 << COMBAT_STATS_TEST, "Unit AddEvent %lu %u %lu", NULL, e_time, set_addtime, (GetEvents()->CalculateTime(0)-e_time));
+    SendCombatStats(1 << COMBAT_STATS_TEST, "Unit AddEvent %lu %u", NULL, e_time, set_addtime);
     //MAPLOCK_WRITE(this, MAP_LOCK_TYPE_DEFAULT);
-    if (set_addtime)
-        GetEvents()->AddEvent(Event, GetEvents()->CalculateTime(e_time), set_addtime);
-    else
-        GetEvents()->AddEvent(Event, e_time, set_addtime);
+    GetEvents()->AddEvent(Event, e_time, set_addtime);
 }
 
 void Unit::Update(uint32 update_diff, uint32 /*p_time*/)
