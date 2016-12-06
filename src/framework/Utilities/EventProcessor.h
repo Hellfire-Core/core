@@ -60,7 +60,7 @@ class HELLGROUND_IMPORT_EXPORT EventProcessor
         EventProcessor();
         ~EventProcessor();
 
-        void Update(uint32 p_time);
+        uint32 Update(uint32 p_time);
         void KillAllEvents(bool force);
         void AddEvent(BasicEvent* Event, uint64 e_time, bool set_addtime = true);
 

@@ -31,8 +31,9 @@ EventProcessor::~EventProcessor()
     KillAllEvents(true);
 }
 
-void EventProcessor::Update(uint32 p_time)
+uint32 EventProcessor::Update(uint32 p_time)
 {
+    uint32 count = 0;
     // update time
     m_time += p_time;
 
@@ -40,6 +41,7 @@ void EventProcessor::Update(uint32 p_time)
     EventList::iterator i;
     while (((i = m_events.begin()) != m_events.end()) && i->first <= m_time)
     {
+        count++;
         // get and remove event from queue
         BasicEvent* Event = i->second;
         m_events.erase(i);
@@ -58,6 +60,7 @@ void EventProcessor::Update(uint32 p_time)
             delete Event;
         }
     }
+    return count;
 }
 
 void EventProcessor::KillAllEvents(bool force)

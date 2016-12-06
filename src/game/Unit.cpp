@@ -416,7 +416,6 @@ void Unit::KillAllEvents(bool force)
 
 void Unit::AddEvent(BasicEvent* Event, uint64 e_time, bool set_addtime)
 {
-    SendCombatStats(1 << COMBAT_STATS_TEST, "Unit AddEvent %lu %u", NULL, e_time, set_addtime);
     //MAPLOCK_WRITE(this, MAP_LOCK_TYPE_DEFAULT);
     GetEvents()->AddEvent(Event, e_time, set_addtime);
 }
@@ -427,9 +426,9 @@ void Unit::Update(uint32 update_diff, uint32 /*p_time*/)
     // Spells must be processed with event system BEFORE they go to _UpdateSpells.
     // Or else we may have some SPELL_STATE_FINISHED spells stalled in pointers, that is bad.
     uint32 startTime = WorldTimer::getMSTime();
-    GetEvents()->Update(update_diff);
-    if (WorldTimer::getMSTimeDiffToNow(startTime) >10)
-        SendCombatStats(1 << COMBAT_STATS_TEST, "Unit updat1 %u ms", NULL, WorldTimer::getMSTimeDiffToNow(startTime));
+    uint32 count = GetEvents()->Update(update_diff);
+    if (WorldTimer::getMSTimeDiffToNow(startTime) > 10)
+        SendCombatStats(1 << COMBAT_STATS_TEST, "Unit updat1 %u %u ms", NULL, WorldTimer::getMSTimeDiffToNow(startTime), count);
     if (!IsInWorld())
         return;
 
@@ -467,11 +466,7 @@ void Unit::Update(uint32 update_diff, uint32 /*p_time*/)
     ModifyAuraState(AURA_STATE_HEALTHLESS_35_PERCENT, GetHealth()*100 < GetMaxHealth()*35);
 
     UpdateSplineMovement(update_diff);
-    if (WorldTimer::getMSTimeDiffToNow(startTime) >10)
-        SendCombatStats(1 << COMBAT_STATS_TEST, "Unit updat7 %u ms", NULL, WorldTimer::getMSTimeDiffToNow(startTime));
     GetUnitStateMgr().Update(update_diff);
-    if (WorldTimer::getMSTimeDiffToNow(startTime) >10)
-        SendCombatStats(1 << COMBAT_STATS_TEST, "Unit updat8 %u ms", NULL, WorldTimer::getMSTimeDiffToNow(startTime));
 }
 
 bool Unit::haveOffhandWeapon() const
@@ -12276,6 +12271,7 @@ class RelocationNotifyEvent : public BasicEvent
 
         bool Execute(uint64 /*e_time*/, uint32 /*p_time*/)
         {
+            uint32 starttime = WorldTimer::getMSTime();
             float radius = _owner.GetMap()->GetVisibilityDistance(&_owner);
             if (_owner.GetObjectGuid().IsPlayer())
             {
@@ -12290,6 +12286,8 @@ class RelocationNotifyEvent : public BasicEvent
 
             //_owner.GetPosition(_owner._notifiedPosition);
             _owner._SetAINotifyScheduled(false);
+            if (WorldTimer::getMSTimeDiffToNow(starttime) > 0)
+                _owner.SendCombatStats(1 << COMBAT_STATS_TEST, "Unit RelocationNotifyEvent took %u ms %f", NULL, WorldTimer::getMSTimeDiffToNow(starttime), radius);
             return true;
         }
 
