@@ -416,6 +416,7 @@ void Unit::KillAllEvents(bool force)
 
 void Unit::AddEvent(BasicEvent* Event, uint64 e_time, bool set_addtime)
 {
+    SendCombatStats(1 << COMBAT_STATS_TEST, "Unit AddEvent %lu %u %lu", NULL, e_time, set_addtime, (GetEvents()->CalculateTime(0)-e_time));
     //MAPLOCK_WRITE(this, MAP_LOCK_TYPE_DEFAULT);
     if (set_addtime)
         GetEvents()->AddEvent(Event, GetEvents()->CalculateTime(e_time), set_addtime);
@@ -436,8 +437,7 @@ void Unit::Update(uint32 update_diff, uint32 /*p_time*/)
         return;
 
     _UpdateSpells(update_diff);
-    if (WorldTimer::getMSTimeDiffToNow(startTime) >10)
-        SendCombatStats(1 << COMBAT_STATS_TEST, "Unit updat2 %u ms", NULL, WorldTimer::getMSTimeDiffToNow(startTime));
+
     // update combat timer only for players and pets
     if (isInCombat() && isCharmedOwnedByPlayerOrPlayer())
     {
@@ -450,8 +450,7 @@ void Unit::Update(uint32 update_diff, uint32 /*p_time*/)
                 m_CombatTimer -= update_diff;
         }
     }
-    if (WorldTimer::getMSTimeDiffToNow(startTime) >10)
-        SendCombatStats(1 << COMBAT_STATS_TEST, "Unit updat3 %u ms", NULL, WorldTimer::getMSTimeDiffToNow(startTime));
+
     if (!hasUnitState(UNIT_STAT_CANNOT_AUTOATTACK))
     {
         if (uint32 base_att = getAttackTimer(BASE_ATTACK))
@@ -463,16 +462,13 @@ void Unit::Update(uint32 update_diff, uint32 /*p_time*/)
 
     if (uint32 ranged_att = getAttackTimer(RANGED_ATTACK))
         setAttackTimer(RANGED_ATTACK, (update_diff >= ranged_att ? 0 : ranged_att - update_diff));
-    if (WorldTimer::getMSTimeDiffToNow(startTime) >10)
-        SendCombatStats(1 << COMBAT_STATS_TEST, "Unit updat4 %u ms", NULL, WorldTimer::getMSTimeDiffToNow(startTime));
+
     // update abilities available only for fraction of time
     UpdateReactives(update_diff);
-    if (WorldTimer::getMSTimeDiffToNow(startTime) >10)
-        SendCombatStats(1 << COMBAT_STATS_TEST, "Unit updat5 %u ms", NULL, WorldTimer::getMSTimeDiffToNow(startTime));
+
     ModifyAuraState(AURA_STATE_HEALTHLESS_20_PERCENT, GetHealth()*100 < GetMaxHealth()*20);
     ModifyAuraState(AURA_STATE_HEALTHLESS_35_PERCENT, GetHealth()*100 < GetMaxHealth()*35);
-    if (WorldTimer::getMSTimeDiffToNow(startTime) >10)
-        SendCombatStats(1 << COMBAT_STATS_TEST, "Unit updat6 %u ms", NULL, WorldTimer::getMSTimeDiffToNow(startTime));
+
     UpdateSplineMovement(update_diff);
     if (WorldTimer::getMSTimeDiffToNow(startTime) >10)
         SendCombatStats(1 << COMBAT_STATS_TEST, "Unit updat7 %u ms", NULL, WorldTimer::getMSTimeDiffToNow(startTime));
