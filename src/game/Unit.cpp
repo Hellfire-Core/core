@@ -12286,7 +12286,7 @@ class RelocationNotifyEvent : public BasicEvent
 
             //_owner.GetPosition(_owner._notifiedPosition);
             _owner._SetAINotifyScheduled(false);
-            if (WorldTimer::getMSTimeDiffToNow(starttime) > 0)
+            if (WorldTimer::getMSTimeDiffToNow(starttime) > 1)
                 _owner.SendCombatStats(1 << COMBAT_STATS_TEST, "Unit RelocationNotifyEvent took %u ms %f", NULL, WorldTimer::getMSTimeDiffToNow(starttime), radius);
             return true;
         }

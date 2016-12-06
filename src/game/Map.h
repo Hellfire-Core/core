@@ -179,8 +179,6 @@ class HELLGROUND_IMPORT_EXPORT Map : public GridRefManager<NGridType>
 
         bool IsRemovalGrid(float x, float y) const;
         bool IsLoaded(float x, float y) const;
-
-        void LoadGrid(float x, float y);
         bool UnloadGrid(const uint32 &x, const uint32 &y, bool pForce);
 
         virtual void UnloadAll();
@@ -311,8 +309,7 @@ class HELLGROUND_IMPORT_EXPORT Map : public GridRefManager<NGridType>
 
         bool loaded(const GridPair &) const;
         void EnsureGridCreated(const GridPair &);
-        bool EnsureGridLoaded(Cell const&);
-        void EnsureGridLoadedAtEnter(Cell const&, Player* player = NULL);
+        void EnsureGridLoaded(Cell const&);
 
         void buildNGridLinkage(NGridType* pNGridType) { pNGridType->link(this); }
 

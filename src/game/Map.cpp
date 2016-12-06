@@ -302,22 +302,7 @@ void Map::EnsureGridCreated(const GridPair &p)
     }
 }
 
-void Map::EnsureGridLoadedAtEnter(const Cell &cell, Player *player)
-{
-    EnsureGridLoaded(cell);
-    NGridType *grid = getNGrid(cell.GridX(), cell.GridY());
-    ASSERT(grid != NULL);
-
-
-    // refresh grid state & timer
-    if (grid->GetGridState() != GRID_STATE_ACTIVE)
-    {
-        ResetGridExpiry(*grid, 0.1f);;
-        grid->SetGridState(GRID_STATE_ACTIVE);
-    }
-}
-
-bool Map::EnsureGridLoaded(const Cell &cell)
+void Map::EnsureGridLoaded(const Cell &cell)
 {
     EnsureGridCreated(GridPair(cell.GridX(), cell.GridY()));
     NGridType *grid = getNGrid(cell.GridX(), cell.GridY());
@@ -331,19 +316,17 @@ bool Map::EnsureGridLoaded(const Cell &cell)
         loader.LoadN();
 
         // Add resurrectable corpses to world object list in grid
-        sObjectAccessor.AddCorpsesToGrid(GridPair(cell.GridX(),cell.GridY()),(*grid)(cell.CellX(), cell.CellY()), this);
+        sObjectAccessor.AddCorpsesToGrid(GridPair(cell.GridX(), cell.GridY()), (*grid)(cell.CellX(), cell.CellY()), this);
 
-        setGridObjectDataLoaded(true,cell.GridX(), cell.GridY());
-        return true;
+        setGridObjectDataLoaded(true, cell.GridX(), cell.GridY());
     }
-    return false;
-}
-
-void Map::LoadGrid(float x, float y)
-{
-    CellPair pair = Hellground::ComputeCellPair(x, y);
-    Cell cell(pair);
-    EnsureGridLoaded(cell);
+    
+    // refresh grid state & timer
+    if (grid->GetGridState() != GRID_STATE_ACTIVE)
+    {
+        ResetGridExpiry(*grid, 0.1f);;
+        grid->SetGridState(GRID_STATE_ACTIVE);
+    }
 }
 
 bool Map::Add(Player *player)
@@ -360,7 +343,7 @@ bool Map::Add(Player *player)
     player->GetMapRef().link(this, player);
 
     Cell cell(p);
-    EnsureGridLoadedAtEnter(cell, player);
+    EnsureGridLoaded(cell);
     NGridType *grid = getNGrid(cell.GridX(), cell.GridY());
     ASSERT(grid != NULL);
     AddToGrid(player, grid, cell);
@@ -397,7 +380,7 @@ void Map::Add(T *obj)
     }
 
     if (obj->isActiveObject())
-        EnsureGridLoadedAtEnter(cell);
+        EnsureGridLoaded(cell);
     else
         EnsureGridCreated(GridPair(cell.GridX(), cell.GridY()));
 
@@ -729,7 +712,7 @@ void Map::PlayerRelocation(Player* player, float x, float y, float z, float orie
         RemoveFromGrid(player, oldGrid,old_cell);
 
         if (old_cell.DiffGrid(new_cell))
-            EnsureGridLoadedAtEnter(new_cell, player);
+            EnsureGridLoaded(new_cell);
 
         NGridType* newGrid = getNGrid(new_cell.GridX(), new_cell.GridY());
         AddToGrid(player, newGrid, new_cell);
@@ -815,7 +798,7 @@ bool Map::CreatureCellRelocation(Creature *c, Cell new_cell)
     }
 
     if (c->isActiveObject())
-        EnsureGridLoadedAtEnter(new_cell);
+        EnsureGridLoaded(new_cell);
     else if (loaded(GridPair(new_cell.GridX(), new_cell.GridY())))
         EnsureGridCreated(GridPair(new_cell.GridX(), new_cell.GridY()));
     else
