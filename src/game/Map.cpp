@@ -282,7 +282,7 @@ void Map::EnsureGridCreated(const GridPair &p)
         ACE_GUARD(ACE_Thread_Mutex, Guard, Lock);
         if (!getNGrid(p.x_coord, p.y_coord))
         {
-            sLog.outDebug("Loading grid[%u,%u] for map %u", p.x_coord, p.y_coord, i_id);
+            sLog.outDetail("Loading grid[%u,%u] for map %u", p.x_coord, p.y_coord, i_id);
 
             setNGrid(new NGridType(p.x_coord*MAX_NUMBER_OF_GRIDS + p.y_coord, p.x_coord, p.y_coord, i_gridExpiry, sWorld.getConfig(CONFIG_GRID_UNLOAD)),
                 p.x_coord, p.y_coord);
@@ -310,7 +310,7 @@ void Map::EnsureGridLoaded(const Cell &cell)
     ASSERT(grid != NULL);
     if (!isGridObjectDataLoaded(cell.GridX(), cell.GridY()))
     {
-        sLog.outDebug("Loading grid[%u,%u] for map %u instance %u", cell.GridX(), cell.GridY(), GetId(), i_InstanceId);
+        sLog.outDetail("Loading grid[%u,%u] for map %u instance %u", cell.GridX(), cell.GridY(), GetId(), i_InstanceId);
 
         ObjectGridLoader loader(*grid, this, cell);
         loader.LoadN();
@@ -1154,7 +1154,7 @@ bool Map::ActiveObjectsNearGrid(uint32 x, uint32 y) const
 
     //we must find visible range in cells so we unload only non-visible cells...
     float viewDist = GetVisibilityDistance();
-    int cell_range = (int)ceilf(viewDist / SIZE_OF_GRID_CELL) + 1;
+    int cell_range = (int)ceilf(viewDist / SIZE_OF_GRID_CELL) + 2;
 
     cell_min << cell_range;
     cell_min -= cell_range;
