@@ -275,7 +275,6 @@ class HELLGROUND_IMPORT_EXPORT TerrainInfo : public Referencable<AtomicLong>
         friend class Map;
         //load/unload terrain data
         GridMap * Load(const uint32 x, const uint32 y);
-        void Unload(const uint32 x, const uint32 y);
 
     private:
         TerrainInfo(const TerrainInfo&);
@@ -283,9 +282,6 @@ class HELLGROUND_IMPORT_EXPORT TerrainInfo : public Referencable<AtomicLong>
 
         GridMap * GetGrid( const float x, const float y );
         GridMap * LoadMapAndVMap(const uint32 x, const uint32 y );
-
-        int RefGrid(const uint32& x, const uint32& y);
-        int UnrefGrid(const uint32& x, const uint32& y);
 
         const uint32 m_mapId;
 
@@ -300,7 +296,6 @@ class HELLGROUND_IMPORT_EXPORT TerrainInfo : public Referencable<AtomicLong>
         typedef ACE_Thread_Mutex LOCK_TYPE;
         typedef ACE_Guard<LOCK_TYPE> LOCK_GUARD;
         LOCK_TYPE m_mutex;
-        LOCK_TYPE m_refMutex;
 };
 
 //class for managing TerrainData object and all sort of geometry querying operations

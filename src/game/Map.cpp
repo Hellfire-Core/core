@@ -72,16 +72,6 @@ Map::~Map()
         sTerrainMgr.UnloadTerrain(m_TerrainData->GetMapId());
 }
 
-void Map::LoadMapAndVMap(int gx,int gy)
-{
-    if (m_bLoadedGrids[gx][gx])
-        return;
-
-    GridMap * pInfo = m_TerrainData->Load(gx, gy);
-    if (pInfo)
-        m_bLoadedGrids[gx][gy] = true;
-}
-
 void Map::InitStateMachine()
 {
     si_GridStates[GRID_STATE_INVALID] = new InvalidState;
@@ -107,8 +97,6 @@ Map::Map(uint32 id, time_t expiry, uint32 InstanceId, uint8 SpawnMode)
     {
         for (unsigned int idx=0; idx < MAX_NUMBER_OF_GRIDS; ++idx)
         {
-            //z code
-            m_bLoadedGrids[idx][j] = false;
             setNGrid(NULL, idx, j);
         }
     }
@@ -296,8 +284,7 @@ void Map::EnsureGridCreated(const GridPair &p)
             int gx = (MAX_NUMBER_OF_GRIDS - 1) - p.x_coord;
             int gy = (MAX_NUMBER_OF_GRIDS - 1) - p.y_coord;
 
-            if (!m_bLoadedGrids[gx][gy])
-                LoadMapAndVMap(gx,gy);
+            m_TerrainData->Load(gx, gy); // ensure vmap/mmap loaded
         }
     }
 }
@@ -875,16 +862,6 @@ bool Map::UnloadGrid(const uint32 &x, const uint32 &y, bool unloadAll)
 
         delete grid;
         setNGrid(NULL, x, y);
-    }
-    int gx = (MAX_NUMBER_OF_GRIDS - 1) - x;
-    int gy = (MAX_NUMBER_OF_GRIDS - 1) - y;
-
-    // unload GridMap - it is reference-countable so will be deleted safely when lockCount < 1
-    // also simply set Map's pointer to corresponding GridMap object to NULL
-    if (m_bLoadedGrids[gx][gy])
-    {
-        m_bLoadedGrids[gx][gy] = false;
-        m_TerrainData->Unload(gx, gy);
     }
 
     DEBUG_LOG("Unloading grid[%u,%u] for map %u finished", x,y, i_id);

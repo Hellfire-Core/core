@@ -2374,7 +2374,7 @@ struct npc_shadowlord_triggerAI : public Scripted_NoMovementAI
                     m_creature->GetRandomPoint(SpawnX,SpawnY,SpawnZ,3.0f,x,y,z);
                     z = SpawnZ;
                     Unit *Retainer = m_creature->SummonCreature(NPC_RETAINER_ID,x,y,z,m_creature->GetOrientation(),
-                    TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT,80000);
+                    TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN,80000);
                     Retainer->GetMotionMaster()->MoveIdle();
                     Retainer->GetMotionMaster()->MovePath(2096+i, false);
                 }

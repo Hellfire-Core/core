@@ -614,7 +614,7 @@ bool GridMap::ExistVMap(uint32 mapid,int gx,int gy)
 
 //////////////////////////////////////////////////////////////////////////
 
-//clean up GridMap objects every minute
+//clean up GridMap objects every few minutes
 #define GRID_CLEANUP_INTERVAL 60000
 
 TerrainInfo::TerrainInfo(uint32 mapid, TerrainSpecifics terrainspecifics) : m_mapId(mapid)
@@ -652,9 +652,6 @@ GridMap * TerrainInfo::Load(const uint32 x, const uint32 y)
      ASSERT(x < MAX_NUMBER_OF_GRIDS);
      ASSERT(y < MAX_NUMBER_OF_GRIDS);
 
-     //reference grid as a first step
-     RefGrid(x, y);
-
      //quick check if GridMap already loaded
      GridMap * pMap = m_GridMaps[x][y];
      if(!pMap)
@@ -664,23 +661,6 @@ GridMap * TerrainInfo::Load(const uint32 x, const uint32 y)
          pMap->lastTimeUsed = WorldTimer::getMSTime();
 
      return pMap;
-}
-
-//schedule lazy GridMap object cleanup
-void TerrainInfo::Unload(const uint32 x, const uint32 y)
-{
-     ASSERT(x < MAX_NUMBER_OF_GRIDS);
-     ASSERT(y < MAX_NUMBER_OF_GRIDS);
-
-     if(m_GridMaps[x][y])
-     {
-         //decrease grid reference count...
-         if(UnrefGrid(x, y) == 0)
-         {
-             //TODO: add your additional logic here
-
-         }
-     }
 }
 
 //call this method only
@@ -697,7 +677,7 @@ void TerrainInfo::CleanUpGrids(const uint32 diff)
              GridMap * pMap = m_GridMaps[x][y];
 
              //delete those GridMap objects which have refcount = 0
-             if(pMap && iRef == 0 && (pMap->lastTimeUsed + GRID_CLEANUP_INTERVAL) < timeNow)
+             if (pMap && iRef == 0 && (pMap->lastTimeUsed + GRID_CLEANUP_INTERVAL * 5) < timeNow)
              {
                  m_GridMaps[x][y] = NULL;
                  //delete grid data if reference count == 0
@@ -712,29 +692,6 @@ void TerrainInfo::CleanUpGrids(const uint32 diff)
      }
 
      i_timer.SetCurrent(0);
-}
-
-int TerrainInfo::RefGrid(const uint32& x, const uint32& y)
-{
-     ASSERT(x < MAX_NUMBER_OF_GRIDS);
-     ASSERT(y < MAX_NUMBER_OF_GRIDS);
-
-     LOCK_GUARD _lock(m_refMutex);
-     return (m_GridRef[x][y] += 1);
-}
-
-int TerrainInfo::UnrefGrid(const uint32& x, const uint32& y)
-{
-     ASSERT(x < MAX_NUMBER_OF_GRIDS);
-     ASSERT(y < MAX_NUMBER_OF_GRIDS);
-
-     int16& iRef = m_GridRef[x][y];
-
-     LOCK_GUARD _lock(m_refMutex);
-     if(iRef > 0)
-         return (iRef -= 1);
-
-     return 0;
 }
 
 float TerrainInfo::GetHeight(float x, float y, float z, bool pUseVmaps, float maxSearchDist) const

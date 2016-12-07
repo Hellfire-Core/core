@@ -188,8 +188,6 @@ class HELLGROUND_IMPORT_EXPORT Map : public GridRefManager<NGridType>
         time_t GetGridExpiry(void) const { return i_gridExpiry; }
         uint32 GetId(void) const { return i_id; }
 
-        void LoadMapAndVMap(int gx, int gy);
-
         static void InitStateMachine();
         static void DeleteStateMachine();
 
@@ -354,7 +352,6 @@ class HELLGROUND_IMPORT_EXPORT Map : public GridRefManager<NGridType>
 
         //Shared geodata object with map coord info...
         TerrainInfo* const m_TerrainData;
-        bool m_bLoadedGrids[MAX_NUMBER_OF_GRIDS][MAX_NUMBER_OF_GRIDS];
 
         std::bitset<TOTAL_NUMBER_OF_CELLS_PER_MAP*TOTAL_NUMBER_OF_CELLS_PER_MAP> marked_cells;
 
