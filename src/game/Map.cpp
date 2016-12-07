@@ -282,7 +282,7 @@ void Map::EnsureGridCreated(const GridPair &p)
         ACE_GUARD(ACE_Thread_Mutex, Guard, Lock);
         if (!getNGrid(p.x_coord, p.y_coord))
         {
-            sLog.outBasic("Loading grid[%u,%u] for map %u", p.x_coord, p.y_coord, i_id);
+            sLog.outDebug("Loading grid[%u,%u] for map %u", p.x_coord, p.y_coord, i_id);
 
             setNGrid(new NGridType(p.x_coord*MAX_NUMBER_OF_GRIDS + p.y_coord, p.x_coord, p.y_coord, i_gridExpiry, sWorld.getConfig(CONFIG_GRID_UNLOAD)),
                 p.x_coord, p.y_coord);
@@ -310,7 +310,7 @@ void Map::EnsureGridLoaded(const Cell &cell)
     ASSERT(grid != NULL);
     if (!isGridObjectDataLoaded(cell.GridX(), cell.GridY()))
     {
-        sLog.outBasic("Loading grid[%u,%u] for map %u instance %u", cell.GridX(), cell.GridY(), GetId(), i_InstanceId);
+        sLog.outDebug("Loading grid[%u,%u] for map %u instance %u", cell.GridX(), cell.GridY(), GetId(), i_InstanceId);
 
         ObjectGridLoader loader(*grid, this, cell);
         loader.LoadN();
@@ -847,7 +847,7 @@ bool Map::UnloadGrid(const uint32 &x, const uint32 &y, bool unloadAll)
         if (!unloadAll && ActiveObjectsNearGrid(x, y))
              return false;
 
-        sLog.outBasic("Unloading grid[%u,%u] for map %u", x,y, i_id);
+        sLog.outDebug("Unloading grid[%u,%u] for map %u", x,y, i_id);
 
         ObjectGridUnloader unloader(*grid);
 

@@ -186,6 +186,7 @@ class GridMap
         float getHeight(float x, float y) { return (this->*m_gridGetHeight)(x, y); }
         float getLiquidLevel(float x, float y);
         uint8 getTerrainType(float x, float y);
+        uint32 lastTimeUsed;
         GridMapLiquidStatus getLiquidStatus(float x, float y, float z, uint8 ReqLiquidType, GridMapLiquidData *data = 0);
 };
 

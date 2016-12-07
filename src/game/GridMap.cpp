@@ -62,6 +62,8 @@ GridMap::GridMap()
     m_liquidLevel = INVALID_HEIGHT_VALUE;
     m_liquid_type = NULL;
     m_liquid_map  = NULL;
+
+    lastTimeUsed = 0;
 }
 
 GridMap::~GridMap()
@@ -611,6 +613,10 @@ bool GridMap::ExistVMap(uint32 mapid,int gx,int gy)
 }
 
 //////////////////////////////////////////////////////////////////////////
+
+//clean up GridMap objects every minute
+#define GRID_CLEANUP_INTERVAL 60000
+
 TerrainInfo::TerrainInfo(uint32 mapid, TerrainSpecifics terrainspecifics) : m_mapId(mapid)
 {
     for (int k = 0; k < MAX_NUMBER_OF_GRIDS; ++k)
@@ -622,13 +628,8 @@ TerrainInfo::TerrainInfo(uint32 mapid, TerrainSpecifics terrainspecifics) : m_ma
         }
     }
 
-    //clean up GridMap objects every minute
-    const uint32 iCleanUpInterval = 60;
-    //schedule start randomly
-    const uint32 iRandomStart = urand(20, 40);
-
-    i_timer.SetInterval(iCleanUpInterval * 1000);
-    i_timer.SetCurrent(iRandomStart * 1000);
+    i_timer.SetInterval(GRID_CLEANUP_INTERVAL);
+    i_timer.SetCurrent(urand(10000,50000));
 
     m_specifics = new MapTemplate(terrainspecifics);
 }
@@ -659,6 +660,9 @@ GridMap * TerrainInfo::Load(const uint32 x, const uint32 y)
      if(!pMap)
          pMap = LoadMapAndVMap(x, y);
 
+     if (pMap)
+         pMap->lastTimeUsed = WorldTimer::getMSTime();
+
      return pMap;
 }
 
@@ -684,7 +688,7 @@ void TerrainInfo::CleanUpGrids(const uint32 diff)
 {
      if (!i_timer.Expired(diff))
          return;
-
+     uint32 timeNow = WorldTimer::getMSTime();
      for (int y = 0; y < MAX_NUMBER_OF_GRIDS; ++y)
      {
          for (int x = 0; x < MAX_NUMBER_OF_GRIDS; ++x)
@@ -693,7 +697,7 @@ void TerrainInfo::CleanUpGrids(const uint32 diff)
              GridMap * pMap = m_GridMaps[x][y];
 
              //delete those GridMap objects which have refcount = 0
-             if(pMap && iRef == 0 )
+             if(pMap && iRef == 0 && (pMap->lastTimeUsed + GRID_CLEANUP_INTERVAL) < timeNow)
              {
                  m_GridMaps[x][y] = NULL;
                  //delete grid data if reference count == 0
@@ -1013,6 +1017,9 @@ GridMap* TerrainInfo::GetGrid(const float x, const float y)
     GridMap * pMap = m_GridMaps[gx][gy];
     if(!pMap)
          pMap = LoadMapAndVMap(gx, gy);
+
+    if(pMap)
+        pMap->lastTimeUsed = WorldTimer::getMSTime();
 
     return pMap;
 }
