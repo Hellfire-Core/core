@@ -443,7 +443,9 @@ void Map::Update(const uint32 &t_diff)
             helper.Update(t_diff);
         }
     }
-    if (WorldTimer::getMSTimeDiffToNow(startTime) > 200)
+    uint32 alloweddiff = sWorld.getConfig(CONFIG_MIN_LOG_CELL);
+
+    if (WorldTimer::getMSTimeDiffToNow(startTime) > alloweddiff)
         sLog.outLog(LOG_DIFF, "Map::Update sessions and players (%u ms) map %u", WorldTimer::getMSTimeDiffToNow(startTime), GetId());
 
     resetMarkedCells();
@@ -454,7 +456,6 @@ void Map::Update(const uint32 &t_diff)
     // for pets
     TypeContainerVisitor<Hellground::ObjectUpdater, WorldTypeMapContainer> world_object_update(updater);
 
-    uint32 alloweddiff = sWorld.getConfig(CONFIG_MIN_LOG_CELL);
 
     // the player iterator is stored in the map object
     // to make sure calls to Map::Remove don't invalidate it

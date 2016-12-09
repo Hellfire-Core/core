@@ -1578,7 +1578,7 @@ void World::Update(uint32 diff)
         }
     }
 
-    DiffRecorder diffRecorder(getConfig(CONFIG_MIN_LOG_UPDATE));
+    DiffRecorder diffRecorder(0);
 
     ///- Update the different timers
     for (int i = 0; i < WUPDATE_COUNT; i++)
@@ -1635,7 +1635,7 @@ void World::Update(uint32 diff)
 
         ///-Handle expired auctions
         sAuctionMgr.Update();
-        diffRecorder.RecordTimeFor("Auctions", 10);
+        diffRecorder.RecordTimeFor("Auctions", 20);
     }
 
     /// <li> Handle session updates when the timer has passed
@@ -1762,7 +1762,7 @@ void World::Update(uint32 diff)
 
     // execute callbacks from sql queries that were queued recently
     UpdateResultQueue();
-    diffRecorder.RecordTimeFor("Delayed SQL results");
+    diffRecorder.RecordTimeFor("Delayed SQL results", 30);
 
     ///- Erase corpses once every 20 minutes
     if (m_timers[WUPDATE_CORPSES].Passed())
@@ -1780,7 +1780,7 @@ void World::Update(uint32 diff)
         uint32 nextGameEvent = sGameEventMgr.Update();
         m_timers[WUPDATE_EVENTS].SetInterval(nextGameEvent);
         m_timers[WUPDATE_EVENTS].Reset();
-        diffRecorder.RecordTimeFor("Game events", 5);
+        diffRecorder.RecordTimeFor("Game events", 30);
     }
     /// </ul>
 

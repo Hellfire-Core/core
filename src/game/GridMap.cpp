@@ -666,7 +666,8 @@ GridMap * TerrainInfo::Load(const uint32 x, const uint32 y)
 //call this method only
 void TerrainInfo::CleanUpGrids(const uint32 diff)
 {
-     if (!i_timer.Expired(diff))
+     // do not unload continent maps ever, its just pointless
+     if (GetMapId() == 0 || GetMapId() == 1 || GetMapId() == 530 || !i_timer.Expired(diff)) 
          return;
      uint32 timeNow = WorldTimer::getMSTime();
      for (int y = 0; y < MAX_NUMBER_OF_GRIDS; ++y)
@@ -675,7 +676,7 @@ void TerrainInfo::CleanUpGrids(const uint32 diff)
          {
              const int16& iRef = m_GridRef[x][y];
              GridMap * pMap = m_GridMaps[x][y];
-
+             
              //delete those GridMap objects which have refcount = 0
              if (pMap && iRef == 0 && (pMap->lastTimeUsed + GRID_CLEANUP_INTERVAL * 5) < timeNow)
              {

@@ -253,12 +253,13 @@ class DiffRecorder
 
         inline void RecordTimeFor(char const* str, uint32 shorter = 0)
         {
-            if (!_diffTresholdForFile) return;
+            if (!shorter) shorter = _diffTresholdForFile;
+            if (!shorter) return;
             uint32 diffTime = WorldTimer::getMSTimeDiffToNow(_prevTime);
 
             _prevTime = WorldTimer::getMSTime();
 
-            if ((diffTime >= _diffTresholdForFile) || (shorter && diffTime > shorter))
+            if (diffTime > shorter)
             {
                 sLog.outLog(LOG_DIFF, "%s [diff: %u].", str, diffTime);
             }
