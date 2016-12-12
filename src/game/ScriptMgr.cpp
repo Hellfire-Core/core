@@ -313,24 +313,6 @@ void ScriptMgr::LoadScripts(ScriptMapMap& scripts, char const* tablename)
     sLog.outString(">> Loaded %u script definitions", count);
 }
 
-void ScriptMgr::CheckScripts(ScriptMapMap const& scripts,std::set<int32>& ids)
-{
-    for (ScriptMapMap::const_iterator itrMM = scripts.begin(); itrMM != scripts.end(); ++itrMM)
-    {
-        for (ScriptMap::const_iterator itrM = itrMM->second.begin(); itrM != itrMM->second.end(); ++itrM)
-        {
-            if (itrM->second.dataint)
-            {
-                if (!sObjectMgr.HasHellgroundString(itrM->second.dataint))
-                    sLog.outLog(LOG_DB_ERR, "Table `db_script_string` has not existed string id  %u", itrM->first);
-
-                if (ids.count(itrM->second.dataint))
-                    ids.erase(itrM->second.dataint);
-            }
-        }
-    }
-}
-
 void ScriptMgr::LoadGameObjectScripts()
 {
     LoadScripts(sGameObjectScripts, "gameobject_scripts");
@@ -588,28 +570,6 @@ void ScriptMgr::LoadWaypointScripts()
         if (!query || !query->GetRowCount())
             sLog.outLog(LOG_DB_ERR, "There is no waypoint which links to the waypoint script %u", itr->first);
     }
-}
-
-void ScriptMgr::LoadDbScriptStrings()
-{
-    LoadHellgroundStrings(GameDataDatabase,"db_script_string",MIN_DB_SCRIPT_STRING_ID,MAX_DB_SCRIPT_STRING_ID);
-
-    std::set<int32> ids;
-
-    for (int32 i = MIN_DB_SCRIPT_STRING_ID; i < MAX_DB_SCRIPT_STRING_ID; ++i)
-        if (sObjectMgr.HasHellgroundString(i))
-            ids.insert(i);
-
-    CheckScripts(sQuestEndScripts,ids);
-    CheckScripts(sQuestStartScripts,ids);
-    CheckScripts(sSpellScripts,ids);
-    CheckScripts(sGameObjectScripts,ids);
-    CheckScripts(sEventScripts,ids);
-
-    CheckScripts(sWaypointScripts,ids);
-
-    for (std::set<int32>::const_iterator itr = ids.begin(); itr != ids.end(); ++itr)
-        sLog.outLog(LOG_DB_ERR, "Table `db_script_string` has unused string id  %u", *itr);
 }
 
 void ScriptMgr::LoadScriptNames()

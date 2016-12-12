@@ -2541,20 +2541,24 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
     {
         case SPELLFAMILY_GENERIC:
         {
+            switch (GetId())
+            {
             // Fiery Soul Visual
-            if (GetId() == 36587)
+            case 36587:
             {
                 if (apply)
                     caster->CastSpell(caster, 36573, true);
+                break;
             }
             // Power Convert
-            if (GetId() == 37136)
+            case 37136:
             {
                 if (m_target->GetTypeId() == TYPEID_UNIT)
                     ((Creature*)m_target)->UpdateEntry(apply ? 21731 : 21729);
+                break;
             }
             // Unstable Power
-            if (GetId() == 24658)
+            case 24658:
             {
                 uint32 spellId = 24659;
                 if (apply && caster)
@@ -2562,7 +2566,7 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
                     const SpellEntry *spell = sSpellStore.LookupEntry(spellId);
                     if (!spell)
                         return;
-                    for (int i=0; i < spell->StackAmount; ++i)
+                    for (int i = 0; i < spell->StackAmount; ++i)
                         caster->CastSpell(m_target, spell->Id, true, NULL, NULL, GetCasterGUID());
                     return;
                 }
@@ -2570,7 +2574,7 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
                 return;
             }
             // Restless Strength
-            if (GetId() == 24661)
+            case 24661:
             {
                 uint32 spellId = 24662;
                 if (apply && caster)
@@ -2578,7 +2582,7 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
                     const SpellEntry *spell = sSpellStore.LookupEntry(spellId);
                     if (!spell)
                         return;
-                    for (int i=0; i < spell->StackAmount; ++i)
+                    for (int i = 0; i < spell->StackAmount; ++i)
                         caster->CastSpell(m_target, spell->Id, true, NULL, NULL, GetCasterGUID());
                     return;
                 }
@@ -2586,13 +2590,14 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
                 return;
             }
             // Victorious
-            if (GetId() == 32216 && m_target->getClass() == CLASS_WARRIOR)
+            case 32216:
             {
-                m_target->ModifyAuraState(AURA_STATE_WARRIOR_VICTORY_RUSH, apply);
+                if (m_target->getClass() == CLASS_WARRIOR)
+                    m_target->ModifyAuraState(AURA_STATE_WARRIOR_VICTORY_RUSH, apply);
                 return;
             }
             //Mark of Malice
-            if (GetId() == 33493)
+            case 33493:
             {
                 if (apply)       // set 5 stacks
                 {
@@ -2605,42 +2610,56 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
                 return;
             }
             //Summon Fire Elemental
-            if (GetId() == 40133 && caster)
+            case 40133:
             {
+                if (!caster)
+                    return;
                 Unit *owner = caster->GetOwner();
                 if (owner && owner->GetTypeId() == TYPEID_PLAYER)
                 {
                     if (apply)
-                        owner->CastSpell(owner,8985,true);
+                        owner->CastSpell(owner, 8985, true);
                     else
                         ((Player*)owner)->RemovePet(NULL, PET_SAVE_NOT_IN_SLOT, true);
                 }
                 return;
             }
-
             //Summon Earth Elemental
-            if (GetId() == 40132 && caster)
+            case 40132:
             {
+                if (!caster)
+                    return;
                 Unit *owner = caster->GetOwner();
                 if (owner && owner->GetTypeId() == TYPEID_PLAYER)
                 {
                     if (apply)
-                        owner->CastSpell(owner,19704,true);
+                        owner->CastSpell(owner, 19704, true);
                     else
                         ((Player*)owner)->RemovePet(NULL, PET_SAVE_NOT_IN_SLOT, true);
                 }
                 return;
             }
-            if (GetId() == 42515)                                 // Jarl Beam
-            {
-                // aura animate dead (fainted) state for the duration, but we need to animate the death itself (correct way below?)
-                if (Unit* pCaster = GetCaster())
-                    pCaster->ApplyModFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_FEIGN_DEATH, apply);
+            case 42515:  // Jarl Beam
+                {
+                    // aura animate dead (fainted) state for the duration, but we need to animate the death itself (correct way below?)
+                    if (Unit* pCaster = GetCaster())
+                        pCaster->ApplyModFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_FEIGN_DEATH, apply);
 
-                // Beam to Zelfrax at remove
-                if (!apply)
-                    m_target->CastSpell(m_target, 42517, true);
-                return;
+                    // Beam to Zelfrax at remove
+                    if (!apply)
+                        m_target->CastSpell(m_target, 42517, true);
+                    return;
+                }
+            case 40753: // dragonmaw peon, defiant and enraged
+            {
+                m_target->setFaction(apply ? 16 : 62);
+                break;
+            }
+            case 40732: // dragonmaw peon, sleping
+            {
+                m_target->SetUInt32Value(UNIT_NPC_EMOTESTATE, apply ? EMOTE_STATE_SLEEP : EMOTE_STATE_NONE);
+                break;
+            }
             }
             break;
         }

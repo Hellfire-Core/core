@@ -87,8 +87,6 @@ class ScriptMgr
         void LoadSpellScripts();
         void LoadWaypointScripts();
 
-        void LoadDbScriptStrings();
-
         void LoadScriptNames();
         void LoadAreaTriggerScripts();
         void LoadCompletedCinematicScripts();
@@ -134,7 +132,6 @@ class ScriptMgr
 
     private:
         void LoadScripts(ScriptMapMap& scripts, const char* tablename);
-        void CheckScripts(ScriptMapMap const& scripts,std::set<int32>& ids);
 
         template<class T>
         void GetScriptHookPtr(T& ptr, const char* name)

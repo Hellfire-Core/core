@@ -1370,9 +1370,6 @@ void World::SetInitialWorldSettings()
     sScriptMgr.LoadEventScripts();                              // must be after load Creature/Gameobject(Template/Data)
     sScriptMgr.LoadWaypointScripts();
 
-    sLog.outString("Loading Scripts text locales...");    // must be after Load*Scripts calls
-    sScriptMgr.LoadDbScriptStrings();
-
     sLog.outString("Loading CreatureEventAI Texts...");
     sCreatureEAIMgr.LoadCreatureEventAI_Texts(false);       // false, will checked in LoadCreatureEventAI_Scripts
 
@@ -1762,7 +1759,7 @@ void World::Update(uint32 diff)
 
     // execute callbacks from sql queries that were queued recently
     UpdateResultQueue();
-    diffRecorder.RecordTimeFor("Delayed SQL results", 30);
+    diffRecorder.RecordTimeFor("Delayed SQL results", 100);
 
     ///- Erase corpses once every 20 minutes
     if (m_timers[WUPDATE_CORPSES].Passed())
