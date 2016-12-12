@@ -174,9 +174,11 @@ struct boss_murmurAI : public Scripted_NoMovementAI
             ForceSpellCast(me, SPELL_SONIC_BOOM, DONT_INTERRUPT, true);
             ForceSpellCastWithScriptText(me, SPELL_SONIC_BOOM_CAST, EMOTE_SONIC_BOOM);
             SonicBoom_Timer = (HeroicMode ? 30000 : 40000);
-            Resonance_Timer = 5000;
-            ThunderingStorm_Timer = 5000;
-            SonicShock_Timer = 5000;
+            //delay other spell so they wont get in queue during cast
+            Resonance_Timer.Delay(6000);
+            ThunderingStorm_Timer.Delay(6000);
+            SonicShock_Timer.Delay(6000);
+            MagneticPull_Timer.Delay(6000);
         }
         
 
