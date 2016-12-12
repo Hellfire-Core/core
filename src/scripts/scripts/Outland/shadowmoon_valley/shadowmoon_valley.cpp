@@ -397,6 +397,23 @@ CreatureAI* GetAI_mob_enslaved_netherwing_drake(Creature* _Creature)
 # mob_dragonmaw_peon
 #####*/
 
+enum eDragonmawPeons
+{
+    NPC_WORKING_PEON        = 22252,
+    NPC_DISOBEDIENT_PEON    = 23311,
+    NPC_SLOW_DEATH_CREDIT   = 23209,
+    QUEST_SLOW_DEATH        = 11020,
+    QUEST_BOOTERANG         = 11055,
+    SPELL_BOOTERANG_HIT     = 40742,
+    SPELL_BOOTERANG_CREDIT  = 39160,
+    SPELL_SLOW_DEATH_HIT    = 40468,
+    SPELL_PEON_0            = 40735,
+    SPELL_PEON_1            = 40732,
+    SPELL_PEON_2            = 40714,
+
+    GOSSIP_PEON_START       = -1001030,
+};
+
 struct mob_dragonmaw_peonAI : public ScriptedAI
 {
     mob_dragonmaw_peonAI(Creature* c) : ScriptedAI(c) {}
@@ -417,7 +434,7 @@ struct mob_dragonmaw_peonAI : public ScriptedAI
         if(!caster)
             return;
 
-        if(caster->GetTypeId() == TYPEID_PLAYER && spell->Id == 40468 && !Tapped)
+        if(caster->GetTypeId() == TYPEID_PLAYER && spell->Id == SPELL_SLOW_DEATH_HIT && !Tapped)
         {
             PlayerGUID = caster->GetGUID();
 
@@ -449,8 +466,8 @@ struct mob_dragonmaw_peonAI : public ScriptedAI
             if(PlayerGUID)
             {
                 Player* plr = Unit::GetPlayer(PlayerGUID);
-                if(plr && plr->GetQuestStatus(11020) == QUEST_STATUS_INCOMPLETE)
-                    plr->KilledMonster(23209, m_creature->GetGUID());
+                if(plr && plr->GetQuestStatus(QUEST_SLOW_DEATH) == QUEST_STATUS_INCOMPLETE)
+                    plr->KilledMonster(NPC_SLOW_DEATH_CREDIT, m_creature->GetGUID());
             }
             PoisonTimer = 0;
             m_creature->DealDamage(m_creature, m_creature->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
@@ -464,6 +481,94 @@ CreatureAI* GetAI_mob_dragonmaw_peon(Creature* _Creature)
 {
     return new mob_dragonmaw_peonAI(_Creature);
 }
+
+struct mob_disobedient_dragonmaw_peonAI : public ScriptedAI
+{
+    mob_disobedient_dragonmaw_peonAI(Creature* c) : ScriptedAI(c) {}
+
+    uint64 PlayerGUID;
+    Timer WorkingTimer;
+
+    void Reset()
+    {
+        SelectAura();
+        PlayerGUID = 0;
+        WorkingTimer.Reset(0);
+    }
+
+    void SelectAura()
+    {
+        uint32 spell = 0;
+        switch (urand(0, 2))
+        {
+        case 0: spell = SPELL_PEON_0; break;
+        case 1: spell = SPELL_PEON_1; break;
+        case 2: spell = SPELL_PEON_2; break;
+        }
+        m_creature->CastSpell(m_creature, spell, true);
+    }
+
+    void EnterCombat(Unit *who)
+    {
+        if (m_creature->HasAura(SPELL_PEON_0))
+            DoScriptText(GOSSIP_PEON_START - (urand(0, 2)), m_creature, who);
+    }
+
+    void SpellHit(Unit* caster, const SpellEntry* spell)
+    {
+        if (!caster)
+            return;
+
+        if (caster->GetTypeId() == TYPEID_PLAYER && spell->Id == SPELL_BOOTERANG_HIT && !WorkingTimer.GetInterval())
+        {
+            m_creature->RemoveAllAuras();
+            caster->ToPlayer()->CastCreatureOrGO(NPC_DISOBEDIENT_PEON, m_creature->GetGUID(), SPELL_BOOTERANG_CREDIT);
+            m_creature->CastSpell(caster, SPELL_BOOTERANG_CREDIT, true); // visual of returning
+            DoScriptText(GOSSIP_PEON_START - (urand(3, 7)), m_creature, caster);
+
+            Unit* peon = FindCreature(NPC_WORKING_PEON, 30.0f, m_creature);
+            if (peon)
+            {
+                float x, y, z;
+                peon->GetNearPoint(x, y, z, m_creature->GetObjectSize());
+
+                m_creature->SetWalk(false);
+                m_creature->GetMotionMaster()->MovePoint(1, x, y, z);
+            }
+        }
+    }
+
+    void MovementInform(uint32 type, uint32 id)
+    {
+        if (type != POINT_MOTION_TYPE)
+            return;
+
+        if (id)
+        {
+            m_creature->SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_ONESHOT_ATTACK1H);
+            WorkingTimer.Reset(MINUTE*IN_MILISECONDS);
+        }
+    }
+
+    void UpdateAI(const uint32 diff)
+    {
+        if (WorkingTimer.Expired(diff))
+        {
+            m_creature->SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_ONESHOT_NONE);
+            m_creature->GetMotionMaster()->MoveTargetedHome();
+            SelectAura();
+            WorkingTimer.Reset(0);
+        }
+
+        DoMeleeAttackIfReady();
+    }
+};
+
+CreatureAI* GetAI_mob_disobedient_dragonmaw_peon(Creature* _Creature)
+{
+    return new mob_disobedient_dragonmaw_peonAI(_Creature);
+}
+
 
 /*######
 ## npc_drake_dealer_hurlunk
@@ -3526,6 +3631,11 @@ void AddSC_shadowmoon_valley()
     newscript = new Script;
     newscript->Name = "mob_dragonmaw_peon";
     newscript->GetAI = &GetAI_mob_dragonmaw_peon;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "mob_disobedient_dragonmaw_peon";
+    newscript->GetAI = &GetAI_mob_disobedient_dragonmaw_peon;
     newscript->RegisterSelf();
 
     newscript = new Script;
