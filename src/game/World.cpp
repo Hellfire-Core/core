@@ -478,6 +478,10 @@ void World::LoadConfigSettings(bool reload)
     if (m_configs[CONFIG_NUMTHREADS] < 1)
         m_configs[CONFIG_NUMTHREADS] = 1;
     loadConfig(CONFIG_MAPUPDATE_MAXVISITORS, "MapUpdate.UpdateVisitorsMax", 0);
+    loadConfig(CONFIG_MAPUPDATE_CONTINENTS, "MapUpdate.Continents", 50);
+    loadConfig(CONFIG_MAPUPDATE_INSTANCES, "MapUpdate.Instances", 50);
+    loadConfig(CONFIG_MAPUPDATE_BATTLEGROUNDS, "MapUpdate.Battlegrounds", 50);
+    loadConfig(CONFIG_MAPUPDATE_ARENAS, "MapUpdate.Arena", 50);
 
     sessionThreads = sConfig.GetIntDefault("SessionUpdate.Threads", 0);
     loadConfig(CONFIG_SESSION_UPDATE_MAX_TIME, "SessionUpdate.MaxTime", 1000);

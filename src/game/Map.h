@@ -359,6 +359,7 @@ class HELLGROUND_IMPORT_EXPORT Map : public GridRefManager<NGridType>
         WorldUpdateCounter m_updateTracker;
 
         bool i_scriptLock;
+        uint32 m_wanted_delay;
 
         std::set<WorldObject *> i_objectsToRemove;
         std::map<WorldObject*, bool> i_objectsToSwitch;

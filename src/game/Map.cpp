@@ -108,6 +108,15 @@ Map::Map(uint32 id, time_t expiry, uint32 InstanceId, uint8 SpawnMode)
     m_TerrainData->AddRef();
 
     SetBroken(false);
+
+    if (IsBattleArena())
+        m_wanted_delay = sWorld.getConfig(CONFIG_MAPUPDATE_ARENAS);
+    else if (IsBattleGround())
+        m_wanted_delay = sWorld.getConfig(CONFIG_MAPUPDATE_BATTLEGROUNDS);
+    else if (IsDungeon())
+        m_wanted_delay = sWorld.getConfig(CONFIG_MAPUPDATE_INSTANCES);
+    else
+        m_wanted_delay = sWorld.getConfig(CONFIG_MAPUPDATE_CONTINENTS);
 }
 
 void Map::InitVisibilityDistance()
@@ -3172,6 +3181,8 @@ bool Map::GetEntrancePos( int32 &mapid, float &x, float &y )
 
 void Map::UpdateHelper::Update( DelayedMapList& delayedUpdate )
 {
+    if (m_map->m_wanted_delay > GetTimeElapsed())
+        return;
     sMapMgr.GetMapUpdater()->schedule_update(*m_map, GetTimeElapsed());
     delayedUpdate.push_back(std::make_pair(m_map, uint32(GetTimeElapsed())));
 

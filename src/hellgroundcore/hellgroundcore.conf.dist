@@ -356,6 +356,13 @@ EAIErrorLevel = 0
 #        Max number of creatures updated by single visitor.
 #        Default: 20
 #
+#    MapUpdate.Continents
+#    MapUpdate.Instances
+#    MapUpdate.Battlegrounds
+#    MapUpdate.Arenas
+#        Min delay between map update, 0=asap
+#
+#
 #    SessionUpdate.Threads
 #        Number of threads to update sessions (0 - disable).
 #        WARNING: DON'T use if you don't know what you are doing ... this feature waits for
@@ -427,6 +434,10 @@ UpdateUptimeInterval = 10
 
 MapUpdate.Threads = 1
 MapUpdate.UpdateVisitorsMax = 20
+MapUpdate.Continents = 50
+MapUpdate.Instances = 50
+MapUpdate.Battlegrounds = 0
+MapUpdate.Arenas = 0
 
 SessionUpdate.Threads = 1
 SessionUpdate.MaxTime = 1000
