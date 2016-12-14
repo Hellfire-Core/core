@@ -768,9 +768,24 @@ void Unit::RemoveSpellbyDamageTaken(uint32 damage, uint32 spell)
             if (SpellMgr::GetDiminishingReturnsGroupForSpell((*i)->GetSpellProto(), false) == DIMINISHING_ENSLAVE)
                 continue;
 
+            dispelable++;
+
+            if ((*i)->GetModifier()->m_auraname == SPELL_AURA_MOD_FEAR && (*i)->GetModifier()->m_amount > 0)
+            {
+                if ((*i)->GetModifier()->m_amount > damage)
+                {
+                    (*i)->GetModifier()->m_amount -= damage;
+                }
+                else
+                {
+                    aurasToRemove.push_back(auraPair);
+                    continue;
+                }
+            }
+            
             if (roll_chance_f(chance))
                 aurasToRemove.push_back(auraPair);
-            dispelable++;
+            
         }
     }
 

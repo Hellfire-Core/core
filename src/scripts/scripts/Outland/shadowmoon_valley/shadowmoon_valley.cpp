@@ -526,7 +526,7 @@ struct mob_disobedient_dragonmaw_peonAI : public ScriptedAI
             m_creature->CastSpell(caster, SPELL_BOOTERANG_CREDIT, true); // visual of returning
             DoScriptText(GOSSIP_PEON_START - (urand(3, 7)), m_creature, caster);
 
-            Unit* peon = FindCreature(NPC_WORKING_PEON, 30.0f, m_creature);
+            Unit* peon = FindCreature(NPC_WORKING_PEON, 60.0f, m_creature);
             if (peon)
             {
                 float x, y, z;
@@ -2424,6 +2424,7 @@ struct npc_shadowlord_triggerAI : public Scripted_NoMovementAI
 
     void Reset()
     {
+        m_creature->setActive(true);
         Reset_Timer = 0;
         Check_Timer = 1;
         Wave_Timer = 1;
@@ -2436,6 +2437,15 @@ struct npc_shadowlord_triggerAI : public Scripted_NoMovementAI
     {
         m_creature->GetMotionMaster()->Clear();
         m_creature->GetMotionMaster()->MoveIdle();
+    }
+
+    void JustRespawned()
+    {
+        SoulstealerList.clear();
+        SoulstealerList = FindAllCreaturesWithEntry(NPC_SOULSTEALER_ID, 80.0f);
+        for (std::list<Creature*>::iterator i = SoulstealerList.begin(); i != SoulstealerList.end(); ++i)
+            if (!(*i)->isAlive())
+                (*i)->Respawn();
     }
 
     void UpdateAI(const uint32 diff)
@@ -2548,7 +2558,6 @@ struct mob_shadowlord_deathwailAI : public ScriptedAI
         m_creature->SetNoCallAssistance(true);
         m_creature->LoadCreaturesAddon(true);
         Check_Timer.Reset(2000);
-        landed = true;
         felfire = false;
 
         Shadowbolt_Timer.Reset(4000);
@@ -2615,7 +2624,7 @@ struct mob_shadowlord_deathwailAI : public ScriptedAI
             Check_Timer = 5000;
         }
 
-        if(!landed || !UpdateVictim())
+        if(!UpdateVictim() || !landed)
             return;
 
         if(Shadowbolt_Timer.Expired(diff))

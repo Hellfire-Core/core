@@ -3768,6 +3768,9 @@ void Aura::HandleModFear(bool apply, bool Real)
     if (!Real)
         return;
 
+    if (GetTarget()->GetTypeId() == TYPEID_PLAYER)
+        m_modifier.m_amount = GetTarget()->GetMaxHealth() * 0.3f;
+
     if (!apply && GetTarget()->HasAuraType(GetModifier()->m_auraname))
         return;
     
