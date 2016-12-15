@@ -2338,6 +2338,18 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
                     if (plr)
                         plr->KilledMonster(21924, 0);
                 }
+                return;
+            }
+            case 36620: // summon spirit hunter
+            {
+                if (m_target->GetTypeId() != TYPEID_PLAYER)
+                    return;
+                GuardianPetList gpl = m_target->ToPlayer()->GetGuardians();
+                for (GuardianPetList::iterator itr = gpl.begin(); itr != gpl.end(); itr++)
+                    if (Unit* pet = m_target->GetUnit(*itr))
+                        if (pet->GetEntry() == 21332)
+                            pet->CastSpell(pet, 36613, false); // cast aspect of spirit hunter
+                return;
             }
         }
 

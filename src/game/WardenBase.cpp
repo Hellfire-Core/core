@@ -149,7 +149,7 @@ void WardenBase::Update()
             else if (Client->GetPlayer() && Client->GetPlayer()->IsInWorld())
                 m_WardenKickTimer += diff;
         }
-        else if (m_WardenCheckTimer.Expired(diff))
+        else if (m_WardenCheckTimer.Expired(diff) && (!Client->GetPlayer() || Client->GetPlayer()->IsInWorld()))
         {
             RequestData();
             m_WardenCheckTimer.Reset(urand(m_checkIntervalMin, m_checkIntervalMax));

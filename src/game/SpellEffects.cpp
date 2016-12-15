@@ -1934,6 +1934,17 @@ void Spell::EffectDummy(uint32 i)
                         m_caster->Kill(unitTarget);
                     return;
                 }
+                case 36781: // despawn spirit hunter
+                {
+                    if (unitTarget->GetTypeId() != TYPEID_PLAYER)
+                        return;
+                    GuardianPetList gpl = unitTarget->ToPlayer()->GetGuardians();
+                    for (GuardianPetList::iterator itr = gpl.begin(); itr != gpl.end(); itr++)
+                        if (Unit* pet = unitTarget->GetUnit(*itr))
+                            if (pet->GetEntry() == 21332)
+                                pet->ToPet()->Remove(PET_SAVE_NOT_IN_SLOT);
+                    return;
+                }
             }
 
             //All IconID Check in there

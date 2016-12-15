@@ -87,7 +87,7 @@ namespace FactorySelector
             {
                 if (creature->m_spells[i])
                 {
-                    ai_factory = ai_registry.GetRegistryItem("CombatAI");
+                    ai_factory = ai_registry.GetRegistryItem("CasterAI");
                     break;
                 }
             }
