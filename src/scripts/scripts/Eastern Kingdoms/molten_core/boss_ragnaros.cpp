@@ -42,6 +42,7 @@ EndScriptData */
 
 #define SPELL_SONSOFFLAME_DUMMY     21108                   //Server side effect
 #define SPELL_RAGSUBMERGE           21107                   //Stealth aura
+#define SPELL_RAGSUBMERGE2          20567
 #define SPELL_RAGEMERGE             20568
 #define SPELL_MELTWEAPON            21388
 #define SPELL_ELEMENTALFIRE         20564
@@ -187,6 +188,7 @@ struct boss_ragnarosAI : public Scripted_NoMovementAI
                 //Become unbanished again
                 m_creature->setFaction(14);
                 m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                m_creature->RemoveAurasDueToSpellByCancel(SPELL_RAGSUBMERGE);
                 DoCast(m_creature, SPELL_RAGEMERGE);
                 WasBanished = false;
             }
@@ -255,7 +257,6 @@ struct boss_ragnarosAI : public Scripted_NoMovementAI
 
             m_creature->InterruptNonMeleeSpells(false);
             //Root self
-            DoCast(m_creature,23973);
             m_creature->setFaction(35);
             m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             m_creature->HandleEmoteCommand(EMOTE_ONESHOT_SUBMERGE);
