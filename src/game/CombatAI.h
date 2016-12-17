@@ -35,34 +35,4 @@ class AggressorAI : public CreatureAI
         static int Permissible(const Creature *);
 };
 
-typedef std::vector<uint32> SpellVct;
-
-class HELLGROUND_IMPORT_EXPORT CombatAI : public CreatureAI
-{
-    public:
-        explicit CombatAI(Creature *c) : CreatureAI(c) {}
-
-        void InitializeAI();
-        void Reset();
-        void EnterCombat(Unit* who);
-        void JustDied(Unit *killer);
-        void UpdateAI(const uint32 diff);
-        static int Permissible(const Creature *);
-    protected:
-        EventMap events;
-        SpellVct spells;
-};
-
-class HELLGROUND_IMPORT_EXPORT CasterAI : public CombatAI
-{
-    public:
-        explicit CasterAI(Creature *c) : CombatAI(c) { m_attackDist = MELEE_RANGE; }
-        void InitializeAI();
-        void AttackStart(Unit * victim) { AttackStartCaster(victim, m_attackDist); }
-        void UpdateAI(const uint32 diff);
-        void EnterCombat(Unit *who);
-    private:
-        float m_attackDist;
-};
-
 #endif

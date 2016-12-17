@@ -476,39 +476,6 @@ class EventMap : private std::map<uint32, uint32>
         }
 };
 
-enum AITarget
-{
-    AITARGET_SELF,
-    AITARGET_VICTIM,
-    AITARGET_ENEMY,
-    AITARGET_ALLY,
-    AITARGET_BUFF,
-    AITARGET_DEBUFF,
-};
-
-enum AICondition
-{
-    AICOND_AGGRO,
-    AICOND_COMBAT,
-    AICOND_DIE,
-};
-
-#define AI_DEFAULT_COOLDOWN 5000
-
-struct AISpellEntryType
-{
-    AISpellEntryType() : target(AITARGET_SELF), condition(AICOND_COMBAT)
-        , cooldown(AI_DEFAULT_COOLDOWN), realCooldown(0), maxRange(0.0f){}
-    AITarget target;
-    AICondition condition;
-    uint32 cooldown;
-    uint32 realCooldown;
-    float maxRange;
-};
-
-HELLGROUND_IMPORT_EXPORT AISpellEntryType * GetAISpellEntry(uint32 i);
-
-
 inline void CreatureAI::SetGazeOn(Unit *target)
 {
     if (me->canAttack(target))

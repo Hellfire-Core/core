@@ -3813,8 +3813,6 @@ void SpellMgr::LoadSpellCustomAttr()
         if (spell && spell->Category)
             sSpellCategoryStore[spell->Category].insert(i);
     }
-
-    CreatureAI::FillAISpellEntry();
 }
 
 // TODO: move this to database along with slot position in cast bar

@@ -34,9 +34,6 @@ void CreatureAI::OnCharmed(bool apply)
     }
 }
 
-AISpellEntryType * UnitAI::AISpellEntry;
-HELLGROUND_EXPORT AISpellEntryType * GetAISpellEntry(uint32 i) { return &CreatureAI::AISpellEntry[i]; }
-
 void CreatureAI::DoZoneInCombat(float max_dist)
 {
      Unit *creature = me;

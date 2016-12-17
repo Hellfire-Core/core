@@ -27,7 +27,6 @@
 
 class Unit;
 class Player;
-struct AISpellEntryType;
 
 //Selection method used by SelectTarget
 enum SelectAggroTarget
@@ -69,7 +68,6 @@ class HELLGROUND_EXPORT UnitAI
 
         void AttackStartCaster(Unit *victim, float dist);
 
-        void DoCast(uint32 spellId);
         void DoCast(Unit* victim, uint32 spellId, bool triggered = false);
         void DoCastVictim(uint32 spellId, bool triggered = false);
         void DoCastAOE(uint32 spellId, bool triggered = false);
@@ -130,9 +128,6 @@ class HELLGROUND_EXPORT UnitAI
         }
 
         void SelectUnitList(std::list<Unit*> &targetList, uint32 num, SelectAggroTarget target, float dist, bool playerOnly, uint64 exclude = 0, float mindist = 0.0f);
-
-        static AISpellEntryType *AISpellEntry;
-        static void FillAISpellEntry();
 
     private:
         Unit *ReturnTargetHelper(SelectAggroTarget target, uint32 position, std::list<Unit*> &targetList);
