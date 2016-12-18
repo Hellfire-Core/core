@@ -2677,6 +2677,7 @@ struct mob_shadowmoon_soulstealerAI : public Scripted_NoMovementAI
     void Reset()
     {
         DoCast(m_creature, 38250);
+        m_creature->SetIgnoreVictimSelection(true);
     }
 
     void MoveInLineOfSight(Unit *who)
@@ -2696,7 +2697,7 @@ struct mob_shadowmoon_soulstealerAI : public Scripted_NoMovementAI
 
     void EnterCombat(Unit* who)
     {
-        m_creature->GetUnitStateMgr().PushAction(UNIT_ACTION_STUN);
+        m_creature->GetUnitStateMgr().PushAction(UNIT_ACTION_ROOT);
         m_creature->CombatStart(who);
         if(Unit* Deathwail = FindCreature(22006, 100.0, m_creature))
             ((mob_shadowlord_deathwailAI*)((Creature*) Deathwail)->AI())->felfire = true;
@@ -3364,7 +3365,7 @@ struct mob_deathbringer_joovanAI : public ScriptedAI
     {
         ImageOfWarbringerGUID = creature->GetGUID();
         EventStarted = true;
-        EventTimer = 0;
+        EventTimer = 1;
         EventCounter = 0;
     }
 
@@ -3459,12 +3460,8 @@ struct mob_deathbringer_joovanAI : public ScriptedAI
                                 Player *p = (Player*)(*it);
                                 if(p->HasAura(37097, 0))
                                 {
-                                    // event happens nie dziala, a powinien!
                                     p->AreaExploredOrEventHappens(10596);
                                     p->AreaExploredOrEventHappens(10563);
-                                    // dlatego recznie musimy complete quest dac
-                                    p->CompleteQuest(10596);
-                                    p->CompleteQuest(10563);
                                 }
                             }
                         }
@@ -3616,6 +3613,122 @@ bool GOUse_go_forged_illidari_bane(Player *pPlayer, GameObject *pGo)
 
     pGo->SetLootState(GO_JUST_DEACTIVATED);
     return true;
+}
+
+#define SPELL_BLUE_BEAM 40225
+#define NPC_LEGION_HOLD_REAVER 21404
+struct npc_invis_legion_hold_casterAI : public ScriptedAI
+{
+    npc_invis_legion_hold_casterAI(Creature* c) : ScriptedAI(c) {}
+
+    void Reset()
+    {
+        Unit* reaver = FindCreature(NPC_LEGION_HOLD_REAVER, 30, m_creature);
+        if (reaver)
+            m_creature->CastSpell(reaver, SPELL_BLUE_BEAM, false);
+    }
+};
+
+CreatureAI* GetAI_npc_invis_legion_hold_caster(Creature* c)
+{
+    return new npc_invis_legion_hold_casterAI(c);
+}
+
+#define NPC_INFERNAL_ATTACKER 21419
+#define SPELL_INFERNAL_SUMMON_DUMMY 23053
+struct npc_invis_infernal_casterAI : public ScriptedAI
+{
+    npc_invis_infernal_casterAI(Creature* c) : ScriptedAI(c) {}
+
+    Timer summonTimer;
+    uint64 myInfernal;
+    void Reset()
+    {
+        summonTimer.Reset(300000);
+        myInfernal = 0;
+    }
+
+    void UpdateAI(const uint32 diff)
+    {
+        if(summonTimer.Expired(diff))
+        {
+            if (!myInfernal)
+            {
+                if (summonTimer.GetInterval() == 3000)
+                {
+                    summonTimer = 10000;
+                    Creature* infernal = m_creature->SummonCreature(NPC_INFERNAL_ATTACKER, m_creature->GetPositionX(),
+                        m_creature->GetPositionY(), m_creature->GetPositionZ(), 0, TEMPSUMMON_DEAD_DESPAWN, 0);
+                    if (infernal)
+                    {
+                        myInfernal = infernal->GetGUID();
+                    }
+                    
+                }
+                else
+                {
+                    m_creature->CastSpell(m_creature->GetPositionX(), m_creature->GetPositionY(), m_creature->GetPositionZ(),
+                        SPELL_INFERNAL_SUMMON_DUMMY, false);
+                    summonTimer = 3000;
+                }
+            }
+            else
+            {
+                Unit* infernal = m_creature->GetUnit(myInfernal);
+                if (!infernal || infernal->isDead())
+                {
+                    summonTimer = 300000;
+                    myInfernal = 0;
+                }
+            }
+        }
+    }
+
+};
+
+CreatureAI* GetAI_npc_invis_infernal_caster(Creature* c)
+{
+    return new npc_invis_infernal_casterAI(c);
+}
+
+#define SPELL_SPIRIT_HUNTER 36620
+#define NPC_VENERATUS 20427
+struct npc_veneratus_spawn_nodeAI : public ScriptedAI
+{
+    npc_veneratus_spawn_nodeAI(Creature* c) : ScriptedAI(c) {}
+
+    Timer resetTimer;
+
+    void Reset()
+    {
+        resetTimer = 0;
+    }
+
+    void MoveInLineOfSight(Unit* who)
+    {
+        if (!resetTimer.GetInterval() && who->HasAura(SPELL_SPIRIT_HUNTER))
+        {
+            m_creature->SummonCreature(NPC_VENERATUS, m_creature->GetPositionX(),
+                m_creature->GetPositionY(), m_creature->GetPositionZ(), 0, TEMPSUMMON_DEAD_DESPAWN, 0);
+            resetTimer = 60000;
+        }
+    }
+
+    void UpdateAI(const uint32 diff)
+    {
+        if (resetTimer.Expired(diff))
+        {
+            if (FindCreature(NPC_VENERATUS, 30, m_creature))
+                resetTimer = 60000;
+            else
+                resetTimer = 0;
+        }
+    }
+};
+
+CreatureAI* GetAI_npc_veneratus_spawn_node(Creature* c)
+{
+    return new npc_veneratus_spawn_nodeAI(c);
 }
 
 void AddSC_shadowmoon_valley()
@@ -3809,5 +3922,20 @@ void AddSC_shadowmoon_valley()
     newscript->Name = "npc_restore_spectrecles";
     newscript->pGossipHello = &GossipHello_npc_restore_spectrecles;
     newscript->pGossipSelect = &GossipSelect_npc_restore_spectrecles;
+    newscript->RegisterSelf();
+    
+    newscript = new Script;
+    newscript->Name = "npc_invis_legion_hold_caster";
+    newscript->GetAI = &GetAI_npc_invis_legion_hold_caster;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_invis_infernal_caster";
+    newscript->GetAI = &GetAI_npc_invis_infernal_caster;
+    newscript->RegisterSelf();
+    
+    newscript = new Script;
+    newscript->Name = "npc_veneratus_spawn_node";
+    newscript->GetAI = &GetAI_npc_veneratus_spawn_node;
     newscript->RegisterSelf();
 }

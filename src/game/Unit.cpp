@@ -3462,7 +3462,7 @@ bool Unit::IsNonMeleeSpellCast(bool withDelayed, bool skipChanneled, bool skipAu
             return true;
     }
     // channeled spells may be delayed, but they are still considered cast
-    else if (!skipChanneled)
+    if (!skipChanneled)
     {
         if (Spell* current = GetCurrentSpell(CURRENT_CHANNELED_SPELL))
         {
@@ -3472,7 +3472,7 @@ bool Unit::IsNonMeleeSpellCast(bool withDelayed, bool skipChanneled, bool skipAu
     }
 
     // autorepeat spells may be finished or delayed, but they are still considered cast
-    else if (!skipAutorepeat && GetCurrentSpell(CURRENT_AUTOREPEAT_SPELL))
+    if (!skipAutorepeat && GetCurrentSpell(CURRENT_AUTOREPEAT_SPELL))
         return true;
 
     return false;

@@ -3021,6 +3021,12 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 36576: // no damage calc for shaleskin
                     spellInfo->Attributes &= ~SPELL_ATTR_LEVEL_DAMAGE_CALCULATION;
                     break;
+                case 36817: // ashtongue corruptors channel spell
+                case 37204:
+                case 37205:
+                case 37206:
+                    spellInfo->AttributesEx |= SPELL_ATTR_EX_UNAFFECTED_BY_SCHOOL_IMMUNE;
+                    break;
                 }
                 if (spellInfo->SpellIconID == 184 && spellInfo->Attributes == 4259840)
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
