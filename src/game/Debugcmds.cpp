@@ -1038,7 +1038,7 @@ bool ChatHandler::HandleDebugShowCombatStats(const char* args)
         target->SetGMToSendCombatStats(m_session->GetPlayer()->GetGUID(), -1);
         PSendSysMessage("Combat stats for unit %s (%lu) enabled", target->GetName(), target->GetGUID());
     }
-    else if(strcmp(args, "off") == 0)
+    else if(strcmp(args, "off") == 0 || strcmp(args, "0") == 0)
     {
         target->SetGMToSendCombatStats(0, 0);
         PSendSysMessage("Combat stats for unit %s (%lu) disabled", target->GetName(), target->GetGUID());

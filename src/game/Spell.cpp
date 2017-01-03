@@ -1069,12 +1069,6 @@ void Spell::DoAllEffectOnTarget(TargetInfo *target)
     {
         if (m_caster->GetTypeId() != TYPEID_PLAYER || !((Player const*)m_caster)->isGameMaster())
             m_caster->CombatStart(unit, !(GetSpellEntry()->AttributesEx3 & SPELL_ATTR_EX3_NO_INITIAL_AGGRO));
-
-        if (GetSpellEntry()->AttributesCu & SPELL_ATTR_CU_AURA_CC)
-        {
-            if (!unit->IsStandState())
-                unit->SetStandState(PLAYER_STATE_NONE);
-        }
     }
 
     // if target is flagged for pvp also flag caster if a player
@@ -1139,8 +1133,6 @@ void Spell::DoSpellHitOnUnit(Unit *unit, const uint32 effectMask)
                 return;
             }
             unit->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_HITBYSPELL);
-            if (GetSpellEntry()->AttributesCu & SPELL_ATTR_CU_AURA_CC)
-                unit->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_CC);
         }
         else
         {
@@ -3842,6 +3834,24 @@ void Spell::HandleEffects(Unit *pUnitTarget, Item *pItemTarget, GameObject *pGOT
     //Simply return. Do not display "immune" in red text on client
     if (unitTarget && unitTarget->IsImmunedToSpellEffect(eff, mechanic))
         return;
+
+    // must be done here, can happen that cc spell has secondary effect (death coil) and target is immune only to cc effect
+    if (unitTarget && GetSpellEntry()->AttributesCu & SPELL_ATTR_CU_AURA_CC) 
+    {
+        switch (GetSpellEntry()->EffectApplyAuraName[i])
+        {
+        case SPELL_AURA_MOD_POSSESS:
+        case SPELL_AURA_MOD_CONFUSE:
+        case SPELL_AURA_MOD_CHARM:
+        case SPELL_AURA_MOD_FEAR:
+        case SPELL_AURA_MOD_STUN:
+            unitTarget->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_CC);
+            if (!unitTarget->IsStandState())
+                unitTarget->SetStandState(PLAYER_STATE_NONE);
+            break;
+        default: break;
+        }
+    }
 
     //we do not need DamageMultiplier here.
     damage = CalculateDamage(i, NULL);

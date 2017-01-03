@@ -10040,7 +10040,7 @@ void Unit::setDeathState(DeathState s)
 {
     if (s != ALIVE && s != JUST_ALIVED)
     {
-        CombatStop();
+        CombatStop(true);
         DeleteThreatList();
         getHostileRefManager().deleteReferences();
         ClearComboPointHolders();                           // any combo points pointed to unit lost at it death
