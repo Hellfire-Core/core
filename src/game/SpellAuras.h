@@ -324,6 +324,9 @@ class HELLGROUND_IMPORT_EXPORT Aura
             if (GetSpellProto()->SpellFamilyName == SPELLFAMILY_SHAMAN && this->GetSpellProto()->SpellIconID == 1677) // Grounding Totem
                 return true;
 
+            if (GetSpellProto()->Id == 36817 || GetSpellProto()->Id == 37204 || GetSpellProto()->Id == 37205 || GetSpellProto()->Id == 37206)
+                return true;
+
             return false;
         }
 

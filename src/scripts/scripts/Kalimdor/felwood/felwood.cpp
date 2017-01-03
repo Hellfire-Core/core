@@ -169,6 +169,33 @@ CreatureAI* GetAI_winnas_kitten(Creature* c)
     return new npc_winnas_kittenAI(c);
 }
 
+#define GOSSIP_ITEM_HASTAT "[Obtain Stave of the Ancient Keepers]"
+bool GossipHello_npc_hastat_the_ancient(Player *player, Creature *_Creature)
+{
+    uint32 eCreature = _Creature->GetEntry();
+
+    if (_Creature->isQuestGiver())
+        player->PrepareQuestMenu(_Creature->GetGUID());
+
+    if (player->GetQuestRewardStatus(7635) && player->GetQuestRewardStatus(7636) && !player->HasItemCount(18715,1,true))
+    {
+        player->ADD_GOSSIP_ITEM(0, GOSSIP_ITEM_HASTAT, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+        player->SEND_GOSSIP_MENU(2848, _Creature->GetGUID());
+    }
+
+    return true;
+}
+
+bool GossipSelect_npc_hastat_the_ancient(Player *player, Creature *_Creature, uint32 sender, uint32 action)
+{
+    if (action == GOSSIP_ACTION_INFO_DEF + 1)
+    {
+        player->CLOSE_GOSSIP_MENU();
+        _Creature->CastSpell(player, 24872, false);
+    }
+    return true;
+}
+
 void AddSC_felwood()
 {
     Script *newscript;
@@ -182,6 +209,12 @@ void AddSC_felwood()
     newscript = new Script;
     newscript->Name = "npc_winnas_kitten";
     newscript->GetAI = &GetAI_winnas_kitten;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_hastat_the_ancient";
+    newscript->pGossipHello = &GossipHello_npc_hastat_the_ancient;
+    newscript->pGossipSelect = &GossipSelect_npc_hastat_the_ancient;
     newscript->RegisterSelf();
 }
 
