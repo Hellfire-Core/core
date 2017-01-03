@@ -1065,7 +1065,7 @@ void Spell::DoAllEffectOnTarget(TargetInfo *target)
                 p->CastCreatureOrGO(unit->GetEntry(), unit->GetGUID(), GetSpellEntry()->Id);
     }
 
-    if (!m_caster->IsFriendlyTo(unit) && !SpellMgr::IsPositiveSpell(GetSpellEntry()->Id))
+    if (!m_caster->IsFriendlyTo(unit) && !SpellMgr::IsPositiveSpell(GetSpellEntry()->Id) && missInfo != SPELL_MISS_IMMUNE)
     {
         if (m_caster->GetTypeId() != TYPEID_PLAYER || !((Player const*)m_caster)->isGameMaster())
             m_caster->CombatStart(unit, !(GetSpellEntry()->AttributesEx3 & SPELL_ATTR_EX3_NO_INITIAL_AGGRO));

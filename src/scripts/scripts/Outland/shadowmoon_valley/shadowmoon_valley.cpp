@@ -489,12 +489,14 @@ struct mob_disobedient_dragonmaw_peonAI : public ScriptedAI
     uint64 PlayerGUID;
     uint32 myAura;
     Timer WorkingTimer;
+    Timer SayTimer;
 
     void Reset()
     {
         SelectAura();
         PlayerGUID = 0;
         WorkingTimer.Reset(0);
+        SayTimer.Reset(6000);
     }
 
     void SelectAura()
@@ -507,12 +509,6 @@ struct mob_disobedient_dragonmaw_peonAI : public ScriptedAI
         }
     }
 
-    void EnterCombat(Unit *who)
-    {
-        if (m_creature->HasAura(SPELL_PEON_0))
-            DoScriptText(GOSSIP_PEON_START - (urand(0, 2)), m_creature, who);
-    }
-
     void SpellHit(Unit* caster, const SpellEntry* spell)
     {
         if (!caster)
@@ -521,6 +517,7 @@ struct mob_disobedient_dragonmaw_peonAI : public ScriptedAI
         if (caster->GetTypeId() == TYPEID_PLAYER && spell->Id == SPELL_BOOTERANG_HIT && !WorkingTimer.GetInterval())
         {
             m_creature->RemoveAllAuras();
+            myAura = 0;
             caster->ToPlayer()->CastCreatureOrGO(NPC_DISOBEDIENT_PEON, m_creature->GetGUID(), SPELL_BOOTERANG_CREDIT);
             m_creature->CastSpell(caster, SPELL_BOOTERANG_CREDIT, true); // visual of returning
             DoScriptText(GOSSIP_PEON_START - (urand(3, 7)), m_creature, caster);
@@ -561,8 +558,15 @@ struct mob_disobedient_dragonmaw_peonAI : public ScriptedAI
 
         if (!UpdateVictim())
         {
-            if (!m_creature->IsInEvadeMode() && !m_creature->HasAura(myAura))
-                m_creature->CastSpell(m_creature, myAura, true);
+            if (SayTimer.Expired(diff))
+            {
+                if (myAura && !m_creature->IsInEvadeMode() && !m_creature->HasAura(myAura))
+                    m_creature->CastSpell(m_creature, myAura, true);
+
+                if (myAura == SPELL_PEON_0)
+                    DoScriptText(GOSSIP_PEON_START - (urand(0, 2)), m_creature);
+                SayTimer = 6000;
+            }
             return;
         }
 
