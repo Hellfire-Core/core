@@ -2662,7 +2662,7 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
                         m_target->CastSpell(m_target, 42517, true);
                     return;
                 }
-            case 40753: // dragonmaw peon, defiant and enraged
+            case 40735: // dragonmaw peon, defiant and enraged
             {
                 m_target->setFaction(apply ? 16 : 62);
                 break;
@@ -2670,6 +2670,11 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
             case 40732: // dragonmaw peon, sleping
             {
                 m_target->SetUInt32Value(UNIT_NPC_EMOTESTATE, apply ? EMOTE_STATE_SLEEP : EMOTE_STATE_NONE);
+                break;
+            }
+            case 40714: // dragonmaw peon, confused
+            {
+                m_target->SetConfused(apply);
                 break;
             }
             }

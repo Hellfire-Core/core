@@ -997,7 +997,8 @@ void CreatureEventAI::JustReachedHome()
 void CreatureEventAI::EnterEvadeMode()
 {
     CreatureAI::EnterEvadeMode();
-
+    if (m_creature->GetEntry() == 21704)
+        m_creature->SendCombatStats(1 << COMBAT_STATS_CRASHTEST, "bang", NULL);
     if (bEmptyList)
         return;
 

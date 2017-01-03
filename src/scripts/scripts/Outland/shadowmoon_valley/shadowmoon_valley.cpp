@@ -487,6 +487,7 @@ struct mob_disobedient_dragonmaw_peonAI : public ScriptedAI
     mob_disobedient_dragonmaw_peonAI(Creature* c) : ScriptedAI(c) {}
 
     uint64 PlayerGUID;
+    uint32 myAura;
     Timer WorkingTimer;
 
     void Reset()
@@ -498,14 +499,12 @@ struct mob_disobedient_dragonmaw_peonAI : public ScriptedAI
 
     void SelectAura()
     {
-        uint32 spell = 0;
         switch (urand(0, 2))
         {
-        case 0: spell = SPELL_PEON_0; break;
-        case 1: spell = SPELL_PEON_1; break;
-        case 2: spell = SPELL_PEON_2; break;
+        case 0: myAura = SPELL_PEON_0; break;
+        case 1: myAura = SPELL_PEON_1; break;
+        case 2: myAura = SPELL_PEON_2; break;
         }
-        m_creature->CastSpell(m_creature, spell, true);
     }
 
     void EnterCombat(Unit *who)
@@ -534,6 +533,7 @@ struct mob_disobedient_dragonmaw_peonAI : public ScriptedAI
 
                 m_creature->SetWalk(false);
                 m_creature->GetMotionMaster()->MovePoint(1, x, y, z);
+                WorkingTimer.Reset(MINUTE*IN_MILISECONDS);
             }
         }
     }
@@ -546,7 +546,6 @@ struct mob_disobedient_dragonmaw_peonAI : public ScriptedAI
         if (id)
         {
             m_creature->SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_ONESHOT_ATTACK1H);
-            WorkingTimer.Reset(MINUTE*IN_MILISECONDS);
         }
     }
 
@@ -558,6 +557,13 @@ struct mob_disobedient_dragonmaw_peonAI : public ScriptedAI
             m_creature->GetMotionMaster()->MoveTargetedHome();
             SelectAura();
             WorkingTimer.Reset(0);
+        }
+
+        if (!UpdateVictim())
+        {
+            if (!m_creature->IsInEvadeMode() && !m_creature->HasAura(myAura))
+                m_creature->CastSpell(m_creature, myAura, true);
+            return;
         }
 
         DoMeleeAttackIfReady();
