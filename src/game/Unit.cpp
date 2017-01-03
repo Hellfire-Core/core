@@ -3417,7 +3417,11 @@ void Unit::InterruptSpell(uint32 spellType, bool withDelayed, bool withInstant)
 {
     ASSERT(spellType < CURRENT_MAX_SPELL);
 
+    
+
     Spell* spell = GetCurrentSpell(CurrentSpellTypes(spellType));
+    SendCombatStats(1 << COMBAT_STATS_TEST, "interrupt spell %u %u %u|%u %u %u", NULL, spellType, withDelayed, withInstant,
+        spell ? spell->GetSpellEntry()->Id : 0, spell ? spell->getState() : 6, spell ? spell->GetCastTime() : 0);
     if (spell
         && (withDelayed || spell->getState() != SPELL_STATE_DELAYED)
         && (withInstant || spell->GetCastTime() > 0))
@@ -3480,6 +3484,7 @@ bool Unit::IsNonMeleeSpellCast(bool withDelayed, bool skipChanneled, bool skipAu
 
 void Unit::InterruptNonMeleeSpells(bool withDelayed, uint32 spell_id, bool withInstant)
 {
+    SendCombatStats(1 << COMBAT_STATS_TEST, "interrupt non melee spells %u %u %u", NULL, withDelayed, spell_id, withInstant);
     // generic spells are interrupted if they are not finished or delayed
     if (m_currentSpells[CURRENT_GENERIC_SPELL] && (!spell_id || m_currentSpells[CURRENT_GENERIC_SPELL]->GetSpellEntry()->Id==spell_id))
         InterruptSpell(CURRENT_GENERIC_SPELL,withDelayed,withInstant);

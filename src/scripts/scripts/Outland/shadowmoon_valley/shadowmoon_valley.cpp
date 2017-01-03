@@ -3627,6 +3627,12 @@ struct npc_invis_legion_hold_casterAI : public ScriptedAI
         if (reaver)
             m_creature->CastSpell(reaver, SPELL_BLUE_BEAM, false);
     }
+
+    void UpdateAI(const uint32 diff)
+    {
+        if (!m_creature->IsNonMeleeSpellCast(true))
+            Reset();
+    }
 };
 
 CreatureAI* GetAI_npc_invis_legion_hold_caster(Creature* c)
@@ -3680,6 +3686,8 @@ struct npc_invis_infernal_casterAI : public ScriptedAI
                     summonTimer = 300000;
                     myInfernal = 0;
                 }
+                else
+                    summonTimer = 10000;
             }
         }
     }
