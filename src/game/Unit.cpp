@@ -3457,7 +3457,8 @@ bool Unit::IsNonMeleeSpellCast(bool withDelayed, bool skipChanneled, bool skipAu
 {
     // We don't do loop here to explicitly show that melee spell is excluded.
     // Maybe later some special spells will be excluded too.
-
+    SendCombatStats(1 << COMBAT_STATS_TEST, "isnonmeleespellcast %u %u %u %u", NULL, withDelayed, skipChanneled, skipAutorepeat,
+        GetCurrentSpell(CURRENT_CHANNELED_SPELL) ? GetCurrentSpell(CURRENT_CHANNELED_SPELL)->getState() : 17);
     // generic spells are cast when they are not finished and not delayed
     if (Spell* current = GetCurrentSpell(CURRENT_GENERIC_SPELL))
     {
@@ -3477,7 +3478,7 @@ bool Unit::IsNonMeleeSpellCast(bool withDelayed, bool skipChanneled, bool skipAu
     // autorepeat spells may be finished or delayed, but they are still considered cast
     if (!skipAutorepeat && GetCurrentSpell(CURRENT_AUTOREPEAT_SPELL))
         return true;
-
+    
     return false;
 }
 
@@ -9376,6 +9377,7 @@ void Unit::SetInCombatWith(Unit* enemy)
             return;
         }
     }
+    
     SetInCombatState(false, enemy);
 }
 
@@ -9417,9 +9419,6 @@ void Unit::SetInCombatState(bool PvP, Unit* enemy)
     // only alive units can be in combat
     if (!isAlive())
         return;
-
-    if (GetEntry() == 21709)
-        SendCombatStats(1 << COMBAT_STATS_CRASHTEST, "Bang", NULL);
 
     if (PvP)
         m_CombatTimer = 5600;
@@ -10042,7 +10041,7 @@ void Unit::setDeathState(DeathState s)
 {
     if (s != ALIVE && s != JUST_ALIVED)
     {
-        CombatStop(true);
+        CombatStop();
         DeleteThreatList();
         getHostileRefManager().deleteReferences();
         ClearComboPointHolders();                           // any combo points pointed to unit lost at it death

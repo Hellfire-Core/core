@@ -346,8 +346,8 @@ bool OPvPCapturePointZM_GraveYard::HandleGossipOption(Player *plr, uint64 guid, 
         return false;
 
     Creature * cr = m_PvP->GetMap()->GetCreature(guid);
-    if (!cr)
-        return true;
+    if (!cr || (cr->GetEntry() != ALLIANCE_FIELD_SCOUT && cr->GetEntry() != HORDE_FIELD_SCOUT))
+        return false; // not this outdorpvp gossip
     // if the flag is already taken, then return
     if (m_FlagCarrierGUID)
         return true;

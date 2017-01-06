@@ -509,22 +509,20 @@ bool OPvPCapturePointEP::CanTalkTo(Player * p, Creature * c, GossipOption &gso)
 bool OPvPCapturePointEP::HandleGossipOption(Player *plr, uint64 guid, uint32 gossipid)
 {
     Creature * cr = m_PvP->GetMap()->GetCreature(guid);
-    if (!cr)
-        return true;
-    if (cr->GetEntry() == PWT_FLIGHT_MASTER)
-    {
-        uint32 src = EP_TAXI_NODE[0];
-        uint32 dst = EP_TAXI_NODE[gossipid+1];
+    if (!cr || cr->GetEntry() != PWT_FLIGHT_MASTER)
+        return false; // not this outdorpvp gossip
 
-        std::vector<uint32> nodes;
-        nodes.resize(2);
-        nodes[0] = src;
-        nodes[1] = dst;
+    uint32 src = EP_TAXI_NODE[0];
+    uint32 dst = EP_TAXI_NODE[gossipid+1];
 
-        plr->PlayerTalkClass->CloseGossip();
-        plr->ActivateTaxiPathTo(nodes, 0, cr);
-        // leave the opvp, seems like moveinlineofsight isn't called when entering a taxi
-        HandlePlayerLeave(plr);
-    }
+    std::vector<uint32> nodes;
+    nodes.resize(2);
+    nodes[0] = src;
+    nodes[1] = dst;
+
+    plr->PlayerTalkClass->CloseGossip();
+    plr->ActivateTaxiPathTo(nodes, 0, cr);
+    // leave the opvp, seems like moveinlineofsight isn't called when entering a taxi
+    HandlePlayerLeave(plr);
     return true;
 }
