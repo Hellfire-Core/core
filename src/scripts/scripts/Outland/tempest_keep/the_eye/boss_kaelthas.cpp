@@ -470,6 +470,9 @@ struct boss_kaelthasAI : public ScriptedAI
     {
         if(!pInstance)
             return;
+        if (pInstance->GetData(DATA_ALAREVENT) != DONE || pInstance->GetData(DATA_HIGHASTROMANCERSOLARIANEVENT) != DONE ||
+            pInstance->GetData(DATA_VOIDREAVEREVENT) != DONE)
+            return;
 
         AdvisorGuid[0] = pInstance->GetData64(DATA_THALADREDTHEDARKENER);
         AdvisorGuid[1] = pInstance->GetData64(DATA_LORDSANGUINAR);

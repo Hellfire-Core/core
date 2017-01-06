@@ -167,6 +167,7 @@ struct boss_lady_vashjAI : public ScriptedAI
     uint8 EnchantedElemental_Pos;
     uint8 Phase;
     uint8 path_nr;
+    Timer InviCheckTimer;
 
     bool Entangle;
     bool InCombat;
@@ -192,7 +193,21 @@ struct boss_lady_vashjAI : public ScriptedAI
         Phase = 0;
         Intro = false;
 
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE); //set it only once on creature create (no need do intro if wiped)
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+
+        if (instance->GetData(DATA_PREVIOUS_BOSS_DEAD) != DONE)
+        {
+            me->SetVisibility(VISIBILITY_OFF);    
+            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            me->setFaction(35);
+        }
+        else
+        {
+            me->SetVisibility(VISIBILITY_ON);
+            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            me->setFaction(14);
+        }
+        InviCheckTimer.Reset(5000);
 
         Entangle = false;
         CanAttack = false;
@@ -326,6 +341,18 @@ struct boss_lady_vashjAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
+        if (me->getFaction() == 35 && InviCheckTimer.Expired(diff))
+        {
+            if (instance->GetData(DATA_PREVIOUS_BOSS_DEAD) == DONE)
+            {
+                me->SetVisibility(VISIBILITY_ON);
+                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                me->setFaction(14);
+            }
+            InviCheckTimer = 5000;
+            return;
+        }
+
         if(!CanAttack && Intro)
         {
             if(AggroTimer.Expired(diff))

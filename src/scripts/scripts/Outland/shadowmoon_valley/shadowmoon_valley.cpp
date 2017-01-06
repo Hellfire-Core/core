@@ -517,9 +517,11 @@ struct mob_disobedient_dragonmaw_peonAI : public ScriptedAI
         if (caster->GetTypeId() == TYPEID_PLAYER && spell->Id == SPELL_BOOTERANG_HIT && !WorkingTimer.GetInterval())
         {
             m_creature->RemoveAllAuras();
+            m_creature->CombatStop();
             myAura = 0;
             caster->ToPlayer()->CastCreatureOrGO(NPC_DISOBEDIENT_PEON, m_creature->GetGUID(), SPELL_BOOTERANG_CREDIT);
             m_creature->CastSpell(caster, SPELL_BOOTERANG_CREDIT, true); // visual of returning
+            m_creature->LoadEquipment(451);
             DoScriptText(GOSSIP_PEON_START - (urand(3, 7)), m_creature, caster);
 
             Unit* peon = FindCreature(NPC_WORKING_PEON, 60.0f, m_creature);
@@ -550,6 +552,7 @@ struct mob_disobedient_dragonmaw_peonAI : public ScriptedAI
     {
         if (WorkingTimer.Expired(diff))
         {
+            m_creature->LoadEquipment(0, true);
             m_creature->SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_ONESHOT_NONE);
             m_creature->GetMotionMaster()->MoveTargetedHome();
             SelectAura();

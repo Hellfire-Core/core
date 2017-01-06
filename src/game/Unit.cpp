@@ -427,8 +427,7 @@ void Unit::Update(uint32 update_diff, uint32 /*p_time*/)
     // Or else we may have some SPELL_STATE_FINISHED spells stalled in pointers, that is bad.
     uint32 startTime = WorldTimer::getMSTime();
     uint32 count = GetEvents()->Update(update_diff);
-    if (WorldTimer::getMSTimeDiffToNow(startTime) > 10)
-        SendCombatStats(1 << COMBAT_STATS_TEST, "Unit updat1 %u %u ms", NULL, WorldTimer::getMSTimeDiffToNow(startTime), count);
+    
     if (!IsInWorld())
         return;
 
@@ -9419,6 +9418,9 @@ void Unit::SetInCombatState(bool PvP, Unit* enemy)
     if (!isAlive())
         return;
 
+    if (GetEntry() == 21709)
+        SendCombatStats(1 << COMBAT_STATS_CRASHTEST, "Bang", NULL);
+
     if (PvP)
         m_CombatTimer = 5600;
 
@@ -12306,8 +12308,7 @@ class RelocationNotifyEvent : public BasicEvent
 
             //_owner.GetPosition(_owner._notifiedPosition);
             _owner._SetAINotifyScheduled(false);
-            if (WorldTimer::getMSTimeDiffToNow(starttime) > 1)
-                _owner.SendCombatStats(1 << COMBAT_STATS_TEST, "Unit RelocationNotifyEvent took %u ms %f", NULL, WorldTimer::getMSTimeDiffToNow(starttime), radius);
+
             return true;
         }
 

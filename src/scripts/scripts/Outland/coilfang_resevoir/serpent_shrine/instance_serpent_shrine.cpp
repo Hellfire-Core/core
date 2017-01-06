@@ -50,7 +50,11 @@ bool GOUse_go_bridge_console(Player *player, GameObject* go)
     if(!pInstance)
         return false;
 
-    pInstance->SetData(DATA_CONTROL_CONSOLE, DONE);
+    if (pInstance->GetData(DATA_PREVIOUS_BOSS_DEAD) != DONE)
+        return true;
+
+    if (pInstance->GetData(DATA_CONTROL_CONSOLE) != DONE)
+        pInstance->SetData(DATA_CONTROL_CONSOLE, DONE);
 
     return true;
 }
@@ -382,6 +386,9 @@ struct instance_serpentshrine_cavern : public ScriptedInstance
                 break;
             case DATA_STRANGE_POOL:             return StrangePool;
             case DATA_WATER:                    return Water;
+            case DATA_PREVIOUS_BOSS_DEAD:
+                return (Encounters[0] == DONE && Encounters[1] == DONE && Encounters[2] == DONE && Encounters[3] == DONE &&
+                    Encounters[4] == DONE) ? DONE : NOT_STARTED;
         }
         return 0;
     }

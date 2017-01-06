@@ -4250,9 +4250,12 @@ bool SpellMgr::IsSpellAllowedInLocation(SpellEntry const *spellInfo,uint32 map_i
         case 43822:
         case 43820:
             return map_id == 568;
-        // Ritual of summoning in Zul'Aman
+        // Ritual of summoning
         case 698:
-            return map_id != 568;
+            if (map_id == 568) return false; // Zul'aman
+            if (zone_id == 3523 || zone_id == 3845 || zone_id == 3847 || zone_id == 3848 || zone_id == 3849)
+                return false; // netherstorm; shall be removed with SWP RELEASE
+            return true;
         case 32096:
         case 32098:
         case 39911:
