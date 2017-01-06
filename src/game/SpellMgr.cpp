@@ -3028,6 +3028,9 @@ void SpellMgr::LoadSpellCustomAttr()
                     spellInfo->AttributesEx4 &= ~SPELL_ATTR_EX4_FORCE_TRIGGERED;
                     spellInfo->AttributesEx |= SPELL_ATTR_EX_UNAFFECTED_BY_SCHOOL_IMMUNE;
                     break;
+                case 48025: // headless horseman mount
+                    spellInfo->Attributes |= SPELL_ATTR_CANT_USED_IN_COMBAT | SPELL_ATTR_OUTDOORS_ONLY;
+                    break;
                 }
                 if (spellInfo->SpellIconID == 184 && spellInfo->Attributes == 4259840)
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;

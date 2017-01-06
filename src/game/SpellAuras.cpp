@@ -4658,6 +4658,9 @@ void Aura::HandleAuraModSchoolImmunity(bool apply, bool Real)
     if (apply && m_modifier.m_miscvalue == SPELL_SCHOOL_MASK_NORMAL)
         m_target->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_UNATTACKABLE);
 
+    if (!apply && m_target->HasAura(GetId(), GetEffIndex()))
+        return; // has same aura from other caster
+
     m_target->ApplySpellImmune(GetId(),IMMUNITY_SCHOOL,m_modifier.m_miscvalue,apply);
 
     if (Real && apply && GetSpellProto()->AttributesEx & SPELL_ATTR_EX_DISPEL_AURAS_ON_IMMUNITY)

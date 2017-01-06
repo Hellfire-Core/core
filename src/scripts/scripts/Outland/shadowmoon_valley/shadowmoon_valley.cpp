@@ -3663,7 +3663,7 @@ struct npc_invis_infernal_casterAI : public ScriptedAI
     uint64 myInfernal;
     void Reset()
     {
-        summonTimer.Reset(300000);
+        summonTimer.Reset(60000);
         myInfernal = 0;
     }
 
@@ -3680,6 +3680,7 @@ struct npc_invis_infernal_casterAI : public ScriptedAI
                         m_creature->GetPositionY(), m_creature->GetPositionZ(), 0, TEMPSUMMON_DEAD_DESPAWN, 0);
                     if (infernal)
                     {
+                        infernal->GetMotionMaster()->MoveRandom(5.0f);
                         myInfernal = infernal->GetGUID();
                     }
                     
@@ -3696,7 +3697,7 @@ struct npc_invis_infernal_casterAI : public ScriptedAI
                 Unit* infernal = m_creature->GetUnit(myInfernal);
                 if (!infernal || infernal->isDead())
                 {
-                    summonTimer = 300000;
+                    summonTimer = 60000;
                     myInfernal = 0;
                 }
                 else
