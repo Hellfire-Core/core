@@ -4,20 +4,14 @@
 #   HellGroundCore   #
 ######################
 
-World of Warcraft TBC server
 
-* Repository: http://emu.hellground.net
-* Wiki: http://wiki.hellground.net
-* Site: https://hellground.net
+* Repository: http://core.wow-hellground.com
+* Wiki: http://wiki.wow-hellground.com
+* Site: https://wow.hellground.com
 
 Welcome!
-
-
 
 Do not share this code with anyone who does not have access to repository.
 
 
-
-
-
-Copyright (C) 2008-2014 HellGround team <http://hellground.net/>
+Copyright (C) 2008-2018 HellGround team <http://wow-hellground.com/>
