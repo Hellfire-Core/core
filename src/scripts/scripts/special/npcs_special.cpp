@@ -1048,16 +1048,13 @@ struct npc_snake_trap_serpentsAI : public ScriptedAI
 
     void Reset()
     {
-        if (roll_chance_f(66.0f))
-        {
-            SetAutocast(me->GetEntry() == SNAKE_VIPER ? RAND(SPELL_MIND_NUMBING_POISON, SPELL_CRIPPLING_POISON) : SPELL_DEADLY_POISON, urand(1000, 3000), false, CAST_TANK);
-            StartAutocast();
-        }
+        SetAutocast(me->GetEntry() == SNAKE_VIPER ? RAND(SPELL_MIND_NUMBING_POISON, SPELL_CRIPPLING_POISON) : SPELL_DEADLY_POISON, urand(500, 2000), false, CAST_TANK);
+        StartAutocast();
 
         checkTimer.Reset(2000);
 
         me->SetReactState(REACT_AGGRESSIVE);
-        me->setAttackTimer(BASE_ATTACK, urand(500, 1500));
+        me->setAttackTimer(BASE_ATTACK, 500);
     }
 
     bool UpdateVictim()
