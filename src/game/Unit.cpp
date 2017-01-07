@@ -9551,7 +9551,7 @@ bool Unit::canAttack(Unit const* target, bool force) const
     if ((m_invisibilityMask || target->m_invisibilityMask) && !canDetectInvisibilityOf(target) && !target->canDetectInvisibilityOf(this))
         return false;
 
-    if (target->GetVisibility() == VISIBILITY_GROUP_STEALTH && !canDetectStealthOf(target, this, GetDistance(target)))
+    if (target->GetVisibility() == VISIBILITY_GROUP_STEALTH && !canDetectStealthOf(target, this))
         return false;
 
     return true;
@@ -9767,12 +9767,16 @@ bool Unit::canDetectInvisibilityOf(Unit const* u) const
     return false;
 }
 
-bool Unit::canDetectStealthOf(Unit const* target, WorldObject const* viewPoint, float distance) const
+bool Unit::canDetectStealthOf(Unit const* target, WorldObject const* viewPoint) const
 {
+    Unit* owner = GetCharmerOrOwner();
+    if (owner && owner != this && owner->canDetectStealthOf(target,owner))
+        return true;
+
     if (hasUnitState(UNIT_STAT_STUNNED))
         return false;
 
-    if (distance < 0.24f) //collision
+    if (viewPoint->GetDistance(target) < 0.24f) //collision
         return true;
 
     if (!viewPoint->HasInArc(M_PI, target)) //behind
@@ -9795,7 +9799,7 @@ bool Unit::canDetectStealthOf(Unit const* target, WorldObject const* viewPoint, 
     visibleDistance += (float)(GetTotalAuraModifierByMiscValue(SPELL_AURA_MOD_DETECT, 0) - target->GetTotalAuraModifier(SPELL_AURA_MOD_STEALTH_LEVEL)) / 5.0f;
     visibleDistance = visibleDistance > MAX_PLAYER_STEALTH_DETECT_RANGE ? MAX_PLAYER_STEALTH_DETECT_RANGE : visibleDistance;
 
-    return distance < visibleDistance;
+    return viewPoint->GetDistance(target) < visibleDistance;
 }
 
 void Unit::DestroyForNearbyPlayers()

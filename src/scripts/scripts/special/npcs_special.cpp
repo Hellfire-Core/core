@@ -1046,7 +1046,7 @@ struct npc_snake_trap_serpentsAI : public ScriptedAI
 
     Timer checkTimer;
 
-    void EnterCombat(Unit*)
+    void Reset()
     {
         if (roll_chance_f(66.0f))
         {
@@ -1054,7 +1054,7 @@ struct npc_snake_trap_serpentsAI : public ScriptedAI
             StartAutocast();
         }
 
-        checkTimer = 2000;
+        checkTimer.Reset(2000);
 
         me->SetReactState(REACT_AGGRESSIVE);
         me->setAttackTimer(BASE_ATTACK, urand(500, 1500));

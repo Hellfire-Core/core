@@ -1702,7 +1702,7 @@ bool Creature::canSeeOrDetect(Unit const* u, WorldObject const* viewPoint, bool 
     if (u->GetVisibility() == VISIBILITY_GROUP_STEALTH)
     {
         //do not know what is the use of this detect
-        if (!detect || !canDetectStealthOf(u, viewPoint, viewPoint->GetDistance(u)))
+        if (!detect || !canDetectStealthOf(u, viewPoint))
             return false;
     }
 

@@ -1385,7 +1385,7 @@ class HELLGROUND_IMPORT_EXPORT Unit : public WorldObject
         virtual bool canSeeOrDetect(Unit const* u, WorldObject const*, bool detect, bool inVisibleList = false, bool is3dDistance = true) const;
 
         bool canDetectInvisibilityOf(Unit const* u) const;
-        bool canDetectStealthOf(Unit const* u, WorldObject const*, float distance) const;
+        bool canDetectStealthOf(Unit const* u, WorldObject const*) const;
 
         // virtual functions for all world objects types
         bool isVisibleForInState(Player const*, WorldObject const*, bool) const;

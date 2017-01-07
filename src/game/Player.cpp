@@ -18785,7 +18785,7 @@ bool Player::canSeeOrDetect(Unit const* u, WorldObject const* viewPoint, bool de
             detect = false;
         if (m_DetectInvTimer < 300 || !HaveAtClient(u))
             if (!(u->GetTypeId()==TYPEID_PLAYER && !IsHostileTo(u) && IsGroupVisiblefor (((Player*)u))))
-                if (!detect || !canDetectStealthOf(u, viewPoint, viewPoint->GetDistance(u)))
+                if (!detect || !canDetectStealthOf(u, viewPoint))
                     return false;
     }
 

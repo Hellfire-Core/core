@@ -3027,6 +3027,7 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 37206:
                     spellInfo->AttributesEx4 &= ~SPELL_ATTR_EX4_FORCE_TRIGGERED;
                     spellInfo->AttributesEx |= SPELL_ATTR_EX_UNAFFECTED_BY_SCHOOL_IMMUNE;
+                    spellInfo->InterruptFlags = 0xF;
                     break;
                 case 48025: // headless horseman mount
                     spellInfo->Attributes |= SPELL_ATTR_CANT_USED_IN_COMBAT | SPELL_ATTR_OUTDOORS_ONLY;
