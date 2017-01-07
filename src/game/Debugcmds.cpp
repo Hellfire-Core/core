@@ -41,6 +41,7 @@
 #include "CellImpl.h"
 #include "vmap/VMapFactory.h"
 #include "BattleGroundMgr.h"
+#include "GuildMgr.h"
 
 bool ChatHandler::HandleWPToFileCommand(const char* args)
 {
@@ -1294,5 +1295,33 @@ bool ChatHandler::HandleDebugCellCommand(const char* args)
         str << (*itr)->GetName() << " (" << (*itr)->GetEntry() << "," << (*itr)->GetGUIDLow() << "); ";
     }
     SendSysMessage(str.str().c_str());
+    return true;
+}
+
+bool ChatHandler::HandleDebugGuildKill(const char* args)
+{
+    if (!args) return false;
+    char* token = strtok((char*)args, " ");
+    uint32 boss = atoi(token);
+    if (!boss)
+        return false;
+    if (boss == GBK_ANTISPAMINLOGSINATOR)
+    {
+        sGuildMgr.UpdateWeek();
+        return true;
+    }
+
+    token = strtok(NULL, " ");
+    if (!token) return false;
+    uint32 mstime = atoi(token);
+    token = strtok(NULL, " ");
+    if (!token) return false;
+    uint32 guild = atoi(token);
+
+    if (boss >= GBK_TOTAL)
+        return false;
+    
+    sGuildMgr.BossKilled(boss, guild, mstime);
+
     return true;
 }

@@ -1314,7 +1314,7 @@ bool Spell::IsAliveUnitPresentInTargetList()
                 if (!unit)
                     m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "ihit %u not found", NULL, GUID_LOPART(ihit->targetGUID));
                 else
-                m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "ihit %u alive %u effmask %u", NULL, GUID_LOPART(ihit->targetGUID),unit->isAlive(), ihit->effectMask);
+                m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "ihit %u alive %u effmask %u misscond %u", NULL, GUID_LOPART(ihit->targetGUID),unit->isAlive(), ihit->effectMask, ihit->missCondition);
             }
         }
 

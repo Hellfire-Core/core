@@ -289,6 +289,7 @@ ChatCommand * ChatHandler::getCommandTable()
         { "getinstdata",    PERM_ADM,       PERM_CONSOLE, false,  &ChatHandler::HandleDebugGetInstanceDataCommand,    "", NULL },
         { "getinstdata64",  PERM_ADM,       PERM_CONSOLE, false,  &ChatHandler::HandleDebugGetInstanceData64Command,  "", NULL },
         { "getvalue",       PERM_ADM,       PERM_CONSOLE, false,  &ChatHandler::HandleDebugGetValue,                  "", NULL },
+        { "guildkill",      PERM_ADM,       PERM_CONSOLE, false,  &ChatHandler::HandleDebugGuildKill,                 "", NULL },
         { "hostilelist",    PERM_GMT_DEV,   PERM_CONSOLE, false,  &ChatHandler::HandleDebugHostileRefList,            "", NULL },
         { "lootrecipient",  PERM_GMT_DEV,   PERM_CONSOLE, false,  &ChatHandler::HandleDebugGetLootRecipient,          "", NULL },
         { "joinbg",         PERM_GMT_DEV,   PERM_CONSOLE, false,  &ChatHandler::HandleDebugJoinBG,                    "", NULL },

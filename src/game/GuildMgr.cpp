@@ -198,7 +198,7 @@ uint32 GuildMgr::BossKilled(uint32 boss, uint32 guildid, uint32 mstime)
         br.record = mstime;
     }
 
-    RealmDataDatabase.PExecute("UPDATE guild SET CurrentPoints = CurrentPoints + %u WHERE guildid = %u", br.points, guildid);
+    RealmDataDatabase.PExecute("UPDATE guild SET CurrentPoints = CurrentPoints + '%u' WHERE guildid = '%u'", br.points, guildid);
 
     return m_bosskill++;
 }
