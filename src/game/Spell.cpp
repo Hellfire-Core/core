@@ -1301,6 +1301,24 @@ bool Spell::IsAliveUnitPresentInTargetList()
         }
     }
 
+    if (GetSpellEntry()->Id == 37206 && needAliveTargetMask != 0)
+    {
+        m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "isaliveunitpresent false %u %u", NULL, needAliveTargetMask, m_UniqueTargetInfo.size());
+        for (std::list<TargetInfo>::iterator ihit = m_UniqueTargetInfo.begin(); ihit != m_UniqueTargetInfo.end(); ++ihit)
+        {
+            if (ihit->deleted)
+                m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "ihit deleted %u", NULL, GUID_LOPART(ihit->targetGUID));
+            else
+            {
+                Unit* unit = m_caster->GetUnit(ihit->targetGUID);
+                if (!unit)
+                    m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "ihit %u not found", NULL, GUID_LOPART(ihit->targetGUID));
+                else
+                m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "ihit %u alive %u effmask %u", NULL, GUID_LOPART(ihit->targetGUID),unit->isAlive(), ihit->effectMask);
+            }
+        }
+
+    }
     // is all effects from m_needAliveTargetMask have alive targets
     return needAliveTargetMask == 0;
 }

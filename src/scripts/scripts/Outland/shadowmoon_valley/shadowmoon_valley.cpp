@@ -3680,7 +3680,8 @@ struct npc_invis_infernal_casterAI : public ScriptedAI
                         m_creature->GetPositionY(), m_creature->GetPositionZ(), 0, TEMPSUMMON_DEAD_DESPAWN, 0);
                     if (infernal)
                     {
-                        infernal->GetMotionMaster()->MoveRandom(5.0f);
+                        infernal->SetDefaultMovementType(RANDOM_MOTION_TYPE);
+                        infernal->GetMotionMaster()->Initialize();
                         myInfernal = infernal->GetGUID();
                     }
                     
