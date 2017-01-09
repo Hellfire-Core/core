@@ -715,12 +715,12 @@ bool ChatHandler::HandleGuildAdvertCommand(const char *args)
         return false;
     }
 
-    if (pGuild->GetMemberSize() < 25)
+    if (pGuild->GetMemberSize() < 50)
     {
-        PSendSysMessage("Your guild is to small to set up an advert, minimum 25 players.");
+        PSendSysMessage("Your guild is to small to set up an advert, minimum 50 players.");
         return false;
     }
-
+    sLog.outLog(LOG_GUILD_ANN, "Player %s (" UI64FMTD ") - guild: %s (%u) set guild advert: %s", m_session->GetPlayer()->GetName(), m_session->GetPlayer()->GetGUID(), pGuild->GetName().c_str(), gId, msg.c_str());
     RealmDataDatabase.escape_string(msg);
     RealmDataDatabase.PExecute("UPDATE guild SET ShortAdvert='%s' WHERE guildid='%u'", msg.c_str(), gId);
     pGuild->AddFlag(GUILD_FLAG_ADVERT_SET);

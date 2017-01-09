@@ -178,7 +178,7 @@ void GuildMgr::UpdateWeek()
 {
     RealmDataDatabase.Execute("UPDATE guild SET LastPoints = (LastPoints + CurrentPoints)/2");
     RealmDataDatabase.Execute("UPDATE guild SET CurrentPoints = 0");
-    RealmDataDatabase.Execute("UPDATE guild SET LastPoints = 0 WHERE LastPoints < 20");
+    RealmDataDatabase.Execute("UPDATE guild SET LastPoints = 0 WHERE LastPoints < 10");
 }
 
 uint32 GuildMgr::BossKilled(uint32 boss, uint32 guildid, uint32 mstime)

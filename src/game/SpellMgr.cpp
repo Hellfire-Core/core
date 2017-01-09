@@ -3019,6 +3019,7 @@ void SpellMgr::LoadSpellCustomAttr()
                     spellInfo->EffectImplicitTargetA[0] = TARGET_DEST_DEST;
                     break;
                 case 36576: // no damage calc for shaleskin
+                case 37950: // no damage calc for mutated blood
                     spellInfo->Attributes &= ~SPELL_ATTR_LEVEL_DAMAGE_CALCULATION;
                     break;
                 case 36817: // ashtongue corruptors channel spell
@@ -3029,6 +3030,14 @@ void SpellMgr::LoadSpellCustomAttr()
                     spellInfo->AttributesEx4 &= ~SPELL_ATTR_EX4_FORCE_TRIGGERED;
                     spellInfo->AttributesEx |= SPELL_ATTR_EX_UNAFFECTED_BY_SCHOOL_IMMUNE;
                     spellInfo->InterruptFlags = 0xF;
+                    break;
+                case 36826: // ashtongue corruptor summon amount
+                case 37201:
+                    spellInfo->EffectBasePoints[0] = 2;
+                    break;
+                case 37202:
+                case 37203:
+                    spellInfo->EffectBasePoints[0] = 3;
                     break;
                 case 48025: // headless horseman mount
                     spellInfo->Attributes |= SPELL_ATTR_CANT_USED_IN_COMBAT | SPELL_ATTR_OUTDOORS_ONLY;
