@@ -315,6 +315,7 @@ extern void AddSC_boss_vazruden_the_herald();
 //Hellfire Peninsula
 extern void AddSC_boss_doomlordkazzak();
 extern void AddSC_hellfire_peninsula();
+extern void AddSC_stair_of_destiny();
 
 //Hillsbrad Foothills
 //Hinterlands
@@ -941,6 +942,7 @@ void AddScripts()
     //Hellfire Peninsula
     AddSC_boss_doomlordkazzak();
     AddSC_hellfire_peninsula();
+    AddSC_stair_of_destiny();
 
     //Hillsbrad Foothills
     //Hinterlands

@@ -1579,6 +1579,9 @@
     <ClCompile Include="..\..\src\scripts\scripts\Eastern Kingdoms\redridge\redridge.cpp">
       <Filter>Scripts\Eastern Kingdoms\Redridge Mountains</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\scripts\scripts\Outland\hellfire_peninsula\stair_of_destiny.cpp">
+      <Filter>Scripts\Outland\Hellfire Peninsula</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\scripts\scripts\Eastern Kingdoms\deadmines\def_deadmines.h">
