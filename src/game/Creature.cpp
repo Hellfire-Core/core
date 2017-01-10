@@ -1415,11 +1415,8 @@ void Creature::SelectLevel(const CreatureInfo *cinfo)
     SetBaseWeaponDamage(RANGED_ATTACK, MINDAMAGE, cinfo->minrangedmg * damagemod);
     SetBaseWeaponDamage(RANGED_ATTACK, MAXDAMAGE, cinfo->maxrangedmg * damagemod);
 
-    // this value is not accurate, but should be close to the real value
     SetModifierValue(UNIT_MOD_ATTACK_POWER, BASE_VALUE, level * 5);
     SetModifierValue(UNIT_MOD_ATTACK_POWER_RANGED, BASE_VALUE, level * 5);
-    //SetModifierValue(UNIT_MOD_ATTACK_POWER, BASE_VALUE, cinfo->attackpower * damagemod);
-    //SetModifierValue(UNIT_MOD_ATTACK_POWER_RANGED, BASE_VALUE, cinfo->rangedattackpower * damagemod);
 }
 
 float Creature::_GetHealthMod(int32 Rank)

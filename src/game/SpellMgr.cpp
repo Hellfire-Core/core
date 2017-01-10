@@ -3051,7 +3051,7 @@ void SpellMgr::LoadSpellCustomAttr()
                     spellInfo->EffectImplicitTargetA[1] = TARGET_DEST_DEST;
                     break;
                 case 38482: // disrupt summoning old god
-                    spellInfo->Attributes | = SPELL_ATTR_UNAFFECTED_BY_INVULNERABILITY;
+                    spellInfo->Attributes |= SPELL_ATTR_UNAFFECTED_BY_INVULNERABILITY;
                     break;
                 }
                 if (spellInfo->SpellIconID == 184 && spellInfo->Attributes == 4259840)

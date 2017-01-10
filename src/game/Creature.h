@@ -188,7 +188,6 @@ struct CreatureInfo
     float   mindmg;
     float   maxdmg;
     uint32  dmgschool;
-    uint32  attackpower;
     uint32  baseattacktime;
     uint32  rangeattacktime;
     uint32  unit_flags;                                     // enum UnitFlags mask values
@@ -200,7 +199,6 @@ struct CreatureInfo
     uint32  race;
     float   minrangedmg;
     float   maxrangedmg;
-    uint32  rangedattackpower;
     uint32  type;                                           // enum CreatureType values
     uint32  type_flags;                                     // enum CreatureTypeFlags mask values
     uint32  lootid;
