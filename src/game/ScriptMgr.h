@@ -42,9 +42,6 @@ class WorldObject;
 
 struct SpellEntry;
 
-#define MIN_DB_SCRIPT_STRING_ID        MAX_HELLGROUND_STRING_ID // 'db_script_string'
-#define MAX_DB_SCRIPT_STRING_ID        2000010000
-
 struct ScriptInfo
 {
     uint32 id;

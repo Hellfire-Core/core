@@ -408,7 +408,12 @@ bool GOUse_go_resonite_cask(Player *pPlayer, GameObject *pGO)
 
 bool GOUse_go_darkmoon_cannon(Player *player, GameObject* _GO)
 {
-    // player->Relocate(    //przeniesc gracza na czubek armaty :]
+    Position pos;
+    _GO->GetPosition(pos);
+    float angle = _GO->GetOrientation() + 0.0f;
+    pos.x += 7.0f * cos(angle);
+    pos.x += 7.0f * sin(angle);
+    player->Relocate(pos);
     player->CastSpell(player,SPELL_WINGS,true);
     return false;
 }

@@ -516,7 +516,7 @@ void Unit::UpdateSplineMovement(uint32 t_diff)
 
     if (m_movesplineTimer.Expired(t_diff) || arrived)
     {
-        m_movesplineTimer.Reset(POSITION_UPDATE_DELAY);
+        m_movesplineTimer = POSITION_UPDATE_DELAY;
         Movement::Location loc = movespline->ComputePosition();
 
         if (GetTypeId() == TYPEID_PLAYER)
