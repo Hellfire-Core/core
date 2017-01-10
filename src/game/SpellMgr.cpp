@@ -3046,6 +3046,13 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 35756:
                     spellInfo->ChannelInterruptFlags |= AURA_INTERRUPT_FLAG_MOVE;
                     break;
+                case 33814: // visual meteor summon infernal
+                    spellInfo->EffectImplicitTargetA[0] = TARGET_DEST_DEST;
+                    spellInfo->EffectImplicitTargetA[1] = TARGET_DEST_DEST;
+                    break;
+                case 38482: // disrupt summoning old god
+                    spellInfo->Attributes | = SPELL_ATTR_UNAFFECTED_BY_INVULNERABILITY;
+                    break;
                 }
                 if (spellInfo->SpellIconID == 184 && spellInfo->Attributes == 4259840)
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;

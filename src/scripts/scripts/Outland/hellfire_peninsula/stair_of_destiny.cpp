@@ -44,11 +44,11 @@ enum
 
 struct npc_pit_commanderAI : public ScriptedAI
 {
-    npc_pit_commanderAI(Creature* c) : ScriptedAI(c) { Init(); }
+    npc_pit_commanderAI(Creature* c) : ScriptedAI(c) { }
 
     uint8 movement;
     Timer infernalSummonTimer;
-    void Init() // once
+    void InitializeAI() // once
     {
         m_creature->setActive(true);
         movement = 0;
@@ -57,6 +57,7 @@ struct npc_pit_commanderAI : public ScriptedAI
 
     void Reset()
     {
+        m_creature->setActive(true);
     }
 
     void JustReachedHome()
@@ -95,12 +96,12 @@ struct npc_pit_commanderAI : public ScriptedAI
 
                 if (infernalSummonTimer.GetInterval() == 2000)
                 {
-                    m_creature->SummonCreature(NPC_INFERNAL_SIEGEBREAKER, relay->GetPositionX(), relay->GetPositionY(), 59.5f, 0.0f, TEMPSUMMON_CORPSE_DESPAWN, 1000);
+                    m_creature->SummonCreature(NPC_INFERNAL_SIEGEBREAKER, relay->GetPositionX(), relay->GetPositionY(), 41.7f, 0.0f, TEMPSUMMON_CORPSE_DESPAWN, 1000);
                     infernalSummonTimer = 60000;
                 }
                 else
                 {
-                    relay->CastSpell(relay->GetPositionX(), relay->GetPositionY(), 59.5f, SPELL_INFERNAL_RAIN, false);
+                    relay->CastSpell(relay->GetPositionX(), relay->GetPositionY(), 41.7f, SPELL_INFERNAL_RAIN, false);
                     infernalSummonTimer = 2000;
                 }
             }
