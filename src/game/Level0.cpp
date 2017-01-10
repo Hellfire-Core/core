@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2008 MaNGOS <http://getmangos.com/>
  * Copyright (C) 2008 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
+ * Copyright (C) 2008-2017 Hellground <http://wow-hellground.com/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -299,7 +299,7 @@ bool ChatHandler::HandleServerInfoCommand(const char* /*args*/)
     uint32 updateTime = sWorld.GetUpdateTime();
     std::string str2 = TimeToTimestampStr(sWorld.GetGameTime());
 
-    PSendSysMessage("HellGround.net - rev: %s",_REVISION);
+    PSendSysMessage("wow-HellGround.com - rev: %s",_REVISION);
     PSendSysMessage(LANG_CONNECTED_USERS, activeClientsNum, maxActiveClientsNum, queuedClientsNum, maxQueuedClientsNum);
     PSendSysMessage(LANG_UPTIME, str.c_str());
     PSendSysMessage("Current time: %s", str2.c_str());

@@ -102,7 +102,7 @@ struct npc_stair_defender_baseAI : public ScriptedAI
 
     void Reset()
     {
-        movement = ishorde? 0 : 4;
+        movement = ishorde() ? 0 : 4;
     }
 
     void JustRespawned()
