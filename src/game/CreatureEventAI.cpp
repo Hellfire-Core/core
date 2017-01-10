@@ -525,7 +525,7 @@ void CreatureEventAI::ProcessAction(CreatureEventAI_Action const& action, uint32
                     {
                         SendDebug("Cannot cast (flags %u, spell %u)",action.cast.castFlags,action.cast.spellId);
                         //Melee current victim if flag not set
-                        if (!(action.cast.castFlags & CAST_NO_MELEE_IF_OOM))
+                        if (!(action.cast.castFlags & CAST_NO_MELEE_IF_OOM) && CombatMovementEnabled)
                         {
                             m_creature->GetMotionMaster()->MoveChase(m_creature->getVictim(), MELEE_RANGE, 0.0f);
                         }
@@ -584,7 +584,7 @@ void CreatureEventAI::ProcessAction(CreatureEventAI_Action const& action, uint32
                         !CanCast(target, tSpell, (action.castguid.castFlags & CAST_TRIGGERED)))
                     {
                         //Melee current victim if flag not set
-                        if (!(action.castguid.castFlags & CAST_NO_MELEE_IF_OOM))
+                        if (!(action.castguid.castFlags & CAST_NO_MELEE_IF_OOM) && CombatMovementEnabled)
                         {
                             if (m_creature->hasUnitState(UNIT_STAT_CHASE))
                                 m_creature->GetMotionMaster()->MoveChase(m_creature->getVictim(), MELEE_RANGE, 0.0f);

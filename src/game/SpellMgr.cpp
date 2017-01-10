@@ -3042,6 +3042,10 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 48025: // headless horseman mount
                     spellInfo->Attributes |= SPELL_ATTR_CANT_USED_IN_COMBAT | SPELL_ATTR_OUTDOORS_ONLY;
                     break;
+                case 38469: // channel, interrupt casting on combat
+                case 35756:
+                    spellInfo->ChannelInterruptFlags |= AURA_INTERRUPT_FLAG_MOVE;
+                    break;
                 }
                 if (spellInfo->SpellIconID == 184 && spellInfo->Attributes == 4259840)
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;

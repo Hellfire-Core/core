@@ -34,14 +34,29 @@ const float commanderpath[][3] = {
     -243.448166,1178.422119,41.714531,
 };
 
+enum
+{
+    NPC_INFERNAL_RELAY = 19215,
+    NPC_INFERNAL_SIEGEBREAKER = 18946,
+
+    SPELL_INFERNAL_RAIN = 33814,
+};
+
 struct npc_pit_commanderAI : public ScriptedAI
 {
-    npc_pit_commanderAI(Creature* c) : ScriptedAI(c) { m_creature->setActive(true); }
+    npc_pit_commanderAI(Creature* c) : ScriptedAI(c) { Init(); }
 
     uint8 movement;
+    Timer infernalSummonTimer;
+    void Init() // once
+    {
+        m_creature->setActive(true);
+        movement = 0;
+        infernalSummonTimer.Reset(60000);
+    }
+
     void Reset()
     {
-        movement = 0;
     }
 
     void JustReachedHome()
@@ -51,6 +66,7 @@ struct npc_pit_commanderAI : public ScriptedAI
 
     void JustRespawned()
     {
+        movement = 0;
         MovementInform(POINT_MOTION_TYPE, 0);
     }
 
@@ -58,12 +74,44 @@ struct npc_pit_commanderAI : public ScriptedAI
     {
         if (type != POINT_MOTION_TYPE || point != movement)
             return;
-        if (movement == 10) // we're at the spot
+        if (movement == 9) // we're at the spot
             return;
+        movement++;
         m_creature->GetMotionMaster()->MovePoint(movement, commanderpath[movement][0], commanderpath[movement][1], commanderpath[movement][2]);
         m_creature->SetHomePosition(commanderpath[movement][0], commanderpath[movement][1], commanderpath[movement][2], 0.0f);
-        movement++;
+        
     }
+    
+    void UpdateAI(const uint32 diff)
+    {
+        if (infernalSummonTimer.Expired(diff))
+        {
+            std::list<uint64> relays = m_creature->GetMap()->GetCreaturesGUIDList(NPC_INFERNAL_RELAY);
+            for (std::list<uint64>::iterator itr = relays.begin(); itr != relays.end(); itr++)
+            {
+                Creature* relay = m_creature->GetCreature(*itr);
+                if (!relay)
+                    continue;
+
+                if (infernalSummonTimer.GetInterval() == 2000)
+                {
+                    m_creature->SummonCreature(NPC_INFERNAL_SIEGEBREAKER, relay->GetPositionX(), relay->GetPositionY(), 59.5f, 0.0f, TEMPSUMMON_CORPSE_DESPAWN, 1000);
+                    infernalSummonTimer = 60000;
+                }
+                else
+                {
+                    relay->CastSpell(relay->GetPositionX(), relay->GetPositionY(), 59.5f, SPELL_INFERNAL_RAIN, false);
+                    infernalSummonTimer = 2000;
+                }
+            }
+        }
+
+        if (!UpdateVictim())
+            return;
+
+        DoMeleeAttackIfReady();
+    }
+
 };
 
 CreatureAI* GetAI_npc_pit_commander(Creature* c)
@@ -103,6 +151,7 @@ struct npc_stair_defender_baseAI : public ScriptedAI
     void Reset()
     {
         movement = ishorde() ? 0 : 4;
+        m_creature->SetWalk(false);
     }
 
     void JustRespawned()
