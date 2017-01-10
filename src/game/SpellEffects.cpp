@@ -6766,7 +6766,7 @@ void Spell::EffectScriptEffect(uint32 effIndex)
             unitTarget->CastSpell(unitTarget, 30542, true, NULL, NULL, m_caster->GetGUID());
             break;
         case 38482: // disrupt summoning old god
-            if (unitTarget->GetTypeId != TYPEID_UNIT)
+            if (unitTarget->GetTypeId() != TYPEID_UNIT)
                 return;
             unitTarget->ToCreature()->ForcedDespawn();
             break;
