@@ -1090,6 +1090,7 @@ void Spell::DoSpellHitOnUnit(Unit *unit, const uint32 effectMask)
     if (!unit || !effectMask)
         return;
 
+    m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "DoSpellHitOnUnit effects %u", unit, effectMask);
     if (unit->IsImmunedToSpellEffect(SPELL_EFFECT_ATTACK_ME, MECHANIC_NONE) && SpellMgr::IsTauntSpell(GetSpellEntry()))
     {
         m_caster->SendSpellMiss(unit, GetSpellEntry()->Id, SPELL_MISS_IMMUNE);

@@ -34,25 +34,49 @@ const float commanderpath[][3] = {
     -243.448166,1178.422119,41.714531,
 };
 
+const float summonpos[9][3] = {
+    -214.350647,1637.153931,39.914082,
+    -207.305817,1637.377075,39.924305,
+    -193.851624,1636.948730,39.490860,
+    -187.019592,1635.961182,39.356621,
+    -189.144714,1645.597534,40.894733,
+    -196.218124,1645.822754,41.168633,
+    -205.629456,1646.132812,41.303810,
+    -213.563522,1648.108154,41.882431,
+    -201.142731,1636.422363,40.535400,
+
+}
+
+#define ATTAKERS_PATH_BEGIN 16010
+
 enum
 {
-    NPC_INFERNAL_RELAY = 19215,
+    NPC_INFERNAL_RELAY      = 19215,
     NPC_INFERNAL_SIEGEBREAKER = 18946,
+    NPC_WRATH_MASTER        = 19005,
+    NPC_FEL_SOLDIER         = 18944,
 
-    SPELL_INFERNAL_RAIN = 33814,
+    SPELL_INFERNAL_RAIN     = 33814,
+    SPELL_CLEAVE            = 16044,
+    SPELL_RAIN_OF_FIRE      = 32785,
 };
 
 struct npc_pit_commanderAI : public ScriptedAI
 {
     npc_pit_commanderAI(Creature* c) : ScriptedAI(c) { }
 
-    uint8 movement;
     Timer infernalSummonTimer;
+    Timer invadersSummonTimer;
+    Timer cleaveTimer;
+    Timer rainOfFireTimer;
+
     void InitializeAI() // once
     {
         m_creature->setActive(true);
-        movement = 0;
-        infernalSummonTimer.Reset(60000);
+        infernalSummonTimer.Reset(40000);
+        invadersSummonTimer.Reset(60000);
+        cleaveTimer.Reset(20000);
+        rainOfFireTimer.Reset(30000);
         JustRespawned();
     }
 
@@ -61,55 +85,82 @@ struct npc_pit_commanderAI : public ScriptedAI
         m_creature->setActive(true);
     }
 
-    void JustReachedHome()
-    {
-        MovementInform(POINT_MOTION_TYPE, movement);
-    }
-
     void JustRespawned()
     {
-        movement = 0;
-        MovementInform(POINT_MOTION_TYPE, 0);
-    }
-
-    void MovementInform(uint32 type, uint32 point)
-    {
-        if (type != POINT_MOTION_TYPE || point != movement)
-            return;
-        if (movement == 9) // we're at the spot
-            return;
-        movement++;
-        m_creature->GetMotionMaster()->MovePoint(movement, commanderpath[movement][0], commanderpath[movement][1], commanderpath[movement][2]);
-        m_creature->SetHomePosition(commanderpath[movement][0], commanderpath[movement][1], commanderpath[movement][2], 0.0f);
-        
+        m_creature->GetMotionMaster()->MovePath(ATTACKERS_PATH_BEGIN + 8, false);
     }
     
+    void SummonInfernals()
+    {
+        std::list<uint64> relays = m_creature->GetMap()->GetCreaturesGUIDList(NPC_INFERNAL_RELAY);
+        for (std::list<uint64>::iterator itr = relays.begin(); itr != relays.end(); itr++)
+        {
+            Creature* relay = m_creature->GetCreature(*itr);
+            if (!relay)
+                continue;
+
+            if (infernalSummonTimer.GetInterval() == 2000)
+            {
+                if (Creature* infernal = m_creature->SummonCreature(NPC_INFERNAL_SIEGEBREAKER, relay->GetPositionX(), relay->GetPositionY(), 41.7f, 4.76f, TEMPSUMMON_CORPSE_DESPAWN, 1000))
+                {
+                    infernal->AI()->AttackStart(infernal->SelectNearestTarget(10.0f));
+                }
+            }
+            else
+            {
+                relay->CastSpell(relay->GetPositionX(), relay->GetPositionY(), 41.7f, SPELL_INFERNAL_RAIN, false);
+            }
+        }
+        infernalSummonTimer = (infernalSummonTimer.GetInterval() == 2000) ? 40000 : 2000;
+    }
+
+    void SummonInvaders()
+    {
+        if (urand(0, 1))
+        {
+            for (uint8 i = 0; i < 8; i++) // 8 fel soldiers
+            {
+                Creature* soldier = m_creature->SummonCreature(NPC_FEL_SOLDIER, summonpos[i][0], summonpos[i][1], summonpos[i][2], 4.76f, TEMPSUMMON_CORPSE_DESPAWN, 1000);
+                soldier->GetMotionMaster()->MovePath(ATTACKERS_PATH_BEGIN + i, false);
+            }
+
+        }
+        else
+        {
+            for (uint8 i = 0; i < 4; i++) // 4 fel soldiers
+            {
+                Creature* soldier = m_creature->SummonCreature(NPC_FEL_SOLDIER, summonpos[i][0], summonpos[i][1], summonpos[i][2], 4.76f, TEMPSUMMON_CORPSE_DESPAWN, 1000);
+                soldier->GetMotionMaster()->MovePath(ATTACKERS_PATH_BEGIN + i, false);
+            }
+            // and wrath master
+            Creature* master = m_creature->SummonCreature(NPC_FEL_SOLDIER, summonpos[9][0], summonpos[9][1], summonpos[9][2], 4.76f, TEMPSUMMON_CORPSE_DESPAWN, 1000);
+            master->GetMotionMaster()->MovePath(ATTACKERS_PATH_BEGIN + 9,false);
+        }
+        invadersSummonTimer = 600000;
+    }
+
     void UpdateAI(const uint32 diff)
     {
         if (infernalSummonTimer.Expired(diff))
-        {
-            std::list<uint64> relays = m_creature->GetMap()->GetCreaturesGUIDList(NPC_INFERNAL_RELAY);
-            for (std::list<uint64>::iterator itr = relays.begin(); itr != relays.end(); itr++)
-            {
-                Creature* relay = m_creature->GetCreature(*itr);
-                if (!relay)
-                    continue;
+            SummonInfernals();
 
-                if (infernalSummonTimer.GetInterval() == 2000)
-                {
-                    m_creature->SummonCreature(NPC_INFERNAL_SIEGEBREAKER, relay->GetPositionX(), relay->GetPositionY(), 41.7f, 0.0f, TEMPSUMMON_CORPSE_DESPAWN, 1000);
-                }
-                else
-                {
-                    relay->CastSpell(relay->GetPositionX(), relay->GetPositionY(), 41.7f, SPELL_INFERNAL_RAIN, false);
-                }
-            }
-            infernalSummonTimer = (infernalSummonTimer.GetInterval() == 2000) ? 60000 : 2000;
-
-        }
+        if (invadersSummonTimer.Expired(diff))
+            SummonInvaders();
 
         if (!UpdateVictim())
             return;
+
+        if (cleaveTimer.Expired(diff))
+        {
+            DoCast(m_creature->getVictim(), SPELL_CLEAVE);
+            cleaveTimer = 20000;
+        }
+
+        if (rainOfFireTimer.Expired(diff))
+        {
+            DoCast(m_creature->getVictim(), SPELL_RAIN_OF_FIRE);
+            rainOfFireTimer = 30000;
+        }
 
         DoMeleeAttackIfReady();
     }
@@ -137,7 +188,7 @@ struct npc_stair_defender_baseAI : public ScriptedAI
     npc_stair_defender_baseAI(Creature* c) : ScriptedAI(c) {}
     
     uint8 movement;
-
+    Timer searchTimer;
     bool ishorde()
     {
         switch (m_creature->getFaction())
@@ -153,8 +204,16 @@ struct npc_stair_defender_baseAI : public ScriptedAI
     void Reset()
     {
         movement = ishorde() ? 0 : 4;
+        searchTimer.Reset(1000);
         m_creature->SetWalk(false);
+        m_creature->SetReactState(REACT_AGGRESSIVE);
     }
+
+    void JustReachedHome()
+    {
+        AttackStart(m_creature->SelectNearbyTarget(30.0f));
+    }
+
 
     void JustRespawned()
     {
@@ -176,7 +235,7 @@ struct npc_stair_defender_baseAI : public ScriptedAI
         }
         movement++;
         m_creature->GetMotionMaster()->MovePoint(movement, defenderpath[movement][0], defenderpath[movement][1], defenderpath[movement][2]);
-        m_creature->SetHomePosition(defenderpath[movement][0], defenderpath[movement][1], defenderpath[movement][2], 0);
+        m_creature->SetHomePosition(defenderpath[movement][0], defenderpath[movement][1], defenderpath[movement][2], 1.75f);
     }
 };
 

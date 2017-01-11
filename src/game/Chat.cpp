@@ -60,7 +60,7 @@ ChatCommand * ChatHandler::getCommandTable()
     {
         { "battleground",   PERM_PLAYER,        PERM_CONSOLE, false, &ChatHandler::HandleAccountBattleGroundAnnCommand,   "", NULL },
         { "bg",             PERM_PLAYER,        PERM_CONSOLE, false, &ChatHandler::HandleAccountBattleGroundAnnCommand,   "", NULL },
-        { "broadcast",      PERM_PLAYER,        PERM_CONSOLE, false, &ChatHandler::HandleAccountAnnounceBroadcastCommand, "", NULL },
+        { "broadcast",      PERM_GMT_DEV,       PERM_CONSOLE, false, &ChatHandler::HandleAccountAnnounceBroadcastCommand, "", NULL },
         { "guild",          PERM_PLAYER,        PERM_CONSOLE, false, &ChatHandler::HandleAccountGuildAnnToggleCommand,    "", NULL },
         { NULL,             0,                  0,            false,  NULL,                                               "", NULL }
     };
@@ -284,7 +284,7 @@ ChatCommand * ChatHandler::getCommandTable()
         { "bg",             PERM_ADM,       PERM_CONSOLE, false,  &ChatHandler::HandleDebugBattleGroundCommand,       "", NULL },
         { "bossemote",      PERM_GMT_DEV,   PERM_CONSOLE, false,  &ChatHandler::HandleDebugBossEmoteCommand,          "", NULL },
         { "cell",           PERM_GMT_DEV,   PERM_CONSOLE, false,  &ChatHandler::HandleDebugCellCommand,               "", NULL },
-        { "cooldowns",      PERM_GMT_DEV,   PERM_PLAYER,  false,  &ChatHandler::HandleDebugCooldownsCommand,          "", NULL },
+        { "cooldowns",      PERM_GMT_DEV,   PERM_CONSOLE, false,  &ChatHandler::HandleDebugCooldownsCommand,          "", NULL },
         { "getitemstate",   PERM_ADM,       PERM_CONSOLE, false,  &ChatHandler::HandleDebugGetItemState,              "", NULL },
         { "getinstdata",    PERM_ADM,       PERM_CONSOLE, false,  &ChatHandler::HandleDebugGetInstanceDataCommand,    "", NULL },
         { "getinstdata64",  PERM_ADM,       PERM_CONSOLE, false,  &ChatHandler::HandleDebugGetInstanceData64Command,  "", NULL },
@@ -305,10 +305,10 @@ ChatCommand * ChatHandler::getCommandTable()
         { "setvalue",       PERM_ADM,       PERM_CONSOLE, false,  &ChatHandler::HandleDebugSetValue,                  "", NULL },
         { "showcombatstats",PERM_ADM,       PERM_CONSOLE, false,  &ChatHandler::HandleDebugShowCombatStats,           "", NULL },
         { "threatlist",     PERM_GMT_DEV,   PERM_CONSOLE, false,  &ChatHandler::HandleDebugThreatList,                "", NULL },
-        { "printstate",     PERM_PLAYER,    PERM_CONSOLE, false,  &ChatHandler::HandleDebugUnitState,                 "", NULL },
+        { "printstate",     PERM_GMT_DEV,   PERM_CONSOLE, false,  &ChatHandler::HandleDebugUnitState,                 "", NULL },
         { "update",         PERM_ADM,       PERM_CONSOLE, false,  &ChatHandler::HandleDebugUpdate,                    "", NULL },
         { "uws",            PERM_ADM,       PERM_CONSOLE, false,  &ChatHandler::HandleDebugUpdateWorldStateCommand,   "", NULL },
-        { "vmap",           PERM_PLAYER,    PERM_CONSOLE, false,  &ChatHandler::HandleDebugVmapsCommand,              "", NULL },
+        { "vmap",           PERM_GMT_DEV,   PERM_CONSOLE, false,  &ChatHandler::HandleDebugVmapsCommand,              "", NULL },
         { NULL,             0,              0,            false,  NULL,                                               "", NULL }
     };
 
@@ -549,7 +549,7 @@ ChatCommand * ChatHandler::getCommandTable()
         { "fieldflag",      PERM_GMT_DEV,   PERM_CONSOLE, false,  &ChatHandler::HandleNpcFieldFlagCommand,        "", NULL },
         { "flag",           PERM_GMT_DEV,   PERM_CONSOLE, false,  &ChatHandler::HandleNpcFlagCommand,             "", NULL },
         { "follow",         PERM_GMT_DEV,   PERM_CONSOLE, false,  &ChatHandler::HandleNpcFollowCommand,           "", NULL },
-        { "info",           PERM_PLAYER,    PERM_CONSOLE, false,  &ChatHandler::HandleNpcInfoCommand,             "", NULL },
+        { "info",           PERM_GMT_DEV,   PERM_CONSOLE, false,  &ChatHandler::HandleNpcInfoCommand,             "", NULL },
         { "move",           PERM_GMT_DEV,   PERM_CONSOLE, false,  &ChatHandler::HandleNpcMoveCommand,             "", NULL },
         { "playemote",      PERM_GMT_DEV,   PERM_CONSOLE, false,  &ChatHandler::HandleNpcPlayEmoteCommand,        "", NULL },
         { "resetai",        PERM_GMT_DEV,   PERM_CONSOLE, false,  &ChatHandler::HandleNpcResetAICommand,          "", NULL },
@@ -724,7 +724,7 @@ ChatCommand * ChatHandler::getCommandTable()
         { "damage",         PERM_ADM,       PERM_CONSOLE, false,  &ChatHandler::HandleDamageCommand,              "", NULL },
         { "demorph",        PERM_GMT,       PERM_CONSOLE, false,  &ChatHandler::HandleDeMorphCommand,             "", NULL },
         { "die",            PERM_ADM,       PERM_CONSOLE, false,  &ChatHandler::HandleDieCommand,                 "", NULL },
-        { "dismount",       PERM_PLAYER,    PERM_CONSOLE, false,  &ChatHandler::HandleDismountCommand,            "", NULL },
+        { "dismount",       PERM_GMT_DEV,   PERM_CONSOLE, false,  &ChatHandler::HandleDismountCommand,            "", NULL },
         { "distance",       PERM_GMT_DEV,   PERM_CONSOLE, false,  &ChatHandler::HandleGetDistanceCommand,         "", NULL },
         { "explorecheat",   PERM_ADM,       PERM_CONSOLE, false,  &ChatHandler::HandleExploreCheatCommand,        "", NULL },
         { "freeze",         PERM_GMT,       PERM_CONSOLE, false,  &ChatHandler::HandleFreezeCommand,              "", NULL },
