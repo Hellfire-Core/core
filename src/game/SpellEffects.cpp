@@ -5652,6 +5652,7 @@ void Spell::EffectSummonObjectWild(uint32 i)
 
 void Spell::EffectScriptEffect(uint32 effIndex)
 {
+    m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "effectscripteffect %u", unitTarget, GetSpellEntry()->Id);
     // TODO: we must implement hunter pet summon at login there (spell 6962)
     switch (GetSpellEntry()->Id)
     {

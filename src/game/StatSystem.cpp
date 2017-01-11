@@ -788,7 +788,7 @@ void Creature::UpdateDamagePhysical(WeaponAttackType attType)
     float total_pct   = GetModifierValue(unitMod, TOTAL_PCT);
 
     // disarming decreases creature damage by ~50%
-    if (attType == BASE_ATTACK && HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISARMED))
+    if (attType == BASE_ATTACK && HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISARMED) && GetEquipmentId())
     {
         base_pct *= 0.5f;
     }

@@ -53,6 +53,7 @@ struct npc_pit_commanderAI : public ScriptedAI
         m_creature->setActive(true);
         movement = 0;
         infernalSummonTimer.Reset(60000);
+        JustRespawned();
     }
 
     void Reset()
@@ -97,14 +98,14 @@ struct npc_pit_commanderAI : public ScriptedAI
                 if (infernalSummonTimer.GetInterval() == 2000)
                 {
                     m_creature->SummonCreature(NPC_INFERNAL_SIEGEBREAKER, relay->GetPositionX(), relay->GetPositionY(), 41.7f, 0.0f, TEMPSUMMON_CORPSE_DESPAWN, 1000);
-                    infernalSummonTimer = 60000;
                 }
                 else
                 {
                     relay->CastSpell(relay->GetPositionX(), relay->GetPositionY(), 41.7f, SPELL_INFERNAL_RAIN, false);
-                    infernalSummonTimer = 2000;
                 }
             }
+            infernalSummonTimer = (infernalSummonTimer.GetInterval() == 2000) ? 60000 : 2000;
+
         }
 
         if (!UpdateVictim())

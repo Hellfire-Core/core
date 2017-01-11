@@ -3932,13 +3932,10 @@ void Aura::HandleAuraModDisarm(bool apply, bool Real)
         else
             ((Player *)m_target)->SetRegularAttackTime();
     }
-    else
-    {
-        // creature does not have equipment
-        if (apply && !((Creature*)m_target)->GetCurrentEquipmentId())
-            return;
-    }
 
+    // some mobs may be not immune, but as they have no weapon disarm does not help.
+    // statsystem is checking if mob have equipement id set.
+    // some mobs have weapons in their morph rather than equipped, disarm also does not work on them (not sure if ok).
     m_target->UpdateDamagePhysical(BASE_ATTACK);
 }
 

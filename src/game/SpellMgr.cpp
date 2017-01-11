@@ -3050,8 +3050,8 @@ void SpellMgr::LoadSpellCustomAttr()
                     spellInfo->EffectImplicitTargetA[0] = TARGET_DEST_DEST;
                     spellInfo->EffectImplicitTargetA[1] = TARGET_DEST_DEST;
                     break;
-                case 38482: // disrupt summoning old god
-                    spellInfo->Attributes |= SPELL_ATTR_UNAFFECTED_BY_INVULNERABILITY;
+                case 36558: // artor prison visual
+                    spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_NEARBY_ENTRY;
                     break;
                 }
                 if (spellInfo->SpellIconID == 184 && spellInfo->Attributes == 4259840)
