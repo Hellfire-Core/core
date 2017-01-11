@@ -34,7 +34,7 @@ const float summonpos[9][3] = {
 
 };
 
-#define ATTAKERS_PATH_BEGIN 16010
+#define ATTACKERS_PATH_BEGIN 16010
 
 enum
 {
