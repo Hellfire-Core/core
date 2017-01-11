@@ -190,6 +190,7 @@ void Creature::AddToWorld()
         Unit::AddToWorld();
         SearchFormation();
         AIM_Initialize();
+        UpdateVisibilityAndView();
 
         if (m_zoneScript)
             m_zoneScript->OnCreatureCreate(this, true);

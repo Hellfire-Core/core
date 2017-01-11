@@ -1090,7 +1090,6 @@ void Spell::DoSpellHitOnUnit(Unit *unit, const uint32 effectMask)
     if (!unit || !effectMask)
         return;
 
-    m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "DoSpellHitOnUnit effects %u", unit, effectMask);
     if (unit->IsImmunedToSpellEffect(SPELL_EFFECT_ATTACK_ME, MECHANIC_NONE) && SpellMgr::IsTauntSpell(GetSpellEntry()))
     {
         m_caster->SendSpellMiss(unit, GetSpellEntry()->Id, SPELL_MISS_IMMUNE);
@@ -1108,7 +1107,7 @@ void Spell::DoSpellHitOnUnit(Unit *unit, const uint32 effectMask)
         m_damage = 0;
         return;
     }
-
+    m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "DoSpellHitOnUnit effects %u", unit, effectMask);
     if (m_caster != unit)
     {
         if (unit->GetCharmerOrOwnerGUID() != m_caster->GetGUID() && !CanIgnoreNotAttackableFlags())
@@ -5635,6 +5634,7 @@ bool Spell::CanIgnoreNotAttackableFlags()
         case 32958:     // Crystal Channel
         case 44877:     // Living Flare Master
         case 45023:     // Fel Consumption
+        case 38482:     // dark conclave ritual disrupt
             return true;
         default:
             return false;

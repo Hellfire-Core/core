@@ -1141,6 +1141,7 @@ uint32 Unit::DealDamage(DamageLog *damageInfo, DamageEffectType damagetype, cons
     SendDamageLog(damageInfo);
 
     DEBUG_LOG("DealDamageEnd returned %d damage", damageInfo->damage);
+    ScheduleAINotify(GetTerrain()->GetSpecifics()->ainotifyperiod);
     return damageInfo->damage;
 }
 

@@ -34,10 +34,11 @@ const float summonpos[9][3] = {
 
 };
 
-#define ATTACKERS_PATH_BEGIN 16010
-
 enum
 {
+    ATTACKERS_PATH_BEGIN    = 16010,
+    POINTID_SET_RUN         = 14,
+
     NPC_INFERNAL_RELAY      = 19215,
     NPC_INFERNAL_SIEGEBREAKER = 18946,
     NPC_WRATH_MASTER        = 19005,
@@ -46,6 +47,9 @@ enum
     SPELL_INFERNAL_RAIN     = 33814,
     SPELL_CLEAVE            = 16044,
     SPELL_RAIN_OF_FIRE      = 32785,
+
+    SPELL_SOLDIER_CLEAVE    = 15496,
+    SPELL_SOLDIER_CUTDOWN   = 32009,
 };
 
 struct npc_pit_commanderAI : public ScriptedAI
@@ -77,6 +81,12 @@ struct npc_pit_commanderAI : public ScriptedAI
         m_creature->GetMotionMaster()->MovePath(ATTACKERS_PATH_BEGIN + 8, false);
     }
     
+    void MovementInform(uint32 type, uint32 point)
+    {
+        if (type == WAYPOINT_MOTION_TYPE)
+            m_creature->SetHomePosition(m_creature->GetPositionX(), m_creature->GetPositionY(), m_creature->GetPositionZ(), m_creature->GetOrientation());
+    }
+
     void SummonInfernals()
     {
         std::list<uint64> relays = m_creature->GetMap()->GetCreaturesGUIDList(NPC_INFERNAL_RELAY);
@@ -159,6 +169,55 @@ CreatureAI* GetAI_npc_pit_commander(Creature* c)
     return new npc_pit_commanderAI(c);
 }
 
+struct npc_stair_attackerAI : public ScriptedAI
+{
+    npc_stair_attackerAI(Creature* c) : ScriptedAI(c) {}
+
+    Timer skill1timer;
+    Timer skill2timer;
+
+    void Reset()
+    {
+        skill1timer.Reset(10000);
+        skill2timer.Reset(20000);
+    }
+
+    void MovementInform(uint32 type, uint32 point)
+    {
+        if (type == WAYPOINT_MOTION_TYPE)
+            m_creature->SetHomePosition(m_creature->GetPositionX(), m_creature->GetPositionY(), m_creature->GetPositionZ(), m_creature->GetOrientation());
+        if (point == POINTID_SET_RUN)
+            m_creature->SetWalk(false);
+    }
+
+    void UpdateAI(const uint32 diff)
+    {
+        if (!UpdateVictim())
+            return;
+
+        if (skill1timer.Expired(diff))
+        {
+            DoCast(m_creature->getVictim(), SPELL_SOLDIER_CLEAVE);
+            skill1timer = 10000;
+        }
+
+        if (skill2timer.Expired(diff))
+        {
+            DoCast(m_creature->getVictim(), SPELL_SOLDIER_CUTDOWN);
+            skill2timer = 10000;
+        }
+
+        DoMeleeAttackIfReady();
+    }
+
+};
+
+CreatureAI* GetAI_npc_stair_attacker(Creature* c)
+{
+    return new npc_stair_attackerAI(c);
+}
+
+
 const float defenderpath[][3] = {
     -160.907440,966.141113,54.281906,
     -179.534409,1013.573242,54.292568,
@@ -238,6 +297,11 @@ void AddSC_stair_of_destiny()
     newscript = new Script;
     newscript->Name = "npc_pit_commander";
     newscript->GetAI = &GetAI_npc_pit_commander;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_stair_attacker";
+    newscript->GetAI = &GetAI_npc_stair_attacker;
     newscript->RegisterSelf();
 
     newscript = new Script;
