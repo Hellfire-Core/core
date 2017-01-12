@@ -2683,6 +2683,9 @@ void Spell::cast(bool skipCheck)
     }
 
     SetExecutedCurrently(false);
+
+    if (m_caster->GetTypeId() == TYPEID_PLAYER && !SpellMgr::IsChanneledSpell(GetSpellEntry()))
+        ((Player*)m_caster)->RemoveSpellMods(this);
 }
 
 void Spell::handle_immediate()
@@ -3134,9 +3137,9 @@ void Spell::finish(bool ok)
     }
     // other code related only to successfully finished spells
 
-    //remove spell mods
-    if (m_caster->GetTypeId() == TYPEID_PLAYER && !SpellMgr::IsChanneledSpell(GetSpellEntry()))
-        ((Player*)m_caster)->RemoveSpellMods(this);
+    // remove spell mods
+    // if (m_caster->GetTypeId() == TYPEID_PLAYER && !SpellMgr::IsChanneledSpell(GetSpellEntry()))
+    //    ((Player*)m_caster)->RemoveSpellMods(this);
 
     // Okay to remove extra attacks
     if (GetSpellEntry()->HasEffect(SPELL_EFFECT_ADD_EXTRA_ATTACKS))
