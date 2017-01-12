@@ -1107,7 +1107,7 @@ void Spell::DoSpellHitOnUnit(Unit *unit, const uint32 effectMask)
         m_damage = 0;
         return;
     }
-    m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "DoSpellHitOnUnit effects %u", unit, effectMask);
+    
     if (m_caster != unit)
     {
         if (unit->GetCharmerOrOwnerGUID() != m_caster->GetGUID() && !CanIgnoreNotAttackableFlags())
@@ -1181,7 +1181,7 @@ void Spell::DoSpellHitOnUnit(Unit *unit, const uint32 effectMask)
                 unit->IncrDiminishing(m_diminishGroup);
         }
     }
-
+    m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "DoSpellHitOnUnit effects %u", unit, effectMask);
     for (uint32 effectNumber = 0; effectNumber < 3; effectNumber++)
     {
         if (!(effectMask & (1 << effectNumber)))

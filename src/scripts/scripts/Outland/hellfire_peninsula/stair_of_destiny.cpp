@@ -37,7 +37,7 @@ const float summonpos[9][3] = {
 enum
 {
     ATTACKERS_PATH_BEGIN    = 16010,
-    POINTID_SET_RUN         = 14,
+    POINTID_SET_RUN         = 13,
 
     NPC_INFERNAL_RELAY      = 19215,
     NPC_INFERNAL_SIEGEBREAKER = 18946,
@@ -46,7 +46,7 @@ enum
 
     SPELL_INFERNAL_RAIN     = 33814,
     SPELL_CLEAVE            = 16044,
-    SPELL_RAIN_OF_FIRE      = 32785,
+    SPELL_RAIN_OF_FIRE      = 33972,
 
     SPELL_SOLDIER_CLEAVE    = 15496,
     SPELL_SOLDIER_CUTDOWN   = 32009,
@@ -100,7 +100,8 @@ struct npc_pit_commanderAI : public ScriptedAI
             {
                 if (Creature* infernal = m_creature->SummonCreature(NPC_INFERNAL_SIEGEBREAKER, relay->GetPositionX(), relay->GetPositionY(), 41.7f, 4.76f, TEMPSUMMON_CORPSE_DESPAWN, 1000))
                 {
-                    infernal->AI()->AttackStart(infernal->SelectNearestTarget(10.0f));
+                    infernal->GetMotionMaster()->MovePoint(0, -250, 1085, 47);
+                    infernal->setActive(true);
                 }
             }
             else
@@ -130,10 +131,10 @@ struct npc_pit_commanderAI : public ScriptedAI
                 soldier->GetMotionMaster()->MovePath(ATTACKERS_PATH_BEGIN + i, false);
             }
             // and wrath master
-            Creature* master = m_creature->SummonCreature(NPC_FEL_SOLDIER, summonpos[9][0], summonpos[9][1], summonpos[9][2], 4.76f, TEMPSUMMON_CORPSE_DESPAWN, 1000);
+            Creature* master = m_creature->SummonCreature(NPC_WRATH_MASTER, summonpos[8][0], summonpos[8][1], summonpos[8][2], 4.76f, TEMPSUMMON_CORPSE_DESPAWN, 1000);
             master->GetMotionMaster()->MovePath(ATTACKERS_PATH_BEGIN + 9,false);
         }
-        invadersSummonTimer = 600000;
+        invadersSummonTimer = 60000;
     }
 
     void UpdateAI(const uint32 diff)
@@ -229,6 +230,12 @@ const float defenderpath[][3] = {
     -264.332001,1069.990845,54.309059,
 };
 
+enum
+{
+    SPELL_SHOOT = 15620,
+
+};
+
 struct npc_stair_defender_baseAI : public ScriptedAI
 {
     npc_stair_defender_baseAI(Creature* c) : ScriptedAI(c) {}
@@ -285,10 +292,46 @@ struct npc_stair_defender_baseAI : public ScriptedAI
     }
 };
 
-CreatureAI* GetAI_npc_stair_defender_base(Creature* c) // should be removed after we set up all scripts
+struct npc_defender_rangedAI : public npc_stair_defender_baseAI
 {
-    return new npc_stair_defender_baseAI(c);
+    npc_defender_rangedAI(Creature* c) : npc_stair_defender_baseAI(c) {}
+
+    void Reset()
+    {
+        npc_stair_defender_baseAI::Reset();
+        SetAutocast(SPELL_SHOOT, 2000);
+        StartAutocast();
+    }
+
+    void AttackStart(Unit* who)
+    {
+        ScriptedAI::AttackStartNoMove(who, CHECK_TYPE_SHOOTER);
+    }
+
+    void UpdateAI(const uint32 diff)
+    {
+        if (!UpdateVictim())
+            return;
+
+        CheckShooterNoMovementInRange(diff, 30.0);
+        CastNextSpellIfAnyAndReady();
+        DoMeleeAttackIfReady();
+    }
+};
+
+CreatureAI* GetAI_npc_stair_defender_base(Creature* c)
+{
+    switch (c->GetEntry())
+    {
+    case 18965:
+    case 18970:
+        return new npc_defender_rangedAI(c);
+    default:
+        return new npc_stair_defender_baseAI(c);
+    }
+    
 }
+
 
 void AddSC_stair_of_destiny()
 {
