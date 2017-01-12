@@ -247,7 +247,7 @@ enum
     // paladin
     SPELL_EXORCISM  = 33632,
     SPELL_STUN      = 13005,
-    SPELL_BLESSING  = 13903,
+    SPELL_BLESS     = 13903,
 };
 
 struct npc_stair_defender_baseAI : public ScriptedAI
@@ -475,7 +475,7 @@ struct npc_defender_paladinAI : public npc_stair_defender_baseAI
         if (blessingTimer.Expired(diff))
         {
             blessingTimer = 20000;
-            AddSpellToCast(SPELL_BLOODLUST, CAST_LOWEST_HP_FRIENDLY);
+            AddSpellToCast(SPELL_BLESS, CAST_LOWEST_HP_FRIENDLY);
         }
 
         CastNextSpellIfAnyAndReady();
