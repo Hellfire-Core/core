@@ -1216,7 +1216,7 @@ void Unit::CastSpell(Unit* Victim,SpellEntry const *spellInfo, bool triggered, I
         originalCaster = triggeredByAura->GetCasterGUID();
 
     Spell *spell = new Spell(this, spellInfo, triggered, originalCaster);
-
+    SendCombatStats(1 << COMBAT_STATS_MAGIC_RESULT, "casting spell %u %u ", Victim, spellInfo->Id, triggered);
     if (Victim)
         targets.setUnitTarget(Victim);
     else

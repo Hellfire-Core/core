@@ -1181,7 +1181,7 @@ void Spell::DoSpellHitOnUnit(Unit *unit, const uint32 effectMask)
                 unit->IncrDiminishing(m_diminishGroup);
         }
     }
-    m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "DoSpellHitOnUnit effects %u", unit, effectMask);
+    
     for (uint32 effectNumber = 0; effectNumber < 3; effectNumber++)
     {
         if (!(effectMask & (1 << effectNumber)))
@@ -1198,7 +1198,7 @@ void Spell::DoSpellHitOnUnit(Unit *unit, const uint32 effectMask)
                 continue;
             }
         }
-
+        m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "DoSpellHitOnUnit effects %u", unit, effectNumber);
         HandleEffects(unit, NULL, NULL, effectNumber/*,m_damageMultipliers[effectNumber]*/);
     }
 

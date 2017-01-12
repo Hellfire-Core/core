@@ -1802,7 +1802,7 @@ void World::Update(uint32 diff)
     {
         sGuildMgr.UpdateWeek();
         m_NextWeekReset += 7*DAY;
-        RealmDataDatabase.PExecute("UPDATE saved_variables SET NextWeekReset = '" UI64FMTD "')", m_NextWeekReset);
+        RealmDataDatabase.PExecute("UPDATE saved_variables SET NextWeekReset = '" UI64FMTD "'", m_NextWeekReset);
     }
 }
 

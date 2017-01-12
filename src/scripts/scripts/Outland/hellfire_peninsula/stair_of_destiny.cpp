@@ -232,8 +232,22 @@ const float defenderpath[][3] = {
 
 enum
 {
-    SPELL_SHOOT = 15620,
-
+    // ranged
+    SPELL_SHOOT     = 15620,
+    // mages
+    SPELL_FIREBALL  = 33417,
+    SPELL_ICEBOLT   = 33463,
+    SPELL_BLIZZARD  = 33624,
+    // warrior
+    SPELL_STRIKE    = 33626,
+    // shaman
+    SPELL_BLOODLUST = 16170,
+    SPELL_SHOCK     = 15616,
+    SPELL_SHIELD    = 20545,
+    // paladin
+    SPELL_EXORCISM  = 33632,
+    SPELL_STUN      = 13005,
+    SPELL_BLESSING  = 13903,
 };
 
 struct npc_stair_defender_baseAI : public ScriptedAI
@@ -319,6 +333,156 @@ struct npc_defender_rangedAI : public npc_stair_defender_baseAI
     }
 };
 
+struct npc_defender_mageAI : public npc_stair_defender_baseAI
+{
+    npc_defender_mageAI(Creature* c) : npc_stair_defender_baseAI(c) {}
+
+    Timer blizzardTimer;
+    void Reset()
+    {
+        npc_stair_defender_baseAI::Reset();
+        SetAutocast(ishorde() ? SPELL_ICEBOLT : SPELL_FIREBALL, 2000);
+        StartAutocast();
+        blizzardTimer.Reset(10000);
+    }
+
+    void AttackStart(Unit* who)
+    {
+        ScriptedAI::AttackStartNoMove(who, CHECK_TYPE_CASTER);
+    }
+
+    void UpdateAI(const uint32 diff)
+    {
+        if (!UpdateVictim())
+            return;
+
+        if (blizzardTimer.Expired(diff))
+        {
+            AddSpellToCast(SPELL_BLIZZARD, CAST_RANDOM);
+            blizzardTimer = 10000;
+        }
+
+        CheckCasterNoMovementInRange(diff, 30.0);
+        CastNextSpellIfAnyAndReady();
+        DoMeleeAttackIfReady();
+    }
+};
+
+struct npc_defender_warriorAI : public npc_stair_defender_baseAI
+{
+    npc_defender_warriorAI(Creature* c) : npc_stair_defender_baseAI(c) {}
+
+    void Reset()
+    {
+        npc_stair_defender_baseAI::Reset();
+        SetAutocast(SPELL_STRIKE, 5000);
+        StartAutocast();
+    }
+
+
+    void UpdateAI(const uint32 diff)
+    {
+        if (!UpdateVictim())
+            return;
+
+        CastNextSpellIfAnyAndReady();
+        DoMeleeAttackIfReady();
+    }
+};
+
+struct npc_defender_shamanAI : public npc_stair_defender_baseAI
+{
+    npc_defender_shamanAI(Creature* c) : npc_stair_defender_baseAI(c) {}
+
+    Timer bloodlustTimer;
+    Timer shockTimer;
+    Timer shieldTimer;
+    void Reset()
+    {
+        npc_stair_defender_baseAI::Reset();
+        bloodlustTimer.Reset(10000);
+        shockTimer.Reset(1000);
+        shieldTimer.Reset(1000);
+    }
+
+
+    void UpdateAI(const uint32 diff)
+    {
+        if (!UpdateVictim())
+            return;
+
+        if (shieldTimer.Expired(diff))
+        {
+            shieldTimer = 10000;
+            if (!m_creature->HasAura(SPELL_SHIELD))
+                AddSpellToCast(SPELL_SHIELD, CAST_SELF);
+        }
+
+        if (shockTimer.Expired(diff))
+        {
+            AddSpellToCast(SPELL_SHOCK);
+            shockTimer = 6000;
+        }
+
+        if (bloodlustTimer.Expired(diff))
+        {
+            bloodlustTimer = 20000;
+            std::list<Creature*> friends = FindFriendlyMissingBuff(20.0f, SPELL_BLOODLUST);
+            if (friends.size())
+            {
+                AddSpellToCast(*friends.begin(), SPELL_BLOODLUST);
+            }
+        }
+
+        CastNextSpellIfAnyAndReady();
+        DoMeleeAttackIfReady();
+    }
+};
+
+struct npc_defender_paladinAI : public npc_stair_defender_baseAI
+{
+    npc_defender_paladinAI(Creature* c) : npc_stair_defender_baseAI(c) {}
+
+    Timer exorcismTimer;
+    Timer stunTimer;
+    Timer blessingTimer;
+    void Reset()
+    {
+        npc_stair_defender_baseAI::Reset();
+        blessingTimer.Reset(10000);
+        stunTimer.Reset(5000);
+        exorcismTimer.Reset(1000);
+    }
+
+
+    void UpdateAI(const uint32 diff)
+    {
+        if (!UpdateVictim())
+            return;
+
+        if (exorcismTimer.Expired(diff))
+        {
+            exorcismTimer = 10000;
+            AddSpellToCast(SPELL_EXORCISM);
+        }
+
+        if (stunTimer.Expired(diff))
+        {
+            AddSpellToCast(SPELL_STUN);
+            stunTimer = 6000;
+        }
+
+        if (blessingTimer.Expired(diff))
+        {
+            blessingTimer = 20000;
+            AddSpellToCast(SPELL_BLOODLUST, CAST_LOWEST_HP_FRIENDLY);
+        }
+
+        CastNextSpellIfAnyAndReady();
+        DoMeleeAttackIfReady();
+    }
+};
+
 CreatureAI* GetAI_npc_stair_defender_base(Creature* c)
 {
     switch (c->GetEntry())
@@ -326,6 +490,16 @@ CreatureAI* GetAI_npc_stair_defender_base(Creature* c)
     case 18965:
     case 18970:
         return new npc_defender_rangedAI(c);
+    case 18949:
+    case 18971:
+        return new npc_defender_mageAI(c);
+    case 18948:
+    case 18950:
+        return new npc_defender_warriorAI(c);
+    case 18986:
+        return new npc_defender_paladinAI(c);
+    case 18972:
+        return new npc_defender_shamanAI(c);
     default:
         return new npc_stair_defender_baseAI(c);
     }
