@@ -161,8 +161,8 @@ void PlayerTaxi::InitTaxiNodesForLevel(uint32 race, uint32 level)
         case HORDE:    SetTaximaskNode(99);  break;
     }
     // level dependent taxi hubs
-    if (level>=68)
-        SetTaximaskNode(213);                               //Shattered Sun Staging Area
+    //if (level>=68) SWP RELEASE
+    //    SetTaximaskNode(213);                               //Shattered Sun Staging Area
 }
 
 void PlayerTaxi::LoadTaxiMask(const char* data)
@@ -20071,6 +20071,7 @@ void Player::UpdateZoneDependentAuras(uint32 oldZone, uint32 newZone)
         if (spellid && !HasAura(spellid,0))
             CastSpell(this,spellid,true);
     }
+    /* DISABLED Ki'ru song of something
     else if (newZone == 4080 || newZone == 4075 || newZone == 4131) // isle,swp,mgt
     {
         if (!HasAura(46302,0) || !HasAura(46302,1)) // if at least one aura missing try to cast it
@@ -20080,7 +20081,7 @@ void Player::UpdateZoneDependentAuras(uint32 oldZone, uint32 newZone)
     if ((oldZone == 4080 || oldZone == 4075 || oldZone == 4131) && (newZone != 4080 && newZone !=4075 && newZone != 4131))
     {
         RemoveAurasDueToSpellByCancel(46302);
-    }
+    }*/
 }
 
 void Player::UpdateAreaDependentAuras(uint32 newArea)

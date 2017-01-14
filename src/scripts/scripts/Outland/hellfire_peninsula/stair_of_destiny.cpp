@@ -310,11 +310,11 @@ struct npc_defender_rangedAI : public npc_stair_defender_baseAI
 {
     npc_defender_rangedAI(Creature* c) : npc_stair_defender_baseAI(c) {}
 
+    Timer shootTimer;
     void Reset()
     {
         npc_stair_defender_baseAI::Reset();
-        SetAutocast(SPELL_SHOOT, 2000);
-        StartAutocast();
+        shootTimer.Reset(2000);
     }
 
     void AttackStart(Unit* who)
@@ -327,8 +327,13 @@ struct npc_defender_rangedAI : public npc_stair_defender_baseAI
         if (!UpdateVictim())
             return;
 
+        if (shootTimer.Expired(diff))
+        {
+            DoCast(m_creature->getVictim(), SPELL_SHOOT);
+            shootTimer = 1500;
+        }
+
         CheckShooterNoMovementInRange(diff, 30.0);
-        CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
     }
 };

@@ -1198,7 +1198,7 @@ void Spell::DoSpellHitOnUnit(Unit *unit, const uint32 effectMask)
                 continue;
             }
         }
-        m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "DoSpellHitOnUnit effects %u", unit, effectNumber);
+        
         HandleEffects(unit, NULL, NULL, effectNumber/*,m_damageMultipliers[effectNumber]*/);
     }
 
@@ -3855,7 +3855,7 @@ void Spell::HandleEffects(Unit *pUnitTarget, Item *pItemTarget, GameObject *pGOT
         default: break;
         }
     }
-
+    m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "Handle effect %u", unitTarget, i);
     //we do not need DamageMultiplier here.
     damage = CalculateDamage(i, NULL);
 
