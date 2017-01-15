@@ -12490,32 +12490,37 @@ void Unit::Kill(Unit *pVictim, bool durabilityLoss)
     // roll loot, some additional work is done in Creature::setDeathState(JUST_DIED), must be before calling setDeathState
     if (Creature *creatureVictim = pVictim->ToCreature())
     {
-        if (creatureVictim->lootForPickPocketed)
+        if (creatureVictim->GetMapId() != 509 || creatureVictim->GetMapId() != 531 || creatureVictim->GetMapId() != 469 || 
+            creatureVictim->GetMapId() != 409 || creatureVictim->GetMapId() != 249 || creatureVictim->GetMapId() != 533 ||
+            creatureVictim->GetMapId() != 309) // disabled loot in pretbc raids
         {
-            creatureVictim->lootForPickPocketed = false;
-            creatureVictim->loot.clear();
-        }
-
-        if (!creatureVictim->loot.LootLoadedFromDB())
-        {
-            creatureVictim->loot.clear();
-
-            if (uint32 lootid = creatureVictim->GetCreatureInfo()->lootid)
+            if (creatureVictim->lootForPickPocketed)
             {
-                creatureVictim->loot.setCreatureGUID(creatureVictim);
-                creatureVictim->loot.FillLoot(lootid, LootTemplates_Creature, creatureVictim->GetLootRecipient(), false);
+                creatureVictim->lootForPickPocketed = false;
+                creatureVictim->loot.clear();
             }
 
-            creatureVictim->loot.generateMoneyLoot(creatureVictim->GetCreatureInfo()->mingold, creatureVictim->GetCreatureInfo()->maxgold);
-        }
+            if (!creatureVictim->loot.LootLoadedFromDB())
+            {
+                creatureVictim->loot.clear();
 
-        // set looterGUID for round robin loot
-        if (creatureVictim->GetLootRecipient() && creatureVictim->GetLootRecipient()->GetGroup())
-        {
-            Group *group = creatureVictim->GetLootRecipient()->GetGroup();
-            group->UpdateLooterGuid(this, true);            // select next looter if one is out of xp range
-            creatureVictim->loot.looterGUID = group->GetLooterGuid();
-            group->UpdateLooterGuid(this, false);           // select next looter
+                if (uint32 lootid = creatureVictim->GetCreatureInfo()->lootid)
+                {
+                    creatureVictim->loot.setCreatureGUID(creatureVictim);
+                    creatureVictim->loot.FillLoot(lootid, LootTemplates_Creature, creatureVictim->GetLootRecipient(), false);
+                }
+
+                creatureVictim->loot.generateMoneyLoot(creatureVictim->GetCreatureInfo()->mingold, creatureVictim->GetCreatureInfo()->maxgold);
+            }
+
+            // set looterGUID for round robin loot
+            if (creatureVictim->GetLootRecipient() && creatureVictim->GetLootRecipient()->GetGroup())
+            {
+                Group *group = creatureVictim->GetLootRecipient()->GetGroup();
+                group->UpdateLooterGuid(this, true);            // select next looter if one is out of xp range
+                creatureVictim->loot.looterGUID = group->GetLooterGuid();
+                group->UpdateLooterGuid(this, false);           // select next looter
+            }
         }
     }
 

@@ -3359,6 +3359,14 @@ void Spell::EffectSendEvent(uint32 EffectIndex)
             }
             break;
         }
+        case 38482: // disrupt summoning old god
+        {
+            if (unitTarget->GetTypeId() != TYPEID_UNIT)
+                return;
+            unitTarget->ToCreature()->ForcedDespawn();
+            break;
+        }
+
     }
 
     if (m_caster->GetTypeId() == TYPEID_PLAYER && ((Player*)m_caster)->InBattleGround())
@@ -5652,7 +5660,6 @@ void Spell::EffectSummonObjectWild(uint32 i)
 
 void Spell::EffectScriptEffect(uint32 effIndex)
 {
-    m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "effectscripteffect %u", unitTarget, GetSpellEntry()->Id);
     // TODO: we must implement hunter pet summon at login there (spell 6962)
     switch (GetSpellEntry()->Id)
     {
@@ -6765,11 +6772,6 @@ void Spell::EffectScriptEffect(uint32 effIndex)
             break;
         case 30541: // Magtheridon's Blaze
             unitTarget->CastSpell(unitTarget, 30542, true, NULL, NULL, m_caster->GetGUID());
-            break;
-        case 38482: // disrupt summoning old god
-            if (unitTarget->GetTypeId() != TYPEID_UNIT)
-                return;
-            unitTarget->ToCreature()->ForcedDespawn();
             break;
     }
 

@@ -37,7 +37,6 @@ const float summonpos[9][3] = {
 enum
 {
     ATTACKERS_PATH_BEGIN    = 16010,
-    POINTID_SET_RUN         = 13,
 
     NPC_INFERNAL_RELAY      = 19215,
     NPC_INFERNAL_SIEGEBREAKER = 18946,
@@ -120,6 +119,7 @@ struct npc_pit_commanderAI : public ScriptedAI
             {
                 Creature* soldier = m_creature->SummonCreature(NPC_FEL_SOLDIER, summonpos[i][0], summonpos[i][1], summonpos[i][2], 4.76f, TEMPSUMMON_CORPSE_DESPAWN, 1000);
                 soldier->GetMotionMaster()->MovePath(ATTACKERS_PATH_BEGIN + i, false);
+                soldier->setActive(true);
             }
 
         }
@@ -129,10 +129,12 @@ struct npc_pit_commanderAI : public ScriptedAI
             {
                 Creature* soldier = m_creature->SummonCreature(NPC_FEL_SOLDIER, summonpos[i][0], summonpos[i][1], summonpos[i][2], 4.76f, TEMPSUMMON_CORPSE_DESPAWN, 1000);
                 soldier->GetMotionMaster()->MovePath(ATTACKERS_PATH_BEGIN + i, false);
+                soldier->setActive(true);
             }
             // and wrath master
             Creature* master = m_creature->SummonCreature(NPC_WRATH_MASTER, summonpos[8][0], summonpos[8][1], summonpos[8][2], 4.76f, TEMPSUMMON_CORPSE_DESPAWN, 1000);
             master->GetMotionMaster()->MovePath(ATTACKERS_PATH_BEGIN + 9,false);
+            master->setActive(true);
         }
         invadersSummonTimer = 60000;
     }
@@ -187,8 +189,6 @@ struct npc_stair_attackerAI : public ScriptedAI
     {
         if (type == WAYPOINT_MOTION_TYPE)
             m_creature->SetHomePosition(m_creature->GetPositionX(), m_creature->GetPositionY(), m_creature->GetPositionZ(), m_creature->GetOrientation());
-        if (point == POINTID_SET_RUN)
-            m_creature->SetWalk(false);
     }
 
     void UpdateAI(const uint32 diff)
@@ -248,6 +248,18 @@ enum
     SPELL_EXORCISM  = 33632,
     SPELL_STUN      = 13005,
     SPELL_BLESS     = 13903,
+    // justinius
+    SPELL_CONSA     = 33559,
+    SPELL_BUBBLE    = 33581,
+    SPELL_FLASH     = 33641,
+    SPELL_GBOM      = 33564,
+    SPELL_JUDGEMENT = 33554,
+    // melgrom
+    SPELL_EARTH_TOT = 33570,
+    SPELL_FIRE_TOT  = 33560,
+    SPELL_SHOCK2    = 22885,
+    SPELL_CHAIN_L   = 33643,
+    SPELL_CHAIN_H   = 33642,
 };
 
 struct npc_stair_defender_baseAI : public ScriptedAI
@@ -274,6 +286,7 @@ struct npc_stair_defender_baseAI : public ScriptedAI
         searchTimer.Reset(1000);
         m_creature->SetWalk(false);
         m_creature->SetReactState(REACT_AGGRESSIVE);
+        m_creature->setActive(true);
     }
 
     void JustReachedHome()
@@ -343,11 +356,11 @@ struct npc_defender_mageAI : public npc_stair_defender_baseAI
     npc_defender_mageAI(Creature* c) : npc_stair_defender_baseAI(c) {}
 
     Timer blizzardTimer;
+    Timer maincastTimer;
     void Reset()
     {
         npc_stair_defender_baseAI::Reset();
-        SetAutocast(ishorde() ? SPELL_ICEBOLT : SPELL_FIREBALL, 2000);
-        StartAutocast();
+        maincastTimer.Reset(1500);
         blizzardTimer.Reset(10000);
     }
 
@@ -365,6 +378,12 @@ struct npc_defender_mageAI : public npc_stair_defender_baseAI
         {
             AddSpellToCast(SPELL_BLIZZARD, CAST_RANDOM);
             blizzardTimer = 10000;
+        }
+
+        if (maincastTimer.Expired(diff))
+        {
+            AddSpellToCast(ishorde() ? SPELL_ICEBOLT : SPELL_FIREBALL);
+            maincastTimer = 1500;
         }
 
         CheckCasterNoMovementInRange(diff, 30.0);
@@ -488,6 +507,127 @@ struct npc_defender_paladinAI : public npc_stair_defender_baseAI
     }
 };
 
+struct npc_justiniusAI : public npc_stair_defender_baseAI
+{
+    npc_justiniusAI(Creature* c) : npc_stair_defender_baseAI(c) {}
+
+    Timer consaTimer;
+    Timer bubbleCooldown;
+    Timer flashTimer;
+    Timer bomTimer;
+    Timer judgementTimer;
+    void Reset()
+    {
+        npc_stair_defender_baseAI::Reset();
+        consaTimer.Reset(10000);
+        bubbleCooldown.Reset(1);
+        flashTimer.Reset(7000);
+        bomTimer.Reset(1000);
+        judgementTimer.Reset(3000);
+    }
+
+    void UpdateAI(const uint32 diff)
+    {
+        if (!UpdateVictim())
+            return;
+
+        bubbleCooldown.Update(diff);
+
+        if (consaTimer.Expired(diff))
+        {
+            AddSpellToCast(SPELL_CONSA);
+            consaTimer = 25000;
+        }
+
+        if (flashTimer.Expired(diff))
+        {
+            AddSpellToCast(SPELL_FLASH, CAST_LOWEST_HP_FRIENDLY);
+            flashTimer = 5000;
+        }
+
+        if (bomTimer.Expired(diff))
+        {
+            AddSpellToCast(SPELL_GBOM, CAST_SELF);
+            bomTimer = 40000;
+        }
+
+        if (judgementTimer.Expired(diff))
+        {
+            AddSpellToCast(SPELL_JUDGEMENT);
+            judgementTimer = 5000;
+        }
+
+        if (m_creature->HealthBelowPct(20) && bubbleCooldown.Passed())
+        {
+            DoCast(m_creature, SPELL_BUBBLE);
+            bubbleCooldown.Reset(60000);
+        }
+
+        CastNextSpellIfAnyAndReady();
+        DoMeleeAttackIfReady();
+    }
+};
+
+struct npc_melgromAI : public npc_stair_defender_baseAI
+{
+    npc_melgromAI(Creature* c) : npc_stair_defender_baseAI(c) {}
+
+    Timer earthtotTimer;
+    Timer firetotTimer;
+    Timer shockTimer;
+    Timer healTimer;
+    Timer chainTimer;
+    void Reset()
+    {
+        npc_stair_defender_baseAI::Reset();
+        earthtotTimer.Reset(3000);
+        firetotTimer.Reset(3100);
+        healTimer.Reset(7000);
+        chainTimer.Reset(1000);
+        shockTimer.Reset(5000);
+    }
+
+    void UpdateAI(const uint32 diff)
+    {
+        if (!UpdateVictim())
+            return;
+
+
+        if (earthtotTimer.Expired(diff))
+        {
+            AddSpellToCast(SPELL_EARTH_TOT);
+            earthtotTimer = 120000;
+        }
+
+        if (healTimer.Expired(diff))
+        {
+            AddSpellToCast(SPELL_CHAIN_H, CAST_LOWEST_HP_FRIENDLY);
+            healTimer = 10000;
+        }
+
+        if (chainTimer.Expired(diff))
+        {
+            AddSpellToCast(SPELL_CHAIN_L);
+            chainTimer = 10000;
+        }
+
+        if (shockTimer.Expired(diff))
+        {
+            AddSpellToCast(SPELL_JUDGEMENT);
+            shockTimer = 5000;
+        }
+
+        if (firetotTimer.Expired(diff))
+        {
+            AddSpellToCast(SPELL_FIRE_TOT);
+            firetotTimer = 20000;
+        }
+
+        CastNextSpellIfAnyAndReady();
+        DoMeleeAttackIfReady();
+    }
+};
+
 CreatureAI* GetAI_npc_stair_defender_base(Creature* c)
 {
     switch (c->GetEntry())
@@ -505,6 +645,10 @@ CreatureAI* GetAI_npc_stair_defender_base(Creature* c)
         return new npc_defender_paladinAI(c);
     case 18972:
         return new npc_defender_shamanAI(c);
+    case 18969:
+        return new npc_melgromAI(c);
+    case 18966:
+        return new npc_justiniusAI(c);
     default:
         return new npc_stair_defender_baseAI(c);
     }
