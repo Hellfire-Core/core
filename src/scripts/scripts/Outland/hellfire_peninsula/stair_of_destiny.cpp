@@ -253,7 +253,7 @@ enum
     SPELL_BUBBLE    = 33581,
     SPELL_FLASH     = 33641,
     SPELL_GBOM      = 33564,
-    SPELL_JUDGEMENT = 33554,
+    SPELL_JOC       = 33554,
     // melgrom
     SPELL_EARTH_TOT = 33570,
     SPELL_FIRE_TOT  = 33560,
@@ -613,7 +613,7 @@ struct npc_melgromAI : public npc_stair_defender_baseAI
 
         if (shockTimer.Expired(diff))
         {
-            AddSpellToCast(SPELL_JUDGEMENT);
+            AddSpellToCast(SPELL_JOC);
             shockTimer = 5000;
         }
 
