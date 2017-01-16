@@ -388,6 +388,8 @@ void LoadDBCStores(const std::string& dataPath)
         case 2683: entry->spellid[0] = 14673; break; // shadow guard
         case 3214: entry->amount[0] = 12; break; // sparkling falling star
         case 3219: entry->amount[1] = 12; break; // rigid bladestone
+
+        case 3284: entry->type[2] = ITEM_ENCHANTMENT_TYPE_NONE; break; // steady seaspray emerald, has extra ranged crit in dbc
         }
     }}
 

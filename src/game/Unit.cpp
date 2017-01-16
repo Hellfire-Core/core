@@ -12490,8 +12490,8 @@ void Unit::Kill(Unit *pVictim, bool durabilityLoss)
     // roll loot, some additional work is done in Creature::setDeathState(JUST_DIED), must be before calling setDeathState
     if (Creature *creatureVictim = pVictim->ToCreature())
     {
-        if (creatureVictim->GetMapId() != 509 || creatureVictim->GetMapId() != 531 || creatureVictim->GetMapId() != 469 || 
-            creatureVictim->GetMapId() != 409 || creatureVictim->GetMapId() != 249 || creatureVictim->GetMapId() != 533 ||
+        if (creatureVictim->GetMapId() != 509 && creatureVictim->GetMapId() != 531 && creatureVictim->GetMapId() != 469 && 
+            creatureVictim->GetMapId() != 409 && creatureVictim->GetMapId() != 249 && creatureVictim->GetMapId() != 533 &&
             creatureVictim->GetMapId() != 309) // disabled loot in pretbc raids
         {
             if (creatureVictim->lootForPickPocketed)

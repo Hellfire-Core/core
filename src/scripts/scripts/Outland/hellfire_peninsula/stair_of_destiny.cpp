@@ -108,7 +108,7 @@ struct npc_pit_commanderAI : public ScriptedAI
                 relay->CastSpell(relay->GetPositionX(), relay->GetPositionY(), 41.7f, SPELL_INFERNAL_RAIN, false);
             }
         }
-        infernalSummonTimer = (infernalSummonTimer.GetInterval() == 2000) ? 40000 : 2000;
+        infernalSummonTimer = (infernalSummonTimer.GetInterval() == 2000) ? urand(30000,50000) : 2000;
     }
 
     void SummonInvaders()
@@ -136,7 +136,7 @@ struct npc_pit_commanderAI : public ScriptedAI
             master->GetMotionMaster()->MovePath(ATTACKERS_PATH_BEGIN + 9,false);
             master->setActive(true);
         }
-        invadersSummonTimer = 60000;
+        invadersSummonTimer = urand(30000,60000);
     }
 
     void UpdateAI(const uint32 diff)
@@ -553,7 +553,7 @@ struct npc_justiniusAI : public npc_stair_defender_baseAI
 
         if (judgementTimer.Expired(diff))
         {
-            AddSpellToCast(SPELL_JUDGEMENT);
+            AddSpellToCast(SPELL_JOC);
             judgementTimer = 5000;
         }
 
@@ -613,7 +613,7 @@ struct npc_melgromAI : public npc_stair_defender_baseAI
 
         if (shockTimer.Expired(diff))
         {
-            AddSpellToCast(SPELL_JOC);
+            AddSpellToCast(SPELL_SHOCK2);
             shockTimer = 5000;
         }
 
