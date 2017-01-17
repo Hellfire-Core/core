@@ -42,6 +42,7 @@ enum
     NPC_INFERNAL_SIEGEBREAKER = 18946,
     NPC_WRATH_MASTER        = 19005,
     NPC_FEL_SOLDIER         = 18944,
+    NPC_PIT_COMMANDER       = 18945,
 
     SPELL_INFERNAL_RAIN     = 33814,
     SPELL_CLEAVE            = 16044,
@@ -383,7 +384,7 @@ struct npc_defender_mageAI : public npc_stair_defender_baseAI
         if (maincastTimer.Expired(diff))
         {
             AddSpellToCast(ishorde() ? SPELL_ICEBOLT : SPELL_FIREBALL);
-            maincastTimer = 1500;
+            maincastTimer = ishorde() ? 1600 : 3100;
         }
 
         CheckCasterNoMovementInRange(diff, 30.0);
@@ -524,6 +525,8 @@ struct npc_justiniusAI : public npc_stair_defender_baseAI
         flashTimer.Reset(7000);
         bomTimer.Reset(1000);
         judgementTimer.Reset(3000);
+        if (Creature* pit = m_creature->GetMap()->GetCreatureById(NPC_PIT_COMMANDER))
+            pit->setActive(true);
     }
 
     void UpdateAI(const uint32 diff)
