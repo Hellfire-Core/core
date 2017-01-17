@@ -46,12 +46,14 @@ EndScriptData */
 #define ASHTONGUE_RUSE                39527
 #define QUEST_RUSEOFTHEASHTONGUE      10946
 
-static float waypoint[6][3] =
+static float waypoint[8][3] =
 {
     {340.15, 58.65, 17.71},
     {388.09, 31.54, 20.18},
     {388.18, -32.85, 20.18},
     {340.29, -60.19, 17.72},
+    {262.60, -42.05, 20.18},
+    {262.71, 40.57, 20.18},
     {332, 0.01, 39}, // better not use the same xy coord
     {331, 0.01, -2.59}
 };
@@ -126,7 +128,7 @@ struct boss_alarAI : public ScriptedAI
         ForceTimer.Reset(0);
         checkTimer.Reset(3000);
 
-        cur_wp = 4;
+        cur_wp = 6;
         m_creature->SetDisplayId(m_creature->GetNativeDisplayId());
         m_creature->SetSpeed(MOVE_RUN, 2.0);
         m_creature->SetSpeed(MOVE_FLIGHT, 2.0);
@@ -216,7 +218,7 @@ struct boss_alarAI : public ScriptedAI
                 m_creature->SetSpeed(MOVE_RUN, 5.0f);
                 m_creature->SetSpeed(MOVE_FLIGHT, 5.0f);
                 ForceTimer = 1;
-                cur_wp = 5;
+                cur_wp = 7;
                 //m_creature->GetMotionMaster()->Clear();
                 //m_creature->GetMotionMaster()->MovePoint(0, waypoint[5][0], waypoint[5][1], waypoint[5][2]);
             }
@@ -404,9 +406,9 @@ struct boss_alarAI : public ScriptedAI
 
             if(Platforms_Move_Timer.Expired(diff))
             {
-                if(cur_wp == 4)
+                if(cur_wp == 6)
                 {
-                    cur_wp = urand(0,1) ? 0 : 3;
+                    cur_wp = urand(0,5);
                     WaitEvent = WE_PLATFORM;
                 }
                 else
@@ -414,15 +416,13 @@ struct boss_alarAI : public ScriptedAI
                     if(urand(0,4)) // next platform
                     {
                         DoSpawnCreature(CREATURE_EMBER_OF_ALAR, 0, 0, 0, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 5000);
-                        if(cur_wp == 3)
-                            cur_wp = 0;
-                        else
-                            cur_wp++;
+                        cur_wp += urand(1, 5);
+                        cur_wp %= 6;
                         WaitEvent = WE_PLATFORM;
                     }
                     else // flame quill
                     {
-                        cur_wp = 4;
+                        cur_wp = 6;
                         WaitEvent = WE_QUILL;
                     }
                 }
@@ -455,7 +455,7 @@ struct boss_alarAI : public ScriptedAI
             {
                 m_creature->SetReactState(REACT_PASSIVE);
                 m_creature->AttackStop();
-                m_creature->GetMotionMaster()->MovePoint(6, waypoint[4][0], waypoint[4][1], waypoint[4][2]);
+                m_creature->GetMotionMaster()->MovePoint(6, waypoint[6][0], waypoint[6][1], waypoint[6][2]);
                 m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                 m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                 m_creature->SetFloatValue(UNIT_FIELD_BOUNDINGRADIUS, 50);
@@ -546,7 +546,7 @@ struct mob_ember_of_alarAI : public ScriptedAI
     {
         m_creature->CastSpell(m_creature, SPELL_EMBER_BLAST, true);
 
-        if(pInstance)
+        /*if(pInstance)
         {
             if(Creature* Alar = Creature::GetCreature((*m_creature), pInstance->GetData64(DATA_ALAR)))
             {
@@ -560,7 +560,7 @@ struct mob_ember_of_alarAI : public ScriptedAI
                         Alar->SetHealth(1);
                 }
             }
-        }
+        }*/
     }
     void UpdateAI(const uint32 diff)
     {

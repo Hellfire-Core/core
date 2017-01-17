@@ -56,6 +56,7 @@ EndScriptData */
 #define SPELL_TOXIC_SPORES          38575
 #define SPELL_MAGIC_BARRIER         38112
 #define SPELL_PARALYZE              38132
+#define SPELL_PERSUASION            38511
 
 #define MIDDLE_X                    30.134
 #define MIDDLE_Y                    -923.65
@@ -164,6 +165,7 @@ struct boss_lady_vashjAI : public ScriptedAI
     Timer CoilfangStrider_Timer;
     Timer SummonSporebat_Timer;
     Timer SummonSporebat_StaticTimer;
+    Timer Possession_Timer;
     uint8 EnchantedElemental_Pos;
     uint8 Phase;
     uint8 path_nr;
@@ -189,6 +191,7 @@ struct boss_lady_vashjAI : public ScriptedAI
         CoilfangStrider_Timer.Reset(urand(60000, 70000));
         SummonSporebat_Timer.Reset(10000);
         SummonSporebat_StaticTimer.Reset(25000);
+        Possession_Timer.Reset(10000);
         EnchantedElemental_Pos = 0;
         Phase = 0;
         Intro = false;
@@ -490,6 +493,15 @@ struct boss_lady_vashjAI : public ScriptedAI
                     if(SummonSporebat_Timer.GetTimeLeft() < 5000)
                         SummonSporebat_Timer.Reset(5000);
 
+                }
+
+                if (Possession_Timer.Expired(diff))
+                {
+                    std::list<Unit*> possesed;
+                    SelectUnitList(possesed, 3, SELECT_TARGET_RANDOM, 0, true);
+                    for (std::list<Unit*>::iterator itr = possesed.begin(); itr != possesed.end(); itr++)
+                        DoCast(*itr, SPELL_PERSUASION);
+                    Possession_Timer = urand(20000, 30000);
                 }
             }
 

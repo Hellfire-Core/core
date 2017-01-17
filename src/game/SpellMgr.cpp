@@ -3053,6 +3053,9 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 36558: // artor prison visual
                     spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_NEARBY_ENTRY;
                     break;
+                case 44032: // manticron cube exhaustion 90sec
+                    spellInfo->DurationIndex = 23;
+                    break;
                 }
                 if (spellInfo->SpellIconID == 184 && spellInfo->Attributes == 4259840)
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
