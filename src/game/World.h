@@ -805,8 +805,6 @@ class HELLGROUND_EXPORT World
 
         void UpdateRealmCharCount(uint32 accid);
 
-        void UpdateRequiredPermissions();
-
         LocaleConstant GetAvailableDbcLocale(LocaleConstant locale) const { if (m_availableDbcLocaleMask & (1 << locale)) return locale; else return m_defaultDbcLocale; }
 
         void addDisconnectTime(std::pair<uint32,time_t> tPair){ m_disconnects.insert(tPair); }

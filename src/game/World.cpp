@@ -2451,16 +2451,6 @@ void World::InitDailyQuestResetTime()
         m_NextWeekReset = (*result)[0].GetUInt64();
 }
 
-void World::UpdateRequiredPermissions()
-{
-     QueryResultAutoPtr result = AccountsDatabase.PQuery("SELECT required_permission_mask from realms WHERE realm_id = '%u'", realmID);
-     if (result)
-     {
-        m_requiredPermissionMask = result->Fetch()->GetUInt64();
-        sLog.outDebug("Required permission mask: %lu", m_requiredPermissionMask);
-     }
-}
-
 void World::SelectRandomHeroicDungeonDaily()
 {
     if (sGameEventMgr.GetEventMap().empty())
@@ -2677,7 +2667,11 @@ void World::SetPlayerLimit(int32 limit)
     if(limit >= 0)
     {
         m_playerLimit = limit;
-        m_requiredPermissionMask = PERM_PLAYER;
+        QueryResultAutoPtr result = AccountsDatabase.PQuery("SELECT required_permission_mask from realms WHERE realm_id = '%u'", realmID);
+        if (result)
+            m_requiredPermissionMask = result->Fetch()->GetUInt64();
+        else
+            m_requiredPermissionMask = PERM_PLAYER;
         return;
     }
     

@@ -408,7 +408,7 @@ struct boss_alarAI : public ScriptedAI
             {
                 if(cur_wp == 6)
                 {
-                    cur_wp = urand(0,5);
+                    cur_wp = urand(0, 1) ? 0 : 3;
                     WaitEvent = WE_PLATFORM;
                 }
                 else
