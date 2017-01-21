@@ -4007,12 +4007,20 @@ void Unit::RemoveRankAurasDueToSpell(uint32 spellId)
 bool Unit::CheckForStrongerAuras(Aura* Aur)
 {
     SpellEntry const* spellProto = Aur->GetSpellProto();
-    if (Aur->GetModifier()->m_auraname == SPELL_AURA_MOD_DECREASE_SPEED && !Aur->IsPersistent())
+    // possibly more aura types affected by this
+    if ((Aur->GetModifier()->m_auraname == SPELL_AURA_MOD_DECREASE_SPEED ||
+        Aur->GetModifier()->m_auraname == SPELL_AURA_MOD_HEALING_PCT) &&
+        !Aur->IsPersistent() && Aur->GetModifierValue() < 0)
     {
-        Unit::AuraList list = GetAurasByType(SPELL_AURA_MOD_DECREASE_SPEED);
+        Unit::AuraList list = GetAurasByType(Aur->GetModifier()->m_auraname);
         for (Unit::AuraList::iterator itr = list.begin(); itr != list.end(); itr++)
         {
+            if ((*itr)->GetModifierValue() > 0)
+                continue;
             if ((*itr)->GetModifierValue() < Aur->GetModifierValue() && !(*itr)->IsPersistent()) // they are negative!
+                return true;
+            if ((*itr)->GetModifierValue() == Aur->GetModifierValue() && !(*itr)->IsPersistent() &&
+                (*itr)->GetAuraDuration() > Aur->GetAuraDuration())
                 return true;
         }
     }
