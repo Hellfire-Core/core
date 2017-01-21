@@ -188,8 +188,9 @@ struct boss_netherspiteAI : public ScriptedAI
                 {
                     portal->InterruptNonMeleeSpells(true);
 
-                    if (current->GetTypeId() == TYPEID_PLAYER)
-                        current->CastSpell(current, PlayerDebuff[j], true);
+                    // debuff added when aura expires by spell_linked_spell
+                    //if (current->GetTypeId() == TYPEID_PLAYER)
+                    //    current->CastSpell(current, PlayerDebuff[j], true);
 
                     //portal->CastSpell(target, PortalBeam[j], false);
                     PortalCasting[j] = false; // cast next update

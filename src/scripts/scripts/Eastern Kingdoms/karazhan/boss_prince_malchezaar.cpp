@@ -323,12 +323,12 @@ struct boss_malchezaarAI : public ScriptedAI
         std::list<HostileReference *> t_list = m_creature->getThreatManager().getThreatList();
         std::vector<Unit *> targets;
 
-        if (!t_list.size())
+        if (t_list.size() < 2)
             return;
 
         //begin + 1 , so we don't target the one with the highest threat
         std::list<HostileReference *>::iterator itr = t_list.begin();
-        std::advance(itr, 1);
+        itr++;
         for (; itr != t_list.end(); ++itr)                   //store the threat list in a different container
         {
             Unit *target = Unit::GetUnit(*m_creature, (*itr)->getUnitGuid());
