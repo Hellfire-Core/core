@@ -249,14 +249,6 @@ struct mob_arcane_protectorAI : public ScriptedAI
         me->CastSpell(me, RAND(SPELL_RETURN_FIRE1, SPELL_RETURN_FIRE2, SPELL_RETURN_FIRE3), false); 
     }
 
-    void JustSummoned(Creature *c)
-    {
-        if (c->GetEntry() == NPC_ASTRAL_SPARK)
-        {
-            c->CastSpell(c, SPELL_DETONATE, true);
-        }
-    }
-
     void OnAuraApply(Aura *aur, Unit*, bool stack)
     {
         if(aur->GetEffIndex() == 0)
