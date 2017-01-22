@@ -94,6 +94,7 @@ static InfernalPoint InfernalPoints[] =
 
 #define INFERNAL_MODEL_INVISIBLE 11686                      //Infernal Effects
 #define SPELL_INFERNAL_RELAY     30834
+#define NPC_RELAY                17645
 
 #define AXE_EQUIP_MODEL          40066                      //Axes info
 #define AXE_EQUIP_INFO           33448898
@@ -398,7 +399,11 @@ struct boss_malchezaarAI : public ScriptedAI
             ((netherspite_infernalAI*)Infernal->AI())->malchezaarGUID=m_creature->GetGUID();
 
             infernals.push_back(Infernal->GetGUID());
-            DoCast(Infernal, SPELL_INFERNAL_RELAY);
+            Creature* relay = m_creature->GetMap()->GetCreatureById(NPC_RELAY);
+            if (relay)
+                relay->CastSpell(Infernal, SPELL_INFERNAL_RELAY, false);
+            else
+                DoCast(Infernal, SPELL_INFERNAL_RELAY);
         }
 
         DoScriptText(RAND(SAY_SUMMON1, SAY_SUMMON2), m_creature);

@@ -168,19 +168,25 @@ struct boss_netherspiteAI : public ScriptedAI
                     for(Map::PlayerList::const_iterator i = players.begin(); i!=players.end(); ++i)
                     {
                         Player* p = i->getSource();
-                        if(p && p->isAlive() && !p->HasAura(PlayerDebuff[j]) // alive
+                        if (p && p->isAlive() && !p->HasAura(PlayerDebuff[j]) // alive
                             && (!target || target->GetExactDistance2d(portal->GetPositionX(), portal->GetPositionY()) > p->GetExactDistance2d(portal->GetPositionX(), portal->GetPositionY())) // closer than current best
-                            && !p->HasAura(PlayerDebuff[j],0) // not exhausted
-                            && !p->HasAura(PlayerBuff[(j+1)%3],0) // not on another beam
-                            && !p->HasAura(PlayerBuff[(j+2)%3],0)
+                            && !p->HasAura(PlayerDebuff[j], 0) // not exhausted
+                            //&& !p->HasAura(PlayerBuff[(j+1)%3],0) // not on another beam
+                            //&& !p->HasAura(PlayerBuff[(j+2)%3],0)
+                            && BeamTarget[(j + 1) % 3] != p->GetGUID()
+                            && BeamTarget[(j + 2) % 3] != p->GetGUID()
                             && p->isBetween(m_creature, portal)) // on the beam
                             target = p;
                     }
                 }
 
                 // buff the target
-                if(target->GetTypeId() == TYPEID_PLAYER)
+                if (target->GetTypeId() == TYPEID_PLAYER)
+                {
                     target->AddAura(PlayerBuff[j], target);
+                    target->RemoveAurasDueToSpell(PlayerBuff[(j + 1) % 3]);
+                    target->RemoveAurasDueToSpell(PlayerBuff[(j + 2) % 3]);
+                }
                 else
                     target->AddAura(NetherBuff[j], target);    
 

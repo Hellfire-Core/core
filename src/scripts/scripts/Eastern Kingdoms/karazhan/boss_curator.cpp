@@ -78,6 +78,7 @@ struct boss_curatorAI : public ScriptedAI
         me->ApplySpellImmune(0, IMMUNITY_SCHOOL, SPELL_SCHOOL_MASK_ARCANE, true);
         me->ApplySpellImmune(1, IMMUNITY_STATE, SPELL_AURA_PERIODIC_LEECH, true);
         me->ApplySpellImmune(2, IMMUNITY_STATE, SPELL_AURA_PERIODIC_MANA_LEECH, true);
+        me->ApplySpellImmune(3, IMMUNITY_DISPEL, DISPEL_POISON, true);
 
         pInstance->SetData(DATA_CURATOR_EVENT, NOT_STARTED);
     }
@@ -130,6 +131,7 @@ struct boss_curatorAI : public ScriptedAI
                 {
                     astralFlare->CastSpell(astralFlare, SPELL_ASTRAL_FLARE_PASSIVE, false);
                     astralFlare->ApplySpellImmune(0, IMMUNITY_SCHOOL, SPELL_SCHOOL_MASK_ARCANE, true);
+                    astralFlare->ApplySpellImmune(1, IMMUNITY_STATE, SPELL_AURA_MOD_TAUNT, true);
                     astralFlare->AI()->AttackStart(target);
                 }
 

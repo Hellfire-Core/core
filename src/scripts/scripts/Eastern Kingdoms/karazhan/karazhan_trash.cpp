@@ -227,8 +227,6 @@ CreatureAI* GetAI_mob_spectral_sentry(Creature *_Creature)
 #define SPELL_RETURN_FIRE2  29794
 #define SPELL_RETURN_FIRE3  29788
 #define SPELL_FIST_OF_STONE 29840
-#define SPELL_DETONATE      29876
-#define SPELL_SEAR          29864
 #define NPC_ASTRAL_SPARK    17283
 
 
@@ -240,6 +238,9 @@ struct mob_arcane_protectorAI : public ScriptedAI
 
     void Reset()
     {
+        me->ApplySpellImmune(1, IMMUNITY_STATE, SPELL_AURA_PERIODIC_LEECH, true);
+        me->ApplySpellImmune(2, IMMUNITY_STATE, SPELL_AURA_PERIODIC_MANA_LEECH, true);
+        me->ApplySpellImmune(3, IMMUNITY_DISPEL, DISPEL_POISON, true);
         SkillTimer.Reset(urand(10000, 20000));
     }
     
@@ -252,8 +253,7 @@ struct mob_arcane_protectorAI : public ScriptedAI
     {
         if (c->GetEntry() == NPC_ASTRAL_SPARK)
         {
-            c->CastSpell(me, SPELL_DETONATE, true);
-            c->CastSpell(me, SPELL_SEAR, true);
+            c->CastSpell(c, SPELL_DETONATE, true);
         }
     }
 
