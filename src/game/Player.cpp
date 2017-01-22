@@ -14502,8 +14502,7 @@ bool Player::LoadFromDB(uint32 guid, SqlQueryHolder *holder)
     SetByteValue(PLAYER_BYTES_3, 0, gender);
 
     SetUInt32Value(PLAYER_FLAGS, fields[12].GetUInt32());
-    // TEST, do not remove, just replace with SetFloatValue(UNIT_FIELD_COMBATREACH, DEFAULT_COMBAT_REACH); 
-    SetFloatValue(UNIT_FIELD_COMBATREACH, getRace() == RACE_TAUREN ? 3.0f : DEFAULT_COMBAT_REACH); 
+    SetFloatValue(UNIT_FIELD_COMBATREACH, DEFAULT_COMBAT_REACH); 
 
     // cleanup inventory related item value fields (its will be filled correctly in _LoadInventory)
     for (uint8 slot = EQUIPMENT_SLOT_START; slot < EQUIPMENT_SLOT_END; ++slot)

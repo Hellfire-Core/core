@@ -37,9 +37,8 @@
 #define DEFAULT_WORLD_OBJECT_SIZE   0.388999998569489f      // player size, also currently used (correctly?) for any non Unit world objects
 #define MAX_STEALTH_DETECT_RANGE    45.0f
 #define DEFAULT_COMBAT_REACH        1.5f
-#define MIN_MELEE_REACH             2.0f
 #define NOMINAL_MELEE_RANGE         5.0f
-#define MELEE_RANGE                 (NOMINAL_MELEE_RANGE - MIN_MELEE_REACH * 2) //center to center for players
+#define MELEE_RANGE                 1.33f
 #define COMMON_ALLOW_HEIGHT_DIFF    4.3f
 
 uint32 GuidHigh2TypeId(uint32 guid_hi);
