@@ -22,9 +22,51 @@
 #include "Player.h"
 #include "DBCStores.h"
 #include "SpellMgr.h"
+#include "GridNotifiers.h"
 
 class Player;
 struct SpellEntry;
+
+Unit* PlayerAI::SelectNewVictim()
+{
+    std::list<Unit *> targets;
+    Hellground::AnyPlayerInObjectRangeCheck u_check(me, 100);
+    Hellground::UnitListSearcher<Hellground::AnyPlayerInObjectRangeCheck> searcher(targets, u_check);
+
+    Cell::VisitAllObjects(me, searcher, 100);
+    // no appropriate targets, try non player
+    if (targets.empty())
+        return me->SelectNearbyTarget(100);
+
+    // if there are any non-charmed players around attack them first
+    bool anyenemy = false;
+    for (std::list<Unit*>::iterator itr = targets.begin(); itr != targets.end(); itr++)
+    {
+        if (!(*itr)->IsFriendlyTo(me))
+        {
+            anyenemy = true;
+            break;
+        }
+    }
+    if (anyenemy) // non charmed found, remove friendly to us
+    {
+        for (std::list<Unit*>::iterator itr = targets.begin(); itr != targets.end();)
+        {
+            if ((*itr)->IsFriendlyTo(me))
+                itr = targets.erase(itr);
+            else
+                itr++;
+        }
+    }
+
+    // select random
+    uint32 rIdx = urand(0, targets.size() - 1);
+    std::list<Unit *>::const_iterator tcIter = targets.begin();
+    for (uint32 i = 0; i < rIdx; ++i)
+        ++tcIter;
+
+    return *tcIter;
+}
 
 bool PlayerAI::UpdateVictim(float range)
 {
@@ -34,7 +76,7 @@ bool PlayerAI::UpdateVictim(float range)
         {
             if (!me->getVictim() || !me->getVictim()->isAlive())
             {
-                if (Unit *victim = me->SelectNearbyTarget(range))
+                if (Unit *victim = SelectNewVictim())
                     AttackStart(victim);
                 else
                     if (charmer->getVictim())
