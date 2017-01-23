@@ -236,7 +236,8 @@ void WorldSession::HandleTrainerBuySpellOpcode(WorldPacket & recv_data)
 
     // apply reputation discount
     uint32 nSpellCost = uint32(floor(trainer_spell->spellCost * _player->GetReputationPriceDiscount(unit)));
-
+    if (sWorld.getConfig(CONFIG_HAPPY_TESTING))
+        nSpellCost = 0;
     // check money requirement
     if (_player->GetMoney() < nSpellCost)
         return;

@@ -14491,7 +14491,7 @@ bool Player::LoadFromDB(uint32 guid, SqlQueryHolder *holder)
     SetUInt32Value(UNIT_FIELD_BYTES_0, bytes0);
     SetUInt32Value(UNIT_FIELD_LEVEL, fields[7].GetUInt8());
     SetUInt32Value(PLAYER_XP, fields[8].GetUInt32());
-    if (sWorld.getConfig(CONFIG_HAPPY_TESTING))
+    if (sWorld.getConfig(CONFIG_HAPPY_TESTING) && fields[9].GetUInt32() < 5000*GOLD)
         SetUInt32Value(PLAYER_FIELD_COINAGE, 5000*GOLD);
     else
         SetUInt32Value(PLAYER_FIELD_COINAGE, fields[9].GetUInt32());
@@ -18167,7 +18167,7 @@ bool Player::BuyItemFromVendor(uint64 vendorguid, uint32 item, uint8 count, uint
         }
     }
 
-    if (uint32(m_reputationMgr.GetRank(pProto->RequiredReputationFaction)) < pProto->RequiredReputationRank)
+    if (uint32(m_reputationMgr.GetRank(pProto->RequiredReputationFaction)) < pProto->RequiredReputationRank && !sWorld.getConfig(CONFIG_HAPPY_TESTING))
     {
         SendBuyError(BUY_ERR_REPUTATION_REQUIRE, pCreature, item, 0);
         return false;
@@ -18216,7 +18216,8 @@ bool Player::BuyItemFromVendor(uint64 vendorguid, uint32 item, uint8 count, uint
     }
 
     uint32 price  = pProto->BuyPrice * count;
-
+    if (sWorld.getConfig(CONFIG_HAPPY_TESTING))
+        price = 0;
     // reputation discount
     price = uint32(floor(price * GetReputationPriceDiscount(pCreature)));
 
