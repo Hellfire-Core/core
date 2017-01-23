@@ -23,6 +23,7 @@
 #include "DBCStores.h"
 #include "SpellMgr.h"
 #include "GridNotifiers.h"
+#include "CellImpl.h"
 
 class Player;
 struct SpellEntry;
