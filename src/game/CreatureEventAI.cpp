@@ -990,6 +990,7 @@ void CreatureEventAI::JustReachedHome()
         }
     }
     Reset();
+    m_creature->GetMotionMaster()->Initialize();
 }
 
 void CreatureEventAI::EnterEvadeMode()
