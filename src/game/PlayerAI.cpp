@@ -22,8 +22,8 @@
 #include "Player.h"
 #include "DBCStores.h"
 #include "SpellMgr.h"
-#include "GridNotifiers.h"
 #include "CellImpl.h"
+#include "GridNotifiersImpl.h"
 
 class Player;
 struct SpellEntry;
