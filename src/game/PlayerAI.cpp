@@ -30,9 +30,9 @@ struct SpellEntry;
 
 Unit* PlayerAI::SelectNewVictim()
 {
-    std::list<Unit *> targets;
+    std::list<Player*> targets;
     Hellground::AnyPlayerInObjectRangeCheck u_check(me, 100);
-    Hellground::UnitListSearcher<Hellground::AnyPlayerInObjectRangeCheck> searcher(targets, u_check);
+    Hellground::ObjectListSearcher<Player, Hellground::AnyPlayerInObjectRangeCheck> searcher(targets, u_check);
 
     Cell::VisitAllObjects(me, searcher, 100);
     // no appropriate targets, try non player
@@ -41,7 +41,7 @@ Unit* PlayerAI::SelectNewVictim()
 
     // if there are any non-charmed players around attack them first
     bool anyenemy = false;
-    for (std::list<Unit*>::iterator itr = targets.begin(); itr != targets.end(); itr++)
+    for (std::list<Player*>::iterator itr = targets.begin(); itr != targets.end(); itr++)
     {
         if (!(*itr)->IsFriendlyTo(me))
         {
@@ -51,7 +51,7 @@ Unit* PlayerAI::SelectNewVictim()
     }
     if (anyenemy) // non charmed found, remove friendly to us
     {
-        for (std::list<Unit*>::iterator itr = targets.begin(); itr != targets.end();)
+        for (std::list<Player*>::iterator itr = targets.begin(); itr != targets.end();)
         {
             if ((*itr)->IsFriendlyTo(me))
                 itr = targets.erase(itr);
@@ -62,7 +62,7 @@ Unit* PlayerAI::SelectNewVictim()
 
     // select random
     uint32 rIdx = urand(0, targets.size() - 1);
-    std::list<Unit *>::const_iterator tcIter = targets.begin();
+    std::list<Player*>::const_iterator tcIter = targets.begin();
     for (uint32 i = 0; i < rIdx; ++i)
         ++tcIter;
 
