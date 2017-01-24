@@ -99,7 +99,6 @@ struct boss_kelidan_the_breakerAI : public ScriptedAI
 
         if (pInstance)
             pInstance->SetData(DATA_KELIDANEVENT, NOT_STARTED);
-        JustReachedHome();
     }
 
     void EnterCombat(Unit *who)

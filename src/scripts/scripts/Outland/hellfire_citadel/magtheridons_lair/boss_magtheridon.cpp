@@ -379,13 +379,16 @@ struct mob_hellfire_channelerAI : public ScriptedAI
         if (DarkMending_Timer.Expired(diff))
         {
             Unit * target = SelectLowestHpFriendly(30.0f);
-            if (!target && HealthBelowPct(50))
+            if (!target)
                 target = me;
 
-            if (target)
+            if (target && target->HealthBelowPct(50))
+            {
                 AddSpellToCast(target, SPELL_DARK_MENDING);
-
-            DarkMending_Timer = urand(10000, 20000);
+                DarkMending_Timer = urand(10000, 20000);
+            }
+            else
+                DarkMending_Timer = 2000;
         }
 
         if (Fear_Timer.Expired(diff))

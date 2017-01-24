@@ -143,7 +143,7 @@ struct boss_high_king_maulgarAI : public BossAI
                 case EVENT_ARCING_SMASH:
                 {
                     AddSpellToCast(SPELL_ARCING_SMASH);
-                    events.ScheduleEvent(eventId, 10000);
+                    events.ScheduleEvent(eventId, urand(6000,10000));
                     break;
                 }
                 case EVENT_WHIRLWIND:
@@ -155,13 +155,13 @@ struct boss_high_king_maulgarAI : public BossAI
                 case EVENT_MIGHTY_BLOW:
                 {
                     AddSpellToCast(SPELL_MIGHTY_BLOW);
-                    events.ScheduleEvent(eventId, urand(30000, 40000));
+                    events.ScheduleEvent(eventId, urand(20000, 40000));
                     break;
                 }
                 case EVENT_CHARGE_HKM:
                 {
                     AddSpellToCast(SPELL_BERSERKER_C, CAST_RANDOM);
-                    events.ScheduleEvent(eventId, 20000);
+                    events.ScheduleEvent(eventId, urand(10000,20000));
                     break;
                 }
                 case EVENT_ROAR:
@@ -253,7 +253,7 @@ struct boss_olm_the_summonerAI : public BossAI
                 case EVENT_DARK_DECAY:
                 {
                     AddSpellToCast(SPELL_DARK_DECAY);
-                    events.ScheduleEvent(eventId, 20000);
+                    events.ScheduleEvent(eventId, urand(5000,9000));
                     break;
                 }
                 case EVENT_SUMMON:
@@ -265,7 +265,7 @@ struct boss_olm_the_summonerAI : public BossAI
                 case EVENT_DEATH_COIL:
                 {
                     AddSpellToCast(SPELL_DEATH_COIL, CAST_RANDOM);
-                    events.ScheduleEvent(eventId, 20000);
+                    events.ScheduleEvent(eventId, urand(10000,15000));
                     break;
                 }
             }

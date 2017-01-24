@@ -3053,8 +3053,27 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 36558: // artor prison visual
                     spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_NEARBY_ENTRY;
                     break;
-                case 44032: // manticron cube exhaustion 90sec
-                    spellInfo->DurationIndex = 23;
+                case 36449: // maghteridon roof falling at phase change
+                    spellInfo->AttributesCu |= SPELL_ATTR_CU_IGNORE_ARMOR;
+                    break;
+                case 31717: // black stalker chain dmg
+                    spellInfo->EffectBasePoints[0] = 1700;
+                    spellInfo->EffectDieSides[0] = 400;
+                    spellInfo->Attributes &= ~SPELL_ATTR_LEVEL_DAMAGE_CALCULATION;
+                    break;
+                    //PRE NERF ZONE
+                case 44032: // manticron cube exhaustion 180sec
+                    spellInfo->DurationIndex = 14;
+                    break;
+                case 36152: 
+                    spellInfo->EffectBasePoints[0] = 2000;
+                    spellInfo->EffectDieSides[0] = 1000;
+                    break;
+                case 33237:
+                    spellInfo->EffectBasePoints[0] = 2250;
+                    break;
+                case 34435:
+                    spellInfo->EffectBasePoints[0] = 1800;
                     break;
                 }
                 if (spellInfo->SpellIconID == 184 && spellInfo->Attributes == 4259840)
