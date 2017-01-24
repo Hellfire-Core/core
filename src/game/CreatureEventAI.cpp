@@ -118,6 +118,7 @@ CreatureEventAI::CreatureEventAI(Creature *c) : CreatureAI(c)
     bEmptyList = CreatureEventAIList.empty();
     Phase = 0;
     CombatMovementEnabled = true;
+    AllowConditionalMovement = false;
     MeleeEnabled = true;
     AttackDistance = 0.0f;
     AttackAngle = 0.0f;
@@ -142,11 +143,18 @@ CreatureEventAI::CreatureEventAI(Creature *c) : CreatureAI(c)
     CreatureEventAIList.push_back(CreatureEventAIHolder(cevent));
 
     //Handle Spawned Events
+    // and check for conditional movement
     if (!bEmptyList)
     {
         for (std::list<CreatureEventAIHolder>::iterator i = CreatureEventAIList.begin(); i != CreatureEventAIList.end(); ++i)
+        {
             if (SpawnedEventConditionsCheck((*i).Event))
                 ProcessEvent(*i);
+            if (((*i).Event.action[0].type == ACTION_T_COMBAT_MOVEMENT && (*i).Event.action[0].combat_movement.state != 0)
+                || ((*i).Event.action[1].type == ACTION_T_COMBAT_MOVEMENT && (*i).Event.action[1].combat_movement.state != 0)
+                || ((*i).Event.action[1].type == ACTION_T_COMBAT_MOVEMENT && (*i).Event.action[2].combat_movement.state != 0))
+                AllowConditionalMovement = true;
+        }
     }
 }
 
@@ -525,7 +533,7 @@ void CreatureEventAI::ProcessAction(CreatureEventAI_Action const& action, uint32
                     {
                         SendDebug("Cannot cast (flags %u, spell %u)",action.cast.castFlags,action.cast.spellId);
                         //Melee current victim if flag not set
-                        if (!(action.cast.castFlags & CAST_NO_MELEE_IF_OOM) && CombatMovementEnabled)
+                        if (!(action.cast.castFlags & CAST_NO_MELEE_IF_OOM) && (CombatMovementEnabled || AllowConditionalMovement))
                         {
                             m_creature->GetMotionMaster()->MoveChase(m_creature->getVictim(), MELEE_RANGE, 0.0f);
                         }
@@ -584,7 +592,7 @@ void CreatureEventAI::ProcessAction(CreatureEventAI_Action const& action, uint32
                         !CanCast(target, tSpell, (action.castguid.castFlags & CAST_TRIGGERED)))
                     {
                         //Melee current victim if flag not set
-                        if (!(action.castguid.castFlags & CAST_NO_MELEE_IF_OOM) && CombatMovementEnabled)
+                        if (!(action.castguid.castFlags & CAST_NO_MELEE_IF_OOM) && (CombatMovementEnabled || AllowConditionalMovement))
                         {
                             if (m_creature->hasUnitState(UNIT_STAT_CHASE))
                                 m_creature->GetMotionMaster()->MoveChase(m_creature->getVictim(), MELEE_RANGE, 0.0f);

@@ -2351,6 +2351,12 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
                             pet->CastSpell(pet, 36613, false); // cast aspect of spirit hunter
                 return;
             }
+            case 36660: // death count- remove damage debuffs
+            {
+                m_target->RemoveAurasDueToSpell(36657);
+                m_target->RemoveAurasDueToSpell(38818);
+                return;
+            }
         }
 
         // Earth Shield

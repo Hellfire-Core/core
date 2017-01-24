@@ -653,6 +653,7 @@ class HELLGROUND_IMPORT_EXPORT CreatureEventAI : public CreatureAI
         //Variables used by Events themselves
         uint8 Phase;                                        // Current phase, max 32 phases
         bool CombatMovementEnabled;                         // If we allow targeted movment gen (movement twoards top threat)
+        bool AllowConditionalMovement;                      // Allow moving when in los even if combat movement not enabled
         bool MeleeEnabled;                                  // If we allow melee auto attack
         float AttackDistance;                               // Distance to attack from
         float AttackAngle;                                  // Angle of attack
