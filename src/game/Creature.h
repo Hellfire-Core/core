@@ -649,6 +649,7 @@ class HELLGROUND_IMPORT_EXPORT Creature : public Unit
                 return m_charmInfo->GetCharmSpell(pos)->spellId;
         }
 
+        void SetLastHitPos(WorldLocation wl);
         void SetHomePosition(float x, float y, float z, float ori)
         {
             homeLocation.coord_x = x;
@@ -656,6 +657,7 @@ class HELLGROUND_IMPORT_EXPORT Creature : public Unit
             homeLocation.coord_z = z;
             homeLocation.orientation = ori;
             homeLocation.mapid = GetMapId();
+            lastHitPos = homeLocation;
         }
 
         void GetHomePosition(float &x, float &y, float &z, float &ori)
@@ -762,6 +764,7 @@ class HELLGROUND_IMPORT_EXPORT Creature : public Unit
         uint32 m_originalEntry;
 
         WorldLocation homeLocation;
+        WorldLocation lastHitPos;
 
         bool DisableReputationGain;
 

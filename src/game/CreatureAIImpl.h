@@ -591,6 +591,7 @@ inline bool CreatureAI::_EnterEvadeMode()
     me->LoadCreaturesAddon();
     me->SetLootRecipient(NULL);
     me->SetReactState(REACT_AGGRESSIVE);
+    me->SetLastHitPos(me->GetHomePosition());
 
     return true;
 }

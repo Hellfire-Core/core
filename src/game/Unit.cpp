@@ -1007,6 +1007,9 @@ uint32 Unit::DealDamage(DamageLog *damageInfo, DamageEffectType damagetype, cons
 
             if (GetCharmerOrOwnerPlayerOrPlayerItself())
                 ((Creature*)pVictim)->LowerPlayerDamageReq(health < damageInfo->damage ?  health : damageInfo->damage);
+            WorldLocation hitpos;
+            pVictim->GetPosition(hitpos);
+            pVictim->ToCreature()->SetLastHitPos(hitpos);
         }
 
         if (health <= damageInfo->damage)
