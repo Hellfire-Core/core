@@ -74,6 +74,7 @@ struct boss_mekgineer_steamriggerAI : public ScriptedAI
     Timer Saw_Blade_Timer;
     Timer Electrified_Net_Timer;
     Timer Berserk_timer;
+    Timer Heroic_gnomes_timer;
     bool Summon75;
     bool Summon50;
     bool Summon25;
@@ -84,6 +85,7 @@ struct boss_mekgineer_steamriggerAI : public ScriptedAI
         Saw_Blade_Timer.Reset(15000);
         Electrified_Net_Timer.Reset(10000);
         Berserk_timer.Reset(300000);
+        Heroic_gnomes_timer.Reset(7000);
 
         Summon75 = false;
         Summon50 = false;
@@ -163,6 +165,12 @@ struct boss_mekgineer_steamriggerAI : public ScriptedAI
                 DoCast(me, H_SPELL_ENRAGE);
 
             Berserk_timer = 300000+rand()%10000;
+        }
+
+        if (HeroicMode && Heroic_gnomes_timer.Expired(diff))
+        {
+            me->SummonCreature(ENTRY_STREAMRIGGER_MECHANIC, Pos[0].x, Pos[0].y, Pos[0].z, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 240000);
+            Heroic_gnomes_timer = urand(7000, 10000);
         }
 
         if (!Summon75)

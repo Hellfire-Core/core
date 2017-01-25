@@ -76,6 +76,7 @@ struct boss_warlord_kalithreshAI : public ScriptedAI
             (*it)->Respawn();
             (*it)->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             (*it)->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            (*it)->GetUnitStateMgr().PushAction(UNIT_ACTION_STUN);
         }
 
         if (pInstance)

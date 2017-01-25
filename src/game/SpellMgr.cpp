@@ -3061,6 +3061,12 @@ void SpellMgr::LoadSpellCustomAttr()
                     spellInfo->EffectDieSides[0] = 400;
                     spellInfo->Attributes &= ~SPELL_ATTR_LEVEL_DAMAGE_CALCULATION;
                     break;
+                case 38511: // vashj persuasion
+                    spellInfo->MaxAffectedTargets = 5;
+                    break;
+                case 31673: // hungarfen remove visual from shrooms
+                    spellInfo->Effect[2] = 0;
+                    break;
                     //PRE NERF ZONE
                 case 44032: // manticron cube exhaustion 180sec
                     spellInfo->DurationIndex = 14;

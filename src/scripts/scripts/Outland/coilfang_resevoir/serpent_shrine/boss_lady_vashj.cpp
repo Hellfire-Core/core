@@ -497,10 +497,7 @@ struct boss_lady_vashjAI : public ScriptedAI
 
                 if (Possession_Timer.Expired(diff))
                 {
-                    std::list<Unit*> possesed;
-                    SelectUnitList(possesed, 3, SELECT_TARGET_RANDOM, 0, true);
-                    for (std::list<Unit*>::iterator itr = possesed.begin(); itr != possesed.end(); itr++)
-                        DoCast(*itr, SPELL_PERSUASION);
+                    DoCast(NULL, SPELL_PERSUASION);
                     Possession_Timer = urand(20000, 30000);
                 }
             }
