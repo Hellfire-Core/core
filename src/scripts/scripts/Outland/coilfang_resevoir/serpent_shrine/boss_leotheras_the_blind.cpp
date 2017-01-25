@@ -88,7 +88,7 @@ struct mob_inner_demonAI : public ScriptedAI
 
     void Reset()
     {
-        ShadowBolt_Timer.Reset(10000);
+        ShadowBolt_Timer.Reset(3000);
         Link_Timer.Reset(1000);
     }
     void JustDied(Unit *victim)
@@ -133,6 +133,8 @@ struct mob_inner_demonAI : public ScriptedAI
         {
             DoCast(m_creature->getVictim(), SPELL_SOUL_LINK, true);
             Link_Timer = 1000;
+            m_creature->GetMotionMaster()->MoveChase(m_creature->getVictim());
+                
         }
         
 
@@ -143,7 +145,7 @@ struct mob_inner_demonAI : public ScriptedAI
         if (ShadowBolt_Timer.Expired(diff))
         {
             DoCast(m_creature->getVictim(), SPELL_SHADOWBOLT, false);
-            ShadowBolt_Timer = 10000;
+            ShadowBolt_Timer = 5000;
         }
         
 

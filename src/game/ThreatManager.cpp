@@ -332,7 +332,9 @@ bool DropAggro(Creature* pAttacker, Unit * target)
     // special cases
     if (target->HasAura(24698, 1) || // Gouge
         target->HasAura(41086, 0) || // Ice Trap
-        target->HasAura(41197,2))    // Shield Bash
+        target->HasAura(41197, 2) || // Shield Bash
+        target->HasAura(38509, 0) // vashj stun
+        ) 
         return true;
 
     // Vengeful Spirit can't be attacked

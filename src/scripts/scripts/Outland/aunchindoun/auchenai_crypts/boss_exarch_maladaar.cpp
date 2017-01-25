@@ -177,7 +177,7 @@ struct boss_exarch_maladaarAI : public ScriptedAI
 
     void MoveInLineOfSight(Unit *who)
     {
-        if (!HasTaunted && m_creature->IsWithinDistInMap(who, 150.0))
+        if (!HasTaunted && m_creature->IsWithinDistInMap(who, 60.0))
         {
             DoScriptText(SAY_INTRO, m_creature);
             HasTaunted = true;

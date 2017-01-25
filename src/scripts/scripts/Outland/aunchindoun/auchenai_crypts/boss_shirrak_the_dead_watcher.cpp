@@ -37,7 +37,7 @@ EndScriptData */
 #define N_SPELL_FIERY_BLAST         32302
 #define H_SPELL_FIERY_BLAST         38382
 #define SPELL_FIERY_BLAST           (HeroicMode?H_SPELL_FIERY_BLAST:N_SPELL_FIERY_BLAST)
-#define SPELL_FOCUS_FIRE_VISUAL     42075 //need to find better visual
+#define SPELL_FOCUS_FIRE_VISUAL     32286 //need to find better visual
 
 struct boss_shirrak_the_dead_watcherAI : public ScriptedAI
 {
@@ -84,7 +84,7 @@ struct boss_shirrak_the_dead_watcherAI : public ScriptedAI
             summoned->CastSpell(summoned,SPELL_FOCUS_FIRE_VISUAL,false);
             summoned->setFaction(m_creature->getFaction());
             summoned->SetLevel(m_creature->getLevel());
-            summoned->addUnitState(UNIT_STAT_ROOT);
+            summoned->GetUnitStateMgr().PushAction(UNIT_ACTION_ROOT);
 
             if(focusedTarget)
                 summoned->AI()->AttackStart(focusedTarget);

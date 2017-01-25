@@ -6530,6 +6530,11 @@ void Spell::EffectScriptEffect(uint32 effIndex)
             m_caster->CastSpell(unitTarget, damage ,false);
             break;
         }
+        case 33091: // wild fel stalker determination
+        {
+            m_caster->RemoveAurasDueToSpell(33129);
+            break; // should remove all negative, but should be enough
+        }
     }
 
     if (!unitTarget)
