@@ -2463,6 +2463,8 @@ void Spell::cancel(SpellCastResult reason)
     m_spellState = SPELL_STATE_FINISHED;
 
     m_autoRepeat = false;
+    if (SpellMgr::IsChanneledSpell(GetSpellEntry()))
+        m_caster->SendCombatStats(1 << COMBAT_STATS_CHANNEL_UPDATE, "Channeled spell %u interrupt %u", NULL, GetSpellEntry()->Id, reason);
     switch (oldState)
     {
         case SPELL_STATE_PREPARING:

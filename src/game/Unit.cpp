@@ -12852,8 +12852,7 @@ void Unit::RemoveCharmedOrPossessedBy(Unit *charmer)
             RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
 
         thisCreature->AI()->OnCharmed(false);
-        SendCombatStats(1 << COMBAT_STATS_TEST, "unpossess alive %u aienabled %u isfriendly %u", charmer, isAlive(), thisCreature->IsAIEnabled, IsFriendlyTo(charmer));
-        if (isAlive() && thisCreature->IsAIEnabled)
+        if (isAlive() /* && thisCreature->IsAIEnabled*/) // set to false in OnCharmed
         {
             if (charmer && !IsFriendlyTo(charmer))
             {
