@@ -3047,7 +3047,7 @@ void Spell::update(uint32 difftime)
                 {
                     float max_range = SpellMgr::GetSpellMaxRange(sSpellRangeStore.LookupEntry(GetSpellEntry()->rangeIndex));
 
-                    if (!m_targets.getUnitTarget() || !m_caster->IsWithinDistInMap(m_targets.getUnitTarget(), max_range + 3.0))
+                    if (!m_targets.getUnitTarget() || !m_caster->IsWithinDistInMap(m_targets.getUnitTarget(), max_range + 5.0))
                         cancel(SPELL_FAILED_INTERRUPTED);
                 }
 
@@ -5014,7 +5014,8 @@ SpellCastResult Spell::CheckRange(bool strict)
 
     SpellRangeEntry const* srange = sSpellRangeStore.LookupEntry(GetSpellEntry()->rangeIndex);
     float max_range = SpellMgr::GetSpellMaxRange(srange);
-    if (!strict) max_range += 4.0f; // additional 4 yds of range if spell was started in range
+    if (!strict) max_range += SpellMgr::IsChanneledSpell(GetSpellEntry()) ? 9.0f : 4.0f;
+    // additional 4 yds of range if spell was started in range, 9 if chaneled
     float min_range = SpellMgr::GetSpellMinRange(srange);
     uint32 range_type = SpellMgr::GetSpellRangeType(srange);
 

@@ -17461,6 +17461,9 @@ void Player::PetSpellInitialize()
                 if (itr->second->state == PETSPELL_REMOVED)
                     continue;
                 ++addlist;
+
+                // clear cooldowns
+                GetCooldownMgr().CancelSpellCooldown(itr->first);
             }
         }
 

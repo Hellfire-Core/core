@@ -161,6 +161,12 @@ void WorldSession::HandleAutoEquipItemOpcode(WorldPacket & recv_data)
     if (!pSrcItem)
         return;                                             // only at cheat
 
+    if (pSrcItem->GetProto()->Class == ITEM_CLASS_WEAPON && _player->IsNonMeleeSpellCast(false)
+        && _player->GetCurrentSpell(CURRENT_GENERIC_SPELL))
+    {
+        _player->InterruptNonMeleeSpells(false); // interrupt spell when equiping weapon as of 2.4.3
+    }
+
     if (pSrcItem->m_lootGenerated)                           // prevent swap looting item
     {
         //best error message found for attempting to swap while looting
