@@ -333,7 +333,8 @@ bool DropAggro(Creature* pAttacker, Unit * target)
     if (target->HasAura(24698, 1) || // Gouge
         target->HasAura(41086, 0) || // Ice Trap
         target->HasAura(41197, 2) || // Shield Bash
-        target->HasAura(38509, 0) // vashj stun
+        target->HasAura(38509, 0) || // vashj stun
+        target->HasAura(33130, 0) // olm death coil
         ) 
         return true;
 

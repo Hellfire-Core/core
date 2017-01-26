@@ -3198,7 +3198,8 @@ void Spell::SendCastResult(SpellCastResult result)
     }
 
     m_caster->SendCombatStats(1 << COMBAT_STATS_FAILED_CAST, "Cast %u failed, result %u", NULL, GetSpellEntry()->Id, result);
-
+    if (GetSpellEntry()->Id == 27220 && result == SPELL_FAILED_INT_AURA_REMOVED)
+        m_caster->SendCombatStats(1 << COMBAT_STATS_CRASHTEST, "bang", NULL);
     if (result >= SPELL_FAILED_DEBUG_START && result <= SPELL_FAILED_DEBUG_END)
         result = SPELL_FAILED_INTERRUPTED;
 
