@@ -153,7 +153,7 @@ struct boss_operaAI : public ScriptedAI
 // Strawman
 #define SPELL_BRAIN_BASH        31046
 #define SPELL_BRAIN_WIPE        31069
-#define SPELL_BURNING_STRAW     31075
+#define SPELL_CONFLAGRATE_SELF  31073
 
 // Tinhead
 #define SPELL_CLEAVE            31043
@@ -362,12 +362,7 @@ struct boss_strawmanAI : public boss_operaAI
     void EnterCombat(Unit* who)
     {
         DoScriptText(SAY_STRAWMAN_AGGRO, m_creature);
-    }
-
-    void SpellHit(Unit* caster, const SpellEntry *Spell)
-    {
-        if ((Spell->SchoolMask == SPELL_SCHOOL_MASK_FIRE) && (!(rand()%10)))
-            DoCast(m_creature, SPELL_BURNING_STRAW, true);
+        DoCast(m_creature, SPELL_CONFLAGRATE_SELF, true);
     }
 
     void JustDied(Unit* killer)
