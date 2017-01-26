@@ -2494,8 +2494,6 @@ void Spell::cancel(SpellCastResult reason)
             
             m_caster->RemoveAurasByCasterSpell(GetSpellEntry()->Id, casterGuid);
             SendChannelUpdate(0);
-            if (GetSpellEntry()->Id == 27220 && reason == SPELL_FAILED_INT_AURA_REMOVED)
-                m_caster->SendCombatStats(1 << COMBAT_STATS_CRASHTEST, "bang", NULL);
             if (!SpellMgr::IsChanneledSpell(GetSpellEntry()))
             {
                 SendInterrupted(0);
@@ -5018,8 +5016,7 @@ SpellCastResult Spell::CheckRange(bool strict)
 
     SpellRangeEntry const* srange = sSpellRangeStore.LookupEntry(GetSpellEntry()->rangeIndex);
     float max_range = SpellMgr::GetSpellMaxRange(srange);
-    if (!strict) max_range += SpellMgr::IsChanneledSpell(GetSpellEntry()) ? 9.0f : 4.0f;
-    // additional 4 yds of range if spell was started in range, 9 if chaneled
+    if (!strict) max_range += 4.0f;
     float min_range = SpellMgr::GetSpellMinRange(srange);
     uint32 range_type = SpellMgr::GetSpellRangeType(srange);
 

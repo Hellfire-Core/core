@@ -619,7 +619,7 @@ void Aura::Update(uint32 diff)
 
                 if (Player* modOwner = caster->GetSpellModOwner())
                     modOwner->ApplySpellMod(GetId(), SPELLMOD_RANGE, max_range, NULL);
-
+                max_range += 7.0f; // 7 extra range for channels when they are already being casted
                 if (!caster->IsWithinDistInMap(m_target, max_range))
                 {
                     m_target->RemoveAura(GetId(), GetEffIndex());
