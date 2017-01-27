@@ -3067,6 +3067,9 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 31673: // hungarfen remove visual from shrooms
                     spellInfo->Effect[2] = 0;
                     break;
+                case 38523: // netherspite netherbreath
+                    spellInfo->MaxAffectedTargets = 4;
+                    break;
                     //PRE NERF ZONE
                 case 44032: // manticron cube exhaustion 180sec
                     spellInfo->DurationIndex = 25;
@@ -3550,6 +3553,7 @@ void SpellMgr::LoadSpellCustomAttr()
             case 40861: // Wicked Beam
                 spellInfo->MaxAffectedTargets = 10;
                 break;
+            case 5246: // intimidating shout CAN be break by damage, lower chance handled in Aura::HandleModFear & Unit::RemoveSpellByDamageTaken
             case 8122:
             case 8124:
             case 10888:

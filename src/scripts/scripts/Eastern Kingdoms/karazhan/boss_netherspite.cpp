@@ -217,8 +217,8 @@ struct boss_netherspiteAI : public ScriptedAI
         SummonPortals();
         PhaseTimer.Reset(60000);
         PortalPhase = true;
-        PortalTimer.Reset(3000);
-        EmpowermentTimer.Reset(10000);
+        PortalTimer.Reset(10000);
+        EmpowermentTimer.Reset(13000);
         DoScriptText(EMOTE_PHASE_PORTAL,m_creature);
         AttackStart(m_creature->getVictim());
         DoResetThreat();
@@ -310,7 +310,7 @@ struct boss_netherspiteAI : public ScriptedAI
             if (PortalTimer.Expired(diff))
             {
                 UpdatePortals();
-                PortalTimer = 500;
+                PortalTimer = 1000;
             }
 
             if (EmpowermentTimer.Expired(diff))

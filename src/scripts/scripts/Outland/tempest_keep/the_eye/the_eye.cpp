@@ -486,7 +486,7 @@ struct mob_Bloodwarder_SquireAI : public ScriptedAI
                 DoCast(target,SPELL_FLASHOFLIGHT_BW_SQUIRE);
 
                 if(target->GetHealth() <= target->GetMaxHealth()*0.5)
-                    FlashofLight_Timer = 0;
+                    FlashofLight_Timer = 1;
                 else
                     FlashofLight_Timer = rand()%7000;
                 return;
