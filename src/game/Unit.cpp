@@ -746,7 +746,15 @@ bool Unit::HasAuraByCasterWithFamilyFlags(uint64 pCaster, uint32 familyName,  ui
 /* Called by DealDamage for auras that have a chance to be dispelled on damage taken. */
 void Unit::RemoveSpellbyDamageTaken(uint32 damage, uint32 spell)
 {
+    
     // The chance to dispel an aura depends on the damage taken with respect to the casters level.
+    // leech has much bigger chance to break, dots have lower
+    float chanceMultiplier = 1.0f;
+    if (SpellMgr::IsAuraAddedBySpell(SPELL_AURA_PERIODIC_LEECH, spell) || SpellMgr::IsAuraAddedBySpell(SPELL_AURA_PERIODIC_MANA_LEECH, spell) ||
+        SpellMgr::IsAuraAddedBySpell(SPELL_AURA_PERIODIC_HEALTH_FUNNEL, spell) || SpellMgr::IsAuraAddedBySpell(SPELL_AURA_PERIODIC_MANA_FUNNEL, spell))
+        chanceMultiplier = 2.0f;
+    else if (SpellMgr::IsAuraAddedBySpell(SPELL_AURA_PERIODIC_DAMAGE, spell) || SpellMgr::IsAuraAddedBySpell(SPELL_AURA_PERIODIC_DAMAGE_PERCENT, spell))
+        chanceMultiplier = 0.7f;
     uint32 max_dmg = getLevel() > 8 ? 30 * getLevel() - 100 : 50;
     float chance = float(damage) / max_dmg * 100.0f;
     uint32 dispelable = 0;
@@ -760,6 +768,7 @@ void Unit::RemoveSpellbyDamageTaken(uint32 damage, uint32 spell)
         if(aurasDone.find(auraPair) != aurasDone.end())
             continue;
 
+        float currentChance = chance;
         aurasDone.insert(auraPair);
 
         if (*i && (!spell || (*i)->GetId() != spell))
@@ -773,6 +782,7 @@ void Unit::RemoveSpellbyDamageTaken(uint32 damage, uint32 spell)
             {
                 if ((*i)->GetModifier()->m_amount > damage)
                 {
+                    currentChance = std::min(currentChance, (float(damage) / (*i)->GetModifier()->m_amount)*70.0f);
                     (*i)->GetModifier()->m_amount -= damage;
                 }
                 else
@@ -782,7 +792,7 @@ void Unit::RemoveSpellbyDamageTaken(uint32 damage, uint32 spell)
                 }
             }
             
-            if (roll_chance_f(chance))
+            if (roll_chance_f(currentChance * chanceMultiplier))
                 aurasToRemove.push_back(auraPair);
             
         }
@@ -4131,8 +4141,17 @@ bool Unit::RemoveNoStackAurasDueToAura(Aura *Aur)
             continue;
 
         bool sameCaster = Aur->GetCasterGUID() == (*i).second->GetCasterGUID();
+        uint8 noStack = SpellMgr::IsNoStackSpellDueToSpell(spellProto, i_spellProto, sameCaster, Aur->GetEffIndex());
 
-        if (uint8 noStack = SpellMgr::IsNoStackSpellDueToSpell(spellProto, i_spellProto, sameCaster, Aur->GetEffIndex()))
+        if (Aur->GetModifier()->m_auraname == (*i).second->GetModifier()->m_auraname &&
+            (Aur->GetModifier()->m_auraname == SPELL_AURA_MOD_DECREASE_SPEED ||
+                Aur->GetModifier()->m_auraname == SPELL_AURA_MOD_HEALING_PCT) &&
+            Aur->GetModifierValue() < 0 && (*i).second->GetModifierValue() < 0)
+        {
+            noStack |= (1 << ((*i).second->GetEffIndex()));
+        }
+
+        if (noStack)
         {
 
             // Its a parent aura (create this aura in ApplyModifier)
