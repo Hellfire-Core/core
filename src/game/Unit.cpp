@@ -557,6 +557,11 @@ bool Unit::IsWithinMeleeRange(Unit *obj, float dist) const
     if (!obj || !IsInMap(obj))
         return false;
 
+    // both running extra 2.66 yd to melee
+    if ((m_movementInfo.HasMovementFlag(MOVEFLAG_MOVING) && !m_movementInfo.HasMovementFlag(MOVEFLAG_WALK_MODE)) &&
+        (obj->m_movementInfo.HasMovementFlag(MOVEFLAG_MOVING) && !obj->m_movementInfo.HasMovementFlag(MOVEFLAG_WALK_MODE)))
+        dist += 2 * MELEE_RANGE;
+
     float dx = GetPositionX() - obj->GetPositionX();
     float dy = GetPositionY() - obj->GetPositionY();
     float dz = GetPositionZ() - obj->GetPositionZ();

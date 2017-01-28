@@ -5028,13 +5028,7 @@ SpellCastResult Spell::CheckRange(bool strict)
     {
         if (range_type == SPELL_RANGE_MELEE)
         {
-            float distance_to_check = max_range - 2 * DEFAULT_COMBAT_REACH;
-            // Because of lag, we can not check too strictly here.
-            if (m_caster->m_movementInfo.HasMovementFlag(MOVEFLAG_MOVING))
-                distance_to_check += MELEE_RANGE;
-            if (target->m_movementInfo.HasMovementFlag(MOVEFLAG_MOVING))
-                distance_to_check += MELEE_RANGE;
-            if (!m_caster->IsWithinMeleeRange(target, distance_to_check))
+            if (!m_caster->IsWithinMeleeRange(target, max_range - 2 * DEFAULT_COMBAT_REACH))
                 return SPELL_FAILED_OUT_OF_RANGE;
         }
         else if (!m_caster->IsWithinCombatRange(target, max_range))

@@ -3553,7 +3553,7 @@ void SpellMgr::LoadSpellCustomAttr()
             case 40861: // Wicked Beam
                 spellInfo->MaxAffectedTargets = 10;
                 break;
-            case 5246: // intimidating shout CAN be break by damage, lower chance handled in Aura::HandleModFear & Unit::RemoveSpellByDamageTaken
+            case 5246:
             case 8122:
             case 8124:
             case 10888:
