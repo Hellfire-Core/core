@@ -56,22 +56,21 @@ struct mob_treantAI  : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (!UpdateVictim())
+        if (WarpGuid && lifeExpired.Expired(diff))
         {
-            if (WarpGuid && lifeExpired.Expired(diff))
-            {
-                lifeExpired = 0;
+            lifeExpired = 0;
 
-                if (Unit *Warp = me->GetUnit(WarpGuid))
-                {
-                    int32 CurrentHP_Treant = (int32)m_creature->GetHealth();
-                    Warp->CastCustomSpell(Warp, SPELL_HEAL_FATHER, &CurrentHP_Treant, 0, 0, true, 0, 0, m_creature->GetGUID());
-                    m_creature->DealDamage(m_creature, m_creature->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
-                    return;
-                }
+            if (Unit *Warp = me->GetUnit(WarpGuid))
+            {
+                int32 CurrentHP_Treant = (int32)m_creature->GetHealth();
+                Warp->CastCustomSpell(Warp, SPELL_HEAL_FATHER, &CurrentHP_Treant, 0, 0, true, 0, 0, m_creature->GetGUID());
+                m_creature->DealDamage(m_creature, m_creature->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+                return;
             }
-            return;
         }
+
+        if (!UpdateVictim())
+            return;
 
         if (m_creature->getVictimGUID() != WarpGuid)
             DoMeleeAttackIfReady();
@@ -169,10 +168,10 @@ struct boss_warp_splinterAI : public ScriptedAI
             float Y = Treant_Spawn_Pos_Y + TREANT_SPAWN_DIST * sin(angle);
             float O = - m_creature->GetAngle(X,Y);
 
-            if(Creature *pTreant = m_creature->SummonCreature(CREATURE_TREANT,treant_pos[i][0],treant_pos[i][1],treant_pos[i][2],O,TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN,25000))
+            if(Creature *pTreant = m_creature->SummonCreature(CREATURE_TREANT,treant_pos[i][0],treant_pos[i][1],treant_pos[i][2],O,TEMPSUMMON_CORPSE_DESPAWN,25000))
             {
                 pTreant->setFaction(me->getFaction());
-                pTreant->GetMotionMaster()->MovePoint(1, wLoc.coord_x, wLoc.coord_y, wLoc.coord_z);
+                pTreant->GetMotionMaster()->MoveFollow(m_creature, 5.0f, frand(0, 2 * M_PI));
                 ((mob_treantAI*)pTreant->AI())->WarpGuid = m_creature->GetGUID();
             }
         }

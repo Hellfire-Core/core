@@ -633,7 +633,7 @@ struct rift_summonAI : public ScriptedAI
                 {
                     Spell_Timer1.Reset(urand(1200, 12400));                      //kidney shot
                     Spell_Timer2.Reset(HeroicMode ? urand(1000, 6500) : 0);      //deadly poison
-                    Spell_Timer3 = 0;                                       //backstab
+                    Spell_Timer3 = 1;                                       //backstab
                 }
                 break;
             }
@@ -643,12 +643,12 @@ struct rift_summonAI : public ScriptedAI
             {
                 if(Type)    //frost
                 {
-                    Spell_Timer1 = 0;    //frostbolt
+                    Spell_Timer1 = 1;    //frostbolt
                     Spell_Timer2.Reset(HeroicMode ? urand(3600, 12200) : urand(3700, 12900));    //frost nova
                 }
                 else        //arcane
                 {
-                    Spell_Timer1 = 0;                       //arcane bolt
+                    Spell_Timer1 = 1;                       //arcane bolt
                     Spell_Timer2.Reset(urand(8600, 18500));      //arcane explosion
                 }
                 break;
@@ -867,7 +867,7 @@ struct rift_summonAI : public ScriptedAI
                         
                         if (Spell_Timer3.Expired(diff))    //crippling poison
                         {
-                            AddSpellToCast(m_creature->getVictim(), 9080, true);
+                            AddSpellToCast(m_creature->getVictim(), 30981, true);
                             Spell_Timer3 = HeroicMode ? urand(12200, 62800) : 0;
                         }
                         

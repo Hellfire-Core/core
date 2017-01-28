@@ -5565,6 +5565,19 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
                     }
                     return false;
                 }
+                case 34201: // shift form
+                {
+                    target = this;
+                    if (procSpell->SchoolMask & SPELL_SCHOOL_MASK_FIRE)
+                        triggered_spell_id = 34203;
+                    else if (procSpell->SchoolMask & SPELL_SCHOOL_MASK_FROST)
+                        triggered_spell_id = 34202;
+                    else if (procSpell->SchoolMask & SPELL_SCHOOL_MASK_ARCANE)
+                        triggered_spell_id = 34204;
+                    else if (procSpell->SchoolMask & SPELL_SCHOOL_MASK_SHADOW)
+                        triggered_spell_id = 34205;
+                    break;
+                }
             }
             break;
         }

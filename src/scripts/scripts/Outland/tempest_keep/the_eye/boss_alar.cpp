@@ -345,7 +345,8 @@ struct boss_alarAI : public ScriptedAI
                             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0,GetSpellMaxRange(SPELL_DIVE_BOMB),true))
                             {
                                 m_creature->RemoveAurasDueToSpell(SPELL_DIVE_BOMB_VISUAL);
-                                m_creature->CastSpell(target, SPELL_DIVE_BOMB, true);
+                                int32 dmgVal = urand(90000, 120000); // PRE NERF HUE HUE HUE
+                                m_creature->CastCustomSpell(target, SPELL_DIVE_BOMB, &dmgVal, NULL, NULL, true);
                                 float dist = 3.0f;
                                 if(m_creature->IsWithinDistInMap(target, 5.0f))
                                     dist = 5.0f;
