@@ -2515,12 +2515,6 @@ class HELLGROUND_EXPORT Player : public Unit
 
         void UpdateKnownCurrencies(uint32 itemId, bool apply);
         void AdjustQuestReqItemCount(Quest const* pQuest, QuestStatusData& questStatusData);
-        float GetCombatReach() const // unmorphed taurens have much higher combat reach
-        {
-            return (getRace() == RACE_TAUREN &&
-                GetUInt32Value(UNIT_FIELD_DISPLAYID) == GetUInt32Value(UNIT_FIELD_NATIVEDISPLAYID))
-                ? 3.5f : DEFAULT_COMBAT_REACH;
-        };
 
         int32 m_MirrorTimer[MAX_TIMERS];
         uint8 m_MirrorTimerFlags;

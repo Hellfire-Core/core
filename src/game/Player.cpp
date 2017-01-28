@@ -602,6 +602,7 @@ bool Player::Create(uint32 guidlow, const std::string& name, uint8 race, uint8 c
 
     SetFloatValue(UNIT_FIELD_BOUNDINGRADIUS, DEFAULT_WORLD_OBJECT_SIZE);
     SetFloatValue(UNIT_FIELD_COMBATREACH, DEFAULT_COMBAT_REACH);
+    RecalculateCombatReach();
 
     switch (gender)
     {
@@ -14504,6 +14505,7 @@ bool Player::LoadFromDB(uint32 guid, SqlQueryHolder *holder)
 
     SetUInt32Value(PLAYER_FLAGS, fields[12].GetUInt32());
     SetFloatValue(UNIT_FIELD_COMBATREACH, DEFAULT_COMBAT_REACH); 
+    RecalculateCombatReach();
 
     // cleanup inventory related item value fields (its will be filled correctly in _LoadInventory)
     for (uint8 slot = EQUIPMENT_SLOT_START; slot < EQUIPMENT_SLOT_END; ++slot)
@@ -18115,6 +18117,7 @@ void Player::InitDataForForm(bool reapplyMods)
         UpdateEquipSpellsAtFormChange();
 
     UpdateAllStats();
+    RecalculateCombatReach();
 }
 
 // Return true is the bought item has a max count to force refresh of window by caller

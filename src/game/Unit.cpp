@@ -13437,3 +13437,15 @@ bool Unit::isInSanctuary()
 
     return false;
 }
+
+void Unit::RecalculateCombatReach()
+{
+    if (GetTypeId() != TYPEID_PLAYER)
+        return;
+    if (getRace() != RACE_TAUREN)
+        return;
+    if (GetUInt32Value(UNIT_FIELD_DISPLAYID) == GetUInt32Value(UNIT_FIELD_NATIVEDISPLAYID))
+        SetFloatValue(UNIT_FIELD_COMBATREACH, 3.5f);
+    else
+        SetFloatValue(UNIT_FIELD_COMBATREACH, DEFAULT_COMBAT_REACH);
+}
