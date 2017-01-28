@@ -1981,7 +1981,7 @@ struct mob_illidari_boneslicerAI : public ScriptedAI
         DoZoneInCombat(80.0f);
     }
 
-    void DamageMade(Unit* target, uint32 & damage, bool direct_damage)
+    void DamageMade(Unit* target, uint32 & damage, bool direct_damage, uint8 school_mask)
     {
         if (damage && direct_damage)
             ForceSpellCast(target, SPELL_WOUND_POISON);
@@ -3009,7 +3009,7 @@ struct mob_shadowmoon_riding_houndAI : public ScriptedAI
             AttackStart(hunter->getVictim());
     }
 
-    void DamageMade(Unit* target, uint32 &damage, bool direct_damage)
+    void DamageMade(Unit* target, uint32 &damage, bool direct_damage, uint8 school_mask)
     {
         if (damage)
         {

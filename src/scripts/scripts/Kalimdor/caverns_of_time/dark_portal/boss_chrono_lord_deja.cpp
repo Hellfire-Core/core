@@ -57,13 +57,10 @@ struct boss_chrono_lord_dejaAI : public ScriptedAI
     Timer Attraction_Timer;
     Timer TimeLapse_Timer;
 
-    bool arcane;
-
     void Reset()
     {
         if (HeroicMode)
         {
-            GetSpellRangeStore();
             ArcaneBlast_Timer.Reset(2000);
             Attraction_Timer.Reset(18000);
         }
@@ -72,7 +69,6 @@ struct boss_chrono_lord_dejaAI : public ScriptedAI
 
         ArcaneDischarge_Timer.Reset(10000);
         TimeLapse_Timer.Reset(15000);
-        arcane = false;
         m_creature->setActive(true);
 
         SayIntro();
@@ -136,22 +132,18 @@ struct boss_chrono_lord_dejaAI : public ScriptedAI
         {
             if (Attraction_Timer.Expired(diff))
             {
-                if (Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_ATTRACTION), true))
-                    if (!arcane)
-                    {
-                        AddSpellToCast(target, SPELL_ATTRACTION, true);
-                        arcane = true;
-                    }
+                if (Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, 50, true))
+                    AddSpellToCast(target, SPELL_ATTRACTION, true);
+                ArcaneBlast_Timer = 2000;
+                Attraction_Timer = 0;
+            }
 
 
-                if (ArcaneBlast_Timer.Expired(diff))
-                {
-                    AddSpellToCast(m_creature->getVictim(), H_SPELL_ARCANE_BLAST, true);
-
-                    arcane = false;
-                    Attraction_Timer = urand(18000, 23000);
-                    ArcaneBlast_Timer = 2000;
-                }
+            if (ArcaneBlast_Timer.Expired(diff))
+            {
+                AddSpellToCast(m_creature->getVictim(), H_SPELL_ARCANE_BLAST, true);
+                Attraction_Timer = urand(18000, 23000);
+                ArcaneBlast_Timer = 0;
             }
         }
 

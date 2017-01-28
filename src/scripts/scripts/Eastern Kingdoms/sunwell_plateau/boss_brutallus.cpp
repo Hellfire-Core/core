@@ -155,7 +155,7 @@ struct boss_brutallusAI : public ScriptedAI
         pInstance->SetData(DATA_BRUTALLUS_EVENT, DONE);
     }
 
-    void DamageMade(Unit* target, uint32 &damage, bool /*direct_damage*/)
+    void DamageMade(Unit* target, uint32 &damage, bool /*direct_damage*/, uint8 school_mask)
     {
         if (target->GetTypeId() == TYPEID_UNIT && target->GetEntry() == 24895)
             damage *= 40;

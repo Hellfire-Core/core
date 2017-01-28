@@ -208,7 +208,7 @@ struct mob_shadowy_constructAI : public ScriptedAI
             damage = 0;                                         // Only the ghost can deal damage.
     }
 
-    void DamageMade(Unit* target, uint32 &dmg, bool direct)
+    void DamageMade(Unit* target, uint32 &dmg, bool direct, uint8 school_mask)
     {
         if(dmg && direct)
             DoCast(target, SPELL_ATROPHY);

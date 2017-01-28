@@ -246,7 +246,7 @@ struct ScriptedAI : public CreatureAI
     void OnAuraRemove(Aura* aur, bool stackRemove) {}
 
     //Called when creature deals damage to player
-    void DamageMade(Unit* target, uint32 & damage, bool direct_damage) {}
+    void DamageMade(Unit* target, uint32 & damage, bool direct_damage, uint8 school_mask) {}
 
     // Called when spell hits a target
     void SpellHitTarget(Unit* target, const SpellEntry*) {}

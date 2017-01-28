@@ -61,7 +61,8 @@ struct mob_crystalcore_devastatorAI : public ScriptedAI
         //Knockaway_Timer
         if (Knockaway_Timer.Expired(diff))
         {
-            m_creature->CastSpell(m_creature->getVictim(), SPELL_KNOCKAWAY, true);
+            int32 damage = 4000;
+            m_creature->CastCustomSpell(m_creature->getVictim(), SPELL_KNOCKAWAY,&damage,NULL,NULL, true);
 
             // current aggro target is knocked away pick new target
             Unit* target = SelectUnit(SELECT_TARGET_TOPAGGRO, 0, 60, true, m_creature->getVictimGUID());

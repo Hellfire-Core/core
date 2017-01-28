@@ -219,7 +219,7 @@ struct boss_highlord_mograineAI : public BossAI
         instance->SetData(DATA_THE_FOUR_HORSEMEN, IN_PROGRESS);
     }
 
-    void DamageMade(Unit* target, uint32 & damage, bool direct_damage)
+    void DamageMade(Unit* target, uint32 & damage, bool direct_damage, uint8 school_mask)
     {
         if (direct_damage && roll_chance_f(25.0f))
             me->CastSpell(target, SPELL_RIGHTEOUS_FIRE, true);

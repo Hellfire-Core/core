@@ -108,7 +108,7 @@ struct boss_temporusAI : public ScriptedAI
         ScriptedAI::MoveInLineOfSight(who);
     }
 
-    void DamageMade(Unit* target, uint32 & damage, bool direct_damage)
+    void DamageMade(Unit* target, uint32 & damage, bool direct_damage, uint8 school_mask)
     {
         if (canApplyWound)
             me->CastSpell(target, SPELL_MORTAL_WOUND, true);

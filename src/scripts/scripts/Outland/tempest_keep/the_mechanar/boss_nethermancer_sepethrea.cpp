@@ -41,7 +41,7 @@ EndScriptData */
 #define SPELL_FROST_ATTACK              45195
 #define SPELL_ARCANE_BLAST              35314
 #define SPELL_DRAGONS_BREATH            35250
-//#define SPELL_SOLARBURN                 35267 // its an NPC ability, not this boss
+#define SPELL_SOLARBURN                 (HeroicMode ? 38930 : 35267)
 
 struct boss_nethermancer_sepethreaAI : public ScriptedAI
 {
@@ -58,6 +58,7 @@ struct boss_nethermancer_sepethreaAI : public ScriptedAI
     Timer arcane_blast_Timer;
     Timer dragons_breath_Timer;
     Timer yell_timer;
+    Timer solarburn_timer;
 
     SummonList summons;
 
@@ -66,6 +67,7 @@ struct boss_nethermancer_sepethreaAI : public ScriptedAI
         arcane_blast_Timer.Reset(urand(12000, 18000));
         dragons_breath_Timer.Reset(urand(22000, 28000));
         yell_timer.Reset(5000);
+        solarburn_timer.Reset(7000);
 
         pInstance->SetData(DATA_NETHERMANCER_EVENT, NOT_STARTED);
 
@@ -131,6 +133,12 @@ struct boss_nethermancer_sepethreaAI : public ScriptedAI
         {
             DoScriptText(SAY_SUMMON, me);
             yell_timer = 0;
+        }
+
+        if (solarburn_timer.Expired(diff))
+        {
+            AddSpellToCast(SPELL_SOLARBURN);
+            solarburn_timer = urand(12000, 15000);
         }
 
         CastNextSpellIfAnyAndReady();

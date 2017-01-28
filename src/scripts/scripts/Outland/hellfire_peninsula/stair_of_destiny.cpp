@@ -286,7 +286,7 @@ struct npc_stair_defender_baseAI : public ScriptedAI
         movement = ishorde() ? 0 : 4;
         searchTimer.Reset(1000);
         m_creature->SetWalk(false);
-        m_creature->SetReactState(REACT_AGGRESSIVE);
+        //m_creature->SetReactState(REACT_AGGRESSIVE);
         m_creature->setActive(true);
     }
 

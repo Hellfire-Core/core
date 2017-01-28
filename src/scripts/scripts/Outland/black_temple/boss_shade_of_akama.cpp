@@ -890,7 +890,7 @@ struct boss_shade_of_akamaAI : public ScriptedAI
         m_freeSlot = 0;
     }
 
-    void DamageMade(Unit *target, uint32 &damage, bool direct_damage)
+    void DamageMade(Unit *target, uint32 &damage, bool direct_damage, uint8 school_mask)
     {
         if (target->GetGUID() == AkamaGUID)
         {

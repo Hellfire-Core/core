@@ -660,7 +660,7 @@ struct boss_kagani_nightstrikeAI : public boss_priestess_guestAI
         DoCast(m_creature, SPELL_DUALWIELD);
     }
 
-    void DamageMade(Unit* target, uint32 & damage, bool direct_damage)
+    void DamageMade(Unit* target, uint32 & damage, bool direct_damage, uint8 school_mask)
     {
         if(target->HasAura(SPELL_CRIPPLING_POISON, 0))
             return;
@@ -958,7 +958,7 @@ struct boss_eramas_brightblazeAI : public boss_priestess_guestAI
         boss_priestess_guestAI::Reset();
     }
 
-    void DamageMade(Unit* target, uint32 & damage, bool direct_damage)
+    void DamageMade(Unit* target, uint32 & damage, bool direct_damage, uint8 school_mask)
     {
         if(damage && direct_damage && roll_chance_f(20))
             AddSpellToCast(target, SPELL_FISTS_OF_ARCANE_FURY, true);
