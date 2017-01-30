@@ -5028,7 +5028,7 @@ SpellCastResult Spell::CheckRange(bool strict)
     {
         if (range_type == SPELL_RANGE_MELEE)
         {
-            if (!m_caster->IsWithinMeleeRange(target, max_range - 2 * DEFAULT_COMBAT_REACH))
+            if (!m_caster->IsWithinMeleeRange(target, max_range - NOMINAL_MELEE_RANGE + MELEE_RANGE))
                 return SPELL_FAILED_OUT_OF_RANGE;
         }
         else if (!m_caster->IsWithinCombatRange(target, max_range))

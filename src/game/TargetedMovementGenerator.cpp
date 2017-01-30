@@ -167,7 +167,7 @@ bool TargetedMovementGeneratorMedium<T,D>::Update(T &owner, const uint32 & time_
                 return false;
 
             if (owner.GetObjectGuid().IsPet() || owner.GetObjectGuid().IsCreature() && owner.IsStopped())
-                targetMoved = !owner.IsWithinMeleeRange(victim, (NOMINAL_MELEE_RANGE - 2*DEFAULT_COMBAT_REACH) + _offset);
+                targetMoved = !owner.IsWithinMeleeRange(victim, MELEE_RANGE + _offset);
         }
 
         if (targetMoved)

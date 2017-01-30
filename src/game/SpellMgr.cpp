@@ -3070,6 +3070,9 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 38523: // netherspite netherbreath
                     spellInfo->MaxAffectedTargets = 4;
                     break;
+                case 32723: // summon bonechewer riding wolf 60 sec stay only
+                    spellInfo->DurationIndex = 3;
+                    break;
                     //PRE NERF ZONE
                 case 44032: // manticron cube exhaustion 180sec
                     spellInfo->DurationIndex = 25;

@@ -305,7 +305,8 @@ void PetAI::UpdateAI(const uint32 diff)
                         target = FindValidTarget();
                 }
 
-                AttackStart(target);
+                if (!targetHasInterruptableAura(target))
+                    AttackStart(target);
             }
 
             // we still do NOT have target, if follow command were appliend and we are NOT followin or casting, reapply movegen :P
