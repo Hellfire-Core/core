@@ -3071,6 +3071,7 @@ void SpellMgr::LoadSpellCustomAttr()
                     spellInfo->MaxAffectedTargets = 4;
                     break;
                 case 32723: // summon bonechewer riding wolf 60 sec stay only
+                case 34368:
                     spellInfo->DurationIndex = 3;
                     break;
                     //PRE NERF ZONE

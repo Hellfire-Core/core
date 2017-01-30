@@ -3720,6 +3720,83 @@ CreatureAI* GetAI_npc_pet_bomb(Creature* c)
     return new npc_pet_bombAI(c);
 }
 
+bool GossipHello_npc_quick_test_services(Player* plr, Creature* c)
+{
+    plr->ADD_GOSSIP_ITEM(0, "Teach me base class spells.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+    plr->ADD_GOSSIP_ITEM(0, "Port me to shattrath.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
+
+    // Hey there, $N. How can I help you?
+    plr->SEND_GOSSIP_MENU(2, c->GetGUID());
+    return true;
+}
+
+bool GossipSelect_npc_quick_test_services(Player* plr, Creature* c, uint32 sender, uint32 action)
+{
+    if (sender != GOSSIP_SENDER_MAIN)
+        return true;
+    if (action == GOSSIP_ACTION_INFO_DEF + 2)
+    {
+        plr->TeleportTo(530, -1860, 5420, -10, 0.2);
+        return true;
+    }
+    else if (action == GOSSIP_ACTION_INFO_DEF + 1)
+    {
+        switch (plr->getClass())
+        {
+        case CLASS_WARRIOR:
+            c->CastSpell(plr, 8121, true);
+            c->CastSpell(plr, 8616, true);
+            break;
+            
+        case CLASS_PALADIN:
+            c->CastSpell(plr, 7329, true);
+            c->CastSpell(plr, 5503, true);
+            break;
+        case CLASS_HUNTER:
+            c->CastSpell(plr, 1579, true);
+            c->CastSpell(plr, 5300, true);
+            break;
+        case CLASS_ROGUE:
+            c->CastSpell(plr, 2995, true);
+            break;
+        case CLASS_PRIEST:
+            break;
+        case CLASS_SHAMAN:
+        {
+            c->CastSpell(plr, 5396, true);
+            c->CastSpell(plr, 8073, true);
+            c->CastSpell(plr, 2075, true);
+            c->CastSpell(plr, 5396, true);
+            ItemPosCountVec dest;
+            for (uint32 totem = 5175; totem < 5179; totem++)
+            {
+                uint8 msg = plr->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, totem, 1);
+                if (msg == EQUIP_ERR_OK)
+                {
+                    Item* item = plr->StoreNewItem(dest, totem, true);
+                    plr->SendNewItem(item, 1, true, false, true);
+                }
+            }
+            break;
+        }
+        case CLASS_MAGE:
+            break;
+        case CLASS_WARLOCK:
+            c->CastSpell(plr, 1413, true);
+            c->CastSpell(plr, 11519, true);
+            c->CastSpell(plr, 7763, true);
+            c->CastSpell(plr, 11520, true);
+            c->CastSpell(plr, 1373, true);
+            c->CastSpell(plr, 23160, true);
+            break;
+        case CLASS_DRUID:
+            c->CastSpell(plr, 19179, true);
+            c->CastSpell(plr, 1446, true);
+            c->CastSpell(plr, 8947, true);
+            break;
+        }
+    }
+}
 
 void AddSC_npcs_special()
 {
@@ -3975,5 +4052,11 @@ void AddSC_npcs_special()
     newscript = new Script;
     newscript->Name = "npc_pet_bomb";
     newscript->GetAI = &GetAI_npc_pet_bomb;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_quick_test_services";
+    newscript->pGossipHello = &GossipHello_npc_quick_test_services;
+    newscript->pGossipSelect = &GossipSelect_npc_quick_test_services;
     newscript->RegisterSelf();
 }
