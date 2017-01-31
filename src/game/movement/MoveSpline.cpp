@@ -20,6 +20,7 @@
 #include "MoveSpline.h"
 #include <sstream>
 #include "Log.h"
+#include "../../shared/Util.h"
 
 namespace Movement{
 
