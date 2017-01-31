@@ -6887,13 +6887,13 @@ bool Unit::HandleProcTriggerSpell(Unit *pVictim, uint32 damage, Aura* triggeredB
                  return false;
              }
 
-             if (pVictim->GetTypeId() == TYPEID_PLAYER)
+             /*if (pVictim->GetTypeId() == TYPEID_PLAYER)
              {
                  if (((Player*)pVictim)->GetCooldownMgr().HasSpellCooldown(trigger_spell_id))
                      return false;
 
                  ((Player*)pVictim)->GetCooldownMgr().AddSpellCooldown(trigger_spell_id, 1000);
-             }
+             } NO COOLDOWN*/
 
              // Improved Judgement of Light: bonus heal from t4 set
              if (Unit *caster = triggeredByAura->GetCaster())

@@ -143,6 +143,20 @@ bool GOUse_go_haaleshi_altar(Player *player, GameObject* go)
     return false;
 }
 
+bool GOUse_gob_cursed_cauldron(Player* plr, GameObject* go)
+{
+    uint8 count = urand(8, 12);
+    for (; count > 0; count--)
+    {
+        float x, y, z;
+        go->GetNearPoint(x, y, z, 10.0, 0, frand(0, 6.28));
+        Creature* scarab = go->SummonCreature(21306,x,y,z,0,TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT,10000);
+        if (scarab)
+            scarab->Attack(plr, true);
+    }
+    return false;
+}
+
 /*######
 ## npc_wing_commander_dabiree
 ######*/
@@ -2515,5 +2529,10 @@ void AddSC_hellfire_peninsula()
     newscript = new Script;
     newscript->Name = "npc_barracks";
     newscript->GetAI = &GetAI_npc_barracks;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "gob_cursed_cauldron";
+    newscript->pGOUse = &GOUse_gob_cursed_cauldron;
     newscript->RegisterSelf();
 }

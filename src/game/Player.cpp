@@ -10470,6 +10470,7 @@ uint8 Player::CanUseItem(Item *pItem, bool not_loading) const
             if (pProto->RequiredSpell != 0 && !HasSpell(pProto->RequiredSpell))
                 return EQUIP_ERR_NO_REQUIRED_PROFICIENCY;
 
+            if (!sWorld.getConfig(CONFIG_HAPPY_TESTING))
             if (pProto->RequiredReputationFaction && uint32(GetReputationMgr().GetRank(pProto->RequiredReputationFaction)) < pProto->RequiredReputationRank)
                 return EQUIP_ERR_CANT_EQUIP_REPUTATION;
 
@@ -18189,30 +18190,32 @@ bool Player::BuyItemFromVendor(uint64 vendorguid, uint32 item, uint8 count, uint
             return false;
         }
 
-        // honor points price
-        if (GetHonorPoints() < (iece->reqhonorpoints * count))
+        if (!sWorld.getConfig(CONFIG_HAPPY_TESTING))
         {
-            SendEquipError(EQUIP_ERR_NOT_ENOUGH_HONOR_POINTS, NULL, NULL);
-            return false;
-        }
-
-        // arena points price
-        if (GetArenaPoints() < (iece->reqarenapoints * count))
-        {
-            SendEquipError(EQUIP_ERR_NOT_ENOUGH_ARENA_POINTS, NULL, NULL);
-            return false;
-        }
-
-        // item base price
-        for (uint8 i = 0; i < 5; ++i)
-        {
-            if (iece->reqitem[i] && !HasItemCount(iece->reqitem[i], (iece->reqitemcount[i] * count)))
+            // honor points price
+            if (GetHonorPoints() < (iece->reqhonorpoints * count))
             {
-                SendEquipError(EQUIP_ERR_VENDOR_MISSING_TURNINS, NULL, NULL);
+                SendEquipError(EQUIP_ERR_NOT_ENOUGH_HONOR_POINTS, NULL, NULL);
                 return false;
             }
-        }
 
+            // arena points price
+            if (GetArenaPoints() < (iece->reqarenapoints * count))
+            {
+                SendEquipError(EQUIP_ERR_NOT_ENOUGH_ARENA_POINTS, NULL, NULL);
+                return false;
+            }
+
+            // item base price
+            for (uint8 i = 0; i < 5; ++i)
+            {
+                if (iece->reqitem[i] && !HasItemCount(iece->reqitem[i], (iece->reqitemcount[i] * count)))
+                {
+                    SendEquipError(EQUIP_ERR_VENDOR_MISSING_TURNINS, NULL, NULL);
+                    return false;
+                }
+            }
+        }
         // check for personal arena rating requirement
         if (GetMaxPersonalArenaRatingRequirement() < iece->reqpersonalarenarating)
         {
@@ -18271,7 +18274,7 @@ bool Player::BuyItemFromVendor(uint64 vendorguid, uint32 item, uint8 count, uint
         }
 
         ModifyMoney(-(int32)price);
-        if (crItem->ExtendedCost)                            // case for new honor system
+        if (crItem->ExtendedCost && !sWorld.getConfig(CONFIG_HAPPY_TESTING))
         {
             ItemExtendedCostEntry const* iece = sItemExtendedCostStore.LookupEntry(crItem->ExtendedCost);
             if (iece->reqhonorpoints)
@@ -18316,7 +18319,7 @@ bool Player::BuyItemFromVendor(uint64 vendorguid, uint32 item, uint8 count, uint
         }
 
         ModifyMoney(-(int32)price);
-        if (crItem->ExtendedCost)                            // case for new honor system
+        if (crItem->ExtendedCost && !sWorld.getConfig(CONFIG_HAPPY_TESTING))
         {
             ItemExtendedCostEntry const* iece = sItemExtendedCostStore.LookupEntry(crItem->ExtendedCost);
             if (iece->reqhonorpoints)

@@ -279,6 +279,20 @@ void LoadDBCStores(const std::string& dataPath)
     }
 
     LoadDBC(availableDbcLocales,bar,bad_dbc_files,sFactionTemplateStore,     dbcPath,"FactionTemplate.dbc");
+    for (uint32 i = 0; i < sFactionTemplateStore.GetNumRows(); ++i)
+    {
+        FactionTemplateEntry* fte = (FactionTemplateEntry*)sFactionTemplateStore.LookupEntry(i);
+        if (!fte)
+            continue;
+        switch (fte->ID)
+        {
+        case 1755: case 1756: case 1757: case 1758: case 1759: case 1760:
+            fte->friendlyMask = 1;
+            break;
+        default:
+            break;
+        }
+    }
     LoadDBC(availableDbcLocales,bar,bad_dbc_files,sGameObjectDisplayInfoStore,dbcPath,"GameObjectDisplayInfo.dbc");
     LoadDBC(availableDbcLocales,bar,bad_dbc_files,sGemPropertiesStore,       dbcPath,"GemProperties.dbc");
 
