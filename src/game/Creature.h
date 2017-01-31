@@ -652,7 +652,7 @@ class HELLGROUND_IMPORT_EXPORT Creature : public Unit
         void SetLastHitPos(WorldLocation wl);
         void SetHomePosition(float x, float y, float z, float ori)
         {
-            SendCombatStats(1 << COMBAT_STATS_TEST, "set home position %f %f %f", NULL, x, y, z);
+            SendCombatStats(1 << COMBAT_STATS_CRASHTEST, "set home position %f %f %f", NULL, x, y, z);
             homeLocation.coord_x = x;
             homeLocation.coord_y = y;
             homeLocation.coord_z = z;

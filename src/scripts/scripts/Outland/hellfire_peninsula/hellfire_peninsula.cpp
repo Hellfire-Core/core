@@ -149,10 +149,10 @@ bool GOUse_gob_cursed_cauldron(Player* plr, GameObject* go)
     for (; count > 0; count--)
     {
         float x, y, z;
-        go->GetNearPoint(x, y, z, 10.0, 0, frand(0, 6.28));
+        go->GetNearPoint(x, y, z,frand(5,10), 0, frand(0, 6.28));
         Creature* scarab = go->SummonCreature(21306,x,y,z,0,TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT,10000);
         if (scarab)
-            scarab->Attack(plr, true);
+            scarab->AI()->AttackStart(plr);
     }
     return false;
 }
