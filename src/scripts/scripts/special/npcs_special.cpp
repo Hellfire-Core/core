@@ -3724,6 +3724,7 @@ bool GossipHello_npc_quick_test_services(Player* plr, Creature* c)
 {
     plr->ADD_GOSSIP_ITEM(0, "Teach me base class spells.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
     plr->ADD_GOSSIP_ITEM(0, "Port me to shattrath.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
+    plr->ADD_GOSSIP_ITEM(0, "Please boost me a lvl.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
 
     // Hey there, $N. How can I help you?
     plr->SEND_GOSSIP_MENU(2, c->GetGUID());
@@ -3734,10 +3735,15 @@ bool GossipSelect_npc_quick_test_services(Player* plr, Creature* c, uint32 sende
 {
     if (sender != GOSSIP_SENDER_MAIN)
         return true;
-    if (action == GOSSIP_ACTION_INFO_DEF + 2)
+
+    if (action == GOSSIP_ACTION_INFO_DEF + 3)
+    {
+        if (plr->getLevel() < 70)
+            plr->GiveLevel(plr->getLevel() + 1);
+    }
+    else if (action == GOSSIP_ACTION_INFO_DEF + 2)
     {
         plr->TeleportTo(530, -1860, 5420, -10, 0.2);
-        return true;
     }
     else if (action == GOSSIP_ACTION_INFO_DEF + 1)
     {
@@ -3796,6 +3802,7 @@ bool GossipSelect_npc_quick_test_services(Player* plr, Creature* c, uint32 sende
             break;
         }
     }
+    return true;
 }
 
 void AddSC_npcs_special()

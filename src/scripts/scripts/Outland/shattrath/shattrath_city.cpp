@@ -313,6 +313,7 @@ struct npc_kservantAI : public npc_escortAI
 
         me->SetReactState(REACT_PASSIVE);
         Start(false, false, me->GetCharmerOrOwnerGUID());
+        me->addUnitState(UNIT_STAT_IGNORE_PATHFINDING);
     }
 
     void EnterCombat(Unit* who) {}

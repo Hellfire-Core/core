@@ -76,7 +76,7 @@ class WaypointMovementGenerator<Creature> : public MovementGeneratorMedium< Crea
 
         bool Update(Creature &, const uint32 &diff);
 
-        const char* Name() const { return "<Waypoint>"; }
+        const char* Name() const { return _repeating ? "<Repeating Waypoint>" : "<Waypoint>"; }
         MovementGeneratorType GetMovementGeneratorType() const { return WAYPOINT_MOTION_TYPE; }
 
         // now path movement implementation
