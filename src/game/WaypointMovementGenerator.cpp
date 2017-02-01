@@ -128,6 +128,27 @@ bool WaypointMovementGenerator<Creature>::tryToMove(Creature &creature)
     return true;
 }
 
+void WaypointMovementGenerator<Creature>::Reset(Creature& c)
+{
+    c.StopMoving();
+
+    const WaypointData *node = _path->at(_currentNode);
+
+    Movement::MoveSplineInit init(c);
+    init.MoveTo(node->x, node->y, node->z, _pathFinding && node->moveType != M_FLY);
+
+    if (node->moveType == M_FLY)
+        init.SetFly();
+    else
+        init.SetWalk(node->moveType != M_RUN);
+
+    init.Launch();
+
+    //Call for creature group update
+    if (c.IsFormationLeader())
+        c.GetFormation()->LeaderMoveTo(node->x, node->y, node->z);
+}
+
 bool WaypointMovementGenerator<Creature>::Update(Creature &creature, const uint32 &diff)
 {
     // way point movement can be switched on/off

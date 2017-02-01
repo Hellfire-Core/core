@@ -80,6 +80,9 @@ namespace Movement
         if (args.velocity == 0.f)
             args.velocity = unit.GetSpeed(SelectSpeedType(moveFlags));
 
+        if (args.velocity <= 0.f)
+            sLog.outLog(LOG_DEFAULT, "unit %s %u trying to launch spline with %f speed", unit.GetName(),unit.GetGUIDLow(),args.velocity);
+
         if (!args.Validate())
             return 0;
 

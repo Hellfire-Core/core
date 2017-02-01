@@ -72,7 +72,7 @@ class WaypointMovementGenerator<Creature> : public MovementGeneratorMedium< Crea
         void Finalize(Creature &);
 
         void Interrupt(Creature &c) { Finalize(c); }
-        void Reset(Creature &c) { Initialize(c); }
+        void Reset(Creature &c);
 
         bool Update(Creature &, const uint32 &diff);
 

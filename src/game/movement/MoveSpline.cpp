@@ -20,7 +20,6 @@
 #include "MoveSpline.h"
 #include <sstream>
 #include "Log.h"
-#include "../../shared/Util.h"
 
 namespace Movement{
 
@@ -161,7 +160,6 @@ bool MoveSplineInitArgs::Validate() const
     if (!(exp))\
     {\
         sLog.outLog(LOG_DEFAULT, "ERROR: MoveSplineInitArgs::Validate: expression '%s' failed", #exp);\
-        if (!urand(0,1000)) *((uint32 volatile*)NULL) = 0;\
         return false;\
     }
     CHECK(path.size() > 1);

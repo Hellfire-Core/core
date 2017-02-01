@@ -40,6 +40,7 @@
 #include "AccountMgr.h"
 #include "SocialMgr.h"
 #include "GuildMgr.h"
+#include "VMapFactory.h"
 
 bool ChatHandler::HandleNpcSayCommand(const char* args)
 {
@@ -870,10 +871,18 @@ bool ChatHandler::HandleGPSCommand(const char* args)
 
     if (have_vmap)
     {
+        VMAP::IVMapManager* vmgr = VMAP::VMapFactory::createOrGetVMapManager();
+        float liquid_level, ground_level = INVALID_HEIGHT_VALUE;
+        uint32 liquid_type = 0;
+        if (!vmgr->GetLiquidLevel(obj->GetMapId(), obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(),
+            MAP_ALL_LIQUIDS, liquid_level, ground_level, liquid_type))
+            liquid_type = -1;
+
+
         if (map->IsOutdoors(obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ()))
-            PSendSysMessage("You are outdoors");
+            PSendSysMessage("You are outdoors, water data %u %f",liquid_type,liquid_level);
         else
-            PSendSysMessage("You are indoor");
+            PSendSysMessage("You are indoor, water data %u %f", liquid_type, liquid_level);
     }
     else
         PSendSysMessage("no VMAP available for area info");
