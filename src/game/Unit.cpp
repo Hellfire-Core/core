@@ -1073,7 +1073,7 @@ uint32 Unit::DealDamage(DamageLog *damageInfo, DamageEffectType damagetype, cons
                 }
 
                 pVictim->AddThreat(threatTarget, threat, SpellSchoolMask(damageInfo->schoolMask), spellProto);
-                if (pVictim->ToPet())
+                if (pVictim->ToPet() && pVictim->IsAIEnabled)
                     pVictim->ToPet()->AI()->ownerOrMeAttackedBy(threatTarget->GetGUID());
             }
             else                                                // victim is a player
@@ -1095,7 +1095,8 @@ uint32 Unit::DealDamage(DamageLog *damageInfo, DamageEffectType damagetype, cons
 
                 if (Pet* pet = pVictim->GetPet())
                 {
-                    pet->AI()->ownerOrMeAttackedBy(GetGUID());
+                    if (pet->IsAIEnabled)
+                        pet->AI()->ownerOrMeAttackedBy(GetGUID());
                 }
             }
 
