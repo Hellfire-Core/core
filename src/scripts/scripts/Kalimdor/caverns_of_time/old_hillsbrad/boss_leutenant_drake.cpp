@@ -39,12 +39,10 @@ bool GOUse_go_barrel_old_hillsbrad(Player *player, GameObject* go)
     if (!pInstance)
         return false;
 
-    if (pInstance->GetData(TYPE_BARREL_DIVERSION) == DONE)
+    if (pInstance->GetData(TYPE_BARREL_DIVERSION) == DONE || go->getLootState() != GO_READY)
         return false;
 
     pInstance->SetData(TYPE_BARREL_DIVERSION, IN_PROGRESS);
-
-    go->UseDoorOrButton(1800);
 
     return false;
 }

@@ -67,13 +67,12 @@ struct boss_talon_king_ikissAI : public ScriptedAI
 
     Timer ArcaneVolley_Timer;
     Timer Sheep_Timer;
-    Timer Blink_Timer;
     Timer Slow_Timer;
 
     WorldLocation wLoc;
 
     bool ManaShield;
-    bool Blink;
+    uint8 Blink;
     bool Intro;
 
     void Reset()
@@ -82,9 +81,8 @@ struct boss_talon_king_ikissAI : public ScriptedAI
 
         ArcaneVolley_Timer.Reset(5000);
         Sheep_Timer.Reset(8000);
-        Blink_Timer.Reset(35000);
         Slow_Timer.Reset(15000 + rand() % 15000);
-        Blink = false;
+        Blink = 0;
         Intro = false;
         ManaShield = false;
 
@@ -140,11 +138,11 @@ struct boss_talon_king_ikissAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (Blink)
+        if (Blink & 0x1)
         {
             DoCast(m_creature,HeroicMode ? H_SPELL_ARCANE_EXPLOSION : SPELL_ARCANE_EXPLOSION);
             m_creature->CastSpell(m_creature,SPELL_ARCANE_BUBBLE,true);
-            Blink = false;
+            Blink++;
         }
 
         if (ArcaneVolley_Timer.Expired(diff))
@@ -181,7 +179,7 @@ struct boss_talon_king_ikissAI : public ScriptedAI
             }
         }
 
-        if (Blink_Timer.Expired(diff))
+        if ((m_creature->HealthBelowPct(80) && Blink == 0) || (m_creature->HealthBelowPct(50) && Blink == 2) || (m_creature->HealthBelowPct(20) && Blink == 4))
         {
             DoScriptText(EMOTE_ARCANE_EXP, m_creature);
 
@@ -196,13 +194,12 @@ struct boss_talon_king_ikissAI : public ScriptedAI
                 DoTeleportTo(target->GetPositionX(),target->GetPositionY(),target->GetPositionZ());
 
                 DoCast(target,SPELL_BLINK_TELEPORT);
-                Blink = true;
+                Blink++;
             }
-            Blink_Timer = 35000+rand()%5000;
         }
         
 
-        if (!Blink)
+        if (!(Blink & 0x1))
             DoMeleeAttackIfReady();
     }
 };

@@ -265,7 +265,7 @@ struct mob_steamrigger_mechanicAI : public ScriptedAI
                     {
                         DoCast(Mekgineer, SPELL_REPAIR);
 
-                        Repair_Timer = irand(1500, 3000);
+                        Repair_Timer = 5000;
                     }
                 }
             }else Repair_Timer = irand(1500, 3000);

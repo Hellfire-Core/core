@@ -75,7 +75,7 @@ struct instance_sethekk_halls : public ScriptedInstance
         if (player->isGameMaster())
             return;
 
-        if (player->GetQuestStatus(QUEST_BROTHER) == QUEST_STATUS_INCOMPLETE && Lakka == LAKKA_NOT_SUMMONED && !player->GetMap()->IsHeroic())
+        if (player->GetQuestStatus(QUEST_BROTHER) == QUEST_STATUS_INCOMPLETE && Lakka == LAKKA_NOT_SUMMONED)
            Lakka = LAKKA_WAIT_FOR_SUMMON;
     }
 

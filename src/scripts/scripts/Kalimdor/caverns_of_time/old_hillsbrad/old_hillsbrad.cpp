@@ -1170,21 +1170,22 @@ struct erozion_imageAI : public ScriptedAI
                    return 15000;
                case 3:
                    Thrall->Respawn();
+                   Thrall->Unmount();
 
                    if (pInstance)
                    {
                        if (pInstance->GetData(TYPE_THRALL_PART1) == NOT_STARTED)
-                           Thrall->Relocate(2231.51f, 119.84f, 82.297f, 4.15f);
+                           m_creature->GetMap()->CreatureRelocation(Thrall, 2231.51f, 119.84f, 82.297f, 4.15f);
 
                        if (pInstance->GetData(TYPE_THRALL_PART1) == DONE && pInstance->GetData(TYPE_THRALL_PART2) == NOT_STARTED)
-                           Thrall->Relocate(2063.40f, 229.512f, 64.488f, 2.18f);
+                           m_creature->GetMap()->CreatureRelocation(Thrall, 2063.40f, 229.512f, 64.488f, 2.18f);
 
                        if (pInstance->GetData(TYPE_THRALL_PART2) == DONE && pInstance->GetData(TYPE_THRALL_PART3) == NOT_STARTED)
-                           Thrall->Relocate(2486.91f, 626.357f, 58.076f, 4.66f);
+                           m_creature->GetMap()->CreatureRelocation(Thrall, 2486.91f, 626.357f, 58.076f, 4.66f);
 
                        if (pInstance->GetData(TYPE_THRALL_PART3) == DONE && pInstance->GetData(TYPE_THRALL_PART4) == NOT_STARTED)
                        {
-                           Thrall->Relocate(2660.48f, 659.409f, 61.937f, 5.83f);
+                           m_creature->GetMap()->CreatureRelocation(Thrall, 2660.48f, 659.409f, 61.937f, 5.83f);
                            if (uint64 TarethaGUID = pInstance->GetData64(DATA_TARETHA))
                            {
                                if (Unit *Taretha = me->GetUnit(TarethaGUID))

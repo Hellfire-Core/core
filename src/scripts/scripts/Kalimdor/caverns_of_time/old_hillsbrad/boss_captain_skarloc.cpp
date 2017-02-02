@@ -284,7 +284,7 @@ struct boss_captain_skarlocAI : public ScriptedAI
             if (Consecration_Timer.Expired(diff))
             {
                 DoCast(me, SPELL_CONSECRATION);
-                Consecration_Timer = 8000;
+                Consecration_Timer = 20000;
             }
         }
         
