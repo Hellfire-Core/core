@@ -1073,6 +1073,8 @@ uint32 Unit::DealDamage(DamageLog *damageInfo, DamageEffectType damagetype, cons
                 }
 
                 pVictim->AddThreat(threatTarget, threat, SpellSchoolMask(damageInfo->schoolMask), spellProto);
+                if (pVictim->ToPet() && ((PetAI*)(pVictim->ToPet()->AI())))
+                    ((PetAI*)(pVictim->ToPet()->AI()))->ownerOrMeAttackedBy(threatTarget->GetGUID());
             }
             else                                                // victim is a player
             {
@@ -1083,15 +1085,18 @@ uint32 Unit::DealDamage(DamageLog *damageInfo, DamageEffectType damagetype, cons
                   EquipmentSlots slot = EquipmentSlots(urand(0,EQUIPMENT_SLOT_END-1));
                     ((Player*)pVictim)->DurabilityPointLossForEquipSlot(slot);
                 }
-            }
 
-            if (GetTypeId()==TYPEID_PLAYER)
-            {
                 // random durability for items (HIT DONE)
                 if (roll_chance_f(sWorld.getConfig(RATE_DURABILITY_LOSS_DAMAGE)))
                 {
                     EquipmentSlots slot = EquipmentSlots(urand(0,EQUIPMENT_SLOT_END-1));
                     ((Player*)this)->DurabilityPointLossForEquipSlot(slot);
+                }
+
+                if (Pet* pet = pVictim->GetPet())
+                {
+                    if ((PetAI*)(pet->AI()))
+                        ((PetAI*)pet->AI())->ownerOrMeAttackedBy(GetGUID());
                 }
             }
 

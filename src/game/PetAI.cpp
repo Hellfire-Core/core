@@ -290,24 +290,7 @@ void PetAI::UpdateAI(const uint32 diff)
     {
         if (m_owner)
         {
-            if (!me->HasReactState(REACT_PASSIVE) && !me->GetCharmInfo()->HasCommandState(COMMAND_STAY))
-            {
-                Unit* target = NULL;
-                if (m_owner->getVictim())
-                    target = m_owner->getVictim();
-                else
-                {
-                    if (!m_owner->getAttackers().empty())
-                        target = m_owner->getAttackerForHelper();
-                    else if (!me->getAttackers().empty())
-                        target = me->getAttackerForHelper();
-                    else if (me->HasReactState(REACT_AGGRESSIVE))
-                        target = FindValidTarget();
-                }
-
-                if (!targetHasInterruptableAura(target))
-                    AttackStart(target);
-            }
+            TargetSelectHelper();
 
             // we still do NOT have target, if follow command were appliend and we are NOT followin or casting, reapply movegen :P
             if (!me->getVictim() && me->GetCharmInfo()->HasCommandState(COMMAND_FOLLOW) &&
@@ -333,7 +316,10 @@ void PetAI::UpdateAllies()
 {
     Group *pGroup = NULL;
 
-    updateAlliesTimer.Reset(10000);                            //update friendly targets every 10 seconds, lesser checks increase performance
+    updateAlliesTimer.Reset(5000);                            //update friendly targets every 5 seconds, lesser checks increase performance
+
+    if (m_creature->GetReactState() != REACT_DEFENSIVE)
+        m_EnemySet.clear(); // clear if changed
 
     if (!m_owner)
         return;
@@ -362,6 +348,43 @@ void PetAI::UpdateAllies()
     }
     else                                                    //remove group
         m_AllySet.insert(m_owner->GetGUID());
+}
+
+void PetAI::TargetSelectHelper()
+{
+    if (me->HasReactState(REACT_PASSIVE) || me->GetCharmInfo()->HasCommandState(COMMAND_STAY))
+        return;
+    Unit* target = NULL;
+    if (m_owner->getVictim())
+        target = m_owner->getVictim();
+    else if (me->HasReactState(REACT_AGGRESSIVE))
+    {
+        if (!m_owner->getAttackers().empty())
+            target = m_owner->getAttackerForHelper();
+        else if (!me->getAttackers().empty())
+            target = me->getAttackerForHelper();
+        else
+            target = FindValidTarget();
+    }
+    else if (me->HasReactState(REACT_DEFENSIVE))
+    {
+        for (std::set<uint64>::iterator itr = m_EnemySet.begin(); itr != m_EnemySet.end();)
+        {
+            Unit* possibletarget = m_creature->GetUnit(*itr);
+            if (!possibletarget || m_creature->IsInRange(possibletarget,0,50) ||
+                (m_owner->getAttackers().find(possibletarget) == m_owner->getAttackers().end() &&
+                m_creature->getAttackers().find(possibletarget) == m_creature->getAttackers().end()))
+            { // remove if not found, too far away or already not in combat
+                itr = m_EnemySet.erase(itr);
+                continue;
+            }
+            target = possibletarget; // do not break, clear everything
+            itr++;
+        }
+    }
+
+    if (!targetHasInterruptableAura(target))
+        AttackStart(target);
 }
 
 Unit* PetAI::FindValidTarget()

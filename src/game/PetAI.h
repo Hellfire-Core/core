@@ -49,6 +49,7 @@ class PetAI : public CreatureAI
 
         bool targetHasInterruptableAura(Unit *target) const;
 
+        void ownerOrMeAttackedBy(uint64 enemy) {if (me->HasReactState(REACT_DEFENSIVE)) m_EnemySet.insert(enemy); }
     protected:
 
         void UpdateMotionMaster();
@@ -60,9 +61,11 @@ class PetAI : public CreatureAI
 
         void UpdateAllies();
         Unit* FindValidTarget(); // for aggresive stance
+        void TargetSelectHelper();
 
         TimeTracker i_tracker;
         std::set<uint64> m_AllySet;
+        std::set<uint64> m_EnemySet;
         
         TimeTrackerSmall updateAlliesTimer;
 
