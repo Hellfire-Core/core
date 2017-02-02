@@ -1073,8 +1073,8 @@ uint32 Unit::DealDamage(DamageLog *damageInfo, DamageEffectType damagetype, cons
                 }
 
                 pVictim->AddThreat(threatTarget, threat, SpellSchoolMask(damageInfo->schoolMask), spellProto);
-                if (pVictim->ToPet() && ((PetAI*)(pVictim->ToPet()->AI())))
-                    ((PetAI*)(pVictim->ToPet()->AI()))->ownerOrMeAttackedBy(threatTarget->GetGUID());
+                if (pVictim->ToPet())
+                    pVictim->ToPet()->AI()->ownerOrMeAttackedBy(threatTarget->GetGUID());
             }
             else                                                // victim is a player
             {
@@ -1095,8 +1095,7 @@ uint32 Unit::DealDamage(DamageLog *damageInfo, DamageEffectType damagetype, cons
 
                 if (Pet* pet = pVictim->GetPet())
                 {
-                    if ((PetAI*)(pet->AI()))
-                        ((PetAI*)pet->AI())->ownerOrMeAttackedBy(GetGUID());
+                    pet->AI()->ownerOrMeAttackedBy(GetGUID());
                 }
             }
 
@@ -9411,6 +9410,7 @@ void Unit::Unmount()
 
 void Unit::SetInCombatWith(Unit* enemy)
 {
+    SendCombatStats(1 << COMBAT_STATS_TEST, "SetInCombatWith %u", enemy, GetUInt32Value(UNIT_FIELD_FLAGS));
     Unit* eOwner = enemy->GetCharmerOrOwnerOrSelf();
     if (eOwner->IsPvP())
     {
@@ -9529,6 +9529,7 @@ void Unit::SetInCombatState(bool PvP, Unit* enemy)
 
 void Unit::ClearInCombat()
 {
+    SendCombatStats(1 << COMBAT_STATS_TEST, "ClearInCombat %u", NULL, GetUInt32Value(UNIT_FIELD_FLAGS));
     m_CombatTimer = 0;
     RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IN_COMBAT);
 

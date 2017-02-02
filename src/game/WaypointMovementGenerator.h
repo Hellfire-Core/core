@@ -71,7 +71,7 @@ class WaypointMovementGenerator<Creature> : public MovementGeneratorMedium< Crea
         void Initialize(Creature &);
         void Finalize(Creature &);
 
-        void Interrupt(Creature &c) { Finalize(c); }
+        void Interrupt(Creature &c) { c.SendCombatStats(1 << COMBAT_STATS_CRASHTEST,"bang",NULL); Finalize(c); }
         void Reset(Creature &c);
 
         bool Update(Creature &, const uint32 &diff);

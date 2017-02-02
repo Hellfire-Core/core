@@ -283,7 +283,7 @@ void npc_escortAI::UpdateAI(const uint32 uiDiff)
 
             if (!HasEscortState(STATE_ESCORT_PAUSED))
             {
-                me->GetUnitStateMgr().DropAllControlledStates();
+                me->GetMotionMaster()->StopControlledMovement();
                 me->GetMotionMaster()->MovePoint(CurrentWP->id, CurrentWP->x, CurrentWP->y, CurrentWP->z);
                 debug_log("TSCR: EscortAI start waypoint %u (%f, %f, %f).", CurrentWP->id, CurrentWP->x, CurrentWP->y, CurrentWP->z);
                 SendDebug("EscortAI Started moving towards %u (%f %f %f)", CurrentWP->id, CurrentWP->x, CurrentWP->y, CurrentWP->z);

@@ -146,7 +146,8 @@ class HELLGROUND_IMPORT_EXPORT CreatureAI : public UnitAI
         virtual void OnCharmed(bool apply);
 
         //virtual void SpellClick(Player *player) {}
- 
+        // overriden by petai
+        virtual void ownerOrMeAttackedBy(uint64 guid) {};
         // Called at reaching home after evade
         virtual void JustReachedHome();
  
