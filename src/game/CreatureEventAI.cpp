@@ -1127,7 +1127,7 @@ void CreatureEventAI::AttackStart(Unit *who)
 
     if (m_creature->Attack(who, MeleeEnabled))
     {
-        m_creature->GetMotionMaster()->StopControlledMovement();
+        //m_creature->GetMotionMaster()->StopControlledMovement();
         if (CombatMovementEnabled)
             m_creature->GetMotionMaster()->MoveChase(who, AttackDistance, AttackAngle);
     }

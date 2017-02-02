@@ -3777,6 +3777,8 @@ bool GossipSelect_npc_quick_test_services(Player* plr, Creature* c, uint32 sende
             for (uint32 totem = 5175; totem < 5179; totem++)
             {
                 uint8 msg = plr->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, totem, 1);
+                if (plr->HasItemCount(totem, 1, true))
+                    break;
                 if (msg == EQUIP_ERR_OK)
                 {
                     Item* item = plr->StoreNewItem(dest, totem, true);
@@ -3801,6 +3803,7 @@ bool GossipSelect_npc_quick_test_services(Player* plr, Creature* c, uint32 sende
             c->CastSpell(plr, 8947, true);
             break;
         }
+        c->Say("I teached you only spells that require quests to get, for other ones go visit your trainer.", LANG_UNIVERSAL, plr->GetGUID());
     }
     return true;
 }

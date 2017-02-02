@@ -20690,6 +20690,11 @@ void Player::UpdateUnderwaterState(Map* m, float x, float y, float z)
         return;
     }
 
+    if (liquid_status.type == MAP_LIQUID_TYPE_WATER &&
+        (GetZoneId() == 1584 || GetZoneId() == 25 || GetZoneId() == 2717))// hack for blackrock lava not being lava in game files
+        liquid_status.type = MAP_LIQUID_TYPE_MAGMA;
+
+
     // All liquids type - check under water position
     if (liquid_status.type&(MAP_LIQUID_TYPE_WATER|MAP_LIQUID_TYPE_OCEAN|MAP_LIQUID_TYPE_MAGMA|MAP_LIQUID_TYPE_SLIME))
     {

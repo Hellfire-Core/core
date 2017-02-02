@@ -1065,6 +1065,8 @@ void Spell::DoAllEffectOnTarget(TargetInfo *target)
                 p->CastCreatureOrGO(unit->GetEntry(), unit->GetGUID(), GetSpellEntry()->Id);
     }
 
+    m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "spell %u causing combat %u %u %u", unit, GetSpellEntry()->Id, m_caster->IsFriendlyTo(unit),
+        SpellMgr::IsPositiveSpell(GetSpellEntry()->Id), (GetSpellEntry()->AttributesEx3 & SPELL_ATTR_EX3_NO_INITIAL_AGGRO));
     if (!m_caster->IsFriendlyTo(unit) && !SpellMgr::IsPositiveSpell(GetSpellEntry()->Id))
     {
         if (m_caster->GetTypeId() != TYPEID_PLAYER || !((Player const*)m_caster)->isGameMaster())
