@@ -246,5 +246,26 @@ bool AnyUnfriendlyUnitInObjectRangeCheck::operator()(Unit* u)
         return false;
 }
 
+bool AnyUnfriendlyUnitInPetAttackRangeCheck::operator()(Unit* u)
+{
+    if (Player* owner = sObjectAccessor.GetPlayer(i_unit->GetCharmerOrOwnerGUID()))
+    {
+        if (!owner->HaveAtClient(u))
+            return false; // pets should be able to attack stealthed unit if only player detected them
+    }
+    else if (u->m_invisibilityMask && u->m_invisibilityMask & (1 << 10) &&
+        !u->canDetectInvisibilityOf(i_unit))
+        return false;
+
+    float dist = 20.0f + i_unit->getLevel() - u->getLevel();
+    if (dist < 5.0f) dist = 5.0f;
+    if (dist > 30.0f) dist = 30.0f;
+
+    if (u->isAlive() && i_unit->IsWithinDistInMap(u, dist) && !i_unit->IsFriendlyTo(u))
+        return true;
+    else
+        return false;
+}
+
 template void ObjectUpdater::Visit<GameObject>(GameObjectMapType &);
 template void ObjectUpdater::Visit<DynamicObject>(DynamicObjectMapType &);

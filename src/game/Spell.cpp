@@ -1065,8 +1065,6 @@ void Spell::DoAllEffectOnTarget(TargetInfo *target)
                 p->CastCreatureOrGO(unit->GetEntry(), unit->GetGUID(), GetSpellEntry()->Id);
     }
 
-    m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "spell %u causing combat %u %u %u", unit, GetSpellEntry()->Id, m_caster->IsFriendlyTo(unit),
-        SpellMgr::IsPositiveSpell(GetSpellEntry()->Id), (GetSpellEntry()->AttributesEx3 & SPELL_ATTR_EX3_NO_INITIAL_AGGRO));
     if (!m_caster->IsFriendlyTo(unit) && !SpellMgr::IsPositiveSpell(GetSpellEntry()->Id))
     {
         if (m_caster->GetTypeId() != TYPEID_PLAYER || !((Player const*)m_caster)->isGameMaster())
@@ -4177,7 +4175,9 @@ SpellCastResult Spell::CheckCast(bool strict)
 
     if (!IsTriggeredSpell() || GetSpellEntry()->Id == 33395) // hack for water elemental freeze since it is cast as triggered spell
     {
-        SpellCastResult castResult = CheckRange(strict);
+        SpellCastResult castResult = SPELL_CAST_OK;
+        if (!IsNextMeleeSwingSpell())
+            castResult = CheckRange(strict);
         if (castResult != SPELL_CAST_OK)
             return castResult;
 
@@ -4987,7 +4987,7 @@ bool Spell::CanAutoCast(Unit* target)
         GetSpellEntry()->EffectApplyAuraName[0] == SPELL_AURA_MOD_INCREASE_SPEED &&
         GetSpellEntry()->SpellVisual == 2276)
     {
-        if (!m_caster->getVictim() || m_caster->IsWithinMeleeRange(m_caster->getVictim()) || !m_caster->isInCombat())
+        if (!m_caster->getVictim() || m_caster->IsWithinMeleeRange(m_caster->getVictim()))
             return false;
     }
     SpellCastResult result = CheckPetCast(target);

@@ -49,7 +49,7 @@ class PetAI : public CreatureAI
 
         bool targetHasInterruptableAura(Unit *target) const;
 
-        void ownerOrMeAttackedBy(uint64 enemy) {if (me->HasReactState(REACT_DEFENSIVE)) m_EnemySet.insert(enemy); }
+        void ownerOrMeAttackedBy(uint64 enemy);
     protected:
 
         void UpdateMotionMaster();

@@ -416,6 +416,15 @@ namespace Hellground
             float i_range;
     };
 
+    class AnyUnfriendlyUnitInPetAttackRangeCheck
+    {
+    public:
+        AnyUnfriendlyUnitInPetAttackRangeCheck(Unit const* unit) : i_unit(unit) {}
+        bool operator()(Unit* u);
+    private:
+        Unit const* i_unit;
+    };
+
     class AnyUnfriendlyNoTotemUnitInObjectRangeCheck
     {
         public:

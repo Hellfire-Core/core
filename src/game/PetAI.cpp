@@ -89,6 +89,13 @@ bool PetAI::targetHasInterruptableAura(Unit *target) const
     return false;
 }
 
+void PetAI::ownerOrMeAttackedBy(uint64 enemy)
+{
+    if (me->HasReactState(REACT_DEFENSIVE))
+        m_EnemySet.insert(enemy);
+    m_creature->SendCombatStats(1 << COMBAT_STATS_TEST, "ownerormeattackedby %u %u", NULL, GUID_LOPART(enemy), m_EnemySet.size());
+}
+
 bool PetAI::_needToStop()
 {
     // This is needed for charmed creatures, as once their target was reset other effects can trigger threat
@@ -371,9 +378,9 @@ void PetAI::TargetSelectHelper()
         for (std::set<uint64>::iterator itr = m_EnemySet.begin(); itr != m_EnemySet.end();)
         {
             Unit* possibletarget = m_creature->GetUnit(*itr);
-            if (!possibletarget || m_creature->IsInRange(possibletarget,0,50) ||
-                (m_owner->getAttackers().find(possibletarget) == m_owner->getAttackers().end() &&
-                m_creature->getAttackers().find(possibletarget) == m_creature->getAttackers().end()))
+            if (!possibletarget || m_creature->IsInRange(possibletarget,0,50) || !possibletarget->isInCombat()
+                /*(m_owner->getAttackers().find(possibletarget) == m_owner->getAttackers().end() &&
+                m_creature->getAttackers().find(possibletarget) == m_creature->getAttackers().end())*/)
             { // remove if not found, too far away or already not in combat
                 itr = m_EnemySet.erase(itr);
                 continue;
@@ -391,9 +398,9 @@ void PetAI::TargetSelectHelper()
 Unit* PetAI::FindValidTarget()
 {
     std::list<Unit *> targets;
-    Hellground::AnyUnfriendlyUnitInObjectRangeCheck u_check(m_creature, m_creature->GetAggroRange());
-    Hellground::UnitListSearcher<Hellground::AnyUnfriendlyUnitInObjectRangeCheck> searcher(targets, u_check);
-    Cell::VisitAllObjects(me, searcher, m_creature->GetAggroRange());
+    Hellground::AnyUnfriendlyUnitInPetAttackRangeCheck u_check(m_creature);
+    Hellground::UnitListSearcher<Hellground::AnyUnfriendlyUnitInPetAttackRangeCheck> searcher(targets, u_check);
+    Cell::VisitAllObjects(me, searcher, 30);
 
     // remove not LoS targets and interruptable
     for (std::list<Unit *>::iterator tIter = targets.begin(); tIter != targets.end();)
