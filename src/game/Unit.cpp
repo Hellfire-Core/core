@@ -440,7 +440,10 @@ void Unit::Update(uint32 update_diff, uint32 /*p_time*/)
         {
             // m_CombatTimer set at aura start and it will be freeze until aura removing
             if (m_CombatTimer <= update_diff)
+            {
+                SendCombatStats(1 << COMBAT_STATS_TEST, "ClearInCombat hostilerefmgr empty", NULL);
                 ClearInCombat();
+            }
             else
                 m_CombatTimer -= update_diff;
         }
@@ -1082,15 +1085,8 @@ uint32 Unit::DealDamage(DamageLog *damageInfo, DamageEffectType damagetype, cons
                 // random durability for items (HIT TAKEN)
                 if (roll_chance_f(sWorld.getConfig(RATE_DURABILITY_LOSS_DAMAGE)))
                 {
-                  EquipmentSlots slot = EquipmentSlots(urand(0,EQUIPMENT_SLOT_END-1));
+                    EquipmentSlots slot = EquipmentSlots(urand(0, EQUIPMENT_SLOT_END - 1));
                     ((Player*)pVictim)->DurabilityPointLossForEquipSlot(slot);
-                }
-
-                // random durability for items (HIT DONE)
-                if (roll_chance_f(sWorld.getConfig(RATE_DURABILITY_LOSS_DAMAGE)))
-                {
-                    EquipmentSlots slot = EquipmentSlots(urand(0,EQUIPMENT_SLOT_END-1));
-                    ((Player*)this)->DurabilityPointLossForEquipSlot(slot);
                 }
 
                 if (Pet* pet = pVictim->GetPet())
@@ -1098,6 +1094,18 @@ uint32 Unit::DealDamage(DamageLog *damageInfo, DamageEffectType damagetype, cons
                     if (pet->IsAIEnabled)
                         pet->AI()->ownerOrMeAttackedBy(GetGUID());
                 }
+
+            }
+            if (GetTypeId() == TYPEID_PLAYER)
+            {
+                // random durability for items (HIT DONE)
+                if (roll_chance_f(sWorld.getConfig(RATE_DURABILITY_LOSS_DAMAGE)))
+                {
+                    EquipmentSlots slot = EquipmentSlots(urand(0,EQUIPMENT_SLOT_END-1));
+                    ((Player*)this)->DurabilityPointLossForEquipSlot(slot);
+                }
+
+                
             }
 
             if (damagetype != NODAMAGE && damageInfo->damage)
@@ -7861,6 +7869,7 @@ void Unit::CombatStop(bool cast)
     if (GetObjectGuid().IsPlayer())
         ToPlayer()->SendAttackSwingCancelAttack();     // melee and ranged forced attack cancel
 
+    SendCombatStats(1 << COMBAT_STATS_TEST, "CombatStop", NULL);
     ClearInCombat();
 }
 
@@ -9530,7 +9539,6 @@ void Unit::SetInCombatState(bool PvP, Unit* enemy)
 
 void Unit::ClearInCombat()
 {
-    SendCombatStats(1 << COMBAT_STATS_TEST, "ClearInCombat %u", NULL, GetUInt32Value(UNIT_FIELD_FLAGS));
     m_CombatTimer = 0;
     RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IN_COMBAT);
 

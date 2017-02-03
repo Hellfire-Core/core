@@ -141,6 +141,9 @@ bool ACRequest::DetectSpeedHack(Player *pPlayer)
     else
         moveType = MOVE_RUN;
 
+    if (pPlayer->HasUnitMovementFlag(MOVEFLAG_ONTRANSPORT) && pPlayer->GetMapId() == 369)
+        return false; // deeprun tram
+
     Position n = GetNewMovementInfo().pos;
     Position o = GetLastMovementInfo().pos;
 

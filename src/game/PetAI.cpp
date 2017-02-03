@@ -355,13 +355,13 @@ void PetAI::TargetSelectHelper()
     if (me->HasReactState(REACT_PASSIVE) || me->GetCharmInfo()->HasCommandState(COMMAND_STAY))
         return;
     Unit* target = NULL;
-    if (m_owner->getVictim())
+    if (m_owner->getVictim() && !targetHasInterruptableAura(m_owner->getVictim()))
         target = m_owner->getVictim();
     else if (me->HasReactState(REACT_AGGRESSIVE))
     {
-        if (!m_owner->getAttackers().empty())
+        if (!m_owner->getAttackers().empty() && !targetHasInterruptableAura(m_owner->getAttackerForHelper()))
             target = m_owner->getAttackerForHelper();
-        else if (!me->getAttackers().empty())
+        else if (!me->getAttackers().empty() && !targetHasInterruptableAura(me->getAttackerForHelper()))
             target = me->getAttackerForHelper();
         else
             target = FindValidTarget();
@@ -378,12 +378,13 @@ void PetAI::TargetSelectHelper()
                 itr = m_EnemySet.erase(itr);
                 continue;
             }
-            target = possibletarget; // do not break, clear everything
+            if (!targetHasInterruptableAura(possibletarget))
+                target = possibletarget; // do not break, clear everything
             itr++;
         }
     }
 
-    if (!targetHasInterruptableAura(target))
+    if (target)
         AttackStart(target);
 }
 
@@ -394,10 +395,11 @@ Unit* PetAI::FindValidTarget()
     Hellground::UnitListSearcher<Hellground::AnyUnfriendlyUnitInObjectRangeCheck> searcher(targets, u_check);
     Cell::VisitAllObjects(me, searcher, m_creature->GetAggroRange());
 
-    // remove not LoS targets
+    // remove not LoS targets and interruptable
     for (std::list<Unit *>::iterator tIter = targets.begin(); tIter != targets.end();)
     {
         if (!m_creature->IsWithinLOSInMap(*tIter) || (*tIter)->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE) ||
+            targetHasInterruptableAura(*tIter) ||
             (*tIter)->GetTypeId() == TYPEID_UNIT && ((Creature*)(*tIter))->isTrigger() )
         {
             std::list<Unit *>::iterator tIter2 = tIter;
