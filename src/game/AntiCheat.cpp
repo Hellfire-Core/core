@@ -161,7 +161,7 @@ bool ACRequest::DetectSpeedHack(Player *pPlayer)
         return false;
 
     uint32 count = 0;
-    if (timeDiff <= (sWorld.getConfig(CONFIG_MAPUPDATE_CONTINENTS) + 10) && exact2dDist < speedRate * 0.55)
+    if (timeDiff <= 300 && exact2dDist < speedRate * 0.55)
     {
         count = pPlayer->CumulativeACReport(ANTICHEAT_CHECK_SPEEDHACK);
         if (count < 4)

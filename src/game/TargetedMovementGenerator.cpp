@@ -80,6 +80,9 @@ void TargetedMovementGeneratorMedium<T,D>::_setTargetLocation(T &owner)
         _target->GetNearPoint(x, y, z, owner.GetObjectSize(), _offset, _angle);
     }
 
+    if (abs(_target->GetPositionZ() - z) > 5.0f) // get nearpoint is normalizing position for ground, enable fly and swim
+        z = _target->GetPositionZ();
+
     if (!_path)
         _path = new PathFinder(&owner);
 

@@ -9422,6 +9422,7 @@ void Unit::SetInCombatWith(Unit* enemy)
 {
     SendCombatStats(1 << COMBAT_STATS_TEST, "SetInCombatWith %u", enemy, GetUInt32Value(UNIT_FIELD_FLAGS));
     Unit* eOwner = enemy->GetCharmerOrOwnerOrSelf();
+    AddThreat(enemy, 0.0f);
     if (eOwner->IsPvP())
     {
         SetInCombatState(true, enemy);
