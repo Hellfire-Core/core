@@ -442,7 +442,7 @@ void Object::BuildValuesUpdate(uint8 updatetype, ByteBuffer * data, UpdateMask *
                 }
                 else if (index == UNIT_FIELD_HEALTH && !target->IsInRaidWith((Unit*)this) && !target->IsInPartyWith((Unit*)this))
                 {
-                    *data << uint32(ceil(m_uint32Values[index]*100/m_uint32Values[UNIT_FIELD_MAXHEALTH]));
+                    *data << uint32(ceil(float(m_uint32Values[index])*100.f/float(m_uint32Values[UNIT_FIELD_MAXHEALTH])));
                 }
                 // use modelid_a if not gm, _h if gm for CREATURE_FLAG_EXTRA_TRIGGER creatures
                 else if (index == UNIT_FIELD_DISPLAYID && GetTypeId() == TYPEID_UNIT)
