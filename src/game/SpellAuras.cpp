@@ -834,7 +834,7 @@ void AreaAura::Update(uint32 diff)
         // or caster is (no longer) friendly
         bool needFriendly = (m_areaAuraType == AREA_AURA_ENEMY ? false : true);
         if (!caster || caster->hasUnitState(UNIT_STAT_ISOLATED) ||
-            !caster->IsWithinDistInMap(tmp_target, m_radius)    ||
+            !caster->IsWithinExactDistInMap(tmp_target, m_radius)    ||
             !caster->HasAura(tmp_spellId, tmp_effIndex)         ||
             caster->IsFriendlyTo(tmp_target) != needFriendly
           )
@@ -872,7 +872,7 @@ void PersistentAreaAura::Update(uint32 diff)
 
         if (dynObj)
         {
-            if (!m_target->IsWithinDistInMap(dynObj, dynObj->GetRadius()) || (!dynObj->m_ignore_los && !m_target->IsWithinLOSInMap(dynObj)))
+            if (!m_target->IsWithinExactDistInMap(dynObj, dynObj->GetRadius()) || (!dynObj->m_ignore_los && !m_target->IsWithinLOSInMap(dynObj)))
                 remove = true;
         }
         else
