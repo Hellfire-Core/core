@@ -436,11 +436,11 @@ void Object::BuildValuesUpdate(uint8 updatetype, ByteBuffer * data, UpdateMask *
                 {
                     *data << (m_uint32Values[ index ] & ~UNIT_FLAG_NOT_SELECTABLE);
                 }
-                else if (index == UNIT_FIELD_MAXHEALTH && !target->IsInRaidWith((Unit*)this))
+                else if (index == UNIT_FIELD_MAXHEALTH && !target->IsInRaidWith((Unit*)this) && !target->IsInPartyWith((Unit*)this))
                 {
                     *data << uint32(100);
                 }
-                else if (index == UNIT_FIELD_HEALTH && target->IsInPartyWith((Unit*)this))
+                else if (index == UNIT_FIELD_HEALTH && !target->IsInRaidWith((Unit*)this) && !target->IsInPartyWith((Unit*)this))
                 {
                     *data << uint32(ceil(m_uint32Values[index]*100/m_uint32Values[UNIT_FIELD_MAXHEALTH]));
                 }
