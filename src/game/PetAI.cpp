@@ -93,7 +93,6 @@ void PetAI::ownerOrMeAttackedBy(uint64 enemy)
 {
     if (me->HasReactState(REACT_DEFENSIVE))
         m_EnemySet.insert(enemy);
-    m_creature->SendCombatStats(1 << COMBAT_STATS_TEST, "ownerormeattackedby %u %u", NULL, GUID_LOPART(enemy), m_EnemySet.size());
 }
 
 bool PetAI::_needToStop()
@@ -362,11 +361,12 @@ void PetAI::TargetSelectHelper()
     if (me->HasReactState(REACT_PASSIVE) || me->GetCharmInfo()->HasCommandState(COMMAND_STAY))
         return;
     Unit* target = NULL;
-    if (m_owner->getVictim() && !targetHasInterruptableAura(m_owner->getVictim()))
-        target = m_owner->getVictim();
-    else if (me->HasReactState(REACT_AGGRESSIVE))
+    
+    if (me->HasReactState(REACT_AGGRESSIVE))
     {
-        if (!m_owner->getAttackers().empty() && !targetHasInterruptableAura(m_owner->getAttackerForHelper()))
+        if (m_owner->getVictim() && !targetHasInterruptableAura(m_owner->getVictim()))
+            target = m_owner->getVictim();
+        else if (!m_owner->getAttackers().empty() && !targetHasInterruptableAura(m_owner->getAttackerForHelper()))
             target = m_owner->getAttackerForHelper();
         else if (!me->getAttackers().empty() && !targetHasInterruptableAura(me->getAttackerForHelper()))
             target = me->getAttackerForHelper();
@@ -375,6 +375,7 @@ void PetAI::TargetSelectHelper()
     }
     else if (me->HasReactState(REACT_DEFENSIVE))
     {
+        m_creature->SendCombatStats(1 << COMBAT_STATS_TEST, "petai::tsh %u", NULL, m_EnemySet.size());
         for (std::set<uint64>::iterator itr = m_EnemySet.begin(); itr != m_EnemySet.end();)
         {
             Unit* possibletarget = m_creature->GetUnit(*itr);
@@ -390,7 +391,7 @@ void PetAI::TargetSelectHelper()
             itr++;
         }
     }
-
+    m_creature->SendCombatStats(1 << COMBAT_STATS_TEST, "petai::tsh target chosen", target);
     if (target)
         AttackStart(target);
 }

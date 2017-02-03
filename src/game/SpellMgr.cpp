@@ -3216,7 +3216,8 @@ void SpellMgr::LoadSpellCustomAttr()
                 if (spellInfo->SpellFamilyFlags & 0x10LL && spellInfo->SpellIconID == 548)
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
                 // Healthstone
-                else if (spellInfo->SpellFamilyFlags & 0x10000LL)
+                else if (spellInfo->SpellFamilyFlags & 0x10000LL ||
+                    spellInfo->Id == 30294) // soul leech effect
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
                 // Death Coil
                 else if (spellInfo->SpellVisual == 9152)

@@ -507,6 +507,10 @@ class HELLGROUND_IMPORT_EXPORT WorldObject : public Object//, public WorldLocati
         {
             return wLoc && GetMapId() == wLoc->mapid && _IsWithinDist(wLoc,dist2compare,is3D);
         }
+        bool IsWithinExactDistInMap(WorldObject const* obj, float distance)
+        {
+            return obj && IsInMap(obj) && (GetExactDist2dSq(obj->GetPositionX(), obj->GetPositionY()) < distance*distance);
+        }
         bool IsWithinLOS(const float x, const float y, const float z) const;
         bool IsWithinLOSInMap(WorldObject const* obj) const;
 

@@ -731,7 +731,7 @@ bool ChatHandler::HandleGoCreatureDirectCommand(const char* args)
 bool ChatHandler::HandleGUIDCommand(const char* /*args*/)
 {
     uint64 guid = m_session->GetPlayer()->GetSelection();
-
+    uint32 dbguid = 0;
     if (guid == 0)
     {
         SendSysMessage(LANG_NO_SELECTION);
@@ -739,7 +739,9 @@ bool ChatHandler::HandleGUIDCommand(const char* /*args*/)
         return false;
     }
 
-    PSendSysMessage(LANG_OBJECT_GUID, GUID_LOPART(guid), GUID_HIPART(guid));
+    if (Creature* target = m_session->GetPlayer()->GetCreature(guid))
+        dbguid = target->GetDBTableGUIDLow();
+    PSendSysMessage(LANG_OBJECT_GUID, GUID_LOPART(guid), GUID_HIPART(guid), dbguid);
     return true;
 }
 
