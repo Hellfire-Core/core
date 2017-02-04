@@ -4643,6 +4643,32 @@ SpellCastResult Spell::CheckCast(bool strict)
                 }
                 break;
             }
+            case SPELL_EFFECT_DISPEL:
+            {
+                Unit* target = m_targets.getUnitTarget();
+                if (!target)
+                    break;
+                uint32 dispelMask = SpellMgr::GetDispellMask(DispelType(GetSpellEntry()->EffectMiscValue[i]));
+                bool anydispelable = false;
+                Unit::AuraMap& Auras = target->GetAuras();
+                for (Unit::AuraMap::iterator i = Auras.begin(); i != Auras.end(); ++i)
+                {
+                    Aura *aur = (*i).second;
+                    if (aur && (1 << aur->GetSpellProto()->Dispel) & dispelMask)
+                    {
+                        if (aur->GetSpellProto()->Dispel == DISPEL_MAGIC &&
+                            aur->IsPositive() == target->IsFriendlyTo(m_caster))
+                            continue;
+
+                        anydispelable = true;
+                        break;
+                    }
+                }
+                if (!anydispelable)
+                    return SPELL_FAILED_NOTHING_TO_DISPEL;
+                break;
+            }
+
             default:break;
         }
     }

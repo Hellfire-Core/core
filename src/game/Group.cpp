@@ -1523,8 +1523,8 @@ void Group::BroadcastGroupUpdate(void)
         {
             pp->ForceValuesUpdateAtIndex(UNIT_FIELD_BYTES_2);
             pp->ForceValuesUpdateAtIndex(UNIT_FIELD_FACTIONTEMPLATE);
-            pp->ForceValuesUpdateAtIndex(UNIT_FIELD_HEALTH);
-            pp->ForceValuesUpdateAtIndex(UNIT_FIELD_MAXHEALTH);
+            for (uint32 index = UNIT_FIELD_HEALTH; index <= UNIT_FIELD_MAXPOWER5; index++)
+                pp->ForceValuesUpdateAtIndex(index);
             DEBUG_LOG("-- Forced group value update for '%s'", pp->GetName());
         }
     }

@@ -375,11 +375,10 @@ void PetAI::TargetSelectHelper()
     }
     else if (me->HasReactState(REACT_DEFENSIVE))
     {
-        m_creature->SendCombatStats(1 << COMBAT_STATS_TEST, "petai::tsh %u", NULL, m_EnemySet.size());
         for (std::set<uint64>::iterator itr = m_EnemySet.begin(); itr != m_EnemySet.end();)
         {
             Unit* possibletarget = m_creature->GetUnit(*itr);
-            if (!possibletarget || m_creature->IsInRange(possibletarget,0,50) || !possibletarget->isInCombat()
+            if (!possibletarget || !m_creature->IsInRange(possibletarget,0,50) || !possibletarget->isInCombat()
                 /*(m_owner->getAttackers().find(possibletarget) == m_owner->getAttackers().end() &&
                 m_creature->getAttackers().find(possibletarget) == m_creature->getAttackers().end())*/)
             { // remove if not found, too far away or already not in combat
@@ -391,7 +390,6 @@ void PetAI::TargetSelectHelper()
             itr++;
         }
     }
-    m_creature->SendCombatStats(1 << COMBAT_STATS_TEST, "petai::tsh target chosen", target);
     if (target)
         AttackStart(target);
 }
