@@ -36,8 +36,8 @@ namespace VMAP
 
     bool ModelInstance::intersectRay(const G3D::Ray& pRay, float& pMaxDist, bool pStopAtFirstHit, bool alsoM2) const
     {
-        if ((ModelSpawn::flags & MOD_M2) && !alsoM2)
-            return false; // m2 objects no collision
+        //if ((ModelSpawn::flags & MOD_M2) && !alsoM2)
+        //    return false; // m2 objects no collision
         if (!iModel)
         {
 #ifdef VMAP_DEBUG

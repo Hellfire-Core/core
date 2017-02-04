@@ -19693,6 +19693,7 @@ void Player::SummonIfPossible(bool agree, uint64 summonerGUID)
 
     // stop taxi flight at summon
     InterruptTaxiFlying();
+    Unmount();
 
     // drop flag at summon
     if (BattleGround *bg = GetBattleGround())

@@ -4646,14 +4646,15 @@ SpellCastResult Spell::CheckCast(bool strict)
             case SPELL_EFFECT_DISPEL:
             {
                 Unit* target = m_targets.getUnitTarget();
-                if (!target)
-                    break;
-                uint32 dispelMask = SpellMgr::GetDispellMask(DispelType(GetSpellEntry()->EffectMiscValue[i]));
+                if (!target || i != 0 || GetSpellEntry()->Effect[1] != 0 )
+                    break; // only for single target when dispel is only effect
+
+                uint32 dispelMask = SpellMgr::GetDispellMask(DispelType(GetSpellEntry()->EffectMiscValue[0]));
                 bool anydispelable = false;
                 Unit::AuraMap& Auras = target->GetAuras();
-                for (Unit::AuraMap::iterator i = Auras.begin(); i != Auras.end(); ++i)
+                for (Unit::AuraMap::iterator itr = Auras.begin(); itr != Auras.end(); ++itr)
                 {
-                    Aura *aur = (*i).second;
+                    Aura *aur = (*itr).second;
                     if (aur && (1 << aur->GetSpellProto()->Dispel) & dispelMask)
                     {
                         if (aur->GetSpellProto()->Dispel == DISPEL_MAGIC &&
