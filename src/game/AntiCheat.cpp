@@ -161,10 +161,10 @@ bool ACRequest::DetectSpeedHack(Player *pPlayer)
         return false;
 
     uint32 count = 0;
-    if (timeDiff <= 300 && exact2dDist < speedRate * 0.55)
+    if (timeDiff <= 300 && exact2dDist < speedRate * 0.7)
     {
         count = pPlayer->CumulativeACReport(ANTICHEAT_CHECK_SPEEDHACK);
-        if (count < 4)
+        if (count < 6)
             return false;
     }
 

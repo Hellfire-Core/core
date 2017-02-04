@@ -334,8 +334,15 @@ void WorldSession::HandleItemQuerySingleOpcode(WorldPacket & recv_data)
         data << pProto->RequiredSpell;
         data << pProto->RequiredHonorRank;
         data << pProto->RequiredCityRank;
-        data << pProto->RequiredReputationFaction;
-        data << pProto->RequiredReputationRank;
+        if (sWorld.getConfig(CONFIG_HAPPY_TESTING))
+        {
+            data << uint32(0) << uint32(0);
+        }
+        else
+        {
+            data << pProto->RequiredReputationFaction;
+            data << pProto->RequiredReputationRank;
+        }
         data << pProto->MaxCount;
         data << pProto->Stackable;
         data << pProto->ContainerSlots;

@@ -1849,6 +1849,7 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
             setFollowTarget(0);
             GetMotionMaster()->Clear(true);
         }
+        SendHeartBeat();
     }
     else
     {
@@ -17457,7 +17458,7 @@ void Player::PetSpellInitialize()
 
         CreatureInfo const *cinfo = pet->GetCreatureInfo();
 
-        if (pet->isControlled() && (pet->getPetType() == HUNTER_PET || cinfo && cinfo->type == CREATURE_TYPE_DEMON && getClass() == CLASS_WARLOCK))
+        if (pet->isControlled() && (pet->getPetType() == HUNTER_PET || cinfo && cinfo->type == CREATURE_TYPE_DEMON && getClass() == CLASS_WARLOCK || cinfo->Entry == 510))
         {
             for (PetSpellMap::iterator itr = pet->m_spells.begin();itr != pet->m_spells.end();++itr)
             {
