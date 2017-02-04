@@ -129,6 +129,7 @@ CreatureEventAI::CreatureEventAI(Creature *c) : CreatureAI(c)
     InvinceabilityHpLevel = 0;
 
     CreatureEventAI_Event cevent;
+    cevent.event_id = 0;
     cevent.event_type = EVENT_T_TIMER;
     cevent.event_inverse_phase_mask = 0;
     cevent.event_chance = 100;
@@ -1509,8 +1510,42 @@ void CreatureEventAI::GetDebugInfo(ChatHandler& reader)
     str << ") consists of " << CreatureEventAIList.size() << " event entries\n";
     for (std::list<CreatureEventAIHolder>::iterator i = CreatureEventAIList.begin(); i != CreatureEventAIList.end(); ++i)
     {
-        str << "Event " << i->Event.event_id << " : type " << i->Event.event_type << " timer " << i->Time;
-        str << (i->Enabled ? " enabled\n" : " disabled\n");
+        str << "Event " << i->Event.event_id << " timer " << i->Time << " flags " << i->Event.event_flags
+            << " chance " << i->Event.event_chance << (i->Enabled ? " (enabled)\n" : " (disabled)\n");
+        switch (i->Event.event_type)
+        {
+        case EVENT_T_TIMER:
+            str << "timer " << i->Event.timer.initialMin << "-" << i->Event.timer.initialMax << " after start, repeat "
+                << i->Event.timer.repeatMin << "-" << i->Event.timer.repeatMax << "\n";
+            break;
+        case EVENT_T_AGGRO:
+            str << "on aggro\n";
+            break;
+        case EVENT_T_HP:
+            str << "on my hp between " << i->Event.percent_range.percentMin <<"-" << i->Event.percent_range.percentMax
+                << " repeat every " << i->Event.percent_range.repeatMin << "-" << i->Event.percent_range.repeatMax << "\n";
+            break;
+        case EVENT_T_FRIENDLY_HP:
+            str << "on friendly hp under " << i->Event.friendly_hp.hpDeficit << " \% in " << i->Event.friendly_hp.radius
+                << " yd range, repeat every " << i->Event.friendly_hp.repeatMin << "-" << i->Event.friendly_hp.repeatMax << "\n";
+            break;
+        default:
+            str << "event type " << i->Event.event_type << "\n";
+        }
+        for (uint8 ai = 0; ai < 3; ai++)
+        {
+            switch (i->Event.action[ai].type)
+            {
+            case ACTION_T_CAST:
+                str << "cast spell " << i->Event.action[ai].cast.spellId << " on target " << i->Event.action[ai].cast.target << "\n";
+                break;
+            case ACTION_T_NONE:
+                break;
+            default:
+                str << "action type " << i->Event.action[ai].type << "\n";
+            }
+        }
+        
     }
 
     reader.SendSysMessage(str.str().c_str());
