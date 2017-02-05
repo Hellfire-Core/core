@@ -3074,6 +3074,9 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 34368:
                     spellInfo->DurationIndex = 3;
                     break;
+                case 30846: // proximity bomb make it trap
+                    spellInfo->Effect[0] = SPELL_EFFECT_SUMMON_OBJECT_SLOT1;
+                    break;
                     //PRE NERF ZONE
                 case 44032: // manticron cube exhaustion 180sec
                     spellInfo->DurationIndex = 25;

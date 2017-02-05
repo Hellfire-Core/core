@@ -69,9 +69,9 @@ struct boss_hungarfenAI : public ScriptedAI
         if (Mushroom_Timer.Expired(diff))
         {
             if( Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0) )
-                me->SummonCreature(17990, target->GetPositionX()+(rand()%8), target->GetPositionY()+(rand()%8), target->GetPositionZ(), (rand()%5), TEMPSUMMON_TIMED_DESPAWN, 22000);
+                me->SummonCreature(17990, target->GetPositionX()+(rand()%8), target->GetPositionY()+(rand()%8), target->GetPositionZ(), (rand()%5), TEMPSUMMON_TIMED_DESPAWN, 31000);
             else
-                me->SummonCreature(17990, me->GetPositionX()+(rand()%8), me->GetPositionY()+(rand()%8), me->GetPositionZ(), (rand()%5), TEMPSUMMON_TIMED_DESPAWN, 22000);
+                me->SummonCreature(17990, me->GetPositionX()+(rand()%8), me->GetPositionY()+(rand()%8), me->GetPositionZ(), (rand()%5), TEMPSUMMON_TIMED_DESPAWN, 31000);
 
             Mushroom_Timer = 10000;
         }
@@ -106,11 +106,13 @@ struct mob_underbog_mushroomAI : public ScriptedAI
     void Reset()
     {
         Stop = false;
-        Grow_Timer = 0;
+        Grow_Timer.Reset(3000);
         Shrink_Timer.Reset(20000);
 
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+
         DoCast(me,SPELL_PUTRID_MUSHROOM,true);
-        DoCast(me,SPELL_SPORE_CLOUD,true);
     }
 
     void MoveInLineOfSight(Unit *who) { return; }
@@ -130,8 +132,21 @@ struct mob_underbog_mushroomAI : public ScriptedAI
 
         if (Shrink_Timer.Expired(diff))
         {
-            me->RemoveAurasDueToSpell(SPELL_GROW);
-            Stop = true;
+            if (Shrink_Timer.GetInterval() == 20000)
+            {
+                // shrink
+                me->RemoveAurasDueToSpell(SPELL_GROW);
+                Shrink_Timer = 1000;
+                Grow_Timer = 0;
+                m_creature->CastSpell(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), SPELL_SPORE_CLOUD, false);
+            }
+            else
+            {
+                // disappear visually
+                me->RemoveAurasDueToSpell(SPELL_PUTRID_MUSHROOM);
+                Stop = true;
+                Shrink_Timer = 0;
+            }
         }
     }
 };

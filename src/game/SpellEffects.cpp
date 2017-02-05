@@ -7738,9 +7738,13 @@ void Spell::EffectPlayerPull(uint32 i)
     if (!unitTarget)
         return;
 
+
     float dist = unitTarget->GetDistance2d(m_caster);
     if (damage && dist > damage)
         dist = damage;
+
+    if (GetSpellEntry()->Id == 37370 && dist < 10.0f)
+        return; // keli'dan the breaker Vortex dont pull close players
 
     unitTarget->KnockBackFrom(m_caster, -dist, GetSpellEntry()->EffectMiscValue[i]/10.0);
 }

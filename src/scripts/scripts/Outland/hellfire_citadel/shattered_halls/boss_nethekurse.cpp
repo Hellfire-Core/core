@@ -342,6 +342,7 @@ struct mob_fel_orc_convertAI : public ScriptedAI
 
     void Reset()
     {
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
         me->SetNoCallAssistance(true);
         Hemorrhage_Timer.Reset(3000);
         Kill_Timer = 0;
@@ -349,6 +350,12 @@ struct mob_fel_orc_convertAI : public ScriptedAI
 
     void MoveInLineOfSight(Unit* who)
     {
+        // dont allow puling by sending pet
+        if (who->GetTypeId() == TYPEID_PLAYER && me->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE) &&
+            who->IsWithinDist(me,10.0))
+            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+
+        // do nothing mote
         return;
     }
 

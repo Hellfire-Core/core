@@ -65,8 +65,8 @@ struct boss_warlord_kalithreshAI : public ScriptedAI
         ClearCastQueue();
 
         Reflection_Timer.Reset(10000);
-        Impale_Timer.Reset(7000 + rand() % 7000);
-        Rage_Timer.Reset(45000);
+        Impale_Timer.Reset(urand(7000,14000));
+        Rage_Timer.Reset(urand(15000, 25000));
         CurrentDistiller = 0;
         checkTimer.Reset(3000);
 
@@ -187,14 +187,14 @@ struct boss_warlord_kalithreshAI : public ScriptedAI
                 CurrentDistiller = distiller->GetGUID();
             }
 
-            Rage_Timer = 15000+rand()%15000;
+            Rage_Timer = urand(15000,25000);
         }
 
         //Reflection_Timer
         if (Reflection_Timer.Expired(diff))
         {
             AddSpellToCast(me, SPELL_SPELL_REFLECTION);
-            Reflection_Timer = 15000+rand()%10000;
+            Reflection_Timer = urand(15000,25000);
         }
 
         //Impale_Timer
@@ -203,7 +203,7 @@ struct boss_warlord_kalithreshAI : public ScriptedAI
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0))
                 AddSpellToCast(target,SPELL_IMPALE);
 
-            Impale_Timer = 7500+rand()%5000;
+            Impale_Timer = urand(7500, 12500);
         }
 
         CastNextSpellIfAnyAndReady();
