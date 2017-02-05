@@ -13243,7 +13243,7 @@ Unit* Unit::GetNextRandomRaidMember(float radius, bool PlayerOnly)
             // IsHostileTo check duel and controlled by enemy
             if (Target != this && IsWithinDistInMap(Target, radius) &&
                 !Target->HasInvisibilityAura() && !IsHostileTo(Target) &&
-                !Target->HasAuraType(SPELL_AURA_MOD_UNATTACKABLE) && Target->isAlive())
+                !Target->HasAuraType(SPELL_AURA_MOD_UNATTACKABLE) && Target->isAlive() && !Target->duel)
                     nearMembers.push_back(Target);
 
             if (Pet *pet = Target->GetPet())

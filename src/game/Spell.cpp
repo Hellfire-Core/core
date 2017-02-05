@@ -4646,7 +4646,7 @@ SpellCastResult Spell::CheckCast(bool strict)
             case SPELL_EFFECT_DISPEL:
             {
                 Unit* target = m_targets.getUnitTarget();
-                if (!target || i != 0 || GetSpellEntry()->Effect[1] != 0 )
+                if (!target || i != 0 || GetSpellEntry()->Effect[1] != 0 || m_IsTriggeredSpell)
                     break; // only for single target when dispel is only effect
 
                 uint32 dispelMask = SpellMgr::GetDispellMask(DispelType(GetSpellEntry()->EffectMiscValue[0]));

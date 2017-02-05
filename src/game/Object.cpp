@@ -1951,6 +1951,7 @@ void WorldObject::GetValidPointInAngle(Position &pos, float dist, float angle, b
     if (meAsSourcePos)
         GetPosition(pos);
 
+    Position orginal = pos;
     //pos.z += 2.0f;   this caused npcs to stuck in textures over them?
 
     Position dest;
@@ -1987,6 +1988,9 @@ void WorldObject::GetValidPointInAngle(Position &pos, float dist, float angle, b
     Hellground::NormalizeMapCoord(pos.x);
     Hellground::NormalizeMapCoord(pos.y);
     UpdateAllowedPositionZ(pos.x, pos.y, pos.z);
+
+    if (!VMAP::VMapFactory::createOrGetVMapManager()->isInLineOfSight(GetMapId(), pos.x, pos.y, pos.z, orginal.x, orginal.y, orginal.z + 2.0f))
+        pos = orginal;
 }
 
 void WorldObject::UpdateGroundPositionZ(float x, float y, float &z) const
