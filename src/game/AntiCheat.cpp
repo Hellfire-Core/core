@@ -160,19 +160,19 @@ bool ACRequest::DetectSpeedHack(Player *pPlayer)
     if (!exact2dDist)
         return false;
 
-    uint32 count = 0;
-    if (timeDiff <= 300 && exact2dDist < speedRate * 0.7)
-    {
-        count = pPlayer->CumulativeACReport(ANTICHEAT_CHECK_SPEEDHACK);
-        if (count < 6)
-            return false;
-    }
-
     //client-side speed, traveled distance div by movement time.
     float clientSpeedRate = exact2dDist * 1000 / timeDiff;
 
     if (clientSpeedRate <= speedRate * sWorld.getConfig(CONFIG_ANTICHEAT_SPEEDHACK_TOLERANCE))
         return false;
+
+    uint32 count = 0;
+    if (timeDiff <= 300 && exact2dDist < speedRate * 0.7)
+    {
+        count = pPlayer->CumulativeACReport(ANTICHEAT_CHECK_SPEEDHACK);
+        if (count < 5)
+            return false;
+    }
 
     sWorld.SendGMText(LANG_ANTICHEAT_SPEEDHACK, pPlayer->GetName(), pPlayer->GetName(), count, speedRate, clientSpeedRate);
     sLog.outLog(LOG_CHEAT, "Player %s (GUID: %u / ACCOUNT_ID: %u) moved for distance %f with server speed "
