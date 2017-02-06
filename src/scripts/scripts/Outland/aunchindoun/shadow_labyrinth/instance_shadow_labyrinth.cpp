@@ -27,7 +27,7 @@ EndScriptData */
 #include "precompiled.h"
 #include "def_shadow_labyrinth.h"
 
-#define ENCOUNTERS 5
+#define ENCOUNTERS 4
 
 #define REFECTORY_DOOR          183296                      //door opened when blackheart the inciter dies
 #define SCREAMING_HALL_DOOR     183295                      //door opened when grandmaster vorpil dies
@@ -47,24 +47,15 @@ struct instance_shadow_labyrinth : public ScriptedInstance
 
     uint64 RefectoryDoorGUID;
     uint64 ScreamingHallDoorGUID;
-    std::list<uint64> RitualistGUIDList;
 
     uint64 GrandmasterVorpil;
-    uint32 RitualistCount;
-
-    bool check;
 
     void Initialize()
     {
         RefectoryDoorGUID = 0;
         ScreamingHallDoorGUID = 0;
 
-        RitualistGUIDList.clear();
-
         GrandmasterVorpil = 0;
-        RitualistCount = 0;
-
-        check = false;
 
         for(uint8 i = 0; i < ENCOUNTERS; i++)
             Encounter[i] = NOT_STARTED;
@@ -84,12 +75,12 @@ struct instance_shadow_labyrinth : public ScriptedInstance
         {
         case REFECTORY_DOOR:
             RefectoryDoorGUID = go->GetGUID();
-            if (Encounter[2] == DONE)
+            if (Encounter[1] == DONE)
                 go->SetGoState(GO_STATE_ACTIVE);
             break;
         case SCREAMING_HALL_DOOR:
             ScreamingHallDoorGUID = go->GetGUID();
-            if (Encounter[3] == DONE)
+            if (Encounter[2] == DONE)
                 go->SetGoState(GO_STATE_ACTIVE);
             break;
         }
@@ -101,15 +92,6 @@ struct instance_shadow_labyrinth : public ScriptedInstance
         {
             case 18732:
                 GrandmasterVorpil = creature->GetGUID();
-                break;
-            case 18794:
-            //case 20645:
-                if (creature->isAlive())
-                {
-                    RitualistGUIDList.push_back(creature->GetGUID());
-                    ++RitualistCount;
-                    SetData(TYPE_RITUALIST, NOT_STARTED);
-                }
                 break;
         }
     }
@@ -133,37 +115,27 @@ struct instance_shadow_labyrinth : public ScriptedInstance
             case TYPE_HELLMAW:
                 Encounter[0] = data;
                 break;
-
-            case TYPE_RITUALIST:
-                if (data == NOT_STARTED)
-                    Encounter[1] = NOT_STARTED;
-                if (data == DONE && RitualistCount)
-                    --RitualistCount;
-                if (RitualistCount == 0)
-                    Encounter[1] = DONE;
-                break;
-
             case DATA_BLACKHEARTTHEINCITEREVENT:
                 if (data == DONE)
                     HandleGameObject(RefectoryDoorGUID,0);
-                Encounter[2] = data;
+                Encounter[1] = data;
                 break;
 
             case DATA_GRANDMASTERVORPILEVENT:
                 if (data == DONE)
                     HandleGameObject(ScreamingHallDoorGUID,0);
-                Encounter[3] = data;
+                Encounter[2] = data;
                 break;
 
             case DATA_MURMUREVENT:
-                Encounter[4] = data;
+                Encounter[3] = data;
+                break;
+            case TYPE_RITUALIST: // handled in getdata
                 break;
         }
 
         if (data == DONE)
         {
-            if (type == TYPE_RITUALIST && RitualistCount != 0)
-                return;
 
             SaveToDB();
         }
@@ -174,9 +146,14 @@ struct instance_shadow_labyrinth : public ScriptedInstance
         switch (type)
         {
             case TYPE_HELLMAW:                  return Encounter[0];
-            case TYPE_RITUALIST:                return Encounter[1];
-            case DATA_GRANDMASTERVORPILEVENT:   return Encounter[3];
-            case DATA_MURMUREVENT:              return Encounter[4];
+            case TYPE_RITUALIST:
+            {
+                if (instance->GetCreatureById(18794, GET_ALIVE_CREATURE_GUID))
+                    return NOT_STARTED;
+                else return DONE;
+            }
+            case DATA_GRANDMASTERVORPILEVENT:   return Encounter[2];
+            case DATA_MURMUREVENT:              return Encounter[3];
         }
         return false;
     }
@@ -189,24 +166,6 @@ struct instance_shadow_labyrinth : public ScriptedInstance
         return 0;
     }
 
-    void Update(uint32 diff)
-    {
-        if (!check && !RitualistGUIDList.empty())
-        {
-            for (std::list<uint64>::iterator iter = RitualistGUIDList.begin(); iter != RitualistGUIDList.end(); ++iter)
-            {
-                Creature* ritualist = instance->GetCreature(*iter);
-                if (ritualist && ritualist->isDead())
-                    --RitualistCount;
-            }
-
-            if (!RitualistCount)
-                Encounter[1] = DONE;
-
-            check = true;
-        }
-    }
-
     std::string GetSaveData()
     {
         OUT_SAVE_INST_DATA;
@@ -215,8 +174,7 @@ struct instance_shadow_labyrinth : public ScriptedInstance
         stream << Encounter[0] << " ";
         stream << Encounter[1] << " ";
         stream << Encounter[2] << " ";
-        stream << Encounter[3] << " ";
-        stream << Encounter[4];
+        stream << Encounter[3];
 
         OUT_SAVE_INST_DATA_COMPLETE;
 
@@ -234,7 +192,7 @@ struct instance_shadow_labyrinth : public ScriptedInstance
         OUT_LOAD_INST_DATA(in);
 
         std::istringstream loadStream(in);
-        loadStream >> Encounter[0] >> Encounter[1] >> Encounter[2] >> Encounter[3] >> Encounter[4];
+        loadStream >> Encounter[0] >> Encounter[1] >> Encounter[2] >> Encounter[3];
 
         for(uint8 i = 0; i < ENCOUNTERS; ++i)
             if (Encounter[i] == IN_PROGRESS)

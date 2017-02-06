@@ -3077,6 +3077,10 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 30846: // proximity bomb make it trap
                     spellInfo->Effect[0] = SPELL_EFFECT_SUMMON_OBJECT_SLOT1;
                     break;
+                case 31689: // underbog mushroom effect proper targeting
+                    spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_CASTER;
+                    spellInfo->EffectImplicitTargetB[0] = 0;
+                    break;
                     //PRE NERF ZONE
                 case 44032: // manticron cube exhaustion 180sec
                     spellInfo->DurationIndex = 25;

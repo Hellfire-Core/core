@@ -66,6 +66,7 @@ struct boss_murmurAI : public Scripted_NoMovementAI
             me->SetHealth(hp);
 
         me->ResetPlayerDamageReq();
+        ClearCastQueue();
     }
 
     void EnterCombat(Unit *who) { }

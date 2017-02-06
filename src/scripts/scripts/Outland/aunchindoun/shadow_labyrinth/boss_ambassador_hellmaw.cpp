@@ -72,7 +72,7 @@ struct boss_ambassador_hellmawAI : public ScriptedAI
     void Reset()
     {
         EventCheck_Timer.Reset(5000);
-        Banish_Timer = 0;
+        Banish_Timer = 1;
         CorrosiveAcid_Timer.Reset(25000);
         Fear_Timer.Reset(40000);
         Enrage_Timer.Reset(180000);
@@ -149,8 +149,8 @@ struct boss_ambassador_hellmawAI : public ScriptedAI
             {
                 if(pInstance->GetData(TYPE_RITUALIST) == DONE)
                 {
-                        OnPath_Delay = 0;
-                        DoIntro();
+                    OnPath_Delay = 0;
+                    DoIntro();
                 }
                 EventCheck_Timer = 5000;
             }
