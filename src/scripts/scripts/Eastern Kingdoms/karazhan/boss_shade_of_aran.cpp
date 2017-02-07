@@ -298,7 +298,7 @@ struct boss_aranAI : public Scripted_NoMovementAI
         if(Drinking == DRINKING_NO_DRINKING)
         {
             //Normal casts
-            if (NormalCastTimer <= diff)
+            if (NormalCastTimer <= diff && spellList.empty()) // do not spam queue with normal spells
             {
                 if (!m_creature->IsNonMeleeSpellCast(false))
                 {
@@ -318,7 +318,7 @@ struct boss_aranAI : public Scripted_NoMovementAI
                     if (AvailableSpells)
                         AddSpellToCast(Spells[rand() % AvailableSpells], CAST_RANDOM, false, true);
                 }
-                NormalCastTimer = 1000;
+                NormalCastTimer = 3000;
             }
             else
                 NormalCastTimer -= diff;

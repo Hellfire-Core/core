@@ -13290,6 +13290,7 @@ void Unit::SetInFront(Unit const* target)
 
 void Unit::SetFacingTo(float ori)
 {
+    SendCombatStats(1 << COMBAT_STATS_TEST, "set orientation %f", NULL);
     Movement::MoveSplineInit init(*this);
     init.SetFacing(ori);
     init.Launch();

@@ -341,8 +341,8 @@ struct boss_netherspiteAI : public ScriptedAI
 
             if (NetherbreathTimer.Expired(diff))
             {
-                if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0,GetSpellMaxRange(SPELL_NETHERBREATH),true))
-                    AddSpellToCast(target,SPELL_NETHERBREATH);
+                if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_NETHERBREATH), true))
+                    AddSpellToCast(target, SPELL_NETHERBREATH, false, true);
 
                 NetherbreathTimer = 5000+rand()%2000;
             }

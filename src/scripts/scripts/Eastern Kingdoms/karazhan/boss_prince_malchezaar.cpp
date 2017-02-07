@@ -212,6 +212,7 @@ struct boss_malchezaarAI : public ScriptedAI
         EnfeebleResetTimer = 0;
         ShadowNovaTimer = 0;
         SWPainTimer.Reset(20000);
+        SunderArmorTimer = 0;
         AmplifyDamageTimer.Reset(5000);
         Cleave_Timer.Reset(8000);
         InfernalTimer.Reset(45000);
@@ -486,6 +487,8 @@ struct boss_malchezaarAI : public ScriptedAI
                 m_creature->SetFloatValue(UNIT_FIELD_MAXOFFHANDDAMAGE, cinfo->maxdmg);
 
                 m_creature->SetAttackTime(OFF_ATTACK, (m_creature->GetAttackTime(BASE_ATTACK)*150)/100);
+
+                SunderArmorTimer.Reset(15000);
             }
         }
         else if (phase == 2)

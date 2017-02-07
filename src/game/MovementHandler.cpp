@@ -292,19 +292,24 @@ bool WorldSession::HandleMoverRelocation(MovementInfo& movementInfo)
                 movementInfo.pos.x = mover->m_movementInfo.pos.x;
                 movementInfo.pos.y = mover->m_movementInfo.pos.y;
                 movementInfo.pos.z = mover->m_movementInfo.pos.z;
+                mover->SendCombatStats(1 << COMBAT_STATS_TEST, "badmoving", NULL);
                 movingGood = false;
             }
         }
 
-        if (sWorld.getConfig(CONFIG_ENABLE_PASSIVE_ANTICHEAT) && !plMover->hasUnitState(UNIT_STAT_LOST_CONTROL | UNIT_STAT_NOT_MOVE) && !plMover->GetSession()->HasPermissions(PERM_GMT_DEV) && plMover->m_AC_timer == 0)
+        if (sWorld.getConfig(CONFIG_ENABLE_PASSIVE_ANTICHEAT) && !plMover->hasUnitState(UNIT_STAT_LOST_CONTROL | UNIT_STAT_NOT_MOVE) && !plMover->GetSession()->HasPermissions(PERM_GMT_DEV))
         {
-            sWorld.m_ac.execute(new ACRequest(plMover, plMover->m_movementInfo, movementInfo));
-            if (!plMover->isForcedAC()) // check every packet
+            if (plMover->m_AC_timer == 0 || abs(plMover->m_movementInfo.pos.x - movementInfo.pos.x) > 15 || abs(plMover->m_movementInfo.pos.y - movementInfo.pos.y) > 15)
             {
-                if (urand(0, 10))
-                    plMover->m_AC_timer = 1000;
-                else
-                    plMover->m_AC_timer = 100;
+
+                sWorld.m_ac.execute(new ACRequest(plMover, plMover->m_movementInfo, movementInfo));
+                if (!plMover->isForcedAC()) // check every packet
+                {
+                    if (urand(0, 10))
+                        plMover->m_AC_timer = 1000;
+                    else
+                        plMover->m_AC_timer = 100;
+                }
             }
         }
 
