@@ -1853,36 +1853,42 @@ void Map::ScriptsProcess()
 
             case SCRIPT_COMMAND_CAST_SPELL:
             {
-                if (!source)
+                Object* cmdTarget = NULL;
+                Object* cmdSource = NULL;
+                switch (step.script->datalong2)
+                {
+                case 0:
+                    cmdTarget = target; cmdSource = source; break;
+                case 1:
+                    cmdTarget = source; cmdSource = source; break;
+                case 2:
+                    cmdTarget = target; cmdSource = target; break;
+                case 3:
+                    cmdTarget = source; cmdSource = target; break;
+                }
+
+                if (!cmdSource)
                 {
                     sLog.outDebug("SCRIPT_COMMAND_CAST_SPELL must have source caster.");
                     break;
                 }
-
-                if (!source->isType(TYPEMASK_UNIT))
+                if (!cmdSource->isType(TYPEMASK_UNIT))
                 {
                     sLog.outDebug("SCRIPT_COMMAND_CAST_SPELL source caster isn't unit (TypeId: %u), skipping.",source->GetTypeId());
                     break;
                 }
-
-                Object* cmdTarget = step.script->datalong2 ? source : target;
-
                 if (!cmdTarget)
                 {
                     sLog.outDebug("SCRIPT_COMMAND_CAST_SPELL call for NULL %s.",step.script->datalong2 ? "source" : "target");
                     break;
                 }
-
                 if (!cmdTarget->isType(TYPEMASK_UNIT))
                 {
                     sLog.outDebug("SCRIPT_COMMAND_CAST_SPELL %s isn't unit (TypeId: %u), skipping.",step.script->datalong2 ? "source" : "target",cmdTarget->GetTypeId());
                     break;
                 }
 
-                Unit* spellTarget = (Unit*)cmdTarget;
-
-                //TODO: when GO cast implemented, code below must be updated accordingly to also allow GO spell cast
-                ((Unit*)source)->CastSpell(spellTarget,step.script->datalong,false);
+                ((Unit*)cmdSource)->CastSpell(((Unit*)cmdTarget), step.script->datalong, step.script->dataint ? true : false);
 
                 break;
             }

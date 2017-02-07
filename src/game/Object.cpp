@@ -1951,19 +1951,17 @@ void WorldObject::GetValidPointInAngle(Position &pos, float dist, float angle, b
     if (meAsSourcePos)
         GetPosition(pos);
 
-    Position orginal = pos;
-    //pos.z += 2.0f;   this caused npcs to stuck in textures over them?
-
     Position dest;
-    dest.x = pos.x + dist * cos(angle);
-    dest.y = pos.y + dist * sin(angle);
+    dest.x = pos.x + (dist+2) * cos(angle);
+    dest.y = pos.y + (dist+2) * sin(angle);
+    // try 2yds more, then backout 2yds for collision prevention
 
     TerrainInfo const* _map = GetTerrain();
     float ground = _map->GetHeight(dest.x, dest.y, MAX_HEIGHT, true);
     float floor = _map->GetHeight(dest.x, dest.y, pos.z, true);
     dest.z = fabs(ground - pos.z) <= fabs(floor - pos.z) ? ground : floor;
 
-    VMAP::VMapFactory::createOrGetVMapManager()->getObjectHitPos(GetMapId(), pos.x, pos.y, pos.z + 2.0f, dest.x, dest.y, dest.z +2.0f, dest.x, dest.y, dest.z, -0.5f);
+    VMAP::VMapFactory::createOrGetVMapManager()->getObjectHitPos(GetMapId(), pos.x, pos.y, pos.z + 2.0f, dest.x, dest.y, dest.z + 2.0f, dest.x, dest.y, dest.z, -2.5f);
     dist = sqrt((pos.x - dest.x)*(pos.x - dest.x) + (pos.y - dest.y)*(pos.y - dest.y));
 
     float step = dist / 10.0f;
@@ -1988,9 +1986,6 @@ void WorldObject::GetValidPointInAngle(Position &pos, float dist, float angle, b
     Hellground::NormalizeMapCoord(pos.x);
     Hellground::NormalizeMapCoord(pos.y);
     UpdateAllowedPositionZ(pos.x, pos.y, pos.z);
-
-    if (!VMAP::VMapFactory::createOrGetVMapManager()->isInLineOfSight(GetMapId(), pos.x, pos.y, pos.z, orginal.x, orginal.y, orginal.z + 2.0f))
-        pos = orginal;
 }
 
 void WorldObject::UpdateGroundPositionZ(float x, float y, float &z) const
