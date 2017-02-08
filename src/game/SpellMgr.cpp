@@ -3098,6 +3098,9 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 30510:
                     spellInfo->CastingTimeIndex = 4;
                     break;
+                case 37566:
+                    spellInfo->CastingTimeIndex = 1;
+                    break;
                 }
                 if (spellInfo->SpellIconID == 184 && spellInfo->Attributes == 4259840)
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;

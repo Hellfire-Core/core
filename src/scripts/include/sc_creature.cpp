@@ -122,6 +122,7 @@ ScriptedAI::ScriptedAI(Creature* pCreature) :
 CreatureAI(pCreature), m_creature(pCreature), IsFleeing(false), m_bCombatMovement(true), m_uiEvadeCheckCooldown(2500),
 autocast(false), m_specialThingTimer(1000)
 {
+    reportedBigList = false;
     HeroicMode = m_creature->GetMap()->IsHeroic();
 }
 
@@ -341,6 +342,11 @@ void ScriptedAI::CastNextSpellIfAnyAndReady(uint32 diff)
 
     if (!spellList.empty() && !cast)
     {
+        if (spellList.size() > 10 and !reportedBigList)
+        {
+            reportedBigList = true;
+            sLog.outLog(LOG_DB_ERR, "creature %u has too many spells to cast!", m_creature->GetEntry());
+        }
         SpellToCast temp(spellList.front());
         spellList.pop_front();
 

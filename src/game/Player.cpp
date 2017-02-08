@@ -1785,7 +1785,7 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
             // send transfer packet to display load screen
             WorldPacket data;
             BuildTeleportAckMsg(data, x, y, z, orientation);
-            BroadcastPacket(&data, true);
+            SendPacketToSelf(&data);
             SetPosition(x, y, z, orientation, true);
         }
         else
@@ -1848,6 +1848,14 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
         {
             setFollowTarget(0);
             GetMotionMaster()->Clear(true);
+        }
+
+        { // inform everyone around (MSG_MOVE_TELEPORT may be better?)
+            m_movementInfo.UpdateTime(WorldTimer::getMSTime());
+            WorldPacket data(MSG_MOVE_HEARTBEAT, 64);
+            data << GetPackGUID();
+            data << m_movementInfo;
+            BroadcastPacket(&data, false);
         }
     }
     else

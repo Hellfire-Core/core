@@ -43,7 +43,7 @@ void WaypointMgr::Load()
     result = GameDataDatabase.PQuery("SELECT `id`,`point`,`position_x`,`position_y`,`position_z`,`move_type`,`delay`,`action`,`action_chance` FROM `waypoint_data` ORDER BY `id`, `point`");
     if (!result)
     {
-        sLog.outLog(LOG_DB_ERR, "The table `creature_addon` is empty or corrupted");
+        sLog.outLog(LOG_DB_ERR, "The table `waypoint_data` is empty or corrupted");
         return;
     }
 

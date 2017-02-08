@@ -401,7 +401,7 @@ struct ScriptedAI : public CreatureAI
     //Returns spells that meet the specified criteria from the creatures spell list
     SpellEntry const* SelectSpell(Unit* Target, int32 School, int32 Mechanic, SelectTargetType Targets,  uint32 PowerCostMin, uint32 PowerCostMax, float RangeMin, float RangeMax, SelectEffect Effect);
     float GetSpellMaxRange(uint32 id);
-
+    bool reportedBigList;
     bool m_bCombatMovement;
     bool HeroicMode;
     uint32 m_uiEvadeCheckCooldown;
