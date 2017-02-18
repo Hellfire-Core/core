@@ -299,7 +299,8 @@ bool WorldSession::HandleMoverRelocation(MovementInfo& movementInfo)
 
         if (sWorld.getConfig(CONFIG_ENABLE_PASSIVE_ANTICHEAT) && !plMover->hasUnitState(UNIT_STAT_LOST_CONTROL | UNIT_STAT_NOT_MOVE) && !plMover->GetSession()->HasPermissions(PERM_GMT_DEV))
         {
-            if (plMover->m_AC_timer == 0 || abs(plMover->m_movementInfo.pos.x - movementInfo.pos.x) > 15 || abs(plMover->m_movementInfo.pos.y - movementInfo.pos.y) > 15)
+            if (plMover->m_AC_timer == 0 || // time up OR moved long distance and timer is NOT on long interval(caused by teleport)
+                (plMover->m_AC_timer < 2500 && (abs(plMover->m_movementInfo.pos.x - movementInfo.pos.x) > 15 || abs(plMover->m_movementInfo.pos.y - movementInfo.pos.y) > 15)))
             {
 
                 sWorld.m_ac.execute(new ACRequest(plMover, plMover->m_movementInfo, movementInfo));

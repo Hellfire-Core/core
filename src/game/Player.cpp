@@ -550,6 +550,7 @@ void Player::CleanupsBeforeDelete()
     ClearLFM();
 
     Unit::CleanupsBeforeDelete();
+    DestroyForNearbyPlayers();
 }
 
 bool Player::Create(uint32 guidlow, const std::string& name, uint8 race, uint8 class_, uint8 gender, uint8 skin, uint8 face, uint8 hairStyle, uint8 hairColor, uint8 facialHair, uint8 outfitId)
@@ -19700,7 +19701,7 @@ void Player::SummonIfPossible(bool agree, uint64 summonerGUID)
 
     // stop taxi flight at summon
     InterruptTaxiFlying();
-    Unmount();
+    RemoveSpellsCausingAura(SPELL_AURA_MOUNTED);
 
     // drop flag at summon
     if (BattleGround *bg = GetBattleGround())
