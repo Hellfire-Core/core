@@ -17682,7 +17682,7 @@ bool Player::IsAffectedBySpellmod(SpellEntry const *spellInfo, SpellModifier *mo
             return false;
     }
     if (mod->op == SPELLMOD_COST)
-        SendCombatStats(1 << COMBAT_STATS_TEST, "iabsm %u %u %u %x %u", NULL, spellInfo->Id, mod->spellId, mod->effectId, mod->mask, sSpellMgr.IsAffectedBySpell(spellInfo, mod->spellId, mod->effectId, mod->mask));
+        SendCombatStats(1 << COMBAT_STATS_TEST, "iabsm %u %u %u %lx %lx %u", NULL, spellInfo->Id, mod->spellId, mod->effectId, mod->mask, spellInfo->SpellFamilyFlags, sSpellMgr.IsAffectedBySpell(spellInfo, mod->spellId, mod->effectId, mod->mask));
     return sSpellMgr.IsAffectedBySpell(spellInfo,mod->spellId,mod->effectId,mod->mask);
 }
 

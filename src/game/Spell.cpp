@@ -4663,12 +4663,12 @@ SpellCastResult Spell::CheckCast(bool strict)
                             aur->IsPositive() == target->IsFriendlyTo(m_caster))
                             continue;
 
-                        if (Player* modOwner = aur->GetCaster()->GetSpellModOwner())
+                        if (aur->GetCaster() && aur->GetCaster()->GetSpellModOwner())
                         {
-                            if (modOwner->GetTotalFlatMods(GetSpellEntry()->Id, SPELLMOD_RESIST_DISPEL_CHANCE) >= 100)
+                            if (aur->GetCaster()->GetSpellModOwner()->GetTotalFlatMods(GetSpellEntry()->Id, SPELLMOD_RESIST_DISPEL_CHANCE) >= 100)
                                 continue; // not dispelable
                         }
-
+                        m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "dispelable buff %u",target,aur->GetId());
                         anydispelable = true;
                         break;
                     }

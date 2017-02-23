@@ -292,7 +292,6 @@ bool WorldSession::HandleMoverRelocation(MovementInfo& movementInfo)
                 movementInfo.pos.x = mover->m_movementInfo.pos.x;
                 movementInfo.pos.y = mover->m_movementInfo.pos.y;
                 movementInfo.pos.z = mover->m_movementInfo.pos.z;
-                mover->SendCombatStats(1 << COMBAT_STATS_TEST, "badmoving", NULL);
                 movingGood = false;
             }
         }

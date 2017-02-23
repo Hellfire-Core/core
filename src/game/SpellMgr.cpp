@@ -3200,6 +3200,8 @@ void SpellMgr::LoadSpellCustomAttr()
                 {
                     spellInfo->SpellFamilyFlags = 0;
                 }
+                else if (spellInfo->Id == 10909 || spellInfo->Id == 2096) // mind vision no haste
+                    spellInfo->Attributes |= SPELL_ATTR_TRADESPELL;
                 break;
             }
             case SPELLFAMILY_MAGE:
