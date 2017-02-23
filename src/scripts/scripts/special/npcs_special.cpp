@@ -1667,9 +1667,9 @@ struct npc_fire_elemental_guardianAI : public ScriptedAI
              me->ForcedDespawn();
              return;
           }
-          if (!me->IsWithinDistInMap(pTotem, 30.0f) || (!victim || !attacker))
+          if (!me->IsWithinDistInMap(pTotem, 50.0f) || (!victim || !attacker))
           {
-             if (!me->getVictim()|| !me->IsWithinDistInMap(pTotem, 30.0f))
+             if (!me->getVictim()|| !me->IsWithinDistInMap(pTotem, 50.0f))
                 if (!me->hasUnitState(UNIT_STAT_FOLLOW))
                 {
                    victim = NULL;
@@ -1771,9 +1771,9 @@ struct npc_earth_elemental_guardianAI : public ScriptedAI
              return;
           }
 
-          if (!me->IsWithinDistInMap(pTotem, 30.0f) || (!victim || !attacker))
+          if (!me->IsWithinDistInMap(pTotem, 50.0f) || (!victim || !attacker))
           {
-             if (!me->getVictim() || !me->IsWithinDistInMap(pTotem, 30.0f))
+             if (!me->getVictim() || !me->IsWithinDistInMap(pTotem, 50.0f))
                 if (!me->hasUnitState(UNIT_STAT_FOLLOW))
                 {
                    victim = NULL;

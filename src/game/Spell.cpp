@@ -2123,6 +2123,8 @@ void Spell::SetTargetMap(uint32 i, uint32 cur)
         float radius = SpellMgr::GetSpellRadius(GetSpellEntry(), i, false);
         if (modOwner)
             modOwner->ApplySpellMod(GetSpellEntry()->Id, SPELLMOD_RADIUS, radius, this);
+        if (m_caster->GetTypeId() == TYPEID_PLAYER && m_caster->HasUnitMovementFlag(MOVEFLAG_MOVING))
+            radius += MELEE_RANGE * 2;
 
         if (radius > MAX_VISIBILITY_DISTANCE)
             radius = MAX_VISIBILITY_DISTANCE;
@@ -4661,6 +4663,12 @@ SpellCastResult Spell::CheckCast(bool strict)
                             aur->IsPositive() == target->IsFriendlyTo(m_caster))
                             continue;
 
+                        if (Player* modOwner = aur->GetCaster()->GetSpellModOwner())
+                        {
+                            if (modOwner->GetTotalFlatMods(GetSpellEntry()->Id, SPELLMOD_RESIST_DISPEL_CHANCE) >= 100)
+                                continue; // not dispelable
+                        }
+
                         anydispelable = true;
                         break;
                     }
@@ -4915,7 +4923,8 @@ SpellCastResult Spell::CheckCasterAuras() const
     //Check whether the cast should be prevented by any state you might have.
     SpellCastResult prevented_reason = SPELL_CAST_OK;
     // Have to check if there is a stun aura. Otherwise will have problems with ghost aura apply while logging out
-    if (!(GetSpellEntry()->AttributesEx5 & SPELL_ATTR_EX5_USABLE_WHILE_STUNNED) && m_caster->HasAuraType(SPELL_AURA_MOD_STUN))
+    if ((!(GetSpellEntry()->AttributesEx5 & SPELL_ATTR_EX5_USABLE_WHILE_STUNNED) && m_caster->HasAuraType(SPELL_AURA_MOD_STUN)) ||
+        m_caster->HasAura(33786)) // CYCLONE IS UBER STUN
         prevented_reason = SPELL_FAILED_STUNNED;
     else if (m_caster->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_CONFUSED) && !(GetSpellEntry()->AttributesEx5 & SPELL_ATTR_EX5_USABLE_WHILE_CONFUSED))
         prevented_reason = SPELL_FAILED_CONFUSED;

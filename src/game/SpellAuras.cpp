@@ -4753,6 +4753,14 @@ void Aura::HandleAuraProcTriggerSpell(bool apply, bool Real)
                         caster->RemoveAurasDueToSpell(33356);
                 }
                 break;
+            case 24398: // water shield cast on expire
+            case 33736:
+            {
+                if (m_removeMode == AURA_REMOVE_BY_EXPIRE)
+                {
+                    for (uint8 i = 0; i < GetStackAmount(); i++) TriggerSpell();
+                }
+            }
             default: break;
         }
     }

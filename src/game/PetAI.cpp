@@ -91,6 +91,8 @@ bool PetAI::targetHasInterruptableAura(Unit *target) const
 
 void PetAI::ownerOrMeAttackedBy(uint64 enemy)
 {
+    if (enemy == m_creature->GetGUID() || enemy == m_creature->GetCharmerOrOwnerGUID())
+        return;
     if (me->HasReactState(REACT_DEFENSIVE))
         m_EnemySet.insert(enemy);
 }

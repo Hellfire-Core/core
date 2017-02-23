@@ -441,7 +441,6 @@ void Unit::Update(uint32 update_diff, uint32 /*p_time*/)
             // m_CombatTimer set at aura start and it will be freeze until aura removing
             if (m_CombatTimer <= update_diff)
             {
-                SendCombatStats(1 << COMBAT_STATS_TEST, "ClearInCombat hostilerefmgr empty", NULL);
                 ClearInCombat();
             }
             else
@@ -7869,7 +7868,6 @@ void Unit::CombatStop(bool cast)
     if (GetObjectGuid().IsPlayer())
         ToPlayer()->SendAttackSwingCancelAttack();     // melee and ranged forced attack cancel
 
-    SendCombatStats(1 << COMBAT_STATS_TEST, "CombatStop", NULL);
     ClearInCombat();
 }
 
@@ -9420,7 +9418,6 @@ void Unit::Unmount()
 
 void Unit::SetInCombatWith(Unit* enemy)
 {
-    SendCombatStats(1 << COMBAT_STATS_TEST, "SetInCombatWith %u", enemy, GetUInt32Value(UNIT_FIELD_FLAGS));
     Unit* eOwner = enemy->GetCharmerOrOwnerOrSelf();
     AddThreat(enemy, 0.0f);
     if (eOwner->IsPvP())
@@ -9939,7 +9936,7 @@ void Unit::UpdateSpeed(UnitMoveType mtype, bool forced)
     float non_stack_bonus = 1.0f;
 
     if (GetTypeId() == TYPEID_PLAYER)
-        ((Player *)this)->m_AC_timer = 2000;
+        ((Player *)this)->m_AC_timer = 3000;
 
     switch (mtype)
     {
@@ -13290,7 +13287,6 @@ void Unit::SetInFront(Unit const* target)
 
 void Unit::SetFacingTo(float ori)
 {
-    SendCombatStats(1 << COMBAT_STATS_TEST, "set orientation %f", NULL);
     Movement::MoveSplineInit init(*this);
     init.SetFacing(ori);
     init.Launch();
