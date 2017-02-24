@@ -1679,6 +1679,10 @@ struct npc_fire_elemental_guardianAI : public ScriptedAI
                    return;
                 }
           }
+
+          if (!UpdateVictim())
+              return;
+
           if (me->getVictim() && me->getVictim()->GetCharmerOrOwnerPlayerOrPlayerItself() &&
               (pTotem->isInSanctuary() || me->isInSanctuary() || me->getVictim()->isInSanctuary()))
           {
@@ -1783,6 +1787,9 @@ struct npc_earth_elemental_guardianAI : public ScriptedAI
                    return;
                 }
           }
+
+          if (!UpdateVictim())
+              return;
 
           if (me->getVictim() && me->getVictim()->GetCharmerOrOwnerPlayerOrPlayerItself() &&
               (pTotem->isInSanctuary() || me->isInSanctuary() || me->getVictim()->isInSanctuary()))

@@ -397,7 +397,16 @@ uint32 SpellMgr::CalculatePowerCost(SpellEntry const * spellInfo, Unit const * c
         powerCost += caster->GetAttackTime(OFF_ATTACK)/100;
     // Apply cost mod by spell
     if (Player* modOwner = caster->GetSpellModOwner())
-        modOwner->ApplySpellMod(spellInfo->Id, SPELLMOD_COST, powerCost, spell);
+    {
+        // surge of light special case (hacky, but this is only spell with percentage bonus to mana cost)
+        if (modOwner->HasAura(33151) && sSpellMgr.IsAffectedBySpell(spellInfo, 33151, 0, 0)) 
+        {
+            powerCost = 0;
+            modOwner->RemoveAura(33151, 0);// remove only cost bonus, others will be removed on apply spell mod
+        }
+        else
+            modOwner->ApplySpellMod(spellInfo->Id, SPELLMOD_COST, powerCost, spell);
+    }
 
     if (spellInfo->Attributes & SPELL_ATTR_LEVEL_DAMAGE_CALCULATION)
         powerCost = int32(powerCost/ (1.117f* spellInfo->spellLevel / caster->getLevel() -0.1327f));
@@ -3180,10 +3189,6 @@ void SpellMgr::LoadSpellCustomAttr()
                 // Power Word: Fortitude/Prayer of Fortitude
                 else if (spellInfo->SpellFamilyFlags & 0x08 && spellInfo->SpellVisual == 278)
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SCROLL_STACK;
-                // surge of light
-                // need to stay this way spell extra crit calculations ignore pct mods in spell::prepare
-                else if (spellInfo->Id == 33151)
-                    spellInfo->EffectApplyAuraName[2] = SPELLMOD_FLAT;
                 // mass dispel simplification - combine 3 spells limiting triggering
                 else if (spellInfo->Id == 32375)
                 {

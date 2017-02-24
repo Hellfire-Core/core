@@ -777,7 +777,7 @@ namespace Hellground
                         break;
                     case SPELL_TARGETS_ENEMY:
                     {
-                        if (itr->getSource()->GetTypeId()==TYPEID_UNIT && ((Creature*)itr->getSource())->isTotem())
+                        if (itr->getSource()->GetTypeId()==TYPEID_UNIT && (((Creature*)itr->getSource())->isTotem() || itr->getSource()->GetCreatureType() == CREATURE_TYPE_CRITTER))
                             continue;
                         if (!itr->getSource()->isTargetableForAttack())
                             continue;

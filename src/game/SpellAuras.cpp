@@ -4756,9 +4756,9 @@ void Aura::HandleAuraProcTriggerSpell(bool apply, bool Real)
             case 24398: // water shield cast on expire
             case 33736:
             {
-                if (m_removeMode == AURA_REMOVE_BY_EXPIRE)
+                if (m_removeMode == AURA_REMOVE_BY_EXPIRE && m_procCharges != -1)
                 {
-                    for (uint8 i = 0; i < GetStackAmount(); i++) TriggerSpell();
+                    for (uint8 i = 0; i < m_procCharges; i++) TriggerSpell();
                 }
             }
             default: break;
