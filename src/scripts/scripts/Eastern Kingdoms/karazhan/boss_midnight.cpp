@@ -41,7 +41,8 @@ EndScriptData */
 
 #define SPELL_SHADOWCLEAVE          29832
 #define SPELL_INTANGIBLE_PRESENCE   29833
-#define SPELL_BERSERKER_CHARGE      26561                   //Only when mounted
+#define SPELL_BERSERKER_CHARGE      29847                   //Only when mounted
+#define SPELL_KNOCKDOWN             29711
 
 #define MOUNTED_DISPLAYID           16040
 
@@ -60,6 +61,7 @@ struct boss_midnightAI : public ScriptedAI
     uint8 Phase;
     uint32 Mount_Timer;
     uint32 CheckTimer;
+    Timer knockdownTimer;
 
     ScriptedInstance *pInstance;
     WorldLocation wLoc;
@@ -70,6 +72,7 @@ struct boss_midnightAI : public ScriptedAI
         Attumen = 0;
         Mount_Timer = 0;
         CheckTimer = 3000;
+        knockdownTimer = 5000;
 
         m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
         m_creature->SetVisibility(VISIBILITY_ON);
@@ -166,6 +169,13 @@ struct boss_midnightAI : public ScriptedAI
             }
         }
 
+        if (Phase < 3 && knockdownTimer.Expired(diff))
+        {
+            DoCast(me->getVictim(), SPELL_KNOCKDOWN);
+            knockdownTimer = urand(15000, 20000);
+        }
+            
+
         DoMeleeAttackIfReady();
     }
 
@@ -192,6 +202,8 @@ struct boss_midnightAI : public ScriptedAI
         //pAttumen->Relocate(newX,newY,newZ,-angle);
         //pAttumen->SendMonsterMove(newX, newY, newZ, 0, true, 1000);
         Mount_Timer = 1000;
+        ((ScriptedAI*)(pAttumen->ToCreature()->AI()))->DoResetThreat();
+        
     }
 
     void SetMidnight(Creature *, uint64);                   //Below ..
@@ -218,6 +230,7 @@ struct boss_attumenAI : public ScriptedAI
 
     ScriptedInstance *pInstance;
 
+    Timer knockdownTimer;
     uint64 Midnight;
     uint8 Phase;
     uint32 CleaveTimer;
@@ -228,6 +241,7 @@ struct boss_attumenAI : public ScriptedAI
 
     void Reset()
     {
+        knockdownTimer = 5000;
         ResetTimer = 2000;
     }
 
@@ -309,6 +323,12 @@ struct boss_attumenAI : public ScriptedAI
             }
             else
                 ChargeTimer -= diff;
+
+            if (knockdownTimer.Expired(diff))
+            {
+                AddSpellToCast(SPELL_KNOCKDOWN);
+                knockdownTimer = urand(15000, 20000);
+            }
         }
         else
         {

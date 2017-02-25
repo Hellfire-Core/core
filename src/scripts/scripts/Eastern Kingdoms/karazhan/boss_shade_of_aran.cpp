@@ -129,6 +129,7 @@ struct boss_aranAI : public Scripted_NoMovementAI
     int32 NormalCastTimer;
     int32 SuperCastTimer;
     int32 BerserkTimer;
+    Timer DragonbreathTimer;
 
     uint8 LastSuperSpell;
 
@@ -160,6 +161,7 @@ struct boss_aranAI : public Scripted_NoMovementAI
         CheckTimer          = 3000;
         PyroblastTimer      = 0;
         DrinkingDelay       = 0;
+        DragonbreathTimer   = 15000;
 
 
         LastSuperSpell = rand()%3;
@@ -295,10 +297,16 @@ struct boss_aranAI : public Scripted_NoMovementAI
                 PyroblastTimer -= diff;
         }
 
+        if (DragonbreathTimer.Expired(diff))
+        {
+            AddSpellToCast(SPELL_DRAGONSBREATH, CAST_RANDOM);
+            DragonbreathTimer = urand(15000, 25000);
+        }
+
         if(Drinking == DRINKING_NO_DRINKING)
         {
             //Normal casts
-            if (NormalCastTimer <= diff && spellList.empty()) // do not spam queue with normal spells
+            if (NormalCastTimer <= diff)
             {
                 if (!m_creature->IsNonMeleeSpellCast(false))
                 {
@@ -314,11 +322,18 @@ struct boss_aranAI : public Scripted_NoMovementAI
                     if (!FrostCooldown)
                         Spells[AvailableSpells++] = SPELL_FROSTBOLT;
 
-                    //If no available spells wait 1 second and try again
+                    
                     if (AvailableSpells)
-                        AddSpellToCast(Spells[rand() % AvailableSpells], CAST_RANDOM, false, true);
+                    {
+                        uint32 casting = Spells[rand() % AvailableSpells];
+                        AddSpellToCast(casting, CAST_RANDOM, false, true);
+                        NormalCastTimer = (casting == SPELL_ARCMISSLE) ? 7000 : 3000; // arcane misile is 6 sec!
+                    }
+                    else
+                        NormalCastTimer = 1000; // wait one second for cooldowns
                 }
-                NormalCastTimer = 3000;
+                else
+                    NormalCastTimer = 3000;
             }
             else
                 NormalCastTimer -= diff;
@@ -583,9 +598,9 @@ struct circular_blizzardAI : public ScriptedAI
     void SetBlizzardWaypoints()
     {
         blizzardWaypoints[0][0] = -11154.3;    blizzardWaypoints[1][0] = -1903.3;
-        blizzardWaypoints[0][1] = -11163.6;    blizzardWaypoints[1][1] = -1898.7;
-        blizzardWaypoints[0][2] = -11173.6;    blizzardWaypoints[1][2] = -1901.2;
-        blizzardWaypoints[0][3] = -11178.1;    blizzardWaypoints[1][3] = -1910.4;
+        blizzardWaypoints[0][1] = -11164.9;    blizzardWaypoints[1][1] = -1896.5;
+        blizzardWaypoints[0][2] = -11179.2;    blizzardWaypoints[1][2] = -1894.1;
+        blizzardWaypoints[0][3] = -11181.1;    blizzardWaypoints[1][3] = -1907.6;
         blizzardWaypoints[0][4] = -11175.4;    blizzardWaypoints[1][4] = -1920.6;
         blizzardWaypoints[0][5] = -11166.6;    blizzardWaypoints[1][5] = -1925.1;
         blizzardWaypoints[0][6] = -11156.5;    blizzardWaypoints[1][6] = -1922.8;

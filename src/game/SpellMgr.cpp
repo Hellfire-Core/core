@@ -3090,6 +3090,10 @@ void SpellMgr::LoadSpellCustomAttr()
                     spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_CASTER;
                     spellInfo->EffectImplicitTargetB[0] = 0;
                     break;
+                case 37476: // chess horde king cleave in front
+                    spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_CONE_ENTRY;
+                    spellInfo->EffectImplicitTargetB[0] = 0;
+                    break;
                     //PRE NERF ZONE
                 case 44032: // manticron cube exhaustion 180sec
                     spellInfo->DurationIndex = 25;

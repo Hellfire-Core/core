@@ -509,7 +509,7 @@ struct boss_malchezaarAI : public ScriptedAI
                 Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0);
                 for (uint32 i = 0; i < 2; ++i)
                 {
-                    Creature *axe = m_creature->SummonCreature(MALCHEZARS_AXE, m_creature->GetPositionX(), m_creature->GetPositionY(), m_creature->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 1000);
+                    Creature *axe = m_creature->SummonCreature(MALCHEZARS_AXE, m_creature->GetPositionX(), m_creature->GetPositionY(), m_creature->GetPositionZ(), 0, TEMPSUMMON_DEAD_DESPAWN, 1000);
                     if (axe)
                     {
                         axe->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_DISPLAY, AXE_EQUIP_MODEL);

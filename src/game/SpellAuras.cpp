@@ -751,6 +751,20 @@ bool AreaAura::CheckTarget(Unit *target)
             return false;
         }
         break;
+        case 29521: // dance vibe
+        {
+            switch (target->GetEntry())
+            {
+            case 16406: // ballroom trash only
+            case 16407:
+            case 16408:
+            case 16409:   
+            case 16410:
+                return true;
+            }
+            return false;
+        }
+        break;
         default:
             break;
     }

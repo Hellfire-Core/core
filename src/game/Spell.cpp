@@ -4079,6 +4079,9 @@ SpellCastResult Spell::CheckCast(bool strict)
         {
             if (m_spellInfo->Id == 3411 && !target->isAlive())
                 return SPELL_FAILED_BAD_TARGETS;
+            if (m_spellInfo->Id == 37455 && target->getFaction() == 1691 ||
+                m_spellInfo->Id == 37456 && target->getFaction() == 1690)
+                return SPELL_FAILED_BAD_TARGETS; // explicit check for chess healing spells (pieces are not hostile to players, only to eachother)
         }
 
         //Must be behind the target.

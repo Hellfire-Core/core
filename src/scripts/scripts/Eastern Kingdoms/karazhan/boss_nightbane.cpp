@@ -70,6 +70,7 @@ struct boss_nightbaneAI : public ScriptedAI
         SPELL_RAIN_OF_BONES         = 37098,
         SPELL_RAIN_OF_BONES_EFFECT  = 37091,
         SPELL_SMOKING_BLAST         = 37057,
+        SPELL_IMMOLATION            = 37059,
         SPELL_FIREBALL_BARRAGE      = 30282,
         SPELL_SEARING_CINDERS       = 30127,
         SPELL_SUMMON_SKELETON       = 30170
@@ -271,6 +272,7 @@ struct boss_nightbaneAI : public ScriptedAI
         }
 
         summoned->AI()->AttackStart(m_creature->getVictim());
+        summoned->CastSpell(summoned, SPELL_IMMOLATION, true);
     }
     
     void JustRespawned()
