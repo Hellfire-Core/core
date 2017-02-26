@@ -3211,7 +3211,7 @@ void SpellMgr::LoadSpellCustomAttr()
                 }
                 else if (spellInfo->Id == 10909 || spellInfo->Id == 2096) // mind vision no haste
                     spellInfo->Attributes |= SPELL_ATTR_TRADESPELL;
-                else if (spellInfo->Id = 33619) // reflective shield effect
+                else if (spellInfo->Id == 33619) // reflective shield effect
                 {
                     spellInfo->AttributesEx3 |= SPELL_ATTR_EX3_NO_INITIAL_AGGRO;
                 }
