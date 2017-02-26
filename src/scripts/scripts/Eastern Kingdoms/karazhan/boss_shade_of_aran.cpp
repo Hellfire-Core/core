@@ -133,9 +133,6 @@ struct boss_aranAI : public Scripted_NoMovementAI
 
     uint8 LastSuperSpell;
 
-    int32 ArcaneCooldown;
-    int32 FireCooldown;
-    int32 FrostCooldown;
     int32 CheckTimer;
     int32 PyroblastTimer;
 
@@ -165,11 +162,6 @@ struct boss_aranAI : public Scripted_NoMovementAI
 
 
         LastSuperSpell = rand()%3;
-
-
-        ArcaneCooldown     = 0;
-        FireCooldown       = 0;
-        FrostCooldown      = 0;
 
         ElementalsSpawned       = false;
         Drinking                = DRINKING_NO_DRINKING;
@@ -233,33 +225,6 @@ struct boss_aranAI : public Scripted_NoMovementAI
 
             CheckTimer += 3000;
         }
-        
-
-        //whoever wrote that cooldowns shall be crucified. upside down. underwater. salt water.
-        //Cooldowns for casts
-        if (ArcaneCooldown)
-        {
-            if (ArcaneCooldown >= diff)
-                ArcaneCooldown -= diff;
-            else
-                ArcaneCooldown = 0;
-        }
-
-        if (FireCooldown)
-        {
-            if (FireCooldown >= diff)
-                FireCooldown -= diff;
-            else
-                FireCooldown = 0;
-        }
-
-        if (FrostCooldown)
-        {
-            if (FrostCooldown >= diff)
-                FrostCooldown -= diff;
-            else
-                FrostCooldown = 0;
-        }
 
         if (DrinkingDelay)
         {
@@ -310,30 +275,13 @@ struct boss_aranAI : public Scripted_NoMovementAI
             {
                 if (!m_creature->IsNonMeleeSpellCast(false))
                 {
-                    uint32 Spells[3];
-                    uint8 AvailableSpells = 0;
-                    //Check for what spells are not on cooldown
-                    if (!ArcaneCooldown)
-                        Spells[AvailableSpells++] = SPELL_ARCMISSLE;
-
-                    if (!FireCooldown)
-                        Spells[AvailableSpells++] = SPELL_FIREBALL;
-
-                    if (!FrostCooldown)
-                        Spells[AvailableSpells++] = SPELL_FROSTBOLT;
-
-                    
-                    if (AvailableSpells)
-                    {
-                        uint32 casting = Spells[rand() % AvailableSpells];
-                        AddSpellToCast(casting, CAST_RANDOM, false, true);
-                        NormalCastTimer = (casting == SPELL_ARCMISSLE) ? 7000 : 3000; // arcane misile is 6 sec!
-                    }
-                    else
-                        NormalCastTimer = 1000; // wait one second for cooldowns
+                    uint32 Spells[3] = { SPELL_ARCMISSLE, SPELL_FIREBALL,SPELL_FROSTBOLT };
+                    uint32 casting = Spells[urand(0,2)];
+                    AddSpellToCast(casting, CAST_RANDOM, false, true);
+                    NormalCastTimer = (casting == SPELL_ARCMISSLE) ? 7000 : 3000; // arcane misile is 6 sec!
                 }
                 else
-                    NormalCastTimer = 3000;
+                    NormalCastTimer = 1000;
             }
             else
                 NormalCastTimer -= diff;
@@ -479,25 +427,6 @@ struct boss_aranAI : public Scripted_NoMovementAI
             spellEntry->Effect[2] != SPELL_EFFECT_INTERRUPT_CAST) || !m_creature->IsNonMeleeSpellCast(false))
             return;
 
-        //Normally we would set the cooldown equal to the spell duration
-        //but we do not have access to the DurationStore
-        switch (me->GetCurrentSpellId())
-        {
-            case SPELL_ARCMISSLE:
-                ArcaneCooldown = 5000;
-                m_creature->InterruptNonMeleeSpells(false);
-                break;
-            case SPELL_FIREBALL:
-                FireCooldown = 5000;
-                m_creature->InterruptNonMeleeSpells(false);
-                break;
-            case SPELL_FROSTBOLT:
-                FrostCooldown = 5000;
-                m_creature->InterruptNonMeleeSpells(false);
-                break;
-            default:
-                break;
-        }
     }
 };
 
@@ -597,14 +526,14 @@ struct circular_blizzardAI : public ScriptedAI
 
     void SetBlizzardWaypoints()
     {
-        blizzardWaypoints[0][0] = -11154.3;    blizzardWaypoints[1][0] = -1903.3;
+        blizzardWaypoints[0][0] = -11151.7;    blizzardWaypoints[1][0] = -1901.5;
         blizzardWaypoints[0][1] = -11164.9;    blizzardWaypoints[1][1] = -1896.5;
-        blizzardWaypoints[0][2] = -11179.2;    blizzardWaypoints[1][2] = -1894.1;
+        blizzardWaypoints[0][2] = -11183.2;    blizzardWaypoints[1][2] = -1889.1;
         blizzardWaypoints[0][3] = -11181.1;    blizzardWaypoints[1][3] = -1907.6;
-        blizzardWaypoints[0][4] = -11175.4;    blizzardWaypoints[1][4] = -1920.6;
-        blizzardWaypoints[0][5] = -11166.6;    blizzardWaypoints[1][5] = -1925.1;
-        blizzardWaypoints[0][6] = -11156.5;    blizzardWaypoints[1][6] = -1922.8;
-        blizzardWaypoints[0][7] = -11151.8;    blizzardWaypoints[1][7] = -1913.5;
+        blizzardWaypoints[0][4] = -11178.2;    blizzardWaypoints[1][4] = -1922.7;
+        blizzardWaypoints[0][5] = -11166.8;    blizzardWaypoints[1][5] = -1927.7;
+        blizzardWaypoints[0][6] = -11153.1;    blizzardWaypoints[1][6] = -1926.8;
+        blizzardWaypoints[0][7] = -11148.3;    blizzardWaypoints[1][7] = -1913.5;
     }
 
     void JustDied(Unit* killer){}

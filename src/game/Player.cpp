@@ -1337,6 +1337,9 @@ void Player::Update(uint32 update_diff, uint32 p_time)
                     resetAttackTimer(OFF_ATTACK);
                 }
             }
+
+            if (!pVictim->isVisibleFor(this, this))
+                AttackStop();
         }
     }
 
@@ -17681,8 +17684,6 @@ bool Player::IsAffectedBySpellmod(SpellEntry const *spellInfo, SpellModifier *mo
         else if (mod->lastAffected != FindCurrentSpellBySpellId(spellInfo->Id))
             return false;
     }
-    if (mod->op == SPELLMOD_COST)
-        SendCombatStats(1 << COMBAT_STATS_TEST, "iabsm %u %u %u %lx %lx %u", NULL, spellInfo->Id, mod->spellId, mod->effectId, mod->mask, spellInfo->SpellFamilyFlags, sSpellMgr.IsAffectedBySpell(spellInfo, mod->spellId, mod->effectId, mod->mask));
     return sSpellMgr.IsAffectedBySpell(spellInfo,mod->spellId,mod->effectId,mod->mask);
 }
 

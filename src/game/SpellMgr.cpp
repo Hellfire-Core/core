@@ -323,9 +323,6 @@ void SpellMgr::ApplySpellThreatModifiers(SpellEntry const *spellInfo, float &thr
     else if (spellInfo->SpellFamilyName == SPELLFAMILY_PRIEST && spellInfo->SpellFamilyFlags & 0x8400000LL)    // Holy Nova
         threat = 1.0f;
 
-    else if (spellInfo->Id == 33619) // Reflective shield
-        threat = 1.0f;
-
     else if (spellInfo->Id == 31616) // Nature's Guardian - shaman talent
         threat *= 0.9f;
 
@@ -3094,6 +3091,9 @@ void SpellMgr::LoadSpellCustomAttr()
                     spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_CONE_ENTRY;
                     spellInfo->EffectImplicitTargetB[0] = 0;
                     break;
+                case 29683: // spotlight also on players?
+                    spellInfo->EffectImplicitTargetB[1] = 0;
+                    break;
                     //PRE NERF ZONE
                 case 44032: // manticron cube exhaustion 180sec
                     spellInfo->DurationIndex = 25;
@@ -3211,6 +3211,10 @@ void SpellMgr::LoadSpellCustomAttr()
                 }
                 else if (spellInfo->Id == 10909 || spellInfo->Id == 2096) // mind vision no haste
                     spellInfo->Attributes |= SPELL_ATTR_TRADESPELL;
+                else if (spellInfo->Id = 33619) // reflective shield effect
+                {
+                    spellInfo->AttributesEx3 |= SPELL_ATTR_EX3_NO_INITIAL_AGGRO;
+                }
                 break;
             }
             case SPELLFAMILY_MAGE:
@@ -3371,11 +3375,12 @@ void SpellMgr::LoadSpellCustomAttr()
             case 2094:                     // Blind
                 spellInfo->AttributesCu |= SPELL_ATTR_CU_FAKE_DELAY; // add const fake delay
                 break;
+            /* seems invalid as of tbc
             case 5171:
             case 6774:                     // Slice'n'Dice
                 spellInfo->AttributesEx |= SPELL_ATTR_EX_NOT_BREAK_STEALTH;
                 spellInfo->AttributesEx3 |= SPELL_ATTR_EX3_NO_INITIAL_AGGRO; // Do not put caster in combat after use
-                break;
+                break;*/
             /* SHAMAN CUSTOM ATTRIBUTES */
             case 2895:                      // Wrath of Air Totem - disallow weird stacking
                 spellInfo->EffectImplicitTargetA[0] = spellInfo->EffectImplicitTargetA[1] = TARGET_UNIT_CASTER;

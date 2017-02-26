@@ -927,7 +927,7 @@ uint32 Unit::DealDamage(DamageLog *damageInfo, DamageEffectType damagetype, cons
             pVictim->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_DAMAGE, spellProto ? spellProto->Id : 0);
             pVictim->RemoveSpellbyDamageTaken(damageInfo->damage, spellProto ? spellProto->Id : 0);
         }
-        else// if (spellProto->AttributesEx4 & SPELL_ATTR_EX4_DAMAGE_DOESNT_BREAK_AURAS) // if got here - 100% got this attribute
+        else if (damageInfo->damage) // break nothing if everything absorbed
             pVictim->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_DAMAGE, spellProto->Id, true);
         // Rage from any damage taken
         if (pVictim->GetTypeId() == TYPEID_PLAYER && (pVictim->getPowerType() == POWER_RAGE))

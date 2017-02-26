@@ -308,12 +308,6 @@ struct boss_malchezaarAI : public ScriptedAI
 
         m_creature->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_DISPLAY+1, 0);
         m_creature->SetUInt32Value(UNIT_VIRTUAL_ITEM_INFO+2, 0);
-
-        //damage
-        const CreatureInfo *cinfo = m_creature->GetCreatureInfo();
-        m_creature->SetBaseWeaponDamage(BASE_ATTACK, MINDAMAGE, cinfo->mindmg);
-        m_creature->SetBaseWeaponDamage(BASE_ATTACK, MAXDAMAGE, cinfo->maxdmg);
-        m_creature->UpdateDamagePhysical(BASE_ATTACK);
     }
 
     void EnfeebleHealthEffect()
@@ -473,18 +467,6 @@ struct boss_malchezaarAI : public ScriptedAI
 
                 m_creature->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_DISPLAY+1, AXE_EQUIP_MODEL);
                 m_creature->SetUInt32Value(UNIT_VIRTUAL_ITEM_INFO+2, AXE_EQUIP_INFO);
-
-                //damage
-                const CreatureInfo *cinfo = m_creature->GetCreatureInfo();
-                m_creature->SetBaseWeaponDamage(BASE_ATTACK, MINDAMAGE, 2*cinfo->mindmg);
-                m_creature->SetBaseWeaponDamage(BASE_ATTACK, MAXDAMAGE, 2*cinfo->maxdmg);
-                m_creature->UpdateDamagePhysical(BASE_ATTACK);
-
-                m_creature->SetBaseWeaponDamage(OFF_ATTACK, MINDAMAGE, cinfo->mindmg);
-                m_creature->SetBaseWeaponDamage(OFF_ATTACK, MAXDAMAGE, cinfo->maxdmg);
-                //Sigh, updating only works on main attack , do it manually ....
-                m_creature->SetFloatValue(UNIT_FIELD_MINOFFHANDDAMAGE, cinfo->mindmg);
-                m_creature->SetFloatValue(UNIT_FIELD_MAXOFFHANDDAMAGE, cinfo->maxdmg);
 
                 m_creature->SetAttackTime(OFF_ATTACK, (m_creature->GetAttackTime(BASE_ATTACK)*150)/100);
 

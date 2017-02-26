@@ -329,6 +329,9 @@ struct boss_netherspiteAI : public ScriptedAI
                 }
             }
 
+            // check target
+            if (BeamTarget[0] && BeamTarget[0] != me->getVictimGUID() && BeamTarget[0] != m_creature->GetGUID() && m_creature->GetUnit(BeamTarget[0]))
+                AttackStart(m_creature->GetUnit(BeamTarget[0]));
             DoMeleeAttackIfReady();
         }
         else // BANISH PHASE

@@ -430,6 +430,71 @@ CreatureAI* GetAI_mob_homunculus(Creature *_Creature)
     return new mob_homunculusAI(_Creature);
 }
 
+enum arcaneanomalyspells
+{
+    SPELL_AA_MANASHIELD = 29880,
+    SPELL_AA_LOOSEMANA  = 29882,
+    SPELL_AA_BLINK      = 29883,
+    SPELL_AA_VOLLEY     = 29885
+};
+
+struct mob_arcane_anomalyAI : public ScriptedAI
+{
+    mob_arcane_anomalyAI(Creature* c) : ScriptedAI(c) {}
+
+
+    Timer blinkTimer;
+    Timer volleyTimer;
+    bool shield;
+    void Reset()
+    {
+        blinkTimer = urand(6000, 8000);
+        volleyTimer = urand(8000, 10000);
+        shield = false;
+    }
+
+    void DamageTaken(Unit* enemy, uint32& Damage)
+    {
+        if (shield)
+            return;
+
+        m_creature->CastSpell(m_creature, SPELL_AA_MANASHIELD, true);
+        shield = true;
+        if (Damage >= m_creature->GetHealth())
+            Damage = m_creature->GetHealth() - 1;
+    }
+
+    void UpdateAI(const uint32 diff)
+    {
+        if (!UpdateVictim())
+            return;
+
+        if (blinkTimer.Expired(diff))
+        {
+            AddSpellToCast(SPELL_AA_BLINK, CAST_RANDOM);
+            blinkTimer = urand(10000, 12000);
+        }
+
+        if (volleyTimer.Expired(diff))
+        {
+            AddSpellToCast(SPELL_AA_VOLLEY);
+            volleyTimer = urand(10000, 15000);
+        }
+
+        CastNextSpellIfAnyAndReady();
+        DoMeleeAttackIfReady();
+    }
+
+    void JustDied(Unit* who)
+    {
+        m_creature->CastSpell(m_creature, SPELL_AA_LOOSEMANA, true);
+    }
+};
+
+CreatureAI* GetAI_mob_arcane_anomaly(Creature *_Creature)
+{
+    return new mob_arcane_anomalyAI(_Creature);
+}
 
 void AddSC_karazhan_trash()
 {
@@ -467,5 +532,10 @@ void AddSC_karazhan_trash()
     newscript = new Script;
     newscript->Name = "mob_homunculus";
     newscript->GetAI = &GetAI_mob_homunculus;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "mob_arcane_anomaly";
+    newscript->GetAI = &GetAI_mob_arcane_anomaly;
     newscript->RegisterSelf();
 }

@@ -2695,6 +2695,7 @@ void Spell::cast(bool skipCheck)
 
 void Spell::handle_immediate()
 {
+    m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "handle immediate for %u", NULL, GetSpellEntry()->Id);
     if (GetSpellEntry()->Id <= 0 || GetSpellEntry()->Id > MAX_SPELL_ID || GetSpellEntry()->Id == 32 || GetSpellEntry()->Id == 48 || GetSpellEntry()->Id == 576 || GetSpellEntry()->Id == 80 || GetSpellEntry()->Id == 160)
         return;
 
@@ -2770,6 +2771,7 @@ void Spell::handle_immediate()
 
 uint64 Spell::handle_delayed(uint64 t_offset)
 {
+    m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "handle delayed for %u", NULL, GetSpellEntry()->Id);
     UpdatePointers();
 
     uint64 next_time = 0;
@@ -2779,7 +2781,7 @@ uint64 Spell::handle_delayed(uint64 t_offset)
         _handle_immediate_phase();
         m_immediateHandled = true;
     }
-
+    
     bool single_missile = (m_targets.m_targetMask & TARGET_FLAG_DEST_LOCATION);
 
     // now recheck units targeting correctness (need before any effects apply to prevent adding immunity at first effect not allow apply second spell effect and similar cases)
