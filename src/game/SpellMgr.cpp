@@ -3375,12 +3375,12 @@ void SpellMgr::LoadSpellCustomAttr()
             case 2094:                     // Blind
                 spellInfo->AttributesCu |= SPELL_ATTR_CU_FAKE_DELAY; // add const fake delay
                 break;
-            /* seems invalid as of tbc
+            
             case 5171:
             case 6774:                     // Slice'n'Dice
-                spellInfo->AttributesEx |= SPELL_ATTR_EX_NOT_BREAK_STEALTH;
+                // spellInfo->AttributesEx |= SPELL_ATTR_EX_NOT_BREAK_STEALTH; wotlk feature
                 spellInfo->AttributesEx3 |= SPELL_ATTR_EX3_NO_INITIAL_AGGRO; // Do not put caster in combat after use
-                break;*/
+                break;
             /* SHAMAN CUSTOM ATTRIBUTES */
             case 2895:                      // Wrath of Air Totem - disallow weird stacking
                 spellInfo->EffectImplicitTargetA[0] = spellInfo->EffectImplicitTargetA[1] = TARGET_UNIT_CASTER;

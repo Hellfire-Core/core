@@ -921,14 +921,7 @@ uint32 Unit::DealDamage(DamageLog *damageInfo, DamageEffectType damagetype, cons
             ((Creature*)this)->AI()->DamageMade(pVictim, damageInfo->damage, damagetype == DIRECT_DAMAGE, damageInfo->schoolMask);
 
     if (damageInfo->damage || damageInfo->absorb)
-    {
-        if (!spellProto || !(spellProto->AttributesEx4 & SPELL_ATTR_EX4_DAMAGE_DOESNT_BREAK_AURAS))
-        {
-            pVictim->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_DAMAGE, spellProto ? spellProto->Id : 0);
-            pVictim->RemoveSpellbyDamageTaken(damageInfo->damage, spellProto ? spellProto->Id : 0);
-        }
-        else if (damageInfo->damage) // break nothing if everything absorbed
-            pVictim->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_DAMAGE, spellProto->Id, true);
+    { 
         // Rage from any damage taken
         if (pVictim->GetTypeId() == TYPEID_PLAYER && (pVictim->getPowerType() == POWER_RAGE))
             ((Player*)pVictim)->RewardRage(damageInfo->rageDamage, 0, false);
@@ -941,6 +934,15 @@ uint32 Unit::DealDamage(DamageLog *damageInfo, DamageEffectType damagetype, cons
 
     if (damageInfo->damage)
     {
+        // dont remove auras if everything was absorbed
+        if (!spellProto || !(spellProto->AttributesEx4 & SPELL_ATTR_EX4_DAMAGE_DOESNT_BREAK_AURAS))
+        {
+            pVictim->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_DAMAGE, spellProto ? spellProto->Id : 0);
+            pVictim->RemoveSpellbyDamageTaken(damageInfo->damage, spellProto ? spellProto->Id : 0);
+        }
+        else
+            pVictim->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_DAMAGE, spellProto->Id, true);
+
         if (pVictim->GetTypeId() != TYPEID_PLAYER)
         {
             // no xp,health if type 8 /critters/
@@ -6194,6 +6196,9 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
                     if (this == pVictim)
                         return false;
 
+                    if (!procSpell || procSpell->Mechanic == MECHANIC_BANDAGE)
+                        return false;
+
                     // heal amount
                     basepoints0 = triggeredByAura->GetModifierValue()*std::min(damage,GetMaxHealth() - GetHealth())/100;
                     target = this;
@@ -8237,6 +8242,10 @@ uint32 Unit::SpellDamageBonus(Unit *pVictim, SpellEntry const *spellProto, uint3
             case 4920: case 4919:
                 if (pVictim->HasAuraState(AURA_STATE_HEALTHLESS_20_PERCENT))
                     TakenTotalMod *= (100.0f+(*i)->GetModifier()->m_amount)/100.0f; break;
+            case 6427: case 6428: //rank 1, rank 2   // Dirty Deeds
+                if (pVictim->HasAuraState(AURA_STATE_HEALTHLESS_35_PERCENT))
+                    TakenTotalMod *= ((*i)->GetModifier()->m_miscvalue == 6427 ? 1.1f : 1.2f);
+                break;
         }
     }
 
@@ -9251,26 +9260,20 @@ void Unit::MeleeDamageBonus(Unit *pVictim, uint32 *pdamage,WeaponAttackType attT
         }
     }
 
-    // .. taken pct: class scripts
-    AuraList const& mclassScritAuras = GetAurasByType(SPELL_AURA_OVERRIDE_CLASS_SCRIPTS);
-    for (AuraList::const_iterator i = mclassScritAuras.begin(); i != mclassScritAuras.end(); ++i)
-    {
-        switch ((*i)->GetMiscValue())
-        {
-            case 6427: case 6428:                           // Dirty Deeds
-                if (pVictim->HasAuraState(AURA_STATE_HEALTHLESS_35_PERCENT))
-                {
-                    Aura* eff0 = GetAura((*i)->GetId(),0);
-                    if (!eff0 || (*i)->GetEffIndex()!=1)
-                    {
-                        sLog.outLog(LOG_DEFAULT, "ERROR: Spell structure of DD (%u) changed.",(*i)->GetId());
-                        continue;
-                    }
 
-                    // effect 0 have expected value but in negative state
-                    TakenTotalMod *= (-eff0->GetModifier()->m_amount+100.0f)/100.0f;
-                }
+    if (spellProto)
+    {
+        // .. taken pct: class scripts
+        AuraList const& mclassScritAuras = GetAurasByType(SPELL_AURA_OVERRIDE_CLASS_SCRIPTS);
+        for (AuraList::const_iterator i = mclassScritAuras.begin(); i != mclassScritAuras.end(); ++i)
+        {
+            switch ((*i)->GetMiscValue())
+            {
+            case 6427: case 6428: //rank 1, rank 2   // Dirty Deeds
+                if (pVictim->HasAuraState(AURA_STATE_HEALTHLESS_35_PERCENT))
+                    TakenTotalMod *= ((*i)->GetModifier()->m_miscvalue == 6427 ? 1.1f : 1.2f);
                 break;
+            }
         }
     }
 
@@ -11482,6 +11485,13 @@ void Unit::ProcDamageAndSpellfor (bool isVictim, Unit * pTarget, uint32 procFlag
                 // Compare mechanic
                 if (procSpell==NULL || procSpell->Mechanic != auraModifier->m_miscvalue)
                     continue;
+                break;
+            case SPELL_AURA_REFLECT_SPELLS:
+                if (useCharges && triggeredByAura->m_procCharges == 1)
+                {
+                    useCharges = false;
+                    triggeredByAura->SetAuraDuration(0); // remove on next world tick
+                }
                 break;
             default:
                 // nothing do, just charges counter
