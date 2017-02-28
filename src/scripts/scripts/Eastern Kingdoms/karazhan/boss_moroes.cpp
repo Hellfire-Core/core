@@ -304,7 +304,7 @@ struct boss_moroesAI : public ScriptedAI
             if (Gouge_Timer.Expired(diff))
             {
                 DoCast(m_creature->getVictim(), SPELL_GOUGE);
-                Gouge_Timer = 40000;
+                Gouge_Timer = urand(25000,35000);
             }
             
             if (Blind_Timer.Expired(diff))
