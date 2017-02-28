@@ -4041,7 +4041,8 @@ bool Unit::CheckForStrongerAuras(Aura* Aur)
     SpellEntry const* spellProto = Aur->GetSpellProto();
     // possibly more aura types affected by this
     if ((Aur->GetModifier()->m_auraname == SPELL_AURA_MOD_DECREASE_SPEED ||
-        Aur->GetModifier()->m_auraname == SPELL_AURA_MOD_HEALING_PCT) &&
+        Aur->GetModifier()->m_auraname == SPELL_AURA_MOD_HEALING_PCT ||
+        Aur->GetModifier()->m_auraname == SPELL_AURA_HASTE_MELEE) &&
         !Aur->IsPersistent() && Aur->GetModifierValue() < 0)
     {
         Unit::AuraList list = GetAurasByType(Aur->GetModifier()->m_auraname);
