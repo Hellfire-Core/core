@@ -40,12 +40,10 @@ struct boss_the_black_stalkerAI : public ScriptedAI
 {
     boss_the_black_stalkerAI(Creature *c) : ScriptedAI(c)
     {
-        HeroicMode = me->GetMap()->IsHeroic();
         c->GetPosition(wLoc);
     }
 
     WorldLocation wLoc;
-    bool HeroicMode;
     Timer SporeStriders_Timer;
     Timer Levitate_Timer;
     Timer ChainLightning_Timer;

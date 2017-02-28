@@ -57,7 +57,6 @@ struct boss_pathaleon_the_calculatorAI : public ScriptedAI
     boss_pathaleon_the_calculatorAI(Creature *c) : ScriptedAI(c), summons(me)
     {
         pInstance = c->GetInstanceData();
-        HeroicMode = me->GetMap()->IsHeroic();
         me->GetPosition(wLoc);
     }
 
@@ -71,7 +70,6 @@ struct boss_pathaleon_the_calculatorAI : public ScriptedAI
     Timer ArcaneExplosion_Timer;
     Timer Check_Timer;
     WorldLocation wLoc;
-    bool HeroicMode;
     bool Enraged;
 
     uint32 Counter;

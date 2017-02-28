@@ -58,11 +58,9 @@ struct boss_warchief_kargath_bladefistAI : public ScriptedAI
     boss_warchief_kargath_bladefistAI(Creature *c) : ScriptedAI(c)
     {
         pInstance = (c->GetInstanceData());
-        HeroicMode = me->GetMap()->IsHeroic();
     }
 
     ScriptedInstance* pInstance;
-    bool HeroicMode;
 
     std::vector<uint64> adds;
     std::vector<uint64> assassins;

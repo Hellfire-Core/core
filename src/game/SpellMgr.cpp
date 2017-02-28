@@ -3094,6 +3094,10 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 29683: // spotlight also on players?
                     spellInfo->EffectImplicitTargetB[1] = 0;
                     break;
+                case 38459: // broggok poison bolt
+                case 30917:
+                    spellInfo->MaxAffectedTargets = 2;
+                    break;
                     //PRE NERF ZONE
                 case 44032: // manticron cube exhaustion 180sec
                     spellInfo->DurationIndex = 25;

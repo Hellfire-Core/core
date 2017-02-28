@@ -45,13 +45,9 @@ struct boss_gatewatcher_gyro_killAI : public ScriptedAI
     boss_gatewatcher_gyro_killAI(Creature *c) : ScriptedAI(c)
     {
         pInstance = (c->GetInstanceData());
-        HeroicMode = me->GetMap()->IsHeroic();
     }
 
     ScriptedInstance *pInstance;
-
-    bool HeroicMode;
-
     Timer Shadow_Power_Timer;
     Timer Saw_Blade_Timer;
     Timer Stream_of_Machine_Fluid_Timer;

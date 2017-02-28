@@ -48,12 +48,10 @@ struct boss_nethermancer_sepethreaAI : public ScriptedAI
     boss_nethermancer_sepethreaAI(Creature *c) : ScriptedAI(c), summons(me)
     {
         pInstance = c->GetInstanceData();
-        HeroicMode = me->GetMap()->IsHeroic();
     }
 
     ScriptedInstance *pInstance;
 
-    bool HeroicMode;
 
     Timer arcane_blast_Timer;
     Timer dragons_breath_Timer;
@@ -159,12 +157,10 @@ struct mob_ragin_flamesAI : public ScriptedAI
     mob_ragin_flamesAI(Creature *c) : ScriptedAI(c)
     {
         pInstance = (c->GetInstanceData());
-        HeroicMode = me->GetMap()->IsHeroic();
     }
 
     ScriptedInstance *pInstance;
 
-    bool HeroicMode;
     bool canMelee;
     Timer infernoTimer;
     uint64 currentTarget;

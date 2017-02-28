@@ -43,14 +43,12 @@ struct boss_shirrak_the_dead_watcherAI : public ScriptedAI
 {
     boss_shirrak_the_dead_watcherAI(Creature *c) : ScriptedAI(c)
     {
-        HeroicMode = m_creature->GetMap()->IsHeroic();
     }
 
     Timer Inhibitmagic_Timer;
     Timer Attractmagic_Timer;
     Timer Carnivorousbite_Timer;
     Timer FocusFire_Timer;
-    bool HeroicMode;
     Unit *focusedTarget;
 
     void Reset()
@@ -177,10 +175,8 @@ struct mob_focus_fireAI : public ScriptedAI
 {
     mob_focus_fireAI(Creature *c) : ScriptedAI(c)
     {
-        HeroicMode = m_creature->GetMap()->IsHeroic();
     }
 
-    bool HeroicMode;
     Timer FieryBlast_Timer;
     bool fiery1, fiery2;
 

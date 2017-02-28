@@ -34,10 +34,8 @@ EndScriptData */
 #define SAY_KILL_2                  -1542013
 #define SAY_DIE                     -1542014
 
-#define SPELL_ACID_SPRAY            38153
 #define SPELL_EXPLODING_BREAKER     (HeroicMode ? 40059 : 30925)
-#define SPELL_KNOCKDOWN             20276
-#define SPELL_DOMINATION            25772
+#define SPELL_DOMINATION            30923
 
 struct boss_the_makerAI : public ScriptedAI
 {
@@ -46,19 +44,15 @@ struct boss_the_makerAI : public ScriptedAI
         pInstance = c->GetInstanceData();
     }
 
-    Timer AcidSpray_Timer;
     Timer ExplodingBreaker_Timer;
     Timer Domination_Timer;
-    Timer Knockdown_Timer;
 
     ScriptedInstance *pInstance;
 
     void Reset()
     {
-        AcidSpray_Timer.Reset(15000);
         ExplodingBreaker_Timer.Reset(6000);
         Domination_Timer.Reset(20000);
-        Knockdown_Timer.Reset(10000);
 
         if (pInstance)
             pInstance->SetData(DATA_MAKEREVENT, NOT_STARTED);
@@ -90,17 +84,10 @@ struct boss_the_makerAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (AcidSpray_Timer.Expired(diff))
-        {
-            AddSpellToCast(me->getVictim(), SPELL_ACID_SPRAY);
-            AcidSpray_Timer = 35000+rand()%8000; // not the correct spell. why spam ?
-        }
-
         if (ExplodingBreaker_Timer.Expired(diff))
         {
-            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0))
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0,10.0f,true))
                 AddSpellToCast(target,SPELL_EXPLODING_BREAKER);
-
             ExplodingBreaker_Timer = urand(4000, 12000);
         }
 
@@ -109,14 +96,10 @@ struct boss_the_makerAI : public ScriptedAI
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0))
                 AddSpellToCast(target, SPELL_DOMINATION);
 
-            Domination_Timer = 120000;
+            Domination_Timer = HeroicMode ? urand(20000,25000) : urand(30000,50000);
         }
 
-        if (Knockdown_Timer.Expired(diff))
-        {
-            AddSpellToCast(me->getVictim(),SPELL_KNOCKDOWN);
-            Knockdown_Timer = urand(4000, 12000);
-        }
+ 
 
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();

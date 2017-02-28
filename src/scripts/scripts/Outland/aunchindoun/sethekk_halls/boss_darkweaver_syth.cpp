@@ -60,7 +60,6 @@ struct boss_darkweaver_sythAI : public ScriptedAI
 {
     boss_darkweaver_sythAI(Creature *c) : ScriptedAI(c), summons(c)
     {
-        HeroicMode = m_creature->GetMap()->IsHeroic();
         pInstance = c->GetInstanceData();
     }
 
@@ -77,7 +76,6 @@ struct boss_darkweaver_sythAI : public ScriptedAI
     bool summon90;
     bool summon50;
     bool summon10;
-    bool HeroicMode;
 
     void Reset()
     {
@@ -230,12 +228,10 @@ struct mob_syth_fireAI : public ScriptedAI
     mob_syth_fireAI(Creature *c) : ScriptedAI(c)
 
     {
-        HeroicMode = m_creature->GetMap()->IsHeroic();
     }
 
     Timer flameshock_timer;
     Timer flamebuffet_timer;
-    bool HeroicMode;
 
     void Reset()
     {
@@ -281,14 +277,11 @@ CreatureAI* GetAI_mob_syth_fire(Creature *_Creature)
 struct mob_syth_arcaneAI : public ScriptedAI
 {
     mob_syth_arcaneAI(Creature *c) : ScriptedAI(c)
-
     {
-        HeroicMode = m_creature->GetMap()->IsHeroic();
     }
 
     Timer arcaneshock_timer;
     Timer arcanebuffet_timer;
-    bool HeroicMode;
 
     void Reset()
     {
@@ -333,14 +326,11 @@ CreatureAI* GetAI_mob_syth_arcane(Creature *_Creature)
 struct mob_syth_frostAI : public ScriptedAI
 {
     mob_syth_frostAI(Creature *c) : ScriptedAI(c)
-
     {
-        HeroicMode = m_creature->GetMap()->IsHeroic();
     }
 
     Timer frostshock_timer;
     Timer frostbuffet_timer;
-    bool HeroicMode;
 
     void Reset()
     {

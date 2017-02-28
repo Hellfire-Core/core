@@ -110,7 +110,6 @@ struct boss_warp_splinterAI : public ScriptedAI
 {
     boss_warp_splinterAI(Creature *c) : ScriptedAI(c), summons(me)
     {
-        HeroicMode = c->GetMap()->IsHeroic();
         Treant_Spawn_Pos_X = c->GetPositionX();
         Treant_Spawn_Pos_Y = c->GetPositionY();
         m_creature->GetPosition(wLoc);
@@ -122,7 +121,6 @@ struct boss_warp_splinterAI : public ScriptedAI
     Timer Arcane_Volley_Timer;
     Timer Check_Timer;
     WorldLocation wLoc;
-    bool HeroicMode;
 
     float Treant_Spawn_Pos_X;
     float Treant_Spawn_Pos_Y;

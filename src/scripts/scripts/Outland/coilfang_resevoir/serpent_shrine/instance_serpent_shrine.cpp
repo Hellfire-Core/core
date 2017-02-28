@@ -310,7 +310,6 @@ struct instance_serpentshrine_cavern : public ScriptedInstance
                     OpenDoor(BridgePart[1], true);
                     OpenDoor(BridgePart[2], true);
                 }
-                ControlConsole = data;
                 break;
             case DATA_HYDROSSTHEUNSTABLEEVENT:
                 if(Encounters[0] != DONE)

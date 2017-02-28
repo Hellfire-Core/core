@@ -197,6 +197,7 @@ struct boss_malchezaarAI : public ScriptedAI
 
     void Reset()
     {
+        m_creature->SetCanDualWield(false);
         AxesCleanup();
         ClearWeapons();
         InfernalCleanup();
@@ -471,6 +472,7 @@ struct boss_malchezaarAI : public ScriptedAI
                 m_creature->SetAttackTime(OFF_ATTACK, (m_creature->GetAttackTime(BASE_ATTACK)*150)/100);
 
                 SunderArmorTimer.Reset(15000);
+                m_creature->SetCanDualWield(true);
             }
         }
         else if (phase == 2)

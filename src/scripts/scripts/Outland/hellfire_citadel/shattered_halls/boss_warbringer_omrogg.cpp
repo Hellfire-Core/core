@@ -132,11 +132,9 @@ struct boss_warbringer_omroggAI : public ScriptedAI
     boss_warbringer_omroggAI(Creature *c) : ScriptedAI(c)
     {
         pInstance = (c->GetInstanceData());
-        HeroicMode = me->GetMap()->IsHeroic();
     }
 
     ScriptedInstance* pInstance;
-    bool HeroicMode;
 
     uint64 LeftHead;
     uint64 RightHead;

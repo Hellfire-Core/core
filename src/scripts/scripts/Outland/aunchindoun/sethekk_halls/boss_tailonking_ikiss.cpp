@@ -63,8 +63,6 @@ struct boss_talon_king_ikissAI : public ScriptedAI
 
     ScriptedInstance* pInstance;
 
-    bool HeroicMode;
-
     Timer ArcaneVolley_Timer;
     Timer Sheep_Timer;
     Timer Slow_Timer;
@@ -77,8 +75,6 @@ struct boss_talon_king_ikissAI : public ScriptedAI
 
     void Reset()
     {
-        HeroicMode = m_creature->GetMap()->IsHeroic();
-
         ArcaneVolley_Timer.Reset(5000);
         Sheep_Timer.Reset(8000);
         Slow_Timer.Reset(15000 + rand() % 15000);

@@ -39,12 +39,10 @@ struct boss_mennu_the_betrayerAI : public ScriptedAI
     boss_mennu_the_betrayerAI(Creature *c) : ScriptedAI(c), Summons(m_creature)
     {
         pInstance = (c->GetInstanceData());
-        HeroicMode = m_creature->GetMap()->IsHeroic();
     }
 
 
     ScriptedInstance *pInstance;
-    bool HeroicMode;
 
     SummonList Summons;
 
@@ -158,11 +156,9 @@ struct npc_corrupted_nova_totemAI : public Scripted_NoMovementAI
     npc_corrupted_nova_totemAI(Creature *c) : Scripted_NoMovementAI(c)
     {
         pInstance = (c->GetInstanceData());
-        HeroicMode = m_creature->GetMap()->IsHeroic();
     }
 
     ScriptedInstance *pInstance;
-    bool HeroicMode;
     Timer Life_Timer;
     uint32 Phase;
 

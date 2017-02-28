@@ -45,11 +45,9 @@ struct boss_temporusAI : public ScriptedAI
     boss_temporusAI(Creature *c) : ScriptedAI(c)
     {
         pInstance = (c->GetInstanceData());
-        HeroicMode = m_creature->GetMap()->IsHeroic();
     }
 
     ScriptedInstance *pInstance;
-    bool HeroicMode;
     bool canApplyWound;
 
     Timer MortalWound_Timer;

@@ -47,13 +47,11 @@ struct boss_pandemoniusAI : public ScriptedAI
 {
     boss_pandemoniusAI(Creature *c) : ScriptedAI(c)
     {
-        HeroicMode = m_creature->GetMap()->IsHeroic();
         pInstance = c->GetInstanceData();
     }
 
     ScriptedInstance *pInstance;
 
-    bool HeroicMode;
     Timer VoidBlast_Timer;
     Timer DarkShell_Timer;
     uint32 VoidBlast_Counter;

@@ -57,12 +57,10 @@ struct boss_epoch_hunterAI : public ScriptedAI
     boss_epoch_hunterAI(Creature *creature) : ScriptedAI(creature)
     {
         pInstance = (creature->GetInstanceData());
-        HeroicMode = me->GetMap()->IsHeroic();
     }
 
     ScriptedInstance *pInstance;
 
-    bool HeroicMode;
     bool Intro;
     bool Next;
 

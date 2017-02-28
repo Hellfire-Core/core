@@ -114,8 +114,6 @@ struct npc_medivh_bmAI : public ScriptedAI
     npc_medivh_bmAI(Creature *c) : ScriptedAI(c)
     {
         pInstance = c->GetInstanceData();
-        HeroicMode = c->GetMap()->IsHeroic();
-        c->setActive(true);
     }
 
     ScriptedInstance *pInstance;
@@ -128,8 +126,6 @@ struct npc_medivh_bmAI : public ScriptedAI
     bool Life75;
     bool Life50;
     bool Life25;
-
-    bool HeroicMode;
     bool Intro;
     bool Delay;
 
@@ -430,13 +426,10 @@ struct npc_time_riftAI : public ScriptedAI
     npc_time_riftAI(Creature *c) : ScriptedAI(c)
     {
         pInstance = (c->GetInstanceData());
-        HeroicMode = c->GetMap()->IsHeroic();
         c->setActive(true);
     }
 
     ScriptedInstance *pInstance;
-
-    bool HeroicMode;
 
     Timer TimeRiftWave_Timer;
     uint8 mRiftWaveCount;
@@ -557,13 +550,10 @@ struct rift_summonAI : public ScriptedAI
     rift_summonAI(Creature *c) : ScriptedAI(c)
     {
         pInstance = (c->GetInstanceData());
-        HeroicMode = c->GetMap()->IsHeroic();
         c->setActive(true);
     }
 
     ScriptedInstance *pInstance;
-
-    bool HeroicMode;
 
     Timer Spell_Timer1;
     Timer Spell_Timer2;

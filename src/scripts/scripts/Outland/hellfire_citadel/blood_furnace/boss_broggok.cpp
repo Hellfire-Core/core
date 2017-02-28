@@ -217,7 +217,7 @@ struct boss_broggokAI : public ScriptedAI
         if (PoisonBolt_Timer.Expired(diff))
         {
             AddSpellToCast(me->getVictim(), SPELL_POISON_BOLT);
-            PoisonBolt_Timer = urand(4000, 12000);;
+            PoisonBolt_Timer = urand(8000, 16000);;
         }
 
         if (PoisonSpawn_Timer.Expired(diff))

@@ -49,11 +49,9 @@ struct boss_thespiaAI : public ScriptedAI
     boss_thespiaAI(Creature *c) : ScriptedAI(c)
     {
         pInstance = (c->GetInstanceData());
-        HeroicMode = me->GetMap()->IsHeroic();
     }
 
     ScriptedInstance *pInstance;
-    bool HeroicMode;
 
     Timer LightningCloud_Timer;
     Timer LungBurst_Timer;
@@ -149,12 +147,10 @@ struct mob_coilfang_waterelementalAI : public ScriptedAI
 {
     mob_coilfang_waterelementalAI(Creature *c) : ScriptedAI(c) {}
 
-    bool HeroicMode;
     Timer WaterBoltVolley_Timer;
 
     void Reset()
     {
-        HeroicMode = me->GetMap()->IsHeroic();
         WaterBoltVolley_Timer.Reset(3000 + rand() % 3000);
     }
 

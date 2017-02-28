@@ -33,10 +33,8 @@ struct boss_hungarfenAI : public ScriptedAI
 {
     boss_hungarfenAI(Creature *c) : ScriptedAI(c)
     {
-        HeroicMode = me->GetMap()->IsHeroic();
     }
 
-    bool HeroicMode;
     bool Root;
     Timer Mushroom_Timer;
     Timer AcidGeyser_Timer;

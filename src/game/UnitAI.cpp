@@ -215,6 +215,8 @@ void UnitAI::SelectUnitList(std::list<Unit*> &targetList, uint32 num, SelectAggr
     for (std::list<HostileReference*>::const_iterator itr = threatlist.begin(); itr != threatlist.end(); ++itr)
         targetList.push_back((*itr)->getTarget());
 
+    targetList.remove_if(Hellground::ObjectIsTotemCheck(true));
+
     if (playerOnly)
         targetList.remove_if(Hellground::ObjectTypeIdCheck(TYPEID_PLAYER, false));
 

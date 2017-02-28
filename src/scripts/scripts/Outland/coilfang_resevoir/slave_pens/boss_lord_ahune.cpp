@@ -129,8 +129,6 @@ struct boss_lord_ahuneAI : public Scripted_NoMovementAI
 
     Timer Phase_Timer;
     uint8 PhaseCounter;
-    bool HeroicMode;
-
     Timer IceSpear_Timer;
     Timer Elementals_Timer;
     Timer Hailstone_Timer;
@@ -139,7 +137,6 @@ struct boss_lord_ahuneAI : public Scripted_NoMovementAI
     boss_lord_ahuneAI(Creature *c) : Scripted_NoMovementAI(c), Summons(m_creature)
     {
         pInstance = (c->GetInstanceData());
-        HeroicMode = m_creature->GetMap()->IsHeroic();
     }
 
     void Reset()

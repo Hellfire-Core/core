@@ -52,12 +52,10 @@ struct boss_captain_skarlocAI : public ScriptedAI
     boss_captain_skarlocAI(Creature *creature) : ScriptedAI(creature)
     {
         pInstance = (creature->GetInstanceData());
-        HeroicMode = me->GetMap()->IsHeroic();
     }
 
     ScriptedInstance *pInstance;
 
-    bool HeroicMode;
     bool Intro;
 
     uint8 Next;

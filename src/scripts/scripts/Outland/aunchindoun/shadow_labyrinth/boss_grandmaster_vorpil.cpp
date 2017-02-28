@@ -73,10 +73,8 @@ struct mob_voidtravelerAI : public ScriptedAI
 {
     mob_voidtravelerAI(Creature *c) : ScriptedAI(c)
     {
-        HeroicMode = me->GetMap()->IsHeroic();
     }
 
-    bool HeroicMode;
     uint64 VorpilGUID;
     Timer MoveTimer;
     bool sacrificed;
@@ -147,14 +145,12 @@ struct boss_grandmaster_vorpilAI : public ScriptedAI
     boss_grandmaster_vorpilAI(Creature *c) : ScriptedAI(c)
     {
         pInstance = (c->GetInstanceData());
-        HeroicMode = me->GetMap()->IsHeroic();
         Intro = false;
     }
 
     ScriptedInstance *pInstance;
     bool Intro, HelpYell;
     bool sumportals;
-    bool HeroicMode;
 
     Timer ShadowBoltVolley_Timer;
     Timer DrawShadows_Timer;

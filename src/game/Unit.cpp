@@ -559,11 +559,6 @@ bool Unit::IsWithinMeleeRange(Unit *obj, float dist) const
     if (!obj || !IsInMap(obj))
         return false;
 
-    // both running extra 2.66 yd to melee
-    if ((m_movementInfo.HasMovementFlag(MOVEFLAG_MOVING) && !m_movementInfo.HasMovementFlag(MOVEFLAG_WALK_MODE)) &&
-        (obj->m_movementInfo.HasMovementFlag(MOVEFLAG_MOVING) && !obj->m_movementInfo.HasMovementFlag(MOVEFLAG_WALK_MODE)))
-        dist += 2 * MELEE_RANGE;
-
     float dx = GetPositionX() - obj->GetPositionX();
     float dy = GetPositionY() - obj->GetPositionY();
     float dz = GetPositionZ() - obj->GetPositionZ();
@@ -571,6 +566,11 @@ bool Unit::IsWithinMeleeRange(Unit *obj, float dist) const
 
     float sizefactor = GetCombatReach() + obj->GetCombatReach();
     float maxdist = std::max(dist + sizefactor,NOMINAL_MELEE_RANGE);
+
+    // both running extra 2.66 yd to melee
+    if ((m_movementInfo.HasMovementFlag(MOVEFLAG_MOVING) && !m_movementInfo.HasMovementFlag(MOVEFLAG_WALK_MODE)) &&
+        (obj->m_movementInfo.HasMovementFlag(MOVEFLAG_MOVING) && !obj->m_movementInfo.HasMovementFlag(MOVEFLAG_WALK_MODE)))
+        maxdist += 2 * MELEE_RANGE;
 
     return distsq < maxdist * maxdist;
 }

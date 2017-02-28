@@ -66,12 +66,10 @@ struct boss_vazruden_the_heraldAI : public ScriptedAI
     boss_vazruden_the_heraldAI(Creature* creature) : ScriptedAI(creature)
     {
         pInstance = (creature->GetInstanceData());
-        HeroicMode = me->GetMap()->IsHeroic();
     }
 
     ScriptedInstance* pInstance;
 
-    bool HeroicMode;
     bool SentryDown;
     bool IsEventInProgress;
     bool IsDescending;
@@ -369,12 +367,10 @@ struct boss_vazrudenAI : public ScriptedAI
     boss_vazrudenAI(Creature* creature) : ScriptedAI(creature)
     {
         pInstance = (creature->GetInstanceData());
-        HeroicMode = me->GetMap()->IsHeroic();
     }
 
     ScriptedInstance* pInstance;
 
-    bool HeroicMode;
     bool HealthBelow;
 
     Timer RevengeTimer;

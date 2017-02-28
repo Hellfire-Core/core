@@ -66,12 +66,10 @@ struct boss_harbinger_skyrissAI : public ScriptedAI
     boss_harbinger_skyrissAI(Creature *c) : ScriptedAI(c), summons(me)
     {
         pInstance = (c->GetInstanceData());
-        HeroicMode = me->GetMap()->IsHeroic();
         Intro = false;
     }
 
     ScriptedInstance *pInstance;
-    bool HeroicMode;
 
     bool Intro;
     bool IsImage33;
@@ -327,13 +325,11 @@ struct boss_harbinger_skyriss_illusionAI : public ScriptedAI
     boss_harbinger_skyriss_illusionAI(Creature *c) : ScriptedAI(c)
     {
         pInstance = (c->GetInstanceData());
-        HeroicMode = me->GetMap()->IsHeroic();
     }
 
     Timer MindRend_Timer;
 
     ScriptedInstance *pInstance;
-    bool HeroicMode;
 
     void Reset()
     {

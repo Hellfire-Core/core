@@ -46,11 +46,9 @@ struct boss_aeonusAI : public ScriptedAI
     boss_aeonusAI(Creature *c) : ScriptedAI(c)
     {
         pInstance = (c->GetInstanceData());
-        HeroicMode = m_creature->GetMap()->IsHeroic();
     }
 
     ScriptedInstance *pInstance;
-    bool HeroicMode;
 
     Timer Say_Timer;
     Timer Cleave_Timer;

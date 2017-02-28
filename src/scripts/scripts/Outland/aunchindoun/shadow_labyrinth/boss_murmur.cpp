@@ -40,7 +40,6 @@ struct boss_murmurAI : public Scripted_NoMovementAI
 {
     boss_murmurAI(Creature *c) : Scripted_NoMovementAI(c)
     {
-        HeroicMode = me->GetMap()->IsHeroic();
     }
 
     Timer SonicBoom_Timer;
@@ -49,7 +48,6 @@ struct boss_murmurAI : public Scripted_NoMovementAI
     Timer MagneticPull_Timer;
     Timer SonicShock_Timer;
     Timer ThunderingStorm_Timer;
-    bool HeroicMode;
 
     void Reset()
     {

@@ -529,14 +529,12 @@ struct npc_arcatraz_sentinelAI : public ScriptedAI
     npc_arcatraz_sentinelAI(Creature *c) : ScriptedAI(c)
     {
         pInstance = c->GetInstanceData();
-        HeroicMode = me->GetMap()->IsHeroic();
     }
 
     Timer ThreatWipe_Timer;
     Timer Suicide_Timer;
 
     ScriptedInstance *pInstance;
-    bool HeroicMode;
 
     void Reset()
     {
