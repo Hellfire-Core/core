@@ -85,6 +85,7 @@ struct boss_high_king_maulgarAI : public BossAI
         events.ScheduleEvent(EVENT_WHIRLWIND, 30000);
 
         ForceSpellCast(me, SPELL_DUAL_WIELD);
+        JustReachedHome(); // respawn adds
     }
 
     void KilledUnit()
@@ -160,6 +161,12 @@ struct boss_high_king_maulgarAI : public BossAI
                 }
                 case EVENT_CHARGE_HKM:
                 {
+                    if (m_creature->HasAura(SPELL_WHIRLWIND, 0))
+                    {
+                        //delay when whirlwinding
+                        events.ScheduleEvent(eventId, 1000);
+                        break;
+                    }
                     AddSpellToCast(SPELL_BERSERKER_C, CAST_RANDOM);
                     events.ScheduleEvent(eventId, urand(10000,20000));
                     break;

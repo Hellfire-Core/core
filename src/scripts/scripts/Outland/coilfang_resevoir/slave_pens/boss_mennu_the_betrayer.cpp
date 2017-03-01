@@ -17,22 +17,29 @@
  */
 
 #include "precompiled.h"
+enum mennu
+{
+    SPELL_HEALING_WARD            = 34980,
+    SPELL_CORRUPTED_NOVA_TOTEM    = 31991,
+    SPELL_LIGHTNING_BOLT          = 35010,
+    SPELL_EARTHGRAB_TOTEM         = 31981,
+    SPELL_STONESKIN_TOTEM         = 31985,
+    SPELL_HEALING_TOTEM           = 34980,
 
-#define SPELL_HEALING_WARD              34980
-#define SPELL_CORRUPTED_NOVA_TOTEM      31991
-#define SPELL_LIGHTNING_BOLT            35010
-#define SPELL_EARTHGRAB_TOTEM           31981
-#define SPELL_STONESKIN_TOTEM           31985
-#define SPELL_HEALING_TOTEM             34980
+    SPELL_FIRE_NOVA               = 33132,
+    SPELL_ENTANGLING_ROOTS        = 20654,
+    SPELL_STONESKIN               = 31986,
 
-#define SPELL_FIRE_NOVA                 33132
-#define SPELL_ENTANGLING_ROOTS          20654
-#define SPELL_STONESKIN                 31986
+    NPC_STONESKIN_TOTEM           = 18177,
+    NPC_H_STONESKIN_TOTEM         = 19900,
 
-#define NPC_STONESKIN_TOTEM             18177
-#define NPC_H_STONESKIN_TOTEM           19900
-
-//todo: move all this useless code to eventai
+    SAY_AGGRO_1                   = -1545024,
+    SAY_AGGRO_2                   = -1545025,
+    SAY_AGGRO_3                   = -1545026,
+    SAY_KILL_1                    = -1545027,
+    SAY_KILL_2                    = -1545028,
+    SAY_DIE                       = -1545029
+};
 
 struct boss_mennu_the_betrayerAI : public ScriptedAI
 {
@@ -67,6 +74,7 @@ struct boss_mennu_the_betrayerAI : public ScriptedAI
 
     void EnterCombat(Unit *who)
     {
+        DoScriptText(RAND(SAY_AGGRO_1, SAY_AGGRO_2, SAY_AGGRO_3), m_creature);
     }
 
 
@@ -92,8 +100,14 @@ struct boss_mennu_the_betrayerAI : public ScriptedAI
     {
     }
 
+    void KilledUnit(Unit* victim)
+    {
+        DoScriptText(RAND(SAY_KILL_1, SAY_KILL_2), m_creature);
+    }
+
     void JustDied(Unit *u)
     {
+        DoScriptText(SAY_DIE, m_creature);
         Summons.DespawnAll();
     }
 
