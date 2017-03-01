@@ -734,6 +734,7 @@ struct mob_caribdis_cycloneAI : public ScriptedAI
     {
         Check_Timer.Reset(1000);
         Swap_Timer = 0;
+        m_creature->SetSpeed(MOVE_RUN, 0.6);
     }
 
     void EnterCombat(Unit *who)
@@ -743,8 +744,17 @@ struct mob_caribdis_cycloneAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        //Return since we have no target
-        if (!UpdateVictim() )
+        // instead of updatevictim
+        if (!me->isInCombat() || !me->isAlive())
+            return;
+        if (Unit *pVictim = me->SelectVictim())
+            AttackStart(pVictim);
+        if (me->getThreatManager().isThreatListEmpty())
+        {
+            EnterEvadeMode();
+            return;
+        }
+        else if (me->IsInEvadeMode())
             return;
 
         if (Swap_Timer.Expired(diff))
@@ -755,7 +765,7 @@ struct mob_caribdis_cycloneAI : public ScriptedAI
                 {
                     DoResetThreat();
                     m_creature->GetMotionMaster()->Clear();
-                    m_creature->GetMotionMaster()->MovePoint(0,target->GetPositionX(),target->GetPositionY(),target->GetPositionZ());
+                    AttackStart(target);
                 }
                 Swap_Timer = 5000;
             }
@@ -774,11 +784,14 @@ struct mob_caribdis_cycloneAI : public ScriptedAI
                     {
                         Player *p = i->getSource();
                         if (!p->HasAura(SPELL_CYCLONE_CYCLONE, 0))
-                            DoCast(p, SPELL_CYCLONE_CYCLONE);
+                        {
+                            DoCast(p, SPELL_CYCLONE_CYCLONE, true);
+                            Swap_Timer = 1;
+                        }
                     }
                 }
             }
-            Check_Timer = 500;
+            Check_Timer = 1000;
         }
     }
 };

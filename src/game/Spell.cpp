@@ -1722,8 +1722,14 @@ void Spell::SetTargetMap(uint32 i, uint32 cur)
                     //m_caster->GetValidPointInAngle(pos, dis + DEFAULT_WORLD_OBJECT_SIZE, frand(-0.6, 0.6), true, max_dis);
                     float liquidLevel = m_caster->GetMap()->GetTerrain()->GetWaterOrGroundLevel(pos.x, pos.y, pos.z);
                     m_targets.setDestination(pos.x, pos.y, liquidLevel);
-                    if (!m_caster->IsWithinLOS(pos.x, pos.y, liquidLevel) ||
-                        !m_caster->GetTerrain()->IsInWater(pos.x, pos.y, liquidLevel))
+                    if (!m_caster->IsWithinLOS(pos.x, pos.y, liquidLevel) )
+                    {
+                        SendCastResult(SPELL_FAILED_LINE_OF_SIGHT);
+                        SendChannelUpdate(0);
+                        finish(false);
+                        return;
+                    }
+                    if (!m_caster->GetTerrain()->IsInWater(pos.x, pos.y, liquidLevel))
                     {
                         SendCastResult(SPELL_FAILED_NOT_HERE);
                         SendChannelUpdate(0);
@@ -2139,7 +2145,6 @@ void Spell::SetTargetMap(uint32 i, uint32 cur)
             case TARGET_UNIT_CONE_ENEMY:
             case TARGET_UNIT_CONE_ENEMY_UNKNOWN:
                 SearchAreaTarget(unitList, radius, pushType, SPELL_TARGETS_ENEMY);
-                radius = SpellMgr::GetSpellRadius(GetSpellEntry(), i, false);
                 break;
             case TARGET_UNIT_AREA_ALLY_SRC:
             case TARGET_UNIT_AREA_ALLY_DST:

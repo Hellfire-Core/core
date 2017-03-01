@@ -3098,6 +3098,9 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 30917:
                     spellInfo->MaxAffectedTargets = 2;
                     break;
+                case 39045: //summon ssc parasite
+                    spellInfo->AreaId = 0;
+                    break;
                     //PRE NERF ZONE
                 case 44032: // manticron cube exhaustion 180sec
                     spellInfo->DurationIndex = 25;

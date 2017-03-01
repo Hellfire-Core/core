@@ -73,7 +73,9 @@ struct boss_nightbaneAI : public ScriptedAI
         SPELL_IMMOLATION            = 37059,
         SPELL_FIREBALL_BARRAGE      = 30282,
         SPELL_SEARING_CINDERS       = 30127,
-        SPELL_SUMMON_SKELETON       = 30170
+        SPELL_SUMMON_SKELETON       = 30170,
+
+        NPC_SKELETON                = 17261
     };
 
     ScriptedInstance* pInstance;
@@ -95,7 +97,7 @@ struct boss_nightbaneAI : public ScriptedAI
     Timer Cleave_Timer;
 
     uint32 FlyCount;
-    Timer FlyTimer;
+    Timer FlyCheckTimer;
 
     int32 MovePhase;
     Timer WaitTimer;
@@ -233,29 +235,8 @@ struct boss_nightbaneAI : public ScriptedAI
             WaitTimer = 1;
         }
 
-        if (Flying)
-        {
-            switch (id)
-            {
-                case 0:
-                {
-                    DoTextEmote(EMOTE_BREATH, NULL, true);
-                    Flying = true;
-                    break;
-                }
-                case 8:
-                {
-                    DoResetThreat();
-
-                    Flying = false;
-                    Phase = PHASE_GROUND;
-                    Movement = true;
-                    return;
-                }
-            }
-
-            WaitTimer = 1;
-        }
+        if (Flying && id == 0)
+            DoTextEmote(EMOTE_BREATH, NULL, true);       
     }
 
     void JustSummoned(Creature *summoned)
@@ -272,7 +253,7 @@ struct boss_nightbaneAI : public ScriptedAI
         }
 
         summoned->AI()->AttackStart(m_creature->getVictim());
-        summoned->CastSpell(summoned, SPELL_IMMOLATION, true);
+        summoned->AddAura(SPELL_IMMOLATION,summoned);
     }
     
     void JustRespawned()
@@ -296,7 +277,7 @@ struct boss_nightbaneAI : public ScriptedAI
         Flying = true;
         ++FlyCount;
 
-        FlyTimer.Reset(45000 + rand() % 15000); //timer wrong between 45 and 60 seconds
+        FlyCheckTimer.Reset(1000); //timer wrong between 45 and 60 seconds
         DistractingAshTimer.Delay(10000); // wrong, just to not cast while flying up
         RainofBonesTimer = 5000;
         SmokingBlastTimer = 0;
@@ -439,17 +420,26 @@ struct boss_nightbaneAI : public ScriptedAI
                 FireballBarrageTimer = urand(3000, 6000);
             }
 
-            if (FlyTimer.Expired(diff)) //landing
+            if (FlyCheckTimer.Expired(diff)) //landing
             {
-                if (rand() % 2)
-                    DoYell(YELL_LAND_PHASE_1, LANG_UNIVERSAL, NULL);
+                if (m_creature->GetMap()->GetCreatureById(NPC_SKELETON, GET_ALIVE_CREATURE_GUID))
+                {
+                    FlyCheckTimer = 1000;
+                }
                 else
-                    DoYell(YELL_LAND_PHASE_2, LANG_UNIVERSAL, NULL);
+                {
+                    DoYell((urand(0,1) ? YELL_LAND_PHASE_1 : YELL_LAND_PHASE_2), LANG_UNIVERSAL, NULL);
 
-                m_creature->GetMotionMaster()->Clear(false);
-                m_creature->GetMotionMaster()->MovePoint(3, IntroWay[3][0], IntroWay[3][1], IntroWay[3][2]);
-
-                FlyTimer = 0;
+                    m_creature->SetLevitate(false);
+                    m_creature->HandleEmoteCommand(EMOTE_ONESHOT_LAND);
+                    
+                    DoZoneInCombat(1000.0f);
+                    UpdateVictim();
+                    Flying = false;
+                    m_creature->GetMotionMaster()->MovePoint(8, IntroWay[7][0], IntroWay[7][1], IntroWay[7][2]);
+                    
+                    FlyCheckTimer = 0;
+                }
             }
         }
     }

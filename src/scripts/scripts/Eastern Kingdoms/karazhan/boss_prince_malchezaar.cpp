@@ -296,7 +296,7 @@ struct boss_malchezaarAI : public ScriptedAI
         {
             if (Unit *axe = Unit::GetUnit(*m_creature, axes[i]))
                 if (axe->isAlive())
-                    axe->DealDamage(axe, axe->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, nullptr, false);
+                    axe->Kill(axe);
 
             axes[i] = 0;
         }

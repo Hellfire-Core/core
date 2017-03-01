@@ -207,7 +207,7 @@ struct mob_underbog_colossusAI : public ScriptedAI
 
     void Reset()
     {
-        Infection_Timer.Reset(urand(0, 10000));
+        Infection_Timer.Reset(urand(1, 10000));
         Parasite_Timer.Reset(10000);
         Quake_Timer.Reset(urand(10000, 40000));
         Geyser_Timer.Reset(15000);
@@ -298,7 +298,7 @@ struct mob_underbog_colossusAI : public ScriptedAI
             }
             
 
-            if (me->HasAura(SPELL_FRENZY, 0))
+            if (me->HasAura(SPELL_ENRAGE, 0))
             {
                 if (Blow_Timer.Expired(diff))
                 {
