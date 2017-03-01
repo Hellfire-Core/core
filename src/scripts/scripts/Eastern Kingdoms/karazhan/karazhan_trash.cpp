@@ -455,7 +455,12 @@ struct mob_arcane_anomalyAI : public ScriptedAI
 
     void DamageTaken(Unit* enemy, uint32& Damage)
     {
-        if (shield)
+        if (m_creature->HasAura(SPELL_AA_MANASHIELD))
+        {
+            Damage = 0;
+            return;
+        }
+        if (shield) // shield ended dont cast again
             return;
 
         m_creature->CastSpell(m_creature, SPELL_AA_MANASHIELD, true);

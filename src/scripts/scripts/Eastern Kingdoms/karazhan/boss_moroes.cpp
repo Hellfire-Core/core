@@ -364,6 +364,17 @@ struct boss_moroes_guestAI : public ScriptedAI
             pInstance->SetData(DATA_MOROES_EVENT, NOT_STARTED);
     }
 
+    void EnterCombat(Unit* who)
+    {
+        if (!pInstance)
+            return;
+        Creature* Moroes = (Unit::GetCreature((*m_creature), pInstance->GetData64(DATA_MOROES)));
+        if (Moroes)
+        {
+            Moroes->AI()->EnterCombat(who);
+        }
+    }
+
     void AcquireGUID()
     {
         if(!pInstance)

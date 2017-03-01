@@ -281,7 +281,7 @@ void WorldSession::HandleGossipHelloOpcode(WorldPacket & recv_data)
     //if(GetPlayer()->HasFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_FEIGN_DEATH))
     //    GetPlayer()->RemoveSpellsCausingAura(SPELL_AURA_FEIGN_DEATH);
 
-    if (unit->isArmorer() || unit->isCivilian() || unit->isQuestGiver() || unit->isServiceProvider())
+    if (!unit->isInCombat() && (unit->isArmorer() || unit->isCivilian() || unit->isQuestGiver() || unit->isServiceProvider()))
     {
         //unit->StopMoving();
         unit->SetFacingTo(unit->GetAngle(GetPlayer()));

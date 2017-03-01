@@ -325,9 +325,10 @@ struct boss_malchezaarAI : public ScriptedAI
 
         //begin + 1 , so we don't target the one with the highest threat
         std::list<HostileReference *>::iterator itr = t_list.begin();
-        itr++;
         for (; itr != t_list.end(); ++itr)                   //store the threat list in a different container
         {
+            if ((*itr)->getUnitGuid() == m_creature->getVictimGUID())
+                continue;
             Unit *target = Unit::GetUnit(*m_creature, (*itr)->getUnitGuid());
                                                             //only on alive players
             if (target && target->isAlive() && target->GetTypeId() == TYPEID_PLAYER)
@@ -346,7 +347,7 @@ struct boss_malchezaarAI : public ScriptedAI
                 enfeeble_targets[i] = target->GetGUID();
                 enfeeble_health[i] = target->GetHealth();
 
-                target->CastSpell(target, SPELL_ENFEEBLE, true, 0, 0, m_creature->GetGUID());
+                target->CastSpell(target, SPELL_ENFEEBLE, true);
                 target->SetHealth(1);
             }
         }
@@ -522,7 +523,7 @@ struct boss_malchezaarAI : public ScriptedAI
             if (SunderArmorTimer.Expired(diff))
             {
                 DoCast(m_creature->getVictim(), SPELL_SUNDER_ARMOR);
-                SunderArmorTimer = 15000;
+                SunderArmorTimer = urand(10000,15000);
             }
 
             if (Cleave_Timer.Expired(diff))

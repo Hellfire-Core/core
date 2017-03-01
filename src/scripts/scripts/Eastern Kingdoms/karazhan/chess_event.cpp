@@ -3778,10 +3778,8 @@ bool GossipHello_npc_echo_of_medivh(Player* player, Creature* _Creature)
 {
     ScriptedInstance* pInstance = ((ScriptedInstance*)_Creature->GetInstanceData());
 
-    if (pInstance->GetData(DATA_CHESS_EVENT) == IN_PROGRESS)
-        return false;
-
-    pInstance->SetData(DATA_CHESS_EVENT, NOT_STARTED);
+    if (pInstance->GetData(DATA_CHESS_EVENT) != NOT_STARTED)
+        return true;
 
     player->ADD_GOSSIP_ITEM(0, EVENT_START, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF);
     player->SEND_GOSSIP_MENU(10506, _Creature->GetGUID());
@@ -3792,6 +3790,9 @@ bool GossipHello_npc_echo_of_medivh(Player* player, Creature* _Creature)
 bool GossipSelect_npc_echo_of_medivh(Player* player, Creature* _Creature, uint32 sender, uint32 action)
 {
     ScriptedInstance* pInstance = ((ScriptedInstance*)_Creature->GetInstanceData());
+
+    if (pInstance->GetData(DATA_CHESS_EVENT) != NOT_STARTED)
+        return true;
 
     if (action == GOSSIP_ACTION_INFO_DEF)
     {
