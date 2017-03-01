@@ -619,7 +619,7 @@ void Creature::Update(uint32 update_diff, uint32 diff)
                 RegenerateHealth();
             }
             else if (IsPolymorphed())
-                    RegenerateHealth();
+                RegenerateHealth();
 
             RegenerateMana();
 
@@ -1610,9 +1610,10 @@ void Creature::LoadEquipment(uint32 equip_entry, bool force)
     m_equipmentId = equip_entry;
     for (uint8 i = 0; i < 3; i++)
     {
-        // UNIT_VIRTUAL_ITEM_INFO is most possibly 0x000000(sheath) 0x(inventorytype)(material)(subclass)(class)
-        // usualy used values 0x00000003 0x01FF????
-        // for weapon to be shown properly it is enough to set class (0x0 0x2)
+        // most possibly equipslot 0x000000(sheath) equipinfo 0x(inventorytype)(material)(subclass)(class)
+        // usualy used values like 0x00000003 0x01FF????
+        // for weapon to be shown properly it is enough to set class (slot 0x0  info 0x2)
+        // for shield slot 0xE info 0x4
         SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_DISPLAY + i, einfo->equipmodel[i]);
         SetUInt32Value(UNIT_VIRTUAL_ITEM_INFO + (i * 2), einfo->equipinfo[i]);
         SetUInt32Value(UNIT_VIRTUAL_ITEM_INFO + (i * 2) + 1, einfo->equipslot[i]);

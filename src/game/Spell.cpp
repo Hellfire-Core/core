@@ -2840,6 +2840,7 @@ uint64 Spell::handle_delayed(uint64 t_offset)
     }
     else
     {
+        m_canTrigger = false; // multiple hiting spells (blizard, arcane misiles) should triger only on first hit
         // spell is unfinished, return next execution time
         return next_time;
     }

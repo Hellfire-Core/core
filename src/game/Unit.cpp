@@ -9422,6 +9422,7 @@ void Unit::Unmount()
 
 void Unit::SetInCombatWith(Unit* enemy)
 {
+    SendCombatStats(1 << COMBAT_STATS_CRASHTEST, "BANG", NULL);
     Unit* eOwner = enemy->GetCharmerOrOwnerOrSelf();
     AddThreat(enemy, 0.0f);
     if (eOwner->IsPvP())
@@ -9484,7 +9485,12 @@ void Unit::SetInCombatState(bool PvP, Unit* enemy)
         return;
 
     if (PvP)
-        m_CombatTimer = 5600;
+    {
+        //somewhere between 4.5 and 6.5, synchronized with regen timer
+        m_CombatTimer = 4000 + m_regenTimer;
+        if (m_CombatTimer < 4500)
+            m_CombatTimer += 2000;
+    }
 
     if (isInCombat())
         return;
