@@ -278,11 +278,8 @@ void instance_karazhan::SetData(uint32 type, uint32 data)
                 if (GetData(DATA_DUST_COVERED_CHEST) != SPECIAL)
                     SetData(DATA_DUST_COVERED_CHEST, DONE);
             }
-            else
-            {
-                if (data == FAIL)
-                    SetData(DATA_DUST_COVERED_CHEST, SPECIAL);
-            }
+            else if (data == FAIL)
+                SetData(DATA_DUST_COVERED_CHEST, DONE); // open doors, dont let starting again
 
             Encounters[9] = data;
             break;

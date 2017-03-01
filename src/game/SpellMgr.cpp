@@ -3101,10 +3101,16 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 39045: //summon ssc parasite
                     spellInfo->AreaId = 0;
                     break;
-                    //PRE NERF ZONE
-                case 29690:
+                case 30843: // prince enfeblee efect
+                    spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_CASTER;
+                    spellInfo->EffectImplicitTargetA[1] = TARGET_UNIT_CASTER;
+                    spellInfo->EffectImplicitTargetB[0] = 0;
+                    spellInfo->EffectImplicitTargetB[1] = 0;
+                    break;
+                case 29690: // drunken skull krack drunk 100 instead of 1000
                     spellInfo->EffectBasePoints[2] = 99;
                     break;
+                    //PRE NERF ZONE
                 case 44032: // manticron cube exhaustion 180sec
                     spellInfo->DurationIndex = 25;
                     break;

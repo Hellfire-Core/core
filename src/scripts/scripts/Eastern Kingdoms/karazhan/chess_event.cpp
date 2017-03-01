@@ -432,7 +432,6 @@ void npc_chesspieceAI::SpellHit(Unit * caster, const SpellEntry * spell)
 {
     if (spell->Id == SPELL_MOVE_MARKER)
     {
-        me->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
         ((Creature*)me)->HandleEmoteCommand(EMOTE_ONESHOT_ATTACK1H);
         me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
     }
@@ -2552,6 +2551,8 @@ void boss_MedivhAI::UpdateAI(const uint32 diff)
                             ChangePieceFacing(chessBoard[i][j].piece, chessBoard[4][j].trigger);
                             if (tmpC = me->GetCreature(chessBoard[i][j].piece))
                             {
+                                if ((pInstance->GetData(CHESS_EVENT_TEAM) == ALLIANCE) == (tmpC->getFaction() == A_FACTION))
+                                    tmpC->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
                                 tmpC->CastSpell(tmpC, SPELL_MOVE_MARKER, false);
                                 tmpC->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IN_COMBAT);
                             }

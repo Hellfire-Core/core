@@ -277,13 +277,9 @@ void WorldSession::HandleGossipHelloOpcode(WorldPacket & recv_data)
     }
 
     GetPlayer()->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_TALK);
-    // remove fake death
-    //if(GetPlayer()->HasFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_FEIGN_DEATH))
-    //    GetPlayer()->RemoveSpellsCausingAura(SPELL_AURA_FEIGN_DEATH);
 
-    if (!unit->isInCombat() && (unit->isArmorer() || unit->isCivilian() || unit->isQuestGiver() || unit->isServiceProvider()))
+    if (!unit->isInCombat() && unit->GetUInt32Value(UNIT_NPC_FLAGS) != 0 && (unit->isArmorer() || unit->isCivilian() || unit->isQuestGiver() || unit->isServiceProvider()))
     {
-        //unit->StopMoving();
         unit->SetFacingTo(unit->GetAngle(GetPlayer()));
         unit->GetMotionMaster()->MoveDistract(20 * IN_MILISECONDS);
     }

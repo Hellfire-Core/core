@@ -356,17 +356,19 @@ struct mob_serpentshrine_parasiteAI : public ScriptedAI
         if(!TargetGUID)
         {
             std::list<Player*> players = FindAllPlayersInRange(50);
-            if(players.empty())
+            if (players.empty())
             {
                 me->Kill(me);
-                std::list<Player*>::iterator i = players.begin();
-                advance(i, urand(0, players.size()-1));
-                Player *target = *i;
-                if(target->isAlive())
-                {
-                    TargetGUID = target->GetGUID();
-                    me->GetMotionMaster()->MoveChase(target);
-                }
+                return;
+            }
+
+            std::list<Player*>::iterator i = players.begin();
+            advance(i, urand(0, players.size()-1));
+            Player *target = *i;
+            if(target->isAlive())
+            {
+                TargetGUID = target->GetGUID();
+                me->GetMotionMaster()->MoveChase(target);
             }
         }
     }

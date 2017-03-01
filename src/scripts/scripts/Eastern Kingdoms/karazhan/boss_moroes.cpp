@@ -118,7 +118,7 @@ struct boss_moroesAI : public ScriptedAI
     {
         if (!pInstance)
             return;
-        if (pInstance->GetData(DATA_MOROES) != NOT_STARTED)
+        if (pInstance->GetData(DATA_MOROES_EVENT) != NOT_STARTED)
             return;
 
         pInstance->SetData(DATA_MOROES_EVENT, IN_PROGRESS);

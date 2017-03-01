@@ -131,6 +131,7 @@ struct boss_warchief_kargath_bladefistAI : public ScriptedAI
                 break;
             case MOB_SHATTERED_ASSASSIN:
                 assassins.push_back(summoned->GetGUID());
+                summoned->SetAggroRange(12.0f);
                 break;
         }
     }
@@ -290,11 +291,10 @@ struct boss_warchief_kargath_bladefistAI : public ScriptedAI
 
         if (resetcheck_timer.Expired(diff))
         {
-            uint32 tempx,tempy;
+            uint32 tempx;
             tempx = me->GetPositionX();
-            tempy = me->GetPositionY();
 
-            if ( tempx > 255 || tempx < 205)
+            if ( tempx > 260 || tempx < 200)
             {
                 EnterEvadeMode();
                 return;

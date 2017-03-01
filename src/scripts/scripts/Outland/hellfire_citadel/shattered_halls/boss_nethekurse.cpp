@@ -74,7 +74,7 @@ static Say PeonDies[]=
 #define H_SPELL_SHADOW_SLAM         35953
 
 #define SPELL_HEMORRHAGE            30478
-#define SPELL_CONSUMPTION           30497
+#define SPELL_CONSUMPTION           (HeroicMode ? 35952 : 30497)
 
 struct boss_grand_warlock_nethekurseAI : public ScriptedAI
 {
@@ -278,7 +278,7 @@ struct boss_grand_warlock_nethekurseAI : public ScriptedAI
         {
             if (!SpinOnce)
             {
-                me->GetUnitStateMgr().PushAction(UNIT_ACTION_STUN);
+                me->GetUnitStateMgr().PushAction(UNIT_ACTION_ROOT);
                 DoCast(me, SPELL_DARK_SPIN);
                 SpinOnce = true;
             }

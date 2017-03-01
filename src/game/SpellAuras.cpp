@@ -2122,6 +2122,10 @@ void Aura::TriggerSpell()
                     m_target->CastSpell(pPlayer, 42490, true, 0, this, originalCasterGUID);
                 return;
             }
+            case 30915: // broggok poison cloud
+            case 38463:
+                target = NULL;
+                break;
         }
     }
     if (!SpellMgr::GetSpellMaxRange(sSpellRangeStore.LookupEntry(triggeredSpellEntry->rangeIndex)))

@@ -765,7 +765,7 @@ struct mob_caribdis_cycloneAI : public ScriptedAI
                 {
                     DoResetThreat();
                     m_creature->GetMotionMaster()->Clear();
-                    AttackStart(target);
+                    DoStartMovement(target);
                 }
                 Swap_Timer = 5000;
             }
@@ -791,7 +791,7 @@ struct mob_caribdis_cycloneAI : public ScriptedAI
                     }
                 }
             }
-            Check_Timer = 1000;
+            Check_Timer = 500;
         }
     }
 };
