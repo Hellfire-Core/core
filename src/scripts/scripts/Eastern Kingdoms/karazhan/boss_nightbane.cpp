@@ -277,7 +277,7 @@ struct boss_nightbaneAI : public ScriptedAI
         Flying = true;
         ++FlyCount;
 
-        FlyCheckTimer.Reset(1000); //timer wrong between 45 and 60 seconds
+        FlyCheckTimer.Reset(20000); //timer wrong between 45 and 60 seconds
         DistractingAshTimer.Delay(10000); // wrong, just to not cast while flying up
         RainofBonesTimer = 5000;
         SmokingBlastTimer = 0;

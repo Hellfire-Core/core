@@ -113,21 +113,18 @@ struct boss_moroesAI : public ScriptedAI
             pInstance->SetData(DATA_MOROES_EVENT, NOT_STARTED);
     }
 
-    void StartEvent()
-    {
-        if(pInstance)
-            pInstance->SetData(DATA_MOROES_EVENT, IN_PROGRESS);
-
-        DoZoneInCombat();
-    }
 
     void EnterCombat(Unit* who)
     {
-        StartEvent();
+        if (!pInstance)
+            return;
+        if (pInstance->GetData(DATA_MOROES) != NOT_STARTED)
+            return;
 
+        pInstance->SetData(DATA_MOROES_EVENT, IN_PROGRESS);
         DoScriptText(SAY_AGGRO, m_creature);
-        AddsAttack();
         DoZoneInCombat();
+        AddsAttack();
     }
 
     void KilledUnit(Unit* victim)

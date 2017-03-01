@@ -219,11 +219,6 @@ struct boss_dorotheeAI : public boss_operaAI
         boss_operaAI::Reset();
     }
 
-    void EnterCombat(Unit* who)
-    {
-        DoScriptText(SAY_DOROTHEE_AGGRO, m_creature);
-    }
-
     void SummonTito();                                      // See below
 
     void JustDied(Unit* killer)
@@ -245,6 +240,7 @@ struct boss_dorotheeAI : public boss_operaAI
             
         if (AggroTimer.Expired(diff))
         {
+            DoScriptText(SAY_DOROTHEE_AGGRO, m_creature);
             m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
             DoZoneInCombat();
             AggroTimer = 0;
@@ -359,12 +355,6 @@ struct boss_strawmanAI : public boss_operaAI
         boss_operaAI::Reset();
     }
 
-    void EnterCombat(Unit* who)
-    {
-        DoScriptText(SAY_STRAWMAN_AGGRO, m_creature);
-        DoCast(m_creature, SPELL_CONFLAGRATE_SELF, true);
-    }
-
     void JustDied(Unit* killer)
     {
         DoScriptText(SAY_STRAWMAN_DEATH, m_creature);
@@ -389,6 +379,8 @@ struct boss_strawmanAI : public boss_operaAI
             
         if (AggroTimer.Expired(diff))
         {
+            DoScriptText(SAY_STRAWMAN_AGGRO, m_creature);
+            DoCast(m_creature, SPELL_CONFLAGRATE_SELF, true);
             m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
             DoZoneInCombat();
             AggroTimer = 0;
@@ -439,11 +431,6 @@ struct boss_tinheadAI : public boss_operaAI
         boss_operaAI::Reset();
     }
 
-    void EnterCombat(Unit* who)
-    {
-        DoScriptText(SAY_TINHEAD_AGGRO, m_creature);
-    }
-
     void JustDied(Unit* killer)
     {
         DoScriptText(SAY_TINHEAD_DEATH, m_creature);
@@ -467,6 +454,7 @@ struct boss_tinheadAI : public boss_operaAI
    
         if (AggroTimer.Expired(diff))
         {
+            DoScriptText(SAY_TINHEAD_AGGRO, m_creature);
             m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
             DoZoneInCombat();
             AggroTimer = 0;
@@ -518,11 +506,6 @@ struct boss_roarAI : public boss_operaAI
         boss_operaAI::Reset();
     }
 
-    void EnterCombat(Unit* who)
-    {
-        DoScriptText(SAY_ROAR_AGGRO, m_creature);
-    }
-
     void JustDied(Unit* killer)
     {
         DoScriptText(SAY_ROAR_DEATH, m_creature);
@@ -546,6 +529,7 @@ struct boss_roarAI : public boss_operaAI
      
         if (AggroTimer.Expired(diff))
         {
+            DoScriptText(SAY_ROAR_AGGRO, m_creature);
             m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
             DoZoneInCombat();
             AggroTimer = 0;

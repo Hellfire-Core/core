@@ -3778,7 +3778,7 @@ bool GossipHello_npc_echo_of_medivh(Player* player, Creature* _Creature)
 {
     ScriptedInstance* pInstance = ((ScriptedInstance*)_Creature->GetInstanceData());
 
-    if (pInstance->GetData(DATA_CHESS_EVENT) != NOT_STARTED)
+    if (pInstance->GetData(DATA_DUST_COVERED_CHEST) != NOT_STARTED)
         return true;
 
     player->ADD_GOSSIP_ITEM(0, EVENT_START, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF);
@@ -3791,7 +3791,7 @@ bool GossipSelect_npc_echo_of_medivh(Player* player, Creature* _Creature, uint32
 {
     ScriptedInstance* pInstance = ((ScriptedInstance*)_Creature->GetInstanceData());
 
-    if (pInstance->GetData(DATA_CHESS_EVENT) != NOT_STARTED)
+    if (pInstance->GetData(DATA_DUST_COVERED_CHEST) != NOT_STARTED)
         return true;
 
     if (action == GOSSIP_ACTION_INFO_DEF)

@@ -2291,6 +2291,15 @@ void Spell::SetTargetMap(uint32 i, uint32 cur)
                 case 45785: // KJ: sinister reflection  - copy model
                     unitList.remove_if((Hellground::ObjectEntryCheck(25708, false)));   //allow to transform only sinister reflections instead of everything nearby
                     break;
+                case 30915: // broggok poison cloud grows slowly!
+                case 38463:
+                {
+                    Aura* orginal = m_caster->GetAura(m_triggeredByAuraSpell->Id, 0);
+                    if (!orginal)
+                        break;
+                    uint32 radius = 12 - (orginal->GetAuraDuration() / 5);
+                    unitList.remove_if(Hellground::ObjectDistanceCheck(m_caster, radius, true));
+                }
                 default:
                     break;
             }

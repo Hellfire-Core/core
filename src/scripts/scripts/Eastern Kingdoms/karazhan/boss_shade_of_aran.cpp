@@ -338,7 +338,7 @@ struct boss_aranAI : public Scripted_NoMovementAI
                         DrinkingDelay = 30000;
                         break;
                 }
-
+                DragonbreathTimer.Delay(12000);
                 SuperCastTimer += urand(35000, 40000);
             }
             
@@ -572,6 +572,8 @@ struct circular_blizzardAI : public ScriptedAI
             {
                 currentWaypoint = 0;
                 move = false;
+                EnterEvadeMode();
+                return;
             }
 
             wLoc.coord_x = blizzardWaypoints[0][(startWaypoint + currentWaypoint) % 8];

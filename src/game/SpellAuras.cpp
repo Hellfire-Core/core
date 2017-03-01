@@ -6778,6 +6778,11 @@ void Aura::PeriodicTick()
                             m_modifier.m_amount *= 2;
                     }
                     break;
+                    case 29964: // arans dragons breath aoe
+                    {
+                        m_target->CastSpell((Unit*)(NULL), 29965, true);
+                        break;
+                    }
                     default:
                         break;
                 }

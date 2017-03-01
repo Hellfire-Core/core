@@ -3102,6 +3102,9 @@ void SpellMgr::LoadSpellCustomAttr()
                     spellInfo->AreaId = 0;
                     break;
                     //PRE NERF ZONE
+                case 29690:
+                    spellInfo->EffectBasePoints[2] = 99;
+                    break;
                 case 44032: // manticron cube exhaustion 180sec
                     spellInfo->DurationIndex = 25;
                     break;
