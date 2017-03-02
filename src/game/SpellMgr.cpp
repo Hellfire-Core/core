@@ -3110,9 +3110,6 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 29690: // drunken skull krack drunk 100 instead of 1000
                     spellInfo->EffectBasePoints[2] = 99;
                     break;
-                case 29538: // cyclone karathresh test
-                    spellInfo->EffectMiscValue[1] = 1;
-                    break;
                 case 14157: // ruthlessness no cause combat on proc
                     spellInfo->AttributesEx3 |= SPELL_ATTR_EX3_NO_INITIAL_AGGRO;
                     break;

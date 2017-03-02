@@ -375,6 +375,9 @@ void Object::BuildValuesUpdate(uint8 updatetype, ByteBuffer * data, UpdateMask *
     if (!target)
         return;
 
+    if (isType(TYPEMASK_UNIT) && updateMask->GetBit(UNIT_FIELD_HEALTH))
+        updateMask->SetBit(UNIT_FIELD_MAXHEALTH); //always update max when updating actual
+
     bool IsActivateToQuest = false;
     if (updatetype == UPDATETYPE_CREATE_OBJECT || updatetype == UPDATETYPE_CREATE_OBJECT2)
     {
@@ -410,8 +413,6 @@ void Object::BuildValuesUpdate(uint8 updatetype, ByteBuffer * data, UpdateMask *
     // 2 specialized loops for speed optimization in non-unit case
     if (isType(TYPEMASK_UNIT))                               // unit (creature/player) case
     {
-        if (updateMask->GetBit(UNIT_FIELD_HEALTH))
-            updateMask->SetBit(UNIT_FIELD_MAXHEALTH); //always update max when updating actual
         for (uint16 index = 0; index < m_valuesCount; index ++)
         {
             if (updateMask->GetBit(index))

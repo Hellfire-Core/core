@@ -3036,6 +3036,8 @@ void Aura::HandleAuraFeatherFall(bool apply, bool Real)
     if (!Real)
         return;
 
+    if (apply && GetSpellProto()->Id == 29538)
+        m_target->KnockBack(0, 0, 11); // karathresh cyclone (knockback must be sent before ff)
     WorldPacket data;
     if (apply)
         data.Initialize(SMSG_MOVE_FEATHER_FALL, 8+4);
