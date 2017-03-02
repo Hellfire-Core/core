@@ -2603,6 +2603,7 @@ void boss_MedivhAI::UpdateAI(const uint32 diff)
                         endGameEventState = GAMEEND_CLEAR_BOARD;
                     break;
                 case GAMEEND_CLEAR_BOARD:
+                {
                     Creature* status = m_creature->GetMap()->GetCreatureById(NPC_STATUS);
                     if (status)
                         status->Kill(status);
@@ -2612,6 +2613,7 @@ void boss_MedivhAI::UpdateAI(const uint32 diff)
                     if (chestGUID)
                         endEventTimer = 180000;
                     break;
+                }
                 case GAMEEND_DESPAWN_CHEST:
                     DeleteChest();
                     EnterEvadeMode();

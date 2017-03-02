@@ -4705,6 +4705,9 @@ DiminishingGroup SpellMgr::GetDiminishingReturnsGroupForSpell(SpellEntry const* 
             // Intimidation
             else if (spellproto->Id == 24394)
                 return DIMINISHING_CONTROL_STUN;
+            // scatter shot
+            else if (spellproto->Id == 19503)
+                return DIMINISHING_BLIND_CYCLONE;
             break;
         }
         case SPELLFAMILY_WARLOCK:
