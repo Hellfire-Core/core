@@ -360,14 +360,17 @@ struct mob_hellfire_channelerAI : public ScriptedAI
             me->CastSpell(me, SPELL_SOUL_TRANSFER, true);
     }
 
-    void JustReachedHome()
-    {
-        me->CastSpell((Unit*)NULL, SPELL_SHADOW_GRASP_C, false);
-    }
-
     void UpdateAI(const uint32 diff)
     {
         if (!UpdateVictim())
+        {
+            if (Check_Timer.Expired(diff))
+            {
+                Check_Timer = 5000;
+                if (!m_creature->IsNonMeleeSpellCast(true))
+                    me->CastSpell((Unit*)NULL, SPELL_SHADOW_GRASP_C, false);
+            }
+        }
             return;
 
         if (ShadowBoltVolley_Timer.Expired(diff))

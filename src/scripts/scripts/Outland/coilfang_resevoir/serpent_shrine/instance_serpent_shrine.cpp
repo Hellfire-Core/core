@@ -54,7 +54,10 @@ bool GOUse_go_bridge_console(Player *player, GameObject* go)
         return true;
 
     if (pInstance->GetData(DATA_CONTROL_CONSOLE) != DONE)
+    {
         pInstance->SetData(DATA_CONTROL_CONSOLE, DONE);
+        return false;
+    }
 
     return true;
 }

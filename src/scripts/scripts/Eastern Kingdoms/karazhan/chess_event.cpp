@@ -2488,6 +2488,9 @@ void boss_MedivhAI::StartMiniEvent()
     miniEventState = MINI_EVENT_KING;
 
     pInstance->SetData(DATA_DUST_COVERED_CHEST, IN_PROGRESS);
+    Creature* status = m_creature->GetMap()->GetCreatureById(NPC_STATUS);
+    if (status)
+        status->AI()->Reset();
 }
 
 void boss_MedivhAI::StartEvent()
@@ -2600,6 +2603,9 @@ void boss_MedivhAI::UpdateAI(const uint32 diff)
                         endGameEventState = GAMEEND_CLEAR_BOARD;
                     break;
                 case GAMEEND_CLEAR_BOARD:
+                    Creature* status = m_creature->GetMap()->GetCreatureById(NPC_STATUS);
+                    if (status)
+                        status->Kill(status);
                     ClearBoard();
                     endGameEventState = GAMEEND_DESPAWN_CHEST;
 
@@ -3749,6 +3755,9 @@ bool GossipHello_npc_chesspiece(Player* player, Creature* _Creature)
 
 void npc_chess_statusAI::Reset()
 {
+    ScriptedInstance* pInstance = m_creature->GetInstanceData();
+    if (!pInstance || pInstance->GetData(DATA_DUST_COVERED_CHEST) != IN_PROGRESS)
+        return;
     m_creature->SetLevitate(true);
     m_creature->NearTeleportTo(-11080.599609, -1876.380005, 231.000092, 0.0);
     me->CastSpell(me, SPELL_GAME_IN_SESSION, false);

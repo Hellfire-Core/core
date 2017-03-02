@@ -1722,7 +1722,7 @@ void Spell::SetTargetMap(uint32 i, uint32 cur)
                     //m_caster->GetValidPointInAngle(pos, dis + DEFAULT_WORLD_OBJECT_SIZE, frand(-0.6, 0.6), true, max_dis);
                     float liquidLevel = m_caster->GetMap()->GetTerrain()->GetWaterOrGroundLevel(pos.x, pos.y, pos.z);
                     m_targets.setDestination(pos.x, pos.y, liquidLevel);
-                    if (!m_caster->IsWithinLOS(pos.x, pos.y, liquidLevel) )
+                    if (!m_caster->IsWithinLOS(pos.x, pos.y, liquidLevel) && m_caster->GetAreaId() != 3607) // ssc lurker los bug
                     {
                         SendCastResult(SPELL_FAILED_LINE_OF_SIGHT);
                         SendChannelUpdate(0);
@@ -1891,7 +1891,7 @@ void Spell::SetTargetMap(uint32 i, uint32 cur)
                 case TARGET_DEST_CASTER_BACK:       pos.o = M_PI;       break;
                 case TARGET_DEST_CASTER_RIGHT:      pos.o = M_PI / 2;     break;
                 case TARGET_DEST_CASTER_LEFT:       pos.o = -M_PI / 2;    break;
-                case TARGET_DEST_CASTER_FRONT_LEAP: pos.o = 0.0f; allowHeightDifference = 10.0f; break;
+                case TARGET_DEST_CASTER_FRONT_LEAP: pos.o = 0.0f; allowHeightDifference = 20.0f; break;
                 default:                            pos.o = rand_norm() * 2 * M_PI; break;
             }
 
@@ -2709,7 +2709,6 @@ void Spell::cast(bool skipCheck)
 
 void Spell::handle_immediate()
 {
-    m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "handle immediate for %u", NULL, GetSpellEntry()->Id);
     if (GetSpellEntry()->Id <= 0 || GetSpellEntry()->Id > MAX_SPELL_ID || GetSpellEntry()->Id == 32 || GetSpellEntry()->Id == 48 || GetSpellEntry()->Id == 576 || GetSpellEntry()->Id == 80 || GetSpellEntry()->Id == 160)
         return;
 
@@ -2785,7 +2784,6 @@ void Spell::handle_immediate()
 
 uint64 Spell::handle_delayed(uint64 t_offset)
 {
-    m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "handle delayed for %u", NULL, GetSpellEntry()->Id);
     UpdatePointers();
 
     uint64 next_time = 0;

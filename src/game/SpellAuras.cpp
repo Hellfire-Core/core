@@ -2123,7 +2123,7 @@ void Aura::TriggerSpell()
                 return;
             }
             case 30915: // broggok poison cloud
-            case 38463:
+            case 38462:
                 target = NULL;
                 break;
         }
@@ -4260,8 +4260,13 @@ void Aura::HandleModTaunt(bool apply, bool Real)
         m_target->TauntApply(caster);
     else
     {
-        // When taunt aura fades out, mob will switch to previous target if current has less than 1.1 * secondthreat
-        m_target->TauntFadeOut(caster);
+        std::list<Aura*> taunts =  m_target->GetAurasByType(SPELL_AURA_MOD_TAUNT);
+        if (taunts.empty())
+            m_target->TauntFadeOut(caster);
+        else
+        {
+            m_target->TauntApply(taunts.front()->GetCaster());
+        }
     }
 }
 

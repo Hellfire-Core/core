@@ -142,7 +142,7 @@ struct boss_nightbaneAI : public ScriptedAI
         me->SetReactState(REACT_AGGRESSIVE);
 
         m_creature->SetSpeed(MOVE_RUN, 2.0f);
-        m_creature->SetFlying(true);
+        m_creature->SetLevitate(true);
         m_creature->SetWalk(false);
 
         if (pInstance && pInstance->GetData(DATA_NIGHTBANE_EVENT) != DONE)
@@ -268,7 +268,7 @@ struct boss_nightbaneAI : public ScriptedAI
         DoResetThreat();
         m_creature->InterruptSpell(CURRENT_GENERIC_SPELL);
         m_creature->HandleEmoteCommand(EMOTE_ONESHOT_LIFTOFF);
-        m_creature->SetFlying(true);
+        m_creature->SetLevitate(true);
         m_creature->GetMotionMaster()->Clear(false);
         m_creature->GetMotionMaster()->MovePoint(0, IntroWay[2][0], IntroWay[2][1], IntroWay[2][2]);
 
@@ -291,7 +291,7 @@ struct boss_nightbaneAI : public ScriptedAI
             {
                 if (MovePhase >= 7)
                 {
-                    m_creature->SetFlying(false);
+                    m_creature->SetLevitate(false);
                     m_creature->HandleEmoteCommand(EMOTE_ONESHOT_LAND);
                     m_creature->GetMotionMaster()->MovePoint(8, IntroWay[7][0], IntroWay[7][1], IntroWay[7][2]);
                 }
@@ -306,7 +306,7 @@ struct boss_nightbaneAI : public ScriptedAI
             {
                 if (MovePhase >= 7)
                 {
-                    m_creature->SetFlying(false);
+                    m_creature->SetLevitate(false);
                     m_creature->HandleEmoteCommand(EMOTE_ONESHOT_LAND);
                     m_creature->GetMotionMaster()->MovePoint(8, IntroWay[7][0], IntroWay[7][1], IntroWay[7][2]);
                     DoZoneInCombat(1000.0f);
@@ -430,7 +430,7 @@ struct boss_nightbaneAI : public ScriptedAI
                 {
                     DoYell((urand(0,1) ? YELL_LAND_PHASE_1 : YELL_LAND_PHASE_2), LANG_UNIVERSAL, NULL);
 
-                    m_creature->SetFlying(false);
+                    m_creature->SetLevitate(false);
                     m_creature->HandleEmoteCommand(EMOTE_ONESHOT_LAND);
                     
                     DoZoneInCombat(1000.0f);
@@ -439,6 +439,7 @@ struct boss_nightbaneAI : public ScriptedAI
                     m_creature->GetMotionMaster()->MovePoint(8, IntroWay[7][0], IntroWay[7][1], IntroWay[7][2]);
                     
                     FlyCheckTimer = 0;
+                    Phase = PHASE_GROUND;
                 }
             }
         }

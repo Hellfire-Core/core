@@ -151,6 +151,7 @@ struct instance_magtheridons_lair : public ScriptedInstance
                         m_gbk.StartCombat(GBK_MAGTHERIDON);
                         break;
                     case NOT_STARTED:
+                        CageTimer = 0;
                         RespawnTimer = 10000;
                         m_gbk.StopCombat(GBK_MAGTHERIDON, false);
                         HandleGameObject(DoorGUID, true);

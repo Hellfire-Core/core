@@ -3110,6 +3110,12 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 29690: // drunken skull krack drunk 100 instead of 1000
                     spellInfo->EffectBasePoints[2] = 99;
                     break;
+                case 29538: // cyclone karathresh test
+                    spellInfo->EffectMiscValue[1] = 1;
+                    break;
+                case 14157: // ruthlessness no cause combat on proc
+                    spellInfo->AttributesEx3 |= SPELL_ATTR_EX3_NO_INITIAL_AGGRO;
+                    break;
                     //PRE NERF ZONE
                 case 44032: // manticron cube exhaustion 180sec
                     spellInfo->DurationIndex = 25;
@@ -3263,9 +3269,11 @@ void SpellMgr::LoadSpellCustomAttr()
                 // Death Coil
                 else if (spellInfo->SpellVisual == 9152)
                     spellInfo->Attributes |= SPELL_ATTR_CANT_CANCEL;
-
                 if (spellInfo->SpellFamilyFlags & 0x0000800000000000LL) // Seed of corruption (proc one from another)
                     spellInfo->AttributesEx2 |= SPELL_ATTR_EX2_TRIGGERED_CAN_TRIGGER;
+
+                if (spellInfo->Id == 27285) // soc effectnot ignore los
+                    spellInfo->AttributesEx2 &= ~SPELL_ATTR_EX2_IGNORE_LOS;
                 break;
             }
             case SPELLFAMILY_HUNTER:
