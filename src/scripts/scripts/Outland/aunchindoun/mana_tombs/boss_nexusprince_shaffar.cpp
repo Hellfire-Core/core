@@ -46,8 +46,8 @@ EndContentData */
 #define SAY_DEAD                        -1557007
 
 #define SPELL_BLINK                     34605
-#define SPELL_FROSTBOLT                 32370
-#define SPELL_FIREBALL                  20420
+#define SPELL_FROSTBOLT                 (HeroicMode ? 32364:32370)
+#define SPELL_FIREBALL                  (HeroicMode ? 32363:32369)
 #define SPELL_FROSTNOVA                 32365
 
 #define SPELL_ETHEREAL_BEACON           32371               // Summon 18431

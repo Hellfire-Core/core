@@ -1012,14 +1012,13 @@ void GameObject::Use(Unit* user)
     // by default spell caster is user
     Unit* spellCaster = user;
     uint32 spellId = 0;
-    user->SendCombatStats(1 << COMBAT_STATS_TEST, "using object", NULL);
     Player *pPlayer = user->GetCharmerOrOwnerPlayerOrPlayerItself();
     if (pPlayer)
     {
         if (sScriptMgr.OnGameObjectUse(pPlayer, this))
             return;
     }
-    user->SendCombatStats(1 << COMBAT_STATS_TEST, "default scripting", NULL);
+    
     GetMap()->ScriptsStart(sGameObjectScripts, GetDBTableGUIDLow(), user, this);
 
     switch (GetGoType())

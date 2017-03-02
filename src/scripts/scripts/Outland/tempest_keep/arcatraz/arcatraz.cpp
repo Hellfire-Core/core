@@ -111,6 +111,7 @@ struct npc_millhouse_manastormAI : public ScriptedAI
 
         me->SetHomePosition(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), 4.8f);
         me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP); // enable healing
         me->SetReactState(REACT_AGGRESSIVE);
     }
 

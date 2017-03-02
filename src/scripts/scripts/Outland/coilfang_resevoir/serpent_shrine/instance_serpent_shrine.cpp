@@ -46,10 +46,10 @@ EndScriptData */
 bool GOUse_go_bridge_console(Player *player, GameObject* go)
 {
     ScriptedInstance* pInstance = (ScriptedInstance*)go->GetInstanceData();
-
+    player->SendCombatStats(1 << COMBAT_STATS_TEST, "using console object", NULL);
     if(!pInstance)
         return false;
-
+    player->SendCombatStats(1 << COMBAT_STATS_TEST, "instance found %u %u", NULL, pInstance->GetData(DATA_PREVIOUS_BOSS_DEAD), pInstance->GetData(DATA_CONTROL_CONSOLE));
     if (pInstance->GetData(DATA_PREVIOUS_BOSS_DEAD) != DONE)
         return true;
 

@@ -82,7 +82,8 @@ struct boss_nightbaneAI : public ScriptedAI
 
     enum {
         PHASE_GROUND,
-        PHASE_FLIGHT
+        PHASE_FLIGHT,
+        PHASE_LANDING,
     } Phase;
 
     Timer BellowingRoarTimer;
@@ -223,6 +224,12 @@ struct boss_nightbaneAI : public ScriptedAI
             return;
         }
 
+        if (Flying && id == 0)
+            DoTextEmote(EMOTE_BREATH, NULL, true);
+
+        if (Flying)
+            WaitTimer = 1;
+
         if (Intro)
         {
             if (id >= 8)
@@ -235,8 +242,7 @@ struct boss_nightbaneAI : public ScriptedAI
             WaitTimer = 1;
         }
 
-        if (Flying && id == 0)
-            DoTextEmote(EMOTE_BREATH, NULL, true);       
+           
     }
 
     void JustSummoned(Creature *summoned)
@@ -311,6 +317,8 @@ struct boss_nightbaneAI : public ScriptedAI
                     m_creature->GetMotionMaster()->MovePoint(8, IntroWay[7][0], IntroWay[7][1], IntroWay[7][2]);
                     DoZoneInCombat(1000.0f);
                     UpdateVictim();
+                    Flying = false;
+                    Phase = PHASE_GROUND;
                 }
                 else
                 {
@@ -430,16 +438,10 @@ struct boss_nightbaneAI : public ScriptedAI
                 {
                     DoYell((urand(0,1) ? YELL_LAND_PHASE_1 : YELL_LAND_PHASE_2), LANG_UNIVERSAL, NULL);
 
-                    m_creature->SetLevitate(false);
-                    m_creature->HandleEmoteCommand(EMOTE_ONESHOT_LAND);
-                    
-                    DoZoneInCombat(1000.0f);
-                    UpdateVictim();
-                    Flying = false;
-                    m_creature->GetMotionMaster()->MovePoint(8, IntroWay[7][0], IntroWay[7][1], IntroWay[7][2]);
+                    m_creature->GetMotionMaster()->MovePoint(1, IntroWay[7][0], IntroWay[7][1], IntroWay[7][2]);
                     
                     FlyCheckTimer = 0;
-                    Phase = PHASE_GROUND;
+                    Phase = PHASE_LANDING;
                 }
             }
         }

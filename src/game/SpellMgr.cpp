@@ -3133,6 +3133,24 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 37566:
                     spellInfo->CastingTimeIndex = 1;
                     break;
+
+                    // mana tombs crap
+                case 33462:
+                case 34944:
+                case 34945:
+                case 34922:
+                case 34930:
+                case 38760:
+                case 37669:
+                case 32365:
+                case 32364:
+                    spellInfo->EffectBasePoints[0] *= 2;
+                    if (spellInfo->Id == 37669)
+                        spellInfo->EffectBasePoints[1] *= 2;
+                    break;
+                case 33919:
+                    spellInfo->EffectBasePoints[0] *= 2;
+                    break;
                 }
                 if (spellInfo->SpellIconID == 184 && spellInfo->Attributes == 4259840)
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SPELL_DMG_COEFF;
