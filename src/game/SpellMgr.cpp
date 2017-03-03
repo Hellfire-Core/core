@@ -3149,7 +3149,7 @@ void SpellMgr::LoadSpellCustomAttr()
                         spellInfo->EffectBasePoints[1] *= 2;
                     break;
                 case 33919:
-                    spellInfo->EffectBasePoints[0] *= 2;
+                    spellInfo->EffectBasePoints[0] *= 4;
                     break;
                 }
                 if (spellInfo->SpellIconID == 184 && spellInfo->Attributes == 4259840)

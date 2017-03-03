@@ -2295,10 +2295,9 @@ void Spell::SetTargetMap(uint32 i, uint32 cur)
                 case 38463:
                 {
                     Aura* orginal = m_caster->GetAura(m_triggeredByAuraSpell->Id, 0);
-                    m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "poison cloud targeting %u %u %u", NULL, m_triggeredByAuraSpell->Id, (orginal ? 1 : 0), (orginal ? orginal->GetAuraDuration() : 0));
                     if (!orginal)
                         break;
-                    uint32 radius = 12 - (orginal->GetAuraDuration() / 5);
+                    uint32 radius = 12 - (orginal->GetAuraDuration() / 5000);
                     unitList.remove_if(Hellground::ObjectDistanceCheck(m_caster, radius, true));
                 }
                 default:

@@ -227,7 +227,7 @@ struct boss_nightbaneAI : public ScriptedAI
         if (Flying && id == 0)
             DoTextEmote(EMOTE_BREATH, NULL, true);
 
-        if (Flying)
+        if (Phase == PHASE_FLIGHT)
             WaitTimer = 1;
 
         if (Intro)
@@ -308,7 +308,7 @@ struct boss_nightbaneAI : public ScriptedAI
                 }
             }
 
-            if (Flying)
+            if (Phase == PHASE_FLIGHT)
             {
                 if (MovePhase >= 7)
                 {
@@ -437,9 +437,9 @@ struct boss_nightbaneAI : public ScriptedAI
                 else
                 {
                     DoYell((urand(0,1) ? YELL_LAND_PHASE_1 : YELL_LAND_PHASE_2), LANG_UNIVERSAL, NULL);
-
-                    m_creature->GetMotionMaster()->MovePoint(1, IntroWay[7][0], IntroWay[7][1], IntroWay[7][2]);
-                    
+                    // all skeletons dead, fly around (we re in point 3) and land
+                    m_creature->GetMotionMaster()->MovePoint(3, IntroWay[3][0], IntroWay[3][1], IntroWay[3][2]);
+                    MovePhase = 4; 
                     FlyCheckTimer = 0;
                     Phase = PHASE_LANDING;
                 }
