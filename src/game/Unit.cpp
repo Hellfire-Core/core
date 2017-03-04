@@ -6044,8 +6044,7 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
                     return false;
                 
                 // mana cost save
-                basepoints0 = procSpell->manaCost * 40/100;
-                SendCombatStats(1 << COMBAT_STATS_TEST, "thrill of the hunt procing %i", NULL, basepoints0);
+                basepoints0 = (procSpell->manaCost + procSpell->ManaCostPercentage * (GetCreateMana()/100)) * 40/100;
                 if (basepoints0 <= 0)
                     return false;
 
@@ -10410,6 +10409,7 @@ int32 Unit::CalculateSpellDamage(SpellEntry const* spellProto, uint8 effect_inde
         value *= exp(getLevel()*(getLevel()-spellProto->spellLevel)/1000.0f - 1);
         //value = int32(value * (int32)getLevel() / (int32)(spellProto->spellLevel ? spellProto->spellLevel : 1));
 
+    SendCombatStats(1 << COMBAT_STATS_DAMAGE_CALC, "csd(%u) = %i, %i ", NULL,spellProto->Id, value, effBasePoints);
     return value;
 }
 
@@ -11101,6 +11101,8 @@ void Unit::UpdateCharmAI()
 
             i_AI = i_disabledAI;
             i_disabledAI = NULL;
+            if (getVictim())
+                i_AI->AttackStart(getVictim());
         }
     }
     else
@@ -12926,7 +12928,6 @@ void Unit::RemoveCharmedOrPossessedBy(Unit *charmer)
             {
                 thisCreature->AddThreat(charmer, 10000.0f);
                 thisCreature->AI()->AttackStart(charmer);
-                thisCreature->GetMotionMaster()->MoveChase(charmer);
             }
             else
                 thisCreature->AI()->EnterEvadeMode();
@@ -13172,6 +13173,7 @@ void Unit::KnockBackFrom(Unit* target, float horizontalSpeed, float verticalSpee
 
 void Unit::KnockBack(float angle, float horizontalSpeed, float verticalSpeed)
 {
+    SendCombatStats(1 << COMBAT_STATS_TEST, "knockback %f %f %f", NULL, angle, horizontalSpeed, verticalSpeed);
     float vsin = sin(angle);
     float vcos = cos(angle);
 

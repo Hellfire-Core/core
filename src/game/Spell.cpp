@@ -1447,7 +1447,7 @@ void Spell::SearchChainTarget(std::list<Unit*> &TagUnitMap, float max_range, uin
             while (GetSpellEntry()->DmgClass == SPELL_DAMAGE_CLASS_MELEE
                 && !m_caster->isInFront(*next, max_range)
                 || !m_caster->canSeeOrDetect(*next, m_caster, false)
-                || (GetSpellEntry()->AttributesEx6 & SPELL_ATTR_EX6_CANT_TARGET_CCD && ((*next)->hasNegativeAuraWithInterruptFlag(AURA_INTERRUPT_FLAG_CC) || (*next)->GetTypeId() == TYPEID_UNIT && ((Creature*)(*next))->GetCreatureType() == CREATURE_TYPE_CRITTER))
+                || (GetSpellEntry()->AttributesEx6 & SPELL_ATTR_EX6_CANT_TARGET_CCD && ((*next)->hasNegativeAuraWithInterruptFlag(AURA_INTERRUPT_FLAG_DAMAGE) || (*next)->GetTypeId() == TYPEID_UNIT && ((Creature*)(*next))->GetCreatureType() == CREATURE_TYPE_CRITTER))
                 || !ignoreLOS && !cur->IsWithinLOSInMap(*next))
             {
                 ++next;
@@ -2297,7 +2297,7 @@ void Spell::SetTargetMap(uint32 i, uint32 cur)
                     Aura* orginal = m_caster->GetAura(m_triggeredByAuraSpell->Id, 0);
                     if (!orginal)
                         break;
-                    uint32 radius = std::min(15 - (orginal->GetAuraDuration() / 5000), 12);
+                    uint32 radius = 15 - (orginal->GetAuraDuration() / 5000);
                     unitList.remove_if(Hellground::ObjectDistanceCheck(m_caster, radius, true));
                 }
                 default:

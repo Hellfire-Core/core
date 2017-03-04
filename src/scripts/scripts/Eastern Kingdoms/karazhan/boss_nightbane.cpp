@@ -308,7 +308,7 @@ struct boss_nightbaneAI : public ScriptedAI
                 }
             }
 
-            if (Phase == PHASE_FLIGHT)
+            if (Phase == PHASE_LANDING)
             {
                 if (MovePhase >= 7)
                 {

@@ -3516,6 +3516,7 @@ void Aura::HandleAuraTransform(bool apply, bool Real)
             //dismount polymorphed target (after patch 2.4.2)
             if (m_target->IsMounted())
                 m_target->RemoveSpellsCausingAura(SPELL_AURA_MOUNTED);
+            m_target->SetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 0); // dismount also creatures
         }
     }
     else

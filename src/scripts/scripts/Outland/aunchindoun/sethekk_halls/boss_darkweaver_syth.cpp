@@ -436,7 +436,7 @@ void AddSC_boss_darkweaver_syth()
 
     newscript = new Script;
     newscript->Name="mob_syth_fire";
-    newscript->GetAI = &GetAI_mob_syth_arcane;
+    newscript->GetAI = &GetAI_mob_syth_fire;
     newscript->RegisterSelf();
 
     newscript = new Script;

@@ -157,6 +157,7 @@ struct boss_grand_warlock_nethekurseAI : public ScriptedAI
         PeonKilledCount = 4;
         IsMainEvent = true;
         me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        DoZoneInCombat();
     }
 
     void AttackStart(Unit* who)
