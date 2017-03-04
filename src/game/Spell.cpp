@@ -2720,18 +2720,10 @@ void Spell::handle_immediate()
     // start channeling if applicable
     if (SpellMgr::IsChanneledSpell(GetSpellEntry()))
     {
-        Unit* unittarget = NULL;
-        Unit* caster = (m_originalCasterGUID ? m_originalCaster : m_caster);
-        if (m_UniqueTargetInfo.size())
-            unittarget = m_caster->GetUnit(m_UniqueTargetInfo.begin()->targetGUID);
 
         int32 duration = SpellMgr::GetSpellDuration(GetSpellEntry());
 
-        if (unittarget && !SpellMgr::IsPositiveSpell(spellInfo->Id) && unittarget != caster)
-        {
-            DiminishingGroup dg =  SpellMgr::GetDiminishingReturnsGroupForSpell(GetSpellEntry(), m_triggeredByAuraSpell);
-            unittarget->ApplyDiminishingToDuration(dg, duration, caster, m_diminishLevel, spellInfo);
-        }
+        
         if (duration)
         {
             //apply haste mods
@@ -2741,12 +2733,19 @@ void Spell::handle_immediate()
                 modOwner->ApplySpellMod(GetSpellEntry()->Id, SPELLMOD_DURATION, duration);
 
             // channels in pvp duration
-            if (unittarget)
+            if (m_UniqueTargetInfo.size())
             {
+                Unit* unittarget = m_caster->GetUnit(m_UniqueTargetInfo.begin()->targetGUID);
                 Player* casterpl = m_caster->GetCharmerOrOwnerPlayerOrPlayerItself();
                 Player* targetpl = unittarget ? unittarget->GetCharmerOrOwnerPlayerOrPlayerItself() : NULL;
                 if (duration > 10000 && casterpl && targetpl && casterpl->IsHostileTo(targetpl))
                     duration = 10000;
+
+                if (!SpellMgr::IsPositiveSpell(spellInfo->Id) && unittarget != m_caster)
+                {
+                    DiminishingGroup dg = SpellMgr::GetDiminishingReturnsGroupForSpell(GetSpellEntry(), m_triggeredByAuraSpell);
+                    unittarget->ApplyDiminishingToDuration(dg, duration, unittarget->GetDiminishing(dg), spellInfo);
+                }
             }
             m_spellState = SPELL_STATE_CASTING;
             m_caster->AddInterruptMask(GetSpellEntry()->ChannelInterruptFlags);

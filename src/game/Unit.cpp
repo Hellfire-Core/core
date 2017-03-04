@@ -10546,7 +10546,7 @@ void Unit::IncrDiminishing(DiminishingGroup group)
         m_Diminishing.push_back(DiminishingReturn(group,WorldTimer::getMSTime(),DIMINISHING_LEVEL_2));
 }
 
-void Unit::ApplyDiminishingToDuration(DiminishingGroup group, int32 &duration,Unit* /*caster*/,DiminishingLevels Level, SpellEntry const *spellInfo)
+void Unit::ApplyDiminishingToDuration(DiminishingGroup group, int32 &duration,DiminishingLevels Level, SpellEntry const *spellInfo)
 {
     if (duration == -1 || group == DIMINISHING_NONE)/*(caster->IsFriendlyTo(this) && caster != this)*/
         return;
@@ -11101,8 +11101,11 @@ void Unit::UpdateCharmAI()
 
             i_AI = i_disabledAI;
             i_disabledAI = NULL;
-            if (getVictim())
-                i_AI->AttackStart(getVictim());
+            if (!getThreatManager().isThreatListEmpty())
+            {
+                AttackStop();
+                i_AI->AttackStart(getThreatManager().getHostilTarget());
+            }
         }
     }
     else

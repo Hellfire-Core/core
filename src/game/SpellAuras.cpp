@@ -583,14 +583,6 @@ void Aura::Update(uint32 diff)
         if (m_target->GetPositionZ() >= -19.9645)
             m_target->RemoveAurasDueToSpell(37284);
     }
-    else if (GetId() == 40627) // Apexis Emanations
-    {
-        if (m_target->GetZoneId() != 3522) // Blade's Edge only
-        {
-            m_target->RemoveAurasDueToSpell(40625);
-            m_target->RemoveAurasDueToSpell(40627);
-        }
-    }
 
     // Channeled aura required check distance from caster except in possessed cases
     Unit *pRealTarget = (GetSpellProto()->EffectApplyAuraName[m_effIndex] == SPELL_AURA_PERIODIC_TRIGGER_SPELL &&
@@ -2375,6 +2367,12 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
                 m_target->RemoveAurasDueToSpell(38818);
                 return;
             }
+            case 32441: // karazhan brittle bones
+            {
+                m_isPeriodic = true;
+                m_periodicTimer = urand(10000, 20000);
+                return;
+            }
         }
 
         // Earth Shield
@@ -3506,11 +3504,11 @@ void Aura::HandleAuraTransform(bool apply, bool Real)
         }
 
         // polymorph case
-        if (Real && m_target->GetTypeId() == TYPEID_PLAYER && m_target->IsPolymorphed())
+        if (Real && m_target->IsPolymorphed())
         {
             // for players, start regeneration after 1s (in polymorph fast regeneration case)
             // only if caster is Player (after patch 2.4.2)
-            if (IS_PLAYER_GUID(GetCasterGUID()))
+            if (IS_PLAYER_GUID(GetCasterGUID()) && m_target->GetTypeId() == TYPEID_PLAYER)
                 ((Player*)m_target)->setRegenTimer(1000);
 
             //dismount polymorphed target (after patch 2.4.2)
@@ -7434,16 +7432,12 @@ void Aura::PeriodicDummyTick()
                 m_target->CastSpell(m_target,m_modifier.m_amount,true,NULL,this);
             return;
         }
-//        // Panda
-//        case 19230: break;
-//        // Master of Subtlety
-//        case 31666: break;
-//        // Gossip NPC Periodic - Talk
-//        case 33208: break;
-//        // Gossip NPC Periodic - Despawn
-//        case 33209: break;
-//        // Force of Nature
-//        case 33831: break;
+        case 32441: // karazhan brittle bones
+        {
+            m_target->CastSpell(m_target, 32437, true);
+            m_periodicTimer = urand(15000, 40000);
+            break;
+        }
         // Aspect of the Viper
         case 34074:
         {
@@ -7474,67 +7468,13 @@ void Aura::PeriodicDummyTick()
             ((Player*)m_target)->UpdateManaRegen();
             return;
         }
-//        // Steal Weapon
-//        case 36207: break;
-//        // Simon Game START timer, (DND)
-//        case 39993: break;
         // Harpooner's Mark
         case 40084:
         {
             m_target->CastSpell((Unit*)NULL, 40085, true);
             break;
         }
-//        // Knockdown Fel Cannon: break; The Aggro Burst
-//        case 40119: break;
-//        // Old Mount Spell
-//        case 40154: break;
-//        // Magnetic Pull
-//        case 40581: break;
-//        // Ethereal Ring: break; The Bolt Burst
-//        case 40801: break;
-//        // Crystal Prison
-//        case 40846: break;
-//        // Copy Weapon
-//        case 41054: break;
-//        // Ethereal Ring Visual, Lightning Aura
-//        case 41477: break;
-//        // Ethereal Ring Visual, Lightning Aura (Fork)
-//        case 41525: break;
-//        // Ethereal Ring Visual, Lightning Jumper Aura
-//        case 41567: break;
-//        // No Man's Land
-//        case 41955: break;
-//        // Headless Horseman - Fire
-//        case 42074: break;
-//        // Headless Horseman - Visual - Large Fire
-//        case 42075: break;
-//        // Headless Horseman - Start Fire, Periodic Aura
-//        case 42140: break;
-//        // Ram Speed Boost
-//        case 42152: break;
-//        // Headless Horseman - Fires Out Victory Aura
-//        case 42235: break;
-//        // Pumpkin Life Cycle
-//        case 42280: break;
-//        // Brewfest Request Chick Chuck Mug Aura
-//        case 42537: break;
-//        // Squashling
-//        case 42596: break;
-//        // Headless Horseman Climax, Head: Periodic
-//        case 42603: break;
-//        // Fire Bomb
-//        case 42621: break;
-//        // Headless Horseman - Conflagrate, Periodic Aura
-//        case 42637: break;
-//        // Headless Horseman - Create Pumpkin Treats Aura
-//        case 42774: break;
-//        // Headless Horseman Climax - Summoning Rhyme Aura
-//        case 42879: break;
-//        // Tricky Treat
-//        case 42919: break;
-//        // Giddyup!
-//        case 42924: break;
-//        // Ram - Trot
+        // Ram - Trot
         case 42992:
         {
             if(m_target->HasAura(43052, 0))
@@ -7628,46 +7568,13 @@ void Aura::PeriodicDummyTick()
             }
             break;
         }
-//        // Headless Horseman - Maniacal Laugh, Maniacal, Delayed 17
-//        case 43884: break;
-//        // Headless Horseman - Maniacal Laugh, Maniacal, other, Delayed 17
-//        case 44000: break;
-//        // Energy Feedback
-//        case 44328: break;
-//        // Romantic Picnic
+        // Romantic Picnic
         case 43681: // Inactive
             m_target->RemoveAurasDueToSpell(SPELL_AURA_PLAYER_INACTIVE);
             if (m_target->ToPlayer() && m_target->ToPlayer()->InBattleGround())
                 m_target->ToPlayer()->LeaveBattleground();
             break;
-//        case 45102: break;
-//        // Romantic Picnic
-//        case 45123: break;
-//        // Looking for Love
-//        case 45124: break;
-//        // Kite - Lightning Strike Kite Aura
-//        case 45197: break;
-//        // Rocket Chicken
-//        case 45202: break;
-//        // Copy Offhand Weapon
-//        case 45205: break;
-//        // Upper Deck - Kite - Lightning Periodic Aura
-//        case 45207: break;
-//        // Kite -Sky  Lightning Strike Kite Aura
-//        case 45251: break;
-//        // Ribbon Pole Dancer Check Aura
-//        case 45390: break;
-//        // Holiday - Midsummer, Ribbon Pole Periodic Visual
-//        case 45406: break;
-//        // Parachute
-//        case 45472: break;
-//        // Alliance Flag, Extra Damage Debuff
-//        case 45898: break;
-//        // Horde Flag, Extra Damage Debuff
-//        case 45899: break;
-//        // Ahune - Summoning Rhyme Aura
-//        case 45926: break;
-//        // Ahune - Slippery Floor
+        // Ahune - Slippery Floor
         case 45945:
         {
             if (m_target->GetTypeId() == TYPEID_PLAYER)
@@ -7683,15 +7590,14 @@ void Aura::PeriodicDummyTick()
             }
             break;
         }
-//        // Ahune's Shield
-//        case 45954: break;
+
         // Nether Vapor Lightning
         case 45960:
         {
             m_target->CastSpell(m_target, 45959, true);
             break;
         }
-//        // Darkness - summon Dark Fiends on tick no 2
+        // Darkness - summon Dark Fiends on tick no 2
         case 45996:
         {
             Unit* caster = GetCaster();
@@ -7704,7 +7610,7 @@ void Aura::PeriodicDummyTick()
             }
             break;
         }
-//        // Summon Blood Elves Periodic
+        // Summon Blood Elves Periodic
         case 46041:
         {
             Unit* caster = GetCaster();
@@ -7714,7 +7620,7 @@ void Aura::PeriodicDummyTick()
                 caster->CastSpell((Unit*)NULL, 46037+i, true, 0, this);    // up ramp Berserkers & Fury Mages
             break;
         }
-//        // Transform Visual Missile Periodic
+        // Transform Visual Missile Periodic
         case 46205:
         {
             Unit* caster = GetCaster();
@@ -7733,32 +7639,6 @@ void Aura::PeriodicDummyTick()
             }
             break;
         }
-//        // Find Opening Beam End
-//        case 46333: break;
-//        // Ice Spear Control Aura
-//        case 46371: break;
-//        // Hailstone Chill
-//        case 46458: break;
-//        // Hailstone Chill, Internal
-//        case 46465: break;
-//        // Chill, Internal Shifter
-//        case 46549: break;
-//        // Summon Ice Spear Knockback Delayer
-//        case 46878: break;
-//        // Burninate Effect
-//        case 47214: break;
-//        // Fizzcrank Practice Parachute
-//        case 47228: break;
-//        // Send Mug Control Aura
-//        case 47369: break;
-//        // Direbrew's Disarm (precast)
-//        case 47407: break;
-//        // Mole Machine Port Schedule
-//        case 47489: break;
-//        // Mole Machine Portal Schedule
-//        case 49466: break;
-//        // Drink Coffee
-//        case 49472: break;
         // Listening to Music
         case 50493:
         {

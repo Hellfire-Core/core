@@ -32,11 +32,9 @@ EndScriptData */
 
 #define DOOR_NETHEKURSE1     182539
 #define DOOR_NETHEKURSE2     182540
-#define NPC_FEL_ORC          17083
 #define NPC_NETHEKURSE       16807
 #define NPC_WARBRINGER       16809
 #define NPC_KARGATH          16808
-#define SPELL_SHADOW_SEAR    30735
 
 enum
 {
@@ -88,7 +86,6 @@ struct instance_shattered_halls : public ScriptedInstance
     instance_shattered_halls(Map *map) : ScriptedInstance(map) {Initialize();};
 
     uint32 Encounter[ENCOUNTERS];
-    std::list<uint64> OrcGUID;
     uint64 nethekurseGUID;
     uint64 warbringerGUID;
     uint64 nethekurseDoor1GUID;
@@ -198,7 +195,6 @@ struct instance_shattered_halls : public ScriptedInstance
             case NPC_SOLDIER_HORDE_2: soldierh2GUID = creature->GetGUID(); break;
             case NPC_SOLDIER_HORDE_3: soldierh3GUID = creature->GetGUID(); break;
             case NPC_OFFICER_HORDE: officerhGUID = creature->GetGUID(); break;
-            case NPC_FEL_ORC: OrcGUID.push_back(creature->GetGUID()); break;
         }
     }
 
@@ -207,35 +203,6 @@ struct instance_shattered_halls : public ScriptedInstance
         switch( type )
         {
             case TYPE_NETHEKURSE:
-                if (data == FAIL)
-                {
-                    for (std::list<uint64>::iterator itr = OrcGUID.begin(); itr != OrcGUID.end(); ++itr)
-                    {
-                        if (Creature* Orc = instance->GetCreature(*itr))
-                        {
-                            if (!Orc->isAlive())
-                            {
-                                Orc->ForcedDespawn();
-                                Orc->Respawn();
-                            }
-                        }
-                    }
-                }
-                if (data == SPECIAL)
-                {
-                    for (std::list<uint64>::iterator itr = OrcGUID.begin(); itr != OrcGUID.end(); ++itr)
-                    {
-                        if (Creature* Orc = instance->GetCreature(*itr))
-                        {
-                            if (Orc->isAlive())
-                            {
-                                if (Creature* neth = instance->GetCreature(nethekurseGUID))
-                                    neth->CastSpell(Orc, SPELL_SHADOW_SEAR, true);
-
-                            }
-                        }
-                    }
-                }
                 if (data == DONE)
                 {
                     HandleGameObject(nethekurseDoor1GUID, 0);

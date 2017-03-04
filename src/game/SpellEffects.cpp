@@ -3143,7 +3143,7 @@ void Spell::EffectApplyAura(uint32 i)
     {
         if (unitTarget != caster || !SpellMgr::IsChanneledSpell(spellInfo))
         {
-            unitTarget->ApplyDiminishingToDuration(m_diminishGroup,duration,caster,m_diminishLevel, spellInfo);
+            unitTarget->ApplyDiminishingToDuration(m_diminishGroup,duration,m_diminishLevel, spellInfo);
             Aur->setDiminishGroup(m_diminishGroup);
         }
     }

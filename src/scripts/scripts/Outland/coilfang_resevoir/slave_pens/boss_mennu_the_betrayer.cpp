@@ -19,7 +19,6 @@
 #include "precompiled.h"
 enum mennu
 {
-    SPELL_HEALING_WARD            = 34980,
     SPELL_CORRUPTED_NOVA_TOTEM    = 31991,
     SPELL_LIGHTNING_BOLT          = 35010,
     SPELL_EARTHGRAB_TOTEM         = 31981,
@@ -28,10 +27,6 @@ enum mennu
 
     SPELL_FIRE_NOVA               = 33132,
     SPELL_ENTANGLING_ROOTS        = 20654,
-    SPELL_STONESKIN               = 31986,
-
-    NPC_STONESKIN_TOTEM           = 18177,
-    NPC_H_STONESKIN_TOTEM         = 19900,
 
     SAY_AGGRO_1                   = -1545024,
     SAY_AGGRO_2                   = -1545025,
@@ -80,14 +75,6 @@ struct boss_mennu_the_betrayerAI : public ScriptedAI
 
     void JustSummoned(Creature* summoned)
     {
-        switch(summoned->GetEntry())
-        {
-            case NPC_STONESKIN_TOTEM:
-            case NPC_H_STONESKIN_TOTEM:
-                summoned->CastSpell(summoned, SPELL_STONESKIN, true);
-                summoned->SetDefaultMovementType(IDLE_MOTION_TYPE);
-                break;
-        }
         Summons.Summon(summoned);
     }
 

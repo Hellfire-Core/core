@@ -75,6 +75,7 @@ static Say PeonDies[]=
 
 #define SPELL_HEMORRHAGE            30478
 #define SPELL_CONSUMPTION           (HeroicMode ? 35952 : 30497)
+#define NPC_FEL_ORC                 17083
 
 struct boss_grand_warlock_nethekurseAI : public ScriptedAI
 {
@@ -86,12 +87,12 @@ struct boss_grand_warlock_nethekurseAI : public ScriptedAI
     ScriptedInstance* pInstance;
     bool IntroOnce;
     bool IsIntroEvent;
-    bool IsMainEvent;
     bool SpinOnce;
     bool Phase;
 
     uint32 PeonEngagedCount;
     uint32 PeonKilledCount;
+    std::list<uint64 > orcs;
 
     Timer IntroEvent_Timer;
     Timer DeathCoil_Timer;
@@ -104,15 +105,13 @@ struct boss_grand_warlock_nethekurseAI : public ScriptedAI
     {
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
         IsIntroEvent = false;
-        IntroOnce = false;
-        IsMainEvent = false;
         SpinOnce = false;
         Phase = false;
 
         PeonEngagedCount = 0;
         PeonKilledCount = 0;
 
-        IntroEvent_Timer.Reset(20000);
+        IntroEvent_Timer.Reset(0);
         DeathCoil_Timer.Reset(20000);
         ShadowFissure_Timer.Reset(8000);
         Cleave_Timer.Reset(17000);
@@ -121,6 +120,7 @@ struct boss_grand_warlock_nethekurseAI : public ScriptedAI
 
         if (pInstance)
             pInstance->SetData(TYPE_NETHEKURSE, NOT_STARTED);
+        orcs = me->GetMap()->GetCreaturesGUIDList(NPC_FEL_ORC);
     }
 
     void DoYellForPeonEnterCombat()
@@ -140,29 +140,23 @@ struct boss_grand_warlock_nethekurseAI : public ScriptedAI
         DoScriptText(PeonDies[PeonKilledCount].id, me);
         ++PeonKilledCount;
 
+        if (PeonKilledCount == 3)
+        {
+            me->CastSpell((Unit*)NULL, SPELL_SHADOW_SEAR, true);
+            IntroEvent_Timer.Reset(20000);
+        }
         if (PeonKilledCount == 4)
         {
+            DoScriptText(RAND(SAY_TAUNT_1, SAY_TAUNT_2, SAY_TAUNT_3), me);
             IsIntroEvent = false;
-            IsMainEvent = true;
             me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            DoZoneInCombat();
         }
-    }
-
-    void PeonsAreDead()
-    {
-        DoScriptText(RAND(SAY_TAUNT_1, SAY_TAUNT_2, SAY_TAUNT_3), me);
-
-        IsIntroEvent = false;
-        PeonEngagedCount = 4;
-        PeonKilledCount = 4;
-        IsMainEvent = true;
-        me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-        DoZoneInCombat();
     }
 
     void AttackStart(Unit* who)
     {
-        if (IsIntroEvent || !IsMainEvent)
+        if (IsIntroEvent)
             return;
 
         ScriptedAI::AttackStart(who);
@@ -170,23 +164,18 @@ struct boss_grand_warlock_nethekurseAI : public ScriptedAI
 
     void MoveInLineOfSight(Unit *who)
     {
-        if (!IntroOnce && me->IsWithinDistInMap(who, 40.0f))
+        if (me->IsWithinDistInMap(who, 40.0f) && pInstance && pInstance->GetData(TYPE_NETHEKURSE) == NOT_STARTED)
         {
             if (who->GetTypeId() != TYPEID_PLAYER || ((Player*)who)->isGameMaster())
                 return;
 
             DoScriptText(SAY_INTRO, me);
-            IntroOnce = true;
             IsIntroEvent = true;
 
-            if (pInstance)
-            {
-                pInstance->SetData(TYPE_NETHEKURSE,IN_PROGRESS);
-                pInstance->SetData(TYPE_NETHEKURSE, SPECIAL);
-            }
+            pInstance->SetData(TYPE_NETHEKURSE,IN_PROGRESS);
         }
 
-        if (IsIntroEvent || !IsMainEvent)
+        if (IsIntroEvent)
             return;
 
         ScriptedAI::MoveInLineOfSight(who);
@@ -222,14 +211,15 @@ struct boss_grand_warlock_nethekurseAI : public ScriptedAI
 
         if (pInstance)
         {
-            pInstance->SetData(TYPE_NETHEKURSE, FAIL);
+            for (std::list<uint64>::iterator itr = orcs.begin(); itr != orcs.end(); itr++)
+            {
+                Creature* Orc = me->GetCreature(*itr);
+                if (!Orc || Orc->isAlive())
+                    continue;
 
-            float x, y, z;
-            me->GetRespawnCoord(x, y, z);
-            me->GetMotionMaster()->MovePoint(1, x, y, z);
+                Orc->Respawn();
+            }
         }
-        else
-            me->GetMotionMaster()->MoveTargetedHome();
     }
 
     void JustDied(Unit* killer)
@@ -242,37 +232,25 @@ struct boss_grand_warlock_nethekurseAI : public ScriptedAI
         pInstance->SetData(TYPE_NETHEKURSE,DONE);
     }
 
-    void MovementInform(uint32 type, uint32 id)
-    {
-        if (type != POINT_MOTION_TYPE)
-            return;
-
-        if(id == 1)
-        {
-            Reset();
-            me->SetFacingTo(4.4f);
-            me->CastSpell(me, SPELL_SHADOW_SEAR, true);
-        }
-    }
-
     void UpdateAI(const uint32 diff)
     {
         if (IsIntroEvent)
         {
-            if (!pInstance)
-                return;
-
-            if (pInstance->GetData(TYPE_NETHEKURSE) == IN_PROGRESS)
+            if (IntroEvent_Timer.Expired(diff))
             {
-                if (IntroEvent_Timer.Expired(diff))
-                    PeonsAreDead();
+                for (std::list<uint64>::iterator itr = orcs.begin(); itr != orcs.end(); itr++)
+                {
+                    Creature* Orc = me->GetCreature(*itr);
+                    if (!Orc || !Orc->isAlive())
+                        continue;
+
+                    me->Kill(Orc);
+                }
+                IntroEvent_Timer = 0;
             }
-        }
-
-        if (!UpdateVictim())
             return;
-
-        if (!IsMainEvent)
+        }
+        if (!UpdateVictim())
             return;
 
         if (Phase)

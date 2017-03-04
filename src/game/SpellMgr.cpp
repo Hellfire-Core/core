@@ -3148,7 +3148,6 @@ void SpellMgr::LoadSpellCustomAttr()
                     spellInfo->EffectBasePoints[0] *= 2;
                     break;
                 case 33919:
-                case 33462:
                 case 37669:
                     spellInfo->EffectBasePoints[0] *= 4;
                     if (spellInfo->Id == 37669)
@@ -3273,6 +3272,9 @@ void SpellMgr::LoadSpellCustomAttr()
 
                 if (spellInfo->SpellFamilyFlags & 0x0000000800200080LL) // Arcane Missles / Blizzard / Molten Armor proc
                     spellInfo->AttributesEx2 |= SPELL_ATTR_EX2_TRIGGERED_CAN_TRIGGER;
+
+                if (spellInfo->Id == 33462) // mana tombs crap
+                    spellInfo->EffectBasePoints[0] *= 2;
                 break;
             }
             case SPELLFAMILY_WARLOCK:

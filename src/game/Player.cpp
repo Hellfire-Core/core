@@ -20092,6 +20092,11 @@ void Player::UpdateZoneDependentAuras(uint32 oldZone, uint32 newZone)
         if (spellid && !HasAura(spellid,0))
             CastSpell(this,spellid,true);
     }
+    if (oldZone == 3522) // apexis emanation blade edge only
+    {
+        RemoveAurasDueToSpell(40625);
+        RemoveAurasDueToSpell(40627);
+    }
     /* DISABLED Ki'ru song of something
     else if (newZone == 4080 || newZone == 4075 || newZone == 4131) // isle,swp,mgt
     {

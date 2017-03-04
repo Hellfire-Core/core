@@ -838,7 +838,7 @@ class HELLGROUND_IMPORT_EXPORT Unit : public WorldObject
 
         DiminishingLevels GetDiminishing(DiminishingGroup  group);
         void IncrDiminishing(DiminishingGroup group);
-        void ApplyDiminishingToDuration(DiminishingGroup  group, int32 &duration,Unit* caster, DiminishingLevels Level, SpellEntry const *tSpell = NULL);
+        void ApplyDiminishingToDuration(DiminishingGroup  group, int32 &duration, DiminishingLevels Level, SpellEntry const *tSpell = NULL);
         void ApplyDiminishingAura(DiminishingGroup  group, bool apply);
         void ClearDiminishings() { m_Diminishing.clear(); }
 
