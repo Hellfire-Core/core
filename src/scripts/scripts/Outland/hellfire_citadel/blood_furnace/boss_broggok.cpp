@@ -67,6 +67,7 @@ struct boss_broggokAI : public ScriptedAI
     Timer PoisonSpawn_Timer;
     Timer PoisonBolt_Timer;
     Timer checkTimer;
+    Timer Cage_Timer;
 
     SummonList summons;
     ScriptedInstance *pInstance;
@@ -81,6 +82,7 @@ struct boss_broggokAI : public ScriptedAI
         PoisonSpawn_Timer.Reset(13000);
         PoisonBolt_Timer.Reset(7000);
         checkTimer.Reset(3000);
+        Cage_Timer = 0;
 
         summons.DespawnAll();
         prisoners.clear();
@@ -145,6 +147,7 @@ struct boss_broggokAI : public ScriptedAI
             case EVENT_4_CAGE:
             {
                 phase = eEvents(param);
+                Cage_Timer.Reset((param == EVENT_4_CAGE ? 0 :120000));
                 break;
             }
             default:
@@ -179,14 +182,14 @@ struct boss_broggokAI : public ScriptedAI
     {
         if (!UpdateVictim())
         {
-            if (checkTimer.Expired(diff))
+            if (phase != EVENT_NULL && phase != EVENT_FIGHT)
             {
-                if (phase != EVENT_NULL && phase != EVENT_FIGHT)
+                if (checkTimer.Expired(diff))
                 {
                     bool found = false;
                     for (std::map<uint64, uint8>::iterator it = prisoners.begin(); it != prisoners.end(); it++)
                     {
-                        if (it->second == phase)
+                        if (it->second <= phase)
                         {
                             if (Creature *pPrisoner = me->GetCreature(it->first))
                             {
@@ -200,11 +203,16 @@ struct boss_broggokAI : public ScriptedAI
                     }
 
                     if (!found)
-                        DoAction(uint8(phase) +1);
+                        DoAction(uint8(phase) + 1);
+                    checkTimer = 2000;
                 }
-                checkTimer = 2000;
-            }
 
+                if (Cage_Timer.Expired(diff))
+                {
+                    DoAction(uint8(phase) + 1);
+                    // cage timer is set in doaction
+                }
+            }
             return;
         }
 

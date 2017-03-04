@@ -3113,6 +3113,9 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 14157: // ruthlessness no cause combat on proc
                     spellInfo->AttributesEx3 |= SPELL_ATTR_EX3_NO_INITIAL_AGGRO;
                     break;
+                case  31479: // black morass dragon helper 60 sec despawn
+                    spellInfo->DurationIndex = 3;
+                    break;
                     //PRE NERF ZONE
                 case 44032: // manticron cube exhaustion 180sec
                     spellInfo->DurationIndex = 25;
@@ -3135,21 +3138,21 @@ void SpellMgr::LoadSpellCustomAttr()
                     break;
 
                     // mana tombs crap
-                case 33462:
-                case 34944:
-                case 34945:
+                case 35944:
+                case 35945:
                 case 34922:
                 case 34930:
                 case 38760:
-                case 37669:
                 case 32365:
                 case 32364:
                     spellInfo->EffectBasePoints[0] *= 2;
-                    if (spellInfo->Id == 37669)
-                        spellInfo->EffectBasePoints[1] *= 2;
                     break;
                 case 33919:
+                case 33462:
+                case 37669:
                     spellInfo->EffectBasePoints[0] *= 4;
+                    if (spellInfo->Id == 37669)
+                        spellInfo->EffectBasePoints[1] *= 4;
                     break;
                 }
                 if (spellInfo->SpellIconID == 184 && spellInfo->Attributes == 4259840)

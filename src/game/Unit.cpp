@@ -6042,9 +6042,10 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
             {
                 if (!procSpell)
                     return false;
-
+                
                 // mana cost save
                 basepoints0 = procSpell->manaCost * 40/100;
+                SendCombatStats(1 << COMBAT_STATS_TEST, "thrill of the hunt procing %i", NULL, basepoints0);
                 if (basepoints0 <= 0)
                     return false;
 
@@ -12925,6 +12926,7 @@ void Unit::RemoveCharmedOrPossessedBy(Unit *charmer)
             {
                 thisCreature->AddThreat(charmer, 10000.0f);
                 thisCreature->AI()->AttackStart(charmer);
+                thisCreature->GetMotionMaster()->MoveChase(charmer);
             }
             else
                 thisCreature->AI()->EnterEvadeMode();

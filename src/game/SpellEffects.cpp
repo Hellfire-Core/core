@@ -2292,7 +2292,7 @@ void Spell::EffectDummy(uint32 i)
             {
                 if (m_caster->getClass()!=CLASS_HUNTER)
                     return;
-
+                m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "kill command activated", NULL);
                 // clear hunter crit aura state
                 m_caster->ModifyAuraState(AURA_STATE_HUNTER_CRIT_STRIKE,false);
 

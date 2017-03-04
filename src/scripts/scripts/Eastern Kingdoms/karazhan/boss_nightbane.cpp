@@ -103,6 +103,7 @@ struct boss_nightbaneAI : public ScriptedAI
     int32 MovePhase;
     Timer WaitTimer;
 
+    // all this thing should be rewritten to use phases only (add intro phase and should be ccool)
     bool Summoned;
     bool Intro;
     bool Flying;
@@ -227,7 +228,7 @@ struct boss_nightbaneAI : public ScriptedAI
         if (Flying && id == 0)
             DoTextEmote(EMOTE_BREATH, NULL, true);
 
-        if (Phase == PHASE_FLIGHT)
+        if (Phase == PHASE_LANDING)
             WaitTimer = 1;
 
         if (Intro)
@@ -279,12 +280,11 @@ struct boss_nightbaneAI : public ScriptedAI
         m_creature->GetMotionMaster()->MovePoint(0, IntroWay[2][0], IntroWay[2][1], IntroWay[2][2]);
 
         Phase = PHASE_FLIGHT;
-        MovePhase = 1;
         Flying = true;
         ++FlyCount;
 
-        FlyCheckTimer.Reset(20000); //timer wrong between 45 and 60 seconds
-        DistractingAshTimer.Delay(10000); // wrong, just to not cast while flying up
+        FlyCheckTimer.Reset(20000);
+        DistractingAshTimer = 0;
         RainofBonesTimer = 5000;
         SmokingBlastTimer = 0;
     }
@@ -385,16 +385,21 @@ struct boss_nightbaneAI : public ScriptedAI
         {
             if (RainofBonesTimer.Expired(diff)) // only once at the beginning of phase 2
             {
+
                 if (Unit* target = SelectCastTarget(SPELL_RAIN_OF_BONES, CAST_RANDOM))
                 {
                     m_creature->CastSpell(target, SPELL_RAIN_OF_BONES, false);
+                }
 
-                    for (int i = 0; i < 5; ++i)
+                for (int i = 0; i < 5; ++i)
+                {
+                    if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0))
                         DoCast(target, SPELL_SUMMON_SKELETON, true);
                 }
 
                 RainofBonesTimer = 0;
                 SmokingBlastTimer = urand(10000, 12000);
+                DistractingAshTimer.Reset(urand(10000, 12000));
             }
 
             if (DistractingAshTimer.Expired(diff))

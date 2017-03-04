@@ -2297,7 +2297,7 @@ void Spell::SetTargetMap(uint32 i, uint32 cur)
                     Aura* orginal = m_caster->GetAura(m_triggeredByAuraSpell->Id, 0);
                     if (!orginal)
                         break;
-                    uint32 radius = 12 - (orginal->GetAuraDuration() / 5000);
+                    uint32 radius = std::min(15 - (orginal->GetAuraDuration() / 5000), 12);
                     unitList.remove_if(Hellground::ObjectDistanceCheck(m_caster, radius, true));
                 }
                 default:
@@ -2720,7 +2720,18 @@ void Spell::handle_immediate()
     // start channeling if applicable
     if (SpellMgr::IsChanneledSpell(GetSpellEntry()))
     {
+        Unit* unittarget = NULL;
+        Unit* caster = (m_originalCasterGUID ? m_originalCaster : m_caster);
+        if (m_UniqueTargetInfo.size())
+            unittarget = m_caster->GetUnit(m_UniqueTargetInfo.begin()->targetGUID);
+
         int32 duration = SpellMgr::GetSpellDuration(GetSpellEntry());
+
+        if (unittarget && !SpellMgr::IsPositiveSpell(spellInfo->Id) && unittarget != caster)
+        {
+            DiminishingGroup dg =  SpellMgr::GetDiminishingReturnsGroupForSpell(GetSpellEntry(), m_triggeredByAuraSpell);
+            unittarget->ApplyDiminishingToDuration(dg, duration, caster, m_diminishLevel, spellInfo);
+        }
         if (duration)
         {
             //apply haste mods
@@ -2730,9 +2741,8 @@ void Spell::handle_immediate()
                 modOwner->ApplySpellMod(GetSpellEntry()->Id, SPELLMOD_DURATION, duration);
 
             // channels in pvp duration
-            if (m_UniqueTargetInfo.size())
+            if (unittarget)
             {
-                Unit* unittarget = m_caster->GetUnit(m_UniqueTargetInfo.begin()->targetGUID);
                 Player* casterpl = m_caster->GetCharmerOrOwnerPlayerOrPlayerItself();
                 Player* targetpl = unittarget ? unittarget->GetCharmerOrOwnerPlayerOrPlayerItself() : NULL;
                 if (duration > 10000 && casterpl && targetpl && casterpl->IsHostileTo(targetpl))
@@ -3915,6 +3925,9 @@ SpellCastResult Spell::CheckCast(bool strict)
 
     if (GetSpellEntry()->Attributes & SPELL_ATTR_DISABLED_WHILE_ACTIVE && m_caster->HasAura(GetSpellEntry()->Id, 0))
         return SPELL_FAILED_NOT_READY;
+
+    if (GetSpellEntry()->Id == 34477 && m_targets.getUnitTarget() && m_targets.getUnitTarget()->HasAura(35097, 0))
+        return SPELL_FAILED_AURA_BOUNCED;// missdirection already active
 
     // Check global cooldown
     if (strict && !IsTriggeredSpell() && HasGlobalCooldown())

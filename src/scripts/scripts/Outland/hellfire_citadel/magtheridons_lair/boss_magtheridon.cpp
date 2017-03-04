@@ -436,6 +436,26 @@ struct mob_magtheridon_triggerAI : public Scripted_NoMovementAI
     }
 };
 
+struct mob_magtheridon_bfAI : public Scripted_NoMovementAI
+{
+    mob_magtheridon_bfAI(Creature* c) : Scripted_NoMovementAI(c) {}
+
+    Timer yellTimer;
+    void Reset()
+    {
+        yellTimer.Reset(90000);
+    }
+
+    void UpdateAI(const uint32 diff)
+    {
+        if (yellTimer.Expired(diff))
+        {
+            DoScriptText(RAND(MAGT_RANDOM_YELL_1, MAGT_RANDOM_YELL_2, MAGT_RANDOM_YELL_3, MAGT_RANDOM_YELL_4, MAGT_RANDOM_YELL_5, MAGT_RANDOM_YELL_6), m_creature);
+            yellTimer = 90000;
+        }
+    }
+};
+
 //Manticron Cube
 bool GOUse_go_Manticron_Cube(Player *player, GameObject* _GO)
 {
@@ -488,6 +508,11 @@ CreatureAI* GetAI_mob_magtheridon_triggerAI(Creature *_Creature)
     return new mob_magtheridon_triggerAI(_Creature);
 }
 
+CreatureAI* GetAI_mob_magtheridon_bfAI(Creature* _Creature)
+{
+    return new mob_magtheridon_bfAI(_Creature);
+}
+
 void AddSC_boss_magtheridon()
 {
     Script *newscript;
@@ -514,5 +539,10 @@ void AddSC_boss_magtheridon()
     newscript = new Script();
     newscript->Name = "mob_magtheridon_trigger";
     newscript->GetAI = &GetAI_mob_magtheridon_triggerAI;
+    newscript->RegisterSelf();
+
+    newscript = new Script();
+    newscript->Name = "mob_magtheridon_bf";
+    newscript->GetAI = &GetAI_mob_magtheridon_bfAI;
     newscript->RegisterSelf();
 }
