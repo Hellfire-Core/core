@@ -61,6 +61,12 @@ const uint32 Adds[6]=
     19876,
 };
 
+bool checkPosition(WorldObject* obj)
+{
+    if (!obj) return true;
+    return (obj->GetPositionX() > -11030) && (obj->GetPositionY() > -1950);
+}
+
 struct boss_moroesAI : public ScriptedAI
 {
     boss_moroesAI(Creature *c) : ScriptedAI(c)
@@ -274,10 +280,16 @@ struct boss_moroesAI : public ScriptedAI
                 {
                     Temp = Unit::GetCreature((*m_creature),AddGUID[i]);
                     if (Temp && Temp->isAlive())
-                        if (!Temp->getVictim() )
+                    {
+                        if (!Temp->getVictim())
                             Temp->AI()->AttackStart(m_creature->getVictim());
+                        if (!checkPosition(Temp) || checkPosition(Temp->getVictim()))
+                            EnterEvadeMode();
+                    }
                 }
             }
+            if (!checkPosition(m_creature) || !checkPosition(m_creature->getVictim()))
+                EnterEvadeMode();
             CheckAdds_Timer = 5000;
         }
         
@@ -392,7 +404,7 @@ struct boss_moroes_guestAI : public ScriptedAI
 
     Unit* SelectTarget()
     {
-        uint64 TempGUID = GuestGUID[rand()%5];
+        uint64 TempGUID = GuestGUID[urand(0,4)];
         if(TempGUID)
         {
             Unit* pUnit = Unit::GetUnit((*m_creature), TempGUID);

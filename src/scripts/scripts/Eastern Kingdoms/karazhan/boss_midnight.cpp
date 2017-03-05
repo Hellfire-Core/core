@@ -49,6 +49,12 @@ EndScriptData */
 //Attumen (TODO: Use the summoning spell instead of creature id. It works , but is not convenient for us)
 #define SUMMON_ATTUMEN 15550
 
+bool checkPosition(WorldObject* obj) // returns false if outside of "proper" zone
+{
+    if (!obj) return true;
+    return obj->GetPositionY() < (obj->GetPositionX()*(-2.154f) - 25849);
+}
+
 struct boss_midnightAI : public ScriptedAI
 {
     boss_midnightAI(Creature *c) : ScriptedAI(c)
@@ -105,7 +111,7 @@ struct boss_midnightAI : public ScriptedAI
 
         if (CheckTimer < diff)
         {
-            if (!m_creature->IsWithinDistInMap(&wLoc, 50.0f))
+            if (!m_creature->IsWithinDistInMap(&wLoc, 50.0f) || !checkPosition(m_creature) || !checkPosition(me->getVictim()))
                 EnterEvadeMode();
             else
                 DoZoneInCombat();
@@ -226,11 +232,13 @@ struct boss_attumenAI : public ScriptedAI
         RandomYellTimer = urand(30000, 61000);         //Occasionally yell
         ChargeTimer = 20000;
         ResetTimer = 0;
+        checkTimer.Reset(5000);
     }
 
     ScriptedInstance *pInstance;
 
     Timer knockdownTimer;
+    Timer checkTimer;
     uint64 Midnight;
     uint8 Phase;
     uint32 CleaveTimer;
@@ -283,6 +291,13 @@ struct boss_attumenAI : public ScriptedAI
         //Return since we have no target
         if (!UpdateVictim())
             return;
+
+        if (checkTimer.Expired(diff))
+        {
+            if (!checkPosition(m_creature) || !checkPosition(me->getVictim()))
+                EnterEvadeMode();
+            checkTimer = 5000;
+        }
 
         if (m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE ))
             return;

@@ -3074,7 +3074,9 @@ void SpellMgr::LoadSpellCustomAttr()
                     spellInfo->Effect[2] = 0;
                     break;
                 case 38523: // netherspite netherbreath
+                    spellInfo->rangeIndex = 6;
                     spellInfo->MaxAffectedTargets = 4;
+                    spellInfo->AttributesEx2 |= SPELL_ATTR_EX2_IGNORE_LOS;
                     break;
                 case 32723: // summon bonechewer riding wolf 60 sec stay only
                 case 34368:
@@ -3115,6 +3117,9 @@ void SpellMgr::LoadSpellCustomAttr()
                     break;
                 case  31479: // black morass dragon helper 60 sec despawn
                     spellInfo->DurationIndex = 3;
+                    break;
+                case 33493: // mark of malice
+                    spellInfo->Attributes &= ~SPELL_ATTR_ON_NEXT_SWING_2;
                     break;
                     //PRE NERF ZONE
                 case 44032: // manticron cube exhaustion 180sec

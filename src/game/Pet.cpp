@@ -1065,6 +1065,7 @@ bool Pet::InitStatsForLevel(uint32 petlevel)
     {
         case SUMMON_PET:
         {
+            float dmgBaseMultiplier = 1.0f;
             if (owner->GetTypeId() == TYPEID_PLAYER)
             {
                 switch (owner->getClass())
@@ -1079,6 +1080,22 @@ bool Pet::InitStatsForLevel(uint32 petlevel)
 
                         SetBonusDamage(int32 (val * 0.15f));
                         //bonusAP += val * 0.57;
+
+                        switch (cinfo->Entry)
+                        {
+                        case 17252: // felguard base dmg~ 148 = level* 2.1
+                            dmgBaseMultiplier = 2.1f;
+                            break;
+                        case 1863: // succubus base dmg~ 105 = level* 1.5
+                            dmgBaseMultiplier = 1.5f;
+                            break;
+                        case 417: // fel hunter dmg ?
+                            dmgBaseMultiplier = 1.3f;
+                            break;
+                        case 1860: // voidwalker base dmg~ 84 = level* 1.2
+                            dmgBaseMultiplier = 1.2f;
+                            break;
+                        }
                         break;
                     }
                     case CLASS_MAGE:
@@ -1095,8 +1112,8 @@ bool Pet::InitStatsForLevel(uint32 petlevel)
                 }
             }
 
-            SetBaseWeaponDamage(BASE_ATTACK, MINDAMAGE, float(petlevel - (petlevel / 4)));
-            SetBaseWeaponDamage(BASE_ATTACK, MAXDAMAGE, float(petlevel + (petlevel / 4)));
+            SetBaseWeaponDamage(BASE_ATTACK, MINDAMAGE, float(petlevel - (petlevel / 4))*dmgBaseMultiplier);
+            SetBaseWeaponDamage(BASE_ATTACK, MAXDAMAGE, float(petlevel + (petlevel / 4))*dmgBaseMultiplier);
 
             PetLevelInfo const* pInfo = sObjectMgr.GetPetLevelInfo(creature_ID, petlevel);
             if (pInfo)                                       // exist in DB

@@ -419,10 +419,7 @@ void UnitStateMgr::DropAction(UnitActionPriority priority)
     // Don't remove action with NONE priority - static
     if (priority < UNIT_ACTION_PRIORITY_IDLE)
         return;
-    
-    if (priority == UNIT_ACTION_PRIORITY_DOWAYPOINTS)
-        GetOwner()->SendCombatStats(1 << COMBAT_STATS_CRASHTEST, "bang", NULL);
-
+   
     ActionInfo* oldInfo = CurrentState();
     UnitActionStorage::iterator itr;
     {

@@ -9422,7 +9422,6 @@ void Unit::Unmount()
 
 void Unit::SetInCombatWith(Unit* enemy)
 {
-    SendCombatStats(1 << COMBAT_STATS_CRASHTEST, "BANG", NULL);
     Unit* eOwner = enemy->GetCharmerOrOwnerOrSelf();
     AddThreat(enemy, 0.0f);
     if (eOwner->IsPvP())
