@@ -84,6 +84,11 @@ struct mob_kilrekAI : public ScriptedAI
 
     void Reset()
     {
+        if (pInstance && pInstance->GetData(DATA_TERESTIAN_EVENT) == DONE)
+        {
+            me->SetVisibility(VISIBILITY_OFF);
+            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        }
         TerestianGUID = 0;
 
         AmplifyTimer.Reset(2000);
@@ -180,7 +185,6 @@ struct boss_terestianAI : public ScriptedAI
     Timer SummonTimer;
     Timer BerserkTimer;
     Timer CheckTimer;
-    Timer KilrekTimer;
 
     WorldLocation wLoc;
 
@@ -206,7 +210,6 @@ struct boss_terestianAI : public ScriptedAI
         ShadowboltTimer.Reset(5000);
         SummonTimer.Reset(10000);
         BerserkTimer.Reset(600000);
-        KilrekTimer.Reset(1000);
 
         SummonedPortals     = false;
         Berserk             = false;
@@ -352,24 +355,7 @@ struct boss_terestianAI : public ScriptedAI
             
         }
 
-        if (KilrekTimer.Expired(diff))
-        {
-            float x, y, z;
-            m_creature->GetNearPoint(x, y, z, 10);
-            Creature* Imp = m_creature->SummonCreature(CREATURE_KILREK, x, y, z, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 15000);
-
-            if (Imp)
-                Imp->AI()->DoZoneInCombat();
-            KilrekTimer = 0;
-        }
-
         DoMeleeAttackIfReady();
-    }
-
-    void SummonedCreatureDespawn(Creature* who)
-    {
-        if (who->GetEntry() == CREATURE_KILREK)
-            KilrekTimer.Reset(30000);
     }
 };
 

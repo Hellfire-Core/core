@@ -3144,6 +3144,9 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 37566:
                     spellInfo->CastingTimeIndex = 1;
                     break;
+                case 30065:
+                    spellInfo->DurationIndex = 9;
+                    break;
 
                     // mana tombs crap
                 case 35944:
