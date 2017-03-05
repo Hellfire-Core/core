@@ -49,7 +49,7 @@ EndScriptData */
 //Attumen (TODO: Use the summoning spell instead of creature id. It works , but is not convenient for us)
 #define SUMMON_ATTUMEN 15550
 
-bool checkPosition(WorldObject* obj) // returns false if outside of "proper" zone
+bool attumancheckPosition(WorldObject* obj) // returns false if outside of "proper" zone
 {
     if (!obj) return true;
     return obj->GetPositionY() < (obj->GetPositionX()*(-2.154f) - 25849);
@@ -111,7 +111,7 @@ struct boss_midnightAI : public ScriptedAI
 
         if (CheckTimer < diff)
         {
-            if (!m_creature->IsWithinDistInMap(&wLoc, 50.0f) || !checkPosition(m_creature) || !checkPosition(me->getVictim()))
+            if (!m_creature->IsWithinDistInMap(&wLoc, 50.0f) || !attumancheckPosition(m_creature) || !attumancheckPosition(me->getVictim()))
                 EnterEvadeMode();
             else
                 DoZoneInCombat();
@@ -294,7 +294,7 @@ struct boss_attumenAI : public ScriptedAI
 
         if (checkTimer.Expired(diff))
         {
-            if (!checkPosition(m_creature) || !checkPosition(me->getVictim()))
+            if (!attumancheckPosition(m_creature) || !attumancheckPosition(me->getVictim()))
                 EnterEvadeMode();
             checkTimer = 5000;
         }

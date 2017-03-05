@@ -61,7 +61,7 @@ const uint32 Adds[6]=
     19876,
 };
 
-bool checkPosition(WorldObject* obj)
+bool morocheckPosition(WorldObject* obj)
 {
     if (!obj) return true;
     return (obj->GetPositionX() > -11030) && (obj->GetPositionY() > -1950);
@@ -283,12 +283,12 @@ struct boss_moroesAI : public ScriptedAI
                     {
                         if (!Temp->getVictim())
                             Temp->AI()->AttackStart(m_creature->getVictim());
-                        if (!checkPosition(Temp) || checkPosition(Temp->getVictim()))
+                        if (!morocheckPosition(Temp) || morocheckPosition(Temp->getVictim()))
                             EnterEvadeMode();
                     }
                 }
             }
-            if (!checkPosition(m_creature) || !checkPosition(m_creature->getVictim()))
+            if (!morocheckPosition(m_creature) || !morocheckPosition(m_creature->getVictim()))
                 EnterEvadeMode();
             CheckAdds_Timer = 5000;
         }
