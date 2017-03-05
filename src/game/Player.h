@@ -1030,6 +1030,7 @@ class HELLGROUND_EXPORT Player : public Unit
         uint8 chatTag() const;
         std::string afkMsg;
         std::string dndMsg;
+        Timer afkTimer;
 
         PlayerSocial *GetSocial() { return m_social; }
 

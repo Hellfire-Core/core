@@ -472,6 +472,7 @@ Player::Player (WorldSession *session): Unit(), m_reputationMgr(this), m_camera(
     m_outdoors = GetTerrain()->IsOutdoors(GetPositionX(), GetPositionY(), GetPositionZ());
 
     StartTeleportTimer();
+    afkTimer.Reset(0);
 }
 
 Player::~Player ()
@@ -1240,6 +1241,12 @@ void Player::Update(uint32 update_diff, uint32 p_time)
 
     UpdateAfkReport(now);
 
+    if (afkTimer.Expired(update_diff))
+    {
+        GetSession()->KickPlayer();
+        return;
+    }
+
     // do not allow the AI to be changed during update
     if (IsAIEnabled)
     {
@@ -1659,6 +1666,11 @@ bool Player::ToggleAFK()
     // afk player not allowed in battleground
     if (isAFK() && InBattleGround() && !InArena())
         LeaveBattleground();
+    
+    if (isAFK() && !GetSession()->HasPermissions(PERM_GMT_HDEV))
+        afkTimer.Reset(sWorld.getConfig(CONFIG_SESSION_UPDATE_IDLE_KICK));
+    else
+        afkTimer.Reset(0);
 
     return isAFK();
 }

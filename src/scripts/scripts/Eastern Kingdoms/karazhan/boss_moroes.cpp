@@ -357,11 +357,11 @@ struct boss_moroes_guestAI : public ScriptedAI
 {
     ScriptedInstance* pInstance;
 
-    uint64 GuestGUID[4];
+    uint64 GuestGUID[5];
 
     boss_moroes_guestAI(Creature* c) : ScriptedAI(c)
     {
-        for(uint8 i = 0; i < 4; ++i)
+        for(uint8 i = 0; i < 5; ++i)
             GuestGUID[i] = 0;
 
         pInstance = (c->GetInstanceData());
@@ -393,11 +393,10 @@ struct boss_moroes_guestAI : public ScriptedAI
         Creature* Moroes = (Unit::GetCreature((*m_creature), GuestGUID[0]));
         if(Moroes)
         {
-            for(uint8 i = 0; i < 3; ++i)
+            for(uint8 i = 0; i < 4; ++i)
             {
                 uint64 GUID = ((boss_moroesAI*)Moroes->AI())->AddGUID[i];
-                if(GUID && GUID != m_creature->GetGUID())
-                    GuestGUID[i+1] = GUID;
+                GuestGUID[i+1] = GUID;
             }
         }
     }
