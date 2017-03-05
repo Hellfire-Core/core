@@ -416,7 +416,7 @@ enum AttributesCu
     SPELL_ATTR_CU_BLOCK_STEALTH         = 0x00200000  // simplification, faerie-fire-alike spells
 };
 
-#define SPELL_FAKE_DELAY 200LL
+#define SPELL_FAKE_DELAY 150LL
 
 typedef std::map<int32, std::vector<int32> > SpellLinkedMap;
 

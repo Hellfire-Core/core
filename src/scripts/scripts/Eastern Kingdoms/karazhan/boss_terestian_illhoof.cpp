@@ -132,9 +132,9 @@ struct mob_kilrekAI : public ScriptedAI
         }
 
         //Chain cast
-        if (!m_creature->IsNonMeleeSpellCast(false) && m_creature->IsWithinDistInMap(m_creature->getVictim(), 30))
+        /*if (!m_creature->IsNonMeleeSpellCast(false) && m_creature->IsWithinDistInMap(m_creature->getVictim(), 30))
             DoCast(m_creature->getVictim(),SPELL_FIREBOLT);
-        else DoMeleeAttackIfReady();
+        else */DoMeleeAttackIfReady();
     }
 };
 
@@ -180,6 +180,7 @@ struct boss_terestianAI : public ScriptedAI
     Timer SummonTimer;
     Timer BerserkTimer;
     Timer CheckTimer;
+    Timer KilrekTimer;
 
     WorldLocation wLoc;
 
@@ -205,6 +206,7 @@ struct boss_terestianAI : public ScriptedAI
         ShadowboltTimer.Reset(5000);
         SummonTimer.Reset(10000);
         BerserkTimer.Reset(600000);
+        KilrekTimer.Reset(1000);
 
         SummonedPortals     = false;
         Berserk             = false;
@@ -286,7 +288,7 @@ struct boss_terestianAI : public ScriptedAI
         
         if (SacrificeTimer.Expired(diff))
         {
-            Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 1, GetSpellMaxRange(SPELL_SACRIFICE), true, m_creature->getVictimGUID());
+            Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 1, GetSpellMaxRange(SPELL_SACRIFICE), true); // , m_creature->getVictimGUID() PRE NERF can target also tank
             if(target && target->isAlive() && target->GetTypeId() == TYPEID_PLAYER)
             {
                 DoCast(target, SPELL_SACRIFICE, true);
@@ -334,11 +336,7 @@ struct boss_terestianAI : public ScriptedAI
             Creature* Imp = m_creature->SummonCreature(CREATURE_FIENDISHIMP, PortalLocations[random][0], PortalLocations[random][1], PORTAL_Z, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 15000);
 
             if(Imp)
-            {
-                Imp->AddThreat(m_creature->getVictim(), 1.0f);
-                if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 1, 200, true, m_creature->getVictimGUID()))
-                    Imp->AI()->AttackStart(target);
-            }
+                Imp->AI()->DoZoneInCombat();
             SummonTimer = 5000;
         }
         
@@ -354,7 +352,24 @@ struct boss_terestianAI : public ScriptedAI
             
         }
 
+        if (KilrekTimer.Expired(diff))
+        {
+            float x, y, z;
+            m_creature->GetNearPoint(x, y, z, 10);
+            Creature* Imp = m_creature->SummonCreature(CREATURE_KILREK, x, y, z, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 15000);
+
+            if (Imp)
+                Imp->AI()->DoZoneInCombat();
+            KilrekTimer = 0;
+        }
+
         DoMeleeAttackIfReady();
+    }
+
+    void SummonedCreatureDespawn(Creature* who)
+    {
+        if (who->GetEntry() == CREATURE_KILREK)
+            KilrekTimer.Reset(30000);
     }
 };
 

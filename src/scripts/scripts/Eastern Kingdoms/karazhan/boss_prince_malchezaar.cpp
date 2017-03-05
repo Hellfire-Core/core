@@ -103,7 +103,7 @@ static InfernalPoint InfernalPoints[] =
 struct netherspite_infernalAI : public Scripted_NoMovementAI
 {
     netherspite_infernalAI(Creature *c) : Scripted_NoMovementAI(c) ,
-        malchezaarGUID(0), HellfireTimer(0), CleanupTimer(0), point(nullptr)
+        malchezaarGUID(0), HellfireTimer(0)
     {
         me->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_MOD_CASTING_SPEED, true);
         me->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_HASTE_SPELLS, true);
@@ -111,9 +111,7 @@ struct netherspite_infernalAI : public Scripted_NoMovementAI
     }
 
     Timer HellfireTimer;
-    Timer CleanupTimer;
     uint64 malchezaarGUID;
-    InfernalPoint *point;
 
     void Reset() {}
     void EnterCombat(Unit*) {}
@@ -126,12 +124,6 @@ struct netherspite_infernalAI : public Scripted_NoMovementAI
         {
             DoCast(m_creature, SPELL_HELLFIRE);
             HellfireTimer = 0;
-        }
-
-        if (CleanupTimer.Expired(diff))
-        {
-            Cleanup();
-            CleanupTimer = 0;
         }
     }
 
@@ -148,7 +140,6 @@ struct netherspite_infernalAI : public Scripted_NoMovementAI
             m_creature->SetUInt32Value(UNIT_FIELD_DISPLAYID, m_creature->GetUInt32Value(UNIT_FIELD_NATIVEDISPLAYID));
             m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             HellfireTimer = 4000;
-            CleanupTimer = 170000;
         }
     }
 
@@ -157,8 +148,6 @@ struct netherspite_infernalAI : public Scripted_NoMovementAI
         if (done_by->GetGUID() != malchezaarGUID)
             damage = 0;
     }
-
-    void Cleanup();
 };
 
 struct boss_malchezaarAI : public ScriptedAI
@@ -185,7 +174,7 @@ struct boss_malchezaarAI : public ScriptedAI
     WorldLocation wLoc;
 
     std::vector<uint64> infernals;
-    std::vector<InfernalPoint*> positions;
+    std::vector<InfernalPoint> positions;
 
     uint64 axes[2];
     uint64 enfeeble_targets[5];
@@ -201,14 +190,10 @@ struct boss_malchezaarAI : public ScriptedAI
         AxesCleanup();
         ClearWeapons();
         InfernalCleanup();
-        positions.clear();
-
         for(int i =0; i < 5; ++i)
             enfeeble_targets[i] = 0;
 
-        for(int i = 0; i < TOTAL_INFERNAL_POINTS; ++i)
-            positions.push_back(&InfernalPoints[i]);
-
+        
         EnfeebleTimer.Reset(30000);
         EnfeebleResetTimer = 0;
         ShadowNovaTimer = 0;
@@ -248,10 +233,6 @@ struct boss_malchezaarAI : public ScriptedAI
         AxesCleanup();
         ClearWeapons();
         InfernalCleanup();
-        positions.clear();
-
-        for(int i = 0; i < TOTAL_INFERNAL_POINTS; ++i)
-            positions.push_back(&InfernalPoints[i]);
 
         if (pInstance)
         {
@@ -273,6 +254,11 @@ struct boss_malchezaarAI : public ScriptedAI
 
             pInstance->SetData(DATA_MALCHEZZAR_EVENT, IN_PROGRESS);
         }
+
+        positions.clear();
+
+        for (int i = 0; i < TOTAL_INFERNAL_POINTS; ++i)
+            positions.push_back(InfernalPoints[i]);
     }
 
     void InfernalCleanup()
@@ -366,9 +352,20 @@ struct boss_malchezaarAI : public ScriptedAI
         }
     }
 
+    void SummonedCreatureDespawn(Creature* who)
+    {
+        if (who->GetEntry() == NETHERSPITE_INFERNAL)
+        {
+            InfernalPoint ip;
+            ip.x = who->GetPositionX();
+            ip.y = who->GetPositionY();
+            positions.push_back(ip);
+        }
+    }
+
     void SummonInfernal(const uint32 diff)
     {
-        InfernalPoint *point = nullptr;
+        InfernalPoint point;
         float posX, posY, posZ;
 
         if ((m_creature->GetMapId() != 532) || positions.empty())
@@ -377,22 +374,20 @@ struct boss_malchezaarAI : public ScriptedAI
         }
         else
         {
-            std::vector<InfernalPoint*>::iterator itr = positions.begin()+rand()%positions.size();
+            std::vector<InfernalPoint>::iterator itr = positions.begin()+rand()%positions.size();
             point = *itr;
-
-            posX = point->x;
-            posY = point->y;
+            positions.erase(itr);
+            posX = point.x;
+            posY = point.y;
             posZ = INFERNAL_Z;
         }
 
-        Creature *Infernal = m_creature->SummonCreature(NETHERSPITE_INFERNAL, posX, posY, posZ, 0, TEMPSUMMON_TIMED_DESPAWN, 180000);
+        Creature *Infernal = m_creature->SummonCreature(NETHERSPITE_INFERNAL, posX, posY, posZ, 0, TEMPSUMMON_TIMED_DESPAWN, 240000);
 
         if (Infernal)
         {
             Infernal->SetUInt32Value(UNIT_FIELD_DISPLAYID, INFERNAL_MODEL_INVISIBLE);
             Infernal->setFaction(m_creature->getFaction());
-            if(point)
-                ((netherspite_infernalAI*)Infernal->AI())->point=point;
             ((netherspite_infernalAI*)Infernal->AI())->malchezaarGUID=m_creature->GetGUID();
 
             infernals.push_back(Infernal->GetGUID());
@@ -637,26 +632,8 @@ struct boss_malchezaarAI : public ScriptedAI
         }
     }
 
-    void Cleanup(Creature *infernal, InfernalPoint *point)
-    {
-        for (std::vector<uint64>::iterator itr = infernals.begin(); itr != infernals.end(); ++itr)
-            if (*itr == infernal->GetGUID())
-            {
-                infernals.erase(itr);
-                break;
-            }
 
-        positions.push_back(point);
-    }
 };
-
-void netherspite_infernalAI::Cleanup()
-{
-    Unit *pMalchezaar = Unit::GetUnit(*m_creature, malchezaarGUID);
-
-    if(pMalchezaar && pMalchezaar->isAlive())
-        ((boss_malchezaarAI*)((Creature*)pMalchezaar)->AI())->Cleanup(m_creature, point);
-}
 
 CreatureAI* GetAI_netherspite_infernal(Creature *_Creature)
 {

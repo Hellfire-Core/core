@@ -2803,6 +2803,8 @@ void SpellMgr::LoadSpellCustomAttr()
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_AURA_HOT;
                     break;
                 case SPELL_AURA_MOD_ROOT:
+                    spellInfo->AttributesCu |= SPELL_ATTR_CU_FAKE_DELAY;
+                    // no break intended
                 case SPELL_AURA_MOD_DECREASE_SPEED:
                     // Creature daze exception
                     if (spellInfo->Id == 1604)
@@ -2814,6 +2816,7 @@ void SpellMgr::LoadSpellCustomAttr()
                 case SPELL_AURA_MOD_CHARM:
                 case SPELL_AURA_MOD_FEAR:
                 case SPELL_AURA_MOD_STUN:
+                    spellInfo->AttributesCu |= SPELL_ATTR_CU_FAKE_DELAY;
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_AURA_CC;
                     spellInfo->AttributesCu &= ~SPELL_ATTR_CU_MOVEMENT_IMPAIR;
                     break;
@@ -3421,10 +3424,6 @@ void SpellMgr::LoadSpellCustomAttr()
                 spellInfo->AttributesCu |= SPELL_ATTR_CU_NO_SCROLL_STACK;
                 break;
             /* ROGUE CUSTOM ATTRIBUTES */
-            case 2094:                     // Blind
-                spellInfo->AttributesCu |= SPELL_ATTR_CU_FAKE_DELAY; // add const fake delay
-                break;
-            
             case 5171:
             case 6774:                     // Slice'n'Dice
                 // spellInfo->AttributesEx |= SPELL_ATTR_EX_NOT_BREAK_STEALTH; wotlk feature
@@ -3919,19 +3918,6 @@ void SpellMgr::LoadSpellCustomAttr()
             case 45342: // Conflagration Eredar Twins
                 spellInfo->Mechanic = MECHANIC_CONFUSED;
                 spellInfo->EffectMechanic[1] = MECHANIC_NONE;
-                break;
-            case 20253: // Intercept Stun (Rank 1)
-            case 20614: // Intercept Stun (Rank 2)
-            case 20615: // Intercept Stun (Rank 3)
-            case 25273: // Intercept Stun (Rank 4)
-            case 25274: // Intercept Stun (Rank 5)
-            case 7922: // Charge Stun
-            case 30153: // Felguard Intercept Stun rank 1
-            case 30195: // Felguard Intercept Stun rank 2
-            case 30197: // Felguard Intercept Stun rank 3
-            case 25999: // Boar Charge Immobilize
-                // Feral charge? - unaffected
-                spellInfo->AttributesCu |= SPELL_ATTR_CU_FAKE_DELAY;
                 break;
             case 30834: // Infernal Relay
                 spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_TARGET_ANY;

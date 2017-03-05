@@ -283,7 +283,7 @@ struct boss_moroesAI : public ScriptedAI
                     {
                         if (!Temp->getVictim())
                             Temp->AI()->AttackStart(m_creature->getVictim());
-                        if (!morocheckPosition(Temp) || morocheckPosition(Temp->getVictim()))
+                        if (!morocheckPosition(Temp) || !morocheckPosition(Temp->getVictim()))
                             EnterEvadeMode();
                     }
                 }
