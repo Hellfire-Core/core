@@ -247,9 +247,12 @@ void Creature::RemoveCorpse()
     m_deathTimer = 0;
     loot.clear();
     // hack for quick respawns 
-    if (sWorld.GetActiveSessionCount() > 1000 && getLevel() <=40 && GetInstanceId() == 0 &&
-        m_respawnDelay <= 600 && (time(NULL) - m_respawnTime) < 120)
+    if (sWorld.GetActiveSessionCount() > 1000 && getLevel() <= 40 && GetInstanceId() == 0 &&
+        m_respawnDelay <= 600)
+    {
         m_respawnTime = time(NULL) + 30; // just 30 sec delay
+        SendCombatStats(1 << COMBAT_STATS_TEST, "30 sec resp", NULL);
+    }
     else
         m_respawnTime = time(NULL) + m_respawnDelay;
 

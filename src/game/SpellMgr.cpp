@@ -3129,6 +3129,8 @@ void SpellMgr::LoadSpellCustomAttr()
                     spellInfo->DurationIndex = 25;
                     break;
                 case 36152: 
+                    // No min range (not a nerf)
+                    spellInfo->rangeIndex = 5;
                     spellInfo->EffectBasePoints[0] = 2500;
                     spellInfo->EffectDieSides[0] = 1000;
                     break;
