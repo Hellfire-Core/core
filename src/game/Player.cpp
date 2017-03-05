@@ -1244,6 +1244,7 @@ void Player::Update(uint32 update_diff, uint32 p_time)
     if (afkTimer.Expired(update_diff))
     {
         GetSession()->KickPlayer();
+        updateMutex.release();
         return;
     }
 
