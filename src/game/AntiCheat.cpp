@@ -170,7 +170,7 @@ bool ACRequest::DetectSpeedHack(Player *pPlayer)
     if (timeDiff <= 500 && exact2dDist < speedRate * 0.6)
     {
         count = pPlayer->CumulativeACReport(ANTICHEAT_CHECK_SPEEDHACK);
-        if (count < 2)
+        if (count < sWorld.getConfig(CONFIG_ANTICHEAT_SHORTMOVE_INGNORE))
             return false;
     }
 

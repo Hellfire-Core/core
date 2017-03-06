@@ -469,6 +469,8 @@ void ImpAI::UpdateAI(const uint32 diff)
             return;
         }
         float dist = me->GetDistance(target);
+        if (dist <= 30 && !me->IsWithinLOSInMap(target))
+            dist = 50;
         if (dist < 30 && m_chasing)
         {
             me->clearUnitState(UNIT_STAT_FOLLOW);

@@ -10322,6 +10322,7 @@ Unit* Creature::SelectVictim()
     // search nearby enemy before enter evade mode
     if (HasReactState(REACT_AGGRESSIVE))
     {
+        lastHitPos = homeLocation; // reset home before checking distance when noone atacking us
         target = SelectNearestTarget(25.0f);
         if (target && !IsOutOfThreatArea(target))
             return target;

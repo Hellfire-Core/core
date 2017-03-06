@@ -336,6 +336,18 @@ void WorldSession::DoLootRelease(uint64 lguid)
                     go->SetLootState(GO_READY);
             }
 
+            if (!loot->isLooted())
+            {
+                LootItem* li = loot->LootItemInSlot(0);
+                if (li && ObjectMgr::GetItemPrototype(li->itemid)->Class == ITEM_CLASS_QUEST)
+                {
+                    ItemPosCountVec dest;
+                    uint8 msg = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, li->itemid, li->count);
+                    if (!li->is_looted && !li->is_blocked && msg == EQUIP_ERR_OK)
+                        player->StoreNewItem(dest, li->itemid, true, li->randomPropertyId);
+                }
+            }
+
             loot->clear();
         }
 

@@ -4543,7 +4543,7 @@ void Spell::EffectSummonWild(uint32 i)
 
         int32 duration = SpellMgr::GetSpellDuration(GetSpellEntry());
 
-        TemporarySummonType summonType = (duration == 0) ? TEMPSUMMON_DEAD_DESPAWN : TEMPSUMMON_TIMED_DESPAWN;
+        TemporarySummonType summonType = (duration == 0) ? TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT : TEMPSUMMON_TIMED_DESPAWN;
 
         Creature* summoned = NULL;
         if (m_originalCaster)

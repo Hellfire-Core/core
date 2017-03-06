@@ -843,6 +843,7 @@ void World::LoadConfigSettings(bool reload)
     loadConfig(CONFIG_ANTICHEAT_CUMULATIVE_DELAY, "AntiCheat.CumulativeDelay", 5);
     loadConfig(CONFIG_ANTICHEAT_SPEEDHACK_TOLERANCE, "AntiCheat.SpeedhackTolerance",1.00f);
     loadConfig(CONFIG_GOBJECT_USE_EXPLOIT_RANGE, "AntiCheat.GobjectUseExploitRange", 3 * INTERACTION_DISTANCE);
+    loadConfig(CONFIG_ANTICHEAT_SHORTMOVE_INGNORE, "AntiCheat.ShortmoveIgnore", 5);
 
     // RaF
     loadConfig(CONFIG_UINT32_RAF_MAXGRANTLEVEL, "RAF.MaxGrantLevel", 60);

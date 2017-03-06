@@ -3118,7 +3118,8 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 14157: // ruthlessness no cause combat on proc
                     spellInfo->AttributesEx3 |= SPELL_ATTR_EX3_NO_INITIAL_AGGRO;
                     break;
-                case  31479: // black morass dragon helper 60 sec despawn
+                case 31479: // black morass dragon helper 60 sec despawn
+                case 11939: // some random add summon
                     spellInfo->DurationIndex = 3;
                     break;
                 case 33493: // mark of malice

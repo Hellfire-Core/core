@@ -1940,6 +1940,10 @@ VMSS.MapFreezeDetectTime = 1000
 #        Float value of max distance from which gameobject use will be logged (possible packet edits)
 #        Default: 15.00 (in yards)
 #
+#    AntiCheat.ShortmoveIgnore
+#        How many short moves (small time, big speed because of rounding) will be ignored
+#        Default: 5
+#
 ###################################################################################################################
 
 Warden.Enabled = 1
@@ -1954,6 +1958,7 @@ AntiCheat.Enable = 1
 AntiCheat.CumulativeDelay = 5000
 AntiCheat.SpeedhackTolerance = 1.00
 AntiCheat.GobjectUseExploitRange = 15.00
+AntiCheat.ShortmoveIgnore = 5
 
 ###################################################################################################################
 #    Refer-A-Friend system by Mas0n
