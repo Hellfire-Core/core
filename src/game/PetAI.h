@@ -50,6 +50,7 @@ class PetAI : public CreatureAI
         bool targetHasInterruptableAura(Unit *target) const;
 
         void ownerOrMeAttackedBy(uint64 enemy);
+        void clearEnemySet() { m_EnemySet.clear(); };
     protected:
 
         void UpdateMotionMaster();

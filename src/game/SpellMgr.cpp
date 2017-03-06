@@ -2815,8 +2815,9 @@ void SpellMgr::LoadSpellCustomAttr()
                 case SPELL_AURA_MOD_CONFUSE:
                 case SPELL_AURA_MOD_CHARM:
                 case SPELL_AURA_MOD_FEAR:
-                case SPELL_AURA_MOD_STUN:
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_FAKE_DELAY;
+                    // no break intended
+                case SPELL_AURA_MOD_STUN:
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_AURA_CC;
                     spellInfo->AttributesCu &= ~SPELL_ATTR_CU_MOVEMENT_IMPAIR;
                     break;

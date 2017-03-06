@@ -141,7 +141,18 @@ bool ChatHandler::HandleNameAnnounceCommand(const char* args)
         return false;
     //char str[1024];
     //sprintf(str, GetHellgroundString(LANG_ANNOUNCE_COLOR), m_session->GetPlayer()->GetName(), args);
-    sWorld.SendWorldText(LANG_ANNOUNCE_COLOR, 0, m_session->GetPlayer()->GetName(), args);
+    uint32 textid;
+    if (m_session->HasPermissions(PERM_ADM_HEAD))
+        textid = LANG_ANNOUNCE_COLOR_ADM;
+    else if (m_session->HasPermissions(PERM_ADM_NORM))
+        textid = LANG_ANNOUNCE_COLOR_HGM;
+    else if (m_session->HasPermissions(PERM_GM_HEAD | PERM_GM_HELPER))
+        textid = LANG_ANNOUNCE_COLOR_GM;
+    else if (m_session->HasPermissions(PERM_GM_TRIAL))
+        textid = LANG_ANNOUNCE_COLOR_TESTGM;
+    else
+        return false;
+    sWorld.SendWorldText(textid, 0, m_session->GetPlayer()->GetName(), args);
     return true;
 }
 
@@ -151,7 +162,7 @@ bool ChatHandler::HandleHDevAnnounceCommand(const char* args)
     if (!*args)
         return false;
 
-    sWorld.SendWorldText(LANG_HDEV_ANNOUNCE_COLOR, 0, m_session->GetPlayer()->GetName(), args);
+    sWorld.SendWorldText(LANG_ANNOUNCE_COLOR_HDEV, 0, m_session->GetPlayer()->GetName(), args);
     return true;
 }
 

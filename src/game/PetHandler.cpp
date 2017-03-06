@@ -112,7 +112,7 @@ void WorldSession::HandlePetAction(WorldPacket & recv_data)
             switch (spellId)
             {
                 case REACT_PASSIVE:                         //passive
-                    if (pCharm->ToPet())
+                    if (pCharm->ToPet() && pCharm->ToPet()->GetReactState() != REACT_PASSIVE)
                         pCharm->ToPet()->AI()->JustDied(NULL); // calls only petAI::_stopAttack()
                     // no break intended
                 case REACT_DEFENSIVE:                       //recovery

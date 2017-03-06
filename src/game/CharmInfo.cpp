@@ -289,6 +289,12 @@ void CharmInfo::HandleFollowCommand()
     m_unit->InterruptNonMeleeSpells(false);
 
     m_unit->GetMotionMaster()->MoveFollow(m_unit->GetCharmerOrOwner(), PET_FOLLOW_DIST, PET_FOLLOW_ANGLE);
+
+    if (Creature* pCharm = m_unit->ToCreature())
+    {
+        if (PetAI* petai = dynamic_cast<PetAI*>(pCharm->AI()))
+            petai->clearEnemySet();
+    }
 }
 
 void CharmInfo::HandleAttackCommand(uint64 targetGUID)

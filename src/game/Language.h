@@ -698,16 +698,18 @@ enum HellgroundStrings
     // Room for BG/ARENA                  751-769 not used
 
     LANG_ARENA_TESTING                  = 785,
-
     LANG_AUTO_ANN                       = 786,
-    LANG_ANNOUNCE_COLOR                 = 787,
     LANG_GUILD_ANNOUNCE                 = 788,
 
     LANG_MOVEGENS_FOLLOW_PLAYER         = 789,
     LANG_MOVEGENS_FOLLOW_CREATURE       = 790,
     LANG_MOVEGENS_FOLLOW_NULL           = 791,
     LANG_MOVEGENS_EFFECT                = 792,
-    LANG_HDEV_ANNOUNCE_COLOR            = 793,
+    LANG_ANNOUNCE_COLOR_HDEV            = 793,
+    LANG_ANNOUNCE_COLOR_ADM             = 794,
+    LANG_ANNOUNCE_COLOR_HGM             = 795,
+    LANG_ANNOUNCE_COLOR_GM              = 796,
+    LANG_ANNOUNCE_COLOR_TESTGM          = 797,
 
     LANG_BG_GROUP_TOO_LARGE             = 1122, // "Your group is too large for this battleground. Please regroup to join."
     LANG_ARENA_GROUP_TOO_LARGE          = 1123, // "Your group is too large for this arena. Please regroup to join."
