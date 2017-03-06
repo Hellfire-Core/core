@@ -246,7 +246,15 @@ void Creature::RemoveCorpse()
 
     m_deathTimer = 0;
     loot.clear();
-    m_respawnTime = time(NULL) + m_respawnDelay;
+    // hack for quick respawns 
+    if (sWorld.GetActiveSessionCount() > 2000 && getLevel() <= 50 && GetInstanceId() == 0 &&
+        m_respawnDelay <= 600)
+    {
+        uint32 delay = std::min(m_respawnDelay, (30 + getLevel() * 9));
+        m_respawnTime = time(NULL) + delay;
+    }
+    else
+        m_respawnTime = time(NULL) + m_respawnDelay;
 
     float x,y,z,o;
     GetRespawnCoord(x, y, z, &o);
