@@ -3084,6 +3084,7 @@ void SpellMgr::LoadSpellCustomAttr()
                     break;
                 case 32723: // summon bonechewer riding wolf 60 sec stay only
                 case 34368:
+                case 12746: // wastewalker shadow mage void
                     spellInfo->DurationIndex = 3;
                     break;
                 case 30846: // proximity bomb make it trap

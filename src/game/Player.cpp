@@ -13017,6 +13017,14 @@ void Player::RewardQuest(Quest const *pQuest, uint32 reward, Object* questGiver,
                 Item* item = StoreNewItem(dest, pQuest->RewChoiceItemId[reward], true);
                 SendNewItem(item, pQuest->RewChoiceItemCount[reward], true, false);
             }
+            else
+            {
+                std::string subject = GetSession()->GetHellgroundString(LANG_NOT_EQUIPPED_ITEM);
+                MailDraft draft(subject);
+                Item* item = Item::CreateItem(pQuest->RewChoiceItemId[reward], pQuest->RewChoiceItemCount[reward], this);
+                draft.AddItem(item);
+                draft.SendMailTo(this, MailSender(this, MAIL_STATIONERY_GM));
+            }
         }
     }
 
@@ -13032,6 +13040,14 @@ void Player::RewardQuest(Quest const *pQuest, uint32 reward, Object* questGiver,
                     Item* item = StoreNewItem(dest, pQuest->RewItemId[i], true);
                     SendNewItem(item, pQuest->RewItemCount[i], true, false);
                 }
+            }
+            else
+            {
+                std::string subject = GetSession()->GetHellgroundString(LANG_NOT_EQUIPPED_ITEM);
+                MailDraft draft(subject);
+                Item* item = Item::CreateItem(pQuest->RewItemId[i], pQuest->RewItemCount[i], this);
+                draft.AddItem(item);
+                draft.SendMailTo(this, MailSender(this, MAIL_STATIONERY_GM));
             }
         }
     }

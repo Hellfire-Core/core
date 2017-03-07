@@ -183,11 +183,11 @@ bool ACRequest::DetectSpeedHack(Player *pPlayer)
     if (exact2dDist < 10)
     {
         count = pPlayer->CumulativeACReport(ANTICHEAT_CHECK_RARE_CASE);
-        if (count == 1)
+        if (count <= 2)
             return false; // lag happens
     }
 
-    sWorld.SendGMText(LANG_ANTICHEAT_SPEEDHACK, pPlayer->GetName(), pPlayer->GetName(), count, speedRate, clientSpeedRate);
+    sWorld.SendGMText(LANG_ANTICHEAT_SPEEDHACK, pPlayer->GetName(), pPlayer->GetName(), count, speedRate, clientSpeedRate, exact2dDist);
     sLog.outLog(LOG_CHEAT, "Player %s (GUID: %u / ACCOUNT_ID: %u) moved for distance %f with server speed "
         ": %f (client speed: %f, time diff %u). MapID: %u, player's coord before X:%f Y:%f Z:%f."
         " Player's coord now X:%f Y:%f Z:%f. MOVEMENTFLAGS: %u LATENCY: %u. BG/Arena: %s, occurences count %u",
