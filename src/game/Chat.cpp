@@ -542,6 +542,7 @@ ChatCommand * ChatHandler::getCommandTable()
         { "delete",         PERM_HIGH_GMT,  PERM_CONSOLE, false,  &ChatHandler::HandleNpcDeleteCommand,           "", NULL },
         { "deleteformation",PERM_DEVELOPER, PERM_CONSOLE, false,  &ChatHandler::HandleNpcDeleteFormationCommand,  "", NULL },
         { "delitem",        PERM_GMT_DEV,   PERM_CONSOLE, false,  &ChatHandler::HandleNpcDelItemCommand,          "", NULL },
+        { "dmginfo",        PERM_GMT_DEV,   PERM_CONSOLE, false,  &ChatHandler::HandleNpcDmginfoCommand,          "", NULL },
         { "doaction",       PERM_GMT_DEV,   PERM_CONSOLE, false,  &ChatHandler::HandleNpcDoActionCommand,         "", NULL },
         { "enterevademode", PERM_GMT_DEV,   PERM_CONSOLE, false,  &ChatHandler::HandleNpcEnterEvadeModeCommand,   "", NULL },
         { "extraflag",      PERM_GMT_DEV,   PERM_CONSOLE, false,  &ChatHandler::HandleNpcExtraFlagCommand,        "", NULL },

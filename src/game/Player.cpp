@@ -21396,16 +21396,39 @@ bool Player::isInSanctuary()
 
 uint32 Player::CumulativeACReport(AnticheatChecks check)
 {
-    if(check >= ANTICHEAT_CHECK_MAX)
-        return 0;
-    uint32 toreturn = ++m_AC_cumulative_count[check];
-    if (m_AC_cumulative_timer[check] < time(NULL))
+    switch (check)
     {
-        m_AC_cumulative_timer[check] = time(NULL) + sWorld.getConfig(CONFIG_ANTICHEAT_CUMULATIVE_DELAY);
-        m_AC_cumulative_count[check] = 0;
-        return toreturn;
+    case ANTICHEAT_CHECK_FLYHACK:
+    case ANTICHEAT_CHECK_WATERWALKHACK:
+    case ANTICHEAT_CHECK_SHORTMOVE:
+    {
+        // this is spam-prevent mechanic, first report once, then not report for some period
+        // when period expires send report count in next call
+        uint32 toreturn = ++m_AC_cumulative_count[check];
+        if (m_AC_cumulative_timer[check] < time(NULL))
+        {
+            m_AC_cumulative_timer[check] = time(NULL) + sWorld.getConfig(CONFIG_ANTICHEAT_CUMULATIVE_DELAY);
+            m_AC_cumulative_count[check] = 0;
+            return toreturn;
+        }
+        return 0;
     }
-    return 0;
+    case ANTICHEAT_CHECK_RARE_CASE:
+    {
+        // this is timing check, if was called during past <period> then report how many times
+        if (time(NULL) - m_AC_cumulative_timer[check] > sWorld.getConfig(CONFIG_ANTICHEAT_RARE_CASE_TIMER))
+        {
+            m_AC_cumulative_timer[check] = time(NULL);
+            m_AC_cumulative_count[check] = 1;
+            return 1;
+        }
+        m_AC_cumulative_timer[check] = time(NULL); // count from now, do not reset counter
+        return ++m_AC_cumulative_count[check];
+
+    }
+    default:
+        return 0;
+    }
 }
 
 void Player::SpectateArena(uint32 arenaMap)

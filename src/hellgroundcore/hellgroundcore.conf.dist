@@ -1944,6 +1944,10 @@ VMSS.MapFreezeDetectTime = 1000
 #        How many short moves (small time, big speed because of rounding) will be ignored
 #        Default: 5
 #
+#    AntiCheat.RareCaseTimer
+#        Time in sec, one report in such period with short distance will be ignored
+#        Default: 600
+#
 ###################################################################################################################
 
 Warden.Enabled = 1
@@ -1959,6 +1963,7 @@ AntiCheat.CumulativeDelay = 5000
 AntiCheat.SpeedhackTolerance = 1.00
 AntiCheat.GobjectUseExploitRange = 15.00
 AntiCheat.ShortmoveIgnore = 5
+AntiCheat.RareCaseTimer = 600
 
 ###################################################################################################################
 #    Refer-A-Friend system by Mas0n

@@ -260,7 +260,7 @@ void MapManager::Update(uint32 diff)
         WorldObject::UpdateHelper helper(*iter);
         helper.Update(diff);
     }
-    dr.RecordTimeFor("MapManager-transports", 50);
+    dr.RecordTimeFor("MapManager-transports", 60);
 }
 
 bool MapManager::ExistMap(uint32 mapid, float x,float y)

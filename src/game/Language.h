@@ -930,7 +930,8 @@ enum HellgroundStrings
     LANG_GM_BANNED_PLAYER               = 11015,
     LANG_POSSIBLE_CHEAT                 = 11016,
     LANG_INSTA_KILL_GUARDIAN            = 11017,
-    LANG_INSTA_KILL_GUARDIAN_PET        = 11018
+    LANG_INSTA_KILL_GUARDIAN_PET        = 11018,
+    LANG_ANTICHEAT_SHORTMOVE            = 11019,        
 
     // NOT RESERVED IDS                   12000-1999999999
     // For other tables maybe             2000010000-2147483647 (max index)

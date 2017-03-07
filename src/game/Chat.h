@@ -332,6 +332,7 @@ class ChatHandler
         bool HandleNpcDeleteFormationCommand(const char* args);
         bool HandleNpcSetLinkCommand(const char* args);
         bool HandleNpcResetAICommand(const char* args);
+        bool HandleNpcDmginfoCommand(const char* args);
         bool HandleNpcDoActionCommand(const char* args);
         bool HandleNpcEnterEvadeModeCommand(const char* args);
 

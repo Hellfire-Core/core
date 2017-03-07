@@ -3448,16 +3448,28 @@ void SpellMgr::LoadSpellCustomAttr()
                 spellInfo->AttributesEx3 |= SPELL_ATTR_EX3_NO_DONE_BONUS;
                 break;
             // Triggered spells that should be delayed
-            case 20272:                     // Illumination
-            case 32848:                     // Mana Restore
-            case 14189:                     // Seal Fate
-            case 14157:                     // Ruthlessness
-            case 14181:                     // Relentless Strikes
-            case 17794:                     // Improved Shadow Bolt ranks 1-5
+            case 20272: // Illumination
+            case 32848: // Mana Restore
+            case 14189: // Seal Fate
+            case 14157: // Ruthlessness
+            case 14181: // Relentless Strikes
+            case 17794: // Improved Shadow Bolt ranks 1-5
             case 17797:
             case 17798:
             case 17799:
             case 17800:
+            case 20424: // seal of command damage
+            case 20253: // Intercept Stun (Rank 1)
+            case 20614: // Intercept Stun (Rank 2)
+            case 20615: // Intercept Stun (Rank 3)
+            case 25273: // Intercept Stun (Rank 4)
+            case 25274: // Intercept Stun (Rank 5)
+            case 7922:  // Charge Stun
+            case 30153: // Felguard Intercept Stun rank 1
+            case 30195: // Felguard Intercept Stun rank 2
+            case 30197: // Felguard Intercept Stun rank 3
+            case 25999: // Boar Charge Immobilize
+                        // Feral charge? - unaffected
                 spellInfo->AttributesCu |= SPELL_ATTR_CU_FAKE_DELAY;
                 break;
             /* UNSORTED */

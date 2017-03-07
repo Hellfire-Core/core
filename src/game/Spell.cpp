@@ -766,7 +766,7 @@ void Spell::AddUnitTarget(Unit* pVictim, uint32 effIndex, bool redirected)
         if (m_delayMoment == 0 || m_delayMoment>target.timeDelay)
             m_delayMoment = target.timeDelay;
     }
-    else if (GetSpellEntry()->AttributesCu & SPELL_ATTR_CU_FAKE_DELAY && m_caster->GetTypeId() == TYPEID_PLAYER && !IsTriggeredSpell())
+    else if (GetSpellEntry()->AttributesCu & SPELL_ATTR_CU_FAKE_DELAY)
     {
         target.timeDelay = SPELL_FAKE_DELAY;
         m_delayMoment = target.timeDelay;

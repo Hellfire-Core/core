@@ -169,9 +169,22 @@ bool ACRequest::DetectSpeedHack(Player *pPlayer)
     uint32 count = 0;
     if (timeDiff <= 500 && exact2dDist < speedRate * 0.6)
     {
-        count = pPlayer->CumulativeACReport(ANTICHEAT_CHECK_SPEEDHACK);
+        count = pPlayer->CumulativeACReport(ANTICHEAT_CHECK_SHORTMOVE);
         if (count < sWorld.getConfig(CONFIG_ANTICHEAT_SHORTMOVE_INGNORE))
             return false;
+        sWorld.SendGMText(LANG_ANTICHEAT_SHORTMOVE, pPlayer->GetName(), pPlayer->GetName(), count, speedRate, exact2dDist);
+        sLog.outLog(LOG_CHEAT, "Player %s (GUID: %u / ACCOUNT_ID: %u) shortmove count %u, server speed %f."
+            "MapID: %u, player's coord X:%f Y:%f Z:%f. MOVEMENTFLAGS: %u LATENCY: %u.",
+            pPlayer->GetName(), pPlayer->GetGUIDLow(), pPlayer->GetSession()->GetAccountId(), count, speedRate,
+            pPlayer->GetMapId(), GetNewMovementInfo().pos.x, GetNewMovementInfo().pos.y, GetNewMovementInfo().pos.z,
+            GetNewMovementInfo().GetMovementFlags(), pPlayer->GetSession()->GetLatency());
+        return true;
+    }
+    if (exact2dDist < 10)
+    {
+        count = pPlayer->CumulativeACReport(ANTICHEAT_CHECK_RARE_CASE);
+        if (count == 1)
+            return false; // lag happens
     }
 
     sWorld.SendGMText(LANG_ANTICHEAT_SPEEDHACK, pPlayer->GetName(), pPlayer->GetName(), count, speedRate, clientSpeedRate);

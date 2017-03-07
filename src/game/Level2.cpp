@@ -4886,3 +4886,21 @@ bool ChatHandler::HandleNpcDebugAICommand(const char* args)
         ai->GetDebugInfo(*this);
     return true;
 }
+
+bool ChatHandler::HandleNpcDmginfoCommand(const char* args)
+{
+    Creature* pCreature = getSelectedCreature();
+    if (!pCreature)
+    {
+        SendSysMessage(LANG_SELECT_CREATURE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    const CreatureInfo* ci = pCreature->GetCreatureInfo();
+    if (!ci) return false;
+    
+    PSendSysMessage("creature entry %u dmg %u-%u ranged %u-%u\n%u-%u base hp %u-%u base mp",
+        ci->Entry, ci->mindmg, ci->maxdmg, ci->minrangedmg, ci->maxrangedmg, ci->minhealth, ci->maxhealth, ci->minmana, ci->maxmana);
+    return true;
+}

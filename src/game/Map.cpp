@@ -442,6 +442,9 @@ void Map::Update(const uint32 &t_diff)
         }
     }
 
+    if (WorldTimer::getMSTimeDiffToNow(startTime) > 50)
+        sLog.outLog(LOG_DIFF, "Map::Update sessions (%u ms) map %u", WorldTimer::getMSTimeDiffToNow(startTime), GetId());
+    startTime = WorldTimer::getMSTime();
     /// update players at tick
     for (m_mapRefIter = m_mapRefManager.begin(); m_mapRefIter != m_mapRefManager.end(); ++m_mapRefIter)
     {
@@ -452,10 +455,11 @@ void Map::Update(const uint32 &t_diff)
             helper.Update(t_diff);
         }
     }
-    uint32 alloweddiff = sWorld.getConfig(CONFIG_MIN_LOG_CELL);
 
-    if (WorldTimer::getMSTimeDiffToNow(startTime) > alloweddiff)
-        sLog.outLog(LOG_DIFF, "Map::Update sessions and players (%u ms) map %u", WorldTimer::getMSTimeDiffToNow(startTime), GetId());
+    if (WorldTimer::getMSTimeDiffToNow(startTime) > 50)
+        sLog.outLog(LOG_DIFF, "Map::Update players (%u ms) map %u", WorldTimer::getMSTimeDiffToNow(startTime), GetId());
+
+    uint32 alloweddiff = sWorld.getConfig(CONFIG_MIN_LOG_CELL);
 
     resetMarkedCells();
 
