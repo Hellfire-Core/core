@@ -180,6 +180,7 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket & /*recv_data*/)
         return;
 
     Loot *pLoot = NULL;
+    bool isPickpocket = false;
 
     switch (GUID_HIPART(guid))
     {
@@ -216,7 +217,8 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket & /*recv_data*/)
 
             if (ok_loot && pCreature->IsWithinDistInMap(_player,INTERACTION_DISTANCE))
                 pLoot = &pCreature->loot ;
-
+            if (pCreature->isAlive())
+                isPickpocket = true;
             break;
         }
         default:
@@ -233,7 +235,7 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket & /*recv_data*/)
             return;
         }
 
-        if (!IS_ITEM_GUID(guid) && player->GetGroup())      //item can be looted only single player
+        if (!IS_ITEM_GUID(guid) && player->GetGroup() && !isPickpocket)      //item can be looted only single player
         {
             Group *group = player->GetGroup();
 

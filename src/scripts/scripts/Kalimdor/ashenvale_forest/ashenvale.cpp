@@ -527,6 +527,8 @@ bool GOUse_go_naga_brazier(Player* pPlayer, GameObject* pGo)
     {
         if (npc_muglashAI* pEscortAI = CAST_AI(npc_muglashAI, pCreature->AI()))
         {
+            if (pEscortAI->m_bIsBrazierExtinguished)
+                return false;
             DoScriptText(SAY_MUG_BRAZIER_WAIT, pCreature);
             pEscortAI->m_bIsBrazierExtinguished = true;
             return false;

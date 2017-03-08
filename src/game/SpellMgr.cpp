@@ -1152,6 +1152,9 @@ bool SpellMgr::IsPartialyResistable(SpellEntry const* spellInfo)
             return false;
     }
 
+    if (spellInfo->SchoolMask & SPELL_SCHOOL_MASK_HOLY)                  // can't resist holy spells
+        return false;
+
     if (SpellMgr::IsBinaryResistable(spellInfo))
         return false;
     else

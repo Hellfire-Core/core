@@ -4043,12 +4043,12 @@ bool Unit::CheckForStrongerAuras(Aura* Aur)
     if ((Aur->GetModifier()->m_auraname == SPELL_AURA_MOD_DECREASE_SPEED ||
         Aur->GetModifier()->m_auraname == SPELL_AURA_MOD_HEALING_PCT ||
         Aur->GetModifier()->m_auraname == SPELL_AURA_HASTE_MELEE) &&
-        !Aur->IsPersistent() && Aur->GetModifierValue() < 0)
+        !Aur->IsPersistent() && Aur->GetModifierValue() < 0 && Aur->GetCasterGUID() != GetGUID())
     {
         Unit::AuraList list = GetAurasByType(Aur->GetModifier()->m_auraname);
         for (Unit::AuraList::iterator itr = list.begin(); itr != list.end(); itr++)
         {
-            if ((*itr)->GetModifierValue() > 0)
+            if ((*itr)->GetModifierValue() > 0 || (*itr)->GetCasterGUID() == GetGUID())
                 continue;
             if ((*itr)->GetModifierValue() < Aur->GetModifierValue() && !(*itr)->IsPersistent()) // they are negative!
                 return true;

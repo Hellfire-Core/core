@@ -100,7 +100,9 @@ struct npc_aged_dying_ancient_kodoAI : public ScriptedAI
         {
             me->CombatStop();
             if (!me->HasAura(SPELL_KODO_KOMBO_DESPAWN_BUFF))
-                me->Respawn();
+            {
+                me->ForcedDespawn(0);
+            }
         }
         
         

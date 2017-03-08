@@ -2163,7 +2163,8 @@ struct npc_deranged_helboarAI : public ScriptedAI
 
     void EnterCombat(Unit* who)
     {
-        DoCast(me, SPELL_BURNING_SPOKES);
+        if (!m_creature->HasAura(SPELL_BURNING_SPOKES))
+            DoCast(me, SPELL_BURNING_SPOKES);
     } 
 
     void DamageTaken(Unit* doneby, uint32 & damage)

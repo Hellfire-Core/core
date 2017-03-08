@@ -4444,6 +4444,7 @@ void Spell::EffectPickPocket(uint32 /*i*/)
     {
         int32 chance = 10 + int32(m_caster->getLevel()) - int32(unitTarget->getLevel());
 
+        m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "pickpocketing chance %i", unitTarget, chance);
         if (chance > irand(0, 19))
         {
             // Stealing successful
