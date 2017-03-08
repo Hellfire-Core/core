@@ -217,7 +217,7 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket & /*recv_data*/)
 
             if (ok_loot && pCreature->IsWithinDistInMap(_player,INTERACTION_DISTANCE))
                 pLoot = &pCreature->loot ;
-            if (pCreature->isAlive())
+            if (pCreature && pCreature->isAlive())
                 isPickpocket = true;
             break;
         }
