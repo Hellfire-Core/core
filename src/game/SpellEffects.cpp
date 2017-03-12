@@ -7544,7 +7544,7 @@ void Spell::EffectCharge(uint32 /*i*/)
 
 
     if (m_caster->GetTypeId() == TYPEID_PLAYER)
-        ((Player *)m_caster)->m_AC_timer = 3000;
+        ((Player *)m_caster)->m_AC_timer = 5000;
 
     float speed = GetSpellEntry()->speed ? GetSpellEntry()->speed : SPEED_CHARGE;
     if (_path.getPathType() & PATHFIND_NOPATH)

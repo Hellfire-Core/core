@@ -42,6 +42,12 @@ struct MapID
         if(nMapId == val.nMapId)
             return nInstanceId < val.nInstanceId;
 
+        // 0 < 1< 530 < 2 < ...
+        if (nMapId == 530)
+            return 1 < val.nMapId;
+        if (val.nMapId == 530)
+            return nMapId <= 1;
+
         return nMapId < val.nMapId;
     }
 
