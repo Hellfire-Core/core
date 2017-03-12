@@ -277,6 +277,7 @@ void WorldSession::HandleLootOpcode(WorldPacket & recv_data)
     uint64 guid;
     recv_data >> guid;
 
+    GetPlayer()->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_TALK);
     GetPlayer()->SendLoot(guid, LOOT_CORPSE);
 }
 

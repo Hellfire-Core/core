@@ -717,6 +717,7 @@ void WorldSession::SendListInventory(uint64 vendorguid)
     // remove fake death
     if (GetPlayer()->HasFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_FEIGN_DEATH))
         GetPlayer()->RemoveSpellsCausingAura(SPELL_AURA_FEIGN_DEATH);
+    GetPlayer()->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_TALK);
 
     // Stop the npc if moving
     pCreature->StopMoving();
