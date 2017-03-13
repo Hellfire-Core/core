@@ -1963,11 +1963,11 @@ struct npc_cannon_targetAI : public ScriptedAI
                 if (Player* player = me->GetPlayer(PlayerGUID))
                 {
                     if (Creature* bunny = GetClosestCreatureWithEntry(me, NPC_SOUTH_GATE, 20.0f))
-                        player->KilledMonster(CREDIT_SOUTH, me->GetGUID());
+                        player->RewardPlayerAndGroupAtEvent(CREDIT_SOUTH, bunny);
                     else
                     {   
                         if (Creature* bunny = GetClosestCreatureWithEntry(me, NPC_NORTH_GATE, 20.0f))
-                            player->KilledMonster(CREDIT_NORTH, me->GetGUID());
+                            player->RewardPlayerAndGroupAtEvent(CREDIT_NORTH, bunny);
                     }
                 }
 

@@ -4076,6 +4076,23 @@ SpellCastResult Spell::CheckCast(bool strict)
             }*/
         }
 
+        SpellScriptTarget::const_iterator lower = sSpellMgr.GetBeginSpellScriptTarget(GetSpellEntry()->Id);
+        SpellScriptTarget::const_iterator upper = sSpellMgr.GetEndSpellScriptTarget(GetSpellEntry()->Id);
+        if (lower != upper)
+        {
+            bool found = false;
+            for (SpellScriptTarget::const_iterator i_spellST = lower; i_spellST != upper; ++i_spellST)
+            {
+                if (i_spellST->second.type != SPELL_TARGET_TYPE_CREATURE)
+                    continue;
+                if (i_spellST->second.targetEntry == target->GetEntry())
+                    found = true;
+            }
+
+            if (!found)
+                return SPELL_FAILED_BAD_TARGETS;
+        }
+
         // TODO: this check can be applied and for player to prevent cheating when IsPositiveSpell will return always correct result.
         // check target for pet/charmed casts (not self targeted), self targeted cast used for area effects and etc
         if (m_caster != target && m_caster->GetTypeId() == TYPEID_UNIT && m_caster->GetCharmerOrOwnerGUID())

@@ -286,7 +286,7 @@ struct npc_manaforge_control_consoleAI : public ScriptedAI
                     DoScriptText(EMOTE_COMPLETE, me);
                     Player* player = Unit::GetPlayer(someplayer);
                     if (player)
-                        player->KilledMonster(me->GetEntry(),me->GetGUID());
+                        player->RewardPlayerAndGroupAtEvent(me->GetEntry(), me);
                     DoCast(me,SPELL_DISABLE_VISUAL);
 
                     if (goConsole)
@@ -2195,6 +2195,7 @@ struct npc_saeedAI : public npc_escortAI
             summoned->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
             DoScriptText(SAY_DIMENSIUS_1, summoned);
             summoned->AI()->AttackStart(me);
+            summoned->LowerPlayerDamageReq(summoned->GetMaxHealth() / 4);
         }
     }
 
