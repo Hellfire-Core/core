@@ -3223,7 +3223,8 @@ void Spell::SendCastResult(SpellCastResult result)
         ((Player*)m_caster)->SendPacketToSelf(&data);
         return;
     }
-
+    if (GetSpellEntry()->Id == 29989)
+        m_caster->SendCombatStats(1 << COMBAT_STATS_CRASHTEST, "bang", NULL);
     m_caster->SendCombatStats(1 << COMBAT_STATS_FAILED_CAST, "Cast %u failed, result %u", NULL, GetSpellEntry()->Id, result);
     
     if (result >= SPELL_FAILED_DEBUG_START && result <= SPELL_FAILED_DEBUG_END)

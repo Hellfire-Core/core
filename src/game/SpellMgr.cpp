@@ -3130,6 +3130,9 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 33493: // mark of malice
                     spellInfo->Attributes &= ~SPELL_ATTR_ON_NEXT_SWING_2;
                     break;
+                case 30009: // dip in a moonwell
+                    spellInfo->DurationIndex = 4;
+                    break;
                     //PRE NERF ZONE
                 case 44032: // manticron cube exhaustion 180sec
                     spellInfo->DurationIndex = 25;

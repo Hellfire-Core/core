@@ -180,10 +180,10 @@ bool ACRequest::DetectSpeedHack(Player *pPlayer)
             GetNewMovementInfo().GetMovementFlags(), pPlayer->GetSession()->GetLatency());
         return true;
     }
-    if (exact2dDist < 10)
+    if (exact2dDist < 14)
     {
         count = pPlayer->CumulativeACReport(ANTICHEAT_CHECK_RARE_CASE);
-        if (count <= 2)
+        if (count <= 3)
             return false; // lag happens
     }
 

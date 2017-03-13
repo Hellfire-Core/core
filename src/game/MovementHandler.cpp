@@ -295,8 +295,7 @@ bool WorldSession::HandleMoverRelocation(MovementInfo& movementInfo)
                 movingGood = false;
             }
         }
-        if (WorldTimer::getMSTimeDiffToNow(mstime) > 100)
-            sLog.outLog(LOG_SESSION_DIFF, "movement opcode too long(check 1)");
+
         if (sWorld.getConfig(CONFIG_ENABLE_PASSIVE_ANTICHEAT) && !plMover->hasUnitState(UNIT_STAT_LOST_CONTROL | UNIT_STAT_NOT_MOVE) && !plMover->GetSession()->HasPermissions(PERM_GMT_DEV))
         {
             if (plMover->m_AC_timer == 0 || // time up OR moved long distance and timer is NOT on long interval(caused by teleport)
@@ -313,8 +312,7 @@ bool WorldSession::HandleMoverRelocation(MovementInfo& movementInfo)
                 }
             }
         }
-        if (WorldTimer::getMSTimeDiffToNow(mstime) > 100)
-            sLog.outLog(LOG_SESSION_DIFF, "movement opcode too long(check 2)");
+
         if (movementInfo.HasMovementFlag(MOVEFLAG_ONTRANSPORT))
         {
             if (!plMover->GetTransport())
@@ -337,18 +335,20 @@ bool WorldSession::HandleMoverRelocation(MovementInfo& movementInfo)
             plMover->SetTransport(NULL);
             movementInfo.ClearTransportData();
         }
-        if (WorldTimer::getMSTimeDiffToNow(mstime) > 100)
-            sLog.outLog(LOG_SESSION_DIFF, "movement opcode too long(check 3)");
+        
         if (movementInfo.HasMovementFlag(MOVEFLAG_SWIMMING) != plMover->IsInWater())
         {
             // now client not include swimming flag in case jumping under water
             plMover->SetInWater(!plMover->IsInWater() || plMover->GetTerrain()->IsInWater(movementInfo.GetPos()->x, movementInfo.GetPos()->y, movementInfo.GetPos()->z));
+            if (WorldTimer::getMSTimeDiffToNow(mstime) > 100)
+                sLog.outLog(LOG_SESSION_DIFF, "movement opcode too long(check 2)");
         }
     }
-
+    
     mover->m_movementInfo = movementInfo;
     mover->SetPosition(movementInfo.GetPos()->x, movementInfo.GetPos()->y, movementInfo.GetPos()->z, movementInfo.GetPos()->o);
-
+    if (WorldTimer::getMSTimeDiffToNow(mstime) > 100)
+        sLog.outLog(LOG_SESSION_DIFF, "movement opcode too long(check 3)");
     if (mover->GetObjectGuid().IsPlayer())
         mover->ToPlayer()->HandleFallUnderMap(movementInfo.GetPos()->z);
     if (WorldTimer::getMSTimeDiffToNow(mstime) > 100)

@@ -2096,7 +2096,6 @@ void Player::RewardRage(uint32 damage, uint32 weaponSpeedHitFactor, bool attacke
         // Berserker Rage effect
         if (HasAura(18499,0))
             addRage *= 2.0f;
-        SendCombatStats(1 << COMBAT_STATS_TEST, "generating %f rage from %u damage", NULL, addRage, damage);
     }
 
     addRage *= sWorld.getConfig(RATE_POWER_RAGE_INCOME);
@@ -18954,8 +18953,6 @@ inline void BeforeVisibilityDestroy<Creature>(Creature* t, Player* p)
 
 void Player::UpdateVisibilityOf(WorldObject const* viewPoint, WorldObject* target)
 {
-    SendCombatStats(1 << COMBAT_STATS_TEST,"update visibility of (%u %u)",(target->isType(TYPEMASK_UNIT) ? target->ToUnit() : NULL),
-        HaveAtClient(target), target->isVisibleForInState(this, viewPoint, true));
     if (HaveAtClient(target))
     {
         if (!target->isVisibleForInState(this, viewPoint, true))
