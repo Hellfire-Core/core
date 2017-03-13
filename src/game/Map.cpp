@@ -442,7 +442,7 @@ void Map::Update(const uint32 &t_diff)
         }
     }
 
-    if (WorldTimer::getMSTimeDiffToNow(startTime) > 80)
+    if (WorldTimer::getMSTimeDiffToNow(startTime) > 90)
         sLog.outLog(LOG_DIFF, "Map::Update sessions (%u ms) map %u", WorldTimer::getMSTimeDiffToNow(startTime), GetId());
     startTime = WorldTimer::getMSTime();
     /// update players at tick

@@ -212,6 +212,8 @@ void WorldSession::HandleMoveTeleportAck(WorldPacket& recv_data)
 
 void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
 {
+    uint32 startTime = WorldTimer::getMSTime();
+
     Unit *mover = _player->GetMover();
     Player *plMover = mover->ToPlayer();
 
@@ -244,9 +246,12 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
     if (!_player->IsSelfMover() && plMover)
         movementInfo.RemoveMovementFlag(MOVEFLAG_WALK_MODE);
 
+    if (WorldTimer::getMSTimeDiffToNow(startTime) > 100)
+        sLog.outLog(LOG_SESSION_DIFF, "movement opcode too long(check 1)");
     /* process position-change */
     bool result = HandleMoverRelocation(movementInfo);
-
+    if (WorldTimer::getMSTimeDiffToNow(startTime) > 100)
+        sLog.outLog(LOG_SESSION_DIFF, "movement opcode too long(check 2)");
     if (plMover)
         plMover->UpdateFallInformationIfNeed(movementInfo, opcode);
 
@@ -264,6 +269,8 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
        // sLog.outLog(LOG_CHEAT, "Player %s (GUID:%u) moving when rooted, position %f %f %f %u",
        //     _player->GetName(), _player->GetGUIDLow(), movementInfo.pos.x, movementInfo.pos.y, movementInfo.pos.z, _player->GetMapId());
     }
+    if (WorldTimer::getMSTimeDiffToNow(startTime) > 100)
+        sLog.outLog(LOG_SESSION_DIFF, "movement opcode too long(check 3)");
 }
 
 bool WorldSession::HandleMoverRelocation(MovementInfo& movementInfo)

@@ -13725,6 +13725,9 @@ void Player::AreaExploredOrEventHappens(uint32 questId)
         {
             QuestStatusData& q_status = mQuestStatus[questId];
 
+            if (GetQuestSlotState(log_slot) == QUEST_STATE_FAIL)
+                return;
+
             if (!q_status.m_explored)
             {
                 q_status.m_explored = true;
@@ -18950,6 +18953,8 @@ inline void BeforeVisibilityDestroy<Creature>(Creature* t, Player* p)
 
 void Player::UpdateVisibilityOf(WorldObject const* viewPoint, WorldObject* target)
 {
+    SendCombatStats(1 << COMBAT_STATS_TEST,"update visibility of (%u %u)",(target->isType(TYPEMASK_UNIT) ? target->ToUnit() : NULL),
+        HaveAtClient(target), target->isVisibleForInState(this, viewPoint, true));
     if (HaveAtClient(target))
     {
         if (!target->isVisibleForInState(this, viewPoint, true))

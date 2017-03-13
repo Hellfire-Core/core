@@ -12455,6 +12455,8 @@ void Unit::UpdateVisibilityAndView()
         }
     }*/
 
+    SendCombatStats(1 << COMBAT_STATS_TEST, "update visibility and view", NULL);
+
     WorldObject::UpdateVisibilityAndView();
     ScheduleAINotify(0);
 }
