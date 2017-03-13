@@ -2081,7 +2081,7 @@ void Player::RewardRage(uint32 damage, uint32 weaponSpeedHitFactor, bool attacke
 
     if (attacker)
     {
-        addRage = ((damage/rageconversion*7.5 + weaponSpeedHitFactor)/2);
+        addRage = ((float(damage)/rageconversion*7.5 + weaponSpeedHitFactor)/2);
 
         if (addRage > 15*damage/rageconversion)
             addRage = 15*damage/rageconversion;
@@ -2091,11 +2091,12 @@ void Player::RewardRage(uint32 damage, uint32 weaponSpeedHitFactor, bool attacke
     }
     else
     {
-        addRage = (damage/rageconversion)*2.5;
+        addRage = (float(damage)/rageconversion)*2.5;
 
         // Berserker Rage effect
         if (HasAura(18499,0))
             addRage *= 2.0f;
+        SendCombatStats(1 << COMBAT_STATS_TEST, "generating %f rage from %u damage", NULL, addRage, damage);
     }
 
     addRage *= sWorld.getConfig(RATE_POWER_RAGE_INCOME);

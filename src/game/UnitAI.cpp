@@ -31,6 +31,7 @@
 
 void UnitAI::AttackStart(Unit *victim)
 {
+    me->SendCombatStats(1 << COMBAT_STATS_CRASHTEST, "bang crash", NULL);
     if (victim && me->Attack(victim, true))
         me->GetMotionMaster()->MoveChase(victim);
 }
