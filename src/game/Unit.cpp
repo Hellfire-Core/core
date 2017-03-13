@@ -4118,6 +4118,9 @@ bool Unit::RemoveNoStackAurasDueToAura(Aura *Aur)
                 continue;
         }
 
+        if (SpellMgr::IsChanneledSpell(i_spellProto))
+            continue; // do not remove channeled auras
+
         uint32 i_effIndex = (*i).second->GetEffIndex();
 
         bool is_triggered_by_spell = false;
@@ -12454,8 +12457,6 @@ void Unit::UpdateVisibilityAndView()
                 ++it;
         }
     }*/
-
-    SendCombatStats(1 << COMBAT_STATS_TEST, "update visibility and view", NULL);
 
     WorldObject::UpdateVisibilityAndView();
     ScheduleAINotify(0);

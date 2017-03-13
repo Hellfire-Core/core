@@ -1891,7 +1891,6 @@ void Creature::Respawn()
     // forced recreate creature object at clients
     UnitVisibility currentVis = GetVisibility();
     SetVisibility(VISIBILITY_RESPAWN);
-    SetVisibility(currentVis);                              // restore visibility state
 
     if (getDeathState()==DEAD)
     {
@@ -1924,6 +1923,7 @@ void Creature::Respawn()
         AI()->Reset();
         AI()->JustRespawned();
     }
+    SetVisibility(currentVis);                              // restore visibility state
 
     SendHeartBeat();
     SendMonsterStop();
