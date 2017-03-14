@@ -15157,10 +15157,10 @@ bool Player::isAllowedToLoot(Creature* creature)
         if (Group* otherGroup = recipient->GetGroup())
         {
             Group* thisGroup = GetGroup();
-            SendCombatStats(1 << COMBAT_STATS_LOOTING, "isAllowedToLoot %u %lu %u %u", creature, thisGroup->IsRoundRobinLootType(), creature->loot.looterGUID, creature->loot.everyone_can_open, creature->loot.max_quality);
+            
             if (!thisGroup)
                 return false;
-
+            SendCombatStats(1 << COMBAT_STATS_LOOTING, "isAllowedToLoot %u %lu %u %u", creature, thisGroup->IsRoundRobinLootType(), creature->loot.looterGUID, creature->loot.everyone_can_open, creature->loot.max_quality);
             if (thisGroup != otherGroup)
                 return false;
 
