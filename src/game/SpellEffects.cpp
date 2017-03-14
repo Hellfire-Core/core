@@ -2831,10 +2831,12 @@ void Spell::EffectTriggerSpell(uint32 i)
             return;
             // diemetradon tag kill credit
         case 37907:
+        {
             Player* plr = m_caster->GetCharmerOrOwnerPlayerOrPlayerItself();
             if (plr)
                 plr->CastSpell(plr, 37907, true);
             return;
+        }
         case 29989: // dip in a moonwell control robot cast on robot (find by entry)
             m_caster->CastSpell((Unit*)(NULL), 29989, true);
             return;
