@@ -1133,30 +1133,23 @@ struct npc_warp_chaserAI : public ScriptedAI
 {
     npc_warp_chaserAI(Creature* creature) : ScriptedAI(creature) {}
 
-    Unit* summonedZeppit;
 
     void JustDied(Unit* slayer)
     {
-        if(slayer->GetTypeId()==TYPEID_PLAYER && ((Player*)(slayer))->GetQuestStatus(10924)==QUEST_STATUS_INCOMPLETE)
-        {
-            if(me->IsWithinMeleeRange(slayer))
-            {
-                summonedZeppit = FindCreature(22484, MELEE_RANGE + 5, me);
-                // to avoid leeching by other players:
-                if (summonedZeppit && summonedZeppit->GetOwner()==slayer)
-                {
-                    // create item needed to complete the quest
-                    summonedZeppit->CastSpell(summonedZeppit, 39244, true);
-                }
-            }
-        }
+        Player* plr = slayer->GetCharmerOrOwnerPlayerOrPlayerItself();
+        if (!plr)
+            return;
+        Unit* zeppit = slayer->ToPlayer()->GetMiniPet();
+        if (!zeppit || zeppit->GetEntry() != 22484)
+            return;
+        
+        zeppit->CastSpell(zeppit, 39244, true);
     }
 
     void EnterCombat(Unit* who) {}
 
     void Reset()
     {
-        summonedZeppit = NULL;
     }
 };
 

@@ -1910,8 +1910,6 @@ enum
 
     NPC_IMP              = 22474,
     NPC_HOUND            = 22500,
-    NPC_SOUTH_GATE       = 22472,
-    NPC_NORTH_GATE       = 22471,
     CREDIT_SOUTH         = 22504,
     CREDIT_NORTH         = 22503,
 
@@ -1962,13 +1960,10 @@ struct npc_cannon_targetAI : public ScriptedAI
             {
                 if (Player* player = me->GetPlayer(PlayerGUID))
                 {
-                    if (Creature* bunny = GetClosestCreatureWithEntry(me, NPC_SOUTH_GATE, 20.0f))
-                        player->RewardPlayerAndGroupAtEvent(CREDIT_SOUTH, bunny);
+                    if (me->GetPositionX()< 2000)
+                        player->RewardPlayerAndGroupAtEvent(CREDIT_SOUTH, me);
                     else
-                    {   
-                        if (Creature* bunny = GetClosestCreatureWithEntry(me, NPC_NORTH_GATE, 20.0f))
-                            player->RewardPlayerAndGroupAtEvent(CREDIT_NORTH, bunny);
-                    }
+                        player->RewardPlayerAndGroupAtEvent(CREDIT_NORTH, me);
                 }
 
                 me->SummonGameObject(GO_BIG_FIRE, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 60);
