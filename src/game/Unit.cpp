@@ -11626,7 +11626,6 @@ void Unit::SendPetAIReaction(uint64 guid)
 ///----------End of Pet responses methods----------
 bool Unit::SetPosition(float x, float y, float z, float orientation, bool teleport)
 {
-    uint32 mstime = WorldTimer::getMSTime();
     // prevent crash when a bad coord is sent by the client
     if (!Hellground::IsValidMapCoord(x,y,z,orientation))
     {
@@ -11637,9 +11636,7 @@ bool Unit::SetPosition(float x, float y, float z, float orientation, bool telepo
     bool turn = (GetOrientation() != orientation);
     bool relocated = (teleport || GetPositionX() != x || GetPositionY() != y || GetPositionZ() != z);
 
-    SpellAuraInterruptFlags interruptFlags = AURA_INTERRUPT_FLAG_NONE;
-    if (WorldTimer::getMSTimeDiffToNow(mstime) > 100)
-        sLog.outLog(LOG_SESSION_DIFF, "movement opcode too long(check 2 %u %u)", relocated, GetTypeId());
+    SpellAuraInterruptFlags interruptFlags = AURA_INTERRUPT_FLAG_NONE;    
     if (relocated)
     {
         interruptFlags = SpellAuraInterruptFlags(interruptFlags | AURA_INTERRUPT_FLAG_MOVE | AURA_INTERRUPT_FLAG_NOT_SEATED);
@@ -11650,8 +11647,7 @@ bool Unit::SetPosition(float x, float y, float z, float orientation, bool telepo
         else
             GetMap()->CreatureRelocation(ToCreature(), x, y, z, orientation);
     }
-    if (WorldTimer::getMSTimeDiffToNow(mstime) > 100)
-        sLog.outLog(LOG_SESSION_DIFF, "movement opcode too long(check 3)");
+
     if (turn)
     {
         interruptFlags = SpellAuraInterruptFlags(interruptFlags | AURA_INTERRUPT_FLAG_TURNING | AURA_INTERRUPT_FLAG_NOT_SEATED);
@@ -11661,8 +11657,6 @@ bool Unit::SetPosition(float x, float y, float z, float orientation, bool telepo
     if (interruptFlags)
         RemoveAurasWithInterruptFlags(interruptFlags);
 
-    if (WorldTimer::getMSTimeDiffToNow(mstime) > 100)
-        sLog.outLog(LOG_SESSION_DIFF, "movement opcode too long(check 4)");
     return (relocated || turn);
 }
 

@@ -4076,25 +4076,34 @@ SpellCastResult Spell::CheckCast(bool strict)
             }*/
         }
 
-        SpellScriptTarget::const_iterator lower = sSpellMgr.GetBeginSpellScriptTarget(GetSpellEntry()->Id);
-        SpellScriptTarget::const_iterator upper = sSpellMgr.GetEndSpellScriptTarget(GetSpellEntry()->Id);
-        if (lower != upper)
+        if (GetSpellEntry()->EffectImplicitTargetA[0] == TARGET_UNIT_NEARBY_ENTRY)
         {
-            bool found = false;
-            for (SpellScriptTarget::const_iterator i_spellST = lower; i_spellST != upper; ++i_spellST)
+            SpellScriptTarget::const_iterator lower = sSpellMgr.GetBeginSpellScriptTarget(GetSpellEntry()->Id);
+            SpellScriptTarget::const_iterator upper = sSpellMgr.GetEndSpellScriptTarget(GetSpellEntry()->Id);
+            if (lower != upper)
             {
-                if (i_spellST->second.type == SPELL_TARGET_TYPE_GAMEOBJECT)
-                    {found = true; break;}
-                if (i_spellST->second.type == SPELL_TARGET_TYPE_CREATURE && target->isAlive() &&
-                    i_spellST->second.targetEntry == target->GetEntry())
-                    {found = true; break;}
-                if (i_spellST->second.type == SPELL_TARGET_TYPE_DEAD && !target->isAlive() &&
-                    i_spellST->second.targetEntry == target->GetEntry())
-                    {found = true; break;}
-            }
+                bool found = false;
+                for (SpellScriptTarget::const_iterator i_spellST = lower; i_spellST != upper; ++i_spellST)
+                {
+                    if (i_spellST->second.type == SPELL_TARGET_TYPE_GAMEOBJECT)
+                    {
+                        found = true; break;
+                    }
+                    if (i_spellST->second.type == SPELL_TARGET_TYPE_CREATURE && target->isAlive() &&
+                        i_spellST->second.targetEntry == target->GetEntry())
+                    {
+                        found = true; break;
+                    }
+                    if (i_spellST->second.type == SPELL_TARGET_TYPE_DEAD && !target->isAlive() &&
+                        i_spellST->second.targetEntry == target->GetEntry())
+                    {
+                        found = true; break;
+                    }
+                }
 
-            if (!found)
-                return SPELL_FAILED_BAD_TARGETS;
+                if (!found)
+                    return SPELL_FAILED_BAD_TARGETS;
+            }
         }
 
         // TODO: this check can be applied and for player to prevent cheating when IsPositiveSpell will return always correct result.

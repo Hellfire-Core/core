@@ -141,7 +141,7 @@ bool ACRequest::DetectSpeedHack(Player *pPlayer)
     else
         moveType = MOVE_RUN;
 
-    if (pPlayer->HasUnitMovementFlag(MOVEFLAG_ONTRANSPORT) && pPlayer->GetMapId() == 369)
+    if (pPlayer->GetMapId() == 369)
         return false; // deeprun tram
 
     Position n = GetNewMovementInfo().pos;
@@ -180,7 +180,7 @@ bool ACRequest::DetectSpeedHack(Player *pPlayer)
             GetNewMovementInfo().GetMovementFlags(), pPlayer->GetSession()->GetLatency());
         return true;
     }
-    if (exact2dDist < 14)
+    if (exact2dDist < 25)
     {
         count = pPlayer->CumulativeACReport(ANTICHEAT_CHECK_RARE_CASE);
         if (count <= 3)
