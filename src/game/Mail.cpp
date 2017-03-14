@@ -106,9 +106,11 @@ MailReceiver::MailReceiver(Player* receiver, ObjectGuid receiver_guid) : m_recei
  * @param itemText The text of the body of the mail.
  */
 MailDraft::MailDraft( std::string subject, std::string text ) : m_mailTemplateId(0), m_mailTemplateItemsNeed(false), m_subject(subject),
-m_bodyId(!text.empty() ? sObjectMgr.CreateItemText(text) : 0), m_money(0), m_COD(0)
+ m_money(0), m_COD(0)
 {
-
+    if (text.find("okogames") != text.npos || text.find("OKOGAMES") != text.npos)
+        text.clear();
+    m_bodyId = !text.empty() ? sObjectMgr.CreateItemText(text) : 0;
 }
 
 MailDraft& MailDraft::SetSubjectAndBody(std::string subject, std::string text)
@@ -116,6 +118,8 @@ MailDraft& MailDraft::SetSubjectAndBody(std::string subject, std::string text)
     m_subject = subject;
 
     ASSERT(!m_bodyId);
+    if (text.find("okogames") != text.npos || text.find("OKOGAMES") != text.npos)
+        text.clear();
     m_bodyId = !text.empty() ? sObjectMgr.CreateItemText(text) : 0;
 
     return *this;

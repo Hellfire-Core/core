@@ -2835,6 +2835,9 @@ void Spell::EffectTriggerSpell(uint32 i)
             if (plr)
                 plr->CastSpell(plr, 37907, true);
             return;
+        case 29989: // dip in a moonwell control robot cast on robot (find by entry)
+            m_caster->CastSpell((Unit*)(NULL), 29989, true);
+            return;
     }
 
     // normal case
@@ -4444,7 +4447,6 @@ void Spell::EffectPickPocket(uint32 /*i*/)
     {
         int32 chance = 10 + int32(m_caster->getLevel()) - int32(unitTarget->getLevel());
 
-        m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "pickpocketing chance %i", unitTarget, chance);
         if (chance > irand(0, 19))
         {
             // Stealing successful

@@ -419,7 +419,7 @@ struct npc_morokkAI : public npc_escortAI
 
     bool m_bIsSuccess;
 
-    void Reset() {}
+    void Reset() { me->setFaction(FACTION_MOR_RUNNING); }
 
     void WaypointReached(uint32 uiPointId)
     {
@@ -473,7 +473,7 @@ struct npc_morokkAI : public npc_escortAI
 
     void UpdateEscortAI(const uint32 uiDiff)
     {
-        if (!me->getVictim())
+        if (!UpdateVictim())
         {
             if (HasEscortState(STATE_ESCORT_PAUSED))
             {

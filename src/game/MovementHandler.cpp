@@ -340,19 +340,14 @@ bool WorldSession::HandleMoverRelocation(MovementInfo& movementInfo)
         {
             // now client not include swimming flag in case jumping under water
             plMover->SetInWater(!plMover->IsInWater() || plMover->GetTerrain()->IsInWater(movementInfo.GetPos()->x, movementInfo.GetPos()->y, movementInfo.GetPos()->z));
-            if (WorldTimer::getMSTimeDiffToNow(mstime) > 100)
-                sLog.outLog(LOG_SESSION_DIFF, "movement opcode too long(check 2)");
         }
     }
     
     mover->m_movementInfo = movementInfo;
     mover->SetPosition(movementInfo.GetPos()->x, movementInfo.GetPos()->y, movementInfo.GetPos()->z, movementInfo.GetPos()->o);
-    if (WorldTimer::getMSTimeDiffToNow(mstime) > 100)
-        sLog.outLog(LOG_SESSION_DIFF, "movement opcode too long(check 3)");
     if (mover->GetObjectGuid().IsPlayer())
         mover->ToPlayer()->HandleFallUnderMap(movementInfo.GetPos()->z);
-    if (WorldTimer::getMSTimeDiffToNow(mstime) > 100)
-        sLog.outLog(LOG_SESSION_DIFF, "movement opcode too long(check 4)");
+    
     return movingGood;
 }
 

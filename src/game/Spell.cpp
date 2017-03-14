@@ -3223,8 +3223,7 @@ void Spell::SendCastResult(SpellCastResult result)
         ((Player*)m_caster)->SendPacketToSelf(&data);
         return;
     }
-    if (GetSpellEntry()->Id == 29989)
-        m_caster->SendCombatStats(1 << COMBAT_STATS_CRASHTEST, "bang", NULL);
+    
     m_caster->SendCombatStats(1 << COMBAT_STATS_FAILED_CAST, "Cast %u failed, result %u", NULL, GetSpellEntry()->Id, result);
     
     if (result >= SPELL_FAILED_DEBUG_START && result <= SPELL_FAILED_DEBUG_END)
@@ -4084,10 +4083,14 @@ SpellCastResult Spell::CheckCast(bool strict)
             bool found = false;
             for (SpellScriptTarget::const_iterator i_spellST = lower; i_spellST != upper; ++i_spellST)
             {
-                if (i_spellST->second.type != SPELL_TARGET_TYPE_CREATURE)
-                    continue;
-                if (i_spellST->second.targetEntry == target->GetEntry())
-                    found = true;
+                if (i_spellST->second.type == SPELL_TARGET_TYPE_GAMEOBJECT)
+                    {found = true; break;}
+                if (i_spellST->second.type == SPELL_TARGET_TYPE_CREATURE && target->isAlive() &&
+                    i_spellST->second.targetEntry == target->GetEntry())
+                    {found = true; break;}
+                if (i_spellST->second.type == SPELL_TARGET_TYPE_DEAD && !target->isAlive() &&
+                    i_spellST->second.targetEntry == target->GetEntry())
+                    {found = true; break;}
             }
 
             if (!found)

@@ -7483,7 +7483,7 @@ bool Unit::IsHostileTo(Unit const* unit) const
         return false;
 
     // always hostile to enemy
-    if (getVictim() == unit || unit->getVictim() == this)
+    if (isInCombat() && (getVictim() == unit || unit->getVictim() == this))
         return true;
 
     // if is neutral to all, so it won't be hostile ;P
@@ -11626,6 +11626,7 @@ void Unit::SendPetAIReaction(uint64 guid)
 ///----------End of Pet responses methods----------
 bool Unit::SetPosition(float x, float y, float z, float orientation, bool teleport)
 {
+    uint32 mstime = WorldTimer::getMSTime();
     // prevent crash when a bad coord is sent by the client
     if (!Hellground::IsValidMapCoord(x,y,z,orientation))
     {
@@ -11637,6 +11638,8 @@ bool Unit::SetPosition(float x, float y, float z, float orientation, bool telepo
     bool relocated = (teleport || GetPositionX() != x || GetPositionY() != y || GetPositionZ() != z);
 
     SpellAuraInterruptFlags interruptFlags = AURA_INTERRUPT_FLAG_NONE;
+    if (WorldTimer::getMSTimeDiffToNow(mstime) > 100)
+        sLog.outLog(LOG_SESSION_DIFF, "movement opcode too long(check 2 %u %u)", relocated, GetTypeId());
     if (relocated)
     {
         interruptFlags = SpellAuraInterruptFlags(interruptFlags | AURA_INTERRUPT_FLAG_MOVE | AURA_INTERRUPT_FLAG_NOT_SEATED);
@@ -11647,7 +11650,8 @@ bool Unit::SetPosition(float x, float y, float z, float orientation, bool telepo
         else
             GetMap()->CreatureRelocation(ToCreature(), x, y, z, orientation);
     }
-
+    if (WorldTimer::getMSTimeDiffToNow(mstime) > 100)
+        sLog.outLog(LOG_SESSION_DIFF, "movement opcode too long(check 3)");
     if (turn)
     {
         interruptFlags = SpellAuraInterruptFlags(interruptFlags | AURA_INTERRUPT_FLAG_TURNING | AURA_INTERRUPT_FLAG_NOT_SEATED);
@@ -11657,6 +11661,8 @@ bool Unit::SetPosition(float x, float y, float z, float orientation, bool telepo
     if (interruptFlags)
         RemoveAurasWithInterruptFlags(interruptFlags);
 
+    if (WorldTimer::getMSTimeDiffToNow(mstime) > 100)
+        sLog.outLog(LOG_SESSION_DIFF, "movement opcode too long(check 4)");
     return (relocated || turn);
 }
 
@@ -13179,7 +13185,6 @@ void Unit::KnockBackFrom(Unit* target, float horizontalSpeed, float verticalSpee
 
 void Unit::KnockBack(float angle, float horizontalSpeed, float verticalSpeed)
 {
-    SendCombatStats(1 << COMBAT_STATS_TEST, "knockback %f %f %f", NULL, angle, horizontalSpeed, verticalSpeed);
     float vsin = sin(angle);
     float vcos = cos(angle);
 
