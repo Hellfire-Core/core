@@ -1139,7 +1139,7 @@ struct npc_warp_chaserAI : public ScriptedAI
         Player* plr = slayer->GetCharmerOrOwnerPlayerOrPlayerItself();
         if (!plr)
             return;
-        Unit* zeppit = slayer->ToPlayer()->GetMiniPet();
+        Unit* zeppit = plr->GetMiniPet();
         if (!zeppit || zeppit->GetEntry() != 22484)
             return;
         
