@@ -38,6 +38,16 @@
 typedef std::list<std::pair<REGEX_NAMESPACE::regex, REGEX_NAMESPACE::regex > > PatternList; // <IP pattern, LocalIP pattern>
 #endif
 
+enum eStatus
+{
+    STATUS_CHALLENGE,
+    STATUS_LOGON_PROOF,
+    STATUS_RECON_PROOF,
+    STATUS_AUTHED,
+    STATUS_CLOSED,
+    STATUS_NEVER
+};
+
 /// Handle login commands
 class AuthSocket: public BufferedSocket
 {
@@ -76,7 +86,7 @@ class AuthSocket: public BufferedSocket
         BigNumber K;
         BigNumber _reconnectProof;
 
-        bool _authed;
+        eStatus _authed;
 
         std::string _login;
         std::string _tokenKey;
