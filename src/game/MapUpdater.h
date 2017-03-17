@@ -68,7 +68,7 @@ class MapUpdater
         int deactivate(void);
 
         bool activated();
-        void update_finished();
+        void update_finished(uint32 map);
 
         void register_thread(ACE_thread_t const threadId, uint32 mapId, uint32 instanceId);
         void unregister_thread(ACE_thread_t const threadId);
@@ -77,11 +77,12 @@ class MapUpdater
 
         MapUpdateInfo const* GetMapUpdateInfo(ACE_thread_t const threadId);
 
+        uint32 GetLastMapId() { return lastMapId; };
     private:
         ThreadMapMap m_threads;
 
         uint32 freezeDetectTime;
-
+        uint32 lastMapId;
         DelayExecutor m_executor;
         ACE_Condition_Thread_Mutex m_condition;
         ACE_Thread_Mutex m_mutex;

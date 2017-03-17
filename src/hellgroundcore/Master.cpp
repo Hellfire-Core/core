@@ -460,7 +460,7 @@ void Master::_OnSignal(int s)
                     map->SetBroken(true);
 
                 sMapMgr.GetMapUpdater()->unregister_thread(ACE_OS::thr_self());
-                sMapMgr.GetMapUpdater()->update_finished();
+                sMapMgr.GetMapUpdater()->update_finished(mapUpdateInfo->GetId());
             }
             else
             {

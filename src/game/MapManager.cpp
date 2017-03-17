@@ -249,7 +249,8 @@ void MapManager::Update(uint32 diff)
     }
     dr.RecordTimeFor("MapManager-general");
     m_updater.wait();
-    dr.RecordTimeFor("MapManager-wait");
+    if (dr.RecordTimeFor("MapManager-wait"))
+        sLog.outLog(LOG_DIFF, "last updated map %u", m_updater.GetLastMapId());
 
     for (DelayedMapList::iterator iter = delayedUpdate.begin(); iter != delayedUpdate.end(); ++iter)
         iter->first->DelayedUpdate(iter->second);

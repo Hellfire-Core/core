@@ -282,6 +282,7 @@ void WorldSession::HandleGossipHelloOpcode(WorldPacket & recv_data)
     {
         unit->SetFacingTo(unit->GetAngle(GetPlayer()));
         unit->GetMotionMaster()->MoveDistract(20 * IN_MILISECONDS);
+        unit->SendCombatStats(1 << COMBAT_STATS_TEST, "distract movement", NULL);
     }
 
     // If spirit guide, no need for gossip menu, just put player into resurrect queue

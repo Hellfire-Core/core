@@ -196,5 +196,7 @@ bool ACRequest::DetectSpeedHack(Player *pPlayer)
         GetNewMovementInfo().pos.x, GetNewMovementInfo().pos.y, GetNewMovementInfo().pos.z,
         GetNewMovementInfo().GetMovementFlags(), pPlayer->GetSession()->GetLatency(),
         pPlayer->GetMap() ? (pPlayer->GetMap()->IsBattleGroundOrArena() ? "Yes" : "No") : "No", count);
+    if (count >= 15)
+        pPlayer->GetSession()->KickPlayer();
     return true;
 }

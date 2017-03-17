@@ -76,7 +76,7 @@ class MapUpdateRequest : public ACE_Method_Request
                 m_map.ForcedUnload();
 
             m_updater.unregister_thread(ACE_OS::thr_self());
-            m_updater.update_finished();
+            m_updater.update_finished(m_map.GetId());
             return 0;
         }
 };
@@ -135,9 +135,11 @@ bool MapUpdater::activated()
     return m_executor.activated();
 }
 
-void MapUpdater::update_finished()
+void MapUpdater::update_finished(uint32 map)
 {
     ACE_GUARD(ACE_Thread_Mutex, guard, this->m_mutex);
+
+    this->lastMapId = map;
 
     if (this->pending_requests == 0)
     {

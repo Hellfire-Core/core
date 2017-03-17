@@ -698,13 +698,11 @@ void Map::Remove(T *obj, bool remove)
 
 void Map::PlayerRelocation(Player* player, float x, float y, float z, float orientation)
 {
-    uint32 mstime = WorldTimer::getMSTime();
     Cell old_cell(Hellground::ComputeCellPair(player->GetPositionX(), player->GetPositionY()));
     Cell new_cell(Hellground::ComputeCellPair(x, y));
 
     player->Relocate(x, y, z, orientation);
-    if (WorldTimer::getMSTimeDiffToNow(mstime) > 80)
-        sLog.outLog(LOG_SESSION_DIFF, "player relocation too long (check 1)");
+
     if (old_cell.DiffGrid(new_cell) || old_cell.DiffCell(new_cell))
     {
         // update player position for group at taxi flight
@@ -713,21 +711,16 @@ void Map::PlayerRelocation(Player* player, float x, float y, float z, float orie
 
         NGridType* oldGrid = getNGrid(old_cell.GridX(), old_cell.GridY());
         RemoveFromGrid(player, oldGrid,old_cell);
-        if (WorldTimer::getMSTimeDiffToNow(mstime) > 80)
-            sLog.outLog(LOG_SESSION_DIFF, "player relocation too long (check 2)");
+
         if (old_cell.DiffGrid(new_cell))
             EnsureGridLoaded(new_cell);
 
         NGridType* newGrid = getNGrid(new_cell.GridX(), new_cell.GridY());
         AddToGrid(player, newGrid, new_cell);
         player->GetViewPoint().Event_GridChanged(&(*newGrid)(new_cell.CellX(),new_cell.CellY()));
-        if (WorldTimer::getMSTimeDiffToNow(mstime) > 80)
-            sLog.outLog(LOG_SESSION_DIFF, "player relocation too long (check 3)");
     }
 
     player->OnRelocated();
-    if (WorldTimer::getMSTimeDiffToNow(mstime) > 80)
-        sLog.outLog(LOG_SESSION_DIFF, "player relocation too long (check 4)");
 }
 
 void Map::CreatureRelocation(Creature *creature, float x, float y, float z, float ang)
@@ -1592,7 +1585,7 @@ void Map::ScriptsProcess()
                 float z = step.script->z;
                 float o = step.script->o;
 
-                Creature* pCreature = summoner->SummonCreature(step.script->datalong, x, y, z, o,TEMPSUMMON_TIMED_OR_DEAD_DESPAWN,step.script->datalong2);
+                Creature* pCreature = summoner->SummonCreature(step.script->datalong, x, y, z, o,TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT,step.script->datalong2);
                 if (!pCreature)
                 {
                     sLog.outLog(LOG_DEFAULT, "ERROR: SCRIPT_COMMAND_TEMP_SUMMON failed for creature (entry: %u).",step.script->datalong);

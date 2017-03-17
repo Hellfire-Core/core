@@ -46,8 +46,7 @@ void WorldSession::HandlePetAction(WorldPacket & recv_data)
     recv_data >> charmGUID;                                 // pet guid
     recv_data >> spellId;
     recv_data >> flag;                                      // delete = 0x0700 CastSpell = C100
-    recv_data >> targetGUID;                                // tag guid
-    pPlayer->SendCombatStats(1 << COMBAT_STATS_TEST, "pet action %lu %u %u %lu", NULL, charmGUID, spellId, flag, targetGUID);
+    recv_data >> targetGUID;                                // tag guid    
     // used also for charmed creature
     Unit* pCharm = pPlayer->GetUnit(charmGUID);
     

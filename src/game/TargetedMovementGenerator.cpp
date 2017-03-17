@@ -51,7 +51,7 @@ void TargetedMovementGeneratorMedium<T,D>::_setTargetLocation(T &owner)
     }
     else if (!_offset)
     {
-        if (_target->IsWithinMeleeRange(&owner))
+        if (_target->IsWithinMeleeRange(&owner, MELEE_RANGE - 0.5f))
         {
             if (!owner.IsStopped())
                 owner.StopMoving();
