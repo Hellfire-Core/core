@@ -489,7 +489,7 @@ struct npc_felfire_waveAI : public ScriptedAI
 
     void IsSummonedBy(Unit *summoner)
     {
-        BurnTimer = 0;
+        BurnTimer = 1;
         float x, y, z;
         me->SetSpeed(MOVE_RUN, 1.1);
         me->GetNearPoint(x, y, z, 0, 20, summoner->GetAngle(me));

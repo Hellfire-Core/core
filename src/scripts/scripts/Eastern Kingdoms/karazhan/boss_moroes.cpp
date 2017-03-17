@@ -304,7 +304,7 @@ struct boss_moroesAI : public ScriptedAI
                 m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                 NonAttackable = true;
                 NonAttackable_Timer = 12100;
-                Vanish_Timer = 30000;
+                Vanish_Timer = 42000;
                 Wait_Timer = 5000;
             }
             

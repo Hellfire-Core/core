@@ -403,7 +403,7 @@ struct npc_thrall_old_hillsbradAI : public npc_escortAI
                         me->SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_ONESHOT_POINT);
                         EmoteTimer = 2000;
                         me->SetFacingTo(2.18f);
-                        me->SummonCreature(NPC_SKARLOC, 2000.201f, 277.9190f, 66.4911f, 6.11f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000);
+                        me->SummonCreature(NPC_SKARLOC, 2000.201f, 277.9190f, 66.4911f, 6.11f, TEMPSUMMON_DEAD_DESPAWN, 60000);
                         DoScriptText(SAY_TH_SKARLOC_MEET, me);
                         break;
                     case 33:

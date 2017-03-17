@@ -1815,7 +1815,7 @@ struct quest_the_vengeful_harbringerAI : public ScriptedAI
     uint64 owner;
 
     bool event_done;
-    bool IS_ASCENDANT_ALREADY_SUMMONED;
+    bool ascendant;
     bool corpse_moved;
 
     void SpawnVengefulHarbringer()
@@ -1870,7 +1870,7 @@ struct quest_the_vengeful_harbringerAI : public ScriptedAI
         trash_counter=0;
         trash_timer.Reset(15000);
         visual_1_timer.Reset(5000);
-        IS_ASCENDANT_ALREADY_SUMMONED=false;
+        ascendant=false;
         corpse_moved=false;
 
         owner = 0;
@@ -1940,60 +1940,55 @@ struct quest_the_vengeful_harbringerAI : public ScriptedAI
             }
         }
 
-        if (checktimer.Expired(diff))
+        if (trash_counter >= 4 && checktimer.Expired(diff))
         {
             Unit * player = me->GetUnit(owner);
             if (!player)
                 return;
 
+            
             std::list<Unit*> DeadList = FindAllDeadInRange(50);
-            bool IS_DEFENDER_DEAD=false, IS_BOSS_DEAD=false;
-            for(std::list<Unit*>::iterator i = DeadList.begin(); i != DeadList.end(); ++i)
-            {
-                if ((*i)->GetEntry() == NPC_GUARDIAN) IS_DEFENDER_DEAD = true;
-                if ((*i)->GetEntry() == NPC_HARBRINGER) IS_BOSS_DEAD = true;
-            }
+            bool defenderDead=true, bossDead=false;
+            if (me->GetMap()->GetCreatureById(NPC_GUARDIAN, GET_ALIVE_CREATURE_GUID))
+                defenderDead = false;
+            if (!me->GetMap()->GetCreatureById(NPC_HARBRINGER, GET_ALIVE_CREATURE_GUID))
+                bossDead = true;
 
-            if (trash_counter>=4)
+            if (player->GetTypeId() == TYPEID_PLAYER)
             {
-                if (player->GetTypeId() == TYPEID_PLAYER)
+                if(Group* pGroup = ((Player*)player)->GetGroup() )
                 {
-                    if(Group* pGroup = ((Player*)player)->GetGroup() )
+                    for(GroupReference *itr = pGroup->GetFirstMember(); itr != NULL; itr = itr->next())
                     {
-                        for(GroupReference *itr = pGroup->GetFirstMember(); itr != NULL; itr = itr->next())
+                        Player *pGroupie = itr->getSource();
+                        if(pGroupie && pGroupie->GetQuestStatus(QUEST_VENGEFUL_HARBRINGER) == QUEST_STATUS_INCOMPLETE)
                         {
-                            Player *pGroupie = itr->getSource();
-                            if(pGroupie && pGroupie->GetQuestStatus(QUEST_VENGEFUL_HARBRINGER) == QUEST_STATUS_INCOMPLETE)
+                            if (defenderDead)
                             {
-                                if (IS_DEFENDER_DEAD)
-                                {
-                                    pGroupie->FailQuest(QUEST_VENGEFUL_HARBRINGER);
-                                    StopEventAndCleanUp();
-                                }
-                                else
-                                    if (IS_BOSS_DEAD)
-                                        pGroupie->CompleteQuest(QUEST_VENGEFUL_HARBRINGER);
+                                pGroupie->FailQuest(QUEST_VENGEFUL_HARBRINGER);
+                                StopEventAndCleanUp();
                             }
+                            else if (bossDead)
+                                pGroupie->CompleteQuest(QUEST_VENGEFUL_HARBRINGER);
                         }
                     }
-                    else
+                }
+                else
+                {
+                    if (((Player*)player)->GetQuestStatus(QUEST_VENGEFUL_HARBRINGER) == QUEST_STATUS_INCOMPLETE)
                     {
-                        if (((Player*)player)->GetQuestStatus(QUEST_VENGEFUL_HARBRINGER) == QUEST_STATUS_INCOMPLETE)
+                        if (defenderDead)
                         {
-                            if (IS_DEFENDER_DEAD)
-                            {
-                                ((Player*)player)->FailQuest(QUEST_VENGEFUL_HARBRINGER);
-                               StopEventAndCleanUp();
-                            }
-                            else
-                                if (IS_BOSS_DEAD)
-                                   ((Player*)player)->CompleteQuest(QUEST_VENGEFUL_HARBRINGER);
+                            ((Player*)player)->FailQuest(QUEST_VENGEFUL_HARBRINGER);
+                            StopEventAndCleanUp();
                         }
+                        else if (bossDead)
+                            ((Player*)player)->CompleteQuest(QUEST_VENGEFUL_HARBRINGER);
                     }
                 }
             }
 
-            if (IS_BOSS_DEAD && !IS_DEFENDER_DEAD)
+            if (bossDead && !defenderDead)
             {
                 //summon Draenei Ascendant
                 Creature *portal_trigger = GetClosestCreatureWithEntry(me, NPC_GUARDIAN_PORTAL, 50.0f);
@@ -2001,10 +1996,10 @@ struct quest_the_vengeful_harbringerAI : public ScriptedAI
                 if (!portal_trigger)
                     return;
 
-                if (!IS_ASCENDANT_ALREADY_SUMMONED)
+                if (!ascendant)
                     me->SummonGameObject(GOB_ASCENDAND, portal_trigger->GetPositionX(), portal_trigger->GetPositionY(), portal_trigger->GetPositionZ(),  0, 0, 0, 0.70959, 0.704615, 240000);
 
-                IS_ASCENDANT_ALREADY_SUMMONED=true;
+                ascendant=true;
 
                 if (Creature * Dranei_Guardian = GetClosestCreatureWithEntry(me, NPC_GUARDIAN,50.0f))
                     Dranei_Guardian->DisappearAndDie();
