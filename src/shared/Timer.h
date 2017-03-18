@@ -254,7 +254,7 @@ class DiffRecorder
         inline bool RecordTimeFor(char const* str, uint32 shorter = 0)
         {
             if (!shorter) shorter = _diffTresholdForFile;
-            if (!shorter) return;
+            if (!shorter) return false;
             uint32 diffTime = WorldTimer::getMSTimeDiffToNow(_prevTime);
 
             _prevTime = WorldTimer::getMSTime();
