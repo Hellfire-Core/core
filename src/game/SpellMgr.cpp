@@ -3033,6 +3033,7 @@ void SpellMgr::LoadSpellCustomAttr()
                     break;
                 case 36576: // no damage calc for shaleskin
                 case 37950: // no damage calc for mutated blood
+                case 33551: // corrosive acid (sl first boss -armor debuff)
                     spellInfo->Attributes &= ~SPELL_ATTR_LEVEL_DAMAGE_CALCULATION;
                     break;
                 case 36817: // ashtongue corruptors channel spell

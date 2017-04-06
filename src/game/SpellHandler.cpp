@@ -431,8 +431,11 @@ void WorldSession::HandleCancelAuraOpcode(WorldPacket& recvPacket)
     // channeled spell case (it currently cast then)
     if (SpellMgr::IsChanneledSpell(spellInfo))
     {
-        if (_player->m_currentSpells[CURRENT_CHANNELED_SPELL] &&
-            _player->m_currentSpells[CURRENT_CHANNELED_SPELL]->GetSpellEntry()->Id==spellId)
+        if (!_player->m_currentSpells[CURRENT_CHANNELED_SPELL])
+            return;
+        const SpellEntry* current = _player->m_currentSpells[CURRENT_CHANNELED_SPELL]->GetSpellEntry();
+        if (current->Id==spellId || current->EffectTriggerSpell[0]==spellId ||
+            current->EffectTriggerSpell[1] == spellId || current->EffectTriggerSpell[2] == spellId)
             _player->InterruptSpell(CURRENT_CHANNELED_SPELL);
         return;
     }
