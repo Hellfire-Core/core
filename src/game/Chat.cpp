@@ -1050,8 +1050,7 @@ bool ChatHandler::ContainsNotAllowedSigns(std::string text,bool strict)
     for (uint32 i = 0; i < text.length(); ++i)
         text[i] = tolower(text[i]);
 
-    if ((text.find(".blp") != text.npos) || (text.find("t|t") != text.npos) ||
-        (text.find("okogames") != text.npos) || (text.find("OKOGAMES") != text.npos))
+    if ((text.find(".blp") != text.npos) || (text.find("t|t") != text.npos))
         return true;
 
     if (!strict)

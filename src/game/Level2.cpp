@@ -4900,7 +4900,8 @@ bool ChatHandler::HandleNpcDmginfoCommand(const char* args)
     const CreatureInfo* ci = pCreature->GetCreatureInfo();
     if (!ci) return false;
     
-    PSendSysMessage("creature entry %u dmg %f-%f ranged %f-%f\n%u-%u base hp %u-%u base mp",
-        ci->Entry, ci->mindmg, ci->maxdmg, ci->minrangedmg, ci->maxrangedmg, ci->minhealth, ci->maxhealth, ci->minmana, ci->maxmana);
+    PSendSysMessage("creature entry %u dmg %f-%f ranged %f-%f", ci->Entry, ci->mindmg, ci->maxdmg, ci->minrangedmg, ci->maxrangedmg);
+    if (m_session->GetPermissions() > PERM_PLAYER)
+        PSendSysMessage("%u-%u base hp %u-%u base mp", ci->minhealth, ci->maxhealth, ci->minmana, ci->maxmana);
     return true;
 }

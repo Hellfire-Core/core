@@ -6611,7 +6611,7 @@ void Player::UpdateZone(uint32 newZone)
         return;
 
     // inform outdoor pvp
-    if (oldZoneId != m_zoneUpdateId)
+    //if (oldZoneId != m_zoneUpdateId)
     {
         sOutdoorPvPMgr.HandlePlayerLeaveZone(this, oldZoneId);
         sOutdoorPvPMgr.HandlePlayerEnterZone(this, m_zoneUpdateId);

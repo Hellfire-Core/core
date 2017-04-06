@@ -106,6 +106,12 @@ void WorldSession::HandleSendMail(WorldPacket & recv_data)
         return;
     }
 
+    if (GetPlayer()->getLevel() < sWorld.getConfig(CONFIG_CHAT_MINIMUM_LVL))
+    {
+        GetPlayer()->SendMailResult(0, MAIL_SEND, MAIL_ERR_MAIL_AND_CHAT_SUSPENDED);
+        return;
+    }
+
     // recheck
     CHECK_PACKET_SIZE(recv_data, 8+(receiver.size()+1)+(subject.size()+1)+(body.size()+1)+4+4+1+items_count*(1+8)+4+4+8+1);
 
