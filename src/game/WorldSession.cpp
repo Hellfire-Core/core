@@ -379,7 +379,8 @@ bool WorldSession::Update(uint32 diff, PacketFilter& updater)
     {
         while (m_Socket && !m_Socket->IsClosed() && _recvQueue.next(packet, updater))
         {
-            GetPlayer()->SendCombatStats(1 << COMBAT_STATS_TEST, "packet %u", NULL);
+            if (GetPlayer())
+                GetPlayer()->SendCombatStats(1 << COMBAT_STATS_TEST, "packet %u", NULL);
             if (verbose > 0)
             {
                 RecordVerboseTimeDiff(true);
