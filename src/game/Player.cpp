@@ -14496,7 +14496,7 @@ bool Player::LoadFromDB(uint32 guid, SqlQueryHolder *holder)
     uint8 gender = fields[6].GetUInt8();
     if (HasAtLoginFlag(AT_LOGIN_DISPLAY_CHANGE))
     {
-        std::string name = std::string("Hg") + GetName();
+        std::string name = std::string("Wg") + GetName();
         name[2] = std::tolower(name[2]);
         if (name.length() > 12)
             name.resize(12, '\0');
