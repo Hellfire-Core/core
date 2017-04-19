@@ -536,7 +536,7 @@ void CreatureEventAI::ProcessAction(CreatureEventAI_Action const& action, uint32
                         //Melee current victim if flag not set
                         if (!(action.cast.castFlags & CAST_NO_MELEE_IF_OOM) && (CombatMovementEnabled || AllowConditionalMovement))
                         {
-                            m_creature->GetMotionMaster()->MoveChase(m_creature->getVictim(), MELEE_RANGE, 0.0f);
+                            m_creature->GetMotionMaster()->MoveChase(m_creature->getVictim());
                         }
 
                     }
@@ -596,7 +596,7 @@ void CreatureEventAI::ProcessAction(CreatureEventAI_Action const& action, uint32
                         if (!(action.castguid.castFlags & CAST_NO_MELEE_IF_OOM) && (CombatMovementEnabled || AllowConditionalMovement))
                         {
                             if (m_creature->hasUnitState(UNIT_STAT_CHASE))
-                                m_creature->GetMotionMaster()->MoveChase(m_creature->getVictim(), MELEE_RANGE, 0.0f);
+                                m_creature->GetMotionMaster()->MoveChase(m_creature->getVictim());
                         }
 
                     }

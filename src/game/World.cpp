@@ -559,8 +559,13 @@ void World::LoadConfigSettings(bool reload)
     loadConfig(CONFIG_NO_RESET_TALENT_COST, "NoResetTalentsCost", false);
     loadConfig(CONFIG_FREE_RESPEC_COST, "FreeRespec.Cost", 10000000);
     loadConfig(CONFIG_FREE_RESPEC_DURATION, "FreeRespec.Duration", 6 * MONTH);
+    loadConfig(CONFIG_TRAINER_DISCOUNT_MAX_LEVEL, "TrainerDiscount.MaxLevel", 0);
+    loadConfig(RATE_TRAINER_ALLIANCE, "TrainerDiscount.Alliance", 1.0f);
+    loadConfig(RATE_TRAINER_HORDE, "TrainerDiscount.Horde", 1.0f);
     loadConfig(CONFIG_RABBIT_DAY, "Rabbit.Day", 0);
     loadConfig(CONFIG_SKILL_PROSPECTING, "SkillChance.Prospecting",false);
+    loadConfig(RATE_FAKEPOP_ALLIANCE, "Rate.Fakepop.Alliance", 1.0f);
+    loadConfig(RATE_FAKEPOP_HORDE, "Rate.Fakepop.Horde", 1.0f);
 
     // note: disable value (-1) will assigned as 0xFFFFFFF, to prevent overflow at calculations limit it to max possible player level MAX_LEVEL(100)
     loadConfig(CONFIG_QUEST_LOW_LEVEL_HIDE_DIFF, "Quests.LowLevelHideDiff", 4);
@@ -2716,11 +2721,12 @@ uint32 World::GetLoggedInCharsCount(TeamId team)
     switch (team)
     {
         case TEAM_HORDE:
-            return loggedInHordes.value();
+            return uint32(float(loggedInHordes.value()) * getConfig(RATE_FAKEPOP_HORDE));
         case TEAM_ALLIANCE:
-            return loggedInAlliances.value();
+            return uint32(float(loggedInAlliances.value()) * getConfig(RATE_FAKEPOP_ALLIANCE));
         default:
-            return loggedInAlliances.value() + loggedInHordes.value();
+            return uint32(float(loggedInHordes.value()) * getConfig(RATE_FAKEPOP_HORDE)
+                + float(loggedInAlliances.value()) * getConfig(RATE_FAKEPOP_ALLIANCE));
     }
 }
 
