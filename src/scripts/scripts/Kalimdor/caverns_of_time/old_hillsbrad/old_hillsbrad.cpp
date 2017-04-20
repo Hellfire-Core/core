@@ -403,7 +403,8 @@ struct npc_thrall_old_hillsbradAI : public npc_escortAI
                         me->SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_ONESHOT_POINT);
                         EmoteTimer = 2000;
                         me->SetFacingTo(2.18f);
-                        me->SummonCreature(NPC_SKARLOC, 2000.201f, 277.9190f, 66.4911f, 6.11f, TEMPSUMMON_DEAD_DESPAWN, 60000);
+                        if (pInstance->GetData(DATA_SKARLOC_DEATH) != DONE)
+                            me->SummonCreature(NPC_SKARLOC, 2000.201f, 277.9190f, 66.4911f, 6.11f, TEMPSUMMON_DEAD_DESPAWN, 60000);
                         DoScriptText(SAY_TH_SKARLOC_MEET, me);
                         break;
                     case 33:
@@ -505,7 +506,8 @@ struct npc_thrall_old_hillsbradAI : public npc_escortAI
                 switch (i)
                 {
                     case 0:
-                       if (Creature* Epoch = me->SummonCreature(NPC_EPOCH,2639.13,698.55,65.43,4.59,TEMPSUMMON_DEAD_DESPAWN,120000))
+                        if (pInstance->GetData(DATA_EPOCH_DEATH) != DONE)
+                        if (Creature* Epoch = me->SummonCreature(NPC_EPOCH,2639.13,698.55,65.43,4.59,TEMPSUMMON_DEAD_DESPAWN,120000))
                            DoScriptText(SAY_EPOCH_ENTER1, Epoch);
                         me->SetFacingTo(2.63f);
                         DoScriptText(SAY_TH_EPOCH_WONDER, me);
@@ -879,7 +881,7 @@ struct npc_thrall_old_hillsbradAI : public npc_escortAI
         if (StepsTimer.Expired(diff))
         {
             if (Event)
-                StepsTimer.Delay(NextStep(++Steps));
+                StepsTimer.Reset(NextStep(++Steps));
         }
         
 
@@ -975,6 +977,8 @@ bool GossipSelect_npc_thrall_old_hillsbrad(Player *player, Creature *creature, u
             player->CLOSE_GOSSIP_MENU();
             if (pInstance)
             {
+                if (pInstance->GetData(DATA_DRAKE_DEATH) != DONE || pInstance->GetData(TYPE_THRALL_PART1) != NOT_STARTED)
+                    return true;
                 pInstance->SetData(TYPE_THRALL_EVENT, IN_PROGRESS);
                 pInstance->SetData(TYPE_THRALL_PART1, IN_PROGRESS);
             }
@@ -985,11 +989,17 @@ bool GossipSelect_npc_thrall_old_hillsbrad(Player *player, Creature *creature, u
             break;
 
         case GOSSIP_ACTION_INFO_DEF+2:
+            if (pInstance && (pInstance->GetData(TYPE_THRALL_PART1) != DONE ||
+                pInstance->GetData(TYPE_THRALL_PART2) != NOT_STARTED))
+                return true;
             player->ADD_GOSSIP_ITEM(0, GOSSIP_ITEM_SKARLOC2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+20);
             player->SEND_GOSSIP_MENU(GOSSIP_ID_SKARLOC2, creature->GetGUID());
             break;
 
         case GOSSIP_ACTION_INFO_DEF+20:
+            if (pInstance && (pInstance->GetData(TYPE_THRALL_PART1) != DONE ||
+                pInstance->GetData(TYPE_THRALL_PART2) != NOT_STARTED))
+                return true;
             player->ADD_GOSSIP_ITEM(0, GOSSIP_ITEM_SKARLOC3, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+22);
             player->SEND_GOSSIP_MENU(GOSSIP_ID_SKARLOC3, creature->GetGUID());
             break;
@@ -998,6 +1008,8 @@ bool GossipSelect_npc_thrall_old_hillsbrad(Player *player, Creature *creature, u
             player->CLOSE_GOSSIP_MENU();
             if (pInstance)
             {
+                if (pInstance->GetData(TYPE_THRALL_PART1) != DONE || pInstance->GetData(TYPE_THRALL_PART2) != NOT_STARTED)
+                    return true;
                 pInstance->SetData(TYPE_THRALL_EVENT, IN_PROGRESS);
                 pInstance->SetData(TYPE_THRALL_PART2,IN_PROGRESS);
             }
@@ -1011,6 +1023,8 @@ bool GossipSelect_npc_thrall_old_hillsbrad(Player *player, Creature *creature, u
             player->CLOSE_GOSSIP_MENU();
             if (pInstance)
             {
+                if (pInstance->GetData(TYPE_THRALL_PART2) != DONE || pInstance->GetData(TYPE_THRALL_PART3) != NOT_STARTED);
+                    return true;
                 pInstance->SetData(TYPE_THRALL_EVENT, IN_PROGRESS);
                 pInstance->SetData(TYPE_THRALL_PART3,IN_PROGRESS);
             }

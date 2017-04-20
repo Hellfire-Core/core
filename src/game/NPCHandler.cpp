@@ -160,7 +160,7 @@ void WorldSession::SendTrainerList(uint64 guid, const std::string& strTitle)
 
     // reputation discount
     float fDiscountMod = _player->GetReputationPriceDiscount(unit);
-    if (_player->getLevel() <= sWorld.getConfig(CONFIG_TRAINER_DISCOUNT_MAX_LEVEL))
+    if (_player->getLevel() <= sWorld.getConfig(CONFIG_TRAINER_DISCOUNT_MAX_LEVEL) && unit->GetCreatureInfo()->trainer_type == TRAINER_TYPE_CLASS)
         fDiscountMod *= sWorld.getConfig(_player->GetTeam() == ALLIANCE ? RATE_TRAINER_ALLIANCE : RATE_TRAINER_HORDE);
 
     uint32 count = 0;
@@ -238,7 +238,7 @@ void WorldSession::HandleTrainerBuySpellOpcode(WorldPacket & recv_data)
 
     // apply reputation discount
     float fDiscountMod = _player->GetReputationPriceDiscount(unit);
-    if (_player->getLevel() <= sWorld.getConfig(CONFIG_TRAINER_DISCOUNT_MAX_LEVEL))
+    if (_player->getLevel() <= sWorld.getConfig(CONFIG_TRAINER_DISCOUNT_MAX_LEVEL) && unit->GetCreatureInfo()->trainer_type == TRAINER_TYPE_CLASS)
         fDiscountMod *= sWorld.getConfig(_player->GetTeam() == ALLIANCE ? RATE_TRAINER_ALLIANCE : RATE_TRAINER_HORDE);
     uint32 nSpellCost = uint32(floor(trainer_spell->spellCost * fDiscountMod));
     if (sWorld.getConfig(CONFIG_HAPPY_TESTING))

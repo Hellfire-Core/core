@@ -294,7 +294,6 @@ bool ChatHandler::HandleServerInfoCommand(const char* /*args*/)
     uint32 alianceCount = sWorld.GetLoggedInCharsCount(TEAM_ALLIANCE);
     uint32 hordeCount = sWorld.GetLoggedInCharsCount(TEAM_HORDE);
     uint32 playerCap = sWorld.GetPlayerAmountLimit();
-    uint32 activeClientsNum = sWorld.GetActiveSessionCount();
     uint32 queuedClientsNum = sWorld.GetQueuedSessionCount();
     //uint32 maxActiveClientsNum = sWorld.GetMaxActiveSessionCount();
     //uint32 maxQueuedClientsNum = sWorld.GetMaxQueuedSessionCount();
@@ -303,7 +302,7 @@ bool ChatHandler::HandleServerInfoCommand(const char* /*args*/)
     std::string str2 = TimeToTimestampStr(sWorld.GetGameTime());
 
     PSendSysMessage("wargate-project.org - rev: %s",_REVISION);
-    PSendSysMessage(LANG_CONNECTED_USERS, activeClientsNum, playerCap, alianceCount, hordeCount, queuedClientsNum);
+    PSendSysMessage(LANG_CONNECTED_USERS, alianceCount + hordeCount, playerCap, alianceCount, hordeCount, queuedClientsNum);
     PSendSysMessage(LANG_UPTIME, str.c_str());
     PSendSysMessage("Current time: %s", str2.c_str());
     PSendSysMessage("Update time diff: %u.", updateTime);

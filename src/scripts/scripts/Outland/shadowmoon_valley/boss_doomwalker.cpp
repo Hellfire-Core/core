@@ -63,7 +63,7 @@ struct boss_doomwalkerAI : public ScriptedAI
 
     void Reset()
     {
-        Enrage_Timer    = 0;
+        Enrage_Timer.Reset(1);
         Armor_Timer.Reset(5000 + rand() % 8000);
         Chain_Timer.Reset(10000 + rand() % 20000);
         Quake_Timer.Reset(25000 + rand() % 10000);
@@ -118,7 +118,7 @@ struct boss_doomwalkerAI : public ScriptedAI
             {
                 m_creature->RemoveAurasDueToSpell(SPELL_ENRAGE);
                 DoCast(m_creature,SPELL_ENRAGE);
-                Enrage_Timer = 600000;
+                Enrage_Timer.Reset(600000);
                 InEnrage = true;
             }
         }
@@ -148,7 +148,7 @@ struct boss_doomwalkerAI : public ScriptedAI
                 m_creature->RemoveAura(SPELL_ENRAGE, 0);
 
             DoCast(m_creature,SPELL_EARTHQUAKE);
-            Enrage_Timer = 8000;
+            Enrage_Timer.Reset(8000);
             Quake_Timer = 30000 + rand()%25000;
         }
 

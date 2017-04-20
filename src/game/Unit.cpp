@@ -6055,6 +6055,12 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
                 triggered_spell_id = 34720;
                 break;
             }
+            // improved kill command
+            else if (dummySpell->Id == 37483)
+            {
+                triggered_spell_id = 37482;
+                target = this;
+            }
             break;
         }
         case SPELLFAMILY_PALADIN:

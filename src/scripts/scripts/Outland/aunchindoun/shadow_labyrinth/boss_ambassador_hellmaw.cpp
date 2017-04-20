@@ -79,11 +79,13 @@ struct boss_ambassador_hellmawAI : public ScriptedAI
 
         if (pInstance)
         {
-            if (pInstance->GetData(TYPE_HELLMAW) ==  NOT_STARTED)
+            if (pInstance->GetData(TYPE_HELLMAW) == NOT_STARTED)
             {
-                DoCast(me,SPELL_BANISH, true);
+                DoCast(me, SPELL_BANISH, true);
                 IsBanished = true;
             }
+            else
+                pInstance->SetData(TYPE_HELLMAW, SPECIAL); // not in_progress but also not not_started
         }
     }
 
