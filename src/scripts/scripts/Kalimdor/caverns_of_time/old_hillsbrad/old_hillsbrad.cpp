@@ -1023,7 +1023,7 @@ bool GossipSelect_npc_thrall_old_hillsbrad(Player *player, Creature *creature, u
             player->CLOSE_GOSSIP_MENU();
             if (pInstance)
             {
-                if (pInstance->GetData(TYPE_THRALL_PART2) != DONE || pInstance->GetData(TYPE_THRALL_PART3) != NOT_STARTED);
+                if (pInstance->GetData(TYPE_THRALL_PART2) != DONE || pInstance->GetData(TYPE_THRALL_PART3) != NOT_STARTED)
                     return true;
                 pInstance->SetData(TYPE_THRALL_EVENT, IN_PROGRESS);
                 pInstance->SetData(TYPE_THRALL_PART3,IN_PROGRESS);

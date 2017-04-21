@@ -300,7 +300,7 @@ struct boss_netherspiteAI : public ScriptedAI
                 if (!PortalCasting[j]) //first tick after target change
                 {
                     Creature* portal = Unit::GetCreature(*m_creature, PortalGUID[j]);
-                    Unit* target = Unit::GetUnit(*portal, BeamTarget[j]);
+                    Unit* target = m_creature->GetUnit(BeamTarget[j]);
                     if (target && portal)
                         portal->CastSpell(target, PortalBeam[j], false);
                     PortalCasting[j] = true;
