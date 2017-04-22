@@ -1574,8 +1574,8 @@ void World::Update(uint32 diff)
             sLog.outLog(LOG_DEFAULT, "[Diff]: Update time diff: %.3f, avg: %.3f. Players online: %u.", curAvgUpdateTime, avgUpdateTime, GetActiveSessionCount());
             sLog.outLog(LOG_DIFF, "Update time diff: %.3f, avg: %.3f. Players online: %u.", curAvgUpdateTime, avgUpdateTime, GetActiveSessionCount());
             sLog.outLog(LOG_STATUS, "%u %u %u %u %u %u %s %.3f %.3f %u %u %ld",
-                        GetUptime(), GetActiveSessionCount(), GetMaxActiveSessionCount(), GetQueuedSessionCount(), GetMaxQueuedSessionCount(),
-                        m_playerLimit, _REVISION, curAvgUpdateTime, avgUpdateTime, sWorld.GetLoggedInCharsCount(TEAM_ALLIANCE), sWorld.GetLoggedInCharsCount(TEAM_HORDE), sWorld.GetGameTime());
+                        GetUptime(), GetLoggedInCharsCount(TEAM_NEUTRAL), 0, GetQueuedSessionCount(), GetMaxQueuedSessionCount(),
+                        m_playerLimit, _REVISION, curAvgUpdateTime, avgUpdateTime, GetLoggedInCharsCount(TEAM_ALLIANCE), GetLoggedInCharsCount(TEAM_HORDE), sWorld.GetGameTime());
 
             m_updateTimeSum = m_updateTime;
             m_updateTimeCount = 1;

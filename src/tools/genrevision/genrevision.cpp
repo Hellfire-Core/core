@@ -341,6 +341,10 @@ bool extractDataFromHG(std::string path, bool use_url, RawData& data)
         res = extractDataFromHG(path+".hg/cache/branch",path,use_url,data);
     if (!res)
         res = extractDataFromHG(path+"_hg/cache/branch",path,use_url,data);
+    if (!res)
+        res = extractDataFromHG(path + ".hg/cache/branch2-served", path, use_url, data);
+    if (!res)
+        res = extractDataFromHG(path + ".hg/cache/branch2-base", path, use_url, data);
 
     return res;
 }

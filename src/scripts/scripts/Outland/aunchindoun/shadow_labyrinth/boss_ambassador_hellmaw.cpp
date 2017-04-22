@@ -98,9 +98,6 @@ struct boss_ambassador_hellmawAI : public ScriptedAI
 
         IsBanished = false;
         Intro = true;
-
-        if (pInstance)
-            pInstance->SetData(TYPE_HELLMAW, IN_PROGRESS);
     }
 
     void EnterCombat(Unit *who)
@@ -113,6 +110,8 @@ struct boss_ambassador_hellmawAI : public ScriptedAI
 
         me->GetMotionMaster()->Clear();
         DoScriptText(RAND(SAY_AGGRO1, SAY_AGGRO2, SAY_AGGRO3), me);
+        if (pInstance)
+            pInstance->SetData(TYPE_HELLMAW, IN_PROGRESS);
     }
 
     void KilledUnit(Unit *victim)

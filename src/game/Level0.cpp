@@ -38,32 +38,45 @@
 #include "ObjectMgr.h"
 #include "GuildMgr.h"
 #include "Guild.h"
+#include "World.h"
 
 bool ChatHandler::HandleAccountXPToggleCommand(const char* args)
 {
-    if (uint32 account_id = m_session->GetAccountId())
+    if (!m_session)
+        return true;
+
+    if (args)
     {
-        if (WorldSession *session = sWorld.FindSession(account_id))
+        if (strcmp(args, "1") == 0)
         {
-            if (session->IsAccountFlagged(ACC_BLIZZLIKE_RATES))
-            {
-                session->RemoveAccountFlag(ACC_BLIZZLIKE_RATES);
-                PSendSysMessage("Now your rates are serverlike: x2.");
-            }
-            else
-            {
-                session->AddAccountFlag(ACC_BLIZZLIKE_RATES);
-                PSendSysMessage("Now your rates are blizzlike: x1.");
-            }
+            m_session->AddAccountFlag(ACC_BLIZZLIKE_RATES);
+            PSendSysMessage("Now your rates are blizzlike: x1.");
             PSendSysMessage("You have to RELOG before the command takes effect!");
+            return true;
         }
+        if (strcmp(args, "2") == 0)
+        {
+            m_session->RemoveAccountFlag(ACC_BLIZZLIKE_RATES);
+            PSendSysMessage("Now your rates are serverlike: x%f.", sWorld.getConfig(RATE_XP_KILL));
+            PSendSysMessage("You have to RELOG before the command takes effect!");
+            return true;
+        }
+
+        SendSysMessage("Invalid argument, use '.acc xp 1' or '.acc xp 2' or '.acc xp'");
+        return true;
+    }
+
+    if (m_session->IsAccountFlagged(ACC_BLIZZLIKE_RATES))
+    {
+        m_session->RemoveAccountFlag(ACC_BLIZZLIKE_RATES);
+        PSendSysMessage("Now your rates are serverlike: x%f.",sWorld.getConfig(RATE_XP_KILL));
     }
     else
     {
-        PSendSysMessage("Specified account not found.");
-        SetSentErrorMessage(true);
-        return false;
+        m_session->AddAccountFlag(ACC_BLIZZLIKE_RATES);
+        PSendSysMessage("Now your rates are blizzlike: x1.");
     }
+    PSendSysMessage("You have to RELOG before the command takes effect!");
 
     return true;
 }

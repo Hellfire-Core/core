@@ -608,6 +608,7 @@ struct npc_warder_corpseAI : public ScriptedAI
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
         me->SetUInt32Value(UNIT_DYNAMIC_FLAGS, 32);
         me->SetUInt32Value(UNIT_FIELD_BYTES_1, 7);
+        me->SetReactState(REACT_PASSIVE);
         summon = false;
     }
 
