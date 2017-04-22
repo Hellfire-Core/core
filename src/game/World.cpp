@@ -793,6 +793,7 @@ void World::LoadConfigSettings(bool reload)
     loadConfig(CONFIG_BATTLEGROUND_WSG_END_AFTER_ENABLED, "BattleGround.WSGEndAfter.Enabled",false);
     loadConfig(CONFIG_BATTLEGROUND_WSG_END_AFTER_TIME, "BatleGround.WSGEndAfter.Time",1800000);
     loadConfig(CONFIG_BATTLEGROUND_WSG_END_AFTER_ALWAYS_DRAW, "BattleGround.WSGEndAfter.AlwaysDraw",true);
+    loadConfig(CONFIG_BATTLEGROUND_KICK_QUEUES_ON_JOIN, "BattleGround.KickQueuesOnJoin", false);
 
     // Vmaps/mmaps
     loadConfig(CONFIG_VMAP_LOS_ENABLED, "vmap.enableLOS", true);
@@ -1574,7 +1575,7 @@ void World::Update(uint32 diff)
             sLog.outLog(LOG_DIFF, "Update time diff: %.3f, avg: %.3f. Players online: %u.", curAvgUpdateTime, avgUpdateTime, GetActiveSessionCount());
             sLog.outLog(LOG_STATUS, "%u %u %u %u %u %u %s %.3f %.3f %u %u %ld",
                         GetUptime(), GetActiveSessionCount(), GetMaxActiveSessionCount(), GetQueuedSessionCount(), GetMaxQueuedSessionCount(),
-                        m_playerLimit, _REVISION, curAvgUpdateTime, avgUpdateTime, loggedInAlliances.value(), loggedInHordes.value(), sWorld.GetGameTime());
+                        m_playerLimit, _REVISION, curAvgUpdateTime, avgUpdateTime, sWorld.GetLoggedInCharsCount(TEAM_ALLIANCE), sWorld.GetLoggedInCharsCount(TEAM_HORDE), sWorld.GetGameTime());
 
             m_updateTimeSum = m_updateTime;
             m_updateTimeCount = 1;

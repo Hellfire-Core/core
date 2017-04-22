@@ -501,6 +501,22 @@ void WorldSession::HandleBattleGroundPlayerPortOpcode(WorldPacket &recv_data)
                 // add only in HandleMoveWorldPortAck()
                 // bg->AddPlayer(_player,team);
                 DEBUG_LOG("Battleground: player %s (%u) joined battle for bg %u, bgtype %u, queue type %u.",_player->GetName(),_player->GetGUIDLow(),bg->GetInstanceID(),bg->GetTypeID(),bgQueueTypeId);
+
+                if (sWorld.getConfig(CONFIG_BATTLEGROUND_KICK_QUEUES_ON_JOIN))
+                {
+                    for (uint8 i = 0; i < PLAYER_MAX_BATTLEGROUND_QUEUES; i++)
+                    {
+                        if (i == queueSlot)
+                            continue;
+                        BattleGroundQueueTypeId other = _player->GetBattleGroundQueueTypeId(i);
+                        if (other == BATTLEGROUND_QUEUE_NONE || other >= BATTLEGROUND_QUEUE_2v2)
+                            continue;
+                        _player->RemoveBattleGroundQueueId(other);
+                        sBattleGroundMgr.m_BattleGroundQueues[other].RemovePlayer(_player->GetGUID(), true);
+                        sBattleGroundMgr.BuildBattleGroundStatusPacket(&data, NULL, 0, other, STATUS_NONE, 0, 0);
+                        SendPacket(&data);
+                    }
+                }
                 break;
             case 0:                                         // leave queue
                 queueSlot = _player->GetBattleGroundQueueIndex(bgQueueTypeId);

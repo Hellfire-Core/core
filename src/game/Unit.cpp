@@ -930,11 +930,7 @@ uint32 Unit::DealDamage(DamageLog *damageInfo, DamageEffectType damagetype, cons
             if (damagetype == DIRECT_DAMAGE || damagetype == SPELL_DIRECT_DAMAGE)
                 if(spell->GetSpellEntry()->Id == 21651 || spell->GetSpellEntry()->Id == 26868)
                     pVictim->InterruptSpell(CURRENT_GENERIC_SPELL,true,true);
-    }
 
-    if (damageInfo->damage)
-    {
-        // dont remove auras if everything was absorbed
         if (!spellProto || !(spellProto->AttributesEx4 & SPELL_ATTR_EX4_DAMAGE_DOESNT_BREAK_AURAS))
         {
             pVictim->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_DAMAGE, spellProto ? spellProto->Id : 0);
@@ -942,7 +938,10 @@ uint32 Unit::DealDamage(DamageLog *damageInfo, DamageEffectType damagetype, cons
         }
         else
             pVictim->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_DAMAGE, spellProto->Id, true);
+    }
 
+    if (damageInfo->damage)
+    {
         if (pVictim->GetTypeId() != TYPEID_PLAYER)
         {
             // no xp,health if type 8 /critters/
