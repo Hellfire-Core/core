@@ -349,6 +349,8 @@ m_periodicTimer(0), m_amplitude(0), m_PeriodicEventId(0), m_AuraDRGroup(DIMINISH
     }
 
     m_isPassive = SpellMgr::IsPassiveSpell(GetId());
+    if (spellproto->Id == 6562 || spellproto->Id == 28878) // inspiring presence on friends
+        m_isPassive = (caster == target);
     m_positive = SpellMgr::IsPositiveEffect(GetId(), m_effIndex);
 
     m_applyTime = time(NULL);

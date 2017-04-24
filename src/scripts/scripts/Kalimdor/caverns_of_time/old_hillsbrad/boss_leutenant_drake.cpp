@@ -152,6 +152,7 @@ struct boss_lieutenant_drakeAI : public ScriptedAI
         me->CombatStop(true);
         me->SetWalk(true);
         me->GetMotionMaster()->MovePoint(0, me->GetPositionX() - 1.0f, me->GetPositionY() + 1.0f, me->GetPositionZ());
+        pInstance->SetData(DATA_DRAKE_DEATH, NOT_STARTED);
     }
 
     void KilledUnit(Unit *victim)

@@ -1167,6 +1167,7 @@ void BattleGround::AddPlayer(Player *plr)
     if (isArena())
     {
         plr->RemoveArenaSpellCooldowns();
+        plr->ClearComboPoints();
         plr->RemoveArenaAuras();
         plr->GetMotionMaster()->MoveIdle();
 

@@ -148,11 +148,15 @@ void OutdoorPvPZM::HandlePlayerEnterZone(Player * plr, uint32 zone)
     {
         if (m_GraveYard->m_GraveYardState & ZM_GRAVEYARD_A)
             plr->CastSpell(plr,ZM_CAPTURE_BUFF,true);
+        if (plr->GetGUID() == m_GraveYard->m_FlagCarrierGUID)
+            plr->CastSpell(plr, ZM_BATTLE_STANDARD_A, true);
     }
     else
     {
         if (m_GraveYard->m_GraveYardState & ZM_GRAVEYARD_H)
             plr->CastSpell(plr,ZM_CAPTURE_BUFF,true);
+        if (plr->GetGUID() == m_GraveYard->m_FlagCarrierGUID)
+            plr->CastSpell(plr, ZM_BATTLE_STANDARD_H, true);
     }
     OutdoorPvP::HandlePlayerEnterZone(plr,zone);
 }
@@ -327,6 +331,20 @@ void OPvPCapturePointZM_GraveYard::SetBeaconState(uint32 controlling_faction)
 
 bool OPvPCapturePointZM_GraveYard::CanTalkTo(Player * plr, Creature * c, GossipOption & gso)
 {
+    if (m_FlagCarrierGUID)
+    {
+        Player* plr = sObjectAccessor.GetPlayer(m_FlagCarrierGUID);
+        if (!plr || !plr->GetOutdoorPvP() || plr->GetOutdoorPvP()->GetTypeId != OUTDOOR_PVP_ZM)
+        {
+            if (plr)
+            {
+                plr->RemoveAurasDueToSpell(ZM_BATTLE_STANDARD_A);
+                plr->RemoveAurasDueToSpell(ZM_BATTLE_STANDARD_H);
+            }
+            m_FlagCarrierGUID = 0;
+        }
+    }
+
     if (c->GetEntry() == ALLIANCE_FIELD_SCOUT && plr->GetTeam() == ALLIANCE && m_BothControllingFaction == ALLIANCE && !m_FlagCarrierGUID && m_GraveYardState != ZM_GRAVEYARD_A)
     {
         gso.OptionText.assign(sObjectMgr.GetHellgroundStringForDBCLocale(LANG_OPVP_ZM_GOSSIP_ALLIANCE));

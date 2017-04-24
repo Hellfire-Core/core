@@ -590,6 +590,7 @@ void World::LoadConfigSettings(bool reload)
     }
     delete[] forbiddenMaps;
 
+    loadConfig(CONFIG_NO_CHANNEL_INVITES, "NoChannelInvites", false);
     loadConfig(CONFIG_GUILD_ANN_INTERVAL, "GuildAnnounce.Timer", 1*MINUTE*1000);
     loadConfig(CONFIG_GUILD_ANN_COOLDOWN, "GuildAnnounce.Cooldown", 60*MINUTE);
     loadConfig(CONFIG_GUILD_ANN_LENGTH, "GuildAnnounce.Length", 60);

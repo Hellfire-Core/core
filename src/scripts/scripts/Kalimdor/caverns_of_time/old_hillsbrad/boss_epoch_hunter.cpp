@@ -117,6 +117,7 @@ struct boss_epoch_hunterAI : public ScriptedAI
         me->DeleteThreatList();
         me->CombatStop(true);
         me->ForcedDespawn();
+        pInstance->SetData(DATA_EPOCH_DEATH, NOT_STARTED);
     }
 
     void JustDied(Unit *victim)

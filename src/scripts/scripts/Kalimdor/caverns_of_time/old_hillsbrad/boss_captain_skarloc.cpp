@@ -208,6 +208,7 @@ struct boss_captain_skarlocAI : public ScriptedAI
 
         if (Creature* mount = tmpMap->GetCreatureById(SKARLOC_MOUNT))
             mount->ForcedDespawn();
+        pInstance->SetData(DATA_SKARLOC_DEATH, NOT_STARTED);
     }
 
     void JustDied(Unit *victim)

@@ -12671,26 +12671,38 @@ void Unit::Kill(Unit *pVictim, bool durabilityLoss)
         if (InstanceData* instance = creatureVictim->GetInstanceData())
             instance->OnCreatureDeath(creatureVictim);
 
+        Map* m = creatureVictim->GetMap();
+        // log boss kills
+        if (creatureVictim->GetCreatureInfo()->rank == CREATURE_ELITE_WORLDBOSS && creatureVictim->GetCreatureInfo()->lootid != 0)
+        {
+            std::stringstream ss;
+            ss << "BossEntry: " << creatureVictim->GetEntry() << " " << creatureVictim->GetName() << " InstanceId: " << creatureVictim->GetInstanceId()
+                << " MapId: " << m->GetId() << " " << m->GetMapName();
+            if (m->GetPlayers().getSize() && m->IsDungeon())
+            {
+                ss << " Players in instance: ";
+                for (MapRefManager::const_iterator itr = m->GetPlayers().begin(); itr != m->GetPlayers().end(); ++itr)
+                {
+                    if (Player* ininstance = itr->getSource())
+                        ss << ininstance->GetName() << ":(" << ininstance->GetGUIDLow() << ") ";
+                }
+            }
+            else if (!m->IsDungeon())
+            {
+                ss << " World boss, killer name: " << (creatureVictim->GetLootRecipient() ? creatureVictim->GetLootRecipient()->GetName() : "<none>");
+            }
+            else
+                ss << " no players in instance";
+            sLog.outLog(LOG_BOSS, "%s", ss.str().c_str());
+        }
+
+
         // Dungeon specific stuff, only applies to players killing creatures
         if (creatureVictim->GetInstanceId())
         {
-            Map* m = creatureVictim->GetMap();
-
+            
             if (m->IsDungeon() && m->GetPlayers().getSize())
             {
-                // log boss kills
-                if (creatureVictim->GetCreatureInfo()->rank == CREATURE_ELITE_WORLDBOSS)
-                {
-                    std::stringstream ss;
-                    ss << "BossEntry: " << creatureVictim->GetEntry() << " " << creatureVictim->GetName() << " InstanceId: " << creatureVictim->GetInstanceId()
-                        << " MapId: " << m->GetId() << " " << m->GetMapName() << " Players in instance: ";
-                    for (MapRefManager::const_iterator itr = m->GetPlayers().begin(); itr != m->GetPlayers().end(); ++itr)
-                    {
-                        if (Player* ininstance = itr->getSource())
-                            ss << ininstance->GetName() << ":(" << ininstance->GetGUIDLow() << ") ";
-                    }
-                    sLog.outLog(LOG_BOSS, "%s", ss.str().c_str());
-                }
 
                 if (m->IsRaid() || m->IsHeroic())
                 {
