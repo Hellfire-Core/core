@@ -334,7 +334,7 @@ bool OPvPCapturePointZM_GraveYard::CanTalkTo(Player * plr, Creature * c, GossipO
     if (m_FlagCarrierGUID)
     {
         Player* plr = sObjectAccessor.GetPlayer(m_FlagCarrierGUID);
-        if (!plr || !plr->GetOutdoorPvP() || plr->GetOutdoorPvP()->GetTypeId != OUTDOOR_PVP_ZM)
+        if (!plr || !plr->GetOutdoorPvP() || plr->GetOutdoorPvP()->GetTypeId() != OUTDOOR_PVP_ZM)
         {
             if (plr)
             {
