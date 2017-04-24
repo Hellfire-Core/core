@@ -415,7 +415,7 @@ void CreatureEventAI::ProcessAction(CreatureEventAI_Action const& action, uint32
                 temp = action.text.TextId[rand()%3];
             else if (action.text.TextId[1] && urand(0,1))
                 temp = action.text.TextId[1];
-             else
+            else
                 temp = action.text.TextId[0];
 
             if (temp)

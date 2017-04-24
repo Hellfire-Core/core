@@ -162,7 +162,7 @@ struct mob_spectral_sentryAI : public ScriptedAI
     {
         me->CastSpell(me, SPELL_DUAL_WIELD, true);
 
-        ShotTimer = 0;
+        ShotTimer = 1;
         MultiShotTimer.Reset(8000);
         RandomSayTimer.Reset(urand(40000, 80000));
     }
@@ -501,6 +501,234 @@ CreatureAI* GetAI_mob_arcane_anomaly(Creature *_Creature)
     return new mob_arcane_anomalyAI(_Creature);
 }
 
+enum downstairs
+{
+    SPELL_KNOCKDOWN         = 18812,
+    SPELL_PIERCE_ARMOUR     = 6016,
+    SPELL_HEALING_TOUCH     = 29339,
+    SPELL_FRENZY_WHIP       = 29340,
+
+    SPELL_DEMORALIZING_ROAR = 29584,
+    SPELL_STEALTH_DETECTION = 12418,
+
+    SPELL_ALLURING_AURA     = 29485,
+    SPELL_HOSTESS_TRANSFORM = 29472,
+    SPELL_BEWITCHING_AURA   = 29486,
+    SPELL_HOSTESS_WAIL      = 29477,
+    SPELL_HOSTESS_SILENCE   = 29505,
+
+    SPELL_NIGHT_TRANSFORM   = 29491,
+    SPELL_NIGHT_SHADOWBOLT  = 29487,
+    SPELL_NIGHT_IMPENDING   = 29488,
+
+    SPELL_CONCUBINE_TRANSFORM = 29489,
+    SPELL_CONCUBINE_SEDUCTION = 29490,
+    SPELL_CONCUBINE_TEMPTATION = 29494,
+    SPELL_CONCUBINE_JEALOUSY = 29497,
+
+    NPC_HOSTESS         = 16459,
+    NPC_NIGHT_MISTRESS  = 16460,
+    NPC_CONCUBINE       = 16461,
+};
+
+struct mob_demon_ladiesAI : public ScriptedAI
+{
+    mob_demon_ladiesAI(Creature* c) : ScriptedAI(c) {}
+
+    bool changed;
+    Timer mainCastTimer;
+
+    void Reset()
+    {
+        changed = false;
+        mainCastTimer.Reset(urand(5000,7000));
+    }
+
+    void EnterCombat(Unit*)
+    {
+        if (m_creature->GetEntry() == NPC_HOSTESS)
+            DoCast(m_creature, SPELL_ALLURING_AURA, true);
+    }
+
+    void UpdateAI(const uint32 diff)
+    {
+        if (!changed && m_creature->HealthBelowPct(50))
+        {
+            changed = true;
+            m_creature->RemoveAllAuras();
+            switch (m_creature->GetEntry())
+            {
+            case NPC_HOSTESS:
+                DoCast(m_creature, SPELL_BEWITCHING_AURA, true);
+                DoCast(m_creature, SPELL_HOSTESS_TRANSFORM, true);
+                break;
+            case NPC_NIGHT_MISTRESS:
+                DoCast(m_creature, SPELL_NIGHT_TRANSFORM, true);
+                break;
+            case NPC_CONCUBINE:
+                DoCast(m_creature, SPELL_CONCUBINE_TRANSFORM, true);
+                break;
+            }
+        }
+        if (!UpdateVictim())
+            return;
+
+        if (mainCastTimer.Expired(diff))
+        {
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 0, true))
+            {
+                switch (m_creature->GetEntry())
+                {
+                case NPC_HOSTESS:
+                    DoCast(target, changed ? SPELL_HOSTESS_SILENCE : SPELL_HOSTESS_WAIL, false);
+                    mainCastTimer = urand(8000, 15000);
+                    break;
+                case NPC_NIGHT_MISTRESS:
+                    DoCast(target, changed ? SPELL_NIGHT_IMPENDING : SPELL_NIGHT_SHADOWBOLT, false);
+                    mainCastTimer = urand(5000, 7000);
+                    break;
+                case NPC_CONCUBINE:
+                    DoCast(target, changed ? SPELL_CONCUBINE_JEALOUSY : SPELL_CONCUBINE_TEMPTATION, false);
+                    mainCastTimer = urand(8000, 12000);
+                    break;
+                }
+            }
+            else
+                mainCastTimer = 1000;
+        }
+        DoMeleeAttackIfReady();
+    }
+};
+
+CreatureAI* GetAI_mob_demon_ladies(Creature* c)
+{
+    return new mob_demon_ladiesAI(c);
+}
+
+struct mob_spectral_stable_handAI : public ScriptedAI
+{
+    mob_spectral_stable_handAI(Creature* c) : ScriptedAI(c) {}
+
+    Timer KnockdownTimer;
+    Timer PierceTimer;
+    Timer HealTimer;
+    Timer FrenzyTimer;
+
+    
+
+    void Reset()
+    {
+        KnockdownTimer.Reset(urand(7000,10000));
+        PierceTimer.Reset(urand(4000,6000));
+        HealTimer.Reset(urand(15000,25000));
+        FrenzyTimer.Reset(urand(15000,25000));
+    }
+
+    Unit* findHorse()
+    {
+        struct horsefinder
+        {
+            bool operator()(Unit* u)
+            {
+                if (u->GetTypeId() != TYPEID_UNIT || !u->isAlive() || !u->isInCombat())
+                    return false;
+                return (u->GetEntry() == 15547 || u->GetEntry() == 15548);
+            }
+        } u_check;
+        std::list<Creature*> unitList;
+
+        Hellground::ObjectListSearcher<Creature, horsefinder> searcher(unitList, u_check);
+        Cell::VisitGridObjects(me, searcher, 100);
+
+        if (unitList.size() == 0)
+            return NULL;
+        std::list<Creature*>::iterator i = unitList.begin();
+        advance(i, urand(0, unitList.size() - 1));
+        return (*i);
+    }
+
+    void UpdateAI(const uint32 diff)
+    {
+        if (!UpdateVictim())
+            return;
+
+        if (KnockdownTimer.Expired(diff))
+        {
+            DoCastVictim(SPELL_KNOCKDOWN);
+            KnockdownTimer = urand(12000,18000);
+        }
+
+        if (PierceTimer.Expired(diff))
+        {
+            DoCastVictim(SPELL_PIERCE_ARMOUR);
+            PierceTimer = urand(30000, 45000);
+        }
+
+        if (HealTimer.Expired(diff))
+        {
+            if (Unit* horse = findHorse())
+                DoCast(horse, SPELL_HEALING_TOUCH);
+            HealTimer = urand(20000, 35000);
+        }
+
+        if (FrenzyTimer.Expired(diff))
+        {
+            if (Unit* horse = findHorse())
+                DoCast(horse, SPELL_FRENZY_WHIP);
+            FrenzyTimer = urand(20000, 35000);
+        }
+
+        DoMeleeAttackIfReady();
+    }
+
+    void JustDied(Unit*)
+    {
+        DoScriptText(RAND(-40, -41), m_creature);
+    }
+};
+
+CreatureAI* GetAI_mob_spectral_stable_hand(Creature* c)
+{
+    return new mob_spectral_stable_handAI(c);
+}
+
+struct mob_phantom_valetAI : public ScriptedAI
+{
+    mob_phantom_valetAI(Creature* c) : ScriptedAI(c) {}
+
+    Timer RoarTimer;
+
+    void Reset()
+    {
+        RoarTimer.Reset(9000);
+    }
+
+    void UpdateAI(const uint32 diff)
+    {
+        if (!m_creature->HasAura(SPELL_STEALTH_DETECTION))
+            DoCast(m_creature, SPELL_STEALTH_DETECTION, true);
+        if (!UpdateVictim())
+            return;
+
+        if (RoarTimer.Expired(diff))
+        {
+            DoCastVictim(SPELL_DEMORALIZING_ROAR);
+            RoarTimer = 30000;
+        }
+    }
+
+    void JustDied(Unit*)
+    {
+        DoScriptText(-51, m_creature);
+    }
+};
+
+CreatureAI* GetAI_mob_phantom_valet(Creature* c)
+{
+    return new mob_phantom_valetAI(c);
+}
+
+
 void AddSC_karazhan_trash()
 {
     Script* newscript;
@@ -542,5 +770,20 @@ void AddSC_karazhan_trash()
     newscript = new Script;
     newscript->Name = "mob_arcane_anomaly";
     newscript->GetAI = &GetAI_mob_arcane_anomaly;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "mob_demon_ladies";
+    newscript->GetAI = &GetAI_mob_demon_ladies;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "mob_spectral_stable_hand";
+    newscript->GetAI = &GetAI_mob_spectral_stable_hand;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "mob_phantom_valet";
+    newscript->GetAI = &GetAI_mob_phantom_valet;
     newscript->RegisterSelf();
 }

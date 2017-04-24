@@ -42,7 +42,7 @@ EndScriptData */
 #define SPELL_SHADOW_BOLT           30055                   // Hurls a bolt of dark magic at an enemy, inflicting Shadow damage.
 #define SPELL_SACRIFICE             30115                   // Teleports and adds the debuff
 #define SPELL_BERSERK               32965                   // Increases attack speed by 75%. Periodically casts Shadow Bolt Volley.
-
+#define SPELL_BROKEN_PACT           30065
 #define SPELL_SUMMON_IMP            30066                   // Summons Kil'rek
 
 #define SPELL_FIENDISH_PORTAL       30171                   // Opens portal and summons Fiendish Portal, 2 sec cast
@@ -185,11 +185,20 @@ struct boss_terestianAI : public ScriptedAI
     Timer SummonTimer;
     Timer BerserkTimer;
     Timer CheckTimer;
+    Timer PactTimer;
 
     WorldLocation wLoc;
 
     bool SummonedPortals;
     bool Berserk;
+
+    void SpellHit(Unit* source, const SpellEntry* spell)
+    {
+        if (spell->Id == SPELL_BROKEN_PACT)
+        {
+            PactTimer.Reset(30000);
+        }
+    }
 
     void Reset()
     {
@@ -289,9 +298,20 @@ struct boss_terestianAI : public ScriptedAI
             CheckTimer = 1000;
         }
         
+        if (PactTimer.Expired(diff))
+        {
+            if (pInstance)
+            {
+                Creature* Kilrek = (Unit::GetCreature(*m_creature, pInstance->GetData64(DATA_KILREK)));
+                if (Kilrek && !Kilrek->isAlive())
+                    Kilrek->Respawn();
+            }
+            PactTimer = 0;
+        }
+
         if (SacrificeTimer.Expired(diff))
         {
-            Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 1, GetSpellMaxRange(SPELL_SACRIFICE), true); // , m_creature->getVictimGUID() PRE NERF can target also tank
+            Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_SACRIFICE), true); // , m_creature->getVictimGUID() PRE NERF can target also tank
             if(target && target->isAlive() && target->GetTypeId() == TYPEID_PLAYER)
             {
                 DoCast(target, SPELL_SACRIFICE, true);

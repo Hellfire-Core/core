@@ -65,9 +65,6 @@ void instance_karazhan::Initialize()
     ServentAccessDoor   = 0;
     ImageGUID           = 0;
     MedivhGUID          = 0;
-    CheckTimer          = 5000;
-
-    needRespawn         = true;
 }
 
 bool instance_karazhan::IsEncounterInProgress() const
@@ -484,32 +481,6 @@ void instance_karazhan::Update(uint32 diff)
                 }
                 AnimalBossCheck = 0;
             }
-        }
-    }
-
-    if(GetData(DATA_TERESTIAN_EVENT) == IN_PROGRESS)
-    {
-     
-        if (CheckTimer.Expired(diff))
-        {
-            Creature *Kilrek = instance->GetCreature(KilrekGUID);
-            if(Kilrek && needRespawn)
-            {
-                Kilrek->Respawn();
-                needRespawn = false;
-
-                Creature *Terestian = instance->GetCreature(TerestianGUID);
-                if(Terestian && Terestian->isAlive())
-                    Terestian->RemoveAurasDueToSpell(SPELL_BROKEN_PACT);
-            }
-
-            if(Kilrek && !Kilrek->isAlive() && !needRespawn)
-            {
-                needRespawn = true;
-                CheckTimer = 45000;
-            }
-            else
-                CheckTimer = 5000;
         }
     }
 }

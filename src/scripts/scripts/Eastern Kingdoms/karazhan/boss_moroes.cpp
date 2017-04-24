@@ -403,14 +403,33 @@ struct boss_moroes_guestAI : public ScriptedAI
 
     Unit* SelectTarget()
     {
-        uint64 TempGUID = GuestGUID[urand(0,4)];
-        if(TempGUID)
+        uint8 count = 0;
+        for (uint8 i = 0; i < 5; i++)
         {
-            Unit* pUnit = Unit::GetUnit((*m_creature), TempGUID);
-            if(pUnit && pUnit->isAlive())
-                return pUnit;
+            uint64 TempGUID = GuestGUID[urand(0, 4)];
+            if (TempGUID)
+            {
+                Unit* pUnit = Unit::GetUnit((*m_creature), TempGUID);
+                if (pUnit && pUnit->isAlive())
+                    count++;
+            }
         }
 
+        count = urand(1, count);
+        for (uint8 i = 0; i < 5; i++)
+        {
+            uint64 TempGUID = GuestGUID[urand(0, 4)];
+            if (TempGUID)
+            {
+                Unit* pUnit = Unit::GetUnit((*m_creature), TempGUID);
+                if (pUnit && pUnit->isAlive())
+                {
+                    count--;
+                    if (count == 0)
+                        return pUnit;
+                }
+            }
+        }
         return m_creature;
     }
 

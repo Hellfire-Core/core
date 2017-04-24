@@ -96,7 +96,9 @@ struct boss_nightbaneAI : public ScriptedAI
     Timer FireballBarrageTimer;
     Timer SearingCindersTimer;
     Timer Cleave_Timer;
+    Timer SummonSkeleton_Timer;
 
+    uint8 SkeletonCount;
     uint32 FlyCount;
     Timer FlyCheckTimer;
 
@@ -136,6 +138,8 @@ struct boss_nightbaneAI : public ScriptedAI
         FireballBarrageTimer.Reset(10000);
         SearingCindersTimer.Reset(14000);
         WaitTimer.Reset(1000);
+        SummonSkeleton_Timer = 0;
+        SkeletonCount = 0;
 
         Phase = PHASE_GROUND;
         FlyCount = 0;
@@ -391,15 +395,20 @@ struct boss_nightbaneAI : public ScriptedAI
                     m_creature->CastSpell(target, SPELL_RAIN_OF_BONES, false);
                 }
 
-                for (int i = 0; i < 5; ++i)
-                {
-                    if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0))
-                        DoCast(target, SPELL_SUMMON_SKELETON, true);
-                }
+                SummonSkeleton_Timer.Reset(urand(2000,3000));
+                SkeletonCount = 0;
 
                 RainofBonesTimer = 0;
                 SmokingBlastTimer = urand(10000, 12000);
                 DistractingAshTimer.Reset(urand(10000, 12000));
+            }
+
+            if (SummonSkeleton_Timer.Expired(diff))
+            {
+                if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0))
+                    DoCast(target, SPELL_SUMMON_SKELETON, true);
+                SkeletonCount++;
+                SummonSkeleton_Timer = ((SkeletonCount == 5) ? 0 : urand(2000, 3000));
             }
 
             if (DistractingAshTimer.Expired(diff))

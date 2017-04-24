@@ -158,7 +158,7 @@ struct boss_aranAI : public Scripted_NoMovementAI
         CheckTimer          = 3000;
         PyroblastTimer      = 0;
         DrinkingDelay       = 0;
-        DragonbreathTimer   = 15000;
+        DragonbreathTimer.Reset(15000);
 
 
         LastSuperSpell = rand()%3;
@@ -208,6 +208,38 @@ struct boss_aranAI : public Scripted_NoMovementAI
 
         if (pInstance)
             pInstance->SetData(DATA_SHADEOFARAN_EVENT, IN_PROGRESS);
+    }
+
+    void SelectPrimarySpell()
+    {
+        uint32 casting = 0;
+        uint8 mask = 0; // arcane/frost/fire
+        if (!me->isSchoolProhibited(SPELL_SCHOOL_MASK_FIRE))
+            mask |= 0x1;
+        if (!me->isSchoolProhibited(SPELL_SCHOOL_MASK_FROST))
+            mask |= 0x2;
+        if (!me->isSchoolProhibited(SPELL_SCHOOL_MASK_ARCANE))
+            mask |= 0x4;
+        switch (mask)
+        {
+        
+        case 1: casting = SPELL_FIREBALL; break;
+        case 2: casting = SPELL_FROSTBOLT; break;
+        case 4: casting = SPELL_ARCMISSLE; break;
+        case 3: casting = RAND(SPELL_FIREBALL, SPELL_FROSTBOLT); break;
+        case 5: casting = RAND(SPELL_FIREBALL, SPELL_ARCMISSLE); break;
+        case 6: casting = RAND(SPELL_ARCMISSLE, SPELL_FROSTBOLT); break;
+        case 7: casting = RAND(SPELL_ARCMISSLE, SPELL_FROSTBOLT, SPELL_FIREBALL); break;
+        case 0:
+        default: break;
+        }
+        if (casting == 0)
+        {
+            NormalCastTimer = 100;
+            return;
+        }
+        AddSpellToCast(casting, CAST_RANDOM, false, true);
+        NormalCastTimer = (casting == SPELL_ARCMISSLE) ? 6000 : 2000;
     }
 
     void UpdateAI(const uint32 diff)
@@ -275,13 +307,10 @@ struct boss_aranAI : public Scripted_NoMovementAI
             {
                 if (!m_creature->IsNonMeleeSpellCast(false))
                 {
-                    uint32 Spells[3] = { SPELL_ARCMISSLE, SPELL_FIREBALL,SPELL_FROSTBOLT };
-                    uint32 casting = Spells[urand(0,2)];
-                    AddSpellToCast(casting, CAST_RANDOM, false, true);
-                    NormalCastTimer = (casting == SPELL_ARCMISSLE) ? 7000 : 3000; // arcane misile is 6 sec!
+                    SelectPrimarySpell();
                 }
                 else
-                    NormalCastTimer = 1000;
+                    NormalCastTimer = 100;
             }
             else
                 NormalCastTimer -= diff;
@@ -326,19 +355,22 @@ struct boss_aranAI : public Scripted_NoMovementAI
                         AddSpellToCast(SPELL_MASSSLOW, CAST_SELF);
                         AddSpellToCastWithScriptText(SPELL_AEXPLOSION, CAST_SELF, RAND(SAY_EXPLOSION1, SAY_EXPLOSION2));
                         DrinkingDelay = 15000;
+                        DragonbreathTimer.Delay(12000);
                         break;
 
                     case SUPER_FLAME:
                         AddSpellToCastWithScriptText(SPELL_FLAME_WREATH, CAST_SELF, RAND(SAY_FLAMEWREATH1, SAY_FLAMEWREATH2));
                         DrinkingDelay = 25000;
+                        DragonbreathTimer.Delay(25000);
                         break;
 
                     case SUPER_BLIZZARD:
                         AddSpellToCastWithScriptText(SPELL_SUMMON_BLIZZARD, CAST_NULL, RAND(SAY_BLIZZARD1, SAY_BLIZZARD2));
                         DrinkingDelay = 30000;
+                        DragonbreathTimer.Delay(12000);
                         break;
                 }
-                DragonbreathTimer.Delay(12000);
+                
                 SuperCastTimer += urand(35000, 40000);
             }
             
@@ -521,6 +553,7 @@ struct circular_blizzardAI : public ScriptedAI
         currentWaypoint = 0;
         waypointTimer = 0;
         SetBlizzardWaypoints();
+        me->SetReactState(REACT_PASSIVE);
     }
 
 

@@ -83,6 +83,7 @@ struct boss_netherspiteAI : public ScriptedAI
     Timer EmpowermentTimer;
     Timer ExhaustCheckTimer;
     Timer PortalTimer; // timer for beam checking
+    Timer PortalPhaseIntro;
     uint64 PortalGUID[3]; // guid's of portals
     uint64 BeamTarget[3]; // guid's of portals' current targets
     bool PortalCasting[3];
@@ -96,6 +97,7 @@ struct boss_netherspiteAI : public ScriptedAI
         VoidZoneTimer.Reset(15000);
         NetherbreathTimer.Reset(3000);
         ExhaustCheckTimer.Reset(1000);
+        PortalPhaseIntro.Reset(0);
         HandleDoors(true);
         DestroyPortals();
 
@@ -212,6 +214,7 @@ struct boss_netherspiteAI : public ScriptedAI
 
     void SwitchToPortalPhase()
     {
+        PortalPhaseIntro.Reset(3000);
         m_creature->RemoveAurasDueToSpell(SPELL_BANISH_ROOT);
         m_creature->RemoveAurasDueToSpell(SPELL_BANISH_VISUAL);
         SummonPortals();
@@ -332,7 +335,11 @@ struct boss_netherspiteAI : public ScriptedAI
             // check target
             if (BeamTarget[0] && BeamTarget[0] != me->getVictimGUID() && BeamTarget[0] != m_creature->GetGUID() && m_creature->GetUnit(BeamTarget[0]))
                 AttackStart(m_creature->GetUnit(BeamTarget[0]));
-            DoMeleeAttackIfReady();
+
+            if (PortalPhaseIntro.Expired(diff))
+                PortalPhaseIntro = 0;
+            if (!PortalPhaseIntro.GetInterval())
+                DoMeleeAttackIfReady();
         }
         else // BANISH PHASE
         {

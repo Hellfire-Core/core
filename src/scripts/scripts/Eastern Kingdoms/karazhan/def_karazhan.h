@@ -57,8 +57,6 @@
 #define DATA_DUST_COVERED_CHEST         35
 #define DATA_CHESS_DAMAGE               36
 
-#define SPELL_BROKEN_PACT               30065
-
 // Opera Performances
 #define EVENT_OZ        1
 #define EVENT_HOOD      2

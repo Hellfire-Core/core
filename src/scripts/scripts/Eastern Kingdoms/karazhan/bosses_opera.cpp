@@ -254,7 +254,7 @@ struct boss_dorotheeAI : public boss_operaAI
         if (WaterBoltTimer.Expired(diff))
         {
             AddSpellToCast(SelectUnit(SELECT_TARGET_RANDOM, 0), SPELL_WATERBOLT);
-            WaterBoltTimer = TitoDied ? 1500 : 5000;
+            WaterBoltTimer = TitoDied ? 1500 : 4000;
         }
         
 
@@ -273,7 +273,15 @@ struct boss_dorotheeAI : public boss_operaAI
             
         }
 
-        boss_operaAI::UpdateAI(diff);
+        //boss_operaAI::UpdateAI(diff);
+        if (checkTimer.Expired(diff))
+        {
+            DoZoneInCombat();
+            checkTimer = 1000;
+        }
+
+
+        CastNextSpellIfAnyAndReady();
     }
 };
 
@@ -418,15 +426,11 @@ struct boss_tinheadAI : public boss_operaAI
     Timer CleaveTimer;
     Timer RustTimer;
 
-    uint8 RustCount;
-
     void Reset()
     {
         AggroTimer.Reset(15000);
         CleaveTimer.Reset(5000);
         RustTimer.Reset(30000);
-
-        RustCount   = 0;
 
         boss_operaAI::Reset();
     }
@@ -473,15 +477,10 @@ struct boss_tinheadAI : public boss_operaAI
         }
         
 
-        if (RustCount < 8)
+        if (RustTimer.Expired(diff))
         {
-            
-            if (RustTimer.Expired(diff))
-            {
-                RustCount++;
-                AddSpellToCastWithScriptText(m_creature, SPELL_RUST, EMOTE_RUST);
-                RustTimer = 6000;
-            }
+            AddSpellToCastWithScriptText(m_creature, SPELL_RUST, EMOTE_RUST);
+            RustTimer = 6000;
         }
 
         boss_operaAI::UpdateAI(diff);

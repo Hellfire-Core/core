@@ -3277,6 +3277,11 @@ void SpellMgr::LoadSpellCustomAttr()
                 {
                     spellInfo->AttributesEx3 |= SPELL_ATTR_EX3_NO_INITIAL_AGGRO;
                 }
+                else if (spellInfo->Id == 32445) // maiden of virtue holy wrath
+                {
+                    spellInfo->EffectBasePoints[0] = 2299;
+                    spellInfo->EffectDieSides[0] = 201;
+                }
                 break;
             }
             case SPELLFAMILY_MAGE:
