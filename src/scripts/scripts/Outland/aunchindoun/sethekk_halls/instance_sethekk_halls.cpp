@@ -132,6 +132,8 @@ struct instance_sethekk_halls : public ScriptedInstance
                     Encounter[0] = data;
                 if(data == DONE)
                     HandleGameObject(IkissDoorGUID, true);
+                if (data == IN_PROGRESS && Encounter[2] != DONE)
+                    LogPossibleCheaters("SH-Auch Ikiss in combat with Syth alive");
                 break;
             case DATA_ANZUEVENT:
                 if(Encounter[1] != DONE)

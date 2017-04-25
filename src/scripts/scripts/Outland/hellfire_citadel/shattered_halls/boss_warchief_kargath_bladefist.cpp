@@ -132,6 +132,7 @@ struct boss_warchief_kargath_bladefistAI : public ScriptedAI
             case MOB_SHATTERED_ASSASSIN:
                 assassins.push_back(summoned->GetGUID());
                 summoned->SetAggroRange(12.0f);
+                summoned->setFaction(14); // this way they wont assist
                 break;
         }
     }

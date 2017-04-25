@@ -112,8 +112,18 @@ struct boss_talon_king_ikissAI : public ScriptedAI
     {
         DoScriptText(RAND(SAY_AGGRO_1, SAY_AGGRO_2, SAY_AGGRO_3), m_creature);
 
-        if(pInstance)
+        if (pInstance)
+        {
             pInstance->SetData(DATA_IKISSEVENT, IN_PROGRESS);
+            if (pInstance->GetData(DATA_DARKWEAVEREVENT) != DONE)
+            {
+                Player* moron = who->GetCharmerOrOwnerPlayerOrPlayerItself();
+                if (moron)
+                    me->Kill(moron);
+
+                EnterEvadeMode();
+            }
+        }
     }
 
     void JustDied(Unit* Killer)

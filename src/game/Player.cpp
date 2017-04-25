@@ -7192,7 +7192,10 @@ void Player::ApplyItemEquipSpell(Item *item, bool apply, bool form_change)
         if (!spellproto)
             continue;
 
-        ApplyEquipSpell(spellproto,item,apply,form_change);
+        if (!apply && spellData.SpellTrigger == ITEM_SPELLTRIGGER_ON_USE)
+            ApplyEquipSpell(spellproto, NULL, false, form_change); // passing item will cause not removing this aura if it was applied before relog
+        else
+            ApplyEquipSpell(spellproto, item, apply, form_change);
     }
 }
 

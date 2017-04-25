@@ -747,6 +747,7 @@ class HELLGROUND_IMPORT_EXPORT SpellMgr
         static bool IsPartialyResistable(SpellEntry const* spellInfo);
         static bool SpellIgnoreLOS(SpellEntry const* spellInfo, uint8 effIdx);
         static bool isSpellBreakStealth(SpellEntry const* spellInfo);
+        static bool IsNotIgnoreTriggeredSpell(SpellEntry const* spellInfo);
 
         static bool IsPrimaryProfessionSkill(uint32 skill);
         static bool IsProfessionSkill(uint32 skill);

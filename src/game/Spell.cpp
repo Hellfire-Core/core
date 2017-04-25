@@ -2741,7 +2741,7 @@ void Spell::handle_immediate()
                 if (duration > 10000 && casterpl && targetpl && casterpl->IsHostileTo(targetpl))
                     duration = 10000;
 
-                if (!SpellMgr::IsPositiveSpell(spellInfo->Id) && unittarget != m_caster)
+                if (unittarget && !SpellMgr::IsPositiveSpell(spellInfo->Id) && unittarget != m_caster)
                 {
                     DiminishingGroup dg = SpellMgr::GetDiminishingReturnsGroupForSpell(GetSpellEntry(), m_triggeredByAuraSpell);
                     unittarget->ApplyDiminishingToDuration(dg, duration, unittarget->GetDiminishing(dg), spellInfo);
@@ -5810,7 +5810,7 @@ bool Spell::CheckTarget(Unit* target, uint32 eff)
     }
 
     //Do not check LOS for triggered spells
-    if (IsTriggeredSpell() && (!sWorld.getConfig(CONFIG_VMAP_TOTEM) || !m_caster->ToTotem()))
+    if (IsTriggeredSpell() && !sSpellMgr.IsNotIgnoreTriggeredSpell(GetSpellEntry()) && (!sWorld.getConfig(CONFIG_VMAP_TOTEM) || !m_caster->ToTotem()))
         return true;
 
     //Check targets for LOS visibility (except spells without range limitations)
