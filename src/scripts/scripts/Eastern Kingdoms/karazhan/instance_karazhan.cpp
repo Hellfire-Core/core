@@ -270,16 +270,34 @@ void instance_karazhan::SetData(uint32 type, uint32 data)
                 Encounters[8] = data;
             break;
         case DATA_CHESS_EVENT:
-            if(data == DONE)
+        {
+            
+            std::stringstream ss;
+            ss << " Chess event, InstanceId: " << instance->GetInstanceId();
+            if (instance->GetPlayers().getSize())
+            {
+                ss << " Players in instance: ";
+                for (MapRefManager::const_iterator itr = instance->GetPlayers().begin(); itr != instance->GetPlayers().end(); ++itr)
+                {
+                    if (Player* ininstance = itr->getSource())
+                        ss << ininstance->GetName() << ":(" << ininstance->GetGUIDLow() << ") ";
+                }
+            }
+            if (data == DONE)
             {
                 if (GetData(DATA_DUST_COVERED_CHEST) != SPECIAL)
                     SetData(DATA_DUST_COVERED_CHEST, DONE);
+                sLog.outLog(LOG_BOSS, "Done %s", ss.str().c_str());
             }
             else if (data == FAIL)
+            {
                 SetData(DATA_DUST_COVERED_CHEST, DONE); // open doors, dont let starting again
+                sLog.outLog(LOG_BOSS, "Failed %s", ss.str().c_str());
+            }
 
             Encounters[9] = data;
             break;
+        }
         case CHESS_EVENT_TEAM:
             Encounters[13] = data;
             break;

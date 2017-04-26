@@ -3580,28 +3580,41 @@ bool GossipSelect_npc_thane_yoregar(Player *player, Creature *_Creature, uint32 
 ####*/
 
 #define GOSSIP_RESTORE_SPECTRECLES "Restore Spectrecles."
-#define ITEM_SPECTRECLES 30719
+#define ITEM_SPECTRECLES_T1 30719
+#define ITEM_SPECTRECLES_T2 30721
 
 bool GossipHello_npc_restore_spectrecles(Player *player, Creature *_Creature)
 {
     if (_Creature->isQuestGiver())
         player->PrepareQuestMenu(_Creature->GetGUID());
 
-    if ((player->GetQuestStatus(10643) || player->GetQuestStatus(10625)) && !player->HasItemCount(ITEM_SPECTRECLES, 1, true))
+    if ((player->GetQuestStatus(10643) || player->GetQuestStatus(10625)) && !player->HasItemCount(ITEM_SPECTRECLES_T1, 1, true))
         player->ADD_GOSSIP_ITEM(0, GOSSIP_RESTORE_SPECTRECLES, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+    if ((player->GetQuestStatus(10644) || player->GetQuestStatus(10633)) && !player->HasItemCount(ITEM_SPECTRECLES_T2, 1, true))
+        player->ADD_GOSSIP_ITEM(0, GOSSIP_RESTORE_SPECTRECLES, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
     player->SEND_GOSSIP_MENU(_Creature->GetNpcTextId(), _Creature->GetGUID());
     return true;
 }
 
 bool GossipSelect_npc_restore_spectrecles(Player *player, Creature *_Creature, uint32 sender, uint32 action)
 {
-    if (action == GOSSIP_ACTION_INFO_DEF + 1 && (player->GetQuestStatus(10643) || player->GetQuestStatus(10625)) && !player->HasItemCount(ITEM_SPECTRECLES, 1, true))
+    if (action == GOSSIP_ACTION_INFO_DEF + 1 && (player->GetQuestStatus(10643) || player->GetQuestStatus(10625)) && !player->HasItemCount(ITEM_SPECTRECLES_T1, 1, true))
     {
         ItemPosCountVec dest;
-        uint8 msg = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_SPECTRECLES, 1);
+        uint8 msg = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_SPECTRECLES_T1, 1);
         if (msg == EQUIP_ERR_OK)
         {
-            Item* item = player->StoreNewItem(dest, ITEM_SPECTRECLES, true);
+            Item* item = player->StoreNewItem(dest, ITEM_SPECTRECLES_T1, true);
+            player->SendNewItem(item, 1, true, false, true);
+        }
+    }
+    if (action == GOSSIP_ACTION_INFO_DEF + 2 && (player->GetQuestStatus(10644) || player->GetQuestStatus(10633)) && !player->HasItemCount(ITEM_SPECTRECLES_T2, 1, true))
+    {
+        ItemPosCountVec dest;
+        uint8 msg = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_SPECTRECLES_T2, 1);
+        if (msg == EQUIP_ERR_OK)
+        {
+            Item* item = player->StoreNewItem(dest, ITEM_SPECTRECLES_T2, true);
             player->SendNewItem(item, 1, true, false, true);
         }
     }
