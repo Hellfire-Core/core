@@ -7254,8 +7254,11 @@ void Aura::PeriodicTick()
 
             int32 gain = m_target->ModifyPower(power,pdamage);
 
-            if (Unit* pCaster = GetCaster())
-                m_target->getHostileRefManager().threatAssist(pCaster, float(gain) * 0.5f, GetSpellProto());
+            if (!IsPassive())
+            {
+                if (Unit* pCaster = GetCaster())
+                    m_target->getHostileRefManager().threatAssist(pCaster, float(gain) * 0.5f, GetSpellProto());
+            }
             break;
         }
         case SPELL_AURA_OBS_MOD_MANA:

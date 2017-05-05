@@ -79,7 +79,7 @@ struct boss_gruulAI : public ScriptedAI
     {
         pInstance = c->GetInstanceData();
         c->GetPosition(wLoc);
-        c->SetAggroRange(50.0f);
+        c->SetAggroRange(42.0f);
     }
 
     ScriptedInstance *pInstance;
