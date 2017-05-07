@@ -308,7 +308,7 @@ void Spell::EffectEnvirinmentalDMG(uint32 i)
     // currently each enemy selected explicitly and self cast damage, we prevent apply self cast spell bonuses/etc
     damage = GetSpellEntry()->CalculateSimpleValue(i);
 
-    m_caster->CalcAbsorbResist(m_caster,SpellMgr::GetSpellSchoolMask(GetSpellEntry()), SPELL_DIRECT_DAMAGE, damage, &absorb, &resist);
+    m_caster->CalcAbsorb(m_caster,SpellMgr::GetSpellSchoolMask(GetSpellEntry()), damage, &absorb, &resist);
 
     m_caster->SendSpellNonMeleeDamageLog(m_caster, GetSpellEntry()->Id, damage, SpellMgr::GetSpellSchoolMask(GetSpellEntry()), absorb, resist, false, 0, false);
     if (m_caster->GetTypeId() == TYPEID_PLAYER)

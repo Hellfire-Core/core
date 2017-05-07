@@ -4730,7 +4730,7 @@ DiminishingGroup SpellMgr::GetDiminishingReturnsGroupForSpell(SpellEntry const* 
         {
             // Polymorph
             if ((spellproto->SpellFamilyFlags & 0x00001000000LL) && spellproto->EffectApplyAuraName[0]==SPELL_AURA_MOD_CONFUSE)
-                return DIMINISHING_POLYMORPH;
+                return DIMINISHING_INCAPACITATE;
             break;
         }
         case SPELLFAMILY_ROGUE:
@@ -4740,10 +4740,10 @@ DiminishingGroup SpellMgr::GetDiminishingReturnsGroupForSpell(SpellEntry const* 
                 return DIMINISHING_KIDNEYSHOT;
             // Sap
             else if (spellproto->SpellFamilyFlags & 0x00000000080LL)
-                return DIMINISHING_POLYMORPH;
+                return DIMINISHING_INCAPACITATE;
             // Gouge
             else if (spellproto->SpellFamilyFlags & 0x00000000008LL)
-                return DIMINISHING_POLYMORPH;
+                return DIMINISHING_INCAPACITATE;
             // Blind
             else if (spellproto->SpellFamilyFlags & 0x00001000000LL)
                 return DIMINISHING_BLIND_CYCLONE;
@@ -4850,7 +4850,7 @@ DiminishingGroup SpellMgr::GetDiminishingReturnsGroupForSpell(SpellEntry const* 
             return DIMINISHING_FREEZE;
         case MECHANIC_KNOCKOUT:
         case MECHANIC_SAPPED:
-            return DIMINISHING_KNOCKOUT;
+            return DIMINISHING_INCAPACITATE;
         case MECHANIC_BANISH:
             return DIMINISHING_BANISH;
     }
@@ -4871,9 +4871,8 @@ bool SpellMgr::IsDiminishingReturnsGroupDurationLimited(DiminishingGroup group)
         case DIMINISHING_FEAR:
         case DIMINISHING_WARLOCK_FEAR:
         case DIMINISHING_CHARM:
-        case DIMINISHING_POLYMORPH:
+        case DIMINISHING_INCAPACITATE:
         case DIMINISHING_FREEZE:
-        case DIMINISHING_KNOCKOUT:
         case DIMINISHING_BLIND_CYCLONE:
         case DIMINISHING_BANISH:
         case DIMINISHING_LIMITONLY:
@@ -4896,14 +4895,13 @@ DiminishingReturnsType SpellMgr::GetDiminishingReturnsGroupType(DiminishingGroup
         case DIMINISHING_TRIGGER_ROOT:
         case DIMINISHING_FEAR:
         case DIMINISHING_CHARM:
-        case DIMINISHING_POLYMORPH:
+        case DIMINISHING_INCAPACITATE:
         case DIMINISHING_UNSTABLE_AFFLICTION:
         case DIMINISHING_DISARM:
         case DIMINISHING_DEATHCOIL:
         case DIMINISHING_FREEZE:
         case DIMINISHING_BANISH:
         case DIMINISHING_WARLOCK_FEAR:
-        case DIMINISHING_KNOCKOUT:
             return DRTYPE_PLAYER;
     }
 

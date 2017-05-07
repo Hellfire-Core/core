@@ -2594,6 +2594,15 @@ void Spell::cast(bool skipCheck)
             SendCastResult(castResult);
             finish(false);
             SetExecutedCurrently(false);
+            if (castResult == SPELL_FAILED_NO_POWER && IsNextMeleeSwingSpell())
+            {
+                // Spell::cast is called from AttackerStateUpdate and normal atack is not executed after that
+                // if you ran out of power, do normal white attack, extra=true so we wont get in loop
+                // this fixes for example warriors heroic strike
+
+                m_caster->AttackerStateUpdate(m_caster->getVictim(), BASE_ATTACK, true);
+            }
+
             return;
         }
     }
@@ -2607,15 +2616,6 @@ void Spell::cast(bool skipCheck)
             SendCastResult(castResult);
             finish(false);
             SetExecutedCurrently(false);
-
-            if (castResult == SPELL_FAILED_NO_POWER && IsNextMeleeSwingSpell())
-            {
-                // Spell::cast is called from AttackerStateUpdate and normal atack is not executed after that
-                // if you ran out of power, do normal white attack, extra=true so we wont get in loop
-                // this fixes for example warriors heroic strike
-                
-                m_caster->AttackerStateUpdate(m_caster->getVictim(), BASE_ATTACK, true);
-            }
 
             return;
         }
