@@ -1960,7 +1960,7 @@ void WorldObject::GetValidPointInAngle(Position &pos, float dist, float angle, b
     // try 2yds more, then backout 2yds for collision prevention
 
     TerrainInfo const* _map = GetTerrain();
-    float ground = _map->GetHeight(dest.x, dest.y, MAX_HEIGHT, true);
+    float ground = _map->GetHeight(dest.x, dest.y, MAX_HEIGHT, false);
     float floor = _map->GetHeight(dest.x, dest.y, pos.z, true);
     dest.z = fabs(ground - pos.z) <= fabs(floor - pos.z) ? ground : floor;
     
@@ -1975,7 +1975,7 @@ void WorldObject::GetValidPointInAngle(Position &pos, float dist, float angle, b
         {
             dest.x -= step * cos(angle);
             dest.y -= step * sin(angle);
-            ground = _map->GetHeight(dest.x, dest.y, MAX_HEIGHT, true);
+            ground = _map->GetHeight(dest.x, dest.y, MAX_HEIGHT, false);
             floor = _map->GetHeight(dest.x, dest.y, pos.z, true);
             dest.z = fabs(ground - pos.z) <= fabs(floor - pos.z) ? ground : floor;
         }

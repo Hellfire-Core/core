@@ -2417,7 +2417,7 @@ void SpellMgr::LoadSpellChains()
     mSpellChains[spell_id].first = 33943;
     mSpellChains[spell_id].last = 40120;
     mSpellChains[spell_id].rank = 2;
-
+    /* moved to SpellMgr::GetSpellGreaterVersion()
     // Blessing of Kings
     spell_id = 20217;
     mSpellChains[spell_id].prev = 0;
@@ -2459,7 +2459,7 @@ void SpellMgr::LoadSpellChains()
     mSpellChains[20913].last = spell_id;
     mSpellChains[20914].last = spell_id;
     mSpellChains[27168].last = spell_id;
-
+    */
 //uncomment these two lines to print yourself list of spell_chains on startup
 //    for (UNORDERED_MAP<uint32, SpellChainNode>::iterator itr=mSpellChains.begin();itr!=mSpellChains.end();itr++)
 //       sLog.outString("Id: %u, Rank: %d , %s",itr->first,itr->second.rank, sSpellStore.LookupEntry(itr->first)->Rank[sWorld.GetDefaultDbcLocale()]);
@@ -4417,6 +4417,10 @@ bool SpellMgr::IsSpellAllowedInLocation(SpellEntry const *spellInfo,uint32 map_i
             if (map_id == 568) return false; // Zul'aman
             if (zone_id == 3523 || zone_id == 3845 || zone_id == 3847 || zone_id == 3848 || zone_id == 3849)
                 return false; // netherstorm; shall be removed with SWP RELEASE
+
+            if (map_id == 30 || map_id == 489 || map_id == 529 || map_id == 566)
+                return false; // bgs
+
             return true;
         case 32096:
         case 32098:

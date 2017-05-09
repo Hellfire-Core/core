@@ -70,7 +70,7 @@ void instance_karazhan::Initialize()
 bool instance_karazhan::IsEncounterInProgress() const
 {
     for (uint8 i = 0; i < ENCOUNTERS - 3; ++i)
-        if (Encounters[i] != DONE && Encounters[i] != NOT_STARTED)
+        if (Encounters[i] == IN_PROGRESS)
             return true;
 
     return false;

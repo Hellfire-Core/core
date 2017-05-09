@@ -511,6 +511,24 @@ class HELLGROUND_IMPORT_EXPORT SpellMgr
             return itr->second;
         }
 
+        uint32 GetSpellGreaterVersion(uint32 spell_id)
+        {
+            switch (spell_id)
+            {
+            case 20217: // BoK
+                return 25898;
+            case 20914: // BoS IV
+                return 25899; // GBoS I
+            case 27168: // BoS V
+                return 27169; // GBoS II
+            case 27841: // Spirit IV
+                return 27681;
+            case 2531: // Spirit V
+                return 32999;
+            }
+            return 0;
+        }
+
         uint32 GetFirstSpellInChain(uint32 spell_id) const
         {
             if (SpellChainNode const* node = GetSpellChainNode(spell_id))

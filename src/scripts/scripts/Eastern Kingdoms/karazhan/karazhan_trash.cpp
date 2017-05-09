@@ -310,11 +310,11 @@ struct mob_mana_warpAI : public ScriptedAI
 {
     mob_mana_warpAI(Creature* c) : ScriptedAI(c) {}
 
-    bool Exploded;
+    Timer Exploded;
 
     void Reset()
     {
-        Exploded = false;
+        Exploded = 0;
     }
     
     void DamageTaken(Unit* pDone_by, uint32& uiDamage)
@@ -328,12 +328,14 @@ struct mob_mana_warpAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if(!Exploded && HealthBelowPct(10))
+        if(!Exploded.GetInterval() && HealthBelowPct(10))
         {
             me->CastSpell(me, SPELL_WARP_BREACH_AOE, false);
             me->CastSpell(me, SPELL_WARP_BREACH_VISUAL, true);
-            Exploded = true;
+            Exploded.Reset(1000);
         }
+        if (Exploded.Expired(diff))
+            me->Kill(me);
 
         DoMeleeAttackIfReady();
     }    

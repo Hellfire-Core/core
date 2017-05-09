@@ -300,6 +300,8 @@ void Spell::EffectInstaKill(uint32 /*i*/)
 
 void Spell::EffectEnvirinmentalDMG(uint32 i)
 {
+    if (!unitTarget)
+        return;
     uint32 absorb = 0;
     uint32 resist = 0;
 
@@ -310,10 +312,10 @@ void Spell::EffectEnvirinmentalDMG(uint32 i)
 
     m_caster->CalcAbsorb(m_caster,SpellMgr::GetSpellSchoolMask(GetSpellEntry()), damage, &absorb, &resist);
 
-    m_caster->SendSpellNonMeleeDamageLog(m_caster, GetSpellEntry()->Id, damage, SpellMgr::GetSpellSchoolMask(GetSpellEntry()), absorb, resist, false, 0, false);
+    //m_caster->SendSpellNonMeleeDamageLog(m_caster, GetSpellEntry()->Id, damage, SpellMgr::GetSpellSchoolMask(GetSpellEntry()), absorb, resist, false, 0, false);
     m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "enviromental dmg %u %u %u", NULL, damage, absorb, resist);
-    if (m_caster->GetTypeId() == TYPEID_PLAYER)
-        ((Player*)m_caster)->EnvironmentalDamage(DAMAGE_FIRE,damage);
+    if (unitTarget->GetTypeId() == TYPEID_PLAYER)
+        unitTarget->ToPlayer()->EnvironmentalDamage(DAMAGE_FIRE, damage);
 }
 
 void Spell::EffectSchoolDMG(uint32 effect_idx)

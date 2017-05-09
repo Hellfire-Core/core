@@ -869,7 +869,7 @@ bool ChatHandler::HandleGPSCommand(const char* args)
     Map2ZoneCoordinates(zone_x,zone_y,zone_id);
 
     TerrainInfo const *map = obj->GetTerrain();
-    float ground_z = map->GetHeight(obj->GetPositionX(), obj->GetPositionY(), MAX_HEIGHT);
+    float ground_z = map->GetHeight(obj->GetPositionX(), obj->GetPositionY(), MAX_HEIGHT, false);
     float floor_z = map->GetHeight(obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ());
 
     GridPair p = Hellground::ComputeGridPair(obj->GetPositionX(), obj->GetPositionY());

@@ -13253,7 +13253,7 @@ void Unit::GetLeapForwardDestination(Position& pos, float distance)
         dest.x = pos.x + (distance*(8 - i)*0.125f)* cos(GetOrientation());
         dest.y = pos.y + (distance*(8 - i)*0.125f)* sin(GetOrientation());
 
-        float ground = _map->GetHeight(dest.x, dest.y, MAX_HEIGHT, true);
+        float ground = _map->GetHeight(dest.x, dest.y, MAX_HEIGHT, false);
         float floor = _map->GetHeight(dest.x, dest.y, pos.z, true);
         dest.z = fabs(ground - pos.z) <= fabs(floor - pos.z) ? ground : floor;
 
