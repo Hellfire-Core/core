@@ -159,7 +159,7 @@ namespace VMAP
     }
     //=========================================================
 
-    bool StaticMapTree::isInLineOfSight(const Vector3& pos1, const Vector3& pos2, bool debug) const
+    bool StaticMapTree::isInLineOfSight(const Vector3& pos1, const Vector3& pos2, bool debug, bool alsom2) const
     {
         float maxDist = (pos2 - pos1).magnitude();
         // valid map coords should *never ever* produce float overflow, but this would produce NaNs too
@@ -169,7 +169,7 @@ namespace VMAP
             return true;
         // direction with length of 1
         G3D::Ray ray = G3D::Ray::fromOriginAndDirection(pos1, (pos2 - pos1)/maxDist);
-        if (getIntersectionTime(ray, maxDist, true, debug, false))
+        if (getIntersectionTime(ray, maxDist, true, debug, alsom2))
             return false;
 
         return true;

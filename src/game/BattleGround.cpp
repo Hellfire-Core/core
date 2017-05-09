@@ -118,11 +118,14 @@ BattleGround::~BattleGround()
         DelObject(i);
     }
 
-    // delete creature and go respawn times
-    RealmDataDatabase.PExecute("DELETE FROM creature_respawn WHERE instance = '%u'",GetInstanceID());
-    RealmDataDatabase.PExecute("DELETE FROM gameobject_respawn WHERE instance = '%u'",GetInstanceID());
-    // delete instance from db
-    RealmDataDatabase.PExecute("DELETE FROM instance WHERE id = '%u'",GetInstanceID());
+    if (GetInstanceID())
+    {
+        // delete creature and go respawn times
+        RealmDataDatabase.PExecute("DELETE FROM creature_respawn WHERE instance = '%u'", GetInstanceID());
+        RealmDataDatabase.PExecute("DELETE FROM gameobject_respawn WHERE instance = '%u'", GetInstanceID());
+        // delete instance from db
+        RealmDataDatabase.PExecute("DELETE FROM instance WHERE id = '%u'", GetInstanceID());
+    }
     // remove from battlegrounds
     sBattleGroundMgr.RemoveBattleGround(GetInstanceID(), GetTypeID());
     // unload map

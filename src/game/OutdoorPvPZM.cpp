@@ -166,8 +166,12 @@ void OutdoorPvPZM::HandlePlayerLeaveZone(Player * plr, uint32 zone)
     // remove buffs
     plr->RemoveAurasDueToSpell(ZM_CAPTURE_BUFF);
     // remove flag
-    plr->RemoveAurasDueToSpell(ZM_BATTLE_STANDARD_A);
-    plr->RemoveAurasDueToSpell(ZM_BATTLE_STANDARD_H);
+    if (m_GraveYard->m_FlagCarrierGUID == plr->GetGUID())
+    {
+        plr->RemoveAurasDueToSpell(ZM_BATTLE_STANDARD_A);
+        plr->RemoveAurasDueToSpell(ZM_BATTLE_STANDARD_H);
+        m_GraveYard->m_FlagCarrierGUID = plr->GetGUID(); // removing aura will cause this variable to be reset in HandleDropFlag
+    }
     OutdoorPvP::HandlePlayerLeaveZone(plr, zone);
 }
 

@@ -4840,10 +4840,13 @@ void ObjectMgr::DeleteRespawnTimeForInstance(uint32 instance)
             mCreatureRespawnTimes.erase(itr);
     }
 
-    RealmDataDatabase.BeginTransaction();
-    RealmDataDatabase.PExecute("DELETE FROM creature_respawn WHERE instance = '%u'", instance);
-    RealmDataDatabase.PExecute("DELETE FROM gameobject_respawn WHERE instance = '%u'", instance);
-    RealmDataDatabase.CommitTransaction();
+    if (instance != 0)
+    {
+        RealmDataDatabase.BeginTransaction();
+        RealmDataDatabase.PExecute("DELETE FROM creature_respawn WHERE instance = '%u'", instance);
+        RealmDataDatabase.PExecute("DELETE FROM gameobject_respawn WHERE instance = '%u'", instance);
+        RealmDataDatabase.CommitTransaction();
+    }
 }
 
 void ObjectMgr::DeleteGOData(uint32 guid)

@@ -324,6 +324,7 @@ namespace VMAP
         ByteBuffer packet;
         uint32 mapId;
         float x1, y1, z1, x2, y2, z2;
+        bool alsom2;
 
         IVMapManager* vMapManager = VMapFactory::createOrGetVMapManager();
 
@@ -338,7 +339,7 @@ namespace VMAP
                 return 0;
             }
             packet.read_skip(1+4);
-            packet >> mapId >> x1 >> y1 >> z1 >> x2 >> y2 >> z2;
+            packet >> mapId >> x1 >> y1 >> z1 >> x2 >> y2 >> z2 >> alsom2;
 
             char buff[20];
             sprintf(buff, "%d", mapId);
@@ -347,7 +348,7 @@ namespace VMAP
             EnsureVMapLoaded(mapId, x2, y2);
             EnsureVMapLoaded(mapId, x2, y1);
             EnsureVMapLoaded(mapId, x1, y2);
-            bool res = vMapManager->isInLineOfSight2(mapId, x1, y1, z1, x2, y2, z2);
+            bool res = vMapManager->isInLineOfSight2(mapId, x1, y1, z1, x2, y2, z2, alsom2);
 
             packet.clear();
             packet << (uint8)2;
@@ -368,7 +369,7 @@ namespace VMAP
         m_requester.Connect(VMAP_CLUSTER_MANAGER_PROCESS);
     }
 
-    bool LoSProxy::isInLineOfSight(unsigned int pMapId, float x1, float y1, float z1, float x2, float y2, float z2)
+    bool LoSProxy::isInLineOfSight(unsigned int pMapId, float x1, float y1, float z1, float x2, float y2, float z2, bool alsom2)
     {
         ACE_thread_t tid = ACE_Thread::self();
 
@@ -376,7 +377,7 @@ namespace VMAP
         packet << (uint8)(1+4+4+sizeof(float)*6);
         packet << (int32)tid;
         packet << (uint32)pMapId;
-        packet << x1 << y1 << z1 << x2 << y2 << z2;
+        packet << x1 << y1 << z1 << x2 << y2 << z2 << alsom2;
 
         m_requester.SendPacket(packet);
 
@@ -411,7 +412,7 @@ namespace VMAP
         if (response == 2)
         {
             sLog.outLog(LOG_DEFAULT, "ERROR: LoSProxy::isInLineOfSight: cluster failed to check line of sight, checking locally");
-            return VMapFactory::createOrGetVMapManager()->isInLineOfSight2(pMapId, x1, y1, z1, x2, y2, z2);
+            return VMapFactory::createOrGetVMapManager()->isInLineOfSight2(pMapId, x1, y1, z1, x2, y2, z2, alsom2);
         }
         return response;
     }

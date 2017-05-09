@@ -13257,9 +13257,10 @@ void Unit::GetLeapForwardDestination(Position& pos, float distance)
         float floor = _map->GetHeight(dest.x, dest.y, pos.z, true);
         dest.z = fabs(ground - pos.z) <= fabs(floor - pos.z) ? ground : floor;
 
-        bool result = VMAP::VMapFactory::createOrGetVMapManager()->isInLineOfSight(GetMapId(), pos.x, pos.y, pos.z + 2.0f, dest.x, dest.y, dest.z + 2.0f);
+        bool result = VMAP::VMapFactory::createOrGetVMapManager()->isInLineOfSight(GetMapId(), pos.x, pos.y, pos.z + 1.0f, dest.x, dest.y, dest.z + 1.0f, true);
         if (result)
         {
+            dest.z += 1.0f;
             pos = dest;
             return;
         }

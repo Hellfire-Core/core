@@ -295,7 +295,7 @@ struct boss_attumenAI : public ScriptedAI
         if (checkTimer.Expired(diff))
         {
             if (!attumancheckPosition(m_creature) || !attumancheckPosition(me->getVictim()))
-                EnterEvadeMode();
+                m_creature->ForcedDespawn();
             checkTimer = 5000;
         }
 

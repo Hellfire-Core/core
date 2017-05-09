@@ -155,16 +155,16 @@ namespace VMAP
 
     //==========================================================
 
-    bool VMapManager2::isInLineOfSight(unsigned int pMapId, float x1, float y1, float z1, float x2, float y2, float z2)
+    bool VMapManager2::isInLineOfSight(unsigned int pMapId, float x1, float y1, float z1, float x2, float y2, float z2, bool alsom2)
     {
-        if(isClusterComputingEnabled())
-            return sLoSProxy.isInLineOfSight(pMapId, x1, y1, z1, x2, y2, z2);
+        if (isClusterComputingEnabled())
+            return sLoSProxy.isInLineOfSight(pMapId, x1, y1, z1, x2, y2, z2, alsom2);
         else
-            return isInLineOfSight2(pMapId, x1, y1, z1, x2, y2, z2);
+            return isInLineOfSight2(pMapId, x1, y1, z1, x2, y2, z2, alsom2);
     }
 
 
-    bool VMapManager2::isInLineOfSight2(unsigned int pMapId, float x1, float y1, float z1, float x2, float y2, float z2, bool debug)
+    bool VMapManager2::isInLineOfSight2(unsigned int pMapId, float x1, float y1, float z1, float x2, float y2, float z2, bool debug, bool alsom2)
     {
         bool result = true;
         InstanceTreeMap::iterator instanceTree = iInstanceMapTrees.find(pMapId);
@@ -174,7 +174,7 @@ namespace VMAP
             Vector3 pos2 = convertPositionToInternalRep(x2,y2,z2);
             if (pos1 != pos2)
             {
-                result = instanceTree->second->isInLineOfSight(pos1, pos2, debug);
+                result = instanceTree->second->isInLineOfSight(pos1, pos2, debug, alsom2);
             }
         }
         return result;
