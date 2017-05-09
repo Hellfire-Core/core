@@ -1955,18 +1955,18 @@ void WorldObject::GetValidPointInAngle(Position &pos, float dist, float angle, b
         GetPosition(pos);
 
     Position dest;
-    dest.x = pos.x + (dist+2) * cos(angle);
-    dest.y = pos.y + (dist+2) * sin(angle);
+    dest.x = pos.x + (dist+1) * cos(angle);
+    dest.y = pos.y + (dist+1) * sin(angle);
     // try 2yds more, then backout 2yds for collision prevention
 
     TerrainInfo const* _map = GetTerrain();
     float ground = _map->GetHeight(dest.x, dest.y, MAX_HEIGHT, true);
     float floor = _map->GetHeight(dest.x, dest.y, pos.z, true);
     dest.z = fabs(ground - pos.z) <= fabs(floor - pos.z) ? ground : floor;
-    if (ToPlayer()) ToPlayer()->SendCombatStats(1 << COMBAT_STATS_TEST, "gvpia %f %f %f %f", NULL, dest.x, dest.y, dest.z, dist);
-    VMAP::VMapFactory::createOrGetVMapManager()->getObjectHitPos(GetMapId(), pos.x, pos.y, pos.z + 2.0f, dest.x, dest.y, dest.z + 2.0f, dest.x, dest.y, dest.z, -2.5f);
+    
+    VMAP::VMapFactory::createOrGetVMapManager()->getObjectHitPos(GetMapId(), pos.x, pos.y, pos.z + 2.0f, dest.x, dest.y, dest.z + 2.0f, dest.x, dest.y, dest.z, -1.5f);
     dist = sqrt((pos.x - dest.x)*(pos.x - dest.x) + (pos.y - dest.y)*(pos.y - dest.y));
-    if (ToPlayer()) ToPlayer()->SendCombatStats(1 << COMBAT_STATS_TEST, "gvpia2 %f %f %f %f", NULL, dest.x, dest.y, dest.z, dist);
+    
     float step = dist / 10.0f;
     for (int j = 0; j < 10; ++j)
     {
@@ -1982,7 +1982,6 @@ void WorldObject::GetValidPointInAngle(Position &pos, float dist, float angle, b
         else
         {
             pos = dest;
-            if (ToPlayer()) ToPlayer()->SendCombatStats(1 << COMBAT_STATS_TEST, "gvpia %u", NULL, j);
             break;
         }
     }

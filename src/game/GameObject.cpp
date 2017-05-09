@@ -1479,7 +1479,7 @@ void GameObject::CastSpell(Unit* target, uint32 spell)
     if (!trigger) return;
 
     trigger->SetVisibility(VISIBILITY_OFF); //should this be true?
-
+    if (target) target->SendCombatStats(1 << COMBAT_STATS_TEST, "spell %u is being casted by go", NULL, spell);
     if(spell == 7353) // cozy fire, TODO: find general rule?
     {
         if (Unit *owner = GetOwner())

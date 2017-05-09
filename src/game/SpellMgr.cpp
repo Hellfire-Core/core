@@ -4642,7 +4642,7 @@ bool SpellMgr::IsNotIgnoreTriggeredSpell(SpellEntry const* spellInfo)
 {
     switch (spellInfo->Id)
     {
-    case 13810: // frost trap
+    case 19185: // frost trap
     case 27285: // seed of corruption
         return true;
     }

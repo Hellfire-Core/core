@@ -13242,6 +13242,30 @@ void Unit::KnockBack(float angle, float horizontalSpeed, float verticalSpeed)
     }
 }
 
+void Unit::GetLeapForwardDestination(Position& pos, float distance)
+{
+    Position dest;
+    GetPosition(pos);
+    
+    TerrainInfo const* _map = GetTerrain();
+    for (uint8 i = 0; i < 8; i++)
+    {
+        dest.x = pos.x + (distance*(8 - i)*0.125f)* cos(GetOrientation());
+        dest.y = pos.y + (distance*(8 - i)*0.125f)* sin(GetOrientation());
+
+        float ground = _map->GetHeight(dest.x, dest.y, MAX_HEIGHT, true);
+        float floor = _map->GetHeight(dest.x, dest.y, pos.z, true);
+        dest.z = fabs(ground - pos.z) <= fabs(floor - pos.z) ? ground : floor;
+
+        bool result = VMAP::VMapFactory::createOrGetVMapManager()->isInLineOfSight(GetMapId(), pos.x, pos.y, pos.z + 2.0f, dest.x, dest.y, dest.z + 2.0f);
+        if (result)
+        {
+            pos = dest;
+            return;
+        }
+    }
+}
+
 uint32 Unit::GetSpellRadiusForTarget(Unit* target,const SpellRadiusEntry * radiusEntry)
 {
     if (!radiusEntry)

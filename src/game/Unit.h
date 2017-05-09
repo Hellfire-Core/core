@@ -1516,6 +1516,7 @@ class HELLGROUND_IMPORT_EXPORT Unit : public WorldObject
 
         void KnockBackFrom(Unit* target, float horizontalSpeed, float verticalSpeed);
         void KnockBack(float angle, float horizontalSpeed, float verticalSpeed);
+        void GetLeapForwardDestination(Position& pos, float distance);
 
         void _RemoveAllAuraMods();
         void _ApplyAllAuraMods();
