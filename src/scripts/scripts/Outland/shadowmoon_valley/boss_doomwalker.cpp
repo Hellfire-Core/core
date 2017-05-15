@@ -117,7 +117,7 @@ struct boss_doomwalkerAI : public ScriptedAI
             if(Enrage_Timer.Expired(diff))
             {
                 m_creature->RemoveAurasDueToSpell(SPELL_ENRAGE);
-                DoCast(m_creature,SPELL_ENRAGE);
+                DoCast(m_creature,SPELL_ENRAGE, true);
                 Enrage_Timer.Reset(600000);
                 InEnrage = true;
             }

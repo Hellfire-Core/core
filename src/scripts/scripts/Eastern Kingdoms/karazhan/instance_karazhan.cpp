@@ -291,8 +291,9 @@ void instance_karazhan::SetData(uint32 type, uint32 data)
             }
             else if (data == FAIL)
             {
-                SetData(DATA_DUST_COVERED_CHEST, DONE); // open doors, dont let starting again
+                SetData(DATA_DUST_COVERED_CHEST, NOT_STARTED); 
                 sLog.outLog(LOG_BOSS, "Failed %s", ss.str().c_str());
+                data = NOT_STARTED;
             }
 
             Encounters[9] = data;

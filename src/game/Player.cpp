@@ -2520,8 +2520,8 @@ void Player::GiveXP(uint32 xp, Unit* victim)
     if (CheckRAFConditions())
     {
         // RAF bonus exp don't decrease rest exp
-        bool ReferAFriend = true;
-        bonus_xp += xp * (sWorld.getConfig(CONFIG_FLOAT_RATE_RAF_XP) - 1);
+        ReferAFriend = true;
+        bonus_xp += xp * (sWorld.getConfig(CONFIG_FLOAT_RATE_RAF_XP) - 1.0f);
     }
 
     // XP resting bonus for kill
@@ -4242,7 +4242,7 @@ void Player::BuildPlayerRepop()
     // BG - remove insignia related
     RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE);
 
-//    SendCorpseReclaimDelay();
+    SendCorpseReclaimDelay();
 
     // to prevent cheating
     corpse->ResetGhostTime();
@@ -4360,7 +4360,7 @@ void Player::KillPlayer()
     m_deathTimer = 6*MINUTE*1000;
 
     UpdateCorpseReclaimDelay();                             // dependent at use SetDeathPvP() call before kill
-    SendCorpseReclaimDelay();
+    //SendCorpseReclaimDelay();
 
     // don't create corpse at this moment, player might be falling
 
