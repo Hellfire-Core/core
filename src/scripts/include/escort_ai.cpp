@@ -383,6 +383,8 @@ void npc_escortAI::MovementInform(uint32 uiMoveType, uint32 uiPointId)
 
 void npc_escortAI::AddWaypoint(uint32 id, float x, float y, float z, uint32 WaitTimeMs)
 {
+    if (id == 0)
+        WaypointList.clear(); // wipe old ones, just in case
     Escort_Waypoint t(id, x, y, z, WaitTimeMs);
 
     WaypointList.push_back(t);

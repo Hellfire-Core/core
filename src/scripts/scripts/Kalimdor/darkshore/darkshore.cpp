@@ -378,6 +378,95 @@ bool QuestAccept_npc_kerlonian(Player* pPlayer, Creature* pCreature, const Quest
     return true;
 }
 
+enum evolcor
+{
+    QUEST_BY_FORCE = 994,
+    QUEST_BY_STEALTH = 995,
+    SAY_VOLCOR_1 = -1001988,
+    SAY_VOLCOR_2 = -1001987,
+    SAY_VOLCOR_3 = -1001986,
+    SAY_VOLCOR_4 = -1001985,
+    SAY_VOLCOR_STEALTH = -1001984,
+    MORPH_CAT = 9956,
+};
+
+struct npc_volcorAI : public npc_escortAI
+{
+    npc_volcorAI(Creature* pCreature) : npc_escortAI(pCreature) { }
+
+    bool type;
+
+    void Reset()
+    {
+        m_creature->SetStandState(UNIT_STAND_STATE_KNEEL);
+        type = 0;
+        m_creature->DeMorph();
+    }
+
+    void WaypointReached(uint32 point)
+    {
+        if (type == 1)
+        {
+            switch (point)
+            {
+            case 3:
+                DoScriptText(SAY_VOLCOR_2, m_creature);
+                break;
+            case 15:
+            {
+                DoScriptText(SAY_VOLCOR_3, m_creature);
+                DoScriptText(SAY_VOLCOR_4, m_creature);
+                if (Player* plr = GetPlayerForEscort())
+                    plr->GroupEventHappens(QUEST_BY_FORCE,m_creature);
+                m_creature->ForcedDespawn(500);
+                break;
+            }
+            }
+        }
+        else if (type == 2)
+        {
+            if (point == 3)
+            {
+                DoScriptText(SAY_VOLCOR_STEALTH, m_creature);
+                if (Player* plr = GetPlayerForEscort())
+                    plr->GroupEventHappens(QUEST_BY_STEALTH, m_creature);
+                m_creature->ForcedDespawn(1);
+            }
+        }
+    }
+};
+
+CreatureAI* GetAI_npc_volcor(Creature* pCreature)
+{
+    return new npc_volcorAI(pCreature);
+}
+
+bool QuestAccept_npc_volcor(Player* pPlayer, Creature* pCreature, const Quest* pQuest)
+{
+    if (pQuest->GetQuestId() == QUEST_BY_FORCE)
+    {
+        if (npc_volcorAI* volcorAI = CAST_AI(npc_volcorAI, pCreature->AI()))
+        {
+            pCreature->SetStandState(UNIT_STAND_STATE_STAND);
+            volcorAI->Start(true, false, pPlayer->GetGUID(), pQuest);
+            volcorAI->type = 1;
+            DoScriptText(SAY_VOLCOR_1, pCreature);
+        }
+    }
+    else if(pQuest->GetQuestId() == QUEST_BY_STEALTH)
+    {
+        if (npc_volcorAI* volcorAI = CAST_AI(npc_volcorAI, pCreature->AI()))
+        {
+            pCreature->SetStandState(UNIT_STAND_STATE_STAND);
+            volcorAI->Start(false, true, pPlayer->GetGUID(), NULL);
+            volcorAI->type = 2;
+            pCreature->SetDisplayId(MORPH_CAT);
+        }
+    }
+
+    return true;
+}
+
 
 /*######
 ## AddSC
@@ -404,4 +493,11 @@ void AddSC_darkshore()
     newscript->GetAI = &GetAI_npc_kerlonian;
     newscript->pQuestAcceptNPC = &QuestAccept_npc_kerlonian;
     newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_volcor";
+    newscript->GetAI = &GetAI_npc_volcor;
+    newscript->pQuestAcceptNPC = &QuestAccept_npc_volcor;
+    newscript->RegisterSelf();
+
 }

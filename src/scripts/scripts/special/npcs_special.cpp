@@ -1352,6 +1352,7 @@ struct npc_garments_of_questsAI : public ScriptedAI
             me->CombatStop();
             me->DeleteThreatList();
             me->RemoveCorpse();
+            me->SetVisibility(VISIBILITY_ON);
         }
     }
 

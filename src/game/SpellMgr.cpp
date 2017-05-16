@@ -3200,6 +3200,10 @@ void SpellMgr::LoadSpellCustomAttr()
                     case 17768: //Wolfshead Helm - Wolfshead Helm Energy in cat form
                         spellInfo->EffectTriggerSpell[1] = 29940;
                         break;
+                    case 37116: // primal fury (without that learning 1/2 talent gives you 2/2)
+                    case 37117:
+                        spellInfo->Attributes |= SPELL_ATTR_PASSIVE;
+                        break;
                 }
                 break;
             }
