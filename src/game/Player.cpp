@@ -1517,6 +1517,8 @@ void Player::setDeathState(DeathState s)
         // remove uncontrolled pets
         RemoveMiniPet();
         RemoveGuardians();
+        if (Unit* charmed = GetCharm())
+            charmed->RemoveSpellsCausingAura(SPELL_AURA_MOD_CHARM);
 
         // save value before aura remove in Unit::setDeathState
         ressSpellId = GetUInt32Value(PLAYER_SELF_RES_SPELL);
