@@ -2741,6 +2741,8 @@ bool AttackResumeEvent::Execute(uint64 /*e_time*/, uint32 /*p_time*/)
         case HIGHGUID_PLAYER:
             if (m_owner.IsAIEnabled)
                 m_owner.ToPlayer()->AI()->AttackStart(victim);
+            else if (m_owner.canAttack(victim))
+                m_owner.Attack(victim, true);
             break;
         default:
             sLog.outLog(LOG_DEFAULT, "ERROR: AttackResumeEvent::Execute try execute for unsupported owner %s!", m_owner.GetObjectGuid().GetString().c_str());

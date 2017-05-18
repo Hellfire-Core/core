@@ -53,6 +53,9 @@ enum
     SPELL_KARGATH_EXECUTIONER_2    = 39289,
     SPELL_KARGATH_EXECUTIONER_3    = 39290,
 
+    QUEST_ALLY = 9524,
+    QUEST_HORDE = 9525,
+
     //SAY_KARGATH_EXECUTE_ALLY = ?,
     //SAY_KARGATH_EXECUTE_HORDE = ?
 };
@@ -122,7 +125,7 @@ struct instance_shattered_halls : public ScriptedInstance
 
         Team = 0;
         ExecutionStage =0;
-        ExecutionTimer = 55*MINUTE*IN_MILISECONDS;
+        ExecutionTimer = 0;
 
         summon = NOT_SUMMONED;
 
@@ -241,7 +244,7 @@ struct instance_shattered_halls : public ScriptedInstance
                             Executioner->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NON_ATTACKABLE);
 
                         DoCastGroupDebuff(SPELL_KARGATH_EXECUTIONER_1);
-                        ExecutionTimer = 55*MINUTE*IN_MILISECONDS;
+                        ExecutionTimer.Reset(55*MINUTE*IN_MILISECONDS);
                    }
                }
                else
@@ -250,8 +253,16 @@ struct instance_shattered_halls : public ScriptedInstance
             case TYPE_EXECUTION_DONE:
                if (data == DONE)
                {
+                   
                    if (Creature* Officer = instance->GetCreature(Team == ALLIANCE ? officeraGUID : officerhGUID))
+                   {
+                       if (Player* player = GetPlayerInMap())
+                       {
+                            if (ExecutionStage == 0) // officer still alive
+                                player->AreaExploredOrEventHappens(Team == ALLIANCE ? QUEST_ALLY : QUEST_HORDE);
+                       }
                        Officer->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP | UNIT_NPC_FLAG_QUESTGIVER);
+                   }
                }
                else
                    Encounter[5] = data;

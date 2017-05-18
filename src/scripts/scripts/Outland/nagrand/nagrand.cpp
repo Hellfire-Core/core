@@ -45,6 +45,7 @@ EndContentData */
 
 #include "precompiled.h"
 #include "escort_ai.h"
+#include "GuardAI.h"
 
 /*######
 ## mob_shattered_rumbler - this should be done with ACID
@@ -1647,6 +1648,41 @@ CreatureAI* GetAI_npc_rethhedron_the_subduer(Creature *creature)
     return new npc_rethhedron_the_subduerAI(creature);
 }
 
+struct npc_haala_guardAI : public GuardAI
+{
+    npc_haala_guardAI(Creature* c) : GuardAI(c) {}
+
+    void EnterEvadeMode()
+    {
+        // normal enter evade except removing auras
+        if (!me->isAlive())
+            return;
+
+        me->DeleteThreatList();
+        me->CombatStop(true);
+        if (me->IsInEvadeMode())
+            return;
+
+        me->LoadCreaturesAddon();
+        me->SetLootRecipient(NULL);
+        me->SetReactState(REACT_AGGRESSIVE);
+        me->SetLastHitPos(me->GetHomePosition());
+
+        me->GetMotionMaster()->MoveTargetedHome();
+
+        if (CreatureGroup *formation = me->GetFormation())
+            formation->EvadeFormation(me);
+
+        Reset();
+        ResetGuard();
+    }
+};
+
+CreatureAI* GetAI_npc_haala_guard(Creature *creature)
+{
+    return new npc_haala_guardAI(creature);
+}
+
 void AddSC_nagrand()
 {
     Script *newscript;
@@ -1741,6 +1777,11 @@ void AddSC_nagrand()
     newscript = new Script;
     newscript->Name="npc_rethhedron_the_subduer";
     newscript->GetAI = &GetAI_npc_rethhedron_the_subduer;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_haala_guard";
+    newscript->GetAI = &GetAI_npc_haala_guard;
     newscript->RegisterSelf();
     
 }

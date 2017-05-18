@@ -488,13 +488,15 @@ struct boss_alarAI : public ScriptedAI
 
         Unit *temp = m_creature->getVictim();
 
-        if (!temp && !(temp = SelectUnit(SELECT_TARGET_TOPAGGRO, 0, 5.0f, true)))
-            return;
+        if (!temp || !m_creature->canAttack(temp))
+        {
+            temp = SelectUnit(SELECT_TARGET_TOPAGGRO, 0, 5.0f, true);
+        }
 
         if (WaitEvent == WE_PLATFORM || WaitEvent == WE_QUILL || WaitEvent == WE_DUMMY)
             return;
 
-        if (m_creature->IsWithinMeleeRange(temp))
+        if (temp && m_creature->IsWithinMeleeRange(temp))
         {
             if(m_creature->hasUnitState(UNIT_STAT_CASTING)) // TO JEST DO POTWIERDZENIA:
                 m_creature->InterruptNonMeleeSpells(true);  // PRZERWAC CASTA FLAME BUFFET,
@@ -511,7 +513,7 @@ struct boss_alarAI : public ScriptedAI
                     return;
                 }
             }
-            else
+            else if (temp)
                 AttackStart(temp);
 
             DoCast(m_creature, SPELL_FLAME_BUFFET);

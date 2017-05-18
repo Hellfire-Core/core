@@ -3134,6 +3134,11 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 30009: // dip in a moonwell
                     spellInfo->DurationIndex = 4;
                     break;
+                case 37116: // primal fury (without that learning 1/2 talent gives you 2/2)
+                case 37117:
+                    spellInfo->Attributes |= SPELL_ATTR_PASSIVE;
+                    break;
+
                     //PRE NERF ZONE
                 case 44032: // manticron cube exhaustion 180sec
                     spellInfo->DurationIndex = 25;
@@ -3199,10 +3204,6 @@ void SpellMgr::LoadSpellCustomAttr()
                         break;
                     case 17768: //Wolfshead Helm - Wolfshead Helm Energy in cat form
                         spellInfo->EffectTriggerSpell[1] = 29940;
-                        break;
-                    case 37116: // primal fury (without that learning 1/2 talent gives you 2/2)
-                    case 37117:
-                        spellInfo->Attributes |= SPELL_ATTR_PASSIVE;
                         break;
                 }
                 break;

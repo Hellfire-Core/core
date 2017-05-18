@@ -46,10 +46,11 @@ class GuardAI : public CreatureAI
         void UpdateAI(const uint32);
         static int Permissible(const Creature *);
 
+        void ResetGuard() { i_state = STATE_NORMAL; i_victimGuid = 0; }
+
     private:
         uint64 i_victimGuid;
         GuardState i_state;
-        TimeTracker i_tracker;
 };
 
 #endif
