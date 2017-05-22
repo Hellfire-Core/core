@@ -446,7 +446,7 @@ namespace Hellground
                 if (/*u->hasUnitState(UNIT_STAT_ISOLATED) || */u->HasFlag(UNIT_FIELD_FLAGS, (UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE)))
                     return false;
 
-                return i_obj->IsWithinDistInMap(u, i_range) && !i_funit->IsFriendlyTo(u);
+                return i_obj->IsWithinExactDistInMap(u, i_range) && !i_funit->IsFriendlyTo(u);
             }
         private:
             WorldObject const* i_obj;

@@ -160,7 +160,7 @@ void GuildMgr::LoadGuilds()
     result = RealmDataDatabase.Query("SELECT max(kill_id) FROM boss_fights");
     if (result) m_bosskill = (*result)[0].GetUInt32() + 1;
 
-    result = RealmDataDatabase.Query("SELECT mob_id, boss_name, min(length), boss_points FROM boss_id_names JOIN boss_fights ON mob_id = boss_id GROUP BY mob_id");
+    result = RealmDataDatabase.Query("SELECT mob_id, boss_name, min(length), boss_points FROM boss_id_names JOIN boss_fights WHERE guild_id != 0 ON mob_id = boss_id GROUP BY mob_id");
     if (!result)
         return; // shouldnt happen in any way
     m_bossrecords.resize(GBK_TOTAL);

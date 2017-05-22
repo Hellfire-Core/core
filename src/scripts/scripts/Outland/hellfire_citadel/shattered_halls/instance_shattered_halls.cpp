@@ -229,7 +229,8 @@ struct instance_shattered_halls : public ScriptedInstance
                     if (Creature* Executioner = instance->GetCreature(executionerGUID))
                         Executioner->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NON_ATTACKABLE);
                 }
-                else
+                
+                if (Encounter[3] != DONE)
                     Encounter[3] = data;
                 break;
             case TYPE_EXECUTION:
@@ -246,10 +247,10 @@ struct instance_shattered_halls : public ScriptedInstance
                         DoCastGroupDebuff(SPELL_KARGATH_EXECUTIONER_1);
                         ExecutionTimer.Reset(55*MINUTE*IN_MILISECONDS);
                    }
-               }
-               else
-                   Encounter[4] = data;
-               break;
+                }
+                if (Encounter[4] != DONE)
+                    Encounter[4] = data;
+                break;
             case TYPE_EXECUTION_DONE:
                if (data == DONE)
                {
@@ -264,7 +265,8 @@ struct instance_shattered_halls : public ScriptedInstance
                        Officer->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP | UNIT_NPC_FLAG_QUESTGIVER);
                    }
                }
-               else
+               
+               if (Encounter[5] != DONE)
                    Encounter[5] = data;
                break;
         }
