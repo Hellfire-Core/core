@@ -160,7 +160,7 @@ void GuildMgr::LoadGuilds()
     result = RealmDataDatabase.Query("SELECT max(kill_id) FROM boss_fights");
     if (result) m_bosskill = (*result)[0].GetUInt32() + 1;
 
-    result = RealmDataDatabase.Query("SELECT mob_id, boss_name, min(length), boss_points FROM boss_id_names JOIN boss_fights WHERE guild_id != 0 ON mob_id = boss_id GROUP BY mob_id");
+    result = RealmDataDatabase.Query("SELECT boss_id, boss_name, boss_points FROM boss_id_names");
     if (!result)
         return; // shouldnt happen in any way
     m_bossrecords.resize(GBK_TOTAL);
@@ -168,10 +168,19 @@ void GuildMgr::LoadGuilds()
     {
         Field* fields = result->Fetch();
         m_bossrecords[fields[0].GetUInt32()].name = fields[1].GetCppString();
-        m_bossrecords[fields[0].GetUInt32()].record = fields[2].GetUInt32();
-        m_bossrecords[fields[0].GetUInt32()].points = fields[3].GetUInt32();
+        m_bossrecords[fields[0].GetUInt32()].record = 0xFFFFFFFF;
+        m_bossrecords[fields[0].GetUInt32()].points = fields[2].GetUInt32();
     }
     while (result->NextRow());
+
+    result = RealmDataDatabase.Query("SELECT mob_id, min(length) FROM boss_fights WHERE guild_id !=0 GROUP BY mob_id");
+    if (!result)
+        return;
+    do
+    {
+        Field* fields = result->Fetch();
+        m_bossrecords[fields[0].GetUInt32()].record = fields[1].GetUInt32();
+    } while (result->NextRow());
 }
 
 void GuildMgr::UpdateWeek()
