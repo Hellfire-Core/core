@@ -100,7 +100,7 @@ struct mob_inner_demonAI : public ScriptedAI
 
     void DamageTaken(Unit *done_by, uint32 &damage)
     {
-        if(done_by->GetCharmerOrOwnerOrOwnGUID() != victimGUID && done_by->GetCharmerOrOwnerOrOwnGUID() != m_creature->GetGUID())
+        if(done_by->GetCharmerOrOwnerOrOwnGUID() != victimGUID /*&& done_by->GetCharmerOrOwnerOrOwnGUID() != m_creature->GetGUID()*/)
         {
             damage = 0;
             DoModifyThreatPercent(done_by, -100);
@@ -403,7 +403,9 @@ struct boss_leotheras_the_blindAI : public ScriptedAI
             {
                 
                 DoResetThreat();
-                
+                Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 0, true);
+                if (target)
+                    m_creature->AddThreat(target, 1000000.0f);
                 Whirlwind_Timer = 2000;
             }
         }
@@ -448,7 +450,7 @@ struct boss_leotheras_the_blindAI : public ScriptedAI
                 {
                     DoCast(m_creature, SPELL_WHIRLWIND);
                     // while whirlwinding this variable is used to countdown target's change
-                    Whirlwind_Timer = 2000;
+                    Whirlwind_Timer = 1;
                     NeedThreatReset = true;
                     //m_creature->SetReactState(REACT_PASSIVE);
                 }

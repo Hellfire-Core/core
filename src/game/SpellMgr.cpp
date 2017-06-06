@@ -2941,9 +2941,14 @@ void SpellMgr::LoadSpellCustomAttr()
                     spellInfo->EffectDieSides[0] = 1;
                     break;
                 case 40669: // egbert egg- run away spell
+                case 36200: // doomsaw 12 sec
                     spellInfo->DurationIndex = 29; // 12 secs, guess
                     break;
+                case 37674: // leotheras chaos blast
+                    spellInfo->AttributesEx |= SPELL_ATTR_EX_CANT_BE_REFLECTED;
+                    break;
                 case 37675: // leotheras the blind - chaos blast should be spell not ability
+                    spellInfo->AttributesEx |= SPELL_ATTR_EX_CANT_BE_REFLECTED;
                     spellInfo->Attributes &= ~SPELL_ATTR_ABILITY;
                     break;
                 case 8690: // hearthstone - no haste bonus
@@ -3138,7 +3143,6 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 37117:
                     spellInfo->Attributes |= SPELL_ATTR_PASSIVE;
                     break;
-
                     //PRE NERF ZONE
                 case 44032: // manticron cube exhaustion 180sec
                     spellInfo->DurationIndex = 25;

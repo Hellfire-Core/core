@@ -3031,6 +3031,38 @@ bool QuestAccept_npc_doctor_vomisa(Player* player, Creature* creature, const Que
 }
 
 /*######
+## npc_doomsaw
+######*/
+
+#define SPELL_SAW          36194
+
+struct npc_doomsawAI : public ScriptedAI
+{
+    npc_doomsawAI(Creature* c) : ScriptedAI(c) {}
+
+    void IsSummonedBy(Unit *summoner)
+    {
+        me->SetReactState(REACT_PASSIVE);
+        float x, y, z;
+        me->SetWalk(true);
+        me->SetSpeed(MOVE_WALK, 1.7);
+        me->GetNearPoint(x, y, z, 0, 20, summoner->GetAngle(me));
+        me->UpdateAllowedPositionZ(x, y, z);
+        me->GetMotionMaster()->MovePoint(1, x, y, z);
+        me->CastSpell(me, SPELL_SAW, true);
+    }
+
+    void UpdateAI(const uint32 diff)
+    {
+    }
+};
+
+CreatureAI* GetAI_npc_doomsaw(Creature* _Creature)
+{
+    return new npc_doomsawAI(_Creature);
+}
+
+/*######
 ## AddSC_netherstrom
 ######*/
 
@@ -3191,5 +3223,10 @@ void AddSC_netherstorm()
     newscript->pGossipHello =  &GossipHello_npc_doctor_vomisa;
     newscript->pQuestAcceptNPC = &QuestAccept_npc_doctor_vomisa;
     newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_doomsaw";
+    newscript->GetAI = &GetAI_npc_doomsaw;
+    newscript->RegisterSelf(); 
 }
 

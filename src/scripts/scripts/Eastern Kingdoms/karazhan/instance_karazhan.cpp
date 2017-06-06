@@ -497,8 +497,9 @@ void instance_karazhan::Update(uint32 diff)
                     boss->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                     boss->SetVisibility(VISIBILITY_ON);
                     boss->SetReactState(REACT_AGGRESSIVE);
+                    AnimalBossCheck = 0;
                 }
-                AnimalBossCheck = 0;
+                
             }
         }
     }
