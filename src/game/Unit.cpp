@@ -6113,15 +6113,16 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
                 switch (triggeredByAura->GetEffIndex())
                 {
                     case 0:
+                    {
+                        
                         triggered_spell_id = 31893;
+                        // cast both triggers in one run, or one can be resisted
+                        int32 points = damage * 35 / 1000;
+                        CastCustomSpell(this, 32221, &points, NULL, NULL, true, castItem, triggeredByAura, originalCaster);
                         break;
+                    }
                     case 1:
                     {
-                        basepoints0 = triggeredByAura->GetModifier()->m_amount/*10%*/ * damage * 35/*from seal of blood damage done*/ / 10000;
-
-                        target = this;
-
-                        triggered_spell_id = 32221;
                         break;
                     }
                 }
