@@ -2662,12 +2662,12 @@ void World::ResetDailyQuests()
         if (itr->second->GetPlayer())
             itr->second->GetPlayer()->ResetDailyQuestStatus();
 
-    /*
+    
     SelectRandomHeroicDungeonDaily();
     SelectRandomDungeonDaily();
     SelectRandomCookingDaily();
     SelectRandomFishingDaily();
-    SelectRandomPvPDaily();*/
+    SelectRandomPvPDaily();
 
     //sGameEventMgr.LoadFromDB();
 }
