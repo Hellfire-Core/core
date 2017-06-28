@@ -3081,7 +3081,13 @@ void SpellMgr::LoadSpellCustomAttr()
                     spellInfo->Attributes &= ~SPELL_ATTR_LEVEL_DAMAGE_CALCULATION;
                     break;
                 case 38511: // vashj persuasion
-                    spellInfo->MaxAffectedTargets = 5;
+                    spellInfo->MaxAffectedTargets = 1;
+                    spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_TARGET_ENEMY;
+                    spellInfo->EffectImplicitTargetA[1] = TARGET_UNIT_TARGET_ENEMY;
+                    spellInfo->EffectImplicitTargetA[2] = TARGET_UNIT_TARGET_ENEMY;
+                    spellInfo->EffectImplicitTargetB[0] = 0;
+                    spellInfo->EffectImplicitTargetB[1] = 0;
+                    spellInfo->EffectImplicitTargetB[2] = 0;
                     break;
                 case 31673: // hungarfen remove visual from shrooms
                     spellInfo->Effect[2] = 0;
