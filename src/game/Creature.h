@@ -687,7 +687,7 @@ class HELLGROUND_IMPORT_EXPORT Creature : public Unit
 
         bool IsTemporarySummon() { return m_tempSummon; }
 
-        void UpdateDeathTimer(uint32 timer) { if(m_deathTimer < timer) m_deathTimer = timer; }
+        void UpdateDeathTimer(uint32 timer) { if((m_deathTimer - time(NULL)) < timer) m_deathTimer = time(NULL)+timer; }
 
         virtual float GetXPMod() const override { return m_xpMod; }
 
@@ -708,7 +708,7 @@ class HELLGROUND_IMPORT_EXPORT Creature : public Unit
         std::set<uint64> m_playersAllowedToLoot;
 
         /// Timers
-        uint32 m_deathTimer;                                // (msecs)timer for death or corpse disappearance
+        time_t m_deathTimer;                                // (secs) timer for death or corpse disappearance
         time_t m_respawnTime;                               // (secs) time of next respawn
         uint32 m_respawnDelay;                              // (secs) delay between corpse disappearance and respawning
         uint32 m_corpseDelay;                               // (secs) delay between death and corpse disappearance

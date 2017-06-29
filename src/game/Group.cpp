@@ -612,7 +612,7 @@ void Group::PrepareLootRolls(const uint64& playerGUID, Loot *loot, WorldObject* 
                 r->itemSlot = itemSlot;
                 r->rollTimer = 60000;
                 if (object->ToCreature())
-                    object->ToCreature()->UpdateDeathTimer(70000);
+                    object->ToCreature()->UpdateDeathTimer(70);
                 r->SendLootStartRoll(60000);
                 i->is_blocked = true;
 

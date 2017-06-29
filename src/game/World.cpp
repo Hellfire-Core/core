@@ -2466,7 +2466,7 @@ void World::SelectRandomHeroicDungeonDaily()
         return;
 
     const uint32 HeroicEventStart = 100;
-    const uint32 HeroicEventEnd   = 115;
+    const uint32 HeroicEventEnd   = 114; // 115 for mgt
 
     uint8 currentId = 0;
     for (uint8 eventId = HeroicEventStart; eventId <= HeroicEventEnd; ++eventId)
@@ -2504,7 +2504,7 @@ void World::SelectRandomDungeonDaily()
         return;
 
     const uint32 DungeonEventStart = 116;
-    const uint32 DungeonEventEnd   = 123;
+    const uint32 DungeonEventEnd   = 122; // 123 for mgt
 
     uint8 currentId = 0;
     for (uint8 eventId = DungeonEventStart; eventId <= DungeonEventEnd; ++eventId)

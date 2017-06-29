@@ -517,14 +517,10 @@ void Creature::Update(uint32 update_diff, uint32 diff)
             if (m_isDeadByDefault)
                 break;
 
-            if (m_deathTimer <= update_diff)
+            if (m_deathTimer <= time(NULL))
             {
                 RemoveCorpse();
                 DEBUG_LOG("Removing corpse... %u ", GetUInt32Value(OBJECT_FIELD_ENTRY));
-            }
-            else
-            {
-                m_deathTimer -= update_diff;
             }
 
             if (loot.looterTimer && loot.looterTimer < time(NULL))
@@ -554,14 +550,10 @@ void Creature::Update(uint32 update_diff, uint32 diff)
         {
             if (m_isDeadByDefault)
             {
-                if (m_deathTimer <= update_diff)
+                if (m_deathTimer <= time(NULL))
                 {
                     RemoveCorpse();
                     DEBUG_LOG("Removing alive corpse... %u ", GetUInt32Value(OBJECT_FIELD_ENTRY));
-                }
-                else
-                {
-                    m_deathTimer -= update_diff;
                 }
             }
 
@@ -1808,12 +1800,12 @@ void Creature::setDeathState(DeathState s)
 {
     if ((s == JUST_DIED && !m_isDeadByDefault)||(s == JUST_ALIVED && m_isDeadByDefault))
     {
-        m_deathTimer = m_corpseDelay*IN_MILISECONDS;
+        m_deathTimer = time(NULL)+m_corpseDelay;
 
         // if no loot in DB, remove corpse quickly (20 sec ?)
         CreatureInfo const* cInfo = GetCreatureInfo();
         if (cInfo && !cInfo->lootid && !(cInfo->mingold || cInfo->maxgold) && !isWorldBoss())
-            m_deathTimer = 20*IN_MILISECONDS;
+            m_deathTimer = time(NULL)+20;
 
         // always save boss respawn time at death to prevent crash cheating
         if (sWorld.getConfig(CONFIG_SAVE_RESPAWN_TIME_IMMEDIATELY) || isWorldBoss())
@@ -1848,7 +1840,7 @@ void Creature::setDeathState(DeathState s)
         if (!loot.empty())
         {
             // Loot is filled in Unit:Kill, here we just do some additional work
-            loot.looterTimer = time(NULL) + (m_deathTimer * 3 / 4 / IN_MILISECONDS);
+            loot.looterTimer = time(NULL)/4 + m_deathTimer *3/4;
             loot.looterCheckTimer = time(NULL) + 1;
             if (GetLootRecipient() && GetLootRecipient()->GetGroup())
                 GetLootRecipient()->GetGroup()->SendRoundRobin(&loot, this);
@@ -2093,7 +2085,7 @@ bool Creature::IsVisibleInGridForPlayer(Player const* pl) const
     {
         if (GetEntry() == VISUAL_WAYPOINT && !pl->isGameMaster())
             return false;
-        return isAlive() || m_deathTimer > 0 || m_isDeadByDefault && m_deathState==CORPSE;
+        return isAlive() || (m_deathTimer > time(NULL)) || m_isDeadByDefault && m_deathState==CORPSE;
     }
 
     // Dead player see creatures near own corpse
@@ -2255,8 +2247,8 @@ void Creature::SaveRespawnTime()
 
     if (m_respawnTime > time(NULL))                          // dead (no corpse)
         sObjectMgr.SaveCreatureRespawnTime(m_DBTableGuid,GetInstanceId(),m_respawnTime);
-    else if (m_deathTimer > 0)                               // dead (corpse)
-        sObjectMgr.SaveCreatureRespawnTime(m_DBTableGuid,GetInstanceId(),time(NULL)+m_respawnDelay+m_deathTimer/1000);
+    else if (m_deathTimer > time(NULL))                               // dead (corpse)
+        sObjectMgr.SaveCreatureRespawnTime(m_DBTableGuid,GetInstanceId(),m_respawnDelay+m_deathTimer);
 }
 
 bool Creature::IsOutOfThreatArea(Unit* pVictim) const
@@ -2454,8 +2446,8 @@ time_t Creature::GetRespawnTimeEx() const
     time_t now = time(NULL);
     if (m_respawnTime > now)                                 // dead (no corpse)
         return m_respawnTime;
-    else if (m_deathTimer > 0)                               // dead (corpse)
-        return now+m_respawnDelay+m_deathTimer/1000;
+    else if (m_deathTimer > now)                               // dead (corpse)
+        return m_respawnDelay+m_deathTimer;
     else
         return now;
 }
@@ -2504,15 +2496,14 @@ void Creature::AllLootRemovedFromCorpse()
         // corpse was not skinnable -> apply corpse looted timer
         if (!cinfo || !cinfo->SkinLootId)
             nDeathTimer = std::max<uint32>(
-                (uint32)((m_corpseDelay * IN_MILISECONDS) * sWorld.getConfig(RATE_CORPSE_DECAY_LOOTED)),
-                uint32(20* IN_MILISECONDS));
+                (uint32)(m_corpseDelay * sWorld.getConfig(RATE_CORPSE_DECAY_LOOTED)),uint32(20));
         // corpse skinnable, but without skinning flag, and then skinned, corpse will despawn next update
         else
             nDeathTimer = 0;
 
         // update death timer only if looted timer is shorter
-        if (m_deathTimer > nDeathTimer)
-            m_deathTimer = nDeathTimer;
+        if ((m_deathTimer - time(NULL)) > nDeathTimer)
+            m_deathTimer = time(NULL) + nDeathTimer;
     }
 }
 
