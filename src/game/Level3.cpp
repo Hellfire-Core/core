@@ -7470,3 +7470,60 @@ bool ChatHandler::HandleModifyRemoveTitleCommand(const char* args)
 
     return true;
 }
+
+bool ChatHandler::HandleArenaCreateCommand(const char* args)
+{
+    char* arg = strtok((char*)args, " ");
+    if (arg == NULL || arg == "")
+        return false;
+    uint32 count = atoi(arg);
+    if (count ==0 || count >5)
+        return false;
+
+    uint32* players = new uint32[count*2];
+
+    BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(BATTLEGROUND_AA);
+    BattleGroundQueueTypeId bgQueueTypeId = BattleGroundMgr::BGQueueTypeId(BATTLEGROUND_AA, ARENA_TYPE_2v2);
+
+    for (uint8 i = 0; i < count * 2; i++)
+    {
+        arg = strtok(NULL, " ");
+        if (arg == NULL || arg == "")
+            return false;
+        players[i] = atoi(arg);
+        Player* check = sObjectAccessor.GetPlayer(MAKE_NEW_GUID(players[i], 0, HIGHGUID_PLAYER));
+        if (!check)
+        {
+            PSendSysMessage("Cannot find player %u",players[i]);
+            SetSentErrorMessage(true);
+            return false;
+        }
+        if (check->GetBattleGroundQueueIndex(bgQueueTypeId) < PLAYER_MAX_BATTLEGROUND_QUEUES || !check->HasFreeBattleGroundQueueId())
+        {
+            PSendSysMessage("player %u is in que or no slots", players[i]);
+            SetSentErrorMessage(true);
+            return false;
+        }
+    }
+    BattleGround* bg2 = sBattleGroundMgr.CreateNewBattleGround(BATTLEGROUND_AA, BG_BRACKET_ID_LAST, ARENA_TYPE_2v2, false);
+    // invites
+    for (uint8 i = 0; i < count * 2; i++)
+    {
+        Player* _player = sObjectAccessor.GetPlayer(MAKE_NEW_GUID(players[i], 0, HIGHGUID_PLAYER));
+        uint32 queueSlot = _player->AddBattleGroundQueueId(bgQueueTypeId);
+        // store entry point coords
+        _player->SetBattleGroundEntryPoint(_player->GetMapId(), _player->GetPositionX(), _player->GetPositionY(), _player->GetPositionZ(), _player->GetOrientation());
+
+        WorldPacket data;
+        // send status packet (in queue)
+        sBattleGroundMgr.BuildBattleGroundStatusPacket(&data, bg, _player->GetTeam(), queueSlot, STATUS_WAIT_QUEUE, 0, 0, ARENA_TYPE_2v2, false);
+        _player->SendPacketToSelf(&data);
+        GroupQueueInfo* ginfo = sBattleGroundMgr.m_BattleGroundQueues[bgQueueTypeId].AddGroup(_player, BATTLEGROUND_AA, BG_BRACKET_ID_LAST, ARENA_TYPE_2v2, false, false, 0, 0, 0, _player->GetTeam());
+        sBattleGroundMgr.m_BattleGroundQueues[bgQueueTypeId].AddPlayer(_player, ginfo);
+        sBattleGroundMgr.m_BattleGroundQueues[bgQueueTypeId].InviteGroupToBG(ginfo, bg2, (i % 2 ? ALLIANCE : HORDE));
+    }
+    bg2->StartBattleGround();
+
+    return true;
+}
+

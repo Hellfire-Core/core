@@ -41,6 +41,7 @@ ChatCommand * ChatHandler::getCommandTable()
 {
     static ChatCommand arenaCommandTable[] =
     {
+        { "create",         PERM_ADM,       PERM_CONSOLE, false,  &ChatHandler::HandleArenaCreateCommand,    "", NULL },
         { "flusharenapoints",PERM_CONSOLE,  PERM_CONSOLE, false,  &ChatHandler::HandleFlushArenaPointsCommand,"", NULL },
         { "ready",          PERM_PLAYER,    PERM_CONSOLE, false,  &ChatHandler::HandleArenaReadyCommand,     "", NULL },
         { "spectate",       PERM_PLAYER,    PERM_CONSOLE, false,  &ChatHandler::HandleArenaSpectateCommand,  "", NULL },

@@ -134,8 +134,6 @@ class BattleGroundQueue
         typedef ACE_Atomic_Op<ACE_Thread_Mutex, uint32> atomicUInt32;
         atomicUInt32 queuedPlayersCount[BG_TEAMS_COUNT][MAX_BATTLEGROUND_BRACKETS];
 
-    private:
-
         bool InviteGroupToBG(GroupQueueInfo * ginfo, BattleGround * bg, uint32 side);
 };
 

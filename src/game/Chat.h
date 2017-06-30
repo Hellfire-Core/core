@@ -114,6 +114,7 @@ class ChatHandler
         bool HandleAccountBGMarksCommand(const char* args);
         bool HandleAccountAnnounceBroadcastCommand(const char* args);
 
+        bool HandleArenaCreateCommand(const char* args);
         bool HandleArenaReadyCommand(const char* args);
         bool HandleArenaSpectateCommand(const char* args);
         bool HandleArenaUnspectateCommand(const char* args);

@@ -595,6 +595,17 @@ void BattleGround::EndBattleGround(uint32 winner)
     SetStatus(STATUS_WAIT_LEAVE);
     m_EndTime = 0;
 
+    if (isArena() && !isRated())
+    {
+        std::stringstream str;
+        str << "skirmish battle ended, winner team" << winner << " players: ";
+        for (BattleGroundPlayerMap::iterator itr = m_Players.begin(); itr != m_Players.end(); ++itr)
+        {
+            str << itr->first << "(" << (itr->second.Team) << ") ";
+        }
+        sLog.outLog(LOG_SPECIAL, str.str().c_str());
+    }
+
     // arena rating calculation
     if (isArena() && isRated() && !sWorld.IsStopped())
     {
