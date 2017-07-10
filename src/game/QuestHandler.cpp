@@ -315,18 +315,10 @@ void WorldSession::HandleQuestgiverChooseRewardOpcode(WorldPacket & recv_data)
         {
             _player->RewardQuest(pQuest, reward, pObject);
 
-            switch (pObject->GetTypeId())
+            if (Quest const* nextquest = _player->GetNextQuest(guid, pQuest))
             {
-                case TYPEID_UNIT:
-                    // Send next quest
-                    if (Quest const* nextquest = _player->GetNextQuest(guid ,pQuest))
-                        _player->PlayerTalkClass->SendQuestGiverQuestDetails(nextquest,guid,true);
-                    break;
-                case TYPEID_GAMEOBJECT:
-                    // Send next quest
-                    if (Quest const* nextquest = _player->GetNextQuest(guid ,pQuest))
-                        _player->PlayerTalkClass->SendQuestGiverQuestDetails(nextquest,guid,true);
-                    break;
+                if (_player->CanTakeQuest(nextquest, false))
+                    _player->PlayerTalkClass->SendQuestGiverQuestDetails(nextquest, guid, true);
             }
         }
         else

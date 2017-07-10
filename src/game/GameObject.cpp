@@ -462,7 +462,7 @@ void GameObject::Update(uint32 update_diff, uint32 /*p_time*/)
                         {
                             if(GetGOInfo()->summoningRitual.spellId == 7720)
                             {
-                                sLog.outLog(LOG_SPECIAL, "summoning ritual deactivated %s",target->GetName());
+                                //sLog.outLog(LOG_SPECIAL, "summoning ritual deactivated %s",target->GetName());
                                 WorldPacket data(SMSG_SUMMON_CANCEL, 0);
                                 target->SendPacketToSelf(&data);
 

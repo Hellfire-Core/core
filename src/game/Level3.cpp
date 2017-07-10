@@ -7504,6 +7504,12 @@ bool ChatHandler::HandleArenaCreateCommand(const char* args)
             SetSentErrorMessage(true);
             return false;
         }
+        if (check->InBattleGround())
+        {
+            PSendSysMessage("player %u is already in battleground", players[i]);
+            SetSentErrorMessage(true);
+            return false;
+        }
     }
     BattleGround* bg2 = sBattleGroundMgr.CreateNewBattleGround(BATTLEGROUND_AA, BG_BRACKET_ID_LAST, ARENA_TYPE_2v2, false);
     // invites
@@ -7520,10 +7526,10 @@ bool ChatHandler::HandleArenaCreateCommand(const char* args)
         _player->SendPacketToSelf(&data);
         GroupQueueInfo* ginfo = sBattleGroundMgr.m_BattleGroundQueues[bgQueueTypeId].AddGroup(_player, BATTLEGROUND_AA, BG_BRACKET_ID_LAST, ARENA_TYPE_2v2, false, false, 0, 0, 0, _player->GetTeam());
         sBattleGroundMgr.m_BattleGroundQueues[bgQueueTypeId].AddPlayer(_player, ginfo);
-        sBattleGroundMgr.m_BattleGroundQueues[bgQueueTypeId].InviteGroupToBG(ginfo, bg2, (i % 2 ? ALLIANCE : HORDE));
+        sBattleGroundMgr.m_BattleGroundQueues[bgQueueTypeId].InviteGroupToBG(ginfo, bg2, (i < count ? ALLIANCE : HORDE));
     }
     bg2->StartBattleGround();
-
+    SendSysMessage("arena created for selected players");
     return true;
 }
 

@@ -116,6 +116,7 @@ struct instance_ramparts : public ScriptedInstance
                         }
                     }
                     Encounter[2] = NOT_STARTED;
+                    break;
                 }
 
                 if (data == DONE)

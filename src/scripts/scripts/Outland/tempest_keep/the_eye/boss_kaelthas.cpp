@@ -232,6 +232,12 @@ struct advisorbase_ai : public ScriptedAI
         UpdateMaxHealth(false);
         CanDie = false;
     }
+    
+    void JustReachedHome()
+    {
+        // just for visual relocation, there is problem with visibility. (creature has visibility=respawn when it goes home)
+        m_creature->NearTeleportTo(m_creature->GetPositionX(), m_creature->GetPositionY(), m_creature->GetPositionZ(), m_creature->GetOrientation());
+    }
 
     void MoveInLineOfSight(Unit *who)
     {
@@ -466,13 +472,13 @@ struct boss_kaelthasAI : public ScriptedAI
         }
     }
 
-    void StartEvent()
+    bool StartEvent()
     {
         if(!pInstance)
-            return;
+            return false;
         if (pInstance->GetData(DATA_ALAREVENT) != DONE || pInstance->GetData(DATA_HIGHASTROMANCERSOLARIANEVENT) != DONE ||
             pInstance->GetData(DATA_VOIDREAVEREVENT) != DONE)
-            return;
+            return false;
 
         AdvisorGuid[0] = pInstance->GetData64(DATA_THALADREDTHEDARKENER);
         AdvisorGuid[1] = pInstance->GetData64(DATA_LORDSANGUINAR);
@@ -480,7 +486,7 @@ struct boss_kaelthasAI : public ScriptedAI
         AdvisorGuid[3] = pInstance->GetData64(DATA_MASTERENGINEERTELONICUS);
 
         if(!AdvisorGuid[0] || !AdvisorGuid[1] || !AdvisorGuid[2] || !AdvisorGuid[3])
-            return;
+            return false;
 
         PrepareAdvisors();
         DeleteLegs();
@@ -494,6 +500,7 @@ struct boss_kaelthasAI : public ScriptedAI
         Phase_Timer = 23000;
         Phase = 1;
         DoZoneInCombat();
+        return true;
     }
 
     void MoveInLineOfSight(Unit *who)
@@ -514,11 +521,11 @@ struct boss_kaelthasAI : public ScriptedAI
                 }
                 else if (m_creature->GetMap()->IsDungeon())
                 {
-                    if (pInstance && !pInstance->GetData(DATA_KAELTHASEVENT) && !Phase)
-                        StartEvent();
-
-                    who->SetInCombatWith(m_creature);
-                    m_creature->AddThreat(who, 0.0f);
+                    if (pInstance && !pInstance->GetData(DATA_KAELTHASEVENT) && !Phase && StartEvent())
+                    {
+                        who->SetInCombatWith(m_creature);
+                        m_creature->AddThreat(who, 0.0f);
+                    }
                 }
             }
         }
