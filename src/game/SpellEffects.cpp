@@ -724,7 +724,7 @@ void Spell::SpellDamageSchoolDmg(uint32 effect_idx)
 
                     if (!stacks)
                         //No damage if the target isn't affected by this
-                        damage = -1;
+                        damage = 0;
                     else
                         damage *= stacks;
                 }

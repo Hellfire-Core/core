@@ -961,7 +961,7 @@ struct npc_simon_bunnyAI : public ScriptedAI
         fails = 0;
         gameTicks = 0;
         zCoordCorrection = large ? 8.0f : 2.75f;
-        searchDistance = large ? 13.0f : 5.0f;
+        searchDistance = large ? 20.0f : 10.0f;
         colorSequence.clear();
         playableSequence.clear();
         playerSequence.clear();
@@ -1065,8 +1065,12 @@ struct npc_simon_bunnyAI : public ScriptedAI
     void PrepareClusters(bool clustersOnly = false)
     {
         for (uint32 clusterId = SIMON_BLUE; clusterId < SIMON_MAX_COLORS; clusterId++)
+        {
             if (GameObject* cluster = GetClosestGameObjectWithEntry(me, clusterIds[clusterId], searchDistance))
                 cluster->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_NOTSELECTABLE);
+            else
+                sLog.outLog(LOG_SPECIAL, "cannot find cluster to prepare, %u %u %lu", clusterId, clusterIds[clusterId], playerGUID);
+        }
 
         if (clustersOnly)
             return;
@@ -1263,7 +1267,6 @@ bool OnGossipHello_go_simon_cluster(Player* player, GameObject* go)
 enum ApexisRelic
 {
     QUEST_APEXIS                 = 11058,
-    QUEST_EMANATION              = 11080,
     QUEST_GUARDIAN               = 11059,
     GOSSIP_TEXT_ID               = 10948,
 
@@ -1279,7 +1282,7 @@ bool OnGossipHello_go_apexis_relic(Player* player, GameObject* go)
 {
     bool large = (go->GetEntry() == GO_APEXIS_MONUMENT);
 
-    if (player->HasItemCount(ITEM_APEXIS_SHARD, large ? 35 : 1) && large ? player->GetQuestStatus(QUEST_GUARDIAN) == QUEST_STATUS_INCOMPLETE : (player->GetQuestStatus(QUEST_APEXIS) == QUEST_STATUS_INCOMPLETE || player->GetQuestStatus(QUEST_EMANATION) == QUEST_STATUS_INCOMPLETE))
+    if (player->HasItemCount(ITEM_APEXIS_SHARD, large ? 35 : 1) && player->GetQuestStatus(large ? QUEST_GUARDIAN : QUEST_APEXIS) != QUEST_STATUS_NONE)
         player->ADD_GOSSIP_ITEM(0, large ? GOSSIP_ITEM_2 : GOSSIP_ITEM_1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
     player->SEND_GOSSIP_MENU(GOSSIP_TEXT_ID, go->GetGUID());
 

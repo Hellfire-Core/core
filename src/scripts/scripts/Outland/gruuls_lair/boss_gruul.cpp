@@ -191,7 +191,7 @@ struct boss_gruulAI : public ScriptedAI
             // Hurtful Strike
             if (HurtfulStrike_Timer.Expired(diff))
             {
-                Unit* target = SelectUnit(SELECT_TARGET_TOPAGGRO, 0, me->GetCombatReach(), true, me->getVictimGUID());
+                Unit* target = SelectUnit(SELECT_TARGET_TOPAGGRO, 0, me->GetCombatReach()+5.0f, true, me->getVictimGUID());
                 if (!target)
                     target = me->getVictim();
 

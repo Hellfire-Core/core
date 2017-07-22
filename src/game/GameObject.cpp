@@ -432,6 +432,7 @@ void GameObject::Update(uint32 update_diff, uint32 /*p_time*/)
                             if (!(caster && caster->GetCurrentSpell(CURRENT_CHANNELED_SPELL)))
                                 // if someone is stoped channeling deactivate
                             {
+                                sLog.outLog(LOG_SPECIAL,"channeling ritual interrupted by breaking (%u)",*i);
                                 m_lootState = GO_JUST_DEACTIVATED;
                                 break;
                             }
@@ -462,7 +463,7 @@ void GameObject::Update(uint32 update_diff, uint32 /*p_time*/)
                         {
                             if(GetGOInfo()->summoningRitual.spellId == 7720)
                             {
-                                //sLog.outLog(LOG_SPECIAL, "summoning ritual deactivated %s",target->GetName());
+                                sLog.outLog(LOG_SPECIAL, "summoning ritual deactivated for %s",target->GetName());
                                 WorldPacket data(SMSG_SUMMON_CANCEL, 0);
                                 target->SendPacketToSelf(&data);
 
