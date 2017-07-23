@@ -3149,6 +3149,10 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 37117:
                     spellInfo->Attributes |= SPELL_ATTR_PASSIVE;
                     break;
+                case 31626: // unholy frenzy GCD
+                    spellInfo->StartRecoveryCategory = 133;
+                    spellInfo->StartRecoveryTime = 1500;
+                    break;
                     //PRE NERF ZONE
                 case 44032: // manticron cube exhaustion 180sec
                     spellInfo->DurationIndex = 25;

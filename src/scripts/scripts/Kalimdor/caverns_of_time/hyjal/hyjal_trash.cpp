@@ -976,9 +976,9 @@ struct mob_bansheeAI : public hyjal_trashAI
 
     void Reset()
     {
-        CourseTimer.Reset(10000 + rand() % 5000);
-        WailTimer.Reset(15000 + rand() % 5000);
-        ShellTimer.Reset(5000 + rand() % 10000);
+        CourseTimer.Reset(urand(10000, 15000));
+        WailTimer.Reset(urand(15000, 20000));
+        ShellTimer.Reset(urand(10000, 15000));
     }
 
     void WaypointReached(uint32 i)
@@ -1058,7 +1058,7 @@ struct mob_bansheeAI : public hyjal_trashAI
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 50, true))
                 DoCast(target, SPELL_BANSHEE_CURSE);
 
-            CourseTimer = 20000 + rand() % 5000;
+            CourseTimer = urand (20000,25000);
         }
         
 
@@ -1066,7 +1066,7 @@ struct mob_bansheeAI : public hyjal_trashAI
         if (WailTimer.Expired(diff))
         {
             DoCast(m_creature->getVictim(), SPELL_BANSHEE_WAIL);
-            WailTimer = 5000 + rand() % 5000;
+            WailTimer = urand(5000,12000);
         }
         
 
@@ -1074,7 +1074,7 @@ struct mob_bansheeAI : public hyjal_trashAI
         if (ShellTimer.Expired(diff))
         {
             DoCast(m_creature, SPELL_ANTI_MAGIC_SHELL);
-            ShellTimer = 30000 + rand() % 10000;
+            ShellTimer = urand(45000,75000);
         }
         
 
