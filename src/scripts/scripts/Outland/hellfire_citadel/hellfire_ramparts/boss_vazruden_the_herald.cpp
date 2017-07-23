@@ -111,6 +111,9 @@ struct boss_vazruden_the_heraldAI : public ScriptedAI
             Vazruden->SetLootRecipient(NULL);
             Vazruden->RemoveCorpse();
         }
+
+        if (pInstance)
+            pInstance->SetData(DATA_NAZAN, FAIL);
     }
 
     void AttackStart(Unit* who)
@@ -256,12 +259,6 @@ struct boss_vazruden_the_heraldAI : public ScriptedAI
     {
         if (pInstance)
             pInstance->SetData(DATA_NAZAN, DONE);
-    }
-
-    void JustReachedHome()
-    {
-        if (pInstance)
-            pInstance->SetData(DATA_NAZAN, FAIL);
     }
 
     void UpdateAI(const uint32 diff)

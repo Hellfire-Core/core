@@ -770,10 +770,10 @@ enum SimonGame
     GO_RED_CLUSTER_DISPLAY_LARGE    = 7366,
     GO_YELLOW_CLUSTER_DISPLAY_LARGE = 7367,
 
-    SPELL_PRE_GAME_BLUE             = 40176,
-    SPELL_PRE_GAME_GREEN            = 40177,
-    SPELL_PRE_GAME_RED              = 40178,
-    SPELL_PRE_GAME_YELLOW           = 40179,
+    SPELL_PRE_GAME_BLUE             = 40281,
+    SPELL_PRE_GAME_GREEN            = 40287,
+    SPELL_PRE_GAME_RED              = 40288,
+    SPELL_PRE_GAME_YELLOW           = 40289,
     SPELL_VISUAL_BLUE               = 40244,
     SPELL_VISUAL_GREEN              = 40245,
     SPELL_VISUAL_RED                = 40246,
@@ -1000,6 +1000,28 @@ struct npc_simon_bunnyAI : public ScriptedAI
             }
         }
 
+        if (!large) // summon auras
+        {
+            for (uint32 clusterId = SIMON_BLUE; clusterId < SIMON_MAX_COLORS; clusterId++)
+            {
+                if (GameObject* cluster = GetClosestGameObjectWithEntry(me, clusterIds[clusterId], 2.0f*searchDistance))
+                {
+                    uint32 preGameSpellId;
+                    if (cluster->GetEntry() == clusterIds[SIMON_RED])
+                        preGameSpellId = SPELL_PRE_GAME_RED;
+                    else if (cluster->GetEntry() == clusterIds[SIMON_BLUE])
+                        preGameSpellId = SPELL_PRE_GAME_BLUE;
+                    else if (cluster->GetEntry() == clusterIds[SIMON_GREEN])
+                        preGameSpellId = SPELL_PRE_GAME_GREEN;
+                    else if (cluster->GetEntry() == clusterIds[SIMON_YELLOW])
+                        preGameSpellId = SPELL_PRE_GAME_YELLOW;
+                    else
+                        break;
+
+                    me->CastSpell(cluster->GetPositionX(),cluster->GetPositionY(),cluster->GetPositionZ(), preGameSpellId, true);
+                }
+            }
+        }
         _events.Reset();
         _events.ScheduleEvent(EVENT_SIMON_ROUND_FINISHED, 1000);
         _events.ScheduleEvent(EVENT_SIMON_PERIODIC_PLAYER_CHECK, 2000);
@@ -1068,8 +1090,6 @@ struct npc_simon_bunnyAI : public ScriptedAI
         {
             if (GameObject* cluster = GetClosestGameObjectWithEntry(me, clusterIds[clusterId], searchDistance))
                 cluster->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_NOTSELECTABLE);
-            else
-                sLog.outLog(LOG_SPECIAL, "cannot find cluster to prepare, %u %u %lu", clusterId, clusterIds[clusterId], playerGUID);
         }
 
         if (clustersOnly)
@@ -1125,28 +1145,6 @@ struct npc_simon_bunnyAI : public ScriptedAI
             if (GameObject* cluster = GetClosestGameObjectWithEntry(me,clusterIds[clusterId], 2.0f*searchDistance))
             {
                 cluster->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_NOTSELECTABLE);
-
-                // break since we don't need glowing auras for large clusters
-                if (large)
-                    break;
-
-                float x, y, z, o = 0.0f;
-                cluster->GetPosition(x, y, z);
-                me->NearTeleportTo(x, y, z, o);
-
-                uint32 preGameSpellId;
-                if (cluster->GetEntry() == clusterIds[SIMON_RED])
-                    preGameSpellId = SPELL_PRE_GAME_RED;
-                else if (cluster->GetEntry() == clusterIds[SIMON_BLUE])
-                    preGameSpellId = SPELL_PRE_GAME_BLUE;
-                else if (cluster->GetEntry() == clusterIds[SIMON_GREEN])
-                    preGameSpellId = SPELL_PRE_GAME_GREEN;
-                else if (cluster->GetEntry() == clusterIds[SIMON_YELLOW])
-                    preGameSpellId = SPELL_PRE_GAME_YELLOW;
-                else
-                    break;
-
-                me->CastSpell(cluster, preGameSpellId, true);
             }
         }
 

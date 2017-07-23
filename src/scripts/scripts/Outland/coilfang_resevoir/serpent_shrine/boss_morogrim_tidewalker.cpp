@@ -215,6 +215,7 @@ struct boss_morogrim_tidewalkerAI : public ScriptedAI
             }
         }
 
+        me->SetInFront(me->getVictim());
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
     }
