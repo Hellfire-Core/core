@@ -269,7 +269,7 @@ struct boss_magtheridonAI : public BossAI
                 case MAGTHERIDON_EVENT_BLAST_NOVA:
                 {
                     AddSpellToCastWithScriptText(SPELL_BLASTNOVA, CAST_NULL, MAGTHERIDON_EMOTE_BLASTNOVA);
-                    events.ScheduleEvent(MAGTHERIDON_EVENT_BLAST_NOVA, 60000);
+                    events.ScheduleEvent(MAGTHERIDON_EVENT_BLAST_NOVA, 45000);
                     break;
                 }
                 case MAGTHERIDON_EVENT_BLAZE:

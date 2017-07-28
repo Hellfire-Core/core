@@ -723,6 +723,7 @@ bool SpellMgr::IsPositiveEffect(uint32 spellId, uint32 effIndex)
         case 38318:                                         // Orb of Blackwhelp
         case 37851:                                         // tag greater felfire diemetradon
         case 37907:                                         // kill credit felfire diemetradon
+        case 40825:                                         // blade edge banish the demons quest (dont get in combat with trigger)
             return true;
         case 46392:                                         // Focused Assault
         case 46393:                                         // Brutal Assault

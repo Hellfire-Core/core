@@ -3255,6 +3255,13 @@ void Spell::SendCastResult(SpellCastResult result)
             break;
         case SPELL_FAILED_REQUIRES_AREA:
             // hardcode areas limitation case
+            if (GetSpellEntry()->SpellFamilyName == SPELLFAMILY_POTION && sSpellMgr.GetSpellElixirMask(GetSpellEntry()->Id) & ELIXIR_UNSTABLE_MASK)
+            {
+                // blade edge elixirs 
+                data << uint32(3522);
+                break;
+            }
+
             switch (GetSpellEntry()->Id)
             {
                 case 41617:                             // Cenarion Mana Salve

@@ -2699,6 +2699,7 @@ struct npc_banishing_crystalAI : public ScriptedAI
         PlayerGUID = 0;
         DoCast(me, SPELL_BANISHMENT);
         GetPlayer();
+        me->SetReactState(REACT_PASSIVE);
     }
 
     void GetPlayer()
