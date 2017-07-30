@@ -241,7 +241,7 @@ struct instance_shattered_halls : public ScriptedInstance
                         for (uint8 i = 2; i < 5; ++i)
                             player->SummonCreature(Team == ALLIANCE ? aSoldiersLocs[i].AllianceEntry : aSoldiersLocs[i].HordeEntry, aSoldiersLocs[i].fX, aSoldiersLocs[i].fY, aSoldiersLocs[i].fZ, aSoldiersLocs[i].fO, TEMPSUMMON_DEAD_DESPAWN, 0);
 
-                        if (Creature* Executioner = player->SummonCreature(NPC_EXECUTIONER, afExecutionerLoc[0], afExecutionerLoc[1], afExecutionerLoc[2], afExecutionerLoc[3], TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 80*MINUTE*IN_MILISECONDS))
+                        if (Creature* Executioner = player->SummonCreature(NPC_EXECUTIONER, afExecutionerLoc[0], afExecutionerLoc[1], afExecutionerLoc[2], afExecutionerLoc[3], TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 90*MINUTE*IN_MILISECONDS))
                             Executioner->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NON_ATTACKABLE);
 
                         DoCastGroupDebuff(SPELL_KARGATH_EXECUTIONER_1);
@@ -294,6 +294,8 @@ struct instance_shattered_halls : public ScriptedInstance
                 return Encounter[4];
             case TYPE_EXECUTION_DONE:
                 return Encounter[5];
+            case TYPE_EXECUTION_TIMER:
+                return ExecutionTimer.GetTimeLeft();
         }
         return 0;
     }
@@ -344,7 +346,7 @@ struct instance_shattered_halls : public ScriptedInstance
 
     void Update(uint32 diff)
     {
-        if (ExecutionTimer.Expired(diff))
+        if (Encounter[5] == NOT_STARTED && ExecutionTimer.Expired(diff))
         {
             switch(ExecutionStage)
             {

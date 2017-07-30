@@ -176,6 +176,7 @@ extern void AddSC_instance_blackwing_lair();
 
 //Blade's Edge Mountains
 extern void AddSC_blades_edge_mountains();
+extern void AddSC_shartuul();
 
 //Blasted lands
 extern void AddSC_boss_kruul();
@@ -803,6 +804,7 @@ void AddScripts()
 
     //Blade's Edge Mountains
     AddSC_blades_edge_mountains();
+    AddSC_shartuul();
 
     //Blasted lands
     AddSC_boss_kruul();

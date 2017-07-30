@@ -3268,7 +3268,6 @@ void Player::learnSpell(uint32 spell_id)
     if (node)
     {
         PlayerSpellMap::iterator iter = m_spells.find(node->next);
-        SendCombatStats(1 << COMBAT_STATS_TEST, "learn spell higher rank %u %u %u", NULL, spell_id, node->next, disabled);
         if (disabled && iter != m_spells.end() && iter->second.disabled)
             learnSpell(node->next);
     }
@@ -3302,7 +3301,6 @@ void Player::removeSpell(uint32 spell_id, bool disabled)
     SpellChainNode const* node = sSpellMgr.GetSpellChainNode(spell_id);
     if (node)
     {
-        SendCombatStats(1 << COMBAT_STATS_TEST,"remove higher rank %u %u %u", NULL, spell_id, node->next, GetTalentSpellPos(node->next));
         if (HasSpell(node->next) && !GetTalentSpellPos(node->next))
             removeSpell(node->next,disabled);
     }

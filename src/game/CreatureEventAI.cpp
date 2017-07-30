@@ -1091,6 +1091,8 @@ void CreatureEventAI::JustSummoned(Creature* pUnit)
 
 void CreatureEventAI::EnterCombat(Unit *enemy)
 {
+    if (m_creature->GetMotionMaster()->GetCurrentMovementGeneratorType() == RANDOM_MOTION_TYPE)
+        m_creature->GetMotionMaster()->StopControlledMovement();
     //Check for on combat start events
     if (!bEmptyList)
     {
@@ -1126,12 +1128,8 @@ void CreatureEventAI::AttackStart(Unit *who)
     if (!who)
         return;
 
-    me->SendCombatStats(1 << COMBAT_STATS_CRASHTEST, "bang crash", NULL);
-
     if (m_creature->Attack(who, MeleeEnabled))
     {
-        if (m_creature->GetMotionMaster()->GetCurrentMovementGeneratorType() == RANDOM_MOTION_TYPE)
-            m_creature->GetMotionMaster()->StopControlledMovement();
         if (CombatMovementEnabled)
             m_creature->GetMotionMaster()->MoveChase(who, AttackDistance, AttackAngle);
     }

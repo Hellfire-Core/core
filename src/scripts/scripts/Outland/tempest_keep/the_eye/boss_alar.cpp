@@ -237,9 +237,10 @@ struct boss_alarAI : public ScriptedAI
 
     void MovementInform(uint32 type, uint32 id)
     {
+        SendDebug("movement inform %u %u", type, id);
         if(type == POINT_MOTION_TYPE)
         {
-            WaitTimer = 1;
+            WaitTimer = 1000;
             AfterMoving = true;
             ForceTimer = 0;
         }
@@ -516,6 +517,7 @@ struct boss_alarAI : public ScriptedAI
             else if (temp)
                 AttackStart(temp);
 
+            SendDebug("casting buffet %u", uint32(WaitEvent));
             DoCast(m_creature, SPELL_FLAME_BUFFET);
         }
     }

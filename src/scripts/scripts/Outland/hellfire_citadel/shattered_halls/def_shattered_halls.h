@@ -30,5 +30,6 @@
 
 #define TYPE_EXECUTION          7
 #define TYPE_EXECUTION_DONE     8
+#define TYPE_EXECUTION_TIMER    9
 #endif
 

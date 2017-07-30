@@ -3062,6 +3062,34 @@ CreatureAI* GetAI_npc_doomsaw(Creature* _Creature)
     return new npc_doomsawAI(_Creature);
 }
 
+struct npc_ethereum_jailorAI : public ScriptedAI
+{
+    npc_ethereum_jailorAI(Creature* c) : ScriptedAI(c){}
+
+    std::vector<ScriptPointMove> points;
+
+    void JustRespawned()
+    {
+        if (points.empty())
+        {
+            points = pSystemMgr.GetPointMoveList(m_creature->GetEntry());
+            if (points.empty())
+                return;
+        }
+
+        uint8 target = urand(0, points.size() - 1);
+        m_creature->NearTeleportTo(points[target].fX, points[target].fY, points[target].fZ, frand(0, 2 * M_PI));
+        m_creature->SetHomePosition(points[target].fX, points[target].fY, points[target].fZ, frand(0, 2 * M_PI));
+        m_creature->SetLastHitPos(m_creature->GetHomePosition());
+    }
+
+};
+
+CreatureAI* GetAI_npc_ethereum_jailor(Creature* _Creature)
+{
+    return new npc_ethereum_jailorAI(_Creature);
+}
+
 /*######
 ## AddSC_netherstrom
 ######*/
@@ -3228,5 +3256,10 @@ void AddSC_netherstorm()
     newscript->Name = "npc_doomsaw";
     newscript->GetAI = &GetAI_npc_doomsaw;
     newscript->RegisterSelf(); 
+
+    newscript = new Script;
+    newscript->Name = "npc_ethereum_jailor";
+    newscript->GetAI = &GetAI_npc_ethereum_jailor;
+    newscript->RegisterSelf();
 }
 
