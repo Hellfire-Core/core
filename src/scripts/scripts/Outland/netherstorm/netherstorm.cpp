@@ -3078,7 +3078,7 @@ struct npc_ethereum_jailorAI : public ScriptedAI
         }
 
         uint8 target = urand(0, points.size() - 1);
-        m_creature->NearTeleportTo(points[target].fX, points[target].fY, points[target].fZ, frand(0, 2 * M_PI));
+        m_creature->SetPosition(points[target].fX, points[target].fY, points[target].fZ, frand(0, 2 * M_PI));
         m_creature->SetHomePosition(points[target].fX, points[target].fY, points[target].fZ, frand(0, 2 * M_PI));
         m_creature->SetLastHitPos(m_creature->GetHomePosition());
     }

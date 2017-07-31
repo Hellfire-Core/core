@@ -3761,7 +3761,7 @@ void npc_chess_statusAI::Reset()
     if (!pInstance || pInstance->GetData(DATA_DUST_COVERED_CHEST) != IN_PROGRESS)
         return;
     m_creature->SetLevitate(true);
-    m_creature->NearTeleportTo(-11080.599609, -1876.380005, 231.000092, 0.0);
+    m_creature->SetPosition(-11080.599609, -1876.380005, 231.000092, 0.0);
     me->CastSpell(me, SPELL_GAME_IN_SESSION, false);
 }
 

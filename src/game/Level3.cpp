@@ -3632,7 +3632,7 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/)
         return false;
     }
 
-    uint32 faction = target->getFaction();
+    uint32 faction = (target->getFactionTemplateEntry() ? target->getFactionTemplateEntry()->faction: 0);
     uint32 npcflags = target->GetUInt32Value(UNIT_NPC_FLAGS);
     uint32 displayid = target->GetDisplayId();
     uint32 nativeid = target->GetNativeDisplayId();

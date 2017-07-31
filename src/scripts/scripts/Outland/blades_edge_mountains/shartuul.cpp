@@ -26,19 +26,17 @@ enum someshartuuldata {
 
     SPELL_ACTIVATE_EVENT    = 40309,
     SPELL_SHIELD_VISUAL     = 40158,
-    SPELL_BORDER            = 40071, // ??
+    SPELL_BORDER            = 40071,
+    SPELL_PLAYER_IMMUNITY   = 40357,
+    SPELL_PLAYER_STUN       = 41592,
+    SPELL_POSSESS           = 39985, // there are multiple ones
+
+    WORLD_STATE_SHIELD      = 3055,
     /*
-WS_REMAINING_SHIELD     3055
-LR_EVENT_CONTROLLER     23059
 LR_TRIGGER              23260
 LR_STUN_FIELD           23312
-LR_STUN_ROPE_DUMMY      23313
 LR_EREDAR_BREATH_TARGET 23328
 LR_SHIELD_ZAPPER        23500
-LR_PORTAL_SHIELD        23116
-LR_SPELL_IMMUNE_INVIS   40357
-LR_COSMETIC_SHIELD      40158
-LR_FELGUARD_DEGRADER    23055
 LR_DOOMGUARD_PUNISHER   23113
 LR_SHIVAN_ASSASSIN      23220
 LR_EYE_OF_SHARTUUL      23228
@@ -54,32 +52,47 @@ struct npc_shartuul_triggerAI : public ScriptedAI
 
     uint64 borderguys[4];
     uint64 shieldguy;
+
+    uint64 playerGUID;
     uint8 stage;
     void Reset()
     {
+        // neighbourhood cleanup
         if (Unit* shield = FindCreature(NPC_SHIELD_GUY, 50, m_creature))
             shield->RemoveAurasDueToSpell(SPELL_SHIELD_VISUAL);
+        std::list<Creature*> borders = FindAllCreaturesWithEntry(NPC_ARENA_BORDER, 120);
+        for (std::list<Creature*>::iterator itr = borders.begin(); itr != borders.end(); itr++)
+            (*itr)->RemoveAllAuras();
+
+        if (Player* player = sObjectAccessor.GetPlayer(playerGUID))
+        {
+            player->RemoveAurasDueToSpell(SPELL_PLAYER_IMMUNITY);
+            player->RemoveAurasDueToSpell(SPELL_PLAYER_STUN);
+            player->StopCastingCharm();
+        }
 
         stage = 0;
         borderguys[0] = borderguys[1] = borderguys[2] = borderguys[3] = 0;
         shieldguy = 0;
+        playerGUID = 0;
     }
 
-    void DoAction(int32 param)
+    void StartFor(Unit* caster, Unit* felguard)
     {
-        if (param != 175 || stage)
+        if (stage || !caster || !felguard || caster->GetTypeId() != TYPEID_PLAYER)
             return;
         stage = 1;
         std::list<Creature*> borders = FindAllCreaturesWithEntry(NPC_ARENA_BORDER, 120);
         for (std::list<Creature*>::iterator itr = borders.begin(); itr != borders.end(); itr++)
         {
+            (*itr)->Respawn();
             if ((*itr)->GetPositionY() > 7170)
                 borderguys[0] = (*itr)->GetGUID(); //west
             else if ((*itr)->GetPositionX() > 2780)
                 borderguys[1] = (*itr)->GetGUID(); //north
             else if ((*itr)->GetPositionY() < 7060)
                 borderguys[2] = (*itr)->GetGUID(); //east
-            else if ((*itr)->GetPositionY() < 2670)
+            else if ((*itr)->GetPositionX() < 2670)
                 borderguys[3] = (*itr)->GetGUID(); //south
         }
         
@@ -96,6 +109,32 @@ struct npc_shartuul_triggerAI : public ScriptedAI
             if (!border || !next) continue;
             border->CastSpell(next, SPELL_BORDER, true);
         }
+
+        SendInitWS(caster->ToPlayer());
+        caster->CastSpell(felguard, SPELL_POSSESS, true);
+        caster->CastSpell(caster, SPELL_PLAYER_IMMUNITY, true);
+        caster->CastSpell(caster, SPELL_PLAYER_STUN, true);
+    }
+
+    void SendInitWS(Player* who)
+    {
+        WorldPacket data(SMSG_INIT_WORLD_STATES, (14 + 80));
+        data << uint32(530);                                    // mapid
+        data << uint32(3522);                                   // zone id
+        data << uint32(4008);                                   // area id
+        data << uint16(10);                                     // count of uint64 blocks
+        data << uint32(0x8d8) << uint32(0x0);                   // 1
+        data << uint32(0x8d7) << uint32(0x0);                   // 2
+        data << uint32(0x8d6) << uint32(0x0);                   // 3
+        data << uint32(0x8d5) << uint32(0x0);                   // 4
+        data << uint32(0x8d4) << uint32(0x0);                   // 5
+        data << uint32(0x8d3) << uint32(0x0);                   // 6
+        data << uint32(0x9bf) << uint32(0x0);                   // 7
+        data << uint32(0x9bd) << uint32(0xF);                   // 8
+        data << uint32(0x9bb) << uint32(0xF);                   // 9
+        data << uint32(WORLD_STATE_SHIELD) << uint32(100);      // 10
+
+        who->SendPacketToSelf(&data);
     }
 };
 
@@ -115,7 +154,7 @@ struct npc_felguard_degraderAI : public ScriptedAI
             Creature* trigger = m_creature->GetMap()->GetCreatureById(NPC_EVENT_CONTROLLER);
             if (!trigger)
                 return;
-            trigger->AI()->DoAction(175);
+            CAST_AI(npc_shartuul_triggerAI,trigger->AI())->StartFor(caster, m_creature);
         }
     }
 };
