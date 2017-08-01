@@ -3154,6 +3154,9 @@ void SpellMgr::LoadSpellCustomAttr()
                     spellInfo->StartRecoveryCategory = 133;
                     spellInfo->StartRecoveryTime = 1500;
                     break;
+                case 39985: // posses - shartuul transporter
+                    spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_TARGET_ENEMY;
+                    break;
                     //PRE NERF ZONE
                 case 44032: // manticron cube exhaustion 180sec
                     spellInfo->DurationIndex = 25;
@@ -3350,8 +3353,6 @@ void SpellMgr::LoadSpellCustomAttr()
                     spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_AREA_ENEMY_DST;
                 else if (spellInfo->Id == 34026) // kill command, all handled by first dummy effect
                     spellInfo->Effect[1] = 0;
-                else if (spellInfo->Id == 13810) // frost trap effect ignore los
-                    spellInfo->AttributesEx2 |= SPELL_ATTR_EX2_IGNORE_LOS;
                 else if (spellInfo->Id == 1543 || spellInfo->Id == 28822) // flares
                 {
                     spellInfo->AttributesCu |= SPELL_ATTR_CU_BLOCK_STEALTH;

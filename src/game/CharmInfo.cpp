@@ -93,59 +93,37 @@ void CharmInfo::InitEmptyActionBar(bool withAttack)
 
 void CharmInfo::InitPossessCreateSpells()
 {
-    uint32 SpiritSpellID[7] =   //Vengeful Spirit's spells
+    switch (m_unit->GetEntry()) // special cases
     {
-        40325,
-        60000,  //to make empty slot
-        40157,
-        40175,
-        40314,
-        60000,  //to make empty slot
-        40322
-    };
-
-    uint32 BlueDrakeID[5] =   //Power of the Blue Flight spells (Kij'jaeden fight)
-    {
-        45862,
-        45856,
-        45860,
-        60000,  //to make empty slot
-        45848
-    };
-
-
-    if (m_unit->GetEntry() == 23109)     //HACK to allow proper spells for Vengeful Spirit
-    {
-        InitEmptyActionBar(false);
-
-        for (uint32 i = 0; i < 7; ++i)
-        {
-            uint32 spellid = SpiritSpellID[i];
-            AddSpellToActionBar(0, spellid, ACT_CAST);
-        }
+    case 23055: // felguard degrader
+        InitEmptyActionBar();
+        PetActionBar[0].SpellOrAction = 40220;
+        PetActionBar[1].SpellOrAction = 40219;
+        PetActionBar[2].SpellOrAction = 40221;
+        PetActionBar[3].SpellOrAction = 40497;
+        PetActionBar[4].SpellOrAction = 40222;
+        PetActionBar[5].SpellOrAction = 40658;
         return;
-    }
-
-    if (m_unit->GetEntry() == 25653)     //HACK to allow proper spells for the Power of the Blue Flight
-    {
+    case 23109: // vengeful spirit
         InitEmptyActionBar(false);
-
-        for (uint32 i = 0; i < 5; ++i)
-        {
-            uint32 spellid = BlueDrakeID[i];
-            AddSpellToActionBar(0, spellid, ACT_CAST);
-        }
+        PetActionBar[0].SpellOrAction = 40325;
+        PetActionBar[2].SpellOrAction = 40157;
+        PetActionBar[3].SpellOrAction = 40175;
+        PetActionBar[4].SpellOrAction = 40314;
+        PetActionBar[6].SpellOrAction = 40322;
         return;
-    }
-    if (m_unit->GetEntry() == 21909) //arcano-scoop
-    {
+    case 25653: // blue flight
+        InitEmptyActionBar(false);
+        PetActionBar[0].SpellOrAction = 45862;
+        PetActionBar[1].SpellOrAction = 45856;
+        PetActionBar[2].SpellOrAction = 45860;
+        PetActionBar[4].SpellOrAction = 45848;
+        return;
+    case 21909: // arcano scoop
         InitEmptyActionBar();
         PetActionBar[5].SpellOrAction = 37919;
         PetActionBar[6].SpellOrAction = 37918;
         PetActionBar[3].SpellOrAction = 37851;
-        PetActionBar[5].Type = ACT_CAST;
-        PetActionBar[6].Type = ACT_CAST;
-        PetActionBar[9].Type = ACT_CAST;
         return;
     }
 

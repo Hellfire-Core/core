@@ -23,6 +23,7 @@ enum someshartuuldata {
     NPC_FELGUARD_DEGRADER   = 23055,
     NPC_ARENA_BORDER        = 23313,
     NPC_SHIELD_GUY          = 23116,
+    NPC_SHIELD_TARGET       = 23500,
 
     SPELL_ACTIVATE_EVENT    = 40309,
     SPELL_SHIELD_VISUAL     = 40158,
@@ -30,7 +31,9 @@ enum someshartuuldata {
     SPELL_PLAYER_IMMUNITY   = 40357,
     SPELL_PLAYER_STUN       = 41592,
     SPELL_POSSESS           = 39985, // there are multiple ones
+    SPELL_SHIELD_SMASH      = 40222,
 
+    WORLD_STATE_PERCENTAGE  = 3054,
     WORLD_STATE_SHIELD      = 3055,
     /*
 LR_TRIGGER              23260
@@ -55,6 +58,8 @@ struct npc_shartuul_triggerAI : public ScriptedAI
 
     uint64 playerGUID;
     uint8 stage;
+    Timer shieldCountdown;
+    uint8 shieldLevel;
     void Reset()
     {
         // neighbourhood cleanup
@@ -62,19 +67,25 @@ struct npc_shartuul_triggerAI : public ScriptedAI
             shield->RemoveAurasDueToSpell(SPELL_SHIELD_VISUAL);
         std::list<Creature*> borders = FindAllCreaturesWithEntry(NPC_ARENA_BORDER, 120);
         for (std::list<Creature*>::iterator itr = borders.begin(); itr != borders.end(); itr++)
+        {
             (*itr)->RemoveAllAuras();
+            (*itr)->CastStop();
+        }
 
         if (Player* player = sObjectAccessor.GetPlayer(playerGUID))
         {
             player->RemoveAurasDueToSpell(SPELL_PLAYER_IMMUNITY);
             player->RemoveAurasDueToSpell(SPELL_PLAYER_STUN);
             player->StopCastingCharm();
+            player->SendUpdateWorldState(WORLD_STATE_SHIELD, 0);
         }
 
         stage = 0;
         borderguys[0] = borderguys[1] = borderguys[2] = borderguys[3] = 0;
         shieldguy = 0;
         playerGUID = 0;
+        shieldCountdown.Reset(0);
+        shieldLevel = 8;
     }
 
     void StartFor(Unit* caster, Unit* felguard)
@@ -107,40 +118,67 @@ struct npc_shartuul_triggerAI : public ScriptedAI
             Unit* border = m_creature->GetUnit(borderguys[i]);
             Unit* next = m_creature->GetUnit(borderguys[(i + 1) % 4]);
             if (!border || !next) continue;
-            border->CastSpell(next, SPELL_BORDER, true);
+            border->CastSpell(next, SPELL_BORDER, false);
         }
 
-        SendInitWS(caster->ToPlayer());
+        playerGUID = caster->GetGUID();
+        caster->ToPlayer()->SendUpdateWorldState(WORLD_STATE_SHIELD, 1);
+        caster->ToPlayer()->SendUpdateWorldState(WORLD_STATE_PERCENTAGE, 100);
         caster->CastSpell(felguard, SPELL_POSSESS, true);
         caster->CastSpell(caster, SPELL_PLAYER_IMMUNITY, true);
         caster->CastSpell(caster, SPELL_PLAYER_STUN, true);
+        shieldCountdown.Reset(4 * MINUTE*IN_MILISECONDS);
     }
 
-    void SendInitWS(Player* who)
+    void ShieldHit()
     {
-        WorldPacket data(SMSG_INIT_WORLD_STATES, (14 + 80));
-        data << uint32(530);                                    // mapid
-        data << uint32(3522);                                   // zone id
-        data << uint32(4008);                                   // area id
-        data << uint16(10);                                     // count of uint64 blocks
-        data << uint32(0x8d8) << uint32(0x0);                   // 1
-        data << uint32(0x8d7) << uint32(0x0);                   // 2
-        data << uint32(0x8d6) << uint32(0x0);                   // 3
-        data << uint32(0x8d5) << uint32(0x0);                   // 4
-        data << uint32(0x8d4) << uint32(0x0);                   // 5
-        data << uint32(0x8d3) << uint32(0x0);                   // 6
-        data << uint32(0x9bf) << uint32(0x0);                   // 7
-        data << uint32(0x9bd) << uint32(0xF);                   // 8
-        data << uint32(0x9bb) << uint32(0xF);                   // 9
-        data << uint32(WORLD_STATE_SHIELD) << uint32(100);      // 10
+        if (stage != 1)
+            return;
+        shieldLevel--;
+        if (shieldLevel == 0)
+        {
+            Reset(); // go stage 2
+            return;
+        }
+        if (Player* player = sObjectAccessor.GetPlayer(playerGUID))
+        {
+            player->SendUpdateWorldState(WORLD_STATE_PERCENTAGE, uint32(12.5 * shieldLevel));
+        }
+    }
 
-        who->SendPacketToSelf(&data);
+    void UpdateAI(const uint32 diff)
+    {
+        if (shieldCountdown.Expired(diff))
+        {
+            Reset();
+        }
     }
 };
 
 CreatureAI* GetAI_npc_shartuul_trigger(Creature* creature)
 {
     return new npc_shartuul_triggerAI(creature);
+}
+
+struct npc_shartuul_shield_targetAI : public ScriptedAI
+{
+    npc_shartuul_shield_targetAI(Creature* c) : ScriptedAI(c) {}
+
+    void SpellHit(Unit* caster, const SpellEntry* spell)
+    {
+        if (spell->Id == SPELL_SHIELD_SMASH)
+        {
+            Creature* trigger = m_creature->GetMap()->GetCreatureById(NPC_EVENT_CONTROLLER);
+            if (!trigger)
+                return;
+            CAST_AI(npc_shartuul_triggerAI, trigger->AI())->ShieldHit();
+        }
+    }
+};
+
+CreatureAI* GetAI_npc_shartuul_shield_target(Creature* creature)
+{
+    return new npc_shartuul_shield_targetAI(creature);
 }
 
 struct npc_felguard_degraderAI : public ScriptedAI
@@ -171,6 +209,11 @@ void AddSC_shartuul()
     newscript = new Script;
     newscript->Name = "npc_shartuul_trigger";
     newscript->GetAI = &GetAI_npc_shartuul_trigger;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_shartuul_shield_target";
+    newscript->GetAI = &GetAI_npc_shartuul_shield_target;
     newscript->RegisterSelf();
 
     newscript = new Script;

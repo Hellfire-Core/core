@@ -321,18 +321,6 @@ void WorldSession::DoLootRelease(uint64 lguid)
 
         loot = &go->loot;
 
-        if (go->GetGoType() == GAMEOBJECT_TYPE_CHEST && !loot->isLooted())
-        {
-            LootItem* li = loot->LootItemInSlot(0, GetPlayer());
-            if (li && ObjectMgr::GetItemPrototype(li->itemid)->Class == ITEM_CLASS_QUEST)
-            {
-                ItemPosCountVec dest;
-                uint8 msg = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, li->itemid, li->count);
-                if (!li->is_looted && !li->is_blocked && msg == EQUIP_ERR_OK)
-                    player->StoreNewItem(dest, li->itemid, true, li->randomPropertyId);
-            }
-        }
-
         if (go->GetGoType() == GAMEOBJECT_TYPE_DOOR)
         {
             // locked doors are opened with spelleffect openlock, prevent remove its as looted

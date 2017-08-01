@@ -2241,6 +2241,8 @@ void Player::RegenerateHealth()
 
 bool Player::CanInteractWithNPCs(bool alive) const
 {
+    if (hasUnitState(UNIT_STAT_LOST_CONTROL))
+        return false;
     if (alive && !isAlive())
         return false;
     if (IsTaxiFlying())
