@@ -8021,10 +8021,10 @@ void Player::SendInitWorldStates(bool forceZone, uint32 forceZoneId)
         case 3698:
         case 3702:
         case 3968:
-            NumberOfFields = 9;
+            NumberOfFields = 10;
             break;
         case 3703:
-            NumberOfFields = 9;
+            NumberOfFields = 10;
             break;
         default:
             NumberOfFields = 10;
@@ -8047,6 +8047,7 @@ void Player::SendInitWorldStates(bool forceZone, uint32 forceZoneId)
         data << uint32(0x9bf) << uint32(0x0);               // 7
         data << uint32(0x9bd) << uint32(0xF);               // 8
         data << uint32(0x9bb) << uint32(0xF);               // 9
+        data << uint32(3055) << uint32(0);                  // 10
     }
     switch (zoneid)
     {

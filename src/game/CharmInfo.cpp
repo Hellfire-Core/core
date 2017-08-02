@@ -97,12 +97,12 @@ void CharmInfo::InitPossessCreateSpells()
     {
     case 23055: // felguard degrader
         InitEmptyActionBar();
-        PetActionBar[0].SpellOrAction = 40220;
-        PetActionBar[1].SpellOrAction = 40219;
-        PetActionBar[2].SpellOrAction = 40221;
-        PetActionBar[3].SpellOrAction = 40497;
-        PetActionBar[4].SpellOrAction = 40222;
-        PetActionBar[5].SpellOrAction = 40658;
+        PetActionBar[1].SpellOrAction = 40220;
+        PetActionBar[2].SpellOrAction = 40219;
+        PetActionBar[3].SpellOrAction = 40221;
+        PetActionBar[4].SpellOrAction = 40497;
+        PetActionBar[5].SpellOrAction = 40222;
+        PetActionBar[6].SpellOrAction = 40658;
         return;
     case 23109: // vengeful spirit
         InitEmptyActionBar(false);

@@ -551,21 +551,21 @@ struct mob_ember_of_alarAI : public ScriptedAI
     {
         m_creature->CastSpell(m_creature, SPELL_EMBER_BLAST, true);
 
-        /*if(pInstance)
+        if(pInstance)
         {
             if(Creature* Alar = Creature::GetCreature((*m_creature), pInstance->GetData64(DATA_ALAR)))
             {
                 if((!((boss_alarAI*)Alar->AI())->Phase1) && Alar->isAlive())
                 {
-                    int AlarHealth = Alar->GetHealth() - Alar->GetMaxHealth()*0.03;
+                    int AlarHealth = Alar->GetHealth() - Alar->GetMaxHealth()*0.01;
 
                     if(AlarHealth > 0)
-                        Alar->ModifyHealth(-(int)Alar->GetMaxHealth()*0.03);
+                        Alar->ModifyHealth(-(int)Alar->GetMaxHealth()*0.01);
                     else
                         Alar->SetHealth(1);
                 }
             }
-        }*/
+        }
     }
     void UpdateAI(const uint32 diff)
     {

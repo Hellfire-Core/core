@@ -68,8 +68,8 @@ struct npc_shartuul_triggerAI : public ScriptedAI
         std::list<Creature*> borders = FindAllCreaturesWithEntry(NPC_ARENA_BORDER, 120);
         for (std::list<Creature*>::iterator itr = borders.begin(); itr != borders.end(); itr++)
         {
-            (*itr)->RemoveAllAuras();
             (*itr)->CastStop();
+            (*itr)->RemoveAllAuras();
         }
 
         if (Player* player = sObjectAccessor.GetPlayer(playerGUID))

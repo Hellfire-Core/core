@@ -3158,6 +3158,9 @@ void SpellMgr::LoadSpellCustomAttr()
                     spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_TARGET_ENEMY;
                     break;
                     //PRE NERF ZONE
+                case 37060: // nightbane immolation aura efect
+                    spellInfo->EffectBasePoints[0] = 470;
+                    break;
                 case 44032: // manticron cube exhaustion 180sec
                     spellInfo->DurationIndex = 25;
                     break;

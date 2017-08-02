@@ -2329,6 +2329,7 @@ void Spell::SetTargetMap(uint32 i, uint32 cur)
 
 void Spell::prepare(SpellCastTargets * targets, Aura* triggeredByAura)
 {
+    m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "spell prepare %lu", targets->getUnitTargetGUID);
     m_spellState = SPELL_STATE_PREPARING;
 
     if (m_CastItem)
