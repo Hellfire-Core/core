@@ -294,6 +294,37 @@ bool ChatHandler::HandleGMChatCommand(const char* args)
     return false;
 }
 
+bool ChatHandler::HandleGMTriggersCommand(const char* args)
+{
+    if (!*args)
+    {
+        SendSysMessage(LANG_USE_BOL);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    std::string argstr = (char*)args;
+
+    if (argstr == "off")
+    {
+        m_session->GetPlayer()->SetGMHideTriggers(true);
+        m_session->SendNotification(LANG_DONE);
+        return true;
+    }
+
+    if (argstr == "on")
+    {
+        m_session->GetPlayer()->SetGMHideTriggers(false);
+        m_session->SendNotification(LANG_DONE);
+        return true;
+    }
+    SendSysMessage(LANG_USE_BOL);
+    SetSentErrorMessage(true);
+    return false;
+    
+}
+
+
 std::string ChatHandler::PGetParseString(int32 entry, ...)
 {
         const char *format = GetHellgroundString(entry);

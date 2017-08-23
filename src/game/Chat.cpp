@@ -623,6 +623,7 @@ ChatCommand * ChatHandler::getCommandTable()
         { "list",           PERM_ADM,       PERM_CONSOLE, true,   &ChatHandler::HandleGMListFullCommand,          "", NULL },
         { "nameannounce",   PERM_GMT,       PERM_CONSOLE, false,  &ChatHandler::HandleGMNameAnnounceCommand,      "", NULL },
         { "notify",         PERM_HIGH_GMT,  PERM_CONSOLE, true,   &ChatHandler::HandleGMNotifyCommand,            "", NULL },
+        { "triggers",       PERM_GMT,       PERM_CONSOLE, false,  &ChatHandler::HandleGMTriggersCommand,          "", NULL },
         { "visible",        PERM_GMT,       PERM_CONSOLE, false,  &ChatHandler::HandleGMVisibleCommand,           "", NULL },
         { "",               PERM_GMT,       PERM_CONSOLE, false,  &ChatHandler::HandleGMCommand,                  "", NULL },
         { NULL,             0,              0,            false,  NULL,                                           "", NULL }

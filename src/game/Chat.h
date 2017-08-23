@@ -216,6 +216,7 @@ class ChatHandler
         bool HandleGMListFullCommand(const char* args);
         bool HandleGMNameAnnounceCommand(const char* args);
         bool HandleGMNotifyCommand(const char* args);
+        bool HandleGMTriggersCommand(const char* args);
         bool HandleGMVisibleCommand(const char* args);
 
         bool HandleGuildAdvertCommand(const char *args);

@@ -568,6 +568,7 @@ enum PlayerExtraFlags
     PLAYER_EXTRA_GM_INVISIBLE       = 0x0010,
     PLAYER_EXTRA_GM_CHAT            = 0x0020,               // Show GM badge in chat messages
     PLAYER_EXTRA_AGGRESIVE_AC       = 0x0040,
+    PLAYER_EXTRA_GM_TRIGGERS        = 0x0080,               // true = hide triggers in gm mode
 
     // other states
     PLAYER_EXTRA_PVP_DEATH          = 0x0100,               // store PvP death status until corpse creating.
@@ -1048,6 +1049,8 @@ class HELLGROUND_EXPORT Player : public Unit
         void SetGameMaster(bool on);
         bool isGMChat() const { return GetSession()->HasPermissions(PERM_GMT) && (m_ExtraFlags & PLAYER_EXTRA_GM_CHAT); }
         void SetGMChat(bool on) { if (on) m_ExtraFlags |= PLAYER_EXTRA_GM_CHAT; else m_ExtraFlags &= ~PLAYER_EXTRA_GM_CHAT; }
+        bool isGMTriggersVisible() const {return GetSession()->HasPermissions(PERM_GMT) && (m_ExtraFlags & PLAYER_EXTRA_GM_ON) && !(m_ExtraFlags & PLAYER_EXTRA_GM_TRIGGERS)); }
+        void SetGMHideTriggers(bool on) { if (on) m_ExtraFlags |= PLAYER_EXTRA_GM_TRIGGERS; else m_ExtraFlags &= ~PLAYER_EXTRA_GM_TRIGGERS; }
         bool isTaxiCheater() const { return m_ExtraFlags & PLAYER_EXTRA_TAXICHEAT; }
         void SetTaxiCheater(bool on) { if (on) m_ExtraFlags |= PLAYER_EXTRA_TAXICHEAT; else m_ExtraFlags &= ~PLAYER_EXTRA_TAXICHEAT; }
         bool isGMVisible() const { return !(m_ExtraFlags & PLAYER_EXTRA_GM_INVISIBLE); }

@@ -3090,6 +3090,16 @@ CreatureAI* GetAI_npc_ethereum_jailor(Creature* _Creature)
     return new npc_ethereum_jailorAI(_Creature);
 }
 
+#define QUEST_SPECIAL_DELIVERY 10280
+bool AreaTrigger_at_haramad_trasporter(Player* player, AreaTriggerEntry const* at)
+{
+    if (player->isAlive() && player->GetQuestStatus(QUEST_SPECIAL_DELIVERY) == QUEST_STATUS_INCOMPLETE)
+    {
+        player->TeleportTo(530, -1874, 5427, -10.4, 0.1);
+    }
+    return true;
+}
+
 /*######
 ## AddSC_netherstrom
 ######*/
@@ -3260,6 +3270,11 @@ void AddSC_netherstorm()
     newscript = new Script;
     newscript->Name = "npc_ethereum_jailor";
     newscript->GetAI = &GetAI_npc_ethereum_jailor;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "at_haramad_transporter";
+    newscript->pAreaTrigger = &AreaTrigger_at_haramad_transporter;
     newscript->RegisterSelf();
 }
 

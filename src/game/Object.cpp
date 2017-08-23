@@ -454,7 +454,7 @@ void Object::BuildValuesUpdate(uint8 updatetype, ByteBuffer * data, UpdateMask *
                     const CreatureInfo* cinfo = ((Creature*)this)->GetCreatureInfo();
                     if (cinfo->flags_extra & CREATURE_FLAG_EXTRA_TRIGGER)
                     {
-                        if (target->isGameMaster())
+                        if (target->isGMTriggersVisible())
                         {
                             if (cinfo->Modelid_A2)
                                 *data << cinfo->Modelid_A1;
