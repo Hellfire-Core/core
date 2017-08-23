@@ -3091,7 +3091,7 @@ CreatureAI* GetAI_npc_ethereum_jailor(Creature* _Creature)
 }
 
 #define QUEST_SPECIAL_DELIVERY 10280
-bool AreaTrigger_at_haramad_trasporter(Player* player, AreaTriggerEntry const* at)
+bool AreaTrigger_at_haramad_transporter(Player* player, AreaTriggerEntry const* at)
 {
     if (player->isAlive() && player->GetQuestStatus(QUEST_SPECIAL_DELIVERY) == QUEST_STATUS_INCOMPLETE)
     {
