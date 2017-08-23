@@ -1049,7 +1049,7 @@ class HELLGROUND_EXPORT Player : public Unit
         void SetGameMaster(bool on);
         bool isGMChat() const { return GetSession()->HasPermissions(PERM_GMT) && (m_ExtraFlags & PLAYER_EXTRA_GM_CHAT); }
         void SetGMChat(bool on) { if (on) m_ExtraFlags |= PLAYER_EXTRA_GM_CHAT; else m_ExtraFlags &= ~PLAYER_EXTRA_GM_CHAT; }
-        bool isGMTriggersVisible() const {return GetSession()->HasPermissions(PERM_GMT) && (m_ExtraFlags & PLAYER_EXTRA_GM_ON) && !(m_ExtraFlags & PLAYER_EXTRA_GM_TRIGGERS)); }
+        bool isGMTriggersVisible() const {return GetSession()->HasPermissions(PERM_GMT) && (m_ExtraFlags & PLAYER_EXTRA_GM_ON) && !(m_ExtraFlags & PLAYER_EXTRA_GM_TRIGGERS); }
         void SetGMHideTriggers(bool on) { if (on) m_ExtraFlags |= PLAYER_EXTRA_GM_TRIGGERS; else m_ExtraFlags &= ~PLAYER_EXTRA_GM_TRIGGERS; }
         bool isTaxiCheater() const { return m_ExtraFlags & PLAYER_EXTRA_TAXICHEAT; }
         void SetTaxiCheater(bool on) { if (on) m_ExtraFlags |= PLAYER_EXTRA_TAXICHEAT; else m_ExtraFlags &= ~PLAYER_EXTRA_TAXICHEAT; }
