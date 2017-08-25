@@ -2310,7 +2310,7 @@ enum PetDiet
 #define GUILD_BANK_MAX_TABS         6
 #define GUILD_BANK_MAX_SLOTS        98
 #define GUILD_BANK_MAX_LOGS         24
-#define GUILD_EVENTLOG_MAX_ENTRIES  99 // client shows only 99
+#define GUILD_EVENTLOG_MAX_ENTRIES  50 // client shows only 99? 
 #define GUILD_MAX_RANKS             10
 #define GUILD_LOGS_MAX_GUID         10000 // if db guids bigger than this renum on guild load
 

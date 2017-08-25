@@ -175,15 +175,22 @@ CreatureAI* GetAI_npc_pit_commander(Creature* c)
 
 struct npc_stair_attackerAI : public ScriptedAI
 {
-    npc_stair_attackerAI(Creature* c) : ScriptedAI(c) {}
+    npc_stair_attackerAI(Creature* c) : ScriptedAI(c) { despawnTimer.Reset(0); }
 
     Timer skill1timer;
     Timer skill2timer;
+    Timer despawnTimer;
 
     void Reset()
     {
         skill1timer.Reset(10000);
         skill2timer.Reset(20000);
+    }
+
+    void EnterCombat(Unit* who)
+    {
+        if (!despawnTimer.GetInterval())
+            despawnTimer.Reset(60000); // live one minute from first combat, dont stack infinitely
     }
 
     void MovementInform(uint32 type, uint32 point)
@@ -196,6 +203,11 @@ struct npc_stair_attackerAI : public ScriptedAI
     {
         if (!UpdateVictim())
             return;
+
+        if (despawnTimer.Expired(diff))
+        {
+            me->DealDamage(me, me->GetHealth());
+        }
 
         if (skill1timer.Expired(diff))
         {
