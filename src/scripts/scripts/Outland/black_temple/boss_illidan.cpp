@@ -1800,7 +1800,7 @@ struct boss_illidan_flameofazzinothAI : public ScriptedAI
                     if (Creature *pOwner = me->GetMap()->GetCreature(m_owner))
                     {
                         if (!me->IsWithinDistInMap(pOwner, 30.0f) && !me->HasAura(SPELL_FLAME_ENRAGE, 0))
-                            ForceSpellCast(me, SPELL_FLAME_ENRAGE);
+                            me->CastSpell(me, SPELL_FLAME_ENRAGE, true);
                     }
 
                     events.ScheduleEvent(EVENT_FLAME_RANGE_CHECK, 2000);

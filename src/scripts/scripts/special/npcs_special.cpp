@@ -2574,7 +2574,7 @@ struct npc_small_pet_handlerAI : public ScriptedAI
                     m_bIsIdle = false;
                     m_uiActionTimer = urand(10000, 20000);
                 }
-                else if (me->IsWithinDistInMap(pPlayer, 1.5f) && !m_bIsIdle)
+                else if (me->IsWithinDistInMap(pPlayer, 2.5f) && !m_bIsIdle)
                 {
                     m_bIsIdle = true;
                 }

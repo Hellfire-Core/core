@@ -4672,6 +4672,7 @@ bool SpellMgr::IsNotIgnoreTriggeredSpell(SpellEntry const* spellInfo)
     {
     case 19185: // frost trap
     case 27285: // seed of corruption
+    case 43733: // stormchops
         return true;
     }
     return false;
