@@ -240,16 +240,16 @@ struct mob_netherweb_victimAI : public ScriptedAI
         {
             if (player->GetQuestStatus(10873) == QUEST_STATUS_INCOMPLETE)
             {
-                if (rand() % 100 < 25)
+                if (roll_chance_i(25))
                 {
                     DoSpawnCreature(QUEST_TARGET, 0, 0, 0, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000);
                     player->KilledMonster(QUEST_TARGET, me->GetGUID());
                 }
                 else
-                    DoSpawnCreature(netherwebVictims[rand() % 6], 0, 0, 0, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000);
+                    DoSpawnCreature(netherwebVictims[urand(0,5)], 0, 0, 0, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000);
             }
             else
-                DoSpawnCreature(netherwebVictims[rand() % 6], 0, 0, 0, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000);
+                DoSpawnCreature(netherwebVictims[urand(0,5)], 0, 0, 0, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000);
         }
     }
 };

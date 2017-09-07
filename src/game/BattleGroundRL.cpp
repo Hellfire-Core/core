@@ -88,8 +88,8 @@ void BattleGroundRL::Update(uint32 diff)
             DoorOpen(BG_RL_OBJECT_DOOR_1);
             DoorOpen(BG_RL_OBJECT_DOOR_2);
 
-            SpawnBGObject(BG_RL_OBJECT_BUFF_1, 60);
-            SpawnBGObject(BG_RL_OBJECT_BUFF_2, 60);
+            SpawnBGObject(BG_RL_OBJECT_BUFF_1, 90);
+            SpawnBGObject(BG_RL_OBJECT_BUFF_2, 90);
             DelCreature(BG_ARENA_READY_NPC1);
             DelCreature(BG_ARENA_READY_NPC2);
 

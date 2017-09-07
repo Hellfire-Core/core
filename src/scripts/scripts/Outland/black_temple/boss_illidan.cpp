@@ -1714,8 +1714,6 @@ struct boss_illidan_flameofazzinothAI : public ScriptedAI
     {
         pInstance = c->GetInstanceData();
 
-        me->SetFloatValue(UNIT_FIELD_BOUNDINGRADIUS, 8.0f);
-        me->SetFloatValue(UNIT_FIELD_COMBATREACH, 8.0f);
         me->SetReactState(REACT_PASSIVE);
     }
 

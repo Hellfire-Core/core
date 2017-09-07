@@ -85,8 +85,8 @@ void BattleGroundNA::Update(uint32 diff)
             for (uint32 i = BG_NA_OBJECT_DOOR_1; i <= BG_NA_OBJECT_DOOR_2; i++)
                 DoorOpen(i);
 
-            SpawnBGObject(BG_NA_OBJECT_BUFF_1, 60);
-            SpawnBGObject(BG_NA_OBJECT_BUFF_2, 60);
+            SpawnBGObject(BG_NA_OBJECT_BUFF_1, 90);
+            SpawnBGObject(BG_NA_OBJECT_BUFF_2, 90);
             DelCreature(BG_ARENA_READY_NPC1);
             DelCreature(BG_ARENA_READY_NPC2);
 
