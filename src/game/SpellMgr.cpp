@@ -3157,6 +3157,26 @@ void SpellMgr::LoadSpellCustomAttr()
                 case 39985: // posses - shartuul transporter
                     spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_TARGET_ENEMY;
                     break;
+                case 32096: // Thrallmar's Favor
+                    spellInfo->EffectBasePoints[0] = 24;
+                    spellInfo->EffectApplyAuraName[0] = 190;
+                    spellInfo->EffectMiscValue[0] = 947;
+                    spellInfo->Effect[1] = 6;
+                    spellInfo->EffectBasePoints[1] = 4;
+                    spellInfo->EffectImplicitTargetA[1] = 1;
+                    spellInfo->EffectApplyAuraName[1] = 200;
+                    spellInfo->EffectBaseDice[1] = 1;
+                    break;
+                case 32098: // Honor Hold's Favor
+                    spellInfo->EffectBasePoints[0] = 24;
+                    spellInfo->EffectApplyAuraName[0] = 190;
+                    spellInfo->EffectMiscValue[0] = 946;
+                    spellInfo->Effect[1] = 6;
+                    spellInfo->EffectBasePoints[1] = 4;
+                    spellInfo->EffectImplicitTargetA[1] = 1;
+                    spellInfo->EffectApplyAuraName[1] = 200;
+                    spellInfo->EffectBaseDice[1] = 1;
+                    break;
                     //PRE NERF ZONE
                 case 37060: // nightbane immolation aura efect
                     spellInfo->EffectBasePoints[0] = 470;
@@ -4083,26 +4103,6 @@ void SpellMgr::LoadCustomSpellCooldowns(SpellEntry* spellInfo)
         case 44935: //Expose Razorthorn Root
         case 29992: //Quest spell - needs cooldown to be able to add to possessed unit
             spellInfo->RecoveryTime = 1080;
-            break;
-        case 32096: // Thrallmar's Favor
-            spellInfo->EffectBasePoints[0] = 24;
-            spellInfo->EffectApplyAuraName[0] = 190;
-            spellInfo->EffectMiscValue[0] = 947;
-            spellInfo->Effect[1] = 6;
-            spellInfo->EffectBasePoints[1] = 4;
-            spellInfo->EffectImplicitTargetA[1] = 1;
-            spellInfo->EffectApplyAuraName[1] = 200;
-            spellInfo->EffectBaseDice[1] = 1;
-            break;
-        case 32098: // Honor Hold's Favor
-            spellInfo->EffectBasePoints[0] = 24;
-            spellInfo->EffectApplyAuraName[0] = 190;
-            spellInfo->EffectMiscValue[0] = 946;
-            spellInfo->Effect[1] = 6;
-            spellInfo->EffectBasePoints[1] = 4;
-            spellInfo->EffectImplicitTargetA[1] = 1;
-            spellInfo->EffectApplyAuraName[1] = 200;
-            spellInfo->EffectBaseDice[1] = 1;
             break;
         default:
             break;
