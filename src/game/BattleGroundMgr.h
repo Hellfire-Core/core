@@ -44,6 +44,7 @@ struct PlayerQueueInfo                                      // stores informatio
     uint32  LastInviteTime;                                 // last invite time
     uint32  LastOnlineTime;                                 // for tracking and removing offline players from queue after 5 minutes
     GroupQueueInfo * GroupInfo;                             // pointer to the associated groupqueueinfo
+    std::string adr;
 };
 
 struct GroupQueueInfo                                       // stores information about the group in queue (also used when joined as solo!)

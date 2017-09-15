@@ -178,9 +178,21 @@ void BattleGroundQueue::AddPlayer(Player *plr, GroupQueueInfo *ginfo)
     info.LastInviteTime             = 0;
     info.LastOnlineTime             = WorldTimer::getMSTime();
     info.GroupInfo                  = ginfo;
+    info.adr                        = plr->GetSession()->GetRemoteAddress();
 
     // add the pinfo to ginfo's list
     ginfo->Players[plr->GetGUID()]  = &info;
+
+    for (QueuedPlayersMap::iterator itr = m_QueuedPlayers.begin(); itr != m_QueuedPlayers.end(); ++itr)
+    {
+        if (itr->second.GroupInfo->GetBGTeam() == ginfo->GetBGTeam())
+            continue;
+        if (itr->second.adr != info.adr)
+            continue;
+
+        sWorld.SendGMText(LANG_ABUSE_BG_BOTH_FACTIONS, plr->GetName(), plr->GetGUID(), itr->first);
+        sLog.outLog(LOG_EXPLOITS_CHEATS, "Player (%s %u) queued bg on both factions from same IP (other faction char %u)", plr->GetName(), plr->GetGUID(), itr->first);
+    }
 }
 
 //remove player from queue and from group info, if group info is empty then remove it too
@@ -309,7 +321,7 @@ bool BattleGroundQueue::InviteGroupToBG(GroupQueueInfo * ginfo, BattleGround * b
             // if offline, skip him
             if(!plr)
                 continue;
-
+            plr->GetSession()->GetRemoteAddress();
             // invite the player
             sBattleGroundMgr.InvitePlayer(plr, bg->GetInstanceID(), bg->GetTypeID(), ginfo->Team);
 
