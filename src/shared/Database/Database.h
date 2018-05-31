@@ -60,7 +60,7 @@ class SqlConnection
         virtual bool CommitTransaction() { return true; }
         // can't rollback without transaction support
         virtual bool RollbackTransaction() { return true; }
-        virtual bool Ping() {};
+		virtual bool Ping() { return 0; };
         //methods to work with prepared statements
         bool ExecuteStmt(int nIndex, const SqlStmtParameters& id);
 
