@@ -342,7 +342,7 @@ void ScriptedAI::CastNextSpellIfAnyAndReady(uint32 diff)
 
     if (!spellList.empty() && !cast)
     {
-        if (spellList.size() > 10 and !reportedBigList)
+        if (spellList.size() > 10 && !reportedBigList)
         {
             reportedBigList = true;
             sLog.outLog(LOG_DB_ERR, "creature %u has too many spells to cast!", m_creature->GetEntry());
