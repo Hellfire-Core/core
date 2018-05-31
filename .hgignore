@@ -29,3 +29,8 @@ win/VC1*0/*/*
 win/_*/
 
 src/shared/revision.h
+win/.vs/HellGround VC120/v15/Solution.VC.db-wal
+win/.vs/HellGround VC120/v15/Browse.VC.db
+win/.vs/HellGround VC120/v15/Solution.VC.db-shm
+win/.vs/HellGround VC120/v15/Browse.VC.opendb
+win/.vs/HellGround VC120/v15/Solution.VC.db
