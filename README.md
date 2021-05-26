@@ -12,7 +12,9 @@
 Welcome!
 
 
-Do not share this code with anyone who does not have access to repository.
+/\*Do not share this code with anyone who does not have access to repository.\*/
+
+HellGround Core (Wargate core) has been released as public as of Classic-TBC release.
 
 
 Copyright (C) 2008-2017 HellGround team <https://wow-hellground.com/>
