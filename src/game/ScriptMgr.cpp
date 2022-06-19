@@ -51,7 +51,10 @@ struct TSpellSummary
 extern TSpellSummary* SpellSummary;
 
 ScriptMgr::ScriptMgr()
-{ }
+{
+    for (uint16 i = 0; i < MAX_SCRIPTS; ++i)
+        m_scripts[i] = NULL;
+}
 
 ScriptMgr::~ScriptMgr()
 {
