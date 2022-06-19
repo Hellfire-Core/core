@@ -724,7 +724,7 @@ bool ChatHandler::HandleReloadSpellDisabledCommand(const char* /*arg*/)
 
 bool ChatHandler::HandleLoadScriptsCommand(const char* args)
 {
-     if (!sScriptMgr.LoadScriptLibrary(args))
+     if (!sScriptMgr.LoadScriptLibrary())
          return true;
 
     sWorld.SendGMText(LANG_SCRIPTS_RELOADED);

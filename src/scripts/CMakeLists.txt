@@ -1,4 +1,6 @@
-file(GLOB_RECURSE hellgroundscript_SRCS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp *.h)
+set(LIBRARY_NAME scripts)
+
+file(GLOB_RECURSE SCRIPTS_SRCS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp *.h)
 
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}
@@ -60,15 +62,23 @@ source_group("AI"
   REGULAR_EXPRESSION escort_ai|follower_ai|simple_ai|sc_creature
 )
 
-add_library(hellgroundscript SHARED ${hellgroundscript_SRCS})
+add_library(${LIBRARY_NAME} STATIC
+  ${SCRIPTS_SRCS}
+)
 
-add_definitions(-D_TRINITY_SCRIPT_CONFIG='"${CONF_DIR}/hellgroundcore.conf"' -DTHIS_IS_SCRIPT_DLL)
+SET_TARGET_PROPERTIES (${LIBRARY_NAME} PROPERTIES FOLDER "Game Libs")
 
-IF (CMAKE_SYSTEM_NAME MATCHES "Darwin")
-    SET_TARGET_PROPERTIES(hellgroundscript PROPERTIES LINK_FLAGS "-flat_namespace -undefined suppress")
-ENDIF (CMAKE_SYSTEM_NAME MATCHES "Darwin")
+target_link_libraries(scripts
+  game
+)
 
-target_link_libraries(hellgroundscript)
-
-set_target_properties(hellgroundscript PROPERTIES VERSION 4.2.0 SOVERSION 4)
-install(TARGETS hellgroundscript DESTINATION lib)
+if(PCH)
+  if(MSVC OR XCODE)
+    if(MSVC)
+      set(scripts_pch "${CMAKE_CURRENT_SOURCE_DIR}/include/precompiled.cpp")
+    endif()
+    add_native_precompiled_header(scripts ${CMAKE_CURRENT_SOURCE_DIR}/include/precompiled.h)
+  elseif(CMAKE_COMPILER_IS_GNUCXX)
+    add_precompiled_header(scripts ${CMAKE_CURRENT_SOURCE_DIR}/include/precompiled.h)
+  endif()
+endif()

@@ -25,6 +25,10 @@
 
 #include "Common.h"
 #include "CreatureEventAI.h"
+#include "ScriptMgr.h"
+
+ // Text Maps
+typedef UNORDERED_MAP<int32, StringTextData> CreatureEventAI_TextMap;
 
 class CreatureEventAIMgr
 {

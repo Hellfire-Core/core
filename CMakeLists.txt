@@ -24,6 +24,10 @@ set(SERVER_VERSION 2.4.3)
 # CMake policies
 cmake_minimum_required(VERSION 2.8)
 
+if(${CMAKE_VERSION} VERSION_GREATER "2.8.12")
+  cmake_policy(SET CMP0043 OLD)
+endif()
+
 set(CMAKE_MODULE_PATH
   ${CMAKE_MODULE_PATH}
   ${CMAKE_SOURCE_DIR}/cmake

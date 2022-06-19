@@ -41,15 +41,6 @@
 #  endif //ACE_BYTE_ORDER
 #endif //HELLGROUND_ENDIAN
 
-typedef ACE_SHLIB_HANDLE HELLGROUND_LIBRARY_HANDLE;
-
-#define HELLGROUND_SCRIPT_NAME "hellgroundscript"
-#define HELLGROUND_SCRIPT_SUFFIX ACE_DLL_SUFFIX
-#define HELLGROUND_SCRIPT_PREFIX ACE_DLL_PREFIX
-#define HELLGROUND_LOAD_LIBRARY(libname)    ACE_OS::dlopen(libname)
-#define HELLGROUND_CLOSE_LIBRARY(hlib)      ACE_OS::dlclose(hlib)
-#define HELLGROUND_GET_PROC_ADDR(hlib,name) ACE_OS::dlsym(hlib,name)
-
 #if PLATFORM == PLATFORM_WINDOWS
 #  ifndef THIS_IS_SCRIPT_DLL
 #    define HELLGROUND_EXPORT __declspec(dllexport)

@@ -1392,7 +1392,7 @@ void World::SetInitialWorldSettings()
     sCreatureEAIMgr.LoadCreatureEventAI_Scripts();
 
     sLog.outString("Initializing Scripts...");
-    sScriptMgr.LoadScriptLibrary(HELLGROUND_SCRIPT_NAME);
+    sScriptMgr.LoadScriptLibrary();
 
     ///- Initialize game time and timers
     sLog.outDebug("DEBUG:: Initialize game time and timers");

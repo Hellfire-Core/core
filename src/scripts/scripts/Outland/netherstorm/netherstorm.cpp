@@ -3072,7 +3072,7 @@ struct npc_ethereum_jailorAI : public ScriptedAI
     {
         if (points.empty())
         {
-            points = pSystemMgr.GetPointMoveList(m_creature->GetEntry());
+            points = sScriptMgr.GetPointMoveList(m_creature->GetEntry());
             if (points.empty())
                 return;
         }

@@ -23,6 +23,10 @@
 #include "ObjectMgr.h"
 #include "WaypointMgr.h"
 #include "World.h"
+#include "Player.h"
+#include "GossipDef.h"
+#include "SpellAuras.h"
+#include "CreatureAI.h"
 
 #include "../shared/Config/Config.h"
 
@@ -34,42 +38,154 @@ ScriptMapMap sEventScripts;
 ScriptMapMap sGossipScripts;
 ScriptMapMap sWaypointScripts;
 
-ScriptMgr::ScriptMgr() :
-    m_hScriptLib(NULL),
-    m_pOnInitScriptLibrary(NULL),
-    m_pOnFreeScriptLibrary(NULL),
-    m_pGetCreatureAI(NULL),
-    m_pCreateInstanceData(NULL),
+void FillSpellSummary();
 
-    m_pOnGossipHello(NULL),
-    m_pOnGossipSelect(NULL),
-    m_pOnGOGossipSelect(NULL),
-    m_pOnGossipSelectWithCode(NULL),
-    m_pOnGOGossipSelectWithCode(NULL),
-    m_pOnQuestAccept(NULL),
-    m_pOnGOQuestAccept(NULL),
-    m_pOnItemQuestAccept(NULL),
-    m_pOnQuestRewarded(NULL),
-    m_pOnGOQuestRewarded(NULL),
-    m_pGetNPCDialogStatus(NULL),
-    m_pGetGODialogStatus(NULL),
-    m_pOnGOUse(NULL),
-    m_pOnItemUse(NULL),
-    m_pOnAreaTrigger(NULL),
-    m_pOnCompletedCinematic(NULL),
-    m_pOnProcessEvent(NULL),
-    m_pOnAuraDummy(NULL),
-    m_pOnReceiveEmote(NULL),
+// -------------------
 
-    // spell scripts
-    m_pOnSpellSetTargetMap(NULL),
-    m_pOnSpellHandleEffect(NULL)
+struct TSpellSummary
 {
-}
+    uint8 Targets;                                          // set of enum SelectTarget
+    uint8 Effects;                                          // set of enum SelectEffect
+};
+
+extern TSpellSummary* SpellSummary;
+
+ScriptMgr::ScriptMgr()
+{ }
 
 ScriptMgr::~ScriptMgr()
 {
     UnloadScriptLibrary();
+}
+
+void ScriptMgr::LoadScriptTexts()
+{
+    outstring_log("TSCR: Loading Script Texts...");
+    LoadHellgroundStrings(GameDataDatabase, "script_texts", TEXT_SOURCE_RANGE, 1 + (TEXT_SOURCE_RANGE * 2));
+
+    QueryResultAutoPtr pResult = GameDataDatabase.PQuery("SELECT entry, sound, type, language, emote FROM script_texts");
+
+    outstring_log("TSCR: Loading Script Texts additional data...");
+
+    if (pResult)
+    {
+        BarGoLink bar(pResult->GetRowCount());
+        uint32 uiCount = 0;
+
+        do
+        {
+            bar.step();
+            Field* pFields = pResult->Fetch();
+            StringTextData pTemp;
+
+            int32 iId = pFields[0].GetInt32();
+            pTemp.SoundId = pFields[1].GetUInt32();
+            pTemp.Type = pFields[2].GetUInt32();
+            pTemp.Language = pFields[3].GetUInt32();
+            pTemp.Emote = pFields[4].GetUInt32();
+
+            if (iId >= 0)
+            {
+                error_db_log("TSCR: Entry %i in table `script_texts` is not a negative value.", iId);
+                continue;
+            }
+
+            if (iId > TEXT_SOURCE_RANGE || iId <= TEXT_SOURCE_RANGE * 2)
+            {
+                error_db_log("TSCR: Entry %i in table `script_texts` is out of accepted entry range for table.", iId);
+                continue;
+            }
+
+            if (pTemp.SoundId)
+            {
+                if (!GetSoundEntriesStore()->LookupEntry(pTemp.SoundId))
+                    error_db_log("TSCR: Entry %i in table `script_texts` has soundId %u but sound does not exist.", iId, pTemp.SoundId);
+            }
+
+            if (!GetLanguageDescByID(pTemp.Language))
+                error_db_log("TSCR: Entry %i in table `script_texts` using Language %u but Language does not exist.", iId, pTemp.Language);
+
+            if (pTemp.Type > CHAT_TYPE_ZONE_YELL)
+                error_db_log("TSCR: Entry %i in table `script_texts` has Type %u but this Chat Type does not exist.", iId, pTemp.Type);
+
+            m_mTextDataMap[iId] = pTemp;
+            ++uiCount;
+        } while (pResult->NextRow());
+
+        outstring_log();
+        outstring_log(">> Loaded %u additional Script Texts data.", uiCount);
+    }
+    else
+    {
+        BarGoLink bar(1);
+        bar.step();
+        outstring_log();
+        outstring_log(">> Loaded 0 additional Script Texts data. DB table `script_texts` is empty.");
+    }
+}
+
+void ScriptMgr::LoadScriptWaypoints()
+{
+    // Drop Existing Waypoint list
+    m_mPointMoveMap.clear();
+
+    uint64 uiCreatureCount = 0;
+
+    // Load Waypoints
+    QueryResultAutoPtr pResult = GameDataDatabase.PQuery("SELECT COUNT(entry) FROM script_waypoint GROUP BY entry");
+    if (pResult)
+    {
+        uiCreatureCount = pResult->GetRowCount();
+    }
+
+    outstring_log("TSCR: Loading Script Waypoints for %lu creature(s)...", uiCreatureCount);
+
+    pResult = GameDataDatabase.PQuery("SELECT entry, pointid, location_x, location_y, location_z, waittime FROM script_waypoint ORDER BY pointid");
+
+    if (pResult)
+    {
+        BarGoLink bar(pResult->GetRowCount());
+        uint32 uiNodeCount = 0;
+
+        do
+        {
+            bar.step();
+            Field* pFields = pResult->Fetch();
+            ScriptPointMove pTemp;
+
+            pTemp.uiCreatureEntry = pFields[0].GetUInt32();
+            uint32 uiEntry = pTemp.uiCreatureEntry;
+            pTemp.uiPointId = pFields[1].GetUInt32();
+            pTemp.fX = pFields[2].GetFloat();
+            pTemp.fY = pFields[3].GetFloat();
+            pTemp.fZ = pFields[4].GetFloat();
+            pTemp.uiWaitTime = pFields[5].GetUInt32();
+
+            CreatureInfo const* pCInfo = GetCreatureTemplateStore(pTemp.uiCreatureEntry);
+
+            if (!pCInfo)
+            {
+                error_db_log("TSCR: DB table script_waypoint has waypoint for non-existant creature entry %u", pTemp.uiCreatureEntry);
+                continue;
+            }
+
+            if (!pCInfo->ScriptID)
+                error_db_log("TSCR: DB table script_waypoint has waypoint for creature entry %u, but creature does not have ScriptName defined and then useless.", pTemp.uiCreatureEntry);
+
+            m_mPointMoveMap[uiEntry].push_back(pTemp);
+            ++uiNodeCount;
+        } while (pResult->NextRow());
+
+        outstring_log();
+        outstring_log(">> Loaded %u Script Waypoint nodes.", uiNodeCount);
+    }
+    else
+    {
+        BarGoLink bar(1);
+        bar.step();
+        outstring_log();
+        outstring_log(">> Loaded 0 Script Waypoints. DB table `script_waypoint` is empty.");
+    }
 }
 
 void ScriptMgr::LoadScripts(ScriptMapMap& scripts, char const* tablename)
@@ -684,213 +800,326 @@ void ScriptMgr::LoadCompletedCinematicScripts()
 
 CreatureAI* ScriptMgr::GetCreatureAI(Creature* pCreature)
 {
-    if (!m_pGetCreatureAI)
+    Script* pTempScript = m_scripts[pCreature->GetScriptId()];
+
+    if (!pTempScript || !pTempScript->GetAI)
         return NULL;
 
-    return m_pGetCreatureAI(pCreature);
+    CreatureAI* ai = pTempScript->GetAI(pCreature);
+    ai->m_AIName = pCreature->GetScriptName();
+    return ai;
 }
 
 InstanceData* ScriptMgr::CreateInstanceData(Map* pMap)
 {
-    if (!m_pCreateInstanceData)
+    if (!pMap->IsDungeon())
+        return NULL;
+    Script* pTempScript = m_scripts[((InstanceMap*)pMap)->GetScriptId()];
+
+    if (!pTempScript || !pTempScript->GetInstanceData)
         return NULL;
 
-    return m_pCreateInstanceData(pMap);
+    return pTempScript->GetInstanceData(pMap);
 }
 
 bool ScriptMgr::OnGossipHello(Player* pPlayer, Creature* pCreature)
 {
-    return m_pOnGossipHello != NULL && m_pOnGossipHello(pPlayer, pCreature);
+    Script* pTempScript = m_scripts[pCreature->GetScriptId()];
+
+    if (!pTempScript || !pTempScript->pGossipHello)
+        return false;
+
+    pPlayer->PlayerTalkClass->ClearMenus();
+
+    return pTempScript->pGossipHello(pPlayer, pCreature);
 }
 
 bool ScriptMgr::OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 sender, uint32 action, const char* code)
 {
-    if (code)
-        return m_pOnGossipSelectWithCode != NULL && m_pOnGossipSelectWithCode(pPlayer, pCreature, sender, action, code);
-    else
-        return m_pOnGossipSelect != NULL && m_pOnGossipSelect(pPlayer, pCreature, sender, action);
+    debug_log("SD2: Gossip selection, sender: %u, action: %u", sender, action);
+
+    Script* pTempScript = m_scripts[pCreature->GetScriptId()];
+
+    if (!pTempScript || !pTempScript->pGossipSelect)
+        return false;
+
+    pPlayer->PlayerTalkClass->ClearMenus();
+
+    return pTempScript->pGossipSelect(pPlayer, pCreature, sender, action);
 }
 
-bool ScriptMgr::OnGossipSelect(Player* pPlayer, GameObject* pGameObject, uint32 sender, uint32 action, const char* code)
+bool ScriptMgr::OnGossipSelect(Player* pPlayer, GameObject* pGo, uint32 sender, uint32 action, const char* code)
 {
-    if (code)
-        return m_pOnGOGossipSelectWithCode != NULL && m_pOnGOGossipSelectWithCode(pPlayer, pGameObject, sender, action, code);
-    else
-        return m_pOnGOGossipSelect != NULL && m_pOnGOGossipSelect(pPlayer, pGameObject, sender, action);
+    debug_log("SD2: GO Gossip selection, sender: %u, action: %u", sender, action);
+
+    Script* pTempScript = m_scripts[pGo->GetGOInfo()->ScriptId];
+
+    if (!pTempScript || !pTempScript->pGossipSelectGO)
+        return false;
+
+    pPlayer->PlayerTalkClass->ClearMenus();
+
+    return pTempScript->pGossipSelectGO(pPlayer, pGo, sender, action);
+}
+
+bool ScriptMgr::OnGossipSelectWithCode(Player* pPlayer, Creature* pCreature, uint32 uiSender, uint32 uiAction, const char* sCode)
+{
+    debug_log("SD2: Gossip selection with code, sender: %u, action: %u", uiSender, uiAction);
+
+    Script* pTempScript = m_scripts[pCreature->GetScriptId()];
+
+    if (!pTempScript || !pTempScript->pGossipSelectWithCode)
+        return false;
+
+    pPlayer->PlayerTalkClass->ClearMenus();
+
+    return pTempScript->pGossipSelectWithCode(pPlayer, pCreature, uiSender, uiAction, sCode);
+}
+
+bool ScriptMgr::OnGossipSelectWithCode(Player* pPlayer, GameObject* pGo, uint32 uiSender, uint32 uiAction, const char* sCode)
+{
+    debug_log("SD2: GO Gossip selection with code, sender: %u, action: %u", uiSender, uiAction);
+
+    Script* pTempScript = m_scripts[pGo->GetGOInfo()->ScriptId];
+
+    if (!pTempScript || !pTempScript->pGossipSelectGOWithCode)
+        return false;
+
+    pPlayer->PlayerTalkClass->ClearMenus();
+
+    return pTempScript->pGossipSelectGOWithCode(pPlayer, pGo, uiSender, uiAction, sCode);
 }
 
 bool ScriptMgr::OnQuestAccept(Player* pPlayer, Creature* pCreature, Quest const* pQuest)
 {
-    return m_pOnQuestAccept != NULL && m_pOnQuestAccept(pPlayer, pCreature, pQuest);
+    Script* pTempScript = m_scripts[pCreature->GetScriptId()];
+
+    if (!pTempScript || !pTempScript->pQuestAcceptNPC)
+        return false;
+
+    pPlayer->PlayerTalkClass->ClearMenus();
+
+    return pTempScript->pQuestAcceptNPC(pPlayer, pCreature, pQuest);
 }
 
-bool ScriptMgr::OnQuestAccept(Player* pPlayer, GameObject* pGameObject, Quest const* pQuest)
+bool ScriptMgr::OnQuestAccept(Player* pPlayer, GameObject* pGo, Quest const* pQuest)
 {
-    return m_pOnGOQuestAccept != NULL && m_pOnGOQuestAccept(pPlayer, pGameObject, pQuest);
+    Script* pTempScript = m_scripts[pGo->GetGOInfo()->ScriptId];
+
+    if (!pTempScript || !pTempScript->pQuestAcceptGO)
+        return false;
+
+    pPlayer->PlayerTalkClass->ClearMenus();
+
+    return pTempScript->pQuestAcceptGO(pPlayer, pGo, pQuest);
 }
 
 bool ScriptMgr::OnQuestAccept(Player* pPlayer, Item* pItem, Quest const* pQuest)
 {
-    return m_pOnItemQuestAccept != NULL && m_pOnItemQuestAccept(pPlayer, pItem, pQuest);
+    Script* pTempScript = m_scripts[pItem->GetProto()->ScriptId];
+
+    if (!pTempScript || !pTempScript->pQuestAcceptItem)
+        return false;
+
+    pPlayer->PlayerTalkClass->ClearMenus();
+
+    return pTempScript->pQuestAcceptItem(pPlayer, pItem, pQuest);
 }
 
 bool ScriptMgr::OnQuestRewarded(Player* pPlayer, Creature* pCreature, Quest const* pQuest)
 {
-    return m_pOnQuestRewarded != NULL && m_pOnQuestRewarded(pPlayer, pCreature, pQuest);
+    Script* pTempScript = m_scripts[pCreature->GetScriptId()];
+
+    if (!pTempScript || !pTempScript->pQuestRewardedNPC)
+        return false;
+
+    pPlayer->PlayerTalkClass->ClearMenus();
+
+    return pTempScript->pQuestRewardedNPC(pPlayer, pCreature, pQuest);
 }
 
-bool ScriptMgr::OnQuestRewarded(Player* pPlayer, GameObject* pGameObject, Quest const* pQuest)
+bool ScriptMgr::OnQuestRewarded(Player* pPlayer, GameObject* pGo, Quest const* pQuest)
 {
-    return m_pOnGOQuestRewarded != NULL && m_pOnGOQuestRewarded(pPlayer, pGameObject, pQuest);
+    Script* pTempScript = m_scripts[pGo->GetGOInfo()->ScriptId];
+
+    if (!pTempScript || !pTempScript->pQuestRewardedGO)
+        return false;
+
+    pPlayer->PlayerTalkClass->ClearMenus();
+
+    return pTempScript->pQuestRewardedGO(pPlayer, pGo, pQuest);
 }
 
 uint32 ScriptMgr::GetDialogStatus(Player* pPlayer, Creature* pCreature)
 {
-    if (!m_pGetNPCDialogStatus)
-        return DIALOG_STATUS_SCRIPTED_NO_STATUS;
+    Script* pTempScript = m_scripts[pCreature->GetScriptId()];
 
-    return m_pGetNPCDialogStatus(pPlayer, pCreature);
+    if (!pTempScript || !pTempScript->pDialogStatusNPC)
+        return 100;
+
+    pPlayer->PlayerTalkClass->ClearMenus();
+
+    return pTempScript->pDialogStatusNPC(pPlayer, pCreature);
 }
 
-uint32 ScriptMgr::GetDialogStatus(Player* pPlayer, GameObject* pGameObject)
+uint32 ScriptMgr::GetDialogStatus(Player* pPlayer, GameObject* pGo)
 {
-    if (!m_pGetGODialogStatus)
-        return DIALOG_STATUS_SCRIPTED_NO_STATUS;
+    Script* pTempScript = m_scripts[pGo->GetGOInfo()->ScriptId];
 
-    return m_pGetGODialogStatus(pPlayer, pGameObject);
+    if (!pTempScript || !pTempScript->pDialogStatusGO)
+        return 100;
+
+    pPlayer->PlayerTalkClass->ClearMenus();
+
+    return pTempScript->pDialogStatusGO(pPlayer, pGo);
 }
 
-bool ScriptMgr::OnGameObjectUse(Player* pPlayer, GameObject* pGameObject)
+bool ScriptMgr::OnGameObjectUse(Player* pPlayer, GameObject* pGo)
 {
-    return m_pOnGOUse != NULL && m_pOnGOUse(pPlayer, pGameObject);
+    Script* pTempScript = m_scripts[pGo->GetGOInfo()->ScriptId];
+
+    if (!pTempScript || !pTempScript->pGOUse)
+        return false;
+
+    return pTempScript->pGOUse(pPlayer, pGo);
 }
 
 bool ScriptMgr::OnItemUse(Player* pPlayer, Item* pItem, SpellCastTargets const& targets)
 {
-    return m_pOnItemUse != NULL && m_pOnItemUse(pPlayer, pItem, targets);
+    Script* pTempScript = m_scripts[pItem->GetProto()->ScriptId];
+
+    if (!pTempScript || !pTempScript->pItemUse)
+        return false;
+
+    return pTempScript->pItemUse(pPlayer, pItem, targets);
 }
 
 bool ScriptMgr::OnAreaTrigger(Player* pPlayer, AreaTriggerEntry const* atEntry)
 {
-    return m_pOnAreaTrigger != NULL && m_pOnAreaTrigger(pPlayer, atEntry);
+    Script* pTempScript = m_scripts[GetAreaTriggerScriptId(atEntry->id)];
+
+    if (!pTempScript || !pTempScript->pAreaTrigger)
+        return false;
+
+    return pTempScript->pAreaTrigger(pPlayer, atEntry);
 }
 
 bool ScriptMgr::OnCompletedCinematic(Player* pPlayer, CinematicSequencesEntry const* cinematic)
 {
-    return m_pOnCompletedCinematic != NULL && m_pOnCompletedCinematic(pPlayer, cinematic);
+    Script* pTempScript = m_scripts[GetCompletedCinematicScriptId(cinematic->Id)];
+
+    if (!pTempScript || !pTempScript->pCompletedCinematic)
+        return false;
+
+    return pTempScript->pCompletedCinematic(pPlayer, cinematic);
 }
 
 bool ScriptMgr::OnProcessEvent(uint32 eventId, Object* pSource, Object* pTarget, bool isStart)
 {
-    return m_pOnProcessEvent != NULL && m_pOnProcessEvent(eventId, pSource, pTarget, isStart);
+    Script* pTempScript = m_scripts[GetEventIdScriptId(eventId)];
+
+    if (!pTempScript || !pTempScript->pProcessEventId)
+        return false;
+
+    // bIsStart may be false, when event is from taxi node events (arrival=false, departure=true)
+    return pTempScript->pProcessEventId(eventId, pSource, pTarget, isStart);
 }
 
 bool ScriptMgr::OnAuraDummy(Aura const* pAura, bool apply)
 {
-    return m_pOnAuraDummy != NULL && m_pOnAuraDummy(pAura, apply);
+    Script* pTempScript = m_scripts[((Creature*)pAura->GetTarget())->GetScriptId()];
+
+    if (!pTempScript || !pTempScript->pEffectAuraDummy)
+        return false;
+
+    return pTempScript->pEffectAuraDummy(pAura, apply);
 }
 
 bool ScriptMgr::OnReceiveEmote(Player *pPlayer, Creature *pCreature, uint32 emote)
 {
-    return m_pOnReceiveEmote != NULL && m_pOnReceiveEmote(pPlayer, pCreature, emote);
+    Script *tmpscript = m_scripts[pCreature->GetScriptId()];
+    if (!tmpscript || !tmpscript->pReceiveEmote) return false;
+
+    return tmpscript->pReceiveEmote(pPlayer, pCreature, emote);
 }
 
 // spell scripts
 bool ScriptMgr::OnSpellSetTargetMap(Unit* pCaster, std::list<Unit*> &unitList, SpellCastTargets const& targets, SpellEntry const *pSpell, uint32 effectIndex)
 {
-    return m_pOnSpellSetTargetMap != NULL && m_pOnSpellSetTargetMap(pCaster, unitList, targets, pSpell, effectIndex);
+    Script* pTempScript = m_scripts[GetSpellIdScriptId(pSpell->Id)];
+
+    if (!pTempScript || !pTempScript->pSpellTargetMap)
+        return false;
+
+    return pTempScript->pSpellTargetMap(pCaster, unitList, targets, pSpell, effectIndex);
 }
 
 bool ScriptMgr::OnSpellHandleEffect(Unit *pCaster, Unit* pUnit, Item* pItem, GameObject* pGameObject, SpellEntry const *pSpell, uint32 effectIndex)
 {
-    return m_pOnSpellHandleEffect != NULL && m_pOnSpellHandleEffect(pCaster, pUnit, pItem, pGameObject, pSpell, effectIndex);
-}
+    Script* pTempScript = m_scripts[GetSpellIdScriptId(pSpell->Id)];
 
-bool ScriptMgr::LoadScriptLibrary(const char* libName)
-{
-    UnloadScriptLibrary();
-
-    std::string name = libName;
-    name = HELLGROUND_SCRIPT_PREFIX + name + HELLGROUND_SCRIPT_SUFFIX;
-
-    m_hScriptLib = HELLGROUND_LOAD_LIBRARY(name.c_str());
-
-    if (!m_hScriptLib)
+    if (!pTempScript || !pTempScript->pSpellHandleEffect)
         return false;
 
-    GetScriptHookPtr(m_pOnInitScriptLibrary,        "InitScriptLibrary");
-    GetScriptHookPtr(m_pOnFreeScriptLibrary,        "FreeScriptLibrary");
+    return pTempScript->pSpellHandleEffect(pCaster, pUnit, pItem, pGameObject, pSpell, effectIndex);
+}
 
-    GetScriptHookPtr(m_pGetCreatureAI,              "GetCreatureAI");
-    GetScriptHookPtr(m_pCreateInstanceData,         "CreateInstanceData");
-
-    GetScriptHookPtr(m_pOnGossipHello,              "GossipHello");
-    GetScriptHookPtr(m_pOnGossipSelect,             "GossipSelect");
-    GetScriptHookPtr(m_pOnGOGossipSelect,           "GOGossipSelect");
-    GetScriptHookPtr(m_pOnGossipSelectWithCode,     "GossipSelectWithCode");
-    GetScriptHookPtr(m_pOnGOGossipSelectWithCode,   "GOGossipSelectWithCode");
-    GetScriptHookPtr(m_pOnQuestAccept,              "QuestAccept");
-    GetScriptHookPtr(m_pOnGOQuestAccept,            "GOQuestAccept");
-    GetScriptHookPtr(m_pOnItemQuestAccept,          "ItemQuestAccept");
-    GetScriptHookPtr(m_pOnQuestRewarded,            "QuestRewarded");
-    GetScriptHookPtr(m_pOnGOQuestRewarded,          "GOQuestRewarded");
-    GetScriptHookPtr(m_pGetNPCDialogStatus,         "GetNPCDialogStatus");
-    GetScriptHookPtr(m_pGetGODialogStatus,          "GetGODialogStatus");
-    GetScriptHookPtr(m_pOnGOUse,                    "GOUse");
-    GetScriptHookPtr(m_pOnItemUse,                  "ItemUse");
-    GetScriptHookPtr(m_pOnAreaTrigger,              "AreaTrigger");
-    GetScriptHookPtr(m_pOnCompletedCinematic,       "CompletedCinematic");
-    GetScriptHookPtr(m_pOnProcessEvent,             "ProcessEvent");
-    GetScriptHookPtr(m_pOnAuraDummy,                "AuraDummy");
-
-    GetScriptHookPtr(m_pOnReceiveEmote,             "ReceiveEmote");
-
-    // spell scripts
-    GetScriptHookPtr(m_pOnSpellSetTargetMap,         "SpellSetTargetMap");
-    GetScriptHookPtr(m_pOnSpellHandleEffect,         "SpellHandleEffect");
-
-
-    if (m_pOnInitScriptLibrary)
-        m_pOnInitScriptLibrary(sConfig.GetFilename().c_str());
+bool ScriptMgr::LoadScriptLibrary()
+{
+    UnloadScriptLibrary();
+    InitScriptLibrary();
 
     return true;
 }
 
+void AddScripts();
+
+void ScriptMgr::InitScriptLibrary()
+{
+    //Hellground Script startup
+    outstring_log(" _   _      _ _ _____                           _ ");
+    outstring_log("| | | |    | | |  __ \\                         | |");
+    outstring_log("| |_| | ___| | | |  \\/_ __ ___  _   _ _ __   __| |");
+    outstring_log("|  _  |/ _ \\ | | | __| '__/ _ \\| | | | '_ \\ / _` |");
+    outstring_log("| | | |  __/ | | |_\\ \\ | | (_) | |_| | | | | (_| |");
+    outstring_log("\\_| |_/\\___|_|_|\\____/_|  \\___/ \\__,_|_| |_|\\__,_|");
+    outstring_log("http://hellground.net based on http://TrinityCore.org");
+    outstring_log("Hellground Script initializing %s", __DATE__);
+
+    //Load database (must be called after TScriptConfig.SetSource). In case it failed, no need to even try load.
+    LoadScriptTexts();
+    LoadScriptWaypoints(); //[TZERO] to implement
+
+    outstring_log("TSCR: Loading C++ scripts");
+    BarGoLink bar(1);
+    bar.step();
+    outstring_log();
+
+    for (uint16 i = 0; i < MAX_SCRIPTS; ++i)
+        m_scripts[i] = NULL;
+
+    FillSpellSummary();
+
+    AddScripts();
+
+    outstring_log(">> Loaded %i C++ Scripts.", num_sc_scripts);
+}
+
+void ScriptMgr::FreeScriptLibrary()
+{
+    // Free Spell Summary
+    delete[] SpellSummary;
+
+    // Free resources before library unload
+    for (uint16 i = 0; i < MAX_SCRIPTS; ++i)
+        delete m_scripts[i];
+
+    num_sc_scripts = 0;
+}
+
 void ScriptMgr::UnloadScriptLibrary()
 {
-    if (!m_hScriptLib)
-        return;
-
-    if (m_pOnFreeScriptLibrary)
-        m_pOnFreeScriptLibrary();
-
-    HELLGROUND_CLOSE_LIBRARY(m_hScriptLib);
-    m_hScriptLib = NULL;
-
-    m_pOnInitScriptLibrary      = NULL;
-    m_pOnFreeScriptLibrary      = NULL;
-
-    m_pGetCreatureAI            = NULL;
-    m_pCreateInstanceData       = NULL;
-
-    m_pOnGossipHello            = NULL;
-    m_pOnGossipSelect           = NULL;
-    m_pOnGOGossipSelect         = NULL;
-    m_pOnGossipSelectWithCode   = NULL;
-    m_pOnGOGossipSelectWithCode = NULL;
-    m_pOnQuestAccept            = NULL;
-    m_pOnGOQuestAccept          = NULL;
-    m_pOnItemQuestAccept        = NULL;
-    m_pOnQuestRewarded          = NULL;
-    m_pOnGOQuestRewarded        = NULL;
-    m_pGetNPCDialogStatus       = NULL;
-    m_pGetGODialogStatus        = NULL;
-    m_pOnGOUse                  = NULL;
-    m_pOnItemUse                = NULL;
-    m_pOnAreaTrigger            = NULL;
-    m_pOnCompletedCinematic     = NULL;
-    m_pOnProcessEvent           = NULL;
-    m_pOnAuraDummy              = NULL;
+    FreeScriptLibrary();
 }
 
 uint32 ScriptMgr::GetEventIdScriptId(uint32 eventId) const
@@ -962,4 +1191,165 @@ uint32 GetCompletedCinematicScriptId(uint32 cinematic_id)
 uint32 GetScriptId(const char *name)
 {
     return sScriptMgr.GetScriptId(name);
+}
+
+void Script::RegisterSelf(bool bReportError)
+{
+    if (uint32 id = GetScriptId(Name.c_str()))
+    {
+        sScriptMgr.m_scripts[id] = this;
+        ++sScriptMgr.num_sc_scripts;
+    }
+    else
+    {
+        if (bReportError)
+            error_log("SD2: Script registering but ScriptName %s is not assigned in database. Script will not be used.", Name.c_str());
+
+        delete this;
+    }
+}
+
+//*********************************
+//*** Functions used globally ***
+
+void DoScriptText(int32 iTextEntry, WorldObject* pSource, Unit* pTarget, bool withoutPrename)
+{
+    if (!iTextEntry)
+        return;
+
+    if (!pSource)
+    {
+        error_log("TSCR: DoScriptText entry %i, invalid Source pointer.", iTextEntry);
+        return;
+    }
+
+    if (iTextEntry > 0)
+    {
+        error_log("TSCR: DoScriptText with source entry %u (TypeId=%u, guid=%u) attempts to process text entry %i, but text entry must be negative.", pSource->GetEntry(), pSource->GetTypeId(), pSource->GetGUIDLow(), iTextEntry);
+        return;
+    }
+
+    const StringTextData* pData = sScriptMgr.GetTextData(iTextEntry);
+
+    if (!pData)
+    {
+        error_log("TSCR: DoScriptText with source entry %u (TypeId=%u, guid=%u) could not find text entry %i.", pSource->GetEntry(), pSource->GetTypeId(), pSource->GetGUIDLow(), iTextEntry);
+        return;
+    }
+
+    debug_log("TSCR: DoScriptText: text entry=%i, Sound=%u, Type=%u, Language=%u, Emote=%u", iTextEntry, pData->SoundId, pData->Type, pData->Language, pData->Emote);
+
+    if (pData->SoundId)
+    {
+        if (GetSoundEntriesStore()->LookupEntry(pData->SoundId))
+            pSource->SendPlaySound(pData->SoundId, false);
+        else
+            error_log("TSCR: DoScriptText entry %i tried to process invalid sound id %u.", iTextEntry, pData->SoundId);
+    }
+
+    if (pData->Emote)
+    {
+        if (pSource->GetTypeId() == TYPEID_UNIT || pSource->GetTypeId() == TYPEID_PLAYER)
+            ((Unit*)pSource)->HandleEmoteCommand(pData->Emote);
+        else
+            error_log("TSCR: DoScriptText entry %i tried to process emote for invalid TypeId (%u).", iTextEntry, pSource->GetTypeId());
+    }
+
+    switch (pData->Type)
+    {
+        case CHAT_TYPE_SAY:
+            pSource->MonsterSay(iTextEntry, pData->Language, pTarget ? pTarget->GetGUID() : 0);
+            break;
+        case CHAT_TYPE_YELL:
+            pSource->MonsterYell(iTextEntry, pData->Language, pTarget ? pTarget->GetGUID() : 0);
+            break;
+        case CHAT_TYPE_TEXT_EMOTE:
+            pSource->MonsterTextEmote(iTextEntry, pTarget ? pTarget->GetGUID() : 0, false, withoutPrename);
+            break;
+        case CHAT_TYPE_BOSS_EMOTE:
+            pSource->MonsterTextEmote(iTextEntry, pTarget ? pTarget->GetGUID() : 0, true, withoutPrename);
+            break;
+        case CHAT_TYPE_WHISPER:
+        {
+            if (pTarget && pTarget->GetTypeId() == TYPEID_PLAYER)
+                pSource->MonsterWhisper(iTextEntry, pTarget->GetGUID());
+            else
+                error_log("TSCR: DoScriptText entry %i cannot whisper without target unit (TYPEID_PLAYER).", iTextEntry);
+
+            break;
+        }
+        case CHAT_TYPE_BOSS_WHISPER:
+        {
+            if (pTarget && pTarget->GetTypeId() == TYPEID_PLAYER)
+                pSource->MonsterWhisper(iTextEntry, pTarget->GetGUID(), true);
+            else
+                error_log("TSCR: DoScriptText entry %i cannot whisper without target unit (TYPEID_PLAYER).", iTextEntry);
+
+            break;
+        }
+        case CHAT_TYPE_ZONE_YELL:
+            pSource->MonsterYellToZone(iTextEntry, pData->Language, pTarget ? pTarget->GetGUID() : 0);
+            break;
+        case CHAT_TYPE_ZONE_BOSS_EMOTE:
+            pSource->MonsterTextEmoteToZone(iTextEntry, pTarget ? pTarget->GetGUID() : 0, true, withoutPrename);
+            break;
+    }
+
+    if (pTarget && pTarget->GetTypeId() == TYPEID_UNIT)
+        ((Creature*)pTarget)->AI()->ReceiveScriptText(pSource, iTextEntry);
+}
+
+void DoGlobalScriptText(int32 iTextEntry, const char *npcName, Map *map)
+{
+    if (iTextEntry >= 0)
+    {
+        error_log("TSCR: DoGlobalScriptText with npc name %s attempts to process text entry %i, but text entry must be negative.", npcName, iTextEntry);
+        return;
+    }
+
+    const StringTextData* pData = sScriptMgr.GetTextData(iTextEntry);
+
+    if (!pData)
+    {
+        error_log("TSCR: DoGlobalScriptText with npc name %s could not find text entry %i.", npcName, iTextEntry);
+        return;
+    }
+
+    bool playSound = pData->SoundId && GetSoundEntriesStore()->LookupEntry(pData->SoundId);
+    uint32 textType = 0;
+    switch (pData->Type)
+    {
+        case CHAT_TYPE_SAY:
+            textType = CHAT_MSG_MONSTER_SAY;
+            break;
+        case CHAT_TYPE_YELL:
+        case CHAT_TYPE_ZONE_YELL:
+            textType = CHAT_MSG_MONSTER_YELL;
+            break;
+        case CHAT_TYPE_TEXT_EMOTE:
+            textType = CHAT_MSG_MONSTER_EMOTE;
+            break;
+        case CHAT_TYPE_BOSS_EMOTE:
+            textType = CHAT_MSG_RAID_BOSS_EMOTE;
+            break;
+        case CHAT_TYPE_WHISPER:
+            textType = CHAT_MSG_MONSTER_WHISPER;
+            break;
+        case CHAT_TYPE_BOSS_WHISPER:
+            textType = CHAT_MSG_RAID_BOSS_WHISPER;
+            break;
+    }
+
+    Map::PlayerList const &players = map->GetPlayers();
+    for (Map::PlayerList::const_iterator i = players.begin(); i != players.end(); ++i)
+    {
+        if (Player *player = i->getSource())
+        {
+            WorldPacket data(SMSG_MESSAGECHAT, 200);
+            player->BuildMonsterChat(&data, textType, iTextEntry, LANG_UNIVERSAL, npcName, player->GetGUID());
+            player->GetSession()->SendPacket(&data);
+            if (playSound)
+                (*i).getSource()->SendPlaySound(pData->SoundId, true);
+        }
+    }
 }

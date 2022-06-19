@@ -507,7 +507,7 @@ struct npc_gizelton_caravanAI : public ScriptedAI
 
     void Reset()
     {
-        points = pSystemMgr.GetPointMoveList(me->GetEntry());
+        points = sScriptMgr.GetPointMoveList(me->GetEntry());
         pointWait.Reset(100);
         current = points.begin();
         me->SetWalk(false);

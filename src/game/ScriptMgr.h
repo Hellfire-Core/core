@@ -65,6 +65,102 @@ extern ScriptMapMap sGameObjectScripts;
 extern ScriptMapMap sEventScripts;
 extern ScriptMapMap sWaypointScripts;
 
+#define MAX_SCRIPTS         5000                            //72 bytes each (approx 351kb)
+#define VISIBLE_RANGE       (166.0f)                        //MAX visible range (size of grid)
+#define DEFAULT_TEXT        "<Hellground Script Text Entry Missing!>"
+#define TEXT_SOURCE_RANGE -1000000                          //the amount of entries each text source has available
+
+//TODO: find better namings and definitions.
+//N=Neutral, A=Alliance, H=Horde.
+//NEUTRAL or FRIEND = Hostility to player surroundings (not a good definition)
+//ACTIVE or PASSIVE = Hostility to environment surroundings.
+enum eEscortFaction
+{
+    FACTION_ESCORT_A_NEUTRAL_PASSIVE = 10,
+    FACTION_ESCORT_H_NEUTRAL_PASSIVE = 33,
+    FACTION_ESCORT_N_NEUTRAL_PASSIVE = 113,
+
+    FACTION_ESCORT_A_NEUTRAL_ACTIVE = 231,
+    FACTION_ESCORT_H_NEUTRAL_ACTIVE = 232,
+    FACTION_ESCORT_N_NEUTRAL_ACTIVE = 250,
+
+    FACTION_ESCORT_N_FRIEND_PASSIVE = 290,
+    FACTION_ESCORT_N_FRIEND_ACTIVE = 495,
+
+    FACTION_ESCORT_A_PASSIVE = 774,
+    FACTION_ESCORT_H_PASSIVE = 775,
+
+    FACTION_ESCORT_N_ACTIVE = 1986,
+    FACTION_ESCORT_H_ACTIVE = 2046
+};
+
+struct ScriptPointMove
+{
+    uint32 uiCreatureEntry;
+    uint32 uiPointId;
+    float  fX;
+    float  fY;
+    float  fZ;
+    uint32 uiWaitTime;
+};
+
+struct StringTextData
+{
+    uint32 SoundId;
+    uint8  Type;
+    uint32 Language;
+    uint32 Emote;
+};
+
+struct Script
+{
+    Script() :
+        pGossipHello(NULL), pGossipSelect(NULL), pGossipSelectGO(NULL),
+        pGossipSelectWithCode(NULL), pGossipSelectGOWithCode(NULL),
+        pDialogStatusNPC(NULL), pDialogStatusGO(NULL),
+        pQuestAcceptNPC(NULL), pQuestAcceptGO(NULL), pQuestAcceptItem(NULL),
+        pQuestRewardedNPC(NULL), pQuestRewardedGO(NULL),
+        pGOUse(NULL), pItemUse(NULL), pAreaTrigger(NULL), pCompletedCinematic(NULL),
+        pProcessEventId(NULL), pReceiveEmote(NULL), pEffectAuraDummy(NULL),
+        GetAI(NULL), GetInstanceData(NULL),
+
+        //spell scripts
+        pSpellTargetMap(NULL), pSpellHandleEffect(NULL)
+    {}
+
+    std::string Name;
+
+    bool(*pGossipHello)(Player*, Creature*);
+    bool(*pGossipSelect)(Player*, Creature*, uint32, uint32);
+    bool(*pGossipSelectGO)(Player*, GameObject*, uint32, uint32);
+    bool(*pGossipSelectWithCode)(Player*, Creature*, uint32, uint32, const char*);
+    bool(*pGossipSelectGOWithCode)(Player*, GameObject*, uint32, uint32, const char*);
+    uint32(*pDialogStatusNPC)(Player*, Creature*);
+    uint32(*pDialogStatusGO)(Player*, GameObject*);
+    bool(*pQuestAcceptNPC)(Player*, Creature*, Quest const*);
+    bool(*pQuestAcceptGO)(Player*, GameObject*, Quest const*);
+    bool(*pQuestAcceptItem)(Player*, Item*, Quest const*);
+    bool(*pQuestRewardedNPC)(Player*, Creature*, Quest const*);
+    bool(*pQuestRewardedGO)(Player*, GameObject*, Quest const*);
+    bool(*pGOUse)(Player*, GameObject*);
+    bool(*pItemUse)(Player*, Item*, SpellCastTargets const&);
+    bool(*pAreaTrigger)(Player*, AreaTriggerEntry const*);
+    bool(*pCompletedCinematic)(Player*, CinematicSequencesEntry const*);
+    bool(*pProcessEventId)(uint32, Object*, Object*, bool);
+    bool(*pEffectAuraDummy)(const Aura*, bool);
+
+    bool(*pReceiveEmote)(Player*, Creature*, uint32);
+
+    //spell scripts
+    bool(*pSpellTargetMap)(Unit*, std::list<Unit*> &, SpellCastTargets const&, SpellEntry const *, uint32);
+    bool(*pSpellHandleEffect)(Unit *pCaster, Unit* pUnit, Item* pItem, GameObject* pGameObject, SpellEntry const *pSpell, uint32 effectIndex);
+
+    CreatureAI* (*GetAI)(Creature*);
+    InstanceData* (*GetInstanceData)(Map*);
+
+    void RegisterSelf(bool bReportError = true);
+};
+
 class ScriptMgr
 {
     friend class ACE_Singleton<ScriptMgr, ACE_Null_Mutex>;
@@ -74,6 +170,37 @@ class ScriptMgr
 
     public:
         ~ScriptMgr();
+
+        //Maps and lists
+        typedef UNORDERED_MAP<int32, StringTextData> TextDataMap;
+        typedef UNORDERED_MAP<uint32, std::vector<ScriptPointMove> > PointMoveMap;
+
+        //Database
+        void LoadScriptTexts();
+        void LoadScriptWaypoints();
+
+        //Retrive from storage
+        StringTextData const* GetTextData(int32 uiTextId) const
+        {
+            TextDataMap::const_iterator itr = m_mTextDataMap.find(uiTextId);
+
+            if (itr == m_mTextDataMap.end())
+                return NULL;
+
+            return &itr->second;
+        }
+
+        std::vector<ScriptPointMove> const &GetPointMoveList(uint32 uiCreatureEntry) const
+        {
+            static std::vector<ScriptPointMove> vEmpty;
+
+            PointMoveMap::const_iterator itr = m_mPointMoveMap.find(uiCreatureEntry);
+
+            if (itr == m_mPointMoveMap.end())
+                return vEmpty;
+
+            return itr->second;
+        }
 
         void LoadGameObjectScripts();
         void LoadQuestEndScripts();
@@ -97,7 +224,9 @@ class ScriptMgr
         const char * GetScriptName(uint32 id) { return id < m_scriptNames.size() ? m_scriptNames[id].c_str() : ""; }
         uint32 GetScriptId(const char *name);
 
-        bool LoadScriptLibrary(const char* libName);
+        bool LoadScriptLibrary();
+        void InitScriptLibrary();
+        void FreeScriptLibrary();
         void UnloadScriptLibrary();
 
         CreatureAI* GetCreatureAI(Creature* pCreature);
@@ -107,6 +236,8 @@ class ScriptMgr
         bool OnGossipHello(Player* pPlayer, GameObject* pGameObject);
         bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 sender, uint32 action, const char* code);
         bool OnGossipSelect(Player* pPlayer, GameObject* pGameObject, uint32 sender, uint32 action, const char* code);
+        bool OnGossipSelectWithCode(Player* pPlayer, Creature* pCreature, uint32 uiSender, uint32 uiAction, const char* sCode);
+        bool OnGossipSelectWithCode(Player* pPlayer, GameObject* pGo, uint32 uiSender, uint32 uiAction, const char* sCode);
         bool OnQuestAccept(Player* pPlayer, Creature* pCreature, Quest const* pQuest);
         bool OnQuestAccept(Player* pPlayer, GameObject* pGameObject, Quest const* pQuest);
         bool OnQuestAccept(Player* pPlayer, Item* pItem, Quest const* pQuest);
@@ -127,14 +258,10 @@ class ScriptMgr
         bool OnSpellSetTargetMap(Unit* pCaster, std::list<Unit*> &unitList, SpellCastTargets const&, SpellEntry const *pSpell, uint32 effectIndex);
         bool OnSpellHandleEffect(Unit *pCaster, Unit* pUnit, Item* pItem, GameObject* pGameObject, SpellEntry const *pSpell, uint32 effectIndex);
 
+        int num_sc_scripts;
+        Script *m_scripts[MAX_SCRIPTS];
     private:
         void LoadScripts(ScriptMapMap& scripts, const char* tablename);
-
-        template<class T>
-        void GetScriptHookPtr(T& ptr, const char* name)
-        {
-            ptr = (T)HELLGROUND_GET_PROC_ADDR(m_hScriptLib, name);
-        }
 
         typedef UNORDERED_MAP<uint32, uint32> AreaTriggerScriptMap;
         typedef UNORDERED_MAP<uint32, uint32> CompletedCinematicScriptMap;
@@ -146,40 +273,9 @@ class ScriptMgr
         EventIdScriptMap                m_EventIdScripts;
         SpellIdScriptMap                m_SpellIdScripts;
 
-        ScriptNameMap           m_scriptNames;
-
-        HELLGROUND_LIBRARY_HANDLE   m_hScriptLib;
-
-        void (HELLGROUND_IMPORT* m_pOnInitScriptLibrary)(char const*);
-        void (HELLGROUND_IMPORT* m_pOnFreeScriptLibrary)();
-
-        CreatureAI* (HELLGROUND_IMPORT* m_pGetCreatureAI) (Creature*);
-        InstanceData* (HELLGROUND_IMPORT* m_pCreateInstanceData) (Map*);
-
-        bool (HELLGROUND_IMPORT* m_pOnGossipHello) (Player*, Creature*);
-        bool (HELLGROUND_IMPORT* m_pOnGossipSelect) (Player*, Creature*, uint32, uint32);
-        bool (HELLGROUND_IMPORT* m_pOnGOGossipSelect) (Player*, GameObject*, uint32, uint32);
-        bool (HELLGROUND_IMPORT* m_pOnGossipSelectWithCode) (Player*, Creature*, uint32, uint32, const char*);
-        bool (HELLGROUND_IMPORT* m_pOnGOGossipSelectWithCode) (Player*, GameObject*, uint32, uint32, const char*);
-        bool (HELLGROUND_IMPORT* m_pOnQuestAccept) (Player*, Creature*, Quest const*);
-        bool (HELLGROUND_IMPORT* m_pOnGOQuestAccept) (Player*, GameObject*, Quest const*);
-        bool (HELLGROUND_IMPORT* m_pOnItemQuestAccept) (Player*, Item*, Quest const*);
-        bool (HELLGROUND_IMPORT* m_pOnQuestRewarded) (Player*, Creature*, Quest const*);
-        bool (HELLGROUND_IMPORT* m_pOnGOQuestRewarded) (Player*, GameObject*, Quest const*);
-        uint32 (HELLGROUND_IMPORT* m_pGetNPCDialogStatus) (Player*, Creature*);
-        uint32 (HELLGROUND_IMPORT* m_pGetGODialogStatus) (Player*, GameObject*);
-        bool (HELLGROUND_IMPORT* m_pOnGOUse) (Player*, GameObject*);
-        bool (HELLGROUND_IMPORT* m_pOnItemUse) (Player*, Item*, SpellCastTargets const&);
-        bool (HELLGROUND_IMPORT* m_pOnAreaTrigger) (Player*, AreaTriggerEntry const*);
-        bool (HELLGROUND_IMPORT* m_pOnCompletedCinematic) (Player*, CinematicSequencesEntry const*);
-        bool (HELLGROUND_IMPORT* m_pOnProcessEvent) (uint32, Object*, Object*, bool);
-        bool (HELLGROUND_IMPORT* m_pOnAuraDummy) (Aura const*, bool);
-
-        bool (HELLGROUND_IMPORT* m_pOnReceiveEmote) (Player *pPlayer, Creature *pCreature, uint32 emote);
-
-        // spell scripts
-        bool (HELLGROUND_IMPORT* m_pOnSpellSetTargetMap) (Unit* pCaster, std::list<Unit*> &unitList, SpellCastTargets const&, SpellEntry const *pSpell, uint32 effectIndex);
-        bool (HELLGROUND_IMPORT* m_pOnSpellHandleEffect) (Unit *pCaster, Unit* pUnit, Item* pItem, GameObject* pGameObject, SpellEntry const *pSpell, uint32 effectIndex);
+        ScriptNameMap   m_scriptNames;
+        TextDataMap     m_mTextDataMap;                     //additional data for text strings
+        PointMoveMap    m_mPointMoveMap;                    //coordinates for waypoints
 };
 
 #define sScriptMgr (*ACE_Singleton<ScriptMgr, ACE_Null_Mutex>::instance())
@@ -189,5 +285,10 @@ HELLGROUND_IMPORT_EXPORT uint32 GetCompletedCinematicScriptId(uint32 triggerId);
 HELLGROUND_IMPORT_EXPORT uint32 GetScriptId(const char *name);
 HELLGROUND_IMPORT_EXPORT uint32 GetEventIdScriptId(uint32 eventId);
 HELLGROUND_IMPORT_EXPORT uint32 GetSpellIdScriptId(uint32 eventId);
+
+//Generic scripting text function
+void DoScriptText(int32 textEntry, WorldObject* pSource, Unit* target = NULL, bool withoutPrename = false);
+void DoGlobalScriptText(int32 iTextEntry, const char *npcName, Map *map);
+void ScriptText(int32 textEntry, Unit* pSource, Unit* target = NULL);
 
 #endif
