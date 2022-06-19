@@ -57,16 +57,16 @@ EndScriptData */
 #define CREATURE_PORTAL         17265
 #define CREATURE_KILREK            17229
 
-#define KILREK_POS_X    -1.7001953125
-#define KILREK_POS_Y     3.949951171875
-#define KILREK_POS_Z     0.001007080078125
+#define KILREK_POS_X    -1.7001953125f
+#define KILREK_POS_Y     3.949951171875f
+#define KILREK_POS_Z     0.001007080078125f
 
-#define PORTAL_Z        179.434
+#define PORTAL_Z        179.434f
 
-float PortalLocations[2][2]=
+static float PortalLocations[2][2]=
 {
-    {-11249.6933, -1704.61023},
-    {-11242.1160, -1713.33325},
+    {-11249.6933f, -1704.61023f},
+    {-11242.1160f, -1713.33325f},
 };
 
 struct mob_kilrekAI : public ScriptedAI

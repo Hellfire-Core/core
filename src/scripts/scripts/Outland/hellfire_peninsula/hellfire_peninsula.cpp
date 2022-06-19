@@ -753,11 +753,11 @@ enum LivingFlare
     QUEST_BLAST_THE_GATEWAY                 = 11516
 };
 
-float FirePos[3][3] = 
+static float FirePos[3][3] = 
 {
-    {840.9, 2521.0, 293.4},
-    {836.5, 2508.0, 292.0},
-    {826.5, 2513.4, 291.7}
+    {840.9f, 2521.0f, 293.4f},
+    {836.5f, 2508.0f, 292.0f},
+    {826.5f, 2513.4f, 291.7f}
 };
 
 struct npc_living_flareAI : public FollowerAI

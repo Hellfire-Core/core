@@ -53,8 +53,8 @@ Player* ObjectAccessor::FindPlayer(uint64 guid)
 Player* ObjectAccessor::GetPlayerByName(const char *name)
 {
     std::string tmp = name;
-    PlayerName2PlayerMapType::const_accessor a;
-    if (i_playerName2Player.find(a, tmp))
+    PlayerName2PlayerMapType::const_iterator a = i_playerName2Player.find(tmp);
+    if (a != i_playerName2Player.cend())
         if (a->second->IsInWorld())
             return a->second;
 
@@ -63,8 +63,8 @@ Player* ObjectAccessor::GetPlayerByName(const char *name)
 
 Player* ObjectAccessor::GetPlayerByName(std::string &name)
 {
-    PlayerName2PlayerMapType::const_accessor a;
-    if (i_playerName2Player.find(a, name))
+    PlayerName2PlayerMapType::const_iterator a = i_playerName2Player.find(name);
+    if (a != i_playerName2Player.cend())
         if (a->second->IsInWorld())
             return a->second;
 
@@ -99,12 +99,10 @@ bool ObjectAccessor::RemovePlayer(uint64 guid)
 bool ObjectAccessor::AddPlayerName(Player *pl)
 {
     std::string tmp = pl->GetName();
-    PlayerName2PlayerMapType::accessor a;
-    if (i_playerName2Player.insert(a, tmp))
-    {
-        a->second = pl;
+    auto itr = i_playerName2Player.insert(std::make_pair(tmp, pl));
+
+    if (itr.second)
         return true;
-    }
 
     return false;
 }
@@ -153,8 +151,8 @@ Corpse * ObjectAccessor::GetCorpse(WorldObject const &u, uint64 guid)
 
 Corpse* ObjectAccessor::GetCorpseForPlayerGUID(uint64 guid)
 {
-    Player2CorpsesMapType::const_accessor a;
-    if (i_player2corpse.find(a, guid))
+    Player2CorpsesMapType::const_iterator a = i_player2corpse.find(guid);
+    if (a != i_player2corpse.cend())
     {
         ASSERT(a->second->GetType() != CORPSE_BONES);
         return a->second;
@@ -167,8 +165,8 @@ void ObjectAccessor::RemoveCorpse(Corpse *corpse)
 {
     ASSERT(corpse && corpse->GetType() != CORPSE_BONES);
 
-    Player2CorpsesMapType::const_accessor a;
-    if (!i_player2corpse.find(a, corpse->GetOwnerGUID()))
+    Player2CorpsesMapType::const_iterator a = i_player2corpse.find(corpse->GetOwnerGUID());
+    if (a == i_player2corpse.cend())
         return;
 
     // build mapid*cellid -> guid_set map
@@ -186,13 +184,11 @@ void ObjectAccessor::AddCorpse(Corpse *corpse)
 {
     ASSERT(corpse && corpse->GetType() != CORPSE_BONES);
 
-    Player2CorpsesMapType::accessor a;
-    ASSERT(!i_player2corpse.find(a, corpse->GetOwnerGUID()));
-    a.release();
+    Player2CorpsesMapType::iterator a = i_player2corpse.find(corpse->GetOwnerGUID());
+    ASSERT(a == i_player2corpse.end());
 
     ACE_GUARD(LockType, g, i_corpseGuard);
-    i_player2corpse.insert(a, corpse->GetOwnerGUID());
-    a->second = corpse;
+    i_player2corpse.insert(std::make_pair(corpse->GetOwnerGUID(), corpse));
 
     // build mapid*cellid -> guid_set map
     CellPair cell_pair = Hellground::ComputeCellPair(corpse->GetPositionX(), corpse->GetPositionY());
@@ -333,7 +329,7 @@ void ObjectAccessor::RemoveOldCorpses()
 
 /// Define the static member of HashMapHolder
 
-template <class T> tbb::concurrent_hash_map< uint64, T* > HashMapHolder<T>::m_objectMap;
+template <class T> typename HashMapHolder<T>::MapType HashMapHolder<T>::m_objectMap;
 template <class T> ACE_Thread_Mutex HashMapHolder<T>::i_lock;
 
 /// Global definitions for the hashmap storage

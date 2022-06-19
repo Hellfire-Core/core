@@ -61,18 +61,18 @@ static Speech PlayerDeath[]=
 #define SPELL_RENEW                 (HeroicMode?46192:44174)
 #define SPELL_MEDALION_OF_IMMUNITY  46227
 
-#define ORIENT                      4.98
-#define POS_Z                       -19.9215
+#define ORIENT                      4.98f
+#define POS_Z                       -19.9215f
 
-float LackeyLocations[4][2]=
+static float LackeyLocations[4][2]=
 {
-    {123.77, 17.6007},
-    {131.731, 15.0827},
-    {121.563, 15.6213},
-    {129.988, 17.2355},
+    {123.77f,  17.6007f},
+    {131.731f, 15.0827f},
+    {121.563f, 15.6213f},
+    {129.988f, 17.2355f},
 };
 
-const uint32 AddEntry[8]=
+static const uint32 AddEntry[8]=
 {
     24557,                                                  //Kagani Nightstrike
     24558,                                                  //Elris Duskhallow

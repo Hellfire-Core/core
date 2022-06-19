@@ -101,14 +101,14 @@ enum DrinkingState
     DRINKING_POTION
 };
 
-float ElementalSpawnPoints[2][4] = {
-    {-11143.5, -11167.6, -11186.8, -11162.6},   // X coord
-    {-1914.26, -1933.8,  -1909.7,  -1895.4}     // Y coord
+static float ElementalSpawnPoints[2][4] = {
+    {-11143.5f, -11167.6f, -11186.8f, -11162.6f},   // X coord
+    {-1914.26f, -1933.8f,  -1909.7f,  -1895.4f}     // Y coord
 };
 
-float shadowOfAranSpawnPoints[2][8] = {
-    {-11143.5, -11152.1, -11167.6, -11181.3, -11186.8, -11178,  -11162.6, -11148.6},// X coord
-    {-1914.26, -1928.2,  -1933.8,  -1925.05, -1909.7,  -1895.7, -1895.4,  -1899}    // Y coord
+static float shadowOfAranSpawnPoints[2][8] = {
+    {-11143.5f, -11152.1f, -11167.6f, -11181.3f, -11186.8f, -11178.0f,  -11162.6f, -11148.6f},// X coord
+    {-1914.26f, -1928.2f,  -1933.8f,  -1925.05f, -1909.7f,  -1895.7f, -1895.4f,  -1899.0f}    // Y coord
 };
 
 struct boss_aranAI : public Scripted_NoMovementAI

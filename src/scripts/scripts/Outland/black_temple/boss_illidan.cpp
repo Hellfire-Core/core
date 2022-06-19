@@ -997,8 +997,8 @@ struct boss_illidan_stormrageAI : public BossAI
 
 static float SpiritSpawns[][4] =
 {
-    {23411, 755.5426, 309.9156, 312.2129},
-    {23410, 755.5426, 298.7923, 312.0834}
+    {23411, 755.5426f, 309.9156f, 312.2129f},
+    {23410, 755.5426f, 298.7923f, 312.0834f}
 };
 
 //Akama spells

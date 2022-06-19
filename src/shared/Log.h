@@ -25,6 +25,14 @@
 #include "ace/Thread_Mutex.h"
 #include "Common.h"
 
+enum LogLevel
+{
+    LOG_LVL_MINIMAL = 0,                                    // unconditional and errors
+    LOG_LVL_BASIC   = 1,
+    LOG_LVL_DETAIL  = 2,
+    LOG_LVL_DEBUG   = 3
+};
+
 // bitmask
 enum LogFilters
 {
@@ -146,6 +154,7 @@ class Log
         FILE* openWhisplogPerAccount(uint32 account);
 
         // log/console control
+        uint32 m_logLevel;
         uint32 m_logFileLevel;
         bool m_includeTime;
         uint32 m_logFilter;

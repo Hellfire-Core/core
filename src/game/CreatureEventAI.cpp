@@ -1526,7 +1526,7 @@ void CreatureEventAI::GetDebugInfo(ChatHandler& reader)
                 << " repeat every " << i->Event.percent_range.repeatMin << "-" << i->Event.percent_range.repeatMax << "\n";
             break;
         case EVENT_T_FRIENDLY_HP:
-            str << "on friendly hp under " << i->Event.friendly_hp.hpDeficit << " \% in " << i->Event.friendly_hp.radius
+            str << "on friendly hp under " << i->Event.friendly_hp.hpDeficit << " %% in " << i->Event.friendly_hp.radius
                 << " yd range, repeat every " << i->Event.friendly_hp.repeatMin << "-" << i->Event.friendly_hp.repeatMax << "\n";
             break;
         default:

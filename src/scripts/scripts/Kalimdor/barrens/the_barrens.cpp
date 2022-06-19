@@ -276,12 +276,12 @@ bool ReciveEmote_npc_taskmaster_fizzule(Player *player, Creature *_Creature, uin
 
 float AffrayChallengerLoc[6][4]=
 {
-    {-1683, -4326, 2.79, 0},
-    {-1682, -4329, 2.79, 0},
-    {-1683, -4330, 2.79, 0},
-    {-1680, -4334, 2.79, 1.49},
-    {-1674, -4326, 2.79, 3.49},
-    {-1677, -4334, 2.79, 1.66}
+    {-1683, -4326, 2.79f, 0},
+    {-1682, -4329, 2.79f, 0},
+    {-1683, -4330, 2.79f, 0},
+    {-1680, -4334, 2.79f, 1.49f},
+    {-1674, -4326, 2.79f, 3.49f},
+    {-1677, -4334, 2.79f, 1.66f}
 };
 
 struct npc_twiggy_flatheadAI : public ScriptedAI

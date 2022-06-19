@@ -35,7 +35,7 @@ EndScriptData */
 #define ENTRY_REINFORCED_FEL_IRON_CHEST_H    185169
 #define ENTRY_REINFORCED_FEL_IRON_CHEST      185168
 
-const float VazrudenMiddle[3] = {-1406.5, 1746.5, 81.2};
+static const float VazrudenMiddle[3] = {-1406.5f, 1746.5f, 81.2f};
 
 struct instance_ramparts : public ScriptedInstance
 {

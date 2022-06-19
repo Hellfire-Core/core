@@ -283,7 +283,7 @@ struct npc_demolitionist_legosoAI : public npc_escortAI
         }
     }
 
-    void UpdateEscortAI(uint32 diff)
+    void UpdateEscortAI(const uint32 diff)
     {
         if (!UpdateVictim())
         {

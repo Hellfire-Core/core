@@ -118,7 +118,8 @@ namespace VMAP
 
         m_stream = new ACE_SPIPE_Stream();
 
-        ACE_SPIPE_Acceptor acceptor = ACE_SPIPE_Acceptor(addr);
+        ACE_SPIPE_Acceptor acceptor;
+        acceptor.open(addr, 1, 7, (LPSECURITY_ATTRIBUTES)0, 6);
         if(acceptor.accept(*m_stream) == -1)
         {
             sLog.outLog(LOG_DEFAULT, "ERROR: Accept: failed to accept on stream %s becaus of error %d", addr.get_path_name(), ACE_OS::last_error());

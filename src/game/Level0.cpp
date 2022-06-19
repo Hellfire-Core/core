@@ -314,7 +314,7 @@ bool ChatHandler::HandleServerInfoCommand(const char* /*args*/)
     uint32 updateTime = sWorld.GetUpdateTime();
     std::string str2 = TimeToTimestampStr(sWorld.GetGameTime());
 
-    PSendSysMessage("Hellground - rev: %s",_REVISION);
+    PSendSysMessage("Hellground - date: %s", __DATE__);
     PSendSysMessage(LANG_CONNECTED_USERS, alianceCount + hordeCount, playerCap, queuedClientsNum);
     PSendSysMessage(LANG_UPTIME, str.c_str());
     PSendSysMessage("Current time: %s", str2.c_str());

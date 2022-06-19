@@ -96,10 +96,10 @@ PEXCEPTION_POINTERS pExceptionInfo)
     SYSTEMTIME systime;
     GetLocalTime(&systime);
     sprintf(m_szDumpFileName, "%s\\%s_%s_[%u-%u_%u-%u-%u].dmp",
-        crash_folder_path, _REVISION, pos, systime.wDay, systime.wMonth, systime.wHour, systime.wMinute, systime.wSecond);
+        crash_folder_path, "0", pos, systime.wDay, systime.wMonth, systime.wHour, systime.wMinute, systime.wSecond);
 
     sprintf(m_szLogFileName, "%s\\%s_%s_[%u-%u_%u-%u-%u].txt",
-        crash_folder_path, _REVISION, pos, systime.wDay, systime.wMonth, systime.wHour, systime.wMinute, systime.wSecond);
+        crash_folder_path, "0", pos, systime.wDay, systime.wMonth, systime.wHour, systime.wMinute, systime.wSecond);
 
     m_hDumpFile = CreateFile(m_szDumpFileName,
         GENERIC_WRITE,
@@ -972,8 +972,10 @@ PVOID pAddress)
         {
             if (!IsBadStringPtr(*(PSTR*)pAddress, 32))
             {
+                DWORD AddressData = *(PDWORD)pAddress;
+                char* pStrAddressData = reinterpret_cast <char*> (&AddressData);
                 pszCurrBuffer += sprintf(pszCurrBuffer, " = \"%.31s\"",
-                    *(PDWORD)pAddress);
+                    pStrAddressData);
             }
             else
                 pszCurrBuffer += sprintf(pszCurrBuffer, " = %X",

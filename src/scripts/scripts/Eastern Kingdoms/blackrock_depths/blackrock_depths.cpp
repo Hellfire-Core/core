@@ -47,7 +47,7 @@ EndContentData */
 //4 or 6 in total? 1+2+1 / 2+2+2 / 3+3. Depending on this, code should be changed.
 #define MOB_AMOUNT          4
 
-uint32 RingMob[]=
+static uint32 RingMob[]=
 {
     8925,                                                   // Dredge Worm
     8926,                                                   // Deep Stinger
@@ -57,7 +57,7 @@ uint32 RingMob[]=
     8932,                                                   // Borer Beetle
 };
 
-uint32 RingBoss[]=
+static uint32 RingBoss[]=
 {
     9027,                                                   // Gorosh
     9028,                                                   // Grizzle
@@ -67,14 +67,14 @@ uint32 RingBoss[]=
     9032,                                                   // Hedrum
 };
 
-float RingLocations[6][3]=
+static float RingLocations[6][3]=
 {
-    {604.802673, -191.081985, -54.058590},                  // ring
-    {604.072998, -222.106918, -52.743759},                  // first gate
-    {621.400391, -214.499054, -52.814453},                  // hiding in corner
-    {601.300781, -198.556992, -53.950256},                  // ring
-    {631.818359, -180.548126, -52.654770},                  // second gate
-    {627.390381, -201.075974, -52.692917}                   // hiding in corner
+    {604.802673f, -191.081985f, -54.058590f},                  // ring
+    {604.072998f, -222.106918f, -52.743759f},                  // first gate
+    {621.400391f, -214.499054f, -52.814453f},                  // hiding in corner
+    {601.300781f, -198.556992f, -53.950256f},                  // ring
+    {631.818359f, -180.548126f, -52.654770f},                  // second gate
+    {627.390381f, -201.075974f, -52.692917f}                   // hiding in corner
 };
 
 bool AreaTrigger_at_ring_of_law(Player *player, AreaTriggerEntry const* at)
@@ -547,19 +547,19 @@ bool GossipSelect_npc_lokhtos_darkbargainer(Player *player, Creature *creature, 
 #define SPELL_DRUNKEN_RAGE  14872
 #define QUEST_ALE           4295
 
-float BarWpLocations[8][3]=
+static float BarWpLocations[8][3]=
 {
-    {883.294861, -188.926300, -43.703655},
-    {872.763550, -185.605621, -43.703655},                  //b1
-    {867.923401, -188.006393, -43.703655},                  //b2
-    {863.295898, -190.795212, -43.703655},                  //b3
-    {856.139587, -194.652756, -43.703655},                  //b4
-    {851.878906, -196.928131, -43.703655},                  //b5
-    {877.035217, -187.048080, -43.703655},
-    {891.198000, -197.924000, -43.620400}                   //home
+    {883.294861f, -188.926300f, -43.703655f},
+    {872.763550f, -185.605621f, -43.703655f},                  //b1
+    {867.923401f, -188.006393f, -43.703655f},                  //b2
+    {863.295898f, -190.795212f, -43.703655f},                  //b3
+    {856.139587f, -194.652756f, -43.703655f},                  //b4
+    {851.878906f, -196.928131f, -43.703655f},                  //b5
+    {877.035217f, -187.048080f, -43.703655f},
+    {891.198000f, -197.924000f, -43.620400f}                   //home
 };
 
-uint32 BarWpWait[8]=
+static uint32 BarWpWait[8]=
 {
     0,
     5000,

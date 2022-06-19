@@ -33,8 +33,6 @@
 #include "Object.h"
 #include "Player.h"
 
-#include <tbb/concurrent_hash_map.h>
-
 #include <set>
 
 class Creature;
@@ -50,46 +48,49 @@ class HashMapHolder
 {
     public:
 
-        typedef tbb::concurrent_hash_map<uint64, T*>  MapType;
+        typedef std::unordered_map<uint64, T*>  MapType;
         typedef ACE_Thread_Mutex LockType;
 
         static bool Insert(T* o)
         {
-            typename MapType::accessor a;
-            if (m_objectMap.insert(a, o->GetGUID()))
-            {
-                a->second = o;
+            auto a = m_objectMap.insert(std::make_pair(o->GetGUID(), o));
+            if (a.second)
                 return true;
-            }
 
             return false;
         }
 
         static bool Remove(T* o)
         {
-            typename MapType::accessor a;
+            typename MapType::iterator a = m_objectMap.find(o->GetGUID());
 
-            if (m_objectMap.find(a, o->GetGUID()))
-                return m_objectMap.erase(a);
+            if (a != m_objectMap.end())
+            {
+                m_objectMap.erase(a);
+                return true;
+            }
 
             return false;
         }
 
         static bool Remove(uint64 guid)
         {
-            typename MapType::accessor a;
+            typename MapType::iterator a = m_objectMap.find(guid);
 
-            if (m_objectMap.find(a, guid))
-                return m_objectMap.erase(a);
+            if (a != m_objectMap.end())
+            {
+                m_objectMap.erase(a);
+                return true;
+            }
 
             return false;
         }
 
         static T* Find(uint64 guid)
         {
-            typename MapType::const_accessor a;
+            typename MapType::const_iterator a = m_objectMap.find(guid);
 
-            if (m_objectMap.find(a, guid))
+            if (a != m_objectMap.cend())
                 return a->second;
             else
                 return NULL;
@@ -118,8 +119,8 @@ class ObjectAccessor
     ObjectAccessor& operator=(const ObjectAccessor &);
 
     public:
-        typedef tbb::concurrent_hash_map<uint64, Corpse*> Player2CorpsesMapType;
-        typedef tbb::concurrent_hash_map<std::string, Player*> PlayerName2PlayerMapType;
+        typedef std::unordered_map<uint64, Corpse*> Player2CorpsesMapType;
+        typedef std::unordered_map<std::string, Player*> PlayerName2PlayerMapType;
 
         static Pet* GetPet(uint64 guid);
 

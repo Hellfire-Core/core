@@ -823,9 +823,9 @@ enum eNagrandCaptive
     NPC_MURK_PUTRIFIER          = 18202
 };
 
-static float AmbushAH[]= {-1568.805786, 8533.873047, 1.958};
-static float AmbushAA[]= {-1517.302246, 8439.866211, -4.035};
-static float AmbushB[]= {-1442.524780, 8500.364258, 6.381};
+static float AmbushAH[]= {-1568.805786f, 8533.873047f, 1.958f};
+static float AmbushAA[]= {-1517.302246f, 8439.866211f, -4.035f};
+static float AmbushB[]= {-1442.524780f, 8500.364258f, 6.381f};
 
 struct npc_nagrand_captiveAI : public npc_escortAI
 {
@@ -1068,7 +1068,7 @@ static WP M[]=
     {-710.969f, 8763.471f, 186.513f},
     {-865.144f, 8713.610f, 248.041f},
     {-847.285f, 8722.406f, 177.255f},
-    {-897.005f, 8689.280f, 170.527},
+    {-897.005f, 8689.280f, 170.527f},
     {-838.047f, 8691.124f, 180.549f}
 };
 

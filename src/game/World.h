@@ -38,8 +38,6 @@
 #include <map>
 #include <set>
 #include <list>
-#include <tbb/concurrent_hash_map.h>
-#include <tbb/blocked_range.h>
 
 class Object;
 class WorldPacket;
@@ -582,7 +580,7 @@ struct CliCommandHolder
 // ye place for this sucks
 #define MAX_PVP_RANKS 14
 
-typedef tbb::concurrent_hash_map<uint32, std::list<uint64> > LfgContainerType;
+typedef std::unordered_map<uint32, std::list<uint64> > LfgContainerType;
 typedef UNORDERED_MAP<uint32, WorldSession*> SessionMap;
 
 typedef ACE_Atomic_Op<ACE_Thread_Mutex, uint32> atomic_uint;
@@ -948,40 +946,6 @@ class HELLGROUND_EXPORT World
 extern uint32 realmID;
 
 #define sWorld (*ACE_Singleton<World, ACE_Null_Mutex>::instance())
-
-class SessionsUpdater
-{
-private:
-    SessionMap * sessions;
-    uint32 diff;
-
-public:
-    SessionsUpdater(SessionMap * sess, uint32 diff) : sessions(sess), diff(diff) {}
-
-    void operator () (const tbb::blocked_range<int>& r) const
-    {
-        SessionMap::iterator itr = sessions->begin();
-        advance(itr, r.begin());
-        SessionMap::iterator itrEnd = sessions->begin();
-        advance(itrEnd, r.end());
-
-        for (; itr != itrEnd; ++itr)
-        {
-            if (!itr->second)
-                continue;
-
-            ///- and remove not active sessions from the list
-            WorldSession * pSession = itr->second;
-            WorldSessionFilter updater(pSession);
-            if (!pSession->Update(diff, updater))    // As interval = 0
-            {
-                sWorld.RemoveQueuedPlayer(pSession);
-
-                sWorld.AddSessionToRemove(itr);
-            }
-        }
-    }
-};
 
 #endif
 /// @}

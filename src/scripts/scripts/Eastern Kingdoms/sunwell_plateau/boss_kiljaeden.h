@@ -176,16 +176,16 @@ enum KilJaedenTimers
 };
 
 // Locations, where Shield Orbs will spawn
-float ShieldOrbLocations[4][2] =
+static float ShieldOrbLocations[4][2] =
 {
-    {1698.900, 627.870},  //middle pont of Sunwell
-    {(3.14f * 0.75f), 17.0f }, 
-    {(3.14f * 1.25f), 17.0f },
-    {(3.14f * 1.75f), 17.0f }
+    { 1698.900f     , 627.870f},  //middle pont of Sunwell
+    {(3.14f * 0.75f), 17.0f   }, 
+    {(3.14f * 1.25f), 17.0f   },
+    {(3.14f * 1.75f), 17.0f   }
 };
 
 #define GAMEOBJECT_ORB_OF_THE_BLUE_DRAGONFLIGHT 188415
-#define SHIELD_ORB_Z 45.000
+#define SHIELD_ORB_Z 45.000f
 
 struct Speech
 {

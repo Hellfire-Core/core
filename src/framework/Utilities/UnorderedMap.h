@@ -30,7 +30,7 @@
 #include <tr1/unordered_map>
 #elif COMPILER == COMPILER_GNU && __GNUC__ >= 3
 #include <ext/hash_map>
-#elif COMPILER == COMPILER_MICROSOFT && _MSC_VER >= 1500 && _HAS_TR1    // VC9.0 and later
+#elif COMPILER == COMPILER_MICROSOFT && _MSC_VER >= 1500    // VC9.0 and later
 #include <unordered_map>
 #else
 #include <hash_map>
@@ -41,6 +41,8 @@
 using std::hash_map;
 #elif COMPILER == COMPILER_MICROSOFT && _MSC_VER >= 1500 && _HAS_TR1
 #define UNORDERED_MAP std::tr1::unordered_map
+#elif COMPILER == COMPILER_MICROSOFT && _MSC_VER >= 1500
+#define UNORDERED_MAP std::unordered_map
 #elif COMPILER == COMPILER_MICROSOFT && _MSC_VER >= 1300
 #define UNORDERED_MAP stdext::hash_map
 using stdext::hash_map;

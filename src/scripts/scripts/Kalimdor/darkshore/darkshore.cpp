@@ -394,7 +394,7 @@ struct npc_volcorAI : public npc_escortAI
 {
     npc_volcorAI(Creature* pCreature) : npc_escortAI(pCreature) { }
 
-    bool type;
+    uint32 type;
 
     void Reset()
     {
@@ -409,18 +409,18 @@ struct npc_volcorAI : public npc_escortAI
         {
             switch (point)
             {
-            case 3:
-                DoScriptText(SAY_VOLCOR_2, m_creature);
-                break;
-            case 15:
-            {
-                DoScriptText(SAY_VOLCOR_3, m_creature);
-                DoScriptText(SAY_VOLCOR_4, m_creature);
-                if (Player* plr = GetPlayerForEscort())
-                    plr->GroupEventHappens(QUEST_BY_FORCE,m_creature);
-                m_creature->ForcedDespawn(500);
-                break;
-            }
+                case 3:
+                    DoScriptText(SAY_VOLCOR_2, m_creature);
+                    break;
+                case 15:
+                {
+                    DoScriptText(SAY_VOLCOR_3, m_creature);
+                    DoScriptText(SAY_VOLCOR_4, m_creature);
+                    if (Player* plr = GetPlayerForEscort())
+                        plr->GroupEventHappens(QUEST_BY_FORCE,m_creature);
+                    m_creature->ForcedDespawn(500);
+                    break;
+                }
             }
         }
         else if (type == 2)

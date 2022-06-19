@@ -35,8 +35,6 @@
 #include "MapRefManager.h"
 #include "mersennetwister/MersenneTwister.h"
 
-#include <tbb/concurrent_hash_map.h>
-
 #include <bitset>
 #include <list>
 
@@ -104,10 +102,10 @@ enum LevelRequirementVsMode
 
 typedef UNORDERED_MAP<Creature*, CreatureMover>                 CreatureMoveList;
 typedef std::map<uint32/*leaderDBGUID*/, CreatureGroup*>        CreatureGroupHolderType;
-typedef tbb::concurrent_hash_map<uint64, GameObject*>           GObjectMapType;
-typedef tbb::concurrent_hash_map<uint64, DynamicObject*>        DObjectMapType;
-typedef tbb::concurrent_hash_map<uint64, Creature*>             CreaturesMapType;
-typedef tbb::concurrent_hash_map<uint32, std::list<uint64> >    CreatureIdToGuidListMapType;
+typedef std::unordered_map<uint64, GameObject*>           GObjectMapType;
+typedef std::unordered_map<uint64, DynamicObject*>        DObjectMapType;
+typedef std::unordered_map<uint64, Creature*>             CreaturesMapType;
+typedef std::unordered_map<uint32, std::list<uint64> >    CreatureIdToGuidListMapType;
 
 enum GetCreatureGuidType
 {

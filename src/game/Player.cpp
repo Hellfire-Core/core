@@ -20342,10 +20342,10 @@ void Player::LFGAttemptJoin()
         if (m_lookingForGroup.slots[i].Empty())
             continue;
 
-        LfgContainerType::const_accessor a; // const_accessor -> write lock only
+        LfgContainerType::const_iterator a = lfgContainer.find(m_lookingForGroup.slots[i].Combine());
 
         // skip if container doesn't exist
-        if (!lfgContainer.find(a, m_lookingForGroup.slots[i].Combine()))
+        if (a == lfgContainer.cend())
             continue;
 
         for (std::list<uint64>::const_iterator itr = a->second.begin(); itr != a->second.end(); ++itr)
@@ -20428,11 +20428,10 @@ void Player::LFMAttemptAddMore()
     if (!m_lookingForGroup.more.canAutoJoin() || m_lookingForGroup.more.Empty())
         return;
 
-    LfgContainerType::const_accessor a;
-
     // get player container for LFM id
     LfgContainerType & lfgContainer = sWorld.GetLfgContainer(GetTeam());
-    if (!lfgContainer.find(a, m_lookingForGroup.more.Combine()))
+    LfgContainerType::const_iterator a = lfgContainer.find(m_lookingForGroup.more.Combine());
+    if (a == lfgContainer.cend())
         return;
 
     std::list<uint64> joinedList;
@@ -20489,8 +20488,6 @@ void Player::LFMAttemptAddMore()
         }
     }
 
-    a.release();
-
     // clear LFG and LFM for players joined to our pt
     for (std::list<uint64>::const_iterator itr = joinedList.begin(); itr != joinedList.end(); ++itr)
     {
@@ -20513,17 +20510,17 @@ void Player::LFGSet(uint8 slot, uint32 entry, uint32 type)
     if (GetSession()->HasPermissions(PERM_GMT))
         return;
 
-    LfgContainerType::accessor a;
     uint64 guid = GetGUID();
     uint32 combined;
 
     // if not empty then clear slot
     LfgContainerType & lfgContainer = sWorld.GetLfgContainer(GetTeam());
+    LfgContainerType::iterator a = lfgContainer.find(combined);
     if (!m_lookingForGroup.slots[slot].Empty())
     {
         combined = m_lookingForGroup.slots[slot].Combine();
 
-        if (lfgContainer.find(a, combined))
+        if (a != lfgContainer.end())
         {
             // remove player from list
             for (std::list<uint64>::iterator itr = a->second.begin(); itr != a->second.end();)
@@ -20537,7 +20534,6 @@ void Player::LFGSet(uint8 slot, uint32 entry, uint32 type)
         }
 
         m_lookingForGroup.slots[slot].Clear();
-        a.release();
     }
 
     combined = LFG_COMBINE(entry, type);
@@ -20556,9 +20552,15 @@ void Player::LFGSet(uint8 slot, uint32 entry, uint32 type)
     }
 
     // if we can't find list in container or add new list
-    if (!lfgContainer.find(a, combined))
-        if (!lfgContainer.insert(a, combined))
+    a = lfgContainer.find(combined);
+    if (a == lfgContainer.end())
+    {
+        auto b = lfgContainer.insert(std::make_pair(combined, std::list<uint64>()));
+        a = lfgContainer.find(combined);
+        if (a == lfgContainer.end())
             return;
+    }
+        
 
     m_lookingForGroup.slots[slot].Set(entry, type);
     a->second.push_back(guid);
@@ -20583,17 +20585,17 @@ void Player::LFMSet(uint32 entry, uint32 type)
 
     // clear lfg when player want looking for more
     ClearLFG(false);
-    LfgContainerType::accessor a;   // accessor - read and write lock
 
     uint64 guid = GetGUID();
     uint32 combined;
 
     LfgContainerType & lfgContainer = sWorld.GetLfgContainer(GetTeam());
+    LfgContainerType::iterator a = lfgContainer.find(combined);   // accessor - read and write lock
     if (!m_lookingForGroup.more.Empty())
     {
         combined = m_lookingForGroup.more.Combine();
 
-        if (lfgContainer.find(a, combined))
+        if (a != lfgContainer.end())
         {
             // remove player from list
             for (std::list<uint64>::iterator itr = a->second.begin(); itr != a->second.end();)
@@ -20607,15 +20609,19 @@ void Player::LFMSet(uint32 entry, uint32 type)
         }
 
         m_lookingForGroup.more.Clear();
-        a.release();
     }
 
     combined = LFG_COMBINE(entry, type);
 
     // if we can't find list in container or add new list
-    if (!lfgContainer.find(a, combined))
-        if (!lfgContainer.insert(a, combined))
+    a = lfgContainer.find(combined);
+    if (a == lfgContainer.end())
+    {
+        auto b = lfgContainer.insert(std::make_pair(combined, std::list<uint64>()));
+        a = lfgContainer.find(combined);
+        if (a == lfgContainer.end())
             return;
+    }
 
     m_lookingForGroup.more.Set(entry, type);
     a->second.push_back(guid);
@@ -20635,9 +20641,9 @@ void Player::ClearLFG(bool leaveChannel)
 
         wasEmpty = false;
 
-        LfgContainerType::accessor a;
+        LfgContainerType::iterator a = lfgContainer.find(GetLFGCombined(i));
 
-        if (!lfgContainer.find(a, GetLFGCombined(i)))
+        if (a == lfgContainer.end())
             continue;
 
         // remove player from list
@@ -20667,10 +20673,9 @@ void Player::ClearLFM(bool leaveChannel)
     if (m_lookingForGroup.more.Empty())
         return;
 
-    LfgContainerType::accessor a;
-
     LfgContainerType & lfgContainer = sWorld.GetLfgContainer(GetTeam());
-    if (!lfgContainer.find(a, m_lookingForGroup.more.Combine()))
+    LfgContainerType::iterator a = lfgContainer.find(m_lookingForGroup.more.Combine());
+    if (a == lfgContainer.end())
         return;
 
     // remove player from list

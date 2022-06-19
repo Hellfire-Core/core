@@ -53,8 +53,8 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_SYS_DEFAULT
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION FILEVER
- PRODUCTVERSION PRODUCTVER
+ FILEVERSION 0,0,0,0
+ PRODUCTVERSION 0,0,0,0
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -70,12 +70,12 @@ BEGIN
         BLOCK "080004b0"
         BEGIN
             VALUE "FileDescription", "HellgroundRealm"
-            VALUE "FileVersion", STRFILEVER
+            VALUE "FileVersion", "0, 0, 0, 0"
             VALUE "InternalName", "HellgroundRealm"
             VALUE "LegalCopyright", "Copyright (C) 2008-2014"
             VALUE "OriginalFilename", "HellgroundRealm.exe"
             VALUE "ProductName", "HellgroundRealm"
-            VALUE "ProductVersion", STRPRODUCTVER
+            VALUE "ProductVersion", "0, 0, 0, 0"
         END
     END
     BLOCK "VarFileInfo"

@@ -95,6 +95,11 @@ ChatboxClientOsName = "Cha"
 #        Default: ""             - do not create PID file
 #                 "./realmd.pid" - create PID file (recommended name)
 #
+#    LogLevel
+#        Server console level of logging
+#        0 = Minimum; 1 = Error; 2 = Detail; 3 = Full/Debug
+#        Default: 0
+#
 #    LogFile
 #        Logfile name
 #        Default: "realmd.log"
@@ -114,6 +119,7 @@ ChatboxClientOsName = "Cha"
 
 LogsDir = ""
 PidFile = ""
+LogLevel = 0
 LogFile = "realmd.log"
 LogTimestamp = 0
 LogFileLevel = 0

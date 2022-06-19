@@ -55,13 +55,13 @@ EndContentData */
 #define ENTRY_KELIDAN               17377
 #define ENTRY_CHANNELER             17653
 
-const float ShadowmoonChannelers[5][4]=
+static const float ShadowmoonChannelers[5][4]=
 {
-    {346,-74.5,-24.6,3.595},
-    {321,-63.5,-24.6,4.887},
-    {302,-87,-24.4,0.157},
-    {316,-109,-24.6,1.257},
-    {344,-103.5,-24.5,2.356}
+    {346, -74.5f,  -24.6f, 3.595f},
+    {321, -63.5f,  -24.6f, 4.887f},
+    {302, -87,     -24.4f, 0.157f},
+    {316, -109,    -24.6f, 1.257f},
+    {344, -103.5f, -24.5f, 2.356f}
 
 };
 
@@ -185,12 +185,13 @@ struct boss_kelidan_the_breakerAI : public ScriptedAI
     {
         switch (i)
         {
-        case 0: return 2; break;
-        case 1: return 3; break;
-        case 2: return 4; break;
-        case 3: return 0; break;
-        case 4: return 1; break;
+            case 0: return 2; break;
+            case 1: return 3; break;
+            case 2: return 4; break;
+            case 3: return 0; break;
+            case 4: return 1; break;
         }
+        return 0;
     }
     void JustDied(Unit* Killer)
     {

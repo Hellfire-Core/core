@@ -1293,19 +1293,19 @@ bool QuestAccept_npc_letoll(Player* player, Creature* creature, const Quest* que
 
 static float SummonCoord[][3] =
 {
-    {-2469.45, 4696.66, 157.01}
+    {-2469.45f, 4696.66f, 157.01f}
 };
 
 static float MinionCoord[][3] =
 {
-    {-2459.4, 4689.6, 165.5},    //Air start
-    {-2474.5, 4685.7, 156.7},    //Air final
-    {-2485.7, 4678.7, 157.0},    //Water start
-    {-2483.0, 4703.3, 154.3},    //Water final
-    {-2480.9, 4676.1, 157.8},    //Earth start
-    {-2479.0, 4689.4, 155.4},    //Earth final
-    {-2478.8, 4720.4, 153.5},    //Fire start
-    {-2476.0, 4707.2, 155.0}     //Fire final
+    {-2459.4f, 4689.6f, 165.5f},    //Air start
+    {-2474.5f, 4685.7f, 156.7f},    //Air final
+    {-2485.7f, 4678.7f, 157.0f},    //Water start
+    {-2483.0f, 4703.3f, 154.3f},    //Water final
+    {-2480.9f, 4676.1f, 157.8f},    //Earth start
+    {-2479.0f, 4689.4f, 155.4f},    //Earth final
+    {-2478.8f, 4720.4f, 153.5f},    //Fire start
+    {-2476.0f, 4707.2f, 155.0f}     //Fire final
 };
 
 enum eSarthis
@@ -1820,8 +1820,6 @@ struct quest_the_vengeful_harbringerAI : public ScriptedAI
 
     void SpawnVengefulHarbringer()
     {
-        float x,y,z;
-
         Creature * Portal_Trigger  = GetClosestCreatureWithEntry(me, NPC_PORTAL_TRIGGER, 90.0f);
         Creature * Dranei_Guardian = GetClosestCreatureWithEntry(me, NPC_GUARDIAN,50.0f);
 
@@ -1839,8 +1837,6 @@ struct quest_the_vengeful_harbringerAI : public ScriptedAI
 
     void SpawnVengefulDraenei()
     {
-        float x,y,z;
-
         Creature * Portal_Trigger  = GetClosestCreatureWithEntry(me, NPC_PORTAL_TRIGGER, 90.0f);
         Creature * Dranei_Guardian = GetClosestCreatureWithEntry(me, NPC_GUARDIAN,50.0f);
 

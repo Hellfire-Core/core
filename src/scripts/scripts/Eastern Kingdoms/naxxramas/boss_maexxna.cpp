@@ -49,11 +49,11 @@ enum MaexxnaEvents
 #define MAEXXNA_SPIDERLING_ID   17055
 #define WEB_WRAP_ID             16486
 
-float webWrapLocations[3][3] =
+static float webWrapLocations[3][3] =
 {
-    {3546.796,  -3869.082, 296.450},
-    {3531.271, -3847.424, 299.450},
-    {3497.067, -3843.384, 302.384}
+    {3546.796f,  -3869.082f, 296.450f},
+    {3531.271f, -3847.424f, 299.450f},
+    {3497.067f, -3843.384f, 302.384f}
 };
 
 struct mob_webwrapAI : public ScriptedAI

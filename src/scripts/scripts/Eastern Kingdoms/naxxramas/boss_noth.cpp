@@ -76,11 +76,11 @@ enum NothPhases
     NOTH_PHASE_BALCONY      = 2
 };
 
-const float NothSummonLocations[3][4] =
+static const float NothSummonLocations[3][4] =
 {
-    { 2724.83, -3526.62, 261.96, 3.00 },
-    { 2716.68, -3463.05, 262.05, 4.14 },
-    { 2646.88, -3461.90, 263.53, 5.28 }
+    { 2724.83f, -3526.62f, 261.96f, 3.00f },
+    { 2716.68f, -3463.05f, 262.05f, 4.14f },
+    { 2646.88f, -3461.90f, 263.53f, 5.28f }
 };
 
 struct boss_nothAI : public BossAI

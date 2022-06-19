@@ -44,9 +44,9 @@ make him fly from 70-100%
 
 static float position[3] =
 {
-    -9664.55,
-    1562.54,
-    22.05
+    -9664.55f,
+    1562.54f,
+    22.05f
 };
 
 struct boss_ayamissAI : public ScriptedAI

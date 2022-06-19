@@ -150,6 +150,7 @@ void Log::Initialize()
     
     // Main log file settings
     m_includeTime  = sConfig.GetBoolDefault("LogTime", false);
+    m_logLevel = sConfig.GetIntDefault("LogLevel", 0);
     m_logFileLevel = sConfig.GetIntDefault("LogFileLevel", 0);
 
     m_logFilter = 0;
@@ -323,6 +324,16 @@ void Log::outBasic(const char * str, ...)
     if (!str)
         return;
 
+    if (m_logLevel >= LOG_LVL_BASIC)
+    {
+        if (m_includeTime)
+            outTime();
+
+        UTF8PRINTF(stdout, str, );
+
+        printf("\n");
+    }
+    
     if (logFile[LOG_DEFAULT] && m_logFileLevel > 0)
     {
         va_list ap;
@@ -339,6 +350,16 @@ void Log::outDetail(const char * str, ...)
 {
     if (!str)
         return;
+
+    if (m_logLevel >= LOG_LVL_DETAIL)
+    {
+        if (m_includeTime)
+            outTime();
+
+        UTF8PRINTF(stdout, str, );
+
+        printf("\n");
+    }
 
     if (logFile[LOG_DEFAULT] && m_logFileLevel > 1)
     {
@@ -371,6 +392,16 @@ void Log::outDebug(const char * str, ...)
     if(!str)
         return;
 
+    if (m_logLevel >= LOG_LVL_DEBUG)
+    {
+        if (m_includeTime)
+            outTime();
+
+        UTF8PRINTF(stdout, str, );
+
+        printf("\n");
+    }
+
     if (logFile[LOG_DEFAULT] && m_logFileLevel > 2)
     {
         outTimestamp(logFile[LOG_DEFAULT]);
@@ -389,6 +420,16 @@ void Log::outCommand(uint32 account, const char * str, ...)
 {
     if (!str)
         return;
+
+    if (m_logLevel >= LOG_LVL_DETAIL)
+    {
+        if (m_includeTime)
+            outTime();
+
+        UTF8PRINTF(stdout, str, );
+
+        printf("\n");
+    }
 
     if (logFile[LOG_DEFAULT] && m_logFileLevel > 1)
     {
@@ -467,6 +508,16 @@ void Log::outLog(LogNames log, const char * str, ...)
     if (!str)
         return;
 
+    if (log == LOG_DEFAULT)
+    {
+        if (m_includeTime)
+            outTime();
+
+        UTF8PRINTF(stdout, str, );
+
+        printf("\n");
+    }
+    
     if (logFile[log])
     {
         // check for errors

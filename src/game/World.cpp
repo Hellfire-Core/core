@@ -69,7 +69,6 @@
 
 //#include "Timer.h"
 #include "GuildMgr.h"
-#include <tbb/parallel_for.h>
 
 volatile bool World::m_stopEvent = false;
 uint8 World::m_ExitCode = SHUTDOWN_EXIT_CODE;
@@ -1576,7 +1575,7 @@ void World::Update(uint32 diff)
             sLog.outLog(LOG_DIFF, "Update time diff: %.3f, avg: %.3f. Players online: %u.", curAvgUpdateTime, avgUpdateTime, GetActiveSessionCount());
             sLog.outLog(LOG_STATUS, "%u %u %u %u %u %u %s %.3f %.3f %u %u %ld",
                         GetUptime(), GetLoggedInCharsCount(TEAM_NEUTRAL), 0, GetQueuedSessionCount(), GetMaxQueuedSessionCount(),
-                        m_playerLimit, _REVISION, curAvgUpdateTime, avgUpdateTime, GetLoggedInCharsCount(TEAM_ALLIANCE), GetLoggedInCharsCount(TEAM_HORDE), sWorld.GetGameTime());
+                        m_playerLimit, __DATE__, curAvgUpdateTime, avgUpdateTime, GetLoggedInCharsCount(TEAM_ALLIANCE), GetLoggedInCharsCount(TEAM_HORDE), sWorld.GetGameTime());
 
             m_updateTimeSum = m_updateTime;
             m_updateTimeCount = 1;
@@ -1822,27 +1821,22 @@ void World::UpdateSessions(const uint32 & diff)
     while (addSessQueue.next(sess))
         AddSession_ (sess);
 
-    if (sessionThreads)
-        tbb::parallel_for(tbb::blocked_range<int>(0, m_sessions.size(), m_sessions.size()/sessionThreads), SessionsUpdater(&m_sessions, diff));
-    else
+    ///- Then send an update signal to remaining ones
+    for (SessionMap::iterator itr = m_sessions.begin(), next; itr != m_sessions.end(); itr = next)
     {
-        ///- Then send an update signal to remaining ones
-        for (SessionMap::iterator itr = m_sessions.begin(), next; itr != m_sessions.end(); itr = next)
+        next = itr;
+        ++next;
+
+        if (!itr->second)
+            continue;
+
+        ///- and remove not active sessions from the list
+        WorldSession * pSession = itr->second;
+        WorldSessionFilter updater(pSession);
+        if (!pSession->Update(diff, updater))   // As interval = 0
         {
-            next = itr;
-            ++next;
-
-            if (!itr->second)
-                continue;
-
-            ///- and remove not active sessions from the list
-            WorldSession * pSession = itr->second;
-            WorldSessionFilter updater(pSession);
-            if (!pSession->Update(diff, updater))   // As interval = 0
-            {
-                RemoveQueuedPlayer(pSession);
-                AddSessionToRemove(itr);
-            }
+            RemoveQueuedPlayer(pSession);
+            AddSessionToRemove(itr);
         }
     }
 

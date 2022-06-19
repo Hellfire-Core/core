@@ -37,6 +37,7 @@
 #include "PassiveAI.h"
 #include "Chat.h"
 
+/*
 #ifdef WIN32
 #include <windows.h>
 BOOL APIENTRY DllMain( HANDLE hModule,
@@ -47,6 +48,6 @@ LPVOID lpReserved
     return true;
 }
 #endif
-
+*/
 #endif
 

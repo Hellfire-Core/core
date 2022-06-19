@@ -36,7 +36,7 @@
 # define _ENDIAN_STRING "little-endian"
 #endif
 
-#define _FULLVERSION _PACKAGENAME "Rev: " _REVISION
+#define _FULLVERSION _PACKAGENAME "Rev: " __DATE__
 
 #define DEFAULT_PLAYER_LIMIT 100
 #define DEFAULT_WORLDSERVER_PORT 8085                       //8129
@@ -48,8 +48,8 @@
 # define SYSCONFDIR ""
 #endif
 
-#define _HELLGROUND_CORE_CONFIG SYSCONFDIR "hellgroundcore.conf"
-#define _HELLGROUND_REALM_CONFIG SYSCONFDIR "hellgroundrealm.conf"
+#define _HELLGROUND_CORE_CONFIG "hellgroundcore.conf"
+#define _HELLGROUND_REALM_CONFIG "hellgroundrealm.conf"
 
 // Format is YYYYMMDDRR where RR is the change in the conf file
 // for that day.

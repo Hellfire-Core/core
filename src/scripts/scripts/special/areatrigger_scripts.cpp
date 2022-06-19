@@ -94,11 +94,12 @@ enum eNatBargain
     AURA_PAGLE_FISH_PASTE       = 42644,
     NPC_LURKING_SHARK           = 23928
 };
-float SharkPos[3] =
+
+static float SharkPos[3] =
 {
-    -4246.243,
-    -3922.356,
-    -7.488
+    -4246.243f,
+    -3922.356f,
+    -7.488f
 };
 
 bool AreaTrigger_at_nats_landing(Player* player, AreaTriggerEntry const* trigger)

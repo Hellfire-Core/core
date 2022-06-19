@@ -104,7 +104,7 @@ struct npc_winnas_kittenAI : public FollowerAI
             timer.Reset(1000);
     }
 
-    void UpdateFollowerAI(uint32 diff)
+    void UpdateFollowerAI(const uint32 diff)
     {
         if (timer.Expired(diff))
         {

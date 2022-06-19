@@ -259,40 +259,40 @@ static Location AllianceCoords[]=
 {
     {
         // Top-far-right bunk as seen from entrance
-        -3757.38, -4533.05, 14.16, 3.62
+        -3757.38f, -4533.05f, 14.16f, 3.62f
     },
     {
         // Top-far-left bunk
-        -3754.36, -4539.13, 14.16, 5.13
+        -3754.36f, -4539.13f, 14.16f, 5.13f
     },
     {
         // Far-right bunk
-        -3749.54, -4540.25, 14.28, 3.34
+        -3749.54f, -4540.25f, 14.28f, 3.34f
     },
     {
         // Right bunk near entrance
-        -3742.10, -4536.85, 14.28, 3.64
+        -3742.10f, -4536.85f, 14.28f, 3.64f
     },
     {
         // Far-left bunk
-        -3755.89, -4529.07, 14.05, 0.57
+        -3755.89f, -4529.07f, 14.05f, 0.57f
     },
     {
         // Mid-left bunk
-        -3749.51, -4527.08, 14.07, 5.26
+        -3749.51f, -4527.08f, 14.07f, 5.26f
     },
     {
         // Left bunk near entrance
-        -3746.37, -4525.35, 14.16, 5.22
+        -3746.37f, -4525.35f, 14.16f, 5.22f
     },
 };
 
 #define ALLIANCE_COORDS     7
 
 //alliance run to where
-#define A_RUNTOX -3742.96
-#define A_RUNTOY -4531.52
-#define A_RUNTOZ 11.91
+#define A_RUNTOX -3742.96f
+#define A_RUNTOY -4531.52f
+#define A_RUNTOZ 11.91f
 
 #define DOCTOR_HORDE    12920
 
@@ -300,27 +300,27 @@ static Location HordeCoords[]=
 {
     {
         // Left, Behind
-        -1013.75, -3492.59, 62.62, 4.34
+        -1013.75f, -3492.59f, 62.62f, 4.34f
     },
     {
         // Right, Behind
-        -1017.72, -3490.92, 62.62, 4.34
+        -1017.72f, -3490.92f, 62.62f, 4.34f
     },
     {
         // Left, Mid
-        -1015.77, -3497.15, 62.82, 4.34
+        -1015.77f, -3497.15f, 62.82f, 4.34f
     },
     {
         // Right, Mid
-        -1019.51, -3495.49, 62.82, 4.34
+        -1019.51f, -3495.49f, 62.82f, 4.34f
     },
     {
         // Left, front
-        -1017.25, -3500.85, 62.98, 4.34
+        -1017.25f, -3500.85f, 62.98f, 4.34f
     },
     {
         // Right, Front
-        -1020.95, -3499.21, 62.98, 4.34
+        -1020.95f, -3499.21f, 62.98f, 4.34f
     }
 };
 
@@ -1190,13 +1190,13 @@ enum
     SAY_SHAYA_GOODBYE       = -1000563,
 };
 
-float RunTo[5][3]=
+static float RunTo[5][3]=
 {
-    {9661.724, 869.803, 1270.742},                          //shaya
-    {-9543.747, -117.770, 57.893},                          //roberts
-    {-5650.226, -473.517, 397.027},                         //dolf
-    {189.175, -4747.069, 11.215},                           //kor'ja
-    {2471.303, 371.101, 30.919},                            //kel
+    {9661.724f,   869.803f,  1270.742f}, //shaya
+    {-9543.747f, -117.770f,  57.893f},   //roberts
+    {-5650.226f, -473.517f,  397.027f},  //dolf
+    {189.175f,   -4747.069f, 11.215f},   //kor'ja
+    {2471.303f,   371.101f,  30.919f},   //kel
 };
 
 struct npc_garments_of_questsAI : public ScriptedAI
@@ -3427,7 +3427,7 @@ struct npc_headless_horseman_fireAI : public CreatureAI
             DoAction(1);
     }
 
-    void DoAction(int32 what)
+    void DoAction(const int32 what)
     {
         if (what == 1)
         {
@@ -3594,9 +3594,9 @@ struct npc_headless_horseman_matronAI : public CreatureAI
         }
     }
 
-    void DoAction(int32 what)
+    void DoAction(const int32 what)
     {
-        if (what = 66)
+        if (what == 66)
             startEvent -= 14400; //count backwards 4 hours to make event start now
     }
 };

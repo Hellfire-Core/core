@@ -202,8 +202,8 @@ bool GossipSelect_npc_hastings(Player* player, Creature* _Creature, uint32 sende
 #define SPELL_CONFLAGRATION_BLAST   30977
 #define SPELL_MANA_SHIELD           31635
 
-static float MedivPos[4] = {-11161.49,-1902.24,91.48,1.94};
-static float ArcanagosPos[4] = {-11169.75,-1881.48,95.39,4.83};
+static float MedivPos[4] = {-11161.49f, -1902.24f, 91.48f, 1.94f};
+static float ArcanagosPos[4] = {-11169.75f, -1881.48f, 95.39f, 4.83f};
 
 struct npc_image_of_medivhAI : public ScriptedAI
 {

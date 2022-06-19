@@ -2602,9 +2602,9 @@ void BattleGroundMap::UnloadAll()
 
 Creature * Map::GetCreature(uint64 guid)
 {
-    CreaturesMapType::const_accessor a;
+    CreaturesMapType::const_iterator a = creaturesMap.find(guid);
 
-    if (creaturesMap.find(a, guid))
+    if (a != creaturesMap.cend())
     {
         if (a->second->GetInstanceId() != GetInstanceId())
             return NULL;
@@ -2617,9 +2617,9 @@ Creature * Map::GetCreature(uint64 guid)
 
 Creature * Map::GetCreature(uint64 guid, float x, float y)
 {
-    CreaturesMapType::const_accessor a;
+    CreaturesMapType::const_iterator a = creaturesMap.find(guid);
 
-    if (creaturesMap.find(a, guid))
+    if (a != creaturesMap.cend())
     {
         CellPair p = Hellground::ComputeCellPair(x,y);
         if (p.x_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP || p.y_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP)
@@ -2666,9 +2666,9 @@ Creature * Map::GetCreatureOrPet(uint64 guid)
 
 GameObject * Map::GetGameObject(uint64 guid)
 {
-    GObjectMapType::const_accessor a;
+    GObjectMapType::const_iterator a = gameObjectsMap.find(guid);
 
-    if (gameObjectsMap.find(a, guid))
+    if (a != gameObjectsMap.cend())
     {
         if (a->second->GetInstanceId() != GetInstanceId())
             return NULL;
@@ -2681,9 +2681,9 @@ GameObject * Map::GetGameObject(uint64 guid)
 
 DynamicObject * Map::GetDynamicObject(uint64 guid)
 {
-    DObjectMapType::const_accessor a;
+    DObjectMapType::const_iterator a = dynamicObjectsMap.find(guid);
 
-    if (dynamicObjectsMap.find(a, guid))
+    if (a != dynamicObjectsMap.cend())
     {
         if (a->second->GetInstanceId() != GetInstanceId())
             return NULL;
@@ -2744,8 +2744,8 @@ Object* Map::GetObjectByTypeMask(Player const &p, uint64 guid, uint32 typemask)
 
 void Map::VisibilityOfCreatureEntry(uint32 entry, bool hide)
 {
-    CreatureIdToGuidListMapType::const_accessor a;
-    if (!creatureIdToGuidMap.find(a, entry))
+    CreatureIdToGuidListMapType::const_iterator a = creatureIdToGuidMap.find(entry);
+    if (a == creatureIdToGuidMap.cend())
         return;
 
     std::list<uint64> tmpList = a->second;
@@ -2778,8 +2778,8 @@ void Map::VisibilityOfCreatureEntry(uint32 entry, bool hide)
 std::list<uint64> Map::GetCreaturesGUIDList(uint32 id, GetCreatureGuidType type , uint32 max)
 {
     std::list<uint64> returnList;
-    CreatureIdToGuidListMapType::const_accessor a;
-    if (creatureIdToGuidMap.find(a, id))
+    CreatureIdToGuidListMapType::const_iterator a = creatureIdToGuidMap.find(id);
+    if (a != creatureIdToGuidMap.cend())
     {
         std::list<uint64> tmpList = a->second;
 
@@ -2837,8 +2837,8 @@ uint64 Map::GetCreatureGUID(uint32 id, GetCreatureGuidType type)
 {
     uint64 returnGUID = 0;
 
-    CreatureIdToGuidListMapType::const_accessor a;
-    if (creatureIdToGuidMap.find(a, id))
+    CreatureIdToGuidListMapType::const_iterator a = creatureIdToGuidMap.find(id);
+    if (a != creatureIdToGuidMap.cend())
     {
         switch (type)
         {
@@ -2878,25 +2878,25 @@ uint64 Map::GetCreatureGUID(uint32 id, GetCreatureGuidType type)
 
 void Map::InsertIntoCreatureGUIDList(Creature * obj)
 {
-    CreatureIdToGuidListMapType::accessor a;
-    if (creatureIdToGuidMap.insert(a, obj->GetEntry()))
+    auto a = creatureIdToGuidMap.insert(std::make_pair(obj->GetEntry(), std::list<uint64>()));
+    if (a.second)
     {
         std::list<uint64> tmp;
         tmp.push_back(obj->GetGUID());
-        a->second = tmp;
+        a.first->second = tmp;
     }
     else
     {
-        a.release();
-        if (creatureIdToGuidMap.find(a, obj->GetEntry()))
-            a->second.push_back(obj->GetGUID());
+        auto b = creatureIdToGuidMap.find(obj->GetEntry());
+        if (b != creatureIdToGuidMap.end())
+            b->second.push_back(obj->GetGUID());
     }
 }
 
 void Map::RemoveFromCreatureGUIDList(Creature * obj)
 {
-    CreatureIdToGuidListMapType::accessor a;
-    if (creatureIdToGuidMap.find(a, obj->GetEntry()))
+    CreatureIdToGuidListMapType::iterator a = creatureIdToGuidMap.find(obj->GetEntry());
+    if (a != creatureIdToGuidMap.end())
         a->second.remove(obj->GetGUID());
 }
 
@@ -2909,41 +2909,33 @@ void Map::InsertIntoObjMap(Object * obj)
     {
         case HIGHGUID_UNIT:
             {
-                CreaturesMapType::accessor a;
+                auto a = creaturesMap.insert(std::make_pair(guid.GetRawValue(), (Creature*)obj));
 
-                if (creaturesMap.insert(a, guid.GetRawValue()))
+                if (a.second)
                 {
-                    a->second = (Creature*)obj;
-                    InsertIntoCreatureGUIDList(a->second);
+                    InsertIntoCreatureGUIDList(a.first->second);
                 }
                 else
                     error_log("Map::InsertIntoCreatureMap: GUID %lu already in map", guid.GetRawValue());
 
-                a.release();
                 break;
             }
         case HIGHGUID_GAMEOBJECT:
             {
-                GObjectMapType::accessor a;
+                auto a = gameObjectsMap.insert(std::make_pair(guid.GetRawValue(), (GameObject*)obj));
 
-                if (gameObjectsMap.insert(a, guid.GetRawValue()))
-                    a->second = (GameObject*)obj;
-                else
+                if (!a.second)
                     error_log("Map::InsertIntoGameObjectMap: GUID %lu already in map", guid.GetRawValue());
 
-                a.release();
                 break;
             }
         case HIGHGUID_DYNAMICOBJECT:
             {
-                DObjectMapType::accessor a;
+                auto a = dynamicObjectsMap.insert(std::make_pair(guid.GetRawValue(), (DynamicObject*)obj));
 
-                if (dynamicObjectsMap.insert(a, guid.GetRawValue()))
-                    a->second = (DynamicObject*)obj;
-                else
+                if (!a.second)
                     error_log("Map::InsertIntoDynamicObjectMap: GUID %lu already in map", guid.GetRawValue());
 
-                a.release();
                 break;
             }
         case HIGHGUID_PET:
@@ -3003,9 +2995,9 @@ void Map::RemoveFromObjMap(Object * obj)
     {
         case HIGHGUID_UNIT:
         {
-            CreaturesMapType::accessor a;
+            CreaturesMapType::iterator a = creaturesMap.find(objGuid.GetRawValue());
             RemoveFromCreatureGUIDList((Creature*)obj);
-            if (creaturesMap.find(a, objGuid.GetRawValue()))
+            if (a != creaturesMap.end())
                 creaturesMap.erase(a);
             else
                 sLog.outLog(LOG_DEFAULT, "ERROR: Map::RemoveFromCreatureMap: Creature GUID Low %u not in map", objGuid.GetCounter());
@@ -3013,8 +3005,8 @@ void Map::RemoveFromObjMap(Object * obj)
         }
         case HIGHGUID_GAMEOBJECT:
         {
-            GObjectMapType::accessor a;
-            if (gameObjectsMap.find(a, objGuid.GetRawValue()))
+            GObjectMapType::iterator a = gameObjectsMap.find(objGuid.GetRawValue());
+            if (a != gameObjectsMap.end())
                 gameObjectsMap.erase(a);
             else
                 sLog.outLog(LOG_DEFAULT, "ERROR: Map::RemoveFromGameObjectMap: Game Object GUID Low %u not in map", objGuid.GetCounter());
@@ -3022,8 +3014,8 @@ void Map::RemoveFromObjMap(Object * obj)
         }
         case HIGHGUID_DYNAMICOBJECT:
         {
-            DObjectMapType::accessor a;
-            if (dynamicObjectsMap.find(a, objGuid.GetRawValue()))
+            DObjectMapType::iterator a = dynamicObjectsMap.find(objGuid.GetRawValue());
+            if (a != dynamicObjectsMap.end())
                 dynamicObjectsMap.erase(a);
             else
                 sLog.outLog(LOG_DEFAULT, "ERROR: Map::RemoveFromDynamicObjectMap: Dynamic Object GUID Low %u not in map", objGuid.GetCounter());

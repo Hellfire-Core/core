@@ -196,25 +196,24 @@ else()
   include(cmake/ImportACE.cmake)
 endif()
 
-unset(TBB_INCLUDE_DIR CACHE)
-unset(TBB_LIBRARIES CACHE)
-unset(TBB_LIBRARIES_DIR CACHE)
-unset(TBB_INCLUDE_DIR)
-unset(TBB_LIBRARIES)
-unset(TBB_LIBRARIES_DIR)
-if(TBB_USE_EXTERNAL)
-  find_package(TBB)
-  if(NOT TBB_FOUND)
-    message(FATAL_ERROR
-      "This project requires TBB installed when TBB_USE_EXTERNAL is set. Please download the TBB Stable Release from http://www.threadingbuildingblocks.org/ and install it. If this script didn't find TBB and it was correctly installed please set TBB_ROOT to the correct path."
-    )
+if (NOT USE_STD_MALLOC)
+  unset(TBB_INCLUDE_DIR CACHE)
+  unset(TBB_LIBRARIES CACHE)
+  unset(TBB_LIBRARIES_DIR CACHE)
+  unset(TBB_INCLUDE_DIR)
+  unset(TBB_LIBRARIES)
+  unset(TBB_LIBRARIES_DIR)
+  if(TBB_USE_EXTERNAL)
+    find_package(TBB)
+    if(NOT TBB_FOUND)
+      message(FATAL_ERROR
+        "This project requires TBB installed when TBB_USE_EXTERNAL is set. Please download the TBB Stable Release from http://www.threadingbuildingblocks.org/ and install it. If this script didn't find TBB and it was correctly installed please set TBB_ROOT to the correct path."
+      )
+    endif()
+  else()
+    include(cmake/ImportTBB.cmake)
   endif()
-else()
-  include(cmake/ImportTBB.cmake)
 endif()
-
-
-find_package(OpenSSL REQUIRED)
 
 # Win32 delifered packages
 if(WIN32)
@@ -222,6 +221,9 @@ if(WIN32)
   set(MYSQL_LIBRARY ${CMAKE_SOURCE_DIR}/dep/lib/${DEP_ARCH}_release/libmySQL.lib)
   set(MYSQL_DEBUG_LIBRARY ${CMAKE_SOURCE_DIR}/dep/lib/${DEP_ARCH}_debug/libmySQL.lib)
   # zlib is build
+  set(OPENSSL_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/dep/include/openssl)
+  set(OPENSSL_LIBRARIES ${CMAKE_SOURCE_DIR}/dep/lib/${DEP_ARCH}_release/libeay32.lib)
+  set(OPENSSL_DEBUG_LIBRARIES ${CMAKE_SOURCE_DIR}/dep/lib/${DEP_ARCH}_debug/libeay32.lib)
 endif()
 
 # *nix-specific packages
@@ -229,6 +231,7 @@ if(UNIX)
   find_package(Readline REQUIRED)
   find_package(MySQL REQUIRED)
   find_package(ZLIB REQUIRED)
+  find_package(OpenSSL REQUIRED)
 endif()
 
 # Add uninstall script and target
@@ -300,17 +303,16 @@ endif(LARGE_CELL)
 
 message("")
 
-if(PLATFORM MATCHES X86)
-  set(ADDITIONAL_COMPILE_FLAGS "-std=c++0x -ggdb -O2 -msse3  -fno-delete-null-pointer-checks -ftracer -fno-strict-aliasing -funroll-loops -m32 -pipe -DFD_SETSIZE=4096")
-else()
-  set(ADDITIONAL_COMPILE_FLAGS "-std=c++0x -ggdb -O2 -msse3  -fno-delete-null-pointer-checks -ftracer -fno-strict-aliasing -funroll-loops -m64 -pipe -DFD_SETSIZE=4096")
-endif()
-set(ADDITIONAL_OPTIMIZE_FLAGS "-fomit-frame-pointer -frename-registers")
-set(ADDITIONAL_MATH_FLAGS " -ffast-math -fno-math-errno -funsafe-math-optimizations")
-set(ADDITIONAL_GPROF_FLAGS " -pg")
-
 # Set warning levels for different builds
 if(UNIX)
+  if(PLATFORM MATCHES X86)
+    set(ADDITIONAL_COMPILE_FLAGS "-std=c++0x -ggdb -O2 -msse3  -fno-delete-null-pointer-checks -ftracer -fno-strict-aliasing -funroll-loops -m32 -pipe -DFD_SETSIZE=4096")
+  else()
+    set(ADDITIONAL_COMPILE_FLAGS "-std=c++0x -ggdb -O2 -msse3  -fno-delete-null-pointer-checks -ftracer -fno-strict-aliasing -funroll-loops -m64 -pipe -DFD_SETSIZE=4096")
+  endif()
+  set(ADDITIONAL_OPTIMIZE_FLAGS "-fomit-frame-pointer -frename-registers")
+  set(ADDITIONAL_MATH_FLAGS " -ffast-math -fno-math-errno -funsafe-math-optimizations")
+  set(ADDITIONAL_GPROF_FLAGS " -pg")
   set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra -Wfatal-errors")
 elseif(WIN32)
   # Disable warnings in Visual Studio 8 and above and add /MP

@@ -870,16 +870,16 @@ bool GossipSelect_npc_squire_rowe(Player *player, Creature *_Creature, uint32 se
 * Stormwind Elite Guard
 *****/
 
-float StormwindEliteGuardMoveCoords[6][4] =
+static float StormwindEliteGuardMoveCoords[6][4] =
 {
     // right
-    {-8970.5, 520.3, 96.7, 5.38},
-    {-8972.0, 519.2, 96.7, 5.38},
-    {-8974.3, 517.4, 96.7, 5.38},
+    {-8970.5f, 520.3f, 96.7f, 5.38f},
+    {-8972.0f, 519.2f, 96.7f, 5.38f},
+    {-8974.3f, 517.4f, 96.7f, 5.38f},
     // left
-    {-8958.3, 505.4, 96.7, 2.24},
-    {-8960.2, 504.1, 96.7, 2.24},
-    {-8962.0, 502.6, 96.7, 2.24}
+    {-8958.3f, 505.4f, 96.7f, 2.24f},
+    {-8960.2f, 504.1f, 96.7f, 2.24f},
+    {-8962.0f, 502.6f, 96.7f, 2.24f}
 };
 
 struct npc_stormwind_elite_guardAI : public ScriptedAI
@@ -1005,18 +1005,18 @@ enum Event
     EVENT_ONYXIA            = 4
 };
 
-float StormwindGuardsCoords[7][4] =
+static float StormwindGuardsCoords[7][4] =
 {
     // Marcus
-    {-8966.6, 511.3, 96.4, 3.78},
+    {-8966.6f, 511.3f, 96.4f, 3.78f},
     // right
-    {-8968.1, 513.0, 96.4, 3.78},
-    {-8969.8, 515.1, 96.6, 3.78},
-    {-8972.9, 518.3, 96.7, 3.78},
+    {-8968.1f, 513.0f, 96.4f, 3.78f},
+    {-8969.8f, 515.1f, 96.6f, 3.78f},
+    {-8972.9f, 518.3f, 96.7f, 3.78f},
     // left
-    {-8965.0, 509.0, 96.4, 3.78},
-    {-8963.6, 507.3, 96.6, 3.78},
-    {-8960.7, 503.6, 96.7, 3.78}
+    {-8965.0f, 509.0f, 96.4f, 3.78f},
+    {-8963.6f, 507.3f, 96.6f, 3.78f},
+    {-8960.7f, 503.6f, 96.7f, 3.78f}
 };
 
 struct npc_reginald_windsorAI : public npc_escortAI

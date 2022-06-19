@@ -141,13 +141,13 @@ void WorldSession::SendLFM(uint32 type, uint32 entry)
     data << uint32(0);                                      // count, placeholder
     data << uint32(0);                                      // count again, strange, placeholder
 
-    LfgContainerType::const_accessor a;
 
     bool clearNeeded = false;
 
     // get player container for LFM id
     LfgContainerType & lfgContainer = sWorld.GetLfgContainer(GetPlayer()->GetTeam());
-    if (lfgContainer.find(a, LFG_COMBINE(entry, type)))
+    LfgContainerType::const_iterator a = lfgContainer.find(LFG_COMBINE(entry, type));
+    if (a != lfgContainer.cend())
     {
         for (std::list<uint64>::const_iterator itr = a->second.begin(); itr != a->second.end(); ++itr)
         {
@@ -219,8 +219,6 @@ void WorldSession::SendLFM(uint32 type, uint32 entry)
         }
     }
 
-    a.release();
-
     // fill count placeholders
     data.put<uint32>(4+4,   number);
     data.put<uint32>(4+4+4, number);
@@ -230,10 +228,10 @@ void WorldSession::SendLFM(uint32 type, uint32 entry)
 
     if (clearNeeded)
     {
-        LfgContainerType::accessor accessor;
+        LfgContainerType::iterator accessor = lfgContainer.find(LFG_COMBINE(entry, type));
 
         // get player container for LFM id
-        if (lfgContainer.find(accessor, LFG_COMBINE(entry, type)))
+        if (accessor != lfgContainer.end())
         {
             for (std::list<uint64>::iterator itr = accessor->second.begin(); itr != accessor->second.end();)
             {

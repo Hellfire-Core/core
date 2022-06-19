@@ -528,7 +528,7 @@ bool GossipSelect_npc_susurrus(Player *player, Creature *_Creature, uint32 sende
 #define MOB_SPARK       17243
 #define GO_NAGA_FLAG    181694
 
-static float SparkPos[3] = {-5030.95, -11291.99, 7.97};
+static float SparkPos[3] = {-5030.95f, -11291.99f, 7.97f};
 
 struct npc_geezleAI : public ScriptedAI
 {

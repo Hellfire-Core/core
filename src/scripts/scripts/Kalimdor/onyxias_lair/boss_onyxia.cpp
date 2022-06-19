@@ -63,15 +63,15 @@ struct Position;
 enum SpawnDefinitions;
 extern cPosition spawnEntrancePoints[MAX];
 
-static cPosition center = {-24.8694, -214.071, -89.246};
+static cPosition center = {-24.8694f, -214.071f, -89.246f};
 
 static cPosition flyLocations[] =
 {
-    {-65.5955, -222.839, -84.3624},
-    {-48.26, -196.624, -86.1145},
-    {-12.4892, -213.19, -88.0036},
-    {20.0359, -216.578, -85.3187},
-    {-66.6432, -214.359, -84.2238}
+    {-65.5955f, -222.839f, -84.3624f},
+    {-48.26f,   -196.624f, -86.1145f},
+    {-12.4892f, -213.19f,  -88.0036f},
+    {20.0359f,  -216.578f, -85.3187f},
+    {-66.6432f, -214.359f, -84.2238f}
 };
 
 enum PhaseMask
