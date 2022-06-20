@@ -30,9 +30,12 @@ template<>
 void RandomMovementGenerator<Creature>::_setRandomLocation(Creature &creature)
 {
     Position dest;
-    creature.GetRespawnCoord(dest.x, dest.y, dest.z, &dest.o, &wander_distance);
+    creature.GetRespawnCoord(dest.x, dest.y, dest.z, &dest.o, &i_wanderDistance);
 
-    const float range = frand(0.0f, wander_distance);
+    if (i_wanderDistance < 0.1f)
+        i_wanderDistance = 0.1f;
+
+    const float range = frand(0.1f, i_wanderDistance);
     if (!creature.GetMap()->GetReachableRandomPosition(&creature, dest.x, dest.y, dest.z, range))
         return;
 
@@ -41,8 +44,18 @@ void RandomMovementGenerator<Creature>::_setRandomLocation(Creature &creature)
     init.SetWalk(true);
     init.Launch();
 
+    if (i_wanderSteps) // Creature has yet to do steps before pausing
+    {
+        --i_wanderSteps;
+        i_nextMoveTime.Reset(50);
+    }
+    else
+    {
+        // Creature has made all its steps, time for a little break
+        i_nextMoveTime.Reset(urand(4, 10) * 1000); // Retails seems to use rounded numbers so we do as well
+        i_wanderSteps = urand(0, ((i_wanderDistance <= 1.0f) ? 2 : 8));
+    }
     static_cast<MovementGenerator*>(this)->_recalculateTravel = false;
-    i_nextMoveTime.Reset(urand(500, 10000));
 }
 
 template<>

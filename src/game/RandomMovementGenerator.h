@@ -27,8 +27,8 @@ template<class T>
 class RandomMovementGenerator : public MovementGeneratorMedium< T, RandomMovementGenerator<T> >
 {
     public:
-        explicit RandomMovementGenerator(const Unit &) : i_nextMoveTime(0) {}
-        explicit RandomMovementGenerator(float dist) : i_nextMoveTime(0), wander_distance(dist) {}
+        explicit RandomMovementGenerator(const Unit &) : i_nextMoveTime(0), i_wanderDistance(5.0f), i_wanderSteps(0) {}
+        explicit RandomMovementGenerator(float dist) : i_nextMoveTime(0), i_wanderDistance(dist), i_wanderSteps(0) {}
 
         void _setRandomLocation(T &);
         void Initialize(T &);
@@ -45,8 +45,8 @@ class RandomMovementGenerator : public MovementGeneratorMedium< T, RandomMovemen
     private:
         TimeTrackerSmall i_nextMoveTime;
         uint32 i_nextMove;
-
-        float wander_distance;
+        float i_wanderDistance;
+        uint8 i_wanderSteps;
 };
 
 #endif
