@@ -1985,7 +1985,7 @@ void WorldObject::GetValidPointInAngle(Position &pos, float dist, float angle, b
             break;
         }
     }
-    pos.z += 2.0f; //test
+    
     Hellground::NormalizeMapCoord(pos.x);
     Hellground::NormalizeMapCoord(pos.y);
     UpdateAllowedPositionZ(pos.x, pos.y, pos.z);

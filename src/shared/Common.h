@@ -284,6 +284,10 @@ enum RunModes
 #define M_PI            3.14159265358979323846
 #endif
 
+#ifndef M_PI_F
+#define M_PI_F          float(M_PI)
+#endif
+
 // used for creating values for respawn for example
 #define MAKE_PAIR64(l, h)  uint64(uint32(l) | (uint64(h) << 32))
 #define PAIR64_HIPART(x)   (uint32)((uint64(x) >> 32) & UI64LIT(0x00000000FFFFFFFF))
