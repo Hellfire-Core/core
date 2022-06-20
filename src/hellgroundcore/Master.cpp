@@ -335,6 +335,7 @@ int Master::Run()
     GameDataDatabase.HaltDelayThread();
     AccountsDatabase.HaltDelayThread();
 
+    std::quick_exit(World::GetExitCode());
     // Exit the process with specified return value
     return World::GetExitCode();
 }
