@@ -1861,14 +1861,31 @@ void Unit::DealMeleeDamage(MeleeDamageLog *damageInfo, bool durabilityLoss)
     }
 }
 
-
-void Unit::HandleEmoteCommand(uint32 anim_id)
+void Unit::HandleEmoteCommand(uint32 emoteId)
 {
     WorldPacket data(SMSG_EMOTE, 12);
-    data << anim_id << GetGUID();
+    data << emoteId << GetGUID();
     ASSERT(data.size() == 12);
 
     BroadcastPacket(&data, true);
+}
+
+void Unit::HandleEmoteState(uint32 emote_id)
+{
+    SetUInt32Value(UNIT_NPC_EMOTESTATE, emote_id);
+}
+
+void Unit::HandleEmote(uint32 emote_id)
+{
+    if (!emote_id)
+        HandleEmoteState(0);
+    else if (EmotesEntry const* emoteEntry = sEmotesStore.LookupEntry(emote_id))
+    {
+        if (emoteEntry->EmoteType)                          // 1,2 states, 0 command
+            HandleEmoteState(emote_id);
+        else
+            HandleEmoteCommand(emote_id);
+    }
 }
 
 uint32 Unit::CalcArmorReducedDamage(Unit* pVictim, const uint32 damage)
@@ -11742,6 +11759,9 @@ bool Unit::IsStandState() const
 
 void Unit::SetStandState(uint8 state)
 {
+    if (GetByteValue(UNIT_FIELD_BYTES_1, 0) == state)
+        return;
+
     SetByteValue(UNIT_FIELD_BYTES_1, 0, state);
 
     if (IsStandState())

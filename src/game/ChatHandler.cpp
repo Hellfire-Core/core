@@ -597,20 +597,20 @@ void WorldSession::HandleTextEmoteOpcode(WorldPacket & recv_data)
 
     CHECK_PACKET_SIZE(recv_data, 4+4+8);
 
-    uint32 text_emote, emoteNum;
+    uint32 textEmote, emoteNum;
     uint64 guid;
 
-    recv_data >> text_emote;
+    recv_data >> textEmote;
     recv_data >> emoteNum;
     recv_data >> guid;
 
-    EmotesTextEntry const *em = sEmotesTextStore.LookupEntry(text_emote);
+    EmotesTextEntry const *em = sEmotesTextStore.LookupEntry(textEmote);
     if (!em)
         return;
 
-    uint32 emote_anim = em->textid;
+    uint32 emoteId = em->textid;
 
-    switch (emote_anim)
+    switch (emoteId)
     {
         case EMOTE_STATE_SLEEP:
         case EMOTE_STATE_SIT:
@@ -621,7 +621,7 @@ void WorldSession::HandleTextEmoteOpcode(WorldPacket & recv_data)
         {
             // in feign death state allowed only text emotes.
             if (!player->HasFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_FEIGN_DEATH))
-                player->HandleEmoteCommand(emote_anim);
+                player->HandleEmote(emoteId);
             break;
         }
     }
@@ -634,7 +634,7 @@ void WorldSession::HandleTextEmoteOpcode(WorldPacket & recv_data)
 
     data.Initialize(SMSG_TEXT_EMOTE, (20 + namlen));
     data << player->GetGUID();
-    data << uint32(text_emote);
+    data << uint32(textEmote);
     data << emoteNum;
     data << uint32(namlen);
     if (namlen > 1)
@@ -649,9 +649,9 @@ void WorldSession::HandleTextEmoteOpcode(WorldPacket & recv_data)
     if (unit && unit->GetTypeId() == TYPEID_UNIT)
     {
         if (((Creature*)unit)->AI())
-            ((Creature*)unit)->AI()->ReceiveEmote(player, text_emote);
+            ((Creature*)unit)->AI()->ReceiveEmote(player, textEmote);
 
-        sScriptMgr.OnReceiveEmote(GetPlayer(), (Creature*)unit, text_emote);
+        sScriptMgr.OnReceiveEmote(GetPlayer(), (Creature*)unit, textEmote);
     }
 }
 

@@ -244,6 +244,12 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
     if (!_player->IsSelfMover() && plMover)
         movementInfo.RemoveMovementFlag(MOVEFLAG_WALK_MODE);
 
+    if (movementInfo.HasMovementFlag(MOVEFLAG_MOVING))
+    {
+        mover->SetStandState(UNIT_STAND_STATE_STAND);
+        mover->HandleEmoteState(0);
+    }
+
     /* process position-change */
     bool result = HandleMoverRelocation(movementInfo);
 
