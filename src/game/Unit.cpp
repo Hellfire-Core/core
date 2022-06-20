@@ -575,6 +575,49 @@ bool Unit::IsWithinMeleeRange(Unit *obj, float dist) const
     return distsq < maxdist * maxdist;
 }
 
+bool Unit::CanReachWithMeleeAutoAttackAtPosition(Unit const* pVictim, float x, float y, float z, float flat_mod /*= 0.0f*/) const
+{
+    if (!pVictim || !pVictim->IsInWorld())
+        return false;
+
+    float reach = GetCombatReach(pVictim, false, flat_mod);
+
+    float dx = x - pVictim->GetPositionX();
+    float dy = y - pVictim->GetPositionY();
+    float dz = z - pVictim->GetPositionZ();
+
+    float zReach = 36;
+    return (dx * dx + dy * dy < reach * reach) && ((dz * dz) < zReach);
+}
+
+float Unit::GetCombatReach(bool forMeleeRange /*=false*/) const
+{
+    float reach = m_floatValues[UNIT_FIELD_COMBATREACH];
+    return (forMeleeRange && reach < 1.5f) ? 1.5f : reach;
+}
+
+float Unit::GetCombatReach(Unit const* pVictim, bool ability, float flat_mod) const
+{
+    float victimReach = (pVictim && pVictim->IsInWorld())
+        ? pVictim->GetCombatReach(true)
+        : 0.0f;
+
+    float reach = GetCombatReach(true) + victimReach + flat_mod;
+
+    reach += MELEE_RANGE;
+    if (reach < NOMINAL_MELEE_RANGE)
+        reach = NOMINAL_MELEE_RANGE;
+
+    // Melee leeway mechanic.
+    // When both player and target has > 70% of normal runspeed, and are moving,
+    // the player gains an additional 2.66yd of melee range.
+    if ((m_movementInfo.HasMovementFlag(MOVEFLAG_MOVING) && !m_movementInfo.HasMovementFlag(MOVEFLAG_WALK_MODE)) &&
+        (pVictim->m_movementInfo.HasMovementFlag(MOVEFLAG_MOVING) && !pVictim->m_movementInfo.HasMovementFlag(MOVEFLAG_WALK_MODE)))
+        reach += 2 * MELEE_RANGE;
+
+    return reach;
+}
+
 void Unit::GetRandomContactPoint(const Unit* obj, float &x, float &y, float &z, float distance2dMin, float distance2dMax) const
 {
     float combat_reach = GetCombatReach();

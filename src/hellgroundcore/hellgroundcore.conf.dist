@@ -1811,7 +1811,7 @@ Visibility.Distance.ActiveObjectUpdate.Instances = 132
 #
 #    Movement.RecalculateRange
 #        Minimal range after which creature will recalculate movement for chase/follow movegen, higher = less stress on CPU
-#        Default: 1 (yards)
+#        Default: 0.5 (yards)
 #          Range: 0-5 (yards)
 #
 #    Movement.RecheckTimer
@@ -1829,7 +1829,7 @@ Visibility.Distance.ActiveObjectUpdate.Instances = 132
 #
 ###################################################################################################################
 
-Movement.RecalculateRange = 1
+Movement.RecalculateRange = 0.5
 Movement.RecheckTimer = 100
 Movement.WaypointPathfinding.Continents = 1
 Movement.WaypointPathfinding.Instances = 1

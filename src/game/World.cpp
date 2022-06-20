@@ -814,11 +814,11 @@ void World::LoadConfigSettings(bool reload)
     m_activeObjectUpdateDistanceInInstances = sConfig.GetIntDefault("Visibility.Distance.ActiveObjectUpdate.Instances", DEFAULT_VISIBILITY_DISTANCE);
 
     // movement
-    loadConfig(CONFIG_TARGET_POS_RECALCULATION_RANGE, "Movement.RecalculateRange", 2);
-    if (m_configs[CONFIG_TARGET_POS_RECALCULATION_RANGE] < 0)
-        m_configs[CONFIG_TARGET_POS_RECALCULATION_RANGE] = 0;
-    if (m_configs[CONFIG_TARGET_POS_RECALCULATION_RANGE] > 5)
-        m_configs[CONFIG_TARGET_POS_RECALCULATION_RANGE] = 5;
+    loadConfig(CONFIG_TARGET_POS_RECALCULATION_RANGE, "Movement.RecalculateRange", 0.5f);
+    if (rate_values[CONFIG_TARGET_POS_RECALCULATION_RANGE] < 0)
+        rate_values[CONFIG_TARGET_POS_RECALCULATION_RANGE] = 0;
+    if (rate_values[CONFIG_TARGET_POS_RECALCULATION_RANGE] > 5)
+        rate_values[CONFIG_TARGET_POS_RECALCULATION_RANGE] = 5;
     loadConfig(CONFIG_TARGET_POS_RECHECK_TIMER, "Movement.RecheckTimer", 100);
     loadConfig(CONFIG_WAYPOINT_MOVEMENT_PATHFINDING_ON_CONTINENTS, "Movement.WaypointPathfinding.Continents", true);
     loadConfig(CONFIG_WAYPOINT_MOVEMENT_PATHFINDING_IN_INSTANCES, "Movement.WaypointPathfinding.Instances", true);

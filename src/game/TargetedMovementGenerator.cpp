@@ -83,6 +83,9 @@ void TargetedMovementGeneratorMedium<T,D>::_setTargetLocation(T &owner)
     if (abs(_target->GetPositionZ() - z) > 5.0f) // get nearpoint is normalizing position for ground, enable fly and swim
         z = _target->GetPositionZ();
 
+    if (!_offset && targetIsVictim && (!owner.CanReachWithMeleeAutoAttackAtPosition(_target.getTarget(), x, y, z) || !_target->IsWithinLOS(x, y, z)))
+        _target->GetPosition(x, y, z);
+
     if (!_path)
         _path = new PathFinder(&owner);
 
@@ -98,6 +101,7 @@ void TargetedMovementGeneratorMedium<T,D>::_setTargetLocation(T &owner)
 
     _targetReached = false;
     static_cast<MovementGenerator*>(this)->_recalculateTravel = false;
+    _target->GetPosition(m_fTargetLastX, m_fTargetLastY, m_fTargetLastZ);
 
     Movement::MoveSplineInit init(owner);
     init.MovebyPath(_path->getPath());
@@ -148,7 +152,7 @@ bool TargetedMovementGeneratorMedium<T,D>::Update(T &owner, const uint32 & time_
     if (_recheckDistance.Passed())
     {
         uint32 recheckTimer = sWorld.getConfig(CONFIG_TARGET_POS_RECHECK_TIMER);
-        uint32 recalculateRange = sWorld.getConfig(CONFIG_TARGET_POS_RECALCULATION_RANGE);
+        float recalculateRange = sWorld.getConfig(CONFIG_TARGET_POS_RECALCULATION_RANGE);
 
          if (owner.GetObjectGuid().IsPet())
          {
@@ -158,20 +162,10 @@ bool TargetedMovementGeneratorMedium<T,D>::Update(T &owner, const uint32 & time_
 
         _recheckDistance.Reset(recheckTimer);
 
-        float allowed_dist = _offset + owner.GetObjectBoundingRadius() + recalculateRange;
-
-        G3D::Vector3 dest = owner.movespline->FinalDestination();
-        
-        bool targetMoved = !_target->IsWithinDist3d(dest.x, dest.y, dest.z, allowed_dist);
-        if (owner.getVictimGUID() == _target->GetGUID())
-        {
-            Unit* victim = owner.getVictim();
-            if (!victim || !victim->isAlive())
-                return false;
-
-            if (owner.GetObjectGuid().IsPet() || owner.GetObjectGuid().IsCreature() && owner.IsStopped())
-                targetMoved = !owner.IsWithinMeleeRange(victim, MELEE_RANGE + _offset);
-        }
+        bool targetMoved = !_target->IsWithinDist3d(m_fTargetLastX, m_fTargetLastY, m_fTargetLastZ, recalculateRange);
+        if (targetMoved || owner.IsStopped()) // Chase movement may be interrupted
+            targetMoved = _offset ? !_target->_IsWithinDist(&owner, _offset * 2, true) : 
+                                    !_target->IsWithinMeleeRange(&owner, MELEE_RANGE - 0.5f);
 
         if (targetMoved)
             _setTargetLocation(owner);
