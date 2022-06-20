@@ -386,6 +386,7 @@ enum UnitState
     UNIT_STAT_CHARGING           = 0x00008000,        // unit is charging
     UNIT_STAT_ROTATING           = 0x00010000,        // unit is rotating
     UNIT_STAT_CASTING_NOT_MOVE   = 0x00020000,        // unit is casting a spell and can NOT move
+    UNIT_STAT_STAND_UP_PENDING   = 0x00040000,        // unit is will stand up after proc checks run
 
     UNIT_STAT_LOST_CONTROL    = (UNIT_STAT_CONFUSED | UNIT_STAT_STUNNED | UNIT_STAT_FLEEING | UNIT_STAT_CHARGING),
     UNIT_STAT_CAN_NOT_REACT   = (UNIT_STAT_STUNNED | UNIT_STAT_CONFUSED | UNIT_STAT_FLEEING),

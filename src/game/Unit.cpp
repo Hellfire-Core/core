@@ -2408,7 +2408,7 @@ void Unit::RollMeleeHit(MeleeDamageLog *damageInfo, int32 crit_chance, int32 mis
 
     if (!pVictim->IsStandState())
     {
-        crit_chance = 100;
+        crit_chance = 10000;
         dodge_chance = 0;
         parry_chance = 0;
         block_chance = 0;
@@ -5116,10 +5116,18 @@ void Unit::ProcDamageAndSpell(Unit *pVictim, uint32 procAttacker, uint32 procVic
      // Not much to do if no flags are set.
     if (procAttacker && canTrigger)
         ProcDamageAndSpellfor (false,pVictim,procAttacker, procExtra,attType, procSpell, amount);
+
     // Now go on with a victim's events'n'auras
     // Not much to do if no flags are set or there is no victim
     if (pVictim && (pVictim->isAlive() || pVictim->isDying()) && procVictim)
-        pVictim->ProcDamageAndSpellfor (true,this,procVictim, procExtra, attType, procSpell, amount);
+        pVictim->ProcDamageAndSpellfor (true,this,procVictim, !procSpell && !pVictim->IsStandState() ? procExtra & ~PROC_EX_CRITICAL_HIT : procExtra, attType, procSpell, amount);
+
+    // Standing up on damage taken must happen after proc checks.
+    if (pVictim && pVictim->isAlive() && pVictim->hasUnitState(UNIT_STAT_STAND_UP_PENDING))
+    {
+        pVictim->SetStandState(UNIT_STAND_STATE_STAND);
+        pVictim->clearUnitState(UNIT_STAT_STAND_UP_PENDING);
+    }
 }
 
 void Unit::SendSpellMiss(Unit *target, uint32 spellID, SpellMissInfo missInfo)
@@ -9521,7 +9529,7 @@ void Unit::CombatStart(Unit* target, bool initialAggro)
     if (initialAggro)
     {
         if (!target->IsStandState()/* && !target->hasUnitState(UNIT_STAT_STUNNED)*/)
-            target->SetStandState(PLAYER_STATE_NONE);
+            target->addUnitState(UNIT_STAT_STAND_UP_PENDING);
 
         if (!target->isInCombat() && target->GetTypeId() != TYPEID_PLAYER
             && !((Creature*)target)->HasReactState(REACT_PASSIVE) && ((Creature*)target)->IsAIEnabled)
@@ -11316,7 +11324,7 @@ uint32 createProcExtendMask(SpellDamageLog *damageInfo, SpellMissInfo missCondit
     return procEx;
 }
 
-void Unit::ProcDamageAndSpellfor (bool isVictim, Unit * pTarget, uint32 procFlag, uint32 procExtra, WeaponAttackType attType, SpellEntry const * procSpell, uint32 damage)
+void Unit::ProcDamageAndSpellfor(bool isVictim, Unit * pTarget, uint32 procFlag, uint32 procExtra, WeaponAttackType attType, SpellEntry const * procSpell, uint32 damage)
 {
     ++m_procDeep;
     if (m_procDeep > 5)
