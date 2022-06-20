@@ -3350,6 +3350,31 @@ bool ChatHandler::HandleModifyArenaCommand(const char * args)
     return true;
 }
 
+bool ChatHandler::HandleReplenishCommand(const char* args)
+{
+    Unit* pUnit = getSelectedUnit();
+    if (!pUnit || !pUnit->isAlive())
+    {
+        SendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    pUnit->SetHealth(pUnit->GetMaxHealth());
+
+    Powers powerType = pUnit->getPowerType();
+    switch (powerType)
+    {
+        case POWER_MANA:
+        case POWER_ENERGY:
+        case POWER_FOCUS:
+            pUnit->SetPower(powerType, pUnit->GetMaxPower(powerType));
+            break;
+    }
+
+    return true;
+}
+
 bool ChatHandler::HandleReviveCommand(const char* args)
 {
     Player* SelectedPlayer = NULL;

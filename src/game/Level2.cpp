@@ -3311,6 +3311,759 @@ bool ChatHandler::HandleModifyStandStateCommand(const char* args)
     return true;
 }
 
+bool ChatHandler::HandleModifyStrengthCommand(const char* args)
+{
+    if (!*args)
+        return false;
+
+    Unit* pTarget = getSelectedUnit();
+
+    if (!pTarget)
+    {
+        PSendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    int32 amount = atoi((char*)args);
+
+    if (amount < 0)
+    {
+        SendSysMessage(LANG_BAD_VALUE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    pTarget->SetModifierValue(UNIT_MOD_STAT_STRENGTH, BASE_VALUE, (float)amount);
+    pTarget->UpdateAllStats();
+
+    PSendSysMessage("You set strength of %s to %i.", pTarget->GetName(), amount);
+
+    return true;
+}
+
+bool ChatHandler::HandleModifyAgilityCommand(const char* args)
+{
+    if (!*args)
+        return false;
+
+    Unit* pTarget = getSelectedUnit();
+
+    if (!pTarget)
+    {
+        PSendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    int32 amount = atoi((char*)args);
+
+    if (amount < 0)
+    {
+        SendSysMessage(LANG_BAD_VALUE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    pTarget->SetModifierValue(UNIT_MOD_STAT_AGILITY, BASE_VALUE, (float)amount);
+    pTarget->UpdateAllStats();
+
+    PSendSysMessage("You set agility of %s to %i.", pTarget->GetName(), amount);
+
+    return true;
+}
+
+bool ChatHandler::HandleModifyStaminaCommand(const char* args)
+{
+    if (!*args)
+        return false;
+
+    Unit* pTarget = getSelectedUnit();
+
+    if (!pTarget)
+    {
+        PSendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    int32 amount = atoi((char*)args);
+
+    if (amount < 0)
+    {
+        SendSysMessage(LANG_BAD_VALUE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    pTarget->SetModifierValue(UNIT_MOD_STAT_STAMINA, BASE_VALUE, (float)amount);
+    pTarget->UpdateAllStats();
+
+    if (pTarget->isAlive())
+        pTarget->SetHealth(pTarget->GetMaxHealth());
+
+    PSendSysMessage("You set stamina of %s to %i.", pTarget->GetName(), amount);
+
+    return true;
+}
+
+bool ChatHandler::HandleModifyIntellectCommand(const char* args)
+{
+    if (!*args)
+        return false;
+
+    Unit* pTarget = getSelectedUnit();
+
+    if (!pTarget)
+    {
+        PSendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    int32 amount = atoi((char*)args);
+
+    if (amount < 0)
+    {
+        SendSysMessage(LANG_BAD_VALUE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    pTarget->SetModifierValue(UNIT_MOD_STAT_INTELLECT, BASE_VALUE, (float)amount);
+    pTarget->UpdateAllStats();
+
+    PSendSysMessage("You set intellect of %s to %i.", pTarget->GetName(), amount);
+
+    return true;
+}
+
+bool ChatHandler::HandleModifySpiritCommand(const char* args)
+{
+    if (!*args)
+        return false;
+
+    Unit* pTarget = getSelectedUnit();
+
+    if (!pTarget)
+    {
+        PSendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    int32 amount = atoi((char*)args);
+
+    if (amount < 0)
+    {
+        SendSysMessage(LANG_BAD_VALUE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    pTarget->SetModifierValue(UNIT_MOD_STAT_SPIRIT, BASE_VALUE, (float)amount);
+    pTarget->UpdateAllStats();
+
+    PSendSysMessage("You set spirit of %s to %i.", pTarget->GetName(), amount);
+
+    return true;
+}
+
+bool ChatHandler::HandleModifyArmorCommand(const char* args)
+{
+    if (!*args)
+        return false;
+
+    Unit* pTarget = getSelectedUnit();
+
+    if (!pTarget)
+    {
+        PSendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    int32 amount = atoi((char*)args);
+
+    if (amount < 0)
+    {
+        SendSysMessage(LANG_BAD_VALUE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    pTarget->SetInt32Value(UNIT_FIELD_RESISTANCES, amount);
+
+    PSendSysMessage("You set armor of %s to %i.", pTarget->GetName(), amount);
+
+    return true;
+}
+
+bool ChatHandler::HandleModifyHolyCommand(const char* args)
+{
+    if (!*args)
+        return false;
+
+    Unit* pTarget = getSelectedUnit();
+
+    if (!pTarget)
+    {
+        PSendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    int32 amount = atoi((char*)args);
+
+    pTarget->SetInt32Value(UNIT_FIELD_RESISTANCES + 1, amount);
+
+    PSendSysMessage("You set holy resist of %s to %i.", pTarget->GetName(), amount);
+
+    return true;
+}
+
+bool ChatHandler::HandleModifyFireCommand(const char* args)
+{
+    if (!*args)
+        return false;
+
+    Unit* pTarget = getSelectedUnit();
+
+    if (!pTarget)
+    {
+        PSendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    int32 amount = atoi((char*)args);
+
+    pTarget->SetInt32Value(UNIT_FIELD_RESISTANCES + 2, amount);
+
+    PSendSysMessage("You set fire resist of %s to %i.", pTarget->GetName(), amount);
+
+    return true;
+}
+
+bool ChatHandler::HandleModifyNatureCommand(const char* args)
+{
+    if (!*args)
+        return false;
+
+    Unit* pTarget = getSelectedUnit();
+
+    if (!pTarget)
+    {
+        PSendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    int32 amount = atoi((char*)args);
+
+    pTarget->SetInt32Value(UNIT_FIELD_RESISTANCES + 3, amount);
+
+    PSendSysMessage("You set nature resist of %s to %i.", pTarget->GetName(), amount);
+
+    return true;
+}
+
+bool ChatHandler::HandleModifyFrostCommand(const char* args)
+{
+    if (!*args)
+        return false;
+
+    Unit* pTarget = getSelectedUnit();
+
+    if (!pTarget)
+    {
+        PSendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    int32 amount = atoi((char*)args);
+
+    pTarget->SetInt32Value(UNIT_FIELD_RESISTANCES + 4, amount);
+
+    PSendSysMessage("You set frost resist of %s to %i.", pTarget->GetName(), amount);
+
+    return true;
+}
+
+bool ChatHandler::HandleModifyShadowCommand(const char* args)
+{
+    if (!*args)
+        return false;
+
+    Unit* pTarget = getSelectedUnit();
+
+    if (!pTarget)
+    {
+        PSendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    int32 amount = atoi((char*)args);
+
+    pTarget->SetInt32Value(UNIT_FIELD_RESISTANCES + 5, amount);
+
+    PSendSysMessage("You set shadow resist of %s to %i.", pTarget->GetName(), amount);
+
+    return true;
+}
+
+bool ChatHandler::HandleModifyArcaneCommand(const char* args)
+{
+    if (!*args)
+        return false;
+
+    Unit* pTarget = getSelectedUnit();
+
+    if (!pTarget)
+    {
+        PSendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    int32 amount = atoi((char*)args);
+
+    pTarget->SetInt32Value(UNIT_FIELD_RESISTANCES + 6, amount);
+
+    PSendSysMessage("You set arcane resist of %s to %i.", pTarget->GetName(), amount);
+
+    return true;
+}
+
+bool ChatHandler::HandleModifyMeleeApCommand(const char* args)
+{
+    if (!*args)
+        return false;
+
+    Unit* pTarget = getSelectedUnit();
+
+    if (!pTarget)
+    {
+        PSendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    int32 amount = atoi((char*)args);
+
+    if (amount <= 0)
+    {
+        SendSysMessage(LANG_BAD_VALUE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    pTarget->SetInt32Value(UNIT_FIELD_ATTACK_POWER, amount);
+    pTarget->UpdateDamagePhysical(BASE_ATTACK);
+    pTarget->UpdateDamagePhysical(OFF_ATTACK);
+
+    PSendSysMessage("You set attack power of %s to %i.", pTarget->GetName(), amount);
+
+    return true;
+}
+
+bool ChatHandler::HandleModifyRangedApCommand(const char* args)
+{
+    if (!*args)
+        return false;
+
+    Unit* pTarget = getSelectedUnit();
+
+    if (!pTarget)
+    {
+        PSendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    int32 amount = atoi((char*)args);
+
+    if (amount <= 0)
+    {
+        SendSysMessage(LANG_BAD_VALUE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    pTarget->SetInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER, amount);
+    pTarget->UpdateDamagePhysical(RANGED_ATTACK);
+
+    PSendSysMessage("You set ranged attack power of %s to %i.", pTarget->GetName(), amount);
+
+    return true;
+}
+
+bool ChatHandler::HandleModifySpellPowerCommand(const char* args)
+{
+    if (!*args)
+        return false;
+
+    Unit* pTarget = getSelectedUnit();
+
+    if (!pTarget)
+    {
+        PSendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    int32 amount = atoi((char*)args);
+
+    if (amount < 0)
+    {
+        SendSysMessage(LANG_BAD_VALUE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    // dunno where spell power is stored so using a custom spell
+    pTarget->RemoveAurasDueToSpell(18058);
+    pTarget->CastCustomSpell(pTarget, 18058, &amount, &amount, &amount, true);
+
+    PSendSysMessage("You set spell power of %s to %i.", pTarget->GetName(), amount);
+
+    return true;
+}
+
+bool ChatHandler::HandleModifyMeleeCritCommand(const char* args)
+{
+    if (!*args)
+        return false;
+
+    Player* player = getSelectedPlayer();
+
+    if (!player)
+    {
+        PSendSysMessage(LANG_PLAYER_NOT_FOUND);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    float amount = (float)atof((char*)args);
+
+    if (amount < 0 || amount > 100)
+    {
+        SendSysMessage(LANG_BAD_VALUE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    player->SetStatFloatValue(PLAYER_CRIT_PERCENTAGE, amount);
+
+    PSendSysMessage("You set melee crit chance of %s to %g.", player->GetName(), amount);
+
+    return true;
+}
+
+bool ChatHandler::HandleModifyRangedCritCommand(const char* args)
+{
+    if (!*args)
+        return false;
+
+    Player* player = getSelectedPlayer();
+
+    if (!player)
+    {
+        PSendSysMessage(LANG_PLAYER_NOT_FOUND);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    float amount = (float)atof((char*)args);
+
+    if (amount < 0 || amount > 100)
+    {
+        SendSysMessage(LANG_BAD_VALUE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    player->SetStatFloatValue(PLAYER_RANGED_CRIT_PERCENTAGE, amount);
+
+    PSendSysMessage("You set ranged crit chance of %s to %g.", player->GetName(), amount);
+
+    return true;
+}
+
+bool ChatHandler::HandleModifySpellCritCommand(const char* args)
+{
+    if (!*args)
+        return false;
+
+    Player* player = getSelectedPlayer();
+
+    if (!player)
+    {
+        PSendSysMessage(LANG_PLAYER_NOT_FOUND);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    float amount = (float)atof((char*)args);
+
+    if (amount < 0 || amount > 100)
+    {
+        SendSysMessage(LANG_BAD_VALUE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    player->SetStatFloatValue(PLAYER_SPELL_CRIT_PERCENTAGE1 + SPELL_SCHOOL_NORMAL, amount);
+    player->SetStatFloatValue(PLAYER_SPELL_CRIT_PERCENTAGE1 + SPELL_SCHOOL_HOLY, amount);
+    player->SetStatFloatValue(PLAYER_SPELL_CRIT_PERCENTAGE1 + SPELL_SCHOOL_FIRE, amount);
+    player->SetStatFloatValue(PLAYER_SPELL_CRIT_PERCENTAGE1 + SPELL_SCHOOL_NATURE, amount);
+    player->SetStatFloatValue(PLAYER_SPELL_CRIT_PERCENTAGE1 + SPELL_SCHOOL_FROST, amount);
+    player->SetStatFloatValue(PLAYER_SPELL_CRIT_PERCENTAGE1 + SPELL_SCHOOL_SHADOW, amount);
+    player->SetStatFloatValue(PLAYER_SPELL_CRIT_PERCENTAGE1 + SPELL_SCHOOL_ARCANE, amount);
+
+    PSendSysMessage("You set spell crit chance of %s to %g.", player->GetName(), amount);
+
+    return true;
+}
+
+bool ChatHandler::HandleModifyMainSpeedCommand(const char* args)
+{
+    if (!*args)
+        return false;
+
+    Unit* pTarget = getSelectedUnit();
+
+    if (!pTarget)
+    {
+        PSendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    int32 amount = atoi((char*)args);
+
+    if (amount <= 0)
+    {
+        SendSysMessage(LANG_BAD_VALUE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    pTarget->SetFloatValue(UNIT_FIELD_BASEATTACKTIME, (float)amount);
+
+    PSendSysMessage("You set main hand attack speed of %s to %i.", pTarget->GetName(), amount);
+
+    return true;
+}
+
+bool ChatHandler::HandleModifyOffSpeedCommand(const char* args)
+{
+    if (!*args)
+        return false;
+
+    Unit* pTarget = getSelectedUnit();
+
+    if (!pTarget)
+    {
+        PSendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    int32 amount = atoi((char*)args);
+
+    if (amount <= 0)
+    {
+        SendSysMessage(LANG_BAD_VALUE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    pTarget->SetFloatValue(UNIT_FIELD_BASEATTACKTIME + 1, (float)amount);
+
+    PSendSysMessage("You set off hand attack speed of %s to %i.", pTarget->GetName(), amount);
+
+    return true;
+}
+
+bool ChatHandler::HandleModifyRangedSpeedCommand(const char* args)
+{
+    if (!*args)
+        return false;
+
+    Unit* pTarget = getSelectedUnit();
+
+    if (!pTarget)
+    {
+        PSendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    int32 amount = atoi((char*)args);
+
+    if (amount <= 0)
+    {
+        SendSysMessage(LANG_BAD_VALUE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    pTarget->SetFloatValue(UNIT_FIELD_RANGEDATTACKTIME, (float)amount);
+
+    PSendSysMessage("You set ranged attack speed of %s to %i.", pTarget->GetName(), amount);
+
+    return true;
+}
+
+bool ChatHandler::HandleModifyCastSpeedCommand(const char* args)
+{
+    if (!*args)
+        return false;
+
+    Unit* pTarget = getSelectedUnit();
+
+    if (!pTarget)
+    {
+        PSendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    float amount = (float)atof((char*)args);
+
+    if (amount < 0)
+    {
+        SendSysMessage(LANG_BAD_VALUE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    pTarget->SetFloatValue(UNIT_MOD_CAST_SPEED, amount);
+
+    PSendSysMessage("You set cast speed of %s to %g times normal.", pTarget->GetName(), amount);
+
+    return true;
+}
+
+bool ChatHandler::HandleModifyBlockCommand(const char* args)
+{
+    if (!*args)
+        return false;
+
+    Player* player = getSelectedPlayer();
+
+    if (!player)
+    {
+        PSendSysMessage(LANG_PLAYER_NOT_FOUND);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    float amount = (float)atof((char*)args);
+
+    if (amount < 0 || amount > 100)
+    {
+        SendSysMessage(LANG_BAD_VALUE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    player->SetStatFloatValue(PLAYER_BLOCK_PERCENTAGE, amount);
+
+    PSendSysMessage("You set block chance of %s to %g.", player->GetName(), amount);
+
+    return true;
+}
+
+bool ChatHandler::HandleModifyDodgeCommand(const char* args)
+{
+    if (!*args)
+        return false;
+
+    Player* player = getSelectedPlayer();
+
+    if (!player)
+    {
+        PSendSysMessage(LANG_PLAYER_NOT_FOUND);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    float amount = (float)atof((char*)args);
+
+    if (amount < 0 || amount > 100)
+    {
+        SendSysMessage(LANG_BAD_VALUE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    player->SetStatFloatValue(PLAYER_DODGE_PERCENTAGE, amount);
+
+    PSendSysMessage("You set dodge chance of %s to %g.", player->GetName(), amount);
+
+    return true;
+}
+
+bool ChatHandler::HandleModifyParryCommand(const char* args)
+{
+    if (!*args)
+        return false;
+
+    Player* player = getSelectedPlayer();
+
+    if (!player)
+    {
+        PSendSysMessage(LANG_PLAYER_NOT_FOUND);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    float amount = (float)atof((char*)args);
+
+    if (amount < 0 || amount > 100)
+    {
+        SendSysMessage(LANG_BAD_VALUE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    player->SetStatFloatValue(PLAYER_PARRY_PERCENTAGE, amount);
+
+    PSendSysMessage("You set parry chance of %s to %g.", player->GetName(), amount);
+
+    return true;
+}
+
+bool ChatHandler::HandleModifyCrCommand(const char* args)
+{
+    if (!*args)
+        return false;
+
+    Unit* target = getSelectedUnit();
+    if (!target) return false;
+    float f = (float)atof((char*)args);
+
+    target->SetFloatValue(UNIT_FIELD_COMBATREACH, f);
+    return true;
+}
+
+bool ChatHandler::HandleModifyBrCommand(const char* args)
+{
+    if (!*args)
+        return false;
+
+    Unit* target = getSelectedUnit();
+    if (!target) return false;
+    float f = (float)atof((char*)args);
+
+    target->SetFloatValue(UNIT_FIELD_BOUNDINGRADIUS, f);
+    return true;
+}
+
 bool ChatHandler::HandleHonorAddCommand(const char* args)
 {
     if (!*args)
