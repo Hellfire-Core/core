@@ -1152,6 +1152,7 @@ class HELLGROUND_IMPORT_EXPORT Unit : public WorldObject
         void SetInFront(Unit const* target);
         void SetFacingTo(float ori);
         void SetFacingToObject(WorldObject* pObject);
+        bool IsBehindTarget(Unit const* pTarget, bool strict = true) const;
 
         virtual void MoveOutOfRange(Player &) {};
 

@@ -13442,6 +13442,23 @@ void Unit::SetFacingToObject(WorldObject* pObject)
     SetFacingTo(GetAngle(pObject));
 }
 
+bool Unit::IsBehindTarget(Unit const* pTarget, bool strict) const
+{
+    if (strict)
+    {
+        if (Creature const* pCreature = pTarget->ToCreature())
+        {
+            // Mobs always face their current victim, unless incapacitated.
+            if ((pCreature->getVictim() == this) &&
+                !pTarget->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_ROTATE | UNIT_FLAG_CONFUSED | UNIT_FLAG_FLEEING | UNIT_FLAG_PLAYER_CONTROLLED) &&
+                !pTarget->hasUnitState(UNIT_STAT_CANNOT_TURN))
+                return false;
+        }
+    }
+
+    return !pTarget->HasInArc(M_PI_F, this);
+}
+
 void Unit::SendCombatStats(uint32 flag, const char* format, Unit *pVictim, ...) const
 {
     Player *target = m_GMToSendCombatStats ? GetPlayer(m_GMToSendCombatStats) : NULL;
