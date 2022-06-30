@@ -1202,25 +1202,20 @@ void Aura::_RemoveAura()
 
 void Aura::SetAuraFlag(uint32 slot, bool add)
 {
-    uint32 index    = slot / 4;
-    uint32 byte     = (slot % 4) * 8;
-    uint32 val      = m_target->GetUInt32Value(UNIT_FIELD_AURAFLAGS + index);
-    val &= ~((uint32)AFLAG_MASK << byte);
-    uint32 flags = 0;
+    uint32 index = slot / 4;
+    uint32 byte = (slot % 4) * 8;
+    uint32 val = m_target->GetUInt32Value(UNIT_FIELD_AURAFLAGS + index);
+    val &= ~(uint32(AFLAG_MASK_ALL) << byte);
     if (add)
     {
-        if (IsPositive())
-            flags |= AFLAG_POSITIVE;
-        else
-            flags |= AFLAG_NEGATIVE;
+        uint32 flags = AFLAG_NONE;
+        for (uint32 i = 0; i < 3; ++i)
+            if (m_spellProto->EffectApplyAuraName[i])
+                flags |= (1 << i); // AFLAG_EFFECT_0 is 1 and rest is bitshift
 
-        flags |= AFLAG_EFF_INDEX_0;
-        if(GetCasterGUID() == m_target->GetGUID())
-            flags |= AFLAG_NOT_GUID;
-        if (m_maxduration > 0 && !(GetSpellProto()->AttributesEx5 & SPELL_ATTR_EX5_HIDE_DURATION))
-            flags |= AFLAG_HAS_DURATION;
+        flags |= ((IsPositive() && !m_spellProto->HasAttribute(SPELL_ATTR_CANT_CANCEL)) ? AFLAG_CANCELABLE : AFLAG_NOT_CANCELABLE);
 
-        val |= flags << byte;
+        val |= (flags << byte);
     }
     m_target->SetUInt32Value(UNIT_FIELD_AURAFLAGS + index, val);
 }

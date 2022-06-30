@@ -240,236 +240,257 @@ enum SpellCategory
 // Spell Attributes definitions
 // ***********************************
 
-#define SPELL_ATTR_UNK0                           0x00000001            // 0
-#define SPELL_ATTR_RANGED                         0x00000002            // 1 All ranged abilities have this flag
-#define SPELL_ATTR_ON_NEXT_SWING_1                0x00000004            // 2 on next swing
-#define SPELL_ATTR_UNK3                           0x00000008            // 3 not set in 2.4.2
-#define SPELL_ATTR_ABILITY                        0x00000010            // 4 client puts 'ability' instead of 'spell' in game strings for these spells
-#define SPELL_ATTR_TRADESPELL                     0x00000020            // 5 trade/profession spells, will be added by client to a sublist of profession spell
-#define SPELL_ATTR_PASSIVE                        0x00000040            // 6 Passive spell
-#define SPELL_ATTR_UNK7                           0x00000080            // 7 visible?
-#define SPELL_ATTR_UNK8                           0x00000100            // 8
-#define SPELL_ATTR_UNK9                           0x00000200            // 9
-#define SPELL_ATTR_ON_NEXT_SWING_2                0x00000400            // 10 on next swing 2
-#define SPELL_ATTR_UNK11                          0x00000800            // 11
-#define SPELL_ATTR_DAYTIME_ONLY                   0x00001000            // 12 only useable at daytime, not set in 2.4.2
-#define SPELL_ATTR_NIGHT_ONLY                     0x00002000            // 13 only useable at night, not set in 2.4.2
-#define SPELL_ATTR_INDOORS_ONLY                   0x00004000            // 14 only useable indoors, not set in 2.4.2
-#define SPELL_ATTR_OUTDOORS_ONLY                  0x00008000            // 15 Only useable outdoors.
-#define SPELL_ATTR_NOT_SHAPESHIFT                 0x00010000            // 16 Not while shapeshifted
-#define SPELL_ATTR_ONLY_STEALTHED                 0x00020000            // 17 Must be in stealth
-#define SPELL_ATTR_UNK18                          0x00040000            // 18
-#define SPELL_ATTR_LEVEL_DAMAGE_CALCULATION       0x00080000            // 19 spelldamage depends on caster level
-#define SPELL_ATTR_STOP_ATTACK_TARGET             0x00100000            // 20 Stop attack after use this spell (and not begin attack if use)
-#define SPELL_ATTR_IMPOSSIBLE_DODGE_PARRY_BLOCK   0x00200000            // 21 Cannot be dodged/parried/blocked
-#define SPELL_ATTR_UNK22                          0x00400000            // 22 shoot spells
-#define SPELL_ATTR_CASTABLE_WHILE_DEAD            0x00800000            // 23 ??castable while dead?
-#define SPELL_ATTR_CASTABLE_WHILE_MOUNTED         0x01000000            // 24 castable while mounted
-#define SPELL_ATTR_DISABLED_WHILE_ACTIVE          0x02000000            // 25 Activate and start cooldown after aura fade or remove summoned creature or go
-#define SPELL_ATTR_NEGATIVE_1                     0x04000000            // 26 Many negative spells have this attr
-#define SPELL_ATTR_CASTABLE_WHILE_SITTING         0x08000000            // 27 castable while sitting
-#define SPELL_ATTR_CANT_USED_IN_COMBAT            0x10000000            // 28 Cannot be used in combat
-#define SPELL_ATTR_UNAFFECTED_BY_INVULNERABILITY  0x20000000            // 29 unaffected by invulnerability (hmm possible not...)
-#define SPELL_ATTR_BREAKABLE_BY_DAMAGE            0x40000000            // 30 for real this is: SPELL_ATTR_USE_HEARTBEAT_MECHANIC ;]
-#define SPELL_ATTR_CANT_CANCEL                    0x80000000            // 31 positive aura can't be canceled
+enum SpellAttributes
+{
+    SPELL_ATTR_UNK0                           = 0x00000001,            // 0
+    SPELL_ATTR_RANGED                         = 0x00000002,            // 1 All ranged abilities have this flag
+    SPELL_ATTR_ON_NEXT_SWING_1                = 0x00000004,            // 2 on next swing
+    SPELL_ATTR_UNK3                           = 0x00000008,            // 3 not set in 2.4.2
+    SPELL_ATTR_ABILITY                        = 0x00000010,            // 4 client puts 'ability' instead of 'spell' in game strings for these spells
+    SPELL_ATTR_TRADESPELL                     = 0x00000020,            // 5 trade/profession spells, will be added by client to a sublist of profession spell
+    SPELL_ATTR_PASSIVE                        = 0x00000040,            // 6 Passive spell
+    SPELL_ATTR_UNK7                           = 0x00000080,            // 7 visible?
+    SPELL_ATTR_UNK8                           = 0x00000100,            // 8
+    SPELL_ATTR_UNK9                           = 0x00000200,            // 9
+    SPELL_ATTR_ON_NEXT_SWING_2                = 0x00000400,            // 10 on next swing 2
+    SPELL_ATTR_UNK11                          = 0x00000800,            // 11
+    SPELL_ATTR_DAYTIME_ONLY                   = 0x00001000,            // 12 only useable at daytime, not set in 2.4.2
+    SPELL_ATTR_NIGHT_ONLY                     = 0x00002000,            // 13 only useable at night, not set in 2.4.2
+    SPELL_ATTR_INDOORS_ONLY                   = 0x00004000,            // 14 only useable indoors, not set in 2.4.2
+    SPELL_ATTR_OUTDOORS_ONLY                  = 0x00008000,            // 15 Only useable outdoors.
+    SPELL_ATTR_NOT_SHAPESHIFT                 = 0x00010000,            // 16 Not while shapeshifted
+    SPELL_ATTR_ONLY_STEALTHED                 = 0x00020000,            // 17 Must be in stealth
+    SPELL_ATTR_UNK18                          = 0x00040000,            // 18
+    SPELL_ATTR_LEVEL_DAMAGE_CALCULATION       = 0x00080000,            // 19 spelldamage depends on caster level
+    SPELL_ATTR_STOP_ATTACK_TARGET             = 0x00100000,            // 20 Stop attack after use this spell (and not begin attack if use)
+    SPELL_ATTR_IMPOSSIBLE_DODGE_PARRY_BLOCK   = 0x00200000,            // 21 Cannot be dodged/parried/blocked
+    SPELL_ATTR_UNK22                          = 0x00400000,            // 22 shoot spells
+    SPELL_ATTR_CASTABLE_WHILE_DEAD            = 0x00800000,            // 23 ??castable while dead?
+    SPELL_ATTR_CASTABLE_WHILE_MOUNTED         = 0x01000000,            // 24 castable while mounted
+    SPELL_ATTR_DISABLED_WHILE_ACTIVE          = 0x02000000,            // 25 Activate and start cooldown after aura fade or remove summoned creature or go
+    SPELL_ATTR_NEGATIVE_1                     = 0x04000000,            // 26 Many negative spells have this attr
+    SPELL_ATTR_CASTABLE_WHILE_SITTING         = 0x08000000,            // 27 castable while sitting
+    SPELL_ATTR_CANT_USED_IN_COMBAT            = 0x10000000,            // 28 Cannot be used in combat
+    SPELL_ATTR_UNAFFECTED_BY_INVULNERABILITY  = 0x20000000,            // 29 unaffected by invulnerability (hmm possible not...)
+    SPELL_ATTR_BREAKABLE_BY_DAMAGE            = 0x40000000,            // 30 for real this is: SPELL_ATTR_USE_HEARTBEAT_MECHANIC ;]
+    SPELL_ATTR_CANT_CANCEL                    = 0x80000000,            // 31 positive aura can't be canceled
+};
 
-#define SPELL_ATTR_EX_SUMMON_PET                  0x00000001            // 0 many summon/control pet spells have this attr (like enslave, min control, call pet, summon warlock minion)
-#define SPELL_ATTR_EX_DRAIN_ALL_POWER             0x00000002            // 1 use all power (Only paladin Lay of Hands and Bunyanize)
-#define SPELL_ATTR_EX_CHANNELED_1                 0x00000004            // 2 channeled 1
-#define SPELL_ATTR_EX_CANT_BE_REDIRECTED          0x00000008            // 3 spells that can not be redirected 
-#define SPELL_ATTR_EX_UNK4                        0x00000010            // 4
-#define SPELL_ATTR_EX_NOT_BREAK_STEALTH           0x00000020            // 5 Not break stealth
-#define SPELL_ATTR_EX_CHANNELED_2                 0x00000040            // 6 channeled self
-#define SPELL_ATTR_EX_CANT_BE_REFLECTED           0x00000080            // 7 spells that can not be reflected
-#define SPELL_ATTR_EX_NOT_IN_COMBAT_TARGET        0x00000100            // 8 Spell req target not to be in combat state
-#define SPELL_ATTR_EX_UNK9                        0x00000200            // 9 melee spells
-#define SPELL_ATTR_EX_NO_THREAT                   0x00000400            // 10 no generates threat on cast 100% (old NO_INITIAL_AGGRO)
-#define SPELL_ATTR_EX_UNK11                       0x00000800            // 11 aura
-#define SPELL_ATTR_EX_UNK12                       0x00001000            // 12
-#define SPELL_ATTR_EX_UNK13                       0x00002000            // 13
-#define SPELL_ATTR_EX_STACK_FOR_DIFF_CASTERS      0x00004000            // 14
-#define SPELL_ATTR_EX_DISPEL_AURAS_ON_IMMUNITY    0x00008000            // 15 remove auras on immunity
-#define SPELL_ATTR_EX_UNAFFECTED_BY_SCHOOL_IMMUNE 0x00010000            // 16 unaffected by school immunity/on immunity
-#define SPELL_ATTR_EX_UNAUTOCASTABLE_BY_PET       0x00020000            // 17
-#define SPELL_ATTR_EX_UNK18                       0x00040000            // 18
-#define SPELL_ATTR_EX_CANT_TARGET_SELF            0x00080000            // 19 Applies only to unit target - for example Divine Intervention (19752)
-#define SPELL_ATTR_EX_REQ_COMBO_POINTS1           0x00100000            // 20 Req combo points on target
-#define SPELL_ATTR_EX_UNK21                       0x00200000            // 21
-#define SPELL_ATTR_EX_REQ_COMBO_POINTS2           0x00400000            // 22 Req combo points on target
-#define SPELL_ATTR_EX_UNK23                       0x00800000            // 23
-#define SPELL_ATTR_EX_UNK24                       0x01000000            // 24 Req fishing pole??
-#define SPELL_ATTR_EX_UNK25                       0x02000000            // 25 not set in 2.4.2
-#define SPELL_ATTR_EX_UNK26                       0x04000000            // 26 works correctly with [target=focus] and [target=mouseover] macros?
-#define SPELL_ATTR_EX_UNK27                       0x08000000            // 27
-#define SPELL_ATTR_EX_UNK28                       0x10000000            // 28
-#define SPELL_ATTR_EX_CHANNEL_DISPLAY_SPELL_NAME  0x20000000            // 29 spell name is displayed in cast bar instead of 'channeling' text
-#define SPELL_ATTR_EX_ENABLE_AT_DODGE             0x40000000            // 30 overpower
-#define SPELL_ATTR_EX_UNK31                       0x80000000            // 31
+enum SpellAttributesEx
+{
+    SPELL_ATTR_EX_SUMMON_PET                  = 0x00000001,            // 0 many summon/control pet spells have this attr (like enslave, min control, call pet, summon warlock minion)
+    SPELL_ATTR_EX_DRAIN_ALL_POWER             = 0x00000002,            // 1 use all power (Only paladin Lay of Hands and Bunyanize)
+    SPELL_ATTR_EX_CHANNELED_1                 = 0x00000004,            // 2 channeled 1
+    SPELL_ATTR_EX_CANT_BE_REDIRECTED          = 0x00000008,            // 3 spells that can not be redirected 
+    SPELL_ATTR_EX_UNK4                        = 0x00000010,            // 4
+    SPELL_ATTR_EX_NOT_BREAK_STEALTH           = 0x00000020,            // 5 Not break stealth
+    SPELL_ATTR_EX_CHANNELED_2                 = 0x00000040,            // 6 channeled self
+    SPELL_ATTR_EX_CANT_BE_REFLECTED           = 0x00000080,            // 7 spells that can not be reflected
+    SPELL_ATTR_EX_NOT_IN_COMBAT_TARGET        = 0x00000100,            // 8 Spell req target not to be in combat state
+    SPELL_ATTR_EX_UNK9                        = 0x00000200,            // 9 melee spells
+    SPELL_ATTR_EX_NO_THREAT                   = 0x00000400,            // 10 no generates threat on cast 100% (old NO_INITIAL_AGGRO)
+    SPELL_ATTR_EX_UNK11                       = 0x00000800,            // 11 aura
+    SPELL_ATTR_EX_UNK12                       = 0x00001000,            // 12
+    SPELL_ATTR_EX_UNK13                       = 0x00002000,            // 13
+    SPELL_ATTR_EX_STACK_FOR_DIFF_CASTERS      = 0x00004000,            // 14
+    SPELL_ATTR_EX_DISPEL_AURAS_ON_IMMUNITY    = 0x00008000,            // 15 remove auras on immunity
+    SPELL_ATTR_EX_UNAFFECTED_BY_SCHOOL_IMMUNE = 0x00010000,            // 16 unaffected by school immunity/on immunity
+    SPELL_ATTR_EX_UNAUTOCASTABLE_BY_PET       = 0x00020000,            // 17
+    SPELL_ATTR_EX_UNK18                       = 0x00040000,            // 18
+    SPELL_ATTR_EX_CANT_TARGET_SELF            = 0x00080000,            // 19 Applies only to unit target - for example Divine Intervention (19752)
+    SPELL_ATTR_EX_REQ_COMBO_POINTS1           = 0x00100000,            // 20 Req combo points on target
+    SPELL_ATTR_EX_UNK21                       = 0x00200000,            // 21
+    SPELL_ATTR_EX_REQ_COMBO_POINTS2           = 0x00400000,            // 22 Req combo points on target
+    SPELL_ATTR_EX_UNK23                       = 0x00800000,            // 23
+    SPELL_ATTR_EX_UNK24                       = 0x01000000,            // 24 Req fishing pole??
+    SPELL_ATTR_EX_UNK25                       = 0x02000000,            // 25 not set in 2.4.2
+    SPELL_ATTR_EX_UNK26                       = 0x04000000,            // 26 works correctly with [target=focus] and [target=mouseover] macros?
+    SPELL_ATTR_EX_UNK27                       = 0x08000000,            // 27
+    SPELL_ATTR_EX_UNK28                       = 0x10000000,            // 28
+    SPELL_ATTR_EX_CHANNEL_DISPLAY_SPELL_NAME  = 0x20000000,            // 29 spell name is displayed in cast bar instead of 'channeling' text
+    SPELL_ATTR_EX_ENABLE_AT_DODGE             = 0x40000000,            // 30 overpower
+    SPELL_ATTR_EX_UNK31                       = 0x80000000,            // 31
+};
 
-#define SPELL_ATTR_EX2_UNK0                       0x00000001            // 0
-#define SPELL_ATTR_EX2_UNK1                       0x00000002            // 1 ? many triggered spells have this flag
-#define SPELL_ATTR_EX2_IGNORE_LOS                 0x00000004            // 2 used to detect when ever spell can ignore los check
-#define SPELL_ATTR_EX2_UNK3                       0x00000008            // 3 mostly used in shamans' elemental weapons & rogue poisons (sth like "my weapon enchant only")
-#define SPELL_ATTR_EX2_DISPLAY_IN_STANCE_BAR      0x00000010            // 4 client displays icon in stance bar when learned, even if not shapeshift
-#define SPELL_ATTR_EX2_AUTOREPEAT_FLAG            0x00000020            // 5
-#define SPELL_ATTR_EX2_CANT_TARGET_TAPPED         0x00000040            // 6 target must be tapped by caster
-#define SPELL_ATTR_EX2_UNK7                       0x00000080            // 7
-#define SPELL_ATTR_EX2_UNK8                       0x00000100            // 8 not set in 2.4.2
-#define SPELL_ATTR_EX2_UNK9                       0x00000200            // 9
-#define SPELL_ATTR_EX2_UNK10                      0x00000400            // 10
-#define SPELL_ATTR_EX2_HEALTH_FUNNEL              0x00000800            // 11
-#define SPELL_ATTR_EX2_UNK12                      0x00001000            // 12
-#define SPELL_ATTR_EX2_NOT_USABLE_VIA_TRADE       0x00002000            // 13 enchants that cannot be done via trade window (plus disenchanting and prospecting)
-#define SPELL_ATTR_EX2_UNK14                      0x00004000            // 14
-#define SPELL_ATTR_EX2_UNK15                      0x00008000            // 15 not set in 2.4.2
-#define SPELL_ATTR_EX2_TAME_BEAST                 0x00010000            // 16
-#define SPELL_ATTR_EX2_NOT_RESET_AUTOSHOT         0x00020000            // 17 Hunters Shot and Stings only have this flag
-#define SPELL_ATTR_EX2_UNK18                      0x00040000            // 18 Only Revive pet - possible req dead pet
-#define SPELL_ATTR_EX2_NOT_NEED_SHAPESHIFT        0x00080000            // 19 does not necessarly need shapeshift
-#define SPELL_ATTR_EX2_FROM_BEHIND                0x00100000            // 20 must be behind target
-#define SPELL_ATTR_EX2_DAMAGE_REDUCED_SHIELD      0x00200000            // 21 for ice blocks, pala immunity buffs, priest absorb shields, but used also for other spells -> not sure!
-#define SPELL_ATTR_EX2_UNK22                      0x00400000            // 22
-#define SPELL_ATTR_EX2_UNK23                      0x00800000            // 23 Only mage Arcane Concentration have this flag
-#define SPELL_ATTR_EX2_UNK24                      0x01000000            // 24
-#define SPELL_ATTR_EX2_UNK25                      0x02000000            // 25
-#define SPELL_ATTR_EX2_UNK26                      0x04000000            // 26 unaffected by school immunity
-#define SPELL_ATTR_EX2_UNK27                      0x08000000            // 27
-#define SPELL_ATTR_EX2_UNK28                      0x10000000            // 28 no breaks stealth if it fails??
-#define SPELL_ATTR_EX2_CANT_CRIT                  0x20000000            // 29 Spell can't crit
-#define SPELL_ATTR_EX2_TRIGGERED_CAN_TRIGGER      0x40000000            // 30 spell can trigger even if triggered
-#define SPELL_ATTR_EX2_FOOD                       0x80000000            // 31 food, well-fed, and a few others
+enum SpellAttributesEx2
+{
+    SPELL_ATTR_EX2_UNK0                       = 0x00000001,            // 0
+    SPELL_ATTR_EX2_UNK1                       = 0x00000002,            // 1 ? many triggered spells have this flag
+    SPELL_ATTR_EX2_IGNORE_LOS                 = 0x00000004,            // 2 used to detect when ever spell can ignore los check
+    SPELL_ATTR_EX2_UNK3                       = 0x00000008,            // 3 mostly used in shamans' elemental weapons & rogue poisons (sth like "my weapon enchant only")
+    SPELL_ATTR_EX2_DISPLAY_IN_STANCE_BAR      = 0x00000010,            // 4 client displays icon in stance bar when learned, even if not shapeshift
+    SPELL_ATTR_EX2_AUTOREPEAT_FLAG            = 0x00000020,            // 5
+    SPELL_ATTR_EX2_CANT_TARGET_TAPPED         = 0x00000040,            // 6 target must be tapped by caster
+    SPELL_ATTR_EX2_UNK7                       = 0x00000080,            // 7
+    SPELL_ATTR_EX2_UNK8                       = 0x00000100,            // 8 not set in 2.4.2
+    SPELL_ATTR_EX2_UNK9                       = 0x00000200,            // 9
+    SPELL_ATTR_EX2_UNK10                      = 0x00000400,            // 10
+    SPELL_ATTR_EX2_HEALTH_FUNNEL              = 0x00000800,            // 11
+    SPELL_ATTR_EX2_UNK12                      = 0x00001000,            // 12
+    SPELL_ATTR_EX2_NOT_USABLE_VIA_TRADE       = 0x00002000,            // 13 enchants that cannot be done via trade window (plus disenchanting and prospecting)
+    SPELL_ATTR_EX2_UNK14                      = 0x00004000,            // 14
+    SPELL_ATTR_EX2_UNK15                      = 0x00008000,            // 15 not set in 2.4.2
+    SPELL_ATTR_EX2_TAME_BEAST                 = 0x00010000,            // 16
+    SPELL_ATTR_EX2_NOT_RESET_AUTOSHOT         = 0x00020000,            // 17 Hunters Shot and Stings only have this flag
+    SPELL_ATTR_EX2_UNK18                      = 0x00040000,            // 18 Only Revive pet - possible req dead pet
+    SPELL_ATTR_EX2_NOT_NEED_SHAPESHIFT        = 0x00080000,            // 19 does not necessarly need shapeshift
+    SPELL_ATTR_EX2_FROM_BEHIND                = 0x00100000,            // 20 must be behind target
+    SPELL_ATTR_EX2_DAMAGE_REDUCED_SHIELD      = 0x00200000,            // 21 for ice blocks, pala immunity buffs, priest absorb shields, but used also for other spells -> not sure!
+    SPELL_ATTR_EX2_UNK22                      = 0x00400000,            // 22
+    SPELL_ATTR_EX2_UNK23                      = 0x00800000,            // 23 Only mage Arcane Concentration have this flag
+    SPELL_ATTR_EX2_UNK24                      = 0x01000000,            // 24
+    SPELL_ATTR_EX2_UNK25                      = 0x02000000,            // 25
+    SPELL_ATTR_EX2_UNK26                      = 0x04000000,            // 26 unaffected by school immunity
+    SPELL_ATTR_EX2_UNK27                      = 0x08000000,            // 27
+    SPELL_ATTR_EX2_UNK28                      = 0x10000000,            // 28 no breaks stealth if it fails??
+    SPELL_ATTR_EX2_CANT_CRIT                  = 0x20000000,            // 29 Spell can't crit
+    SPELL_ATTR_EX2_TRIGGERED_CAN_TRIGGER      = 0x40000000,            // 30 spell can trigger even if triggered
+    SPELL_ATTR_EX2_FOOD                       = 0x80000000,            // 31 food, well-fed, and a few others
+};
 
-#define SPELL_ATTR_EX3_UNK0                       0x00000001            // 0
-#define SPELL_ATTR_EX3_UNK1                       0x00000002            // 1
-#define SPELL_ATTR_EX3_UNK2                       0x00000004            // 2
-#define SPELL_ATTR_EX3_UNK3                       0x00000008            // 3
-#define SPELL_ATTR_EX3_IGNORE_RESURRECTION_TIMER  0x00000010            // 4 you don't have to wait to be resurrected with these spells
-#define SPELL_ATTR_EX3_UNK5                       0x00000020            // 5
-#define SPELL_ATTR_EX3_UNK6                       0x00000040            // 6
-#define SPELL_ATTR_EX3_STACK_FOR_DIFF_CASTERS     0x00000080            // 7 separate stack for every caster
-#define SPELL_ATTR_EX3_PLAYERS_ONLY               0x00000100            // 8 Player only?
-#define SPELL_ATTR_EX3_TRIGGERED_CAN_TRIGGER_2    0x00000200            // 9 triggered from effect?
-#define SPELL_ATTR_EX3_MAIN_HAND                  0x00000400            // 10 Main hand weapon required
-#define SPELL_ATTR_EX3_BATTLEGROUND               0x00000800            // 11 Can cast only on battleground
-#define SPELL_ATTR_EX3_CAST_ON_DEAD               0x00001000            // 12 target is a dead player (not every spell has this flag)
-#define SPELL_ATTR_EX3_UNK13                      0x00002000            // 13
-#define SPELL_ATTR_EX3_UNK14                      0x00004000            // 14 "Honorless Target" only this spells have this flag
-#define SPELL_ATTR_EX3_UNK15                      0x00008000            // 15 Auto Shoot, Shoot, Throw,  - this is autoshot flag
-#define SPELL_ATTR_EX3_CANT_TRIGGER_PROC          0x00010000            // 16 confirmed with many patchnotes
-#define SPELL_ATTR_EX3_NO_INITIAL_AGGRO           0x00020000            // 17 no initial aggro
-#define SPELL_ATTR_EX3_CANT_MISS                  0x00040000            // 18
-#define SPELL_ATTR_EX3_DISABLE_PROC               0x00080000            // 19 during aura proc no spells can trigger (20178, 20375)
-#define SPELL_ATTR_EX3_DEATH_PERSISTENT           0x00100000            // 20 Death persistent spells
-#define SPELL_ATTR_EX3_UNK21                      0x00200000            // 21
-#define SPELL_ATTR_EX3_REQ_WAND                   0x00400000            // 22 Req wand
-#define SPELL_ATTR_EX3_UNK23                      0x00800000            // 23
-#define SPELL_ATTR_EX3_REQ_OFFHAND                0x01000000            // 24 Req offhand weapon
-#define SPELL_ATTR_EX3_UNK25                      0x02000000            // 25
-#define SPELL_ATTR_EX3_CAN_PROC_TRIGGERED         0x04000000            // 26
-#define SPELL_ATTR_EX3_UNK27                      0x08000000            // 27
-#define SPELL_ATTR_EX3_UNK28                      0x10000000            // 28
-#define SPELL_ATTR_EX3_NO_DONE_BONUS              0x20000000            // 29
-#define SPELL_ATTR_EX3_DONT_DISPLAY_RANGE         0x40000000            // 30 client doesn't display range in tooltip for those spells
-#define SPELL_ATTR_EX3_UNK31                      0x80000000            // 31
+enum SpellAttributesEx3
+{
+    SPELL_ATTR_EX3_UNK0                       = 0x00000001,            // 0
+    SPELL_ATTR_EX3_UNK1                       = 0x00000002,            // 1
+    SPELL_ATTR_EX3_UNK2                       = 0x00000004,            // 2
+    SPELL_ATTR_EX3_UNK3                       = 0x00000008,            // 3
+    SPELL_ATTR_EX3_IGNORE_RESURRECTION_TIMER  = 0x00000010,            // 4 you don't have to wait to be resurrected with these spells
+    SPELL_ATTR_EX3_UNK5                       = 0x00000020,            // 5
+    SPELL_ATTR_EX3_UNK6                       = 0x00000040,            // 6
+    SPELL_ATTR_EX3_STACK_FOR_DIFF_CASTERS     = 0x00000080,            // 7 separate stack for every caster
+    SPELL_ATTR_EX3_PLAYERS_ONLY               = 0x00000100,            // 8 Player only?
+    SPELL_ATTR_EX3_TRIGGERED_CAN_TRIGGER_2    = 0x00000200,            // 9 triggered from effect?
+    SPELL_ATTR_EX3_MAIN_HAND                  = 0x00000400,            // 10 Main hand weapon required
+    SPELL_ATTR_EX3_BATTLEGROUND               = 0x00000800,            // 11 Can cast only on battleground
+    SPELL_ATTR_EX3_CAST_ON_DEAD               = 0x00001000,            // 12 target is a dead player (not every spell has this flag)
+    SPELL_ATTR_EX3_UNK13                      = 0x00002000,            // 13
+    SPELL_ATTR_EX3_UNK14                      = 0x00004000,            // 14 "Honorless Target" only this spells have this flag
+    SPELL_ATTR_EX3_UNK15                      = 0x00008000,            // 15 Auto Shoot, Shoot, Throw,  - this is autoshot flag
+    SPELL_ATTR_EX3_CANT_TRIGGER_PROC          = 0x00010000,            // 16 confirmed with many patchnotes
+    SPELL_ATTR_EX3_NO_INITIAL_AGGRO           = 0x00020000,            // 17 no initial aggro
+    SPELL_ATTR_EX3_CANT_MISS                  = 0x00040000,            // 18
+    SPELL_ATTR_EX3_DISABLE_PROC               = 0x00080000,            // 19 during aura proc no spells can trigger (20178, 20375)
+    SPELL_ATTR_EX3_DEATH_PERSISTENT           = 0x00100000,            // 20 Death persistent spells
+    SPELL_ATTR_EX3_UNK21                      = 0x00200000,            // 21
+    SPELL_ATTR_EX3_REQ_WAND                   = 0x00400000,            // 22 Req wand
+    SPELL_ATTR_EX3_UNK23                      = 0x00800000,            // 23
+    SPELL_ATTR_EX3_REQ_OFFHAND                = 0x01000000,            // 24 Req offhand weapon
+    SPELL_ATTR_EX3_UNK25                      = 0x02000000,            // 25
+    SPELL_ATTR_EX3_CAN_PROC_TRIGGERED         = 0x04000000,            // 26
+    SPELL_ATTR_EX3_UNK27                      = 0x08000000,            // 27
+    SPELL_ATTR_EX3_UNK28                      = 0x10000000,            // 28
+    SPELL_ATTR_EX3_NO_DONE_BONUS              = 0x20000000,            // 29
+    SPELL_ATTR_EX3_DONT_DISPLAY_RANGE         = 0x40000000,            // 30 client doesn't display range in tooltip for those spells
+    SPELL_ATTR_EX3_UNK31                      = 0x80000000,            // 31
+};
 
-#define SPELL_ATTR_EX4_IGNORE_RESISTANCES         0x00000001            // 0 spells with this attribute will completely ignore the target resistances (theese spells cant be resisted)
-#define SPELL_ATTR_EX4_UNK1                       0x00000002            // 1 proc on finishing move?
-#define SPELL_ATTR_EX4_UNK2                       0x00000004            // 2
-#define SPELL_ATTR_EX4_CANT_PROC_FROM_SELFCAST    0x00000008            // 3
-#define SPELL_ATTR_EX4_UNK4                       0x00000010            // 4
-#define SPELL_ATTR_EX4_UNK5                       0x00000020            // 5
-#define SPELL_ATTR_EX4_NOT_STEALABLE              0x00000040            // 6 although such auras might be dispellable, they cannot be stolen
-#define SPELL_ATTR_EX4_FORCE_TRIGGERED            0x00000080            // 7
-#define SPELL_ATTR_EX4_STACK_DOT_MODIFIER         0x00000100            // 8 no effect on non DoTs?
-#define SPELL_ATTR_EX4_UNK9                       0x00000200            // 9
-#define SPELL_ATTR_EX4_SPELL_VS_EXTEND_COST       0x00000400            // 10 Rogue Shiv have this flag
-#define SPELL_ATTR_EX4_UNK11                      0x00000800            // 11
-#define SPELL_ATTR_EX4_UNK12                      0x00001000            // 12
-#define SPELL_ATTR_EX4_UNK13                      0x00002000            // 13
-#define SPELL_ATTR_EX4_DAMAGE_DOESNT_BREAK_AURAS  0x00004000            // 14 doesn't break auras by damage from these spells
-#define SPELL_ATTR_EX4_UNK15                      0x00008000            // 15
-#define SPELL_ATTR_EX4_NOT_USABLE_IN_ARENA        0x00010000            // 16 not usable in arena
-#define SPELL_ATTR_EX4_USABLE_IN_ARENA            0x00020000            // 17 usable in arena
-#define SPELL_ATTR_EX4_AREA_TARGET_CHAIN          0x00040000            // 18 (NYI)hits area targets one after another instead of all at once
-#define SPELL_ATTR_EX4_UNK19                      0x00080000            // 19
-#define SPELL_ATTR_EX4_UNK20                      0x00100000            // 20
-#define SPELL_ATTR_EX4_UNK21                      0x00200000            // 21
-#define SPELL_ATTR_EX4_UNK22                      0x00400000            // 22
-#define SPELL_ATTR_EX4_UNK23                      0x00800000            // 23
-#define SPELL_ATTR_EX4_AUTOSHOT                   0x01000000            // 24
-#define SPELL_ATTR_EX4_UNK25                      0x02000000            // 25 pet scaling auras
-#define SPELL_ATTR_EX4_CAST_ONLY_IN_OUTLAND       0x04000000            // 26 Can only be used in Outland.
-#define SPELL_ATTR_EX4_UNK27                      0x08000000            // 27
-#define SPELL_ATTR_EX4_UNK28                      0x10000000            // 28
-#define SPELL_ATTR_EX4_UNK29                      0x20000000            // 29
-#define SPELL_ATTR_EX4_UNK30                      0x40000000            // 30
-#define SPELL_ATTR_EX4_UNK31                      0x80000000            // 31
+enum SpellAttributesEx4
+{
+    SPELL_ATTR_EX4_IGNORE_RESISTANCES         = 0x00000001,            // 0 spells with this attribute will completely ignore the target resistances (theese spells cant be resisted)
+    SPELL_ATTR_EX4_UNK1                       = 0x00000002,            // 1 proc on finishing move?
+    SPELL_ATTR_EX4_UNK2                       = 0x00000004,            // 2
+    SPELL_ATTR_EX4_CANT_PROC_FROM_SELFCAST    = 0x00000008,            // 3
+    SPELL_ATTR_EX4_UNK4                       = 0x00000010,            // 4
+    SPELL_ATTR_EX4_UNK5                       = 0x00000020,            // 5
+    SPELL_ATTR_EX4_NOT_STEALABLE              = 0x00000040,            // 6 although such auras might be dispellable, they cannot be stolen
+    SPELL_ATTR_EX4_FORCE_TRIGGERED            = 0x00000080,            // 7
+    SPELL_ATTR_EX4_STACK_DOT_MODIFIER         = 0x00000100,            // 8 no effect on non DoTs?
+    SPELL_ATTR_EX4_UNK9                       = 0x00000200,            // 9
+    SPELL_ATTR_EX4_SPELL_VS_EXTEND_COST       = 0x00000400,            // 10 Rogue Shiv have this flag
+    SPELL_ATTR_EX4_UNK11                      = 0x00000800,            // 11
+    SPELL_ATTR_EX4_UNK12                      = 0x00001000,            // 12
+    SPELL_ATTR_EX4_UNK13                      = 0x00002000,            // 13
+    SPELL_ATTR_EX4_DAMAGE_DOESNT_BREAK_AURAS  = 0x00004000,            // 14 doesn't break auras by damage from these spells
+    SPELL_ATTR_EX4_UNK15                      = 0x00008000,            // 15
+    SPELL_ATTR_EX4_NOT_USABLE_IN_ARENA        = 0x00010000,            // 16 not usable in arena
+    SPELL_ATTR_EX4_USABLE_IN_ARENA            = 0x00020000,            // 17 usable in arena
+    SPELL_ATTR_EX4_AREA_TARGET_CHAIN          = 0x00040000,            // 18 (NYI)hits area targets one after another instead of all at once
+    SPELL_ATTR_EX4_UNK19                      = 0x00080000,            // 19
+    SPELL_ATTR_EX4_UNK20                      = 0x00100000,            // 20
+    SPELL_ATTR_EX4_UNK21                      = 0x00200000,            // 21
+    SPELL_ATTR_EX4_UNK22                      = 0x00400000,            // 22
+    SPELL_ATTR_EX4_UNK23                      = 0x00800000,            // 23
+    SPELL_ATTR_EX4_AUTOSHOT                   = 0x01000000,            // 24
+    SPELL_ATTR_EX4_UNK25                      = 0x02000000,            // 25 pet scaling auras
+    SPELL_ATTR_EX4_CAST_ONLY_IN_OUTLAND       = 0x04000000,            // 26 Can only be used in Outland.
+    SPELL_ATTR_EX4_UNK27                      = 0x08000000,            // 27
+    SPELL_ATTR_EX4_UNK28                      = 0x10000000,            // 28
+    SPELL_ATTR_EX4_UNK29                      = 0x20000000,            // 29
+    SPELL_ATTR_EX4_UNK30                      = 0x40000000,            // 30
+    SPELL_ATTR_EX4_UNK31                      = 0x80000000,            // 31
+};
 
-#define SPELL_ATTR_EX5_UNK0                       0x00000001            // 0
-#define SPELL_ATTR_EX5_NO_REAGENT_WHILE_PREP      0x00000002            // 1 not need reagents if UNIT_FLAG_PREPARATION
-#define SPELL_ATTR_EX5_UNK2                       0x00000004            // 2
-#define SPELL_ATTR_EX5_USABLE_WHILE_STUNNED       0x00000008            // 3 usable while stunned
-#define SPELL_ATTR_EX5_UNK4                       0x00000010            // 4
-#define SPELL_ATTR_EX5_SINGLE_TARGET_SPELL        0x00000020            // 5 Only one target can be apply at a time
-#define SPELL_ATTR_EX5_UNK6                       0x00000040            // 6
-#define SPELL_ATTR_EX5_UNK7                       0x00000080            // 7
-#define SPELL_ATTR_EX5_UNK8                       0x00000100            // 8
-#define SPELL_ATTR_EX5_START_PERIODIC_AT_APPLY    0x00000200            // 9 begin periodic tick at aura apply
-#define SPELL_ATTR_EX5_HIDE_DURATION              0x00000400            // 10 do not send duration to client
-#define SPELL_ATTR_EX5_UNK11                      0x00000800            // 11
-#define SPELL_ATTR_EX5_UNK12                      0x00001000            // 12
-#define SPELL_ATTR_EX5_UNK13                      0x00002000            // 13
-#define SPELL_ATTR_EX5_UNK14                      0x00004000            // 14
-#define SPELL_ATTR_EX5_UNK15                      0x00008000            // 15
-#define SPELL_ATTR_EX5_UNK16                      0x00010000            // 16
-#define SPELL_ATTR_EX5_USABLE_WHILE_FEARED        0x00020000            // 17 usable while feared
-#define SPELL_ATTR_EX5_USABLE_WHILE_CONFUSED      0x00040000            // 18 usable while confused
-#define SPELL_ATTR_EX5_UNK19                      0x00080000            // 19
-#define SPELL_ATTR_EX5_UNK20                      0x00100000            // 20
-#define SPELL_ATTR_EX5_UNK21                      0x00200000            // 21
-#define SPELL_ATTR_EX5_UNK22                      0x00400000            // 22
-#define SPELL_ATTR_EX5_UNK23                      0x00800000            // 23
-#define SPELL_ATTR_EX5_UNK24                      0x01000000            // 24
-#define SPELL_ATTR_EX5_UNK25                      0x02000000            // 25
-#define SPELL_ATTR_EX5_UNK26                      0x04000000            // 26
-#define SPELL_ATTR_EX5_UNK27                      0x08000000            // 27
-#define SPELL_ATTR_EX5_UNK28                      0x10000000            // 28
-#define SPELL_ATTR_EX5_UNK29                      0x20000000            // 29
-#define SPELL_ATTR_EX5_UNK30                      0x40000000            // 30
-#define SPELL_ATTR_EX5_UNK31                      0x80000000            // 31 Forces all nearby enemies to focus attacks caster
+enum SpellAttributesEx5
+{
+    SPELL_ATTR_EX5_UNK0                       = 0x00000001,            // 0
+    SPELL_ATTR_EX5_NO_REAGENT_WHILE_PREP      = 0x00000002,            // 1 not need reagents if UNIT_FLAG_PREPARATION
+    SPELL_ATTR_EX5_UNK2                       = 0x00000004,            // 2
+    SPELL_ATTR_EX5_USABLE_WHILE_STUNNED       = 0x00000008,            // 3 usable while stunned
+    SPELL_ATTR_EX5_UNK4                       = 0x00000010,            // 4
+    SPELL_ATTR_EX5_SINGLE_TARGET_SPELL        = 0x00000020,            // 5 Only one target can be apply at a time
+    SPELL_ATTR_EX5_UNK6                       = 0x00000040,            // 6
+    SPELL_ATTR_EX5_UNK7                       = 0x00000080,            // 7
+    SPELL_ATTR_EX5_UNK8                       = 0x00000100,            // 8
+    SPELL_ATTR_EX5_START_PERIODIC_AT_APPLY    = 0x00000200,            // 9 begin periodic tick at aura apply
+    SPELL_ATTR_EX5_HIDE_DURATION              = 0x00000400,            // 10 do not send duration to client
+    SPELL_ATTR_EX5_UNK11                      = 0x00000800,            // 11
+    SPELL_ATTR_EX5_UNK12                      = 0x00001000,            // 12
+    SPELL_ATTR_EX5_UNK13                      = 0x00002000,            // 13
+    SPELL_ATTR_EX5_UNK14                      = 0x00004000,            // 14
+    SPELL_ATTR_EX5_UNK15                      = 0x00008000,            // 15
+    SPELL_ATTR_EX5_UNK16                      = 0x00010000,            // 16
+    SPELL_ATTR_EX5_USABLE_WHILE_FEARED        = 0x00020000,            // 17 usable while feared
+    SPELL_ATTR_EX5_USABLE_WHILE_CONFUSED      = 0x00040000,            // 18 usable while confused
+    SPELL_ATTR_EX5_UNK19                      = 0x00080000,            // 19
+    SPELL_ATTR_EX5_UNK20                      = 0x00100000,            // 20
+    SPELL_ATTR_EX5_UNK21                      = 0x00200000,            // 21
+    SPELL_ATTR_EX5_UNK22                      = 0x00400000,            // 22
+    SPELL_ATTR_EX5_UNK23                      = 0x00800000,            // 23
+    SPELL_ATTR_EX5_UNK24                      = 0x01000000,            // 24
+    SPELL_ATTR_EX5_UNK25                      = 0x02000000,            // 25
+    SPELL_ATTR_EX5_UNK26                      = 0x04000000,            // 26
+    SPELL_ATTR_EX5_UNK27                      = 0x08000000,            // 27
+    SPELL_ATTR_EX5_UNK28                      = 0x10000000,            // 28
+    SPELL_ATTR_EX5_UNK29                      = 0x20000000,            // 29
+    SPELL_ATTR_EX5_UNK30                      = 0x40000000,            // 30
+    SPELL_ATTR_EX5_UNK31                      = 0x80000000,            // 31 Forces all nearby enemies to focus attacks caster
+};
 
-#define SPELL_ATTR_EX6_DONT_DISPLAY_COOLDOWN      0x00000001            // 0 client doesn't display cooldown in tooltip for these spells
-#define SPELL_ATTR_EX6_UNK1                       0x00000002            // 1 not set in 2.4.2
-#define SPELL_ATTR_EX6_UNK2                       0x00000004            // 2
-#define SPELL_ATTR_EX6_UNK3                       0x00000008            // 3
-#define SPELL_ATTR_EX6_UNK4                       0x00000010            // 4 not set in 2.4.2
-#define SPELL_ATTR_EX6_UNK5                       0x00000020            // 5
-#define SPELL_ATTR_EX6_UNK6                       0x00000040            // 6
-#define SPELL_ATTR_EX6_UNK7                       0x00000080            // 7
-#define SPELL_ATTR_EX6_CANT_TARGET_CCD            0x00000100            // 8 do not target crowd controlled
-#define SPELL_ATTR_EX6_UNK9                       0x00000200            // 9 not set in 2.4.2
-#define SPELL_ATTR_EX6_UNK10                      0x00000400            // 10
-#define SPELL_ATTR_EX6_NOT_IN_RAID_INSTANCE       0x00000800            // 11 Not in raid instance
-#define SPELL_ATTR_EX6_UNK12                      0x00001000            // 12 not set in 2.4.2
-#define SPELL_ATTR_EX6_CAN_TARGET_INVISIBLE       0x00002000            // NYI only Bash'ir Phasing Device in 2.4.3
-#define SPELL_ATTR_EX6_UNK14                      0x00004000            // 14 not set in 2.4.2
-#define SPELL_ATTR_EX6_UNK15                      0x00008000            // 15 not set in 2.4.2
-#define SPELL_ATTR_EX6_UNK16                      0x00010000            // 16 not set in 2.4.2
-#define SPELL_ATTR_EX6_UNK17                      0x00020000            // 17 not set in 2.4.2
-#define SPELL_ATTR_EX6_ONLY_CAST_WHILE_POSSESSED  0x00040000            // 18 (NYI) client won't allow to cast these spells when unit does not have possessor
-#define SPELL_ATTR_EX6_UNK19                      0x00080000            // 19 not set in 2.4.2
-#define SPELL_ATTR_EX6_UNK20                      0x00100000            // 20 not set in 2.4.2
-#define SPELL_ATTR_EX6_UNK21                      0x00200000            // 21 not set in 2.4.2
-#define SPELL_ATTR_EX6_UNK22                      0x00400000            // 22 not set in 2.4.2
-#define SPELL_ATTR_EX6_UNK23                      0x00800000            // 23 not set in 2.4.2
-#define SPELL_ATTR_EX6_UNK24                      0x01000000            // 24 not set in 2.4.2
-#define SPELL_ATTR_EX6_UNK25                      0x02000000            // 25 not set in 2.4.2
-#define SPELL_ATTR_EX6_UNK26                      0x04000000            // 26 not set in 2.4.2
-#define SPELL_ATTR_EX6_UNK27                      0x08000000            // 27 not set in 2.4.2
-#define SPELL_ATTR_EX6_UNK28                      0x10000000            // 28 not set in 2.4.2
-#define SPELL_ATTR_EX6_UNK29                      0x20000000            // 29 not set in 2.4.2
-#define SPELL_ATTR_EX6_UNK30                      0x40000000            // 30 not set in 2.4.2
-#define SPELL_ATTR_EX6_UNK31                      0x80000000            // 31 not set in 2.4.2
+enum SpellAttributesEx6
+{
+     SPELL_ATTR_EX6_DONT_DISPLAY_COOLDOWN      = 0x00000001,            // 0 client doesn't display cooldown in tooltip for these spells
+     SPELL_ATTR_EX6_UNK1                       = 0x00000002,            // 1 not set in 2.4.2
+     SPELL_ATTR_EX6_UNK2                       = 0x00000004,            // 2
+     SPELL_ATTR_EX6_UNK3                       = 0x00000008,            // 3
+     SPELL_ATTR_EX6_UNK4                       = 0x00000010,            // 4 not set in 2.4.2
+     SPELL_ATTR_EX6_UNK5                       = 0x00000020,            // 5
+     SPELL_ATTR_EX6_UNK6                       = 0x00000040,            // 6
+     SPELL_ATTR_EX6_UNK7                       = 0x00000080,            // 7
+     SPELL_ATTR_EX6_CANT_TARGET_CCD            = 0x00000100,            // 8 do not target crowd controlled
+     SPELL_ATTR_EX6_UNK9                       = 0x00000200,            // 9 not set in 2.4.2
+     SPELL_ATTR_EX6_UNK10                      = 0x00000400,            // 10
+     SPELL_ATTR_EX6_NOT_IN_RAID_INSTANCE       = 0x00000800,            // 11 Not in raid instance
+     SPELL_ATTR_EX6_UNK12                      = 0x00001000,            // 12 not set in 2.4.2
+     SPELL_ATTR_EX6_CAN_TARGET_INVISIBLE       = 0x00002000,            // NYI only Bash'ir Phasing Device in 2.4.3
+     SPELL_ATTR_EX6_UNK14                      = 0x00004000,            // 14 not set in 2.4.2
+     SPELL_ATTR_EX6_UNK15                      = 0x00008000,            // 15 not set in 2.4.2
+     SPELL_ATTR_EX6_UNK16                      = 0x00010000,            // 16 not set in 2.4.2
+     SPELL_ATTR_EX6_UNK17                      = 0x00020000,            // 17 not set in 2.4.2
+     SPELL_ATTR_EX6_ONLY_CAST_WHILE_POSSESSED  = 0x00040000,            // 18 (NYI) client won't allow to cast these spells when unit does not have possessor
+     SPELL_ATTR_EX6_UNK19                      = 0x00080000,            // 19 not set in 2.4.2
+     SPELL_ATTR_EX6_UNK20                      = 0x00100000,            // 20 not set in 2.4.2
+     SPELL_ATTR_EX6_UNK21                      = 0x00200000,            // 21 not set in 2.4.2
+     SPELL_ATTR_EX6_UNK22                      = 0x00400000,            // 22 not set in 2.4.2
+     SPELL_ATTR_EX6_UNK23                      = 0x00800000,            // 23 not set in 2.4.2
+     SPELL_ATTR_EX6_UNK24                      = 0x01000000,            // 24 not set in 2.4.2
+     SPELL_ATTR_EX6_UNK25                      = 0x02000000,            // 25 not set in 2.4.2
+     SPELL_ATTR_EX6_UNK26                      = 0x04000000,            // 26 not set in 2.4.2
+     SPELL_ATTR_EX6_UNK27                      = 0x08000000,            // 27 not set in 2.4.2
+     SPELL_ATTR_EX6_UNK28                      = 0x10000000,            // 28 not set in 2.4.2
+     SPELL_ATTR_EX6_UNK29                      = 0x20000000,            // 29 not set in 2.4.2
+     SPELL_ATTR_EX6_UNK30                      = 0x40000000,            // 30 not set in 2.4.2
+     SPELL_ATTR_EX6_UNK31                      = 0x80000000,            // 31 not set in 2.4.2
+};
 
 enum SheathTypes
 {
