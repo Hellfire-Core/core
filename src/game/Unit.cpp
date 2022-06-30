@@ -2687,14 +2687,13 @@ void Unit::SendMeleeAttackStart(uint64 victimGUID)
     DEBUG_LOG("WORLD: Sent SMSG_ATTACKSTART");
 }
 
-void Unit::SendMeleeAttackStop( uint64 victimGUID )
+void Unit::SendMeleeAttackStop(Unit* victim)
 {
-    WorldPacket data(SMSG_ATTACKSTOP, (4+16));              // we guess size
+    WorldPacket data(SMSG_ATTACKSTOP, (4+16));               // we guess size
     data << GetPackGUID();
-    data << victimGUID;                                     // can be 0x00...
-    data << uint32(0);                                      // can be 0x1
+    data << (victim ? victim->GetPackGUID() : PackedGuid()); // can be 0x00...
+    data << uint32(victim && victim->isDead());              // can be 0x1
     BroadcastPacket(&data, true);
-    sLog.outDetail("%s %u stopped attacking %s %lu", (GetTypeId()==TYPEID_PLAYER ? "player" : "creature"), GetGUIDLow(), (IS_PLAYER_GUID(victimGUID) ? "player" : "creature"),victimGUID);
 }
 
 int32 Unit::GetCurrentSpellCastTime(uint32 spell_id) const
@@ -7917,7 +7916,7 @@ bool Unit::AttackStop()
 {
     if (!m_attacking)
         return false;
-    uint64 attacker_guid = m_attacking->GetGUID();
+
     m_attacking->_removeAttacker(this);
 
     //Clear our target
@@ -7934,7 +7933,7 @@ bool Unit::AttackStop()
         ((Creature*)this)->SetNoSearchAssistance(false);
     }
 
-    SendMeleeAttackStop(attacker_guid);
+    SendMeleeAttackStop(m_attacking);
     m_attacking = NULL;
 
     return true;

@@ -81,7 +81,8 @@ public:
         if (target->GetTypeId() == TYPEID_PLAYER)
             target->SetStandState(UNIT_STAND_STATE_STAND);
 
-        target->SendMeleeAttackStop(0);
+        if (Unit* pVictim = target->getVictim())
+            target->SendMeleeAttackStop(pVictim);
 
         WorldPacket data(SMSG_FORCE_MOVE_ROOT, target->GetPackGUID().size() + 4);
         data << target->GetPackGUID();
@@ -146,7 +147,8 @@ public:
         target->m_movementInfo.RemoveMovementFlag(MOVEFLAG_MOVING);
         target->m_movementInfo.AddMovementFlag(MOVEFLAG_ROOT);
 
-        target->SendMeleeAttackStop(0);
+        if (Unit* pVictim = target->getVictim())
+            target->SendMeleeAttackStop(pVictim);
 
         if (target->GetTypeId() == TYPEID_PLAYER)
         {
