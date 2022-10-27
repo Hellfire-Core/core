@@ -1,6 +1,8 @@
 /*
  * Copyright (C) 2005-2011 MaNGOS <http://getmangos.com/>
- * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
+ * Copyright (C) 2009-2011 MaNGOSZero <https://github.com/mangos/zero>
+ * Copyright (C) 2011-2016 Nostalrius <https://nostalrius.org>
+ * Copyright (C) 2016-2017 Elysium Project <https://github.com/elysium-project>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -9,25 +11,31 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "Config.h"
-#include "ace/Configuration_Import_Export.h"
 
-static bool GetValueHelper(ACE_Configuration_Heap *mConf, const char *name, ACE_TString &result)
+#include "Policies/SingletonImp.h"
+
+INSTANTIATE_SINGLETON_1(Config);
+
+// Defined here as it must not be exposed to end-users.
+bool Config::GetValueHelper(char const* name, ACE_TString& result)
 {
+    GuardType guard(m_configLock);
+
     if (!mConf)
         return false;
 
     ACE_TString section_name;
     ACE_Configuration_Section_Key section_key;
-    ACE_Configuration_Section_Key root_key = mConf->root_section();
+    ACE_Configuration_Section_Key const& root_key = mConf->root_section();
 
     int i = 0;
     while (mConf->enumerate_sections(root_key, i, section_name) == 0)
@@ -42,7 +50,7 @@ static bool GetValueHelper(ACE_Configuration_Heap *mConf, const char *name, ACE_
 }
 
 Config::Config()
-: mConf(NULL)
+: mConf(nullptr)
 {
 }
 
@@ -51,7 +59,7 @@ Config::~Config()
     delete mConf;
 }
 
-bool Config::SetSource(const char *file)
+bool Config::SetSource(char const* file)
 {
     mFilename = file;
 
@@ -63,48 +71,46 @@ bool Config::Reload()
     delete mConf;
     mConf = new ACE_Configuration_Heap;
 
-    if (mConf->open() == 0)
+    if (mConf->open() != -1)
     {
         ACE_Ini_ImpExp config_importer(*mConf);
-
-        if (config_importer.import_config(mFilename.c_str()) == 0)
+        if (config_importer.import_config(mFilename.c_str()) != -1)
             return true;
     }
 
     delete mConf;
-    mConf = NULL;
+    mConf = nullptr;
     return false;
 }
 
-std::string Config::GetStringDefault(const char* name, const char* def)
+std::string Config::GetStringDefault(char const* name, char const* def)
 {
     ACE_TString val;
-    return GetValueHelper(mConf, name, val) ? val.c_str() : def;
+    return GetValueHelper(name, val) ? val.c_str() : def;
 }
 
-bool Config::GetBoolDefault(const char* name, bool def)
+bool Config::GetBoolDefault(char const* name, bool def)
 {
     ACE_TString val;
-    if (!GetValueHelper(mConf, name, val))
+    if (!GetValueHelper(name, val))
         return def;
 
-    const char* str = val.c_str();
-    if (strcmp(str, "true") == 0 || strcmp(str, "TRUE") == 0 ||
-        strcmp(str, "yes") == 0 || strcmp(str, "YES") == 0 ||
-        strcmp(str, "1") == 0)
-        return true;
-    else
-        return false;
+    char const* str = val.c_str();
+    return strcmp(str, "true") == 0 || strcmp(str, "TRUE") == 0 ||
+           strcmp(str, "yes") == 0 || strcmp(str, "YES") == 0 ||
+           strcmp(str, "1") == 0;
 }
 
-int32 Config::GetIntDefault(const char* name, int32 def)
+
+int32 Config::GetIntDefault(char const* name, int32 def)
 {
     ACE_TString val;
-    return GetValueHelper(mConf, name, val) ? atoi(val.c_str()) : def;
+    return GetValueHelper(name, val) ? atoi(val.c_str()) : def;
 }
 
-float Config::GetFloatDefault(const char* name, float def)
+
+float Config::GetFloatDefault(char const* name, float def)
 {
     ACE_TString val;
-    return GetValueHelper(mConf, name, val) ? (float)atof(val.c_str()) : def;
+    return GetValueHelper(name, val) ? (float)atof(val.c_str()) : def;
 }

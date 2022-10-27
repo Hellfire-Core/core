@@ -147,17 +147,17 @@ class Log
         FILE* openLogFile(ChatLogs log);
         FILE* openGmlogPerAccount(uint32 account);
 
-        FILE *logFile[LOG_MAX_FILES];
+        FILE *logFile[LOG_MAX_FILES] = {};
         std::string logFileNames[LOG_MAX_FILES];
-        FILE *chatLogFile[LOG_CHAT_MAX];
+        FILE *chatLogFile[LOG_CHAT_MAX] = {};
 
         FILE* openWhisplogPerAccount(uint32 account);
 
         // log/console control
-        uint32 m_logLevel;
-        uint32 m_logFileLevel;
-        bool m_includeTime;
-        uint32 m_logFilter;
+        uint32 m_logLevel = 0;
+        uint32 m_logFileLevel = 0;
+        bool m_includeTime = false;
+        uint32 m_logFilter = 0;
 
         // cache values for after initilization use (like gm log per account case)
         std::string m_logsDir;
@@ -165,7 +165,7 @@ class Log
         std::string m_chatLogsDir;
 
         // gm log control
-        bool m_gmlog_per_account;
+        bool m_gmlog_per_account = false;
 
         std::string m_gmlog_filename_format;
         std::string m_whisplog_filename_format;

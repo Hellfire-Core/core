@@ -10588,7 +10588,7 @@ DiminishingLevels Unit::GetDiminishing(DiminishingGroup group)
             return DiminishingLevels(i->hitCount);
 
         // If last spell was cast more than 15 seconds ago - reset the count.
-        if (i->stack==0 && WorldTimer::getMSTimeDiff(i->hitTime,WorldTimer::getMSTime()) > 15000)
+        if (i->stacks==0 && WorldTimer::getMSTimeDiff(i->hitTime,WorldTimer::getMSTime()) > 15000)
         {
             i->hitCount = DIMINISHING_LEVEL_1;
             return DIMINISHING_LEVEL_1;
@@ -10662,9 +10662,9 @@ void Unit::ApplyDiminishingAura(DiminishingGroup group, bool apply)
         i->hitTime = WorldTimer::getMSTime();
 
         if (apply)
-            i->stack += 1;
-        else if (i->stack)
-            i->stack -= 1;
+            i->stacks += 1;
+        else if (i->stacks)
+            i->stacks -= 1;
 
         break;
     }

@@ -233,7 +233,7 @@ bool Log::outTimestamp(FILE* file)
     //       HH     hour (2 digits 00-23)
     //       MM     minutes (2 digits 00-59)
     //       SS     seconds (2 digits 00-59)
-    if (fprintf(file, "%-4d-%02d-%02d %02d:%02d:%02d ", aTm->tm_year+1900, aTm->tm_mon+1, aTm->tm_mday, aTm->tm_hour, aTm->tm_min, aTm->tm_sec) < 0)
+    if (fprintf(file, "%-4d-%02d-%02d %02d:%02d:%02d ", aTm->tm_year + 1900, aTm->tm_mon + 1, aTm->tm_mday, aTm->tm_hour, aTm->tm_min, aTm->tm_sec) < 0)
         return false;
 
     return true;
@@ -545,10 +545,13 @@ void Log::outLog(LogNames log, const char * str, ...)
 
 void Log::outChat(uint32 type, uint32 faction, const char* who, const char* str)
 {
-    if (faction == 67) // horde
-        type++;
-
     if (!str)
+        return;
+
+    if (type >= LOG_CHAT_MAX)
+        return;
+
+    if (!sConfig.GetBoolDefault("ChatLogsEnabled"))
         return;
 
     if (chatLogFile[type])
