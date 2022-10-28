@@ -2327,7 +2327,7 @@ void Spell::SetTargetMap(uint32 i, uint32 cur)
     } // Chain or Area
 }
 
-void Spell::prepare(SpellCastTargets * targets, Aura* triggeredByAura)
+SpellCastResult Spell::prepare(SpellCastTargets * targets, Aura* triggeredByAura)
 {
     m_caster->SendCombatStats(1 << COMBAT_STATS_TEST, "spell prepare %lu", NULL, targets->getUnitTargetGUID());
     m_spellState = SPELL_STATE_PREPARING;
@@ -2354,7 +2354,7 @@ void Spell::prepare(SpellCastTargets * targets, Aura* triggeredByAura)
     {
         SendCastResult(SPELL_FAILED_SPELL_IN_PROGRESS);
         finish(false);
-        return;
+        return SPELL_FAILED_SPELL_IN_PROGRESS;
     }
 
     if (SpellMgr::CanSpellCrit(GetSpellEntry())) // only if spell can crit
@@ -2373,7 +2373,7 @@ void Spell::prepare(SpellCastTargets * targets, Aura* triggeredByAura)
         {
             SendCastResult(SPELL_FAILED_SPELL_UNAVAILABLE);
             finish(false);
-            return;
+            return SPELL_FAILED_SPELL_UNAVAILABLE;
         }
         // maybe also precalculate this one?
         m_extraCrit += m_caster->GetFloatValue(PLAYER_SPELL_CRIT_PERCENTAGE1 + GetFirstSchoolInMask(m_spellSchoolMask));
@@ -2384,7 +2384,7 @@ void Spell::prepare(SpellCastTargets * targets, Aura* triggeredByAura)
         {
             SendCastResult(SPELL_FAILED_SPELL_UNAVAILABLE);
             finish(false);
-            return;
+            return SPELL_FAILED_SPELL_UNAVAILABLE;
         }
     }
     else
@@ -2392,7 +2392,7 @@ void Spell::prepare(SpellCastTargets * targets, Aura* triggeredByAura)
         if (sObjectMgr.IsCreatureSpellDisabled(GetSpellEntry()->Id))
         {
             finish(false);
-            return;
+            return SPELL_FAILED_SPELL_UNAVAILABLE;
         }
     }
     // Fill cost data
@@ -2408,7 +2408,7 @@ void Spell::prepare(SpellCastTargets * targets, Aura* triggeredByAura)
         }
         SendCastResult(result);
         finish(false);
-        return;
+        return result;
     }
 
     // Prepare data for triggers
@@ -2454,7 +2454,7 @@ void Spell::prepare(SpellCastTargets * targets, Aura* triggeredByAura)
             m_caster->SetCurrentCastSpell(this);
             m_selfContainer = &(m_caster->m_currentSpells[GetCurrentContainer()]);
             TriggerGlobalCooldown();
-            return;
+            return SPELL_CAST_OK;
         }
 
         // stealth must be removed at cast starting (at show channel bar)
@@ -2474,6 +2474,8 @@ void Spell::prepare(SpellCastTargets * targets, Aura* triggeredByAura)
             && GetCurrentContainer() == CURRENT_GENERIC_SPELL)
             cast(true);
     }
+
+    return SPELL_CAST_OK;
 }
 
 void Spell::cancel(SpellCastResult reason)
