@@ -144,7 +144,9 @@ void Log::Initialize()
     for (uint8 i = LOG_DEFAULT; i < LOG_MAX_FILES; ++i)
         logFile[i] = openLogFile(LogNames(i));
 
-    if (sConfig.GetBoolDefault("ChatLogsEnabled"))
+    m_chatLogEnabled = sConfig.GetBoolDefault("ChatLogsEnabled");
+
+    if (m_chatLogEnabled)
         for (uint8 i = 0; i < LOG_CHAT_MAX; i++)
             chatLogFile[i] = openLogFile(ChatLogs(i));
     
@@ -551,7 +553,7 @@ void Log::outChat(uint32 type, uint32 faction, const char* who, const char* str)
     if (type >= LOG_CHAT_MAX)
         return;
 
-    if (!sConfig.GetBoolDefault("ChatLogsEnabled"))
+    if (!m_chatLogEnabled)
         return;
 
     if (chatLogFile[type])

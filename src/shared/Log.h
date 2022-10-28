@@ -157,6 +157,7 @@ class Log
         uint32 m_logLevel = 0;
         uint32 m_logFileLevel = 0;
         bool m_includeTime = false;
+        bool m_chatLogEnabled = false;
         uint32 m_logFilter = 0;
 
         // cache values for after initilization use (like gm log per account case)
