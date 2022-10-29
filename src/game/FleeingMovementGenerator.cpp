@@ -106,7 +106,7 @@ void FleeingMovementGenerator<UNIT>::Finalize(UNIT &unit)
 {
     Interrupt(unit);
 
-    unit.clearUnitState(UNIT_STAT_FLEEING);
+    unit.ClearUnitState(UNIT_STAT_FLEEING);
     unit.AddEvent(new AttackResumeEvent(unit), ATTACK_DISPLAY_DELAY);
 }
 
@@ -114,7 +114,7 @@ template<class UNIT>
 void FleeingMovementGenerator<UNIT>::Interrupt(UNIT &unit)
 {
     unit.StopMoving();
-    unit.clearUnitState(UNIT_STAT_FLEEING);
+    unit.ClearUnitState(UNIT_STAT_FLEEING);
 }
 
 template<class UNIT>

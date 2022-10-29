@@ -41,46 +41,6 @@
 
 #define WORLD_TRIGGER   12999
 
-enum SpellInterruptFlags
-{
-    SPELL_INTERRUPT_FLAG_MOVEMENT     = 0x01, // why need this for instant?
-    SPELL_INTERRUPT_FLAG_PUSH_BACK    = 0x02, // push back
-    SPELL_INTERRUPT_FLAG_INTERRUPT    = 0x04, // interrupt
-    SPELL_INTERRUPT_FLAG_AUTOATTACK   = 0x08, // no
-    SPELL_INTERRUPT_FLAG_DAMAGE       = 0x10  // _complete_ interrupt on direct damage?
-};
-
-enum SpellAuraInterruptFlags
-{
-    AURA_INTERRUPT_FLAG_NONE                = 0x00000000,
-    AURA_INTERRUPT_FLAG_HITBYSPELL          = 0x00000001,   // 0    removed when getting hit by a negative spell?
-    AURA_INTERRUPT_FLAG_DAMAGE              = 0x00000002,   // 1    removed by any damage
-    AURA_INTERRUPT_FLAG_CC                  = 0x00000004,   // 2    crowd control
-    AURA_INTERRUPT_FLAG_MOVE                = 0x00000008,   // 3    removed by any movement
-    AURA_INTERRUPT_FLAG_TURNING             = 0x00000010,   // 4    removed by any turning
-    AURA_INTERRUPT_FLAG_JUMP                = 0x00000020,   // 5    removed by entering combat
-    AURA_INTERRUPT_FLAG_NOT_MOUNTED         = 0x00000040,   // 6    removed by unmounting
-    AURA_INTERRUPT_FLAG_NOT_ABOVEWATER      = 0x00000080,   // 7    removed by entering water
-    AURA_INTERRUPT_FLAG_NOT_UNDERWATER      = 0x00000100,   // 8    removed by leaving water
-    AURA_INTERRUPT_FLAG_NOT_SHEATHED        = 0x00000200,   // 9    removed by unsheathing
-    AURA_INTERRUPT_FLAG_TALK                = 0x00000400,   // 10   talk to npc / loot? action on creature
-    AURA_INTERRUPT_FLAG_USE                 = 0x00000800,   // 11   mine/use/open action on gameobject
-    AURA_INTERRUPT_FLAG_ATTACK              = 0x00001000,   // 12   removed by attacking
-    AURA_INTERRUPT_FLAG_CAST                = 0x00002000,   // 13   ???
-    AURA_INTERRUPT_FLAG_DELAY               = 0x00004000,   // 14   channeled spell can be delayed by damage
-    AURA_INTERRUPT_FLAG_TRANSFORM           = 0x00008000,   // 15   removed by transform?
-    AURA_INTERRUPT_FLAG_UNK16               = 0x00010000,   // 16
-    AURA_INTERRUPT_FLAG_MOUNT               = 0x00020000,   // 17   misdirect, aspect, swim speed
-    AURA_INTERRUPT_FLAG_NOT_SEATED          = 0x00040000,   // 18   removed by standing up
-    AURA_INTERRUPT_FLAG_CHANGE_MAP          = 0x00080000,   // 19   leaving map/getting teleported
-    AURA_INTERRUPT_FLAG_UNATTACKABLE        = 0x00100000,   // 20   invulnerable or stealth
-    AURA_INTERRUPT_FLAG_UNK21               = 0x00200000,   // 21
-    AURA_INTERRUPT_FLAG_TELEPORTED          = 0x00400000,   // 22
-    AURA_INTERRUPT_FLAG_ENTER_PVP_COMBAT    = 0x00800000,   // 23   removed by entering pvp combat
-    AURA_INTERRUPT_FLAG_DIRECT_DAMAGE       = 0x01000000,    // 24   removed by any direct damage
-    AURA_INTERRUPT_FLAG_NOT_VICTIM = (AURA_INTERRUPT_FLAG_HITBYSPELL | AURA_INTERRUPT_FLAG_DAMAGE | AURA_INTERRUPT_FLAG_DIRECT_DAMAGE),
-};
-
 enum SpellModOp
 {
     SPELLMOD_DAMAGE                 = 0,
@@ -141,6 +101,30 @@ enum SpellFacingFlags
 #define BASE_MINDAMAGE 1.0f
 #define BASE_MAXDAMAGE 2.0f
 #define BASE_ATTACK_TIME 2000
+
+enum UnitBytes0Offsets : uint8
+{
+    UNIT_BYTES_0_OFFSET_RACE       = 0,
+    UNIT_BYTES_0_OFFSET_CLASS      = 1,
+    UNIT_BYTES_0_OFFSET_GENDER     = 2,
+    UNIT_BYTES_0_OFFSET_POWER_TYPE = 3,
+};
+
+enum UnitBytes1Offsets : uint8
+{
+    UNIT_BYTES_1_OFFSET_STAND_STATE     = 0,
+    UNIT_BYTES_1_OFFSET_PET_LOYALTY     = 1,
+    UNIT_BYTES_1_OFFSET_VIS_FLAGS       = 2,
+    UNIT_BYTES_1_OFFSET_MISC_FLAGS      = 3,
+};
+
+enum UnitBytes2Offsets : uint8
+{
+    UNIT_BYTES_2_OFFSET_SHEATH_STATE = 0,
+    UNIT_BYTES_2_OFFSET_DEBUFF_LIMIT = 1,
+    UNIT_BYTES_2_OFFSET_PET_FLAGS    = 2,
+    UNIT_BYTES_2_OFFSET_SHAPESHIFT   = 3,
+};
 
 // high byte (3 from 0..3) of UNIT_FIELD_BYTES_2
 enum ShapeshiftForm
@@ -388,8 +372,13 @@ enum UnitState
     UNIT_STAT_CASTING_NOT_MOVE   = 0x00020000,        // unit is casting a spell and can NOT move
     UNIT_STAT_STAND_UP_PENDING   = 0x00040000,        // unit is will stand up after proc checks run
 
+    // stay or scripted movement for effect( = in player case you can't move by client command)
+    UNIT_STAT_NO_FREE_MOVE    = UNIT_STAT_ROOT | UNIT_STAT_STUNNED | UNIT_STAT_TAXI_FLIGHT |
+                                UNIT_STAT_CONFUSED | UNIT_STAT_FLEEING,
+
     UNIT_STAT_LOST_CONTROL    = (UNIT_STAT_CONFUSED | UNIT_STAT_STUNNED | UNIT_STAT_FLEEING | UNIT_STAT_CHARGING),
     UNIT_STAT_CAN_NOT_REACT   = (UNIT_STAT_STUNNED | UNIT_STAT_CONFUSED | UNIT_STAT_FLEEING),
+    UNIT_STAT_CAN_NOT_MOVE    = (UNIT_STAT_ROOT | UNIT_STAT_STUNNED),
     UNIT_STAT_NOT_MOVE        = (UNIT_STAT_ROOT | UNIT_STAT_STUNNED | UNIT_STAT_DISTRACTED),
     UNIT_STAT_CANNOT_AUTOATTACK = (UNIT_STAT_LOST_CONTROL | UNIT_STAT_CASTING | UNIT_STAT_CASTING_NOT_MOVE),
     UNIT_STAT_CANNOT_TURN     = (UNIT_STAT_LOST_CONTROL | UNIT_STAT_ROTATING),
@@ -489,7 +478,7 @@ enum UnitVisibility
 enum UnitFlags
 {
     UNIT_FLAG_UNKNOWN7            = 0x00000001,
-    UNIT_FLAG_NON_ATTACKABLE      = 0x00000002,                // not attackable
+    UNIT_FLAG_SPAWNING            = 0x00000002,                // not attackable
     UNIT_FLAG_DISABLE_MOVE        = 0x00000004,
     UNIT_FLAG_PVP_ATTACKABLE      = 0x00000008,                // allow apply pvp rules to attackable state in addition to faction dependent state
     UNIT_FLAG_RENAME              = 0x00000010,
@@ -804,6 +793,16 @@ enum ReactiveType
 };
 
 #define MAX_REACTIVE 6
+
+// Stored in SummonProperties.dbc with slot+1 values
+enum TotemSlot
+{
+    TOTEM_SLOT_FIRE   = 0,
+    TOTEM_SLOT_EARTH  = 1,
+    TOTEM_SLOT_WATER  = 2,
+    TOTEM_SLOT_AIR    = 3,
+};
+
 #define MAX_TOTEM 4
 
 // delay time next attack to prevent client attack animation problems
@@ -848,6 +847,9 @@ class HELLGROUND_IMPORT_EXPORT Unit : public WorldObject
 
         virtual void Update(uint32 update_diff, uint32 p_time);
 
+        void SetTargetGuid(ObjectGuid targetGuid) { SetGuidValue(UNIT_FIELD_TARGET, targetGuid); }
+        ObjectGuid const& GetTargetGuid() const { return GetGuidValue(UNIT_FIELD_TARGET); }
+        void ClearTarget() { SetTargetGuid(ObjectGuid()); }
         void SetSelection(uint64 guid){ SetUInt64Value(UNIT_FIELD_TARGET, guid); }
         uint64 GetSelection() { return GetUInt64Value(UNIT_FIELD_TARGET); }
 
@@ -863,6 +865,7 @@ class HELLGROUND_IMPORT_EXPORT Unit : public WorldObject
         void RecalculateCombatReach();
         bool IsWithinCombatRange(const Unit *obj, float dist2compare) const;
         bool IsWithinMeleeRange(Unit *obj, float dist = MELEE_RANGE) const;
+        bool CanReachWithMeleeAutoAttack(Unit * pVictim, float flat_mod = 0.0f) const { return IsWithinMeleeRange(pVictim, MELEE_RANGE + flat_mod); };
         bool CanReachWithMeleeAutoAttackAtPosition(Unit const* pVictim, float x, float y, float z, float flat_mod = 0.0f) const;
         void GetRandomContactPoint(const Unit* target, float &x, float &y, float &z, float distance2dMin, float distance2dMax) const;
         uint32 m_extraAttacks;
@@ -882,10 +885,10 @@ class HELLGROUND_IMPORT_EXPORT Unit : public WorldObject
             if (itr != m_attackers.end())
                 m_attackers.erase(itr);
         }
-        Unit * getAttackerForHelper()                       // If someone wants to help, who to give them
+        Unit * GetAttackerForHelper()                       // If someone wants to help, who to give them
         {
-            if (getVictim() != NULL)
-                return getVictim();
+            if (GetVictim() != NULL)
+                return GetVictim();
 
             if (!m_attackers.empty())
                 return *(m_attackers.begin());
@@ -896,32 +899,33 @@ class HELLGROUND_IMPORT_EXPORT Unit : public WorldObject
         void CastStop(uint32 except_spellid = 0);
         bool AttackStop();
         void RemoveAllAttackers();
-        AttackerSet const& getAttackers() const { return m_attackers; }
+        AttackerSet const& GetAttackers() const { return m_attackers; }
         bool isAttackingPlayer() const;
-        Unit* getVictim() const { return m_attacking; }
+        Unit* GetVictim() const { return m_attacking; }
         uint64 getVictimGUID() const { return m_attacking ? m_attacking->GetGUID() : 0; }
         void CombatStop(bool cast = false);
         void CombatStopWithPets(bool cast = false);
         Unit* SelectNearbyTarget(float dist = NOMINAL_MELEE_RANGE, Unit* target = NULL) const;
+        uint8 Unit::GetEnemyCountInRadiusAround(Unit* pTarget, float radius) const;
         void SendMeleeAttackStop(Unit* victim);
         void SendMeleeAttackStart(uint64 victimGUID);
 
         void addUnitState(uint32 f) { m_state |= f; }
-        bool hasUnitState(const uint32 f) const { return (m_state & f); }
-        void clearUnitState(uint32 f) { m_state &= ~f; }
+        bool HasUnitState(const uint32 f) const { return (m_state & f); }
+        void ClearUnitState(uint32 f) { m_state &= ~f; }
         bool CanFreeMove() const
         {
-            return !hasUnitState(UNIT_STAT_CONFUSED | UNIT_STAT_FLEEING | UNIT_STAT_TAXI_FLIGHT |
+            return !HasUnitState(UNIT_STAT_CONFUSED | UNIT_STAT_FLEEING | UNIT_STAT_TAXI_FLIGHT |
                 UNIT_STAT_ROOT | UNIT_STAT_STUNNED | UNIT_STAT_DISTRACTED) && GetOwnerGUID() == 0;
         }
 
-        uint32 getLevel() const { return GetUInt32Value(UNIT_FIELD_LEVEL); }
-        virtual uint32 getLevelForTarget(Unit const* /*target*/) const { return getLevel(); }
+        uint32 GetLevel() const { return GetUInt32Value(UNIT_FIELD_LEVEL); }
+        virtual uint32 getLevelForTarget(Unit const* /*target*/) const { return GetLevel(); }
         void SetLevel(uint32 lvl);
-        uint8 getRace() const { return GetByteValue(UNIT_FIELD_BYTES_0, 0); }
-        uint32 getRaceMask() const { return 1 << (getRace()-1); }
-        uint8 getClass() const { return GetByteValue(UNIT_FIELD_BYTES_0, 1); }
-        uint32 getClassMask() const { return 1 << (getClass()-1); }
+        uint8 GetRace() const { return GetByteValue(UNIT_FIELD_BYTES_0, 0); }
+        uint32 getRaceMask() const { return 1 << (GetRace()-1); }
+        uint8 GetClass() const { return GetByteValue(UNIT_FIELD_BYTES_0, 1); }
+        uint32 getClassMask() const { return 1 << (GetClass()-1); }
         uint8 getGender() const { return GetByteValue(UNIT_FIELD_BYTES_0, 2); }
 
         virtual float GetXPMod() const { return 1.0f; }
@@ -936,19 +940,23 @@ class HELLGROUND_IMPORT_EXPORT Unit : public WorldObject
 
         uint32 GetHealth()    const { return GetUInt32Value(UNIT_FIELD_HEALTH); }
         uint32 GetMaxHealth() const { return GetUInt32Value(UNIT_FIELD_MAXHEALTH); }
+        float GetHealthPercent() const { return (GetHealth()*100.0f) / GetMaxHealth(); }
 
         bool HealthBelowPct(uint32 pct) const { return GetHealth() *100 < GetMaxHealth() *pct; }
 
         void SetHealth(uint32 val, bool ignoreAliveCheck = false);
         void SetMaxHealth(uint32 val);
+        void SetHealthPercent(float percent);
         int32 ModifyHealth(int32 val);
 
-        Powers getPowerType() const { return Powers(GetByteValue(UNIT_FIELD_BYTES_0, 3)); }
+        Powers GetPowerType() const { return Powers(GetByteValue(UNIT_FIELD_BYTES_0, 3)); }
         void setPowerType(Powers power);
         uint32 GetPower(  Powers power) const { return GetUInt32Value(UNIT_FIELD_POWER1   +power); }
         uint32 GetMaxPower(Powers power) const { return GetUInt32Value(UNIT_FIELD_MAXPOWER1+power); }
+        float GetPowerPercent(Powers power) const { return GetMaxPower(power) ? ((GetPower(power)*100.0f) / GetMaxPower(power)) : 100.0f; }
         void SetPower(  Powers power, uint32 val);
         void SetMaxPower(Powers power, uint32 val);
+        void SetPowerPercent(Powers power, float percent);
         int32 ModifyPower(Powers power, int32 val);
         void ApplyPowerMod(Powers power, uint32 val, bool apply);
 
@@ -986,7 +994,7 @@ class HELLGROUND_IMPORT_EXPORT Unit : public WorldObject
             return (creatureType >= 1) ? (1 << (creatureType - 1)) : 0;
         }
 
-        uint8 getStandState() const { return GetByteValue(UNIT_FIELD_BYTES_1, 0); }
+        uint8 GetStandState() const { return GetByteValue(UNIT_FIELD_BYTES_1, 0); }
         bool IsSitState() const;
         bool IsStandState() const;
         void SetStandState(uint8 state);
@@ -996,7 +1004,7 @@ class HELLGROUND_IMPORT_EXPORT Unit : public WorldObject
         void Mount(uint32 mount);
         void Unmount();
 
-        uint16 GetMaxSkillValueForLevel(Unit const* target = NULL) const { return (target ? getLevelForTarget(target) : getLevel()) * 5; }
+        uint16 GetMaxSkillValueForLevel(Unit const* target = NULL) const { return (target ? getLevelForTarget(target) : GetLevel()) * 5; }
         void RemoveSpellbyDamageTaken(uint32 damage, uint32 spell);
 
         void SendDamageLog(DamageLog *damageInfo);
@@ -1037,7 +1045,7 @@ class HELLGROUND_IMPORT_EXPORT Unit : public WorldObject
         int32 GetEffectMechanicResistChance(const SpellEntry *spell, uint8 eff);
 
         virtual uint32 GetShieldBlockValue() const =0;
-        uint32 GetUnitMeleeSkill(Unit const* target = NULL) const { return (target ? getLevelForTarget(target) : getLevel()) * 5; }
+        uint32 GetUnitMeleeSkill(Unit const* target = NULL) const { return (target ? getLevelForTarget(target) : GetLevel()) * 5; }
         uint32 GetDefenseSkillValue(Unit const* target = NULL) const;
         uint32 GetWeaponSkillValue(WeaponAttackType attType, Unit const* target = NULL) const;
         float GetWeaponProcChance() const;
@@ -1073,9 +1081,9 @@ class HELLGROUND_IMPORT_EXPORT Unit : public WorldObject
         //Need fix or use this
         bool isGuard() const  { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GUARD); }
 
-        bool IsTaxiFlying()  const { return hasUnitState(UNIT_STAT_TAXI_FLIGHT); }
+        bool IsTaxiFlying()  const { return HasUnitState(UNIT_STAT_TAXI_FLIGHT); }
 
-        bool isInCombat()  const { return HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IN_COMBAT); }
+        bool IsInCombat()  const { return HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IN_COMBAT); }
         void CombatStart(Unit* target, bool initialAggro = true);
         void SetInCombatState(bool PvP, Unit* enemy = NULL);
         void SetInCombatWith(Unit* enemy);
@@ -1102,9 +1110,9 @@ class HELLGROUND_IMPORT_EXPORT Unit : public WorldObject
 
         bool HasStealthAura()      const { return HasAuraType(SPELL_AURA_MOD_STEALTH); }
         bool HasInvisibilityAura() const { return HasAuraType(SPELL_AURA_MOD_INVISIBILITY); }
-        bool isCrowdControlled() const { return hasUnitState(UNIT_STAT_LOST_CONTROL | UNIT_STAT_POSSESSED); }
-        bool CantMove() const { return hasUnitState(UNIT_STAT_ROOT | UNIT_STAT_STUNNED); }
-        bool isInRoots() const { return hasUnitState(UNIT_STAT_ROOT); }
+        bool isCrowdControlled() const { return HasUnitState(UNIT_STAT_LOST_CONTROL | UNIT_STAT_POSSESSED); }
+        bool CantMove() const { return HasUnitState(UNIT_STAT_ROOT | UNIT_STAT_STUNNED); }
+        bool isInRoots() const { return HasUnitState(UNIT_STAT_ROOT); }
         bool IsPolymorphed() const;
 
         bool isFrozen() const;
@@ -1138,6 +1146,7 @@ class HELLGROUND_IMPORT_EXPORT Unit : public WorldObject
 
         void NearTeleportTo(float x, float y, float z, float orientation, bool casting = false);
 
+        void MonsterMove(float x, float y, float z);
         void MonsterMoveWithSpeed(float x, float y, float z, float speed, bool time=false, bool generatePath = false, bool forceDestination = false);
 
         //Sends mobs movement (and movement end?) to client
@@ -1146,9 +1155,6 @@ class HELLGROUND_IMPORT_EXPORT Unit : public WorldObject
         //for server side update use UpdateVisibilityAndView()
         void SendHeartBeat();
 
-        bool IsLevitating() const { return m_movementInfo.HasMovementFlag(MOVEFLAG_LEVITATING);}
-        bool IsWalking() const { return m_movementInfo.HasMovementFlag(MOVEFLAG_WALK_MODE);}
-
         void SetInFront(Unit const* target);
         void SetFacingTo(float ori);
         void SetFacingToObject(WorldObject* pObject);
@@ -1156,10 +1162,10 @@ class HELLGROUND_IMPORT_EXPORT Unit : public WorldObject
 
         virtual void MoveOutOfRange(Player &) {};
 
-        bool isAlive() const { return (m_deathState == ALIVE); };
+        bool IsAlive() const { return (m_deathState == ALIVE); };
         bool isDying() const { return (m_deathState == JUST_DIED); };
-        bool isDead() const { return (m_deathState == DEAD || m_deathState == CORPSE); };
-        DeathState getDeathState() { return m_deathState; };
+        bool IsDead() const { return (m_deathState == DEAD || m_deathState == CORPSE); };
+        DeathState GetDeathState() { return m_deathState; };
         virtual void setDeathState(DeathState s);           // overwrited in Creature/Player/Pet
 
         uint64 GetOwnerGUID() const { return  GetUInt64Value(UNIT_FIELD_SUMMONEDBY); }
@@ -1214,8 +1220,8 @@ class HELLGROUND_IMPORT_EXPORT Unit : public WorldObject
         void RestoreFaction();
 
         bool isCharmed() const { return GetCharmerGUID() != 0; }
-        bool isPossessed() const { return hasUnitState(UNIT_STAT_POSSESSED); }
-        bool isPossessedByPlayer() const { return hasUnitState(UNIT_STAT_POSSESSED) && IS_PLAYER_GUID(GetCharmerGUID()); }
+        bool isPossessed() const { return HasUnitState(UNIT_STAT_POSSESSED); }
+        bool isPossessedByPlayer() const { return HasUnitState(UNIT_STAT_POSSESSED) && IS_PLAYER_GUID(GetCharmerGUID()); }
         bool isPossessing() const
         {
             if (Unit *u = GetCharm())
@@ -1319,6 +1325,13 @@ class HELLGROUND_IMPORT_EXPORT Unit : public WorldObject
 
         Spell* GetCurrentSpell(CurrentSpellTypes type) const;
         SpellEntry const* GetCurrentSpellProto(CurrentSpellTypes type) const;
+
+        ShapeshiftForm GetShapeshiftForm() const { return ShapeshiftForm(GetByteValue(UNIT_FIELD_BYTES_2, UNIT_BYTES_2_OFFSET_SHAPESHIFT)); }
+        void  SetShapeshiftForm(ShapeshiftForm form) { SetByteValue(UNIT_FIELD_BYTES_2, UNIT_BYTES_2_OFFSET_SHAPESHIFT, form); }
+        bool IsInDisallowedMountForm() const { return m_form == FORM_CAT || m_form == FORM_TREE || m_form == FORM_TRAVEL || m_form == FORM_AQUA || m_form == FORM_BEAR || m_form == FORM_DIREBEAR || m_form == FORM_CREATUREBEAR || m_form == FORM_GHOSTWOLF || m_form == FORM_FLIGHT || m_form == FORM_FLIGHT_EPIC || m_form == FORM_MOONKIN; }
+
+        ObjectGuid GetTotemGuid(TotemSlot slot) const { return ObjectGuid(m_TotemSlot[slot]); }
+        Totem* GetTotem(TotemSlot slot) const;
 
         uint32 m_addDmgOnce;
         uint64 m_TotemSlot[MAX_TOTEM];
@@ -1508,6 +1521,8 @@ class HELLGROUND_IMPORT_EXPORT Unit : public WorldObject
         bool IsImmunedToDamage(SpellSchoolMask meleeSchoolMask, bool useCharges = false);
         virtual bool IsImmunedToSpellEffect(uint32 effect, uint32 mechanic) const;
                                                             // redefined in Creature
+        bool IsTotalImmune() const;
+        bool IsImmuneToMechanic(Mechanics mechanic) const;
 
         uint32 CalcArmorReducedDamage(Unit* pVictim, const uint32 damage);
         void CalcAbsorbResist(Unit *pVictim, SpellSchoolMask schoolMask, DamageEffectType damagetype, const uint32 & damage, uint32 *absorb, uint32 *resist);
@@ -1562,6 +1577,14 @@ class HELLGROUND_IMPORT_EXPORT Unit : public WorldObject
         uint32 HasUnitMovementFlag(uint32 f) const { return m_movementInfo.HasMovementFlag(MovementFlags(f)); }
         uint32 GetUnitMovementFlags() const { return m_movementInfo.GetMovementFlags(); }
         void SetUnitMovementFlags(uint32 f) { m_movementInfo.SetMovementFlags(MovementFlags(f)); }
+
+        bool IsLevitating() const { return m_movementInfo.HasMovementFlag(MOVEFLAG_LEVITATING); }
+        bool IsFlying() const { return m_movementInfo.HasMovementFlag(MOVEFLAG_FLYING); }
+        bool IsWalking() const { return m_movementInfo.HasMovementFlag(MOVEFLAG_WALK_MODE); }
+        bool IsWalkingBackward() const { return m_movementInfo.HasMovementFlag(MOVEFLAG_BACKWARD); }
+        bool IsMoving() const { return m_movementInfo.HasMovementFlag(MOVEFLAG_MOVING); }
+        bool IsSwimming() const { return m_movementInfo.HasMovementFlag(MOVEFLAG_SWIMMING); }
+        bool IsMovingButNotWalking() const { return IsMoving() && !(IsWalking() || IsWalkingBackward()); }
 
         void AddComboPointHolder(uint32 lowguid) { m_ComboPointHolders.insert(lowguid); }
         void RemoveComboPointHolder(uint32 lowguid) { m_ComboPointHolders.erase(lowguid); }

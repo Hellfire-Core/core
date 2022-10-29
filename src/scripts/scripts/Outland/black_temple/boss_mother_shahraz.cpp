@@ -266,7 +266,7 @@ struct boss_shahrazAI : public ScriptedAI
         {
             if(!urand(0, 2))
                 DoScriptText(SAY_SPELL1, m_creature);
-            AddSpellToCast(me->getVictim(), SPELL_SILENCING_SHRIEK);
+            AddSpellToCast(me->GetVictim(), SPELL_SILENCING_SHRIEK);
             m_shriekTimer = 20000;
         }
 

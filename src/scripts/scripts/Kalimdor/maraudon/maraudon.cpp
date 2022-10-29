@@ -54,7 +54,7 @@ struct mob_cavern_shamblerAI : public ScriptedAI
         
         if (knockTimer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(), SPELL_KNOCK);
+            DoCast(m_creature->GetVictim(), SPELL_KNOCK);
             knockTimer = 7000;
         }
         DoMeleeAttackIfReady();

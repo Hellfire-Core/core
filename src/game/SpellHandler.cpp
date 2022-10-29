@@ -89,7 +89,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (pUser->isInCombat())
+    if (pUser->IsInCombat())
     {
         for (int i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
         {
@@ -154,61 +154,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
     if (!sScriptMgr.OnItemUse(pUser, pItem, targets))
     {
         // no script or script not process request by self
-
-        // special learning case
-        if (pItem->GetProto()->Spells[0].SpellId==SPELL_ID_GENERIC_LEARN)
-        {
-            uint32 learning_spell_id = pItem->GetProto()->Spells[1].SpellId;
-
-            SpellEntry const *spellInfo = sSpellStore.LookupEntry(SPELL_ID_GENERIC_LEARN);
-            if (!spellInfo)
-            {
-                sLog.outLog(LOG_DEFAULT, "ERROR: Item (Entry: %u) in have wrong spell id %u, ignoring ",proto->ItemId, SPELL_ID_GENERIC_LEARN);
-                pUser->SendEquipError(EQUIP_ERR_NONE,pItem,NULL);
-                return;
-            }
-
-            Spell *spell = new Spell(pUser, spellInfo, false);
-            spell->m_CastItem = pItem;
-            spell->m_cast_count = cast_count;               //set count of casts
-            spell->m_currentBasePoints[0] = learning_spell_id;
-            spell->prepare(&targets);
-            return;
-        }
-
-        // use triggered flag only for items with many spell casts and for not first cast
-        int count = 0;
-
-        for (int i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
-        {
-            _Spell const& spellData = pItem->GetProto()->Spells[i];
-
-            // no spell
-            if (!spellData.SpellId)
-                continue;
-
-            // wrong triggering type
-            if (spellData.SpellTrigger != ITEM_SPELLTRIGGER_ON_USE && spellData.SpellTrigger != ITEM_SPELLTRIGGER_ON_NO_DELAY_USE)
-                continue;
-
-            SpellEntry const *spellInfo = sSpellStore.LookupEntry(spellData.SpellId);
-            if (!spellInfo)
-            {
-                sLog.outLog(LOG_DEFAULT, "ERROR: Item (Entry: %u) in have wrong spell id %u, ignoring ",proto->ItemId, spellData.SpellId);
-                continue;
-            }
-
-            Spell *spell = new Spell(pUser, spellInfo, (count > 0));
-            spell->m_CastItem = pItem;
-            spell->m_cast_count = cast_count;               //set count of casts
-
-            bool fillMap = spellInfo->NeedFillTargetMapForTargets(0);
-            if (fillMap)
-                spell->FillTargetMap();
-
-            spell->prepare(fillMap ? &spell->m_targets : &targets);
-            ++count;
-        }
+        pUser->CastItemUseSpell(pItem, targets, cast_count);
     }
 }
 
@@ -364,7 +310,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
     if (Unit* target = targets.getUnitTarget())
     {
         // if rank not found then function return NULL but in explicit cast case original spell can be cast and later failed with appropriate error message
-        if (SpellEntry const *actualSpellEntry = sSpellMgr.SelectAuraRankForPlayerLevel(spellInfo, target->getLevel()))
+        if (SpellEntry const *actualSpellEntry = sSpellMgr.SelectAuraRankForPlayerLevel(spellInfo, target->GetLevel()))
             spellInfo = actualSpellEntry;
     }
 
@@ -473,7 +419,7 @@ void WorldSession::HandlePetCancelAuraOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (!pet->isAlive())
+    if (!pet->IsAlive())
     {
         pet->SendPetActionFeedback(FEEDBACK_PET_DEAD);
         return;
@@ -565,9 +511,9 @@ void WorldSession::HandleGetMirrorimageData(WorldPacket& recv_data)
     data << guid;
     data << (uint32)pCreature->GetDisplayId();
 
-    data << (uint8)pCreature->getRace();
+    data << (uint8)pCreature->GetRace();
     data << (uint8)pCreature->getGender();
-    // data << (uint8)pCreature->getClass();
+    // data << (uint8)pCreature->GetClass();
 
     if (pCaster && pCaster->GetTypeId() == TYPEID_PLAYER)
     {

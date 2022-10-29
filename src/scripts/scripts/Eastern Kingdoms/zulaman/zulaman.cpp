@@ -431,7 +431,7 @@ struct npc_ashliAI : public ScriptedAI
             } 
         }
 
-        if(Fire && !me->hasUnitState(UNIT_STAT_CASTING))
+        if(Fire && !me->HasUnitState(UNIT_STAT_CASTING))
         {
             Unit *target = NULL;
             if(!targets.empty())
@@ -824,7 +824,7 @@ struct npc_zulaman_door_triggerAI : public Scripted_NoMovementAI
                 if (Player* plr = itr->getSource())
                 {
                     if(plr->HasAura(SPELL_BANGING_THE_GONG, 0))
-                        count += (plr->isGameMaster()) ? 5 : 1; //possibility for gamemaster to start this event solo
+                        count += (plr->IsGameMaster()) ? 5 : 1; //possibility for gamemaster to start this event solo
                 }
             }
         }
@@ -929,7 +929,7 @@ struct npc_amanishi_lookoutAI : public ScriptedAI
     void Reset()
     {
         //me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         me->SetReactState(REACT_AGGRESSIVE);
         me->SetVisibility(VISIBILITY_ON);
         me->setActive(true);
@@ -982,7 +982,7 @@ struct npc_amanishi_lookoutAI : public ScriptedAI
 
     void MoveInLineOfSight(Unit *who)
     {
-        if(me->getVictim())
+        if(me->GetVictim())
             return;
         if(EventStarted)
             return;
@@ -1098,14 +1098,14 @@ struct npc_amanishi_warriorAI : public npc_escortAI
 
         if (KickTimer.Expired(diff))
         {
-            DoCast(me->getVictim(), SPELL_KICK);
+            DoCast(me->GetVictim(), SPELL_KICK);
             KickTimer = 9000;
         } 
 
        
         if (ChargeTimer.Expired(diff))
         {
-            DoCast(me->getVictim(), SPELL_CHARGE);
+            DoCast(me->GetVictim(), SPELL_CHARGE);
             ChargeTimer = 5000;
         } 
 
@@ -1153,7 +1153,7 @@ struct npc_amani_eagleAI : public npc_escortAI
 
         if (TalonTimer.Expired(diff))
         {
-            DoCast(me->getVictim(), SPELL_TALON);
+            DoCast(me->GetVictim(), SPELL_TALON);
             TalonTimer = 10000;
         } 
 
@@ -1201,7 +1201,7 @@ struct npc_amanishi_scoutAI : public ScriptedAI
 
     void JustSummoned(Creature *c)
     {
-        c->AI()->AttackStart(me->getVictim());
+        c->AI()->AttackStart(me->GetVictim());
     }
 
     void MovementInform(uint32 type, uint32 id)

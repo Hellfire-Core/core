@@ -108,7 +108,7 @@ struct boss_patchwerkAI : public BossAI
                     Unit * target = SelectUnit(SELECT_TARGET_HIGHEST_HP, 0, m_creature->GetCombatReach(), true);
 
                     if (!target)
-                        target = me->getVictim();
+                        target = me->GetVictim();
 
                     if (target)
                         AddSpellToCast(target, SPELL_HATEFULSTRIKE);

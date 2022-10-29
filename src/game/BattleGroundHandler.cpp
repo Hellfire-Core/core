@@ -474,7 +474,7 @@ void WorldSession::HandleBattleGroundPlayerPortOpcode(WorldPacket &recv_data)
                 if (!_player->IsInvitedForBattleGroundQueueType(bgQueueTypeId))
                     return;                                     // cheating?
                 // resurrect the player
-                if (!_player->isAlive())
+                if (!_player->IsAlive())
                 {
                     _player->ResurrectPlayer(1.0f);
                     _player->SpawnCorpseBones();

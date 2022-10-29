@@ -75,16 +75,16 @@ struct boss_firemawAI : public ScriptedAI
         ShadowFlame_Timer -= diff;
         if (ShadowFlame_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_SHADOWFLAME);
+            DoCast(m_creature->GetVictim(),SPELL_SHADOWFLAME);
             ShadowFlame_Timer += 15000 + rand()%3000;
         }
 
         WingBuffet_Timer -= diff;
         if (WingBuffet_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_WINGBUFFET);
-            if(DoGetThreat(m_creature->getVictim()))
-                DoModifyThreatPercent(m_creature->getVictim(),-75);
+            DoCast(m_creature->GetVictim(),SPELL_WINGBUFFET);
+            if(DoGetThreat(m_creature->GetVictim()))
+                DoModifyThreatPercent(m_creature->GetVictim(),-75);
 
             WingBuffet_Timer += 25000;
         }
@@ -92,7 +92,7 @@ struct boss_firemawAI : public ScriptedAI
         FlameBuffet_Timer -= diff;
         if (FlameBuffet_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_FLAMEBUFFET);
+            DoCast(m_creature->GetVictim(),SPELL_FLAMEBUFFET);
             FlameBuffet_Timer += 5000;
         }
 

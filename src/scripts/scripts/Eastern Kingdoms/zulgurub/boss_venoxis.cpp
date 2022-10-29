@@ -115,7 +115,7 @@ struct boss_venoxisAI : public ScriptedAI
                 HolyWrath_Timer -= diff;
                 if(HolyWrath_Timer <= diff)
                 {
-                    DoCast(m_creature->getVictim(), SPELL_HOLY_WRATH);
+                    DoCast(m_creature->GetVictim(), SPELL_HOLY_WRATH);
                     HolyWrath_Timer += 15000 + rand()%10000;
                 }
                 
@@ -162,7 +162,7 @@ struct boss_venoxisAI : public ScriptedAI
                 PoisonCloud_Timer -= diff;
                 if(PhaseTwo && PoisonCloud_Timer <= diff)
                 {
-                    DoCast(m_creature->getVictim(), SPELL_POISON_CLOUD);
+                    DoCast(m_creature->GetVictim(), SPELL_POISON_CLOUD);
                     PoisonCloud_Timer += 15000;
                 }
                 

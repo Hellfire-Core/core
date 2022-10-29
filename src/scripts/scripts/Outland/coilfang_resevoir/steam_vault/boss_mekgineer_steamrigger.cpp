@@ -89,7 +89,7 @@ struct boss_mekgineer_steamriggerAI : public ScriptedAI
         Summon50 = false;
         Summon25 = false;
 
-        if (pInstance && me->isAlive())
+        if (pInstance && me->IsAlive())
             pInstance->SetData(TYPE_MEKGINEER_STEAMRIGGER, NOT_STARTED);
     }
 
@@ -136,7 +136,7 @@ struct boss_mekgineer_steamriggerAI : public ScriptedAI
 
         if (Shrink_Timer.Expired(diff))
         {
-            DoCast(me->getVictim(),SPELL_SUPER_SHRINK_RAY);
+            DoCast(me->GetVictim(),SPELL_SUPER_SHRINK_RAY);
             Shrink_Timer = 20000;
         }
 
@@ -145,14 +145,14 @@ struct boss_mekgineer_steamriggerAI : public ScriptedAI
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 200, true, me->getVictimGUID()))
                 DoCast(target,SPELL_SAW_BLADE);
             else
-                DoCast(me->getVictim(),SPELL_SAW_BLADE);
+                DoCast(me->GetVictim(),SPELL_SAW_BLADE);
 
             Saw_Blade_Timer = 15000;
         } 
 
         if (Electrified_Net_Timer.Expired(diff))
         {
-            DoCast(me->getVictim(),SPELL_ELECTRIFIED_NET);
+            DoCast(me->GetVictim(),SPELL_ELECTRIFIED_NET);
             Electrified_Net_Timer = 10000;
         }
         

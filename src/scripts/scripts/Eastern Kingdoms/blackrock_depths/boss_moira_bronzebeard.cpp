@@ -64,7 +64,7 @@ struct boss_moira_bronzebeardAI : public ScriptedAI
         MindBlast_Timer -= diff;
         if (MindBlast_Timer <= diff)
         {
-            DoCast(me->getVictim(),SPELL_MINDBLAST);
+            DoCast(me->GetVictim(),SPELL_MINDBLAST);
             MindBlast_Timer += 14000;
         }
         
@@ -72,7 +72,7 @@ struct boss_moira_bronzebeardAI : public ScriptedAI
         ShadowWordPain_Timer -= diff;
         if (ShadowWordPain_Timer <= diff)
         {
-            DoCast(me->getVictim(),SPELL_SHADOWWORDPAIN);
+            DoCast(me->GetVictim(),SPELL_SHADOWWORDPAIN);
             ShadowWordPain_Timer += 18000;
         }
         
@@ -80,7 +80,7 @@ struct boss_moira_bronzebeardAI : public ScriptedAI
         Smite_Timer -= diff;
         if (Smite_Timer <= diff)
         {
-            DoCast(me->getVictim(),SPELL_SMITE);
+            DoCast(me->GetVictim(),SPELL_SMITE);
             Smite_Timer += 10000;
         }
            

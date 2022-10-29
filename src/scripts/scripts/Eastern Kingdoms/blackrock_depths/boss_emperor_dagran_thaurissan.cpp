@@ -59,7 +59,7 @@ struct boss_draganthaurissanAI : public ScriptedAI
     void JustDied(Unit*)
     {
         Unit* moira=FindCreature(8929,300,me);
-        if (moira && moira->isAlive())
+        if (moira && moira->IsAlive())
         {
             moira->setFaction(35);
             moira->ToCreature()->AI()->_EnterEvadeMode();
@@ -95,7 +95,7 @@ struct boss_draganthaurissanAI : public ScriptedAI
         AvatarOfFlame_Timer -= diff;
         if (AvatarOfFlame_Timer <= diff)
         {
-            DoCast(me->getVictim(),SPELL_AVATAROFFLAME);
+            DoCast(me->GetVictim(),SPELL_AVATAROFFLAME);
             AvatarOfFlame_Timer += 18000;
         }
         

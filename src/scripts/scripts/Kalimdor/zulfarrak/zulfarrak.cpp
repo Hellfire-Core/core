@@ -49,7 +49,7 @@ struct npc_sergeant_blyAI : public ScriptedAI
     npc_sergeant_blyAI(Creature *c) : ScriptedAI(c) {}
 
     Timer ShieldBash_Timer;
-    Timer Revenge_Timer;                                   //this is wrong, spell should never be used unless m_creature->getVictim() dodge, parry or block attack. Trinity support required.
+    Timer Revenge_Timer;                                   //this is wrong, spell should never be used unless m_creature->GetVictim() dodge, parry or block attack. Trinity support required.
 
     void Reset()
     {
@@ -70,13 +70,13 @@ struct npc_sergeant_blyAI : public ScriptedAI
 
         if( ShieldBash_Timer.Expired(diff) )
         {
-            DoCast(m_creature->getVictim(),SPELL_SHIELD_BASH);
+            DoCast(m_creature->GetVictim(),SPELL_SHIELD_BASH);
             ShieldBash_Timer = 15000;
         }
 
         if (Revenge_Timer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(),SPELL_REVENGE);
+            DoCast(m_creature->GetVictim(),SPELL_REVENGE);
             Revenge_Timer = 10000;
         }
 

@@ -116,7 +116,7 @@ struct boss_azgalorAI : public hyjal_trashAI
         if (i == 7 && pInstance)
         {
             Unit* target = Unit::GetUnit((*m_creature), pInstance->GetData64(DATA_THRALL));
-            if (target && target->isAlive())
+            if (target && target->IsAlive())
             {
                 m_creature->AddThreat(target,0.0);
                 AttackStart(target);
@@ -210,7 +210,7 @@ struct boss_azgalorAI : public hyjal_trashAI
 
         if (CleaveTimer.Expired(diff))
         {
-            if(Unit *target = m_creature->getVictim())
+            if(Unit *target = m_creature->GetVictim())
             {
                 DoCast(target, SPELL_CLEAVE);
                 CleaveTimer = urand(10000, 15000);
@@ -270,7 +270,7 @@ struct mob_lesser_doomguardAI : public hyjal_trashAI
 
     void MoveInLineOfSight(Unit *who)
     {
-        if (!m_creature->isInCombat() && m_creature->IsWithinDistInMap(who, 50) && m_creature->IsHostileTo(who))
+        if (!m_creature->IsInCombat() && m_creature->IsWithinDistInMap(who, 50) && m_creature->IsHostileTo(who))
         {
             m_creature->AddThreat(who,0.0);
             m_creature->Attack(who,false);
@@ -285,7 +285,7 @@ struct mob_lesser_doomguardAI : public hyjal_trashAI
             if(pInstance)
             {
                 Creature *pAzgalor = pInstance->GetCreature(pInstance->GetData64(DATA_AZGALOR));
-                if(!pAzgalor || !pAzgalor->isAlive())
+                if(!pAzgalor || !pAzgalor->IsAlive())
                 {
                     m_creature->setDeathState(JUST_DIED);
                     m_creature->RemoveCorpse();

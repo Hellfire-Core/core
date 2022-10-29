@@ -88,7 +88,7 @@ void move_triggerAI::MakeMove()
     Creature * temp = m_creature->GetCreature(unitToMove);
     Creature * temp2 = m_creature->GetCreature(MedivhGUID);
 
-    if (!temp || !temp->isAlive())
+    if (!temp || !temp->IsAlive())
     {
         unitToMove = 0;
         return;
@@ -454,7 +454,7 @@ void npc_chesspieceAI::UpdateAI(const uint32 diff)
 {
     if (pInstance->GetData(DATA_CHESS_EVENT) == DONE || pInstance->GetData(DATA_CHESS_EVENT) == FAIL)
     {
-        if (m_creature->isInCombat())
+        if (m_creature->IsInCombat())
             m_creature->CombatStop();
 
         if (m_creature->isPossessed())
@@ -1891,7 +1891,7 @@ void boss_MedivhAI::Reset()
 
     chestGUID = 0;
 
-    m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+    m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
     m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
     m_creature->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
 }
@@ -2056,7 +2056,7 @@ void boss_MedivhAI::RemoveChessPieceFromBoard(Creature * piece)
     {
         tmpC->CombatStop();
         tmpC->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-        tmpC->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        tmpC->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         tmpC->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_MOVE);
     }
 

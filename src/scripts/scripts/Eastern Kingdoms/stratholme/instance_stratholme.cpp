@@ -287,7 +287,7 @@ struct instance_stratholme : public ScriptedInstance
                 {
                     if (Unit* abom = Unit::GetUnit(*player, *i))
                     {
-                        if (!abom->isAlive())
+                        if (!abom->IsAlive())
                             --count;
                     }
                 }
@@ -380,24 +380,24 @@ struct instance_stratholme : public ScriptedInstance
         case TYPE_GAUNTLET_MOB:
             if (data != 1)
                 break;
-            if (GetData(TYPE_NERUB) != DONE && std::none_of(acolyte2GUID.begin(),acolyte2GUID.end(),[this](uint64 guid)-> bool {Creature *c = GetCreature(guid) ; return c ? c->isAlive():false;}))
+            if (GetData(TYPE_NERUB) != DONE && std::none_of(acolyte2GUID.begin(),acolyte2GUID.end(),[this](uint64 guid)-> bool {Creature *c = GetCreature(guid) ; return c ? c->IsAlive():false;}))
             {
                 Creature *c = GetCreature(CrystalsGUID[1]);
-                if(c && c->isAlive())
+                if(c && c->IsAlive())
                     c->Kill(c,false);
                 SetData(TYPE_NERUB,DONE);
             }
-            if (GetData(TYPE_BARONESS) != DONE && std::none_of(acolyte1GUID.begin(),acolyte1GUID.end(),[this](uint64 guid)-> bool {Creature *c = GetCreature(guid) ; return c ? c->isAlive():false;}))
+            if (GetData(TYPE_BARONESS) != DONE && std::none_of(acolyte1GUID.begin(),acolyte1GUID.end(),[this](uint64 guid)-> bool {Creature *c = GetCreature(guid) ; return c ? c->IsAlive():false;}))
             {
                 Creature *c = GetCreature(CrystalsGUID[0]);
-                if(c && c->isAlive())
+                if(c && c->IsAlive())
                     c->Kill(c,false);
                 SetData(TYPE_BARONESS,DONE);
             }
-            if (GetData(TYPE_PALLID) != DONE && std::none_of(acolyte3GUID.begin(),acolyte3GUID.end(),[this](uint64 guid)-> bool {Creature *c = GetCreature(guid) ; return c ? c->isAlive():false;}))
+            if (GetData(TYPE_PALLID) != DONE && std::none_of(acolyte3GUID.begin(),acolyte3GUID.end(),[this](uint64 guid)-> bool {Creature *c = GetCreature(guid) ; return c ? c->IsAlive():false;}))
             {
                 Creature *c = GetCreature(CrystalsGUID[2]);
-                if(c && c->isAlive())
+                if(c && c->IsAlive())
                     c->Kill(c,false);
                 SetData(TYPE_PALLID,DONE);
             }

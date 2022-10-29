@@ -321,7 +321,7 @@ struct npc_twiggy_flatheadAI : public ScriptedAI
 
     void MoveInLineOfSight(Unit *who)
     {
-        if(!who || (!who->isAlive())) return;
+        if(!who || (!who->IsAlive())) return;
 
         if (m_creature->IsWithinDistInMap(who, 10.0f) && (who->GetTypeId() == TYPEID_PLAYER) && ((Player*)who)->GetQuestStatus(1719) == QUEST_STATUS_INCOMPLETE && !EventInProgress)
         {
@@ -347,7 +347,7 @@ struct npc_twiggy_flatheadAI : public ScriptedAI
                 return;
             }
 
-            if(!pWarrior->isAlive() && pWarrior->GetQuestStatus(1719) == QUEST_STATUS_INCOMPLETE)
+            if(!pWarrior->IsAlive() && pWarrior->GetQuestStatus(1719) == QUEST_STATUS_INCOMPLETE)
             {
                 EventInProgress = false;
                 DoScriptText(SAY_TWIGGY_FLATHEAD_DOWN, m_creature);
@@ -360,7 +360,7 @@ struct npc_twiggy_flatheadAI : public ScriptedAI
                         Creature* pCreature = Unit::GetCreature((*m_creature), AffrayChallenger[i]);
                         if(pCreature)
                         {
-                            if(pCreature->isAlive())
+                            if(pCreature->IsAlive())
                             {
                                 pCreature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IN_COMBAT);
                                 pCreature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
@@ -377,7 +377,7 @@ struct npc_twiggy_flatheadAI : public ScriptedAI
                     Creature* pCreature = Unit::GetCreature((*m_creature), BigWill);
                     if(pCreature)
                     {
-                        if(pCreature->isAlive())
+                        if(pCreature->IsAlive())
                         {
                             pCreature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IN_COMBAT);
                             pCreature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
@@ -407,7 +407,7 @@ struct npc_twiggy_flatheadAI : public ScriptedAI
 
                         pCreature->setFaction(35);
                         pCreature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                        pCreature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                        pCreature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                         pCreature->HandleEmoteCommand(EMOTE_ONESHOT_ROAR);
                         AffrayChallenger[i] = pCreature->GetGUID();
                     }
@@ -425,7 +425,7 @@ struct npc_twiggy_flatheadAI : public ScriptedAI
                         if (AffrayChallenger[i])
                         {
                             Creature* pCreature = Unit::GetCreature((*m_creature), AffrayChallenger[i]);
-                            if((!pCreature || (!pCreature->isAlive())) && !Challenger_down[i])
+                            if((!pCreature || (!pCreature->IsAlive())) && !Challenger_down[i])
                             {
                                 DoScriptText(SAY_TWIGGY_FLATHEAD_DOWN, m_creature);
                                 Challenger_down[i] = true;
@@ -443,10 +443,10 @@ struct npc_twiggy_flatheadAI : public ScriptedAI
                     {
                         DoScriptText(SAY_TWIGGY_FLATHEAD_FRAY, m_creature);
                         Creature* pCreature = Unit::GetCreature((*m_creature), AffrayChallenger[Wave]);
-                        if(pCreature && (pCreature->isAlive()))
+                        if(pCreature && (pCreature->IsAlive()))
                         {
                             pCreature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                            pCreature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                            pCreature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                             pCreature->HandleEmoteCommand(EMOTE_ONESHOT_ROAR);
                             pCreature->setFaction(14);
                             ((CreatureAI*)pCreature->AI())->AttackStart(pWarrior);
@@ -471,7 +471,7 @@ struct npc_twiggy_flatheadAI : public ScriptedAI
                     else if (Wave >= 6 && EventBigWill && BigWill)
                     {
                         Creature* pCreature = Unit::GetCreature((*m_creature), BigWill);
-                        if (!pCreature || !pCreature->isAlive())
+                        if (!pCreature || !pCreature->IsAlive())
                         {
                             DoScriptText(SAY_TWIGGY_FLATHEAD_OVER, m_creature);
                             EnterEvadeMode();

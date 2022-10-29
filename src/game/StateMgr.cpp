@@ -81,7 +81,7 @@ public:
         if (target->GetTypeId() == TYPEID_PLAYER)
             target->SetStandState(UNIT_STAND_STATE_STAND);
 
-        if (Unit* pVictim = target->getVictim())
+        if (Unit* pVictim = target->GetVictim())
             target->SendMeleeAttackStop(pVictim);
 
         WorldPacket data(SMSG_FORCE_MOVE_ROOT, target->GetPackGUID().size() + 4);
@@ -105,7 +105,7 @@ public:
         if (!target)
             return;
 
-        target->clearUnitState(UNIT_STAT_STUNNED);
+        target->ClearUnitState(UNIT_STAT_STUNNED);
 
         if (!target->GetOwner() || !target->GetOwner()->IsMounted())
             target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_ROTATE);
@@ -140,14 +140,14 @@ public:
         target->StopMoving();
 
         //Save last orientation
-        if (target->getVictim())
-            target->SetOrientation(target->GetAngle(target->getVictim()));
+        if (target->GetVictim())
+            target->SetOrientation(target->GetAngle(target->GetVictim()));
 
         //Clear unit movement flags
         target->m_movementInfo.RemoveMovementFlag(MOVEFLAG_MOVING);
         target->m_movementInfo.AddMovementFlag(MOVEFLAG_ROOT);
 
-        if (Unit* pVictim = target->getVictim())
+        if (Unit* pVictim = target->GetVictim())
             target->SendMeleeAttackStop(pVictim);
 
         if (target->GetTypeId() == TYPEID_PLAYER)
@@ -173,7 +173,7 @@ public:
         if (!target)
             return;
 
-        target->clearUnitState(UNIT_STAT_ROOT);
+        target->ClearUnitState(UNIT_STAT_ROOT);
 
         if (target->GetTypeId() == TYPEID_PLAYER)
         {
@@ -212,7 +212,7 @@ public:
     void Interrupt(Player &u) 
     {
         _Interrupt(u);
-        u.clearUnitState(UNIT_STAT_TAXI_FLIGHT);
+        u.ClearUnitState(UNIT_STAT_TAXI_FLIGHT);
         if (m_displayId)
             u.Unmount();
         u.RemoveFlag(UNIT_FIELD_FLAGS,UNIT_FLAG_DISABLE_MOVE | UNIT_FLAG_TAXI_FLIGHT);
@@ -246,7 +246,7 @@ public:
         // remove flag to prevent send object build movement packets for flight state and crash (movement generator already not at top of stack)
         if (m_displayId)
             u.Unmount();
-        u.clearUnitState(UNIT_STAT_TAXI_FLIGHT);
+        u.ClearUnitState(UNIT_STAT_TAXI_FLIGHT);
         u.RemoveFlag(UNIT_FIELD_FLAGS,UNIT_FLAG_DISABLE_MOVE | UNIT_FLAG_TAXI_FLIGHT);
         u.getHostileRefManager().setOnlineOfflineState(true);
         if(u.pvpInfo.inHostileArea)

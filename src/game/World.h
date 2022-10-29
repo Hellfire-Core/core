@@ -391,6 +391,14 @@ enum WorldConfigs
     CONFIG_ENABLE_PASSIVE_ANTICHEAT,
     CONFIG_ANTICHEAT_CUMULATIVE_DELAY,
 
+    // Bot system
+    CONFIG_UINT32_PARTY_BOT_MAX_BOTS,
+    CONFIG_UINT32_PARTY_BOT_AUTO_EQUIP,
+    CONFIG_UINT32_BATTLE_BOT_AUTO_EQUIP,
+    CONFIG_UINT32_PARTY_BOT_RANDOM_GEAR_LEVEL_DIFFERENCE,
+    CONFIG_BOOL_PLAYER_BOT_SHOW_IN_WHO_LIST,
+    CONFIG_BOOL_PARTY_BOT_SKIP_CHECKS,
+
     // RaF
     CONFIG_UINT32_RAF_MAXGRANTLEVEL,
     CONFIG_UINT32_RAF_MAXREFERALS,
@@ -742,6 +750,7 @@ class HELLGROUND_EXPORT World
         uint32 GetShutdownTimer() const { return m_ShutdownTimer; }
         char const* GetShutdownReason() { return m_ShutdownReason.c_str(); }
 
+        void Shutdown();
         void ShutdownServ(uint32 time, uint32 options, uint8 exitcode, char const* = "no reason");
         void ShutdownCancel();
         void ShutdownMsg(bool show = false, Player* player = NULL);

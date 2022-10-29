@@ -143,7 +143,7 @@ struct boss_selin_fireheartAI : public ScriptedAI
     {
         std::list<Creature*> fel_crystals = FindAllCreaturesWithEntry(CREATURE_FEL_CRYSTAL, 100);
         for (std::list<Creature*>::iterator it = fel_crystals.begin(); it != fel_crystals.end(); it++)
-            if ((*it)->isAlive())
+            if ((*it)->IsAlive())
                 (*it)->Kill(*it);
     }
 
@@ -175,7 +175,7 @@ struct boss_selin_fireheartAI : public ScriptedAI
         if (type == POINT_MOTION_TYPE && id == 1)
         {
             Unit* CrystalChosen = me->GetUnit(CrystalGUID);
-            if (CrystalChosen && CrystalChosen->isAlive())
+            if (CrystalChosen && CrystalChosen->IsAlive())
             {
                 if (roll_chance_f(20.0f))
                     DoScriptText(SAY_DRAINING, m_creature);
@@ -212,7 +212,7 @@ struct boss_selin_fireheartAI : public ScriptedAI
             DrainingJustFinished = true; // killing crystal here causes crash, we kill it on next update
 
             m_creature->GetMotionMaster()->Clear();
-            m_creature->GetMotionMaster()->MoveChase(m_creature->getVictim());
+            m_creature->GetMotionMaster()->MoveChase(m_creature->GetVictim());
         }
     }
 
@@ -223,7 +223,7 @@ struct boss_selin_fireheartAI : public ScriptedAI
             DoScriptText(SAY_EMPOWERED, m_creature);
             Unit* CrystalChosen = m_creature->GetUnit(CrystalGUID);
 
-            if (CrystalChosen && CrystalChosen->isAlive())
+            if (CrystalChosen && CrystalChosen->IsAlive())
                 CrystalChosen->DealDamage(CrystalChosen, CrystalChosen->GetHealth());
 
             CrystalGUID = 0;

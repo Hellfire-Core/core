@@ -260,7 +260,7 @@ struct instance_blackrock_depths : public ScriptedInstance
                 {
                     if (Creature* boss = instance->GetCreature(TombBossGUIDs[i]))
                     {
-                        if (!boss->isAlive())
+                        if (!boss->IsAlive())
                             boss->Respawn();
                     }
                 }

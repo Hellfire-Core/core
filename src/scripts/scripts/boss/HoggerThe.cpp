@@ -64,7 +64,7 @@ struct npc_hogger_theAI : public ScriptedAI
         adsWave = 0;
         summons.DespawnAll();
         m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         m_creature->SetVisibility(VISIBILITY_ON);
     }
 
@@ -94,7 +94,7 @@ struct npc_hogger_theAI : public ScriptedAI
             phase = 3;
             m_creature->SetHealth(m_creature->GetMaxHealth());
             m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-            m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
             m_creature->SetVisibility(VISIBILITY_ON);
             DoCast(NULL, SPELL_ARCANE_EXPLOSION, true);
             SummonMobs(5, NPC_RIVERPAW_ELITE);
@@ -149,7 +149,7 @@ struct npc_hogger_theAI : public ScriptedAI
         if (checkTimer.Expired(diff))
         {
             //manual dozoneincombat
-            Player* plr = me->getVictim()->GetCharmerOrOwnerPlayerOrPlayerItself();
+            Player* plr = me->GetVictim()->GetCharmerOrOwnerPlayerOrPlayerItself();
             Group* grp = NULL;
             if (plr)
                 grp = plr->GetGroup();
@@ -158,7 +158,7 @@ struct npc_hogger_theAI : public ScriptedAI
                 for (GroupReference *itr = grp->GetFirstMember(); itr != NULL; itr = itr->next())
                 {
                     plr = itr->getSource();
-                    if (!plr || plr->isGameMaster() || !plr->isAlive())
+                    if (!plr || plr->IsGameMaster() || !plr->IsAlive())
                         continue;
 
                     WorldLocation center = m_creature->GetHomePosition();
@@ -178,7 +178,7 @@ struct npc_hogger_theAI : public ScriptedAI
             checkTimer = 3000;
         }
 
-        Unit* target = m_creature->getVictim();
+        Unit* target = m_creature->GetVictim();
 
         if (phase == 1 || phase == 3)
         {
@@ -209,7 +209,7 @@ struct npc_hogger_theAI : public ScriptedAI
                 DoCast(target, SPELL_PIERCE_ARMOUR);
                 pierceTimer = 6000;
             }
-            if (!m_creature->IsWithinMeleeRange(m_creature->getVictim()) && !m_creature->HasAura(SPELL_BLAZING_SPEED))
+            if (!m_creature->IsWithinMeleeRange(m_creature->GetVictim()) && !m_creature->HasAura(SPELL_BLAZING_SPEED))
             {
                 DoCast(m_creature, SPELL_BLAZING_SPEED, true);
             }
@@ -220,9 +220,9 @@ struct npc_hogger_theAI : public ScriptedAI
                 phase = 2;
 
                 m_creature->Yell("Enough of this!", 0, 0);
-                DoCast(m_creature->getVictim(), SPELL_ARCANE_EXPLOSION, true);
+                DoCast(m_creature->GetVictim(), SPELL_ARCANE_EXPLOSION, true);
                 m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                 m_creature->SetVisibility(VISIBILITY_OFF);
             }
         }
@@ -283,12 +283,12 @@ struct npc_gruff_ai : public ScriptedAI
                     m_creature->Yell("Demonish? I speak that language very well! That was not a good idea!", 0, 0);
                     triggered = true;
                 }
-                DoCast(m_creature->getVictim(), SPELL_DEATH_BLAST, true);
+                DoCast(m_creature->GetVictim(), SPELL_DEATH_BLAST, true);
                 castTimer = 1000;
             }
             else
             {
-                DoCast(m_creature->getVictim(), SPELL_ARCANE_EXPLOSION);
+                DoCast(m_creature->GetVictim(), SPELL_ARCANE_EXPLOSION);
                 castTimer = 6000;
             }
         }

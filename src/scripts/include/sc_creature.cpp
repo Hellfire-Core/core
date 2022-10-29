@@ -200,10 +200,10 @@ void ScriptedAI::DoStartNoMovement(Unit* pVictim, movementCheckType type)
 
 void ScriptedAI::CheckCasterNoMovementInRange(uint32 diff, float maxrange)
 {
-    if (!UpdateVictim() || !me->getVictim())
+    if (!UpdateVictim() || !me->GetVictim())
         return;
 
-    if (!me->IsInMap(me->getVictim()))
+    if (!me->IsInMap(me->GetVictim()))
         return;
 
     if (casterTimer.GetTimeLeft() > 2000)  // just in case
@@ -212,17 +212,17 @@ void ScriptedAI::CheckCasterNoMovementInRange(uint32 diff, float maxrange)
 
     if (casterTimer.Expired(diff))
     {
-        if (me->hasUnitState(UNIT_STAT_CANNOT_AUTOATTACK))
+        if (me->HasUnitState(UNIT_STAT_CANNOT_AUTOATTACK))
         {
             casterTimer = 1000;
             return;
         }
 
         // go to victim
-        if (!me->IsWithinDistInMap(me->getVictim(), maxrange) || !me->IsWithinLOSInMap(me->getVictim()))
+        if (!me->IsWithinDistInMap(me->GetVictim(), maxrange) || !me->IsWithinLOSInMap(me->GetVictim()))
         {
             float x, y, z;
-            me->getVictim()->GetPosition(x, y, z);
+            me->GetVictim()->GetPosition(x, y, z);
             me->UpdateAllowedPositionZ(x, y, z);
             me->SetSpeed(MOVE_RUN, 1.5);
             me->GetMotionMaster()->MovePoint(40, x, y, z);  //to not possibly collide with any Movement Inform check
@@ -238,10 +238,10 @@ void ScriptedAI::CheckCasterNoMovementInRange(uint32 diff, float maxrange)
 
 void ScriptedAI::CheckShooterNoMovementInRange(uint32 diff, float maxrange)
 {
-    if (!UpdateVictim() || !me->getVictim())
+    if (!UpdateVictim() || !me->GetVictim())
         return;
 
-    if (!me->IsInMap(me->getVictim()))
+    if (!me->IsInMap(me->GetVictim()))
         return;
 
     if (casterTimer.GetTimeLeft() > 3000)  // just in case
@@ -249,31 +249,31 @@ void ScriptedAI::CheckShooterNoMovementInRange(uint32 diff, float maxrange)
 
     if (casterTimer.Expired(diff))
     {
-        if (me->hasUnitState(UNIT_STAT_CANNOT_AUTOATTACK))
+        if (me->HasUnitState(UNIT_STAT_CANNOT_AUTOATTACK))
         {
             casterTimer = 1000;
             return;
         }
 
         // if victim in melee range, than chase it
-        if (me->IsWithinDistInMap(me->getVictim(), 5.0))
+        if (me->IsWithinDistInMap(me->GetVictim(), 5.0))
         {
-            if (!me->hasUnitState(UNIT_STAT_CHASE))
-                DoStartMovement(me->getVictim());
+            if (!me->HasUnitState(UNIT_STAT_CHASE))
+                DoStartMovement(me->GetVictim());
             else
             {
                 casterTimer = 3000;
                 return;
             }
         }
-        else if (me->hasUnitState(UNIT_STAT_CHASE))
+        else if (me->HasUnitState(UNIT_STAT_CHASE))
             me->GetMotionMaster()->StopControlledMovement();
 
         // when victim is in distance, stop and shoot
-        if (!me->IsWithinDistInMap(me->getVictim(), maxrange) || !me->IsWithinLOSInMap(me->getVictim()))
+        if (!me->IsWithinDistInMap(me->GetVictim(), maxrange) || !me->IsWithinLOSInMap(me->GetVictim()))
         {
             float x, y, z;
-            me->getVictim()->GetPosition(x, y, z);
+            me->GetVictim()->GetPosition(x, y, z);
             me->UpdateAllowedPositionZ(x, y, z);
             me->SetSpeed(MOVE_RUN, 1.5);
             me->GetMotionMaster()->MovePoint(41, x, y, z);  //to not possibly collide with any Movement Inform check
@@ -289,7 +289,7 @@ void ScriptedAI::CheckShooterNoMovementInRange(uint32 diff, float maxrange)
 
 void ScriptedAI::DoStopAttack()
 {
-    if (m_creature->getVictim())
+    if (m_creature->GetVictim())
         m_creature->AttackStop();
 
 }
@@ -299,7 +299,7 @@ Unit* ScriptedAI::SelectCastTarget(uint32 spellId, castTargetMode targetMode)
     switch (targetMode)
     {
         case CAST_TANK:
-            return me->getVictim();
+            return me->GetVictim();
         case CAST_NULL:
             return NULL;
         case CAST_RANDOM:
@@ -328,7 +328,7 @@ Unit* ScriptedAI::SelectCastTarget(uint32 spellId, castTargetMode targetMode)
 void ScriptedAI::CastNextSpellIfAnyAndReady(uint32 diff)
 {
     // clear spell list if caster isn't alive
-    if (!m_creature->isAlive())
+    if (!m_creature->IsAlive())
     {
         spellList.clear();
         autocast = false;
@@ -337,7 +337,7 @@ void ScriptedAI::CastNextSpellIfAnyAndReady(uint32 diff)
 
     bool cast = false;
 
-    if (m_creature->hasUnitState(UNIT_STAT_CASTING) || me->IsNonMeleeSpellCast(true))
+    if (m_creature->HasUnitState(UNIT_STAT_CASTING) || me->IsNonMeleeSpellCast(true))
         cast = true;
 
     if (!spellList.empty() && !cast)
@@ -372,14 +372,14 @@ void ScriptedAI::CastNextSpellIfAnyAndReady(uint32 diff)
                     DoScriptText(temp.scriptTextEntry, m_creature, target);
             }
             else
-                DoScriptText(temp.scriptTextEntry, m_creature, m_creature->getVictim());
+                DoScriptText(temp.scriptTextEntry, m_creature, m_creature->GetVictim());
         }
 
         if (temp.targetGUID)
         {
             Unit * tempU = m_creature->GetUnit(*m_creature, temp.targetGUID);
 
-            if (tempU && tempU->IsInWorld() && tempU->isAlive() && tempU->IsInMap(m_creature))
+            if (tempU && tempU->IsInWorld() && tempU->IsAlive() && tempU->IsInMap(m_creature))
                 if (temp.spellId)
                 {
                     if(temp.setAsTarget && !m_creature->hasIgnoreVictimSelection())
@@ -413,7 +413,7 @@ void ScriptedAI::CastNextSpellIfAnyAndReady(uint32 diff)
                 {
                     case CAST_TANK:
                     {
-                        victim = m_creature->getVictim();
+                        victim = m_creature->GetVictim();
                         // prevent from LoS exploiting, probably some general check should be implemented for this
                         uint8 i = 0;
                         SpellEntry const *spellInfo = GetSpellStore()->LookupEntry(autocastId);
@@ -462,7 +462,7 @@ void ScriptedAI::CastNextSpellIfAnyAndReady(uint32 diff)
 
 void ScriptedAI::DoCast(Unit* victim, uint32 spellId, bool triggered)
 {
-    if (/*!victim || */m_creature->hasUnitState(UNIT_STAT_CASTING) && !triggered)
+    if (/*!victim || */m_creature->HasUnitState(UNIT_STAT_CASTING) && !triggered)
         return;
 
     //m_creature->StopMoving();
@@ -471,7 +471,7 @@ void ScriptedAI::DoCast(Unit* victim, uint32 spellId, bool triggered)
 
 void ScriptedAI::DoCastAOE(uint32 spellId, bool triggered)
 {
-    if(!triggered && m_creature->hasUnitState(UNIT_STAT_CASTING))
+    if(!triggered && m_creature->HasUnitState(UNIT_STAT_CASTING))
         return;
 
     m_creature->CastSpell((Unit*)NULL, spellId, triggered);
@@ -635,8 +635,8 @@ void ScriptedAI::ForceSpellCastWithScriptText(uint32 spellId, castTargetMode tar
             m_creature->InterruptNonMeleeSpells(false);
             break;
         case INTERRUPT_AND_CAST_INSTANTLY:
-            if (m_creature->getVictim() && scriptTextEntry)
-                DoScriptText(scriptTextEntry, m_creature, m_creature->getVictim());
+            if (m_creature->GetVictim() && scriptTextEntry)
+                DoScriptText(scriptTextEntry, m_creature, m_creature->GetVictim());
 
             m_creature->CastSpell(pTarget, spellId, triggered);
             return;
@@ -999,7 +999,7 @@ void ScriptedAI::DoTeleportAll(float x, float y, float z, float o)
     Map::PlayerList const &PlayerList = map->GetPlayers();
     for(Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
         if (Player* i_pl = i->getSource())
-            if (i_pl->isAlive())
+            if (i_pl->IsAlive())
                 i_pl->TeleportTo(m_creature->GetMapId(), x, y, z, o, TELE_TO_NOT_LEAVE_COMBAT);
 }
 
@@ -1151,7 +1151,7 @@ class AnyAlivePlayerExceptGm
         AnyAlivePlayerExceptGm(WorldObject const* obj) : _obj(obj) {}
         bool operator()(Player* u)
         {
-            return u->isAlive() && !u->isGameMaster();
+            return u->IsAlive() && !u->IsGameMaster();
         }
 
     private:

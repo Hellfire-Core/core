@@ -2540,7 +2540,7 @@ struct guard_shattrath_aldorAI : public guardAI
         else
             if (Banish_Timer.Expired(diff))
             {
-                Unit* temp = m_creature->getVictim();
+                Unit* temp = m_creature->GetVictim();
                 if( temp && temp->GetTypeId() == TYPEID_PLAYER )
                 {
                     DoCast(temp,SPELL_BANISHED_SHATTRATH_A);
@@ -2737,7 +2737,7 @@ struct guard_shattrath_scryerAI : public guardAI
         else
             if (Banish_Timer.Expired(diff))
             {
-                Unit* temp = m_creature->getVictim();
+                Unit* temp = m_creature->GetVictim();
                 if( temp && temp->GetTypeId() == TYPEID_PLAYER )
                 {
                     DoCast(temp,SPELL_BANISHED_SHATTRATH_S);

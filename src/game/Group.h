@@ -32,7 +32,20 @@
 #define MAXGROUPSIZE 5
 #define MAXRAIDSIZE 40
 #define MAX_RAID_SUBGROUPS (MAXRAIDSIZE / MAXGROUPSIZE)
-#define TARGETICONCOUNT 8
+
+enum RaidTargetIcon : uint8
+{
+    RAID_TARGET_ICON_STAR = 0,
+    RAID_TARGET_ICON_CIRCLE = 1,
+    RAID_TARGET_ICON_DIAMOND = 2,
+    RAID_TARGET_ICON_TRIANGLE = 3,
+    RAID_TARGET_ICON_MOON = 4,
+    RAID_TARGET_ICON_SQUARE = 5,
+    RAID_TARGET_ICON_CROSS = 6,
+    RAID_TARGET_ICON_SKULL = 7
+};
+
+#define TARGET_ICON_COUNT 8
 
 enum RollVote
 {
@@ -299,6 +312,7 @@ class HELLGROUND_IMPORT_EXPORT Group
                 SendUpdate();
         }
 
+        ObjectGuid GetTargetWithIcon(RaidTargetIcon id) const { return ObjectGuid(m_targetIcons[id]); }
         void SetTargetIcon(uint8 id, uint64 guid);
         void SetDifficulty(uint8 difficulty);
         uint8 GetDifficulty() { return m_difficulty; }
@@ -404,7 +418,7 @@ class HELLGROUND_IMPORT_EXPORT Group
         GroupType           m_groupType;
         uint8               m_difficulty;
         BattleGround*       m_bgGroup;
-        uint64              m_targetIcons[TARGETICONCOUNT];
+        uint64              m_targetIcons[TARGET_ICON_COUNT];
         LootMethod          m_lootMethod;
         ItemQualities       m_lootThreshold;
         uint64              m_looterGuid;

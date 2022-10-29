@@ -117,7 +117,7 @@ struct boss_nethermancer_sepethreaAI : public ScriptedAI
         {
             AddSpellToCast(SPELL_ARCANE_BLAST, CAST_TANK);
             arcane_blast_Timer = urand(25000, 35000);
-            me->getThreatManager().modifyThreatPercent(me->getVictim(), -50.0f);
+            me->getThreatManager().modifyThreatPercent(me->GetVictim(), -50.0f);
         }
 
         //Dragons Breath

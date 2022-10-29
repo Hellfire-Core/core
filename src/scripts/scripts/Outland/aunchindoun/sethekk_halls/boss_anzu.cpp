@@ -88,7 +88,7 @@ struct boss_anzuAI : public ScriptedAI
     {
         if (summon->GetEntry() == NPC_BROOD_OF_ANZU)
         {
-            summon->AI()->AttackStart(me->getVictim());
+            summon->AI()->AttackStart(me->GetVictim());
             BroodCount++;
         }
         summons.Summon(summon);

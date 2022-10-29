@@ -607,7 +607,7 @@ struct npc_thrall_old_hillsbradAI : public npc_escortAI
             case NPC_ARMORER:
                 ArmorerGUID = summoned->GetGUID();
                 summoned->SetReactState(REACT_PASSIVE);
-                summoned->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                summoned->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                 break;
             case NPC_WARDEN:
                 DoScriptText(RAND(SAY_AMBUSH_P1, SAY_AMBUSH2_P1), summoned);
@@ -885,7 +885,7 @@ struct npc_thrall_old_hillsbradAI : public npc_escortAI
         }
         
 
-        if (HadMount && !me->isInCombat())
+        if (HadMount && !me->IsInCombat())
             DoMount();
 
 
@@ -902,7 +902,7 @@ struct npc_thrall_old_hillsbradAI : public npc_escortAI
 
         if (StrikeTimer.Expired(diff))
         {
-            DoCast(me->getVictim(), SPELL_STRIKE);
+            DoCast(me->GetVictim(), SPELL_STRIKE);
             StrikeTimer = urand(4000, 7000);
         }
         

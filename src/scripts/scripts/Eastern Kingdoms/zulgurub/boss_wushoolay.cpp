@@ -66,7 +66,7 @@ struct boss_wushoolayAI : public ScriptedAI
         LightningCloud_Timer -= diff;
         if (LightningCloud_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_LIGHTNINGCLOUD);
+            DoCast(m_creature->GetVictim(),SPELL_LIGHTNINGCLOUD);
             LightningCloud_Timer += 15000 + rand()%5000;
         }
         

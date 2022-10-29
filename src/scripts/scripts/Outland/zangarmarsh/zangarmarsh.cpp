@@ -151,7 +151,7 @@ struct npc_cooshcooshAI : public ScriptedAI
 
         if (LightningBolt_Timer.Expired(diff))
         {
-            DoCast(me->getVictim(),SPELL_LIGHTNING_BOLT);
+            DoCast(me->GetVictim(),SPELL_LIGHTNING_BOLT);
             LightningBolt_Timer = 5000;
         }
 

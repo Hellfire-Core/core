@@ -70,14 +70,14 @@ struct boss_theolenkrastinovAI : public ScriptedAI
         Rend_Timer -= diff;
         if (Rend_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_REND);
+            DoCast(m_creature->GetVictim(),SPELL_REND);
             Rend_Timer += 10000;
         }
 
         Blackhand_Timer -= diff;
         if (Blackhand_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(), SPELL_BLACKHAND);
+            DoCast(m_creature->GetVictim(), SPELL_BLACKHAND);
             Blackhand_Timer += 10000;
         }
 

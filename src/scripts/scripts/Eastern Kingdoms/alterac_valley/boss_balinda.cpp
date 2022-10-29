@@ -79,10 +79,10 @@ struct boss_balindaAI : public ScriptedAI
         {
             summons.Summon(summ);
             summ->setFaction(me->getFaction());
-            summ->SetLevel(me->getLevel());
-            summ->SetMaxHealth(6300 + (summ->getLevel() - 60)*360);
-            summ->SetPower(POWER_MANA, 6000 + (summ->getLevel() - 60)*300);
-            summ->AI()->AttackStart(me->getVictim());
+            summ->SetLevel(me->GetLevel());
+            summ->SetMaxHealth(6300 + (summ->GetLevel() - 60)*360);
+            summ->SetPower(POWER_MANA, 6000 + (summ->GetLevel() - 60)*300);
+            summ->AI()->AttackStart(me->GetVictim());
         }
     }
 
@@ -116,23 +116,23 @@ struct boss_balindaAI : public ScriptedAI
         if (CastTimer.Expired(diff))
         {
             // if victim is in range of 6.5 yards and there are 3 attackers cast explosion or CoC if ready
-            if (m_creature->getAttackers().size() >= 3 && m_creature->IsWithinDistInMap(m_creature->getVictim(), 6.5f, false))
+            if (m_creature->GetAttackers().size() >= 3 && m_creature->IsWithinDistInMap(m_creature->GetVictim(), 6.5f, false))
             {
                 if (!CoCTimer.GetInterval())
                 {
-                    ForceSpellCast(me->getVictim(), SPELL_CONE_OF_COLD);
+                    ForceSpellCast(me->GetVictim(), SPELL_CONE_OF_COLD);
                     CoCTimer = urand(8000, 12000);
                     CastTimer = 1;
                 }
                 else
                 {
-                    ForceSpellCast(me->getVictim(), SPELL_ARCANE_EXPLOSION);
+                    ForceSpellCast(me->GetVictim(), SPELL_ARCANE_EXPLOSION);
                     CastTimer = 2000;
                 }
             }
             else
             {
-                AddSpellToCast(m_creature->getVictim(), RAND(SPELL_FROSTBOLT, SPELL_FIREBALL));
+                AddSpellToCast(m_creature->GetVictim(), RAND(SPELL_FROSTBOLT, SPELL_FIREBALL));
                 CastTimer = 2500;
             }
         }

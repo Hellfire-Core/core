@@ -184,7 +184,7 @@ struct boss_lord_ahuneAI : public Scripted_NoMovementAI
 
     void UpdateHealth(Unit *core)
     {
-        if (!me->getVictim())
+        if (!me->GetVictim())
             return;
 
         if (me->GetHealth() > core->GetHealth())
@@ -195,8 +195,8 @@ struct boss_lord_ahuneAI : public Scripted_NoMovementAI
 
     void JustSummoned(Creature* summoned)
     {
-        if (summoned->AI() && me->getVictim())
-            summoned->AI()->AttackStart(me->getVictim());
+        if (summoned->AI() && me->GetVictim())
+            summoned->AI()->AttackStart(me->GetVictim());
 
         Summons.Summon(summoned);
     }

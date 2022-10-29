@@ -138,7 +138,7 @@ struct boss_taerarAI : public ScriptedAI
         NoxiousBreath_Timer -= diff;
         if (NoxiousBreath_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_NOXIOUSBREATH);
+            DoCast(m_creature->GetVictim(),SPELL_NOXIOUSBREATH);
             NoxiousBreath_Timer += 14000 + rand()%6000;
         }
         
@@ -156,14 +156,14 @@ struct boss_taerarAI : public ScriptedAI
         //MarkOfNature_Timer -= diff;
         //if (MarkOfNature_Timer <= diff)
         //{
-        //    DoCast(m_creature->getVictim(),SPELL_MARKOFNATURE);
+        //    DoCast(m_creature->GetVictim(),SPELL_MARKOFNATURE);
         //    MarkOfNature_Timer += 45000;
         //}
 
         ArcaneBlast_Timer -= diff;
         if (ArcaneBlast_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_ARCANEBLAST);
+            DoCast(m_creature->GetVictim(),SPELL_ARCANEBLAST);
             ArcaneBlast_Timer += 7000 + rand()%5000;
         }
       
@@ -171,7 +171,7 @@ struct boss_taerarAI : public ScriptedAI
         BellowingRoar_Timer -= diff;
         if (BellowingRoar_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_BELLOWINGROAR);
+            DoCast(m_creature->GetVictim(),SPELL_BELLOWINGROAR);
             BellowingRoar_Timer += 20000 + rand()%10000;
         }
            
@@ -280,7 +280,7 @@ struct boss_shadeoftaerarAI : public ScriptedAI
         PoisonCloud_Timer -= diff;
         if (PoisonCloud_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_POSIONCLOUD);
+            DoCast(m_creature->GetVictim(),SPELL_POSIONCLOUD);
             PoisonCloud_Timer += 30000;
         }
 
@@ -288,7 +288,7 @@ struct boss_shadeoftaerarAI : public ScriptedAI
         PosionBreath_Timer -= diff;
         if (PosionBreath_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_POSIONBREATH);
+            DoCast(m_creature->GetVictim(),SPELL_POSIONBREATH);
             PosionBreath_Timer += 12000;
         }
 

@@ -98,31 +98,31 @@ struct boss_broodlordAI : public ScriptedAI
         Cleave_Timer -= diff;
         if (Cleave_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_CLEAVE);
+            DoCast(m_creature->GetVictim(),SPELL_CLEAVE);
             Cleave_Timer += 7000;
         }
 
         BlastWave_Timer -= diff;
         if (BlastWave_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_BLASTWAVE);
+            DoCast(m_creature->GetVictim(),SPELL_BLASTWAVE);
             BlastWave_Timer += 8000 + rand()%8000;
         }
 
         MortalStrike_Timer -= diff;
         if (MortalStrike_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_MORTALSTRIKE);
+            DoCast(m_creature->GetVictim(),SPELL_MORTALSTRIKE);
             MortalStrike_Timer += 25000 + rand()%10000;
         }
 
         KnockBack_Timer -= diff;
         if (KnockBack_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_KNOCKBACK);
+            DoCast(m_creature->GetVictim(),SPELL_KNOCKBACK);
             //Drop 50% aggro
-            if (DoGetThreat(m_creature->getVictim()))
-                DoModifyThreatPercent(m_creature->getVictim(),-50);
+            if (DoGetThreat(m_creature->GetVictim()))
+                DoModifyThreatPercent(m_creature->GetVictim(),-50);
 
             KnockBack_Timer += 15000 + rand()%15000;
         }

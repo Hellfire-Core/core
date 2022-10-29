@@ -297,7 +297,7 @@ struct boss_magtheridonAI : public BossAI
         }
 
         // don't do rest of script if in earth quake mode :P
-        if (m_creature->hasUnitState(UNIT_STAT_STUNNED))
+        if (m_creature->HasUnitState(UNIT_STAT_STUNNED))
             return;
 
         if (!Phase3 && HealthBelowPct(30))
@@ -469,7 +469,7 @@ bool GOUse_go_Manticron_Cube(Player *player, GameObject* _GO)
 
     Creature *Magtheridon = _GO->GetMap()->GetCreature(pInstance->GetData64(DATA_MAGTHERIDON));
 
-    if (!Magtheridon || !Magtheridon->isAlive())
+    if (!Magtheridon || !Magtheridon->IsAlive())
         return true;
 
     // if exhausted or already channeling return

@@ -151,7 +151,7 @@ struct mob_lumpAI : public ScriptedAI
         Reset_Timer.Reset(60000);
         Spear_Throw_Timer.Reset(2000);
 
-        me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
     }
 
     void DamageTaken(Unit *done_by, uint32 & damage)
@@ -164,7 +164,7 @@ struct mob_lumpAI : public ScriptedAI
                 damage = 0;
 
                 ((Player*)done_by)->AttackStop();
-                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                 me->RemoveAllAuras();
                 me->DeleteThreatList();
                 me->CombatStop();
@@ -209,7 +209,7 @@ struct mob_lumpAI : public ScriptedAI
         //Spear_Throw_Timer
         if (Spear_Throw_Timer.Expired(diff))
         {
-            DoCast(me->getVictim(), SPELL_SPEAR_THROW);
+            DoCast(me->GetVictim(), SPELL_SPEAR_THROW);
             Spear_Throw_Timer = 20000;
         }
 
@@ -924,12 +924,12 @@ struct npc_nagrand_captiveAI : public npc_escortAI
     void UpdateAI(const uint32 diff)
     {
         npc_escortAI::UpdateAI(diff);
-        if (!me->getVictim())
+        if (!me->GetVictim())
             return;
 
         if (ChainLightningTimer.Expired(diff))
         {
-            DoCast(me->getVictim(), SPELL_CHAIN_LIGHTNING);
+            DoCast(me->GetVictim(), SPELL_CHAIN_LIGHTNING);
             ChainLightningTimer = urand(7000, 14000);
         }
 
@@ -944,7 +944,7 @@ struct npc_nagrand_captiveAI : public npc_escortAI
 
         if (FrostShockTimer.Expired(diff))
         {
-            DoCast(me->getVictim(), SPELL_FROST_SHOCK);
+            DoCast(me->GetVictim(), SPELL_FROST_SHOCK);
             FrostShockTimer = urand(7500, 15000);
         }
 
@@ -1385,7 +1385,7 @@ struct npc_warmaul_pyreAI : public ScriptedAI
                 continue;
             }
             if (Unit* Saboteur = m_creature->GetUnit(*itr))
-                if (Saboteur->isAlive() && Saboteur->IsWithinDistInMap(me, 40.0f))
+                if (Saboteur->IsAlive() && Saboteur->IsWithinDistInMap(me, 40.0f))
                     return Saboteur->ToCreature();
         }
 
@@ -1601,7 +1601,7 @@ struct npc_rethhedron_the_subduerAI : public ScriptedAI
     void Reset()
     {
         doing_event = 0;
-        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         player = 0;
     }
 
@@ -1619,7 +1619,7 @@ struct npc_rethhedron_the_subduerAI : public ScriptedAI
                 m_creature->Yell("I'll be back!", LANG_UNIVERSAL, 0);
                 doing_event = 2;
                 m_creature->GetMotionMaster()->MovePoint(666, -1527.0f, 9790.0f, 199.0f);
-                m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
             }
         }
     }
@@ -1655,7 +1655,7 @@ struct npc_haala_guardAI : public GuardAI
     void EnterEvadeMode()
     {
         // normal enter evade except removing auras
-        if (!me->isAlive())
+        if (!me->IsAlive())
             return;
 
         me->DeleteThreatList();

@@ -102,7 +102,7 @@ struct boss_gatewatcher_gyro_killAI : public ScriptedAI
         //Saw Blade
         if(Saw_Blade_Timer.Expired(diff))
         {
-            DoCast(me->getVictim(),HeroicMode ? H_SPELL_SAW_BLADE : SPELL_SAW_BLADE);
+            DoCast(me->GetVictim(),HeroicMode ? H_SPELL_SAW_BLADE : SPELL_SAW_BLADE);
             DoScriptText(RAND(SAY_SAW_ATTACK1, SAY_SAW_ATTACK2), me);
 
             Saw_Blade_Timer = 30000;
@@ -111,7 +111,7 @@ struct boss_gatewatcher_gyro_killAI : public ScriptedAI
         //Stream of Machine Fluid
         if(Stream_of_Machine_Fluid_Timer.Expired(diff))
         {
-            DoCast(me->getVictim(),SPELL_STREAM_OF_MACHINE_FLUID);
+            DoCast(me->GetVictim(),SPELL_STREAM_OF_MACHINE_FLUID);
             Stream_of_Machine_Fluid_Timer = 35000 + rand()%15000;
         }
 

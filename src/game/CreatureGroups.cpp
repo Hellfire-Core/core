@@ -179,7 +179,7 @@ void CreatureGroup::MemberAttackStart(Creature *member, Unit *target)
     for (CreatureGroupMemberType::iterator itr = m_members.begin(); itr != m_members.end(); ++itr)
     {
         sLog.outDebug("GROUP ATTACK: group instance id %u calls member instid %u", m_leader ? m_leader->GetInstanceId() : 0, member->GetInstanceId());
-        //sLog.outDebug("AI:%u:Group member found: %u, attacked by %s.", groupAI, itr->second->GetGUIDLow(), member->getVictim()->GetName());
+        //sLog.outDebug("AI:%u:Group member found: %u, attacked by %s.", groupAI, itr->second->GetGUIDLow(), member->GetVictim()->GetName());
 
         //Skip one check
         if (itr->first == member->GetGUID())
@@ -187,10 +187,10 @@ void CreatureGroup::MemberAttackStart(Creature *member, Unit *target)
 
         if (Creature *mem = member->GetMap()->GetCreature(itr->first))
         {
-            if (!mem->isAlive())
+            if (!mem->IsAlive())
                 continue;
 
-            if (mem->getVictim())
+            if (mem->GetVictim())
                 continue;
 
             if (mem->canAttack(target))
@@ -210,7 +210,7 @@ void CreatureGroup::FormationReset(bool dismiss)
         {
             if (Creature *mem = m_leader->GetMap()->GetCreature(itr->first))
             {
-                if (!mem->isAlive() || mem->isInCombat())
+                if (!mem->IsAlive() || mem->IsInCombat())
                     continue;
 
                 if (dismiss)
@@ -242,7 +242,7 @@ void CreatureGroup::RespawnFormation(Creature *member)
 
             if (Creature* mem = map->GetCreature(itr->first))
             {
-                if (mem->isAlive())
+                if (mem->IsAlive())
                     continue;
 
                 if (map->IsDungeon() && (map->IsRaid() || map->IsHeroic()))
@@ -285,7 +285,7 @@ void CreatureGroup::LeaderMoveTo(float x, float y, float z)
     for (CreatureGroupMemberType::iterator itr = m_members.begin(); itr != m_members.end(); ++itr)
     {
         Creature *member = m_leader->GetMap()->GetCreature(itr->first);
-        if (!member || member == m_leader || !member->isAlive() || member->getVictim())
+        if (!member || member == m_leader || !member->IsAlive() || member->GetVictim())
             continue;
 
         float angle = itr->second->follow_angle;
@@ -338,7 +338,7 @@ Creature* CreatureGroup::GetNextRandomCreatureGroupMember(Creature* member, floa
         {
             // IsHostileTo check controlled by enemy
             if (itr->first != member->GetGUID() && member->IsWithinDistInMap(mem, radius)
-            && !member->IsHostileTo(mem) && mem->isAlive() && !mem->HasAuraType(SPELL_AURA_MOD_UNATTACKABLE))
+            && !member->IsHostileTo(mem) && mem->IsAlive() && !mem->HasAuraType(SPELL_AURA_MOD_UNATTACKABLE))
                 nearMembers.push_back(mem);
         }
     }

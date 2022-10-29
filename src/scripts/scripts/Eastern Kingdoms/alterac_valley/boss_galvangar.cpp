@@ -91,25 +91,25 @@ struct boss_galvangarAI : public ScriptedAI
 
         if (CleaveTimer.Expired(diff))
         {
-            AddSpellToCast(m_creature->getVictim(), SPELL_CLEAVE);
+            AddSpellToCast(m_creature->GetVictim(), SPELL_CLEAVE);
             CleaveTimer =  urand(4000, 12000);
         }
 
         if (FrighteningShoutTimer.Expired(diff))
         {
-            AddSpellToCast(m_creature->getVictim(), SPELL_FRIGHTENING_SHOUT);
+            AddSpellToCast(m_creature->GetVictim(), SPELL_FRIGHTENING_SHOUT);
             FrighteningShoutTimer = urand(14000, 24000);
         }
 
         if (MortalStrikeTimer.Expired(diff))
         {
-            AddSpellToCast(m_creature->getVictim(), SPELL_MORTAL_STRIKE);
+            AddSpellToCast(m_creature->GetVictim(), SPELL_MORTAL_STRIKE);
             MortalStrikeTimer = 6000;
         }
 
         if (WhirlwindTimer.Expired(diff))
         {
-            AddSpellToCast(m_creature->getVictim(), SPELL_WHIRLWIND);
+            AddSpellToCast(m_creature->GetVictim(), SPELL_WHIRLWIND);
             WhirlwindTimer = 10000;
         }
 

@@ -73,7 +73,7 @@ struct boss_ramstein_the_gorgerAI : public ScriptedAI
 
     void SummonedCreatureDespawn(Creature*)
     {
-        if (pInstance && pInstance->GetData(TYPE_RAMSTEIN) == SPECIAL && std::none_of(summons.begin(),summons.end(),[this](uint64 guid)-> bool {Creature *c = pInstance->GetCreature(guid) ; return c ? c->isAlive():false;}))
+        if (pInstance && pInstance->GetData(TYPE_RAMSTEIN) == SPECIAL && std::none_of(summons.begin(),summons.end(),[this](uint64 guid)-> bool {Creature *c = pInstance->GetCreature(guid) ; return c ? c->IsAlive():false;}))
             pInstance->SetData(TYPE_RAMSTEIN,DONE);
     }
 
@@ -93,7 +93,7 @@ struct boss_ramstein_the_gorgerAI : public ScriptedAI
         Knockout_Timer -= diff; 
         if (Knockout_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_KNOCKOUT);
+            DoCast(m_creature->GetVictim(),SPELL_KNOCKOUT);
             Knockout_Timer += 10000;
         }
 

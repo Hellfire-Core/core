@@ -258,7 +258,7 @@ struct mob_headAI : public ScriptedAI
                     die = true;
                     withbody = true;
                     wait = 300;
-                    m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                    m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                     m_creature->StopMoving();
                     //m_creature->GetMotionMaster()->MoveIdle();
                     DoCast(m_creature, SPELL_HEAD_IS_DEAD);
@@ -292,7 +292,7 @@ struct mob_headAI : public ScriptedAI
             DoCast(m_creature, SPELL_HEAD, false);
             SaySound(SAY_LOST_HEAD);
             m_creature->GetMotionMaster()->Clear(false);
-            m_creature->GetMotionMaster()->MoveFleeing(caster->getVictim());
+            m_creature->GetMotionMaster()->MoveFleeing(caster->GetVictim());
         }
     }
     void Disappear();//we must set returned=true(this will prevent from "body calls head" while head flying to body), see function below
@@ -303,11 +303,11 @@ struct mob_headAI : public ScriptedAI
             if (wait.Expired(diff))
             {
                 wait = 1000;
-                if (!m_creature->getVictim())
+                if (!m_creature->GetVictim())
                     return;
 
                 m_creature->GetMotionMaster()->Clear(false);
-                m_creature->GetMotionMaster()->MoveFleeing(m_creature->getVictim());
+                m_creature->GetMotionMaster()->MoveFleeing(m_creature->GetVictim());
             }
 
 
@@ -425,7 +425,7 @@ struct boss_headless_horsemanAI : public ScriptedAI
     void FlyMode()
     {
         m_creature->SetVisibility(VISIBILITY_OFF);
-        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         m_creature->SetLevitate(true);
         m_creature->SetSpeed(MOVE_WALK, 5.0f, true);
         wp_reached = false;
@@ -469,7 +469,7 @@ struct boss_headless_horsemanAI : public ScriptedAI
                 Phase = 1;
                 IsFlying = false;
                 wp_reached = false;
-                m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                 SaySound(SAY_ENTRANCE);
                 Unit *plr = Unit::GetUnit((*m_creature), playerGUID);
                 if (plr)
@@ -527,8 +527,8 @@ struct boss_headless_horsemanAI : public ScriptedAI
         std::list<Player*>::iterator j;
 
         for (Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
-            if ((m_creature->IsWithinLOSInMap(i->getSource()) || !checkLoS) && m_creature->getVictim() != i->getSource() &&
-                m_creature->IsWithinDistInMap(i->getSource(), range) && i->getSource()->isAlive() && !i->getSource()->isGameMaster())
+            if ((m_creature->IsWithinLOSInMap(i->getSource()) || !checkLoS) && m_creature->GetVictim() != i->getSource() &&
+                m_creature->IsWithinDistInMap(i->getSource(), range) && i->getSource()->IsAlive() && !i->getSource()->IsGameMaster())
                 temp.push_back(i->getSource());
 
         if (temp.size())
@@ -587,7 +587,7 @@ struct boss_headless_horsemanAI : public ScriptedAI
             for (itr = caster->getThreatManager().getThreatList().begin(); itr != caster->getThreatManager().getThreatList().end(); ++itr)
             {
                 Unit* pUnit = Unit::GetUnit((*m_creature), (*itr)->getUnitGuid());
-                if (pUnit && pUnit->isAlive() && pUnit != caster)
+                if (pUnit && pUnit->IsAlive() && pUnit != caster)
                     m_creature->AddThreat(pUnit, caster->getThreatManager().getThreat(pUnit));
             }
         }
@@ -607,9 +607,9 @@ struct boss_headless_horsemanAI : public ScriptedAI
             if (!headGUID)
                 headGUID = DoSpawnCreature(HEAD, rand() % 6, rand() % 6, 0, 0, TEMPSUMMON_DEAD_DESPAWN, 0)->GetGUID();
             Unit* Head = Unit::GetUnit((*m_creature), headGUID);
-            if (Head && Head->isAlive())
+            if (Head && Head->IsAlive())
             {
-                Head->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                Head->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                 //Head->CastSpell(Head,SPELL_HEAD_INVIS,false);
                 m_creature->InterruptNonMeleeSpells(false);
                 DoCast(m_creature, SPELL_IMMUNE, true);
@@ -687,7 +687,7 @@ struct boss_headless_horsemanAI : public ScriptedAI
                     {
                         Unit *plr = SelectUnit(SELECT_TARGET_RANDOM, 1, 30, true, m_creature->getVictimGUID());
                         if (!plr)
-                            plr = m_creature->getVictim();
+                            plr = m_creature->GetVictim();
 
                         if (plr)
                             m_creature->CastSpell(plr, SPELL_CONFLAGRATION, false);
@@ -720,7 +720,7 @@ struct boss_headless_horsemanAI : public ScriptedAI
                 DoMeleeAttackIfReady();
                 if (cleave.Expired(diff))
                 {
-                    DoCast(m_creature->getVictim(), SPELL_CLEAVE);
+                    DoCast(m_creature->GetVictim(), SPELL_CLEAVE);
                     cleave = 2000 + rand() % 4000;       //1 cleave per 2.0-6.0sec
                 }
 
@@ -739,7 +739,7 @@ struct boss_headless_horsemanAI : public ScriptedAI
                     else
                         Phase = 1;
                     Creature* Head = Unit::GetCreature((*m_creature), headGUID);
-                    if (Head && Head->isAlive())
+                    if (Head && Head->IsAlive())
                     {
                         ((mob_headAI*)Head->AI())->Phase = Phase;
                         ((mob_headAI*)Head->AI())->Disappear();
@@ -773,14 +773,14 @@ void mob_headAI::Disappear()
     if (bodyGUID)
     {
         Creature *body = Unit::GetCreature((*m_creature), bodyGUID);
-        if (body && body->isAlive())
+        if (body && body->IsAlive())
         {
             withbody = true;
             m_creature->RemoveAllAuras();
             body->RemoveAurasDueToSpell(SPELL_IMMUNE);//hack, SpellHit doesn't calls if body has immune aura
             DoCast(body, SPELL_FLYING_HEAD);
             m_creature->SetHealth(m_creature->GetMaxHealth());
-            m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
             m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             m_creature->GetMotionMaster()->MoveIdle();
             ((boss_headless_horsemanAI*)body->AI())->returned = true;
@@ -826,7 +826,7 @@ struct mob_pulsing_pumpkinAI : public ScriptedAI
             m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_ROTATE);
             DoCast(m_creature, SPELL_SPROUT_BODY, true);
             m_creature->UpdateEntry(PUMPKIN_FIEND);
-            DoStartMovement(m_creature->getVictim());
+            DoStartMovement(m_creature->GetVictim());
         }
     }
 
@@ -843,7 +843,7 @@ struct mob_pulsing_pumpkinAI : public ScriptedAI
 
     void MoveInLineOfSight(Unit *who)
     {
-        if (!who || !who->isTargetableForAttack() || !m_creature->IsHostileTo(who) || m_creature->getVictim())
+        if (!who || !who->isTargetableForAttack() || !m_creature->IsHostileTo(who) || m_creature->GetVictim())
             return;
 
         m_creature->AddThreat(who, 0.0f);
@@ -861,12 +861,12 @@ struct mob_pulsing_pumpkinAI : public ScriptedAI
 
 bool GOUse_go_loosely_turned_soil(Player *plr, GameObject* soil)
 {
-    /*  if (soil->GetGoType() == GAMEOBJECT_TYPE_QUESTGIVER && plr->getLevel() > 64)
+    /*  if (soil->GetGoType() == GAMEOBJECT_TYPE_QUESTGIVER && plr->GetLevel() > 64)
         {
         plr->PrepareQuestMenu(soil->GetGUID());
         plr->SendPreparedQuest(soil->GetGUID());
         }
-        if (plr->GetQuestStatus(11405) == QUEST_STATUS_INCOMPLETE && plr->getLevel() > 64)
+        if (plr->GetQuestStatus(11405) == QUEST_STATUS_INCOMPLETE && plr->GetLevel() > 64)
         { */
     plr->AreaExploredOrEventHappens(11405);
     Creature *horseman = soil->SummonCreature(HH_MOUNTED, FlightPoint[20].x, FlightPoint[20].y, FlightPoint[20].z, 0, TEMPSUMMON_MANUAL_DESPAWN, 0);

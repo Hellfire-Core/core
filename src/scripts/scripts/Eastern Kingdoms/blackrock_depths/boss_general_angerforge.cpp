@@ -112,7 +112,7 @@ struct boss_general_angerforgeAI : public ScriptedAI
         MightyBlow_Timer -= diff;
         if (MightyBlow_Timer <= diff)
         {
-            DoCast(me->getVictim(),SPELL_MIGHTYBLOW);
+            DoCast(me->GetVictim(),SPELL_MIGHTYBLOW);
             MightyBlow_Timer += 18000;
         }
         
@@ -120,7 +120,7 @@ struct boss_general_angerforgeAI : public ScriptedAI
         HamString_Timer -= diff;
         if (HamString_Timer <= diff)
         {
-            DoCast(me->getVictim(),SPELL_HAMSTRING);
+            DoCast(me->GetVictim(),SPELL_HAMSTRING);
             HamString_Timer += 15000;
         }
         
@@ -128,7 +128,7 @@ struct boss_general_angerforgeAI : public ScriptedAI
         Cleave_Timer -= diff;
         if (Cleave_Timer <= diff)
         {
-            DoCast(me->getVictim(),SPELL_CLEAVE);
+            DoCast(me->GetVictim(),SPELL_CLEAVE);
             Cleave_Timer += 9000;
         }
         
@@ -140,9 +140,9 @@ struct boss_general_angerforgeAI : public ScriptedAI
             if (Adds_Timer <= diff)
             {
                 // summon 3 Adds every 25s
-                SummonAdds(me->getVictim());
-                SummonAdds(me->getVictim());
-                SummonAdds(me->getVictim());
+                SummonAdds(me->GetVictim());
+                SummonAdds(me->GetVictim());
+                SummonAdds(me->GetVictim());
 
                 Adds_Timer += 25000;
             }
@@ -151,8 +151,8 @@ struct boss_general_angerforgeAI : public ScriptedAI
         //Summon Medics
         if ( !Medics && me->GetHealth()*100 / me->GetMaxHealth() < 21 )
         {
-            SummonMedics(me->getVictim());
-            SummonMedics(me->getVictim());
+            SummonMedics(me->GetVictim());
+            SummonMedics(me->GetVictim());
             Medics = true;
         }
 

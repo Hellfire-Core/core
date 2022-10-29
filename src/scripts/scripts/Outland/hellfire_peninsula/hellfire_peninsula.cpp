@@ -114,13 +114,13 @@ struct npc_aeranasAI : public ScriptedAI
 
         if (Shock_Timer.Expired(diff))
         {
-            DoCast(me->getVictim(),SPELL_SHOCK);
+            DoCast(me->GetVictim(),SPELL_SHOCK);
             Shock_Timer = 10000;
         }
 
         if (EnvelopingWinds_Timer.Expired(diff))
         {
-            DoCast(me->getVictim(),SPELL_ENVELOPING_WINDS);
+            DoCast(me->GetVictim(),SPELL_ENVELOPING_WINDS);
             EnvelopingWinds_Timer = 25000;
         }
 
@@ -807,7 +807,7 @@ struct npc_living_flareAI : public FollowerAI
             return;
         DoCast(me, SPELL_FEL_FLAREUP);
         me->UpdateEntry(NPC_UNSTABLE_LIVING_FLARE);
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         if(Unit* owner = me->GetOwner())
             me->setFaction(owner->getFaction());
         me->RemoveAurasDueToSpell(SPELL_LIVING_FLARE_COSMETIC);
@@ -933,7 +933,7 @@ struct npc_felblood_initiateAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-      if(!me->isInCombat())
+      if(!me->IsInCombat())
       {
           if(OOCTimer.Expired(diff))
           {
@@ -951,7 +951,7 @@ struct npc_felblood_initiateAI : public ScriptedAI
           me->UpdateEntry(MOB_EMACIATED_FELBLOOD);
           me->Yell(YellChange[urand(0,2)], 0, 0);
           me->RemoveAurasDueToSpell(SPELL_SELF_STUN);
-          me->AI()->AttackStart(me->getVictim());
+          me->AI()->AttackStart(me->GetVictim());
           ChangeTimer = 0;
       }
 
@@ -1117,7 +1117,7 @@ struct npc_hand_berserkerAI : public ScriptedAI
     {
         if (Creature* Bunny = GetClosestCreatureWithEntry(me, NPC_BUNNY, 17.5f))
         {
-            Bunny->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            Bunny->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
             DoCast(Bunny, SPELL_SOUL_BURDEN);
         }
     }
@@ -1163,7 +1163,7 @@ struct npc_anchorite_relic_bunnyAI : public ScriptedAI
         if (summoned->GetEntry() == NPC_FEL_SPIRIT)
         {
             DoScriptText(SAY_SP, summoned);
-            summoned->AI()->AttackStart(summoned->getVictim());
+            summoned->AI()->AttackStart(summoned->GetVictim());
         }
     }
 
@@ -1173,7 +1173,7 @@ struct npc_anchorite_relic_bunnyAI : public ScriptedAI
         {
             me->InterruptNonMeleeSpells(false);
             me->SummonCreature(NPC_FEL_SPIRIT, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 10000);
-            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
             ChTimer = 2000;
         }
     }
@@ -1486,7 +1486,7 @@ struct npc_darkness_releasedAI : public ScriptedAI
         DoCast(me, SPELL_AURA_ME);
         me->SetLevitate(true);
         me->SetSpeed(MOVE_FLIGHT, 0.08f);
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         switch(urand(0,3))
         {
             case 0: me->GetMotionMaster()->MovePoint(0, M[0].x, M[0].y, M[0].z); break;

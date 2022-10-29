@@ -226,7 +226,7 @@ struct mob_illidari_councilAI : public ScriptedAI
 
     void StartEvent(Unit *pTarget)
     {
-        if (pTarget->isAlive())
+        if (pTarget->IsAlive())
         {
             m_council[0] = pInstance->GetData64(DATA_GATHIOSTHESHATTERER);
             m_council[1] = pInstance->GetData64(DATA_HIGHNETHERMANCERZEREVOR);
@@ -243,7 +243,7 @@ struct mob_illidari_councilAI : public ScriptedAI
                 {
                     if (Unit *pMember = pInstance->GetCreature(m_council[i]))
                     {
-                        if (pMember->isAlive())
+                        if (pMember->IsAlive())
                             ((Creature*)pMember)->AI()->AttackStart(pTarget);
                     }
                 }
@@ -326,25 +326,25 @@ struct illidari_council_baseAI : public ScriptedAI
         }
 
         if (Creature *priest = GetClosestCreatureWithEntry(me, NPC_MALANDE, 100.0f, true))
-            if (priest->isAlive())
+            if (priest->IsAlive())
                 priest->Kill(priest);
 
         if (Creature *rogue = GetClosestCreatureWithEntry(me, NPC_VERAS, 100.0f, true))
-            if (rogue->isAlive())
+            if (rogue->IsAlive())
                 rogue->Kill(rogue);
 
         if (Creature *mage = GetClosestCreatureWithEntry(me, NPC_ZEREVOR, 100.0f, true))
-            if (mage->isAlive())
+            if (mage->IsAlive())
                 mage->Kill(mage);
 
         if (Creature *paladin = GetClosestCreatureWithEntry(me, NPC_GATHIOS, 100.0f, true))
-            if (paladin->isAlive())
+            if (paladin->IsAlive())
                 paladin->Kill(paladin);
 
 
         if (Creature *pCouncil = pInstance->GetCreature(pInstance->GetData64(DATA_ILLIDARICOUNCIL)))
         {
-            if (pCouncil->isAlive())
+            if (pCouncil->IsAlive())
                 pCouncil->Kill(pCouncil, false);
         }
     }
@@ -361,19 +361,19 @@ struct illidari_council_baseAI : public ScriptedAI
             pTrigger->AI()->EnterEvadeMode();
 
             if (Creature *mage = GetClosestCreatureWithEntry(me, NPC_ZEREVOR, 100.0f, true))
-                if (mage->isInCombat())
+                if (mage->IsInCombat())
                     mage->AI()->EnterEvadeMode();
 
             if (Creature *rogue = GetClosestCreatureWithEntry(me, NPC_VERAS, 100.0f, true))
-                if (rogue->isInCombat())
+                if (rogue->IsInCombat())
                     rogue->AI()->EnterEvadeMode();
 
             if (Creature *priest = GetClosestCreatureWithEntry(me, NPC_MALANDE, 100.0f, true))
-                if (priest->isInCombat())
+                if (priest->IsInCombat())
                     priest->AI()->EnterEvadeMode();
 
             if (Creature *paladin = GetClosestCreatureWithEntry(me, NPC_GATHIOS, 100.0f, true))
-                if (paladin->isInCombat())
+                if (paladin->IsInCombat())
                     paladin->AI()->EnterEvadeMode();
 
 
@@ -401,7 +401,7 @@ struct illidari_council_baseAI : public ScriptedAI
         {
             if (Creature *pUnit = pInstance->GetCreature(m_council[i]))
             {
-                if (pUnit->isAlive())
+                if (pUnit->IsAlive())
                 {
                     if (HP)
                         pUnit->SetHealth(HP/4);
@@ -415,7 +415,7 @@ struct illidari_council_baseAI : public ScriptedAI
         {
             if (Creature *pUnit = pInstance->GetCreature(m_council[i]))
             {
-                if (pUnit->isAlive())
+                if (pUnit->IsAlive())
                     pUnit->Kill(pUnit, false);
             }
         }
@@ -468,14 +468,14 @@ struct boss_gathios_the_shattererAI : public illidari_council_baseAI
         {
             if (Unit *pMelande = pInstance->GetCreature(m_council[0]))
             {
-                if (pMelande->isAlive())
+                if (pMelande->IsAlive())
                     return pMelande;
             }
         }
 
         if (Unit *pCouncil = pInstance->GetCreature(m_council[urand(0,1)?1:3])) // else, select others, but never self
         {
-            if (pCouncil->isAlive())
+            if (pCouncil->IsAlive())
                 return pCouncil;
         }
 
@@ -548,7 +548,7 @@ struct boss_gathios_the_shattererAI : public illidari_council_baseAI
         if (m_judgementTimer.Expired(diff))
         {
             RegenMana();
-            ForceSpellCast(me->getVictim(), SPELL_GATHIOS_JUDGEMENT, INTERRUPT_AND_CAST);
+            ForceSpellCast(me->GetVictim(), SPELL_GATHIOS_JUDGEMENT, INTERRUPT_AND_CAST);
             m_judgementTimer = 15000;
         }
         
@@ -611,7 +611,7 @@ struct boss_high_nethermancer_zerevorAI : public illidari_council_baseAI
                 good_z = top_z;
 
             if (z < good_z)
-                me->GetMap()->CreatureRelocation(me, x, y, good_z+0.15, me->GetAngle(me->getVictim()));
+                me->GetMap()->CreatureRelocation(me, x, y, good_z+0.15, me->GetAngle(me->GetVictim()));
         }
     }
 
@@ -631,15 +631,15 @@ struct boss_high_nethermancer_zerevorAI : public illidari_council_baseAI
                 return;
             }
 
-            if (me->GetDistance(me->getVictim()) <= 40.0f)
+            if (me->GetDistance(me->GetVictim()) <= 40.0f)
             {
-                me->SetFacingToObject(me->getVictim());  // he is getting stuck sometimes
+                me->SetFacingToObject(me->GetVictim());  // he is getting stuck sometimes
                 me->StopMoving();
 
             }
             else
-                DoStartMovement(me->getVictim());
-                //me->GetMotionMaster()->MoveChase(me->getVictim(), 40.0f);  // It's not working. Simply.
+                DoStartMovement(me->GetVictim());
+                //me->GetMotionMaster()->MoveChase(me->GetVictim(), 40.0f);  // It's not working. Simply.
 
             // On front stairs, do not let boss to go into textures;
             CheckStairsPos();
@@ -692,7 +692,7 @@ struct boss_high_nethermancer_zerevorAI : public illidari_council_baseAI
             {
                 if (Unit* pUnit = Unit::GetUnit((*me), (*i)->getUnitGuid()))
                 {
-                    if (pUnit->IsWithinDistInMap(me, 5) && pUnit->GetTypeId() == TYPEID_PLAYER && pUnit->isAlive() && !pUnit->IsImmunedToDamage(SPELL_SCHOOL_MASK_ARCANE))
+                    if (pUnit->IsWithinDistInMap(me, 5) && pUnit->GetTypeId() == TYPEID_PLAYER && pUnit->IsAlive() && !pUnit->IsImmunedToDamage(SPELL_SCHOOL_MASK_ARCANE))
                     {
                         ForceSpellCast(SPELL_ARCANE_EXPLOSION, CAST_SELF);
                         m_aexpTimer = 3000;
@@ -763,7 +763,7 @@ struct boss_lady_malandeAI : public illidari_council_baseAI
         
         if (m_smiteTimer.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(), SPELL_EMPOWERED_SMITE, false, true);
+            AddSpellToCast(me->GetVictim(), SPELL_EMPOWERED_SMITE, false, true);
             m_smiteTimer = urand(5000, 9000);
         }
         
@@ -843,7 +843,7 @@ struct boss_veras_darkshadowAI : public illidari_council_baseAI
         {
             m_sneakTimer = 0;
             me->RemoveAurasDueToSpell(SPELL_SNEAK);
-            DoStartMovement(me->getVictim());
+            DoStartMovement(me->GetVictim());
         }
 
         if (m_checkTimer.Expired(diff))
@@ -860,8 +860,8 @@ struct boss_veras_darkshadowAI : public illidari_council_baseAI
             SharedRule(damage);
             me->SetSpeed(MOVE_RUN, 2.0);
             // move always after stun recovery
-            if (!me->hasUnitState(UNIT_STAT_STUNNED) && !me->HasAura(SPELL_VANISH, 1) && !me->HasAura(SPELL_SNEAK, 0))
-                DoStartMovement(me->getVictim());
+            if (!me->HasUnitState(UNIT_STAT_STUNNED) && !me->HasAura(SPELL_VANISH, 1) && !me->HasAura(SPELL_SNEAK, 0))
+                DoStartMovement(me->GetVictim());
             m_checkTimer = 1000;
         }
         

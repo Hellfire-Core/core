@@ -171,7 +171,7 @@ void Object::BuildCreateUpdateBlockForPlayer(UpdateData *data, Player *target) c
 
         if (isType(TYPEMASK_UNIT))
         {
-            if (((Unit*)this)->getVictim())
+            if (((Unit*)this)->GetVictim())
                 updateFlags |= UPDATEFLAG_HAS_ATTACKING_TARGET;
         }
     }
@@ -357,8 +357,8 @@ void Object::BuildMovementUpdate(ByteBuffer * data, uint8 updateFlags) const
     // 0x4
     if (updateFlags & UPDATEFLAG_HAS_ATTACKING_TARGET)       // packed guid (current target guid)
     {
-        if (((Unit*)this)->getVictim())
-            *data << ((Unit*)this)->getVictim()->GetPackGUID();
+        if (((Unit*)this)->GetVictim())
+            *data << ((Unit*)this)->GetVictim()->GetPackGUID();
         else
             data->appendPackGUID(0);
     }
@@ -383,7 +383,7 @@ void Object::BuildValuesUpdate(uint8 updatetype, ByteBuffer * data, UpdateMask *
     {
         if (isType(TYPEMASK_GAMEOBJECT) && !((GameObject*)this)->IsTransport())
         {
-            if (((GameObject*)this)->ActivateToQuest(target) || target->isGameMaster())
+            if (((GameObject*)this)->ActivateToQuest(target) || target->IsGameMaster())
                 IsActivateToQuest = true;
 
             updateMask->SetBit(GAMEOBJECT_DYN_FLAGS);
@@ -396,7 +396,7 @@ void Object::BuildValuesUpdate(uint8 updatetype, ByteBuffer * data, UpdateMask *
     {
         if (isType(TYPEMASK_GAMEOBJECT) && !((GameObject*)this)->IsTransport())
         {
-            if (((GameObject*)this)->ActivateToQuest(target) || target->isGameMaster())
+            if (((GameObject*)this)->ActivateToQuest(target) || target->IsGameMaster())
             {
                 IsActivateToQuest = true;
             }
@@ -435,7 +435,7 @@ void Object::BuildValuesUpdate(uint8 updatetype, ByteBuffer * data, UpdateMask *
                     *data << uint32(m_floatValues[ index ]);
                 }
                 // Gamemasters should be always able to select units - remove not selectable flag
-                else if (index == UNIT_FIELD_FLAGS && target->isGameMaster())
+                else if (index == UNIT_FIELD_FLAGS && target->IsGameMaster())
                 {
                     *data << (m_uint32Values[ index ] & ~UNIT_FLAG_NOT_SELECTABLE);
                 }
@@ -1618,7 +1618,7 @@ Pet* Player::SummonPet(uint32 entry, float x, float y, float z, float ang, PetTy
         if (entry == 19668)
         {
             pet->SetReactState(REACT_AGGRESSIVE);
-            pet->clearUnitState(UNIT_STAT_FOLLOW);
+            pet->ClearUnitState(UNIT_STAT_FOLLOW);
             pet->SendPetAIReaction(pet->GetGUID());
         }
         else if (entry == 510)
@@ -1661,7 +1661,7 @@ Pet* Player::SummonPet(uint32 entry, float x, float y, float z, float ang, PetTy
 
     // this enables pet details window (Shift+P)
     CreatureInfo const *cinfo = pet->GetCreatureInfo();
-    if (petType==HUNTER_PET || (petType==SUMMON_PET && cinfo->type == CREATURE_TYPE_DEMON && getClass() == CLASS_WARLOCK))
+    if (petType==HUNTER_PET || (petType==SUMMON_PET && cinfo->type == CREATURE_TYPE_DEMON && GetClass() == CLASS_WARLOCK))
         pet->GetCharmInfo()->SetPetNumber(pet_number, true);
     else
         pet->GetCharmInfo()->SetPetNumber(pet_number, false);
@@ -1672,7 +1672,7 @@ Pet* Player::SummonPet(uint32 entry, float x, float y, float z, float ang, PetTy
     pet->setPowerType(POWER_MANA);
     pet->SetUInt32Value(UNIT_NPC_FLAGS , 0);
     pet->SetUInt32Value(UNIT_FIELD_BYTES_1,0);
-    pet->InitStatsForLevel(getLevel());
+    pet->InitStatsForLevel(GetLevel());
 
     switch (petType)
     {
@@ -1693,7 +1693,7 @@ Pet* Player::SummonPet(uint32 entry, float x, float y, float z, float ang, PetTy
             DelayedPetSpellInitialize();
             break;
     }
-    if (GetTypeId() == TYPEID_PLAYER && (getClass() == CLASS_HUNTER || getClass() == CLASS_WARLOCK) && pet->isControlled() && !pet->isTemporarySummoned() && (petType == SUMMON_PET || petType == HUNTER_PET))
+    if (GetTypeId() == TYPEID_PLAYER && (GetClass() == CLASS_HUNTER || GetClass() == CLASS_WARLOCK) && pet->isControlled() && !pet->isTemporarySummoned() && (petType == SUMMON_PET || petType == HUNTER_PET))
         SetLastPetNumber(pet_number);
 
     if (petType == SUMMON_PET)
@@ -1763,7 +1763,7 @@ Creature* WorldObject::SummonTrigger(float x, float y, float z, float ang, uint3
     if (GetTypeId()==TYPEID_PLAYER || GetTypeId()==TYPEID_UNIT)
     {
         summon->setFaction(((Unit*)this)->getFaction());
-        summon->SetLevel(((Unit*)this)->getLevel());
+        summon->SetLevel(((Unit*)this)->GetLevel());
     }
 
     if (GetAI)

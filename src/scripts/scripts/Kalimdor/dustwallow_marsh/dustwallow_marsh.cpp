@@ -442,7 +442,7 @@ struct npc_morokkAI : public npc_escortAI
 
     void AttackedBy(Unit* pAttacker)
     {
-        if (me->getVictim())
+        if (me->GetVictim())
             return;
 
         if (me->IsFriendlyTo(pAttacker))
@@ -646,7 +646,7 @@ struct npc_ogronAI : public npc_escortAI
                 if ((*itr)->GetEntry() == NPC_REETHE)
                     continue;
 
-                if ((*itr)->isAlive())
+                if ((*itr)->IsAlive())
                 {
                     (*itr)->setFaction(FACTION_THER_HOSTILE);
                     (*itr)->AI()->AttackStart(me);
@@ -860,7 +860,7 @@ struct npc_private_hendelAI : public ScriptedAI
 
     void AttackedBy(Unit* pAttacker)
     {
-        if (me->getVictim())
+        if (me->GetVictim())
             return;
 
         if (me->IsFriendlyTo(pAttacker))
@@ -899,7 +899,7 @@ struct npc_private_hendelAI : public ScriptedAI
 
         for(std::list<Creature*>::iterator itr = lCreatureList.begin(); itr != lCreatureList.end(); ++itr)
         {
-            if ((*itr)->isAlive())
+            if ((*itr)->IsAlive())
             {
                 (*itr)->setFaction(FACTION_HOSTILE);
                 (*itr)->AI()->AttackStart(pPlayer);

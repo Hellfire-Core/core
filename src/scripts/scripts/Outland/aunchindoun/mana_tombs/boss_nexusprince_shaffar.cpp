@@ -124,7 +124,7 @@ struct boss_nexusprince_shaffarAI : public ScriptedAI
 
     void MoveInLineOfSight(Unit *who)
     {
-        if( !m_creature->getVictim() && who->isTargetableForAttack() && ( m_creature->IsHostileTo( who )) && who->isInAccessiblePlacefor(m_creature) )
+        if( !m_creature->GetVictim() && who->isTargetableForAttack() && ( m_creature->IsHostileTo( who )) && who->isInAccessiblePlacefor(m_creature) )
         {
             if( !HasTaunted && m_creature->IsWithinDistInMap(who, 100.0) )
             {
@@ -150,7 +150,7 @@ struct boss_nexusprince_shaffarAI : public ScriptedAI
 
         // Send initial beacons to join the fight if not already
         for(uint8 i = 0; i < NR_INITIAL_BEACONS; i++)
-            if(Beacon[i] && Beacon[i]->isAlive() && !Beacon[i]->isInCombat())
+            if(Beacon[i] && Beacon[i]->IsAlive() && !Beacon[i]->IsInCombat())
                 Beacon[i]->AI()->AttackStart(who);
 
         if(pInstance)
@@ -200,14 +200,14 @@ struct boss_nexusprince_shaffarAI : public ScriptedAI
 
         if (Frostbolt_Timer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(),SPELL_FROSTBOLT);
+            DoCast(m_creature->GetVictim(),SPELL_FROSTBOLT);
             Frostbolt_Timer = 4500 + rand()%1500;
         }
         
 
         if (FireBall_Timer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(),SPELL_FIREBALL);
+            DoCast(m_creature->GetVictim(),SPELL_FIREBALL);
             FireBall_Timer = 4500 + rand()%1500;
         }
         
@@ -280,19 +280,19 @@ struct mob_ethereal_beaconAI : public ScriptedAI
     {
         // Send Shaffar to fight
         Unit* Shaffar = FindCreature(ENTRY_SHAFFAR, 100, m_creature);
-        if(!Shaffar || Shaffar->isDead())
+        if(!Shaffar || Shaffar->IsDead())
         {
             KillSelf();
             return;
         }
 
-        if(!Shaffar->isInCombat())
+        if(!Shaffar->IsInCombat())
             ((Creature*)Shaffar)->AI()->AttackStart(who);
     }
 
     void JustSummoned(Creature *summoned)
     {
-        summoned->AI()->AttackStart(m_creature->getVictim());
+        summoned->AI()->AttackStart(m_creature->GetVictim());
         if (me->GetOwner())
             me->GetOwner()->ToCreature()->AI()->JustSummoned(summoned);
     }
@@ -312,7 +312,7 @@ struct mob_ethereal_beaconAI : public ScriptedAI
         if (Check_Timer.Expired(diff))
         {
             Unit *Shaffar = FindCreature(ENTRY_SHAFFAR, 100, m_creature);
-            if(!Shaffar || Shaffar->isDead() || !Shaffar->isInCombat())
+            if(!Shaffar || Shaffar->IsDead() || !Shaffar->IsInCombat())
             {
                 KillSelf();
                 return;
@@ -323,7 +323,7 @@ struct mob_ethereal_beaconAI : public ScriptedAI
 
         if (ArcaneBolt_Timer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(),SPELL_ARCANE_BOLT);
+            DoCast(m_creature->GetVictim(),SPELL_ARCANE_BOLT);
             ArcaneBolt_Timer = 2000 + rand()%2500;
         }
         
@@ -373,12 +373,12 @@ struct mob_ethereal_apprenticeAI : public ScriptedAI
         {
             if(isFireboltTurn)
             {
-                m_creature->CastSpell(m_creature->getVictim(), SPELL_ETHEREAL_APPRENTICE_FIREBOLT, true);
+                m_creature->CastSpell(m_creature->GetVictim(), SPELL_ETHEREAL_APPRENTICE_FIREBOLT, true);
                 isFireboltTurn = false;
             }
             else
             {
-                m_creature->CastSpell(m_creature->getVictim(), SPELL_ETHEREAL_APPRENTICE_FROSTBOLT, true);
+                m_creature->CastSpell(m_creature->GetVictim(), SPELL_ETHEREAL_APPRENTICE_FROSTBOLT, true);
                 isFireboltTurn = true;
             }
             Cast_Timer = 3000;

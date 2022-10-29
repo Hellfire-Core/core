@@ -296,7 +296,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
         SpeechPhase = 0;
 
         Emerging.Reset(10000);
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
 
         IsKalecJoined   = false;
         IsInDarkness    = false;
@@ -332,11 +332,11 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
         if (summoned->GetEntry() == CREATURE_ARMAGEDDON_TARGET)
         {
             summoned->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-            summoned->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            summoned->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         }
         else
         {
-            summoned->SetLevel(m_creature->getLevel());
+            summoned->SetLevel(m_creature->GetLevel());
         }
         summoned->setFaction(m_creature->getFaction());
         Summons.Summon(summoned);
@@ -413,7 +413,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
         {
             Emerging = 0;
             IsEmerging = false;
-            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
             DoScriptText(SAY_KJ_EMERGE, me);
         }
 
@@ -421,7 +421,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI
         {
             if (StunTimer.Expired(diff))
             {
-                m_creature->clearUnitState(UNIT_STAT_STUNNED);
+                m_creature->ClearUnitState(UNIT_STAT_STUNNED);
                 StunTimer = 0;
             }
         }
@@ -739,7 +739,7 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
     {
         KalecKJ = pInstance->instance->GetCreatureById(CREATURE_KALECGOS);
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         m_creature->addUnitState(UNIT_STAT_STUNNED);
 
         pInstance->SetData(DATA_KILJAEDEN_EVENT, NOT_STARTED);
@@ -780,7 +780,7 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
             case CREATURE_KILJAEDEN:
                 summoned->CastSpell(summoned, SPELL_REBIRTH, false);
                 ((boss_kiljaedenAI*)summoned->AI())->Phase = PHASE_NORMAL;
-                summoned->AddThreat(m_creature->getVictim(), 0.0f);
+                summoned->AddThreat(m_creature->GetVictim(), 0.0f);
                 summoned->AI()->DoZoneInCombat();
                 break;
         }
@@ -827,7 +827,7 @@ struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
             }
         }
 
-        if (me->getThreatManager().isThreatListEmpty() && me->isInCombat())
+        if (me->getThreatManager().isThreatListEmpty() && me->IsInCombat())
             EnterEvadeMode(); // we use this instead of UpdateVictim()
 
 
@@ -866,7 +866,7 @@ struct mob_hand_of_the_deceiverAI : public ScriptedAI
     void JustSummoned(Creature* summoned)
     {
         summoned->setFaction(m_creature->getFaction());
-        summoned->SetLevel(m_creature->getLevel());
+        summoned->SetLevel(m_creature->GetLevel());
         summoned->AI()->DoZoneInCombat();
         Summons.Summon(summoned);
     }
@@ -958,7 +958,7 @@ struct mob_felfire_portalAI : public Scripted_NoMovementAI
         myOwnerGUID =0;
         SpawnFiendTimer = 3000;
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
     }
     
     void IsSummonedBy(Unit* owner)
@@ -1021,7 +1021,7 @@ struct mob_volatile_felfire_fiendAI : public ScriptedAI
         if (WaitTimer.GetTimeLeft())
             return;
         
-        if (!me->getVictim())
+        if (!me->GetVictim())
         {
             Unit* random = SelectUnit(SELECT_TARGET_RANDOM, 0, 100.0f, true);
             if (random)
@@ -1029,9 +1029,9 @@ struct mob_volatile_felfire_fiendAI : public ScriptedAI
             return;
         }
 
-        if (ExplodeTimer.Expired(diff) || me->GetDistance(me->getVictim()) < 5.0f) // Explode if it's close enough to it's target
+        if (ExplodeTimer.Expired(diff) || me->GetDistance(me->GetVictim()) < 5.0f) // Explode if it's close enough to it's target
         {
-            me->CastCustomSpell(SPELL_FELFIRE_FISSION, SPELLVALUE_BASE_POINT0, 4000, m_creature->getVictim(), true);
+            me->CastCustomSpell(SPELL_FELFIRE_FISSION, SPELLVALUE_BASE_POINT0, 4000, m_creature->GetVictim(), true);
             me->DisappearAndDie();
         }
     }
@@ -1199,10 +1199,10 @@ struct mob_sinster_reflectionAI : public ScriptedAI
     void UpdateAI(const uint32 diff)
     {
         
-        if (Class == 0 && me->getVictim())
+        if (Class == 0 && me->GetVictim())
         {
             me->CastSpell(me, SPELL_SINISTER_REFLECTION_ENLARGE, true);
-            Class = m_creature->getVictim()->getClass();
+            Class = m_creature->GetVictim()->GetClass();
             switch (Class)
             {
                 case CLASS_DRUID:
@@ -1231,8 +1231,8 @@ struct mob_sinster_reflectionAI : public ScriptedAI
 
         if (Wait.Expired(diff))
         {
-            m_creature->clearUnitState(UNIT_STAT_CANNOT_AUTOATTACK);
-            m_creature->clearUnitState(UNIT_STAT_NOT_MOVE);
+            m_creature->ClearUnitState(UNIT_STAT_CANNOT_AUTOATTACK);
+            m_creature->ClearUnitState(UNIT_STAT_NOT_MOVE);
             Wait = 0;
         }
 
@@ -1247,7 +1247,7 @@ struct mob_sinster_reflectionAI : public ScriptedAI
             case CLASS_DRUID:
                 if (_Timer[1].Expired(diff))
                 {
-                    DoCast(m_creature->getVictim(), SPELL_SR_MOONFIRE, false);
+                    DoCast(m_creature->GetVictim(), SPELL_SR_MOONFIRE, false);
                     _Timer[1] = 3000;
                 }
                 DoMeleeAttackIfReady();
@@ -1255,19 +1255,19 @@ struct mob_sinster_reflectionAI : public ScriptedAI
             case CLASS_HUNTER:
                 if (_Timer[1].Expired(diff))
                 {
-                    DoCast(m_creature->getVictim(), SPELL_SR_MULTI_SHOT, false);
+                    DoCast(m_creature->GetVictim(), SPELL_SR_MULTI_SHOT, false);
                     _Timer[1] = 9000;
                 }
                 if (_Timer[2].Expired(diff))
                 {
-                    DoCast(m_creature->getVictim(), SPELL_SR_SHOOT, false);
+                    DoCast(m_creature->GetVictim(), SPELL_SR_SHOOT, false);
                     _Timer[2] = 5000;
                 }
-                if (m_creature->IsWithinMeleeRange(m_creature->getVictim(), 6))
+                if (m_creature->IsWithinMeleeRange(m_creature->GetVictim(), 6))
                 {
                     if (_Timer[3].Expired(diff))
                     {
-                        DoCast(m_creature->getVictim(), SPELL_SR_MULTI_SHOT, false);
+                        DoCast(m_creature->GetVictim(), SPELL_SR_MULTI_SHOT, false);
                         _Timer[3] = 7000;
                     }
                     DoMeleeAttackIfReady();
@@ -1276,7 +1276,7 @@ struct mob_sinster_reflectionAI : public ScriptedAI
             case CLASS_MAGE:
                 if (_Timer[1].Expired(diff))
                 {
-                    DoCast(m_creature->getVictim(), SPELL_SR_FIREBALL, false);
+                    DoCast(m_creature->GetVictim(), SPELL_SR_FIREBALL, false);
                     _Timer[1] = 3000;
                 }
                 DoMeleeAttackIfReady();
@@ -1284,7 +1284,7 @@ struct mob_sinster_reflectionAI : public ScriptedAI
             case CLASS_WARLOCK:
                 if (_Timer[1].Expired(diff))
                 {
-                    DoCast(m_creature->getVictim(), SPELL_SR_SHADOW_BOLT, false);
+                    DoCast(m_creature->GetVictim(), SPELL_SR_SHADOW_BOLT, false);
                     _Timer[1] = 4000;
                 }
                 if (_Timer[2].Expired(diff))
@@ -1298,7 +1298,7 @@ struct mob_sinster_reflectionAI : public ScriptedAI
             case CLASS_WARRIOR:
                 if (_Timer[1].Expired(diff))
                 {
-                    DoCast(m_creature->getVictim(), SPELL_SR_WHIRLWIND, false);
+                    DoCast(m_creature->GetVictim(), SPELL_SR_WHIRLWIND, false);
                     _Timer[1] = 10000;
                 }
                 DoMeleeAttackIfReady();
@@ -1306,12 +1306,12 @@ struct mob_sinster_reflectionAI : public ScriptedAI
             case CLASS_PALADIN:
                 if (_Timer[1].Expired(diff))
                 {
-                    DoCast(m_creature->getVictim(), SPELL_SR_HAMMER_OF_JUSTICE, false);
+                    DoCast(m_creature->GetVictim(), SPELL_SR_HAMMER_OF_JUSTICE, false);
                     _Timer[1] = 7000;
                 }
                 if (_Timer[2].Expired(diff))
                 {
-                    DoCast(m_creature->getVictim(), SPELL_SR_HOLY_SHOCK, false);
+                    DoCast(m_creature->GetVictim(), SPELL_SR_HOLY_SHOCK, false);
                     _Timer[2] = 3000;
                 }
                 DoMeleeAttackIfReady();
@@ -1319,7 +1319,7 @@ struct mob_sinster_reflectionAI : public ScriptedAI
             case CLASS_PRIEST:
                 if (_Timer[1].Expired(diff))
                 {
-                    DoCast(m_creature->getVictim(), SPELL_SR_HOLY_SMITE, false);
+                    DoCast(m_creature->GetVictim(), SPELL_SR_HOLY_SMITE, false);
                     _Timer[1] = 5000;
                 }
                 if (_Timer[2].Expired(diff) && (me->GetHealth()*2 < me->GetMaxHealth()))
@@ -1332,7 +1332,7 @@ struct mob_sinster_reflectionAI : public ScriptedAI
             case CLASS_SHAMAN:
                 if (_Timer[1].Expired(diff))
                 {
-                    DoCast(m_creature->getVictim(), SPELL_SR_EARTH_SHOCK, false);
+                    DoCast(m_creature->GetVictim(), SPELL_SR_EARTH_SHOCK, false);
                     _Timer[1] = 5000;
                 }
                 DoMeleeAttackIfReady();
@@ -1340,7 +1340,7 @@ struct mob_sinster_reflectionAI : public ScriptedAI
             case CLASS_ROGUE:
                 if (_Timer[1].Expired(diff))
                 {
-                    DoCast(m_creature->getVictim(), SPELL_SR_HEMORRHAGE, true);
+                    DoCast(m_creature->GetVictim(), SPELL_SR_HEMORRHAGE, true);
                     _Timer[1] = 5000;
                 }
                 DoMeleeAttackIfReady();

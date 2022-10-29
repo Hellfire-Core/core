@@ -42,8 +42,13 @@ class ChatCommand
         ChatCommand *      ChildCommands;
 };
 
+class PartyBotAI;
+class BattleBotAI;
+
 class ChatHandler
 {
+    friend class PartyBotAI;
+    friend class BattleBotAI;
     public:
         explicit ChatHandler(WorldSession* session) : m_session(session) {}
         explicit ChatHandler(Player* player) : m_session(player->GetSession()) {}
@@ -66,6 +71,7 @@ class ChatHandler
 
         virtual const char *GetHellgroundString(int32 entry) const;
 
+        WorldSession* GetSession() { return m_session; }
         virtual void SendSysMessage( const char *str);
         void SendSysMessage(         int32     entry);
         void PSendSysMessage(        const char *format, ...) ATTR_PRINTF(2,3);
@@ -131,6 +137,34 @@ class ChatHandler
         bool HandleBanListCharacterCommand(const char* args);
         bool HandleBanListIPCommand(const char* args);
         bool HandleBanListEmailCommand(const char* args);
+
+        // Bots commandes
+        bool HandleBotAddAllCommand(const char *);
+        bool HandleBotAddRandomCommand(const char *args);
+        bool HandleBotAddCommand(const char * args);
+        bool HandleBotDeleteCommand(const char * args);
+        bool HandleBotInfoCommand(const char * args);
+        bool HandleBotReloadCommand(const char * args);
+        bool HandleBotStopCommand(const char * args);
+        bool HandleBotStartCommand(const char * args);
+        bool PartyBotAddRequirementCheck(Player const* pPlayer, Player const* pTarget);
+        bool HandlePartyBotAddCommand(const char * args);
+        bool HandlePartyBotCloneCommand(const char * args);
+        bool HandlePartyBotLoadCommand(const char * args);
+        bool HandlePartyBotSetRoleCommand(const char * args);
+        bool HandlePartyBotAttackStartCommand(const char * args);
+        bool HandlePartyBotAttackStopCommand(const char * args);
+        bool HandlePartyBotAoECommand(const char * args);
+        bool HandlePartyBotControlMarkCommand(const char * args);
+        bool HandlePartyBotFocusMarkCommand(const char * args);
+        bool HandlePartyBotClearMarksCommand(const char * args);
+        bool HandlePartyBotComeToMeCommand(const char * args);
+        bool HandlePartyBotUseGObjectCommand(const char * args);
+        bool HandlePartyBotPauseHelper(char* args, bool pause);
+        bool HandlePartyBotPauseCommand(const char * args);
+        bool HandlePartyBotUnpauseCommand(const char * args);
+        bool HandlePartyBotUnequipCommand(const char * args);
+        bool HandlePartyBotRemoveCommand(const char * args);
 
         bool HandleCastCommand(const char *args);
         bool HandleCastBackCommand(const char *args);
@@ -638,6 +672,41 @@ class ChatHandler
         Player*   getSelectedPlayer();
         Creature* getSelectedCreature();
         Unit*     getSelectedUnit();
+
+        // extraction different type params from args string, all functions update (char** args) to first unparsed tail symbol at return
+        void  SkipWhiteSpaces(char** args);
+        bool  ExtractInt32(char** args, int32& val);
+        bool  ExtractOptInt32(char** args, int32& val, int32 defVal);
+        bool  ExtractUInt32Base(char** args, uint32& val, uint32 base);
+        bool  ExtractUInt32(char** args, uint32& val) { return ExtractUInt32Base(args,val, 10); }
+        bool  ExtractOptUInt32(char** args, uint32& val, uint32 defVal);
+        bool  ExtractFloat(char** args, float& val);
+        bool  ExtractOptFloat(char** args, float& val, float defVal);
+        char* ExtractQuotedArg(char** args, bool asis = false);
+                                                            // string with " or [] or ' around
+        char* ExtractLiteralArg(char** args, char const* lit = nullptr);
+                                                            // literal string (until whitespace and not started from "['|), any or 'lit' if provided
+        char* ExtractQuotedOrLiteralArg(char** args, bool asis = false);
+        bool  ExtractOnOff(char** args, bool& value);
+        char* ExtractLinkArg(char** args, char const* const* linkTypes = nullptr, int* foundIdx = nullptr, char** keyPair = nullptr, char** somethingPair = nullptr);
+                                                            // shift-link like arg (with aditional info if need)
+        char* ExtractArg(char** args, bool asis = false);   // any name/number/quote/shift-link strings
+        char* ExtractOptNotLastArg(char** args);            // extract name/number/quote/shift-link arg only if more data in args for parse
+
+        char* ExtractKeyFromLink(char** text, char const* linkType, char** something1 = nullptr);
+        char* ExtractKeyFromLink(char** text, char const* const* linkTypes, int* found_idx = nullptr, char** something1 = nullptr);
+        bool  ExtractUint32KeyFromLink(char** text, char const* linkType, uint32& value);
+
+        uint32 ExtractAccountId(char** args, std::string* accountName = nullptr, Player** targetIfNullArg = nullptr);
+        uint32 ExtractSpellIdFromLink(char** text);
+        ObjectGuid ExtractGuidFromLink(char** text);
+        GameTele const* ExtractGameTeleFromLink(char** text);
+        bool   ExtractLocationFromLink(char** text, uint32& mapid, float& x, float& y, float& z);
+        bool   ExtractRaceMask(char** text, uint32& raceMask, char const** maskName = nullptr);
+        std::string ExtractPlayerNameFromLink(char** text);
+        bool ExtractPlayerTarget(char** args, Player** player, ObjectGuid* player_guid = nullptr, std::string* player_name = nullptr, bool use_extended_response = false);
+                                                            // select by arg (name/link) or in-game selection online/offline player
+
         char*     extractKeyFromLink(char* text, char const* linkType, char** something1 = NULL);
         char*     extractKeyFromLink(char* text, char const* const* linkTypes, int* found_idx, char** something1 = NULL);
         uint32    extractSpellIdFromLink(char* text);

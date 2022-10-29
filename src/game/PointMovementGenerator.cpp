@@ -74,7 +74,7 @@ bool PointMovementGenerator<UNIT>::Update(UNIT &unit, const uint32 &diff)
 template<class UNIT>
 void PointMovementGenerator<UNIT>::Finalize(UNIT &unit)
 {
-    if (!unit.isAlive())
+    if (!unit.IsAlive())
         return;
 
     if (Creature *creature = unit.ToCreature())
@@ -107,7 +107,7 @@ void AssistanceMovementGenerator::Finalize(Unit &unit)
 {
     ((Creature*)&unit)->SetNoCallAssistance(false);
     ((Creature*)&unit)->CallAssistance();
-    if (unit.isAlive())
+    if (unit.IsAlive())
         unit.GetMotionMaster()->MoveSeekAssistanceDistract(sWorld.getConfig(CONFIG_CREATURE_FAMILY_ASSISTANCE_DELAY));
 }
 
@@ -119,7 +119,7 @@ bool EffectMovementGenerator::Update(Unit &unit, const uint32 &)
 void EffectMovementGenerator::Finalize(Unit &unit)
 {
     if (EffectId() == EVENT_CHARGE)
-        unit.clearUnitState(UNIT_STAT_CHARGING);
+        unit.ClearUnitState(UNIT_STAT_CHARGING);
 
     if (unit.GetTypeId() != TYPEID_UNIT)
         return;

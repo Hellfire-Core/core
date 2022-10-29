@@ -135,7 +135,7 @@ struct boss_alarAI : public ScriptedAI
         m_creature->ApplySpellImmune(0, IMMUNITY_SCHOOL, SPELL_SCHOOL_MASK_FIRE, true);
         m_creature->SetWalk(false);
         m_creature->SetLevitate(true);
-        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         m_creature->setActive(false);
         m_creature->addUnitState(UNIT_STAT_IGNORE_PATHFINDING);
@@ -157,7 +157,7 @@ struct boss_alarAI : public ScriptedAI
     void JustDied(Unit *Killer)
     {
         m_creature->SetDisplayId(m_creature->GetNativeDisplayId());
-        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         m_creature->Relocate(331.717987, -0.059397, -2.389479);                        //prevent loot-bug and mid-air stuck, hope it will work after dc too
 
@@ -212,7 +212,7 @@ struct boss_alarAI : public ScriptedAI
                 }
                 m_creature->InterruptNonMeleeSpells(true);
                 m_creature->RemoveAllAuras();
-                m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                 m_creature->AttackStop();
                 m_creature->SetSelection(0);
                 m_creature->SetSpeed(MOVE_RUN, 5.0f);
@@ -252,8 +252,8 @@ struct boss_alarAI : public ScriptedAI
         for(Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
         {
             Player* i_pl = i->getSource();
-            if (i_pl && i_pl->isAlive() && !i_pl->isGameMaster() &&
-                i_pl->isInCombat() && !i_pl->HasFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_FEIGN_DEATH) &&
+            if (i_pl && i_pl->IsAlive() && !i_pl->IsGameMaster() &&
+                i_pl->IsInCombat() && !i_pl->HasFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_FEIGN_DEATH) &&
                 i_pl->IsWithinDistInMap(&wLoc, 135))
                     return true;
         }
@@ -263,7 +263,7 @@ struct boss_alarAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!m_creature->isInCombat()) // sometimes isincombat but !incombat, faction bug?
+        if(!m_creature->IsInCombat()) // sometimes isincombat but !incombat, faction bug?
             return;
 
         if (checkTimer.Expired(diff))
@@ -325,7 +325,7 @@ struct boss_alarAI : public ScriptedAI
                             m_creature->SetHealth(m_creature->GetMaxHealth());
                             m_creature->SetSpeed(MOVE_RUN, DefaultMoveSpeedRate);
                             m_creature->SetSpeed(MOVE_FLIGHT, DefaultMoveSpeedRate);
-                            m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                            m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                             DoZoneInCombat();
                             m_creature->CastSpell(m_creature, SPELL_REBIRTH, true);
                             MeltArmor_Timer = 60000;
@@ -375,14 +375,14 @@ struct boss_alarAI : public ScriptedAI
                             m_creature->SetFloatValue(UNIT_FIELD_BOUNDINGRADIUS, 10);
                             m_creature->SetReactState(REACT_AGGRESSIVE);
                             m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                            m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                            m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                             m_creature->SetDisplayId(m_creature->GetNativeDisplayId());
                             m_creature->CastSpell(m_creature, SPELL_REBIRTH_2, true);
                             if(Unit *top = SelectUnit(SELECT_TARGET_TOPAGGRO,0))
                                 AttackStart(top);
                             break;
                         case WE_TRULY_DIE:
-                            m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                            m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                             m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                             m_creature->DealDamage(m_creature, m_creature->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
                             break;
@@ -439,7 +439,7 @@ struct boss_alarAI : public ScriptedAI
         {
             if(Charge_Timer.Expired(diff))
             {
-                Unit *temp = m_creature->getVictim();
+                Unit *temp = m_creature->GetVictim();
                 if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 1, GetSpellMaxRange(SPELL_CHARGE), true, m_creature->getVictimGUID()))
                     DoCast(target, SPELL_CHARGE);
 
@@ -449,7 +449,7 @@ struct boss_alarAI : public ScriptedAI
 
             if(MeltArmor_Timer.Expired(diff))
             {
-                DoCast(m_creature->getVictim(), SPELL_MELT_ARMOR);
+                DoCast(m_creature->GetVictim(), SPELL_MELT_ARMOR);
                 MeltArmor_Timer = 60000;
             }
 
@@ -459,7 +459,7 @@ struct boss_alarAI : public ScriptedAI
                 m_creature->AttackStop();
                 m_creature->GetMotionMaster()->MovePoint(6, waypoint[6][0], waypoint[6][1], waypoint[6][2]);
                 m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                 m_creature->SetFloatValue(UNIT_FIELD_BOUNDINGRADIUS, 50);
                 WaitEvent = WE_METEOR;
                 WaitTimer = 0;
@@ -484,10 +484,10 @@ struct boss_alarAI : public ScriptedAI
         if (m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE))
             m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
 
-        if (m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
-            m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        if (m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING))
+            m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
 
-        Unit *temp = m_creature->getVictim();
+        Unit *temp = m_creature->GetVictim();
 
         if (!temp || !m_creature->canAttack(temp))
         {
@@ -499,7 +499,7 @@ struct boss_alarAI : public ScriptedAI
 
         if (temp && m_creature->IsWithinMeleeRange(temp))
         {
-            if(m_creature->hasUnitState(UNIT_STAT_CASTING)) // TO JEST DO POTWIERDZENIA:
+            if(m_creature->HasUnitState(UNIT_STAT_CASTING)) // TO JEST DO POTWIERDZENIA:
                 m_creature->InterruptNonMeleeSpells(true);  // PRZERWAC CASTA FLAME BUFFET,
                                                             // GDY CEL ZNAJDZIE SIE W MELEE RANGE CZY NIE !
             UnitAI::DoMeleeAttackIfReady();
@@ -555,7 +555,7 @@ struct mob_ember_of_alarAI : public ScriptedAI
         {
             if(Creature* Alar = Creature::GetCreature((*m_creature), pInstance->GetData64(DATA_ALAR)))
             {
-                if((!((boss_alarAI*)Alar->AI())->Phase1) && Alar->isAlive())
+                if((!((boss_alarAI*)Alar->AI())->Phase1) && Alar->IsAlive())
                 {
                     int AlarHealth = Alar->GetHealth() - Alar->GetMaxHealth()*0.01;
 

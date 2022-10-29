@@ -120,7 +120,7 @@ bool GossipHello_npc_tirion_fordring(Player *player, Creature *_Creature)
     if (_Creature->isQuestGiver())
         player->PrepareQuestMenu( _Creature->GetGUID() );
 
-    if (player->GetQuestStatus(5742) == QUEST_STATUS_INCOMPLETE && player->getStandState() == PLAYER_STATE_SIT )
+    if (player->GetQuestStatus(5742) == QUEST_STATUS_INCOMPLETE && player->GetStandState() == PLAYER_STATE_SIT )
         player->ADD_GOSSIP_ITEM( 0, "I am ready to hear your tale, Tirion.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
 
     player->SEND_GOSSIP_MENU(_Creature->GetNpcTextId(), _Creature->GetGUID());
@@ -170,7 +170,7 @@ struct mobs_scourge_archerAI : public ScriptedAI
 
     void MoveInLineOfSight(Unit * unit)
     {
-        if(me->isInCombat())
+        if(me->IsInCombat())
             return;
 
         if(unit->GetEntry() == NPC_INJURED_PEASANT)
@@ -184,7 +184,7 @@ struct mobs_scourge_archerAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!me->getVictim())
+        if(!me->GetVictim())
             return;
 
         if (Shoot_Timer.Expired(diff))
@@ -276,7 +276,7 @@ struct trigger_epic_staffAI : public TriggerAI
     {
         if(creature->GetEntry() == NPC_INJURED_PEASANT || creature->GetEntry() == NPC_PLAGUED_PEASANT)
         { 
-            if(creature->isAlive())
+            if(creature->IsAlive())
                 Counter++;
             else
                 FailCounter++;
@@ -327,7 +327,7 @@ struct mobs_Scourge_FootsoldierAI : public ScriptedAI
 
     void MoveInLineOfSight(Unit * unit)
     {
-        if(me->isInCombat())
+        if(me->IsInCombat())
             return;
 
         if(unit->GetTypeId() == TYPEID_PLAYER)

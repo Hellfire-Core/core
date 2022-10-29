@@ -91,7 +91,7 @@ struct boss_twinemperorsAI : public ScriptedAI
         AfterTeleportTimer = 0;
         Abuse_Bug_Timer = 10000 + rand()%7000;
         BugsTimer = 2000;
-        m_creature->clearUnitState(UNIT_STAT_STUNNED);
+        m_creature->ClearUnitState(UNIT_STAT_STUNNED);
         DontYellWhenDead = false;
         EnrageTimer = 15*60000;
 
@@ -160,7 +160,7 @@ struct boss_twinemperorsAI : public ScriptedAI
             // TODO: we should activate the other boss location so he can start attackning even if nobody
             // is near I dont know how to do that
             ScriptedAI *otherAI = (ScriptedAI*)pOtherBoss->AI();
-            if (!pOtherBoss->isInCombat())
+            if (!pOtherBoss->IsInCombat())
             {
                 DoPlaySoundToSet(m_creature, IAmVeklor() ? SOUND_VL_AGGRO : SOUND_VN_AGGRO);
                 otherAI->AttackStart(who);
@@ -265,7 +265,7 @@ struct boss_twinemperorsAI : public ScriptedAI
         {
             if (!tspellCast)
             {
-                m_creature->clearUnitState(UNIT_STAT_STUNNED);
+                m_creature->ClearUnitState(UNIT_STAT_STUNNED);
                 DoCast(m_creature, SPELL_TWIN_TELEPORT);
                 m_creature->addUnitState(UNIT_STAT_STUNNED);
             }
@@ -275,7 +275,7 @@ struct boss_twinemperorsAI : public ScriptedAI
             if (AfterTeleportTimer.Expired(diff))
             {
                 AfterTeleport = false;
-                m_creature->clearUnitState(UNIT_STAT_STUNNED);
+                m_creature->ClearUnitState(UNIT_STAT_STUNNED);
                 Unit *nearu = m_creature->SelectNearestTarget(100);
                 //DoYell(nearu->GetName(), LANG_UNIVERSAL, 0);
                 if(nearu)
@@ -303,7 +303,7 @@ struct boss_twinemperorsAI : public ScriptedAI
 
     void MoveInLineOfSight(Unit *who)
     {
-        if (!who || m_creature->getVictim())
+        if (!who || m_creature->GetVictim())
             return;
 
         if (who->isTargetableForAttack() && who->isInAccessiblePlacefor(m_creature) && m_creature->IsHostileTo(who))
@@ -349,7 +349,7 @@ struct boss_twinemperorsAI : public ScriptedAI
         for(std::list<Creature*>::iterator iter = unitList.begin(); iter != unitList.end(); ++iter)
         {
             Creature *c = (Creature *)(*iter);
-            if (c && c->isDead())
+            if (c && c->IsDead())
             {
                 c->Respawn();
                 c->setFaction(7);
@@ -455,7 +455,7 @@ struct boss_veknilashAI : public boss_twinemperorsAI
         //UnbalancingStrike_Timer
         if (UnbalancingStrike_Timer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(),SPELL_UNBALANCING_STRIKE);
+            DoCast(m_creature->GetVictim(),SPELL_UNBALANCING_STRIKE);
             UnbalancingStrike_Timer = 8000+rand()%12000;
         }
 
@@ -544,9 +544,9 @@ struct boss_veklorAI : public boss_twinemperorsAI
         if (ShadowBolt_Timer.Expired(diff))
         {
             if (m_creature->IsWithinDistInMap(m_creature, 45))
-                m_creature->GetMotionMaster()->MoveChase(m_creature->getVictim(), VEKLOR_DIST, 0);
+                m_creature->GetMotionMaster()->MoveChase(m_creature->GetVictim(), VEKLOR_DIST, 0);
             else
-                DoCast(m_creature->getVictim(),SPELL_SHADOWBOLT);
+                DoCast(m_creature->GetVictim(),SPELL_SHADOWBOLT);
             ShadowBolt_Timer = 2000;
         }
 
@@ -601,7 +601,7 @@ struct boss_veklorAI : public boss_twinemperorsAI
                 m_creature->AddThreat(who, 0.0f);
             }
 
-            if (!m_creature->isInCombat())
+            if (!m_creature->IsInCombat())
                 EnterCombat(who);
         }
     }

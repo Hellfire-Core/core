@@ -187,7 +187,7 @@ struct boss_gurtogg_bloodboilAI : public ScriptedAI
             {
                 if (Player* i_pl = i->getSource())
                 {
-                    if(i_pl && i_pl->isAlive() && !i_pl->isGameMaster())
+                    if(i_pl && i_pl->IsAlive() && !i_pl->IsGameMaster())
                         targets.push_back(i_pl);
                 }
             }
@@ -203,7 +203,7 @@ struct boss_gurtogg_bloodboilAI : public ScriptedAI
         for (std::list<Unit *>::iterator itr = targets.begin(); itr != targets.end(); ++itr)
         {
             Unit* target = *itr;
-            if (target && target->isAlive())
+            if (target && target->IsAlive())
                 ForceSpellCast(target, SPELL_BLOODBOIL, INTERRUPT_AND_CAST_INSTANTLY, true);
         }
         targets.clear();
@@ -248,7 +248,7 @@ struct boss_gurtogg_bloodboilAI : public ScriptedAI
 
         if (ArcingSmashTimer.Expired(diff))
         {
-            ForceSpellCast(m_creature->getVictim(), SPELL_ARCING_SMASH, DONT_INTERRUPT, false, true);
+            ForceSpellCast(m_creature->GetVictim(), SPELL_ARCING_SMASH, DONT_INTERRUPT, false, true);
             ArcingSmashTimer = 10000;
         }
 
@@ -264,7 +264,7 @@ struct boss_gurtogg_bloodboilAI : public ScriptedAI
             }
             else
             {
-                AddSpellToCast(m_creature->getVictim(), SPELL_FEL_ACID);
+                AddSpellToCast(m_creature->GetVictim(), SPELL_FEL_ACID);
                 FelAcidTimer = urand(5000, 25000);
             }
         }
@@ -273,13 +273,13 @@ struct boss_gurtogg_bloodboilAI : public ScriptedAI
         {
             if (AcidicWoundTimer.Expired(diff))
             {
-                AddSpellToCast(m_creature->getVictim(), SPELL_ACIDIC_WOUND);
+                AddSpellToCast(m_creature->GetVictim(), SPELL_ACIDIC_WOUND);
                 AcidicWoundTimer = 2000;
             }
 
             if (BewilderingStrikeTimer.Expired(diff))
             {
-                AddSpellToCast(m_creature->getVictim(), SPELL_BEWILDERING_STRIKE);
+                AddSpellToCast(m_creature->GetVictim(), SPELL_BEWILDERING_STRIKE);
                 BewilderingStrikeTimer = urand(5000, 65000);
             }
 
@@ -291,7 +291,7 @@ struct boss_gurtogg_bloodboilAI : public ScriptedAI
 
             if (EjectTimer.Expired(diff))
             {
-                AddSpellToCast(m_creature->getVictim(), SPELL_EJECT);
+                AddSpellToCast(m_creature->GetVictim(), SPELL_EJECT);
                 EjectTimer = 15000;
             }
         }
@@ -299,7 +299,7 @@ struct boss_gurtogg_bloodboilAI : public ScriptedAI
         {
             if (ChargeTimer.Expired(diff))
             {
-                Unit *pVictim = m_creature->getVictim();
+                Unit *pVictim = m_creature->GetVictim();
 
                 if (!m_creature->IsWithinDistInMap(pVictim, 5.0f))
                 {

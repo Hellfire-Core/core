@@ -216,7 +216,7 @@ struct boss_nightbaneAI : public ScriptedAI
     void MoveInLineOfSight(Unit *who)
     {
         if (!Intro && !Flying)
-            if (!m_creature->getVictim() && m_creature->canStartAttack(who))
+            if (!m_creature->GetVictim() && m_creature->canStartAttack(who))
                 ScriptedAI::AttackStart(who);
     }
 
@@ -225,7 +225,7 @@ struct boss_nightbaneAI : public ScriptedAI
         if (type != POINT_MOTION_TYPE)
         {
             if (Flying)
-                DoStartNoMovement(me->getVictim()); // TODO: remove after fixing weird stuff with movement and targets while casting spellz
+                DoStartNoMovement(me->GetVictim()); // TODO: remove after fixing weird stuff with movement and targets while casting spellz
             return;
         }
 
@@ -254,7 +254,7 @@ struct boss_nightbaneAI : public ScriptedAI
     {
         if (summoned->GetPositionZ() < 85.0f)
         {
-            if (Unit* victim = me->getVictim())
+            if (Unit* victim = me->GetVictim())
                 summoned->Relocate(victim->GetPositionX(), victim->GetPositionY(), victim->GetPositionZ());
             else
             {
@@ -263,7 +263,7 @@ struct boss_nightbaneAI : public ScriptedAI
             }
         }
 
-        summoned->AI()->AttackStart(m_creature->getVictim());
+        summoned->AI()->AttackStart(m_creature->GetVictim());
         summoned->AddAura(SPELL_IMMOLATION,summoned);
     }
     
@@ -334,7 +334,7 @@ struct boss_nightbaneAI : public ScriptedAI
             WaitTimer = 0;
         }
 
-        if (!Flying || !me->isInCombat())
+        if (!Flying || !me->IsInCombat())
             if (!UpdateVictim())
                 return;
 
@@ -344,25 +344,25 @@ struct boss_nightbaneAI : public ScriptedAI
         {
             if (Movement)
             {
-                DoStartMovement(m_creature->getVictim());
+                DoStartMovement(m_creature->GetVictim());
                 Movement = false;
             }
 
             if (BellowingRoarTimer.Expired(diff))
             {
-                DoCast(m_creature->getVictim(), SPELL_BELLOWING_ROAR);
+                DoCast(m_creature->GetVictim(), SPELL_BELLOWING_ROAR);
                 BellowingRoarTimer = urand(20000, 30000);
             }
 
             if (SmolderingBreathTimer.Expired(diff))
             {
-                DoCast(m_creature->getVictim(), SPELL_SMOLDERING_BREATH);
+                DoCast(m_creature->GetVictim(), SPELL_SMOLDERING_BREATH);
                 SmolderingBreathTimer = urand(14000, 20000);
             }
 
             if (Cleave_Timer.Expired(diff))
             {
-                DoCast(m_creature->getVictim(), SPELL_CLEAVE);
+                DoCast(m_creature->GetVictim(), SPELL_CLEAVE);
                 Cleave_Timer = urand(6000, 12000);
             }
 
@@ -421,7 +421,7 @@ struct boss_nightbaneAI : public ScriptedAI
 
             if (SmokingBlastTimer.Expired(diff))
             {
-                DoCast(m_creature->getVictim(), SPELL_SMOKING_BLAST);
+                DoCast(m_creature->GetVictim(), SPELL_SMOKING_BLAST);
                 SmokingBlastTimer = urand(1000, 3000);
             }
 
@@ -436,7 +436,7 @@ struct boss_nightbaneAI : public ScriptedAI
             {
                 if (Unit* target = SelectUnit(SELECT_TARGET_FARTHEST, 0, 1000.0f, true))
                     if (!target->IsWithinLOSInMap(me))
-                        DoCast(m_creature->getVictim(), SPELL_FIREBALL_BARRAGE);
+                        DoCast(m_creature->GetVictim(), SPELL_FIREBALL_BARRAGE);
                 FireballBarrageTimer = urand(3000, 6000);
             }
 
@@ -445,7 +445,7 @@ struct boss_nightbaneAI : public ScriptedAI
                 if (Creature* skeleton = m_creature->GetMap()->GetCreatureById(NPC_SKELETON, GET_ALIVE_CREATURE_GUID))
                 {
                     FlyCheckTimer = 1000;
-                    if (skeleton->isAlive() && !skeleton->isInCombat())
+                    if (skeleton->IsAlive() && !skeleton->IsInCombat())
                         skeleton->ForcedDespawn();
                 }
                 else

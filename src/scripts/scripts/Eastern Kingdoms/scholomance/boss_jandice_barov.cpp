@@ -104,7 +104,7 @@ struct boss_jandicebarovAI : public ScriptedAI
         if (CurseOfBlood_Timer <= diff)
         {
             //Cast
-            DoCast(m_creature->getVictim(),SPELL_CURSEOFBLOOD);
+            DoCast(m_creature->GetVictim(),SPELL_CURSEOFBLOOD);
 
             //45 seconds
             CurseOfBlood_Timer += 30000;
@@ -119,7 +119,7 @@ struct boss_jandicebarovAI : public ScriptedAI
             m_creature->setFaction(35);
             m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             m_creature->SetUInt32Value(UNIT_FIELD_DISPLAYID,11686);  // Invisible Model
-            DoModifyThreatPercent(m_creature->getVictim(),-99);
+            DoModifyThreatPercent(m_creature->GetVictim(),-99);
 
             //Summon 10 Illusions attacking random gamers
             Unit* target = NULL;
@@ -141,7 +141,7 @@ struct boss_jandicebarovAI : public ScriptedAI
         //            if (Illusion_Timer <= diff)
         //            {
         //                  //Cast
-        //                DoCast(m_creature->getVictim(),SPELL_ILLUSION);
+        //                DoCast(m_creature->GetVictim(),SPELL_ILLUSION);
         //
         //                  //3 Illusion will be summoned
         //                  if (Illusioncounter < 3)

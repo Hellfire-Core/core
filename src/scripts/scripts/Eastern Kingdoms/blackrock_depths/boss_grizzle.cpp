@@ -55,7 +55,7 @@ struct boss_grizzleAI : public ScriptedAI
         GroundTremor_Timer -= diff;
         if (GroundTremor_Timer <= diff)
         {
-            DoCast(me->getVictim(),SPELL_GROUNDTREMOR);
+            DoCast(me->GetVictim(),SPELL_GROUNDTREMOR);
             GroundTremor_Timer += 8000;
         }
 

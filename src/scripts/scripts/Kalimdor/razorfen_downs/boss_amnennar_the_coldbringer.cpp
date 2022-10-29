@@ -109,7 +109,7 @@ struct boss_amnennar_the_coldbringerAI : public ScriptedAI
         AmnenarsWrath_Timer -= diff;
         if (AmnenarsWrath_Timer <= diff)
         {
-            AddSpellToCast(me->getVictim(),SPELL_AMNENNARSWRATH);
+            AddSpellToCast(me->GetVictim(),SPELL_AMNENNARSWRATH);
             AmnenarsWrath_Timer += 12000;
         }
 

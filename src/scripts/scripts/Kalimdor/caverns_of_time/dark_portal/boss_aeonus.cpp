@@ -80,7 +80,7 @@ struct boss_aeonusAI : public ScriptedAI
         //Despawn Time Keeper
         if (who->GetTypeId() == TYPEID_UNIT && who->GetEntry() == C_TIME_KEEPER)
         {
-            if (me->isAlive() && m_creature->IsWithinDistInMap(who,20.0f))
+            if (me->IsAlive() && m_creature->IsWithinDistInMap(who,20.0f))
             {
                 DoScriptText(SAY_BANISH, m_creature);
                 who->ToCreature()->ForcedDespawn();
@@ -120,7 +120,7 @@ struct boss_aeonusAI : public ScriptedAI
 
         if (Cleave_Timer.Expired(diff))
         {
-            AddSpellToCast(m_creature->getVictim(), SPELL_CLEAVE);
+            AddSpellToCast(m_creature->GetVictim(), SPELL_CLEAVE);
             Cleave_Timer = 6000+rand()%4000;
         }
         
@@ -128,7 +128,7 @@ struct boss_aeonusAI : public ScriptedAI
 
         if (SandBreath_Timer.Expired(diff))
         {
-            AddSpellToCast(m_creature->getVictim(), HeroicMode ? H_SPELL_SAND_BREATH : SPELL_SAND_BREATH);
+            AddSpellToCast(m_creature->GetVictim(), HeroicMode ? H_SPELL_SAND_BREATH : SPELL_SAND_BREATH);
             SandBreath_Timer = 30000;
         }
         
@@ -136,7 +136,7 @@ struct boss_aeonusAI : public ScriptedAI
 
         if (TimeStop_Timer.Expired(diff))
         {
-            AddSpellToCast(m_creature->getVictim(), SPELL_TIME_STOP);
+            AddSpellToCast(m_creature->GetVictim(), SPELL_TIME_STOP);
             TimeStop_Timer = 40000;
         }
         

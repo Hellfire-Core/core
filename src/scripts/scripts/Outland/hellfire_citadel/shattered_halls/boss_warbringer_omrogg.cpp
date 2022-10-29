@@ -225,7 +225,7 @@ struct boss_warbringer_omroggAI : public ScriptedAI
         if (summoned->GetEntry() == ENTRY_RIGHT_HEAD)
             RightHead = summoned->GetGUID();
 
-        //summoned->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        //summoned->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         //summoned->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         summoned->SetVisibility(VISIBILITY_OFF);
     }

@@ -230,8 +230,8 @@ void SocialMgr::GetFriendInfo(Player *player, uint32 friendGUID, FriendInfo &fri
             if (pFriend->InArena())
                 friendInfo.Area = sTerrainMgr.GetZoneId(pFriend->GetBattleGroundEntryPointMap(), pFriend->GetBattleGroundEntryPointX(), pFriend->GetBattleGroundEntryPointY(), pFriend->GetBattleGroundEntryPointZ());
 
-        friendInfo.Level = pFriend->getLevel();
-        friendInfo.Class = pFriend->getClass();
+        friendInfo.Level = pFriend->GetLevel();
+        friendInfo.Class = pFriend->GetClass();
     }
 }
 

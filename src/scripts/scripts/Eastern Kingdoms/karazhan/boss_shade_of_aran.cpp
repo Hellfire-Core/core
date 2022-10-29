@@ -394,7 +394,7 @@ struct boss_aranAI : public Scripted_NoMovementAI
                 Creature* pUnit = m_creature->SummonCreature(CREATURE_SHADOW_OF_ARAN, shadowOfAranSpawnPoints[0][i], shadowOfAranSpawnPoints[1][i], m_creature->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 5000);
                 if (pUnit)
                 {
-                    pUnit->Attack(m_creature->getVictim(), true);
+                    pUnit->Attack(m_creature->GetVictim(), true);
                     pUnit->setFaction(m_creature->getFaction());
                 }
             }
@@ -427,7 +427,7 @@ struct boss_aranAI : public Scripted_NoMovementAI
     {
         if (c->GetEntry() == 17167)
         {
-            c->AI()->AttackStart(m_creature->getVictim());
+            c->AI()->AttackStart(m_creature->GetVictim());
             c->setFaction(m_creature->getFaction());
         }
     }
@@ -488,8 +488,8 @@ struct water_elementalAI : public ScriptedAI
         CastTimer -= diff;
         if (CastTimer <= diff)
         {
-            //AddSpellToCast(m_creature->getVictim(), SPELL_WATERBOLT);
-            DoCast(m_creature->getVictim(), SPELL_WATERBOLT);
+            //AddSpellToCast(m_creature->GetVictim(), SPELL_WATERBOLT);
+            DoCast(m_creature->GetVictim(), SPELL_WATERBOLT);
             CastTimer += 2000 + (rand()%3000);
         }
         

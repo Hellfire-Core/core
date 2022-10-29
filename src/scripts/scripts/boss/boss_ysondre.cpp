@@ -112,7 +112,7 @@ struct boss_ysondreAI : public ScriptedAI
         NoxiousBreath_Timer -= diff;
         if (NoxiousBreath_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_NOXIOUSBREATH);
+            DoCast(m_creature->GetVictim(),SPELL_NOXIOUSBREATH);
             NoxiousBreath_Timer += 14000 + rand()%6000;
         }
         
@@ -132,7 +132,7 @@ struct boss_ysondreAI : public ScriptedAI
         //MarkOfNature_Timer -= diff;
         //if (MarkOfNature_Timer <= diff)
         //{
-        //    DoCast(m_creature->getVictim(),SPELL_MARKOFNATURE);
+        //    DoCast(m_creature->GetVictim(),SPELL_MARKOFNATURE);
         //    MarkOfNature_Timer += 45000;
         //}
 
@@ -226,7 +226,7 @@ struct mob_dementeddruidsAI : public ScriptedAI
         MoonFire_Timer -= diff;
         if (MoonFire_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_MOONFIRE);
+            DoCast(m_creature->GetVictim(),SPELL_MOONFIRE);
             MoonFire_Timer += 5000;
         }
         

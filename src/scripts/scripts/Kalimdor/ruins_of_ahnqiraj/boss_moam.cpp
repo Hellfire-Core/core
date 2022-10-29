@@ -113,7 +113,7 @@ struct boss_moamAI : public ScriptedAI
                 SUMMONMANA_Timer = 90000;
                 DRAINMANA_Timer = 5000;
             }
-            DoCast(m_creature->getVictim(),SPELL_ARCANEERUPTION);
+            DoCast(m_creature->GetVictim(),SPELL_ARCANEERUPTION);
             DoScriptText(EMOTE_MANA_FULL, m_creature);
         }
 
@@ -130,9 +130,9 @@ struct boss_moamAI : public ScriptedAI
             else if (!stoned)
             {
                 //3 different spells, because of 3 different positions
-                DoCast(m_creature->getVictim(),SPELL_SUMMONMANA);
-                DoCast(m_creature->getVictim(),SPELL_SUMMONMANA+1);
-                DoCast(m_creature->getVictim(),SPELL_SUMMONMANA+2);
+                DoCast(m_creature->GetVictim(),SPELL_SUMMONMANA);
+                DoCast(m_creature->GetVictim(),SPELL_SUMMONMANA+1);
+                DoCast(m_creature->GetVictim(),SPELL_SUMMONMANA+2);
                 DoCast(m_creature, SPELL_ENERGIZE);
                 SUMMONMANA_Timer += 90000;
                 DRAINMANA_Timer = 90000;
@@ -144,7 +144,7 @@ struct boss_moamAI : public ScriptedAI
         TRAMPLE_Timer -= diff;
         if (TRAMPLE_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_TRAMPLE);
+            DoCast(m_creature->GetVictim(),SPELL_TRAMPLE);
             TRAMPLE_Timer += 30000;
         }
         
@@ -157,7 +157,7 @@ struct boss_moamAI : public ScriptedAI
                             {
                                 Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 80.0, true);
                                 if(!target)
-                                    target = m_creature->getVictim();
+                                    target = m_creature->GetVictim();
 
                                 if(target)
                                     DoCast(target, SPELL_DRAINMANA, true);
@@ -198,7 +198,7 @@ struct mana_fiendAI : public ScriptedAI
             return;
         if (Arcane_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(), SPELL_ARCANEEXPLOSION);
+            DoCast(m_creature->GetVictim(), SPELL_ARCANEEXPLOSION);
             Arcane_Timer = 3000;
         }
         else Arcane_Timer -= diff;

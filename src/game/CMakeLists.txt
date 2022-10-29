@@ -8,6 +8,7 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/vmap
   ${CMAKE_CURRENT_SOURCE_DIR}/movemap
   ${CMAKE_SOURCE_DIR}/dep/include
+  ${CMAKE_SOURCE_DIR}/src/game/PlayerBots
   ${CMAKE_SOURCE_DIR}/src/shared
   ${CMAKE_SOURCE_DIR}/src/shared/Database
   ${CMAKE_SOURCE_DIR}/src/framework
@@ -53,6 +54,10 @@ source_group("Chat Commands"
 
 source_group("Tool"
   REGULAR_EXPRESSION Language
+)
+
+source_group("PlayerBots"
+  REGULAR_EXPRESSION Bot
 )
 
 source_group("References"

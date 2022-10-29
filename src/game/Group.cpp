@@ -46,7 +46,7 @@ Group::Group()
     m_subGroupsCounts   = NULL;
     m_leaderLogoutTime  = 0;
 
-    for (int i = 0; i< TARGETICONCOUNT; i++)
+    for (int i = 0; i< TARGET_ICON_COUNT; i++)
         m_targetIcons[i] = 0;
 }
 
@@ -177,7 +177,7 @@ bool Group::LoadGroupFromDB(const uint64 &leaderGuid, QueryResultAutoPtr result,
     m_looterGuid = MAKE_NEW_GUID((*result)[3].GetUInt32(), 0, HIGHGUID_PLAYER);
     m_lootThreshold = (ItemQualities)(*result)[4].GetUInt16();
 
-    for (int i=0; i < TARGETICONCOUNT; i++)
+    for (int i=0; i < TARGET_ICON_COUNT; i++)
         m_targetIcons[i] = (*result)[5+i].GetUInt64();
 
     if (loadMembers)
@@ -324,7 +324,7 @@ bool Group::AddMember(const uint64 &guid, const char* name, bool lfg)
             // including raid/heroic instances that they are not permanently bound to!
             player->ResetInstances(INSTANCE_RESET_GROUP_JOIN);
 
-            if (player->getLevel() >= LEVELREQUIREMENT_HEROIC && player->GetDifficulty() != GetDifficulty())
+            if (player->GetLevel() >= LEVELREQUIREMENT_HEROIC && player->GetDifficulty() != GetDifficulty())
             {
                 player->SetDifficulty(m_difficulty);
                 player->SendDungeonDifficulty(true);
@@ -675,12 +675,12 @@ void Group::SendMasterLoot(Loot* loot, WorldObject* object)
 
 void Group::SetTargetIcon(uint8 id, uint64 guid)
 {
-    if (id >= TARGETICONCOUNT)
+    if (id >= TARGET_ICON_COUNT)
         return;
 
     // clean other icons
     if (guid != 0)
-        for (int i=0; i<TARGETICONCOUNT; i++)
+        for (int i=0; i<TARGET_ICON_COUNT; i++)
             if (m_targetIcons[i] == guid)
                 SetTargetIcon(i, 0);
 
@@ -698,23 +698,23 @@ void Group::GetDataForXPAtKill(Unit const* victim, uint32& count,uint32& sum_lev
     for (GroupReference *itr = GetFirstMember(); itr != NULL; itr = itr->next())
     {
         Player* member = itr->getSource();
-        if (!member || !member->isAlive())                   // only for alive
+        if (!member || !member->IsAlive())                   // only for alive
             continue;
 
         if (!member->IsAtGroupRewardDistance(victim))        // at req. distance
             continue;
 
         ++count;
-        sum_level += member->getLevel();
+        sum_level += member->GetLevel();
         // store maximum member level
-        if (!member_with_max_level || member_with_max_level->getLevel() < member->getLevel())
+        if (!member_with_max_level || member_with_max_level->GetLevel() < member->GetLevel())
             member_with_max_level = member;
 
-        uint32 gray_level = Hellground::XP::GetGrayLevel(member->getLevel());
+        uint32 gray_level = Hellground::XP::GetGrayLevel(member->GetLevel());
         // if the victim is higher level than the gray level of the currently examined group member,
         // then set not_gray_member_with_max_level if needed.
-        if (victim->getLevel() > gray_level && (!not_gray_member_with_max_level
-           || not_gray_member_with_max_level->getLevel() < member->getLevel()))
+        if (victim->GetLevel() > gray_level && (!not_gray_member_with_max_level
+           || not_gray_member_with_max_level->GetLevel() < member->GetLevel()))
             not_gray_member_with_max_level = member;
     }
 }
@@ -724,10 +724,10 @@ void Group::SendTargetIconList(WorldSession *session)
     if (!session)
         return;
 
-    WorldPacket data(MSG_RAID_TARGET_UPDATE, (1+TARGETICONCOUNT*9));
+    WorldPacket data(MSG_RAID_TARGET_UPDATE, (1+TARGET_ICON_COUNT*9));
     data << (uint8)1;
 
-    for (int i=0; i<TARGETICONCOUNT; i++)
+    for (int i=0; i<TARGET_ICON_COUNT; i++)
     {
         if (m_targetIcons[i] == 0)
             continue;
@@ -943,7 +943,7 @@ bool Group::_addMember(const uint64 &guid, const char* name, bool isAssistant, u
 
     if (!isRaidGroup())                                      // reset targetIcons for non-raid-groups
     {
-        for (int i=0; i<TARGETICONCOUNT; i++)
+        for (int i=0; i<TARGET_ICON_COUNT; i++)
             m_targetIcons[i] = 0;
     }
 
@@ -1302,7 +1302,7 @@ uint32 Group::CanJoinBattleGroundQueue(BattleGroundTypeId bgTypeId, BattleGround
         if (member->GetTeam() != team)
             return BG_JOIN_ERR_MIXED_FACTION;
         // not in the same battleground level bracket, don't let join
-        if (member->GetBattleGroundBracketIdFromLevel(bgTypeId) != bracket_id || member->getLevel() < 10)
+        if (member->GetBattleGroundBracketIdFromLevel(bgTypeId) != bracket_id || member->GetLevel() < 10)
             return BG_JOIN_ERR_MIXED_LEVELS;
         // don't let join rated matches if the arena team id doesn't match
         if (isRated && member->GetArenaTeamId(arenaSlot) != arenaTeamId)
@@ -1336,7 +1336,7 @@ void Group::SetDifficulty(uint8 difficulty)
     for (GroupReference *itr = GetFirstMember(); itr != NULL; itr = itr->next())
     {
         Player *player = itr->getSource();
-        if (!player->GetSession() || player->getLevel() < LEVELREQUIREMENT_HEROIC)
+        if (!player->GetSession() || player->GetLevel() < LEVELREQUIREMENT_HEROIC)
             continue;
         player->SetDifficulty(difficulty);
         player->SendDungeonDifficulty(true);
@@ -1500,7 +1500,7 @@ void Group::UnbindInstance(uint32 mapid, uint8 difficulty, bool unload)
 
 void Group::_homebindIfInstance(Player *player)
 {
-    if (player && !player->isGameMaster() && sMapStore.LookupEntry(player->GetMapId())->IsDungeon())
+    if (player && !player->IsGameMaster() && sMapStore.LookupEntry(player->GetMapId())->IsDungeon())
     {
         // leaving the group in an instance, the homebind timer is started
         // unless the player is permanently saved to the instance

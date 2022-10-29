@@ -32,6 +32,8 @@
 #include "WorldPacket.h"
 #include "WorldSession.h"
 #include "Player.h"
+#include "PlayerBotMgr.h"
+#include "PlayerBotAI.h"
 #include "ObjectMgr.h"
 #include "Group.h"
 #include "Guild.h"
@@ -96,7 +98,7 @@ m_trollmuteTime(trollmute_time), m_trollmuteReason(trollmute_reason), _player(NU
 m_permissions(permissions), _accountId(id), m_expansion(expansion), m_opcodesDisabled(opcDisabled),
 m_sessionDbcLocale(sWorld.GetAvailableDbcLocale(locale)), m_sessionDbLocaleIndex(sObjectMgr.GetIndexForLocale(locale)),
 _logoutTime(0), m_inQueue(false), m_playerLoading(false), m_playerLogout(false), m_playerSave(false), m_playerRecentlyLogout(false), m_latency(0), m_clientTimeDelay(0),
-m_accFlags(accFlags), m_Warden(NULL)
+m_accFlags(accFlags), m_Warden(NULL), m_bot(nullptr)
 {
     _mailSendTimer.Reset(5*IN_MILISECONDS);
 
@@ -114,6 +116,8 @@ m_accFlags(accFlags), m_Warden(NULL)
         // create copy of base map :P
         _opcodesCooldown = sObjectMgr.GetOpcodesCooldown();
     }
+    else
+        m_Address = "<BOT>";
 }
 
 /// WorldSession destructor
@@ -121,7 +125,7 @@ WorldSession::~WorldSession()
 {
     ///- unload player if not unloaded
     if (_player)
-        LogoutPlayer(true);
+        LogoutPlayer(!m_bot || sPlayerBotMgr.IsSavingAllowed());
 
     /// - If have unclosed socket, close it
     if (m_Socket)
@@ -207,7 +211,43 @@ void WorldSession::RemoveAccountFlag(AccountFlags flag)
 void WorldSession::SendPacket(WorldPacket const* packet)
 {
     if (!m_Socket)
+    {
+        if (GetBot() && GetBot()->ai && !GetBot()->requestRemoval)
+            GetBot()->ai->OnPacketReceived(*packet);
+
+        if (packet->GetOpcode() == SMSG_MESSAGECHAT)
+        {
+            WorldPacket packet2(*packet);
+            packet2.rpos(0);
+            uint8 msgtype;
+            uint32 lang;
+            ObjectGuid guid1;
+            std::string name1;
+            packet2 >> msgtype >> lang;
+            // Channels
+            if (msgtype == CHAT_MSG_CHANNEL)
+            {
+                std::string chanName, message;
+                uint32 unused;
+                packet2 >> chanName >> unused >> guid1 >> unused;
+                packet2 >> message;
+                if (sObjectMgr.GetPlayerNameByGUID(guid1, name1))
+                    m_chatBotHistory << uint32(msgtype) << " " << name1 << " " << chanName << " " << message << std::endl;
+                return;
+            }
+            ObjectGuid guid2;
+            uint32 textLen;
+            std::string message;
+            uint8 chatTag;
+            packet2 >> guid1;
+            if (msgtype == CHAT_MSG_SAY || msgtype == CHAT_MSG_YELL || msgtype == CHAT_MSG_PARTY)
+                packet2 >> guid2;
+            packet2 >> textLen >> message >> chatTag;
+            if (guid1.IsEmpty() || sObjectMgr.GetPlayerNameByGUID(guid1, name1))
+                m_chatBotHistory << uint32(msgtype) << " " << name1 << " NULL " << message << std::endl;
+        }
         return;
+    }
 
     #ifdef HELLGROUND_DEBUG
 
@@ -274,6 +314,11 @@ void WorldSession::logUnexpectedOpcode(WorldPacket* packet, const char *reason)
         LookupOpcodeName(packet->GetOpcode()),
         packet->GetOpcode(),
         reason);
+}
+
+bool WorldSession::CanProcessPackets() const
+{
+    return ((m_Socket && !m_Socket->IsClosed()) || (_player && sPlayerBotMgr.IsChatBot(_player->GetGUIDLow())));
 }
 
 void WorldSession::ProcessPacket(WorldPacket* packet)
@@ -377,7 +422,7 @@ bool WorldSession::Update(uint32 diff, PacketFilter& updater)
 
     try
     {
-        while (m_Socket && !m_Socket->IsClosed() && _recvQueue.next(packet, updater))
+        while (CanProcessPackets() && _recvQueue.next(packet, updater))
         {
             if (verbose > 0)
             {
@@ -454,14 +499,22 @@ bool WorldSession::Update(uint32 diff, PacketFilter& updater)
         sLog.outLog(LOG_SESSION_DIFF, "%s", overtimeText.str().c_str());
     }
 
+    bool forceConnection = !sWorld.IsStopped() && sPlayerBotMgr.ForceAccountConnection(this);
+
     //check if we are safe to proceed with logout
     //logout procedure should happen only in World::UpdateSessions() method!!!
     if (updater.ProcessLogout())
     {
+        if (m_bot != nullptr && m_bot->state == PB_STATE_OFFLINE)
+        {
+            LogoutPlayer(sPlayerBotMgr.IsSavingAllowed());
+            return false;
+        }
+
         ///- If necessary, log the player out
         time_t currTime = time(NULL);
-        if (!m_Socket || (ShouldLogOut(currTime) && !m_playerLoading))
-            LogoutPlayer(true);
+        if ((!m_Socket || (ShouldLogOut(currTime) && !m_playerLoading)) && !forceConnection && m_bot == nullptr)
+            LogoutPlayer(!m_bot || sPlayerBotMgr.IsSavingAllowed());
     }
 
     ///- Cleanup socket pointer if need
@@ -471,7 +524,7 @@ bool WorldSession::Update(uint32 diff, PacketFilter& updater)
         m_Socket = NULL;
     }
 
-    if (!m_Socket)
+    if (!m_Socket && !forceConnection && this->m_bot == nullptr)
         return false;                                       //Will remove this session from the world session map
 
     return true;
@@ -511,7 +564,7 @@ void WorldSession::LogoutPlayer(bool Save)
         }
         else
         {
-            if (!_player->getAttackers().empty() || (_player->GetMap() && _player->GetMap()->EncounterInProgress(_player)))
+            if (!_player->GetAttackers().empty() || (_player->GetMap() && _player->GetMap()->EncounterInProgress(_player)))
             {
                 _player->CombatStop();
                 _player->getHostileRefManager().setOnlineOfflineState(false);
@@ -519,9 +572,9 @@ void WorldSession::LogoutPlayer(bool Save)
 
                 // build set of player who attack _player or who have pet attacking of _player
                 PlayerSet aset;
-                if (!_player->getAttackers().empty())
+                if (!_player->GetAttackers().empty())
                 {
-                    for (Unit::AttackerSet::const_iterator itr = _player->getAttackers().begin(); itr != _player->getAttackers().end(); ++itr)
+                    for (Unit::AttackerSet::const_iterator itr = _player->GetAttackers().begin(); itr != _player->GetAttackers().end(); ++itr)
                     {
                         // including player controlled case
                         if (Unit* owner = (*itr)->GetOwner())
@@ -679,6 +732,11 @@ void WorldSession::KickPlayer()
 {
     if (m_Socket)
         m_Socket->CloseSocket();
+    else if (m_bot)
+    {
+        GetPlayer()->RemoveFromGroup();
+        m_bot->requestRemoval = true;
+    }
 }
 
 /// Cancel channeling handler

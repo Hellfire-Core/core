@@ -67,7 +67,7 @@ struct mob_rift_spawnAI : public ScriptedAI
     {
         me->CastSpell(me, SPELL_RIFT_SPAWN_INVISIBILITY, true);
         me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-        me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         manifestation_timer = 0;
         delay_timer = 0;
         casterGUID = 0;
@@ -108,7 +108,7 @@ struct mob_rift_spawnAI : public ScriptedAI
             me->getThreatManager().clearReferences();
             me->RemoveAllAuras();
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
             me->SetHealth(me->GetMaxHealth());
             me->CastSpell(me, SPELL_SELF_STUN_30SEC, true);
         }

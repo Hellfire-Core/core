@@ -253,18 +253,18 @@ struct boss_zuljinAI : public ScriptedAI
     {
         if( !m_creature->IsNonMeleeSpellCast(false))
         {
-            if(m_creature->isAttackReady() && m_creature->IsWithinMeleeRange(m_creature->getVictim()))
+            if(m_creature->isAttackReady() && m_creature->IsWithinMeleeRange(m_creature->GetVictim()))
             {
                 if(Phase == 1 && !Overpower_Timer.GetInterval())
                 {
-                    uint32 health = m_creature->getVictim()->GetHealth();
-                    m_creature->AttackerStateUpdate(m_creature->getVictim());
-                    if(m_creature->getVictim() && health == m_creature->getVictim()->GetHealth())
+                    uint32 health = m_creature->GetVictim()->GetHealth();
+                    m_creature->AttackerStateUpdate(m_creature->GetVictim());
+                    if(m_creature->GetVictim() && health == m_creature->GetVictim()->GetHealth())
                     {
-                        DoCast(m_creature->getVictim(), SPELL_OVERPOWER, false);
+                        DoCast(m_creature->GetVictim(), SPELL_OVERPOWER, false);
                         Overpower_Timer = 5000;
                     }
-                }else m_creature->AttackerStateUpdate(m_creature->getVictim());
+                }else m_creature->AttackerStateUpdate(m_creature->GetVictim());
                 m_creature->resetAttackTimer();
             }
         }
@@ -279,7 +279,7 @@ struct boss_zuljinAI : public ScriptedAI
             if(pCreature)
             {
                 pCreature->CastSpell(pCreature, SPELL_SPIRIT_AURA, true);
-                pCreature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                pCreature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                 pCreature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                 SpiritGUID[i] = pCreature->GetGUID();
             }
@@ -343,12 +343,12 @@ struct boss_zuljinAI : public ScriptedAI
                 m_creature->CastSpell(m_creature, SPELL_SUMMON_CYCLONE, true);
             }
             else
-                m_creature->AI()->AttackStart(m_creature->getVictim());
+                m_creature->AI()->AttackStart(m_creature->GetVictim());
             if(NextPhase == 3)
             {
                 m_creature->RemoveAurasDueToSpell(SPELL_ENERGY_STORM);
                 Summons.DespawnEntry(CREATURE_FEATHER_VORTEX);
-                m_creature->GetMotionMaster()->MoveChase(m_creature->getVictim());
+                m_creature->GetMotionMaster()->MoveChase(m_creature->GetVictim());
             }
             break;
         default:
@@ -443,7 +443,7 @@ struct boss_zuljinAI : public ScriptedAI
             {
                 if (Claw_Loop_Timer.Expired(diff))
                 {
-                    Unit* target = m_creature->getVictim();
+                    Unit* target = m_creature->GetVictim();
                     if (!target || !target->isTargetableForAttack())
                         target = Unit::GetUnit(*m_creature, TankGUID);
 
@@ -493,7 +493,7 @@ struct boss_zuljinAI : public ScriptedAI
             }
             else if(!Lynx_Rush_Timer.GetInterval())
             {
-                Unit* target = m_creature->getVictim();
+                Unit* target = m_creature->GetVictim();
                 if(!target || !target->isTargetableForAttack())
                 {
                     if(target = SelectUnit(SELECT_TARGET_RANDOM, 0))
@@ -599,9 +599,9 @@ struct feather_vortexAI : public ScriptedAI
     void UpdateAI(const uint32 diff)
     {
         //if the vortex reach the target, it change his target to another player
-        if (!m_creature->getVictim() ||
-            m_creature->IsWithinMeleeRange(m_creature->getVictim()) ||
-            !m_creature->getVictim()->isAlive() ||
+        if (!m_creature->GetVictim() ||
+            m_creature->IsWithinMeleeRange(m_creature->GetVictim()) ||
+            !m_creature->GetVictim()->IsAlive() ||
             TargetChangeTimer.Expired(diff))
         {
             if (Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0))

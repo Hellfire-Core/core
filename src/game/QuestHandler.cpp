@@ -124,7 +124,7 @@ void WorldSession::HandleQuestgiverAcceptQuestOpcode(WorldPacket & recv_data)
     uint32 quest;
     recv_data >> guid >> quest;
 
-    if (GetPlayer()->isAlive() == (GUID_ENPART(guid) == NPC_GAERIYAN))
+    if (GetPlayer()->IsAlive() == (GUID_ENPART(guid) == NPC_GAERIYAN))
         return;
 
     sLog.outDebug("WORLD: Received CMSG_QUESTGIVER_ACCEPT_QUEST npc = %u, quest = %u",uint32(GUID_LOPART(guid)),quest);
@@ -289,7 +289,7 @@ void WorldSession::HandleQuestgiverChooseRewardOpcode(WorldPacket & recv_data)
         return;
     }
 
-    if (GetPlayer()->isAlive() == (GUID_ENPART(guid) == NPC_GAERIYAN))
+    if (GetPlayer()->IsAlive() == (GUID_ENPART(guid) == NPC_GAERIYAN))
         return;
 
     sLog.outDebug("WORLD: Received CMSG_QUESTGIVER_CHOOSE_REWARD npc = %u, quest = %u, reward = %u",uint32(GUID_LOPART(guid)),quest,reward);
@@ -334,7 +334,7 @@ void WorldSession::HandleQuestgiverRequestRewardOpcode(WorldPacket & recv_data)
     uint64 guid;
     recv_data >> guid >> quest;
 
-    if (GetPlayer()->isAlive() == (GUID_ENPART(guid) == NPC_GAERIYAN))
+    if (GetPlayer()->IsAlive() == (GUID_ENPART(guid) == NPC_GAERIYAN))
         return;
 
     sLog.outDebug("WORLD: Received CMSG_QUESTGIVER_REQUEST_REWARD npc = %u, quest = %u",uint32(GUID_LOPART(guid)),quest);
@@ -439,7 +439,7 @@ void WorldSession::HandleQuestComplete(WorldPacket& recv_data)
     uint64 guid;
     recv_data >> guid >> quest;
 
-    if (GetPlayer()->isAlive() == (GUID_ENPART(guid) == NPC_GAERIYAN))
+    if (GetPlayer()->IsAlive() == (GUID_ENPART(guid) == NPC_GAERIYAN))
         return;
 
     sLog.outDebug("WORLD: Received CMSG_QUESTGIVER_COMPLETE_QUEST npc = %u, quest = %u",uint32(GUID_LOPART(guid)),quest);
@@ -630,7 +630,7 @@ uint32 WorldSession::getDialogStatus(Player *pPlayer, Object* questgiver, uint32
                 {
                     if (pQuest->IsAutoComplete() || (pQuest->IsRepeatable() && pPlayer->getQuestStatusMap()[quest_id].m_rewarded))
                         result2 = DIALOG_STATUS_REWARD_REP;
-                    else if (pPlayer->getLevel() <= pPlayer->GetQuestOrPlayerLevel(pQuest) + sWorld.getConfig(CONFIG_QUEST_LOW_LEVEL_HIDE_DIFF))
+                    else if (pPlayer->GetLevel() <= pPlayer->GetQuestOrPlayerLevel(pQuest) + sWorld.getConfig(CONFIG_QUEST_LOW_LEVEL_HIDE_DIFF))
                     {
                         if (pQuest->HasFlag(QUEST_FLAGS_DAILY))
                             result2 = DIALOG_STATUS_AVAILABLE_REP;

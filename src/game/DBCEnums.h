@@ -28,6 +28,15 @@
 // also see MAX_LEVEL and GT_MAX_LEVEL define
 #define STRONG_MAX_LEVEL 255
 
+enum SpellEffectIndex
+{
+    EFFECT_INDEX_0 = 0,
+    EFFECT_INDEX_1 = 1,
+    EFFECT_INDEX_2 = 2
+};
+
+#define MAX_EFFECT_INDEX 3
+
 enum AreaTeams
 {
     AREATEAM_NONE  = 0,

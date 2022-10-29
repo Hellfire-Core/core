@@ -155,6 +155,13 @@ class HELLGROUND_IMPORT_EXPORT Object
         uint8 GetTypeId() const { return m_objectTypeId; }
         bool isType(uint16 mask) const { return (mask & m_objectType); }
 
+        inline bool IsWorldObject() const { return isType(TYPEMASK_WORLDOBJECT); }
+        inline bool IsPlayer() const { return GetTypeId() == TYPEID_PLAYER; }
+        inline bool IsCreature() const { return GetTypeId() == TYPEID_UNIT; }
+        inline bool IsUnit() const { return isType(TYPEMASK_UNIT); }
+        inline bool IsGameObject() const { return GetTypeId() == TYPEID_GAMEOBJECT; }
+        inline bool IsCorpse() const { return GetTypeId() == TYPEID_CORPSE; }
+
         virtual void BuildCreateUpdateBlockForPlayer(UpdateData *data, Player *target) const;
         void SendCreateUpdateToPlayer(Player* player);
 

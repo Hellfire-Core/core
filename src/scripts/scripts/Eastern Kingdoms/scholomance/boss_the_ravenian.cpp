@@ -78,28 +78,28 @@ struct boss_theravenianAI : public ScriptedAI
         Trample_Timer -= diff;
         if (Trample_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_TRAMPLE);
+            DoCast(m_creature->GetVictim(),SPELL_TRAMPLE);
             Trample_Timer += 10000;
         }
 
         Cleave_Timer -= diff;
         if (Cleave_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_CLEAVE);
+            DoCast(m_creature->GetVictim(),SPELL_CLEAVE);
             Cleave_Timer += 7000;
         }
 
         SunderingCleave_Timer -= diff;
         if (SunderingCleave_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_SUNDERINCLEAVE);
+            DoCast(m_creature->GetVictim(),SPELL_SUNDERINCLEAVE);
             SunderingCleave_Timer += 20000;
         }
 
         KnockAway_Timer -= diff;
         if (KnockAway_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_KNOCKAWAY);
+            DoCast(m_creature->GetVictim(),SPELL_KNOCKAWAY);
             KnockAway_Timer += 12000;
         }
 

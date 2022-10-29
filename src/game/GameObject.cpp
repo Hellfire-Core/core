@@ -782,7 +782,7 @@ bool GameObject::isVisibleForInState(Player const* player, WorldObject const* vi
         return true;
 
     // quick check visibility false cases for non-GM-mode
-    if (!player->isGameMaster())
+    if (!player->IsGameMaster())
     {
         // despawned and then not visible for non-GM in GM-mode
         if (!isSpawned())
@@ -806,7 +806,7 @@ bool GameObject::isVisibleForInState(Player const* player, WorldObject const* vi
 
 bool GameObject::canDetectTrap(Player const* u, float distance) const
 {
-    if (u->hasUnitState(UNIT_STAT_STUNNED))
+    if (u->HasUnitState(UNIT_STAT_STUNNED))
         return false;
     if (distance < GetGOInfo()->size) //collision
         return true;
@@ -816,7 +816,7 @@ bool GameObject::canDetectTrap(Player const* u, float distance) const
         return true;
 
     //Visible distance is modified by -Level Diff (every level diff = 0.25f in visible distance)
-    float visibleDistance = (int32(u->getLevel()) - int32(GetOwner()->getLevel()))* 0.25f;
+    float visibleDistance = (int32(u->GetLevel()) - int32(GetOwner()->GetLevel()))* 0.25f;
     //GetModifier for trap (miscvalue 1)
     //35y for aura 2836
     //WARNING: these values are guessed, may be not blizzlike
@@ -1285,7 +1285,7 @@ void GameObject::Use(Unit* user)
             if (!pPlayer)
                 return;
 
-            if (pPlayer->isInCombat())
+            if (pPlayer->IsInCombat())
                 return;
 
             Unit* owner = GetOwner();
@@ -1365,10 +1365,10 @@ void GameObject::Use(Unit* user)
                 return;
 
             //required lvl checks!
-            uint8 level = player->getLevel();
+            uint8 level = player->GetLevel();
             if (level < info->meetingstone.minLevel || level > info->meetingstone.maxLevel)
                 return;
-            level = targetPlayer->getLevel();
+            level = targetPlayer->GetLevel();
             if (level < info->meetingstone.minLevel || level > info->meetingstone.maxLevel)
                 return;
 

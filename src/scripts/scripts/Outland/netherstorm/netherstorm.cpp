@@ -665,7 +665,7 @@ bool AreaTrigger_at_commander_dawnforge(Player* player, AreaTriggerEntry const*a
     if (!player->HasAura(SPELL_SUNFURY_DISGUISE,0))
         return false;
 
-    if (player->isAlive() && player->GetQuestStatus(QUEST_INFO_GATHERING) == QUEST_STATUS_INCOMPLETE)
+    if (player->IsAlive() && player->GetQuestStatus(QUEST_INFO_GATHERING) == QUEST_STATUS_INCOMPLETE)
     {
         Creature* Dawnforge = SearchDawnforge(player, CreatureEntry[1][0], 30.0f);
 
@@ -843,7 +843,7 @@ struct mob_phase_hunterAI : public ScriptedAI
             Materialize = true;
         }
 
-        if (me->HasAuraType(SPELL_AURA_MOD_DECREASE_SPEED) || me->hasUnitState(UNIT_STAT_ROOT)) // if the mob is rooted/slowed by spells eg.: Entangling Roots, Frost Nova, Hamstring, Crippling Poison, etc. => remove it
+        if (me->HasAuraType(SPELL_AURA_MOD_DECREASE_SPEED) || me->HasUnitState(UNIT_STAT_ROOT)) // if the mob is rooted/slowed by spells eg.: Entangling Roots, Frost Nova, Hamstring, Crippling Poison, etc. => remove it
             DoCast(me, SPELL_PHASE_SLIP);
 
         if (!UpdateVictim())
@@ -851,9 +851,9 @@ struct mob_phase_hunterAI : public ScriptedAI
 
         if (ManaBurnTimer.Expired(diff)) // cast Mana Burn
         {
-            if (me->getVictim()->GetCreateMana() > 0)
+            if (me->GetVictim()->GetCreateMana() > 0)
             {
-                DoCast(me->getVictim(), SPELL_MANA_BURN);
+                DoCast(me->GetVictim(), SPELL_MANA_BURN);
                 ManaBurnTimer = 8000 + (rand()%10 * 1000); // 8-18 sec cd
             }
         }
@@ -874,7 +874,7 @@ struct mob_phase_hunterAI : public ScriptedAI
                 Drained = true;
 
                 Health = me->GetHealth(); // get the normal mob's data
-                Level = me->getLevel();
+                Level = me->GetLevel();
 
                 me->AttackStop(); // delete the normal mob
                 me->DealDamage(me, me->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
@@ -985,7 +985,7 @@ bool QuestAccept_npc_bessy(Player* player, Creature* creature, Quest const* ques
     if (quest->GetQuestId() == Q_ALMABTRIEB)
     {
         creature->setFaction(113);
-        creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         if (npc_escortAI* pEscortAI = CAST_AI(npc_bessyAI, creature->AI()))
             pEscortAI->Start(true, true, player->GetGUID(), quest);
     }
@@ -1022,8 +1022,8 @@ struct mob_talbukAI : public ScriptedAI
         {
             if (Tagged_Timer.Expired(diff)) // Remove every effect caused by aura and reset creature.
             {
-                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                me->clearUnitState(UNIT_STAT_STUNNED);
+                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
+                me->ClearUnitState(UNIT_STAT_STUNNED);
                 me->RemoveAurasDueToSpell(SPELL_SLEEP_VISUAL);
                 EnterEvadeMode();
             }
@@ -1257,15 +1257,15 @@ struct mob_dr_boomAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (!me->IsWithinDistInMap(me->getVictim(), 23.0f))
+        if (!me->IsWithinDistInMap(me->GetVictim(), 23.0f))
         {
             EnterEvadeMode();
             return;
         }
 
-        if (me->isAttackReady() && me->IsWithinDistInMap(me->getVictim(), 12.2f))
+        if (me->isAttackReady() && me->IsWithinDistInMap(me->GetVictim(), 12.2f))
         {
-            DoCast(me->getVictim(), THROW_DYNAMITE, true);
+            DoCast(me->GetVictim(), THROW_DYNAMITE, true);
             me->resetAttackTimer();
         }
     }
@@ -1865,18 +1865,18 @@ struct npc_captured_vanguardAI : public npc_escortAI
            }
         }
 
-        if (!me->getVictim())
+        if (!me->GetVictim())
             return;
         
         if (GlaiveTimer.Expired(diff))
         {
-            DoCast(me->getVictim(), SPELL_GLAIVE);
+            DoCast(me->GetVictim(), SPELL_GLAIVE);
             GlaiveTimer = urand(5000, 9000);
         }
 
         if (HamstringTimer.Expired(diff))
         {
-            DoCast(me->getVictim(), SPELL_HAMSTRING);
+            DoCast(me->GetVictim(), SPELL_HAMSTRING);
             HamstringTimer = urand(10000, 16000);
         }
 
@@ -2185,7 +2185,7 @@ struct npc_saeedAI : public npc_escortAI
     {
         if (summoned->GetEntry() == NPC_DIMENSIUS)
         {
-            summoned->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            summoned->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
             DoScriptText(SAY_DIMENSIUS_1, summoned);
             summoned->AI()->AttackStart(me);
             summoned->LowerPlayerDamageReq(summoned->GetMaxHealth() / 4);
@@ -2199,7 +2199,7 @@ struct npc_saeedAI : public npc_escortAI
         for (std::list<Creature*>::iterator itr = DefendersList.begin(); itr != DefendersList.end(); ++itr)
         {
             float fAngle = uiCount < MAX_DEFENDERS ? M_PI/MAX_DEFENDERS - (uiCount*2*M_PI/MAX_DEFENDERS) : 0.0f;
-            if ((*itr)->isAlive())
+            if ((*itr)->IsAlive())
                 (*itr)->GetMotionMaster()->MoveFollow(me, 1.5f, fAngle);
 
             ++uiCount;
@@ -2208,7 +2208,7 @@ struct npc_saeedAI : public npc_escortAI
         for (std::list<Creature*>::iterator itr = AvengersList.begin(); itr != AvengersList.end(); ++itr)
         {
             float fAngle = uiCount < MAX_DEFENDERS ? M_PI/MAX_DEFENDERS - (uiCount*2*M_PI/MAX_DEFENDERS) : 0.0f;
-            if ((*itr)->isAlive())
+            if ((*itr)->IsAlive())
                 (*itr)->GetMotionMaster()->MoveFollow(me, 1.5f, fAngle);
 
             ++uiCount;
@@ -2217,7 +2217,7 @@ struct npc_saeedAI : public npc_escortAI
         for (std::list<Creature*>::iterator itr = RegeneratorsList.begin(); itr != RegeneratorsList.end(); ++itr)
         {
             float fAngle = uiCount < MAX_DEFENDERS ? M_PI/MAX_DEFENDERS - (uiCount*2*M_PI/MAX_DEFENDERS) : 0.0f;
-            if ((*itr)->isAlive())
+            if ((*itr)->IsAlive())
                 (*itr)->GetMotionMaster()->MoveFollow(me, 1.5f, fAngle);
 
             ++uiCount;
@@ -2405,7 +2405,7 @@ struct npc_saeedAI : public npc_escortAI
 
         if (CleaveTimer.Expired(diff))
         {
-            DoCast(me->getVictim(), SPELL_CLEAVE);
+            DoCast(me->GetVictim(), SPELL_CLEAVE);
             CleaveTimer = 20000;
         }
 
@@ -2603,7 +2603,7 @@ struct npc_dimensiusAI : public ScriptedAI
 
         if (SpiraltTimer.Expired(diff))
         {
-            DoCast(me->getVictim(), SPELL_SPIRAL);
+            DoCast(me->GetVictim(), SPELL_SPIRAL);
 
             SpiraltTimer = 13000;
         }
@@ -2705,7 +2705,7 @@ struct npc_king_salhadaarAI : public ScriptedAI
     void PartyTime()
     {
         //DoScriptText(YELL_INTRO, me);
-        me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         me->setFaction(FACTION_HOSTILE);          
         me->RemoveAllAuras();
@@ -2762,7 +2762,7 @@ struct npc_king_salhadaarAI : public ScriptedAI
 
         if (FluxTimer.Expired(diff))
         {
-            DoCast(me->getVictim(), SPELL_FLUX);
+            DoCast(me->GetVictim(), SPELL_FLUX);
 
             FluxTimer = 12000;
         }
@@ -2865,7 +2865,7 @@ struct npc_trader_maridAI : public npc_escortAI
     void JustSummoned(Creature* summoned)
     {
         summoned->setFaction(FACTION_HOSTILE_);
-        summoned->AI()->AttackStart(me->getVictim());
+        summoned->AI()->AttackStart(me->GetVictim());
 
         if (Player* player = GetPlayerForEscort())
             DoScriptText(SAY_GUARD, summoned, player);
@@ -3093,7 +3093,7 @@ CreatureAI* GetAI_npc_ethereum_jailor(Creature* _Creature)
 #define QUEST_SPECIAL_DELIVERY 10280
 bool AreaTrigger_at_haramad_transporter(Player* player, AreaTriggerEntry const* at)
 {
-    if (player->isAlive() && player->GetQuestStatus(QUEST_SPECIAL_DELIVERY) == QUEST_STATUS_INCOMPLETE)
+    if (player->IsAlive() && player->GetQuestStatus(QUEST_SPECIAL_DELIVERY) == QUEST_STATUS_INCOMPLETE)
     {
         player->TeleportTo(530, -1874, 5427, -10.4, 0.1);
     }

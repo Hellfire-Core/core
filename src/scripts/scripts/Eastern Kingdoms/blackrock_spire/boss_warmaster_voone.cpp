@@ -67,42 +67,42 @@ struct boss_warmastervooneAI : public ScriptedAI
         Snapkick_Timer -= diff;
         if (Snapkick_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(), SPELL_SNAPKICK);
+            DoCast(m_creature->GetVictim(), SPELL_SNAPKICK);
             Snapkick_Timer += 6000;
         }
 
         Cleave_Timer -= diff;
         if (Cleave_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_CLEAVE);
+            DoCast(m_creature->GetVictim(),SPELL_CLEAVE);
             Cleave_Timer += 12000;
         }
 
         Uppercut_Timer -= diff;
         if (Uppercut_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_UPPERCUT);
+            DoCast(m_creature->GetVictim(),SPELL_UPPERCUT);
             Uppercut_Timer += 14000;
         }else 
 
         MortalStrike_Timer -= diff;
         if (MortalStrike_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_MORTALSTRIKE);
+            DoCast(m_creature->GetVictim(),SPELL_MORTALSTRIKE);
             MortalStrike_Timer += 10000;
         }
 
         Pummel_Timer -= diff;
         if (Pummel_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_PUMMEL);
+            DoCast(m_creature->GetVictim(),SPELL_PUMMEL);
             Pummel_Timer += 16000;
         }
 
         ThrowAxe_Timer -= diff;
         if (ThrowAxe_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_THROWAXE);
+            DoCast(m_creature->GetVictim(),SPELL_THROWAXE);
             ThrowAxe_Timer += 8000;
         }
 

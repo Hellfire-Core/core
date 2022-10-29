@@ -1696,7 +1696,7 @@ bool ChatHandler::HandleLearnAllCommand(const char* /*args*/)
             continue;
         }
 
-        m_session->GetPlayer()->learnSpell(spell);
+        m_session->GetPlayer()->LearnSpell(spell);
     }
 
     SendSysMessage(LANG_COMMAND_LEARN_MANY_SPELLS);
@@ -1736,7 +1736,7 @@ bool ChatHandler::HandleLearnAllGMCommand(const char* /*args*/)
             continue;
         }
 
-        m_session->GetPlayer()->learnSpell(spell);
+        m_session->GetPlayer()->LearnSpell(spell);
     }
 
     SendSysMessage(LANG_LEARNING_GM_SKILLS);
@@ -1752,7 +1752,7 @@ bool ChatHandler::HandleLearnAllMyClassCommand(const char* /*args*/)
 
 bool ChatHandler::HandleLearnAllMySpellsCommand(const char* /*args*/)
 {
-    ChrClassesEntry const* clsEntry = sChrClassesStore.LookupEntry(m_session->GetPlayer()->getClass());
+    ChrClassesEntry const* clsEntry = sChrClassesStore.LookupEntry(m_session->GetPlayer()->GetClass());
     if (!clsEntry)
         return true;
     uint32 family = clsEntry->spellfamily;
@@ -1784,7 +1784,7 @@ bool ChatHandler::HandleLearnAllMySpellsCommand(const char* /*args*/)
         if (!SpellMgr::IsSpellValid(spellInfo,m_session->GetPlayer(),false))
             continue;
 
-        m_session->GetPlayer()->learnSpell(i);
+        m_session->GetPlayer()->LearnSpell(i);
     }
 
     SendSysMessage(LANG_COMMAND_LEARN_CLASS_SPELLS);
@@ -1797,7 +1797,7 @@ static void learnAllHighRanks(Player* player, uint32 spellid)
     do
     {
         node = sSpellMgr.GetSpellChainNode(spellid);
-        player->learnSpell(spellid);
+        player->LearnSpell(spellid);
         if (!node)
             break;
         spellid=node->next;
@@ -1843,7 +1843,7 @@ bool ChatHandler::HandleLearnAllMyTalentsCommand(const char* /*args*/)
             continue;
 
         // learn highest rank of talent
-        player->learnSpell(spellid);
+        player->LearnSpell(spellid);
 
         // and learn all non-talent spell ranks (recursive by tree)
         learnAllHighRanks(player,spellid);
@@ -1857,7 +1857,7 @@ bool ChatHandler::HandleLearnAllLangCommand(const char* /*args*/)
 {
     // skipping UNIVERSAL language (0)
     for (int i = 1; i < LANGUAGES_COUNT; ++i)
-        m_session->GetPlayer()->learnSpell(lang_description[i].spell_id);
+        m_session->GetPlayer()->LearnSpell(lang_description[i].spell_id);
 
     SendSysMessage(LANG_COMMAND_LEARN_ALL_LANG);
     return true;
@@ -1931,7 +1931,7 @@ bool ChatHandler::HandleLearnCommand(const char* args)
         return false;
     }
 
-    targetPlayer->learnSpell(spell);
+    targetPlayer->LearnSpell(spell);
 
     return true;
 }
@@ -3244,7 +3244,7 @@ bool ChatHandler::HandleDieCommand(const char* /*args*/)
         return false;
     }
 
-    if (target->isAlive())
+    if (target->IsAlive())
     {
         //m_session->GetPlayer()->DealDamage(target, target->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
         m_session->GetPlayer()->Kill(target);
@@ -3267,7 +3267,7 @@ bool ChatHandler::HandleDamageCommand(const char * args)
         return false;
     }
 
-    if (!target->isAlive())
+    if (!target->IsAlive())
         return true;
 
     char* damageStr = strtok((char*)args, " ");
@@ -3353,7 +3353,7 @@ bool ChatHandler::HandleModifyArenaCommand(const char * args)
 bool ChatHandler::HandleReplenishCommand(const char* args)
 {
     Unit* pUnit = getSelectedUnit();
-    if (!pUnit || !pUnit->isAlive())
+    if (!pUnit || !pUnit->IsAlive())
     {
         SendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);
         SetSentErrorMessage(true);
@@ -3362,7 +3362,7 @@ bool ChatHandler::HandleReplenishCommand(const char* args)
 
     pUnit->SetHealth(pUnit->GetMaxHealth());
 
-    Powers powerType = pUnit->getPowerType();
+    Powers powerType = pUnit->GetPowerType();
     switch (powerType)
     {
         case POWER_MANA:
@@ -3427,7 +3427,7 @@ bool ChatHandler::HandleReviveGroupCommand(const char* args)
     {
         Player *pl = itr->getSource();
 
-        if (!pl || pl->isAlive() || pl->GetMapId() != gm->GetMapId())
+        if (!pl || pl->IsAlive() || pl->GetMapId() != gm->GetMapId())
             continue;
 
         // before GM
@@ -3671,7 +3671,7 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/)
     std::string defRespawnDelayStr = secsToTimeString(target->GetRespawnDelay(),true);
 
     PSendSysMessage(LANG_NPCINFO_CHAR,  target->GetDBTableGUIDLow(), faction, npcflags, Entry, displayid, nativeid);
-    PSendSysMessage(LANG_NPCINFO_LEVEL, target->getLevel());
+    PSendSysMessage(LANG_NPCINFO_LEVEL, target->GetLevel());
     PSendSysMessage(LANG_NPCINFO_HEALTH,target->GetCreateHealth(), target->GetMaxHealth(), target->GetHealth());
     PSendSysMessage(LANG_NPCINFO_FLAGS, target->GetUInt32Value(UNIT_FIELD_FLAGS), target->GetUInt32Value(UNIT_DYNAMIC_FLAGS), target->getFaction());
     PSendSysMessage(LANG_COMMAND_RAWPAWNTIMES, defRespawnDelayStr.c_str(),curRespawnDelayStr.c_str());
@@ -3869,7 +3869,7 @@ bool ChatHandler::HandleLevelUpCommand(const char* args)
 
     ASSERT(chr || chr_guid);
 
-    int32 oldlevel = chr ? chr->getLevel() : Player::GetUInt32ValueFromDB(UNIT_FIELD_LEVEL,chr_guid);
+    int32 oldlevel = chr ? chr->GetLevel() : Player::GetUInt32ValueFromDB(UNIT_FIELD_LEVEL,chr_guid);
     int32 newlevel = oldlevel + addlevel;
     if (newlevel < 1)
         newlevel = 1;
@@ -4406,13 +4406,13 @@ bool ChatHandler::HandleResetHonorCommand (const char * args)
 
 static bool HandleResetStatsOrLevelHelper(Player* player)
 {
-    PlayerInfo const *info = sObjectMgr.GetPlayerInfo(player->getRace(), player->getClass());
+    PlayerInfo const *info = sObjectMgr.GetPlayerInfo(player->GetRace(), player->GetClass());
     if (!info) return false;
 
-    ChrClassesEntry const* cEntry = sChrClassesStore.LookupEntry(player->getClass());
+    ChrClassesEntry const* cEntry = sChrClassesStore.LookupEntry(player->GetClass());
     if (!cEntry)
     {
-        sLog.outLog(LOG_DEFAULT, "ERROR: Class %u not found in DBC (Wrong DBC files?)",player->getClass());
+        sLog.outLog(LOG_DEFAULT, "ERROR: Class %u not found in DBC (Wrong DBC files?)",player->GetClass());
         return false;
     }
 
@@ -4427,7 +4427,7 @@ static bool HandleResetStatsOrLevelHelper(Player* player)
         unitfield = 0x0000EE00;
     else
     {
-        sLog.outLog(LOG_DEFAULT, "ERROR: Invalid default powertype %u for player (class %u)",powertype,player->getClass());
+        sLog.outLog(LOG_DEFAULT, "ERROR: Invalid default powertype %u for player (class %u)",powertype,player->GetClass());
         return false;
     }
 
@@ -4438,9 +4438,9 @@ static bool HandleResetStatsOrLevelHelper(Player* player)
     player->SetFloatValue(UNIT_FIELD_BOUNDINGRADIUS, DEFAULT_WORLD_OBJECT_SIZE);
     player->SetFloatValue(UNIT_FIELD_COMBATREACH, DEFAULT_COMBAT_REACH);
 
-    player->setFactionForRace(player->getRace());
+    player->setFactionForRace(player->GetRace());
 
-    player->SetUInt32Value(UNIT_FIELD_BYTES_0, ((player->getRace()) | (player->getClass() << 8) | (player->getGender() << 16) | (powertype << 24)));
+    player->SetUInt32Value(UNIT_FIELD_BYTES_0, ((player->GetRace()) | (player->GetClass() << 8) | (player->getGender() << 16) | (powertype << 24)));
 
     // reset only if player not in some form;
     if (player->m_form==FORM_NONE)
@@ -5651,7 +5651,7 @@ bool ChatHandler::HandleRespawnCommand(const char* args)
             return false;
         }
 
-        if (target->isDead())
+        if (target->IsDead())
             ((Creature*)target)->Respawn();
         return true;
     }
@@ -5904,7 +5904,7 @@ bool ChatHandler::HandleCastBackCommand(const char* args)
     bool triggered = (trig_str != NULL);
 
     // update orientation at server
-    if (!caster->hasUnitState(UNIT_STAT_CANNOT_TURN))
+    if (!caster->HasUnitState(UNIT_STAT_CANNOT_TURN))
         caster->SetFacingTo(caster->GetAngle(m_session->GetPlayer()));
 
     caster->CastSpell(m_session->GetPlayer(),spell,triggered);
@@ -5967,7 +5967,7 @@ bool ChatHandler::HandleCastTargetCommand(const char* args)
         return false;
     }
 
-    if (!caster->getVictim())
+    if (!caster->GetVictim())
     {
         SendSysMessage(LANG_SELECTED_TARGET_NOT_HAVE_VICTIM);
         SetSentErrorMessage(true);
@@ -5990,10 +5990,10 @@ bool ChatHandler::HandleCastTargetCommand(const char* args)
     bool triggered = (trig_str != NULL);
 
     // update orientation at server
-    if (!caster->hasUnitState(UNIT_STAT_CANNOT_TURN))
+    if (!caster->HasUnitState(UNIT_STAT_CANNOT_TURN))
         caster->SetFacingTo(caster->GetAngle(m_session->GetPlayer()));
 
-    caster->CastSpell(caster->getVictim(),spell,triggered);
+    caster->CastSpell(caster->GetVictim(),spell,triggered);
 
     return true;
 }
@@ -6751,7 +6751,7 @@ bool ChatHandler::HandleModifyGenderCommand(const char *args)
             return true;
 
         gender_full = "male";
-        new_displayId = player->getRace() == RACE_BLOODELF ? displayId+1 : displayId-1;
+        new_displayId = player->GetRace() == RACE_BLOODELF ? displayId+1 : displayId-1;
         gender = GENDER_MALE;
     }
     else if (!strncmp(gender_str,"female",gender_len))      // FEMALE
@@ -6760,7 +6760,7 @@ bool ChatHandler::HandleModifyGenderCommand(const char *args)
             return true;
 
         gender_full = "female";
-        new_displayId = player->getRace() == RACE_BLOODELF ? displayId-1 : displayId+1;
+        new_displayId = player->GetRace() == RACE_BLOODELF ? displayId-1 : displayId+1;
         gender = GENDER_FEMALE;
     }
     else
@@ -6853,17 +6853,17 @@ bool ChatHandler::HandleFreezeCommand(const char *args)
         player->CombatStop();
         if (player->IsNonMeleeSpellCast(true))
             player->InterruptNonMeleeSpells(true);
-        player->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        player->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         player->SetUInt32Value(PLAYER_DUEL_TEAM, 1);
 
         //if player class = hunter || warlock remove pet if alive
-        if ((player->getClass() == CLASS_HUNTER) || (player->getClass() == CLASS_WARLOCK))
+        if ((player->GetClass() == CLASS_HUNTER) || (player->GetClass() == CLASS_WARLOCK))
         {
             if (Pet* pet = player->GetPet())
             {
                 pet->SavePetToDB(PET_SAVE_AS_CURRENT);
                 // not let dismiss dead pet
-                if (pet && pet->isAlive())
+                if (pet && pet->IsAlive())
                     player->RemovePet(pet,PET_SAVE_NOT_IN_SLOT);
             }
         }
@@ -6922,8 +6922,8 @@ bool ChatHandler::HandleUnFreezeCommand(const char *args)
         PSendSysMessage(LANG_COMMAND_UNFREEZE,name.c_str());
 
         //Reset player faction + allow combat + allow duels
-        player->setFactionForRace(player->getRace());
-        player->RemoveFlag (UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        player->setFactionForRace(player->GetRace());
+        player->RemoveFlag (UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
 
         //allow movement and spells
         uint32 spellID = 9454;
@@ -7226,7 +7226,7 @@ bool ChatHandler::HandleChannelMassKickCommand(const char* args)
     if (!args)
         return false;
 
-    if (!m_session->GetPlayer()->isGameMaster())
+    if (!m_session->GetPlayer()->IsGameMaster())
     {
         PSendSysMessage("You must have GM mode ON to use this command");
         return false;
@@ -7255,7 +7255,7 @@ bool ChatHandler::HandleChannelMassKickCommand(const char* args)
     for (std::list<uint64>::const_iterator itr = tmpPlList.begin(); itr != tmpPlList.end(); ++itr)
     {
         Player * tmpPl = ObjectAccessor::GetPlayer(*itr);
-        if (tmpPl && !tmpPl->isGameMaster())
+        if (tmpPl && !tmpPl->IsGameMaster())
             chn->Kick(m_session->GetPlayer()->GetGUID(), tmpPl->GetName());
     }
 

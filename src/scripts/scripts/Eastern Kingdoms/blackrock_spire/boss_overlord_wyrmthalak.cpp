@@ -74,14 +74,14 @@ struct boss_overlordwyrmthalakAI : public ScriptedAI
         BlastWave_Timer -= diff;
         if (BlastWave_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_BLASTWAVE);
+            DoCast(m_creature->GetVictim(),SPELL_BLASTWAVE);
             BlastWave_Timer += 20000;
         }
 
         Shout_Timer -= diff;
         if (Shout_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_SHOUT);
+            DoCast(m_creature->GetVictim(),SPELL_SHOUT);
             Shout_Timer += 10000;
         }
 
@@ -89,14 +89,14 @@ struct boss_overlordwyrmthalakAI : public ScriptedAI
         Cleave_Timer -= diff;
         if (Cleave_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_CLEAVE);
+            DoCast(m_creature->GetVictim(),SPELL_CLEAVE);
             Cleave_Timer += 7000;
         }
 
         Cleave_Timer -= diff;
         if (Knockaway_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_KNOCKAWAY);
+            DoCast(m_creature->GetVictim(),SPELL_KNOCKAWAY);
             Knockaway_Timer += 14000;
         }
 

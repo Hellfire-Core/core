@@ -196,7 +196,7 @@ struct boss_lady_vashjAI : public ScriptedAI
         Phase = 0;
         Intro = false;
 
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
 
         if (instance->GetData(DATA_PREVIOUS_BOSS_DEAD) != DONE)
         {
@@ -307,10 +307,10 @@ struct boss_lady_vashjAI : public ScriptedAI
             Intro = true;
             DoScriptText(SAY_INTRO, me);
         }
-        if (!CanAttack || me->isDead())
+        if (!CanAttack || me->IsDead())
             return;
 
-        if (!who || me->getVictim())
+        if (!who || me->GetVictim())
             return;
 
         if (who->isTargetableForAttack() && who->isInAccessiblePlacefor(me) && me->IsHostileTo(who))
@@ -324,7 +324,7 @@ struct boss_lady_vashjAI : public ScriptedAI
                 if(Phase != 2)
                     AttackStart(who);
 
-                if(!me->isInCombat())
+                if(!me->IsInCombat())
                     StartEvent();
             }
         }
@@ -336,7 +336,7 @@ struct boss_lady_vashjAI : public ScriptedAI
         //Used in Phases 1 and 3 after Entangle or while having nobody in melee range. A shot that hits her target for 4097-5543 Physical damage.
         //Multishot
         //Used in Phases 1 and 3 after Entangle or while having nobody in melee range. A shot that hits 1 person and 4 people around him for 6475-7525 physical damage.
-        DoCast(me->getVictim(), RAND(SPELL_SHOOT, SPELL_MULTI_SHOT));
+        DoCast(me->GetVictim(), RAND(SPELL_SHOOT, SPELL_MULTI_SHOT));
 
         if(rand()%3)
             DoScriptText(RAND(SAY_BOWSHOT1, SAY_BOWSHOT2), me);
@@ -361,7 +361,7 @@ struct boss_lady_vashjAI : public ScriptedAI
             if(AggroTimer.Expired(diff))
             {
                 CanAttack = true;
-                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                 AggroTimer = 19000;
             }
             else
@@ -387,7 +387,7 @@ struct boss_lady_vashjAI : public ScriptedAI
             if (ParalyzeCheck_Timer.Expired(diff))
             {
                 Paralyze(true);
-                if (me->hasUnitState(UNIT_STAT_CHASE))
+                if (me->HasUnitState(UNIT_STAT_CHASE))
                 {
                     me->GetMotionMaster()->Clear();
                     DoTeleportTo(MIDDLE_X, MIDDLE_Y, MIDDLE_Z);
@@ -403,10 +403,10 @@ struct boss_lady_vashjAI : public ScriptedAI
             {
                 //Shock Burst
                 //Randomly used in Phases 1 and 3 on Vashj's target, it's a Shock spell doing 8325-9675 nature damage and stunning the target for 5 seconds, during which she will not attack her target but switch to the next person on the aggro list.
-                //if(me->getVictim()->HasAura(23920,0)) anti-reflect not needed anymore
-                //    me->getVictim()->RemoveAurasDueToSpell(23920);
+                //if(me->GetVictim()->HasAura(23920,0)) anti-reflect not needed anymore
+                //    me->GetVictim()->RemoveAurasDueToSpell(23920);
 
-                DoCast(me->getVictim(), SPELL_SHOCK_BLAST);
+                DoCast(me->GetVictim(), SPELL_SHOCK_BLAST);
                 ShockBlast_Timer = 8000+rand()%12000;       //random cooldown
             }
 
@@ -432,7 +432,7 @@ struct boss_lady_vashjAI : public ScriptedAI
                 {
                     //Entangle
                     //Used in Phases 1 and 3, it casts Entangling Roots on everybody in a 15 yard radius of Vashj, immobilzing them for 10 seconds and dealing 500 damage every 2 seconds. It's not a magic effect so it cannot be dispelled, but is removed by various buffs such as Cloak of Shadows or Blessing of Freedom.
-                    DoCast(me->getVictim(), SPELL_ENTANGLE);
+                    DoCast(me->GetVictim(), SPELL_ENTANGLE);
                     Entangle = true;
                     Entangle_Timer = 10000;
                 }
@@ -547,7 +547,7 @@ struct boss_lady_vashjAI : public ScriptedAI
                 Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_FORKED_LIGHTNING), true);
 
                 if(!target)
-                    target = me->getVictim();
+                    target = me->GetVictim();
 
                 DoCast(target, SPELL_FORKED_LIGHTNING);
 
@@ -618,7 +618,7 @@ struct boss_lady_vashjAI : public ScriptedAI
                     Phase = 3;
                     Paralyze(false);
                     //return to the tank
-                    me->GetMotionMaster()->MoveChase(me->getVictim());
+                    me->GetMotionMaster()->MoveChase(me->GetVictim());
                 }
                 Check_Timer = 1000;
             }
@@ -726,7 +726,7 @@ struct mob_enchanted_elementalAI : public ScriptedAI
                     me->DealDamage(me, me->GetMaxHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
                 }
             }
-            if(((boss_lady_vashjAI*)((Creature*)Vashj)->AI())->InCombat == false || ((boss_lady_vashjAI*)((Creature*)Vashj)->AI())->Phase != 2 || Vashj->isDead())
+            if(((boss_lady_vashjAI*)((Creature*)Vashj)->AI())->InCombat == false || ((boss_lady_vashjAI*)((Creature*)Vashj)->AI())->Phase != 2 || Vashj->IsDead())
             {
                 //call Unsummon()
                 me->DealDamage(me, me->GetMaxHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
@@ -881,7 +881,7 @@ struct mob_toxic_sporebatAI : public ScriptedAI
             {
                 //check if vashj is death
                 Unit *Vashj = Unit::GetUnit((*me), instance->GetData64(DATA_LADYVASHJ));
-                if(!Vashj || (Vashj && !Vashj->isAlive()) || (Vashj && ((boss_lady_vashjAI*)((Creature*)Vashj)->AI())->Phase != 3))
+                if(!Vashj || (Vashj && !Vashj->IsAlive()) || (Vashj && ((boss_lady_vashjAI*)((Creature*)Vashj)->AI())->Phase != 3))
                 {
                     //remove
                     me->setDeathState(DEAD);
@@ -1003,7 +1003,7 @@ struct mob_coilfang_eliteAI : public ScriptedAI
 
         if (Cleave_Timer.Expired(diff))
         {
-            me->CastSpell(me->getVictim(),31345,false);
+            me->CastSpell(me->GetVictim(),31345,false);
             Cleave_Timer = 10000+rand()%5000;
         }
 
@@ -1121,7 +1121,7 @@ struct mob_coilfang_striderAI : public ScriptedAI
 
         if (MindBlast_Timer.Expired(diff))
         {
-            me->CastSpell(me->getVictim(),SPELL_MIND_BLAST,true);
+            me->CastSpell(me->GetVictim(),SPELL_MIND_BLAST,true);
             MindBlast_Timer = 3000+rand()%1000;
         }
 
@@ -1161,7 +1161,7 @@ struct mob_shield_generator_channelAI : public ScriptedAI
             Unit *Vashj = NULL;
             Vashj = Unit::GetUnit((*me), instance->GetData64(DATA_LADYVASHJ));
 
-            if(Vashj && Vashj->isAlive())
+            if(Vashj && Vashj->IsAlive())
             {
                 //start visual channel
                 if (!Cast || !Vashj->HasAura(SPELL_MAGIC_BARRIER,0))

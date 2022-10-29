@@ -46,7 +46,7 @@ void WaypointMovementGenerator<Creature>::Initialize(Creature &creature)
     _nextMoveTime.Reset(0);
     creature.StopMoving();
 
-    _pathFinding = !creature.hasUnitState(UNIT_STAT_IGNORE_PATHFINDING) && creature.GetMap()->WaypointMovementPathfinding();
+    _pathFinding = !creature.HasUnitState(UNIT_STAT_IGNORE_PATHFINDING) && creature.GetMap()->WaypointMovementPathfinding();
 
     if (creature.IsFormationLeader())
         creature.GetFormation()->ClearMovingUnits();
@@ -153,7 +153,7 @@ bool WaypointMovementGenerator<Creature>::Update(Creature &creature, const uint3
 {
     // way point movement can be switched on/off
     // This is quite handy for escort quests and other stuff
-    if (creature.hasUnitState(UNIT_STAT_NOT_MOVE))
+    if (creature.HasUnitState(UNIT_STAT_NOT_MOVE))
         return true;
 
     // prevent a crash at empty way point path.

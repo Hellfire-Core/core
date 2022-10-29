@@ -43,6 +43,7 @@
 #include "SystemConfig.h"
 #include "GameEvent.h"
 #include "GuildMgr.h"
+#include "PlayerBotMgr.h"
 
 class GameEvent;
 
@@ -504,6 +505,10 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder * holder)
         m_playerLoading = false;
         return;
     }
+
+    if (GetBot() && !sPlayerBotMgr.IsSavingAllowed())
+        pCurrChar->m_saveDisabled = true;
+
     pCurrChar->GetCamera().Init();
     pCurrChar->GetMotionMaster()->Initialize();
     SetPlayer(pCurrChar);
@@ -617,7 +622,7 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder * holder)
         }
     }
 
-    if (!pCurrChar->isAlive())
+    if (!pCurrChar->IsAlive())
         pCurrChar->SendCorpseReclaimDelay(true);
 
     pCurrChar->SendInitialPacketsBeforeAddToMap();
@@ -627,7 +632,7 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder * holder)
     {
         pCurrChar->setCinematic(true);
 
-        if(ChrRacesEntry const* rEntry = sChrRacesStore.LookupEntry(pCurrChar->getRace()))
+        if(ChrRacesEntry const* rEntry = sChrRacesStore.LookupEntry(pCurrChar->GetRace()))
         {
             pCurrChar->SendCinematicStart(rEntry->CinematicSequence);
 
@@ -683,7 +688,7 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder * holder)
     if (pCurrChar->m_deathState != ALIVE)
     {
         // not blizz like, we must correctly save and load player instead...
-        if (pCurrChar->getRace() == RACE_NIGHTELF)
+        if (pCurrChar->GetRace() == RACE_NIGHTELF)
             pCurrChar->CastSpell(pCurrChar, 20584, true, 0);// auras SPELL_AURA_INCREASE_SPEED(+speed in wisp form), SPELL_AURA_INCREASE_SWIM_SPEED(+swim speed in wisp form), SPELL_AURA_TRANSFORM (to wisp form)
         pCurrChar->CastSpell(pCurrChar, 8326, true, 0);     // auras SPELL_AURA_GHOST, SPELL_AURA_INCREASE_SPEED(why?), SPELL_AURA_INCREASE_SWIM_SPEED(why?)
 
@@ -741,11 +746,11 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder * holder)
     }
 
     // Load pet if any and player is alive and not in taxi flight
-    if (pCurrChar->isAlive() && pCurrChar->m_taxi.GetTaxiSource()==0)
+    if (pCurrChar->IsAlive() && pCurrChar->m_taxi.GetTaxiSource()==0)
         pCurrChar->LoadPet();
 
     // Set FFA PvP for non GM in non-rest mode
-    if (sWorld.IsFFAPvPRealm() && !pCurrChar->isGameMaster() && !pCurrChar->HasFlag(PLAYER_FLAGS,PLAYER_FLAGS_RESTING))
+    if (sWorld.IsFFAPvPRealm() && !pCurrChar->IsGameMaster() && !pCurrChar->HasFlag(PLAYER_FLAGS,PLAYER_FLAGS_RESTING))
         pCurrChar->SetFFAPvP(true);
 
     if (pCurrChar->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_CONTESTED_PVP))
@@ -771,7 +776,7 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder * holder)
     if (sWorld.getConfig(CONFIG_START_ALL_TAXI_PATHS))
         pCurrChar->SetTaxiCheater(true);
 
-    if (pCurrChar->isGameMaster())
+    if (pCurrChar->IsGameMaster())
         SendNotification(LANG_GM_ON);
 
     pCurrChar->CreateCharmAI();

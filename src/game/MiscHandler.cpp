@@ -55,7 +55,7 @@ void WorldSession::HandleRepopRequestOpcode(WorldPacket & /*recv_data*/)
 {
     sLog.outDebug("WORLD: Recvd CMSG_REPOP_REQUEST Message");
 
-    if (GetPlayer()->isAlive() || GetPlayer()->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST))
+    if (GetPlayer()->IsAlive() || GetPlayer()->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST))
         return;
 
     // the world update order is sessions, players, creatures
@@ -63,7 +63,7 @@ void WorldSession::HandleRepopRequestOpcode(WorldPacket & /*recv_data*/)
     // creatures can kill players
     // so if the server is lagging enough the player can
     // release spirit after he's killed but before he is updated
-    if (GetPlayer()->getDeathState() == JUST_DIED)
+    if (GetPlayer()->GetDeathState() == JUST_DIED)
     {
         sLog.outDebug("HandleRepopRequestOpcode: got request after player %s(%d) was killed and before he was updated", GetPlayer()->GetName(), GetPlayer()->GetGUIDLow());
         GetPlayer()->KillPlayer();
@@ -189,22 +189,22 @@ void WorldSession::HandleWhoOpcode(WorldPacket & recv_data)
             continue;
 
         // check if target's level is in level range
-        uint32 lvl = itr->second->getLevel();
+        uint32 lvl = itr->second->GetLevel();
         if (lvl < level_min || lvl > level_max)
             continue;
 
         // check if class matches classmask
-        uint32 class_ = itr->second->getClass();
+        uint32 class_ = itr->second->GetClass();
         if (!(classmask & (1 << class_)))
             continue;
 
         // check if race matches racemask
-        uint32 race = itr->second->getRace();
+        uint32 race = itr->second->GetRace();
         if (!(racemask & (1 << race)))
             continue;
 
         uint32 pzoneid = itr->second->GetCachedZone();
-        if (!GetPlayer()->isGameMaster() && sWorld.getConfig(CONFIG_ENABLE_FAKE_WHO_ON_ARENA))
+        if (!GetPlayer()->IsGameMaster() && sWorld.getConfig(CONFIG_ENABLE_FAKE_WHO_ON_ARENA))
         {
             if (itr->second->InArena())
             {
@@ -298,7 +298,7 @@ void WorldSession::HandleLogoutRequestOpcode(WorldPacket & /*recv_data*/)
         DoLootRelease(lguid);
 
     //Can not logout if...
-    if (GetPlayer()->isInCombat() ||                        //...is in combat
+    if (GetPlayer()->IsInCombat() ||                        //...is in combat
         GetPlayer()->duel         ||                        //...is in Duel
         GetPlayer()->HasAura(9454,0)         ||             //...is frozen by GM via freeze command
                                                             //...is jumping ...is falling
@@ -698,7 +698,7 @@ void WorldSession::HandleCorpseReclaimOpcode(WorldPacket &recv_data)
     CHECK_PACKET_SIZE(recv_data,8);
 
     sLog.outDetail("WORLD: Received CMSG_RECLAIM_CORPSE");
-    if (GetPlayer()->isAlive())
+    if (GetPlayer()->IsAlive())
         return;
 
     // do not allow corpse reclaim in arena
@@ -739,7 +739,7 @@ void WorldSession::HandleResurrectResponseOpcode(WorldPacket & recv_data)
 
     sLog.outDetail("WORLD: Received CMSG_RESURRECT_RESPONSE");
 
-    if (GetPlayer()->isAlive())
+    if (GetPlayer()->IsAlive())
         return;
 
     uint64 guid;
@@ -835,7 +835,7 @@ void WorldSession::HandleAreaTriggerOpcode(WorldPacket & recv_data)
         return;
 
     uint32 quest_id = sObjectMgr.GetQuestForAreaTrigger(Trigger_ID);
-    if (quest_id && GetPlayer()->isAlive() && GetPlayer()->IsActiveQuest(quest_id))
+    if (quest_id && GetPlayer()->IsAlive() && GetPlayer()->IsActiveQuest(quest_id))
     {
         Quest const* pQuest = sObjectMgr.GetQuestTemplate(quest_id);
         if (pQuest)
@@ -1107,10 +1107,10 @@ void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
     for (uint32 i = 0; i < talent_points; ++i)
         data << uint8(0);
 
-    if (sWorld.getConfig(CONFIG_TALENTS_INSPECTING) || _player->isGameMaster())
+    if (sWorld.getConfig(CONFIG_TALENTS_INSPECTING) || _player->IsGameMaster())
     {
         // find class talent tabs (all players have 3 talent tabs)
-        uint32 const* talentTabIds = GetTalentTabPages(plr->getClass());
+        uint32 const* talentTabIds = GetTalentTabPages(plr->GetClass());
 
         uint32 talentTabPos = 0;                            // pos of first talent rank in tab including all prev tabs
         for (uint32 i = 0; i < 3; ++i)
@@ -1486,7 +1486,7 @@ void WorldSession::HandleDungeonDifficultyOpcode(WorldPacket & recv_data)
         return;
     }
 
-    if (_player->getLevel() < LEVELREQUIREMENT_HEROIC)
+    if (_player->GetLevel() < LEVELREQUIREMENT_HEROIC)
         return;
     Group *pGroup = _player->GetGroup();
     if (pGroup)
@@ -1664,5 +1664,5 @@ void WorldSession::HandleAcceptGrantLevel(WorldPacket& recv_data)
     else
         return;
 
-    _player->GiveLevel(_player->getLevel() + 1);
+    _player->GiveLevel(_player->GetLevel() + 1);
 }

@@ -294,8 +294,8 @@ struct boss_hex_lord_malacrassAI : public ScriptedAI
         for(uint8 i = 0; i < 4; ++i)
         {
             Unit* Temp = Unit::GetUnit((*m_creature),AddGUID[i]);
-            if(Temp && Temp->isAlive())
-                ((Creature*)Temp)->AI()->AttackStart(m_creature->getVictim());
+            if(Temp && Temp->IsAlive())
+                ((Creature*)Temp)->AI()->AttackStart(m_creature->GetVictim());
             else
             {
                 EnterEvadeMode();
@@ -319,7 +319,7 @@ struct boss_hex_lord_malacrassAI : public ScriptedAI
         for(uint8 i = 0; i < 4 ; ++i)
         {
             Unit* Temp = Unit::GetUnit((*m_creature),AddGUID[i]);
-            if(Temp && Temp->isAlive())
+            if(Temp && Temp->IsAlive())
                 Temp->DealDamage(Temp, Temp->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
         }
     }
@@ -344,7 +344,7 @@ struct boss_hex_lord_malacrassAI : public ScriptedAI
         for(uint8 i = 0; i < 4; ++i)
         {
             Creature *pCreature = (Unit::GetCreature((*m_creature), AddGUID[i]));
-            if(!pCreature || !pCreature->isAlive())
+            if(!pCreature || !pCreature->IsAlive())
             {
                 if(pCreature) pCreature->setDeathState(DEAD);
                 pCreature = m_creature->SummonCreature(AddEntry[i], Pos_X[i], POS_Y, POS_Z, ORIENT, TEMPSUMMON_DEAD_DESPAWN, 0);
@@ -388,8 +388,8 @@ struct boss_hex_lord_malacrassAI : public ScriptedAI
             for(uint8 i = 0; i < 4; ++i)
             {
                 Unit* Temp = Unit::GetUnit((*m_creature),AddGUID[i]);
-                if(Temp && Temp->isAlive() && !Temp->getVictim())
-                    ((Creature*)Temp)->AI()->AttackStart(m_creature->getVictim());
+                if(Temp && Temp->IsAlive() && !Temp->GetVictim())
+                    ((Creature*)Temp)->AI()->AttackStart(m_creature->GetVictim());
             }
             CheckAddState_Timer = 5000;
         }
@@ -441,7 +441,7 @@ struct boss_hex_lord_malacrassAI : public ScriptedAI
                 //m_creature->SetUInt32Value(UNIT_CHANNEL_SPELL, SPELL_SIPHON_SOUL);
 
                 PlayerGUID = target->GetGUID();
-                PlayerClass = target->getClass() - 1;
+                PlayerClass = target->GetClass() - 1;
                 if(PlayerClass == 10) PlayerClass = 9; // druid
                 if(PlayerClass == 4 && target->HasSpell(15473)) PlayerClass = 5; // shadow priest
 
@@ -474,7 +474,7 @@ struct boss_hex_lord_malacrassAI : public ScriptedAI
                 target = m_creature;
                 break;
             case ABILITY_TARGET_VICTIM:
-                target = m_creature->getVictim();
+                target = m_creature->GetVictim();
                 break;
             case ABILITY_TARGET_HEAL:
                 target = SelectLowestHpFriendly(50, 0);
@@ -533,7 +533,7 @@ struct boss_thurgAI : public boss_hexlord_addAI
 
         if (cleave_timer.Expired(diff))
         {
-            m_creature->CastSpell(m_creature->getVictim(),SPELL_CLEAVE, false);
+            m_creature->CastSpell(m_creature->GetVictim(),SPELL_CLEAVE, false);
             cleave_timer = 12000; //3 sec cast
         }
 
@@ -575,7 +575,7 @@ struct boss_alyson_antilleAI : public boss_hexlord_addAI
                 m_creature->AddThreat(who, 0.0f);
             }
 
-            if (!m_creature->isInCombat())
+            if (!m_creature->IsInCombat())
                 EnterCombat(who);
         }
     }
@@ -689,13 +689,13 @@ struct boss_lord_raadanAI : public boss_hexlord_addAI
 
         if (thunderclap_timer.Expired(diff))
         {
-            m_creature->CastSpell(m_creature->getVictim(),SPELL_THUNDERCLAP, false);
+            m_creature->CastSpell(m_creature->GetVictim(),SPELL_THUNDERCLAP, false);
             thunderclap_timer = 12000;
         }
 
         if (flamebreath_timer.Expired(diff))
         {
-            m_creature->CastSpell(m_creature->getVictim(),SPELL_FLAME_BREATH, false);
+            m_creature->CastSpell(m_creature->GetVictim(),SPELL_FLAME_BREATH, false);
             flamebreath_timer = 12000;
         }
 
@@ -726,7 +726,7 @@ struct boss_darkheartAI : public boss_hexlord_addAI
 
         if (psychicwail_timer.Expired(diff))
         {
-            m_creature->CastSpell(m_creature->getVictim(),SPELL_PSYCHIC_WAIL, false);
+            m_creature->CastSpell(m_creature->GetVictim(),SPELL_PSYCHIC_WAIL, false);
             psychicwail_timer = 12000;
         }
 
@@ -803,7 +803,7 @@ struct boss_fenstalkerAI : public boss_hexlord_addAI
         if (volatileinf_timer.Expired(diff))
         {
             // core bug
-            m_creature->getVictim()->CastSpell(m_creature->getVictim(),SPELL_VOLATILE_INFECTION, false);
+            m_creature->GetVictim()->CastSpell(m_creature->GetVictim(),SPELL_VOLATILE_INFECTION, false);
             volatileinf_timer = 12000;
         }
 
@@ -837,7 +837,7 @@ struct boss_koraggAI : public boss_hexlord_addAI
 
         if (mightyblow_timer.Expired(diff))
         {
-            m_creature->CastSpell(m_creature->getVictim(),SPELL_MIGHTY_BLOW, false);
+            m_creature->CastSpell(m_creature->GetVictim(),SPELL_MIGHTY_BLOW, false);
             mightyblow_timer = 12000;
         }
 

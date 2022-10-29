@@ -125,7 +125,7 @@ struct boss_scarlet_commander_mograineAI : public ScriptedAI
         CrusaderStrike5_Timer -= diff;
         if (CrusaderStrike5_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_CRUSADERSTRIKE5);
+            DoCast(m_creature->GetVictim(),SPELL_CRUSADERSTRIKE5);
             CrusaderStrike5_Timer += 20000;
         }
         
@@ -133,7 +133,7 @@ struct boss_scarlet_commander_mograineAI : public ScriptedAI
         HammerOfJustice3_Timer -= diff;
         if (HammerOfJustice3_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_HAMMEROFJUSTICE3);
+            DoCast(m_creature->GetVictim(),SPELL_HAMMEROFJUSTICE3);
             HammerOfJustice3_Timer += 30000;
         }
         
@@ -141,7 +141,7 @@ struct boss_scarlet_commander_mograineAI : public ScriptedAI
         Consecration3_Timer -= diff;
         if (Consecration3_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_CONSECRATION3);
+            DoCast(m_creature->GetVictim(),SPELL_CONSECRATION3);
             Consecration3_Timer += 20000;
         }
         
@@ -233,7 +233,7 @@ struct boss_high_inquisitor_whitemaneAI : public ScriptedAI
 
         DoScriptText(SAY_WH_RESSURECT, m_creature);
 
-        DoCast(m_creature->getVictim(),SPELL_DEEPSLEEP);
+        DoCast(m_creature->GetVictim(),SPELL_DEEPSLEEP);
         DoCast(m-creature->GetGUID(51117),SPELL_SCARLETRESURRECTION)
         }
         */
@@ -273,7 +273,7 @@ struct boss_high_inquisitor_whitemaneAI : public ScriptedAI
         CrusaderStrike_Timer -= diff;
         if (CrusaderStrike_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_CRUSADERSTRIKE);
+            DoCast(m_creature->GetVictim(),SPELL_CRUSADERSTRIKE);
             CrusaderStrike_Timer += 15000;
         }
         
@@ -281,7 +281,7 @@ struct boss_high_inquisitor_whitemaneAI : public ScriptedAI
         HammerOfJustice_Timer -= diff;
         if (HammerOfJustice_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_HAMMEROFJUSTICE);
+            DoCast(m_creature->GetVictim(),SPELL_HAMMEROFJUSTICE);
             HammerOfJustice_Timer += 12000;
         }
         
@@ -289,7 +289,7 @@ struct boss_high_inquisitor_whitemaneAI : public ScriptedAI
         HolySmite6_Timer -= diff;
         if (HolySmite6_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_HOLYSMITE6);
+            DoCast(m_creature->GetVictim(),SPELL_HOLYSMITE6);
             HolySmite6_Timer += 10000;
         }
         
@@ -297,7 +297,7 @@ struct boss_high_inquisitor_whitemaneAI : public ScriptedAI
         HolyFire5_Timer -= diff;
         if (HolyFire5_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_HOLYFIRE5);
+            DoCast(m_creature->GetVictim(),SPELL_HOLYFIRE5);
             HolyFire5_Timer += 15000;
         }
         
@@ -305,7 +305,7 @@ struct boss_high_inquisitor_whitemaneAI : public ScriptedAI
         MindBlast6_Timer -= diff;
         if (MindBlast6_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_MINDBLAST6);
+            DoCast(m_creature->GetVictim(),SPELL_MINDBLAST6);
             MindBlast6_Timer += 8000;
         }
         

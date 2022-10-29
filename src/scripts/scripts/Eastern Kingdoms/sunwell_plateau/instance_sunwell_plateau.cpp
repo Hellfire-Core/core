@@ -267,7 +267,7 @@ struct instance_sunwell_plateau : public ScriptedInstance
                         creature->SetLevitate(false);
                         creature->setFaction(35);
                         creature->SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_FEIGN_DEATH);
-                        creature->SetFlag(UNIT_DYNAMIC_FLAGS, (UNIT_DYNFLAG_DEAD | UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_PACIFIED));
+                        creature->SetFlag(UNIT_DYNAMIC_FLAGS, (UNIT_DYNFLAG_DEAD | UNIT_FLAG_SPAWNING | UNIT_FLAG_PACIFIED));
                     }
                 }
                 else
@@ -448,7 +448,7 @@ struct instance_sunwell_plateau : public ScriptedInstance
                         if(Unit* muru = pl->GetUnit(Muru))
                         {
                             muru->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                            muru->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                            muru->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                             muru->SetVisibility(VISIBILITY_ON);
                         }
                     }
@@ -514,9 +514,9 @@ struct instance_sunwell_plateau : public ScriptedInstance
                 if (data == DONE)
                 {
                     if (Creature *pAlythess = GetCreature(GetData64(DATA_ALYTHESS)))
-                        pAlythess->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                        pAlythess->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                     if (Creature *pSacrolash = GetCreature(GetData64(DATA_SACROLASH)))
-                        pSacrolash->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                        pSacrolash->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                 }
                 break;
             case DATA_HAND_OF_DECEIVER_COUNT:

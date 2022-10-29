@@ -152,7 +152,7 @@ struct boss_dathrohan_balnazzarAI : public ScriptedAI
                 //Cast
                 if (rand()%100 < 75) //50% chance to cast
                 {
-                    DoCast(m_creature->getVictim(),SPELL_CRUSADERSHAMMER);
+                    DoCast(m_creature->GetVictim(),SPELL_CRUSADERSHAMMER);
                 }
                 //15 seconds until we should cast this again
                 CrusadersHammer_Timer += 12000;
@@ -164,7 +164,7 @@ struct boss_dathrohan_balnazzarAI : public ScriptedAI
                 //Cast
                 if (rand()%100 < 60) //50% chance to cast
                 {
-                    DoCast(m_creature->getVictim(),SPELL_CRUSADERSTRIKE);
+                    DoCast(m_creature->GetVictim(),SPELL_CRUSADERSTRIKE);
                 }
                 //15 seconds until we should cast this again
                 CrusaderStrike_Timer += 15000;
@@ -176,7 +176,7 @@ struct boss_dathrohan_balnazzarAI : public ScriptedAI
                 //Cast
                 if (rand()%100 < 70) //70% chance to cast
                 {
-                    DoCast(m_creature->getVictim(),SPELL_MINDBLAST);
+                    DoCast(m_creature->GetVictim(),SPELL_MINDBLAST);
                 }
                 //15 seconds until we should cast this again
                 MindBlast_Timer += 10000;
@@ -188,7 +188,7 @@ struct boss_dathrohan_balnazzarAI : public ScriptedAI
                 //Cast
                 if (rand()%100 < 50) //50% chance to cast
                 {
-                    DoCast(m_creature->getVictim(),SPELL_HOLYSTRIKE);
+                    DoCast(m_creature->GetVictim(),SPELL_HOLYSTRIKE);
                 }
                 //15 seconds until we should cast this again
                 HolyStrike_Timer += 15000;
@@ -200,7 +200,7 @@ struct boss_dathrohan_balnazzarAI : public ScriptedAI
                 //Cast
                 if (rand()%100 < 50) //50% chance to cast
                 {
-                    DoCast(m_creature->getVictim(),SPELL_DAZED);
+                    DoCast(m_creature->GetVictim(),SPELL_DAZED);
                 }
                 //15 seconds until we should cast this again
                 Dazed_Timer += 15000;
@@ -226,7 +226,7 @@ struct boss_dathrohan_balnazzarAI : public ScriptedAI
                 //Cast
                 if (rand()%100 < 60) //70% chance to cast
                 {
-                    DoCast(m_creature->getVictim(),SPELL_MINDBLAST);
+                    DoCast(m_creature->GetVictim(),SPELL_MINDBLAST);
                 }
                 //15 seconds until we should cast this again
                 MindBlast_Timer += 10000;
@@ -238,7 +238,7 @@ struct boss_dathrohan_balnazzarAI : public ScriptedAI
                 //Cast
                 if (rand()%100 < 80) //80% chance to cast
                 {
-                    DoCast(m_creature->getVictim(),SPELL_SHADOWSHOCK);
+                    DoCast(m_creature->GetVictim(),SPELL_SHADOWSHOCK);
                 }
                 //15 seconds until we should cast this again
                 ShadowShock_Timer += 11000;
@@ -250,9 +250,9 @@ struct boss_dathrohan_balnazzarAI : public ScriptedAI
                 //Cast
                 if (rand()%100 < 60) //60% chance to cast
                 {
-                    DoCast(m_creature->getVictim(),SPELL_PSYCHICSCREAM);
-                    if(DoGetThreat(m_creature->getVictim()))
-                        DoModifyThreatPercent(m_creature->getVictim(),-50);
+                    DoCast(m_creature->GetVictim(),SPELL_PSYCHICSCREAM);
+                    if(DoGetThreat(m_creature->GetVictim()))
+                        DoModifyThreatPercent(m_creature->GetVictim(),-50);
                 }
                 //15 seconds until we should cast this again
                 PsychicScream_Timer += 20000;
@@ -281,7 +281,7 @@ struct boss_dathrohan_balnazzarAI : public ScriptedAI
                 //Cast
                 if (rand()%100 < 75) //75% chance to cast
                 {
-                    DoCast(m_creature->getVictim(),SPELL_SHADOWBOLTVOLLEY);
+                    DoCast(m_creature->GetVictim(),SPELL_SHADOWBOLTVOLLEY);
                 }
                 //15 seconds until we should cast this again
                 ShadowBoltVolley_Timer += 13000;
@@ -293,7 +293,7 @@ struct boss_dathrohan_balnazzarAI : public ScriptedAI
             //Cast
             //                if (rand()%100 < 50) //50% chance to cast
             //                {
-            //                DoCast(m_creature->getVictim(),SPELL_MINDCONTROL);
+            //                DoCast(m_creature->GetVictim(),SPELL_MINDCONTROL);
             //                }
             //15 seconds until we should cast this again
             //                MindControl_Timer += 15000;

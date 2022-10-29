@@ -82,7 +82,7 @@ struct boss_ptheradrasAI : public ScriptedAI
         RepulsiveGaze_Timer -= diff;
         if (RepulsiveGaze_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_REPULSIVEGAZE);
+            DoCast(m_creature->GetVictim(),SPELL_REPULSIVEGAZE);
             RepulsiveGaze_Timer += 20000;
         }
 

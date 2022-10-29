@@ -57,7 +57,7 @@ bool Player::UpdateStats(Stats stat)
         case STAT_AGILITY:
             UpdateArmor();
             UpdateAttackPowerAndDamage(true);
-            if (getClass() == CLASS_ROGUE || getClass() == CLASS_HUNTER || getClass() == CLASS_DRUID && m_form==FORM_CAT)
+            if (GetClass() == CLASS_ROGUE || GetClass() == CLASS_HUNTER || GetClass() == CLASS_DRUID && m_form==FORM_CAT)
                 UpdateAttackPowerAndDamage();
 
             UpdateAllCritPercentages();
@@ -226,7 +226,7 @@ void Player::UpdateMaxPower(Powers power)
 void Player::UpdateAttackPowerAndDamage(bool ranged)
 {
     float val2 = 0.0f;
-    float level = float(getLevel());
+    float level = float(GetLevel());
 
     UnitMods unitMod = ranged ? UNIT_MOD_ATTACK_POWER_RANGED : UNIT_MOD_ATTACK_POWER;
 
@@ -240,7 +240,7 @@ void Player::UpdateAttackPowerAndDamage(bool ranged)
         index_mod = UNIT_FIELD_RANGED_ATTACK_POWER_MODS;
         index_mult = UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER;
 
-        switch (getClass())
+        switch (GetClass())
         {
             case CLASS_HUNTER: val2 = level * 2.0f + GetStat(STAT_AGILITY) - 10.0f;    break;
             case CLASS_ROGUE:  val2 = level        + GetStat(STAT_AGILITY) - 10.0f;    break;
@@ -261,7 +261,7 @@ void Player::UpdateAttackPowerAndDamage(bool ranged)
     }
     else
     {
-        switch (getClass())
+        switch (GetClass())
         {
             case CLASS_WARRIOR: val2 = level*3.0f + GetStat(STAT_STRENGTH)*2.0f                    - 20.0f; break;
             case CLASS_PALADIN: val2 = level*3.0f + GetStat(STAT_STRENGTH)*2.0f                    - 20.0f; break;
@@ -296,12 +296,12 @@ void Player::UpdateAttackPowerAndDamage(bool ranged)
                 switch (m_form)
                 {
                     case FORM_CAT:
-                        val2 = getLevel()*mLevelMult + GetStat(STAT_STRENGTH)*2.0f + GetStat(STAT_AGILITY) - 20.0f; break;
+                        val2 = GetLevel()*mLevelMult + GetStat(STAT_STRENGTH)*2.0f + GetStat(STAT_AGILITY) - 20.0f; break;
                     case FORM_BEAR:
                     case FORM_DIREBEAR:
-                        val2 = getLevel()*mLevelMult + GetStat(STAT_STRENGTH)*2.0f - 20.0f; break;
+                        val2 = GetLevel()*mLevelMult + GetStat(STAT_STRENGTH)*2.0f - 20.0f; break;
                     case FORM_MOONKIN:
-                        val2 = getLevel()*mLevelMult + GetStat(STAT_STRENGTH)*2.0f - 20.0f; break;
+                        val2 = GetLevel()*mLevelMult + GetStat(STAT_STRENGTH)*2.0f - 20.0f; break;
                     default:
                         val2 = GetStat(STAT_STRENGTH)*2.0f - 20.0f; break;
                 }
@@ -346,7 +346,7 @@ void Player::UpdateAttackPowerAndDamage(bool ranged)
         UpdateDamagePhysical(BASE_ATTACK);
         if (CanDualWield() && haveOffhandWeapon())           //allow update offhand damage only if player knows DualWield Spec and has equipped offhand weapon
             UpdateDamagePhysical(OFF_ATTACK);
-        if (getClass() == CLASS_SHAMAN)                      // mental quickness
+        if (GetClass() == CLASS_SHAMAN)                      // mental quickness
             UpdateSpellDamageAndHealingBonus();
     }
 }
@@ -390,7 +390,7 @@ void Player::CalculateMinMaxDamage(WeaponAttackType attType, bool normalized, fl
 
     if (IsInFeralForm())                                    //check if player is druid and in cat or bear forms
     {
-        uint32 lvl = getLevel();
+        uint32 lvl = GetLevel();
         if (lvl > 60) lvl = 60;
 
         weapon_mindamage = lvl*0.85*att_speed;
@@ -633,7 +633,7 @@ void Player::UpdateManaRegen()
         {
             power_regen_mp5 += (*i)->GetModifier()->m_amount * Intellect / 500.0f;
             // Add regen bonus from level in this dummy
-            power_regen_mp5 += getLevel() * 35 / 100;
+            power_regen_mp5 += GetLevel() * 35 / 100;
         }
 
     // Set regen rate in cast state apply only on spirit based regen
@@ -783,7 +783,7 @@ void Creature::UpdateDamagePhysical(WeaponAttackType attType)
 
     float base_value = GetModifierValue(unitMod, BASE_VALUE);
     // base ap is 5* level, reducing ap to 0 should cause about 15% decrease in damage
-    float base_pct    = GetModifierValue(unitMod, BASE_PCT) * (0.85f + 0.03f * GetTotalAttackPowerValue(attType)/getLevel());
+    float base_pct    = GetModifierValue(unitMod, BASE_PCT) * (0.85f + 0.03f * GetTotalAttackPowerValue(attType)/GetLevel());
     float total_value = GetModifierValue(unitMod, TOTAL_VALUE);
     float total_pct   = GetModifierValue(unitMod, TOTAL_PCT);
 
@@ -831,7 +831,7 @@ bool Pet::UpdateStats(Stats stat)
     Unit *owner = GetOwner();
     if (stat == STAT_STAMINA)
     {
-        if (owner && (getPetType() == HUNTER_PET || owner->getClass() == CLASS_WARLOCK || owner->getClass() == CLASS_MAGE))
+        if (owner && (getPetType() == HUNTER_PET || owner->GetClass() == CLASS_WARLOCK || owner->GetClass() == CLASS_MAGE))
         {
             value += float(owner->GetStat(stat)) * 0.3f;
             if (getPetType() == HUNTER_PET && owner->HasAura(38297,1))
@@ -840,7 +840,7 @@ bool Pet::UpdateStats(Stats stat)
     }                                                      //warlock's and mage's pets gain 30% of owner's intellect
     else if (stat == STAT_INTELLECT && getPetType() == SUMMON_PET)
     {
-        if (owner && (owner->getClass() == CLASS_WARLOCK || owner->getClass() == CLASS_MAGE))
+        if (owner && (owner->GetClass() == CLASS_WARLOCK || owner->GetClass() == CLASS_MAGE))
             value += float(owner->GetStat(stat)) * 0.3f;
     }
 
@@ -882,11 +882,11 @@ void Pet::UpdateResistances(uint32 school)
 
         Unit *owner = GetOwner();
         // hunter and warlock pets gain 40% of owner's resistance
-        if (owner && (getPetType() == HUNTER_PET || getPetType() == SUMMON_PET && owner->getClass() == CLASS_WARLOCK))
+        if (owner && (getPetType() == HUNTER_PET || getPetType() == SUMMON_PET && owner->GetClass() == CLASS_WARLOCK))
             value += float(owner->GetResistance(SpellSchools(school))) * 0.4f;
 
         // Void Star Talisman's resistance bonus
-        if (owner && getPetType() == SUMMON_PET && owner->getClass() == CLASS_WARLOCK)
+        if (owner && getPetType() == SUMMON_PET && owner->GetClass() == CLASS_WARLOCK)
             if (Aura *aura = owner->GetAura(37386, 0))
                 value += float(aura->GetModifierValue());
 
@@ -904,7 +904,7 @@ void Pet::UpdateArmor()
 
     Unit *owner = GetOwner();
     // hunter and warlock pets gain 35% of owner's armor value
-    if (owner && (getPetType() == HUNTER_PET || getPetType() == SUMMON_PET && owner->getClass() == CLASS_WARLOCK))
+    if (owner && (getPetType() == HUNTER_PET || getPetType() == SUMMON_PET && owner->GetClass() == CLASS_WARLOCK))
     {
         bonus_armor = 0.35f * float(owner->GetArmor());
         // Leggings of Beast Mastery
@@ -974,7 +974,7 @@ void Pet::UpdateAttackPowerAndDamage(bool ranged)
                 bonusAP += 70.0f;
         }
         //demons benefit from warlocks shadow or fire damage
-        else if (getPetType() == SUMMON_PET && owner->getClass() == CLASS_WARLOCK)
+        else if (getPetType() == SUMMON_PET && owner->GetClass() == CLASS_WARLOCK)
         {
             int32 fire  = int32(owner->GetUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS + SPELL_SCHOOL_FIRE)) - owner->GetUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_NEG + SPELL_SCHOOL_FIRE);
             int32 shadow = int32(owner->GetUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS + SPELL_SCHOOL_SHADOW)) - owner->GetUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_NEG + SPELL_SCHOOL_SHADOW);
@@ -985,7 +985,7 @@ void Pet::UpdateAttackPowerAndDamage(bool ranged)
             bonusAP = maximum * 0.57f;
         }
         //water elementals benefit from mage's frost damage
-        else if (getPetType() == SUMMON_PET && owner->getClass() == CLASS_MAGE)
+        else if (getPetType() == SUMMON_PET && owner->GetClass() == CLASS_MAGE)
         {
             int32 frost = int32(owner->GetUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS + SPELL_SCHOOL_FROST)) - owner->GetUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_NEG + SPELL_SCHOOL_FROST);
             if (frost < 0)

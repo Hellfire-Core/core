@@ -43,7 +43,7 @@ void UnitAI::AttackStartCaster(Unit *victim, float dist)
 
 void UnitAI::DoMeleeAttackIfReady()
 {
-    if (me->hasUnitState(UNIT_STAT_CANNOT_AUTOATTACK))
+    if (me->HasUnitState(UNIT_STAT_CANNOT_AUTOATTACK))
         return;
 
     // set selection back to attacked victim if not selected (after spell casting)
@@ -57,18 +57,18 @@ void UnitAI::DoMeleeAttackIfReady()
     if (me->isAttackReady())
     {
         //If we are within range melee the target
-        if (me->IsWithinMeleeRange(me->getVictim()))
+        if (me->IsWithinMeleeRange(me->GetVictim()))
         {
-            me->AttackerStateUpdate(me->getVictim());
+            me->AttackerStateUpdate(me->GetVictim());
             me->resetAttackTimer();
         }
     }
     if (me->haveOffhandWeapon() && me->isAttackReady(OFF_ATTACK))
     {
         //If we are within range melee the target
-        if (me->IsWithinMeleeRange(me->getVictim()))
+        if (me->IsWithinMeleeRange(me->GetVictim()))
         {
-            me->AttackerStateUpdate(me->getVictim(), OFF_ATTACK);
+            me->AttackerStateUpdate(me->GetVictim(), OFF_ATTACK);
             me->resetAttackTimer(OFF_ATTACK);
         }
     }
@@ -76,15 +76,15 @@ void UnitAI::DoMeleeAttackIfReady()
 
 bool UnitAI::DoSpellAttackIfReady(uint32 spell)
 {
-    if (me->hasUnitState(UNIT_STAT_CASTING))
+    if (me->HasUnitState(UNIT_STAT_CASTING))
         return true;
 
     if (me->isAttackReady())
     {
         const SpellEntry * spellInfo = GetSpellStore()->LookupEntry(spell);
-        if (me->IsWithinCombatRange(me->getVictim(), SpellMgr::GetSpellMaxRange(spellInfo)))
+        if (me->IsWithinCombatRange(me->GetVictim(), SpellMgr::GetSpellMaxRange(spellInfo)))
         {
-            me->CastSpell(me->getVictim(), spell, false);
+            me->CastSpell(me->GetVictim(), spell, false);
             me->resetAttackTimer();
         }
         else
@@ -346,7 +346,7 @@ float UnitAI::DoGetSpellMaxRange(uint32 spellId, bool positive)
 bool UnitAI::CanCast(Unit* Target, SpellEntry const *Spell, bool Triggered)
 {
     //No target so we can't cast
-    if (!Target || !Spell || me->hasUnitState(UNIT_STAT_CASTING))
+    if (!Target || !Spell || me->HasUnitState(UNIT_STAT_CASTING))
         return false;
 
     //Silenced so we can't cast
@@ -391,7 +391,7 @@ bool UnitAI::HasEventAISummonedUnits()
         ++itr;
         if (Unit * tmpU = me->GetUnit(*tmpItr))
         {
-            if (tmpU->IsInWorld() && tmpU->isAlive())
+            if (tmpU->IsInWorld() && tmpU->IsAlive())
                 alive = true;
             else
                 eventAISummonedList.erase(tmpItr);

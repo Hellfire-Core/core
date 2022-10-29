@@ -72,7 +72,7 @@ struct instance_sethekk_halls : public ScriptedInstance
 
     void OnPlayerEnter(Player* player)
     {
-        if (player->isGameMaster())
+        if (player->IsGameMaster())
             return;
 
         if (player->GetQuestStatus(QUEST_BROTHER) == QUEST_STATUS_INCOMPLETE && Lakka == LAKKA_NOT_SUMMONED)

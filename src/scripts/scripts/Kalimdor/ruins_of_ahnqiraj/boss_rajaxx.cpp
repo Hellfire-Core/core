@@ -124,7 +124,7 @@ struct boss_rajaxxAI : public ScriptedAI
         Disarm_Timer -= diff;
         if (Disarm_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(), SPELL_DISARM);
+            DoCast(m_creature->GetVictim(), SPELL_DISARM);
             Disarm_Timer += 20000;
         }
         
@@ -199,7 +199,7 @@ struct rajaxx_officerAI : public ScriptedAI
         SunderTimer -= diff;
         if (SunderTimer <= diff)
         {
-            DoCast(m_creature->getVictim(), SPELL_SUNDER_ARMOR);
+            DoCast(m_creature->GetVictim(), SPELL_SUNDER_ARMOR);
             SunderTimer += 5000 + urand(0, 5000);
         }
         
@@ -207,7 +207,7 @@ struct rajaxx_officerAI : public ScriptedAI
         CleaveTimer -= diff;
         if (CleaveTimer <= diff)
         {
-            DoCast(m_creature->getVictim(), SPELL_CLEAVE);
+            DoCast(m_creature->GetVictim(), SPELL_CLEAVE);
             CleaveTimer = 7500 + urand (0, 5000);
         }
         
@@ -218,7 +218,7 @@ struct rajaxx_officerAI : public ScriptedAI
             switch (GUID)
             {
             case 15391:
-                DoCast(m_creature->getVictim(), SPELL_FRIGHTENING_SHOUT);
+                DoCast(m_creature->GetVictim(), SPELL_FRIGHTENING_SHOUT);
                 SpecialTimer += 30000 + urand (0, 10000);
                 break;
             case 15392:
@@ -227,11 +227,11 @@ struct rajaxx_officerAI : public ScriptedAI
                 SpecialTimer += 30000;
                 break;
             case 15389:
-                DoCast(m_creature->getVictim(), SPELL_LIGHTNING_CLOUD);
+                DoCast(m_creature->GetVictim(), SPELL_LIGHTNING_CLOUD);
                 SpecialTimer += 30000;
                 break;
             case 15390:
-                DoCast(m_creature->getVictim(), SPELL_SHOCKWAVE);
+                DoCast(m_creature->GetVictim(), SPELL_SHOCKWAVE);
                 SpecialTimer += 30000;
                 break;
             case 15386:
@@ -239,7 +239,7 @@ struct rajaxx_officerAI : public ScriptedAI
                 SpecialTimer += 15000;
                 break;
             case 15388:
-                DoCast(m_creature->getVictim(), SPELL_SWEEPING_SLAM);
+                DoCast(m_creature->GetVictim(), SPELL_SWEEPING_SLAM);
                 SpecialTimer += 30000;
                 break;
             case 15385:

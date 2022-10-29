@@ -111,7 +111,7 @@ struct boss_thaddiusAI : public BossAI
         events.ScheduleEvent(EVENT_CHAIN_LIGHTNING, urand(15000, 45000));   // GUESSED
 
         me->SetReactState(REACT_PASSIVE);
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
     }
 
@@ -121,11 +121,11 @@ struct boss_thaddiusAI : public BossAI
         ClearCastQueue();
 
         if (Creature *pStalagg = instance->GetCreature(instance->GetData64(DATA_STALAGG)))
-            if (!pStalagg->isAlive())
+            if (!pStalagg->IsAlive())
                 pStalagg->Respawn();
 
         if (Creature *pFeugen = instance->GetCreature(instance->GetData64(DATA_FEUGEN)))
-            if (!pFeugen->isAlive())
+            if (!pFeugen->IsAlive())
                 pFeugen->Respawn();
 
         CreatureAI::EnterEvadeMode();
@@ -134,7 +134,7 @@ struct boss_thaddiusAI : public BossAI
     void Engage()
     {
         me->SetReactState(REACT_AGGRESSIVE);
-        me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         DoZoneInCombat();
     }
@@ -167,10 +167,10 @@ struct boss_thaddiusAI : public BossAI
 
     void DoMeleeAttackIfReady()
     {
-        if (m_creature->hasUnitState(UNIT_STAT_CASTING))
+        if (m_creature->HasUnitState(UNIT_STAT_CASTING))
             return;
 
-        Unit *temp = m_creature->getVictim();
+        Unit *temp = m_creature->GetVictim();
 
         if (!temp)
             temp = SelectUnit(SELECT_TARGET_TOPAGGRO, 0, 5.0f);
@@ -265,7 +265,7 @@ struct boss_stalaggAI : public BossAI
     void EnterEvadeMode()
     {
         if (Creature *pFeugen = instance->GetCreature(instance->GetData64(DATA_FEUGEN)))
-            if (!pFeugen->isAlive())
+            if (!pFeugen->IsAlive())
                 pFeugen->Respawn();
 
         CreatureAI::EnterEvadeMode();
@@ -296,7 +296,7 @@ struct boss_stalaggAI : public BossAI
                 return;
             }
 
-            if (pFeugen->isDead())
+            if (pFeugen->IsDead())
                 if (Creature *pThaddius = instance->GetCreature(instance->GetData64(DATA_THADDIUS)))
                     ((boss_thaddiusAI*) (pThaddius->AI()))->Engage();
         }
@@ -369,7 +369,7 @@ struct boss_feugenAI : public BossAI
     void EnterEvadeMode()
     {
         if (Creature *pStalagg = instance->GetCreature(instance->GetData64(DATA_STALAGG)))
-            if (!pStalagg->isAlive())
+            if (!pStalagg->IsAlive())
                 pStalagg->Respawn();
 
         CreatureAI::EnterEvadeMode();
@@ -400,7 +400,7 @@ struct boss_feugenAI : public BossAI
                 return;
             }
 
-            if (pStalagg->isDead())
+            if (pStalagg->IsDead())
                 if (Creature *pThaddius = instance->GetCreature(instance->GetData64(DATA_THADDIUS)))
                     ((boss_thaddiusAI*) (pThaddius->AI()))->Engage();
         }

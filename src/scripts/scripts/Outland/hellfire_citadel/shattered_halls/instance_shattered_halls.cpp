@@ -227,7 +227,7 @@ struct instance_shattered_halls : public ScriptedInstance
                 if (data == DONE)
                 {
                     if (Creature* Executioner = instance->GetCreature(executionerGUID))
-                        Executioner->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NON_ATTACKABLE);
+                        Executioner->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_SPAWNING);
                 }
                 
                 if (Encounter[3] != DONE)
@@ -242,7 +242,7 @@ struct instance_shattered_halls : public ScriptedInstance
                             player->SummonCreature(Team == ALLIANCE ? aSoldiersLocs[i].AllianceEntry : aSoldiersLocs[i].HordeEntry, aSoldiersLocs[i].fX, aSoldiersLocs[i].fY, aSoldiersLocs[i].fZ, aSoldiersLocs[i].fO, TEMPSUMMON_DEAD_DESPAWN, 0);
 
                         if (Creature* Executioner = player->SummonCreature(NPC_EXECUTIONER, afExecutionerLoc[0], afExecutionerLoc[1], afExecutionerLoc[2], afExecutionerLoc[3], TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 90*MINUTE*IN_MILISECONDS))
-                            Executioner->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NON_ATTACKABLE);
+                            Executioner->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_SPAWNING);
 
                         DoCastGroupDebuff(SPELL_KARGATH_EXECUTIONER_1);
                         ExecutionTimer.Reset(55*MINUTE*IN_MILISECONDS);
@@ -445,7 +445,7 @@ InstanceData* GetInstanceData_instance_shattered_halls(Map* map)
 
 bool AreaTrigger_at_shattered_halls(Player* player, AreaTriggerEntry const* /*pAt*/)
 {
-    if (player->isGameMaster() || player->isDead())
+    if (player->IsGameMaster() || player->IsDead())
         return false;
 
     instance_shattered_halls* pInstance = (instance_shattered_halls*)player->GetInstanceData();

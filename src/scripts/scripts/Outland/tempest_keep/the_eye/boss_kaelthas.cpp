@@ -219,7 +219,7 @@ struct advisorbase_ai : public ScriptedAI
         m_creature->SetNoCallAssistance(true);
 
         m_creature->SetUInt32Value(UNIT_FIELD_BYTES_1, 0);
-        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
 
         //reset encounter
@@ -241,7 +241,7 @@ struct advisorbase_ai : public ScriptedAI
 
     void MoveInLineOfSight(Unit *who)
     {
-        if(!who || m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
+        if(!who || m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING))
             return;
 
         ScriptedAI::MoveInLineOfSight(who);
@@ -249,7 +249,7 @@ struct advisorbase_ai : public ScriptedAI
 
     void AttackStart(Unit* who)
     {
-        if (!who || m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
+        if (!who || m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING))
             return;
 
         ScriptedAI::AttackStart(who);
@@ -258,7 +258,7 @@ struct advisorbase_ai : public ScriptedAI
     void Revive()
     {
         m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         m_creature->SetHealth(m_creature->GetMaxHealth());
         m_creature->SetUInt32Value(UNIT_FIELD_BYTES_1, PLAYER_STATE_NONE);
         m_creature->setDeathState(ALIVE);
@@ -304,7 +304,7 @@ struct advisorbase_ai : public ScriptedAI
                 m_creature->RemoveAllAuras();
                 m_creature->SetHealth(1);
                 m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                 m_creature->GetMotionMaster()->MovementExpired();
                 m_creature->GetMotionMaster()->MoveIdle();
                 m_creature->SetUInt32Value(UNIT_FIELD_BYTES_1,PLAYER_STATE_DEAD);
@@ -446,7 +446,7 @@ struct boss_kaelthasAI : public ScriptedAI
         DispellMindControl();    //when reset, dispell Mind Control from players
 
         m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         m_creature->SetFloatValue(OBJECT_FIELD_SCALE_X, 1.0f);
 
         m_creature->RemoveAllAuras(); //if Reset called while animation
@@ -465,7 +465,7 @@ struct boss_kaelthasAI : public ScriptedAI
             if(Creature *pCreature = Unit::GetCreature((*m_creature), AdvisorGuid[i]))
             {
                 pCreature->Respawn();
-                pCreature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                pCreature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                 pCreature->setFaction(m_creature->getFaction());
                 pCreature->AI()->EnterEvadeMode();
             }
@@ -494,7 +494,7 @@ struct boss_kaelthasAI : public ScriptedAI
         DoScriptText(SAY_INTRO, m_creature);
 
         pInstance->SetData(DATA_KAELTHASEVENT, IN_PROGRESS);
-        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
 
         PhaseSubphase = 0;
         Phase_Timer = 23000;
@@ -505,7 +505,7 @@ struct boss_kaelthasAI : public ScriptedAI
 
     void MoveInLineOfSight(Unit *who)
     {
-        if (!m_creature->hasUnitState(UNIT_STAT_STUNNED) && who->isTargetableForAttack() &&
+        if (!m_creature->HasUnitState(UNIT_STAT_STUNNED) && who->isTargetableForAttack() &&
             m_creature->IsHostileTo(who))
         {
             if (!m_creature->CanFly() && m_creature->GetDistanceZ(who) > CREATURE_Z_ATTACK_RANGE)
@@ -514,7 +514,7 @@ struct boss_kaelthasAI : public ScriptedAI
             float attackRadius = m_creature->GetAttackDistance(who);
             if (m_creature->IsWithinDistInMap(who, attackRadius) && m_creature->IsWithinLOSInMap(who))
             {
-                if (!m_creature->getVictim() && Phase >= 4)
+                if (!m_creature->GetVictim() && Phase >= 4)
                 {
                     DoZoneInCombat();
                     AttackStart(who);
@@ -569,7 +569,7 @@ struct boss_kaelthasAI : public ScriptedAI
     void JustDied(Unit* Killer)
     {
         m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         m_creature->SetFloatValue(OBJECT_FIELD_SCALE_X,1.0f);
 
         DoScriptText(SAY_DEATH, m_creature);
@@ -611,7 +611,7 @@ struct boss_kaelthasAI : public ScriptedAI
             DoTeleportTo(GRAVITY_X, GRAVITY_Y, GRAVITY_Z);
             m_creature->Relocate(GRAVITY_X, GRAVITY_Y, GRAVITY_Z);
             m_creature->InterruptNonMeleeSpells(false);
-            m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
             ChainPyros = false;
             Arcane1 = true;
             Arcane2 = true;
@@ -669,7 +669,7 @@ struct boss_kaelthasAI : public ScriptedAI
             m_creature->Relocate(GRAVITY_X-1.0f, GRAVITY_Y, GRAVITY_Z);
             m_creature->InterruptNonMeleeSpells(false);
             m_creature->RemoveAurasDueToSpell(SPELL_FULLPOWER);
-            m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
             m_creature->SetLevitate(false);
             Phase = 6;
             if (Unit * target = SelectUnit(SELECT_TARGET_TOPAGGRO, 0))
@@ -711,7 +711,7 @@ struct boss_kaelthasAI : public ScriptedAI
 
                 if(pInstance->GetData(DATA_KAELTHASEVENT) == 5)
                 {
-                    if (m_creature->hasUnitState(UNIT_STAT_CHASE))
+                    if (m_creature->HasUnitState(UNIT_STAT_CHASE))
                         m_creature->GetMotionMaster()->Clear();
                 }
 
@@ -761,7 +761,7 @@ struct boss_kaelthasAI : public ScriptedAI
 
                             if(Advisor)
                             {
-                                Advisor->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                                Advisor->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                                 Advisor->setFaction(m_creature->getFaction());
 
                                 target = SelectUnit(SELECT_TARGET_RANDOM, 0);
@@ -795,7 +795,7 @@ struct boss_kaelthasAI : public ScriptedAI
 
                             if(Advisor)
                             {
-                                Advisor->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                                Advisor->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                                 Advisor->setFaction(m_creature->getFaction());
 
                                 target = SelectUnit(SELECT_TARGET_RANDOM, 0);
@@ -829,7 +829,7 @@ struct boss_kaelthasAI : public ScriptedAI
 
                             if(Advisor)
                             {
-                                Advisor->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                                Advisor->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                                 Advisor->setFaction(m_creature->getFaction());
                                 ((ScriptedAI*)(Advisor->AI()))->StartAutocast();
                                 target = SelectUnit(SELECT_TARGET_RANDOM, 0);
@@ -865,7 +865,7 @@ struct boss_kaelthasAI : public ScriptedAI
 
                             if(Advisor)
                             {
-                                Advisor->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                                Advisor->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                                 Advisor->setFaction(m_creature->getFaction());
 
                                 target = SelectUnit(SELECT_TARGET_RANDOM, 0);
@@ -975,7 +975,7 @@ struct boss_kaelthasAI : public ScriptedAI
                     DoResetThreat();
                     DoZoneInCombat();
                     m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                    m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                    m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
 
                     if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true))
                     {
@@ -1004,8 +1004,8 @@ struct boss_kaelthasAI : public ScriptedAI
                         //Fireball_Timer
                         if(!(pInstance->GetData(DATA_KAELTHASEVENT) == 5) && Fireball_Timer <= diff)
                         {
-                            AddSpellToCast(m_creature->getVictim(), SPELL_FIREBALL, false);
-                            //DoCast(m_creature->getVictim(), SPELL_FIREBALL, false);
+                            AddSpellToCast(m_creature->GetVictim(), SPELL_FIREBALL, false);
+                            //DoCast(m_creature->GetVictim(), SPELL_FIREBALL, false);
                             Fireball_Timer = 5000+rand()%10000;
                         }
                         else
@@ -1046,7 +1046,7 @@ struct boss_kaelthasAI : public ScriptedAI
                                 {
                                     Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 80.0, true, m_creature->getVictimGUID());
                                     if(!target)
-                                        target = m_creature->getVictim();
+                                        target = m_creature->GetVictim();
 
                                     if(target)
                                         DoCast(target, SPELL_MIND_CONTROL, true);
@@ -1072,7 +1072,7 @@ struct boss_kaelthasAI : public ScriptedAI
                                 {
                                     Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 80.0, true, m_creature->getVictimGUID());
                                     if(!target)
-                                         target = m_creature->getVictim();
+                                         target = m_creature->GetVictim();
                                     if(target)
                                         DoCast(target, SPELL_MIND_CONTROL, true);
                                 }
@@ -1131,7 +1131,7 @@ struct boss_kaelthasAI : public ScriptedAI
                             if(PyrosCast < 3)
                             {
                               m_creature->StopMoving();
-                              m_creature->CastSpell(m_creature->getVictim(), SPELL_PYROBLAST, false);
+                              m_creature->CastSpell(m_creature->GetVictim(), SPELL_PYROBLAST, false);
                               ++PyrosCast;
                               Pyro_Timer = 4000;
                             }
@@ -1212,7 +1212,7 @@ struct boss_kaelthasAI : public ScriptedAI
                                 {
                                     Unit* pUnit = Unit::GetUnit((*m_creature), (*iter)->getUnitGuid());
                                     ++iter;
-                                    if(pUnit && pUnit->IsInWorld() && pUnit->IsInMap(m_creature) && pUnit->GetTypeId() == TYPEID_PLAYER && !((Player*)pUnit)->isGameMaster()) //to allow GM's spying :P
+                                    if(pUnit && pUnit->IsInWorld() && pUnit->IsInMap(m_creature) && pUnit->GetTypeId() == TYPEID_PLAYER && !((Player*)pUnit)->IsGameMaster()) //to allow GM's spying :P
                                     {
                                         pUnit->RemoveAurasDueToSpell(SPELL_ARCANE_DISRUPTION);
                                         m_creature->CastSpell(pUnit, glapse_teleport_id, true);  //this should probably go to the core
@@ -1264,8 +1264,8 @@ struct boss_kaelthasAI : public ScriptedAI
                                 Fireball_Timer = 5000 + rand()%10000;
                                 Arcane_Timer2 = 30000;
                                 Arcane2 = false;
-                                DoStartMovement(m_creature->getVictim());
-                                AttackStart(m_creature->getVictim());
+                                DoStartMovement(m_creature->GetVictim());
+                                AttackStart(m_creature->GetVictim());
                                 break;
                         }
                     }
@@ -1340,7 +1340,7 @@ struct boss_thaladred_the_darkenerAI : public advisorbase_ai
 
     void EnterCombat(Unit *who)
     {
-        if(!who || m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
+        if(!who || m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING))
             return;
 
         DoScriptText(SAY_THALADRED_AGGRO, m_creature);
@@ -1351,7 +1351,7 @@ struct boss_thaladred_the_darkenerAI : public advisorbase_ai
     void UpdateAI(const uint32 diff)
     {
         //Faking death, don't do anything
-        if(m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
+        if(m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING))
             return;
 
         //Return since we have no target
@@ -1370,7 +1370,7 @@ struct boss_thaladred_the_darkenerAI : public advisorbase_ai
                 Check_Timer2 -= diff;
         }
 
-        if(Unit *t = m_creature->getVictim())
+        if(Unit *t = m_creature->GetVictim())
         {
             if(t->IsImmunedToDamage(SPELL_SCHOOL_MASK_NORMAL,false))
             {
@@ -1384,8 +1384,8 @@ struct boss_thaladred_the_darkenerAI : public advisorbase_ai
 
         if(Check_Timer <= diff)
         {
-           if(m_creature->getThreatManager().getThreat(m_creature->getVictim(),false) < 5000000.0f)
-               m_creature->AddThreat(m_creature->getVictim(), 5000001.0f);
+           if(m_creature->getThreatManager().getThreat(m_creature->GetVictim(),false) < 5000000.0f)
+               m_creature->AddThreat(m_creature->GetVictim(), 5000001.0f);
 
             Check_Timer = 1000;
         }
@@ -1421,7 +1421,7 @@ struct boss_thaladred_the_darkenerAI : public advisorbase_ai
 
         if(Rend_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(), SPELL_REND);
+            DoCast(m_creature->GetVictim(), SPELL_REND);
             Rend_Timer = 10000;
         }
         else
@@ -1430,7 +1430,7 @@ struct boss_thaladred_the_darkenerAI : public advisorbase_ai
         //PsychicBlow_Timer
         if(PsychicBlow_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(), SPELL_PSYCHIC_BLOW, true);
+            DoCast(m_creature->GetVictim(), SPELL_PSYCHIC_BLOW, true);
             PsychicBlow_Timer = 20000+rand()%5000;
         }
         else
@@ -1463,7 +1463,7 @@ struct boss_lord_sanguinarAI : public advisorbase_ai
 
     void EnterCombat(Unit *who)
     {
-        if (!who || m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
+        if (!who || m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING))
             return;
 
         DoScriptText(SAY_SANGUINAR_AGGRO, m_creature);
@@ -1472,7 +1472,7 @@ struct boss_lord_sanguinarAI : public advisorbase_ai
     void UpdateAI(const uint32 diff)
     {
         //Faking death, don't do anything
-        if (m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
+        if (m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING))
             return;
 
         //Return since we have no target
@@ -1540,7 +1540,7 @@ struct boss_grand_astromancer_capernianAI : public advisorbase_ai
 
     void EnterCombat(Unit *who)
     {
-        if (!who || m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
+        if (!who || m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING))
             return;
 
         ClearCastQueue();
@@ -1551,7 +1551,7 @@ struct boss_grand_astromancer_capernianAI : public advisorbase_ai
     void UpdateAI(const uint32 diff)
     {
         //Faking Death, don't do anything
-        if ( m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE) )
+        if ( m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING) )
             return;
 
         //Return since we have no target
@@ -1559,7 +1559,7 @@ struct boss_grand_astromancer_capernianAI : public advisorbase_ai
             return;
 
         //cast from 30yd distance
-        if (m_creature->GetDistance2d(m_creature->getVictim()) < CAPERNIAN_DISTANCE)
+        if (m_creature->GetDistance2d(m_creature->GetVictim()) < CAPERNIAN_DISTANCE)
             m_creature->StopMoving();
 
         if (Creature* kael = Unit::GetCreature((*m_creature), pInstance->GetData64(DATA_KAELTHAS)))
@@ -1596,7 +1596,7 @@ struct boss_grand_astromancer_capernianAI : public advisorbase_ai
             if(target)
                 DoCast(target, SPELL_CONFLAGRATION, true);
             else
-                DoCast(m_creature->getVictim(), SPELL_CONFLAGRATION, true);
+                DoCast(m_creature->GetVictim(), SPELL_CONFLAGRATION, true);
 
             Conflagration_Timer = 10000+rand()%5000;
         }
@@ -1612,7 +1612,7 @@ struct boss_grand_astromancer_capernianAI : public advisorbase_ai
             {
                 Unit* pUnit = Unit::GetUnit((*m_creature), (*i)->getUnitGuid());
                                                             //if in melee range
-                if(pUnit && pUnit->IsWithinDistInMap(m_creature, 5) && pUnit->GetTypeId() == TYPEID_PLAYER && pUnit->isAlive() && !pUnit->IsImmunedToDamage(SPELL_SCHOOL_MASK_ARCANE))
+                if(pUnit && pUnit->IsWithinDistInMap(m_creature, 5) && pUnit->GetTypeId() == TYPEID_PLAYER && pUnit->IsAlive() && !pUnit->IsImmunedToDamage(SPELL_SCHOOL_MASK_ARCANE))
                 {
                     InMeleeRange = true;
                     break;
@@ -1662,10 +1662,10 @@ struct boss_master_engineer_telonicusAI : public advisorbase_ai
 
     void AttackStart(Unit *who)
     {
-        if (!who || m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
+        if (!who || m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING))
             return;
 
-        if(who->getClass() == CLASS_HUNTER)
+        if(who->GetClass() == CLASS_HUNTER)
         {
             ScriptedAI::AttackStart(who);
             DoStartMovement(who, 28.0f, 2*M_PI);
@@ -1676,7 +1676,7 @@ struct boss_master_engineer_telonicusAI : public advisorbase_ai
 
     void EnterCombat(Unit *who)
     {
-        if (!who || m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
+        if (!who || m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING))
             return;
 
         DoScriptText(SAY_TELONICUS_AGGRO, m_creature);
@@ -1685,23 +1685,23 @@ struct boss_master_engineer_telonicusAI : public advisorbase_ai
     void UpdateAI(const uint32 diff)
     {
         //Faking Death, do nothing
-        if(m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
+        if(m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING))
             return;
 
         //Return since we have no target
         if(!UpdateVictim())
             return;
 
-        if(Unit *hunter = m_creature->getVictim())
+        if(Unit *hunter = m_creature->GetVictim())
         {
-            if(hunter->getClass() == CLASS_HUNTER)
+            if(hunter->GetClass() == CLASS_HUNTER)
             {
                 if(m_creature->GetDistance2d(hunter) > 30.0f)
                     DoStartMovement(hunter, 28.0f, 2*M_PI);
-                else if (m_creature->hasUnitState(UNIT_STAT_CHASE))
+                else if (m_creature->HasUnitState(UNIT_STAT_CHASE))
                     m_creature->StopMoving();
             }
-            else if (!m_creature->hasUnitState(UNIT_STAT_CHASE))
+            else if (!m_creature->HasUnitState(UNIT_STAT_CHASE))
                     ScriptedAI::AttackStart(hunter);
         }
 
@@ -1731,7 +1731,7 @@ struct boss_master_engineer_telonicusAI : public advisorbase_ai
         //Bomb_Timer
         if(Bomb_Timer <= diff)
         {
-            m_creature->CastSpell(m_creature->getVictim(), SPELL_BOMB, false);
+            m_creature->CastSpell(m_creature->GetVictim(), SPELL_BOMB, false);
             Bomb_Timer = 2000+rand()%6000;
             return;
         }
@@ -1899,7 +1899,7 @@ struct mob_phoenix_egg_tkAI : public ScriptedAI
     {
         if(m_creature->Attack(who, false))
         {
-            if(!m_creature->isInCombat())
+            if(!m_creature->IsInCombat())
                 DoStartNoMovement(who);
         }
     }
@@ -1934,7 +1934,7 @@ struct mob_phoenix_egg_tkAI : public ScriptedAI
       //prevent eggs from hatching when in Gravity Lapse
       if(pInstance->GetData(DATA_KAELTHASEVENT) == 4)
       {
-        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
 
         if (Rebirth_Timer <= diff)
         {
@@ -1949,7 +1949,7 @@ struct mob_phoenix_egg_tkAI : public ScriptedAI
             Rebirth_Timer -= diff;
       }
       else if(pInstance->GetData(DATA_KAELTHASEVENT) == 5)
-              m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+              m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
 
       //remove phoenix eggs if encounter resets or done
       if(pInstance->GetData(DATA_KAELTHASEVENT) == NOT_STARTED || pInstance->GetData(DATA_KAELTHASEVENT) == DONE)
@@ -1980,7 +1980,7 @@ struct mob_nether_vaporAI : public ScriptedAI
         m_creature->setFaction(16);
         m_creature->SetLevitate(true);
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         m_creature->CastSpell(m_creature, SPELL_NETHER_VAPOR, false);
         m_creature->CastSpell(m_creature, SPELL_NETHER_VAPOR_LIGHTNING, false);
         m_creature->StopMoving();
@@ -2106,7 +2106,7 @@ struct weapon_advisorAI : public ScriptedAI
     {
         if(Shoot_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_BOW_SHOOT,false);
+            DoCast(m_creature->GetVictim(),SPELL_BOW_SHOOT,false);
             Shoot_Timer = 2000;
         }
         else
@@ -2132,7 +2132,7 @@ struct weapon_advisorAI : public ScriptedAI
             for(uint8 i = 0; i < 7; ++i)
             {
                 if(Unit* adv = Unit::GetUnit((*m_creature), ((boss_kaelthasAI*)kael->AI())->WeaponGuid[i]))
-                    if(adv->isAlive() && adv->GetHealth() / adv->GetMaxHealth() < .2)
+                    if(adv->IsAlive() && adv->GetHealth() / adv->GetMaxHealth() < .2)
                         return adv;
             }
         }
@@ -2163,7 +2163,7 @@ struct weapon_advisorAI : public ScriptedAI
                 if(MultiShoot_Timer <= diff)
                 {
                     // DoCast(m_creature,SPELL_BOW_BLINK); ! Need to manualy relocate it xF
-                    DoCast(m_creature->getVictim(),SPELL_BOW_MULTISHOOT,false);
+                    DoCast(m_creature->GetVictim(),SPELL_BOW_MULTISHOOT,false);
                     MultiShoot_Timer = 15000;
                 }
                 else
@@ -2238,7 +2238,7 @@ struct weapon_advisorAI : public ScriptedAI
 
                 if(WBolt_Timer <= diff)
                 {
-                    DoCast(m_creature->getVictim(),SPELL_STAFF_WBOLT,false);
+                    DoCast(m_creature->GetVictim(),SPELL_STAFF_WBOLT,false);
                     WBolt_count++;
                     WBolt_Timer = (WBolt_count < 4) ? 3000 : 10000;
 
@@ -2263,9 +2263,9 @@ struct weapon_advisorAI : public ScriptedAI
 
                 if(Rend_Timer <= diff)
                 {
-                    Aura * aur = m_creature->getVictim()->GetAura(SPELL_WARP_REND,0);
+                    Aura * aur = m_creature->GetVictim()->GetAura(SPELL_WARP_REND,0);
                       if(!aur || aur->GetStackAmount() < 10)
-                          m_creature->CastSpell(m_creature->getVictim(),SPELL_WARP_REND,true);
+                          m_creature->CastSpell(m_creature->GetVictim(),SPELL_WARP_REND,true);
                       if(aur && aur->GetStackAmount() == 10)
                           aur->SetStackAmount(9);
                     Rend_Timer = 2500;

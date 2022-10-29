@@ -152,7 +152,7 @@ struct boss_kalecgosAI : public ScriptedAI
     void Reset()
     {
         me->setFaction(14);
-        me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
+        me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING | UNIT_FLAG_NOT_SELECTABLE);
         me->SetLevitate(false);
         me->RemoveUnitMovementFlag(MOVEFLAG_ONTRANSPORT);
         me->SetStandState(PLAYER_STATE_SLEEP);
@@ -335,7 +335,7 @@ struct boss_kalecgosAI : public ScriptedAI
         {
             if (!TalkSequence)
             {
-                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE + UNIT_FLAG_NOT_SELECTABLE);
+                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING + UNIT_FLAG_NOT_SELECTABLE);
                 me->InterruptNonMeleeSpells(true);
                 me->RemoveAllAuras();
                 me->DeleteThreatList();
@@ -359,7 +359,7 @@ struct boss_kalecgosAI : public ScriptedAI
         {
 
             // be sure to not attack players in spectral realm
-            if (me->getVictim() && me->getVictim()->HasAura(AURA_SPECTRAL_REALM, 0))
+            if (me->GetVictim() && me->GetVictim()->HasAura(AURA_SPECTRAL_REALM, 0))
             {
                 // if player in spectral realm is on top of threat list either
                 // he has taunted us or there is no alive player outside spectral realm
@@ -367,7 +367,7 @@ struct boss_kalecgosAI : public ScriptedAI
                 if (!UpdateVictim())
                     return;
 
-                if (me->getVictim()->HasAura(AURA_SPECTRAL_REALM, 0))
+                if (me->GetVictim()->HasAura(AURA_SPECTRAL_REALM, 0))
                 {
                     EnterEvadeMode();
                     return;
@@ -375,8 +375,8 @@ struct boss_kalecgosAI : public ScriptedAI
             }
 
             // if still having victim with aura, drop some threat
-            if (me->getVictim() && me->getVictim()->HasAura(AURA_SPECTRAL_REALM, 0))
-                me->getThreatManager().modifyThreatPercent(me->getVictim(), -10);
+            if (me->GetVictim() && me->GetVictim()->HasAura(AURA_SPECTRAL_REALM, 0))
+                me->getThreatManager().modifyThreatPercent(me->GetVictim(), -10);
 
            
             // various checks + interaction with sathrovarr
@@ -432,7 +432,7 @@ struct boss_kalecgosAI : public ScriptedAI
                 }
                 CheckTimer = 1000;
 
-                if (me->isInCombat())
+                if (me->IsInCombat())
                     DoZoneInCombat();
             }
             
@@ -663,7 +663,7 @@ struct boss_sathrovarrAI : public ScriptedAI
                 EnterEvadeMode();
                 return;
             }
-            if (me->isInCombat())
+            if (me->IsInCombat())
                 DoZoneInCombat();
 
             CheckTimer = 1000;
@@ -671,11 +671,11 @@ struct boss_sathrovarrAI : public ScriptedAI
         
 
         // to be tested
-        if (me->getVictim() && (!me->getVictim()->HasAura(AURA_SPECTRAL_REALM)  || me->getVictim()->GetPositionZ() > -50)  && !(me->getVictim()->GetEntry() == MOB_KALEC))
-            DoModifyThreatPercent(me->getVictim(), -100);
+        if (me->GetVictim() && (!me->GetVictim()->HasAura(AURA_SPECTRAL_REALM)  || me->GetVictim()->GetPositionZ() > -50)  && !(me->GetVictim()->GetEntry() == MOB_KALEC))
+            DoModifyThreatPercent(me->GetVictim(), -100);
 
         // be sure to attack only players in spectral realm
-        if (me->getVictim() && me->getVictim()->HasAura(AURA_SPECTRAL_EXHAUSTION))
+        if (me->GetVictim() && me->GetVictim()->HasAura(AURA_SPECTRAL_EXHAUSTION))
         {
             me->RemoveSpellsCausingAura(SPELL_AURA_MOD_TAUNT);
             if (!UpdateVictim())
@@ -710,7 +710,7 @@ struct boss_sathrovarrAI : public ScriptedAI
 
         if (CorruptionStrikeTimer.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(), SPELL_CORRUPTION_STRIKE);
+            AddSpellToCast(me->GetVictim(), SPELL_CORRUPTION_STRIKE);
             if (roll_chance_f(10.0))
                 DoScriptText(SAY_SATH_SPELL2, me);
 
@@ -850,7 +850,7 @@ struct boss_kalecAI : public ScriptedAI
 
         if (HeroicStrikeTimer.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(), SPELL_HEROIC_STRIKE);
+            AddSpellToCast(me->GetVictim(), SPELL_HEROIC_STRIKE);
             HeroicStrikeTimer = 2000;
         }
         

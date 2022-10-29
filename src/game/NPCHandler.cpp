@@ -160,7 +160,7 @@ void WorldSession::SendTrainerList(uint64 guid, const std::string& strTitle)
 
     // reputation discount
     float fDiscountMod = _player->GetReputationPriceDiscount(unit);
-    if (_player->getLevel() <= sWorld.getConfig(CONFIG_TRAINER_DISCOUNT_MAX_LEVEL) && unit->GetCreatureInfo()->trainer_type == TRAINER_TYPE_CLASS)
+    if (_player->GetLevel() <= sWorld.getConfig(CONFIG_TRAINER_DISCOUNT_MAX_LEVEL) && unit->GetCreatureInfo()->trainer_type == TRAINER_TYPE_CLASS)
         fDiscountMod *= sWorld.getConfig(_player->GetTeam() == ALLIANCE ? RATE_TRAINER_ALLIANCE : RATE_TRAINER_HORDE);
 
     uint32 count = 0;
@@ -238,7 +238,7 @@ void WorldSession::HandleTrainerBuySpellOpcode(WorldPacket & recv_data)
 
     // apply reputation discount
     float fDiscountMod = _player->GetReputationPriceDiscount(unit);
-    if (_player->getLevel() <= sWorld.getConfig(CONFIG_TRAINER_DISCOUNT_MAX_LEVEL) && unit->GetCreatureInfo()->trainer_type == TRAINER_TYPE_CLASS)
+    if (_player->GetLevel() <= sWorld.getConfig(CONFIG_TRAINER_DISCOUNT_MAX_LEVEL) && unit->GetCreatureInfo()->trainer_type == TRAINER_TYPE_CLASS)
         fDiscountMod *= sWorld.getConfig(_player->GetTeam() == ALLIANCE ? RATE_TRAINER_ALLIANCE : RATE_TRAINER_HORDE);
     uint32 nSpellCost = uint32(floor(trainer_spell->spellCost * fDiscountMod));
     if (sWorld.getConfig(CONFIG_HAPPY_TESTING))
@@ -258,7 +258,7 @@ void WorldSession::HandleTrainerBuySpellOpcode(WorldPacket & recv_data)
     _player->ModifyMoney(-int32(nSpellCost));
 
     // learn explicitly to prevent lost money at lags, learning spell will be only show spell animation
-    _player->learnSpell(trainer_spell->spell);
+    _player->LearnSpell(trainer_spell->spell);
 
     data.Initialize(SMSG_TRAINER_BUY_SUCCEEDED, 12);
     data << uint64(guid) << uint32(spellId);
@@ -283,7 +283,7 @@ void WorldSession::HandleGossipHelloOpcode(WorldPacket & recv_data)
 
     GetPlayer()->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_TALK);
 
-    if (!unit->isInCombat() && unit->GetUInt32Value(UNIT_NPC_FLAGS) != 0 && (unit->isArmorer() || unit->isCivilian() || unit->isQuestGiver() || unit->isServiceProvider()))
+    if (!unit->IsInCombat() && unit->GetUInt32Value(UNIT_NPC_FLAGS) != 0 && (unit->isArmorer() || unit->isCivilian() || unit->isQuestGiver() || unit->isServiceProvider()))
     {
         unit->SetFacingTo(unit->GetAngle(GetPlayer()));
         unit->GetMotionMaster()->MoveDistract(20 * IN_MILISECONDS);
@@ -436,7 +436,7 @@ void WorldSession::HandleBinderActivateOpcode(WorldPacket & recv_data)
     uint64 npcGUID;
     recv_data >> npcGUID;
 
-    if (!GetPlayer()->IsInWorld() || !GetPlayer()->isAlive())
+    if (!GetPlayer()->IsInWorld() || !GetPlayer()->IsAlive())
         return;
 
     Creature *unit = GetPlayer()->GetNPCIfCanInteractWith(npcGUID, UNIT_NPC_FLAG_INNKEEPER);
@@ -544,11 +544,11 @@ void WorldSession::SendStablePet(uint64 guid)
     uint8 num = 0;                                          // counter for place holder
 
     // not let move dead pet in slot
-    if (pet && pet->isAlive() && pet->getPetType()==HUNTER_PET)
+    if (pet && pet->IsAlive() && pet->getPetType()==HUNTER_PET)
     {
         data << uint32(pet->GetCharmInfo()->GetPetNumber());
         data << uint32(pet->GetEntry());
-        data << uint32(pet->getLevel());
+        data << uint32(pet->GetLevel());
         data << pet->GetName();                             // petname
         data << uint32(pet->GetLoyaltyLevel());             // loyalty
         data << uint8(0x01);                                // client slot 1 == current pet (0)
@@ -588,7 +588,7 @@ void WorldSession::HandleStablePet(WorldPacket & recv_data)
 
     recv_data >> npcGUID;
 
-    if (!GetPlayer()->isAlive())
+    if (!GetPlayer()->IsAlive())
         return;
 
     Creature *unit = GetPlayer()->GetNPCIfCanInteractWith(npcGUID, UNIT_NPC_FLAG_STABLEMASTER);
@@ -607,7 +607,7 @@ void WorldSession::HandleStablePet(WorldPacket & recv_data)
     WorldPacket data(SMSG_STABLE_RESULT, 200);              // guess size
 
     // can't place in stable dead pet
-    if (!pet||!pet->isAlive()||pet->getPetType()!=HUNTER_PET)
+    if (!pet||!pet->IsAlive()||pet->getPetType()!=HUNTER_PET)
     {
         data << uint8(0x06);
         SendPacket(&data);
@@ -669,7 +669,7 @@ void WorldSession::HandleUnstablePet(WorldPacket & recv_data)
     WorldPacket data(SMSG_STABLE_RESULT, 200);              // guess size
 
     Pet* pet = _player->GetPet();
-    if (pet && pet->isAlive())
+    if (pet && pet->IsAlive())
     {
         data << uint8(0x06);
         SendPacket(&data);
@@ -774,7 +774,7 @@ void WorldSession::HandleStableSwapPet(WorldPacket & recv_data)
 
     Pet* pet = _player->GetPet();
 
-    if (!pet || pet->getPetType() != HUNTER_PET || !pet->isAlive())
+    if (!pet || pet->getPetType() != HUNTER_PET || !pet->IsAlive())
     {
         data << uint8(0x06);
         SendPacket(&data);

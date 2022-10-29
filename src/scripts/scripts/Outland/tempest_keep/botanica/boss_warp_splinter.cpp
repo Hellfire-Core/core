@@ -185,7 +185,7 @@ struct boss_warp_splinterAI : public ScriptedAI
         //Check for War Stomp
         if(War_Stomp_Timer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(),WAR_STOMP);
+            DoCast(m_creature->GetVictim(),WAR_STOMP);
             War_Stomp_Timer = 25000 + rand()%15000;
         }
 
@@ -203,7 +203,7 @@ struct boss_warp_splinterAI : public ScriptedAI
         //Check for Arcane Volley
         if(Arcane_Volley_Timer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(),ARCANE_VOLLEY);
+            DoCast(m_creature->GetVictim(),ARCANE_VOLLEY);
             Arcane_Volley_Timer = 20000 + rand()%15000;
         }
 

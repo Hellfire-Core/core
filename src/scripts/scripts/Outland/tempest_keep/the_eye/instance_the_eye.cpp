@@ -202,7 +202,7 @@ struct instance_the_eye : public ScriptedInstance
                         for(std::list<uint64>::iterator i = AstromancerTrash.begin(); i != AstromancerTrash.end(); ++i)
                         {
                             Creature* trashmob = GetCreature(*i);
-                            if (trashmob && trashmob->isAlive())
+                            if (trashmob && trashmob->IsAlive())
                                 trashmob->AI()->DoZoneInCombat();
                         }
                 }
@@ -215,7 +215,7 @@ struct instance_the_eye : public ScriptedInstance
                         for(std::list<uint64>::iterator i = VoidTrash.begin(); i != VoidTrash.end(); ++i)
                         {
                             Creature* trashmob = GetCreature(*i);
-                            if (trashmob && trashmob->isAlive())
+                            if (trashmob && trashmob->IsAlive())
                                 trashmob->AI()->DoZoneInCombat();
                         }
                 }

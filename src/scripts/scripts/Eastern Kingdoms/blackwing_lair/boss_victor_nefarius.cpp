@@ -159,9 +159,9 @@ struct boss_victor_nefariusAI : public ScriptedAI
             if (NefarianGUID)
                 if (Unit* Nefarian = me->GetUnit(NefarianGUID))
                 {
-                    if (!Nefarian->ToCreature()->isAlive())
+                    if (!Nefarian->ToCreature()->IsAlive())
                         me->DisappearAndDie();
-                    else if (!Nefarian->ToCreature()->isInCombat())
+                    else if (!Nefarian->ToCreature()->IsInCombat())
                         EnterEvadeMode();
                 }
 

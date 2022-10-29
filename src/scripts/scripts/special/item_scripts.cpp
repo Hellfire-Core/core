@@ -251,7 +251,7 @@ bool ItemUse_item_muiseks_vessel(Player *player, Item* _Item, SpellCastTargets c
                 cEntry4 = 14604;
                 break;
         }
-        if( uTarget && uTarget->GetTypeId()==TYPEID_UNIT && uTarget->isDead() &&
+        if( uTarget && uTarget->GetTypeId()==TYPEID_UNIT && uTarget->IsDead() &&
             (uTarget->GetEntry()==cEntry || uTarget->GetEntry()==cEntry2 || uTarget->GetEntry()==cEntry3 || uTarget->GetEntry()==cEntry4) )
         {
             ((Creature*)uTarget)->RemoveCorpse();
@@ -384,7 +384,7 @@ bool ItemUse_item_specific_target(Player *player, Item* _Item, SpellCastTargets 
                     return false;
                 case T_ALIVE:
                 {
-                    if(uTarget->isAlive())
+                    if(uTarget->IsAlive())
                         return false;
                     else
                     {
@@ -398,9 +398,9 @@ bool ItemUse_item_specific_target(Player *player, Item* _Item, SpellCastTargets 
                 }
                 case T_DEAD:
                 {
-                    if(uTarget->getDeathState() == CORPSE)
+                    if(uTarget->GetDeathState() == CORPSE)
                         return false;
-                    else if (uTarget->getDeathState() != DEAD)
+                    else if (uTarget->GetDeathState() != DEAD)
                     {
                         WorldPacket data(SMSG_CAST_FAILED, (4+2));              // prepare packet error message
                         data << uint32(_Item->GetEntry());                      // itemId

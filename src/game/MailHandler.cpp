@@ -106,7 +106,7 @@ void WorldSession::HandleSendMail(WorldPacket & recv_data)
         return;
     }
 
-    if (GetPlayer()->getLevel() < sWorld.getConfig(CONFIG_CHAT_MINIMUM_LVL))
+    if (GetPlayer()->GetLevel() < sWorld.getConfig(CONFIG_CHAT_MINIMUM_LVL))
     {
         GetPlayer()->SendMailResult(0, MAIL_SEND, MAIL_ERR_MAIL_AND_CHAT_SUSPENDED);
         return;

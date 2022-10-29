@@ -62,7 +62,7 @@ struct boss_timmy_the_cruelAI : public ScriptedAI
         if (RavenousClaw_Timer <= diff)
         {
             //Cast
-            DoCast(m_creature->getVictim(),SPELL_RAVENOUSCLAW);
+            DoCast(m_creature->GetVictim(),SPELL_RAVENOUSCLAW);
             //15 seconds until we should cast this again
             RavenousClaw_Timer += 15000;
         }

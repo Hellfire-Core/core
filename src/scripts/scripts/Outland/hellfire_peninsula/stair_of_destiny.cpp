@@ -153,13 +153,13 @@ struct npc_pit_commanderAI : public ScriptedAI
 
         if (cleaveTimer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(), SPELL_CLEAVE);
+            DoCast(m_creature->GetVictim(), SPELL_CLEAVE);
             cleaveTimer = 20000;
         }
 
         if (rainOfFireTimer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(), SPELL_RAIN_OF_FIRE);
+            DoCast(m_creature->GetVictim(), SPELL_RAIN_OF_FIRE);
             rainOfFireTimer = 30000;
         }
 
@@ -211,13 +211,13 @@ struct npc_stair_attackerAI : public ScriptedAI
 
         if (skill1timer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(), SPELL_SOLDIER_CLEAVE);
+            DoCast(m_creature->GetVictim(), SPELL_SOLDIER_CLEAVE);
             skill1timer = 10000;
         }
 
         if (skill2timer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(), SPELL_SOLDIER_CUTDOWN);
+            DoCast(m_creature->GetVictim(), SPELL_SOLDIER_CUTDOWN);
             skill2timer = 10000;
         }
 
@@ -355,7 +355,7 @@ struct npc_defender_rangedAI : public npc_stair_defender_baseAI
 
         if (shootTimer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(), SPELL_SHOOT);
+            DoCast(m_creature->GetVictim(), SPELL_SHOOT);
             shootTimer = 1500;
         }
 

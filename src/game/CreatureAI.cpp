@@ -38,7 +38,7 @@ void CreatureAI::DoZoneInCombat(float max_dist)
 {
      Unit *creature = me;
 
-    if (!me->CanHaveThreatList() || me->IsInEvadeMode() || !me->isAlive())
+    if (!me->CanHaveThreatList() || me->IsInEvadeMode() || !me->IsAlive())
         return;
 
     Map *pMap = me->GetMap();
@@ -56,10 +56,10 @@ void CreatureAI::DoZoneInCombat(float max_dist)
     {
         if (Player* pPlayer = i->getSource())
         {
-            if (pPlayer->isGameMaster() || pPlayer->IsFriendlyTo(me))
+            if (pPlayer->IsGameMaster() || pPlayer->IsFriendlyTo(me))
                 continue;
 
-            if (pPlayer->isAlive() && me->IsWithinDistInMap(pPlayer, max_dist))
+            if (pPlayer->IsAlive() && me->IsWithinDistInMap(pPlayer, max_dist))
             {
                 me->SetInCombatWith(pPlayer);
                 pPlayer->SetInCombatWith(me);
@@ -83,7 +83,7 @@ void CreatureAI::MoveInLineOfSight_Safe(Unit *who)
 
 void CreatureAI::MoveInLineOfSight(Unit *who)
 {
-    if (me->getVictim())
+    if (me->GetVictim())
         return;
 
     if (me->canStartAttack(who))
@@ -95,10 +95,10 @@ void CreatureAI::MoveInLineOfSight(Unit *who)
 
 void CreatureAI::SelectNearestTarget(Unit *who)
 {
-    if (me->getVictim() && me->GetDistanceOrder(who, me->getVictim()) && me->canAttack(who))
+    if (me->GetVictim() && me->GetDistanceOrder(who, me->GetVictim()) && me->canAttack(who))
     {
-        float threat = me->getThreatManager().getThreat(me->getVictim());
-        me->getThreatManager().modifyThreatPercent(me->getVictim(), -100);
+        float threat = me->getThreatManager().getThreat(me->GetVictim());
+        me->getThreatManager().modifyThreatPercent(me->GetVictim(), -100);
         me->AddThreat(who, threat);
     }
 }

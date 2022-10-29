@@ -37,6 +37,7 @@ struct ItemPrototype;
 struct AuctionEntry;
 struct AuctionHouseEntry;
 struct DeclinedName;
+struct PlayerBotEntry;
 
 class ObjectGuid;
 class Creature;
@@ -204,6 +205,11 @@ class HELLGROUND_IMPORT_EXPORT WorldSession
 
         void InitWarden(BigNumber *K, uint8& OperatingSystem);
 
+        // Bot system
+        std::stringstream m_chatBotHistory;
+        PlayerBotEntry* GetBot() { return m_bot.get(); }
+        void SetBot(std::shared_ptr<PlayerBotEntry> const& b) { m_bot = b; }
+
         /// Session in auth.queue currently
         void SetInQueue(bool state) { m_inQueue = state; }
 
@@ -226,6 +232,7 @@ class HELLGROUND_IMPORT_EXPORT WorldSession
         void KickPlayer();
 
         void QueuePacket(WorldPacket* new_packet);
+        bool CanProcessPackets() const;
         void ProcessPacket(WorldPacket* packet);
         bool Update(uint32 diff, PacketFilter& updater);
 
@@ -786,6 +793,7 @@ class HELLGROUND_IMPORT_EXPORT WorldSession
         LocaleConstant m_sessionDbcLocale;
         int m_sessionDbLocaleIndex;
         uint32 m_latency;
+        std::shared_ptr<PlayerBotEntry> m_bot;
 
         TimeTrackerSmall _kickTimer;
 

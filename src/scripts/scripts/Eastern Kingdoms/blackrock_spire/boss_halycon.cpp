@@ -62,7 +62,7 @@ struct boss_halyconAI : public ScriptedAI
         CrowdPummel_Timer -= diff;
         if (CrowdPummel_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_CROWDPUMMEL);
+            DoCast(m_creature->GetVictim(),SPELL_CROWDPUMMEL);
             CrowdPummel_Timer += 14000;
         }
 
@@ -70,7 +70,7 @@ struct boss_halyconAI : public ScriptedAI
         MightyBlow_Timer -= diff;
         if (MightyBlow_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_MIGHTYBLOW);
+            DoCast(m_creature->GetVictim(),SPELL_MIGHTYBLOW);
             MightyBlow_Timer += 10000;
         }
 

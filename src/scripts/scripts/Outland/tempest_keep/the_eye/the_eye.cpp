@@ -62,7 +62,7 @@ struct mob_crystalcore_devastatorAI : public ScriptedAI
         if (Knockaway_Timer.Expired(diff))
         {
             int32 damage = 4000;
-            m_creature->CastCustomSpell(m_creature->getVictim(), SPELL_KNOCKAWAY,&damage,NULL,NULL, true);
+            m_creature->CastCustomSpell(m_creature->GetVictim(), SPELL_KNOCKAWAY,&damage,NULL,NULL, true);
 
             // current aggro target is knocked away pick new target
             Unit* target = SelectUnit(SELECT_TARGET_TOPAGGRO, 0, 60, true, m_creature->getVictimGUID());
@@ -315,7 +315,7 @@ struct mob_tempest_falconerAI : public ScriptedAI
 
         if (Shoot_Timer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(),SPELL_SHOOT);
+            DoCast(m_creature->GetVictim(),SPELL_SHOOT);
             Shoot_Timer = 3000+rand()%2000;
         }
 
@@ -393,7 +393,7 @@ struct mob_crimson_hand_blood_knightAI : public ScriptedAI
 
         if (HammerofJustice_Timer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(),SPELL_HAMMEROFJUSTICE);
+            DoCast(m_creature->GetVictim(),SPELL_HAMMEROFJUSTICE);
             HammerofJustice_Timer = 18000;
         }
 
@@ -406,7 +406,7 @@ struct mob_crimson_hand_blood_knightAI : public ScriptedAI
                 for (Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
                 {
                     Player *p = i->getSource();
-                    if(p->isAlive() && p->GetHealth() <= p->GetMaxHealth()*0.2)
+                    if(p->IsAlive() && p->GetHealth() <= p->GetMaxHealth()*0.2)
                     {
                         DoCast(p, SPELL_HAMMEROFWRATH);
                         break;
@@ -497,7 +497,7 @@ struct mob_Bloodwarder_SquireAI : public ScriptedAI
 
         if (HammerofJustice_Timer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(),SPELL_HAMMEROFJUSTICE_BW_SQUIRE);
+            DoCast(m_creature->GetVictim(),SPELL_HAMMEROFJUSTICE_BW_SQUIRE);
             HammerofJustice_Timer = 18000;
         }
 
@@ -510,7 +510,7 @@ struct mob_Bloodwarder_SquireAI : public ScriptedAI
                 for(Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
                 {
                     Player *p = i->getSource();
-                    if(p->isAlive() && p->GetHealth() <= p->GetMaxHealth()*0.2)
+                    if(p->IsAlive() && p->GetHealth() <= p->GetMaxHealth()*0.2)
                     {
                         DoCast(p, SPELL_HAMMEROFWRATH_BW_SQUIRE);
                         break;
@@ -590,7 +590,7 @@ struct mob_Bloodwarder_VindicatorAI : public ScriptedAI
 
         if (HammerofJustice_Timer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(),SPELL_HAMMEROFJUSTICE_BW_VINDICATOR);
+            DoCast(m_creature->GetVictim(),SPELL_HAMMEROFJUSTICE_BW_VINDICATOR);
             HammerofJustice_Timer = 18000;
         }
 
@@ -603,7 +603,7 @@ struct mob_Bloodwarder_VindicatorAI : public ScriptedAI
                 for (Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
                 {
                     Player *p = i->getSource();
-                    if(p->isAlive() && p->GetHealth() <= p->GetMaxHealth()*0.2)
+                    if(p->IsAlive() && p->GetHealth() <= p->GetMaxHealth()*0.2)
                     {
                         DoCast(p, SPELL_HAMMEROFWRATH_BW_VINDICATOR);
                         break;

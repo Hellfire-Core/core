@@ -109,8 +109,8 @@ struct boss_coren_direbrewAI : public ScriptedAI
             if(Unit * target = SelectUnit(SELECT_TARGET_RANDOM, 0, 45, true))
             {
                 AddSpellToCast(target, SPELL_SUMMON_MOLE_MACHINE);
-                //me->SummonGameObject(188478, me->getVictim()->GetPositionX(), me->getVictim()->GetPositionY(), me->getVictim()->GetPositionZ(), 0,0 ,0 ,0 ,0, 4);
-                //me->getVictim()->KnockBackFrom(me, 4, 7);
+                //me->SummonGameObject(188478, me->GetVictim()->GetPositionX(), me->GetVictim()->GetPositionY(), me->GetVictim()->GetPositionZ(), 0,0 ,0 ,0 ,0, 4);
+                //me->GetVictim()->KnockBackFrom(me, 4, 7);
                 //AddSpellToCast(me, SPELL_SUMMON_MINION_KNOCKBACK);
                 AddSpellToCast(target, SPELL_SUMMON_MINION, true);
                 Summon_Timer += 15000;
@@ -178,7 +178,7 @@ struct direbrew_starter_triggerAI : public ScriptedAI
         if(Start_Timer <= diff)
         {
             Creature * Coren = GetClosestCreatureWithEntry(me, BOSS_COREN_DIREBREW, 20);
-            if (Coren && Coren->isAlive())
+            if (Coren && Coren->IsAlive())
             {
                 Coren->Say(COREN_TEXT, LANG_UNIVERSAL, 0);
                 Coren->setFaction(54);

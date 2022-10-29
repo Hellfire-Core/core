@@ -95,7 +95,7 @@ struct boss_ragnarosAI : public Scripted_NoMovementAI
         pInstance = (ScriptedInstance*)c->GetInstanceData();
         me->SetVisibility(VISIBILITY_OFF);
         me->SetReactState(REACT_PASSIVE);
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
     }
 
     ScriptedInstance * pInstance;
@@ -168,9 +168,9 @@ struct boss_ragnarosAI : public Scripted_NoMovementAI
             {
                 me->SetVisibility(VISIBILITY_ON);
                 me->SetReactState(REACT_AGGRESSIVE);
-                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                 Unit *domo = me->GetUnit(pInstance->GetData64(12018));
-                if(domo && domo->isAlive())
+                if(domo && domo->IsAlive())
                 {
                     me->Kill(domo, false);
                 }
@@ -203,7 +203,7 @@ struct boss_ragnarosAI : public Scripted_NoMovementAI
         WrathOfRagnaros_Timer -= diff;
         if (WrathOfRagnaros_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_WRATHOFRAGNAROS);
+            DoCast(m_creature->GetVictim(),SPELL_WRATHOFRAGNAROS);
 
             if (rand()%2 == 0)
             {
@@ -229,21 +229,21 @@ struct boss_ragnarosAI : public Scripted_NoMovementAI
         LavaBurst_Timer -= diff;
         if (LavaBurst_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_LAVABURST);
+            DoCast(m_creature->GetVictim(),SPELL_LAVABURST);
             LavaBurst_Timer = 10000;
         }
 
         Erruption_Timer -= diff;
         if (LavaBurst_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_ERRUPTION);
+            DoCast(m_creature->GetVictim(),SPELL_ERRUPTION);
             Erruption_Timer += 20000 + rand()%25000;
         }
 
         ElementalFire_Timer -= diff;
         if (ElementalFire_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_ELEMENTALFIRE);
+            DoCast(m_creature->GetVictim(),SPELL_ELEMENTALFIRE);
             ElementalFire_Timer += 10000 + rand()%4000;
         }
 
@@ -309,12 +309,12 @@ struct boss_ragnarosAI : public Scripted_NoMovementAI
         }
 
         //If we are within range melee the target
-        if( m_creature->IsWithinMeleeRange(m_creature->getVictim()))
+        if( m_creature->IsWithinMeleeRange(m_creature->GetVictim()))
         {
             //Make sure our attack is ready and we arn't currently casting
             if( m_creature->isAttackReady() && !m_creature->IsNonMeleeSpellCast(false))
             {
-                m_creature->AttackerStateUpdate(m_creature->getVictim());
+                m_creature->AttackerStateUpdate(m_creature->GetVictim());
                 m_creature->resetAttackTimer();
             }
         }else
@@ -322,7 +322,7 @@ struct boss_ragnarosAI : public Scripted_NoMovementAI
             MagmaBurst_Timer -= diff;
             if (MagmaBurst_Timer <= diff)
             {
-                DoCast(m_creature->getVictim(),SPELL_MAGMABURST);
+                DoCast(m_creature->GetVictim(),SPELL_MAGMABURST);
 
                 if (!HasYelledMagmaBurst)
                 {

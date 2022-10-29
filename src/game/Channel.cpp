@@ -61,7 +61,7 @@ void Channel::Join(uint64 p, const char *pass)
 
     Player *plr = sObjectMgr.GetPlayer(p);
 
-    if ((!plr || !plr->isGameMaster()) && !IsConstant())
+    if ((!plr || !plr->IsGameMaster()) && !IsConstant())
     {
         uint32 limitCount = sWorld.getConfig(CONFIG_PRIVATE_CHANNEL_LIMIT);
 
@@ -80,14 +80,14 @@ void Channel::Join(uint64 p, const char *pass)
         return;
     }
 
-    if (IsBanned(p) && (!plr || !plr->isGameMaster()))
+    if (IsBanned(p) && (!plr || !plr->IsGameMaster()))
     {
         MakeBanned(&data);
         SendToOne(&data, p);
         return;
     }
 
-    if (m_password.length() > 0 && strcmp(pass, m_password.c_str()) && (!plr || !plr->isGameMaster()))
+    if (m_password.length() > 0 && strcmp(pass, m_password.c_str()) && (!plr || !plr->IsGameMaster()))
     {
         MakeWrongPassword(&data);
         SendToOne(&data, p);

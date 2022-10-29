@@ -85,32 +85,32 @@ struct boss_razorgoreAI : public ScriptedAI
         Cleave_Timer -= diff;
         if (Cleave_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_CLEAVE);
+            DoCast(m_creature->GetVictim(),SPELL_CLEAVE);
             Cleave_Timer += 7000 + rand()%3000;
         }
 
         WarStomp_Timer -= diff;
         if (WarStomp_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_WARSTOMP);
+            DoCast(m_creature->GetVictim(),SPELL_WARSTOMP);
             WarStomp_Timer += 15000 + rand()%10000;
         }
 
         FireballVolley_Timer -= diff;
         if (FireballVolley_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_FIREBALLVOLLEY);
+            DoCast(m_creature->GetVictim(),SPELL_FIREBALLVOLLEY);
             FireballVolley_Timer += 12000 + rand()%3000;
         }
 
         Conflagration_Timer -= diff;
         if (Conflagration_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_CONFLAGRATION);
+            DoCast(m_creature->GetVictim(),SPELL_CONFLAGRATION);
             //We will remove this threat reduction and add an aura check.
 
-            //if(DoGetThreat(m_creature->getVictim()))
-            //DoModifyThreatPercent(m_creature->getVictim(),-50);
+            //if(DoGetThreat(m_creature->GetVictim()))
+            //DoModifyThreatPercent(m_creature->GetVictim(),-50);
 
             Conflagration_Timer += 12000;
         }

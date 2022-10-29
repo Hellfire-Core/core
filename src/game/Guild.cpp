@@ -384,8 +384,8 @@ bool Guild::FillPlayerData(uint64 guid, MemberSlot* memslot)
     if (pl)
     {
         plName  = pl->GetName();
-        plLevel = pl->getLevel();
-        plClass = pl->getClass();
+        plLevel = pl->GetLevel();
+        plClass = pl->GetClass();
         plZone  = pl->GetCachedZone();
         accountId = pl->GetSession()->GetAccountId();
     }
@@ -445,8 +445,8 @@ void Guild::LoadPlayerStatsByGuid(uint64 guid)
     if (!pl)
         return;
     itr->second.name  = pl->GetName();
-    itr->second.level = pl->getLevel();
-    itr->second.Class = pl->getClass();
+    itr->second.level = pl->GetLevel();
+    itr->second.Class = pl->GetClass();
 }
 
 void Guild::SetLeader(uint64 guid)
@@ -739,12 +739,12 @@ void Guild::WriteMemberRosterPacket(Player *sessionPlayer, const MemberSlot &mem
         data << uint8(1);
         data << std::string(pl->GetName());
         data << uint32(member.RankId);
-        data << uint8(pl->getLevel());
-        data << uint8(pl->getClass());
+        data << uint8(pl->GetLevel());
+        data << uint8(pl->GetClass());
         data << uint8(0);                               // new 2.4.0
 
         uint32 pZoneId = pl->GetCachedZone();
-        if (!sessionPlayer->isGameMaster() && sWorld.getConfig(CONFIG_ENABLE_FAKE_WHO_ON_ARENA) && sWorld.getConfig(CONFIG_ENABLE_FAKE_WHO_IN_GUILD))
+        if (!sessionPlayer->IsGameMaster() && sWorld.getConfig(CONFIG_ENABLE_FAKE_WHO_ON_ARENA) && sWorld.getConfig(CONFIG_ENABLE_FAKE_WHO_IN_GUILD))
         {
             if (pl->InArena())
             {

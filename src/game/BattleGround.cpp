@@ -326,22 +326,22 @@ void BattleGround::Update(uint32 diff)
 
 void BattleGround::RestorePet(Player* plr)
 {
-    if ((plr->getClass() != CLASS_HUNTER && plr->getClass() != CLASS_WARLOCK) || !plr->isAlive())
+    if ((plr->GetClass() != CLASS_HUNTER && plr->GetClass() != CLASS_WARLOCK) || !plr->IsAlive())
         return;
 
     Pet* ThePet;
-    if (plr->getClass() == CLASS_HUNTER)
+    if (plr->GetClass() == CLASS_HUNTER)
     {
         ThePet = new Pet();
         if (!ThePet->LoadPetFromDB(plr,0,0,false))
             return;
 
-        if (ThePet->isDead())
+        if (ThePet->IsDead())
         {
             ThePet->SetUInt32Value(UNIT_DYNAMIC_FLAGS, 0);
             ThePet->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE);
             ThePet->setDeathState(ALIVE);
-            ThePet->clearUnitState(UNIT_STAT_ALL_STATE);
+            ThePet->ClearUnitState(UNIT_STAT_ALL_STATE);
         }
 
         ThePet->SetHealth(ThePet->GetMaxHealth());
@@ -689,7 +689,7 @@ void BattleGround::EndBattleGround(uint32 winner)
         if (plr->HasAuraType(SPELL_AURA_SPIRIT_OF_REDEMPTION))
             plr->RemoveSpellsCausingAura(SPELL_AURA_MOD_SHAPESHIFT);
 
-        if (isArena() && !plr->isGameMaster())
+        if (isArena() && !plr->IsGameMaster())
         {
             plr->SetVisibility(VISIBILITY_ON);
             plr->SetFlying(false);
@@ -697,7 +697,7 @@ void BattleGround::EndBattleGround(uint32 winner)
             plr->GetCamera().ResetView(true);
         }
 
-        if (!plr->isAlive())
+        if (!plr->IsAlive())
         {
             plr->ResurrectPlayer(1.0f);
             plr->SpawnCorpseBones();
@@ -955,10 +955,10 @@ void BattleGround::RemovePlayerAtLeave(uint64 guid, bool Transport, bool SendPac
         plr->RemoveSpellsCausingAura(SPELL_AURA_MOD_SHAPESHIFT);
 
     // should remove SPELL_AURA_MOD_STUN
-    if (plr && plr->isAlive() && plr->HasAuraType(SPELL_AURA_MOD_STUN))
+    if (plr && plr->IsAlive() && plr->HasAuraType(SPELL_AURA_MOD_STUN))
         plr->RemoveSpellsCausingAura(SPELL_AURA_MOD_STUN);            //testfixbg
 
-    if (plr && !plr->isAlive())                              // resurrect on exit
+    if (plr && !plr->IsAlive())                              // resurrect on exit
     {
         plr->ResurrectPlayer(1.0f);
         plr->SpawnCorpseBones();
@@ -1174,7 +1174,7 @@ void BattleGround::AddPlayer(Player *plr)
     plr->RemoveSpellsCausingAura(SPELL_AURA_MOUNTED);
     plr->CombatStop();
     // should remove SPELL_AURA_MOD_STUN
-    if (plr && plr->isAlive() && plr->HasAuraType(SPELL_AURA_MOD_STUN))
+    if (plr && plr->IsAlive() && plr->HasAuraType(SPELL_AURA_MOD_STUN))
         plr->RemoveSpellsCausingAura(SPELL_AURA_MOD_STUN);            //testfixbg
 
     // add arena specific auras
@@ -1761,7 +1761,7 @@ bool BattleGround::HandlePlayerUnderMap(Player * plr, float z)
     if (graveyard)
     {
         plr->NearTeleportTo(graveyard->x, graveyard->y, graveyard->z, plr->GetOrientation());
-        if (plr->isDead())                                        // not send if alive, because it used in TeleportTo()
+        if (plr->IsDead())                                        // not send if alive, because it used in TeleportTo()
         {
             WorldPacket data(SMSG_DEATH_RELEASE_LOC, 4*4);  // show spirit healer position on minimap
             data << graveyard->map_id;
@@ -1877,7 +1877,7 @@ uint32 BattleGround::GetAlivePlayersCountByTeam(uint32 Team) const
         if (itr->second.Team == Team)
         {
             Player * pl = sObjectMgr.GetPlayer(itr->first);
-            if (pl && pl->isAlive() && !pl->HasByteFlag(UNIT_FIELD_BYTES_2, 3, FORM_SPIRITOFREDEMPTION))
+            if (pl && pl->IsAlive() && !pl->HasByteFlag(UNIT_FIELD_BYTES_2, 3, FORM_SPIRITOFREDEMPTION))
                 ++count;
         }
     }

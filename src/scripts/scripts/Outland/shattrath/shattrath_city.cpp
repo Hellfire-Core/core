@@ -70,7 +70,7 @@ struct npc_raliq_the_drunkAI : public ScriptedAI
 
         if (Uppercut_Timer.Expired(diff))
         {
-            DoCast(me->getVictim(),SPELL_UPPERCUT);
+            DoCast(me->GetVictim(),SPELL_UPPERCUT);
             Uppercut_Timer = 15000;
         }
 
@@ -144,7 +144,7 @@ struct npc_salsalabimAI : public ScriptedAI
 
         if (MagneticPull_Timer.Expired(diff))
         {
-            DoCast(me->getVictim(),SPELL_MAGNETIC_PULL);
+            DoCast(me->GetVictim(),SPELL_MAGNETIC_PULL);
             MagneticPull_Timer = 15000;
         }
 
@@ -567,21 +567,21 @@ struct npc_dirty_larryAI : public ScriptedAI
         Step = 0;
         EvadeTimer.Reset(3000);
 
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         me->setFaction(1194);
         Unit* Creepjack = FindCreature(NPC_CREEPJACK, 20, me);
         if(Creepjack)
         {
             ((Creature*)Creepjack)->AI()->EnterEvadeMode();
             Creepjack->setFaction(1194);
-            Creepjack->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            Creepjack->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         }
         Unit* Malone = FindCreature(NPC_MALONE, 20, me);
         if(Malone)
         {
             ((Creature*)Malone)->AI()->EnterEvadeMode();
             Malone->setFaction(1194);
-            Malone->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            Malone->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         }
     }
 
@@ -624,32 +624,32 @@ struct npc_dirty_larryAI : public ScriptedAI
         {
             Player *player = Unit::GetPlayer(PlayerGUID);
             me->setFaction(14);
-            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
             if(player)
             {
             Unit* Creepjack = FindCreature(NPC_CREEPJACK, 20, me);
             if(Creepjack)
             {
-                if(Creepjack->isDead())
+                if(Creepjack->IsDead())
                 {
                     ((Creature*)Creepjack)->Respawn();
                 }
                 Creepjack->Attack(player, true);
                 Creepjack->setFaction(14);
                 Creepjack->GetMotionMaster()->MoveChase(player);
-                Creepjack->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                Creepjack->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
             }
             Unit* Malone = FindCreature(NPC_MALONE, 20, me);
             if(Malone)
             {
-                if(Malone->isDead())
+                if(Malone->IsDead())
                 {
                    ((Creature*)Malone)->Respawn();
                 }
                 Malone->Attack(player, true);
                 Malone->setFaction(14);
                 Malone->GetMotionMaster()->MoveChase(player);
-                Malone->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                Malone->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
             }
                 DoStartMovement(player);
                 AttackStart(player);
@@ -659,7 +659,7 @@ struct npc_dirty_larryAI : public ScriptedAI
 
         if((me->GetHealth()*100)/me->GetMaxHealth() < 5 && !Done)
         {
-            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
             me->RemoveAllAuras();
             Unit* Creepjack = FindCreature(NPC_CREEPJACK, 20, me);
             if(Creepjack)
@@ -667,7 +667,7 @@ struct npc_dirty_larryAI : public ScriptedAI
                 ((Creature*)Creepjack)->AI()->EnterEvadeMode();
                 Creepjack->setFaction(1194);
                 Creepjack->GetMotionMaster()->MoveTargetedHome();
-                Creepjack->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                Creepjack->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
             }
             Unit* Malone = FindCreature(NPC_MALONE, 20, me);
             if(Malone)
@@ -675,7 +675,7 @@ struct npc_dirty_larryAI : public ScriptedAI
                 ((Creature*)Malone)->AI()->EnterEvadeMode();
                 Malone->setFaction(1194);
                 Malone->GetMotionMaster()->MoveTargetedHome();
-                Malone->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                Malone->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
             }
             me->setFaction(1194);
             Done = true;

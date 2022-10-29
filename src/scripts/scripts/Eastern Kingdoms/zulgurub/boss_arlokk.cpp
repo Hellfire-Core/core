@@ -106,7 +106,7 @@ struct boss_arlokkAI : public ScriptedAI
         ShadowWordPain_Timer -= diff;
         if (!PhaseTwo && ShadowWordPain_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_SHADOWWORDPAIN);
+            DoCast(m_creature->GetVictim(),SPELL_SHADOWWORDPAIN);
             ShadowWordPain_Timer += 15000;
         }
         
@@ -192,7 +192,7 @@ struct boss_arlokkAI : public ScriptedAI
         Cleave_Timer -= diff;
         if (PhaseTwo && Cleave_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(), SPELL_CLEAVE);
+            DoCast(m_creature->GetVictim(), SPELL_CLEAVE);
             Cleave_Timer += 16000;
         }
         
@@ -201,9 +201,9 @@ struct boss_arlokkAI : public ScriptedAI
         Gouge_Timer -= diff;
         if (PhaseTwo && Gouge_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(), SPELL_GOUGE);
-            if (DoGetThreat(m_creature->getVictim()))
-                DoModifyThreatPercent(m_creature->getVictim(),-80);
+            DoCast(m_creature->GetVictim(), SPELL_GOUGE);
+            if (DoGetThreat(m_creature->GetVictim()))
+                DoModifyThreatPercent(m_creature->GetVictim(),-80);
 
             Gouge_Timer += 17000+rand()%10000;
         }

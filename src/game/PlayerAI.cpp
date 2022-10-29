@@ -28,6 +28,12 @@
 class Player;
 struct SpellEntry;
 
+void PlayerAI::Remove()
+{
+    me->SetAI(nullptr);
+    delete this;
+}
+
 Unit* PlayerAI::SelectNewVictim()
 {
     std::list<Player*> targets;
@@ -73,15 +79,15 @@ bool PlayerAI::UpdateVictim(float range)
 {
     if (Unit *charmer = me->GetCharmer())
     {
-        if (charmer->isAlive())
+        if (charmer->IsAlive())
         {
-            if (!me->getVictim() || !me->getVictim()->isAlive())
+            if (!me->GetVictim() || !me->GetVictim()->IsAlive())
             {
                 if (Unit *victim = SelectNewVictim())
                     AttackStart(victim);
                 else
-                    if (charmer->getVictim())
-                        AttackStart(charmer->getVictim());
+                    if (charmer->GetVictim())
+                        AttackStart(charmer->GetVictim());
             }
         }
         else
@@ -96,10 +102,10 @@ bool PlayerAI::UpdateVictim(float range)
         return false;
     }
 
-    if (Unit *target = me->getVictim())
+    if (Unit *target = me->GetVictim())
         me->SetInFront(target);
 
-    return me->getVictim();
+    return me->GetVictim();
 }
 
 void WarriorAI::UpdateAI(const uint32 diff)
@@ -109,9 +115,9 @@ void WarriorAI::UpdateAI(const uint32 diff)
 
     if (TC_Timer.Expired(diff))
     {
-        if (CanCast(me->getVictim(), TCSpell, false))
+        if (CanCast(me->GetVictim(), TCSpell, false))
         {
-            me->CastSpell(me->getVictim(), TCSpell, false);
+            me->CastSpell(me->GetVictim(), TCSpell, false);
             TC_Timer = TCSpell->RecoveryTime ? TCSpell->RecoveryTime : 10000;
         }
     }
@@ -128,9 +134,9 @@ void WarriorAI::UpdateAI(const uint32 diff)
 
     if (Demo_Timer.Expired(diff))
     {
-        if (CanCast(me->getVictim(), DemoSpell, false))
+        if (CanCast(me->GetVictim(), DemoSpell, false))
         {
-            me->CastSpell(me->getVictim(), DemoSpell, false);
+            me->CastSpell(me->GetVictim(), DemoSpell, false);
             Demo_Timer = DemoSpell->RecoveryTime ? DemoSpell->RecoveryTime : 12000;
         }
     }
@@ -144,9 +150,9 @@ void HunterAI::UpdateAI(const uint32 diff)
 
     if (Steady_Timer.Expired(diff))
     {
-        if (CanCast(me->getVictim(), SteadySpell, false))
+        if (CanCast(me->GetVictim(), SteadySpell, false))
         {
-            me->CastSpell(me->getVictim(), SteadySpell, false);
+            me->CastSpell(me->GetVictim(), SteadySpell, false);
             Steady_Timer = 2000 + urand(0, 4000);
         }
     }
@@ -154,9 +160,9 @@ void HunterAI::UpdateAI(const uint32 diff)
 
     if (Arcane_Timer.Expired(diff))
     {
-        if (CanCast(me->getVictim(), ArcaneSpell, false))
+        if (CanCast(me->GetVictim(), ArcaneSpell, false))
         {
-            me->CastSpell(me->getVictim(), ArcaneSpell, false);
+            me->CastSpell(me->GetVictim(), ArcaneSpell, false);
             Arcane_Timer = 6000 + urand(0, 6000);
         }
     }
@@ -165,9 +171,9 @@ void HunterAI::UpdateAI(const uint32 diff)
 
     if (Multi_Timer.Expired(diff))
     {
-        if (CanCast(me->getVictim(), MultiSpell, false))
+        if (CanCast(me->GetVictim(), MultiSpell, false))
         {
-            me->CastSpell(me->getVictim(), MultiSpell, false);
+            me->CastSpell(me->GetVictim(), MultiSpell, false);
             Multi_Timer = MultiSpell->RecoveryTime ? MultiSpell->RecoveryTime : 12000;
         }
     }
@@ -176,9 +182,9 @@ void HunterAI::UpdateAI(const uint32 diff)
 
     if (Volley_Timer.Expired(diff))
     {
-        if (CanCast(me->getVictim(), VolleySpell, false))
+        if (CanCast(me->GetVictim(), VolleySpell, false))
         {
-            me->CastSpell(me->getVictim(), VolleySpell, false);
+            me->CastSpell(me->GetVictim(), VolleySpell, false);
             Volley_Timer = VolleySpell->RecoveryTime ? VolleySpell->RecoveryTime : 10000;
         }
     }
@@ -208,9 +214,9 @@ void HunterAI::UpdateAI(const uint32 diff)
 
     if (Auto_Timer.Expired(diff))
     {
-        if (CanCast(me->getVictim(), AutoSpell, false))
+        if (CanCast(me->GetVictim(), AutoSpell, false))
         {
-            me->CastSpell(me->getVictim(), AutoSpell, false);
+            me->CastSpell(me->GetVictim(), AutoSpell, false);
             Auto_Timer = 4000;
         }
     }
@@ -236,9 +242,9 @@ void PaladinAI::UpdateAI(const uint32 diff)
     
     if (crusader != false && Crusader_Timer.Expired(diff))
     {
-        if (CanCast(me->getVictim(), CrusaderSpell, false))
+        if (CanCast(me->GetVictim(), CrusaderSpell, false))
         {
-            me->CastSpell(me->getVictim(), CrusaderSpell, false);
+            me->CastSpell(me->GetVictim(), CrusaderSpell, false);
             Crusader_Timer = 6000 + urand(0, 6000);
         }
     }
@@ -258,9 +264,9 @@ void PaladinAI::UpdateAI(const uint32 diff)
 
     if (Judgement_Timer.Expired(diff))
     {
-        if (CanCast(me->getVictim(), JudgementSpell, false))
+        if (CanCast(me->GetVictim(), JudgementSpell, false))
         {
-            me->CastSpell(me->getVictim(), JudgementSpell, false);
+            me->CastSpell(me->GetVictim(), JudgementSpell, false);
             Judgement_Timer = JudgementSpell->RecoveryTime ? JudgementSpell->RecoveryTime : 30000;
         }
     }
@@ -309,9 +315,9 @@ void WarlockAI::UpdateAI(const uint32 diff)
 
     if (DOT_Timer.Expired(diff))
     {
-        if (CanCast(me->getVictim(), DOTSpell, false))
+        if (CanCast(me->GetVictim(), DOTSpell, false))
         {
-            me->CastSpell(me->getVictim(), DOTSpell, false);
+            me->CastSpell(me->GetVictim(), DOTSpell, false);
             DOT_Timer = 15000;
         }
     }
@@ -319,9 +325,9 @@ void WarlockAI::UpdateAI(const uint32 diff)
 
     if (AOE_Timer.Expired(diff))
     {
-        if (CanCast(me->getVictim(), AOESpell, false))
+        if (CanCast(me->GetVictim(), AOESpell, false))
         {
-            me->CastSpell(me->getVictim(), AOESpell, false);
+            me->CastSpell(me->GetVictim(), AOESpell, false);
             AOE_Timer = AOESpell->RecoveryTime ? AOESpell->RecoveryTime : 10000;
         }
     }
@@ -329,9 +335,9 @@ void WarlockAI::UpdateAI(const uint32 diff)
 
     if (NormalSpell_Timer.Expired(diff))
     {
-        if (CanCast(me->getVictim(), NormalSpell, false))
+        if (CanCast(me->GetVictim(), NormalSpell, false))
         {
-            me->CastSpell(me->getVictim(), NormalSpell, false);
+            me->CastSpell(me->GetVictim(), NormalSpell, false);
             NormalSpell_Timer = NormalSpell->RecoveryTime;
         }
     }
@@ -368,19 +374,19 @@ void DruidAI::UpdateAI(const uint32 diff)
     if (Dmg_Timer.Expired(diff) && me->HasAura(MOONKIN, 0))
     {
         int dmg = urand(0, 2);
-        if (dmg == 0 && CanCast(me->getVictim(), Dmg1Spell, false))
+        if (dmg == 0 && CanCast(me->GetVictim(), Dmg1Spell, false))
         {
-            me->CastSpell(me->getVictim(), Dmg1Spell, false);
+            me->CastSpell(me->GetVictim(), Dmg1Spell, false);
             Dmg_Timer = 3000 + urand(0, 2000);
         }
-        else if (dmg == 1 && CanCast(me->getVictim(), Dmg2Spell, false))
+        else if (dmg == 1 && CanCast(me->GetVictim(), Dmg2Spell, false))
         {
-            me->CastSpell(me->getVictim(), Dmg2Spell, false);
+            me->CastSpell(me->GetVictim(), Dmg2Spell, false);
             Dmg_Timer = 3000 + urand(0, 3000);
         }
-        else if (dmg == 2 && CanCast(me->getVictim(), Dmg3Spell, false))
+        else if (dmg == 2 && CanCast(me->GetVictim(), Dmg3Spell, false))
         {
-            me->CastSpell(me->getVictim(), Dmg3Spell, false);
+            me->CastSpell(me->GetVictim(), Dmg3Spell, false);
             Dmg_Timer = 3000 + urand(0, 2000);
         }
     }
@@ -388,9 +394,9 @@ void DruidAI::UpdateAI(const uint32 diff)
 
     if (feral != false && MangleB_Timer.Expired(diff) && me->HasAura(DIREBEAR, 0))
     {
-        if (CanCast(me->getVictim(), MangleBSpell, false))
+        if (CanCast(me->GetVictim(), MangleBSpell, false))
         {
-            me->CastSpell(me->getVictim(), MangleBSpell, false);
+            me->CastSpell(me->GetVictim(), MangleBSpell, false);
             MangleB_Timer = 7000;
         }
     }
@@ -409,9 +415,9 @@ void DruidAI::UpdateAI(const uint32 diff)
 
     if (feral != false && MangleC_Timer.Expired(diff) && me->HasAura(CAT, 0))
     {
-        if (CanCast(me->getVictim(), MangleCSpell, false))
+        if (CanCast(me->GetVictim(), MangleCSpell, false))
         {
-            me->CastSpell(me->getVictim(), MangleCSpell, false);
+            me->CastSpell(me->GetVictim(), MangleCSpell, false);
             MangleC_Timer = 6000;
         }
     }
@@ -438,9 +444,9 @@ void RogueAI::UpdateAI(const uint32 diff)
 
     if (Gouge_Timer.Expired(diff))
     {
-        if (CanCast(me->getVictim(), GougeSpell, false))
+        if (CanCast(me->GetVictim(), GougeSpell, false))
         {
-            me->CastSpell(me->getVictim(), GougeSpell, false);
+            me->CastSpell(me->GetVictim(), GougeSpell, false);
             Gouge_Timer = urand(10000, 30000);
         }
     }
@@ -449,9 +455,9 @@ void RogueAI::UpdateAI(const uint32 diff)
 
     if (Sinister_Timer.Expired(diff))
     {
-        if (CanCast(me->getVictim(), SinisterSpell, false))
+        if (CanCast(me->GetVictim(), SinisterSpell, false))
         {
-            me->CastSpell(me->getVictim(), SinisterSpell, false);
+            me->CastSpell(me->GetVictim(), SinisterSpell, false);
             Sinister_Timer = urand(2000, 4500);
         }
     }
@@ -503,9 +509,9 @@ void ShamanAI::UpdateAI(const uint32 diff)
 
     if (Lightning_Timer.Expired(diff))
     {
-        if (CanCast(me->getVictim(), LightningSpell, false))
+        if (CanCast(me->GetVictim(), LightningSpell, false))
         {
-            me->CastSpell(me->getVictim(), LightningSpell, false);
+            me->CastSpell(me->GetVictim(), LightningSpell, false);
             Lightning_Timer = LightningSpell->RecoveryTime;
         }
     }
@@ -520,9 +526,9 @@ void PriestAI::UpdateAI(const uint32 diff)
 
     if ((vampiric == true) && Vampiric_Timer.Expired(diff))
     {
-        if (CanCast(me->getVictim(), VampiricSpell, false))
+        if (CanCast(me->GetVictim(), VampiricSpell, false))
         {
-            me->CastSpell(me->getVictim(), VampiricSpell, false);
+            me->CastSpell(me->GetVictim(), VampiricSpell, false);
             Vampiric_Timer = 30000;
         }
     }
@@ -531,9 +537,9 @@ void PriestAI::UpdateAI(const uint32 diff)
 
     if (DmgSpell_Timer.Expired(diff))
     {
-        if (CanCast(me->getVictim(), DmgSpell, false))
+        if (CanCast(me->GetVictim(), DmgSpell, false))
         {
-            me->CastSpell(me->getVictim(), DmgSpell, false);
+            me->CastSpell(me->GetVictim(), DmgSpell, false);
             DmgSpell_Timer = 2500;
             if (vampiric == true) DmgSpell_Timer = 3500;
         }
@@ -568,9 +574,9 @@ void PriestAI::UpdateAI(const uint32 diff)
 
     if (DOTSpell_Timer.Expired(diff))
     {
-        if (CanCast(me->getVictim(), DOTSpell, false))
+        if (CanCast(me->GetVictim(), DOTSpell, false))
         {
-            me->CastSpell(me->getVictim(), DOTSpell, false);
+            me->CastSpell(me->GetVictim(), DOTSpell, false);
             DOTSpell_Timer = 15000;
             if (vampiric == true) DOTSpell_Timer = 3000;
         }
@@ -620,7 +626,7 @@ void MageAI::UpdateAI(const uint32 diff)
     {
         if (CanCast(me, ConeSpell, false))
         {
-            me->CastSpell(me->getVictim(), ConeSpell, false);
+            me->CastSpell(me->GetVictim(), ConeSpell, false);
             ConeSpell_Timer = ConeSpell->RecoveryTime;
         }
     }
@@ -640,9 +646,9 @@ void MageAI::UpdateAI(const uint32 diff)
 
     if (NormalSpell_Timer.Expired(diff))
     {
-        if (CanCast(me->getVictim(), NormalSpell, false))
+        if (CanCast(me->GetVictim(), NormalSpell, false))
         {
-            me->CastSpell(me->getVictim(), NormalSpell, false);
+            me->CastSpell(me->GetVictim(), NormalSpell, false);
             NormalSpell_Timer = NormalSpell->RecoveryTime;
         }
     }

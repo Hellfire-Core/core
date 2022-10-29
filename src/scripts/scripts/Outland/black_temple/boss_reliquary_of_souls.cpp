@@ -210,7 +210,7 @@ struct boss_reliquary_of_soulsAI : public Scripted_NoMovementAI
 
     void StartEvent(Unit *who)
     {
-        if (!me->isInCombat())
+        if (!me->IsInCombat())
         {
             if (me->IsWithinDistInMap(who, 100))
             {
@@ -267,7 +267,7 @@ struct boss_reliquary_of_soulsAI : public Scripted_NoMovementAI
         for (std::list<HostileReference*>::iterator itr = m_threatlist.begin(); itr != m_threatlist.end(); ++itr)
         {
             Unit* pUnit = Unit::GetUnit((*me), (*itr)->getUnitGuid());
-            if (pUnit && pUnit->isAlive() && pUnit->isInCombat() && me->canAttack(pUnit) && pUnit->IsWithinDistInMap(me, 100.0f))
+            if (pUnit && pUnit->IsAlive() && pUnit->IsInCombat() && me->canAttack(pUnit) && pUnit->IsWithinDistInMap(me, 100.0f))
                 return true;
         }
         return false;
@@ -361,7 +361,7 @@ struct boss_reliquary_of_soulsAI : public Scripted_NoMovementAI
                     _Timer = 1000;
                     if (Phase == 3)
                     {
-                        if (!Essence->isAlive())
+                        if (!Essence->IsAlive())
                             DoCast(me, 7, true);
                         else
                             return;
@@ -468,7 +468,7 @@ struct npc_ros_triggerAI : public ScriptedAI
         if (pInstance && pInstance->GetData(EVENT_RELIQUARYOFSOULS) == NOT_STARTED && who->GetTypeId() == TYPEID_PLAYER)
         {
             Creature * ros = Unit::GetCreature(*me, RosGUID);
-            if (ros && !((Player*)who)->isGameMaster())
+            if (ros && !((Player*)who)->IsGameMaster())
             {
                 ((boss_reliquary_of_soulsAI*)(ros->AI()))->StartEvent(who);
             }
@@ -561,7 +561,7 @@ struct boss_essence_of_sufferingAI : public ScriptedAI
             {
                 if (Player* i_pl = i->getSource())
                 {
-                    if (i_pl && i_pl->isAlive() && !i_pl->isGameMaster())
+                    if (i_pl && i_pl->IsAlive() && !i_pl->IsGameMaster())
                         targets.push_back(i_pl);
                 }
             }
@@ -587,7 +587,7 @@ struct boss_essence_of_sufferingAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (me->isInCombat())
+        if (me->IsInCombat())
         {
             //Supposed to be cast on nearest target
             if (FixateTimer.Expired(diff))

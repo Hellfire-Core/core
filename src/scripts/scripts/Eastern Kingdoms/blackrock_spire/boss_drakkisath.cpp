@@ -61,7 +61,7 @@ struct boss_drakkisathAI : public ScriptedAI
         FireNova_Timer -= diff;
         if (FireNova_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_FIRENOVA);
+            DoCast(m_creature->GetVictim(),SPELL_FIRENOVA);
             FireNova_Timer += 10000;
         }
         
@@ -69,7 +69,7 @@ struct boss_drakkisathAI : public ScriptedAI
         Cleave_Timer -= diff;
         if (Cleave_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_CLEAVE);
+            DoCast(m_creature->GetVictim(),SPELL_CLEAVE);
             Cleave_Timer += 8000;
         }
         
@@ -77,7 +77,7 @@ struct boss_drakkisathAI : public ScriptedAI
         Confliguration_Timer -= diff;
         if (Confliguration_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_CONFLIGURATION);
+            DoCast(m_creature->GetVictim(),SPELL_CONFLIGURATION);
             Confliguration_Timer += 18000;
         }
         
@@ -85,7 +85,7 @@ struct boss_drakkisathAI : public ScriptedAI
         Thunderclap_Timer -= diff;
         if (Thunderclap_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_THUNDERCLAP);
+            DoCast(m_creature->GetVictim(),SPELL_THUNDERCLAP);
             Thunderclap_Timer += 20000;
         }
         

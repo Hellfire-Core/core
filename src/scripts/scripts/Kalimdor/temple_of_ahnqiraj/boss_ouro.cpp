@@ -72,7 +72,7 @@ struct boss_ouroAI : public ScriptedAI
 
     void EnterCombat(Unit *who)
     {
-        DoCast(m_creature->getVictim(), SPELL_BIRTH);
+        DoCast(m_creature->GetVictim(), SPELL_BIRTH);
         if (pInstance)
             pInstance->SetData(DATA_OURO, IN_PROGRESS);
     }
@@ -92,14 +92,14 @@ struct boss_ouroAI : public ScriptedAI
         //Sweep_Timer
         if (!Submerged && Sweep_Timer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(), SPELL_SWEEP);
+            DoCast(m_creature->GetVictim(), SPELL_SWEEP);
             Sweep_Timer = 15000 + rand()%15000;
         }
 
         //SandBlast_Timer
         if (!Submerged && SandBlast_Timer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(), SPELL_SANDBLAST);
+            DoCast(m_creature->GetVictim(), SPELL_SANDBLAST);
             SandBlast_Timer = 20000 + rand()%15000;
         }
 
@@ -134,7 +134,7 @@ struct boss_ouroAI : public ScriptedAI
             m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             m_creature->setFaction(14);
 
-            DoCast(m_creature->getVictim(), SPELL_GROUND_RUPTURE);
+            DoCast(m_creature->GetVictim(), SPELL_GROUND_RUPTURE);
 
             Submerged = false;
             Submerge_Timer = 60000 + rand()%60000;

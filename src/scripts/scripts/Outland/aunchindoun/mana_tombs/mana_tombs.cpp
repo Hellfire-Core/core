@@ -117,7 +117,7 @@ struct npc_shaheenAI : public npc_escortAI
 
     void AttackStart(Unit* who)
     {
-        DoCast(me->getVictim(), SPELL_BOLT);
+        DoCast(me->GetVictim(), SPELL_BOLT);
         npc_escortAI::AttackStart(who);
     }
 
@@ -130,7 +130,7 @@ struct npc_shaheenAI : public npc_escortAI
             case NPC_XIRAXIS:
                 XiraxisGUID = summoned->GetGUID();
                 summoned->SetReactState(REACT_PASSIVE);
-                summoned->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                summoned->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                 summoned->setFaction(1731);
                 summoned->GetMotionMaster()->MovePoint(0, pos[11].x, pos[11].y, pos[11].z);
                 break;
@@ -299,7 +299,7 @@ struct npc_shaheenAI : public npc_escortAI
                     if (Creature* Xiraxis = (Unit::GetCreature(*me, XiraxisGUID)))
                     {
                         Xiraxis->SetReactState(REACT_AGGRESSIVE);
-                        Xiraxis->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                        Xiraxis->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                         Xiraxis->setFaction(14);
                         Xiraxis->AI()->AttackStart(me);
                     }

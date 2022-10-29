@@ -60,7 +60,7 @@ void WorldSession::HandleLearnTalentOpcode(WorldPacket & recv_data)
     if ((player->getClassMask() & talentTabInfo->ClassMask) == 0)
         return;
 
-    if (!player->isAlive())
+    if (!player->IsAlive())
         return;
 
     // prevent skip talent ranks (cheating)
@@ -135,7 +135,7 @@ void WorldSession::HandleLearnTalentOpcode(WorldPacket & recv_data)
         return;
 
     // learn! (other talent ranks will unlearned at learning)
-    GetPlayer()->learnSpell(spellid);
+    GetPlayer()->LearnSpell(spellid);
     sLog.outDetail("TalentID: %u Rank: %u Spell: %u\n", talent_id, requested_rank, spellid);
 
     // update free talent points

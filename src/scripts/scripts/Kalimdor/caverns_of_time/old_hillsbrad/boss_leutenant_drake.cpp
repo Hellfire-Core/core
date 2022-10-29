@@ -125,7 +125,7 @@ struct boss_lieutenant_drakeAI : public ScriptedAI
     {
         if (type == POINT_MOTION_TYPE)
         {
-            if (!me->isInCombat())
+            if (!me->IsInCombat())
             {
                 ++wpId;
                 WaypointReached = true;
@@ -187,7 +187,7 @@ struct boss_lieutenant_drakeAI : public ScriptedAI
 
         if (Whirlwind_Timer.Expired(diff))
         {
-            DoCast(me->getVictim(), SPELL_WHIRLWIND);
+            DoCast(me->GetVictim(), SPELL_WHIRLWIND);
             Whirlwind_Timer = 20000 + rand() % 5000;
         }
 
@@ -195,7 +195,7 @@ struct boss_lieutenant_drakeAI : public ScriptedAI
         if (Fear_Timer.Expired(diff))
         {
             DoScriptText(SAY_SHOUT, me);
-            DoCast(me->getVictim(), SPELL_FRIGHTENING_SHOUT);
+            DoCast(me->GetVictim(), SPELL_FRIGHTENING_SHOUT);
             Fear_Timer = 30000 + rand() % 10000;
         }
 
@@ -204,7 +204,7 @@ struct boss_lieutenant_drakeAI : public ScriptedAI
         if (MortalStrike_Timer.Expired(diff))
         {
             DoScriptText(SAY_MORTAL, me);
-            DoCast(me->getVictim(), SPELL_MORTAL_STRIKE);
+            DoCast(me->GetVictim(), SPELL_MORTAL_STRIKE);
             MortalStrike_Timer = 45000 + rand() % 5000;
         }
 

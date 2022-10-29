@@ -118,14 +118,14 @@ struct mob_aquementasAI : public ScriptedAI
         {
             if (SendItem_Timer.Expired(diff))
             {
-                SendItem(me->getVictim());
+                SendItem(me->GetVictim());
                 SendItem_Timer = 1000;
             }
         }
 
         if (FrostShock_Timer.Expired(diff))
         {
-            DoCast(me->getVictim(), SPELL_FROST_SHOCK);
+            DoCast(me->GetVictim(), SPELL_FROST_SHOCK);
             FrostShock_Timer = 15000;
         }
 
@@ -574,7 +574,7 @@ struct npc_toogaAI : public FollowerAI
     {
         FollowerAI::MoveInLineOfSight(pWho);
 
-        if (!me->getVictim() && !HasFollowState(STATE_FOLLOW_COMPLETE | STATE_FOLLOW_POSTEVENT) && pWho->GetEntry() == NPC_TORTA)
+        if (!me->GetVictim() && !HasFollowState(STATE_FOLLOW_COMPLETE | STATE_FOLLOW_POSTEVENT) && pWho->GetEntry() == NPC_TORTA)
         {
             if (me->IsWithinDistInMap(pWho, INTERACTION_DISTANCE))
             {
@@ -613,7 +613,7 @@ struct npc_toogaAI : public FollowerAI
                     m_uiPostEventTimer = 5000;
 
                     Unit *pTorta = Unit::GetUnit(*me, TortaGUID);
-                    if (!pTorta || !pTorta->isAlive())
+                    if (!pTorta || !pTorta->IsAlive())
                     {
                         //something happened, so just complete
                         SetFollowComplete();

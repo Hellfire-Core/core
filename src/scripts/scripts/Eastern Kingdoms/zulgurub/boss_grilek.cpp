@@ -73,8 +73,8 @@ struct boss_grilekAI : public ScriptedAI
 
             target = SelectUnit(SELECT_TARGET_RANDOM,1, 200, true, m_creature->getVictimGUID());
 
-            if(DoGetThreat(m_creature->getVictim()))
-                DoModifyThreatPercent(m_creature->getVictim(),-50);
+            if(DoGetThreat(m_creature->GetVictim()))
+                DoModifyThreatPercent(m_creature->GetVictim(),-50);
             if (target)
                 AttackStart(target);
 
@@ -85,7 +85,7 @@ struct boss_grilekAI : public ScriptedAI
         GroundTremor_Timer -= diff;
         if (GroundTremor_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(), SPELL_GROUNDTREMOR);
+            DoCast(m_creature->GetVictim(), SPELL_GROUNDTREMOR);
             GroundTremor_Timer += 12000 + rand()%4000;
         }
         

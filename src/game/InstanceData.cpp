@@ -200,7 +200,7 @@ void InstanceData::HandleInitCreatureState(Creature * mob)
 
     uint32 encounter = GetEncounterForEntry(tmp->id);
 
-    if (encounter && mob->isAlive() && GetData(encounter) == DONE)
+    if (encounter && mob->IsAlive() && GetData(encounter) == DONE)
     {
         mob->setDeathState(JUST_DIED);
         mob->RemoveCorpse();
@@ -209,9 +209,9 @@ void InstanceData::HandleInitCreatureState(Creature * mob)
 
     encounter = GetRequiredEncounterForEntry(tmp->id);
 
-    if (encounter && mob->isAlive() && GetData(encounter) != DONE)
+    if (encounter && mob->IsAlive() && GetData(encounter) != DONE)
     {
-        mob->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        mob->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         requiredEncounterToMobs[encounter].push_back(mob->GetGUID());
     }
 }
@@ -230,7 +230,7 @@ void InstanceData::HandleRequiredEncounter(uint32 encounter)
                                                     {
                                                         Creature * tmp = GetCreature(var);
                                                         if (tmp != nullptr)
-                                                            tmp->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                                                            tmp->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                                                     });
     }
 }

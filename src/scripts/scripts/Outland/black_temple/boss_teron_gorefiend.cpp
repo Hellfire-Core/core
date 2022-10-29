@@ -86,7 +86,7 @@ struct mob_doom_blossomAI : public NullCreatureAI
         if(Teron)
             m_creature->setFaction(Teron->getFaction());
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_ROTATE);
         m_creature->SetLevitate(true);
 
@@ -110,12 +110,12 @@ struct mob_doom_blossomAI : public NullCreatureAI
         if (CheckTeronTimer.Expired(diff))
         {
             Creature* Teron = (Unit::GetCreature((*m_creature), TeronGUID));
-            if(Teron && Teron->isInCombat())
+            if(Teron && Teron->IsInCombat())
             {
                 DoZoneInCombat();
 
                 Creature* Teron = (Unit::GetCreature((*m_creature), TeronGUID));
-                if((Teron) && (!Teron->isAlive() || Teron->IsInEvadeMode()))
+                if((Teron) && (!Teron->IsAlive() || Teron->IsInEvadeMode()))
                     Despawn();
 
                 float newX, newY, newZ;
@@ -188,8 +188,8 @@ struct mob_shadowy_constructAI : public ScriptedAI
         if(DelayTimer.GetInterval() || who->GetTypeId() != TYPEID_PLAYER || who->HasAura(40282, 0) || who->HasAura(40251, 0) || who->HasAura(40268,0))
             return;
 
-        if(me->getVictim())
-            DoModifyThreatPercent(me->getVictim(), -100);
+        if(me->GetVictim())
+            DoModifyThreatPercent(me->GetVictim(), -100);
 
         ScriptedAI::AttackStart(who);
 
@@ -264,7 +264,7 @@ struct mob_shadowy_constructAI : public ScriptedAI
             if (pInstance)
             {
                 Creature *pTeron = pInstance->GetCreature(pInstance->GetData64(DATA_TERONGOREFIEND));
-                if (!pTeron || !pTeron->isInCombat())
+                if (!pTeron || !pTeron->IsInCombat())
                     m_creature->Kill(m_creature, false);
             }
             CheckTeronTimer = 2000;
@@ -329,7 +329,7 @@ struct boss_teron_gorefiendAI : public ScriptedAI
         m_creature->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_MOD_STUN, true);
 
         // Start off unattackable so that the intro is done properly
-        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
 
         AggroTimer.Reset(20000);
         AggroTargetGUID = 0;
@@ -346,10 +346,10 @@ struct boss_teron_gorefiendAI : public ScriptedAI
 
     void MoveInLineOfSight(Unit *who)
     {
-        if(!who || !who->isAlive())
+        if(!who || !who->IsAlive())
             return;
 
-        if(!m_creature->isInCombat() && who->isTargetableForAttack() && who->isInAccessiblePlacefor(m_creature) && m_creature->IsHostileTo(who))
+        if(!m_creature->IsInCombat() && who->isTargetableForAttack() && who->isInAccessiblePlacefor(m_creature) && m_creature->IsHostileTo(who))
         {
             float attackRadius = m_creature->GetAttackDistance(who);
 
@@ -432,7 +432,7 @@ struct boss_teron_gorefiendAI : public ScriptedAI
         for(i = m_threatlist.begin(); i != m_threatlist.end(); i++)
         {
             Unit* pUnit = Unit::GetUnit((*m_creature), (*i)->getUnitGuid());
-            if(pUnit && pUnit->isAlive())
+            if(pUnit && pUnit->IsAlive())
             {
                 float threat = DoGetThreat(pUnit);
                 Blossom->AddThreat(pUnit, threat);
@@ -445,7 +445,7 @@ struct boss_teron_gorefiendAI : public ScriptedAI
         if(Intro == INTRO_IN_PROGRESS)
             if (AggroTimer.Expired(diff))
             {
-                m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                 m_creature->SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_NONE);
                 Intro = INTRO_DONE;
             }
@@ -475,7 +475,7 @@ struct boss_teron_gorefiendAI : public ScriptedAI
         {
             Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 200, true, m_creature->getVictimGUID());
             if(!target)
-                target = m_creature->getVictim();
+                target = m_creature->GetVictim();
 
             if(target)
             {
@@ -494,7 +494,7 @@ struct boss_teron_gorefiendAI : public ScriptedAI
         {
             Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 100, true, m_creature->getVictimGUID());
 
-            if(target && target->isAlive() && !target->HasAura(SPELL_SHADOW_OF_DEATH, 0) && !target->HasAura(40282, 0) )
+            if(target && target->IsAlive() && !target->HasAura(SPELL_SHADOW_OF_DEATH, 0) && !target->HasAura(40282, 0) )
             {
                 AddSpellToCast(target, SPELL_SHADOW_OF_DEATH, false, true);
                 ShadowOfDeathTimer = 30000;

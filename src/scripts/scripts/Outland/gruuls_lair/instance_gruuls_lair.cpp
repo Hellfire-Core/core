@@ -113,7 +113,7 @@ struct instance_gruuls_lair : public ScriptedInstance
         if (!tmp)
             return;
 
-        if (GetEncounterForEntry(tmp->id) && creature->isAlive() && GetData(GetEncounterForEntry(tmp->id)) == DONE)
+        if (GetEncounterForEntry(tmp->id) && creature->IsAlive() && GetData(GetEncounterForEntry(tmp->id)) == DONE)
         {
             creature->setDeathState(JUST_DIED);
             creature->RemoveCorpse();

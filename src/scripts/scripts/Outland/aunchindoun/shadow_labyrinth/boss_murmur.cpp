@@ -72,14 +72,14 @@ struct boss_murmurAI : public Scripted_NoMovementAI
     // Murmurs Touch heroic, maybe spell exist ?
     void SpellHitTarget(Unit *target, const SpellEntry *spell)
     {
-        if (target && target->isAlive() && spell && spell->Id == 38794)
+        if (target && target->IsAlive() && spell && spell->Id == 38794)
         {
             std::list<HostileReference*>& m_threatlist = me->getThreatManager().getThreatList();
             for(std::list<HostileReference*>::iterator i = m_threatlist.begin(); i != m_threatlist.end(); ++i)
             {
                 if (Unit* targets = Unit::GetUnit((*me),(*i)->getUnitGuid()))
                 {
-                    if (targets->isAlive() && target->GetGUID() != (*i)->getUnitGuid())
+                    if (targets->IsAlive() && target->GetGUID() != (*i)->getUnitGuid())
                         target->CastSpell(targets, SPELL_MAGNETIC_PULL, true);
                 }
             }
@@ -126,7 +126,7 @@ struct boss_murmurAI : public Scripted_NoMovementAI
                 {
                     if (Unit* target = Unit::GetUnit((*me),(*i)->getUnitGuid()))
                     {
-                        if (target->isAlive() && !target->IsWithinDistInMap(me, 12.0f))
+                        if (target->IsAlive() && !target->IsWithinDistInMap(me, 12.0f))
                             ForceSpellCast(target, SPELL_THUNDERING_STORM, DONT_INTERRUPT);
                     }
                 }
@@ -143,7 +143,7 @@ struct boss_murmurAI : public Scripted_NoMovementAI
                 {
                     if (Unit* target = Unit::GetUnit((*me),(*i)->getUnitGuid()))
                     {
-                        if (target->isAlive() && !target->IsWithinDistInMap(me, 12.0f))
+                        if (target->IsAlive() && !target->IsWithinDistInMap(me, 12.0f))
                         {
                             AddSpellToCast(SPELL_SONIC_SHOCK, CAST_TANK);
                             break;
@@ -187,14 +187,14 @@ struct boss_murmurAI : public Scripted_NoMovementAI
         if (!me->isAttackReady())
             return;
 
-        if (!me->IsWithinMeleeRange(me->getVictim()))
+        if (!me->IsWithinMeleeRange(me->GetVictim()))
         {
             std::list<HostileReference*>& m_threatlist = me->getThreatManager().getThreatList();
             for(std::list<HostileReference*>::iterator i = m_threatlist.begin(); i != m_threatlist.end(); ++i)
             {
                 if (Unit* target = Unit::GetUnit((*me),(*i)->getUnitGuid()))
                 {
-                    if (target->isAlive() && me->IsWithinMeleeRange(target))
+                    if (target->IsAlive() && me->IsWithinMeleeRange(target))
                     {
                         me->TauntApply(target);
                         break;

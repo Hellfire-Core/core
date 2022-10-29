@@ -120,7 +120,7 @@ struct boss_harbinger_skyrissAI : public ScriptedAI
         {
             if(Unit* millhouse = (Unit*)FindCreature(NPC_MILLHOUSE, 100, me))
             {
-                if(millhouse->isAlive())
+                if(millhouse->IsAlive())
                 {
                     MapRefManager::const_iterator player = pInstance->instance->GetPlayers().begin();
 
@@ -143,7 +143,7 @@ struct boss_harbinger_skyrissAI : public ScriptedAI
             summon->SetHealth((summon->GetMaxHealth()*33)/100);
         else
             summon->SetHealth((summon->GetMaxHealth()*66)/100);
-        if(me->getVictim())
+        if(me->GetVictim())
             if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0))
                 summon->AI()->AttackStart(target);
      }
@@ -172,7 +172,7 @@ struct boss_harbinger_skyrissAI : public ScriptedAI
 
     void EnterEvadeMode()
     {
-        if (!me->isAlive())
+        if (!me->IsAlive())
             return;
 
         //domination?
@@ -186,7 +186,7 @@ struct boss_harbinger_skyrissAI : public ScriptedAI
         {
             pl = i->getSource();
 
-            if (pl && pl->isAlive())
+            if (pl && pl->IsAlive())
             {
                 alive = true;
                 break;
@@ -262,7 +262,7 @@ struct boss_harbinger_skyrissAI : public ScriptedAI
             if( Unit* target = SelectUnit(SELECT_TARGET_RANDOM,1, GetSpellMaxRange(SPELL_MIND_REND), true, me->getVictimGUID()))
                 DoCast(target,HeroicMode ? H_SPELL_MIND_REND : SPELL_MIND_REND);
             else
-                DoCast(me->getVictim(),HeroicMode ? H_SPELL_MIND_REND : SPELL_MIND_REND);
+                DoCast(me->GetVictim(),HeroicMode ? H_SPELL_MIND_REND : SPELL_MIND_REND);
 
             MindRend_Timer = 8000;
         }
@@ -277,7 +277,7 @@ struct boss_harbinger_skyrissAI : public ScriptedAI
             if( Unit* target = SelectUnit(SELECT_TARGET_RANDOM,1, GetSpellMaxRange(SPELL_FEAR), true, me->getVictimGUID()) )
                 DoCast(target,SPELL_FEAR);
             else
-                DoCast(me->getVictim(),SPELL_FEAR);
+                DoCast(me->GetVictim(),SPELL_FEAR);
 
             Fear_Timer = 25000;
         }
@@ -292,7 +292,7 @@ struct boss_harbinger_skyrissAI : public ScriptedAI
             if( Unit* target = SelectUnit(SELECT_TARGET_RANDOM,1, GetSpellMaxRange(SPELL_DOMINATION), true, me->getVictimGUID()) )
                 DoCast(target,HeroicMode ? H_SPELL_DOMINATION : SPELL_DOMINATION);
             else
-                DoCast(me->getVictim(),HeroicMode ? H_SPELL_DOMINATION : SPELL_DOMINATION);
+                DoCast(me->GetVictim(),HeroicMode ? H_SPELL_DOMINATION : SPELL_DOMINATION);
 
             Domination_Timer = 16000+rand()%16000;
         }
@@ -346,7 +346,7 @@ struct boss_harbinger_skyriss_illusionAI : public ScriptedAI
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM,1, GetSpellMaxRange(SPELL_MIND_REND_IMAGE), true, me->getVictimGUID()))
                 DoCast(target,HeroicMode ? H_SPELL_MIND_REND_IMAGE : SPELL_MIND_REND_IMAGE);
             else
-                DoCast(me->getVictim(),HeroicMode ? H_SPELL_MIND_REND_IMAGE : SPELL_MIND_REND_IMAGE);
+                DoCast(me->GetVictim(),HeroicMode ? H_SPELL_MIND_REND_IMAGE : SPELL_MIND_REND_IMAGE);
 
             MindRend_Timer = 15000+rand()%6000;
         }

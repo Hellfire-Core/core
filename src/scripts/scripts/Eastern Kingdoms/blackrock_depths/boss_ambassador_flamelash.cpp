@@ -76,7 +76,7 @@ struct boss_ambassador_flamelashAI : public ScriptedAI
         FireBlast_Timer -= diff;
         if (FireBlast_Timer <= diff)
         {
-            DoCast(me->getVictim(),SPELL_FIREBLAST);
+            DoCast(me->GetVictim(),SPELL_FIREBLAST);
             FireBlast_Timer += 7000;
         }
         
@@ -84,10 +84,10 @@ struct boss_ambassador_flamelashAI : public ScriptedAI
         Spirit_Timer -= diff;
         if (Spirit_Timer <= diff)
         {
-            SummonSpirits(me->getVictim());
-            SummonSpirits(me->getVictim());
-            SummonSpirits(me->getVictim());
-            SummonSpirits(me->getVictim());
+            SummonSpirits(me->GetVictim());
+            SummonSpirits(me->GetVictim());
+            SummonSpirits(me->GetVictim());
+            SummonSpirits(me->GetVictim());
 
             Spirit_Timer += 30000;
         }

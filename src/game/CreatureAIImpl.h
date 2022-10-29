@@ -487,12 +487,12 @@ inline void CreatureAI::SetGazeOn(Unit *target)
 
 inline bool CreatureAI::UpdateVictimWithGaze()
 {
-    if (!me->isInCombat())
+    if (!me->IsInCombat())
         return false;
 
     if (me->HasReactState(REACT_PASSIVE))
     {
-        if (me->getVictim())
+        if (me->GetVictim())
             return true;
         else
             me->SetReactState(REACT_AGGRESSIVE);
@@ -500,19 +500,19 @@ inline bool CreatureAI::UpdateVictimWithGaze()
 
     if (Unit *victim = me->SelectVictim())
         AttackStart(victim);
-    return me->getVictim();
+    return me->GetVictim();
 }
 
 inline bool CreatureAI::UpdateCombatState()
 {
-    if (!me->isInCombat())
+    if (!me->IsInCombat())
         return false;
 
     if (!me->HasReactState(REACT_PASSIVE))
     {
         if (Unit *victim = me->SelectVictim())
             AttackStart(victim);
-        return me->getVictim();
+        return me->GetVictim();
     }
     else if (me->getThreatManager().isThreatListEmpty())
     {
@@ -526,23 +526,23 @@ inline bool CreatureAI::UpdateCombatState()
 
 inline bool CreatureAI::UpdateVictim()
 {
-    if (!me->isInCombat() || !me->isAlive())
+    if (!me->IsInCombat() || !me->IsAlive())
         return false;
 
-    bool outofthreat = me->IsOutOfThreatArea(me->getVictim());
-    if (me->hasUnitState(UNIT_STAT_LOST_CONTROL))
+    bool outofthreat = me->IsOutOfThreatArea(me->GetVictim());
+    if (me->HasUnitState(UNIT_STAT_LOST_CONTROL))
     {
         me->SetSelection(0);
         return false;
     }
 
-    if (me->getVictim() && !outofthreat)
+    if (me->GetVictim() && !outofthreat)
     {
         if (me->IsNonMeleeSpellCast(false))
             return true;
         else
         {
-            if (!me->hasUnitState(UNIT_STAT_CANNOT_TURN) && !me->HasReactState(REACT_PASSIVE) && me->GetSelection() != me->getVictimGUID() && !me->hasIgnoreVictimSelection())
+            if (!me->HasUnitState(UNIT_STAT_CANNOT_TURN) && !me->HasReactState(REACT_PASSIVE) && me->GetSelection() != me->getVictimGUID() && !me->hasIgnoreVictimSelection())
                 me->SetSelection(me->getVictimGUID());
         }
     }
@@ -560,23 +560,23 @@ inline bool CreatureAI::UpdateVictim()
     else if (me->IsInEvadeMode())
         return false;
 
-    return me->getVictim();
+    return me->GetVictim();
 }
 
 /*
 inline bool CreatureAI::UpdateVictim()
 {
-    if (!me->isInCombat())
+    if (!me->IsInCombat())
         return false;
     if (Unit *victim = me->SelectVictim())
         AttackStart(victim);
-    return me->getVictim();
+    return me->GetVictim();
 }
 */
 
 inline bool CreatureAI::_EnterEvadeMode()
 {
-    if (!me->isAlive())
+    if (!me->IsAlive())
         return false;
 
     // sometimes bosses stuck in combat?
@@ -598,7 +598,7 @@ inline bool CreatureAI::_EnterEvadeMode()
 
 inline void UnitAI::DoCast(Unit* victim, uint32 spellId, bool triggered)
 {
-    if (!victim || me->hasUnitState(UNIT_STAT_CASTING) && !triggered)
+    if (!victim || me->HasUnitState(UNIT_STAT_CASTING) && !triggered)
         return;
 
     me->CastSpell(victim, spellId, triggered);
@@ -606,12 +606,12 @@ inline void UnitAI::DoCast(Unit* victim, uint32 spellId, bool triggered)
 
 inline void UnitAI::DoCastVictim(uint32 spellId, bool triggered)
 {
-    me->CastSpell(me->getVictim(), spellId, triggered);
+    me->CastSpell(me->GetVictim(), spellId, triggered);
 }
 
 inline void UnitAI::DoCastAOE(uint32 spellId, bool triggered)
 {
-    if (!triggered && me->hasUnitState(UNIT_STAT_CASTING))
+    if (!triggered && me->HasUnitState(UNIT_STAT_CASTING))
         return;
 
     me->CastSpell((Unit*)NULL, spellId, triggered);

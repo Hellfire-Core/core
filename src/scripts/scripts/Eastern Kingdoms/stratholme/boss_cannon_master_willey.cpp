@@ -122,7 +122,7 @@ struct boss_cannon_master_willeyAI : public ScriptedAI
             //Cast
             if (rand()%100 < 90) //90% chance to cast
             {
-                DoCast(m_creature->getVictim(),SPELL_PUMMEL);
+                DoCast(m_creature->GetVictim(),SPELL_PUMMEL);
             }
             //12 seconds until we should cast this again
             Pummel_Timer += 12000;
@@ -134,7 +134,7 @@ struct boss_cannon_master_willeyAI : public ScriptedAI
             //Cast
             if (rand()%100 < 80) //80% chance to cast
             {
-                DoCast(m_creature->getVictim(),SPELL_KNOCKAWAY);
+                DoCast(m_creature->GetVictim(),SPELL_KNOCKAWAY);
             }
             //14 seconds until we should cast this again
             KnockAway_Timer += 14000;
@@ -144,7 +144,7 @@ struct boss_cannon_master_willeyAI : public ScriptedAI
         if (Shoot_Timer <= diff)
         {
             //Cast
-            DoCast(m_creature->getVictim(),SPELL_SHOOT);
+            DoCast(m_creature->GetVictim(),SPELL_SHOOT);
             //1 seconds until we should cast this again
             Shoot_Timer += 1000;
         }

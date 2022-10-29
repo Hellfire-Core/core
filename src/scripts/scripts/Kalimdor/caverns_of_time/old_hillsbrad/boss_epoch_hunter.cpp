@@ -88,7 +88,7 @@ struct boss_epoch_hunterAI : public ScriptedAI
         Mda_Timer.Reset(40000);
         attackers.clear();
         me->SetReactState(REACT_PASSIVE);
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
 
         Map* tmpMap = me->GetMap();
 
@@ -147,7 +147,7 @@ struct boss_epoch_hunterAI : public ScriptedAI
     {
         attackers.push_back(summoned->GetGUID());
         summoned->SetReactState(REACT_PASSIVE);
-        summoned->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        summoned->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
     }
 
     void UpdateEntry()
@@ -192,7 +192,7 @@ struct boss_epoch_hunterAI : public ScriptedAI
                     }
                             
                     attacker->SetReactState(REACT_AGGRESSIVE);
-                    attacker->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                    attacker->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
 
                     if (Creature* Thrall = me->GetMap()->GetCreature(ThrallGUID))
                         attacker->AI()->AttackStart(Thrall);
@@ -277,7 +277,7 @@ struct boss_epoch_hunterAI : public ScriptedAI
                 break;
             case 7:
                 me->SetReactState(REACT_AGGRESSIVE);
-                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                 me->GetMotionMaster()->MovePoint(0, 2638.60f, 686.948f, 58.245f);
                 if (Creature* Thrall = me->GetMap()->GetCreature(ThrallGUID))
                     Thrall->AI()->AttackStart(me);
@@ -308,7 +308,7 @@ struct boss_epoch_hunterAI : public ScriptedAI
                     {
                         if (Creature* attacker = tmpMap->GetCreature((*itr)))
                         {
-                            if (attacker->isAlive())
+                            if (attacker->IsAlive())
                             {
                                 alive = true;
                                 break;
@@ -325,7 +325,7 @@ struct boss_epoch_hunterAI : public ScriptedAI
 
                 if (Creature* Thrall = tmpMap->GetCreature(ThrallGUID))
                 {
-                    if (!Thrall->isAlive())
+                    if (!Thrall->IsAlive())
                         me->ForcedDespawn();
                 }
 
@@ -351,7 +351,7 @@ struct boss_epoch_hunterAI : public ScriptedAI
             if (me->IsNonMeleeSpellCast(false))
                 me->InterruptNonMeleeSpells(false);
 
-            DoCast(me->getVictim(),SPELL_SAND_BREATH);
+            DoCast(me->GetVictim(),SPELL_SAND_BREATH);
 
             DoScriptText(RAND(SAY_BREATH1, SAY_BREATH2), me);
 

@@ -155,14 +155,14 @@ struct boss_ambassador_hellmawAI : public ScriptedAI
             }
         }
 
-        if (!me->isInCombat() && !IsBanished && !OnPath_Delay.GetInterval())
+        if (!me->IsInCombat() && !IsBanished && !OnPath_Delay.GetInterval())
         {
             me->GetMotionMaster()->MovePath(PATH_PATROL, false);
             OnPath_Delay = 55000;
             patrol = false;
         }
 
-        if (!me->isInCombat() && !patrol && OnPath_Delay.Expired(diff))
+        if (!me->IsInCombat() && !patrol && OnPath_Delay.Expired(diff))
         {
             me->GetMotionMaster()->MovePath(PATH_FINAL, true);
             patrol = true;
@@ -174,7 +174,7 @@ struct boss_ambassador_hellmawAI : public ScriptedAI
 
         if (CorrosiveAcid_Timer.Expired(diff))
         {
-            DoCast(me->getVictim(),SPELL_CORROSIVE_ACID);
+            DoCast(me->GetVictim(),SPELL_CORROSIVE_ACID);
             CorrosiveAcid_Timer = 25000;
         }
         

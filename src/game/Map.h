@@ -205,6 +205,7 @@ class HELLGROUND_IMPORT_EXPORT Map : public GridRefManager<NGridType>
 
         const char* GetMapName() const;
 
+        MapEntry const* GetMapEntry() const { return i_mapEntry; }
         bool Instanceable() const { return i_mapEntry && i_mapEntry->Instanceable(); }
         // NOTE: this duplicate of Instanceable(), but Instanceable() can be changed when BG also will be instanceable
         bool IsDungeon() const { return i_mapEntry && i_mapEntry->IsDungeon(); }

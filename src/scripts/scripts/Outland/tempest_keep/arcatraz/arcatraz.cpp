@@ -193,13 +193,13 @@ struct npc_millhouse_manastormAI : public ScriptedAI
 
              DoScriptText(SAY_PYRO, me);
 
-            DoCast(me->getVictim(),SPELL_PYROBLAST);
+            DoCast(me->GetVictim(),SPELL_PYROBLAST);
             Pyroblast_Timer = 40000;
         }
 
         if (Fireball_Timer.Expired(diff))
         {
-            DoCast(me->getVictim(),SPELL_FIREBALL);
+            DoCast(me->GetVictim(),SPELL_FIREBALL);
             Fireball_Timer = 4000;
         }
 
@@ -272,7 +272,7 @@ struct npc_warden_mellicharAI : public ScriptedAI
         EventProgress_Timer.Reset(22000);
         Phase = 1;
 
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         DoCast(me,SPELL_TARGET_OMEGA);
 
         if( pInstance && !(pInstance->GetData(TYPE_HARBINGERSKYRISS) == DONE))
@@ -288,7 +288,7 @@ struct npc_warden_mellicharAI : public ScriptedAI
         if( IsRunning )
             return;
 
-        if( !me->getVictim() && who->isTargetableForAttack() && ( me->IsHostileTo( who )) && who->isInAccessiblePlacefor(me) )
+        if( !me->GetVictim() && who->isTargetableForAttack() && ( me->IsHostileTo( who )) && who->isInAccessiblePlacefor(me) )
         {
             if (!me->CanFly() && me->GetDistanceZ(who) > CREATURE_Z_ATTACK_RANGE)
                 return;
@@ -541,7 +541,7 @@ struct npc_arcatraz_sentinelAI : public ScriptedAI
     {
         me->SetUInt32Value(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_DEAD);
         me->SetUInt32Value(UNIT_FIELD_BYTES_1, PLAYER_STATE_DEAD);
-        me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         me->CastSpell(me, SPELL_AURA, true);
 
         ThreatWipe_Timer.Reset(urand(5000, 10000));
@@ -571,7 +571,7 @@ struct npc_arcatraz_sentinelAI : public ScriptedAI
 
             if (me->GetHealth()*100/me->GetMaxHealth() <= 12)
             {
-                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                 me->RemoveAllAuras();
                 me->CastSpell(me, SPELL_EXPLODE, true);
 
@@ -579,7 +579,7 @@ struct npc_arcatraz_sentinelAI : public ScriptedAI
             }
         }
         else if (Suicide_Timer.Expired(diff))
-            me->getVictim()->Kill(me, false);
+            me->GetVictim()->Kill(me, false);
 
         DoMeleeAttackIfReady();
     }
@@ -605,7 +605,7 @@ struct npc_warder_corpseAI : public ScriptedAI
 
     void Reset()
     {
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         me->SetUInt32Value(UNIT_DYNAMIC_FLAGS, 32);
         me->SetUInt32Value(UNIT_FIELD_BYTES_1, 7);
         summon = false;
@@ -710,13 +710,13 @@ struct npc_negaton_screamerAI : public ScriptedAI
 
         if (volleyTimer.Expired(diff))
         {
-            DoCast(me->getVictim(), GetVolleySpell());
+            DoCast(me->GetVictim(), GetVolleySpell());
             volleyTimer = urand(6000, 9000); // will be reset in SpellHitTarget
         }
 
         if (fearTimer.Expired(diff))
         {
-            DoCast(me->getVictim(), SPELL_PSYCHIC_SCREAM);
+            DoCast(me->GetVictim(), SPELL_PSYCHIC_SCREAM);
             fearTimer = urand(15000, 30000);
         }
 

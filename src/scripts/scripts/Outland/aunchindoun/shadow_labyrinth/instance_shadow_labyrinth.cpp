@@ -233,7 +233,7 @@ struct npc_tortured_skeletonAI : public ScriptedAI
         me->DeleteThreatList();
         me->CombatStop();
         
-        if (!me->isAlive())
+        if (!me->IsAlive())
             return;    
 
         me->GetMotionMaster()->MoveTargetedHome();

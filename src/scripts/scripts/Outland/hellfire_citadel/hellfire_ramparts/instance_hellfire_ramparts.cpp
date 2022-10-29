@@ -111,7 +111,7 @@ struct instance_ramparts : public ScriptedInstance
                     {
                         if (Creature* sentry = instance->GetCreature(*it))
                         {
-                            if (sentry->isDead())
+                            if (sentry->IsDead())
                                 sentry->Respawn();
                         }
                     }

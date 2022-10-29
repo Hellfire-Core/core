@@ -69,7 +69,7 @@ struct boss_hazzarahAI : public ScriptedAI
         ManaBurn_Timer -= diff;
         if (ManaBurn_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_MANABURN);
+            DoCast(m_creature->GetVictim(),SPELL_MANABURN);
             ManaBurn_Timer += 8000 + rand()%8000;
         }
         
@@ -77,7 +77,7 @@ struct boss_hazzarahAI : public ScriptedAI
         Sleep_Timer -= diff;
         if (Sleep_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_SLEEP);
+            DoCast(m_creature->GetVictim(),SPELL_SLEEP);
             Sleep_Timer += 12000 + rand()%8000;
         }
         

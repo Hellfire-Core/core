@@ -104,7 +104,7 @@ struct boss_kruulAI : public ScriptedAI
         {
             if (rand()%100 < 46)
             {
-                DoCast(m_creature->getVictim(),SPELL_SHADOWVOLLEY);
+                DoCast(m_creature->GetVictim(),SPELL_SHADOWVOLLEY);
             }
 
             ShadowVolley_Timer += 5000;
@@ -115,7 +115,7 @@ struct boss_kruulAI : public ScriptedAI
         {
             if (rand()%100 < 50)
             {
-                DoCast(m_creature->getVictim(),SPELL_CLEAVE);
+                DoCast(m_creature->GetVictim(),SPELL_CLEAVE);
             }
 
             Cleave_Timer += 10000;
@@ -126,7 +126,7 @@ struct boss_kruulAI : public ScriptedAI
         {
             if (rand()%100 < 20)
             {
-                DoCast(m_creature->getVictim(),SPELL_THUNDERCLAP);
+                DoCast(m_creature->GetVictim(),SPELL_THUNDERCLAP);
             }
 
             ThunderClap_Timer += 12000;
@@ -135,7 +135,7 @@ struct boss_kruulAI : public ScriptedAI
         TwistedReflection_Timer -= diff;
         if (TwistedReflection_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_TWISTEDREFLECTION);
+            DoCast(m_creature->GetVictim(),SPELL_TWISTEDREFLECTION);
             TwistedReflection_Timer += 30000;
         }
 
@@ -144,7 +144,7 @@ struct boss_kruulAI : public ScriptedAI
         {
             if (rand()%100 < 40)
             {
-                DoCast(m_creature->getVictim(),SPELL_VOIDBOLT);
+                DoCast(m_creature->GetVictim(),SPELL_VOIDBOLT);
             }
 
             VoidBolt_Timer += 18000;
@@ -160,9 +160,9 @@ struct boss_kruulAI : public ScriptedAI
         Hound_Timer -= diff;
         if (Hound_Timer <= diff)
         {
-            SummonHounds(m_creature->getVictim());
-            SummonHounds(m_creature->getVictim());
-            SummonHounds(m_creature->getVictim());
+            SummonHounds(m_creature->GetVictim());
+            SummonHounds(m_creature->GetVictim());
+            SummonHounds(m_creature->GetVictim());
 
             Hound_Timer += 45000;
         }

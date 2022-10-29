@@ -215,7 +215,7 @@ struct boss_morogrim_tidewalkerAI : public ScriptedAI
             }
         }
 
-        me->SetInFront(me->getVictim());
+        me->SetInFront(me->GetVictim());
         CastNextSpellIfAnyAndReady();
         DoMeleeAttackIfReady();
     }
@@ -239,7 +239,7 @@ struct mob_water_globuleAI : public ScriptedAI
         Check_Timer.Reset(1000);
 
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         m_creature->setFaction(14);
     }
 
@@ -272,9 +272,9 @@ struct mob_water_globuleAI : public ScriptedAI
                 return;
             }
 
-            if (m_creature->IsWithinDistInMap(m_creature->getVictim(), 5))
+            if (m_creature->IsWithinDistInMap(m_creature->GetVictim(), 5))
             {
-                m_creature->CastSpell(m_creature->getVictim(), SPELL_GLOBULE_EXPLOSION, false);
+                m_creature->CastSpell(m_creature->GetVictim(), SPELL_GLOBULE_EXPLOSION, false);
                 m_creature->ForcedDespawn();
             }
 

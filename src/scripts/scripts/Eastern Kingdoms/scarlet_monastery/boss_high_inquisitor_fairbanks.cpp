@@ -72,49 +72,49 @@ struct boss_high_inquisitor_fairbanksAI : public ScriptedAI
         if ( m_creature->GetHealth()*100 / m_creature->GetMaxHealth() <= 45 && !m_creature->IsNonMeleeSpellCast(false) 
             && Healing_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_RENEW6 || SPELL_FLASHHEAL4);
+            DoCast(m_creature->GetVictim(),SPELL_RENEW6 || SPELL_FLASHHEAL4);
             Healing_Timer += 30000;
         }
 
         Sleep2_Timer -= diff;
         if (Sleep2_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_SLEEP2);
+            DoCast(m_creature->GetVictim(),SPELL_SLEEP2);
             Sleep2_Timer += 45000;
         }
 
         Smite_Timer -= diff;
         if (Smite_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_SMITE);
+            DoCast(m_creature->GetVictim(),SPELL_SMITE);
             Smite_Timer += 20000;
         }
 
         ShadowWordPain_Timer -= diff;
         if (ShadowWordPain_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_SHADOWWORDPAIN);
+            DoCast(m_creature->GetVictim(),SPELL_SHADOWWORDPAIN);
             ShadowWordPain_Timer += 30000;
         }
 
         CurseOfBlood_Timer -= diff;
         if (CurseOfBlood_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_CURSEOFBLOOD);
+            DoCast(m_creature->GetVictim(),SPELL_CURSEOFBLOOD);
             CurseOfBlood_Timer += 25000;
         }
 
         DevouringPlague3_Timer -= diff;
         if (DevouringPlague3_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_DEVOURINGPLAGUE3);
+            DoCast(m_creature->GetVictim(),SPELL_DEVOURINGPLAGUE3);
             DevouringPlague3_Timer += 35000;
         }
 
         MindBlast5_Timer -= diff;
         if (MindBlast5_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_MINDBLAST5);
+            DoCast(m_creature->GetVictim(),SPELL_MINDBLAST5);
             MindBlast5_Timer += 30000;
         }
 

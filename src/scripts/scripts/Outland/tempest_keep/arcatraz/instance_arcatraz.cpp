@@ -153,7 +153,7 @@ struct instance_arcatraz : public ScriptedInstance
                     HandleGameObject(Pod_Delta,false);
                     HandleGameObject(Pod_Omega,false);
                     HandleGameObject(GoSphereGUID,true);
-                    if (GetCreature(MellicharGUID) && GetCreature(MellicharGUID)->isDead())
+                    if (GetCreature(MellicharGUID) && GetCreature(MellicharGUID)->IsDead())
                         GetCreature(MellicharGUID)->Respawn();
                 }
                 Encounter[3] = data;

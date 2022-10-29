@@ -41,7 +41,7 @@ void HomeMovementGenerator<Creature>::Reset(Creature &)
 
 void HomeMovementGenerator<Creature>::_setTargetLocation(Creature & owner)
 {
-    if (owner.hasUnitState(UNIT_STAT_NOT_MOVE))
+    if (owner.HasUnitState(UNIT_STAT_NOT_MOVE))
         return;
 
     Movement::MoveSplineInit init(owner);
@@ -57,7 +57,7 @@ void HomeMovementGenerator<Creature>::_setTargetLocation(Creature & owner)
     init.Launch();
 
     arrived = false;
-    owner.clearUnitState(UNIT_STAT_ALL_STATE);
+    owner.ClearUnitState(UNIT_STAT_ALL_STATE);
 }
 
 bool HomeMovementGenerator<Creature>::Update(Creature &owner, const uint32& time_diff)
@@ -68,7 +68,7 @@ bool HomeMovementGenerator<Creature>::Update(Creature &owner, const uint32& time
 
 void HomeMovementGenerator<Creature>::Finalize(Creature& owner)
 {
-    owner.clearUnitState(UNIT_STAT_IGNORE_ATTACKERS);
+    owner.ClearUnitState(UNIT_STAT_IGNORE_ATTACKERS);
 
     if (arrived)
     {

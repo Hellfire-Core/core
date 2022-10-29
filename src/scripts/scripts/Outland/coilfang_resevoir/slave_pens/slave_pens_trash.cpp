@@ -59,7 +59,7 @@ struct mob_coilfang_slavehandlerAI : public ScriptedAI
         {
             if ((*itr)->GetFormation() == me->GetFormation())
             {
-                if ((*itr)->isAlive())
+                if ((*itr)->IsAlive())
                 {
                     (*itr)->RemoveAllAuras();
                     (*itr)->DeleteThreatList();
@@ -83,7 +83,7 @@ struct mob_coilfang_slavehandlerAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!me->isInCombat())
+        if(!me->IsInCombat())
             if (yelltimer.Expired(diff))
             {
                 me->Yell(RAND(YELL_OOC1,YELL_OOC2,YELL_OOC3,YELL_OOC4,YELL_OOC5,YELL_OOC6),0,0);
@@ -153,7 +153,7 @@ struct npc_coilfang_slavemasterAI : public ScriptedAI
         {
             if ((*itr)->GetFormation() == me->GetFormation())
             {
-                if ((*itr)->isAlive())
+                if ((*itr)->IsAlive())
                 {
                     (*itr)->RemoveAllAuras();
                     (*itr)->DeleteThreatList();
@@ -172,7 +172,7 @@ struct npc_coilfang_slavemasterAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!me->isInCombat())
+        if(!me->IsInCombat())
             if (yelltimer.Expired(diff))
             {
                 me->Yell(RAND(YELL_OOC1,YELL_OOC2,YELL_OOC3,YELL_OOC4,YELL_OOC5,YELL_OOC6),0,0);

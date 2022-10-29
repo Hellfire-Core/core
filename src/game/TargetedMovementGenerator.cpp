@@ -90,7 +90,7 @@ void TargetedMovementGeneratorMedium<T,D>::_setTargetLocation(T &owner)
         _path = new PathFinder(&owner);
 
     // allow pets following their master to cheat while generating paths
-    bool forceDest = (owner.GetObjectGuid().IsPet() && owner.hasUnitState(UNIT_STAT_FOLLOW));
+    bool forceDest = (owner.GetObjectGuid().IsPet() && owner.HasUnitState(UNIT_STAT_FOLLOW));
     bool result = _path->calculate(x, y, z, forceDest);
     //if (!result || _path->getPathType() & PATHFIND_NOPATH)
     //    return;
@@ -141,7 +141,7 @@ bool TargetedMovementGeneratorMedium<T,D>::Update(T &owner, const uint32 & time_
     if (!_target.isValid() || !_target->IsInWorld())
         return false;
 
-    if (!owner.isAlive())
+    if (!owner.IsAlive())
         return true;
 
     // prevent crash after creature killed pet
@@ -173,8 +173,19 @@ bool TargetedMovementGeneratorMedium<T,D>::Update(T &owner, const uint32 & time_
 
     if (owner.IsStopped())
     {
-        if (_angle == 0.f && !owner.HasInArc(0.01f, _target.getTarget()))
-            owner.SetInFront(_target.getTarget());
+        if (this->GetMovementGeneratorType() == CHASE_MOTION_TYPE)
+        {
+            if (owner.IsCreature())
+            {
+                if (!owner.HasInArc(0.01f, _target.getTarget()))
+                    owner.SetInFront(_target.getTarget());
+            }
+            else
+            {
+                if (!owner.HasInArc(M_PI_F / 2.0f, _target.getTarget()))
+                    owner.SetFacingTo(owner.GetAngle(_target.getTarget()));
+            }  
+        }
 
         if (!_targetReached)
         {
@@ -242,7 +253,7 @@ template<class T>
 void ChaseMovementGenerator<T>::Interrupt(T &owner)
 {
     owner.StopMoving();
-    owner.clearUnitState(UNIT_STAT_CHASE);
+    owner.ClearUnitState(UNIT_STAT_CHASE);
 }
 
 template<class T>
@@ -325,7 +336,7 @@ void FollowMovementGenerator<T>::Interrupt(T &owner)
 {
     owner.StopMoving();
 
-    owner.clearUnitState(UNIT_STAT_FOLLOW);
+    owner.ClearUnitState(UNIT_STAT_FOLLOW);
     _updateSpeed(owner);
 }
 

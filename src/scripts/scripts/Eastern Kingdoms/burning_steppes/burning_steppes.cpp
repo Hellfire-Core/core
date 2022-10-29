@@ -209,7 +209,7 @@ struct mob_broodlingessenceAI : public ScriptedAI
 
         if (Fireball_Timer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(),SPELL_FIREBALL);
+            DoCast(m_creature->GetVictim(),SPELL_FIREBALL);
             Fireball_Timer = 10000;
         }
         

@@ -97,7 +97,7 @@ struct mobs_nether_drakeAI : public ScriptedAI
 
         if (me->GetEntry() == ENTRY_NIHIL)
         {
-            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
             IsNihil = true;
         }
 
@@ -199,15 +199,15 @@ struct mobs_nether_drakeAI : public ScriptedAI
 
         if (IntangiblePresence_Timer.Expired(diff))
         {
-            DoCast(me->getVictim(),SPELL_INTANGIBLE_PRESENCE);
+            DoCast(me->GetVictim(),SPELL_INTANGIBLE_PRESENCE);
             IntangiblePresence_Timer = 15000+rand()%15000;
         }
 
 
         if (ManaBurn_Timer.Expired(diff))
         {
-            Unit* target = me->getVictim();
-            if (target && target->getPowerType() == POWER_MANA)
+            Unit* target = me->GetVictim();
+            if (target && target->GetPowerType() == POWER_MANA)
                 DoCast(target,SPELL_MANA_BURN);
             ManaBurn_Timer = 8000+rand()%8000;
         }
@@ -215,7 +215,7 @@ struct mobs_nether_drakeAI : public ScriptedAI
 
         if (ArcaneBlast_Timer.Expired(diff))
         {
-            DoCast(me->getVictim(),SPELL_ARCANE_BLAST);
+            DoCast(me->GetVictim(),SPELL_ARCANE_BLAST);
             ArcaneBlast_Timer = 2500+rand()%5000;
         }
         
@@ -412,10 +412,10 @@ struct npc_ogre_bruteAI : public ScriptedAI
         me->HandleEmoteCommand(7);
         me->SetReactState(REACT_AGGRESSIVE);
 
-        if (!me->getVictim())
+        if (!me->GetVictim())
             me->GetMotionMaster()->MoveTargetedHome();
         else
-            me->GetMotionMaster()->MoveChase(me->getVictim());
+            me->GetMotionMaster()->MoveChase(me->GetVictim());
     }
 
     void UpdateAI(const uint32 diff)
@@ -729,7 +729,7 @@ bool GOUse_go_thunderspike(Player* player, GameObject* go)
         // to prevent spawn spam :)
         if (Creature* pGor = GetClosestCreatureWithEntry(player, GOR_GRIMGUT_ENTRY, 50.0f))
         {
-            if (!pGor->getVictim() && pGor->isAlive())
+            if (!pGor->GetVictim() && pGor->IsAlive())
                 pGor->AI()->AttackStart(player);
 
             return false;
@@ -1231,7 +1231,7 @@ struct npc_simon_bunnyAI : public ScriptedAI
     {
         if (Player* player = me->GetPlayer(playerGUID))
         {
-            if (player->isDead())
+            if (player->IsDead())
                 return false;
 
             if (player->GetDistance2d(me) >= 2.0f*searchDistance)
@@ -1530,14 +1530,14 @@ struct npc_razaani_raiderAI : public ScriptedAI
 
         if (FlareTimer.Expired(diff))
         {
-            DoCast (me->getVictim(), SPELL_FLARE);
+            DoCast (me->GetVictim(), SPELL_FLARE);
             FlareTimer = urand(9000, 14000);
         }
 
 
         if (WarpTimer.Expired(diff))
         {
-            DoCast(me->getVictim(), SPELL_WARP);
+            DoCast(me->GetVictim(), SPELL_WARP);
             WarpTimer = urand(14000, 18000);
         }
 
@@ -1997,7 +1997,7 @@ struct npc_cannon_targetAI : public ScriptedAI
             {
                 if (Creature* cannon = me->GetCreature(CannonGUID))
                 {
-                    if (cannon->isDead())
+                    if (cannon->IsDead())
                         Reset();
                 }
 
@@ -2619,7 +2619,7 @@ struct npc_bashir_landingAI : public ScriptedAI
                     {
                         if (Creature* attacker = tmpMap->GetCreature((*itr)))
                         {
-                            if (attacker->isAlive())
+                            if (attacker->IsAlive())
                             {
                                 alive = true;
                                 break;
@@ -2638,7 +2638,7 @@ struct npc_bashir_landingAI : public ScriptedAI
 
                  if (Creature* Aether = me->GetCreature(AetherGUID))
                  {
-                     if (Aether->isAlive())
+                     if (Aether->IsAlive())
                          return;
                      else EventFail();
                  }

@@ -472,7 +472,7 @@ struct instance_serpentshrine_cavern : public ScriptedInstance
             {
                 if(Player* pPlayer = i->getSource())
                 {
-                    if (pPlayer->isAlive() && pPlayer->IsInWater())
+                    if (pPlayer->IsAlive() && pPlayer->IsInWater())
                     {
                         PlayerInWater = true;
                         if (Water == WATERSTATE_SCALDING)
@@ -491,7 +491,7 @@ struct instance_serpentshrine_cavern : public ScriptedInstance
                         else if (Water == WATERSTATE_FRENZY)
                         {
                             //spawn frenzy
-                            if (DoSpawnFrenzy && !pPlayer->isGameMaster())
+                            if (DoSpawnFrenzy && !pPlayer->IsGameMaster())
                             {
                                if (Creature* frenzy = pPlayer->SummonCreature(MOB_COILFANG_FRENZY,pPlayer->GetPositionX(),pPlayer->GetPositionY(),pPlayer->GetPositionZ(),pPlayer->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT,5000))
                                   frenzy->AI()->AttackStart(pPlayer);

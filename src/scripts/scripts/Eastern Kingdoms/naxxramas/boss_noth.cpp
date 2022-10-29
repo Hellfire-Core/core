@@ -138,7 +138,7 @@ struct boss_nothAI : public BossAI
         BossAI::SummonedCreatureDespawn(summoned);
 
         // if all summons was killed we should teleport back
-        if (checkSummons && m_creature->isAlive() && events.GetPhase() == NOTH_PHASE_BALCONY && summons.empty())
+        if (checkSummons && m_creature->IsAlive() && events.GetPhase() == NOTH_PHASE_BALCONY && summons.empty())
             events.RescheduleEvent(EVENT_TELEPORT_BACK, 1000, 0, NOTH_PHASE_BALCONY);
     }
 
@@ -218,7 +218,7 @@ struct boss_nothAI : public BossAI
                     m_creature->NearTeleportTo(BALCONY_LOC);
                     events.ScheduleEvent(EVENT_SUMMON_1, 2000, 0, NOTH_PHASE_BALCONY);
                     events.SetPhase(NOTH_PHASE_BALCONY);
-                    m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                    m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                     m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
 
                     ++tpCount;
@@ -247,7 +247,7 @@ struct boss_nothAI : public BossAI
                     events.SetPhase(NOTH_PHASE_NORMAL);
                     checkSummons = false;
 
-                    m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                    m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                     m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                     break;
                 }

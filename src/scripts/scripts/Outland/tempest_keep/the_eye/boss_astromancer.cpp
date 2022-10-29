@@ -251,7 +251,7 @@ struct boss_high_astromancer_solarianAI : public ScriptedAI
             {
                 if(BlindingLight)
                 {
-                    DoCast(m_creature->getVictim(), SPELL_BLINDING_LIGHT);
+                    DoCast(m_creature->GetVictim(), SPELL_BLINDING_LIGHT);
                     BlindingLight = false;
                 }
                 else
@@ -259,7 +259,7 @@ struct boss_high_astromancer_solarianAI : public ScriptedAI
                     Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_ARCANE_MISSILES), true);
 
                     if(!m_creature->HasInArc(2.5f, target))
-                        target = m_creature->getVictim();
+                        target = m_creature->GetVictim();
 
                     if(target)
                     {
@@ -272,7 +272,7 @@ struct boss_high_astromancer_solarianAI : public ScriptedAI
 
             if(MarkOfTheSolarian_Timer.Expired(diff))
             {
-                DoCast(m_creature->getVictim(), MARK_OF_SOLARIAN);
+                DoCast(m_creature->GetVictim(), MARK_OF_SOLARIAN);
                 MarkOfTheSolarian_Timer = 45000;
             }
 
@@ -283,7 +283,7 @@ struct boss_high_astromancer_solarianAI : public ScriptedAI
                 if(target)
                     DoCast(target, SPELL_MARK_OF_THE_ASTROMANCER);
                 else
-                    DoCast(m_creature->getVictim(), SPELL_MARK_OF_THE_ASTROMANCER);
+                    DoCast(m_creature->GetVictim(), SPELL_MARK_OF_THE_ASTROMANCER);
 
                 MarkOfTheAstromancer_Timer = 15000;
             }
@@ -383,14 +383,14 @@ struct boss_high_astromancer_solarianAI : public ScriptedAI
             //Fear_Timer
             if (Fear_Timer.Expired(diff))
             {
-                DoCast(m_creature->getVictim(), SPELL_FEAR);
+                DoCast(m_creature->GetVictim(), SPELL_FEAR);
                 Fear_Timer = 20000;
             }
 
             //VoidBolt_Timer
             if (VoidBolt_Timer.Expired(diff))
             {
-                DoCast(m_creature->getVictim(), SPELL_VOID_BOLT);
+                DoCast(m_creature->GetVictim(), SPELL_VOID_BOLT);
                 VoidBolt_Timer = 10000;
             }
         }
@@ -458,13 +458,13 @@ struct mob_solarium_priestAI : public ScriptedAI
 
         if (holysmiteTimer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(), SOLARIUM_SMITE);
+            DoCast(m_creature->GetVictim(), SOLARIUM_SMITE);
             holysmiteTimer = 4000;
         }
 
         if (aoesilenceTimer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(), SOLARIUM_SILENCE);
+            DoCast(m_creature->GetVictim(), SOLARIUM_SILENCE);
             aoesilenceTimer = 13000;
         }
 

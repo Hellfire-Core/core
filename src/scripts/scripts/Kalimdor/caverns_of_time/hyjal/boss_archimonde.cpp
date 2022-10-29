@@ -99,7 +99,7 @@ struct mob_ancient_wispAI : public ScriptedAI
         {
             if (Unit* pArchimonde = Unit::GetUnit((*me), pInstance->GetData64(DATA_ARCHIMONDE)))
             {
-                if (pArchimonde->isAlive())
+                if (pArchimonde->IsAlive())
                     DoCast(pArchimonde, SPELL_ANCIENT_SPARK);
                 else
                     EnterEvadeMode();
@@ -140,7 +140,7 @@ struct mob_doomfire_targettingAI : public NullCreatureAI
             return NULL;
 
         Unit* Archi = pInstance->GetCreature(pInstance->GetData64(DATA_ARCHIMONDE));
-        if(!Archi || !Archi->isAlive())
+        if(!Archi || !Archi->IsAlive())
             return NULL;
 
         Map::PlayerList const &PlayerList = map->GetPlayers();
@@ -151,7 +151,7 @@ struct mob_doomfire_targettingAI : public NullCreatureAI
         {
             if (Player* pl = i->getSource())
             {
-                if (pl->isGameMaster()) // omit GMs
+                if (pl->IsGameMaster()) // omit GMs
                     continue;
                 if (pl->IsWithinDistInMap(me, mindist) || me->GetDistance(pl) > maxdist)
                     continue;
@@ -166,7 +166,7 @@ struct mob_doomfire_targettingAI : public NullCreatureAI
     uint32 ChangeWaypointAndTimer()
     {
         Unit* Archi = pInstance->GetCreature(pInstance->GetData64(DATA_ARCHIMONDE));
-        if(!Archi || !Archi->isAlive())
+        if(!Archi || !Archi->IsAlive())
             return 0;
 
         //1. select victim at proper distance, and not in Archimonde proximity
@@ -211,7 +211,7 @@ struct mob_doomfire_targettingAI : public NullCreatureAI
         if (SummonTimer.Expired(diff))
         {
             Unit* pArchimonde = pInstance->GetCreature(pInstance->GetData64(DATA_ARCHIMONDE));
-            if (pArchimonde && pArchimonde->isAlive())
+            if (pArchimonde && pArchimonde->IsAlive())
             {
                 if (me->GetMotionMaster()->GetCurrentMovementGeneratorType() == IDLE_MOTION_TYPE)
                 {
@@ -231,7 +231,7 @@ struct mob_doomfire_targettingAI : public NullCreatureAI
         {
             /*
             Unit* pArchimonde = pInstance->GetCreature(pInstance->GetData64(DATA_ARCHIMONDE));
-            if (pArchimonde && pArchimonde->isAlive())
+            if (pArchimonde && pArchimonde->IsAlive())
             {
             float angle = me->GetAngle(pArchimonde);
             Position dest;
@@ -374,7 +374,7 @@ struct boss_archimondeAI : public hyjal_trashAI
 
     void MoveInLineOfSight(Unit *who)
     {
-        if (!me->isInCombat() && me->IsWithinDistInMap(who, 50) && me->IsHostileTo(who))
+        if (!me->IsInCombat() && me->IsWithinDistInMap(who, 50) && me->IsHostileTo(who))
             me->AI()->AttackStart(who);
     }
 
@@ -394,15 +394,15 @@ struct boss_archimondeAI : public hyjal_trashAI
 
     bool CanUseFingerOfDeath()
     {
-        if (!me->getVictim())
+        if (!me->GetVictim())
             return true;
 
-        if (me->IsWithinDistInMap(me->getVictim(), 5.0))
+        if (me->IsWithinDistInMap(me->GetVictim(), 5.0))
             return false;
 
-        if (Unit *target = me->SelectNearestTarget(me->GetAttackDistance(me->getVictim())))
+        if (Unit *target = me->SelectNearestTarget(me->GetAttackDistance(me->GetVictim())))
         {
-            me->AddThreat(target, DoGetThreat(me->getVictim()));
+            me->AddThreat(target, DoGetThreat(me->GetVictim()));
             return false;
         }
 
@@ -422,7 +422,7 @@ struct boss_archimondeAI : public hyjal_trashAI
         if (Creature* pDoomfire = me->SummonCreature(CREATURE_DOOMFIRE_TARGETING, dest.x, dest.y, dest.z, 0.0f, TEMPSUMMON_TIMED_DESPAWN, 60000))
         {
             pDoomfire->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-            pDoomfire->SetLevel(me->getLevel());
+            pDoomfire->SetLevel(me->GetLevel());
             pDoomfire->setFaction(me->getFaction());
             pDoomfire->CastSpell(pDoomfire, SPELL_DOOMFIRE_SPAWN, true);
 
@@ -434,7 +434,7 @@ struct boss_archimondeAI : public hyjal_trashAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (!me->isInCombat())
+        if (!me->IsInCombat())
         {
             if (pInstance)
             {
@@ -527,7 +527,7 @@ struct boss_archimondeAI : public hyjal_trashAI
                 me->GetMotionMaster()->Clear(false);
                 me->GetMotionMaster()->MoveIdle();
                 //all members of raid must get this buff
-                ForceSpellCast(me->getVictim(), SPELL_PROTECTION_OF_ELUNE, INTERRUPT_AND_CAST_INSTANTLY);
+                ForceSpellCast(me->GetVictim(), SPELL_PROTECTION_OF_ELUNE, INTERRUPT_AND_CAST_INSTANTLY);
                 HasProtected = true;
                 Enraged = true;
             }

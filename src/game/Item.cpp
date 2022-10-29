@@ -479,6 +479,221 @@ Player* Item::GetOwner()const
     return sObjectMgr.GetPlayer(GetOwnerGUID());
 }
 
+void ItemPrototype::GetAllowedEquipSlots(uint8 slots[4], uint8 classId, bool canDualWield) const
+{
+    slots[0] = NULL_SLOT;
+    slots[1] = NULL_SLOT;
+    slots[2] = NULL_SLOT;
+    slots[3] = NULL_SLOT;
+    switch (InventoryType)
+    {
+        case INVTYPE_HEAD:
+            slots[0] = EQUIPMENT_SLOT_HEAD;
+            break;
+        case INVTYPE_NECK:
+            slots[0] = EQUIPMENT_SLOT_NECK;
+            break;
+        case INVTYPE_SHOULDERS:
+            slots[0] = EQUIPMENT_SLOT_SHOULDERS;
+            break;
+        case INVTYPE_BODY:
+            slots[0] = EQUIPMENT_SLOT_BODY;
+            break;
+        case INVTYPE_CHEST:
+            slots[0] = EQUIPMENT_SLOT_CHEST;
+            break;
+        case INVTYPE_ROBE:
+            slots[0] = EQUIPMENT_SLOT_CHEST;
+            break;
+        case INVTYPE_WAIST:
+            slots[0] = EQUIPMENT_SLOT_WAIST;
+            break;
+        case INVTYPE_LEGS:
+            slots[0] = EQUIPMENT_SLOT_LEGS;
+            break;
+        case INVTYPE_FEET:
+            slots[0] = EQUIPMENT_SLOT_FEET;
+            break;
+        case INVTYPE_WRISTS:
+            slots[0] = EQUIPMENT_SLOT_WRISTS;
+            break;
+        case INVTYPE_HANDS:
+            slots[0] = EQUIPMENT_SLOT_HANDS;
+            break;
+        case INVTYPE_FINGER:
+            slots[0] = EQUIPMENT_SLOT_FINGER1;
+            slots[1] = EQUIPMENT_SLOT_FINGER2;
+            break;
+        case INVTYPE_TRINKET:
+            slots[0] = EQUIPMENT_SLOT_TRINKET1;
+            slots[1] = EQUIPMENT_SLOT_TRINKET2;
+            break;
+        case INVTYPE_CLOAK:
+            slots[0] =  EQUIPMENT_SLOT_BACK;
+            break;
+        case INVTYPE_WEAPON:
+        {
+            slots[0] = EQUIPMENT_SLOT_MAINHAND;
+
+            // suggest offhand slot only if know dual wielding
+            // (this will be replace mainhand weapon at auto equip instead unwonted "you don't known dual wielding" ...
+            if (canDualWield)
+                slots[1] = EQUIPMENT_SLOT_OFFHAND;
+            break;
+        };
+        case INVTYPE_SHIELD:
+            slots[0] = EQUIPMENT_SLOT_OFFHAND;
+            break;
+        case INVTYPE_RANGED:
+            slots[0] = EQUIPMENT_SLOT_RANGED;
+            break;
+        case INVTYPE_2HWEAPON:
+            slots[0] = EQUIPMENT_SLOT_MAINHAND;
+            break;
+        case INVTYPE_TABARD:
+            slots[0] = EQUIPMENT_SLOT_TABARD;
+            break;
+        case INVTYPE_WEAPONMAINHAND:
+            slots[0] = EQUIPMENT_SLOT_MAINHAND;
+            break;
+        case INVTYPE_WEAPONOFFHAND:
+            slots[0] = EQUIPMENT_SLOT_OFFHAND;
+            break;
+        case INVTYPE_HOLDABLE:
+            slots[0] = EQUIPMENT_SLOT_OFFHAND;
+            break;
+        case INVTYPE_THROWN:
+            slots[0] = EQUIPMENT_SLOT_RANGED;
+            break;
+        case INVTYPE_RANGEDRIGHT:
+            slots[0] = EQUIPMENT_SLOT_RANGED;
+            break;
+        case INVTYPE_BAG:
+            slots[0] = INVENTORY_SLOT_BAG_START + 0;
+            slots[1] = INVENTORY_SLOT_BAG_START + 1;
+            slots[2] = INVENTORY_SLOT_BAG_START + 2;
+            slots[3] = INVENTORY_SLOT_BAG_START + 3;
+            break;
+        case INVTYPE_RELIC:
+        {
+            switch (SubClass)
+            {
+                case ITEM_SUBCLASS_ARMOR_LIBRAM:
+                    if (classId == CLASS_PALADIN)
+                        slots[0] = EQUIPMENT_SLOT_RANGED;
+                    break;
+                case ITEM_SUBCLASS_ARMOR_IDOL:
+                    if (classId == CLASS_DRUID)
+                        slots[0] = EQUIPMENT_SLOT_RANGED;
+                    break;
+                case ITEM_SUBCLASS_ARMOR_TOTEM:
+                    if (classId == CLASS_SHAMAN)
+                        slots[0] = EQUIPMENT_SLOT_RANGED;
+                    break;
+                case ITEM_SUBCLASS_ARMOR_MISC:
+                    if (classId == CLASS_WARLOCK)
+                        slots[0] = EQUIPMENT_SLOT_RANGED;
+                    break;
+            }
+            break;
+        }
+    }
+}
+
+uint32 ItemPrototype::GetProficiencySkill() const
+{
+    static uint32 const item_weapon_skills[MAX_ITEM_SUBCLASS_WEAPON] =
+    {
+        SKILL_AXES,     SKILL_2H_AXES,  SKILL_BOWS,          SKILL_GUNS,      SKILL_MACES,
+        SKILL_2H_MACES, SKILL_POLEARMS, SKILL_SWORDS,        SKILL_2H_SWORDS, 0,
+        SKILL_STAVES,   0,              0,                   SKILL_UNARMED,   0,
+        SKILL_DAGGERS,  SKILL_THROWN,   SKILL_ASSASSINATION, SKILL_CROSSBOWS, SKILL_WANDS,
+        SKILL_FISHING
+    };
+
+    static uint32 const item_armor_skills[MAX_ITEM_SUBCLASS_ARMOR] =
+    {
+        0, SKILL_CLOTH, SKILL_LEATHER, SKILL_MAIL, SKILL_PLATE_MAIL, 0, SKILL_SHIELD, 0, 0, 0
+    };
+
+    switch (Class)
+    {
+        case ITEM_CLASS_WEAPON:
+            if (SubClass >= MAX_ITEM_SUBCLASS_WEAPON)
+                return 0;
+            else
+                return item_weapon_skills[SubClass];
+
+        case ITEM_CLASS_ARMOR:
+            if (SubClass >= MAX_ITEM_SUBCLASS_ARMOR)
+                return 0;
+            else
+                return item_armor_skills[SubClass];
+
+        default:
+            return 0;
+    }
+}
+
+uint32 ItemPrototype::GetProficiencySpell() const
+{
+    switch (Class)
+    {
+        case ITEM_CLASS_WEAPON:
+            switch (SubClass)
+            {
+                case ITEM_SUBCLASS_WEAPON_AXE:
+                    return  196;
+                case ITEM_SUBCLASS_WEAPON_AXE2:
+                    return  197;
+                case ITEM_SUBCLASS_WEAPON_BOW:
+                    return  264;
+                case ITEM_SUBCLASS_WEAPON_GUN:
+                    return  266;
+                case ITEM_SUBCLASS_WEAPON_MACE:
+                    return  198;
+                case ITEM_SUBCLASS_WEAPON_MACE2:
+                    return  199;
+                case ITEM_SUBCLASS_WEAPON_POLEARM:
+                    return  200;
+                case ITEM_SUBCLASS_WEAPON_SWORD:
+                    return  201;
+                case ITEM_SUBCLASS_WEAPON_SWORD2:
+                    return  202;
+                case ITEM_SUBCLASS_WEAPON_STAFF:
+                    return  227;
+                case ITEM_SUBCLASS_WEAPON_DAGGER:
+                    return 1180;
+                case ITEM_SUBCLASS_WEAPON_THROWN:
+                    return 2567;
+                case ITEM_SUBCLASS_WEAPON_SPEAR:
+                    return 3386;
+                case ITEM_SUBCLASS_WEAPON_CROSSBOW:
+                    return 5011;
+                case ITEM_SUBCLASS_WEAPON_WAND:
+                    return 5009;
+            }
+            return 0;
+        case ITEM_CLASS_ARMOR:
+            switch (SubClass)
+            {
+                case ITEM_SUBCLASS_ARMOR_CLOTH:
+                    return 9078;
+                case ITEM_SUBCLASS_ARMOR_LEATHER:
+                    return 9077;
+                case ITEM_SUBCLASS_ARMOR_MAIL:
+                    return 8737;
+                case ITEM_SUBCLASS_ARMOR_PLATE:
+                    return  750;
+                case ITEM_SUBCLASS_ARMOR_SHIELD:
+                    return 9116;
+                default:
+                    return 0;
+            }
+    }
+    return 0;
+}
+
 int32 Item::GenerateItemRandomPropertyId(uint32 item_id)
 {
     ItemPrototype const *itemProto = sItemStorage.LookupEntry<ItemPrototype>(item_id);

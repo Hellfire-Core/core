@@ -191,6 +191,7 @@ struct TimeTrackerSmall
 typedef ShortIntervalTimer Timer;
 // for single events
 typedef TimeTrackerSmall Countdown;
+typedef TimeTrackerSmall ShortTimeTracker;
 
 struct PeriodicTimer
 {

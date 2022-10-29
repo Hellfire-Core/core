@@ -73,21 +73,21 @@ struct boss_lucifronAI : public ScriptedAI
         ImpendingDoom_Timer -= diff; 
         if (ImpendingDoom_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_IMPENDINGDOOM);
+            DoCast(m_creature->GetVictim(),SPELL_IMPENDINGDOOM);
             ImpendingDoom_Timer += 20000;
         }
 
         LucifronCurse_Timer -= diff;
         if (LucifronCurse_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_LUCIFRONCURSE);
+            DoCast(m_creature->GetVictim(),SPELL_LUCIFRONCURSE);
             LucifronCurse_Timer += 15000;
         }
 
         ShadowShock_Timer -= diff;
         if (ShadowShock_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_SHADOWSHOCK);
+            DoCast(m_creature->GetVictim(),SPELL_SHADOWSHOCK);
             ShadowShock_Timer += 6000;
         }
 

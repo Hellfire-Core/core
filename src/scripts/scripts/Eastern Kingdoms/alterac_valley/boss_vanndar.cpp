@@ -90,7 +90,7 @@ struct boss_vanndarAI : public ScriptedAI
                             return;
 
                         Creature * c = me->GetMap()->GetCreatureById(a);
-                        if (c && c->isAlive() && c->IsAIEnabled && c->AI())
+                        if (c && c->IsAlive() && c->IsAIEnabled && c->AI())
                             c->AI()->AttackStart(who);
                   });
     }
@@ -103,7 +103,7 @@ struct boss_vanndarAI : public ScriptedAI
 
     void EnterEvadeMode()
     {
-        if (!me->isInCombat() || me->IsInEvadeMode())
+        if (!me->IsInCombat() || me->IsInEvadeMode())
             return;
 
         CreatureAI::EnterEvadeMode();
@@ -141,7 +141,7 @@ struct boss_vanndarAI : public ScriptedAI
         
         if (AvatarTimer.Expired(diff))
         {
-            ForceSpellCast(m_creature->getVictim(), SPELL_AVATAR);
+            ForceSpellCast(m_creature->GetVictim(), SPELL_AVATAR);
             AvatarTimer = urand(15000, 20000);
         }
         
@@ -149,7 +149,7 @@ struct boss_vanndarAI : public ScriptedAI
             
         if (ThunderclapTimer.Expired(diff))
         {
-            AddSpellToCast(m_creature->getVictim(), SPELL_THUNDERCLAP);
+            AddSpellToCast(m_creature->GetVictim(), SPELL_THUNDERCLAP);
             ThunderclapTimer = urand(5000, 15000);
         }
             
@@ -217,7 +217,7 @@ struct boss_vanndarOfficerAI : public ScriptedAI
                             return;
 
                         Creature * c = me->GetMap()->GetCreatureById(a);
-                        if (c && c->isAlive() && c->IsAIEnabled && c->AI())
+                        if (c && c->IsAlive() && c->IsAIEnabled && c->AI())
                             c->AI()->AttackStart(who);
                   });
     }
@@ -229,7 +229,7 @@ struct boss_vanndarOfficerAI : public ScriptedAI
 
     void EnterEvadeMode()
     {
-        if (!me->isInCombat() || me->IsInEvadeMode())
+        if (!me->IsInCombat() || me->IsInEvadeMode())
             return;
 
         CreatureAI::EnterEvadeMode();
@@ -242,7 +242,7 @@ struct boss_vanndarOfficerAI : public ScriptedAI
                             return;
 
                         Creature * c = me->GetMap()->GetCreatureById(a);
-                        if (c && c->isInCombat() && c->IsAIEnabled && c->AI())
+                        if (c && c->IsInCombat() && c->IsAIEnabled && c->AI())
                             c->AI()->EnterEvadeMode();
                   });
     }

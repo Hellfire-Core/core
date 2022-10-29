@@ -160,7 +160,7 @@ struct npc_deaths_head_ward_keeperAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (!m_creature->isAlive())
+        if (!m_creature->IsAlive())
             return;
 
         if (pInstance)

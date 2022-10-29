@@ -50,7 +50,7 @@ class HELLGROUND_EXPORT UnitAI
         virtual void AttackStart(Unit *);
         virtual void UpdateAI(const uint32 diff) = 0;
 
-        virtual void InitializeAI() { if (!me->isDead()) Reset(); }
+        virtual void InitializeAI() { if (!me->IsDead()) Reset(); }
 
         virtual void Reset() {};
 

@@ -86,7 +86,7 @@ void VisibleChangesNotifier::Visit(CameraMapType& m)
 
 void DynamicObjectUpdater::VisitHelper(Unit* target)
 {
-    if (!target->isAlive() || target->IsTaxiFlying())
+    if (!target->IsAlive() || target->IsTaxiFlying())
         return;
 
     if (target->GetTypeId() == TYPEID_UNIT && ((Creature*)target)->isTotem())
@@ -96,7 +96,7 @@ void DynamicObjectUpdater::VisitHelper(Unit* target)
         return;
 
     //Check targets for not_selectable unit flag and remove
-    if (target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE))
+    if (target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING | UNIT_FLAG_NOT_SELECTABLE))
         return;
 
     // Evade target
@@ -104,7 +104,7 @@ void DynamicObjectUpdater::VisitHelper(Unit* target)
         return;
 
     //Check player targets and remove if in GM mode or GM invisibility (for not self casting case)
-    if (target->GetTypeId() == TYPEID_PLAYER && target != i_check && (((Player*)target)->isGameMaster() || ((Player*)target)->GetVisibility() == VISIBILITY_OFF))
+    if (target->GetTypeId() == TYPEID_PLAYER && target != i_check && (((Player*)target)->IsGameMaster() || ((Player*)target)->GetVisibility() == VISIBILITY_OFF))
         return;
 
     if (i_dynobject.IsAffecting(target))
@@ -243,7 +243,7 @@ bool AnyUnfriendlyUnitInObjectRangeCheck::operator()(Unit* u)
         !u->canDetectInvisibilityOf(i_unit))
         return false;
 
-    if (u->isAlive() && i_unit->IsWithinDistInMap(u, i_range) && !i_unit->IsFriendlyTo(u))
+    if (u->IsAlive() && i_obj->IsWithinDistInMap(u, i_range) && !i_unit->IsFriendlyTo(u))
         return true;
     else
         return false;
@@ -260,11 +260,11 @@ bool AnyUnfriendlyUnitInPetAttackRangeCheck::operator()(Unit* u)
         !u->canDetectInvisibilityOf(i_unit))
         return false;
 
-    float dist = 20.0f + i_unit->getLevel() - u->getLevel();
+    float dist = 20.0f + i_unit->GetLevel() - u->GetLevel();
     if (dist < 5.0f) dist = 5.0f;
     if (dist > 30.0f) dist = 30.0f;
 
-    if (u->isAlive() && i_unit->IsWithinDistInMap(u, dist) && !i_unit->IsFriendlyTo(u))
+    if (u->IsAlive() && i_unit->IsWithinDistInMap(u, dist) && !i_unit->IsFriendlyTo(u))
         return true;
     else
         return false;

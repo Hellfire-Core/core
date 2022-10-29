@@ -788,7 +788,7 @@ struct npc_anachronos_the_ancientAI : public ScriptedAI
         PlayerGUID = 0;
         eventEnd = false;
 
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
     }
 
     void HandleAnimation()
@@ -1294,7 +1294,7 @@ struct npc_anachronos_quest_triggerAI : public ScriptedAI
                 }
                 ++GroupMemberCount;
 
-                if (GroupMember->isDead())
+                if (GroupMember->IsDead())
                     ++DeadMemberCount;
             }
 

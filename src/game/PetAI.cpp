@@ -46,14 +46,14 @@ int PetAI::Permissible(const Creature *creature)
 void PetAI::ForcedAttackStart(Unit* target)
 {
     forced_attack = true;
-    if (me->Attack(target, true) && !me->hasUnitState(UNIT_STAT_LOST_CONTROL))
+    if (me->Attack(target, true) && !me->HasUnitState(UNIT_STAT_LOST_CONTROL))
         me->GetMotionMaster()->MoveChase(target);
 }
 
 void PetAI::AttackStart(Unit* target)
 {
     forced_attack = false; // on change not by owners order we stop forced attacks
-    if (me->Attack(target, true) && !me->hasUnitState(UNIT_STAT_LOST_CONTROL))
+    if (me->Attack(target, true) && !me->HasUnitState(UNIT_STAT_LOST_CONTROL))
         me->GetMotionMaster()->MoveChase(target);
 }
 
@@ -100,18 +100,18 @@ void PetAI::ownerOrMeAttackedBy(uint64 enemy)
 bool PetAI::_needToStop()
 {
     // This is needed for charmed creatures, as once their target was reset other effects can trigger threat
-    if (me->isCharmed() && me->getVictim() == me->GetCharmer())
+    if (me->isCharmed() && me->GetVictim() == me->GetCharmer())
         return true;
 
     // also pet should stop attacking if his target of his owner is in sanctuary (applies only to player and player-pets targets)
-    if (me->GetOwner() && me->GetOwner()->isInSanctuary() && me->getVictim()->GetCharmerOrOwnerPlayerOrPlayerItself())
+    if (me->GetOwner() && me->GetOwner()->isInSanctuary() && me->GetVictim()->GetCharmerOrOwnerPlayerOrPlayerItself())
         return true;
 
     // also should stop if cannot attack
-    if (!me->canAttack(me->getVictim()))
+    if (!me->canAttack(me->GetVictim()))
         return true;
 
-    if (targetHasInterruptableAura(me->getVictim()))
+    if (targetHasInterruptableAura(me->GetVictim()))
         return !forced_attack; // if owner explicitly told us to attack him then we do
 
     forced_attack = false; // if target even for a moment does not have interruptable aura stop forced state
@@ -120,7 +120,7 @@ bool PetAI::_needToStop()
 
 void PetAI::_stopAttack()
 {
-    if (!me->isAlive())
+    if (!me->IsAlive())
     {
         DEBUG_LOG("Creature stoped attacking cuz his dead [guid=%u]", me->GetGUIDLow());
 
@@ -153,7 +153,7 @@ void PetAI::PrepareSpellForAutocast(uint32 spellID)
     if (!spellInfo)
         return;
 
-    bool inCombat = me->getVictim();
+    bool inCombat = me->GetVictim();
 
     // ignore some combinations of combat state and combat/noncombat spells
     if (!inCombat)
@@ -173,9 +173,9 @@ void PetAI::PrepareSpellForAutocast(uint32 spellID)
     */
     Spell *spell = new Spell(me, spellInfo, false, 0);
 
-    if (inCombat && !me->hasUnitState(UNIT_STAT_FOLLOW) && spell->CanAutoCast(me->getVictim()))
+    if (inCombat && !me->HasUnitState(UNIT_STAT_FOLLOW) && spell->CanAutoCast(me->GetVictim()))
     {
-        m_targetSpellStore.push_back(std::make_pair/*<Unit*, Spell*>*/(me->getVictim(), spell));
+        m_targetSpellStore.push_back(std::make_pair/*<Unit*, Spell*>*/(me->GetVictim(), spell));
         return;
     }
     else
@@ -262,8 +262,8 @@ void PetAI::MovementInform(uint32 type, uint32 data)
     if (type != CHASE_MOTION_TYPE || data != 2) // target reached only
         return;
 
-    if (Unit *target = me->getVictim())
-        if (target->getVictim() && target->getVictim() != me && target->isInFront(me, 7.0f, M_PI))
+    if (Unit *target = me->GetVictim())
+        if (target->GetVictim() && target->GetVictim() != me && target->isInFront(me, 7.0f, M_PI))
         {
             float x, y, z;
             target->GetGroundPointAroundUnit(x, y, z, target->GetObjectSize(), M_PI);
@@ -278,13 +278,13 @@ void PetAI::UpdateAI(const uint32 diff)
     m_owner = me->GetCharmerOrOwner();
 
     // quest support - Razorthorn Ravager, switch to CreatureAI when charmed and not in combat
-    if (me->GetEntry() == 24922 && me->isCharmed() && !me->isInCombat())
+    if (me->GetEntry() == 24922 && me->isCharmed() && !me->IsInCombat())
         me->NeedChangeAI = true;
 
     if (updateAlliesTimer.Expired(diff))
         UpdateAllies();
 
-    if (me->getVictim())
+    if (me->GetVictim())
     {
         if (_needToStop())
         {
@@ -301,8 +301,8 @@ void PetAI::UpdateAI(const uint32 diff)
             TargetSelectHelper();
 
             // we still do NOT have target, if follow command were appliend and we are NOT followin or casting, reapply movegen :P
-            if (!me->getVictim() && me->GetCharmInfo()->HasCommandState(COMMAND_FOLLOW) &&
-                !me->hasUnitState(UNIT_STAT_FOLLOW | UNIT_STAT_CASTING))
+            if (!me->GetVictim() && me->GetCharmInfo()->HasCommandState(COMMAND_FOLLOW) &&
+                !me->HasUnitState(UNIT_STAT_FOLLOW | UNIT_STAT_CASTING))
                 me->GetMotionMaster()->MoveFollow(m_owner, PET_FOLLOW_DIST,PET_FOLLOW_ANGLE);
         }
     }
@@ -310,7 +310,7 @@ void PetAI::UpdateAI(const uint32 diff)
     if (!me->GetCharmInfo())
         return;
 
-    if (!me->hasUnitState(UNIT_STAT_CASTING))
+    if (!me->HasUnitState(UNIT_STAT_CASTING))
     {
         //Autocast
         for (uint8 i = 0; i < me->GetPetAutoSpellSize(); i++)
@@ -366,12 +366,12 @@ void PetAI::TargetSelectHelper()
     
     if (me->HasReactState(REACT_AGGRESSIVE))
     {
-        if (m_owner->getVictim() && !targetHasInterruptableAura(m_owner->getVictim()))
-            target = m_owner->getVictim();
-        else if (!m_owner->getAttackers().empty() && !targetHasInterruptableAura(m_owner->getAttackerForHelper()))
-            target = m_owner->getAttackerForHelper();
-        else if (!me->getAttackers().empty() && !targetHasInterruptableAura(me->getAttackerForHelper()))
-            target = me->getAttackerForHelper();
+        if (m_owner->GetVictim() && !targetHasInterruptableAura(m_owner->GetVictim()))
+            target = m_owner->GetVictim();
+        else if (!m_owner->GetAttackers().empty() && !targetHasInterruptableAura(m_owner->GetAttackerForHelper()))
+            target = m_owner->GetAttackerForHelper();
+        else if (!me->GetAttackers().empty() && !targetHasInterruptableAura(me->GetAttackerForHelper()))
+            target = me->GetAttackerForHelper();
         else
             target = FindValidTarget();
     }
@@ -380,9 +380,9 @@ void PetAI::TargetSelectHelper()
         for (std::set<uint64>::iterator itr = m_EnemySet.begin(); itr != m_EnemySet.end();)
         {
             Unit* possibletarget = m_creature->GetUnit(*itr);
-            if (!possibletarget || !m_creature->IsInRange(possibletarget,0,50) || !possibletarget->isInCombat()
-                /*(m_owner->getAttackers().find(possibletarget) == m_owner->getAttackers().end() &&
-                m_creature->getAttackers().find(possibletarget) == m_creature->getAttackers().end())*/)
+            if (!possibletarget || !m_creature->IsInRange(possibletarget,0,50) || !possibletarget->IsInCombat()
+                /*(m_owner->GetAttackers().find(possibletarget) == m_owner->GetAttackers().end() &&
+                m_creature->GetAttackers().find(possibletarget) == m_creature->GetAttackers().end())*/)
             { // remove if not found, too far away or already not in combat
                 itr = m_EnemySet.erase(itr);
                 continue;
@@ -451,7 +451,7 @@ void ImpAI::AttackStart(Unit *victim)
 
 void ImpAI::UpdateAI(const uint32 diff)
 {
-    if (!me->isAlive())
+    if (!me->IsAlive())
         return;
 
     m_owner = me->GetCharmerOrOwner();
@@ -459,8 +459,8 @@ void ImpAI::UpdateAI(const uint32 diff)
     if (updateAlliesTimer.Expired(diff))
         UpdateAllies();
 
-    // me->getVictim() can't be used for check in case stop fighting, me->getVictim() clear at Unit death etc.
-    if (Unit *target = me->getVictim())
+    // me->GetVictim() can't be used for check in case stop fighting, me->GetVictim() clear at Unit death etc.
+    if (Unit *target = me->GetVictim())
     {
         if (_needToStop())
         {
@@ -473,7 +473,7 @@ void ImpAI::UpdateAI(const uint32 diff)
             dist = 50;
         if (dist < 30 && m_chasing)
         {
-            me->clearUnitState(UNIT_STAT_FOLLOW);
+            me->ClearUnitState(UNIT_STAT_FOLLOW);
             me->GetMotionMaster()->StopControlledMovement();
             m_chasing = false;
         }
@@ -485,16 +485,16 @@ void ImpAI::UpdateAI(const uint32 diff)
     }
     else
     {
-        if (me->isInCombat())
+        if (me->IsInCombat())
         {
             if (!m_owner|| !m_owner->GetObjectGuid().IsPlayer())
                 _stopAttack();
         }
         else if (m_owner && me->GetCharmInfo()) //no victim
         {
-            if (m_owner->isInCombat() && !(me->HasReactState(REACT_PASSIVE) || me->GetCharmInfo()->HasCommandState(COMMAND_STAY)))
-                AttackStart(m_owner->getAttackerForHelper());
-            else if (me->GetCharmInfo()->HasCommandState(COMMAND_FOLLOW) && !me->hasUnitState(UNIT_STAT_FOLLOW))
+            if (m_owner->IsInCombat() && !(me->HasReactState(REACT_PASSIVE) || me->GetCharmInfo()->HasCommandState(COMMAND_STAY)))
+                AttackStart(m_owner->GetAttackerForHelper());
+            else if (me->GetCharmInfo()->HasCommandState(COMMAND_FOLLOW) && !me->HasUnitState(UNIT_STAT_FOLLOW))
                 me->GetMotionMaster()->MoveFollow(m_owner,PET_FOLLOW_DIST,PET_FOLLOW_ANGLE);
         }
     }
@@ -502,7 +502,7 @@ void ImpAI::UpdateAI(const uint32 diff)
     if (!me->GetCharmInfo())
         return;
 
-    if (!me->hasUnitState(UNIT_STAT_CASTING))
+    if (!me->HasUnitState(UNIT_STAT_CASTING))
     {
         //Autocast
         for (uint8 i = 0; i < me->GetPetAutoSpellSize(); i++)
@@ -512,7 +512,7 @@ void ImpAI::UpdateAI(const uint32 diff)
     }
 
     /*
-    if (!me->hasUnitState(UNIT_STAT_CASTING))
+    if (!me->HasUnitState(UNIT_STAT_CASTING))
         DoMeleeAttackIfReady();*/ // Imps should not have melee attacks. Leaving it here for the note
 }
 
@@ -532,7 +532,7 @@ void FelhunterAI::PrepareSpellForAutocast(uint32 spellID)
     if (sSpellMgr.GetFirstSpellInChain(spellID) == 19505) // Devour Magic
     {
         SpellEntry const *spellInfo = sSpellStore.LookupEntry(spellID);
-        Unit *target = me->getVictim();
+        Unit *target = me->GetVictim();
         if (!spellInfo || !target)
             return;
         Unit::AuraMap const& auras = target->GetAuras();
@@ -563,7 +563,7 @@ int WaterElementalAI::Permissible(const Creature *creature)
 
 void WaterElementalAI::UpdateAI(const uint32 diff)
 {
-    if (!me->isAlive())
+    if (!me->IsAlive())
         return;
 
     m_owner = me->GetCharmerOrOwner();
@@ -571,7 +571,7 @@ void WaterElementalAI::UpdateAI(const uint32 diff)
     if (updateAlliesTimer.Expired(diff))
         UpdateAllies();
 
-    if (Unit *target = me->getVictim())
+    if (Unit *target = me->GetVictim())
     {
         if (_needToStop())
         {
@@ -581,16 +581,16 @@ void WaterElementalAI::UpdateAI(const uint32 diff)
     }
     else
     {
-        if (me->isInCombat())
+        if (me->IsInCombat())
         {
             if (!m_owner || !m_owner->GetObjectGuid().IsPlayer())
                 _stopAttack();
         }
         else if (m_owner && me->GetCharmInfo())
         {
-            if (m_owner->isInCombat() && !(me->HasReactState(REACT_PASSIVE) || me->GetCharmInfo()->HasCommandState(COMMAND_STAY)))
-                AttackStart(m_owner->getAttackerForHelper());
-            else if (me->GetCharmInfo()->HasCommandState(COMMAND_FOLLOW) && !me->hasUnitState(UNIT_STAT_FOLLOW))
+            if (m_owner->IsInCombat() && !(me->HasReactState(REACT_PASSIVE) || me->GetCharmInfo()->HasCommandState(COMMAND_STAY)))
+                AttackStart(m_owner->GetAttackerForHelper());
+            else if (me->GetCharmInfo()->HasCommandState(COMMAND_FOLLOW) && !me->HasUnitState(UNIT_STAT_FOLLOW))
                 me->GetMotionMaster()->MoveFollow(m_owner, PET_FOLLOW_DIST, PET_FOLLOW_ANGLE);
         }
     }
@@ -598,7 +598,7 @@ void WaterElementalAI::UpdateAI(const uint32 diff)
     if (!me->GetCharmInfo())
         return;
 
-    if (!me->hasUnitState(UNIT_STAT_CASTING))
+    if (!me->HasUnitState(UNIT_STAT_CASTING))
     {
         for (uint8 i = 0; i < me->GetPetAutoSpellSize(); i++)
             PrepareSpellForAutocast(me->GetPetAutoSpellOnPos(i));

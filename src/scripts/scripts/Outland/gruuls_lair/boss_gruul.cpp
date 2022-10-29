@@ -169,7 +169,7 @@ struct boss_gruulAI : public ScriptedAI
             {
                 me->GetMotionMaster()->Clear();
 
-                Unit *victim = me->getVictim();
+                Unit *victim = me->GetVictim();
                 if (victim)
                 {
                     // re-chase target after 2 seconds
@@ -193,7 +193,7 @@ struct boss_gruulAI : public ScriptedAI
             {
                 Unit* target = SelectUnit(SELECT_TARGET_TOPAGGRO, 0, me->GetCombatReach()+5.0f, true, me->getVictimGUID());
                 if (!target)
-                    target = me->getVictim();
+                    target = me->GetVictim();
 
                 AddSpellToCast(target, SPELL_HURTFUL_STRIKE);
                 HurtfulStrike_Timer = 8000;

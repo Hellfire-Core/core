@@ -131,7 +131,7 @@ struct boss_halazziAI : public ScriptedAI
     void JustSummoned(Creature* summon)
     {
         summon->AI()->DoZoneInCombat();
-        summon->AI()->AttackStart(m_creature->getVictim());
+        summon->AI()->AttackStart(m_creature->GetVictim());
         if(summon->GetEntry() == MOB_SPIRIT_LYNX)
             LynxGUID = summon->GetGUID();
         
@@ -173,8 +173,8 @@ struct boss_halazziAI : public ScriptedAI
             if(Phase == PHASE_MERGE)
             {
                 ForceSpellCast(m_creature, SPELL_TRANSFORM_MERGE, INTERRUPT_AND_CAST_INSTANTLY, true);
-                m_creature->Attack(m_creature->getVictim(), true);
-                m_creature->GetMotionMaster()->MoveChase(m_creature->getVictim());
+                m_creature->Attack(m_creature->GetVictim(), true);
+                m_creature->GetMotionMaster()->MoveChase(m_creature->GetVictim());
             }
             if(Unit *Lynx = Unit::GetUnit(*m_creature, LynxGUID))
             {
@@ -203,7 +203,7 @@ struct boss_halazziAI : public ScriptedAI
             if(Unit *Lynx = Unit::GetUnit(*m_creature, LynxGUID))
             {
                 DoScriptText(YELL_MERGE, m_creature);
-                Lynx->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                Lynx->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                 Lynx->GetMotionMaster()->Clear();
                 Lynx->GetMotionMaster()->MoveFollow(m_creature, 0, 0);
                 m_creature->GetMotionMaster()->Clear();
@@ -243,7 +243,7 @@ struct boss_halazziAI : public ScriptedAI
         {
             if (SaberlashTimer.Expired(diff))
             {
-                AddSpellToCastWithScriptText(m_creature->getVictim(), SPELL_SABER_LASH, RAND(YELL_SABER_ONE, YELL_SABER_TWO));
+                AddSpellToCastWithScriptText(m_creature->GetVictim(), SPELL_SABER_LASH, RAND(YELL_SABER_ONE, YELL_SABER_TWO));
                 SaberlashTimer = 5000 + rand() % 10000;
             }
 
@@ -367,7 +367,7 @@ struct boss_spiritlynxAI : public ScriptedAI
 
     void AttackStart(Unit *who)
     {
-        if(!m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
+        if(!m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING))
             ScriptedAI::AttackStart(who);
     }
 
@@ -388,7 +388,7 @@ struct boss_spiritlynxAI : public ScriptedAI
         
         if (shredder_timer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(), SPELL_SHRED_ARMOR);
+            DoCast(m_creature->GetVictim(), SPELL_SHRED_ARMOR);
             shredder_timer = 4000;
         }
 

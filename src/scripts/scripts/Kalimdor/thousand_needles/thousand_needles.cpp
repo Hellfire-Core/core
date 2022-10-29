@@ -519,7 +519,7 @@ bool go_panther_cage(Player* pPlayer, GameObject* pGo)
         if (Creature* panther = GetClosestCreatureWithEntry(pGo, ENRAGED_PANTHER, 5))
         {
             //pGo->DestroyForPlayer(pPlayer);
-            panther->RemoveFlag(UNIT_FIELD_FLAGS,UNIT_FLAG_NON_ATTACKABLE);
+            panther->RemoveFlag(UNIT_FIELD_FLAGS,UNIT_FLAG_SPAWNING);
             panther->SetReactState(REACT_AGGRESSIVE);
             panther->AI()->AttackStart(pPlayer);
         }
@@ -534,7 +534,7 @@ struct npc_enraged_pantherAI : public ScriptedAI
 
     void Reset()
     {
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         me->SetReactState(REACT_PASSIVE);
     }
 

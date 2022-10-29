@@ -91,13 +91,13 @@ struct boss_kurinnaxxAI : public ScriptedAI
         if (i==0 && m_creature->GetHealth()*100 / m_creature->GetMaxHealth() <= 30 && !m_creature->IsNonMeleeSpellCast(false))
         {
             i=1;
-            DoCast(m_creature->getVictim(),SPELL_ENRAGE);
+            DoCast(m_creature->GetVictim(),SPELL_ENRAGE);
         }
 
         MORTALWOUND_Timer -= diff;
         if (MORTALWOUND_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_MORTALWOUND);
+            DoCast(m_creature->GetVictim(),SPELL_MORTALWOUND);
             MORTALWOUND_Timer += 9000;
         }
         
@@ -122,14 +122,14 @@ struct boss_kurinnaxxAI : public ScriptedAI
         CLEAVE_Timer -= diff;
         if(CLEAVE_Timer <= diff)
             {
-                DoCast(m_creature->getVictim(), SPELL_CLEAVE);
+                DoCast(m_creature->GetVictim(), SPELL_CLEAVE);
                 CLEAVE_Timer += 6000 + rand()%6000;
             }
         
 
         /*
         if ((SUMMON_Chance = urand(0, 100))%100 == 0) //1% chance to summon enemy every update
-            DoCast(m_creature->getVictim(), SPELL_SUMMON);
+            DoCast(m_creature->GetVictim(), SPELL_SUMMON);
             A bit buggy.
         */
         DoMeleeAttackIfReady();

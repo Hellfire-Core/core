@@ -88,35 +88,35 @@ struct boss_bloodmage_thalnosAI : public ScriptedAI
         FrostNova2_Timer -= diff;
         if (FrostNova2_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_FROSTNOVA2);
+            DoCast(m_creature->GetVictim(),SPELL_FROSTNOVA2);
             FrostNova2_Timer += 10000;
         }
 
         FlameShock3_Timer -= diff;
         if (FlameShock3_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_FLAMESHOCK3);
+            DoCast(m_creature->GetVictim(),SPELL_FLAMESHOCK3);
             FlameShock3_Timer += 15000;
         }
 
         ShadowBolt5_Timer -= diff;
         if (ShadowBolt5_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_SHADOWBOLT5);
+            DoCast(m_creature->GetVictim(),SPELL_SHADOWBOLT5);
             ShadowBolt5_Timer += 20000;
         }
 
         FlameSpike_Timer -= diff;
         if (FlameSpike_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_FLAMESPIKE);
+            DoCast(m_creature->GetVictim(),SPELL_FLAMESPIKE);
             FlameSpike_Timer += 30000;
         }
 
         FireNova_Timer -= diff;
         if (FireNova_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_FIRENOVA);
+            DoCast(m_creature->GetVictim(),SPELL_FIRENOVA);
             FireNova_Timer += 20000;
         }
 

@@ -250,6 +250,8 @@ struct CreatureData
     uint8 movementType;
     uint8 spawnMask;
     bool dbData;
+
+    ObjectGuid GetObjectGuid(uint32 lowguid) const { return ObjectGuid(HIGHGUID_UNIT, id, lowguid); }
 };
 
 struct CreatureDataAddonAura
@@ -479,7 +481,7 @@ class HELLGROUND_IMPORT_EXPORT Creature : public Unit
 
         uint32 GetShieldBlockValue() const                  //dunno mob block value
         {
-            return (getLevel()/2 + uint32(GetStat(STAT_STRENGTH)/20));
+            return (GetLevel()/2 + uint32(GetStat(STAT_STRENGTH)/20));
         }
 
         SpellSchoolMask GetMeleeDamageSchoolMask() const { return m_meleeDamageSchoolMask; }
@@ -661,7 +663,7 @@ class HELLGROUND_IMPORT_EXPORT Creature : public Unit
         {
             if (ignoreSelection)
                 SetSelection(0);
-            else if (getVictim())
+            else if (GetVictim())
                 SetSelection(getVictimGUID());
             m_ignoreSelection = ignoreSelection;
         }

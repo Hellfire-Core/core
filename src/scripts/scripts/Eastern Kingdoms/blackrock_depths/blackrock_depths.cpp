@@ -123,7 +123,7 @@ struct npc_grimstoneAI : public npc_escortAI
 
     void Reset()
     {
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
 
         EventPhase = 0;
         Event_Timer = 1000;
@@ -219,7 +219,7 @@ struct npc_grimstoneAI : public npc_escortAI
                 if (RingBossGUID)
                 {
                     Creature *boss = Unit::GetCreature(*me, RingBossGUID);
-                    if (boss && !boss->isAlive() && boss->isDead())
+                    if (boss && !boss->IsAlive() && boss->IsDead())
                     {
                         RingBossGUID = 0;
                         Event_Timer = 5000;
@@ -232,7 +232,7 @@ struct npc_grimstoneAI : public npc_escortAI
                 for (uint8 i = 0; i < MOB_AMOUNT; i++)
                 {
                     Creature *mob = Unit::GetCreature(*me, RingMobGUID[i]);
-                    if (mob && !mob->isAlive() && mob->isDead())
+                    if (mob && !mob->IsAlive() && mob->IsDead())
                     {
                         RingMobGUID[i] = 0;
                         --MobCount;
@@ -372,7 +372,7 @@ struct mob_phalanxAI : public ScriptedAI
         ThunderClap_Timer -= diff;
         if (ThunderClap_Timer <= diff)
         {
-            DoCast(me->getVictim(),SPELL_THUNDERCLAP);
+            DoCast(me->GetVictim(),SPELL_THUNDERCLAP);
             ThunderClap_Timer += 10000;
         }
         
@@ -383,7 +383,7 @@ struct mob_phalanxAI : public ScriptedAI
         {
             if (FireballVolley_Timer <= diff)
             {
-                DoCast(me->getVictim(),SPELL_FIREBALLVOLLEY);
+                DoCast(me->GetVictim(),SPELL_FIREBALLVOLLEY);
                 FireballVolley_Timer += 15000;
             }
         }
@@ -391,7 +391,7 @@ struct mob_phalanxAI : public ScriptedAI
         MightyBlow_Timer -= diff;
         if (MightyBlow_Timer <= diff)
         {
-            DoCast(me->getVictim(),SPELL_MIGHTYBLOW);
+            DoCast(me->GetVictim(),SPELL_MIGHTYBLOW);
             MightyBlow_Timer += 10000;
         }
         
@@ -751,7 +751,7 @@ struct npc_marshal_windsorAI : public npc_escortAI
             {
                 if (Creature* dughal = Unit::GetCreature(*me, pInstance->GetData64(DATA_DUGHAL)))
                 {
-                    if (!dughal->isAlive())
+                    if (!dughal->IsAlive())
                         dughal->Respawn();
                     dughal->SetVisibility(VISIBILITY_ON);
                     dughal->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
@@ -929,7 +929,7 @@ struct npc_marshal_reginald_windsorAI : public npc_escortAI
                 {
                     if (Creature* jaz = Unit::GetCreature(*me, pInstance->GetData64(DATA_JAZ)))
                     {
-                        if (!jaz->isAlive())
+                        if (!jaz->IsAlive())
                             jaz->Respawn();
                         jaz->SetVisibility(VISIBILITY_ON);
                         jaz->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
@@ -947,7 +947,7 @@ struct npc_marshal_reginald_windsorAI : public npc_escortAI
                 {
                     if (Creature* shill = Unit::GetCreature(*me, pInstance->GetData64(DATA_SHILL)))
                     {
-                        if (!shill->isAlive())
+                        if (!shill->IsAlive())
                             shill->Respawn();
                         shill->SetVisibility(VISIBILITY_ON);
                         shill->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
@@ -968,7 +968,7 @@ struct npc_marshal_reginald_windsorAI : public npc_escortAI
                 {
                     if (Creature* crest = Unit::GetCreature(*me, pInstance->GetData64(DATA_CREST)))
                     {
-                        if (!crest->isAlive())
+                        if (!crest->IsAlive())
                             crest->Respawn();
                         crest->SetVisibility(VISIBILITY_ON);
                         crest->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
@@ -986,7 +986,7 @@ struct npc_marshal_reginald_windsorAI : public npc_escortAI
                 {
                     if (Creature* tobias = Unit::GetCreature(*me, pInstance->GetData64(DATA_TOBIAS)))
                     {
-                        if (!tobias->isAlive())
+                        if (!tobias->IsAlive())
                             tobias->Respawn();
                         tobias->SetVisibility(VISIBILITY_ON);
                         tobias->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);

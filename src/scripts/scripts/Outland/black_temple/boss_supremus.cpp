@@ -259,7 +259,7 @@ struct boss_supremusAI : public ScriptedAI
 
             if (MoltenPunch_Timer.Expired(diff))
             {
-                Unit *target = m_creature->getVictim();
+                Unit *target = m_creature->GetVictim();
                 if(target)
                 {
                     if(m_creature->IsWithinDistInMap(target, 40))
@@ -327,7 +327,7 @@ struct npc_volcanoAI : public Scripted_NoMovementAI
         CastTimer.Reset(1000);
         me->SetIgnoreVictimSelection(true);
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_ROTATE);
-        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
     }
 

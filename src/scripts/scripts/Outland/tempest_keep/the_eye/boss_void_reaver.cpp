@@ -138,7 +138,7 @@ struct boss_void_reaverAI : public ScriptedAI
             Unit * target = SelectUnit(SELECT_TARGET_RANDOM, 0, 200.0f, true, 0, 18.0f);
 
             if (!target)
-                target = m_creature->getVictim();
+                target = m_creature->GetVictim();
 
             if (target)
               if (Creature* t = DoSpawnCreature(TRIGGER, 0.0f, 0.0f, 10.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN, 40000))
@@ -150,7 +150,7 @@ struct boss_void_reaverAI : public ScriptedAI
         // Single Target knock back, reduces aggro
         if (KnockAway_Timer.Expired(diff))
         {
-            AddSpellToCast(m_creature->getVictim(), SPELL_KNOCK_AWAY);
+            AddSpellToCast(m_creature->GetVictim(), SPELL_KNOCK_AWAY);
             KnockAway_Timer = 30000;
         }
 

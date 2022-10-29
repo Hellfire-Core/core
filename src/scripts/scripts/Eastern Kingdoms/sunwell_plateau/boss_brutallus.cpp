@@ -142,7 +142,7 @@ struct boss_brutallusAI : public ScriptedAI
 
     void KilledUnit(Unit* /*victim*/)
     {
-        if (pInstance->GetData(DATA_BRUTALLUS_INTRO_EVENT) == DONE && me->isAlive())
+        if (pInstance->GetData(DATA_BRUTALLUS_INTRO_EVENT) == DONE && me->IsAlive())
         {
             if (roll_chance_f(40.0))
                 DoScriptText(RAND(YELL_KILL1, YELL_KILL2, YELL_KILL3), me);
@@ -172,8 +172,8 @@ struct boss_brutallusAI : public ScriptedAI
             float x, y, z;
             case 0:
                 DoScriptText(YELL_MADR_ICE_BARRIER, pMadrigosa);
-                pMadrigosa->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                pMadrigosa->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
+                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                 pMadrigosa->SetReactState(REACT_PASSIVE);
                 for (uint8 i = 0; i < 8; ++i)
                     pMadrigosa->SetSpeed(UnitMoveType(i), 2.5);
@@ -203,8 +203,8 @@ struct boss_brutallusAI : public ScriptedAI
                 ++IntroPhase;
                 break;
             case 4:
-                pMadrigosa->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                pMadrigosa->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
+                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                 DoStartMovement(pMadrigosa);
                 me->Attack(pMadrigosa, true);
                 pMadrigosa->Attack(me, true);
@@ -283,7 +283,7 @@ struct boss_brutallusAI : public ScriptedAI
                 pMadrigosa->setHover(false);
                 pMadrigosa->SetFlying(false);
                 pMadrigosa->SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_FEIGN_DEATH);
-                pMadrigosa->SetFlag(UNIT_DYNAMIC_FLAGS, (UNIT_DYNFLAG_DEAD | UNIT_FLAG_NON_ATTACKABLE));
+                pMadrigosa->SetFlag(UNIT_DYNAMIC_FLAGS, (UNIT_DYNFLAG_DEAD | UNIT_FLAG_SPAWNING));
                 pMadrigosa->CombatStop();
                 pMadrigosa->DeleteThreatList();
                 pMadrigosa->setFaction(35);
@@ -316,7 +316,7 @@ struct boss_brutallusAI : public ScriptedAI
                 ++IntroPhase;
                 break;
             case 18:
-                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                 EnterEvadeMode();
                 IntroPhaseTimer = 0;
                 ++IntroPhase;
@@ -393,7 +393,7 @@ struct boss_brutallusAI : public ScriptedAI
 
         if (StompTimer.Expired(diff))
         {
-            AddSpellToCastWithScriptText(me->getVictim(), SPELL_STOMP, RAND(YELL_LOVE1, YELL_LOVE2, YELL_LOVE3));
+            AddSpellToCastWithScriptText(me->GetVictim(), SPELL_STOMP, RAND(YELL_LOVE1, YELL_LOVE2, YELL_LOVE3));
             StompTimer = 30000;
         }
 

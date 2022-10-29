@@ -126,7 +126,7 @@ struct boss_nalorakkAI : public ScriptedAI
         if(MoveEvent)
         {
             m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-            m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
             inMove = false;
             waitTimer = 0;
             m_creature->SetSpeed(MOVE_RUN, 2);
@@ -270,7 +270,7 @@ struct boss_nalorakkAI : public ScriptedAI
                                 DoScriptText(YELL_NALORAKK_WAVE4, m_creature);
 
                                 m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                                m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                                m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
 
                                 MoveEvent = false;
                             }
@@ -382,15 +382,15 @@ struct boss_nalorakkAI : public ScriptedAI
         {
             if (BrutalSwipe_Timer.Expired(diff))
             {
-                AddSpellToCast(m_creature->getVictim(), SPELL_BRUTALSWIPE);
+                AddSpellToCast(m_creature->GetVictim(), SPELL_BRUTALSWIPE);
                 BrutalSwipe_Timer = 7000 + rand()%5000;
             }
 
             if (Mangle_Timer.Expired(diff))
             {
-                if(m_creature->getVictim() && !m_creature->getVictim()->HasAura(SPELL_MANGLEEFFECT, 0))
+                if(m_creature->GetVictim() && !m_creature->GetVictim()->HasAura(SPELL_MANGLEEFFECT, 0))
                 {
-                    AddSpellToCast(m_creature->getVictim(), SPELL_MANGLE);
+                    AddSpellToCast(m_creature->GetVictim(), SPELL_MANGLE);
                     Mangle_Timer = 1000;
                 }
                 else 
@@ -418,21 +418,21 @@ struct boss_nalorakkAI : public ScriptedAI
             
             if (LaceratingSlash_Timer.Expired(diff))
             {
-                AddSpellToCast(m_creature->getVictim(), SPELL_LACERATINGSLASH);
+                AddSpellToCast(m_creature->GetVictim(), SPELL_LACERATINGSLASH);
                 LaceratingSlash_Timer = 18000 + rand()%5000;
             }
 
             
             if (RendFlesh_Timer.Expired(diff))
             {
-                AddSpellToCast(m_creature->getVictim(), SPELL_RENDFLESH);
+                AddSpellToCast(m_creature->GetVictim(), SPELL_RENDFLESH);
                 RendFlesh_Timer = 5000 + rand()%5000;
             }
 
             
             if (DeafeningRoar_Timer.Expired(diff))
             {
-                AddSpellToCast(m_creature->getVictim(), SPELL_DEAFENINGROAR);
+                AddSpellToCast(m_creature->GetVictim(), SPELL_DEAFENINGROAR);
                 DeafeningRoar_Timer = 15000 + rand()%5000;
             }
         }

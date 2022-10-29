@@ -44,7 +44,7 @@ EndContentData */
 
 bool GossipHello_npc_bunthen_plainswind(Player *player, Creature *_Creature)
 {
-    if(player->getClass() != CLASS_DRUID)
+    if(player->GetClass() != CLASS_DRUID)
         player->SEND_GOSSIP_MENU(4916,_Creature->GetGUID());
     else if(player->GetTeam() != HORDE)
     {
@@ -53,7 +53,7 @@ bool GossipHello_npc_bunthen_plainswind(Player *player, Creature *_Creature)
 
         player->SEND_GOSSIP_MENU(4917,_Creature->GetGUID());
     }
-    else if(player->getClass() == CLASS_DRUID && player->GetTeam() == HORDE)
+    else if(player->GetClass() == CLASS_DRUID && player->GetTeam() == HORDE)
     {
         player->ADD_GOSSIP_ITEM( 0, GOSSIP_BP2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
 
@@ -72,7 +72,7 @@ bool GossipSelect_npc_bunthen_plainswind(Player *player, Creature *_Creature, ui
         case GOSSIP_ACTION_INFO_DEF + 1:
         {
             player->CLOSE_GOSSIP_MENU();
-            if (player->getClass() == CLASS_DRUID && player->GetTeam() == HORDE)
+            if (player->GetClass() == CLASS_DRUID && player->GetTeam() == HORDE)
             {
                 std::vector<uint32> nodes;
 
@@ -151,7 +151,7 @@ bool GossipSelect_npc_great_bear_spirit(Player *player, Creature *_Creature, uin
 #define GOSSIP_SF2 "I'd like to fly to Rut'theran Village."
 bool GossipHello_npc_silva_filnaveth(Player *player, Creature *_Creature)
 {
-    if(player->getClass() != CLASS_DRUID)
+    if(player->GetClass() != CLASS_DRUID)
         player->SEND_GOSSIP_MENU(4913,_Creature->GetGUID());
     else if(player->GetTeam() != ALLIANCE)
     {
@@ -160,7 +160,7 @@ bool GossipHello_npc_silva_filnaveth(Player *player, Creature *_Creature)
 
         player->SEND_GOSSIP_MENU(4915,_Creature->GetGUID());
     }
-    else if(player->getClass() == CLASS_DRUID && player->GetTeam() == ALLIANCE)
+    else if(player->GetClass() == CLASS_DRUID && player->GetTeam() == ALLIANCE)
     {
         player->ADD_GOSSIP_ITEM( 0, GOSSIP_SF2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
 
@@ -179,7 +179,7 @@ bool GossipSelect_npc_silva_filnaveth(Player *player, Creature *_Creature, uint3
         case GOSSIP_ACTION_INFO_DEF + 1:
         {
             player->CLOSE_GOSSIP_MENU();
-            if (player->getClass() == CLASS_DRUID && player->GetTeam() == ALLIANCE)
+            if (player->GetClass() == CLASS_DRUID && player->GetTeam() == ALLIANCE)
             {
                 std::vector<uint32> nodes;
 
@@ -312,9 +312,9 @@ public:
     void EnterEvadeMode()
     {
         Player* pPlayer = Unit::GetPlayer(PlayerGUID);
-        if (pPlayer && pPlayer->isInCombat() && pPlayer->getAttackerForHelper())
+        if (pPlayer && pPlayer->IsInCombat() && pPlayer->GetAttackerForHelper())
         {
-            AttackStart(pPlayer->getAttackerForHelper());
+            AttackStart(pPlayer->GetAttackerForHelper());
             return;
         }
         npc_escortAI::EnterEvadeMode();
@@ -357,14 +357,14 @@ public:
             return;
         }
 
-        if (!m_creature->isInCombat() && !Event_onWait)
+        if (!m_creature->IsInCombat() && !Event_onWait)
         {
             checkPlayer_Timer -= diff;
             if (checkPlayer_Timer <= diff)
             {
                 Player* pPlayer = Unit::GetPlayer(PlayerGUID);
-                if (pPlayer && pPlayer->isInCombat() && pPlayer->getAttackerForHelper())
-                    AttackStart(pPlayer->getAttackerForHelper());
+                if (pPlayer && pPlayer->IsInCombat() && pPlayer->GetAttackerForHelper())
+                    AttackStart(pPlayer->GetAttackerForHelper());
 
                 checkPlayer_Timer += 1000;
             }
@@ -744,7 +744,7 @@ struct npc_remulosAI : public npc_escortAI
 
     void FindVictim(Creature* pCreature)
     {
-        if (!pCreature->getVictim())
+        if (!pCreature->GetVictim())
         {
             if (PhantasmPhase)
             {
@@ -777,7 +777,7 @@ struct npc_remulosAI : public npc_escortAI
             {
                 if (Creature *pPhantasm = Unit::GetCreature(*me,*itr))
                 {
-                    if (!pPhantasm->isAlive())
+                    if (!pPhantasm->IsAlive())
                     {
                         PhantasmsList.erase(itr);
                         break;
@@ -870,7 +870,7 @@ struct npc_remulosAI : public npc_escortAI
                             pEranikus->SetReactState(REACT_PASSIVE);
                             pEranikus->SetFlying(true);
                             pEranikus->AI()->IsSummonedBy(me);
-                            pEranikus->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
+                            pEranikus->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING | UNIT_FLAG_NOT_SELECTABLE);
                             EranikusGUID = pEranikus->GetGUID();
                         }
                         else me->ForcedDespawn();
@@ -1038,7 +1038,7 @@ struct npc_remulosAI : public npc_escortAI
         StarfireTimer -= diff;
         if (StarfireTimer <= diff)
         {
-            DoCast(me->getVictim(), SPELL_STARFIRE);
+            DoCast(me->GetVictim(), SPELL_STARFIRE);
             StarfireTimer += urand(7000, 10000);
         } 
 
@@ -1062,7 +1062,7 @@ struct npc_remulosAI : public npc_escortAI
         {
             if (Creature* pEranikus = Unit::GetCreature(*me, EranikusGUID))
             {
-                if (Unit* pTarget = pEranikus->getVictim())
+                if (Unit* pTarget = pEranikus->GetVictim())
                     if (pTarget->GetHealth()*100 < pTarget->GetMaxHealth()*90)
                         return pTarget;
                 return NULL;
@@ -1208,7 +1208,7 @@ public:
                         CAST_AI(npc_remulosAI, pRemulos->AI())->SetEscortPaused(false);
                     }
                     DoScriptText(ERANIKUS_YELL_10, me);
-                    for (std::set<Unit*>::const_iterator itr = me->getAttackers().begin(); itr != me->getAttackers().end(); ++itr)
+                    for (std::set<Unit*>::const_iterator itr = me->GetAttackers().begin(); itr != me->GetAttackers().end(); ++itr)
                     {
                         float collision = (float)urand(-8, 8);
                         uint32 r = urand(0, 1) ? 1 : 0;
@@ -1231,7 +1231,7 @@ public:
                     me->DeleteThreatList();
                     me->RemoveAllAuras();
                     me->SetReactState(REACT_PASSIVE);
-                    me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                    me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                     if (Creature* pTyrande = Unit::GetCreature(*me, TyrandeGUID))
                     {
                         pTyrande->SetVisibility(VISIBILITY_ON);
@@ -1353,21 +1353,21 @@ public:
             ShadowBoltTimer -= diff;
             if (ShadowBoltTimer <= diff)
             {
-                DoCast(me->getVictim(), ERANIKUS_SPELL_SHADOW_BOLT_VOLLEY);
+                DoCast(me->GetVictim(), ERANIKUS_SPELL_SHADOW_BOLT_VOLLEY);
                 ShadowBoltTimer += urand(7000, 12000);
             } 
 
             AcidBreathTimer -= diff;
             if (AcidBreathTimer <= diff)
             {
-                DoCast(me->getVictim(), ERANIKUS_SPELL_ACID_BREATH);
+                DoCast(me->GetVictim(), ERANIKUS_SPELL_ACID_BREATH);
                 AcidBreathTimer += urand(5000, 15000);
             } 
 
             NoxiusBreathTimer -= diff;
             if (NoxiusBreathTimer <= diff)
             {
-                DoCast(me->getVictim(), ERANIKUS_SPELL_NOXIUS_BREATH);
+                DoCast(me->GetVictim(), ERANIKUS_SPELL_NOXIUS_BREATH);
                 NoxiusBreathTimer += urand(10000, 20000);
             } 
 
@@ -1391,7 +1391,7 @@ public:
             CanAttack = true;
             me->SetFlying(false);
             me->SetReactState(REACT_AGGRESSIVE);
-            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
+            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING | UNIT_FLAG_NOT_SELECTABLE);
         }
     }
 
@@ -1399,7 +1399,7 @@ public:
     {
         if (Creature* pTyrande = Unit::GetCreature(*me, TyrandeGUID))
         {
-            if (pTyrande->isAlive())
+            if (pTyrande->IsAlive())
                 pTyrande->ForcedDespawn();
         }
 
@@ -1427,7 +1427,7 @@ public:
 
     void FindVictim()
     {
-        if (!me->getVictim())
+        if (!me->GetVictim())
         {
             if (Unit *pTarget = me->SelectNearestTarget(20))
             {

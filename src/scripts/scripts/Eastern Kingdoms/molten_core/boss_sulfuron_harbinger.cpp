@@ -84,7 +84,7 @@ struct boss_sulfuronAI : public ScriptedAI
         DemoralizingShout_Timer -= diff;
         if (DemoralizingShout_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_DEMORALIZINGSHOUT);
+            DoCast(m_creature->GetVictim(),SPELL_DEMORALIZINGSHOUT);
             DemoralizingShout_Timer += 15000 + rand()%5000;
         }
 
@@ -111,7 +111,7 @@ struct boss_sulfuronAI : public ScriptedAI
         Knockdown_Timer -= diff;
         if (Knockdown_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_KNOCKDOWN);
+            DoCast(m_creature->GetVictim(),SPELL_KNOCKDOWN);
             Knockdown_Timer += 12000 + rand()%3000;
         }
 

@@ -57,7 +57,7 @@ void WorldSession::HandlePetAction(WorldPacket & recv_data)
     }
 
     // charm is dead, ignore
-    if (!pCharm->isAlive())
+    if (!pCharm->IsAlive())
         return;
 
     // charmed player can perform only attack
@@ -399,7 +399,7 @@ void WorldSession::HandlePetUnlearnOpcode(WorldPacket& recvPacket)
         pet->removeSpell(spell_id);
     }
 
-    pet->SetTP(pet->getLevel() * (pet->GetLoyaltyLevel() - 1));
+    pet->SetTP(pet->GetLevel() * (pet->GetLoyaltyLevel() - 1));
 
     for (uint8 i = 0; i < 10; i++)
     {

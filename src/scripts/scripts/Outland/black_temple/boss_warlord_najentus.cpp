@@ -234,7 +234,7 @@ struct boss_najentusAI : public ScriptedAI
             Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, 150, true, m_creature->getVictimGUID());
 
             if(!target)
-                target = m_creature->getVictim();
+                target = m_creature->GetVictim();
 
             if(target)
             {

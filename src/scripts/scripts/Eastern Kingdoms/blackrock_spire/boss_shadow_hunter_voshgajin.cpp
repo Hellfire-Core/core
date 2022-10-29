@@ -60,7 +60,7 @@ struct boss_shadowvoshAI : public ScriptedAI
         CurseOfBlood_Timer -= diff;
         if (CurseOfBlood_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_CURSEOFBLOOD);
+            DoCast(m_creature->GetVictim(),SPELL_CURSEOFBLOOD);
             CurseOfBlood_Timer += 45000;
         }
 
@@ -76,7 +76,7 @@ struct boss_shadowvoshAI : public ScriptedAI
         Cleave_Timer -= diff;
         if (Cleave_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_CLEAVE);
+            DoCast(m_creature->GetVictim(),SPELL_CLEAVE);
             Cleave_Timer += 7000;
         }
 

@@ -72,39 +72,39 @@ struct mob_stolen_soulAI : public ScriptedAI
             switch (myClass)
             {
                 case CLASS_WARRIOR:
-                    DoCast(m_creature->getVictim(), SPELL_MORTAL_STRIKE);
+                    DoCast(m_creature->GetVictim(), SPELL_MORTAL_STRIKE);
                     Class_Timer = 6000;
                     break;
                 case CLASS_PALADIN:
-                    DoCast(m_creature->getVictim(), SPELL_HAMMER_OF_JUSTICE);
+                    DoCast(m_creature->GetVictim(), SPELL_HAMMER_OF_JUSTICE);
                     Class_Timer = 6000;
                     break;
                 case CLASS_HUNTER:
-                    DoCast(m_creature->getVictim(), SPELL_FREEZING_TRAP);
+                    DoCast(m_creature->GetVictim(), SPELL_FREEZING_TRAP);
                     Class_Timer = 20000;
                     break;
                 case CLASS_ROGUE:
-                    DoCast(m_creature->getVictim(), SPELL_HEMORRHAGE);
+                    DoCast(m_creature->GetVictim(), SPELL_HEMORRHAGE);
                     Class_Timer = 10000;
                     break;
                 case CLASS_PRIEST:
-                    DoCast(m_creature->getVictim(), SPELL_MIND_FLAY);
+                    DoCast(m_creature->GetVictim(), SPELL_MIND_FLAY);
                     Class_Timer = 5000;
                     break;
                 case CLASS_SHAMAN:
-                    DoCast(m_creature->getVictim(), SPELL_FROSTSHOCK);
+                    DoCast(m_creature->GetVictim(), SPELL_FROSTSHOCK);
                     Class_Timer = 8000;
                     break;
                 case CLASS_MAGE:
-                    DoCast(m_creature->getVictim(), SPELL_FIREBALL);
+                    DoCast(m_creature->GetVictim(), SPELL_FIREBALL);
                     Class_Timer = 5000;
                     break;
                 case CLASS_WARLOCK:
-                    DoCast(m_creature->getVictim(), SPELL_CURSE_OF_AGONY);
+                    DoCast(m_creature->GetVictim(), SPELL_CURSE_OF_AGONY);
                     Class_Timer = 20000;
                     break;
                 case CLASS_DRUID:
-                    DoCast(m_creature->getVictim(), SPELL_MOONFIRE);
+                    DoCast(m_creature->GetVictim(), SPELL_MOONFIRE);
                     Class_Timer = 10000;
                     break;
             }
@@ -255,7 +255,7 @@ struct boss_exarch_maladaarAI : public ScriptedAI
 
                     soulmodel = target->GetDisplayId();
                     soulholder = target->GetGUID();
-                    soulclass = target->getClass();
+                    soulclass = target->GetClass();
 
                     DoCast(target,SPELL_STOLEN_SOUL);
                     DoSpawnCreature(ENTRY_STOLEN_SOUL,0,0,0,0,TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT,10000);
@@ -313,7 +313,7 @@ struct mob_avatar_of_martyredAI : public ScriptedAI
 
         if (Mortal_Strike_timer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(), SPELL_AV_MORTAL_STRIKE);
+            DoCast(m_creature->GetVictim(), SPELL_AV_MORTAL_STRIKE);
             Mortal_Strike_timer = 10000 + rand()%20 * 1000;
         }
 

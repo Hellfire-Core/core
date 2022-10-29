@@ -349,7 +349,7 @@ bool Map::Add(Player *player)
     SendInitSelf(player);
     SendInitTransports(player);
 
-    if (!player->isAlive())
+    if (!player->IsAlive())
         player->SetMovement(MOVE_WATER_WALK);
     player->GetViewPoint().Event_AddedToWorld(&(*grid)(cell.CellX(), cell.CellY()));
     //player->UpdateObjectVisibility();
@@ -1129,7 +1129,7 @@ uint32 Map::GetPlayersCountExceptGMs() const
 {
     uint32 count = 0;
     for (MapRefManager::const_iterator itr = m_mapRefManager.begin(); itr != m_mapRefManager.end(); ++itr)
-        if (!itr->getSource()->isGameMaster())
+        if (!itr->getSource()->IsGameMaster())
             ++count;
     return count;
 }
@@ -1139,7 +1139,7 @@ uint32 Map::GetAlivePlayersCountExceptGMs() const
     uint32 count = 0;
     for (MapRefManager::const_iterator itr = m_mapRefManager.begin(); itr != m_mapRefManager.end(); ++itr)
     {
-        if (!itr->getSource()->isGameMaster() && itr->getSource()->isAlive())
+        if (!itr->getSource()->IsGameMaster() && itr->getSource()->IsAlive())
             ++count;
     }
     return count;
@@ -1799,7 +1799,7 @@ void Map::ScriptsProcess()
                 }
 
                 // quest id and flags checked at script loading
-                if ((worldObject->GetTypeId()!=TYPEID_UNIT || ((Unit*)worldObject)->isAlive()) &&
+                if ((worldObject->GetTypeId()!=TYPEID_UNIT || ((Unit*)worldObject)->IsAlive()) &&
                     (step.script->datalong2==0 || worldObject->IsWithinDistInMap(player,float(step.script->datalong2))))
                     player->AreaExploredOrEventHappens(step.script->datalong);
                 else
@@ -2035,7 +2035,7 @@ void Map::ScriptsProcess()
 
             case SCRIPT_COMMAND_KILL:
             {
-                if (!source || ((Creature*)source)->isDead())
+                if (!source || ((Creature*)source)->IsDead())
                     break;
 
                 switch (step.script->datalong)
@@ -2136,7 +2136,7 @@ bool InstanceMap::EncounterInProgress(Player *player)
     bool inProgress = GetInstanceData() && GetInstanceData()->IsEncounterInProgress();
     if (player && inProgress)
     {
-        if (player->isGameMaster())
+        if (player->IsGameMaster())
             return false;
 
         sLog.outDebug("InstanceMap: Player '%s' can't enter instance '%s' while an encounter is in progress.", player->GetName(),GetMapName());
@@ -2156,7 +2156,7 @@ bool InstanceMap::CanEnter(Player *player)
 
     // cannot enter if the instance is full (player cap), GMs don't count
     uint32 maxPlayers = GetMaxPlayers();
-    if (!player->isGameMaster() && GetPlayersCountExceptGMs() >= maxPlayers)
+    if (!player->IsGameMaster() && GetPlayersCountExceptGMs() >= maxPlayers)
     {
         sLog.outDetail("MAP: Instance '%u' of map '%s' cannot have more than '%u' players. Player '%s' rejected", GetInstanceId(), GetMapName(), maxPlayers, player->GetName());
         player->SendTransferAborted(GetId(), TRANSFER_ABORT_MAX_PLAYERS);
@@ -2759,14 +2759,14 @@ void Map::VisibilityOfCreatureEntry(uint32 entry, bool hide)
         if (hide)
         {
             mob->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-            mob->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            mob->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
             mob->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PASSIVE);
             mob->SetVisibility(VISIBILITY_OFF);
         }
         else
         {
             mob->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-            mob->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            mob->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
             mob->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PASSIVE);
             mob->SetVisibility(VISIBILITY_ON);
         }
@@ -2814,7 +2814,7 @@ std::list<uint64> Map::GetCreaturesGUIDList(uint32 id, GetCreatureGuidType type 
                 for (std::list<uint64>::iterator itr = tmpList.begin(); itr != tmpList.end(); ++itr)
                 {
                     Creature * tmpC = GetCreature(*itr);
-                    if (tmpC && tmpC->isAlive())
+                    if (tmpC && tmpC->IsAlive())
                     {
                         returnList.push_back(*itr);
                         ++count;
@@ -2860,7 +2860,7 @@ uint64 Map::GetCreatureGUID(uint32 id, GetCreatureGuidType type)
                 for (std::list<uint64>::const_iterator itr = a->second.begin(); itr != a->second.end(); ++itr)
                 {
                     Creature * tmpC = GetCreature(*itr);
-                    if (tmpC && tmpC->isAlive())
+                    if (tmpC && tmpC->IsAlive())
                     {
                         returnGUID = *itr;
                         break;

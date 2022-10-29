@@ -278,7 +278,7 @@ struct instance_black_temple : public ScriptedInstance
         if (!tmp)
             return;
 
-        if (pCreature->isAlive() && GetData(GetEncounterForEntry(tmp->id)) == DONE)
+        if (pCreature->IsAlive() && GetData(GetEncounterForEntry(tmp->id)) == DONE)
         {
             if (ashtongueBroken)
                 pCreature->setFaction(1820);

@@ -178,7 +178,7 @@ struct eye_of_cthunAI : public Scripted_NoMovementAI
 
         //Reset flags
         m_creature->RemoveAurasDueToSpell(SPELL_RED_COLORATION);
-        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NON_ATTACKABLE);
+        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_SPAWNING);
 
         //Reset Phase
         if (pInstance)
@@ -412,7 +412,7 @@ struct eye_of_cthunAI : public Scripted_NoMovementAI
 
                 //Reset to normal emote state and prevent select and attack
                 m_creature->HandleEmoteCommand(0);
-                m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NON_ATTACKABLE);
+                m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_SPAWNING);
 
                 //Remove Target field
                 m_creature->SetSelection(0);
@@ -506,7 +506,7 @@ struct cthunAI : public Scripted_NoMovementAI
 
         //Reset flags
         m_creature->RemoveAurasDueToSpell(SPELL_TRANSFORM);
-        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NON_ATTACKABLE);
+        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_SPAWNING);
 
         if (pInstance)
             pInstance->SetData(DATA_CTHUN_PHASE, 0);
@@ -619,7 +619,7 @@ struct cthunAI : public Scripted_NoMovementAI
                     DoCast(m_creature, SPELL_TRANSFORM, false);
                     m_creature->SetHealth(m_creature->GetMaxHealth());
 
-                    m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NON_ATTACKABLE);
+                    m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_SPAWNING);
 
                     //Emerging phase
                     //AttackStart(Unit::GetUnit(*m_creature, HoldPlayer));
@@ -1026,7 +1026,7 @@ struct claw_tentacleAI : public Scripted_NoMovementAI
             return;
 
         //EvadeTimer
-        if (!m_creature->IsWithinMeleeRange(m_creature->getVictim()))
+        if (!m_creature->IsWithinMeleeRange(m_creature->GetVictim()))
             if (EvadeTimer.Expired(diff))
         {
             Unit* p = Unit::GetUnit(*m_creature, Portal);
@@ -1064,14 +1064,14 @@ struct claw_tentacleAI : public Scripted_NoMovementAI
         //GroundRuptureTimer
         if (GroundRuptureTimer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(),SPELL_GROUND_RUPTURE);
+            DoCast(m_creature->GetVictim(),SPELL_GROUND_RUPTURE);
             GroundRuptureTimer = 30000;
         }
 
         //HamstringTimer
         if (HamstringTimer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(),SPELL_HAMSTRING);
+            DoCast(m_creature->GetVictim(),SPELL_HAMSTRING);
             HamstringTimer = 5000;
         }
 
@@ -1122,7 +1122,7 @@ struct giant_claw_tentacleAI : public Scripted_NoMovementAI
             return;
 
         //EvadeTimer
-        if (!m_creature->IsWithinMeleeRange(m_creature->getVictim()))
+        if (!m_creature->IsWithinMeleeRange(m_creature->GetVictim()))
             if (EvadeTimer.Expired(diff))
         {
             Unit* p = Unit::GetUnit(*m_creature, Portal);
@@ -1161,21 +1161,21 @@ struct giant_claw_tentacleAI : public Scripted_NoMovementAI
         //GroundRuptureTimer
         if (GroundRuptureTimer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(),SPELL_GROUND_RUPTURE);
+            DoCast(m_creature->GetVictim(),SPELL_GROUND_RUPTURE);
             GroundRuptureTimer = 30000;
         }
 
         //ThrashTimer
         if (ThrashTimer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(),SPELL_THRASH);
+            DoCast(m_creature->GetVictim(),SPELL_THRASH);
             ThrashTimer = 10000;
         }
 
         //HamstringTimer
         if (HamstringTimer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(),SPELL_HAMSTRING);
+            DoCast(m_creature->GetVictim(),SPELL_HAMSTRING);
             HamstringTimer = 10000;
         }
 
@@ -1245,7 +1245,7 @@ void flesh_tentacleAI::UpdateAI(const uint32 diff)
     {
         Unit* pUnit = Unit::GetUnit(*m_creature, Parent);
 
-        if (!pUnit || !pUnit->isAlive() || !pUnit->isInCombat())
+        if (!pUnit || !pUnit->IsAlive() || !pUnit->IsInCombat())
         {
             Parent = 0;
             m_creature->DealDamage(m_creature, m_creature->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NONE, NULL, false);

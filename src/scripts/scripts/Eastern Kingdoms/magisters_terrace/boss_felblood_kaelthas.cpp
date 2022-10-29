@@ -135,7 +135,7 @@ struct boss_felblood_kaelthasAI : public ScriptedAI
             pInstance->SetData(DATA_KAELTHAS_EVENT, NOT_STARTED);
             pInstance->SetData(DATA_KAEL_PHASE, Phase);
             if(pInstance->GetData(DATA_KAEL_TRASH_EVENT) != DONE)
-                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         }
         ResetStatues(true);
     }
@@ -147,7 +147,7 @@ struct boss_felblood_kaelthasAI : public ScriptedAI
             damage = 0;
             me->InterruptNonMeleeSpells(true);
             DoScriptText(SAY_DEATH, m_creature);
-            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NON_ATTACKABLE);
+            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_SPAWNING);
             RemoveGravityLapse();
             me->DeleteThreatList();
             me->RemoveAllAuras();
@@ -211,7 +211,7 @@ struct boss_felblood_kaelthasAI : public ScriptedAI
         {
             if(Player* player = i->getSource())
             {
-                if(player->isGameMaster())
+                if(player->IsGameMaster())
                     continue;
                 player->RemoveAurasDueToSpell(SPELL_GRAVITY_LAPSE_FLY);
                 player->RemoveAurasDueToSpell(SPELL_GRAVITY_LAPSE_DOT);
@@ -228,7 +228,7 @@ struct boss_felblood_kaelthasAI : public ScriptedAI
         {
             if (Player* player = i->getSource())
             {
-                if(player->isAlive())
+                if(player->IsAlive())
                     player->CastSpell(player, SPELL_GRAVITY_LAPSE_FLY, true, 0, 0, m_creature->GetGUID());
             }
         }
@@ -252,7 +252,7 @@ struct boss_felblood_kaelthasAI : public ScriptedAI
         {
             if (IntroTimer.Expired(diff))
             {
-                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                 Intro = false;
             }
         }
@@ -262,7 +262,7 @@ struct boss_felblood_kaelthasAI : public ScriptedAI
 
             if (OutroTimer.Expired(diff))
             {
-                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NON_ATTACKABLE);
+                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_SPAWNING);
                 me->DealDamage(me, me->GetHealth());
             }
             return;
@@ -280,7 +280,7 @@ struct boss_felblood_kaelthasAI : public ScriptedAI
                 {
                     DoZoneInCombat();
                     // teleport victim to self if not in range or not in LoS
-                    if(!me->IsWithinDistInMap(me->getVictim(), 40) || !me->IsWithinLOSInMap(me->getVictim()))
+                    if(!me->IsWithinDistInMap(me->GetVictim(), 40) || !me->IsWithinLOSInMap(me->GetVictim()))
                         ForceSpellCast(SPELL_TELEPORT_PLAYER, CAST_TANK, INTERRUPT_AND_CAST);
                 }
             }
@@ -306,15 +306,15 @@ struct boss_felblood_kaelthasAI : public ScriptedAI
                 if (FireballTimer.Expired(diff))
                 {
                     AddSpellToCast(SPELL_FIREBALL, CAST_TANK);
-                    if(me->IsWithinMeleeRange(me->getVictim()))
+                    if(me->IsWithinMeleeRange(me->GetVictim()))
                     {
                         if(me->GetMotionMaster()->GetCurrentMovementGeneratorType() == IDLE_MOTION_TYPE)
-                            me->GetMotionMaster()->MoveChase(me->getVictim());
+                            me->GetMotionMaster()->MoveChase(me->GetVictim());
                         FireballTimer = urand(2500, 6000);
                     }
                     else
                     {
-                        if(me->hasUnitState(UNIT_STAT_CHASE))
+                        if(me->HasUnitState(UNIT_STAT_CHASE))
                             me->GetMotionMaster()->MoveIdle();
                         FireballTimer = 2000;
                     }
@@ -344,7 +344,7 @@ struct boss_felblood_kaelthasAI : public ScriptedAI
                     ForceSpellCastWithScriptText(SPELL_TELEPORT_CENTER, CAST_SELF, SAY_GRAVITY_LAPSE, INTERRUPT_AND_CAST_INSTANTLY);
                     m_creature->ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_INTERRUPT_CAST, true);
                     m_creature->StopMoving();
-                    DoStartNoMovement(me->getVictim());
+                    DoStartNoMovement(me->GetVictim());
                     GravityLapseTimer = 1;
                     GravityLapsePhase = 1;
                     Phase = 2;

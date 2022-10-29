@@ -372,7 +372,7 @@ struct npc_lord_gregor_lescovarAI : public npc_escortAI
 
     void Reset()
     {
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         uiTimer = 0;
         uiPhase = 0;
 
@@ -385,18 +385,18 @@ struct npc_lord_gregor_lescovarAI : public npc_escortAI
 
         if (Creature *pMarzon = Unit::GetCreature(*me, MarzonGUID))
         {
-            if (pMarzon->isAlive())
+            if (pMarzon->IsAlive())
                 pMarzon->DisappearAndDie();
         }
     }
 
     void EnterCombat(Unit* pWho)
     {
-        me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         DoScriptText(SAY_LESCOVAR_5, me);
         if (Creature *pMarzon = Unit::GetCreature(*me, MarzonGUID))
         {
-            if (pMarzon->isAlive() && !pMarzon->isInCombat())
+            if (pMarzon->IsAlive() && !pMarzon->IsInCombat())
                 pMarzon->AI()->AttackStart(pWho);
         }
     }
@@ -459,7 +459,7 @@ struct npc_lord_gregor_lescovarAI : public npc_escortAI
                         break;
                     case 2:
                         me->RestoreFaction();
-                        me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                        me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                         uiTimer = 2000;
                         uiPhase = 3;
                         break;
@@ -528,7 +528,7 @@ struct npc_marzon_silent_bladeAI : public ScriptedAI
 
         if (Creature* pLord = GetClosestCreatureWithEntry(me, NPC_LORD_GREGOR_LESCOVAR, 30.0f))
         {
-            if (pLord && pLord->isAlive() && !pLord->isInCombat())
+            if (pLord && pLord->IsAlive() && !pLord->IsInCombat())
                 pLord->AI()->AttackStart(pWho);
         }
     }
@@ -539,7 +539,7 @@ struct npc_marzon_silent_bladeAI : public ScriptedAI
 
         if (Creature* pLord = GetClosestCreatureWithEntry(me, NPC_LORD_GREGOR_LESCOVAR, 30.0f))
         {
-            if (pLord && pLord->isAlive())
+            if (pLord && pLord->IsAlive())
                 pLord->DisappearAndDie();
         }
     }
@@ -1172,14 +1172,14 @@ struct npc_reginald_windsorAI : public npc_escortAI
 
         if (tmpCreature)
         {
-            if (!tmpCreature->isAlive())
+            if (!tmpCreature->IsAlive())
                 tmpCreature->Respawn();
             tmpCreature->SetVisibility(VISIBILITY_ON);
         }
 
         if (tmpCreature = tmpMap->GetCreatureById(NPC_LADY_KATRANA_ID))
         {
-            if (!tmpCreature->isAlive())
+            if (!tmpCreature->IsAlive())
                 tmpCreature->Respawn();
             tmpCreature->SetVisibility(VISIBILITY_ON);
         }
@@ -1603,7 +1603,7 @@ struct npc_reginald_windsorAI : public npc_escortAI
                                     tmpc = ladyOnyxia->SummonCreature(NPC_LADY_ONYXIA_GUARD_ID, guardWLoc.coord_x, guardWLoc.coord_y, guardWLoc.coord_z, guardWLoc.orientation, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 15000);
                                     //if (tmpc)
                                     //{
-                                    //    tmpc->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                                    //    tmpc->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                                     //    tmpc->SetNoCallAssistance(true);
                                     //}
 
@@ -1628,7 +1628,7 @@ struct npc_reginald_windsorAI : public npc_escortAI
                                 std::list<Player*>::iterator tmpItr = itr;
                                 ++itr;
 
-                                if (!(*tmpItr) || !(*tmpItr)->isAlive())
+                                if (!(*tmpItr) || !(*tmpItr)->IsAlive())
                                     playerList.erase(tmpItr);
                             }
 
@@ -1648,7 +1648,7 @@ struct npc_reginald_windsorAI : public npc_escortAI
                                         (*i)->AI()->AttackStart(*tmpItr);
                                     }
 
-                                    //(*i)->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                                    //(*i)->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                                 }
                             }
 
@@ -1659,7 +1659,7 @@ struct npc_reginald_windsorAI : public npc_escortAI
                             break;
                         }
                         case 15:
-                            if (player->isInCombat() || fordragon->isInCombat())
+                            if (player->IsInCombat() || fordragon->IsInCombat())
                                 eventPhase--;
                             phaseTimer = 2000;
                             break;

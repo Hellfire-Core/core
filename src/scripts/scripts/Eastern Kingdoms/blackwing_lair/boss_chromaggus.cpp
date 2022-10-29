@@ -233,7 +233,7 @@ struct boss_chromaggusAI : public ScriptedAI
         Breath1_Timer -= diff;
         if (Breath1_Timer <= diff)
         {
-            if (Unit* target = m_creature->getVictim())
+            if (Unit* target = m_creature->GetVictim())
             {
                 DoCast(target,Breath1_Spell);
                 Breath1_Timer += 60000;
@@ -244,9 +244,9 @@ struct boss_chromaggusAI : public ScriptedAI
         Breath2_Timer -= diff;
         if (Breath2_Timer <= diff)
         {
-            if (Unit* target = m_creature->getVictim())
+            if (Unit* target = m_creature->GetVictim())
             {
-                DoCast(m_creature->getVictim(),Breath2_Spell);
+                DoCast(m_creature->GetVictim(),Breath2_Spell);
                 Breath2_Timer += 60000;
             }
         }

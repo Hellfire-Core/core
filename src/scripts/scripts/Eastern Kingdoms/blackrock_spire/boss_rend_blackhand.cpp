@@ -58,21 +58,21 @@ struct boss_rend_blackhandAI : public ScriptedAI
         WhirlWind_Timer -= diff;
         if (WhirlWind_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_WHIRLWIND);
+            DoCast(m_creature->GetVictim(),SPELL_WHIRLWIND);
             WhirlWind_Timer += 18000;
         }
 
         Cleave_Timer -= diff;
         if (Cleave_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_CLEAVE);
+            DoCast(m_creature->GetVictim(),SPELL_CLEAVE);
             Cleave_Timer += 10000;
         }
 
         Thunderclap_Timer -= diff;
         if (Thunderclap_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_THUNDERCLAP);
+            DoCast(m_creature->GetVictim(),SPELL_THUNDERCLAP);
             Thunderclap_Timer += 16000;
         }
 

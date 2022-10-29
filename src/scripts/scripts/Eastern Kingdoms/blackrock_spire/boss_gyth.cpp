@@ -113,19 +113,19 @@ struct boss_gythAI : public ScriptedAI
 
         if (CorrosiveAcidTimer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(), SPELL_CORROSIVEACID);
+            DoCast(m_creature->GetVictim(), SPELL_CORROSIVEACID);
             CorrosiveAcidTimer = 7000;
         } 
 
         if (FreezeTimer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(), SPELL_FREEZE);
+            DoCast(m_creature->GetVictim(), SPELL_FREEZE);
             FreezeTimer = 16000;
         } 
 
         if (FlamebreathTimer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(),SPELL_FLAMEBREATH);
+            DoCast(m_creature->GetVictim(),SPELL_FLAMEBREATH);
             FlamebreathTimer = 10500;
         } 
 

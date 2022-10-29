@@ -81,7 +81,7 @@ struct mob_azalothAI : public ScriptedAI
 
     void EnterCombat()
     {
-        DoCast(m_creature->getVictim(),SPELL_CRIPPLE);
+        DoCast(m_creature->GetVictim(),SPELL_CRIPPLE);
         banish_timer  = TIME_TO_BANISH;
     }
 
@@ -108,7 +108,7 @@ struct mob_azalothAI : public ScriptedAI
             std::list<Creature*> warlocks = FindAllCreaturesWithEntry(21503, 20.0f);
             for (std::list<Creature*>::iterator itr = warlocks.begin(); itr != warlocks.end(); ++itr)
             {
-                if ((*itr)->isInCombat())
+                if ((*itr)->IsInCombat())
                     continue;
                 (*itr)->GetMotionMaster()->Clear(false);
                 (*itr)->StopMoving();
@@ -126,14 +126,14 @@ struct mob_azalothAI : public ScriptedAI
         //spell cleave
         if (cleave_timer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(), SPELL_CLEAVE);
+            DoCast(m_creature->GetVictim(), SPELL_CLEAVE);
             cleave_timer  = 6000;
         }
 
         //spell cripple
         if (cripple_timer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(), SPELL_CRIPPLE);
+            DoCast(m_creature->GetVictim(), SPELL_CRIPPLE);
            cripple_timer = 40000;
         }
 
@@ -143,14 +143,14 @@ struct mob_azalothAI : public ScriptedAI
         //spell rain of fire
         if (rain_timer.Expired(diff))
         {
-            me->CastSpell(m_creature->getVictim(), SPELL_RAIN_OF_FIRE, false);
+            me->CastSpell(m_creature->GetVictim(), SPELL_RAIN_OF_FIRE, false);
             rain_timer    = 15000;
         }
 
         //spell warstomp
         if (warstomp_timer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(), SPELL_WARSTOMP);
+            DoCast(m_creature->GetVictim(), SPELL_WARSTOMP);
             warstomp_timer= 10000;
         }
 
@@ -246,7 +246,7 @@ struct mob_mature_netherwing_drakeAI : public npc_escortAI
 
         if (CastTimer.Expired(diff))
         {
-            DoCast(me->getVictim(), SPELL_NETHER_BREATH);
+            DoCast(me->GetVictim(), SPELL_NETHER_BREATH);
             CastTimer = 5000;
         }
 
@@ -1445,7 +1445,7 @@ struct mob_illidari_spawnAI : public ScriptedAI
         {
             if(SpellTimer1.Expired(diff))
             {
-                DoCast(m_creature->getVictim(), SpawnCast[0].SpellId);//Spellbreaker
+                DoCast(m_creature->GetVictim(), SpawnCast[0].SpellId);//Spellbreaker
                 SpellTimer1 = SpawnCast[0].Timer2 + (rand()%5 * 1000);
             }
         }
@@ -1468,13 +1468,13 @@ struct mob_illidari_spawnAI : public ScriptedAI
 
             if(SpellTimer2.Expired(diff))
             {
-                DoCast(m_creature->getVictim(), SpawnCast[2].SpellId);//Psychic Scream
+                DoCast(m_creature->GetVictim(), SpawnCast[2].SpellId);//Psychic Scream
                 SpellTimer2 = SpawnCast[2].Timer2 + (rand()%13 * 1000);
             }
 
             if(SpellTimer3.Expired(diff))
             {
-                DoCast(m_creature->getVictim(), SpawnCast[3].SpellId);//Mind Blast
+                DoCast(m_creature->GetVictim(), SpawnCast[3].SpellId);//Mind Blast
                 SpellTimer3 = SpawnCast[3].Timer2 + (rand()%8 * 1000);
             }
         }
@@ -1483,13 +1483,13 @@ struct mob_illidari_spawnAI : public ScriptedAI
         {
             if(SpellTimer1.Expired(diff))
             {
-                DoCast(m_creature->getVictim(), SpawnCast[4].SpellId);//Curse Of Flames
+                DoCast(m_creature->GetVictim(), SpawnCast[4].SpellId);//Curse Of Flames
                 SpellTimer1 = SpawnCast[4].Timer2 + (rand()%10 * 1000);
             }
 
             if(SpellTimer2.Expired(diff))
             {
-                DoCast(m_creature->getVictim(), SpawnCast[5].SpellId);//Flamestrike
+                DoCast(m_creature->GetVictim(), SpawnCast[5].SpellId);//Flamestrike
                 SpellTimer2 = SpawnCast[5].Timer2 + (rand()%7 * 13000);
             }
         }
@@ -1524,7 +1524,7 @@ struct mob_torloth_the_magnificentAI : public ScriptedAI
         Timers = false;
 
         m_creature->addUnitState(UNIT_STAT_ROOT);
-        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         m_creature->SetSelection(0);
     }
 
@@ -1564,8 +1564,8 @@ struct mob_torloth_the_magnificentAI : public ScriptedAI
         case 6:
             if(Player* AggroTarget = (Unit::GetPlayer(AggroTargetGUID)))
             {
-                m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                m_creature->clearUnitState(UNIT_STAT_ROOT);
+                m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
+                m_creature->ClearUnitState(UNIT_STAT_ROOT);
 
                 float x, y, z;
                 AggroTarget->GetPosition(x,y,z);
@@ -1598,13 +1598,13 @@ struct mob_torloth_the_magnificentAI : public ScriptedAI
         {
             if(SpellTimer1.Expired(diff))
             {
-                DoCast(m_creature->getVictim(), SpawnCast[6].SpellId);//Cleave
+                DoCast(m_creature->GetVictim(), SpawnCast[6].SpellId);//Cleave
                 SpellTimer1 = SpawnCast[6].Timer2 + (rand()%10 * 1000);
             }
 
             if(SpellTimer2.Expired(diff))
             {
-                DoCast(m_creature->getVictim(), SpawnCast[7].SpellId);//Shadowfury
+                DoCast(m_creature->GetVictim(), SpawnCast[7].SpellId);//Shadowfury
                 SpellTimer2 = SpawnCast[7].Timer2 + (rand()%5 * 1000);
             }
 
@@ -1761,7 +1761,7 @@ struct npc_lord_illidan_stormrageAI : public ScriptedAI
                 if(!GroupMember)
                     continue;
 
-                if(GroupMember->IsWithinDistInMap(m_creature, EVENT_AREA_RADIUS) && GroupMember->isAlive())
+                if(GroupMember->IsWithinDistInMap(m_creature, EVENT_AREA_RADIUS) && GroupMember->IsAlive())
                     failed = false;
             }
 
@@ -1780,7 +1780,7 @@ struct npc_lord_illidan_stormrageAI : public ScriptedAI
                 return true;
             }
         }
-        else if (pPlayer->isDead() || !pPlayer->IsWithinDistInMap(m_creature, EVENT_AREA_RADIUS))
+        else if (pPlayer->IsDead() || !pPlayer->IsWithinDistInMap(m_creature, EVENT_AREA_RADIUS))
         {
             pPlayer->FailQuest(QUEST_BATTLE_OF_THE_CRIMSON_WATCH);
             return true;
@@ -2457,13 +2457,13 @@ struct npc_shadowlord_triggerAI : public Scripted_NoMovementAI
         SoulstealerList.clear();
         SoulstealerList = FindAllCreaturesWithEntry(NPC_SOULSTEALER_ID, 80.0f);
         for (std::list<Creature*>::iterator i = SoulstealerList.begin(); i != SoulstealerList.end(); ++i)
-            if (!(*i)->isAlive())
+            if (!(*i)->IsAlive())
                 (*i)->Respawn();
     }
 
     void UpdateAI(const uint32 diff)
     {
-        if(!m_creature->isInCombat())
+        if(!m_creature->IsInCombat())
             return;
 
         if(Check_Timer.Expired(diff))
@@ -2476,9 +2476,9 @@ struct npc_shadowlord_triggerAI : public Scripted_NoMovementAI
             if(!SoulstealerList.empty())
                 for(std::list<Creature*>::iterator i = SoulstealerList.begin(); i != SoulstealerList.end(); ++i)
                 {
-                    if((*i)->isAlive())
+                    if((*i)->IsAlive())
                         counter++;
-                    if((*i)->isInCombat())
+                    if((*i)->IsInCombat())
                         ++Ccounter;
                 }
             Check_Timer = 5000;
@@ -2580,14 +2580,14 @@ struct mob_shadowlord_deathwailAI : public ScriptedAI
 
         m_creature->GetMotionMaster()->Initialize();
         m_creature->SetLevitate(true);
-        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         //m_creature->GetMotionMaster()->MovePath(DEATHWAIL_FLYPATH, true);
         //this waypoints are to far away from home and npc resets during travel
         m_creature->GetMotionMaster()->MovePoint(0, -3247, 284, 187);
         landed = false;
 
         Unit* trigger = FindCreature(22096, 100, m_creature);
-        if (trigger && !trigger->isAlive())
+        if (trigger && !trigger->IsAlive())
             ((Creature*)trigger)->Respawn();
     }
 
@@ -2609,18 +2609,18 @@ struct mob_shadowlord_deathwailAI : public ScriptedAI
         {
             Unit* trigger = FindCreature(22096, 100, m_creature);
 
-            if(trigger && !trigger->isAlive() && !landed)
+            if(trigger && !trigger->IsAlive() && !landed)
             {
                 m_creature->setFaction(1813);
                 m_creature->GetMotionMaster()->Initialize();
                 m_creature->SetLevitate(true);
                 m_creature->GetMotionMaster()->MovePoint(1, -3247, 284, 138.1);
                 m_creature->SetHomePosition( -3247, 284, 138.1, 0);
-                m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                 landed = true;
                 felfire = false;
             }
-            if(!m_creature->isInCombat() && landed && trigger && trigger->isAlive())
+            if(!m_creature->IsInCombat() && landed && trigger && trigger->IsAlive())
                 Reset();
 
             if(!m_creature->IsWalking() && m_creature->GetPositionZ() < 142)
@@ -2630,7 +2630,7 @@ struct mob_shadowlord_deathwailAI : public ScriptedAI
                 m_creature->SetSpeed(MOVE_WALK, 4.0);
                 m_creature->SetSpeed(MOVE_RUN, 2.0);
             }
-            if(felfire && trigger && !trigger->isInCombat())
+            if(felfire && trigger && !trigger->IsInCombat())
                 felfire = false;
             if(felfire)
                 DoCast(m_creature, SPELL_FEL_FIREBALL);
@@ -2642,13 +2642,13 @@ struct mob_shadowlord_deathwailAI : public ScriptedAI
 
         if(Shadowbolt_Timer.Expired(diff))
         {
-            AddSpellToCast(m_creature->getVictim(), SPELL_SHADOWBOLT);
+            AddSpellToCast(m_creature->GetVictim(), SPELL_SHADOWBOLT);
             Shadowbolt_Timer = 12000+rand()%6000;
         }
 
         if(ShadowboltVoley_Timer.Expired(diff))
         {
-            AddSpellToCast(m_creature->getVictim(), SPELL_SHADOWBOLT);
+            AddSpellToCast(m_creature->GetVictim(), SPELL_SHADOWBOLT);
             ShadowboltVoley_Timer = 25000+rand()%15000;
         }
 
@@ -2664,7 +2664,7 @@ struct mob_shadowlord_deathwailAI : public ScriptedAI
             if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30.0, true, m_creature->getVictimGUID()))
                 AddSpellToCast(target, SPELL_DEATHCOIL);
             else
-                AddSpellToCast(m_creature->getVictim(), SPELL_DEATHCOIL);
+                AddSpellToCast(m_creature->GetVictim(), SPELL_DEATHCOIL);
             Deathcoil_Timer = 15000+rand()%30000;
         }
        
@@ -2697,7 +2697,7 @@ struct mob_shadowmoon_soulstealerAI : public Scripted_NoMovementAI
     {
         std::list<Unit*> party;
 
-        if(!m_creature->isInCombat() && who->GetTypeId() == TYPEID_PLAYER  && m_creature->IsWithinDistInMap(who, 15.0f))
+        if(!m_creature->IsInCombat() && who->GetTypeId() == TYPEID_PLAYER  && m_creature->IsWithinDistInMap(who, 15.0f))
         {
             who->GetPartyMember(party, 50.0f);
             for(std::list<Unit*>::iterator i = party.begin(); i != party.end(); ++i)
@@ -2902,7 +2902,7 @@ struct npc_maiev_BT_attuAI : public npc_escortAI
 
     void MoveInLineOfSight(Unit* who)
     {
-        if(!m_creature->isInCombat() && (who->GetEntry() == 22988 || who->GetEntry() == 23152) && m_creature->IsWithinDistInMap(who, 20))
+        if(!m_creature->IsInCombat() && (who->GetEntry() == 22988 || who->GetEntry() == 23152) && m_creature->IsWithinDistInMap(who, 20))
             m_creature->AI()->AttackStart(who);
     }
 
@@ -2929,7 +2929,7 @@ struct npc_maiev_BT_attuAI : public npc_escortAI
         {
             if(FanOfBladesTimer.Expired(diff))
             {
-                DoCast(m_creature->getVictim(), SPELL_FAN_OF_BLADES);
+                DoCast(m_creature->GetVictim(), SPELL_FAN_OF_BLADES);
                 FanOfBladesTimer = urand(8000, 16000);
             }
         }
@@ -2974,7 +2974,7 @@ struct npc_akama_BT_attuAI : public npc_escortAI
 
     void MoveInLineOfSight(Unit* who)
     {
-        if(!m_creature->isInCombat() && (who->GetEntry() == 22988 || who->GetEntry() == 23152) && m_creature->IsWithinDistInMap(who, 20))
+        if(!m_creature->IsInCombat() && (who->GetEntry() == 22988 || who->GetEntry() == 23152) && m_creature->IsWithinDistInMap(who, 20))
             m_creature->AI()->AttackStart(who);
     }
 
@@ -3021,7 +3021,7 @@ struct npc_akama_BT_attuAI : public npc_escortAI
         {
             if(ChainLightningTimer.Expired(diff))
             {
-                DoCast(m_creature->getVictim(), CHAIN_LIGHTNING);
+                DoCast(m_creature->GetVictim(), CHAIN_LIGHTNING);
                 ChainLightningTimer = urand(5000, 10000);
             }
         }
@@ -3072,7 +3072,7 @@ struct npc_ashtongue_deathswornAI : public npc_escortAI
 
     void MoveInLineOfSight(Unit* who)
     {
-        if(!m_creature->isInCombat() && (who->GetEntry() == 22988 || who->GetEntry() == 23152 || who->GetEntry() == 21166) && m_creature->IsWithinDistInMap(who, 30))
+        if(!m_creature->IsInCombat() && (who->GetEntry() == 22988 || who->GetEntry() == 23152 || who->GetEntry() == 21166) && m_creature->IsWithinDistInMap(who, 30))
             m_creature->AI()->AttackStart(who);
     }
 
@@ -3162,20 +3162,20 @@ struct mob_illidari_shadowlordAI : public ScriptedAI
         {
             if(CarrionSwarmTimer.Expired(diff))
             {
-                DoCast(m_creature->getVictim(), SPELL_CARRION_SWARM);
+                DoCast(m_creature->GetVictim(), SPELL_CARRION_SWARM);
                 CarrionSwarmTimer = urand(8000, 16000);
             }
 
             if(InfernoTimer.Expired(diff))
             {
-                DoCast(m_creature->getVictim(), SPELL_INFERNO);
+                DoCast(m_creature->GetVictim(), SPELL_INFERNO);
                 InfernoTimer = urand(35000, 50000);
             }
 
             if(SleepTimer.Expired(diff))
             {
                 if(!urand(0, 3))
-                    DoCast(m_creature->getVictim(), SPELL_SLEEP);
+                    DoCast(m_creature->GetVictim(), SPELL_SLEEP);
                 SleepTimer = 60000;
             }
 
@@ -3709,7 +3709,7 @@ struct npc_invis_infernal_casterAI : public ScriptedAI
             else
             {
                 Unit* infernal = m_creature->GetUnit(myInfernal);
-                if (!infernal || infernal->isDead())
+                if (!infernal || infernal->IsDead())
                 {
                     summonTimer = 60000;
                     myInfernal = 0;

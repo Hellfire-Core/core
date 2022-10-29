@@ -121,9 +121,9 @@ struct boss_mennu_the_betrayerAI : public ScriptedAI
         if (LightningBolt_Timer.Expired(diff))
         {
             if (HeroicMode)
-                AddCustomSpellToCast(m_creature->getVictim(), SPELL_LIGHTNING_BOLT,142,0,0);
+                AddCustomSpellToCast(m_creature->GetVictim(), SPELL_LIGHTNING_BOLT,142,0,0);
             else
-            AddCustomSpellToCast(m_creature->getVictim(), SPELL_LIGHTNING_BOLT,175,0,0);
+            AddCustomSpellToCast(m_creature->GetVictim(), SPELL_LIGHTNING_BOLT,175,0,0);
             LightningBolt_Timer = 10000;
         }
         

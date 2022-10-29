@@ -113,7 +113,7 @@ struct npc_ameAI : public npc_escortAI
 
         if (DEMORALIZINGSHOUT_Timer.Expired(diff))
         {
-            DoCast(me->getVictim(),SPELL_DEMORALIZINGSHOUT);
+            DoCast(me->GetVictim(),SPELL_DEMORALIZINGSHOUT);
             DEMORALIZINGSHOUT_Timer = 70000;
         } 
 
@@ -253,7 +253,7 @@ struct npc_ringoAI : public FollowerAI
     {
         FollowerAI::MoveInLineOfSight(pWho);
 
-        if (!me->getVictim() && !HasFollowState(STATE_FOLLOW_COMPLETE) && pWho->GetEntry() == NPC_SPRAGGLE)
+        if (!me->GetVictim() && !HasFollowState(STATE_FOLLOW_COMPLETE) && pWho->GetEntry() == NPC_SPRAGGLE)
         {
             if (me->IsWithinDistInMap(pWho, INTERACTION_DISTANCE))
             {
@@ -309,7 +309,7 @@ struct npc_ringoAI : public FollowerAI
                 if (m_uiEndEventTimer.Expired(uiDiff))
                 {
                     Unit *pSpraggle = Unit::GetUnit(*me, SpraggleGUID);
-                    if (!pSpraggle || !pSpraggle->isAlive())
+                    if (!pSpraggle || !pSpraggle->IsAlive())
                     {
                         SetFollowComplete();
                         return;

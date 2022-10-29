@@ -113,7 +113,7 @@ void HostileReference::addThreat(float pMod)
     if (isValid() && pMod >= 0)
     {
         Unit* victim_owner = getTarget()->GetCharmerOrOwner();
-        if (victim_owner && victim_owner->isAlive())
+        if (victim_owner && victim_owner->IsAlive())
             getSource()->addThreat(victim_owner, 0.0f);     // create a threat to the owner of a pet, if the pet attacks
     }
 }
@@ -137,8 +137,8 @@ void HostileReference::updateOnlineStatus()
     // target is no player or not gamemaster
     // target is not in flight
     if (isValid()
-        && (getTarget()->GetTypeId() != TYPEID_PLAYER || !((Player*)getTarget())->isGameMaster())
-        && !getTarget()->hasUnitState(UNIT_STAT_TAXI_FLIGHT))
+        && (getTarget()->GetTypeId() != TYPEID_PLAYER || !((Player*)getTarget())->IsGameMaster())
+        && !getTarget()->HasUnitState(UNIT_STAT_TAXI_FLIGHT))
     {
         Creature* creature = (Creature*) getSourceUnit();
         online = getTarget()->isInAccessiblePlacefor (creature);
@@ -308,7 +308,7 @@ bool DropAggro(Creature* pAttacker, Unit * target)
     }
 
     // disorient and confuse effects
-    if (target->hasUnitState(UNIT_STAT_CONFUSED))
+    if (target->HasUnitState(UNIT_STAT_CONFUSED))
         return true;
 
     // is this needed ? Oo if not then next check if also useless ;)
@@ -452,12 +452,12 @@ void ThreatManager::addThreat(Unit* pVictim, float pThreat, SpellSchoolMask scho
         return;
 
     // not to GM
-    if (!pVictim || (pVictim->GetTypeId() == TYPEID_PLAYER && ((Player*)pVictim)->isGameMaster()))
+    if (!pVictim || (pVictim->GetTypeId() == TYPEID_PLAYER && ((Player*)pVictim)->IsGameMaster()))
         return;
 
 
     // not to dead and not for dead
-    if (!pVictim->isAlive() || !getOwner()->isAlive())
+    if (!pVictim->IsAlive() || !getOwner()->IsAlive())
         return;
 
     ASSERT(getOwner()->GetTypeId() == TYPEID_UNIT);
@@ -491,7 +491,7 @@ void ThreatManager::_addThreat(Unit *pVictim, float threat)
         HostileReference* hostileRef = new HostileReference(pVictim, this, 0);
         iThreatContainer.addReference(hostileRef);
         hostileRef->addThreat(threat);                 // now we add the real threat
-        if (pVictim->GetTypeId() == TYPEID_PLAYER && ((Player*)pVictim)->isGameMaster())
+        if (pVictim->GetTypeId() == TYPEID_PLAYER && ((Player*)pVictim)->IsGameMaster())
             hostileRef->setOnlineOfflineState(false);  // GM is always offline
     }
 }

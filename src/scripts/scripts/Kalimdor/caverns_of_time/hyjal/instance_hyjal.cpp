@@ -102,7 +102,7 @@ struct instance_mount_hyjal : public ScriptedInstance
             if(!Archimonde)
                 return;
 
-            switch(pVictim->getClass())
+            switch(pVictim->GetClass())
             {
                 case CLASS_PRIEST:
                 case CLASS_PALADIN:

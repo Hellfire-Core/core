@@ -177,14 +177,14 @@ struct boss_vaelAI : public ScriptedAI
         SpeachTimer -= diff;
         if (Cleave_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_CLEAVE);
+            DoCast(m_creature->GetVictim(),SPELL_CLEAVE);
             Cleave_Timer += 15000;
         }
 
         FlameBreath_Timer -= diff;
         if (FlameBreath_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_FLAMEBREATH);
+            DoCast(m_creature->GetVictim(),SPELL_FLAMEBREATH);
             FlameBreath_Timer += 4000 + rand()%4000;
         }
 
@@ -199,7 +199,7 @@ struct boss_vaelAI : public ScriptedAI
                 ++i;
                 target = SelectUnit(SELECT_TARGET_RANDOM,1);//not aggro leader
                 if (target)
-                    if (target->getPowerType() == POWER_MANA)
+                    if (target->GetPowerType() == POWER_MANA)
                         i=3;
             }
             if (target)                                     // cast on self (see below)
@@ -213,7 +213,7 @@ struct boss_vaelAI : public ScriptedAI
         {
             // have the victim cast the spell on himself otherwise the third effect aura will be applied
             // to Vael instead of the player
-            m_creature->getVictim()->CastSpell(m_creature->getVictim(),SPELL_BURNINGADRENALINE,1);
+            m_creature->GetVictim()->CastSpell(m_creature->GetVictim(),SPELL_BURNINGADRENALINE,1);
 
             BurningAdrenalineTank_Timer += 45000;
         }
@@ -221,7 +221,7 @@ struct boss_vaelAI : public ScriptedAI
         FireNova_Timer -= diff;
         if (FireNova_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_FIRENOVA);
+            DoCast(m_creature->GetVictim(),SPELL_FIRENOVA);
             FireNova_Timer += 5000;
         }
 
@@ -229,9 +229,9 @@ struct boss_vaelAI : public ScriptedAI
         if (TailSwipe_Timer <= diff)
         {
             //Only cast if we are behind
-            /*if (!m_creature->HasInArc( M_PI, m_creature->getVictim()))
+            /*if (!m_creature->HasInArc( M_PI, m_creature->GetVictim()))
             {
-            DoCast(m_creature->getVictim(),SPELL_TAILSWIPE);
+            DoCast(m_creature->GetVictim(),SPELL_TAILSWIPE);
             }*/
 
             TailSwipe_Timer += 20000;

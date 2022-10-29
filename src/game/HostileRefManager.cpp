@@ -36,7 +36,7 @@ HostileRefManager::~HostileRefManager()
 
 void HostileRefManager::threatAssist(Unit *pVictim, float pThreat, SpellEntry const *pThreatSpell, bool pSingleTarget)
 {
-    if (iOwner->hasUnitState(UNIT_STAT_IGNORE_ATTACKERS))
+    if (iOwner->HasUnitState(UNIT_STAT_IGNORE_ATTACKERS))
         return;
 
     HostileReference* ref;

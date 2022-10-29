@@ -295,7 +295,7 @@ struct boss_felmystAI : public ScriptedAI
     void JustRespawned()
     {
         Phase = PHASE_RESPAWNING;
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         me->SetStandState(PLAYER_STATE_SLEEP);
         IntroTimer = 4000;
     }
@@ -321,7 +321,7 @@ struct boss_felmystAI : public ScriptedAI
         for(Map::PlayerList::const_iterator i = players.begin(); i != players.end(); ++i)
             if(Player *p = i->getSource())
             {
-                if(p->isAlive() && p->HasAura(SPELL_FOG_CHARM, 0))
+                if(p->IsAlive() && p->HasAura(SPELL_FOG_CHARM, 0))
                     me->Kill(p, false);
             }
         summons.DespawnAll();
@@ -402,7 +402,7 @@ struct boss_felmystAI : public ScriptedAI
                 break;
             case 5:
                 Phase = PHASE_NULL;
-                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                 IntroTimer = 0;
                 break;
         }
@@ -420,8 +420,8 @@ struct boss_felmystAI : public ScriptedAI
         {
             // stop moving on each waypoint
             me->GetMotionMaster()->MoveIdle();
-            if(me->getVictim()) // cosmetics: to be tested if working
-                me->SetInFront(me->getVictim());
+            if(me->GetVictim()) // cosmetics: to be tested if working
+                me->SetInFront(me->GetVictim());
             switch(Id)
             {
                 case 0: // on landing after aggroing
@@ -544,8 +544,8 @@ struct boss_felmystAI : public ScriptedAI
             me->setHover(false);
             me->SendHeartBeat();
             EnterPhase(PHASE_GROUND);
-            AttackStart(me->getVictim());
-            DoStartMovement(me->getVictim());
+            AttackStart(me->GetVictim());
+            DoStartMovement(me->GetVictim());
             break;
         default:
             break;
@@ -568,11 +568,11 @@ struct boss_felmystAI : public ScriptedAI
                 _Timer[EVENT_CHECK]=1000;
                 break;
             case EVENT_CLEAVE:
-                AddSpellToCast(me->getVictim(), SPELL_CLEAVE);
+                AddSpellToCast(me->GetVictim(), SPELL_CLEAVE);
                 _Timer[EVENT_CLEAVE] = urand(5000, 10000);
                 break;
             case EVENT_CORROSION:
-                AddSpellToCast(me->getVictim(), SPELL_CORROSION);
+                AddSpellToCast(me->GetVictim(), SPELL_CORROSION);
                 _Timer[EVENT_CORROSION] = urand(20000, 30000);
                 break;
             case EVENT_GAS_NOVA:
@@ -698,7 +698,7 @@ struct mob_felmyst_vaporAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!me->getVictim() || !me->getVictim()->isTargetableForAttack() || me->getVictim()->GetTypeId() != TYPEID_PLAYER)
+        if(!me->GetVictim() || !me->GetVictim()->isTargetableForAttack() || me->GetVictim()->GetTypeId() != TYPEID_PLAYER)
             AttackStart(SelectUnit(SELECT_TARGET_NEAREST, 0, 100.0, true));
     }
 };

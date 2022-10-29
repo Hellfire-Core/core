@@ -154,7 +154,7 @@ void SimpleAI::KilledUnit(Unit *victim)
         target = m_creature;
         break;
     case CAST_HOSTILE_TARGET:
-        target = m_creature->getVictim();
+        target = m_creature->GetVictim();
         break;
     case CAST_HOSTILE_SECOND_AGGRO:
         target = SelectUnit(SELECT_TARGET_TOPAGGRO,1);
@@ -204,7 +204,7 @@ void SimpleAI::DamageTaken(Unit *killer, uint32 &damage)
         target = m_creature;
         break;
     case CAST_HOSTILE_TARGET:
-        target = m_creature->getVictim();
+        target = m_creature->GetVictim();
         break;
     case CAST_HOSTILE_SECOND_AGGRO:
         target = SelectUnit(SELECT_TARGET_TOPAGGRO,1);
@@ -228,7 +228,7 @@ void SimpleAI::DamageTaken(Unit *killer, uint32 &damage)
 void SimpleAI::UpdateAI(const uint32 diff)
 {
     //Return since we have no target
-    if (!UpdateVictim() || m_creature->hasUnitState(UNIT_STAT_LOST_CONTROL) || m_creature->IsPolymorphed())
+    if (!UpdateVictim() || m_creature->HasUnitState(UNIT_STAT_LOST_CONTROL) || m_creature->IsPolymorphed())
         return;
 
     //Spells
@@ -255,7 +255,7 @@ void SimpleAI::UpdateAI(const uint32 diff)
                     target = m_creature;
                     break;
                 case CAST_HOSTILE_TARGET:
-                    target = m_creature->getVictim();
+                    target = m_creature->GetVictim();
                     break;
                 case CAST_HOSTILE_SECOND_AGGRO:
                     target = SelectUnit(SELECT_TARGET_TOPAGGRO,1);

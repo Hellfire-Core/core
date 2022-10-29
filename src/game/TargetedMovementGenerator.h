@@ -97,7 +97,7 @@ class ChaseMovementGenerator : public TargetedMovementGeneratorMedium<T, ChaseMo
         void Reset(T &);
 
         bool EnableWalking(T &) const;
-        bool _lostTarget(T &u) const { return u.getVictim() != this->GetTarget(); }
+        bool _lostTarget(T &u) const { return u.GetVictim() != this->GetTarget(); }
         void _reachTarget(T &);
 };
 

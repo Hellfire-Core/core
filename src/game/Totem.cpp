@@ -40,7 +40,7 @@ void Totem::Update(uint32 update_diff, uint32 diff)
     SendHeartBeat();
     UpdateVisibilityAndView();
     Unit *owner = GetOwner();
-    if (!owner || !owner->isAlive() || !this->isAlive())
+    if (!owner || !owner->IsAlive() || !this->IsAlive())
     {
         UnSummon();                                         // remove self
         return;
@@ -165,7 +165,7 @@ void Totem::SetOwner(uint64 guid)
     if (Unit *owner = GetOwner())
     {
         this->setFaction(owner->getFaction());
-        this->SetLevel(owner->getLevel());
+        this->SetLevel(owner->GetLevel());
     }
 }
 

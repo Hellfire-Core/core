@@ -110,7 +110,7 @@ struct boss_high_king_maulgarAI : public BossAI
 
     void DoAction(const int32 param)
     {
-        if (me->isAlive())
+        if (me->IsAlive())
             DoScriptText(RAND(SAY_OGRE_DEATH1, SAY_OGRE_DEATH2, SAY_OGRE_DEATH3, SAY_OGRE_DEATH4), me);
     }
 

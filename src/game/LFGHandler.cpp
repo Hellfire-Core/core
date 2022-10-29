@@ -174,7 +174,7 @@ void WorldSession::SendLFM(uint32 type, uint32 entry)
 
             uint8 lfgType = plr->IsLFM(type, entry);
             data << plr->GetPackGUID();                         // packed guid
-            data << plr->getLevel();                            // level
+            data << plr->GetLevel();                            // level
             data << plr->GetCachedZone();                       // current zone
             data << lfgType;                                    // 0x00 - LFG, 0x01 - LFM
 
@@ -208,7 +208,7 @@ void WorldSession::SendLFM(uint32 type, uint32 entry)
                     if (member && member->GetGUID() != plr->GetGUID())
                     {
                         data << member->GetPackGUID();          // packed guid
-                        data << member->getLevel();             // player level
+                        data << member->GetLevel();             // player level
                     }
                 }
             }
@@ -270,7 +270,7 @@ void WorldSession::SendLFG(uint32 type, uint32 entry)
     data << uint32(0);                                      // count again, strange, placeholder
 
     data << plr->GetPackGUID();                         // packed guid
-    data << plr->getLevel();                            // level
+    data << plr->GetLevel();                            // level
     data << plr->GetZoneId();                           // current zone
     data << 0;                                    // 0x00 - LFG, 0x01 - LFM
 

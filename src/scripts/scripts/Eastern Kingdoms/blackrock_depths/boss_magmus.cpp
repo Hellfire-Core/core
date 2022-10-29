@@ -55,7 +55,7 @@ struct boss_magmusAI : public ScriptedAI
         FieryBurst_Timer -= diff;
         if (FieryBurst_Timer <= diff)
         {
-            DoCast(me->getVictim(),SPELL_FIERYBURST);
+            DoCast(me->GetVictim(),SPELL_FIERYBURST);
             FieryBurst_Timer += 6000;
         }
         
@@ -66,7 +66,7 @@ struct boss_magmusAI : public ScriptedAI
             WarStomp_Timer -= diff;
             if (WarStomp_Timer <= diff)
             {
-                DoCast(me->getVictim(),SPELL_WARSTOMP);
+                DoCast(me->GetVictim(),SPELL_WARSTOMP);
                 WarStomp_Timer += 8000;
             }
         }

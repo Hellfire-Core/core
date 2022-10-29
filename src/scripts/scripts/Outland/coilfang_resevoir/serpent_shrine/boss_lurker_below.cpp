@@ -129,7 +129,7 @@ struct boss_the_lurker_belowAI : public BossAI
 
     void MoveInLineOfSight(Unit *pWho)
     {
-        if (me->GetVisibility() == VISIBILITY_OFF || me->isInCombat())
+        if (me->GetVisibility() == VISIBILITY_OFF || me->IsInCombat())
             return;
 
         AttackStart(pWho);
@@ -167,7 +167,7 @@ struct boss_the_lurker_belowAI : public BossAI
         for (std::list<HostileReference*>::iterator itr = m_threatlist.begin(); itr != m_threatlist.end(); ++itr)
         {
             Unit* pUnit = Unit::GetUnit((*me), (*itr)->getUnitGuid());
-            if (pUnit && pUnit->isAlive())
+            if (pUnit && pUnit->IsAlive())
             {
                 if (me->GetDistance(pUnit) > 1.5f)
                     (*itr)->setThreat(0.0f);
@@ -187,9 +187,9 @@ struct boss_the_lurker_belowAI : public BossAI
         if (m_submerged || m_rotating || m_emoting)
             return;
 
-        if (me->GetDistance(me->getVictim()) <= 1.5f)
+        if (me->GetDistance(me->GetVictim()) <= 1.5f)
         {
-            me->Attack(me->getVictim(), true);
+            me->Attack(me->GetVictim(), true);
             UnitAI::DoMeleeAttackIfReady();
             return;
         }
@@ -286,7 +286,7 @@ struct boss_the_lurker_belowAI : public BossAI
                     ForceSpellCast(me, SPELL_SUBMERGE, INTERRUPT_AND_CAST_INSTANTLY);
 
                     me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                    me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                    me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                     me->RemoveAllAuras();
 
                     m_submerged = true;
@@ -304,7 +304,7 @@ struct boss_the_lurker_belowAI : public BossAI
                 case LURKER_EVENT_REEMERGING:
                 {
                     me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                    me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                    me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                     me->RemoveAurasDueToSpell(SPELL_SUBMERGE);
                     me->UpdateVisibilityAndView();
                     ForceSpellCast(SPELL_EMERGE, CAST_NULL, INTERRUPT_AND_CAST_INSTANTLY);
@@ -319,7 +319,7 @@ struct boss_the_lurker_belowAI : public BossAI
                 {
                     me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
                     me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                    me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                    me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
 
                     m_submerged = false;
 

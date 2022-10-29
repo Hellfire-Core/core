@@ -73,7 +73,7 @@ struct boss_illuciabarovAI : public ScriptedAI
         CurseOfAgony_Timer -= diff;
         if (CurseOfAgony_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_CURSEOFAGONY);
+            DoCast(m_creature->GetVictim(),SPELL_CURSEOFAGONY);
             CurseOfAgony_Timer += 30000;
         }
 
@@ -90,14 +90,14 @@ struct boss_illuciabarovAI : public ScriptedAI
         Silence_Timer -= diff;
         if (Silence_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_SILENCE);
+            DoCast(m_creature->GetVictim(),SPELL_SILENCE);
             Silence_Timer += 14000;
         }
 
         Fear_Timer -= diff;
         if (Fear_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_FEAR);
+            DoCast(m_creature->GetVictim(),SPELL_FEAR);
             Fear_Timer += 30000;
         }
 

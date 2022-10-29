@@ -115,7 +115,7 @@ struct boss_kazrogalAI : public hyjal_trashAI
         if (i == 7 && pInstance)
         {
             Unit* target = Unit::GetUnit((*m_creature), pInstance->GetData64(DATA_THRALL));
-            if (target && target->isAlive())
+            if (target && target->IsAlive())
             {
                 m_creature->AddThreat(target,0.0);
                 AttackStart(target);
@@ -174,7 +174,7 @@ struct boss_kazrogalAI : public hyjal_trashAI
 
         if (CleaveTimer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(), SPELL_CLEAVE);
+            DoCast(m_creature->GetVictim(), SPELL_CLEAVE);
             CleaveTimer = 6000+rand()%15000;
         }
 

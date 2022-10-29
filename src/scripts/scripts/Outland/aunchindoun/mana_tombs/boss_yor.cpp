@@ -65,13 +65,13 @@ struct boss_yorAI : public ScriptedAI
 
         if (DoubleBreath_Timer.Expired(diff))
         {
-            AddSpellToCast(m_creature->getVictim(), SPELL_DOUBLE_BREATH);
+            AddSpellToCast(m_creature->GetVictim(), SPELL_DOUBLE_BREATH);
             DoubleBreath_Timer = 7500 + rand() % 5000;
         }
 
         if (Stomp_Timer.Expired(diff))
         {
-            AddSpellToCast(m_creature->getVictim(), SPELL_STOMP);
+            AddSpellToCast(m_creature->GetVictim(), SPELL_STOMP);
             Stomp_Timer = 15000+rand()%5000;
         }
 

@@ -74,7 +74,7 @@ struct boss_gahzrankaAI : public ScriptedAI
         Frostbreath_Timer -= diff;
         if (Frostbreath_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_FROSTBREATH);
+            DoCast(m_creature->GetVictim(),SPELL_FROSTBREATH);
             Frostbreath_Timer += 7000 + rand()%4000;
         }
         
@@ -82,7 +82,7 @@ struct boss_gahzrankaAI : public ScriptedAI
         MassiveGeyser_Timer -= diff;
         if (MassiveGeyser_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_MASSIVEGEYSER);
+            DoCast(m_creature->GetVictim(),SPELL_MASSIVEGEYSER);
             DoResetThreat();
 
             MassiveGeyser_Timer += 22000 + rand()%10000;
@@ -92,7 +92,7 @@ struct boss_gahzrankaAI : public ScriptedAI
         Slam_Timer -= diff;
         if (Slam_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_SLAM);
+            DoCast(m_creature->GetVictim(),SPELL_SLAM);
             Slam_Timer += 12000 + rand()%8000;
         }
         

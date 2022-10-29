@@ -128,7 +128,7 @@ struct boss_doomwalkerAI : public ScriptedAI
         {
             DoScriptText(RAND(SAY_OVERRUN_1, SAY_OVERRUN_2), m_creature);
 
-            DoCast(m_creature->getVictim(),SPELL_OVERRUN);
+            DoCast(m_creature->GetVictim(),SPELL_OVERRUN);
 
             DoResetThreat();
 
@@ -159,7 +159,7 @@ struct boss_doomwalkerAI : public ScriptedAI
             target = SelectUnit(SELECT_TARGET_RANDOM,1, GetSpellMaxRange(SPELL_CHAIN_LIGHTNING), true, m_creature->getVictimGUID());
 
             if (!target)
-                target = m_creature->getVictim();
+                target = m_creature->GetVictim();
 
             if (target)
                 DoCast(target,SPELL_CHAIN_LIGHTNING);
@@ -170,7 +170,7 @@ struct boss_doomwalkerAI : public ScriptedAI
         //Spell Sunder Armor
         if (Armor_Timer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(),SPELL_SUNDER_ARMOR);
+            DoCast(m_creature->GetVictim(),SPELL_SUNDER_ARMOR);
             Armor_Timer = 10000 + rand()%15000;
         }
 

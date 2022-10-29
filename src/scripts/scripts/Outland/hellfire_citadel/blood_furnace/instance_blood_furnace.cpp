@@ -216,7 +216,7 @@ struct instance_blood_furnace : public ScriptedInstance
             {
                 HandleGameObject(MakerDoor1GUID, 0);
 
-                if (Maker && !Maker->isAlive())
+                if (Maker && !Maker->IsAlive())
                     HandleGameObject(MakerDoor2GUID, 0);
             }
 
@@ -224,13 +224,13 @@ struct instance_blood_furnace : public ScriptedInstance
             {
                 HandleGameObject(BroggokDoor1GUID, 0);
 
-                if (Broggok && !Broggok->isAlive())
+                if (Broggok && !Broggok->IsAlive())
                     HandleGameObject(BroggokDoor2GUID, 0);
             }
 
             if (Creature* Kelidan = instance->GetCreature(KelidanGUID))
             {
-                if (Kelidan && !Kelidan->isAlive())
+                if (Kelidan && !Kelidan->IsAlive())
                 {
                     HandleGameObject(Sewer1GUID, 0);
                     HandleGameObject(Sewer2GUID, 0);

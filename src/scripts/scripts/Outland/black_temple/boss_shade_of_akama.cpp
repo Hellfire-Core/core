@@ -151,7 +151,7 @@ struct mob_ashtongue_channelerAI : public ScriptedAI
                 me->RemoveAurasDueToSpell(SPELL_SHADE_SOUL_CHANNEL);
                 if (Unit *shade = me->GetUnit(*me, ShadeGUID))
                 {
-                    if (shade->isAlive())
+                    if (shade->IsAlive())
                         DoCast(shade, SPELL_SHADE_SOUL_CHANNEL);
                 }
             }
@@ -196,20 +196,20 @@ struct mob_ashtongue_defenderAI : public ScriptedAI
 
     void DoMeleeAttackIfReady()
     {
-        if (me->hasUnitState(UNIT_STAT_CASTING))
+        if (me->HasUnitState(UNIT_STAT_CASTING))
             return;
 
         //Make sure our attack is ready and we aren't currently casting before checking distance
         if (me->isAttackReady())
         {
             //If we are within range melee the target
-            if (me->IsWithinMeleeRange(me->getVictim()))
+            if (me->IsWithinMeleeRange(me->GetVictim()))
             {
-                me->AttackerStateUpdate(me->getVictim());
+                me->AttackerStateUpdate(me->GetVictim());
                 me->resetAttackTimer();
 
                 if(IS_CREATURE_GUID(me->getVictimGUID()))
-                    DoCast(me->getVictim(), SPELL_HEROIC_STRIKE, true);
+                    DoCast(me->GetVictim(), SPELL_HEROIC_STRIKE, true);
             }
         }
     }
@@ -221,16 +221,16 @@ struct mob_ashtongue_defenderAI : public ScriptedAI
 
         if (m_debilStrikeTimer.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(), SPELL_DEBILITATIG_STRIKE);
+            AddSpellToCast(me->GetVictim(), SPELL_DEBILITATIG_STRIKE);
             m_debilStrikeTimer = 20000;
         }
         
 
         if (m_shieldBashTimer.Expired(diff))
         {
-            if (me->getVictim() && me->getVictim()->hasUnitState(UNIT_STAT_CASTING))
+            if (me->GetVictim() && me->GetVictim()->HasUnitState(UNIT_STAT_CASTING))
             {
-                AddSpellToCast(me->getVictim(), SPELL_SHIELD_BASH);
+                AddSpellToCast(me->GetVictim(), SPELL_SHIELD_BASH);
                 m_shieldBashTimer = 10000;
             }
         }
@@ -243,7 +243,7 @@ struct mob_ashtongue_defenderAI : public ScriptedAI
 
             if(Creature *pAkama = me->GetCreature(*me, instance->GetData64(DATA_SHADEOFAKAMA)))
             {
-                if(!pAkama->isAlive())
+                if(!pAkama->IsAlive())
                 {
                     me->Kill(me, false);
                     me->RemoveCorpse();
@@ -291,7 +291,7 @@ struct mob_ashtongue_spiritbinderAI : public ScriptedAI
 
     void MoveInLineOfSight(Unit *pWho)
     {
-        if (me->getVictim())
+        if (me->GetVictim())
             return;
 
         if (pWho->GetTypeId() == TYPEID_PLAYER)
@@ -324,7 +324,7 @@ struct mob_ashtongue_spiritbinderAI : public ScriptedAI
 
             for (std::list<Creature*>::iterator i = m_sorcerrers.begin(); i != m_sorcerrers.end(); i++)
             {
-                if (!(*i)->isAlive())
+                if (!(*i)->IsAlive())
                     continue;
 
                 if ((*i)->GetHealth() < pTarget->GetHealth())
@@ -339,7 +339,7 @@ struct mob_ashtongue_spiritbinderAI : public ScriptedAI
 
             for (std::list<Creature*>::iterator i = m_sorcerrers.begin(); i != m_sorcerrers.end(); i++)
             {
-                if (!(*i)->isAlive())
+                if (!(*i)->IsAlive())
                     continue;
 
                 if ((*i)->GetHealth() < pTarget->GetHealth())
@@ -347,7 +347,7 @@ struct mob_ashtongue_spiritbinderAI : public ScriptedAI
             }
         }
 
-        if (pTarget->isAlive() && pTarget->IsInWorld())
+        if (pTarget->IsAlive() && pTarget->IsInWorld())
             return pTarget;
         else
             return NULL;
@@ -391,7 +391,7 @@ struct mob_ashtongue_spiritbinderAI : public ScriptedAI
 
             if(Creature *pAkama = me->GetCreature(*me, instance->GetData64(DATA_SHADEOFAKAMA)))
             {
-                if(!pAkama->isAlive())
+                if(!pAkama->IsAlive())
                 {
                     me->Kill(me, false);
                     me->RemoveCorpse();
@@ -436,7 +436,7 @@ struct mob_ashtongue_elementalistAI : public ScriptedAI
 
     void MoveInLineOfSight(Unit *pWho)
     {
-        if (me->getVictim())
+        if (me->GetVictim())
             return;
 
         if (pWho->GetTypeId() == TYPEID_PLAYER)
@@ -463,7 +463,7 @@ struct mob_ashtongue_elementalistAI : public ScriptedAI
 
         if (m_lightningBoltTimer.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(), SPELL_LIGHTNING_BOLT, false);
+            AddSpellToCast(me->GetVictim(), SPELL_LIGHTNING_BOLT, false);
             m_lightningBoltTimer = 10000;
         }
 
@@ -486,7 +486,7 @@ struct mob_ashtongue_elementalistAI : public ScriptedAI
 
             if (Creature *pAkama = me->GetCreature(*me, instance->GetData64(DATA_SHADEOFAKAMA)))
             {
-                if (!pAkama->isAlive())
+                if (!pAkama->IsAlive())
                 {
                     me->Kill(me, false);
                     me->RemoveCorpse();
@@ -534,7 +534,7 @@ struct mob_ashtongue_rogueAI : public ScriptedAI
 
     void MoveInLineOfSight(Unit *pWho)
     {
-        if (me->getVictim())
+        if (me->GetVictim())
             return;
 
         if (pWho->GetTypeId() == TYPEID_PLAYER)
@@ -561,14 +561,14 @@ struct mob_ashtongue_rogueAI : public ScriptedAI
 
         if (m_debilPoisonTimer.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(), SPELL_DEBILITATING_POISON, false);
+            AddSpellToCast(me->GetVictim(), SPELL_DEBILITATING_POISON, false);
             m_debilPoisonTimer = 15000;
         }
         
 
         if (m_eviscerateTimer.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(), SPELL_EVISCERATE, false);
+            AddSpellToCast(me->GetVictim(), SPELL_EVISCERATE, false);
             m_eviscerateTimer = 10000;
         }
         
@@ -580,7 +580,7 @@ struct mob_ashtongue_rogueAI : public ScriptedAI
 
             if (Creature *pAkama = me->GetCreature(*me, instance->GetData64(DATA_SHADEOFAKAMA)))
             {
-                if(!pAkama->isAlive())
+                if(!pAkama->IsAlive())
                 {
                     me->Kill(me, false);
                     me->RemoveCorpse();
@@ -654,7 +654,7 @@ struct mob_ashtongue_sorcererAI : public ScriptedAI
             {
                 if (Unit *pShade = me->GetUnit(*me, m_shadeGUID))
                 {
-                    if (pShade->isAlive())
+                    if (pShade->IsAlive())
                     {
                         me->SetSelection(m_shadeGUID);
                         DoCast(pShade, SPELL_SHADE_SOUL_CHANNEL);
@@ -743,7 +743,7 @@ struct boss_shade_of_akamaAI : public ScriptedAI
 
         if (Creature *akama = me->GetCreature(*me, AkamaGUID))
         {
-            if (akama->isDead())
+            if (akama->IsDead())
                 akama->Respawn();
 
             akama->AI()->EnterEvadeMode();
@@ -992,7 +992,7 @@ struct boss_shade_of_akamaAI : public ScriptedAI
                 {
                     m_channelers.push_back(channeler->GetGUID());
                     channeler->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                    channeler->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                    channeler->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                 }
             }
         }
@@ -1014,7 +1014,7 @@ struct boss_shade_of_akamaAI : public ScriptedAI
                 for (std::list<uint64>::const_iterator itr = m_channelers.begin(); itr != m_channelers.end(); ++itr)
                 {
                     if (Creature *channeler = me->GetCreature(*me, *itr))
-                        channeler->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                        channeler->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                 }
 
                 DoZoneInCombat();
@@ -1077,7 +1077,7 @@ struct boss_shade_of_akamaAI : public ScriptedAI
                         if (AkamaGUID)
                         {
                             Creature *akama = me->GetCreature(*me, AkamaGUID);
-                            if (akama && akama->isAlive())
+                            if (akama && akama->IsAlive())
                             {
                                 int damage = akama->GetMaxHealth()/12;
                                 if (event_phase == AKAMA_DEATH) // after 60s deal damage equal to hp
@@ -1242,7 +1242,7 @@ struct npc_akamaAI : public Scripted_NoMovementAI
     {
         DoScriptText(SAY_DEATH, me);
         Creature *shade = me->GetCreature(*me, ShadeGUID);
-        if (shade && shade->isAlive())
+        if (shade && shade->IsAlive())
             shade->AI()->EnterEvadeMode();
 
         m_summons.DespawnAll();
@@ -1252,14 +1252,14 @@ struct npc_akamaAI : public Scripted_NoMovementAI
     {
         if (instance && instance->GetData(EVENT_SHADEOFAKAMA) == IN_PROGRESS)
         {
-            if (!me->isInCombat())
+            if (!me->IsInCombat())
                 return false;
 
             if (Creature *pShade = me->GetCreature(*me, ShadeGUID))
             {
                 me->InterruptNonMeleeSpells(false);
                 AttackStart(pShade);
-                return me->getVictim();
+                return me->GetVictim();
             }
         }
         return false;
@@ -1339,14 +1339,14 @@ struct npc_akamaAI : public Scripted_NoMovementAI
 
         if (m_destructiveTimer.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(), SPELL_DESTRUCTIVE_POISON, true);
+            AddSpellToCast(me->GetVictim(), SPELL_DESTRUCTIVE_POISON, true);
             m_destructiveTimer = 5000;
         }
         
 
         if (m_lightningBoltTimer.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(), SPELL_CHAIN_LIGHTNING);
+            AddSpellToCast(me->GetVictim(), SPELL_CHAIN_LIGHTNING);
             m_lightningBoltTimer = 8000;
         }
         
@@ -1431,7 +1431,7 @@ bool GossipHello_npc_akama(Player *player, Creature *_Creature)
     {
         if (instance->GetData(EVENT_SHADEOFAKAMA) == NOT_STARTED)
         {
-            if (player->isAlive())
+            if (player->IsAlive())
             {
                 player->ADD_GOSSIP_ITEM( 0, GOSSIP_ITEM, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
                 player->SEND_GOSSIP_MENU(907, _Creature->GetGUID());

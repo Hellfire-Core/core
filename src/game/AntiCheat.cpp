@@ -32,7 +32,7 @@ int ACRequest::call()
         return -1;
 
     // charging
-    if (pPlayer->hasUnitState(UNIT_STAT_CHARGING))
+    if (pPlayer->HasUnitState(UNIT_STAT_CHARGING))
         return -1;
 
     uint32 latency = pPlayer->GetSession()->GetLatency();
@@ -118,7 +118,7 @@ bool ACRequest::DetectWaterWalkHack(Player *pPlayer)
         return false;
 
     // if we are a ghost we can walk on water
-    if (!pPlayer->isAlive())
+    if (!pPlayer->IsAlive())
         return false;
 
     if (pPlayer->HasAuraType(SPELL_AURA_FEATHER_FALL) ||

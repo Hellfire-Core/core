@@ -170,7 +170,7 @@ struct boss_netherspiteAI : public ScriptedAI
                     for(Map::PlayerList::const_iterator i = players.begin(); i!=players.end(); ++i)
                     {
                         Player* p = i->getSource();
-                        if (p && p->isAlive() && !p->HasAura(PlayerDebuff[j]) // alive
+                        if (p && p->IsAlive() && !p->HasAura(PlayerDebuff[j]) // alive
                             && (!target || target->GetExactDistance2d(portal->GetPositionX(), portal->GetPositionY()) > p->GetExactDistance2d(portal->GetPositionX(), portal->GetPositionY())) // closer than current best
                             && !p->HasAura(PlayerDebuff[j], 0) // not exhausted
                             //&& !p->HasAura(PlayerBuff[(j+1)%3],0) // not on another beam
@@ -206,8 +206,8 @@ struct boss_netherspiteAI : public ScriptedAI
                 }
 
                 // aggro target if Red Beam
-                if(j == RED_PORTAL && m_creature->getVictim() != target && target->GetTypeId() == TYPEID_PLAYER)
-                    m_creature->getThreatManager().addThreat(target, 100000.0f+DoGetThreat(m_creature->getVictim()));
+                if(j == RED_PORTAL && m_creature->GetVictim() != target && target->GetTypeId() == TYPEID_PLAYER)
+                    m_creature->getThreatManager().addThreat(target, 100000.0f+DoGetThreat(m_creature->GetVictim()));
             }
         }
     }
@@ -223,7 +223,7 @@ struct boss_netherspiteAI : public ScriptedAI
         PortalTimer.Reset(10000);
         EmpowermentTimer.Reset(13000);
         DoScriptText(EMOTE_PHASE_PORTAL,m_creature);
-        AttackStart(m_creature->getVictim());
+        AttackStart(m_creature->GetVictim());
         DoResetThreat();
     }
 
@@ -262,7 +262,7 @@ struct boss_netherspiteAI : public ScriptedAI
 
     void MoveInLineOfSight(Unit *who)
     {
-        if (!m_creature->isInCombat() && m_creature->IsWithinDistInMap(who, 25.0) && m_creature->IsHostileTo(who))
+        if (!m_creature->IsInCombat() && m_creature->IsWithinDistInMap(who, 25.0) && m_creature->IsHostileTo(who))
             AttackStart(who);
     }
 
@@ -393,7 +393,7 @@ struct mob_void_zoneAI : public Scripted_NoMovementAI
 
     void Reset()
     {
-        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         checkTimer.Reset(500);
         dieTimer.Reset(25000);
     }

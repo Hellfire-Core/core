@@ -566,7 +566,7 @@ void Aura::Update(uint32 diff)
             if (Unit* caster = GetCaster())
             {
                 Powers powertype = Powers(m_spellProto->powerType);
-                int32 manaPerSecond = m_spellProto->manaPerSecond + m_spellProto->manaPerSecondPerLevel * caster->getLevel();
+                int32 manaPerSecond = m_spellProto->manaPerSecond + m_spellProto->manaPerSecondPerLevel * caster->GetLevel();
                 m_timeCla = 1000;
                 if (manaPerSecond)
                 {
@@ -651,7 +651,7 @@ void Aura::Update(uint32 diff)
             // update before applying (aura can be removed in TriggerSpell or PeriodicTick calls)
             m_periodicTimer += m_amplitude;//m_modifier.periodictime;
 
-            if (!m_target->hasUnitState(UNIT_STAT_ISOLATED))
+            if (!m_target->HasUnitState(UNIT_STAT_ISOLATED))
                 PeriodicTick();
         }
     }
@@ -773,7 +773,7 @@ void AreaAura::Update(uint32 diff)
     {
         Unit* caster = m_target;
 
-        if (!caster->hasUnitState(UNIT_STAT_ISOLATED))
+        if (!caster->HasUnitState(UNIT_STAT_ISOLATED))
         {
             std::list<Unit *> targets;
 
@@ -810,7 +810,7 @@ void AreaAura::Update(uint32 diff)
                 if (!CheckTarget(*tIter))
                     continue;
 
-                if (SpellEntry const *actualSpellEntry = sSpellMgr.SelectAuraRankForPlayerLevel(GetSpellProto(), (*tIter)->getLevel()))
+                if (SpellEntry const *actualSpellEntry = sSpellMgr.SelectAuraRankForPlayerLevel(GetSpellProto(), (*tIter)->GetLevel()))
                 {
                     AreaAura *aur;
                     if (actualSpellEntry == GetSpellProto())
@@ -841,7 +841,7 @@ void AreaAura::Update(uint32 diff)
         // or caster is isolated or caster no longer has the aura
         // or caster is (no longer) friendly
         bool needFriendly = (m_areaAuraType == AREA_AURA_ENEMY ? false : true);
-        if (!caster || caster->hasUnitState(UNIT_STAT_ISOLATED) ||
+        if (!caster || caster->HasUnitState(UNIT_STAT_ISOLATED) ||
             !caster->IsWithinExactDistInMap(tmp_target, m_radius)    ||
             !caster->HasAura(tmp_spellId, tmp_effIndex)         ||
             caster->IsFriendlyTo(tmp_target) != needFriendly
@@ -1062,7 +1062,7 @@ void Aura::_AddAura()
             {
                 SetAura(slot, false);
                 SetAuraFlag(slot, true);
-                SetAuraLevel(slot,caster ? caster->getLevel() : sWorld.getConfig(CONFIG_MAX_PLAYER_LEVEL));
+                SetAuraLevel(slot,caster ? caster->GetLevel() : sWorld.getConfig(CONFIG_MAX_PLAYER_LEVEL));
                 UpdateAuraCharges();
 
                 // update for out of range group members
@@ -1145,7 +1145,7 @@ void Aura::_RemoveAura()
     {
         SetAura(slot, true);
         SetAuraFlag(slot, false);
-        SetAuraLevel(slot,caster ? caster->getLevel() : sWorld.getConfig(CONFIG_MAX_PLAYER_LEVEL));
+        SetAuraLevel(slot,caster ? caster->GetLevel() : sWorld.getConfig(CONFIG_MAX_PLAYER_LEVEL));
 
         SetAuraApplication(slot, 0);
         // update for out of range group members
@@ -1370,7 +1370,7 @@ void Aura::HandleAddModifier(bool apply, bool Real)
         }
     }
 
-    if (m_target->getClass() == CLASS_DRUID)
+    if (m_target->GetClass() == CLASS_DRUID)
     {
         // Improved Party Auras (Idol of the Raven Goddess)
         if (spellInfo->Id == 39926)
@@ -1722,7 +1722,7 @@ void Aura::TriggerSpell()
                                 for (Map::PlayerList::const_iterator itr = players.begin(); itr != players.end(); ++itr)
                                 {
                                     Player *p = itr->getSource();
-                                    if (!p || !p->isAlive() || p->isGameMaster())
+                                    if (!p || !p->IsAlive() || p->IsGameMaster())
                                         continue;
 
                                     if (p == target)
@@ -2007,7 +2007,7 @@ void Aura::TriggerSpell()
                         i = possible_targets.begin();
                         advance(i, rand()% possible_targets.size());
                         target = Unit::GetUnit(*caster,(*i)->getUnitGuid());
-                        if (!target || !target->isAlive() || target->GetTypeId() != TYPEID_PLAYER)
+                        if (!target || !target->IsAlive() || target->GetTypeId() != TYPEID_PLAYER)
                         {
                             possible_targets.erase(i);
                         }
@@ -2399,7 +2399,7 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
             return;
         }
 
-        if ((IsQuestTameSpell(GetId())) && caster && caster->isAlive() && m_target->isAlive())
+        if ((IsQuestTameSpell(GetId())) && caster && caster->IsAlive() && m_target->IsAlive())
         {
             uint32 finalSpelId = 0;
             switch (GetId())
@@ -2623,7 +2623,7 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
             // Victorious
             case 32216:
             {
-                if (m_target->getClass() == CLASS_WARRIOR)
+                if (m_target->GetClass() == CLASS_WARRIOR)
                     m_target->ModifyAuraState(AURA_STATE_WARRIOR_VICTORY_RUSH, apply);
                 return;
             }
@@ -3073,7 +3073,7 @@ void Aura::HandleAuraModShapeshift(bool apply, bool Real)
     switch (form)
     {
         case FORM_CAT:
-            if (Player::TeamForRace(m_target->getRace()) == ALLIANCE)
+            if (Player::TeamForRace(m_target->GetRace()) == ALLIANCE)
                 modelid = 892;
             else
                 modelid = 8571;
@@ -3084,13 +3084,13 @@ void Aura::HandleAuraModShapeshift(bool apply, bool Real)
             modelid = 632;
             break;
         case FORM_AQUA:
-            if (Player::TeamForRace(m_target->getRace()) == ALLIANCE)
+            if (Player::TeamForRace(m_target->GetRace()) == ALLIANCE)
                 modelid = 2428;
             else
                 modelid = 2428;
             break;
         case FORM_BEAR:
-            if (Player::TeamForRace(m_target->getRace()) == ALLIANCE)
+            if (Player::TeamForRace(m_target->GetRace()) == ALLIANCE)
                 modelid = 2281;
             else
                 modelid = 2289;
@@ -3098,11 +3098,11 @@ void Aura::HandleAuraModShapeshift(bool apply, bool Real)
             PowerType = POWER_RAGE;
             break;
         case FORM_GHOUL:
-            if (Player::TeamForRace(m_target->getRace()) == ALLIANCE)
+            if (Player::TeamForRace(m_target->GetRace()) == ALLIANCE)
                 modelid = 10045;
             break;
         case FORM_DIREBEAR:
-            if (Player::TeamForRace(m_target->getRace()) == ALLIANCE)
+            if (Player::TeamForRace(m_target->GetRace()) == ALLIANCE)
                 modelid = 2281;
             else
                 modelid = 2289;
@@ -3119,19 +3119,19 @@ void Aura::HandleAuraModShapeshift(bool apply, bool Real)
             modelid = 4613;
             break;
         case FORM_FLIGHT:
-            if (Player::TeamForRace(m_target->getRace()) == ALLIANCE)
+            if (Player::TeamForRace(m_target->GetRace()) == ALLIANCE)
                 modelid = 20857;
             else
                 modelid = 20872;
             break;
         case FORM_MOONKIN:
-            if (Player::TeamForRace(m_target->getRace()) == ALLIANCE)
+            if (Player::TeamForRace(m_target->GetRace()) == ALLIANCE)
                 modelid = 15374;
             else
                 modelid = 15375;
             break;
         case FORM_FLIGHT_EPIC:
-            if (Player::TeamForRace(m_target->getRace()) == ALLIANCE)
+            if (Player::TeamForRace(m_target->GetRace()) == ALLIANCE)
                 modelid = 21243;
             else
                 modelid = 21244;
@@ -3193,7 +3193,7 @@ void Aura::HandleAuraModShapeshift(bool apply, bool Real)
         if (PowerType != POWER_MANA)
         {
             // reset power to default values only at power change
-            if (m_target->getPowerType() != PowerType)
+            if (m_target->GetPowerType() != PowerType)
                 m_target->setPowerType(PowerType);
 
             switch (form)
@@ -3296,7 +3296,7 @@ void Aura::HandleAuraModShapeshift(bool apply, bool Real)
         m_target->SetByteValue(UNIT_FIELD_BYTES_2, 3, FORM_NONE);
         m_target->ForceValuesUpdateAtIndex(UNIT_FIELD_BYTES_2);
 
-        if (m_target->getClass() == CLASS_DRUID)
+        if (m_target->GetClass() == CLASS_DRUID)
             m_target->setPowerType(POWER_MANA);
 
         m_target->m_ShapeShiftFormSpellId = 0;
@@ -3614,7 +3614,7 @@ void Aura::HandleChannelDeathItem(bool apply, bool Real)
 
         // Soul Shard only from non-grey units and non-totems
         if (spellInfo->EffectItemType[m_effIndex] == 6265 &&
-            (victim->getLevel() <= Hellground::XP::GetGrayLevel(caster->getLevel()) ||
+            (victim->GetLevel() <= Hellground::XP::GetGrayLevel(caster->GetLevel()) ||
             (victim->GetTypeId()==TYPEID_UNIT && (!((Player*)caster)->isAllowedToLoot((Creature*)victim) || ((Creature*)victim)->isTotem()))))
             return;
 
@@ -3709,7 +3709,7 @@ void Aura::HandleModPossess(bool apply, bool Real)
 
     if (apply)
     {
-        if (m_target->getLevel() > m_modifier.m_amount)
+        if (m_target->GetLevel() > m_modifier.m_amount)
             return;
 
         m_target->SetCharmedOrPossessedBy(caster, true);
@@ -3726,13 +3726,13 @@ void Aura::HandleModPossess(bool apply, bool Real)
     {
         if (apply)
         {
-            m_target->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            m_target->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         }
         else
         {
             m_target->Kill(m_target);
             m_target->ToCreature()->RemoveCorpse();
-            m_target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            m_target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
             caster->CastStop();
         }
     }
@@ -3760,7 +3760,7 @@ void Aura::HandleModPossessPet(bool apply, bool Real)
 
         // Reinitialize the pet bar and make the pet come back to the owner
         ((Player*)caster)->PetSpellInitialize();
-        if (!m_target->getVictim())
+        if (!m_target->GetVictim())
         {
             m_target->GetMotionMaster()->MoveFollow(caster, PET_FOLLOW_DIST, PET_FOLLOW_ANGLE);
             m_target->GetCharmInfo()->SetCommandState(COMMAND_FOLLOW);
@@ -3777,7 +3777,7 @@ void Aura::HandleModCharm(bool apply, bool Real)
 
     if (apply)
     {
-        if (int32(m_target->getLevel()) > m_modifier.m_amount)
+        if (int32(m_target->GetLevel()) > m_modifier.m_amount)
             return;
 
         m_target->SetCharmedOrPossessedBy(caster, false);
@@ -3831,7 +3831,7 @@ void Aura::HandleFeignDeath(bool apply, bool Real)
     {
         // feign death in pvp: clear target and interrupt casts
         std::list<Unit*> targets;
-        Hellground::AnyUnfriendlyUnitInObjectRangeCheck u_check(m_target, m_target->GetMap()->GetVisibilityDistance());
+        Hellground::AnyUnfriendlyUnitInObjectRangeCheck u_check(m_target, m_target, m_target->GetMap()->GetVisibilityDistance());
         Hellground::UnitListSearcher<Hellground::AnyUnfriendlyUnitInObjectRangeCheck> searcher(targets, u_check);
 
         Cell::VisitAllObjects(m_target, searcher, m_target->GetMap()->GetVisibilityDistance());
@@ -3844,7 +3844,7 @@ void Aura::HandleFeignDeath(bool apply, bool Real)
             if((*iter)->GetUInt64Value(UNIT_FIELD_TARGET) == m_target->GetGUID())
                 (*iter)->SetUInt64Value(UNIT_FIELD_TARGET, 0);
 
-            if (!(*iter)->hasUnitState(UNIT_STAT_CASTING))
+            if (!(*iter)->HasUnitState(UNIT_STAT_CASTING))
                 continue;
 
             for (uint32 i = CURRENT_FIRST_NON_MELEE_SPELL; i < CURRENT_MAX_SPELL; i++)
@@ -3899,7 +3899,7 @@ void Aura::HandleFeignDeath(bool apply, bool Real)
             uint32 rand = urand(0,100);
             if(rand <= modHitChance) // hit
             {
-                if (target->hasUnitState(UNIT_STAT_CASTING))
+                if (target->HasUnitState(UNIT_STAT_CASTING))
                     for (uint32 i = CURRENT_FIRST_NON_MELEE_SPELL; i < CURRENT_MAX_SPELL; i++)
                         if (target->m_currentSpells[i] && target->m_currentSpells[i]->m_targets.getUnitTargetGUID() == m_target->GetGUID())
                             target->InterruptSpell(i, false);
@@ -3998,7 +3998,7 @@ void Aura::HandleModStealth(bool apply, bool Real)
                 pTarget->SetVisibility(VISIBILITY_GROUP_STEALTH);
 
             // for RACE_NIGHTELF improved stealth from shadowmeld (this should actually be a learned spell)
-            if(m_target->GetTypeId()==TYPEID_PLAYER && m_target->getRace() == RACE_NIGHTELF)
+            if(m_target->GetTypeId()==TYPEID_PLAYER && m_target->GetRace() == RACE_NIGHTELF)
                 pTarget->CastSpell(pTarget, 21009, true, NULL, this);
         }
     }
@@ -4167,7 +4167,7 @@ void Aura::HandleModThreat(bool apply, bool Real)
     if (!Real)
         return;
 
-    if (!m_target->isAlive())
+    if (!m_target->IsAlive())
         return;
 
     int level_diff = 0;
@@ -4176,12 +4176,12 @@ void Aura::HandleModThreat(bool apply, bool Real)
     {
         // Arcane Shroud
         case 26400:
-            level_diff = m_target->getLevel() - 60;
+            level_diff = m_target->GetLevel() - 60;
             multiplier = 2;
             break;
         // The Eye of Diminution
         case 28862:
-            level_diff = m_target->getLevel() - 60;
+            level_diff = m_target->GetLevel() - 60;
             multiplier = 1;
             break;
     }
@@ -4215,12 +4215,12 @@ void Aura::HandleAuraModTotalThreat(bool apply, bool Real)
     if (!Real)
         return;
 
-    if (!m_target->isAlive() || m_target->GetTypeId()!= TYPEID_PLAYER)
+    if (!m_target->IsAlive() || m_target->GetTypeId()!= TYPEID_PLAYER)
         return;
 
     Unit *caster = GetCaster();
 
-    if (!caster || !caster->isAlive())
+    if (!caster || !caster->IsAlive())
         return;
 
     float threatMod = 0.0f;
@@ -4238,7 +4238,7 @@ void Aura::HandleModTaunt(bool apply, bool Real)
     if (!Real)
         return;
 
-    if (!m_target->isAlive())
+    if (!m_target->IsAlive())
         return;
 
     if (!m_target->CanHaveThreatList())
@@ -4249,7 +4249,7 @@ void Aura::HandleModTaunt(bool apply, bool Real)
 
     Unit *caster = GetCaster();
 
-    if (!caster || !caster->isAlive() || caster->GetTypeId() != TYPEID_PLAYER)
+    if (!caster || !caster->IsAlive() || caster->GetTypeId() != TYPEID_PLAYER)
         return;
 
     if (apply)
@@ -4717,7 +4717,7 @@ void Aura::HandleAuraModSchoolImmunity(bool apply, bool Real)
         if (apply)
             m_target->addUnitState(UNIT_STAT_ISOLATED);
         else
-            m_target->clearUnitState(UNIT_STAT_ISOLATED);
+            m_target->ClearUnitState(UNIT_STAT_ISOLATED);
     }
 }
 
@@ -4881,7 +4881,7 @@ void Aura::HandlePeriodicTriggerSpell(bool apply, bool Real)
             {
                 if (Unit* caster = GetCaster())
                 {
-                    if (m_target->GetTypeId() == TYPEID_UNIT && !m_target->isInCombat())
+                    if (m_target->GetTypeId() == TYPEID_UNIT && !m_target->IsInCombat())
                         ((Creature*)m_target)->AI()->AttackStart(caster);
                 }
                 break;
@@ -5408,7 +5408,7 @@ void Aura::HandleAuraModStat(bool apply, bool Real)
 
     if (GetId() == 20007 && apply) // Crusader enchant proc: Holy Strength
     {
-        int32 lvldiff = m_target->getLevel() - 60;
+        int32 lvldiff = m_target->GetLevel() - 60;
         uint32 diff = lvldiff > 0 ? lvldiff*4 : 0;
         m_modifier.m_amount = GetModifierValue() - diff;
     }
@@ -5563,7 +5563,7 @@ void Aura::HandleAuraModTotalHealthPercentRegen(bool apply, bool Real)
     */
     if (apply)
     {
-        if (!m_target->isAlive())
+        if (!m_target->IsAlive())
             return;
 
         if ((GetSpellProto()->AuraInterruptFlags & AURA_INTERRUPT_FLAG_NOT_SEATED) && !m_target->IsSitState())
@@ -5594,7 +5594,7 @@ void Aura::HandleAuraModTotalManaPercentRegen(bool apply, bool Real)
         if (m_modifier.periodictime == 0)
             m_modifier.periodictime = 1000;
 
-        if (m_periodicTimer <= 0 && m_target->getPowerType() == POWER_MANA)
+        if (m_periodicTimer <= 0 && m_target->GetPowerType() == POWER_MANA)
         {
             m_periodicTimer += m_amplitude > 0 ? m_amplitude : 1000;
             if (m_target->GetPower(POWER_MANA) < m_target->GetMaxPower(POWER_MANA))
@@ -5612,7 +5612,7 @@ void Aura::HandleModRegen(bool apply, bool Real)            // eating
 {
     if (apply)
     {
-        if (!m_target->isAlive())
+        if (!m_target->IsAlive())
             return;
 
         if ((GetSpellProto()->AuraInterruptFlags & AURA_INTERRUPT_FLAG_NOT_SEATED)  && !m_target->IsSitState())
@@ -5643,7 +5643,7 @@ void Aura::HandleModPowerRegen(bool apply, bool Real)       // drinking
     if (apply && m_periodicTimer <= 0)
     {
 
-        Powers pt = m_target->getPowerType();
+        Powers pt = m_target->GetPowerType();
         if (pt == POWER_RAGE)
             m_periodicTimer = 3000;
         else
@@ -5669,7 +5669,7 @@ void Aura::HandleModPowerRegen(bool apply, bool Real)       // drinking
         // so 17 is rounded amount for 5 sec tick grow ~ 1 range grow in 3 sec
         if (pt == POWER_RAGE)
         {
-            if (m_target->isInCombat())
+            if (m_target->IsInCombat())
                 m_target->ModifyPower(pt, m_modifier.m_amount*3/5);
         }
     }
@@ -5728,7 +5728,7 @@ void Aura::HandleAuraModIncreaseHealth(bool apply, bool Real)
             if (int32(m_target->GetHealth()) > m_modifier.m_amount)
                 m_target->ModifyHealth(-m_modifier.m_amount);
             else
-                m_target->SetHealth(1, !m_target->isAlive());
+                m_target->SetHealth(1, !m_target->IsAlive());
 
             m_target->HandleStatModifier(UNIT_MOD_HEALTH, TOTAL_VALUE, float(GetModifierValue()), apply);
         }
@@ -5755,7 +5755,7 @@ void  Aura::HandleAuraModIncreaseMaxHealth(bool apply, bool Real)
 
 void Aura::HandleAuraModIncreaseEnergy(bool apply, bool Real)
 {
-    Powers powerType = m_target->getPowerType();
+    Powers powerType = m_target->GetPowerType();
     if (int32(powerType) != m_modifier.m_miscvalue)
         return;
 
@@ -5766,7 +5766,7 @@ void Aura::HandleAuraModIncreaseEnergy(bool apply, bool Real)
 
 void Aura::HandleAuraModIncreaseEnergyPercent(bool apply, bool /*Real*/)
 {
-    Powers powerType = m_target->getPowerType();
+    Powers powerType = m_target->GetPowerType();
     if (int32(powerType) != m_modifier.m_miscvalue)
         return;
 
@@ -6302,7 +6302,7 @@ void Aura::HandleShapeshiftBoosts(bool apply)
                     continue;
 
                 SpellEntry const *spellInfo = sSpellStore.LookupEntry(itr->first);
-                if (!spellInfo || !(spellInfo->Attributes & (SPELL_ATTR_PASSIVE | SPELL_ATTR_UNK7)) || itr->second.disabled)
+                if (!spellInfo || !(spellInfo->Attributes & (SPELL_ATTR_PASSIVE | SPELL_ATTR_HIDDEN_CLIENTSIDE)) || itr->second.disabled)
                     continue;
 
                 if (spellInfo->Stances & (1<<form))
@@ -6512,7 +6512,7 @@ void Aura::HandleModUnattackable(bool Apply, bool Real)
         m_target->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_UNATTACKABLE);
     }
 
-    m_target->ApplyModFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE,Apply);
+    m_target->ApplyModFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING,Apply);
 }
 
 void Aura::HandleSpiritOfRedemption(bool apply, bool Real)
@@ -6649,7 +6649,7 @@ void Aura::HandleSchoolAbsorb(bool apply, bool Real)
 
 void Aura::PeriodicTick()
 {
-    if (!m_target->isAlive() || !m_target->IsInWorld())
+    if (!m_target->IsAlive() || !m_target->IsInWorld())
         return;
 
     if (GetId() == 38575 && m_tickNumber < 3)  // Toxic - Spores delay deal damage
@@ -6901,7 +6901,7 @@ void Aura::PeriodicTick()
             if (!pCaster)
                 return;
 
-            if (!pCaster->isAlive())
+            if (!pCaster->IsAlive())
                 return;
 
             // Check for immune (not use charges)
@@ -7018,7 +7018,7 @@ void Aura::PeriodicTick()
             pCaster->ProcDamageAndSpell(target, procAttacker, procVictim, procEx, damageInfo.damage, BASE_ATTACK, spellProto);
             uint32 new_damage = pCaster->DealDamage(&damageInfo, DOT, spellProto, false);
 
-            if (!target->isAlive() && pCaster->IsNonMeleeSpellCast(false))
+            if (!target->IsAlive() && pCaster->IsNonMeleeSpellCast(false))
             {
                 for (uint32 i = CURRENT_FIRST_NON_MELEE_SPELL; i < CURRENT_MAX_SPELL; i++)
                 {
@@ -7048,7 +7048,7 @@ void Aura::PeriodicTick()
                 return;
 
             // heal for caster damage (must be alive)
-            if (m_target != pCaster && GetSpellProto()->SpellVisual==163 && !pCaster->isAlive())
+            if (m_target != pCaster && GetSpellProto()->SpellVisual==163 && !pCaster->IsAlive())
                 return;
 
             // ignore non positive values (can be result apply spellmods to aura damage
@@ -7095,7 +7095,7 @@ void Aura::PeriodicTick()
             //Do check before because m_modifier.auraName can be invalidate by DealDamage.
             bool procSpell = (m_modifier.m_auraname == SPELL_AURA_PERIODIC_HEAL); // && m_target != pCaster);
 
-            if (pCaster->isInCombat())
+            if (pCaster->IsInCombat())
                 m_target->getHostileRefManager().threatAssist(pCaster, float(gain) * 0.5f, GetSpellProto());
 
             Unit* target = m_target;                        // aura can be deleted in DealDamage
@@ -7116,7 +7116,7 @@ void Aura::PeriodicTick()
             if (!pCaster)
                 return;
 
-            if (!pCaster->isAlive())
+            if (!pCaster->IsAlive())
                 return;
 
             // Check for immune (not use charges)
@@ -7135,7 +7135,7 @@ void Aura::PeriodicTick()
             Powers power = Powers(m_modifier.m_miscvalue);
 
             // power type might have changed between aura applying and tick (druid's shapeshift)
-            if (m_target->getPowerType() != power)
+            if (m_target->GetPowerType() != power)
                 break;
 
             int32 drain_amount = m_target->GetPower(power) > pdamage ? pdamage : m_target->GetPower(power);
@@ -7186,7 +7186,7 @@ void Aura::PeriodicTick()
             }
 
             // Mark of Kaz'rogal
-            if (GetId() == 31447 && m_target->getPowerType() == POWER_MANA && !m_target->GetPower(POWER_MANA))
+            if (GetId() == 31447 && m_target->GetPowerType() == POWER_MANA && !m_target->GetPower(POWER_MANA))
             {
                 m_target->CastSpell(m_target, 31463, true, 0, this);
 
@@ -7299,7 +7299,7 @@ void Aura::PeriodicTick()
 
             Powers powerType = Powers(m_modifier.m_miscvalue);
 
-            if (!m_target->isAlive() || m_target->getPowerType() != powerType)
+            if (!m_target->IsAlive() || m_target->GetPowerType() != powerType)
                 return;
 
             // resilience reduce mana draining effect at spell crit damage reduction (added in 2.4)
@@ -7381,7 +7381,7 @@ void Aura::PeriodicDummyTick()
                         m_isPeriodic = false;
                         if (m_tickNumber == 1)
                         {
-                            if (((Player*)m_target)->getPowerType() != POWER_MANA)
+                            if (((Player*)m_target)->GetPowerType() != POWER_MANA)
                                 (*i)->GetModifier()->m_amount = 0;
                             else
                                 (*i)->GetModifier()->m_amount = m_modifier.m_amount;
@@ -7417,7 +7417,7 @@ void Aura::PeriodicDummyTick()
                             break;
                     }
 
-                    if (((Player*)m_target)->getPowerType() != POWER_MANA)
+                    if (((Player*)m_target)->GetPowerType() != POWER_MANA)
                         (*i)->GetModifier()->m_amount = 0;
 
                     ((Player*)m_target)->UpdateManaRegen();
@@ -7445,7 +7445,7 @@ void Aura::PeriodicDummyTick()
                 return;
 
             // Should be manauser
-            if (m_target->getPowerType() != POWER_MANA)
+            if (m_target->GetPowerType() != POWER_MANA)
                 return;
 
             Unit *caster = GetCaster();
@@ -7744,10 +7744,10 @@ void Aura::HandleAuraMirrorImage(bool apply, bool Real)
 
     if (apply)
     {
-        pCreature->SetByteValue(UNIT_FIELD_BYTES_0, 0, caster->getRace());
-        pCreature->SetByteValue(UNIT_FIELD_BYTES_0, 1, caster->getClass());
+        pCreature->SetByteValue(UNIT_FIELD_BYTES_0, 0, caster->GetRace());
+        pCreature->SetByteValue(UNIT_FIELD_BYTES_0, 1, caster->GetClass());
         pCreature->SetByteValue(UNIT_FIELD_BYTES_0, 2, caster->getGender());
-        pCreature->SetByteValue(UNIT_FIELD_BYTES_0, 3, caster->getPowerType());
+        pCreature->SetByteValue(UNIT_FIELD_BYTES_0, 3, caster->GetPowerType());
 
         pCreature->SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_CLONED);
 

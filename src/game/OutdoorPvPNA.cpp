@@ -57,7 +57,7 @@ uint32 OPvPCapturePointNA::GetAliveGuardsCount()
     {
         if (Creature * cr = m_PvP->GetMap()->GetCreature(*itr))
         {
-            if (cr->isAlive())
+            if (cr->IsAlive())
                 ++cnt;
         }
     }

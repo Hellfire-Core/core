@@ -1295,7 +1295,7 @@ bool ChatHandler::HandleNpcMoveCommand(const char* args)
         Map *pMap = pCreature->GetMap();
         pMap->CreatureRelocation(pCreature,x, y, z,o);
         pCreature->GetMotionMaster()->Initialize();
-        if (pCreature->isAlive())                            // dead creature will reset movement generator at respawn
+        if (pCreature->IsAlive())                            // dead creature will reset movement generator at respawn
         {
             pCreature->setDeathState(JUST_DIED);
             pCreature->Respawn();
@@ -1529,7 +1529,7 @@ bool ChatHandler::HandleNpcAddMoveCommand(const char* args)
     {
         pCreature->SetDefaultMovementType(WAYPOINT_MOTION_TYPE);
         pCreature->GetMotionMaster()->Initialize();
-        if (pCreature->isAlive())                            // dead creature will reset movement generator at respawn
+        if (pCreature->IsAlive())                            // dead creature will reset movement generator at respawn
         {
             pCreature->setDeathState(JUST_DIED);
             pCreature->Respawn();
@@ -1663,7 +1663,7 @@ bool ChatHandler::HandleNpcSetMoveTypeCommand(const char* args)
 
         pCreature->SetDefaultMovementType(move_type);
         pCreature->GetMotionMaster()->Initialize();
-        if (pCreature->isAlive())                            // dead creature will reset movement generator at respawn
+        if (pCreature->IsAlive())                            // dead creature will reset movement generator at respawn
         {
             pCreature->setDeathState(JUST_DIED);
             pCreature->Respawn();
@@ -2035,10 +2035,10 @@ bool ChatHandler::HandlePInfoCommand(const char* args)
         accId = target->GetSession()->GetAccountId();
         money = target->GetMoney();
         total_player_time = target->GetTotalPlayedTime();
-        level = target->getLevel();
+        level = target->GetLevel();
         latency = target->GetSession()->GetLatency();
-        race = target->getRace();
-        Class = target->getClass();
+        race = target->GetRace();
+        Class = target->GetClass();
     }
     // get additional information from DB
     else
@@ -2199,7 +2199,7 @@ bool ChatHandler::HandleNpcSpawnDistCommand(const char* args)
     pCreature->SetRespawnRadius((float)option);
     pCreature->SetDefaultMovementType(mtype);
     pCreature->GetMotionMaster()->Initialize();
-    if (pCreature->isAlive())                                // dead creature will reset movement generator at respawn
+    if (pCreature->IsAlive())                                // dead creature will reset movement generator at respawn
     {
         pCreature->setDeathState(JUST_DIED);
         pCreature->Respawn();
@@ -3399,7 +3399,7 @@ bool ChatHandler::HandleModifyStaminaCommand(const char* args)
     pTarget->SetModifierValue(UNIT_MOD_STAT_STAMINA, BASE_VALUE, (float)amount);
     pTarget->UpdateAllStats();
 
-    if (pTarget->isAlive())
+    if (pTarget->IsAlive())
         pTarget->SetHealth(pTarget->GetMaxHealth());
 
     PSendSysMessage("You set stamina of %s to %i.", pTarget->GetName(), amount);
@@ -4421,7 +4421,7 @@ bool ChatHandler::HandleLearnAllCraftsCommand(const char* /*args*/)
                 if (!spellInfo || !SpellMgr::IsSpellValid(spellInfo,m_session->GetPlayer(),false))
                     continue;
 
-                m_session->GetPlayer()->learnSpell(skillLine->spellId);
+                m_session->GetPlayer()->LearnSpell(skillLine->spellId);
             }
         }
     }
@@ -4494,7 +4494,7 @@ bool ChatHandler::HandleLearnAllRecipesCommand(const char* args)
                     continue;
 
                 if (!target->HasSpell(spellInfo->Id))
-                    m_session->GetPlayer()->learnSpell(skillLine->spellId);
+                    m_session->GetPlayer()->LearnSpell(skillLine->spellId);
             }
 
             uint16 maxLevel = target->GetPureMaxSkillValue(skillInfo->id);
@@ -4744,7 +4744,7 @@ bool ChatHandler::HandleCreatePetCommand(const char* args)
     pet->SetUInt64Value(UNIT_FIELD_CREATEDBY, player->GetGUID());
     pet->SetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE, player->getFaction());
 
-    if (!pet->InitStatsForLevel(creatureTarget->getLevel()))
+    if (!pet->InitStatsForLevel(creatureTarget->GetLevel()))
     {
         sLog.outLog(LOG_DEFAULT, "ERROR: InitStatsForLevel() in EffectTameCreature failed! Pet deleted.");
         PSendSysMessage("Error 2");
@@ -4753,7 +4753,7 @@ bool ChatHandler::HandleCreatePetCommand(const char* args)
     }
 
     // prepare visual effect for levelup
-    pet->SetUInt32Value(UNIT_FIELD_LEVEL,creatureTarget->getLevel()-1);
+    pet->SetUInt32Value(UNIT_FIELD_LEVEL,creatureTarget->GetLevel()-1);
 
      pet->GetCharmInfo()->SetPetNumber(sObjectMgr.GeneratePetNumber(), true);
      // this enables pet details window (Shift+P)
@@ -4765,7 +4765,7 @@ bool ChatHandler::HandleCreatePetCommand(const char* args)
      pMap->Add((Creature*)pet);
 
      // visual effect for levelup
-     pet->SetUInt32Value(UNIT_FIELD_LEVEL,creatureTarget->getLevel());
+     pet->SetUInt32Value(UNIT_FIELD_LEVEL,creatureTarget->GetLevel());
 
      player->SetPet(pet);
      pet->SavePetToDB(PET_SAVE_AS_CURRENT);
@@ -4810,7 +4810,7 @@ bool ChatHandler::HandlePetLearnCommand(const char* args)
         return false;
     }
 
-    pet->learnSpell(spellId);
+    pet->LearnSpell(spellId);
 
     PSendSysMessage("Pet has learned spell %u", spellId);
     return true;
@@ -5244,7 +5244,7 @@ bool ChatHandler::HandleMmapPathCommand(const char* args)
 
     PSendSysMessage("actual end (%.3f, %.3f, %.3f)", actualEnd.x, actualEnd.y, actualEnd.z);
 
-    if (!player->isGameMaster())
+    if (!player->IsGameMaster())
         PSendSysMessage("Enable GM mode to see the path points.");
 
     // this entry visible only to GM's with "gm on"

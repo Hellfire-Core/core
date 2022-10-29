@@ -71,7 +71,7 @@ void npc_escortAI::AttackStart(Unit* pWho)
 //see followerAI
 bool npc_escortAI::AssistPlayerInCombat(Unit* pWho)
 {
-    if (!pWho || !pWho->getVictim() || !IsActiveAttacker)
+    if (!pWho || !pWho->GetVictim() || !IsActiveAttacker)
         return false;
 
     //experimental (unknown) flag not present
@@ -79,7 +79,7 @@ bool npc_escortAI::AssistPlayerInCombat(Unit* pWho)
         return false;
 
     //not a player
-    if (!pWho->getVictim()->GetCharmerOrOwnerPlayerOrPlayerItself())
+    if (!pWho->GetVictim()->GetCharmerOrOwnerPlayerOrPlayerItself())
         return false;
 
     //never attack friendly
@@ -90,7 +90,7 @@ bool npc_escortAI::AssistPlayerInCombat(Unit* pWho)
     if (me->IsWithinDistInMap(pWho, GetMaxPlayerDistance()) && me->IsWithinLOSInMap(pWho))
     {
         //already fighting someone?
-        if (!me->getVictim())
+        if (!me->GetVictim())
         {
             AttackStart(pWho);
             return true;
@@ -108,7 +108,7 @@ bool npc_escortAI::AssistPlayerInCombat(Unit* pWho)
 
 void npc_escortAI::MoveInLineOfSight(Unit* pWho)
 {
-    if (!me->hasUnitState(UNIT_STAT_STUNNED) && pWho->isTargetableForAttack() && pWho->isInAccessiblePlacefor(me))
+    if (!me->HasUnitState(UNIT_STAT_STUNNED) && pWho->isTargetableForAttack() && pWho->isInAccessiblePlacefor(me))
     {
         if (HasEscortState(STATE_ESCORT_ESCORTING) && AssistPlayerInCombat(pWho))
             return;
@@ -121,7 +121,7 @@ void npc_escortAI::MoveInLineOfSight(Unit* pWho)
             float fAttackRadius = me->GetAttackDistance(pWho);
             if (me->IsWithinDistInMap(pWho, fAttackRadius) && me->IsWithinLOSInMap(pWho))
             {
-                if (!me->getVictim())
+                if (!me->GetVictim())
                 {
                     pWho->RemoveAurasDueToSpell(SPELL_AURA_MOD_STEALTH);
                     AttackStart(pWho);
@@ -233,7 +233,7 @@ bool npc_escortAI::IsPlayerOrGroupInRange()
 void npc_escortAI::UpdateAI(const uint32 uiDiff)
 {
     //Waypoint Updating
-    if (HasEscortState(STATE_ESCORT_ESCORTING) && !me->isInCombat() && WPWaitTimer && !HasEscortState(STATE_ESCORT_INCOMBAT))
+    if (HasEscortState(STATE_ESCORT_ESCORTING) && !me->IsInCombat() && WPWaitTimer && !HasEscortState(STATE_ESCORT_INCOMBAT))
     {
         if (WPWaitTimer <= uiDiff)
         {
@@ -297,7 +297,7 @@ void npc_escortAI::UpdateAI(const uint32 uiDiff)
     }
 
     //Check if player or any member of his group is within range
-    if (HasEscortState(STATE_ESCORT_ESCORTING) && PlayerGUID && !me->isInCombat() && !HasEscortState(STATE_ESCORT_INCOMBAT))
+    if (HasEscortState(STATE_ESCORT_ESCORTING) && PlayerGUID && !me->IsInCombat() && !HasEscortState(STATE_ESCORT_INCOMBAT))
     {
         if (PlayerCheckTimer < uiDiff)
         {
@@ -335,7 +335,7 @@ void npc_escortAI::UpdateEscortAI(const uint32 uiDiff)
 
 void npc_escortAI::MovementInform(uint32 uiMoveType, uint32 uiPointId)
 {
-    if (uiMoveType != POINT_MOTION_TYPE || !HasEscortState(STATE_ESCORT_ESCORTING) || me->isInCombat())
+    if (uiMoveType != POINT_MOTION_TYPE || !HasEscortState(STATE_ESCORT_ESCORTING) || me->IsInCombat())
         return;
 
     SendDebug("EscortAI MovementInform(%u %u), currentwp %u", uiMoveType, uiPointId, CurrentWP->id);
@@ -430,7 +430,7 @@ void npc_escortAI::SetRun(bool bRun)
 //TODO: get rid of this many variables passed in function.
 void npc_escortAI::Start(bool bIsActiveAttacker, bool bRun, uint64 uiPlayerGUID, const Quest* pQuest, bool bInstantRespawn, bool bCanLoopPath)
 {
-    if (me->getVictim())
+    if (me->GetVictim())
     {
         error_log("TSCR ERROR: EscortAI attempt to Start while in combat.");
         return;
@@ -507,6 +507,6 @@ void npc_escortAI::SetEscortPaused(bool bPaused)
 void npc_escortAI::GetDebugInfo(ChatHandler& reader)
 {
     std::ostringstream str;
-    str << "WP timer " << WPWaitTimer << " Escort state " << EscortState << " In combat " << me->isInCombat();
+    str << "WP timer " << WPWaitTimer << " Escort state " << EscortState << " In combat " << me->IsInCombat();
     reader.SendSysMessage(str.str().c_str());
 }

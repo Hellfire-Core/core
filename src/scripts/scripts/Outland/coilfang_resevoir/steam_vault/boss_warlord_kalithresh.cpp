@@ -75,7 +75,7 @@ struct boss_warlord_kalithreshAI : public ScriptedAI
         {
             (*it)->Respawn();
             (*it)->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-            (*it)->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            (*it)->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
             (*it)->GetUnitStateMgr().PushAction(UNIT_ACTION_STUN);
         }
 
@@ -104,10 +104,10 @@ struct boss_warlord_kalithreshAI : public ScriptedAI
             {
                 if (Unit* distiller = me->GetUnit(CurrentDistiller))
                 {
-                    if (distiller && distiller->isAlive())
+                    if (distiller && distiller->IsAlive())
                     {
                         distiller->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                        distiller->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                        distiller->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                         distiller->SetHealth(distiller->GetMaxHealth());
                         CurrentDistiller = 0;
                         DoCast(me, SPELL_WARLORDS_RAGE_PROC, true);
@@ -133,7 +133,7 @@ struct boss_warlord_kalithreshAI : public ScriptedAI
                 me->SetFacingToObject(distiller);
                 DoScriptText(SAY_REGEN, me);
                 distiller->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                distiller->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                distiller->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                 distiller->CastSpell(me, SPELL_WARLORDS_RAGE_NAGA, true);
             }
         }

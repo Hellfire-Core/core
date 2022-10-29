@@ -113,7 +113,7 @@ struct boss_arcanist_doanAI : public ScriptedAI
             FullAOE_Timer -= diff;
             if (FullAOE_Timer <= diff)
             {
-                DoCast(m_creature->getVictim(),SPELL_FIREAOE);
+                DoCast(m_creature->GetVictim(),SPELL_FIREAOE);
                 FullAOE_Timer += 40000;
             }
         }
@@ -121,21 +121,21 @@ struct boss_arcanist_doanAI : public ScriptedAI
         AoESilence_Timer -= diff;
         if (AoESilence_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_AOESILENCE);
+            DoCast(m_creature->GetVictim(),SPELL_AOESILENCE);
             AoESilence_Timer += 30000;
         }
 
         ArcaneExplosion3_Timer -= diff;
         if (ArcaneExplosion3_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_ARCANEEXPLOSION3);
+            DoCast(m_creature->GetVictim(),SPELL_ARCANEEXPLOSION3);
             ArcaneExplosion3_Timer += 8000;
         }
 
         ArcaneExplosion4_Timer -= diff;
         if (ArcaneExplosion4_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_ARCANEEXPLOSION4);
+            DoCast(m_creature->GetVictim(),SPELL_ARCANEEXPLOSION4);
             ArcaneExplosion4_Timer += 10000;
         }
 
@@ -149,7 +149,7 @@ struct boss_arcanist_doanAI : public ScriptedAI
         Fireball_Timer -= diff;
         if (Fireball_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_FIREBALL);
+            DoCast(m_creature->GetVictim(),SPELL_FIREBALL);
             Fireball_Timer += 12000;
         }
 

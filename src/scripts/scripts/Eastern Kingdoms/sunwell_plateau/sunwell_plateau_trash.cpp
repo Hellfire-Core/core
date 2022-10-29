@@ -163,8 +163,8 @@ struct mob_sunblade_cabalistAI : public ScriptedAI
     void JustSummoned(Creature* summon)
     {
         summons.Summon(summon);
-        if(me->getVictim())
-            summon->AI()->AttackStart(me->getVictim());
+        if(me->GetVictim())
+            summon->AI()->AttackStart(me->GetVictim());
     }
 
     void UpdateAI(const uint32 diff)
@@ -333,7 +333,7 @@ struct mob_sunblade_dusk_priestAI : public ScriptedAI
 
         if (Fear.Expired(diff))
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 25, true, me->getVictim()->GetGUID()))
+            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 25, true, me->GetVictim()->GetGUID()))
                 AddSpellToCast(target, SPELL_FEAR);
             Fear = urand(6000, 18000);
         }
@@ -526,7 +526,7 @@ struct mob_sunblade_scoutAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (activating_protector && me->hasUnitState(UNIT_STAT_CHASE))
+        if (activating_protector && me->HasUnitState(UNIT_STAT_CHASE))
             activating_protector = false;
 
         if(!UpdateVictim() || activating_protector)
@@ -535,7 +535,7 @@ struct mob_sunblade_scoutAI : public ScriptedAI
 
         if (SinisterStrike.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(), SPELL_SINISTER_STRIKE);
+            AddSpellToCast(me->GetVictim(), SPELL_SINISTER_STRIKE);
             SinisterStrike = urand(4000, 8000);
         }
 
@@ -763,9 +763,9 @@ struct mob_shadowsword_assassinAI : public ScriptedAI
         {
             if (Player* plr = i->getSource())
             {
-                if (plr->isGameMaster() || plr->IsFriendlyTo(me))
+                if (plr->IsGameMaster() || plr->IsFriendlyTo(me))
                     continue;
-                if (plr->isAlive() && me->IsWithinDistInMap(plr, 35))
+                if (plr->IsAlive() && me->IsWithinDistInMap(plr, 35))
                 {
                     DoCast(plr, SPELL_ASSASSINS_MARK, true);
                     DoCast(plr, SPELL_SHADOWSTEP);
@@ -777,9 +777,9 @@ struct mob_shadowsword_assassinAI : public ScriptedAI
 
     void MoveInLineOfSight(Unit *who)
     {
-        if (!me->isAlive() || pInstance->GetData(DATA_FELMYST_EVENT) != DONE)
+        if (!me->IsAlive() || pInstance->GetData(DATA_FELMYST_EVENT) != DONE)
             return;
-        if(me->IsWithinLOSInMap(who) && !me->isInCombat())
+        if(me->IsWithinLOSInMap(who) && !me->IsInCombat())
             DoRandomShadowstep(who);
     }
 
@@ -803,7 +803,7 @@ struct mob_shadowsword_assassinAI : public ScriptedAI
         if (CheckTimer.Expired(diff))
         {
             if(me->isInRoots())
-                DoCast(me->getVictim(), SPELL_SHADOWSTEP);
+                DoCast(me->GetVictim(), SPELL_SHADOWSTEP);
             CheckTimer = 2000;
         }
 
@@ -996,7 +996,7 @@ struct mob_shadowsword_deathbringerAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (me->GetMotionMaster()->GetCurrentMovementGeneratorType() == IDLE_MOTION_TYPE && !me->isInCombat())
+        if (me->GetMotionMaster()->GetCurrentMovementGeneratorType() == IDLE_MOTION_TYPE && !me->IsInCombat())
         {
             if (DespawnTimer.Expired(diff))
                 me->ForcedDespawn();
@@ -1204,7 +1204,7 @@ struct mob_shadowsword_manafiendAI : public ScriptedAI
 
         if (CheckTimer.Expired(diff))
         {
-            if(me->IsWithinDistInMap(me->getVictim(), 15))
+            if(me->IsWithinDistInMap(me->GetVictim(), 15))
                 AddSpellToCast(SPELL_ARCANE_EXPLOSION_2, CAST_SELF);
             CheckTimer = urand(4000, 8000);
         }
@@ -1503,7 +1503,7 @@ struct mob_volatile_fiendAI : public ScriptedAI
     void UpdateAI(const uint32 diff)
     {
         if (summoned && me->GetMotionMaster()->GetCurrentMovementGeneratorType() == IDLE_MOTION_TYPE &&
-            !me->isInCombat() && pInstance->GetData(DATA_TRASH_GAUNTLET_EVENT) == IN_PROGRESS)
+            !me->IsInCombat() && pInstance->GetData(DATA_TRASH_GAUNTLET_EVENT) == IN_PROGRESS)
                 pInstance->SetData(DATA_TRASH_GAUNTLET_EVENT, FAIL);
 
         if(exploding)
@@ -1938,7 +1938,7 @@ struct mob_doomfire_shardAI : public ScriptedAI
         {
             if (Unit* Destroyer = me->GetUnit(DestroyerGUID))
             {
-                if (Destroyer->isAlive())
+                if (Destroyer->IsAlive())
                     DoCast(Destroyer, SPELL_AVENGING_RAGE, true);
             }
         }
@@ -2011,7 +2011,7 @@ struct mob_oblivion_mageAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (!me->isInCombat() && !channeling)
+        if (!me->IsInCombat() && !channeling)
         {
             if (EvadeTimer.Expired(diff))
             {
@@ -2024,7 +2024,7 @@ struct mob_oblivion_mageAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if(!me->getVictim()->IsWithinDistInMap(me, 20) && !me->IsNonMeleeSpellCast(false))
+        if(!me->GetVictim()->IsWithinDistInMap(me, 20) && !me->IsNonMeleeSpellCast(false))
         {
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 20.0, true))
                 AttackStart(target, false);
@@ -2146,7 +2146,7 @@ struct mob_priestess_of_tormentAI : public ScriptedAI
         if(Aur->GetId() == SPELL_WHIRLWIND)
         {
             moving = false;
-            AttackStart(me->getVictim());
+            AttackStart(me->GetVictim());
         }
     }
 
@@ -2299,7 +2299,7 @@ struct npc_gauntlet_imp_triggerAI : public Scripted_NoMovementAI
         Deathbringer_timer.Reset(30000);
         Imp_timer.Reset(1000);
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         summons.DespawnAll();
     }
 

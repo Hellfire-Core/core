@@ -92,7 +92,7 @@ struct boss_gluthAI : public BossAI
 
     void KilledUnit(Unit * unit)
     {
-        if (m_creature->isAlive() && unit->GetTypeId() == TYPEID_UNIT && unit->GetEntry() == ZOMBIE_CHOW_ID)
+        if (m_creature->IsAlive() && unit->GetTypeId() == TYPEID_UNIT && unit->GetEntry() == ZOMBIE_CHOW_ID)
             m_creature->ModifyHealth(m_creature->GetMaxHealth()*0.05);  // if zombie was eaten grow hp by 5%
     }
 
@@ -110,7 +110,7 @@ struct boss_gluthAI : public BossAI
             {
                 case EVENT_MORTALWOUND:
                 {
-                    AddSpellToCast(me->getVictim(), SPELL_MORTALWOUND);
+                    AddSpellToCast(me->GetVictim(), SPELL_MORTALWOUND);
                     events.ScheduleEvent(EVENT_MORTALWOUND, 10000);
                     break;
                 }

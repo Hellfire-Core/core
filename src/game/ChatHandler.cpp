@@ -142,7 +142,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
     if (lang != LANG_ADDON)
     {
         // send in universal language if player in .gmon mode (ignore spell effects)
-        if (_player->isGameMaster())
+        if (_player->IsGameMaster())
             lang = LANG_UNIVERSAL;
         else
         {
@@ -196,7 +196,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
         return;
     }
 
-    if (GetPlayer()->getLevel() < sWorld.getConfig(CONFIG_CHAT_MINIMUM_LVL))
+    if (GetPlayer()->GetLevel() < sWorld.getConfig(CONFIG_CHAT_MINIMUM_LVL))
     {
         int mask = 0;
         switch (type)
@@ -226,7 +226,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
             case CHAT_MSG_REPLY:
             {
                 Player *target = sObjectMgr.GetPlayer(to.c_str());
-                if (target && !target->isGameMaster())
+                if (target && !target->IsGameMaster())
                     mask = DENY_WHISP;
 
                 break;
@@ -261,7 +261,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
         case CHAT_MSG_EMOTE:
         case CHAT_MSG_YELL:
         {
-            if (!_player->isAlive())
+            if (!_player->IsAlive())
                 return;
 
             // strip invisible characters for non-addon messages
@@ -534,7 +534,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
 
         case CHAT_MSG_AFK:
         {
-            if ((msg.empty() || !_player->isAFK()) && !_player->isInCombat())
+            if ((msg.empty() || !_player->isAFK()) && !_player->IsInCombat())
             {
                 if (!_player->isAFK())
                 {
@@ -572,7 +572,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
 
 void WorldSession::HandleEmoteOpcode(WorldPacket & recv_data)
 {
-    if (!GetPlayer()->isAlive() || GetPlayer()->isPossessed() || GetPlayer()->isCharmed())
+    if (!GetPlayer()->IsAlive() || GetPlayer()->isPossessed() || GetPlayer()->isCharmed())
         return;
     CHECK_PACKET_SIZE(recv_data,4);
 
@@ -584,7 +584,7 @@ void WorldSession::HandleEmoteOpcode(WorldPacket & recv_data)
 void WorldSession::HandleTextEmoteOpcode(WorldPacket & recv_data)
 {
     Player * player = GetPlayer();
-    if (!player->isAlive() || player->isPossessed() || player->isCharmed())
+    if (!player->IsAlive() || player->isPossessed() || player->isCharmed())
         return;
 
     if (!player->CanSpeak())

@@ -80,7 +80,7 @@ struct boss_watchkeeper_gargolmarAI : public ScriptedAI
 
     void MoveInLineOfSight(Unit* who)
     {
-        if (!me->getVictim() && who->isTargetableForAttack() && ( me->IsHostileTo( who )) && who->isInAccessiblePlacefor(me) )
+        if (!me->GetVictim() && who->isTargetableForAttack() && ( me->IsHostileTo( who )) && who->isInAccessiblePlacefor(me) )
         {
             if (!me->CanFly() && me->GetDistanceZ(who) > CREATURE_Z_ATTACK_RANGE)
                 return;
@@ -124,7 +124,7 @@ struct boss_watchkeeper_gargolmarAI : public ScriptedAI
 
         if (MortalWound_Timer.Expired(diff))
         {
-            DoCast(me->getVictim(),HeroicMode ? H_SPELL_MORTAL_WOUND : SPELL_MORTAL_WOUND);
+            DoCast(me->GetVictim(),HeroicMode ? H_SPELL_MORTAL_WOUND : SPELL_MORTAL_WOUND);
             MortalWound_Timer = 5000+rand()%8000;
         }
 

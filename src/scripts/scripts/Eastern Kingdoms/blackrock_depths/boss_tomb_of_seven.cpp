@@ -82,7 +82,7 @@ struct boss_angerrelAI : public ScriptedAI
         SunderArmor_Timer -= diff;
         if (SunderArmor_Timer <= diff)
         {
-            DoCast(me->getVictim(), SPELL_SUNDERARMOR);
+            DoCast(me->GetVictim(), SPELL_SUNDERARMOR);
             SunderArmor_Timer += 28000;
         }
 
@@ -98,7 +98,7 @@ struct boss_angerrelAI : public ScriptedAI
         Strike_Timer -= diff;
         if (Strike_Timer <= diff)
         {
-            DoCast(me->getVictim(), SPELL_STRIKE);
+            DoCast(me->GetVictim(), SPELL_STRIKE);
             Strike_Timer += 10000;
         }
 
@@ -164,7 +164,7 @@ struct boss_doperelAI : public ScriptedAI
         SinisterStrike_Timer -= diff;
         if (SinisterStrike_Timer <= diff)
         {
-            DoCast(me->getVictim(), SPELL_SINISTERSTRIKE);
+            DoCast(me->GetVictim(), SPELL_SINISTERSTRIKE);
             SinisterStrike_Timer += 7000;
         }
 
@@ -173,7 +173,7 @@ struct boss_doperelAI : public ScriptedAI
         BackStab_Timer -= diff;
         if (BackStab_Timer <= diff)
         {
-            DoCast(me->getVictim(), SPELL_BACKSTAB);
+            DoCast(me->GetVictim(), SPELL_BACKSTAB);
             BackStab_Timer += 6000;
         }
 
@@ -182,7 +182,7 @@ struct boss_doperelAI : public ScriptedAI
         Gouge_Timer -= diff;
         if (Gouge_Timer <= diff)
         {
-            DoCast(me->getVictim(), SPELL_GOUGE);
+            DoCast(me->GetVictim(), SPELL_GOUGE);
             Gouge_Timer += 8000;
         }
         
@@ -278,7 +278,7 @@ struct boss_haterelAI : public ScriptedAI
         Strike_Timer -= diff;
         if (Strike_Timer <= diff)
         {
-            DoCast(me->getVictim(), SPELL_STRIKE);
+            DoCast(me->GetVictim(), SPELL_STRIKE);
             Strike_Timer += 10000;
         }
         
@@ -347,7 +347,7 @@ struct boss_vilerelAI : public ScriptedAI
         MindBlast_Timer -= diff;
         if (MindBlast_Timer <= diff)
         {
-            DoCast(me->getVictim(), SPELL_MINDBLAST);
+            DoCast(me->GetVictim(), SPELL_MINDBLAST);
             MindBlast_Timer += 7000;
         }
         
@@ -452,7 +452,7 @@ struct boss_seethrelAI : public ScriptedAI
         Frostbolt_Timer -= diff;
         if (Frostbolt_Timer <= diff)
         {
-            DoCast(me->getVictim(), SPELL_FROSTBOLT);
+            DoCast(me->GetVictim(), SPELL_FROSTBOLT);
             Frostbolt_Timer += 15000;
         }
         
@@ -471,7 +471,7 @@ struct boss_seethrelAI : public ScriptedAI
         FrostNova_Timer -= diff;
         if (FrostNova_Timer <= diff)
         {
-            DoCast(me->getVictim(), SPELL_FROSTNOVA);
+            DoCast(me->GetVictim(), SPELL_FROSTNOVA);
             FrostNova_Timer += 14000;
         }
         
@@ -545,7 +545,7 @@ struct boss_gloomrelAI : public ScriptedAI
         Hamstring_Timer -= diff;
         if (Hamstring_Timer <= diff)
         {
-            DoCast(me->getVictim(), SPELL_HAMSTRING);
+            DoCast(me->GetVictim(), SPELL_HAMSTRING);
             Hamstring_Timer += 14000;
         }
         
@@ -554,7 +554,7 @@ struct boss_gloomrelAI : public ScriptedAI
         Cleave_Timer -= diff;
         if (Cleave_Timer <= diff)
         {
-            DoCast(me->getVictim(), SPELL_CLEAVE);
+            DoCast(me->GetVictim(), SPELL_CLEAVE);
             Cleave_Timer += 8000;
         }
         
@@ -563,7 +563,7 @@ struct boss_gloomrelAI : public ScriptedAI
         MortalStrike_Timer -= diff;
         if (MortalStrike_Timer <= diff)
         {
-            DoCast(me->getVictim(), SPELL_MORTALSTRIKE);
+            DoCast(me->GetVictim(), SPELL_MORTALSTRIKE);
             MortalStrike_Timer += 12000;
         }
         
@@ -667,7 +667,7 @@ struct boss_doomrelAI : public ScriptedAI
     void JustSummoned(Creature* summoned)
     {
         voids.Summon(summoned);
-        summoned->AI()->AttackStart(me->getVictim());
+        summoned->AI()->AttackStart(me->GetVictim());
     }
 
     void EnterEvadeMode()
@@ -731,7 +731,7 @@ struct boss_doomrelAI : public ScriptedAI
         ShadowVolley_Timer -= diff;
         if (ShadowVolley_Timer <= diff)
         {
-            DoCast(me->getVictim(), SPELL_SHADOWBOLTVOLLEY);
+            DoCast(me->GetVictim(), SPELL_SHADOWBOLTVOLLEY);
             ShadowVolley_Timer += 12000;
         }
         
@@ -749,7 +749,7 @@ struct boss_doomrelAI : public ScriptedAI
         CurseOfWeakness_Timer -= diff;
         if (CurseOfWeakness_Timer <= diff)
         {
-            DoCast(me->getVictim(), SPELL_CURSEOFWEAKNESS);
+            DoCast(me->GetVictim(), SPELL_CURSEOFWEAKNESS);
             CurseOfWeakness_Timer += 45000;
         }
         
@@ -765,7 +765,7 @@ struct boss_doomrelAI : public ScriptedAI
         //Summon Voidwalkers
         if (!Voidwalkers && me->GetHealth() * 100 / me->GetMaxHealth() < 51)
         {
-            DoCast(me->getVictim(), SPELL_SUMMON_VOIDS);
+            DoCast(me->GetVictim(), SPELL_SUMMON_VOIDS);
             Voidwalkers = true;
         }
 

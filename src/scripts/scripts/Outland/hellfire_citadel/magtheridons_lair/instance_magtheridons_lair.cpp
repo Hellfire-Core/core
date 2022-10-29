@@ -96,7 +96,7 @@ struct instance_magtheridons_lair : public ScriptedInstance
         if (!tmp)
             return;
 
-        if (GetEncounterForEntry(tmp->id) && creature->isAlive() && GetData(GetEncounterForEntry(tmp->id)) == DONE)
+        if (GetEncounterForEntry(tmp->id) && creature->IsAlive() && GetData(GetEncounterForEntry(tmp->id)) == DONE)
         {
             creature->setDeathState(JUST_DIED);
             creature->RemoveCorpse();
@@ -194,7 +194,7 @@ struct instance_magtheridons_lair : public ScriptedInstance
         if (CageTimer.Expired(diff))
         {
             Creature *Magtheridon = instance->GetCreature(MagtheridonGUID);
-            if (Magtheridon && Magtheridon->isAlive())
+            if (Magtheridon && Magtheridon->IsAlive())
             {
                 Magtheridon->RemoveAurasDueToSpell(30205); // SPELL_SHADOW_CAGE_C
                 Magtheridon->AI()->DoZoneInCombat();
@@ -210,7 +210,7 @@ struct instance_magtheridons_lair : public ScriptedInstance
             {
                 if (Creature *Channeler = instance->GetCreature(*i))
                 {
-                    if(Channeler->isAlive())
+                    if(Channeler->IsAlive())
                         Channeler->AI()->EnterEvadeMode();
                     else
                         Channeler->Respawn();

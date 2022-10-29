@@ -203,7 +203,7 @@ int32 DoHighUnlearnCost(Player *player)                     //tailor, alchemy, e
 
 int32 DoMedUnlearnCost(Player *player)                      //blacksmith, leatherwork
 {
-    uint32 level = player->getLevel();
+    uint32 level = player->GetLevel();
     if(level < 51)
         return 250000;
     else if (level < 66)
@@ -214,7 +214,7 @@ int32 DoMedUnlearnCost(Player *player)                      //blacksmith, leathe
 
 int32 DoLowUnlearnCost(Player *player)                      //blacksmith
 {
-    uint32 level = player->getLevel();
+    uint32 level = player->GetLevel();
     if (level < 66)
         return 50000;
     else
@@ -412,7 +412,7 @@ bool GossipHello_npc_prof_alchemy(Player *player, Creature *_Creature)
 
     uint32 eCreature = _Creature->GetEntry();
 
-    if (player->HasSkill(SKILL_ALCHEMY) && player->GetBaseSkillValue(SKILL_ALCHEMY)>=350 && player->getLevel() > 67)
+    if (player->HasSkill(SKILL_ALCHEMY) && player->GetBaseSkillValue(SKILL_ALCHEMY)>=350 && player->GetLevel() > 67)
     {
         if (player->GetQuestRewardStatus(10899) || player->GetQuestRewardStatus(10902) || player->GetQuestRewardStatus(10897))
         {
@@ -632,7 +632,7 @@ bool GossipHello_npc_prof_blacksmith(Player *player, Creature *_Creature)
         }
     }
     //WEAPONSMITH SPEC
-    if(player->HasSpell(S_WEAPON) && player->getLevel() > 49 && player->GetBaseSkillValue(SKILL_BLACKSMITHING)>=250)
+    if(player->HasSpell(S_WEAPON) && player->GetLevel() > 49 && player->GetBaseSkillValue(SKILL_BLACKSMITHING)>=250)
     {
         switch (eCreature)
         {
@@ -899,7 +899,7 @@ bool GossipHello_npc_prof_leather(Player *player, Creature *_Creature)
 
     uint32 eCreature = _Creature->GetEntry();
 
-    if(player->HasSkill(SKILL_LEATHERWORKING) && player->GetBaseSkillValue(SKILL_LEATHERWORKING)>=250 && player->getLevel() > 49 )
+    if(player->HasSkill(SKILL_LEATHERWORKING) && player->GetBaseSkillValue(SKILL_LEATHERWORKING)>=250 && player->GetLevel() > 49 )
     {
         switch (eCreature)
         {
@@ -1053,7 +1053,7 @@ bool GossipHello_npc_prof_tailor(Player *player, Creature *_Creature)
 
     uint32 eCreature = _Creature->GetEntry();
                                                             //TAILORING SPEC
-    if (player->HasSkill(SKILL_TAILORING) && player->GetBaseSkillValue(SKILL_TAILORING)>=350 && player->getLevel() > 59)
+    if (player->HasSkill(SKILL_TAILORING) && player->GetBaseSkillValue(SKILL_TAILORING)>=350 && player->GetLevel() > 59)
     {
         if (player->GetQuestRewardStatus(10831) || player->GetQuestRewardStatus(10832) || player->GetQuestRewardStatus(10833))
         {
@@ -1261,7 +1261,7 @@ bool HasEngineerSpec(Player* player)
 
 bool GossipHello_go_soothsaying_for_dummies(Player *player, GameObject* go)
 {
-    if (player->HasSkill(SKILL_LEATHERWORKING) && player->GetBaseSkillValue(SKILL_LEATHERWORKING) >= 225 && player->getLevel() > 39)
+    if (player->HasSkill(SKILL_LEATHERWORKING) && player->GetBaseSkillValue(SKILL_LEATHERWORKING) >= 225 && player->GetLevel() > 39)
     {
         if (player->GetQuestRewardStatus(5141) || player->GetQuestRewardStatus(5145) || player->GetQuestRewardStatus(5144) ||
             player->GetQuestRewardStatus(5146) || player->GetQuestRewardStatus(5143) || player->GetQuestRewardStatus(5148))
@@ -1278,7 +1278,7 @@ bool GossipHello_go_soothsaying_for_dummies(Player *player, GameObject* go)
         }
     }
 
-    if (player->HasSkill(SKILL_ENGINERING) && player->GetBaseSkillValue(SKILL_ENGINERING) >= 200 && player->getLevel() > 39)
+    if (player->HasSkill(SKILL_ENGINERING) && player->GetBaseSkillValue(SKILL_ENGINERING) >= 200 && player->GetLevel() > 39)
     {
         if (player->GetQuestRewardStatus(3643) || player->GetQuestRewardStatus(3641) || player->GetQuestRewardStatus(3639))
         {

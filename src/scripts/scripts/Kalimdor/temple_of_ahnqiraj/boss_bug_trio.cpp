@@ -93,20 +93,20 @@ struct boss_kriAI : public ScriptedAI
         //Cleave_Timer
         if (Cleave_Timer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(),SPELL_CLEAVE);
+            DoCast(m_creature->GetVictim(),SPELL_CLEAVE);
             Cleave_Timer = 5000 + rand()%7000;
         }
 
         //ToxicVolley_Timer
         if (ToxicVolley_Timer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(),SPELL_TOXIC_VOLLEY);
+            DoCast(m_creature->GetVictim(),SPELL_TOXIC_VOLLEY);
             ToxicVolley_Timer = 10000 + rand()%5000;
         }
 
         if (m_creature->GetHealth() <= m_creature->GetMaxHealth() * 0.05 && !Death)
         {
-            DoCast(m_creature->getVictim(),SPELL_POISON_CLOUD);
+            DoCast(m_creature->GetVictim(),SPELL_POISON_CLOUD);
             Death = true;
         }
 
@@ -198,9 +198,9 @@ struct boss_vemAI : public ScriptedAI
         //KnockBack_Timer
         if (KnockBack_Timer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(),SPELL_KNOCKBACK);
-            if(DoGetThreat(m_creature->getVictim()))
-                DoModifyThreatPercent(m_creature->getVictim(),-80);
+            DoCast(m_creature->GetVictim(),SPELL_KNOCKBACK);
+            if(DoGetThreat(m_creature->GetVictim()))
+                DoModifyThreatPercent(m_creature->GetVictim(),-80);
             KnockBack_Timer = 15000 + rand()%10000;
         }
 
@@ -277,7 +277,7 @@ struct boss_yaujAI : public ScriptedAI
         //Fear_Timer
         if (Fear_Timer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(),SPELL_FEAR);
+            DoCast(m_creature->GetVictim(),SPELL_FEAR);
             DoResetThreat();
             Fear_Timer = 20000;
         }

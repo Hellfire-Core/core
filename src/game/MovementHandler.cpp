@@ -139,7 +139,7 @@ void WorldSession::HandleMoveWorldportAckOpcode()
         {
             if (_player->IsInvitedForBattleGroundInstance(_player->GetBattleGroundId()))
                 bg->AddPlayer(_player);
-            else if (_player->isGameMaster()) // add pvp minimap button
+            else if (_player->IsGameMaster()) // add pvp minimap button
             {
                 WorldPacket data;
                 sBattleGroundMgr.BuildBattleGroundStatusPacket(&data, bg, _player->GetTeam(), 0, STATUS_IN_PROGRESS, 0, bg->GetStartTime());
@@ -286,7 +286,7 @@ bool WorldSession::HandleMoverRelocation(MovementInfo& movementInfo)
     if (Player *plMover = mover->ToPlayer())
     {
         plMover->m_desiredPosition = movementInfo.pos;
-        if (mover->hasUnitState(UNIT_STAT_ROOT))
+        if (mover->HasUnitState(UNIT_STAT_ROOT))
         {
             if (mover->m_movementInfo.pos != movementInfo.pos) // allow rotating in roots
             {
@@ -302,7 +302,7 @@ bool WorldSession::HandleMoverRelocation(MovementInfo& movementInfo)
             }
         }
 
-        if (sWorld.getConfig(CONFIG_ENABLE_PASSIVE_ANTICHEAT) && !plMover->hasUnitState(UNIT_STAT_LOST_CONTROL | UNIT_STAT_NOT_MOVE) && !plMover->GetSession()->HasPermissions(PERM_GMT_DEV))
+        if (sWorld.getConfig(CONFIG_ENABLE_PASSIVE_ANTICHEAT) && !plMover->HasUnitState(UNIT_STAT_LOST_CONTROL | UNIT_STAT_NOT_MOVE) && !plMover->GetSession()->HasPermissions(PERM_GMT_DEV))
         {
             if (plMover->m_AC_timer == 0 || // time up OR moved long distance and timer is NOT on long interval(caused by teleport)
                 (plMover->m_AC_timer < 2500 && (abs(plMover->m_movementInfo.pos.x - movementInfo.pos.x) > 15 || abs(plMover->m_movementInfo.pos.y - movementInfo.pos.y) > 15)))
@@ -505,7 +505,7 @@ void WorldSession::HandleMoveWaterWalkAck(WorldPacket& recv_data)
 
 void WorldSession::HandleSummonResponseOpcode(WorldPacket& recv_data)
 {
-    if (!_player->isAlive() || _player->isInCombat())
+    if (!_player->IsAlive() || _player->IsInCombat())
         return;
 
     uint64 summoner_guid;

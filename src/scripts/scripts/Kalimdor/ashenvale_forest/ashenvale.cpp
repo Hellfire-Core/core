@@ -116,7 +116,7 @@ struct npc_torekAI : public npc_escortAI
         Rend_Timer -= diff;
         if (Rend_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_REND);
+            DoCast(m_creature->GetVictim(),SPELL_REND);
             Rend_Timer += 20000;
         }
         
@@ -468,7 +468,7 @@ struct npc_muglashAI : public npc_escortAI
     {
         npc_escortAI::UpdateAI(uiDiff);
 
-        if (!m_creature->getVictim())
+        if (!m_creature->GetVictim())
         {
             if (HasEscortState(STATE_ESCORT_PAUSED))
             {
@@ -582,7 +582,7 @@ struct npc_Heretic_EmisaryAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (!me->getVictim())
+        if (!me->GetVictim())
         {
             if (EventStarted)
             {
@@ -592,7 +592,7 @@ struct npc_Heretic_EmisaryAI : public ScriptedAI
                     Player * Player_;
                     Creature * Briatha = GetClosestCreatureWithEntry(me, NPC_ICECALLERBRIATHA, 20);
 
-                    if (Briatha && Briatha->isAlive()) 
+                    if (Briatha && Briatha->IsAlive()) 
                     {
                         switch(Phase)
                         {

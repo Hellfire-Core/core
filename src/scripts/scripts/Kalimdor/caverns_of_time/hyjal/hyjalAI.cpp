@@ -424,7 +424,7 @@ void hyjalAI::EnterEvadeMode()
     m_creature->CombatStop();
     m_creature->LoadCreaturesAddon();
 
-    if(m_creature->isAlive())
+    if(m_creature->IsAlive())
         m_creature->GetMotionMaster()->MoveTargetedHome();
 
     m_creature->SetLootRecipient(NULL);
@@ -899,7 +899,7 @@ void hyjalAI::UpdateAI(const uint32 diff)
             if(BossGUID[i])
             {
                 Unit* pUnit = Unit::GetUnit((*m_creature), BossGUID[i]);
-                if(pUnit && (!pUnit->isAlive()))
+                if(pUnit && (!pUnit->IsAlive()))
                 {
                     if(BossGUID[i] == BossGUID[0])
                     {
@@ -944,10 +944,10 @@ void hyjalAI::UpdateAI(const uint32 diff)
                 {
                     case TARGETTYPE_SELF: target = m_creature; break;
                     case TARGETTYPE_RANDOM: target = SelectUnit(SELECT_TARGET_RANDOM, 0); break;
-                    case TARGETTYPE_VICTIM: target = m_creature->getVictim(); break;
+                    case TARGETTYPE_VICTIM: target = m_creature->GetVictim(); break;
                 }
 
-                if(target && target->isAlive())
+                if(target && target->IsAlive())
                 {
                     AddSpellToCast(target, Spell[i].SpellId);
                     SpellTimer[i] = Spell[i].CooldownMin + rand() % (Spell[i].CooldownMax - Spell[i].CooldownMin);
@@ -1056,7 +1056,7 @@ void hyjalAI::WaypointReached(uint32 i)
         {
             for(std::list<Creature*>::iterator itr = creatures.begin(); itr != creatures.end(); ++itr)
             {
-                if((*itr) && (*itr)->isAlive() && (*itr) != m_creature && (*itr)->GetEntry() != JAINA)
+                if((*itr) && (*itr)->IsAlive() && (*itr) != m_creature && (*itr)->GetEntry() != JAINA)
                 {
                     if(!(*itr)->IsWithinDistInMap(m_creature, 60))
                         (*itr)->SetWalk(false);
@@ -1089,11 +1089,11 @@ void hyjalAI::DoOverrun(uint32 faction, const uint32 diff)
             {
                 for(std::list<Creature*>::iterator itr = creatures.begin(); itr != creatures.end(); ++itr)
                 {
-                    if((*itr) && (*itr)->isAlive())
+                    if((*itr) && (*itr)->IsAlive())
                     {
                         (*itr)->CastSpell(*itr, SPELL_TELEPORT_VISUAL, true);
                         (*itr)->setFaction(35);//make them friendly so mobs won't attack them
-                        (*itr)->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                        (*itr)->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                     }
                 }
                 DoCast(m_creature, SPELL_TELEPORT_VISUAL);

@@ -60,7 +60,7 @@ template<class UNIT>
 void ConfusedMovementGenerator<UNIT>::Interrupt(UNIT &unit)
 {
     unit.StopMoving();
-    unit.clearUnitState(UNIT_STAT_CONFUSED);
+    unit.ClearUnitState(UNIT_STAT_CONFUSED);
 }
 
 template<class UNIT>
@@ -118,7 +118,7 @@ void ConfusedMovementGenerator<UNIT>::Finalize(UNIT &unit)
 {
     unit.StopMoving();
 
-    unit.clearUnitState(UNIT_STAT_CONFUSED);
+    unit.ClearUnitState(UNIT_STAT_CONFUSED);
     unit.AddEvent(new AttackResumeEvent(unit), ATTACK_DISPLAY_DELAY);
 }
 

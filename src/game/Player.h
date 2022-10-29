@@ -54,6 +54,7 @@ class Transport;
 class UpdateMask;
 class PlayerSocial;
 class OutdoorPvP;
+class SpellCastTargets;
 struct PlayerAI;
 
 typedef std::deque<Mail*> PlayerMails;
@@ -1037,7 +1038,7 @@ class HELLGROUND_EXPORT Player : public Unit
         PlayerSocial *GetSocial() { return m_social; }
 
         PlayerTaxi m_taxi;
-        void InitTaxiNodesForLevel() { m_taxi.InitTaxiNodesForLevel(getRace(),getLevel()); }
+        void InitTaxiNodesForLevel() { m_taxi.InitTaxiNodesForLevel(GetRace(),GetLevel()); }
         bool ActivateTaxiPathTo(std::vector<uint32> const& nodes, uint32 mount_id = 0 , Creature* npc = NULL);
         void CleanupAfterTaxiFlight();
 
@@ -1045,7 +1046,7 @@ class HELLGROUND_EXPORT Player : public Unit
         void SetAcceptWhispers(bool on) { if (on) m_ExtraFlags |= PLAYER_EXTRA_ACCEPT_WHISPERS; else m_ExtraFlags &= ~PLAYER_EXTRA_ACCEPT_WHISPERS; }
         bool canWhisperToGM() const { return m_ExtraFlags & PLAYER_EXTRA_CAN_WHISP_TO_GM; }
         void SetCanWhisperToGM(bool on);
-        bool isGameMaster() const { return m_ExtraFlags & PLAYER_EXTRA_GM_ON; }
+        bool IsGameMaster() const { return m_ExtraFlags & PLAYER_EXTRA_GM_ON; }
         void SetGameMaster(bool on);
         bool isGMChat() const { return GetSession()->HasPermissions(PERM_GMT) && (m_ExtraFlags & PLAYER_EXTRA_GM_CHAT); }
         void SetGMChat(bool on) { if (on) m_ExtraFlags |= PLAYER_EXTRA_GM_CHAT; else m_ExtraFlags &= ~PLAYER_EXTRA_GM_CHAT; }
@@ -1132,6 +1133,7 @@ class HELLGROUND_EXPORT Player : public Unit
         Item* GetShield(bool useable = false) const;
         static uint32 GetAttackBySlot(uint8 slot);        // MAX_ATTACK if not weapon slot
         std::vector<Item *> &GetItemUpdateQueue() { return m_itemUpdateQueue; }
+        uint32 GetHighestKnownArmorProficiency() const;
         static bool IsInventoryPos(uint16 pos) { return IsInventoryPos(pos >> 8,pos & 255); }
         static bool IsInventoryPos(uint8 bag, uint8 slot);
         static bool IsEquipmentPos(uint16 pos) { return IsEquipmentPos(pos >> 8,pos & 255); }
@@ -1176,6 +1178,9 @@ class HELLGROUND_EXPORT Player : public Unit
         Item* EquipNewItem(uint16 pos, uint32 item, bool update);
         Item* EquipItem(uint16 pos, Item *pItem, bool update);
         void AutoUnequipOffhandIfNeed();
+        void AutoUnequipItemFromSlot(uint32 slot);
+        void SatisfyItemRequirements(ItemPrototype const* pItem);
+        void AddStartingItems();
         bool StoreNewItemInBestSlots(uint32 item_id, uint32 item_count);
         void AutoStoreLoot(uint8 bag, uint8 slot, uint32 loot_id, LootStore const& store, bool broadcast = false);
         void AutoStoreLoot(uint32 loot_id, LootStore const& store, bool broadcast = false) { AutoStoreLoot(NULL_BAG,NULL_SLOT,loot_id,store,broadcast); }
@@ -1255,7 +1260,7 @@ class HELLGROUND_EXPORT Player : public Unit
         /***                    QUEST SYSTEM                   ***/
         /*********************************************************/
 
-        uint32 GetQuestOrPlayerLevel(Quest const* pQuest) const { return pQuest && (pQuest->GetQuestLevel()>0) ? pQuest->GetQuestLevel() : getLevel(); }
+        uint32 GetQuestOrPlayerLevel(Quest const* pQuest) const { return pQuest && (pQuest->GetQuestLevel()>0) ? pQuest->GetQuestLevel() : GetLevel(); }
 
         void PrepareQuestMenu(uint64 guid);
         void SendPreparedQuest(uint64 guid);
@@ -1507,7 +1512,7 @@ class HELLGROUND_EXPORT Player : public Unit
         void SendProficiency(uint8 pr1, uint32 pr2);
         void SendInitialSpells();
         bool addSpell(uint32 spell_id, bool active, bool learning = true, bool loading = false, uint16 slot_id=SPELL_WITHOUT_SLOT_ID, bool disabled = false);
-        void learnSpell(uint32 spell_id);
+        void LearnSpell(uint32 spell_id);
         void removeSpell(uint32 spell_id, bool disabled = false);
         void resetSpells();
         void learnDefaultSpells(bool loading = false);
@@ -1540,6 +1545,9 @@ class HELLGROUND_EXPORT Player : public Unit
         void RestoreSpellMods(Spell const* spell);
 
         CooldownMgr& GetCooldownMgr() { return m_CooldownMgr; }
+        bool IsSpellReady(uint32 spellId) const { return !m_CooldownMgr.HasSpellCooldown(spellId); }
+        bool IsSpellReady(SpellEntry const& spellEntry, ItemPrototype const* itemProto = nullptr) const { return !m_CooldownMgr.HasSpellCooldown(spellEntry.Id) && !m_CooldownMgr.HasItemCooldown(itemProto->ItemId); };
+        bool HasGCD(SpellEntry const* pSpellEntry) const { return m_CooldownMgr.HasGlobalCooldown(pSpellEntry->StartRecoveryCategory); }
         void SendCooldownEvent(SpellEntry const *spellInfo);
         void ProhibitSpellSchool(SpellSchoolMask idSchoolMask, uint32 unTimeMs);
         void RemoveSpellCooldown(uint32 spell_id, bool update = false);
@@ -1560,6 +1568,7 @@ class HELLGROUND_EXPORT Player : public Unit
         void clearResurrectRequestData() { setResurrectRequestData(0,0,0.0f,0.0f,0.0f,0,0); }
         bool isRessurectRequestedBy(uint64 guid) const { return m_resurrectGUID == guid; }
         bool isRessurectRequested() const { return m_resurrectGUID != 0; }
+        uint64 GetResurrector() const { return m_resurrectGUID; }
         void ResurectUsingRequestData();
 
         bool getCinematic()
@@ -1603,7 +1612,7 @@ class HELLGROUND_EXPORT Player : public Unit
         void SetContestedPvPTimer(uint32 newTime) {m_contestedPvPTimer.Reset(newTime);}
         void ResetContestedPvP()
         {
-            clearUnitState(UNIT_STAT_ATTACK_PLAYER);
+            ClearUnitState(UNIT_STAT_ATTACK_PLAYER);
             RemoveFlag(PLAYER_FLAGS, PLAYER_FLAGS_CONTESTED_PVP);
             m_contestedPvPTimer = 0;
         }
@@ -1911,6 +1920,7 @@ class HELLGROUND_EXPORT Player : public Unit
         void UpdateEquipSpellsAtFormChange();
         void CastItemCombatSpell(Unit *target, WeaponAttackType attType, uint32 procVictim, uint32 procEx, SpellEntry const *spellInfo = NULL);
         void CastItemCombatSpell(Unit *target, WeaponAttackType attType, uint32 procVictim, uint32 procEx, Item *item, ItemPrototype const * proto, SpellEntry const *spell = NULL);
+        void CastItemUseSpell(Item* item, SpellCastTargets& targets, uint8 cast_count = 0);
 
         void SendInitWorldStates(bool force = false, uint32 forceZoneId = 0);
         void SendUpdateWorldState(uint32 Field, uint32 Value);
@@ -2140,6 +2150,7 @@ class HELLGROUND_EXPORT Player : public Unit
 
         uint32 GetSaveTimer() const { return m_nextSave; }
         void   SetSaveTimer(uint32 timer) { m_nextSave = timer; }
+        bool   IsSavingDisabled() const { return m_saveDisabled; }
 
         void SaveRecallPosition(TaxiNodesEntry const* = NULL);
 
@@ -2271,6 +2282,7 @@ class HELLGROUND_EXPORT Player : public Unit
         uint64 getFollowingGM() {return m_GMfollow_GUID;}
 
         PlayerAI *AI() const{ return (PlayerAI*)i_AI; }
+        void SetAI(PlayerAI* otherAI) { i_AI = (UnitAI*)otherAI; }
 
         uint32 GetCachedZone() const { return m_zoneUpdateId; }
         uint32 GetCachedArea() const { return m_areaUpdateId; }
@@ -2377,6 +2389,7 @@ class HELLGROUND_EXPORT Player : public Unit
 
         uint32 m_team;
         uint32 m_nextSave;
+        bool m_saveDisabled;
         time_t m_speakTime;
         uint32 m_speakCount;
         uint32 m_dungeonDifficulty;

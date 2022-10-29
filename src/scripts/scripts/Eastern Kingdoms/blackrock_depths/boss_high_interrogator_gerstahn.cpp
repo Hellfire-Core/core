@@ -82,7 +82,7 @@ struct boss_high_interrogator_gerstahnAI : public ScriptedAI
         PsychicScream_Timer -= diff;
         if (PsychicScream_Timer <= diff)
         {
-            DoCast(me->getVictim(),SPELL_PSYCHICSCREAM);
+            DoCast(me->GetVictim(),SPELL_PSYCHICSCREAM);
             PsychicScream_Timer += 30000;
         }
         

@@ -162,31 +162,31 @@ struct boss_nefarianAI : public ScriptedAI
             {
                 case EVENT_CAST_SHADOW_FLAME:
                 {
-                    DoCast(m_creature->getVictim(),SPELL_SHADOWFLAME);
+                    DoCast(m_creature->GetVictim(),SPELL_SHADOWFLAME);
                     events.ScheduleEvent(EVENT_CAST_SHADOW_FLAME, 12000);
                     break;
                 }
                 case EVENT_CAST_BELLOWING_ROAR:
                 {
-                    DoCast(m_creature->getVictim(), SPELL_BELLOWINGROAR);
+                    DoCast(m_creature->GetVictim(), SPELL_BELLOWINGROAR);
                     events.ScheduleEvent(EVENT_CAST_BELLOWING_ROAR, 30000);
                     break;
                 }
                 case EVENT_CAST_VEIL_OF_SHADOW:
                 {
-                    DoCast(m_creature->getVictim(),SPELL_VEILOFSHADOW);
+                    DoCast(m_creature->GetVictim(),SPELL_VEILOFSHADOW);
                     events.ScheduleEvent(EVENT_CAST_VEIL_OF_SHADOW, 15000);
                     break;
                 }
                 case EVENT_CAST_CLEAVE:
                 {
-                    DoCast(m_creature->getVictim(),SPELL_CLEAVE);
+                    DoCast(m_creature->GetVictim(),SPELL_CLEAVE);
                     events.ScheduleEvent(EVENT_CAST_CLEAVE, 7000);
                     break;
                 }
                 case EVENT_CAST_TAIL_LASH:
                 {
-                    DoCast(m_creature->getVictim(),SPELL_TAILLASH); // TODO: test whether Tail Lash works correctly
+                    DoCast(m_creature->GetVictim(),SPELL_TAILLASH); // TODO: test whether Tail Lash works correctly
                     events.ScheduleEvent(EVENT_CAST_TAIL_LASH, 10000);
                     break;
                 }
@@ -195,7 +195,7 @@ struct boss_nefarianAI : public ScriptedAI
                     if (Unit* player = SelectUnit(SELECT_TARGET_RANDOM, 0, 300.0f, true))
                     {
                         // switch (urand(1, 11)) // debug only
-                        switch (player->getClass())
+                        switch (player->GetClass())
                         {
                             //
                             // working

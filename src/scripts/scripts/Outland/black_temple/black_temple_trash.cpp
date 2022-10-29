@@ -107,7 +107,7 @@ struct mob_aqueous_lordAI : public ScriptedAI
 
         if (CrashingWave.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(), SPELL_CRASHING_WAVE);
+            AddSpellToCast(me->GetVictim(), SPELL_CRASHING_WAVE);
             CrashingWave = 15000;
         }
 
@@ -228,7 +228,7 @@ struct mob_coilskar_generalAI : public ScriptedAI
 
         if (Cleave.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(), SPELL_CLEAVE);
+            AddSpellToCast(me->GetVictim(), SPELL_CLEAVE);
             Cleave = urand(15000, 25000);
         }
 
@@ -446,7 +446,7 @@ struct mob_coilskar_geyserAI : public Scripted_NoMovementAI
         Unit* SeaCaller = FindCreature(MOB_COILSCAR_SEACALLER, 20, me);
         if (SeaCaller)
         {
-            me->SetLevel(SeaCaller->getLevel());
+            me->SetLevel(SeaCaller->GetLevel());
             me->setFaction(SeaCaller->getFaction());
         }
         else
@@ -550,7 +550,7 @@ struct mob_coilskar_wranglerAI : public ScriptedAI
 
         if (Cleave.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(), SPELL_CLEAVE_1);
+            AddSpellToCast(me->GetVictim(), SPELL_CLEAVE_1);
             Cleave = urand(10000, 15000);
         }
 
@@ -565,7 +565,7 @@ struct mob_coilskar_wranglerAI : public ScriptedAI
 
         if (LightningProd.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(), SPELL_LIGHTNING_PROD);
+            AddSpellToCast(me->GetVictim(), SPELL_LIGHTNING_PROD);
             LightningProd = urand(10000, 20000);
         }
 
@@ -640,7 +640,7 @@ struct mob_dragon_turtleAI : public ScriptedAI
                         AddSpellToCast(target, SPELL_WATER_SPIT);
                 }
                 else
-                    AddSpellToCast(me->getVictim(), SPELL_WATER_SPIT);
+                    AddSpellToCast(me->GetVictim(), SPELL_WATER_SPIT);
                 WaterSpit = urand(2500, 3500);
             }
         }
@@ -895,7 +895,7 @@ struct mob_bonechewer_workerAI : public ScriptedAI
 
         for (std::list<Creature*>::iterator itr = tmp.begin(); itr != tmp.end(); ++itr)
         {
-            if ((*itr) && (*itr)->isAlive())
+            if ((*itr) && (*itr)->IsAlive())
                 ((mob_bonechewer_taskmasterAI*)(*itr)->AI())->WorkerDied();
         }
     }
@@ -952,7 +952,7 @@ struct mob_dragonmaw_skystalkerAI : public ScriptedAI
         for (Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
         {
             Player* i_pl = i->getSource();
-            if (i_pl && i_pl->isAlive() && !i_pl->isGameMaster() && !me->IsWithinDistInMap(i_pl, 15) && me->IsWithinDistInMap(i_pl, 40))
+            if (i_pl && i_pl->IsAlive() && !i_pl->IsGameMaster() && !me->IsWithinDistInMap(i_pl, 15) && me->IsWithinDistInMap(i_pl, 40))
                 rangedList.push_back((Unit*)i_pl);
         }
 
@@ -975,7 +975,7 @@ struct mob_dragonmaw_skystalkerAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        Unit * victim = me->getVictim();
+        Unit * victim = me->GetVictim();
 
         if (!victim)
             return;
@@ -1062,7 +1062,7 @@ struct mob_dragonmaw_windreaverAI : public ScriptedAI
         for (Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
         {
             Player* i_pl = i->getSource();
-            if (i_pl && i_pl->isAlive() && !i_pl->isGameMaster() && !me->IsWithinDistInMap(i_pl, 15) && me->IsWithinDistInMap(i_pl, 40))
+            if (i_pl && i_pl->IsAlive() && !i_pl->IsGameMaster() && !me->IsWithinDistInMap(i_pl, 15) && me->IsWithinDistInMap(i_pl, 40))
                 rangedList.push_back((Unit*)i_pl);
         }
 
@@ -1085,7 +1085,7 @@ struct mob_dragonmaw_windreaverAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        Unit * victim = me->getVictim();
+        Unit * victim = me->GetVictim();
 
         if (!victim)
             return;
@@ -1186,7 +1186,7 @@ struct mob_dragonmaw_wyrmcallerAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        Unit * victim = me->getVictim();
+        Unit * victim = me->GetVictim();
 
         if (!victim)
             return;
@@ -1211,7 +1211,7 @@ struct mob_dragonmaw_wyrmcallerAI : public ScriptedAI
             std::vector<Creature*> Friendly;
 
             for (std::list<Creature*>::iterator i = FriendlyList.begin(); i != FriendlyList.end(); ++i)
-                if ((*i)->isInCombat() && (*i)->IsAIEnabled)
+                if ((*i)->IsInCombat() && (*i)->IsAIEnabled)
                     Friendly.push_back(*i);
 
             Unit* target = *(Friendly.begin() + rand() % Friendly.size());
@@ -1271,7 +1271,7 @@ struct mob_illidari_fearbringerAI : public ScriptedAI
 
         if (flamesTimer.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(), SPELL_FEARBRINGER_ILLIDARI_FLAMES);
+            AddSpellToCast(me->GetVictim(), SPELL_FEARBRINGER_ILLIDARI_FLAMES);
             flamesTimer = 10000 + urand(0, 10000);
         }
 
@@ -1401,14 +1401,14 @@ struct mob_ashtongue_battlelordAI : public ScriptedAI
 
         if (Cleave.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(), SPELL_CLEAVE_1);
+            AddSpellToCast(me->GetVictim(), SPELL_CLEAVE_1);
             Cleave = 10000;
         }
 
 
         if (ConcussionBlow.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(), SPELL_CONCUSSION_BLOW);
+            AddSpellToCast(me->GetVictim(), SPELL_CONCUSSION_BLOW);
             ConcussionBlow = 25000;
         }
 
@@ -1426,7 +1426,7 @@ struct mob_ashtongue_battlelordAI : public ScriptedAI
         if (Frenzy.Expired(diff))
         {
             if (!me->HasAura(SPELL_FRENZY, 0))
-                AddSpellToCast(me->getVictim(), SPELL_FRENZY);
+                AddSpellToCast(me->GetVictim(), SPELL_FRENZY);
             Frenzy = 30000;
         }
 
@@ -1775,9 +1775,9 @@ struct mob_ashtongue_primalistAI : public ScriptedAI
 
         if (SweepingWingClip.Expired(diff))
         {
-            if (me->IsWithinDistInMap(me->getVictim(), 5.0))
+            if (me->IsWithinDistInMap(me->GetVictim(), 5.0))
             {
-                AddSpellToCast(me->getVictim(), SPELL_SWEEPING_WING_CLIP);
+                AddSpellToCast(me->GetVictim(), SPELL_SWEEPING_WING_CLIP);
 
                 float x, y, z;
                 me->GetNearPoint(x, y, z, 0.0f, urand(10, 15), frand(0.0f, 2 * M_PI));
@@ -1837,7 +1837,7 @@ struct mob_ashtongue_stalkerAI : public ScriptedAI
 
         if (Blind.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(), SPELL_BLIND);
+            AddSpellToCast(me->GetVictim(), SPELL_BLIND);
             Blind = 20000;
         }
 
@@ -1916,7 +1916,7 @@ struct mob_ashtongue_stormcallerAI : public ScriptedAI
 
         if (ChainLightning.Expired(diff))
         {
-            ForceSpellCast(me->getVictim(), SPELL_CHAIN_LIGHTNING);
+            ForceSpellCast(me->GetVictim(), SPELL_CHAIN_LIGHTNING);
             ChainLightning = 10000;
         }
 
@@ -2000,21 +2000,21 @@ struct mob_illidari_boneslicerAI : public ScriptedAI
 
         if (Gouge.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(), SPELL_GOUGE);
+            AddSpellToCast(me->GetVictim(), SPELL_GOUGE);
             Gouge = 10000;
         }
 
 
         if (Shadowstep.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(), SPELL_SHADOWSTEP);
+            AddSpellToCast(me->GetVictim(), SPELL_SHADOWSTEP);
             Shadowstep = 15000;
         }
 
 
         if (WoundPoison.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(), SPELL_WOUND_POISON);
+            AddSpellToCast(me->GetVictim(), SPELL_WOUND_POISON);
             WoundPoison = 3000;
         }
 
@@ -2058,7 +2058,7 @@ struct mob_illidari_centurionAI : public ScriptedAI
 
         if (Cleave.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(), SPELL_CLEAVE_1);
+            AddSpellToCast(me->GetVictim(), SPELL_CLEAVE_1);
             Cleave = 10000;
         }
 
@@ -2116,7 +2116,7 @@ struct mob_illidari_defilerAI : public ScriptedAI
 
         if (FelImmolate.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(), SPELL_FEL_IMMOLATE);
+            AddSpellToCast(me->GetVictim(), SPELL_FEL_IMMOLATE);
             FelImmolate = 25000;
         }
 
@@ -2200,8 +2200,8 @@ struct mob_illidari_heartseekerAI : public ScriptedAI
         if (Shoot.Expired(diff))
         {
             //check if victim is in melee range, if so, start normal chasing
-            if (me->IsWithinDistInMap(me->getVictim(), 8.0) && me->GetMotionMaster()->GetCurrentMovementGeneratorType() == IDLE_MOTION_TYPE)
-                DoStartMovement(me->getVictim());
+            if (me->IsWithinDistInMap(me->GetVictim(), 8.0) && me->GetMotionMaster()->GetCurrentMovementGeneratorType() == IDLE_MOTION_TYPE)
+                DoStartMovement(me->GetVictim());
 
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, 30.0, true, 0, 5.0))
             {
@@ -2480,7 +2480,7 @@ struct mob_shadowmoon_blood_mageAI : public ScriptedAI
             {
                 if (Unit *skeleton = FindCreature(MOB_SKELETON, 20.0f, me))
                 {
-                    if (skeleton->isAlive())
+                    if (skeleton->IsAlive())
                         DoCast(skeleton, SPELL_GREEN_BEAM);
                 }
             }
@@ -2706,7 +2706,7 @@ struct mob_shadowmoon_deathshaperAI : public ScriptedAI
             {
                 if (Unit *skeleton = FindCreature(MOB_SKELETON, 20.0f, me))
                 {
-                    if (skeleton->isAlive())
+                    if (skeleton->IsAlive())
                         DoCast(skeleton, SPELL_GREEN_BEAM);
                 }
             }
@@ -2845,7 +2845,7 @@ struct mob_shadowmoon_houndmasterAI : public ScriptedAI
 
         if (RangeCheck.Expired(diff))
         {
-            Unit* victim = me->getVictim();
+            Unit* victim = me->GetVictim();
             if (me->IsInRange(victim, 5.0f, 30.0f))
                 DoStartNoMovement(victim, CHECK_TYPE_SHOOTER);
             else
@@ -2898,9 +2898,9 @@ struct mob_shadowmoon_houndmasterAI : public ScriptedAI
 
         if (WingClip.Expired(diff))
         {
-            if (me->IsWithinDistInMap(me->getVictim(), 5.0))
+            if (me->IsWithinDistInMap(me->GetVictim(), 5.0))
             {
-                AddSpellToCast(me->getVictim(), SPELL_WING_CLIP);
+                AddSpellToCast(me->GetVictim(), SPELL_WING_CLIP);
                 WingClip = 20000;
             }
             else
@@ -3006,7 +3006,7 @@ struct mob_shadowmoon_riding_houndAI : public ScriptedAI
     void JustRespawned()
     {
         if (Unit* hunter = GetClosestCreatureWithEntry(me, MOB_SHADOWMOON_HOUNDMASTER, 30.0f))
-            AttackStart(hunter->getVictim());
+            AttackStart(hunter->GetVictim());
     }
 
     void DamageMade(Unit* target, uint32 &damage, bool direct_damage, uint8 school_mask)
@@ -3098,7 +3098,7 @@ struct mob_shadowmoon_soldierAI : public ScriptedAI
 
         if (Strike.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(), SPELL_STRIKE);
+            AddSpellToCast(me->GetVictim(), SPELL_STRIKE);
             Strike = urand(3000, 8000);
         }
 
@@ -3389,7 +3389,7 @@ struct mob_shadowmoon_weapon_masterAI : public ScriptedAI
                     SpecialTimer = 25000;
                     break;
                 case BATTLE:
-                    AddSpellToCast(me->getVictim(), SPELL_MUTILATE);
+                    AddSpellToCast(me->GetVictim(), SPELL_MUTILATE);
                     SpecialTimer = 25000;
                     break;
             }
@@ -3398,7 +3398,7 @@ struct mob_shadowmoon_weapon_masterAI : public ScriptedAI
 
         if (KnockAway.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(), SPELL_KNOCK_AWAY);
+            AddSpellToCast(me->GetVictim(), SPELL_KNOCK_AWAY);
             KnockAway = 20000;
         }
 
@@ -3444,14 +3444,14 @@ struct mob_wrathbone_flayerAI : public ScriptedAI
 
         if (Cleave.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(), SPELL_CLEAVE_2);
+            AddSpellToCast(me->GetVictim(), SPELL_CLEAVE_2);
             Cleave = 3000;
         }
 
 
         if (Ignored.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(), SPELL_IGNORED);
+            AddSpellToCast(me->GetVictim(), SPELL_IGNORED);
             Ignored = 10000;
         }
 
@@ -3570,7 +3570,7 @@ struct mob_bonechewer_behemothAI : public ScriptedAI
                     break;
                 }
             }
-            AddSpellToCast(me->getVictim(), SPELL_CLEAVE_2);
+            AddSpellToCast(me->GetVictim(), SPELL_CLEAVE_2);
             SpellTimer = Type ? 20000 : 15000;
         }
 
@@ -3641,7 +3641,7 @@ struct mob_bonechewer_shield_discipleAI : public ScriptedAI
         if (Intervene.Expired(diff))
         {
             Unit* InterveneTarget = GetClosestCreatureWithEntry(me, MOB_BONECHEWER_BLADE_FURY, 25.0f);
-            if (InterveneTarget && !me->IsWithinDistInMap(InterveneTarget, 8.0) && InterveneTarget->isInCombat())
+            if (InterveneTarget && !me->IsWithinDistInMap(InterveneTarget, 8.0) && InterveneTarget->IsInCombat())
             {
                 ForceSpellCast(InterveneTarget, SPELL_INTERVENE);
                 Intervene = 20000;
@@ -3653,7 +3653,7 @@ struct mob_bonechewer_shield_discipleAI : public ScriptedAI
 
         if (ShieldBash.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(), SPELL_SHIELD_BASH);
+            AddSpellToCast(me->GetVictim(), SPELL_SHIELD_BASH);
             ShieldBash = 15000;
         }
 
@@ -3723,7 +3723,7 @@ struct mob_bonechewer_blade_furyAI : public ScriptedAI
         {
             SetCCImmunity(false);
             me->Relocate(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation());
-            DoStartMovement(me->getVictim());
+            DoStartMovement(me->GetVictim());
             MoveTimer = 0;
         }
     }
@@ -3810,7 +3810,7 @@ struct mob_bonechewer_blood_prophetAI : public ScriptedAI
 
         if (BloodDrain.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(), SPELL_BLOOD_DRAIN);
+            AddSpellToCast(me->GetVictim(), SPELL_BLOOD_DRAIN);
             BloodDrain = 25000;
         }
 
@@ -4049,28 +4049,28 @@ struct mob_bonechewer_spectatorAI : public ScriptedAI
 
         if (Cleave.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(), SPELL_CLEAVE_3);
+            AddSpellToCast(me->GetVictim(), SPELL_CLEAVE_3);
             Cleave = 15000;
         }
 
 
         if (MortalWound.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(), SPELL_MORTAL_WOUND);
+            AddSpellToCast(me->GetVictim(), SPELL_MORTAL_WOUND);
             MortalWound = urand(8000, 12000);
         }
 
 
         if (Strike.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(), SPELL_STRIKE_1);
+            AddSpellToCast(me->GetVictim(), SPELL_STRIKE_1);
             Strike = urand(4000, 6000);
         }
 
 
         if (SunderArmor.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(), SPELL_SUNDER_ARMOR);
+            AddSpellToCast(me->GetVictim(), SPELL_SUNDER_ARMOR);
             SunderArmor = 10000;
         }
 
@@ -4501,7 +4501,7 @@ struct mob_sister_of_painAI : public ScriptedAI
 
         if (LashOfPain.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(), SPELL_LASH_OF_PAIN);
+            AddSpellToCast(me->GetVictim(), SPELL_LASH_OF_PAIN);
             LashOfPain = urand(12000, 15000);
         }
 
@@ -4728,9 +4728,9 @@ struct mob_spellbound_attendentAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        if (me->getVictim() && me->getVictim()->IsNonMeleeSpellCast(false) && !cooldown)
+        if (me->GetVictim() && me->GetVictim()->IsNonMeleeSpellCast(false) && !cooldown)
         {
-            ForceSpellCast(me->getVictim(), SPELL_KICK, INTERRUPT_AND_CAST_INSTANTLY);
+            ForceSpellCast(me->GetVictim(), SPELL_KICK, INTERRUPT_AND_CAST_INSTANTLY);
             cooldown = true;
         }
 
@@ -4796,14 +4796,14 @@ struct mob_enslaved_servantAI : public ScriptedAI
 
         if (KidneyShot.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(), SPELL_KIDNEY_SHOT);
+            AddSpellToCast(me->GetVictim(), SPELL_KIDNEY_SHOT);
             KidneyShot = urand(20000, 30000);
         }
 
 
         if (Uppercut.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(), SPELL_UPPERCUT);
+            AddSpellToCast(me->GetVictim(), SPELL_UPPERCUT);
             Uppercut = urand(5000, 10000);
         }
 
@@ -5002,10 +5002,10 @@ struct mob_illidari_archonAI : public ScriptedAI
             {
                 if (!wordDeathCooldown)
                 {
-                    if (me->getVictim()->GetHealth() * 100 / me->getVictim()->GetMaxHealth() < 30)
+                    if (me->GetVictim()->GetHealth() * 100 / me->GetVictim()->GetMaxHealth() < 30)
                     {
                         ClearCastQueue();
-                        ForceSpellCast(me->getVictim(), SPELL_POWER_WORD_DEATH, INTERRUPT_AND_CAST);
+                        ForceSpellCast(me->GetVictim(), SPELL_POWER_WORD_DEATH, INTERRUPT_AND_CAST);
                         wordDeathCooldown = true;
                         wordDeathTimer = 8000;
                     }
@@ -5084,7 +5084,7 @@ struct mob_illidari_assassinAI : public ScriptedAI
     void OnAuraRemove(Aura* Aur, bool stack)
     {
         if (Aur->GetId() == SPELL_VANISH)
-            AttackStart(me->getVictim());
+            AttackStart(me->GetVictim());
     }
 
     void UpdateAI(const uint32 diff)
@@ -5123,7 +5123,7 @@ struct mob_illidari_assassinAI : public ScriptedAI
 
         if (ParalyzingPoison.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(), SPELL_PARALYZING_POISON);
+            AddSpellToCast(me->GetVictim(), SPELL_PARALYZING_POISON);
             ParalyzingPoison = urand(10000, 14000);
         }
 
@@ -5261,14 +5261,14 @@ struct mob_illidari_blood_lordAI : public ScriptedAI
 
         if (HammerOfJustice.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(), SPELL_HAMMER_OF_JUSTICE);
+            AddSpellToCast(me->GetVictim(), SPELL_HAMMER_OF_JUSTICE);
             HammerOfJustice = urand(15000, 25000);
         }
 
 
         if (JudgmentOfCommand.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(), SPELL_JUDGEMENT_OF_COMMAND);
+            AddSpellToCast(me->GetVictim(), SPELL_JUDGEMENT_OF_COMMAND);
             JudgmentOfCommand = urand(3000, 8000);
         }
 

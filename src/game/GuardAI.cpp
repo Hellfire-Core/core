@@ -39,7 +39,7 @@ GuardAI::GuardAI(Creature *c) : CreatureAI(c), i_victimGuid(0), i_state(STATE_NO
 
 void GuardAI::MoveInLineOfSight(Unit *u)
 {
-    if (m_creature->HasFlag(UNIT_FIELD_FLAGS,UNIT_FLAG_NON_ATTACKABLE)) // mainly for halaa guards when they are invisible
+    if (m_creature->HasFlag(UNIT_FIELD_FLAGS,UNIT_FLAG_SPAWNING)) // mainly for halaa guards when they are invisible
         return;
     // Ignore Z for flying creatures
     if (!m_creature->CanFly() && m_creature->GetDistanceZ(u) > CREATURE_Z_ATTACK_RANGE)
@@ -50,7 +50,7 @@ void GuardAI::MoveInLineOfSight(Unit *u)
         float attackRadius = m_creature->GetAttackDistance(u);
         if (m_creature->IsWithinDistInMap(u, attackRadius) && u->isInAccessiblePlacefor(m_creature))
         {
-            if (!m_creature->getVictim())
+            if (!m_creature->GetVictim())
             {
                 AttackStart(u);
                 //u->RemoveAurasByType(SPELL_AURA_MOD_STEALTH);
@@ -64,7 +64,7 @@ void GuardAI::MoveInLineOfSight(Unit *u)
 
 void GuardAI::EnterEvadeMode()
 {
-    if (!m_creature->isAlive())
+    if (!m_creature->IsAlive())
     {
         DEBUG_LOG("Creature stopped attacking because he's dead [guid=%u]", m_creature->GetGUIDLow());
         m_creature->GetMotionMaster()->MoveIdle();
@@ -83,7 +83,7 @@ void GuardAI::EnterEvadeMode()
     {
         DEBUG_LOG("Creature stopped attacking because victim is non exist [guid=%u]", m_creature->GetGUIDLow());
     }
-    else if (!pVictim->isAlive())
+    else if (!pVictim->IsAlive())
     {
         DEBUG_LOG("Creature stopped attacking because victim is dead [guid=%u]", m_creature->GetGUIDLow());
     }
@@ -107,7 +107,7 @@ void GuardAI::EnterEvadeMode()
     i_state = STATE_NORMAL;
 
     // Remove ChaseMovementGenerator from MotionMaster stack list, and add HomeMovementGenerator instead
-    if (me->hasUnitState(UNIT_STAT_CHASE))
+    if (me->HasUnitState(UNIT_STAT_CHASE))
         m_creature->GetMotionMaster()->MoveTargetedHome();
 
     m_creature->UpdateSpeed(MOVE_RUN, true);
@@ -115,7 +115,7 @@ void GuardAI::EnterEvadeMode()
 
 void GuardAI::UpdateAI(const uint32 /*diff*/)
 {
-    // update i_victimGuid if m_creature->getVictim() !=0 and changed
+    // update i_victimGuid if m_creature->GetVictim() !=0 and changed
     if (!UpdateVictim())
         return;
 

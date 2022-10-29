@@ -94,7 +94,7 @@ struct boss_drektharAI : public ScriptedAI
                             return;
 
                         Creature * c = me->GetMap()->GetCreatureById(a);
-                        if (c && c->isAlive() && c->IsAIEnabled && c->AI())
+                        if (c && c->IsAlive() && c->IsAIEnabled && c->AI())
                             c->AI()->AttackStart(who);
                   });
     }
@@ -107,7 +107,7 @@ struct boss_drektharAI : public ScriptedAI
 
     void EnterEvadeMode()
     {
-        if (!me->isInCombat() || me->IsInEvadeMode())
+        if (!me->IsInCombat() || me->IsInEvadeMode())
             return;
 
         CreatureAI::EnterEvadeMode();
@@ -120,7 +120,7 @@ struct boss_drektharAI : public ScriptedAI
                             return;
 
                         Creature * c = me->GetMap()->GetCreatureById(a);
-                        if (c && c->isInCombat() && c->IsAIEnabled && c->AI())
+                        if (c && c->IsInCombat() && c->IsAIEnabled && c->AI())
                             c->AI()->EnterEvadeMode();
                   });
     }
@@ -144,27 +144,27 @@ struct boss_drektharAI : public ScriptedAI
 
         if (WhirlwindTimer.Expired(diff))
         {
-            AddSpellToCast(m_creature->getVictim(), SPELL_WHIRLWIND);
+            AddSpellToCast(m_creature->GetVictim(), SPELL_WHIRLWIND);
             WhirlwindTimer =  urand(8000, 18000);
         }
         
         if (Whirlwind2Timer.Expired(diff))
         {
-            AddSpellToCast(m_creature->getVictim(), SPELL_WHIRLWIND2);
+            AddSpellToCast(m_creature->GetVictim(), SPELL_WHIRLWIND2);
             Whirlwind2Timer = urand(7000, 25000);
         }
         
         
         if (KnockdownTimer.Expired(diff))
         {
-            AddSpellToCast(m_creature->getVictim(), SPELL_KNOCKDOWN);
+            AddSpellToCast(m_creature->GetVictim(), SPELL_KNOCKDOWN);
             KnockdownTimer = urand(10000, 15000);
         }
         
         
         if (FrenzyTimer.Expired(diff))
         {
-            AddSpellToCast(m_creature->getVictim(), SPELL_FRENZY);
+            AddSpellToCast(m_creature->GetVictim(), SPELL_FRENZY);
             FrenzyTimer = urand(20000, 25000);
         }
         
@@ -223,7 +223,7 @@ struct boss_drektharOfficerAI : public ScriptedAI
                             return;
 
                         Creature * c = me->GetMap()->GetCreatureById(a);
-                        if (c && c->isAlive() && c->IsAIEnabled && c->AI())
+                        if (c && c->IsAlive() && c->IsAIEnabled && c->AI())
                             c->AI()->AttackStart(who);
                   });
     }
@@ -235,7 +235,7 @@ struct boss_drektharOfficerAI : public ScriptedAI
 
     void EnterEvadeMode()
     {
-        if (!me->isInCombat() || me->IsInEvadeMode())
+        if (!me->IsInCombat() || me->IsInEvadeMode())
             return;
 
         CreatureAI::EnterEvadeMode();
@@ -248,7 +248,7 @@ struct boss_drektharOfficerAI : public ScriptedAI
                             return;
 
                         Creature * c = me->GetMap()->GetCreatureById(a);
-                        if (c && c->isInCombat() && c->IsAIEnabled && c->AI())
+                        if (c && c->IsInCombat() && c->IsAIEnabled && c->AI())
                             c->AI()->EnterEvadeMode();
                   });
     }

@@ -134,7 +134,7 @@ struct boss_vexallusAI : public ScriptedAI
 
     bool UpdateVictim(uint32 diff)
     {
-        if (me->isInCombat() && !me->IsInEvadeMode())
+        if (me->IsInCombat() && !me->IsInEvadeMode())
         {
             if (evadeTimer.Expired(diff))
             {

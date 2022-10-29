@@ -44,13 +44,13 @@ inline void VisibleNotifier::Visit(GridRefManager<T> &m)
 
 inline void PlayerCreatureRelocationWorker(Player* p, Creature* c)
 {
-    if (!p->isAlive() || !c->isAlive())
+    if (!p->IsAlive() || !c->IsAlive())
         return;
 
     if (p->IsTaxiFlying() && !c->CanReactToPlayerOnTaxi())
         return;
 
-    if (c->hasUnitState(UNIT_STAT_LOST_CONTROL | UNIT_STAT_IGNORE_ATTACKERS))
+    if (c->HasUnitState(UNIT_STAT_LOST_CONTROL | UNIT_STAT_IGNORE_ATTACKERS))
         return;
 
     // Creature AI reaction
@@ -60,10 +60,10 @@ inline void PlayerCreatureRelocationWorker(Player* p, Creature* c)
 
 inline void CreatureCreatureRelocationWorker(Creature* c1, Creature* c2)
 {
-    if (c1->hasUnitState(UNIT_STAT_LOST_CONTROL | UNIT_STAT_IGNORE_ATTACKERS))
+    if (c1->HasUnitState(UNIT_STAT_LOST_CONTROL | UNIT_STAT_IGNORE_ATTACKERS))
         return;
 
-    if (c2->hasUnitState(UNIT_STAT_IGNORE_ATTACKERS))
+    if (c2->HasUnitState(UNIT_STAT_IGNORE_ATTACKERS))
         return;
 
     // Creature AI reaction
@@ -92,7 +92,7 @@ inline void PlayerRelocationNotifier::Visit(CreatureMapType &m)
 
 inline void CreatureRelocationNotifier::Visit(PlayerMapType &m)
 {
-    if (!_creature.isAlive())
+    if (!_creature.IsAlive())
         return;
 
     for (PlayerMapType::iterator iter = m.begin(); iter != m.end(); ++iter)
@@ -101,7 +101,7 @@ inline void CreatureRelocationNotifier::Visit(PlayerMapType &m)
 
 inline void CreatureRelocationNotifier::Visit(CreatureMapType &m)
 {
-    if (!_creature.isAlive())
+    if (!_creature.IsAlive())
         return;
 
     for (CreatureMapType::iterator iter = m.begin(); iter != m.end(); ++iter)

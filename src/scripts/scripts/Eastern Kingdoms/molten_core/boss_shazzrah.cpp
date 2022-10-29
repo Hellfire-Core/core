@@ -78,7 +78,7 @@ struct boss_shazzrahAI : public ScriptedAI
         ArcaneExplosion_Timer -= diff;
         if (ArcaneExplosion_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_ARCANEEXPLOSION);
+            DoCast(m_creature->GetVictim(),SPELL_ARCANEEXPLOSION);
             ArcaneExplosion_Timer += 5000 + rand()%4000;
         }
 
@@ -102,7 +102,7 @@ struct boss_shazzrahAI : public ScriptedAI
         Countspell_Timer -= diff;
         if (Countspell_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_COUNTERSPELL);
+            DoCast(m_creature->GetVictim(),SPELL_COUNTERSPELL);
             Countspell_Timer += 16000 + rand()%4000;
         }
 

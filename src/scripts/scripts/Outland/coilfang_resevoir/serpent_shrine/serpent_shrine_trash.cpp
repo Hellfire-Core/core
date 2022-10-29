@@ -76,7 +76,7 @@ struct mob_vashjir_honor_guardAI : public ScriptedAI
 
         if (Execute_Timer.Expired(diff))
         {
-            if(me->getVictim()->GetHealth() * 5 <= me->getVictim()->GetMaxHealth()) // below 20%
+            if(me->GetVictim()->GetHealth() * 5 <= me->GetVictim()->GetMaxHealth()) // below 20%
             {
                 AddSpellToCast(SPELL_EXECUTE, CAST_TANK);
                 Execute_Timer = 30000;
@@ -340,7 +340,7 @@ struct mob_serpentshrine_parasiteAI : public ScriptedAI
         if (Check_Timer.Expired(diff))
         {
             Unit *target = me->GetUnit(TargetGUID);
-            if(!target || !target->isAlive())
+            if(!target || !target->IsAlive())
                 TargetGUID = 0;
             else if(me->IsWithinDist(target, 5))
             {
@@ -365,7 +365,7 @@ struct mob_serpentshrine_parasiteAI : public ScriptedAI
             std::list<Player*>::iterator i = players.begin();
             advance(i, urand(0, players.size()-1));
             Player *target = *i;
-            if(target->isAlive())
+            if(target->IsAlive())
             {
                 TargetGUID = target->GetGUID();
                 me->GetMotionMaster()->MoveChase(target);
@@ -405,20 +405,20 @@ struct mob_ssc_elementalAI : public ScriptedAI
 
         if (VolleyTimer.Expired(diff))
         {
-            DoCast(me->getVictim(), 38623);
+            DoCast(me->GetVictim(), 38623);
             VolleyTimer = urand(17000, 24000);
         }
 
         if (NovaTimer.Expired(diff))
         {
-            DoCast(me->getVictim(), 39035);
+            DoCast(me->GetVictim(), 39035);
             VolleyTimer = urand(20000, 30000);
         }
 
         if (OwnerGUID)
         {
             Unit* owner = me->GetMap()->GetCreature(OwnerGUID);
-            if (!owner || owner->isDead())
+            if (!owner || owner->IsDead())
             {
                 me->ForcedDespawn();
                 return;

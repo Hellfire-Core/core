@@ -115,11 +115,11 @@ struct boss_onyxiaAI : public ScriptedAI
             m_creature->SendMeleeAttackStart(m_creature->getVictimGUID());
             m_creature->HandleEmoteCommand(EMOTE_ONESHOT_LAND);
             m_creature->SetLevitate(false);
-            DoStartMovement(m_creature->getVictim());
+            DoStartMovement(m_creature->GetVictim());
         }
         else
         {
-            m_creature->SendMeleeAttackStop(m_creature->getVictim());
+            m_creature->SendMeleeAttackStop(m_creature->GetVictim());
             m_creature->HandleEmoteCommand(EMOTE_ONESHOT_LIFTOFF);
             m_creature->SetLevitate(true);
         }
@@ -127,7 +127,7 @@ struct boss_onyxiaAI : public ScriptedAI
 
     void DoMeleeAttackIfReady()
     {
-        if(me->hasUnitState(UNIT_STAT_CASTING))
+        if(me->HasUnitState(UNIT_STAT_CASTING))
             return;
 
         if (m_phaseMask & PHASE_2)
@@ -135,9 +135,9 @@ struct boss_onyxiaAI : public ScriptedAI
             if (!m_nextWay || m_nextWay == 6)
                 return;
 
-            m_creature->SendMeleeAttackStop(m_creature->getVictim());
-            DoCast(m_creature->getVictim(), SPELL_FIREBALL);
-            m_creature->getThreatManager().modifyThreatPercent(m_creature->getVictim(), 100);
+            m_creature->SendMeleeAttackStop(m_creature->GetVictim());
+            DoCast(m_creature->GetVictim(), SPELL_FIREBALL);
+            m_creature->getThreatManager().modifyThreatPercent(m_creature->GetVictim(), 100);
         }
         else
         {
@@ -145,18 +145,18 @@ struct boss_onyxiaAI : public ScriptedAI
             if (me->isAttackReady())
             {
                 //If we are within range melee the target
-                if (me->IsWithinMeleeRange(me->getVictim()))
+                if (me->IsWithinMeleeRange(me->GetVictim()))
                 {
-                    me->AttackerStateUpdate(me->getVictim());
+                    me->AttackerStateUpdate(me->GetVictim());
                     me->resetAttackTimer();
                 }
             }
             if (me->haveOffhandWeapon() && me->isAttackReady(OFF_ATTACK))
             {
                 //If we are within range melee the target
-                if (me->IsWithinMeleeRange(me->getVictim()))
+                if (me->IsWithinMeleeRange(me->GetVictim()))
                 {
-                    me->AttackerStateUpdate(me->getVictim(), OFF_ATTACK);
+                    me->AttackerStateUpdate(me->GetVictim(), OFF_ATTACK);
                     me->resetAttackTimer(OFF_ATTACK);
                 }
             }
@@ -199,7 +199,7 @@ struct boss_onyxiaAI : public ScriptedAI
         std::list<Creature*> warders = FindAllCreaturesWithEntry(NPC_ONYXIAN_WARDER, 200.0f);
 
         for (std::list<Creature*>::iterator i = warders.begin(); i != warders.end(); ++i)
-            if (!(*i)->isAlive())
+            if (!(*i)->IsAlive())
             {
                 (*i)->setDeathState(DEAD);
                 (*i)->Respawn();
@@ -273,7 +273,7 @@ struct boss_onyxiaAI : public ScriptedAI
                 m_nextWay = i + 1;
                 m_nextMoveTimer = 2500;
                 //DoTextEmote("Onyxia takes in a deep breath...", NULL, true);//DoScriptText(EMOTE_BREATH, m_creature);
-                m_creature->SendMeleeAttackStop(m_creature->getVictim());
+                m_creature->SendMeleeAttackStop(m_creature->GetVictim());
                 DoCast(m_creature, SPELL_DEEPBREATH);
                 m_creature->SetSpeed(MOVE_RUN, 2.5f);
                 break;
@@ -301,7 +301,7 @@ struct boss_onyxiaAI : public ScriptedAI
 
             for (Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
                 if (Player* plr = i->getSource())
-                    if (plr->isAlive() && !plr->isGameMaster() && !plr->IsWithinDistInMap(me, 100.0f))
+                    if (plr->IsAlive() && !plr->IsGameMaster() && !plr->IsWithinDistInMap(me, 100.0f))
                         plr->TeleportTo(me->GetMapId(), me->GetPositionX(), me->GetPositionY(),
                             me->GetPositionZ(), plr->GetOrientation(), TELE_TO_NOT_LEAVE_COMBAT);
 
@@ -314,7 +314,7 @@ struct boss_onyxiaAI : public ScriptedAI
             m_flameBreathTimer -= diff;
             if (m_flameBreathTimer <= diff)
             {
-                DoCast(m_creature->getVictim(), SPELL_FLAMEBREATH);
+                DoCast(m_creature->GetVictim(), SPELL_FLAMEBREATH);
                 m_flameBreathTimer += irand(16, 28) * 1000;
             }
             
@@ -322,7 +322,7 @@ struct boss_onyxiaAI : public ScriptedAI
             m_cleaveTimer -= diff;
             if (m_cleaveTimer <= diff)
             {
-                DoCast(m_creature->getVictim(), SPELL_CLEAVE);
+                DoCast(m_creature->GetVictim(), SPELL_CLEAVE);
                 m_cleaveTimer += irand(4, 10) * 1000;
             }
 
@@ -330,7 +330,7 @@ struct boss_onyxiaAI : public ScriptedAI
             m_tailSweepTimer -= diff;
             if (m_tailSweepTimer <= diff)
             {
-                DoCast(m_creature->getVictim(), SPELL_TAILSWEEP);
+                DoCast(m_creature->GetVictim(), SPELL_TAILSWEEP);
                 m_tailSweepTimer += irand(6, 14) * 1000;
             }
             
@@ -338,7 +338,7 @@ struct boss_onyxiaAI : public ScriptedAI
             m_knockBackTimer -= diff;
             if (m_knockBackTimer <= diff)
             {
-                DoCast(m_creature->getVictim(), SPELL_KNOCK_AWAY);
+                DoCast(m_creature->GetVictim(), SPELL_KNOCK_AWAY);
                 m_knockBackTimer += irand(22, 32) * 1000;
             }
             
@@ -346,7 +346,7 @@ struct boss_onyxiaAI : public ScriptedAI
             m_wingBuffetTimer -= diff;
             if (m_wingBuffetTimer <= diff)
             {
-                DoCast(m_creature->getVictim(), SPELL_WINGBUFFET);
+                DoCast(m_creature->GetVictim(), SPELL_WINGBUFFET);
                 m_wingBuffetTimer += irand(24, 36) * 1000;
             }
         }
@@ -368,7 +368,7 @@ struct boss_onyxiaAI : public ScriptedAI
             if (m_fearTimer <= diff)
             {
                 m_fearTimer += irand(10, 30) * 1000;
-                DoCast(m_creature->getVictim(), SPELL_BELLOWINGROAR);
+                DoCast(m_creature->GetVictim(), SPELL_BELLOWINGROAR);
             }
         }
 
@@ -456,7 +456,7 @@ struct mob_onyxiawhelpAI : public ScriptedAI
         m_pyroblastTimer -= diff;
         if (m_pyroblastTimer <= diff)
         {
-            DoCast(m_creature->getVictim(), SPELL_PYROBLAST);
+            DoCast(m_creature->GetVictim(), SPELL_PYROBLAST);
             m_pyroblastTimer += 6000 + irand(0, 6)*1000;
         }
         

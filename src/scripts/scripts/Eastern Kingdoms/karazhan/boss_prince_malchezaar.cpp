@@ -216,7 +216,7 @@ struct boss_malchezaarAI : public ScriptedAI
                 pInstance->SetData(DATA_MALCHEZZAR_EVENT, NOT_STARTED);
         }
 
-        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         Enabled = false;
     }
@@ -267,7 +267,7 @@ struct boss_malchezaarAI : public ScriptedAI
         for(std::vector<uint64>::iterator itr = infernals.begin(); itr != infernals.end(); ++itr)
         {
             Unit *pInfernal = Unit::GetUnit(*m_creature, *itr);
-            if (pInfernal && pInfernal->isAlive())
+            if (pInfernal && pInfernal->IsAlive())
             {
                 pInfernal->SetVisibility(VISIBILITY_OFF);
                 pInfernal->setDeathState(JUST_DIED);
@@ -281,7 +281,7 @@ struct boss_malchezaarAI : public ScriptedAI
         for (int i = 0; i < 2; ++i)
         {
             if (Unit *axe = Unit::GetUnit(*m_creature, axes[i]))
-                if (axe->isAlive())
+                if (axe->IsAlive())
                     axe->Kill(axe);
 
             axes[i] = 0;
@@ -317,7 +317,7 @@ struct boss_malchezaarAI : public ScriptedAI
                 continue;
             Unit *target = Unit::GetUnit(*m_creature, (*itr)->getUnitGuid());
                                                             //only on alive players
-            if (target && target->isAlive() && target->GetTypeId() == TYPEID_PLAYER)
+            if (target && target->IsAlive() && target->GetTypeId() == TYPEID_PLAYER)
                 targets.push_back(target);
         }
 
@@ -344,7 +344,7 @@ struct boss_malchezaarAI : public ScriptedAI
         for (int i = 0; i < 5; ++i)
         {
             Unit *target = Unit::GetUnit(*m_creature, enfeeble_targets[i]);
-            if (target && target->isAlive())
+            if (target && target->IsAlive())
                 target->SetHealth(enfeeble_health[i]);
 
             enfeeble_targets[i] = 0;
@@ -411,7 +411,7 @@ struct boss_malchezaarAI : public ScriptedAI
     {
         if (!Enabled && pInstance->GetData(DATA_OPERA_EVENT) == DONE)
         {
-            m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
             m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             Enabled = true;
         }
@@ -435,7 +435,7 @@ struct boss_malchezaarAI : public ScriptedAI
             EnfeebleResetTimer = 0;
         }
 
-        if (m_creature->hasUnitState(UNIT_STAT_STUNNED))     //While shifting to phase 2 Malchezaar stuns himself
+        if (m_creature->HasUnitState(UNIT_STAT_STUNNED))     //While shifting to phase 2 Malchezaar stuns himself
             return;
 
         if (m_creature->GetSelection() != m_creature->getVictimGUID())
@@ -517,13 +517,13 @@ struct boss_malchezaarAI : public ScriptedAI
 
             if (SunderArmorTimer.Expired(diff))
             {
-                DoCast(m_creature->getVictim(), SPELL_SUNDER_ARMOR);
+                DoCast(m_creature->GetVictim(), SPELL_SUNDER_ARMOR);
                 SunderArmorTimer = urand(10000,15000);
             }
 
             if (Cleave_Timer.Expired(diff))
             {
-                DoCast(m_creature->getVictim(), SPELL_CLEAVE);
+                DoCast(m_creature->GetVictim(), SPELL_CLEAVE);
                 Cleave_Timer = 6000 + rand() % 6000;
             }
         }
@@ -541,15 +541,15 @@ struct boss_malchezaarAI : public ScriptedAI
                         {
                             float threat = 1000000.0f;
 
-                            if (axe->getVictim() && DoGetThreat(axe->getVictim()))
+                            if (axe->GetVictim() && DoGetThreat(axe->GetVictim()))
                             {
-                                threat = axe->getThreatManager().getThreat(axe->getVictim());
-                                axe->getThreatManager().modifyThreatPercent(axe->getVictim(), -100);
+                                threat = axe->getThreatManager().getThreat(axe->GetVictim());
+                                axe->getThreatManager().modifyThreatPercent(axe->GetVictim(), -100);
                             }
 
                             if (target)
                                 axe->AddThreat(target, threat);
-                            //axe->getThreatManager().tauntFadeOut(axe->getVictim());
+                            //axe->getThreatManager().tauntFadeOut(axe->GetVictim());
                             //axe->getThreatManager().tauntApply(target);
                         }
                     }
@@ -579,7 +579,7 @@ struct boss_malchezaarAI : public ScriptedAI
             {
                 Unit* target = nullptr;
                 if (phase == 1)
-                    target = m_creature->getVictim();       // the tank
+                    target = m_creature->GetVictim();       // the tank
                 else                                        //anyone but the tank
                     target = SelectUnit(SELECT_TARGET_RANDOM, 1, GetSpellMaxRange(SPELL_SW_PAIN), true, m_creature->getVictimGUID());
 
@@ -615,18 +615,18 @@ struct boss_malchezaarAI : public ScriptedAI
 
     void DoMeleeAttacksIfReady()
     {
-        if (m_creature->IsWithinMeleeRange(m_creature->getVictim()) && !m_creature->IsNonMeleeSpellCast(false))
+        if (m_creature->IsWithinMeleeRange(m_creature->GetVictim()) && !m_creature->IsNonMeleeSpellCast(false))
         {
             //Check for base attack
-            if (m_creature->isAttackReady() && m_creature->getVictim())
+            if (m_creature->isAttackReady() && m_creature->GetVictim())
             {
-                m_creature->AttackerStateUpdate(m_creature->getVictim());
+                m_creature->AttackerStateUpdate(m_creature->GetVictim());
                 m_creature->resetAttackTimer();
             }
             //Check for offhand attack
-            if (m_creature->isAttackReady(OFF_ATTACK) && m_creature->getVictim())
+            if (m_creature->isAttackReady(OFF_ATTACK) && m_creature->GetVictim())
             {
-                m_creature->AttackerStateUpdate(m_creature->getVictim(), OFF_ATTACK);
+                m_creature->AttackerStateUpdate(m_creature->GetVictim(), OFF_ATTACK);
                 m_creature->resetAttackTimer(OFF_ATTACK);
             }
         }

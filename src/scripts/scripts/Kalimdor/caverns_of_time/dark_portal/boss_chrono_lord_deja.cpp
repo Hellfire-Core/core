@@ -87,7 +87,7 @@ struct boss_chrono_lord_dejaAI : public ScriptedAI
         //Despawn Time Keeper
         if (who->GetTypeId() == TYPEID_UNIT && who->GetEntry() == C_TIME_KEEPER)
         {
-            if (me->isAlive() && m_creature->IsWithinDistInMap(who,20.0f))
+            if (me->IsAlive() && m_creature->IsWithinDistInMap(who,20.0f))
             {
                 DoScriptText(SAY_BANISH, m_creature);
                 who->ToCreature()->ForcedDespawn();
@@ -122,7 +122,7 @@ struct boss_chrono_lord_dejaAI : public ScriptedAI
         {
             if (ArcaneBlast_Timer.Expired(diff))
             {
-                AddSpellToCast(m_creature->getVictim(), SPELL_ARCANE_BLAST, true);
+                AddSpellToCast(m_creature->GetVictim(), SPELL_ARCANE_BLAST, true);
                 ArcaneBlast_Timer = urand(20000, 25000);
             }
         }
@@ -139,7 +139,7 @@ struct boss_chrono_lord_dejaAI : public ScriptedAI
 
             if (ArcaneBlast_Timer.Expired(diff))
             {
-                AddSpellToCast(m_creature->getVictim(), H_SPELL_ARCANE_BLAST, true);
+                AddSpellToCast(m_creature->GetVictim(), H_SPELL_ARCANE_BLAST, true);
                 Attraction_Timer = urand(18000, 23000);
                 ArcaneBlast_Timer = 0;
             }

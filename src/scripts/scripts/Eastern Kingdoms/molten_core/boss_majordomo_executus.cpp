@@ -112,7 +112,7 @@ struct boss_majordomoAI : public BossAI
         }
 
         me->SetReactState(REACT_PASSIVE);
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
     }
 
     void KilledUnit(Unit* victim)
@@ -132,10 +132,10 @@ struct boss_majordomoAI : public BossAI
         for (uint8 i = 0; i < 8; ++i)
         {
             Creature* Temp = Unit::GetCreature((*m_creature), AddGUID[i]);
-            if (Temp && Temp->isAlive())
+            if (Temp && Temp->IsAlive())
             {
                 Temp->SetReactState(REACT_AGGRESSIVE);
-                Temp->AI()->AttackStart(m_creature->getVictim());
+                Temp->AI()->AttackStart(m_creature->GetVictim());
             }
             else
             {
@@ -161,7 +161,7 @@ struct boss_majordomoAI : public BossAI
                 DoScriptText(SAY_SPAWN, m_creature);
                 me->SetVisibility(VISIBILITY_ON);
                 me->SetReactState(REACT_AGGRESSIVE);
-                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
 
                 for (uint8 i = 0; i < 8; ++i)
                 {
@@ -245,7 +245,7 @@ struct boss_majordomoAI : public BossAI
         {
             if (AddsKilled())
             {
-                me->getVictim()->SummonGameObject(CACHE_OF_THE_FIRELORD, 752.492, -1188.51, -118.296, 2.4288, 0, 0, 0.93716, 0.348899, 0);
+                me->GetVictim()->SummonGameObject(CACHE_OF_THE_FIRELORD, 752.492, -1188.51, -118.296, 2.4288, 0, 0, 0.93716, 0.348899, 0);
                 DoAction(3);
                 return;
             }
@@ -299,7 +299,7 @@ struct boss_majordomoAI : public BossAI
         for (uint8 i = 0; i < 8; ++i)
         {
             Unit* add = Unit::GetUnit((*m_creature), AddGUID[i]);
-            if (add && add->isAlive())
+            if (add && add->IsAlive())
                 return false;
         }
         return true;
@@ -310,7 +310,7 @@ struct boss_majordomoAI : public BossAI
         for (uint8 i = 0; i < 8; ++i)
         {
             Creature *pCreature = (Unit::GetCreature((*m_creature), AddGUID[i]));
-            if (!pCreature || !pCreature->isAlive())
+            if (!pCreature || !pCreature->IsAlive())
             {
                 if (pCreature)
                     pCreature->setDeathState(DEAD);
@@ -394,7 +394,7 @@ struct flamewaker_healerAI: public MCflamewakerAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (!me->getVictim())
+        if (!me->GetVictim())
             return;
 
         ShadownBolt_Timer -= diff;
@@ -444,7 +444,7 @@ struct flamewaker_eliteAI: public MCflamewakerAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (!me->getVictim())
+        if (!me->GetVictim())
             return;
 
         BlastWave_Timer -= diff;
@@ -457,14 +457,14 @@ struct flamewaker_eliteAI: public MCflamewakerAI
         FireBlast_Timer -= diff;
         if (FireBlast_Timer <= diff)
         {
-            AddSpellToCast(m_creature->getVictim(), SPELL_FIRE_BLAST, false);
+            AddSpellToCast(m_creature->GetVictim(), SPELL_FIRE_BLAST, false);
             FireBlast_Timer += 15000;
         }
 
         Fireball_Timer -= diff;
         if (Fireball_Timer <= diff)
         {
-            AddSpellToCast(m_creature->getVictim(), SPELL_FIREBALL, false);
+            AddSpellToCast(m_creature->GetVictim(), SPELL_FIREBALL, false);
             Fireball_Timer += 8000;
         }
 

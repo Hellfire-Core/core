@@ -75,7 +75,7 @@ struct boss_blood_guard_porungAI : public ScriptedAI
 
     void MoveInLineOfSight(Unit* who)
     {
-        if (who->GetTypeId() == TYPEID_PLAYER && !((Player*)who)->isGameMaster())
+        if (who->GetTypeId() == TYPEID_PLAYER && !((Player*)who)->IsGameMaster())
         {
             if (who->IsWithinDistInMap(me, 126.0f) && !waveone)
             {
@@ -129,7 +129,7 @@ struct boss_blood_guard_porungAI : public ScriptedAI
 
         if (Cleave_Timer.Expired(diff))
         {
-            DoCast(me->getVictim(), SPELL_CLEAVE, false);
+            DoCast(me->GetVictim(), SPELL_CLEAVE, false);
             Cleave_Timer = 7500 + rand()%5000;
         }
 
@@ -161,7 +161,7 @@ struct npc_blood_guardAI : public ScriptedAI
 
     void MoveInLineOfSight(Unit* who)
     {
-        if (who->GetTypeId() == TYPEID_PLAYER && !((Player*)who)->isGameMaster())
+        if (who->GetTypeId() == TYPEID_PLAYER && !((Player*)who)->IsGameMaster())
         {
             if (who->IsWithinDistInMap(me, 126.0f) && !waveone)
             {

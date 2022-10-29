@@ -232,7 +232,7 @@ void WorldSession::HandleChannelInvite(WorldPacket& recvPacket)
     sLog.outDebug("Opcode %u", recvPacket.GetOpcode());
     //recvPacket.hexlike();
     CHECK_PACKET_SIZE(recvPacket, 1+1);
-    if (GetPlayer()->getLevel() < sWorld.getConfig(CONFIG_CHAT_MINIMUM_LVL))
+    if (GetPlayer()->GetLevel() < sWorld.getConfig(CONFIG_CHAT_MINIMUM_LVL))
         return;
     if (sWorld.getConfig(CONFIG_NO_CHANNEL_INVITES))
         return;

@@ -79,7 +79,7 @@ struct boss_emerissAI : public ScriptedAI
         NoxiousBreath_Timer -= diff;
         if (NoxiousBreath_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_NOXIOUSBREATH);
+            DoCast(m_creature->GetVictim(),SPELL_NOXIOUSBREATH);
             NoxiousBreath_Timer += 14000 + rand()%6000;
         }
 
@@ -96,14 +96,14 @@ struct boss_emerissAI : public ScriptedAI
         //MarkOfNature_Timer -= diff;
         //if (MarkOfNature_Timer <= diff)
         //{
-        //    DoCast(m_creature->getVictim(),SPELL_MARKOFNATURE);
+        //    DoCast(m_creature->GetVictim(),SPELL_MARKOFNATURE);
         //    MarkOfNature_Timer += 45000;
         //}
 
         VolatileInfection_Timer -= diff;
         if (VolatileInfection_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_VOLATILEINFECTION);
+            DoCast(m_creature->GetVictim(),SPELL_VOLATILEINFECTION);
             VolatileInfection_Timer += 7000 + rand()%5000;
         }
         
@@ -115,7 +115,7 @@ struct boss_emerissAI : public ScriptedAI
             CorruptionofEarth1_Timer -= diff;
             if (CorruptionofEarth1_Timer <= diff)
             {
-                DoCast(m_creature->getVictim(),SPELL_CORRUPTIONOFEARTH);
+                DoCast(m_creature->GetVictim(),SPELL_CORRUPTIONOFEARTH);
 
                 //1 minutes for next one. Means not again with this health value
                 CorruptionofEarth1_Timer += 60000;
@@ -130,7 +130,7 @@ struct boss_emerissAI : public ScriptedAI
             CorruptionofEarth2_Timer -= diff;
             if (CorruptionofEarth2_Timer <= diff)
             {
-                DoCast(m_creature->getVictim(),SPELL_CORRUPTIONOFEARTH);
+                DoCast(m_creature->GetVictim(),SPELL_CORRUPTIONOFEARTH);
 
                 //1 minutes for next one. Means not again with this health value
                 CorruptionofEarth2_Timer += 60000;
@@ -143,7 +143,7 @@ struct boss_emerissAI : public ScriptedAI
             CorruptionofEarth3_Timer -= diff;
             if (CorruptionofEarth3_Timer <= diff)
             {
-                DoCast(m_creature->getVictim(),SPELL_CORRUPTIONOFEARTH);
+                DoCast(m_creature->GetVictim(),SPELL_CORRUPTIONOFEARTH);
 
                 //1 minutes for next one. Means not again with this health value
                 CorruptionofEarth3_Timer += 60000;

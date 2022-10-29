@@ -694,7 +694,7 @@ void WorldSession::HandleListInventoryOpcode(WorldPacket & recv_data)
 
     recv_data >> guid;
 
-    if (!GetPlayer()->isAlive())
+    if (!GetPlayer()->IsAlive())
         return;
 
     sLog.outDebug( "WORLD: Recvd CMSG_LIST_INVENTORY");
@@ -748,7 +748,7 @@ void WorldSession::SendListInventory(uint64 vendorguid)
         {
             if (ItemPrototype const *pProto = ObjectMgr::GetItemPrototype(crItem->item))
             {
-                if ((pProto->AllowableClass & _player->getClassMask()) == 0 && pProto->Bonding == BIND_WHEN_PICKED_UP && !_player->isGameMaster())
+                if ((pProto->AllowableClass & _player->getClassMask()) == 0 && pProto->Bonding == BIND_WHEN_PICKED_UP && !_player->IsGameMaster())
                     continue;
 
                 ++count;
@@ -940,7 +940,7 @@ void WorldSession::HandleSetAmmoOpcode(WorldPacket & recv_data)
 {
     CHECK_PACKET_SIZE(recv_data,4);
 
-    if (!GetPlayer()->isAlive())
+    if (!GetPlayer()->IsAlive())
     {
         GetPlayer()->SendEquipError(EQUIP_ERR_YOU_ARE_DEAD, NULL, NULL);
         return;

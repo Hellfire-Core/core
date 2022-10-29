@@ -632,7 +632,7 @@ struct mob_spectral_stable_handAI : public ScriptedAI
         {
             bool operator()(Unit* u)
             {
-                if (u->GetTypeId() != TYPEID_UNIT || !u->isAlive() || !u->isInCombat())
+                if (u->GetTypeId() != TYPEID_UNIT || !u->IsAlive() || !u->IsInCombat())
                     return false;
                 return (u->GetEntry() == 15547 || u->GetEntry() == 15548);
             }

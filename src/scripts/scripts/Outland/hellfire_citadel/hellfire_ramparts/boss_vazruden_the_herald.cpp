@@ -88,7 +88,7 @@ struct boss_vazruden_the_heraldAI : public ScriptedAI
     {
         if (me->GetEntry() != ENTRY_VAZRUDEN_HERALD)
             me->UpdateEntry(ENTRY_VAZRUDEN_HERALD);
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         MovementTimer = 0;
         phase = 0;
         SentryDown = false;
@@ -139,7 +139,7 @@ struct boss_vazruden_the_heraldAI : public ScriptedAI
                         DoSplit();
                     break;
                 case POINT_ID_COMBAT:
-                    me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                    me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                     pInstance->SetData(DATA_NAZAN, IN_PROGRESS);
                     me->SetLevitate(false);
                     me->SetWalk(true);
@@ -224,7 +224,7 @@ struct boss_vazruden_the_heraldAI : public ScriptedAI
                 summoned->AI()->DoZoneInCombat();
                 break;
             case ENTRY_LIQUID_FIRE:
-                summoned->SetLevel(me->getLevel());
+                summoned->SetLevel(me->GetLevel());
                 summoned->setFaction(me->getFaction());
                 break;
         }
@@ -300,11 +300,11 @@ struct boss_vazruden_the_heraldAI : public ScriptedAI
                  if ((me->GetHealth())*100 / me->GetMaxHealth() < 20)
                      DoMoveToCombat();
 
-                 if (me->isAlive() && checktimer.Expired(diff))
+                 if (me->IsAlive() && checktimer.Expired(diff))
                  {
                      if (Creature* Vazruden = me->GetMap()->GetCreature(VazrudenGUID))
                      {
-                         if (Vazruden && Vazruden->getVictim() || me->GetMotionMaster()->GetCurrentMovementGeneratorType() == POINT_MOTION_TYPE)
+                         if (Vazruden && Vazruden->GetVictim() || me->GetMotionMaster()->GetCurrentMovementGeneratorType() == POINT_MOTION_TYPE)
                              return;
                          else
                              EnterEvadeMode();
@@ -326,7 +326,7 @@ struct boss_vazruden_the_heraldAI : public ScriptedAI
 
                 if (ConeOfFireTimer.Expired(diff))
                 {
-                    DoCast(me->getVictim(), SPELL_CONE_OF_FIRE);
+                    DoCast(me->GetVictim(), SPELL_CONE_OF_FIRE);
                     ConeOfFireTimer = 8300+rand()%3000;
                 }
 
@@ -343,7 +343,7 @@ struct boss_vazruden_the_heraldAI : public ScriptedAI
 
                 if (checktimer.Expired(diff))
                 {
-                    if (!me->getVictim())
+                    if (!me->GetVictim())
                     {
                         if (Unit *victim = SelectUnit(SELECT_TARGET_NEAREST,0))
                             me->AI()->AttackStart(victim);
@@ -445,7 +445,7 @@ struct boss_vazrudenAI : public ScriptedAI
 
         if (RevengeTimer.Expired(diff))
         {
-            DoCast(me->getVictim(), SPELL_REVENGE);
+            DoCast(me->GetVictim(), SPELL_REVENGE);
             RevengeTimer = 10000+rand()%3000;
         }
 
@@ -487,7 +487,7 @@ struct mob_hellfire_sentryAI : public ScriptedAI
 
         if (KidneyShot_Timer.Expired(diff))
         {
-            if (Unit *victim = me->getVictim())
+            if (Unit *victim = me->GetVictim())
                 DoCast(victim, SPELL_KIDNEY_SHOT);
 
             KidneyShot_Timer = 18000+rand()%3000;

@@ -132,7 +132,7 @@ struct boss_maiden_of_virtueAI : public ScriptedAI
         
         if (Repentance_Timer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(),SPELL_REPENTANCE);
+            DoCast(m_creature->GetVictim(),SPELL_REPENTANCE);
 
             DoScriptText(RAND(SAY_REPENTANCE1, SAY_REPENTANCE2), m_creature);
 

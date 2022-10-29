@@ -58,9 +58,8 @@ void WorldRunnable::run()
             sWorld.Update(diff);
     }
 
-    sWorld.m_ac.deactivate();                               // Stop Anticheat Delay Executor
-    sWorld.KickAll();                                       // save and kick all players
-    sWorld.UpdateSessions(uint32(1));                       // real players unload required UpdateSessions call
+    sLog.outBasic("Shutting down world...");
+    sWorld.Shutdown();
 
     // unload battleground templates before different singletons destroyed
     sBattleGroundMgr.DeleteAllBattleGrounds();

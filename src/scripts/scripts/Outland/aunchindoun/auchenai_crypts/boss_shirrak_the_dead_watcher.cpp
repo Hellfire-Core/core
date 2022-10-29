@@ -81,7 +81,7 @@ struct boss_shirrak_the_dead_watcherAI : public ScriptedAI
         {
             summoned->CastSpell(summoned,SPELL_FOCUS_FIRE_VISUAL,false);
             summoned->setFaction(m_creature->getFaction());
-            summoned->SetLevel(m_creature->getLevel());
+            summoned->SetLevel(m_creature->GetLevel());
             summoned->GetUnitStateMgr().PushAction(UNIT_ACTION_ROOT);
 
             if(focusedTarget)
@@ -101,7 +101,7 @@ struct boss_shirrak_the_dead_watcherAI : public ScriptedAI
             {
                 if (Player* i_pl = i->getSource())
                 {
-                    if(i_pl->isAlive() && (dist = i_pl->GetDistance(m_creature)) <= 45)
+                    if(i_pl->IsAlive() && (dist = i_pl->GetDistance(m_creature)) <= 45)
                     {
                         i_pl->RemoveAurasDueToSpell(SPELL_INHIBITMAGIC,0);
                         m_creature->AddAura(SPELL_INHIBITMAGIC, i_pl);
@@ -147,7 +147,7 @@ struct boss_shirrak_the_dead_watcherAI : public ScriptedAI
         {
             // Summon Focus Fire & Emote
             Unit *target = SelectUnit(SELECT_TARGET_RANDOM,0,60, true, m_creature->getVictimGUID());
-            if (target && target->GetTypeId() == TYPEID_PLAYER && target->isAlive())
+            if (target && target->GetTypeId() == TYPEID_PLAYER && target->IsAlive())
             {
                 focusedTarget = target;
                 m_creature->SummonCreature(ENTRY_FOCUS_FIRE,target->GetPositionX(),target->GetPositionY(),target->GetPositionZ(),0,TEMPSUMMON_TIMED_DESPAWN,5500);

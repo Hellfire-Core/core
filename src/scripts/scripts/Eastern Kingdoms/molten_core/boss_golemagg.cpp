@@ -105,7 +105,7 @@ struct boss_golemaggAI : public ScriptedAI
 
             if (EarthQuake_Timer.Expired(diff))
             {
-                DoCast(m_creature->getVictim(),SPELL_EARTHQUAKE);
+                DoCast(m_creature->GetVictim(),SPELL_EARTHQUAKE);
                 EarthQuake_Timer = 3000;
             }
 
@@ -148,7 +148,7 @@ struct mob_core_ragerAI : public ScriptedAI
 
         if (Mangle_Timer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(), SPELL_MANGLE);
+            DoCast(m_creature->GetVictim(), SPELL_MANGLE);
             Mangle_Timer = 10000;
         }
 
@@ -164,7 +164,7 @@ struct mob_core_ragerAI : public ScriptedAI
             {
                 Unit *pGolemagg = Unit::GetUnit((*m_creature), pInstance->GetData64(DATA_GOLEMAGG));
 
-                if(!pGolemagg || !pGolemagg->isAlive())
+                if(!pGolemagg || !pGolemagg->IsAlive())
                     me->DisappearAndDie();
             }
 

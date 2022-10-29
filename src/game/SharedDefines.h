@@ -24,6 +24,11 @@
 #include "Platform/Define.h"
 #include <cassert>
 
+#define MAX_SPELL_EFFECTS 3
+#define EFFECT_0          0
+#define EFFECT_1          1
+#define EFFECT_2          2
+
 enum Gender
 {
     GENDER_MALE                        = 0,
@@ -90,6 +95,15 @@ enum Races
     (1<<(RACE_GNOME-1))   |(1<<(RACE_TROLL-1))        |(1<<(RACE_BLOODELF-1))| \
     (1<<(RACE_DRAENEI-1)))
 
+// for most cases batter use ChrRace data for team check as more safe, but when need full mask of team can be use this defines.
+#define RACEMASK_ALLIANCE \
+    ((1<<(RACE_HUMAN-1))    |(1<<(RACE_DWARF-1))    |(1<<(RACE_NIGHTELF-1))| \
+    (1<<(RACE_GNOME-1))     |(1<<(RACE_DRAENEI-1)))
+
+#define RACEMASK_HORDE \
+    ((1<<(RACE_ORC-1))      |(1<<(RACE_UNDEAD_PLAYER-1))   |(1<<(RACE_TAUREN-1))  | \
+    (1<<(RACE_TROLL-1))     |(1<<(RACE_BLOODELF-1)))
+
 // Class value is index in ChrClasses.dbc
 enum Classes
 {
@@ -115,6 +129,15 @@ enum Classes
     (1<<(CLASS_MAGE-1))   |(1<<(CLASS_WARLOCK-1))|(1<<(CLASS_DRUID-1))  )
 
 #define CLASSMASK_WAND_USERS ((1<<(CLASS_PRIEST-1))|(1<<(CLASS_MAGE-1))|(1<<(CLASS_WARLOCK-1)))
+
+enum CombatBotRoles
+{
+    ROLE_INVALID,
+    ROLE_MELEE_DPS,
+    ROLE_RANGE_DPS,
+    ROLE_TANK,
+    ROLE_HEALER,
+};
 
 #define PLAYER_MAX_BATTLEGROUND_QUEUES 3
 
@@ -236,6 +259,46 @@ enum SpellCategory
     SPELL_CATEGORY_DRINK            = 59,
 };
 
+enum SpellInterruptFlags
+{
+    SPELL_INTERRUPT_FLAG_MOVEMENT     = 0x01, // why need this for instant?
+    SPELL_INTERRUPT_FLAG_PUSH_BACK    = 0x02, // push back
+    SPELL_INTERRUPT_FLAG_INTERRUPT    = 0x04, // interrupt
+    SPELL_INTERRUPT_FLAG_AUTOATTACK   = 0x08, // no
+    SPELL_INTERRUPT_FLAG_DAMAGE       = 0x10  // _complete_ interrupt on direct damage?
+};
+
+enum SpellAuraInterruptFlags
+{
+    AURA_INTERRUPT_FLAG_NONE                = 0x00000000,
+    AURA_INTERRUPT_FLAG_HITBYSPELL          = 0x00000001,   // 0    removed when getting hit by a negative spell?
+    AURA_INTERRUPT_FLAG_DAMAGE              = 0x00000002,   // 1    removed by any damage
+    AURA_INTERRUPT_FLAG_CC                  = 0x00000004,   // 2    crowd control
+    AURA_INTERRUPT_FLAG_MOVE                = 0x00000008,   // 3    removed by any movement
+    AURA_INTERRUPT_FLAG_TURNING             = 0x00000010,   // 4    removed by any turning
+    AURA_INTERRUPT_FLAG_JUMP                = 0x00000020,   // 5    removed by entering combat
+    AURA_INTERRUPT_FLAG_NOT_MOUNTED         = 0x00000040,   // 6    removed by unmounting
+    AURA_INTERRUPT_FLAG_NOT_ABOVEWATER      = 0x00000080,   // 7    removed by entering water
+    AURA_INTERRUPT_FLAG_NOT_UNDERWATER      = 0x00000100,   // 8    removed by leaving water
+    AURA_INTERRUPT_FLAG_NOT_SHEATHED        = 0x00000200,   // 9    removed by unsheathing
+    AURA_INTERRUPT_FLAG_TALK                = 0x00000400,   // 10   talk to npc / loot? action on creature
+    AURA_INTERRUPT_FLAG_USE                 = 0x00000800,   // 11   mine/use/open action on gameobject
+    AURA_INTERRUPT_FLAG_ATTACK              = 0x00001000,   // 12   removed by attacking
+    AURA_INTERRUPT_FLAG_CAST                = 0x00002000,   // 13   ???
+    AURA_INTERRUPT_FLAG_DELAY               = 0x00004000,   // 14   channeled spell can be delayed by damage
+    AURA_INTERRUPT_FLAG_TRANSFORM           = 0x00008000,   // 15   removed by transform?
+    AURA_INTERRUPT_FLAG_UNK16               = 0x00010000,   // 16
+    AURA_INTERRUPT_FLAG_MOUNT               = 0x00020000,   // 17   misdirect, aspect, swim speed
+    AURA_INTERRUPT_FLAG_NOT_SEATED          = 0x00040000,   // 18   removed by standing up
+    AURA_INTERRUPT_FLAG_CHANGE_MAP          = 0x00080000,   // 19   leaving map/getting teleported
+    AURA_INTERRUPT_FLAG_UNATTACKABLE        = 0x00100000,   // 20   invulnerable or stealth
+    AURA_INTERRUPT_FLAG_UNK21               = 0x00200000,   // 21
+    AURA_INTERRUPT_FLAG_TELEPORTED          = 0x00400000,   // 22
+    AURA_INTERRUPT_FLAG_ENTER_PVP_COMBAT    = 0x00800000,   // 23   removed by entering pvp combat
+    AURA_INTERRUPT_FLAG_DIRECT_DAMAGE       = 0x01000000,    // 24   removed by any direct damage
+    AURA_INTERRUPT_FLAG_NOT_VICTIM = (AURA_INTERRUPT_FLAG_HITBYSPELL | AURA_INTERRUPT_FLAG_DAMAGE | AURA_INTERRUPT_FLAG_DIRECT_DAMAGE),
+};
+
 // ***********************************
 // Spell Attributes definitions
 // ***********************************
@@ -249,7 +312,7 @@ enum SpellAttributes
     SPELL_ATTR_ABILITY                        = 0x00000010,            // 4 client puts 'ability' instead of 'spell' in game strings for these spells
     SPELL_ATTR_TRADESPELL                     = 0x00000020,            // 5 trade/profession spells, will be added by client to a sublist of profession spell
     SPELL_ATTR_PASSIVE                        = 0x00000040,            // 6 Passive spell
-    SPELL_ATTR_UNK7                           = 0x00000080,            // 7 visible?
+    SPELL_ATTR_HIDDEN_CLIENTSIDE              = 0x00000080,            // 7 Spells with this attribute are not visible in spellbook or aura bar
     SPELL_ATTR_UNK8                           = 0x00000100,            // 8
     SPELL_ATTR_UNK9                           = 0x00000200,            // 9
     SPELL_ATTR_ON_NEXT_SWING_2                = 0x00000400,            // 10 on next swing 2
@@ -2565,6 +2628,33 @@ enum MailResponseResult
     MAIL_ERR_MAIL_AND_CHAT_SUSPENDED   = 17,
     MAIL_ERR_TOO_MANY_ATTACHMENTS      = 18,
     MAIL_ERR_MAIL_ATTACHMENT_INVALID   = 19,
+};
+
+enum TradeStatus
+{
+    TRADE_STATUS_BUSY           = 0,
+    TRADE_STATUS_BEGIN_TRADE    = 1,
+    TRADE_STATUS_OPEN_WINDOW    = 2,
+    TRADE_STATUS_TRADE_CANCELED = 3,
+    TRADE_STATUS_TRADE_ACCEPT   = 4,
+    TRADE_STATUS_BUSY_2         = 5,
+    TRADE_STATUS_NO_TARGET      = 6,
+    TRADE_STATUS_BACK_TO_TRADE  = 7,
+    TRADE_STATUS_TRADE_COMPLETE = 8,
+    // 9?
+    TRADE_STATUS_TARGET_TO_FAR  = 10,
+    TRADE_STATUS_WRONG_FACTION  = 11,
+    TRADE_STATUS_CLOSE_WINDOW   = 12,
+    // 13?
+    TRADE_STATUS_IGNORE_YOU     = 14,
+    TRADE_STATUS_YOU_STUNNED    = 15,
+    TRADE_STATUS_TARGET_STUNNED = 16,
+    TRADE_STATUS_YOU_DEAD       = 17,
+    TRADE_STATUS_TARGET_DEAD    = 18,
+    TRADE_STATUS_YOU_LOGOUT     = 19,
+    TRADE_STATUS_TARGET_LOGOUT  = 20,
+    TRADE_STATUS_TRIAL_ACCOUNT  = 21,                       // Trial accounts can not perform that action
+    TRADE_STATUS_ONLY_CONJURED  = 22                        // You can only trade conjured items... (cross realm BG related).
 };
 
 // indexes of BattlemasterList.dbc

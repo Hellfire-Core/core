@@ -84,7 +84,7 @@ struct boss_captain_skarlocAI : public ScriptedAI
         DevotionAura_Timer.Reset(3000);
         Consecration_Timer.Reset(8000);
         me->SetReactState(REACT_PASSIVE);
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         me->Mount(SKARLOC_MOUNT_MODEL);
         SummonGuards();
         me->GetMotionMaster()->MovePoint(0, 2047.90f, 254.85f, 62.822f);
@@ -104,7 +104,7 @@ struct boss_captain_skarlocAI : public ScriptedAI
         {
             Add1GUID = tAdd1->GetGUID();
             tAdd1->SetReactState(REACT_PASSIVE);
-            tAdd1->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            tAdd1->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
             tAdd1->GetMotionMaster()->MovePoint(0, 2044.12f, 253.47f, 62.748f);
         }
 
@@ -112,7 +112,7 @@ struct boss_captain_skarlocAI : public ScriptedAI
         {
             Add2GUID = tAdd2->GetGUID();
             tAdd2->SetReactState(REACT_PASSIVE);
-            tAdd2->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            tAdd2->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
             tAdd2->GetMotionMaster()->MovePoint(0, 2049.22f, 258.16f, 62.754f);
         }
     }
@@ -157,7 +157,7 @@ struct boss_captain_skarlocAI : public ScriptedAI
     void IntroEnd()
     {
         me->SetReactState(REACT_AGGRESSIVE);
-        me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         me->SetWalk(false);
 
         if (Creature* Thrall = me->GetMap()->GetCreature(ThrallinGUID))
@@ -167,7 +167,7 @@ struct boss_captain_skarlocAI : public ScriptedAI
             if (Creature* tAdd1 = me->GetCreature(Add1GUID))
             {
                 tAdd1->SetReactState(REACT_AGGRESSIVE);
-                tAdd1->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                tAdd1->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                 tAdd1->SetWalk(false);
                 tAdd1->AI()->AttackStart(Thrall);
             }
@@ -175,7 +175,7 @@ struct boss_captain_skarlocAI : public ScriptedAI
             if (Creature* tAdd2 = me->GetCreature(Add2GUID))
             {
                 tAdd2->SetReactState(REACT_AGGRESSIVE);
-                tAdd2->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                tAdd2->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                 tAdd2->SetWalk(false);
                 tAdd2->AI()->AttackStart(Thrall);
             }
@@ -257,7 +257,7 @@ struct boss_captain_skarlocAI : public ScriptedAI
 
         if (HammerOfJustice_Timer.Expired(diff))
         {
-            DoCast(me->getVictim(), SPELL_HAMMER_OF_JUSTICE);
+            DoCast(me->GetVictim(), SPELL_HAMMER_OF_JUSTICE);
             HammerOfJustice_Timer = 60000;
         }
         

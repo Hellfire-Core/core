@@ -221,12 +221,12 @@ struct boss_priestess_delrissaAI : public ScriptedAI
         for(uint8 i = 0; i < Adds.size(); ++i)
         {
             Creature* pAdd = m_creature->GetCreature(Adds[i].guid);
-            if(pAdd && pAdd->isAlive())
+            if(pAdd && pAdd->IsAlive())
             {
                 pAdd->AI()->EnterEvadeMode();
                 pAdd->GetMotionMaster()->MovePoint(0,LackeyLocations[i][0], LackeyLocations[i][1], POS_Z);
             }
-            if(!pAdd || (pAdd && pAdd->isDead()))
+            if(!pAdd || (pAdd && pAdd->IsDead()))
             {
                 if(pAdd)
                     pAdd->RemoveCorpse();//looks stupid if mob is alive but has a dead corpse in front of him :)
@@ -242,7 +242,7 @@ struct boss_priestess_delrissaAI : public ScriptedAI
         if(victim->GetTypeId() != TYPEID_PLAYER)
             return;
 
-        if(m_creature->isAlive())
+        if(m_creature->IsAlive())
             DoScriptText(PlayerDeath[PlayersKilled].id, m_creature);
         if( PlayersKilled < 4 )
             ++PlayersKilled;
@@ -250,7 +250,7 @@ struct boss_priestess_delrissaAI : public ScriptedAI
 
     void KilledLackey()
     {
-        if(m_creature->isAlive())
+        if(m_creature->IsAlive())
         {
             DoScriptText(LackeyDeath[LackeysKilled].id, m_creature);
             if(LackeysKilled < 3)
@@ -289,7 +289,7 @@ struct boss_priestess_delrissaAI : public ScriptedAI
         {
             Creature *c = *it;
             newHealthPct = ((float)c->GetHealth()) / c->GetMaxHealth();
-            if(c->isAlive() && !c->HasAura(spellid, 0) && newHealthPct < healthPct)
+            if(c->IsAlive() && !c->HasAura(spellid, 0) && newHealthPct < healthPct)
             {
                 healthPct = newHealthPct;
                 target = c;
@@ -310,8 +310,8 @@ struct boss_priestess_delrissaAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if(me->getVictim()->isCrowdControlled())
-            DoModifyThreatPercent(me->getVictim(), -100);
+        if(me->GetVictim()->isCrowdControlled())
+            DoModifyThreatPercent(me->GetVictim(), -100);
 
 
         if (Check_Timer.Expired(diff))
@@ -333,7 +333,7 @@ struct boss_priestess_delrissaAI : public ScriptedAI
                     canUseMedalion = false;
                 }
             }
-            if(canFear && me->IsWithinMeleeRange(me->getVictim()))
+            if(canFear && me->IsWithinMeleeRange(me->GetVictim()))
             {
                 ForceSpellCast(SPELL_PHYSIC_SCREAM, CAST_SELF, INTERRUPT_AND_CAST);
                 canFear = false;
@@ -512,7 +512,7 @@ struct boss_priestess_guestAI : public ScriptedAI
             if(Creature *boss = m_creature->GetCreature(pInstance->GetData64(DATA_DELRISSA)))
             {
                 me->SetOrientation(boss->GetOrientation());
-                if(boss->isDead())
+                if(boss->IsDead())
                     boss->Respawn();
             }
         }
@@ -554,7 +554,7 @@ struct boss_priestess_guestAI : public ScriptedAI
         {
             if (Player* player = i->getSource())
             {
-                if (player->isGameMaster())
+                if (player->IsGameMaster())
                     continue;
                 player->TeleportTo(me->GetMapId(), 127.0f, 0.0f, -20.5f, player->GetOrientation(), TELE_TO_NOT_LEAVE_COMBAT);
             }
@@ -687,10 +687,10 @@ struct boss_kagani_nightstrikeAI : public boss_priestess_guestAI
         {
             if (Check_Timer.Expired(diff))
             {
-                if(me->IsWithinMeleeRange(me->getVictim()))
+                if(me->IsWithinMeleeRange(me->GetVictim()))
                 {
-                    if(!me->getVictim()->HasInArc(M_PI, me))
-                        AddSpellToCast(me->getVictim(), SPELL_BACKSTAB);
+                    if(!me->GetVictim()->HasInArc(M_PI, me))
+                        AddSpellToCast(me->GetVictim(), SPELL_BACKSTAB);
                     me->RemoveAurasDueToSpell(SPELL_VANISH);
                     Gouge_Timer = urand(10000, 15000);
                 }
@@ -733,9 +733,9 @@ struct boss_kagani_nightstrikeAI : public boss_priestess_guestAI
 
         }
 
-        if(canKick && (me->getVictim()->IsNonMeleeSpellCast(true) || roll_chance_f(15.0)))
+        if(canKick && (me->GetVictim()->IsNonMeleeSpellCast(true) || roll_chance_f(15.0)))
         {
-            if(me->IsWithinMeleeRange(me->getVictim()))
+            if(me->IsWithinMeleeRange(me->GetVictim()))
             {
                 ForceSpellCast(SPELL_KICK, CAST_TANK);
                 canKick = false;
@@ -745,7 +745,7 @@ struct boss_kagani_nightstrikeAI : public boss_priestess_guestAI
 
         if (Backstab_Timer.Expired(diff))
         {
-            if(!m_creature->getVictim()->HasInArc(M_PI, m_creature))
+            if(!m_creature->GetVictim()->HasInArc(M_PI, m_creature))
                 ForceSpellCast(SPELL_BACKSTAB, CAST_TANK, INTERRUPT_AND_CAST);
             Backstab_Timer = 3000;
         }
@@ -755,7 +755,7 @@ struct boss_kagani_nightstrikeAI : public boss_priestess_guestAI
         if (Gouge_Timer.Expired(diff))
         {
             AddSpellToCast(SPELL_GOUGE, CAST_TANK);
-            DoModifyThreatPercent(m_creature->getVictim(),-100);
+            DoModifyThreatPercent(m_creature->GetVictim(),-100);
             Gouge_Timer = urand(12000, 25000);
         }
 
@@ -826,7 +826,7 @@ struct boss_ellris_duskhallowAI : public boss_priestess_guestAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!me->isInCombat())
+        if(!me->IsInCombat())
         {
 
             if (SummonImp_Timer.Expired(diff))
@@ -837,7 +837,7 @@ struct boss_ellris_duskhallowAI : public boss_priestess_guestAI
                 if(!Fizzle)
                     DoCast(m_creature, SPELL_SUMMON_IMP, false);
 
-                if(Fizzle && !Fizzle->isAlive())
+                if(Fizzle && !Fizzle->IsAlive())
                 {
                     ((Creature*)Fizzle)->RemoveCorpse();
                     DoCast(m_creature, SPELL_SUMMON_IMP, false);
@@ -851,8 +851,8 @@ struct boss_ellris_duskhallowAI : public boss_priestess_guestAI
 
         boss_priestess_guestAI::UpdateAI(diff);
 
-        if(me->getVictim()->isCrowdControlled())
-            DoModifyThreatPercent(me->getVictim(), -100);
+        if(me->GetVictim()->isCrowdControlled())
+            DoModifyThreatPercent(me->GetVictim(), -100);
 
         if (Check_Timer.Expired(diff))
         {
@@ -917,8 +917,8 @@ struct mob_fizzleAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if(me->getVictim()->isCrowdControlled())
-            DoModifyThreatPercent(me->getVictim(), -100);
+        if(me->GetVictim()->isCrowdControlled())
+            DoModifyThreatPercent(me->GetVictim(), -100);
 
 
         if (Autocast_Timer.Expired(diff))
@@ -971,13 +971,13 @@ struct boss_eramas_brightblazeAI : public boss_priestess_guestAI
 
         boss_priestess_guestAI::UpdateAI(diff);
 
-        if(me->getVictim()->isCrowdControlled())
+        if(me->GetVictim()->isCrowdControlled())
             DoResetThreat();
 
 
         if (Knockdown_Timer.Expired(diff))
         {
-            if(me->IsWithinMeleeRange(me->getVictim()))
+            if(me->IsWithinMeleeRange(me->GetVictim()))
             {
                 AddSpellToCast(SPELL_KNOCKDOWN, CAST_TANK);
                 Knockdown_Timer = 10000;
@@ -987,7 +987,7 @@ struct boss_eramas_brightblazeAI : public boss_priestess_guestAI
 
         if (Snap_Kick_Timer.Expired(diff))
         {
-            if(me->IsWithinMeleeRange(me->getVictim()))
+            if(me->IsWithinMeleeRange(me->GetVictim()))
             {
                 AddSpellToCast(SPELL_SNAP_KICK, CAST_TANK);
                 Snap_Kick_Timer = 12000;
@@ -1076,8 +1076,8 @@ struct boss_yazzaiAI : public boss_priestess_guestAI
 
         boss_priestess_guestAI::UpdateAI(diff);
 
-        if(me->getVictim() && me->getVictim()->isCrowdControlled())
-            DoModifyThreatPercent(me->getVictim(), -100);
+        if(me->GetVictim() && me->GetVictim()->isCrowdControlled())
+            DoModifyThreatPercent(me->GetVictim(), -100);
 
 
         if (Check_Timer.Expired(diff))
@@ -1127,7 +1127,7 @@ struct boss_yazzaiAI : public boss_priestess_guestAI
         ;
         if (MeleeCheck_Timer.Expired(diff))
         {
-            if(me->IsWithinMeleeRange(me->getVictim()))
+            if(me->IsWithinMeleeRange(me->GetVictim()))
             {
                 if(canFroze)
                 {
@@ -1152,7 +1152,7 @@ struct boss_yazzaiAI : public boss_priestess_guestAI
                 MeleeCheck_Timer = 2000;
             }
 
-            if(me->IsWithinDistInMap(me->getVictim(), 10.0))
+            if(me->IsWithinDistInMap(me->GetVictim(), 10.0))
             {
                 if(canCoC)
                 {
@@ -1244,8 +1244,8 @@ struct boss_warlord_salarisAI : public boss_priestess_guestAI
 
         boss_priestess_guestAI::UpdateAI(diff);
 
-        if(me->getVictim() && me->getVictim()->isCrowdControlled())
-            DoModifyThreatPercent(me->getVictim(), -100);
+        if(me->GetVictim() && me->GetVictim()->isCrowdControlled())
+            DoModifyThreatPercent(me->GetVictim(), -100);
 
 
         if (BattleShout_Timer.Expired(diff))
@@ -1366,7 +1366,7 @@ struct boss_garaxxasAI : public boss_priestess_guestAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!me->isInCombat())
+        if(!me->IsInCombat())
         {
 
             if (GetSliver_Timer.Expired(diff))
@@ -1381,7 +1381,7 @@ struct boss_garaxxasAI : public boss_priestess_guestAI
                     Creature* Sliver = m_creature->SummonCreature(NPC_SLIVER, x, y, z, me->GetOrientation(), TEMPSUMMON_CORPSE_TIMED_DESPAWN, 30000);
                 }
 
-                if(Sliver && !Sliver->isAlive())
+                if(Sliver && !Sliver->IsAlive())
                 {
                     ((Creature*)Sliver)->RemoveCorpse();
                     float x, y, z;
@@ -1398,8 +1398,8 @@ struct boss_garaxxasAI : public boss_priestess_guestAI
 
         boss_priestess_guestAI::UpdateAI(diff);
 
-        if(me->getVictim() && me->getVictim()->isCrowdControlled())
-            DoModifyThreatPercent(me->getVictim(), -100);
+        if(me->GetVictim() && me->GetVictim()->isCrowdControlled())
+            DoModifyThreatPercent(me->GetVictim(), -100);
 
         if(!canSetTrap)
         {
@@ -1411,12 +1411,12 @@ struct boss_garaxxasAI : public boss_priestess_guestAI
             }
         }
 
-        if(me->IsWithinDistInMap(me->getVictim(), 3.0) && canSetTrap)
+        if(me->IsWithinDistInMap(me->GetVictim(), 3.0) && canSetTrap)
         {
             ForceSpellCast(SPELL_FREEZING_TRAP, CAST_SELF, INTERRUPT_AND_CAST_INSTANTLY);
             float x, y, z;
-            // float dist = me->GetDistance2d(me->getVictim()); <- unused, so why it's here?
-            float angle = me->GetAngle(me->getVictim());
+            // float dist = me->GetDistance2d(me->GetVictim()); <- unused, so why it's here?
+            float angle = me->GetAngle(me->GetVictim());
             me->GetPosition(x, y, z);
             x = x - 5.5 * cos(angle);
             y = y - 5.5 * sin(angle);
@@ -1435,7 +1435,7 @@ struct boss_garaxxasAI : public boss_priestess_guestAI
             }
         }
 
-        if(me->IsWithinDistInMap(me->getVictim(), 6.0) && canWingClip)
+        if(me->IsWithinDistInMap(me->GetVictim(), 6.0) && canWingClip)
         {
             ForceSpellCast(SPELL_WING_CLIP, CAST_TANK, INTERRUPT_AND_CAST);
             float x, y, z;
@@ -1470,7 +1470,7 @@ struct boss_garaxxasAI : public boss_priestess_guestAI
         if (Shoot_Timer.Expired(diff))
         {
             if(me->GetMotionMaster()->GetCurrentMovementGeneratorType() == IDLE_MOTION_TYPE)
-                AddSpellToCast(me->getVictim(), SPELL_SHOOT);
+                AddSpellToCast(me->GetVictim(), SPELL_SHOOT);
             Shoot_Timer = urand(3000, 5000);
         }
 
@@ -1492,8 +1492,8 @@ struct mob_sliverAI : public ScriptedAI
         if(!UpdateVictim())
             return;
 
-        if(me->getVictim() && me->getVictim()->isCrowdControlled())
-            DoModifyThreatPercent(me->getVictim(), -100);
+        if(me->GetVictim() && me->GetVictim()->isCrowdControlled())
+            DoModifyThreatPercent(me->GetVictim(), -100);
 
         DoMeleeAttackIfReady();
     }
@@ -1667,13 +1667,13 @@ struct boss_zelfanAI : public boss_priestess_guestAI
 
         boss_priestess_guestAI::UpdateAI(diff);
 
-        if(me->getVictim() && me->getVictim()->isCrowdControlled())
-            DoModifyThreatPercent(me->getVictim(), -100);
+        if(me->GetVictim() && me->GetVictim()->isCrowdControlled())
+            DoModifyThreatPercent(me->GetVictim(), -100);
 
 
         if (Goblin_Dragon_Gun_Timer.Expired(diff))
         {
-            if (me->IsWithinDistInMap(me->getVictim(), 5))
+            if (me->IsWithinDistInMap(me->GetVictim(), 5))
             {
                 ForceSpellCast(SPELL_GOBLIN_DRAGON_GUN, CAST_TANK, INTERRUPT_AND_CAST);
                 Goblin_Dragon_Gun_Timer = urand(10000, 15000);
@@ -1752,7 +1752,7 @@ struct mob_high_explosive_sheepAI : public ScriptedAI
 
         if (Check_Timer.Expired(diff))
         {
-            if(me->IsWithinMeleeRange(me->getVictim()))
+            if(me->IsWithinMeleeRange(me->GetVictim()))
                 DoCast(me, SPELL_SHEEP_EXPLOSION);
             Check_Timer = 500;
         }

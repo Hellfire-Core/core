@@ -206,7 +206,7 @@ struct boss_akilzonAI : public ScriptedAI
             {
                 Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_STATIC_DISRUPTION), true, m_creature->getVictimGUID());
                 if(!target)
-                    target = m_creature->getVictim();
+                    target = m_creature->GetVictim();
                 AddSpellToCast(target, SPELL_STATIC_DISRUPTION, false, true);
                 StaticDisruption_Timer = urand(7000, 14000);
             }
@@ -230,7 +230,7 @@ struct boss_akilzonAI : public ScriptedAI
 
         if (CallLighting_Timer.Expired(diff))
         {
-            AddSpellToCast(m_creature->getVictim(), SPELL_CALL_LIGHTNING);
+            AddSpellToCast(m_creature->GetVictim(), SPELL_CALL_LIGHTNING);
             CallLighting_Timer = RAND(urand(10000, 15000), urand(30000, 45000));
         }
 

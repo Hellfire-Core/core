@@ -71,7 +71,7 @@ struct boss_thespiaAI : public ScriptedAI
             (*it)->GetMotionMaster()->MoveTargetedHome();
         }
 
-        if (pInstance && me->isAlive())
+        if (pInstance && me->IsAlive())
             pInstance->SetData(TYPE_HYDROMANCER_THESPIA, NOT_STARTED);
     }
 

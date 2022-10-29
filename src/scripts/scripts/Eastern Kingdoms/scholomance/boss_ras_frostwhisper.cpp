@@ -86,28 +86,28 @@ struct boss_rasfrostAI : public ScriptedAI
         Freeze_Timer -= diff;
         if (Freeze_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_FREEZE);
+            DoCast(m_creature->GetVictim(),SPELL_FREEZE);
             Freeze_Timer += 24000;
         }
 
         Fear_Timer -= diff;
         if (Fear_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_FEAR);
+            DoCast(m_creature->GetVictim(),SPELL_FEAR);
             Fear_Timer += 30000;
         }
 
         ChillNova_Timer -= diff;
         if (ChillNova_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_CHILLNOVA);
+            DoCast(m_creature->GetVictim(),SPELL_CHILLNOVA);
             ChillNova_Timer += 14000;
         }
 
         FrostVolley_Timer -= diff;
         if (FrostVolley_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_FROSTVOLLEY);
+            DoCast(m_creature->GetVictim(),SPELL_FROSTVOLLEY);
             FrostVolley_Timer += 15000;
         }
 

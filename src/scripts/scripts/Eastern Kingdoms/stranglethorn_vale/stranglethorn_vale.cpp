@@ -86,11 +86,11 @@ struct mob_yennikuAI : public ScriptedAI
             }
             
 
-            if(m_creature->isInCombat() && m_creature->getVictim())
+            if(m_creature->IsInCombat() && m_creature->GetVictim())
             {
-                if(m_creature->getVictim()->GetTypeId() == TYPEID_PLAYER)
+                if(m_creature->GetVictim()->GetTypeId() == TYPEID_PLAYER)
                 {
-                    Unit *victim = m_creature->getVictim();
+                    Unit *victim = m_creature->GetVictim();
                     if(((Player*)victim)->GetTeam() == HORDE)
                     {
                         m_creature->CombatStop();
@@ -125,7 +125,7 @@ bool ChooseReward_npc_Jang(Player *player, Creature *_Creature, const Quest *_Qu
 {
     if(_Quest->GetQuestId()==8194)
     {
-        uint32 lvl = player->getLevel();
+        uint32 lvl = player->GetLevel();
         int money;
         if(lvl==70)
             money = 11200;

@@ -43,7 +43,7 @@ EndContentData */
 
 bool AreaTrigger_at_legion_teleporter(Player *player, AreaTriggerEntry const* at)
 {
-    if (player->isAlive() && !player->isInCombat())
+    if (player->IsAlive() && !player->IsInCombat())
     {
         if (player->GetTeam()== ALLIANCE && player->GetQuestRewardStatus(10589))
         {
@@ -74,7 +74,7 @@ enum eScentLarkorwi
 
 bool AreaTrigger_at_scent_larkorwi(Player* player, AreaTriggerEntry const* trigger)
 {
-    if (!player->isDead() && player->GetQuestStatus(QUEST_SCENT_OF_LARKORWI) == QUEST_STATUS_INCOMPLETE)
+    if (!player->IsDead() && player->GetQuestStatus(QUEST_SCENT_OF_LARKORWI) == QUEST_STATUS_INCOMPLETE)
     {
         Unit* LarkorwiMate = FindCreature(NPC_LARKORWI_MATE, 15.0, player);
             if(!LarkorwiMate)

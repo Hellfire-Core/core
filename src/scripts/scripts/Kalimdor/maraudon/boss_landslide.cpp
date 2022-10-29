@@ -57,7 +57,7 @@ struct boss_landslideAI : public ScriptedAI
         KnockAway_Timer -= diff;
         if (KnockAway_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_KNOCKAWAY);
+            DoCast(m_creature->GetVictim(),SPELL_KNOCKAWAY);
             KnockAway_Timer += 15000;
         }
 

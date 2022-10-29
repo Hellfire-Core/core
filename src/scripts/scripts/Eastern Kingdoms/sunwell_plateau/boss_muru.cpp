@@ -132,13 +132,13 @@ struct boss_muruAI : public Scripted_NoMovementAI
         if(pInstance->GetData(DATA_EREDAR_TWINS_EVENT) == DONE)
         {
             me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
             me->SetVisibility(VISIBILITY_ON);
         }
         else
         {
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
             me->SetVisibility(VISIBILITY_OFF);
         }
 
@@ -150,7 +150,7 @@ struct boss_muruAI : public Scripted_NoMovementAI
         CreatureAI::_EnterEvadeMode();
         me->SetVisibility(VISIBILITY_OFF);
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         Summons.DespawnAll();
         ResetTimer.Reset(30000);
     }
@@ -308,10 +308,10 @@ struct boss_entropiusAI : public ScriptedAI
                 if(Unit* Muru = me->GetUnit(pInstance->GetData64(DATA_MURU)))
                 {
                     Muru->SetVisibility(VISIBILITY_OFF);
-                    Muru->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                    Muru->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                 }
                 me->SetRooted(false);
-                AttackStart(me->getVictim());
+                AttackStart(me->GetVictim());
                 DoCast(me, SPELL_NEGATIVE_ENERGY_PERIODIC_E);
                 TransitionTimer = 0;
             }
@@ -409,7 +409,7 @@ struct npc_muru_portalAI : public Scripted_NoMovementAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(me->isInCombat())
+        if(me->IsInCombat())
         {
             if (CheckTimer.Expired(diff))
             {
@@ -568,7 +568,7 @@ struct npc_dark_fiendAI : public ScriptedAI
         
         if (CheckTimer.Expired(diff))
         {
-            if(me->IsWithinDistInMap(me->getVictim(), 1.0))
+            if(me->IsWithinDistInMap(me->GetVictim(), 1.0))
             {
                 DoCast(((Unit*)NULL), SPELL_DARKFIEND_AOE);
                 me->SetRooted(true);
@@ -650,7 +650,7 @@ struct npc_void_sentinelAI : public ScriptedAI
         
         if (VoidBlastTimer.Expired(diff))
         {
-            DoCast(me->getVictim(), SPELL_VOID_BLAST, false);
+            DoCast(me->GetVictim(), SPELL_VOID_BLAST, false);
             VoidBlastTimer = 30000;
         }
 
@@ -755,7 +755,7 @@ struct npc_blackholeAI : public ScriptedAI
         ChasingTimer = 0;
         victimGUID = 0;
         me->SetFloatValue(OBJECT_FIELD_SCALE_X, 1.0f);
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         me->GetMotionMaster()->MoveIdle();
     }
@@ -977,8 +977,8 @@ struct mob_shadowsword_fury_mageAI : public ScriptedAI
                 ActivationTimer = 0;
                 DoZoneInCombat(400);
                 me->SetRooted(false);
-                if(me->getVictim())
-                    DoStartMovement(me->getVictim());
+                if(me->GetVictim())
+                    DoStartMovement(me->GetVictim());
                 SetAutocast(SPELL_FEL_FIREBALL, RAND(6300, 8300), true);
             }
             return;
@@ -1073,8 +1073,8 @@ struct mob_shadowsword_berserkerAI : public ScriptedAI
                 ActivationTimer = 0;
                 DoZoneInCombat(400);
                 me->SetRooted(false);
-                if(me->getVictim())
-                    DoStartMovement(me->getVictim());
+                if(me->GetVictim())
+                    DoStartMovement(me->GetVictim());
             }
             return;
         }

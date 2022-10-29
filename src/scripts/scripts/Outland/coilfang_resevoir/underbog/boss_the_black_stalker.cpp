@@ -76,8 +76,8 @@ struct boss_the_black_stalkerAI : public ScriptedAI
             if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0, 200, true, me->getVictimGUID()))
                 summon->AI()->AttackStart(target);
             else
-                if(me->getVictim())
-                    summon->AI()->AttackStart(me->getVictim());
+                if(me->GetVictim())
+                    summon->AI()->AttackStart(me->GetVictim());
         }
     }
 

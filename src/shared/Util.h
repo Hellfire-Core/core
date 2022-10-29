@@ -80,6 +80,22 @@ inline bool roll_chance_i(int chance)
     return chance > irand(0, 99);
 }
 
+// Select a random element from a container. Note: make sure you explicitly empty check the container
+template <class C>
+typename C::value_type const& SelectRandomContainerElement(C const& container)
+{
+    typename C::const_iterator it = container.begin();
+    std::advance(it, urand(0, container.size() - 1));
+    return *it;
+}
+
+template<typename T, typename... Args>
+T PickRandomValue(T first, Args ...rest)
+{
+    T array[sizeof...(rest)+1] = { first, rest... };
+    return array[urand(0, (sizeof...(rest)))];
+}
+
 inline void ApplyModUInt32Var(uint32& var, int32 val, bool apply)
 {
     int32 cur = var;
@@ -178,6 +194,11 @@ inline bool isEastAsianCharacter(wchar_t wchar)
     if(wchar >= 0xFF01 && wchar <= 0xFFEE)                  // Halfwidth forms
         return true;
     return false;
+}
+
+inline bool isWhiteSpace(char c)
+{
+    return ::isspace(int(c)) != 0;
 }
 
 inline bool isNumeric(wchar_t wchar)

@@ -43,15 +43,15 @@ ReactorAI::MoveInLineOfSight(Unit *)
 void
 ReactorAI::UpdateAI(const uint32 /*time_diff*/)
 {
-    // update i_victimGuid if m_creature->getVictim() != 0 and changed
+    // update i_victimGuid if m_creature->GetVictim() != 0 and changed
     if (!UpdateVictim())
         return;
 
     if (m_creature->isAttackReady())
     {
-        if (m_creature->IsWithinMeleeRange(m_creature->getVictim()))
+        if (m_creature->IsWithinMeleeRange(m_creature->GetVictim()))
         {
-            m_creature->AttackerStateUpdate(m_creature->getVictim());
+            m_creature->AttackerStateUpdate(m_creature->GetVictim());
             m_creature->resetAttackTimer();
         }
     }

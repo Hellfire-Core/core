@@ -158,8 +158,8 @@ struct boss_theldrenAI : public ScriptedAI
         for (uint8 i = 0; i < 4; ++i)
         {
             Unit* Temp = Unit::GetUnit((*me),AddGUID[i]);
-            if (Temp && Temp->isAlive())
-                ((Creature*)Temp)->AI()->AttackStart(me->getVictim());
+            if (Temp && Temp->IsAlive())
+                ((Creature*)Temp)->AI()->AttackStart(me->GetVictim());
             else
             {
                 EnterEvadeMode();
@@ -200,7 +200,7 @@ struct boss_theldrenAI : public ScriptedAI
         Disarm_Timer -= diff;
         if (Disarm_Timer <= diff)
         {
-            AddSpellToCast(me->getVictim(), SPELL_DISARM);
+            AddSpellToCast(me->GetVictim(), SPELL_DISARM);
             Disarm_Timer += 60000;
         }
         
@@ -208,14 +208,14 @@ struct boss_theldrenAI : public ScriptedAI
         FrighteningShout_Timer -= diff;
         if (FrighteningShout_Timer <= diff)
         {
-            AddSpellToCast(me->getVictim(), SPELL_FRIGHTENING_SHOUT);
+            AddSpellToCast(me->GetVictim(), SPELL_FRIGHTENING_SHOUT);
             FrighteningShout_Timer += 30000;
         }
            
         Hamstring_Timer -= diff;
         if (Hamstring_Timer <= diff)
         {
-            AddSpellToCast(me->getVictim(), SPELL_HAMSTRING);
+            AddSpellToCast(me->GetVictim(), SPELL_HAMSTRING);
             Hamstring_Timer += 30000;
         }
         
@@ -223,7 +223,7 @@ struct boss_theldrenAI : public ScriptedAI
         Intercept_Timer -= diff;
         if (Intercept_Timer <= diff)
         {
-            AddSpellToCast(me->getVictim(), SPELL_INTERCEPT);
+            AddSpellToCast(me->GetVictim(), SPELL_INTERCEPT);
             Intercept_Timer += 25000;
         }
         
@@ -231,7 +231,7 @@ struct boss_theldrenAI : public ScriptedAI
         MortalStrike_Timer -= diff;
         if (MortalStrike_Timer <= diff)
         {
-            AddSpellToCast(me->getVictim(), SPELL_MORTAL_STRIKE);
+            AddSpellToCast(me->GetVictim(), SPELL_MORTAL_STRIKE);
             MortalStrike_Timer += 15000;
         }
         
@@ -267,7 +267,7 @@ struct boss_theldrenAI : public ScriptedAI
         for (uint8 i = 0; i < 4; ++i)
         {
             Creature *pCreature = (Unit::GetCreature((*me), AddGUID[i]));
-            if (!pCreature || !pCreature->isAlive())
+            if (!pCreature || !pCreature->IsAlive())
             {
                 if (pCreature) pCreature->setDeathState(DEAD);
                 pCreature = me->SummonCreature(AddEntry[i], ArenaLocations[i][0], ArenaLocations[i][1], ArenaLocations[i][2], Orientation, TEMPSUMMON_DEAD_DESPAWN, 0);
@@ -326,8 +326,8 @@ struct boss_malgen_longspearAI : public ScriptedAI
         DoZoneInCombat();
 
         Unit* Temp = Unit::GetUnit((*me),PetGUID);
-        if (Temp && Temp->isAlive())
-            ((Creature*)Temp)->AI()->AttackStart(me->getVictim());
+        if (Temp && Temp->IsAlive())
+            ((Creature*)Temp)->AI()->AttackStart(me->GetVictim());
         else
         {
             EnterEvadeMode();
@@ -344,7 +344,7 @@ struct boss_malgen_longspearAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        DoStartNoMovement(me->getVictim());
+        DoStartNoMovement(me->GetVictim());
 
         FreezingTrap_Timer -= diff;
         if (FreezingTrap_Timer <= diff)
@@ -357,7 +357,7 @@ struct boss_malgen_longspearAI : public ScriptedAI
         AimedShot_Timer -= diff;
         if (AimedShot_Timer <= diff)
         {
-            AddSpellToCast(me->getVictim(), SPELL_AIMED_SHOT);
+            AddSpellToCast(me->GetVictim(), SPELL_AIMED_SHOT);
             AimedShot_Timer += 10000;
         }
         
@@ -365,28 +365,28 @@ struct boss_malgen_longspearAI : public ScriptedAI
         ConclussiveShot_Timer -= diff;
         if (ConclussiveShot_Timer <= diff)
         {
-            AddSpellToCast(me->getVictim(), SPELL_CONCLUSSIVE_SHOT);
+            AddSpellToCast(me->GetVictim(), SPELL_CONCLUSSIVE_SHOT);
             ConclussiveShot_Timer += 8000;
         }
         
         MultiShot_Timer -= diff;
         if (MultiShot_Timer <= diff)
         {
-            AddSpellToCast(me->getVictim(), SPELL_MULTI_SHOT);
+            AddSpellToCast(me->GetVictim(), SPELL_MULTI_SHOT);
             MultiShot_Timer += 5000;
         }
         
         Shoot_Timer -= diff;
         if (Shoot_Timer <= diff)
         {
-            AddSpellToCast(me->getVictim(), SPELL_SHOOT);
+            AddSpellToCast(me->GetVictim(), SPELL_SHOOT);
             Shoot_Timer += 1500;
         }
         
         WingClip_Timer -= diff;
         if (WingClip_Timer <= diff)
         {
-            AddSpellToCast(me->getVictim(), SPELL_WING_CLIP, true);
+            AddSpellToCast(me->GetVictim(), SPELL_WING_CLIP, true);
             WingClip_Timer += 20000;
         }
         
@@ -404,7 +404,7 @@ struct boss_malgen_longspearAI : public ScriptedAI
     void SpawnPet()
     {
         Creature *pPet = (Unit::GetCreature((*me), PetGUID));
-        if (!pPet || !pPet->isAlive())
+        if (!pPet || !pPet->IsAlive())
         {
             if (pPet) pPet->setDeathState(DEAD);
             pPet = me->SummonCreature(AddEntryList[8], me->GetPositionX(), me->GetPositionY()+2, me->GetPositionZ(), me->GetOrientation(), TEMPSUMMON_DEAD_DESPAWN, 0);
@@ -470,7 +470,7 @@ struct boss_leftyAI : public ScriptedAI
         Knockdown_Timer -= diff;
         if (Knockdown_Timer <= diff)
         {
-            AddSpellToCast(me->getVictim(), SPELL_KNOCKDOWN);
+            AddSpellToCast(me->GetVictim(), SPELL_KNOCKDOWN);
             Knockdown_Timer += 30000;
         }
         
@@ -478,7 +478,7 @@ struct boss_leftyAI : public ScriptedAI
         SnapKick_Timer -= diff;
         if (SnapKick_Timer <= diff)
         {
-            AddSpellToCast(me->getVictim(), SPELL_SNAP_KICK);
+            AddSpellToCast(me->GetVictim(), SPELL_SNAP_KICK);
             SnapKick_Timer += 15000;
         }
         
@@ -486,7 +486,7 @@ struct boss_leftyAI : public ScriptedAI
         FFFEHT_Timer -= diff;
         if (FFFEHT_Timer <= diff)
         {
-            AddSpellToCast(me->getVictim(), SPELL_FFFEHT);
+            AddSpellToCast(me->GetVictim(), SPELL_FFFEHT);
             FFFEHT_Timer += 30000;
         }
           
@@ -552,7 +552,7 @@ struct boss_rotfangAI : public ScriptedAI
         Eviscerate_Timer -= diff;
         if (Eviscerate_Timer <= diff)
         {
-            AddSpellToCast(me->getVictim(), SPELL_EVISCERATE);
+            AddSpellToCast(me->GetVictim(), SPELL_EVISCERATE);
             Eviscerate_Timer += 10000;
         }
         
@@ -560,42 +560,42 @@ struct boss_rotfangAI : public ScriptedAI
         Gouge_Timer -= diff;
         if (Gouge_Timer <= diff)
         {
-            AddSpellToCast(me->getVictim(), SPELL_GOUGE);
+            AddSpellToCast(me->GetVictim(), SPELL_GOUGE);
             Gouge_Timer += 120000;
         }
         
         Kick_Timer -= diff;
         if (Kick_Timer <= diff)
         {
-            AddSpellToCast(me->getVictim(), SPELL_KICK);
+            AddSpellToCast(me->GetVictim(), SPELL_KICK);
             Kick_Timer += 60000;
         }
         
         KidneyShot_Timer -= diff;
         if (KidneyShot_Timer <= diff)
         {
-            AddSpellToCast(me->getVictim(), SPELL_KIDNEY_SHOT);
+            AddSpellToCast(me->GetVictim(), SPELL_KIDNEY_SHOT);
             KidneyShot_Timer += 30000;
         }
         
         SinisterStrike_Timer -= diff;
         if (SinisterStrike_Timer <= diff)
         {
-            AddSpellToCast(me->getVictim(), SPELL_SINISTER_STRIKE);
+            AddSpellToCast(me->GetVictim(), SPELL_SINISTER_STRIKE);
             SinisterStrike_Timer += 30000;
         }
         
         SlowingPoison_Timer -= diff;
         if (SlowingPoison_Timer <= diff)
         {
-            AddSpellToCast(me->getVictim(), SPELL_SLOWING_POISON);
+            AddSpellToCast(me->GetVictim(), SPELL_SLOWING_POISON);
             SlowingPoison_Timer += 25000;
         }
         
         Vanish_Timer -= diff;
         if (Vanish_Timer <= diff)
         {
-            AddSpellToCast(me->getVictim(), SPELL_VANISH);
+            AddSpellToCast(me->GetVictim(), SPELL_VANISH);
             Vanish_Timer += 15000;
         }
        
@@ -655,7 +655,7 @@ struct boss_vajashniAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        DoStartNoMovement(me->getVictim());
+        DoStartNoMovement(me->GetVictim());
 
         DispelMagic_Timer -= diff;
         if (DispelMagic_Timer <= diff)
@@ -772,7 +772,7 @@ struct boss_volidaAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        DoStartNoMovement(me->getVictim());
+        DoStartNoMovement(me->GetVictim());
 
         Blink_Timer -= diff;
         if (Blink_Timer <= diff)
@@ -795,7 +795,7 @@ struct boss_volidaAI : public ScriptedAI
         ConeOfCold_Timer -= diff;
         if (ConeOfCold_Timer <= diff)
         {
-            AddSpellToCast(me->getVictim(), SPELL_CONE_OF_COLD);
+            AddSpellToCast(me->GetVictim(), SPELL_CONE_OF_COLD);
             ConeOfCold_Timer += 15000;
         }
         
@@ -809,7 +809,7 @@ struct boss_volidaAI : public ScriptedAI
         FrostBolt_Timer -= diff;
         if (FrostBolt_Timer <= diff)
         {
-            AddSpellToCast(me->getVictim(), SPELL_FROSTBOLT);
+            AddSpellToCast(me->GetVictim(), SPELL_FROSTBOLT);
             FrostBolt_Timer += 3500;
         }
         
@@ -878,7 +878,7 @@ struct boss_snokhAI : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        DoStartNoMovement(me->getVictim());
+        DoStartNoMovement(me->GetVictim());
 
         Blink_Timer -= diff;
         if (Blink_Timer <= diff)
@@ -901,7 +901,7 @@ struct boss_snokhAI : public ScriptedAI
         Scorch_Timer -= diff;
         if (Scorch_Timer <= diff)
         {
-            AddSpellToCast(me->getVictim(), SPELL_SCORCH);
+            AddSpellToCast(me->GetVictim(), SPELL_SCORCH);
             Scorch_Timer += 5000;
         }
         
@@ -916,7 +916,7 @@ struct boss_snokhAI : public ScriptedAI
         Pyroblast_Timer -= diff;
         if (Pyroblast_Timer <= diff)
         {
-            AddSpellToCast(me->getVictim(), SPELL_PYROBLAST);
+            AddSpellToCast(me->GetVictim(), SPELL_PYROBLAST);
             Pyroblast_Timer += 25000;
         }
         
@@ -924,7 +924,7 @@ struct boss_snokhAI : public ScriptedAI
             Polymorph_Timer -= diff;
         if (Polymorph_Timer <= diff)
         {
-            AddSpellToCast(me->getVictim(), SPELL_POLYMORPH);
+            AddSpellToCast(me->GetVictim(), SPELL_POLYMORPH);
             Polymorph_Timer += 15000;
         }
         
@@ -989,7 +989,7 @@ struct boss_korvAI : public ScriptedAI
         FrostShock_Timer -= diff;
         if (FrostShock_Timer <= diff)
         {
-            AddSpellToCast(me->getVictim(), SPELL_FROST_SHOCK);
+            AddSpellToCast(me->GetVictim(), SPELL_FROST_SHOCK);
             FrostShock_Timer += 10000;
         }
         
@@ -1003,7 +1003,7 @@ struct boss_korvAI : public ScriptedAI
         Purge_Timer -= diff;
         if (Purge_Timer <= diff)
         {
-            AddSpellToCast(me->getVictim(), SPELL_PURGE);
+            AddSpellToCast(me->GetVictim(), SPELL_PURGE);
             Purge_Timer += 7000;
         }
         
@@ -1091,35 +1091,35 @@ struct boss_rezznikAI : public ScriptedAI
         Recombobulate_Timer -= diff;
         if (Recombobulate_Timer <= diff)
         {
-            AddSpellToCast(me->getVictim(), SPELL_RECOMBOBULATE);
+            AddSpellToCast(me->GetVictim(), SPELL_RECOMBOBULATE);
             Recombobulate_Timer += 11000;
         }
         
         DarkIronBomb_Timer -= diff;
         if (DarkIronBomb_Timer <= diff)
         {
-            AddSpellToCast(me->getVictim(), SPELL_DARK_IRON_BOMB);
+            AddSpellToCast(me->GetVictim(), SPELL_DARK_IRON_BOMB);
             DarkIronBomb_Timer += 4000;
         }
         
         GoblinGragonGun_Timer -= diff;
         if (GoblinGragonGun_Timer <= diff)
         {
-            AddSpellToCast(me->getVictim(), SPELL_GOBLIN_DRAGON_GUN);
+            AddSpellToCast(me->GetVictim(), SPELL_GOBLIN_DRAGON_GUN);
             GoblinGragonGun_Timer += 12000;
         }
         
         ExplosiveSheep_Timer -= diff;
         if (ExplosiveSheep_Timer <= diff)
         {
-            AddSpellToCast(me->getVictim(), SPELL_EXPLOSIVE_SHEEP);
+            AddSpellToCast(me->GetVictim(), SPELL_EXPLOSIVE_SHEEP);
             ExplosiveSheep_Timer += 20000;
         }
         
         SummonADragonling_Timer -= diff;
         if (SummonADragonling_Timer <= diff)
         {
-            AddSpellToCast(me->getVictim(), SPELL_SUMMON_ADRAGONLING);
+            AddSpellToCast(me->GetVictim(), SPELL_SUMMON_ADRAGONLING);
             SummonADragonling_Timer += 3600000;
         }
         

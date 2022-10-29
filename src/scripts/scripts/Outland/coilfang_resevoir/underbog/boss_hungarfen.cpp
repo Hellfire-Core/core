@@ -107,7 +107,7 @@ struct mob_underbog_mushroomAI : public ScriptedAI
         Grow_Timer.Reset(3000);
         Shrink_Timer.Reset(20000);
 
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
 
         DoCast(me,SPELL_PUTRID_MUSHROOM,true);

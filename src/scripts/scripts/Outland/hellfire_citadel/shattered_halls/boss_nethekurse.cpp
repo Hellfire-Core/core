@@ -103,7 +103,7 @@ struct boss_grand_warlock_nethekurseAI : public ScriptedAI
 
     void Reset()
     {
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         IsIntroEvent = false;
         SpinOnce = false;
         Phase = false;
@@ -149,7 +149,7 @@ struct boss_grand_warlock_nethekurseAI : public ScriptedAI
         {
             DoScriptText(RAND(SAY_TAUNT_1, SAY_TAUNT_2, SAY_TAUNT_3), me);
             IsIntroEvent = false;
-            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
             DoZoneInCombat();
         }
     }
@@ -166,7 +166,7 @@ struct boss_grand_warlock_nethekurseAI : public ScriptedAI
     {
         if (me->IsWithinDistInMap(who, 40.0f) && pInstance && pInstance->GetData(TYPE_NETHEKURSE) == NOT_STARTED)
         {
-            if (who->GetTypeId() != TYPEID_PLAYER || ((Player*)who)->isGameMaster())
+            if (who->GetTypeId() != TYPEID_PLAYER || ((Player*)who)->IsGameMaster())
                 return;
 
             DoScriptText(SAY_INTRO, me);
@@ -189,7 +189,7 @@ struct boss_grand_warlock_nethekurseAI : public ScriptedAI
     void JustSummoned(Creature *summoned)
     {
         summoned->setFaction(14);
-        summoned->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        summoned->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         summoned->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         summoned->CastSpell(summoned,SPELL_CONSUMPTION,false,0,0,me->GetGUID());
     }
@@ -206,7 +206,7 @@ struct boss_grand_warlock_nethekurseAI : public ScriptedAI
         me->CombatStop(true);
         me->GetUnitStateMgr().InitDefaults(true);
         
-        if (!me->isAlive())
+        if (!me->IsAlive())
             return;    
 
         if (pInstance)
@@ -214,7 +214,7 @@ struct boss_grand_warlock_nethekurseAI : public ScriptedAI
             for (std::list<uint64>::iterator itr = orcs.begin(); itr != orcs.end(); itr++)
             {
                 Creature* Orc = me->GetCreature(*itr);
-                if (!Orc || Orc->isAlive())
+                if (!Orc || Orc->IsAlive())
                     continue;
 
                 Orc->Respawn();
@@ -241,7 +241,7 @@ struct boss_grand_warlock_nethekurseAI : public ScriptedAI
                 for (std::list<uint64>::iterator itr = orcs.begin(); itr != orcs.end(); itr++)
                 {
                     Creature* Orc = me->GetCreature(*itr);
-                    if (!Orc || !Orc->isAlive())
+                    if (!Orc || !Orc->IsAlive())
                         continue;
 
                     me->Kill(Orc);
@@ -271,7 +271,7 @@ struct boss_grand_warlock_nethekurseAI : public ScriptedAI
 
             if (DarkCleave_Timer.Expired(diff))
             {
-                DoCast(me->getVictim(),SPELL_DARK_CLEAVE);
+                DoCast(me->GetVictim(),SPELL_DARK_CLEAVE);
                 DarkCleave_Timer = 1000;
             }
         }
@@ -293,7 +293,7 @@ struct boss_grand_warlock_nethekurseAI : public ScriptedAI
 
             if (Cleave_Timer.Expired(diff))
             {
-                DoCast(me->getVictim(),(HeroicMode ? H_SPELL_SHADOW_SLAM : SPELL_SHADOW_CLEAVE));
+                DoCast(me->GetVictim(),(HeroicMode ? H_SPELL_SHADOW_SLAM : SPELL_SHADOW_CLEAVE));
                 Cleave_Timer = 20000+rand()%2500;
             }
 
@@ -318,7 +318,7 @@ struct mob_fel_orc_convertAI : public ScriptedAI
 
     void Reset()
     {
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         me->SetNoCallAssistance(true);
         Hemorrhage_Timer.Reset(3000);
         Kill_Timer = 0;
@@ -327,9 +327,9 @@ struct mob_fel_orc_convertAI : public ScriptedAI
     void MoveInLineOfSight(Unit* who)
     {
         // dont allow puling by sending pet
-        if (who->GetTypeId() == TYPEID_PLAYER && me->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE) &&
+        if (who->GetTypeId() == TYPEID_PLAYER && me->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING) &&
             who->IsWithinDist(me,10.0))
-            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
 
         // do nothing mote
         return;
@@ -387,7 +387,7 @@ struct mob_fel_orc_convertAI : public ScriptedAI
 
         if (Hemorrhage_Timer.Expired(diff))
         {
-            DoCast(me->getVictim(),SPELL_HEMORRHAGE);
+            DoCast(me->GetVictim(),SPELL_HEMORRHAGE);
             Hemorrhage_Timer = 15000;
         }
 

@@ -95,7 +95,7 @@ struct boss_broggokAI : public ScriptedAI
         phase = EVENT_NULL;
 
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
 
         for (int i = 1; i <= 5; i++)
             pInstance->HandleGameObject(pInstance->GetData64(i), false, NULL);
@@ -107,7 +107,7 @@ struct boss_broggokAI : public ScriptedAI
                 if (Creature *pPrisoner = me->SummonCreature(17429, CellLocation[i].x +frand(-2.0, 2.0), CellLocation[i].y +frand(-2.0, 2.0), CellLocation[i].z,  CellLocation[i].o, TEMPSUMMON_DEAD_DESPAWN, 2000))
                 {
                     pPrisoner->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                    pPrisoner->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                    pPrisoner->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                     pPrisoner->SetReactState(REACT_PASSIVE);
 
                     pPrisoner->SetDisplayId(16332);
@@ -152,7 +152,7 @@ struct boss_broggokAI : public ScriptedAI
             }
             default:
                 me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                 me->SetReactState(REACT_AGGRESSIVE);
 
                 DoZoneInCombat();
@@ -171,7 +171,7 @@ struct boss_broggokAI : public ScriptedAI
                     pPrisoner->SetReactState(REACT_AGGRESSIVE);
 
                     pPrisoner->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                    pPrisoner->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                    pPrisoner->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                     pPrisoner->AI()->DoZoneInCombat();
                 }
             }
@@ -193,7 +193,7 @@ struct boss_broggokAI : public ScriptedAI
                         {
                             if (Creature *pPrisoner = me->GetCreature(it->first))
                             {
-                                if (pPrisoner->isAlive())
+                                if (pPrisoner->IsAlive())
                                 {
                                     found = true;
                                     break;
@@ -218,13 +218,13 @@ struct boss_broggokAI : public ScriptedAI
 
         if (AcidSpray_Timer.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(),SPELL_SLIME_SPRAY);
+            AddSpellToCast(me->GetVictim(),SPELL_SLIME_SPRAY);
             AcidSpray_Timer = urand(4000, 12000);
         }
 
         if (PoisonBolt_Timer.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(), SPELL_POISON_BOLT);
+            AddSpellToCast(me->GetVictim(), SPELL_POISON_BOLT);
             PoisonBolt_Timer = urand(8000, 16000);;
         }
 

@@ -66,6 +66,7 @@
 #include "CreatureEventAIMgr.h"
 #include "WardenDataStorage.h"
 #include "WorldEventProcessor.h"
+#include "PlayerBotMgr.h"
 
 //#include "Timer.h"
 #include "GuildMgr.h"
@@ -852,6 +853,15 @@ void World::LoadConfigSettings(bool reload)
     loadConfig(CONFIG_ANTICHEAT_SHORTMOVE_INGNORE, "AntiCheat.ShortmoveIgnore", 5);
     loadConfig(CONFIG_ANTICHEAT_RARE_CASE_TIMER, "AntiCheat.RareCaseTimer", 600);
 
+    // Bot system
+    sPlayerBotMgr.LoadConfig();
+    loadConfig(CONFIG_BOOL_PLAYER_BOT_SHOW_IN_WHO_LIST, "PlayerBot.ShowInWhoList", false);
+    loadConfig(CONFIG_UINT32_PARTY_BOT_MAX_BOTS, "PartyBot.MaxBots", 0);
+    loadConfig(CONFIG_BOOL_PARTY_BOT_SKIP_CHECKS, "PartyBot.SkipChecks", false);
+    loadConfig(CONFIG_UINT32_PARTY_BOT_AUTO_EQUIP, "PartyBot.AutoEquip", PLAYER_BOT_AUTO_EQUIP_RANDOM_GEAR);
+    loadConfig(CONFIG_UINT32_BATTLE_BOT_AUTO_EQUIP, "BattleBot.AutoEquip", PLAYER_BOT_AUTO_EQUIP_RANDOM_GEAR);
+    loadConfig(CONFIG_UINT32_PARTY_BOT_RANDOM_GEAR_LEVEL_DIFFERENCE, "PartyBot.RandomGearLevelDifference", 10);
+
     // RaF
     loadConfig(CONFIG_UINT32_RAF_MAXGRANTLEVEL, "RAF.MaxGrantLevel", 60);
     loadConfig(CONFIG_UINT32_RAF_MAXREFERALS, "RAF.MaxReferals", 5);
@@ -1303,6 +1313,9 @@ void World::SetInitialWorldSettings()
 
     sLog.outString("Loading Disabled Spells...");
     sObjectMgr.LoadSpellDisabledEntrys();
+
+    sLog.outString("Loading PlayerBot ..."); // Requires Players cache
+    sPlayerBotMgr.Load();
 
     sLog.outString("Loading Loot Tables...");
     LoadLootTables();
@@ -1797,6 +1810,9 @@ void World::Update(uint32 diff)
     sInstanceSaveManager.Update();
     diffRecorder.RecordTimeFor("Instance save manager", 15);
 
+    //Update PlayerBotMgr
+    sPlayerBotMgr.Update(diff);
+
     // And last, but not least handle the issued cli commands
     ProcessCliCommands();
     diffRecorder.RecordTimeFor("Command line", 5);
@@ -1844,7 +1860,8 @@ void World::UpdateSessions(const uint32 & diff)
     {
         sess = (*itr)->second;
         m_sessions.erase(*itr);
-        delete sess;
+        if (!sess->GetBot())
+            delete sess;
         sess = NULL;
     }
 
@@ -1993,7 +2010,7 @@ void World::SendWorldTextForLevels(uint32 minLevel, uint32 maxLevel, uint32 prev
         if (!itr->second || !itr->second->GetPlayer() || !itr->second->GetPlayer()->IsInWorld())
             continue;
 
-        if (itr->second->GetPlayer()->getLevel() < minLevel || itr->second->GetPlayer()->getLevel() > maxLevel)
+        if (itr->second->GetPlayer()->GetLevel() < minLevel || itr->second->GetPlayer()->GetLevel() > maxLevel)
             continue;
 
         if (itr->second->IsAccountFlagged(AccountFlags(preventFlags)))
@@ -2273,6 +2290,14 @@ void World::_UpdateGameTime()
             ShutdownMsg();
         }
     }
+}
+
+void World::Shutdown()
+{
+    sPlayerBotMgr.DeleteAll();
+    sWorld.m_ac.deactivate();                               // Stop Anticheat Delay Executor
+    sWorld.KickAll();                                       // save and kick all players
+    sWorld.UpdateSessions(uint32(1));                       // real players unload required UpdateSessions call
 }
 
 /// Shutdown the server

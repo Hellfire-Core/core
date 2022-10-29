@@ -80,7 +80,7 @@ struct boss_darkmaster_gandlingAI : public ScriptedAI
         ArcaneMissiles_Timer -= diff;
         if (ArcaneMissiles_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_ARCANEMISSILES);
+            DoCast(m_creature->GetVictim(),SPELL_ARCANEMISSILES);
             ArcaneMissiles_Timer += 8000;
         }
 
@@ -94,7 +94,7 @@ struct boss_darkmaster_gandlingAI : public ScriptedAI
         Curse_Timer -= diff;
         if (Curse_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_CURSE);
+            DoCast(m_creature->GetVictim(),SPELL_CURSE);
             Curse_Timer += 15000 + rand()%12000;
         }
 

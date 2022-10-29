@@ -271,7 +271,7 @@ struct instance_mechanar : public ScriptedInstance
                                 case 3:
                                 case 4:
                                 case 5:
-                                    if (player->isAlive())
+                                    if (player->IsAlive())
                                         temp->AI()->AttackStart(player);
                                     break;
                             }
@@ -305,7 +305,7 @@ struct instance_mechanar : public ScriptedInstance
                 for(Map::PlayerList::const_iterator i = players.begin(); i != players.end(); ++i)
                 {
                     Player *sourcePlayer = i->getSource();
-                    if(sourcePlayer->isGameMaster())
+                    if(sourcePlayer->IsGameMaster())
                         continue;
 
                     sourcePlayer->RemoveAurasDueToSpell(39089);
@@ -318,7 +318,7 @@ struct instance_mechanar : public ScriptedInstance
                     for(Map::PlayerList::const_iterator j = players.begin(); j != players.end(); ++j)
                     {
                         Player *checkPlayer = j->getSource();
-                        if(checkPlayer->isGameMaster() || sourcePlayer == checkPlayer)
+                        if(checkPlayer->IsGameMaster() || sourcePlayer == checkPlayer)
                             continue;
 
                         if(chargeid == GET_CHARGE_ID(checkPlayer) && sourcePlayer->IsWithinDist(checkPlayer, 10))
@@ -338,7 +338,7 @@ struct instance_mechanar : public ScriptedInstance
             for(Map::PlayerList::const_iterator i = players.begin(); i != players.end(); ++i)
             {
                 Player *sourcePlayer = i->getSource();
-                if(sourcePlayer->isGameMaster())
+                if(sourcePlayer->IsGameMaster())
                     continue;
 
                 sourcePlayer->RemoveAurasDueToSpell(39089);
@@ -364,7 +364,7 @@ struct instance_mechanar : public ScriptedInstance
             {
                 if (Creature *tmp = instance->GetCreature(*itr))
                 {
-                    if (tmp->isAlive())
+                    if (tmp->IsAlive())
                     {
                         alive = true;
                         break;
@@ -446,7 +446,7 @@ bool GOUse_go_cache_of_the_legion(Player *player, GameObject* _GO)
             for (Map::PlayerList::const_iterator i = players.begin(); i != players.end(); ++i)
             {
                 Player *player = i->getSource();
-                if (player->isGameMaster())
+                if (player->IsGameMaster())
                     continue;
 
                 ItemPosCountVec dest;

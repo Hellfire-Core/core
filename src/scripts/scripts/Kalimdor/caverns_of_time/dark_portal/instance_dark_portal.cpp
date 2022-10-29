@@ -307,7 +307,7 @@ struct instance_dark_portal : public ScriptedInstance
                     {
                         if (Unit *medivh = Unit::GetUnit(*player,MedivhGUID))
                         {
-                            if (medivh->isAlive())
+                            if (medivh->IsAlive())
                             {
                                 medivh->DealDamage(medivh, medivh->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
                                 Encounter[0] = FAIL;
@@ -470,7 +470,7 @@ struct instance_dark_portal : public ScriptedInstance
                     {
                         PortalGUID.push_back(temp->GetGUID());
                         temp->setActive(true);
-                        temp->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                        temp->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                         temp->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
 
 

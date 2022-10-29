@@ -87,7 +87,7 @@ struct mob_kilrekAI : public ScriptedAI
         if (pInstance && pInstance->GetData(DATA_TERESTIAN_EVENT) == DONE)
         {
             me->SetVisibility(VISIBILITY_OFF);
-            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         }
         TerestianGUID = 0;
 
@@ -103,7 +103,7 @@ struct mob_kilrekAI : public ScriptedAI
         }
 
         Creature* Terestian = (Unit::GetCreature(*m_creature, pInstance->GetData64(DATA_TERESTIAN)));
-        if(Terestian && !Terestian->getVictim())
+        if(Terestian && !Terestian->GetVictim())
             Terestian->AddThreat(who, 1.0f);
     }
 
@@ -115,7 +115,7 @@ struct mob_kilrekAI : public ScriptedAI
             if(TerestianGUID)
             {
                 Unit* Terestian = Unit::GetUnit((*m_creature), TerestianGUID);
-                if(Terestian && Terestian->isAlive())
+                if(Terestian && Terestian->IsAlive())
                     DoCast(Terestian, SPELL_BROKEN_PACT, true);
             }
         }else ERROR_INST_DATA(m_creature);
@@ -131,14 +131,14 @@ struct mob_kilrekAI : public ScriptedAI
         if (AmplifyTimer.Expired(diff))
         {
             m_creature->InterruptNonMeleeSpells(false);
-            DoCast(m_creature->getVictim(),SPELL_AMPLIFY_FLAMES);
+            DoCast(m_creature->GetVictim(),SPELL_AMPLIFY_FLAMES);
 
             AmplifyTimer = 10000 + rand()%10000;
         }
 
         //Chain cast
-        /*if (!m_creature->IsNonMeleeSpellCast(false) && m_creature->IsWithinDistInMap(m_creature->getVictim(), 30))
-            DoCast(m_creature->getVictim(),SPELL_FIREBOLT);
+        /*if (!m_creature->IsNonMeleeSpellCast(false) && m_creature->IsWithinDistInMap(m_creature->GetVictim(), 30))
+            DoCast(m_creature->GetVictim(),SPELL_FIREBOLT);
         else */DoMeleeAttackIfReady();
     }
 };
@@ -231,7 +231,7 @@ struct boss_terestianAI : public ScriptedAI
     {
         if (Creature * kilrek = me->GetCreature(pInstance->GetData64(DATA_KILREK)))
         {
-            if (kilrek->isAlive())
+            if (kilrek->IsAlive())
                 kilrek->AI()->EnterEvadeMode();
             else
                 kilrek->Respawn();
@@ -248,7 +248,7 @@ struct boss_terestianAI : public ScriptedAI
         {
             // Put Kil'rek in combat against our target so players don't skip him
             Creature* Kilrek = (Unit::GetCreature(*m_creature, pInstance->GetData64(DATA_KILREK)));
-            if(Kilrek && !Kilrek->getVictim())
+            if(Kilrek && !Kilrek->GetVictim())
                 Kilrek->AddThreat(who, 1.0f);
 
             pInstance->SetData(DATA_TERESTIAN_EVENT, IN_PROGRESS);
@@ -303,7 +303,7 @@ struct boss_terestianAI : public ScriptedAI
             if (pInstance)
             {
                 Creature* Kilrek = (Unit::GetCreature(*m_creature, pInstance->GetData64(DATA_KILREK)));
-                if (Kilrek && !Kilrek->isAlive())
+                if (Kilrek && !Kilrek->IsAlive())
                     Kilrek->Respawn();
             }
             PactTimer = 0;
@@ -312,7 +312,7 @@ struct boss_terestianAI : public ScriptedAI
         if (SacrificeTimer.Expired(diff))
         {
             Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0, GetSpellMaxRange(SPELL_SACRIFICE), true); // , m_creature->getVictimGUID() PRE NERF can target also tank
-            if(target && target->isAlive() && target->GetTypeId() == TYPEID_PLAYER)
+            if(target && target->IsAlive() && target->GetTypeId() == TYPEID_PLAYER)
             {
                 DoCast(target, SPELL_SACRIFICE, true);
                 Creature* Chains = m_creature->SummonCreature(CREATURE_DEMONCHAINS, -11234.2, -1698.46, 179.24, 0.67621, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 21000);
@@ -400,7 +400,7 @@ struct mob_fiendish_impAI : public ScriptedAI
 
         if (FireboltTimer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(), SPELL_FIREBOLT);
+            DoCast(m_creature->GetVictim(), SPELL_FIREBOLT);
             FireboltTimer = 2200;
         }
         

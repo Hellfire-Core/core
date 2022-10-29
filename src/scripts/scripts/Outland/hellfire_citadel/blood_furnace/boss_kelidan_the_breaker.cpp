@@ -134,7 +134,7 @@ struct boss_kelidan_the_breakerAI : public ScriptedAI
         for(int i=0; i<5; ++i)
         {
             Creature *channeler = Unit::GetCreature(*m_creature, Channelers[i]);
-            if(who && channeler && !channeler->isInCombat())
+            if(who && channeler && !channeler->IsInCombat())
                 channeler->AI()->AttackStart(who);
         }
     }
@@ -144,7 +144,7 @@ struct boss_kelidan_the_breakerAI : public ScriptedAI
         for(int i=0; i<5; ++i)
         {
             Creature *channeler = Unit::GetCreature(*m_creature, Channelers[i]);
-            if(channeler && channeler->isAlive())
+            if(channeler && channeler->IsAlive())
                 return;
         }
 
@@ -163,7 +163,7 @@ struct boss_kelidan_the_breakerAI : public ScriptedAI
         for(uint8 i=0; i<5; i++)
         {
             Creature *channeler = Unit::GetCreature(*m_creature, Channelers[i]);
-            if(!channeler || channeler->isDead())
+            if(!channeler || channeler->IsDead())
                 channeler = m_creature->SummonCreature(ENTRY_CHANNELER,ShadowmoonChannelers[i][0],ShadowmoonChannelers[i][1],ShadowmoonChannelers[i][2],ShadowmoonChannelers[i][3],TEMPSUMMON_CORPSE_TIMED_DESPAWN,300000);
             if(channeler)
                 Channelers[i] = channeler->GetGUID();
@@ -329,7 +329,7 @@ struct mob_shadowmoon_channelerAI : public ScriptedAI
 
         if (ShadowBolt_Timer.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(), SPELL_SHADOW_BOLT);
+            AddSpellToCast(me->GetVictim(), SPELL_SHADOW_BOLT);
             ShadowBolt_Timer = urand(5000, 6000);
         }
 

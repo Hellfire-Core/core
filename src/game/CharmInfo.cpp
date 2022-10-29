@@ -378,7 +378,7 @@ void CharmInfo::HandleSpellActCommand(uint64 targetGUID, uint32 spellId)
 
         if (pSpellTarget && !m_unit->isPossessed() && !m_unit->GetCharmerOrOwner()->IsFriendlyTo(pSpellTarget))
         {
-            if (m_unit->getVictim())
+            if (m_unit->GetVictim())
                 m_unit->AttackStop();
 
             if (pCreature->IsAIEnabled)

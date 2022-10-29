@@ -149,7 +149,7 @@ struct boss_lajAI : public ScriptedAI
 
     void JustSummoned(Creature *summon)
     {
-        if(summon && m_creature->getVictim())
+        if(summon && m_creature->GetVictim())
         {
             if(Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0 ))
                 summon->AI()->AttackStart(target);
@@ -173,7 +173,7 @@ struct boss_lajAI : public ScriptedAI
 
         if (Allergic_Timer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(),SPELL_ALLERGIC_REACTION);
+            DoCast(m_creature->GetVictim(),SPELL_ALLERGIC_REACTION);
             Allergic_Timer = 25000+rand()%15000;
         }
 

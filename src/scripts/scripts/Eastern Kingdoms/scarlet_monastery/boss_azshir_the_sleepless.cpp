@@ -60,7 +60,7 @@ struct boss_azshir_the_sleeplessAI : public ScriptedAI
             SoulSiphon_Timer -= diff;
             if (SoulSiphon_Timer <= diff)
             {
-                DoCast(m_creature->getVictim(),SPELL_SOULSIPHON);
+                DoCast(m_creature->GetVictim(),SPELL_SOULSIPHON);
                 return;
 
                 SoulSiphon_Timer += 20000;
@@ -70,14 +70,14 @@ struct boss_azshir_the_sleeplessAI : public ScriptedAI
         CallOftheGrave_Timer -= diff;
         if (CallOftheGrave_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_CALLOFTHEGRAVE);
+            DoCast(m_creature->GetVictim(),SPELL_CALLOFTHEGRAVE);
             CallOftheGrave_Timer += 30000;
         }
 
         Terrify_Timer -= diff;
         if (Terrify_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_TERRIFY);
+            DoCast(m_creature->GetVictim(),SPELL_TERRIFY);
             Terrify_Timer += 20000;
         }
 

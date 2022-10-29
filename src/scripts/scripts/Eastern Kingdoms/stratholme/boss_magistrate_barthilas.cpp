@@ -58,7 +58,7 @@ struct boss_magistrate_barthilasAI : public ScriptedAI
         FuriousAnger_Timer = 5000;
         AngerCount = 0;
 
-        if (m_creature->isAlive())
+        if (m_creature->IsAlive())
             m_creature->SetUInt32Value(UNIT_FIELD_DISPLAYID, MODEL_NORMAL);
         else
             m_creature->SetUInt32Value(UNIT_FIELD_DISPLAYID, MODEL_HUMAN);
@@ -100,21 +100,21 @@ struct boss_magistrate_barthilasAI : public ScriptedAI
         DrainingBlow_Timer -= diff;
         if (DrainingBlow_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_DRAININGBLOW);
+            DoCast(m_creature->GetVictim(),SPELL_DRAININGBLOW);
             DrainingBlow_Timer += 15000;
         }
 
         CrowdPummel_Timer -= diff;
         if (CrowdPummel_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_CROWDPUMMEL);
+            DoCast(m_creature->GetVictim(),SPELL_CROWDPUMMEL);
             CrowdPummel_Timer += 15000;
         }
 
         MightyBlow_Timer -= diff;
         if (MightyBlow_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_MIGHTYBLOW);
+            DoCast(m_creature->GetVictim(),SPELL_MIGHTYBLOW);
             MightyBlow_Timer += 20000;
         }
 

@@ -284,7 +284,7 @@ struct npc_erratic_sentryAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!me->isInCombat())
+        if(!me->IsInCombat())
         {
             if(HealthBelowPct(90))
             {
@@ -341,7 +341,7 @@ struct npc_erratic_sentryAI : public ScriptedAI
             if (ElectricalOverload.Expired(diff))
             {
                 if(roll_chance_i(20))
-                    DoYell(YELL_CORE_OVERLOAD, 0, me->getVictim());
+                    DoYell(YELL_CORE_OVERLOAD, 0, me->GetVictim());
                 AddSpellToCast(SPELL_ELECTRICAL_OVERLOAD, CAST_SELF);
                 ElectricalOverload = 10000;
             }
@@ -427,7 +427,7 @@ struct npc_wrath_enforcerAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!me->isInCombat())
+        if(!me->IsInCombat())
         {
             Unit* Ravager = GetClosestCreatureWithEntry(me, MOB_RAVAGER, 50);
             Unit* Ghoul = GetClosestCreatureWithEntry(me, MOB_GHOUL, 50);
@@ -539,7 +539,7 @@ struct npc_pit_overlordAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!me->isInCombat())
+        if(!me->IsInCombat())
         {
             Unit* Ravager = GetClosestCreatureWithEntry(me, MOB_RAVAGER, 50);
             Unit* Ghoul = GetClosestCreatureWithEntry(me, MOB_GHOUL, 50);
@@ -620,7 +620,7 @@ struct npc_eredar_sorcererAI : public Scripted_NoMovementAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!me->isInCombat())
+        if(!me->IsInCombat())
         {
             Unit* Ravager = GetClosestCreatureWithEntry(me, MOB_RAVAGER, 100);
             Unit* Ghoul = GetClosestCreatureWithEntry(me, MOB_GHOUL, 100);

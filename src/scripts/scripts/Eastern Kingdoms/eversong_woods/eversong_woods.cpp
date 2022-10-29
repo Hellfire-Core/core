@@ -358,7 +358,7 @@ struct npc_secondTrialAI : public ScriptedAI
 
         m_creature->SetUInt32Value(UNIT_FIELD_BYTES_1, PLAYER_STATE_KNEEL);
         m_creature->setFaction(FACTION_FRIENDLY);
-        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
 
         spellFlashLight = false;
         spellJustice = false;
@@ -441,7 +441,7 @@ struct npc_secondTrialAI : public ScriptedAI
 
     void DoAction(const int32 param)
     {
-        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         m_creature->SetUInt32Value(UNIT_FIELD_BYTES_1, PLAYER_STATE_NONE);
         m_creature->setFaction(FACTION_HOSTILE);
 

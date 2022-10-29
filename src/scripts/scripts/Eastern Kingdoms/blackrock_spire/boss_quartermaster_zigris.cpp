@@ -59,14 +59,14 @@ struct boss_quatermasterzigrisAI : public ScriptedAI
         Shoot_Timer -= diff;
         if (Shoot_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_SHOOT);
+            DoCast(m_creature->GetVictim(),SPELL_SHOOT);
             Shoot_Timer += 500;
         }
 
         StunBomb_Timer -= diff;
         if (StunBomb_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_STUNBOMB);
+            DoCast(m_creature->GetVictim(),SPELL_STUNBOMB);
             StunBomb_Timer += 14000;
         }
 

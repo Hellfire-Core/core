@@ -431,7 +431,7 @@ struct npc_injured_patientAI : public ScriptedAI
 
     void SpellHit(Unit *caster, const SpellEntry *spell)
     {
-        if (caster->GetTypeId() == TYPEID_PLAYER && me->isAlive() && spell->Id == 20804)
+        if (caster->GetTypeId() == TYPEID_PLAYER && me->IsAlive() && spell->Id == 20804)
         {
             if( (((Player*)caster)->GetQuestStatus(6624) == QUEST_STATUS_INCOMPLETE) || (((Player*)caster)->GetQuestStatus(6622) == QUEST_STATUS_INCOMPLETE))
             {
@@ -471,7 +471,7 @@ struct npc_injured_patientAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (!me->isAlive())
+        if (!me->IsAlive())
             return;
 
         if (BleedTimer.Expired(diff))
@@ -666,7 +666,7 @@ struct npc_guardianAI : public ScriptedAI
 
     void Reset()
     {
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
     }
 
     void EnterCombat(Unit *who)
@@ -681,7 +681,7 @@ struct npc_guardianAI : public ScriptedAI
 
         if (me->isAttackReady())
         {
-            me->CastSpell(me->getVictim(), SPELL_DEATHTOUCH, true);
+            me->CastSpell(me->GetVictim(), SPELL_DEATHTOUCH, true);
             me->resetAttackTimer();
         }
     }
@@ -704,7 +704,7 @@ bool GossipHello_npc_mount_vendor(Player *player, Creature *_Creature)
     bool canBuy;
     canBuy = false;
     uint32 vendor = _Creature->GetEntry();
-    uint8 race = player->getRace();
+    uint8 race = player->GetRace();
 
     switch (vendor)
     {
@@ -788,7 +788,7 @@ bool GossipHello_npc_rogue_trainer(Player *player, Creature *_Creature)
 {
     _Creature->prepareGossipMenu(player); // why to rewrite other function? just add new line if nessessary
 
-    if( player->getClass() == CLASS_ROGUE && player->getLevel() >= 24 && !player->HasItemCount(17126,1) && !player->GetQuestRewardStatus(6681) )
+    if( player->GetClass() == CLASS_ROGUE && player->GetLevel() >= 24 && !player->HasItemCount(17126,1) && !player->GetQuestRewardStatus(6681) )
     {
         player->ADD_GOSSIP_ITEM(0, "<Take the letter>", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
         player->SEND_GOSSIP_MENU(5996, _Creature->GetGUID());
@@ -1065,7 +1065,7 @@ struct npc_snake_trap_serpentsAI : public ScriptedAI
         if (Unit* target = me->SelectNearestTarget(5.0f))
             AttackStart(target);
 
-        return me->getVictim();
+        return me->GetVictim();
     }
 
     void UpdateAI(const uint32 diff)
@@ -1132,8 +1132,8 @@ struct npc_flight_masterAI : public ScriptedAI
         if(add)
         {
             add->setFaction(me->getFaction());
-            add->SetLevel(me->getLevel());
-            add->AI()->AttackStart(me->getVictim());
+            add->SetLevel(me->GetLevel());
+            add->AI()->AttackStart(me->GetVictim());
         }
     }
 
@@ -1233,7 +1233,7 @@ struct npc_garments_of_questsAI : public ScriptedAI
         if(Spell->Id == SPELL_LESSER_HEAL_R2 || Spell->Id == SPELL_FORTITUDE_R1)
         {
             //not while in combat
-            if(me->isInCombat())
+            if(me->IsInCombat())
                 return;
 
             //nothing to be done now
@@ -1358,7 +1358,7 @@ struct npc_garments_of_questsAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (CanRun && !me->isInCombat())
+        if (CanRun && !me->IsInCombat())
         {
             if (RunAwayTimer.Expired(diff))
             {
@@ -1541,7 +1541,7 @@ struct npc_woeful_healerAI : public ScriptedAI
         if (healTimer.Expired(diff))
         {
             healTimer = urand(2500, 7500);
-            if (!owner || !owner->isInCombat())
+            if (!owner || !owner->IsInCombat())
                 return;
             me->CastSpell(me, SPELL_PREYER_OF_HEALING, false);
         }
@@ -1659,19 +1659,19 @@ struct npc_fire_elemental_guardianAI : public ScriptedAI
     {
        Creature *pTotem = me->GetCreature(me->GetOwnerGUID());
        Unit *victim = pTotem->SelectNearestTarget(5.0f);
-       Unit *attacker = pTotem->getAttackerForHelper();
+       Unit *attacker = pTotem->GetAttackerForHelper();
 
        if (pTotem)
        {
-          if (!pTotem->isAlive())
+          if (!pTotem->IsAlive())
           {
              me->ForcedDespawn();
              return;
           }
           if (!me->IsWithinDistInMap(pTotem, 50.0f) || (!victim || !attacker))
           {
-             if (!me->getVictim()|| !me->IsWithinDistInMap(pTotem, 50.0f))
-                if (!me->hasUnitState(UNIT_STAT_FOLLOW))
+             if (!me->GetVictim()|| !me->IsWithinDistInMap(pTotem, 50.0f))
+                if (!me->HasUnitState(UNIT_STAT_FOLLOW))
                 {
                    victim = NULL;
                    attacker = NULL;
@@ -1682,8 +1682,8 @@ struct npc_fire_elemental_guardianAI : public ScriptedAI
           }
 
 
-          if (me->getVictim() && me->getVictim()->GetCharmerOrOwnerPlayerOrPlayerItself() &&
-              (pTotem->isInSanctuary() || me->isInSanctuary() || me->getVictim()->isInSanctuary()))
+          if (me->GetVictim() && me->GetVictim()->GetCharmerOrOwnerPlayerOrPlayerItself() &&
+              (pTotem->isInSanctuary() || me->isInSanctuary() || me->GetVictim()->isInSanctuary()))
           {
              victim = NULL;
              attacker = NULL;
@@ -1704,25 +1704,25 @@ struct npc_fire_elemental_guardianAI : public ScriptedAI
                 me->SetInCombatWith(victim);
                 AttackStart(victim);
              }
-             if (me->hasUnitState(UNIT_STAT_CASTING))
+             if (me->HasUnitState(UNIT_STAT_CASTING))
                 return;
 
              if (FireShield_Timer.Expired(diff))
              {
-                DoCast(me->getVictim(), SPELL_FIRESHIELD);
+                DoCast(me->GetVictim(), SPELL_FIRESHIELD);
                 FireShield_Timer = 2000;
              }
 
              if (FireBlast_Timer.Expired(diff))
              {
-                DoCast(me->getVictim(), SPELL_FIREBLAST);
+                DoCast(me->GetVictim(), SPELL_FIREBLAST);
                 FireBlast_Timer = 10000 + rand() % 5000; // 10-15 sec cd
              }
 
 /*
              if (FireNova_Timer.Expired(diff))
              {
-                DoCast(me->getVictim(), SPELL_FIRENOVA);
+                DoCast(me->GetVictim(), SPELL_FIRENOVA);
                 FireNova_Timer = 5000 + rand() % 15000; // 5-20 sec cd
              }
 */
@@ -1764,11 +1764,11 @@ struct npc_earth_elemental_guardianAI : public ScriptedAI
     {
        Creature *pTotem = me->GetCreature(me->GetOwnerGUID());
        Unit *victim = pTotem->SelectNearestTarget(5.0f);
-       Unit *attacker = pTotem->getAttackerForHelper();
+       Unit *attacker = pTotem->GetAttackerForHelper();
 
        if (pTotem)
        {
-          if (!pTotem->isAlive())
+          if (!pTotem->IsAlive())
           {
              me->ForcedDespawn();
              return;
@@ -1776,8 +1776,8 @@ struct npc_earth_elemental_guardianAI : public ScriptedAI
 
           if (!me->IsWithinDistInMap(pTotem, 50.0f) || (!victim || !attacker))
           {
-             if (!me->getVictim() || !me->IsWithinDistInMap(pTotem, 50.0f))
-                if (!me->hasUnitState(UNIT_STAT_FOLLOW))
+             if (!me->GetVictim() || !me->IsWithinDistInMap(pTotem, 50.0f))
+                if (!me->HasUnitState(UNIT_STAT_FOLLOW))
                 {
                    victim = NULL;
                    attacker = NULL;
@@ -1787,8 +1787,8 @@ struct npc_earth_elemental_guardianAI : public ScriptedAI
                 }
           }
 
-          if (me->getVictim() && me->getVictim()->GetCharmerOrOwnerPlayerOrPlayerItself() &&
-              (pTotem->isInSanctuary() || me->isInSanctuary() || me->getVictim()->isInSanctuary()))
+          if (me->GetVictim() && me->GetVictim()->GetCharmerOrOwnerPlayerOrPlayerItself() &&
+              (pTotem->isInSanctuary() || me->isInSanctuary() || me->GetVictim()->isInSanctuary()))
           {
              Reset();
              victim = NULL;
@@ -1808,7 +1808,7 @@ struct npc_earth_elemental_guardianAI : public ScriptedAI
 
              if (AngeredEarth_Timer.Expired(diff))
              {
-                DoCast(me->getVictim(), SPELL_ANGEREDEARTH);
+                DoCast(me->GetVictim(), SPELL_ANGEREDEARTH);
                 AngeredEarth_Timer = 5000 + rand() % 15000; // 5-20 sec cd
              }
 
@@ -1911,43 +1911,43 @@ bool GossipSelect_npc_master_omarion(Player *player, Creature *_Creature, uint32
     switch (action)
     {
     case GOSSIP_ACTION_INFO_DEF + 1:         // Icebane Bracers
-        player->learnSpell( 28244 );
+        player->LearnSpell( 28244 );
         break;
     case GOSSIP_ACTION_INFO_DEF + 2:         // Icebane Gauntlets
-        player->learnSpell( 28243 );
+        player->LearnSpell( 28243 );
         break;
     case GOSSIP_ACTION_INFO_DEF + 3:         // Icebane Breastplate
-        player->learnSpell( 28242 );
+        player->LearnSpell( 28242 );
         break;
     case GOSSIP_ACTION_INFO_DEF + 4:         // Polar Bracers
-        player->learnSpell( 28221 );
+        player->LearnSpell( 28221 );
         break;
     case GOSSIP_ACTION_INFO_DEF + 5:         // Polar Gloves
-        player->learnSpell( 28220 );
+        player->LearnSpell( 28220 );
         break;
     case GOSSIP_ACTION_INFO_DEF + 6:         // Polar Tunic
-        player->learnSpell( 28219 );
+        player->LearnSpell( 28219 );
         break;
     case GOSSIP_ACTION_INFO_DEF + 7:         // Icy Scale Bracers
-        player->learnSpell( 28224 );
+        player->LearnSpell( 28224 );
         break;
     case GOSSIP_ACTION_INFO_DEF + 8:         // Icy Scale Gauntlets
-        player->learnSpell( 28223 );
+        player->LearnSpell( 28223 );
         break;
     case GOSSIP_ACTION_INFO_DEF + 9:         // Icy Scale Breastplate
-        player->learnSpell( 28222 );
+        player->LearnSpell( 28222 );
         break;
     case GOSSIP_ACTION_INFO_DEF + 10:        // Glacial Wrists
-        player->learnSpell( 28209 );
+        player->LearnSpell( 28209 );
         break;
     case GOSSIP_ACTION_INFO_DEF + 11:        // Glacial Gloves
-        player->learnSpell( 28205 );
+        player->LearnSpell( 28205 );
         break;
     case GOSSIP_ACTION_INFO_DEF + 12:        // Glacial Vest
-        player->learnSpell( 28207 );
+        player->LearnSpell( 28207 );
         break;
     case GOSSIP_ACTION_INFO_DEF + 13:        // Glacial Cloak
-        player->learnSpell( 28208 );
+        player->LearnSpell( 28208 );
         break;
     }
     player->CLOSE_GOSSIP_MENU();
@@ -2074,7 +2074,7 @@ struct npc_crashin_trashin_robotAI : public ScriptedAI
 
     void SpellHit(Unit * caster, const SpellEntry * spell)
     {
-        if (me->isInCombat() || !caster || !spell || caster->GetEntry() != CRASHIN_TRASHIN_ROBOT_ID)
+        if (me->IsInCombat() || !caster || !spell || caster->GetEntry() != CRASHIN_TRASHIN_ROBOT_ID)
             return;
 
         me->SetInCombatWith(caster);
@@ -2091,7 +2091,7 @@ struct npc_crashin_trashin_robotAI : public ScriptedAI
             return;
         }
 
-        if (!me->isAlive())
+        if (!me->IsAlive())
             return;
 
         if (despawnTimer.Expired(diff))
@@ -2439,12 +2439,12 @@ struct npc_arcanite_dragonlingAI : public ScriptedAI
 
     Unit* selectTarget()
     {
-        if (m_owner->getVictim())
-            return m_owner->getVictim();
-        if (!m_owner->getAttackers().empty())
-            return m_owner->getAttackerForHelper();
-        if (!me->getAttackers().empty())
-            return me->getAttackerForHelper();
+        if (m_owner->GetVictim())
+            return m_owner->GetVictim();
+        if (!m_owner->GetAttackers().empty())
+            return m_owner->GetAttackerForHelper();
+        if (!me->GetAttackers().empty())
+            return me->GetAttackerForHelper();
         return NULL;
     }
 
@@ -2452,7 +2452,7 @@ struct npc_arcanite_dragonlingAI : public ScriptedAI
     {
         m_owner = me->GetCharmerOrOwner();
 
-        Unit* victim = me->getVictim();
+        Unit* victim = me->GetVictim();
         if (!victim || !me->canAttack(victim))
         {
             if (Unit* newvictim = selectTarget())
@@ -2878,14 +2878,14 @@ struct npc_explosive_sheepAI : public ScriptedAI
             return;
         }
 
-        if (me->getVictim() == nullptr)
+        if (me->GetVictim() == nullptr)
         {
             if (Unit* target = me->SelectNearestTarget())
                 ScriptedAI::AttackStart(target);
         }
         else
         {
-            if (me->IsWithinDistInMap(me->getVictim(), 2.0f))
+            if (me->IsWithinDistInMap(me->GetVictim(), 2.0f))
             {
                 ForceSpellCast(me->GetEntry() == EXPLOSIVE_SHEEP ? EXPLOSIVE_SHEEP_EXPLOSION : HIGH_EXPLOSIVE_SHEEP_EXPLOSION, CAST_SELF, INTERRUPT_AND_CAST, true);
                 me->ForcedDespawn();
@@ -2958,7 +2958,7 @@ struct npc_gnomish_flame_turret : public Scripted_NoMovementAI
         if (Unit* target = me->SelectNearestTarget(10.0f))
             AttackStart(target);
 
-        return me->getVictim();
+        return me->GetVictim();
     }
 
     void UpdateAI(const uint32 diff)
@@ -3043,13 +3043,13 @@ struct npc_bad_santaAI : public ScriptedAI
         ForceSpellCast(SPELL_ICE_ARMOR, CAST_SELF);
         me->MonsterSay("YOU WILL FREEZE TO DEATH!", 0, 0);
         me->HandleEmoteCommand(EMOTE_ONESHOT_ROAR);
-        AddSpellToCast(me->getVictim(), SPELL_FROSTBOLT_VOLLEY);
+        AddSpellToCast(me->GetVictim(), SPELL_FROSTBOLT_VOLLEY);
     }
 
     void SpellHitTarget(Unit* who, const SpellEntry* SpellID)
     {
         if (SpellID->Id != SPELL_FROST_BUFFET)
-            if (SpellID->Id == SPELL_FROSTBOLT_VOLLEY && who != me->getVictim())
+            if (SpellID->Id == SPELL_FROSTBOLT_VOLLEY && who != me->GetVictim())
                 me->AddAura(SPELL_FROST_BUFFET, who);
 
         if (SpellID->Id == SPELL_FROSTBOLT_VOLLEY)
@@ -3087,7 +3087,7 @@ struct npc_bad_santaAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-          if (!me->isInCombat())
+          if (!me->IsInCombat())
               return;
           if (!UpdateVictim())
               return;
@@ -3095,9 +3095,9 @@ struct npc_bad_santaAI : public ScriptedAI
 
           if (Frost_Buffet_Timer.Expired(diff))
           {
-              if(me->getVictim())
+              if(me->GetVictim())
               {
-                  me->AddAura(SPELL_FROST_BUFFET, me->getVictim());
+                  me->AddAura(SPELL_FROST_BUFFET, me->GetVictim());
                   Frost_Buffet_Timer = 3000;
               }
 
@@ -3135,7 +3135,7 @@ struct npc_bad_santaAI : public ScriptedAI
 
           if (Weakness_Timer.Expired(diff))
           {
-              if (Unit* target = me->getVictim())
+              if (Unit* target = me->GetVictim())
                   if (target->GetAura(SPELL_FROST_BUFFET, 1) && target->GetAura(SPELL_FROST_BUFFET, 1)->GetStackAmount() == 20)
                   {
                       me->MonsterSay("TASTE THE TRUE MEANINGNESS OF COLD!",0,0);
@@ -3230,10 +3230,10 @@ struct npc_instakill_guardianAI : public Scripted_NoMovementAI
 
     void MoveInLineOfSight(Unit* who)
     {
-        if (me->isAlive())
+        if (me->IsAlive())
         {
             Player* player = who->GetCharmerOrOwnerPlayerOrPlayerItself();
-            if (!player || player->isGameMaster())
+            if (!player || player->IsGameMaster())
                 return;
 
             WorldLocation loc, loc2;
@@ -3252,10 +3252,10 @@ struct npc_instakill_guardianAI : public Scripted_NoMovementAI
 
             if (m_creature->GetExactDist(&loc) < distance)
             {
-                if (player->isDead())
+                if (player->IsDead())
                     player->TeleportToNearestGraveyard();
 
-                if (player->isAlive())
+                if (player->IsAlive())
                 {
                     player->Kill(player);
                     player->RepopAtGraveyard();
@@ -3302,20 +3302,20 @@ struct npc_voodoo_servantAI : public ScriptedAI
     void UpdateAI(const uint32 diff)
     {
        Unit *pOwner = me->GetOwner();
-       Unit *victim = me->getVictim();
-       Unit *attacker = pOwner->getAttackerForHelper();
+       Unit *victim = me->GetVictim();
+       Unit *attacker = pOwner->GetAttackerForHelper();
 
        if (pOwner)
        {
-            if (!pOwner->isAlive())
+            if (!pOwner->IsAlive())
             {
                 me->ForcedDespawn();
                 return;
             }
             if (!me->IsWithinDistInMap(pOwner, 30.0f) || (!victim || !attacker))
             {
-                if (!me->getVictim()|| !me->IsWithinDistInMap(pOwner, 30.0f))
-                    if (!me->hasUnitState(UNIT_STAT_FOLLOW))
+                if (!me->GetVictim()|| !me->IsWithinDistInMap(pOwner, 30.0f))
+                    if (!me->HasUnitState(UNIT_STAT_FOLLOW))
                     {
                     victim = NULL;
                     attacker = NULL;
@@ -3324,8 +3324,8 @@ struct npc_voodoo_servantAI : public ScriptedAI
                     return;
                     }
             }
-            if (me->getVictim() && me->getVictim()->GetCharmerOrOwnerPlayerOrPlayerItself() &&
-                (pOwner->isInSanctuary() || me->isInSanctuary() || me->getVictim()->isInSanctuary()))
+            if (me->GetVictim() && me->GetVictim()->GetCharmerOrOwnerPlayerOrPlayerItself() &&
+                (pOwner->isInSanctuary() || me->isInSanctuary() || me->GetVictim()->isInSanctuary()))
             {
                 victim = NULL;
                 attacker = NULL;
@@ -3346,13 +3346,13 @@ struct npc_voodoo_servantAI : public ScriptedAI
                     me->SetInCombatWith(victim);
                     AttackStart(victim);
                 }
-                if (me->hasUnitState(UNIT_STAT_CASTING))
+                if (me->HasUnitState(UNIT_STAT_CASTING))
                     return;
 
 
                 if (LightingBlast_Timer.Expired(diff))
                 {
-                    DoCast(me->getVictim(), SPELL_LIGHTING_BLAST);
+                    DoCast(me->GetVictim(), SPELL_LIGHTING_BLAST);
                     LightingBlast_Timer = 2000;
                 }
 
@@ -3567,7 +3567,7 @@ struct npc_headless_horseman_matronAI : public CreatureAI
                     if (Creature* fire = m_creature->GetCreature(*itr))
                     {
                         allCount++;
-                        if (fire->isAlive() && fire->HasAura(HH_SPELL_FIRE_VISUAL))// some could be respawned after kiling, but not initialized
+                        if (fire->IsAlive() && fire->HasAura(HH_SPELL_FIRE_VISUAL))// some could be respawned after kiling, but not initialized
                             aliveCount++;
                         // respawn some fires?
                     }
@@ -3697,19 +3697,19 @@ struct npc_pet_bombAI : public ScriptedAI
             m_creature->Kill(m_creature);
         }
 
-        if (!me->getVictim() || !me->canAttack(me->getVictim()))
+        if (!me->GetVictim() || !me->canAttack(me->GetVictim()))
         {
             Player* owner = m_creature->GetCharmerOrOwnerPlayerOrPlayerItself();
             if (!owner)
                 return;
-            Unit* victim = owner->getAttackerForHelper();
+            Unit* victim = owner->GetAttackerForHelper();
             if (!victim)
                 return;
             AttackStart(victim);
         }
 
 
-        if (me->IsWithinMeleeRange(me->getVictim()))
+        if (me->IsWithinMeleeRange(me->GetVictim()))
         {
             m_creature->CastSpell(m_creature, SPELL_PET_BOMB_EXPLODE, true);
             m_creature->Kill(m_creature);
@@ -3741,8 +3741,8 @@ bool GossipSelect_npc_quick_test_services(Player* plr, Creature* c, uint32 sende
 
     if (action == GOSSIP_ACTION_INFO_DEF + 3)
     {
-        if (plr->getLevel() < 70)
-            plr->GiveLevel(plr->getLevel() + 1);
+        if (plr->GetLevel() < 70)
+            plr->GiveLevel(plr->GetLevel() + 1);
     }
     else if (action == GOSSIP_ACTION_INFO_DEF + 2)
     {
@@ -3750,7 +3750,7 @@ bool GossipSelect_npc_quick_test_services(Player* plr, Creature* c, uint32 sende
     }
     else if (action == GOSSIP_ACTION_INFO_DEF + 1)
     {
-        switch (plr->getClass())
+        switch (plr->GetClass())
         {
         case CLASS_WARRIOR:
             c->CastSpell(plr, 8121, true);

@@ -94,14 +94,14 @@ struct boss_azuregosAI : public ScriptedAI
         //        MarkOfFrost_Timer -= diff;
         //        if (MarkOfFrost_Timer <= diff)
         //        {
-        //            DoCast(m_creature->getVictim(),SPELL_MARKOFFROST);
+        //            DoCast(m_creature->GetVictim(),SPELL_MARKOFFROST);
         //            MarkOfFrost_Timer += 25000;
         //        }
 
         Chill_Timer -= diff;
         if (Chill_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_CHILL);
+            DoCast(m_creature->GetVictim(),SPELL_CHILL);
             Chill_Timer += 13000 + rand()%12000;
         }
         
@@ -109,7 +109,7 @@ struct boss_azuregosAI : public ScriptedAI
         Breath_Timer -= diff;
         if (Breath_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_FROSTBREATH);
+            DoCast(m_creature->GetVictim(),SPELL_FROSTBREATH);
             Breath_Timer += 10000 + rand()%5000;
         }
         
@@ -134,7 +134,7 @@ struct boss_azuregosAI : public ScriptedAI
         Cleave_Timer -= diff;
         if (Cleave_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_CLEAVE);
+            DoCast(m_creature->GetVictim(),SPELL_CLEAVE);
             Cleave_Timer += 7000;
         }
         

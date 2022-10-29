@@ -406,7 +406,7 @@ uint32 SpellMgr::CalculatePowerCost(SpellEntry const * spellInfo, Unit const * c
     }
 
     if (spellInfo->Attributes & SPELL_ATTR_LEVEL_DAMAGE_CALCULATION)
-        powerCost = int32(powerCost/ (1.117f* spellInfo->spellLevel / caster->getLevel() -0.1327f));
+        powerCost = int32(powerCost/ (1.117f* spellInfo->spellLevel / caster->GetLevel() -0.1327f));
 
     // PCT mod from user auras by school
     powerCost = int32(powerCost * (1.0f+caster->GetFloatValue(UNIT_FIELD_POWER_COST_MULTIPLIER+school)));

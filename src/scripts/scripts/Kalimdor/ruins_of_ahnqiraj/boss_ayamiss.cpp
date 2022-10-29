@@ -114,7 +114,7 @@ struct boss_ayamissAI : public ScriptedAI
         STINGERSPRAY_Timer -= diff;
         if (STINGERSPRAY_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_STINGERSPRAY);
+            DoCast(m_creature->GetVictim(),SPELL_STINGERSPRAY);
             STINGERSPRAY_Timer += 30000;
         }
         
@@ -122,7 +122,7 @@ struct boss_ayamissAI : public ScriptedAI
         POISONSTINGER_Timer -= diff;
         if (phase==1 && POISONSTINGER_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_POISONSTINGER);
+            DoCast(m_creature->GetVictim(),SPELL_POISONSTINGER);
             POISONSTINGER_Timer += 3500;
         }
         
@@ -130,7 +130,7 @@ struct boss_ayamissAI : public ScriptedAI
         SUMMONSWARMER_Timer -= diff;
         if (SUMMONSWARMER_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_SUMMONSWARMER);
+            DoCast(m_creature->GetVictim(),SPELL_SUMMONSWARMER);
             SUMMONSWARMER_Timer += 60000;
         }
 

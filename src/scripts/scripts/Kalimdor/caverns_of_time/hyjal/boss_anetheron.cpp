@@ -118,7 +118,7 @@ struct boss_anetheronAI : public hyjal_trashAI
         if (i == 7 && pInstance)
         {
             Unit* target = Unit::GetUnit((*m_creature), pInstance->GetData64(DATA_JAINAPROUDMOORE));
-            if (target && target->isAlive())
+            if (target && target->IsAlive())
             {
                 m_creature->AddThreat(target,0.0);
                 AttackStart(target);
@@ -166,7 +166,7 @@ struct boss_anetheronAI : public hyjal_trashAI
             }
         }
 
-        if (!m_creature->isInCombat())
+        if (!m_creature->IsInCombat())
             return;
 
         if (CheckTimer.Expired(diff))
@@ -288,7 +288,7 @@ struct mob_towering_infernalAI : public ScriptedAI
 
     void MoveInLineOfSight(Unit *who)
     {
-        if (!m_creature->isInCombat() && m_creature->IsWithinDistInMap(who, 50) && m_creature->IsHostileTo(who))
+        if (!m_creature->IsInCombat() && m_creature->IsWithinDistInMap(who, 50) && m_creature->IsHostileTo(who))
         {
             m_creature->AddThreat(who,0.0);
             m_creature->Attack(who,false);
@@ -303,7 +303,7 @@ struct mob_towering_infernalAI : public ScriptedAI
             if(pInstance)
             {
                 Creature *pAnetheron = pInstance->GetCreature(pInstance->GetData64(DATA_ANETHERON));
-                if(!pAnetheron || !pAnetheron->isAlive())
+                if(!pAnetheron || !pAnetheron->IsAlive())
                 {
                     m_creature->setDeathState(JUST_DIED);
                     m_creature->RemoveCorpse();

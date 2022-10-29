@@ -78,7 +78,7 @@ void WorldSession::HandleGroupInviteOpcode(WorldPacket & recv_data)
     }
 
     // restrict invite to GMs
-    if (!sWorld.getConfig(CONFIG_ALLOW_GM_GROUP) && !GetPlayer()->isGameMaster() && player->isGameMaster())
+    if (!sWorld.getConfig(CONFIG_ALLOW_GM_GROUP) && !GetPlayer()->IsGameMaster() && player->IsGameMaster())
     {
         SendPartyResult(PARTY_OP_INVITE, membername, PARTY_RESULT_CANT_FIND_TARGET);
         return;
@@ -707,7 +707,7 @@ void WorldSession::BuildPartyMemberStatsChangedPacket(Player *player, WorldPacke
     if (mask & GROUP_UPDATE_FLAG_MAX_HP)
         *data << (uint16) player->GetMaxHealth();
 
-    Powers powerType = player->getPowerType();
+    Powers powerType = player->GetPowerType();
     if (mask & GROUP_UPDATE_FLAG_POWER_TYPE)
         *data << (uint8) powerType;
 
@@ -718,7 +718,7 @@ void WorldSession::BuildPartyMemberStatsChangedPacket(Player *player, WorldPacke
         *data << (uint16) player->GetMaxPower(powerType);
 
     if (mask & GROUP_UPDATE_FLAG_LEVEL)
-        *data << (uint16) player->getLevel();
+        *data << (uint16) player->GetLevel();
 
     if (mask & GROUP_UPDATE_FLAG_ZONE)
         *data << (uint16) player->GetCachedZone();
@@ -785,7 +785,7 @@ void WorldSession::BuildPartyMemberStatsChangedPacket(Player *player, WorldPacke
     if (mask & GROUP_UPDATE_FLAG_PET_POWER_TYPE)
     {
         if (pet)
-            *data << (uint8)  pet->getPowerType();
+            *data << (uint8)  pet->GetPowerType();
         else
             *data << (uint8)  0;
     }
@@ -793,7 +793,7 @@ void WorldSession::BuildPartyMemberStatsChangedPacket(Player *player, WorldPacke
     if (mask & GROUP_UPDATE_FLAG_PET_CUR_POWER)
     {
         if (pet)
-            *data << (uint16) pet->GetPower(pet->getPowerType());
+            *data << (uint16) pet->GetPower(pet->GetPowerType());
         else
             *data << (uint16) 0;
     }
@@ -801,7 +801,7 @@ void WorldSession::BuildPartyMemberStatsChangedPacket(Player *player, WorldPacke
     if (mask & GROUP_UPDATE_FLAG_PET_MAX_POWER)
     {
         if (pet)
-            *data << (uint16) pet->GetMaxPower(pet->getPowerType());
+            *data << (uint16) pet->GetMaxPower(pet->GetPowerType());
         else
             *data << (uint16) 0;
     }
@@ -858,7 +858,7 @@ void WorldSession::HandleRequestPartyMemberStatsOpcode(WorldPacket &recv_data)
 
     uint16 online_status = GetPlayer()->IsReferAFriendLinked(player) ? (MEMBER_STATUS_ONLINE | MEMBER_STATUS_RAF) : MEMBER_STATUS_ONLINE;
 
-    Powers powerType = player->getPowerType();
+    Powers powerType = player->GetPowerType();
     data << (uint32) mask1;                                 // group update mask
     data << (uint16) online_status;                         // member's online status
     data << (uint16) player->GetHealth();                   // GROUP_UPDATE_FLAG_CUR_HP
@@ -866,7 +866,7 @@ void WorldSession::HandleRequestPartyMemberStatsOpcode(WorldPacket &recv_data)
     data << (uint8)  powerType;                             // GROUP_UPDATE_FLAG_POWER_TYPE
     data << (uint16) player->GetPower(powerType);           // GROUP_UPDATE_FLAG_CUR_POWER
     data << (uint16) player->GetMaxPower(powerType);        // GROUP_UPDATE_FLAG_MAX_POWER
-    data << (uint16) player->getLevel();                    // GROUP_UPDATE_FLAG_LEVEL
+    data << (uint16) player->GetLevel();                    // GROUP_UPDATE_FLAG_LEVEL
     data << (uint16) player->GetCachedZone();               // GROUP_UPDATE_FLAG_ZONE
     data << (uint16) player->GetPositionX();                // GROUP_UPDATE_FLAG_POSITION
     data << (uint16) player->GetPositionY();                // GROUP_UPDATE_FLAG_POSITION
@@ -887,7 +887,7 @@ void WorldSession::HandleRequestPartyMemberStatsOpcode(WorldPacket &recv_data)
 
     if (pet)
     {
-        Powers petpowertype = pet->getPowerType();
+        Powers petpowertype = pet->GetPowerType();
         data << (uint64) pet->GetGUID();                    // GROUP_UPDATE_FLAG_PET_GUID
         data << pet->GetName();                             // GROUP_UPDATE_FLAG_PET_NAME
         data << (uint16) pet->GetDisplayId();               // GROUP_UPDATE_FLAG_PET_MODEL_ID

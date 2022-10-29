@@ -126,7 +126,7 @@ struct mob_voidtravelerAI : public ScriptedAI
                 return;
             }
 
-            if(!Vorpil->isInCombat() || Vorpil->isDead())
+            if(!Vorpil->IsInCombat() || Vorpil->IsDead())
             {
                 me->DealDamage(me, me->GetMaxHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
                 return;
@@ -197,7 +197,7 @@ struct boss_grandmaster_vorpilAI : public ScriptedAI
             for (int i = 0;i < 5; i ++)
             {
                 Unit *Portal = Unit::GetUnit((*me), PortalsGuid[i]);
-                if (Portal && Portal->isAlive())
+                if (Portal && Portal->IsAlive())
                     Portal->DealDamage(Portal, Portal->GetHealth(), DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
                 PortalsGuid[i] = 0;
             }
@@ -248,7 +248,7 @@ struct boss_grandmaster_vorpilAI : public ScriptedAI
 
     void MoveInLineOfSight(Unit *who)
     {
-        if(who && !me->getVictim() && me->canStartAttack(who))
+        if(who && !me->GetVictim() && me->canStartAttack(who))
             AttackStart(who);
         if (!Intro && who && me->IsWithinLOSInMap(who)&& me->IsWithinDistInMap(who, 100) && me->IsHostileTo(who))
         {
@@ -285,7 +285,7 @@ struct boss_grandmaster_vorpilAI : public ScriptedAI
             Map::PlayerList const &PlayerList = map->GetPlayers();
             for(Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
                 if (Player* i_pl = i->getSource())
-                    if (i_pl->isAlive() && !i_pl->HasAura(SPELL_BANISH,0) && !i_pl->isGameMaster())
+                    if (i_pl->IsAlive() && !i_pl->HasAura(SPELL_BANISH,0) && !i_pl->IsGameMaster())
                         i_pl->TeleportTo(me->GetMapId(), VorpilPosition[0],VorpilPosition[1],VorpilPosition[2], 0, TELE_TO_NOT_LEAVE_COMBAT);
 
             me->NearTeleportTo(VorpilPosition[0],VorpilPosition[1],VorpilPosition[2],me->GetOrientation());

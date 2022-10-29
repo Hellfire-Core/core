@@ -102,14 +102,14 @@ struct boss_noxxionAI : public ScriptedAI
         ToxicVolley_Timer -= diff;
         if (ToxicVolley_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_TOXICVOLLEY);
+            DoCast(m_creature->GetVictim(),SPELL_TOXICVOLLEY);
             ToxicVolley_Timer += 9000;
         }
 
         Uppercut_Timer -= diff;
         if (Uppercut_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_UPPERCUT);
+            DoCast(m_creature->GetVictim(),SPELL_UPPERCUT);
             Uppercut_Timer += 12000;
         }
 
@@ -126,11 +126,11 @@ struct boss_noxxionAI : public ScriptedAI
                 m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                 // Invisible Model
                 m_creature->SetUInt32Value(UNIT_FIELD_DISPLAYID, 11686);
-                SummonAdds(m_creature->getVictim());
-                SummonAdds(m_creature->getVictim());
-                SummonAdds(m_creature->getVictim());
-                SummonAdds(m_creature->getVictim());
-                SummonAdds(m_creature->getVictim());
+                SummonAdds(m_creature->GetVictim());
+                SummonAdds(m_creature->GetVictim());
+                SummonAdds(m_creature->GetVictim());
+                SummonAdds(m_creature->GetVictim());
+                SummonAdds(m_creature->GetVictim());
                 Invisible = true;
                 Invisible_Timer = 15000;
 

@@ -180,7 +180,7 @@ void BattleGroundEY::Update(uint32 diff)
         }
 
 
-        if (Exploiter && Exploiter->isAlive())
+        if (Exploiter && Exploiter->IsAlive())
         {
             if (uWalkingDead.Expired(diff))
             {
@@ -190,7 +190,7 @@ void BattleGroundEY::Update(uint32 diff)
             }
 
         }
-        else if (Exploiter && !Exploiter->isAlive())
+        else if (Exploiter && !Exploiter->IsAlive())
         {
             Exploiter->RepopAtGraveyard();
 
@@ -437,7 +437,7 @@ void BattleGroundEY::HandleAreaTrigger(Player *Source, uint32 Trigger)
     if (GetStatus() != STATUS_IN_PROGRESS)
         return;
 
-    if (!Source->isAlive())                                  //hack code, must be removed later
+    if (!Source->IsAlive())                                  //hack code, must be removed later
         return;
 
     switch (Trigger)

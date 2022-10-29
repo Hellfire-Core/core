@@ -170,7 +170,7 @@ void instance_karazhan::OnCreatureCreate(Creature *creature, uint32 entry)
         case 16179: case 16180: case 16181:
             AnimalBossGUID[creature->GetEntry() - 16179] = creature->GetGUID();
             creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-            creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
             creature->SetVisibility(VISIBILITY_OFF);
             creature->SetReactState(REACT_PASSIVE);
             break;
@@ -481,7 +481,7 @@ void instance_karazhan::Update(uint32 diff)
             for (std::list<uint64>::iterator itr = animalBossTrashList.begin(); itr != animalBossTrashList.end(); itr++)
             {
                 Creature* tcre = GetCreature(*itr);
-                if (tcre && tcre->isAlive())
+                if (tcre && tcre->IsAlive())
                 {
                     found = true;
                     break;
@@ -491,10 +491,10 @@ void instance_karazhan::Update(uint32 diff)
             if (!found)
             {
                 Creature* boss = GetCreature(AnimalBossGUID[urand(0, 2)]);
-                if (boss && boss->isAlive())
+                if (boss && boss->IsAlive())
                 {
                     boss->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                    boss->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                    boss->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                     boss->SetVisibility(VISIBILITY_ON);
                     boss->SetReactState(REACT_AGGRESSIVE);
                     AnimalBossCheck = 0;

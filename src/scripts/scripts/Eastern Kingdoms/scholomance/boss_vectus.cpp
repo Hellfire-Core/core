@@ -64,7 +64,7 @@ struct boss_vectusAI : public ScriptedAI
         BlastWave_Timer -= diff;
         if (BlastWave_Timer <= diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_BLASTWAVE);
+            DoCast(m_creature->GetVictim(),SPELL_BLASTWAVE);
             BlastWave_Timer += 12000;
         }
 

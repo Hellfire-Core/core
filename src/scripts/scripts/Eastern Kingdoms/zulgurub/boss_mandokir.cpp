@@ -101,7 +101,7 @@ struct boss_mandokirAI : public ScriptedAI
 
                 if (pInstance)
                     if (Unit* Jindo = Unit::GetUnit(*me, pInstance->GetData64(DATA_JINDO)))
-                        if (Jindo->isAlive())
+                        if (Jindo->IsAlive())
                             DoScriptText(SAY_GRATS_JINDO, Jindo);
 
                 DoCast(me, SPELL_LEVEL_UP, true);
@@ -145,7 +145,7 @@ struct boss_mandokirAI : public ScriptedAI
             {
                 case EVENT_CAST_CLEAVE:
                 {
-                    DoCast(me->getVictim(), SPELL_CLEAVE);
+                    DoCast(me->GetVictim(), SPELL_CLEAVE);
                     events.ScheduleEvent(EVENT_CAST_CLEAVE, 7000);
                     break;
                 }
@@ -158,16 +158,16 @@ struct boss_mandokirAI : public ScriptedAI
                 case EVENT_CAST_FEAR:
                 {
                     if (FindAllPlayersInRange(NOMINAL_MELEE_RANGE).size() >= 2)
-                        DoCast(me->getVictim(), SPELL_FEAR);
+                        DoCast(me->GetVictim(), SPELL_FEAR);
 
                     events.ScheduleEvent(EVENT_CAST_FEAR, 4000);
                     break;
                 }
                 case EVENT_CAST_MORTAL_STRIKE:
                 {
-                    if (me->getVictim() && me->getVictim()->HealthBelowPct(50))
+                    if (me->GetVictim() && me->GetVictim()->HealthBelowPct(50))
                     {
-                        DoCast(m_creature->getVictim(), SPELL_MORTAL_STRIKE);
+                        DoCast(m_creature->GetVictim(), SPELL_MORTAL_STRIKE);
                         events.ScheduleEvent(EVENT_CAST_MORTAL_STRIKE, 15000);
                     }
                     else
@@ -209,7 +209,7 @@ struct boss_mandokirAI : public ScriptedAI
                         Position currentPos;
                         target->GetPosition(currentPos);
 
-                        if (tPos != currentPos && target->isAlive() && target->isInCombat())
+                        if (tPos != currentPos && target->IsAlive() && target->IsInCombat())
                         {
                             if (me->IsWithinMeleeRange(target))
                             {
@@ -259,7 +259,7 @@ struct mob_ohganAI : public ScriptedAI
 
         if (uint64 MandokirGUID = me->GetInstanceData()->GetData64(DATA_MANDOKIR))
             if (Unit* Mandokir = me->GetUnit(MandokirGUID))
-                if (Mandokir->isAlive() && Mandokir->isInCombat())
+                if (Mandokir->IsAlive() && Mandokir->IsInCombat())
                     dynamic_cast<boss_mandokirAI*>(Mandokir->ToCreature()->AI())->DoAction(boss_mandokirAI::EVENT_ENRAGE);
     }
 
@@ -270,7 +270,7 @@ struct mob_ohganAI : public ScriptedAI
 
         if (SunderArmor_Timer.Expired(diff))
         {
-            DoCast(m_creature->getVictim(), SPELL_SUNDERARMOR);
+            DoCast(m_creature->GetVictim(), SPELL_SUNDERARMOR);
             SunderArmor_Timer = 10000 + rand()%5000;
         }
 

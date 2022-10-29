@@ -208,13 +208,13 @@ struct npc_sethir_the_ancientAI : public ScriptedAI
 
     void MoveInLineOfSight(Unit *who)
     {
-        if (!me->isInCombat() && !pause_say && me->IsWithinDistInMap(who, 30) && me->IsHostileTo(who) && who->HasAuraType(SPELL_AURA_MOD_STEALTH))
+        if (!me->IsInCombat() && !pause_say && me->IsWithinDistInMap(who, 30) && me->IsHostileTo(who) && who->HasAuraType(SPELL_AURA_MOD_STEALTH))
         {
             me->Say("I know you are there, rogue. Leave my home or join the others at the bottom of the World Tree!", LANG_UNIVERSAL, 0);
             pause_say = true;
             temp = 60000;
         }
-        //if (!me->isInCombat() && me->IsWithinDistInMap(who, 30) && me->IsHostileTo(who)) AttackStart(who);
+        //if (!me->IsInCombat() && me->IsWithinDistInMap(who, 30) && me->IsHostileTo(who)) AttackStart(who);
         ScriptedAI::MoveInLineOfSight(who);
     }
 
@@ -242,7 +242,7 @@ struct npc_sethir_the_ancientAI : public ScriptedAI
                 for (int i = 1; i <= 6; i++)
                 {
                     Creature * tmpC = me->SummonCreature(6911, pos.x, pos.y, pos.z, pos.o, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 3000);
-                    tmpC->AI()->AttackStart(me->getVictim());
+                    tmpC->AI()->AttackStart(me->GetVictim());
                 }
 
                 Timer = 0;
@@ -288,7 +288,7 @@ struct npc_engineer_spark_overgrindAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if( !me->isInCombat() )
+        if( !me->IsInCombat() )
         {
             Emote_Timer -= diff;
             if (Emote_Timer <= diff)
@@ -305,7 +305,7 @@ struct npc_engineer_spark_overgrindAI : public ScriptedAI
         Dynamite_Timer -= diff;
         if (Dynamite_Timer <= diff)
         {
-            DoCast(me->getVictim(), SPELL_DYNAMITE);
+            DoCast(me->GetVictim(), SPELL_DYNAMITE);
             Dynamite_Timer += 8000;
         }
 
@@ -756,7 +756,7 @@ bool go_ravager_cage(Player* pPlayer, GameObject* pGo)
     {
         if (Creature* ravager = GetClosestCreatureWithEntry(pGo, NPC_DEATH_RAVAGER, 5.0f))
         {
-            ravager->RemoveFlag(UNIT_FIELD_FLAGS,UNIT_FLAG_NON_ATTACKABLE);
+            ravager->RemoveFlag(UNIT_FIELD_FLAGS,UNIT_FLAG_SPAWNING);
             ravager->SetReactState(REACT_AGGRESSIVE);
             ravager->AI()->AttackStart(pPlayer);
         }
@@ -776,7 +776,7 @@ struct npc_death_ravagerAI : public ScriptedAI
         RendTimer = 30000;
         EnragingBiteTimer = 20000;
 
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         me->SetReactState(REACT_PASSIVE);
     }
 
@@ -788,7 +788,7 @@ struct npc_death_ravagerAI : public ScriptedAI
         RendTimer -= diff;
         if (RendTimer <= diff)
         {
-            DoCast(me->getVictim(), SPELL_REND);
+            DoCast(me->GetVictim(), SPELL_REND);
             RendTimer += 30000;
         }
 
@@ -796,7 +796,7 @@ struct npc_death_ravagerAI : public ScriptedAI
         EnragingBiteTimer -= diff;
         if (EnragingBiteTimer <= diff)
         {
-            DoCast(me->getVictim(), SPELL_ENRAGING_BITE);
+            DoCast(me->GetVictim(), SPELL_ENRAGING_BITE);
             EnragingBiteTimer += 15000;
         }
        

@@ -216,7 +216,7 @@ void Creature::RemoveFromWorld()
 void Creature::DisappearAndDie()
 {
     DestroyForNearbyPlayers();
-    if (isAlive())
+    if (IsAlive())
         setDeathState(JUST_DIED);
     RemoveCorpse();
 }
@@ -238,7 +238,7 @@ void Creature::SearchFormation()
 
 void Creature::RemoveCorpse()
 {
-    if (getDeathState()!=CORPSE && !m_isDeadByDefault || getDeathState()!=ALIVE && m_isDeadByDefault)
+    if (GetDeathState()!=CORPSE && !m_isDeadByDefault || GetDeathState()!=ALIVE && m_isDeadByDefault)
         return;
 
     setDeathState(DEAD);
@@ -247,10 +247,10 @@ void Creature::RemoveCorpse()
     m_deathTimer = 0;
     loot.clear();
     // hack for quick respawns 
-    if (sWorld.GetActiveSessionCount() > 2000 && getLevel() <= 50 && GetInstanceId() == 0 &&
+    if (sWorld.GetActiveSessionCount() > 2000 && GetLevel() <= 50 && GetInstanceId() == 0 &&
         m_respawnDelay <= 600)
     {
-        uint32 delay = std::min(m_respawnDelay, (30 + getLevel() * 9));
+        uint32 delay = std::min(m_respawnDelay, (30 + GetLevel() * 9));
         m_respawnTime = time(NULL) + delay;
     }
     else
@@ -561,7 +561,7 @@ void Creature::Update(uint32 update_diff, uint32 diff)
 
             // creature can be dead after Unit::Update call
             // CORPSE/DEAD state will processed at next tick (in other case death timer will be updated unexpectedly)
-            if (!isAlive())
+            if (!IsAlive())
                 break;
 
             // if creature is charmed, switch to charmed AI
@@ -592,7 +592,7 @@ void Creature::Update(uint32 update_diff, uint32 diff)
             // Trentone says: Some scripts make creatures kill themself - and then they're not in combat - thus dynamicflags are set to normal - which should not happen
             // creature can be dead after UpdateAI call (example: Kalecgos / Illidan)
             // CORPSE/DEAD state will processed at next tick (in other case death timer will be updated unexpectedly)
-            if (!isAlive())
+            if (!IsAlive())
                 break;
 
             if (m_regenTimer > 0)
@@ -606,7 +606,7 @@ void Creature::Update(uint32 update_diff, uint32 diff)
             if (m_regenTimer != 0)
                 break;
 
-            if (!isInCombat())
+            if (!IsInCombat())
             {
                 if (HasFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_OTHER_TAGGER))
                     SetUInt32Value(UNIT_DYNAMIC_FLAGS, GetCreatureInfo()->dynamicflags);
@@ -627,7 +627,7 @@ void Creature::Update(uint32 update_diff, uint32 diff)
 
     if (m_aiReinitializeCheckTimer <= update_diff)
     {
-        if (!isInCombat() && !IsInEvadeMode() && !isCharmed() && m_aiInitializeTime < CreatureAIReInitialize[GetEntry()])
+        if (!IsInCombat() && !IsInEvadeMode() && !isCharmed() && m_aiInitializeTime < CreatureAIReInitialize[GetEntry()])
             AIM_Initialize();
 
         m_aiReinitializeCheckTimer = 10000;
@@ -653,7 +653,7 @@ void Creature::RegenerateMana()
     uint32 addvalue = 0;
 
     // Combat and any controlled creature
-    if (isInCombat() || GetCharmerOrOwnerGUID())
+    if (IsInCombat() || GetCharmerOrOwnerGUID())
     {
         if (!IsUnderLastManaUseEffect())
         {
@@ -787,7 +787,7 @@ bool Creature::isCanTrainingOf(Player* pPlayer, bool msg) const
     switch (GetCreatureInfo()->trainer_type)
     {
         case TRAINER_TYPE_CLASS:
-            if (pPlayer->getClass()!=GetCreatureInfo()->classNum)
+            if (pPlayer->GetClass()!=GetCreatureInfo()->classNum)
             {
                 if (msg)
                 {
@@ -809,7 +809,7 @@ bool Creature::isCanTrainingOf(Player* pPlayer, bool msg) const
             }
             break;
         case TRAINER_TYPE_PETS:
-            if (pPlayer->getClass()!=CLASS_HUNTER)
+            if (pPlayer->GetClass()!=CLASS_HUNTER)
             {
                 pPlayer->PlayerTalkClass->ClearMenus();
                 pPlayer->PlayerTalkClass->SendGossipMenu(3620,GetGUID());
@@ -817,7 +817,7 @@ bool Creature::isCanTrainingOf(Player* pPlayer, bool msg) const
             }
             break;
         case TRAINER_TYPE_MOUNTS:
-            if (GetCreatureInfo()->race && pPlayer->getRace() != GetCreatureInfo()->race)
+            if (GetCreatureInfo()->race && pPlayer->GetRace() != GetCreatureInfo()->race)
             {
                 if (msg)
                 {
@@ -887,9 +887,9 @@ bool Creature::isCanInteractWithBattleMaster(Player* pPlayer, bool msg) const
 
 bool Creature::isCanTrainingAndResetTalentsOf(Player* pPlayer) const
 {
-    return pPlayer->getLevel() >= 10
+    return pPlayer->GetLevel() >= 10
         && GetCreatureInfo()->trainer_type == TRAINER_TYPE_CLASS
-        && pPlayer->getClass() == GetCreatureInfo()->classNum;
+        && pPlayer->GetClass() == GetCreatureInfo()->classNum;
 }
 
 void Creature::prepareGossipMenu(Player *pPlayer,uint32 gossipid)
@@ -936,7 +936,7 @@ void Creature::prepareGossipMenu(Player *pPlayer,uint32 gossipid)
                         cantalking=false;                   // added in special mode
                         break;
                     case GOSSIP_OPTION_SPIRITHEALER:
-                        if (!pPlayer->isDead())
+                        if (!pPlayer->IsDead())
                             cantalking=false;
                         break;
                     case GOSSIP_OPTION_VENDOR:
@@ -1072,7 +1072,7 @@ void Creature::OnGossipSelect(Player* player, uint32 option)
             sOutdoorPvPMgr.HandleGossipOption(player, GetGUID(), option);
             break;
         case GOSSIP_OPTION_SPIRITHEALER:
-            if (player->isDead())
+            if (player->IsDead())
                 CastSpell(this,17251,true,NULL,NULL,player->GetGUID());
             break;
         case GOSSIP_OPTION_QUESTGIVER:
@@ -1568,7 +1568,7 @@ bool Creature::LoadFromDB(uint32 guid, Map *map)
     m_creatureData = data;
 
     // check if it is rabbit day
-    if (isAlive() && sWorld.getConfig(CONFIG_RABBIT_DAY))
+    if (IsAlive() && sWorld.getConfig(CONFIG_RABBIT_DAY))
     {
         time_t rabbit_day = time_t(sWorld.getConfig(CONFIG_RABBIT_DAY));
         tm rabbit_day_tm = *localtime(&rabbit_day);
@@ -1683,7 +1683,7 @@ bool Creature::canSeeOrDetect(Unit const* u, WorldObject const* viewPoint, bool 
         return false;
 
     // all dead creatures/players not visible for any creatures
-    if (!u->isAlive() || !isAlive())
+    if (!u->IsAlive() || !IsAlive())
         return false;
 
     // Always can see self
@@ -1865,7 +1865,7 @@ void Creature::setDeathState(DeathState s)
         SetUInt32Value(UNIT_NPC_FLAGS, cinfo->npcflag);
         SetUInt32Value(UNIT_FIELD_FLAGS, cinfo->unit_flags);
 
-        clearUnitState(UNIT_STAT_ALL_STATE);
+        ClearUnitState(UNIT_STAT_ALL_STATE);
         GetMotionMaster()->Initialize();
 
         SetMeleeDamageSchool(SpellSchools(cinfo->dmgschool));
@@ -1884,7 +1884,7 @@ void Creature::Respawn()
     UnitVisibility currentVis = GetVisibility();
     SetVisibility(VISIBILITY_RESPAWN);
 
-    if (getDeathState()==DEAD)
+    if (GetDeathState()==DEAD)
     {
         if (m_DBTableGuid)
             sObjectMgr.SaveCreatureRespawnTime(m_DBTableGuid,GetInstanceId(),0);
@@ -1905,7 +1905,7 @@ void Creature::Respawn()
             setDeathState(JUST_DIED);
             SetHealth(0);
             GetUnitStateMgr().InitDefaults(true);
-            clearUnitState(UNIT_STAT_ALL_STATE);
+            ClearUnitState(UNIT_STAT_ALL_STATE);
             LoadCreaturesAddon(true);
         }
         else
@@ -1931,7 +1931,7 @@ void Creature::ForcedDespawn(uint32 timeMSToDespawn)
         return;
     }
 
-    if (isAlive())
+    if (IsAlive())
         setDeathState(JUST_DIED);
 
     RemoveCorpse();
@@ -2077,15 +2077,15 @@ SpellEntry const *Creature::reachWithSpellCure(Unit *pVictim)
 bool Creature::IsVisibleInGridForPlayer(Player const* pl) const
 {
     // gamemaster in GM mode see all, including ghosts
-    if (pl->isGameMaster())
+    if (pl->IsGameMaster())
         return true;
 
     // Live player (or with not release body see live creatures or death creatures with corpse disappearing time > 0
-    if (pl->isAlive() || pl->GetDeathTimer() > 0)
+    if (pl->IsAlive() || pl->GetDeathTimer() > 0)
     {
-        if (GetEntry() == VISUAL_WAYPOINT && !pl->isGameMaster())
+        if (GetEntry() == VISUAL_WAYPOINT && !pl->IsGameMaster())
             return false;
-        return isAlive() || (m_deathTimer > time(NULL)) || m_isDeadByDefault && m_deathState==CORPSE;
+        return IsAlive() || (m_deathTimer > time(NULL)) || m_isDeadByDefault && m_deathState==CORPSE;
     }
 
     // Dead player see creatures near own corpse
@@ -2111,10 +2111,10 @@ bool Creature::IsVisibleInGridForPlayer(Player const* pl) const
 
 void Creature::DoFleeToGetAssistance()
 {
-    if (!getVictim())
+    if (!GetVictim())
         return;
 
-    if (HasAuraType(SPELL_AURA_PREVENTS_FLEEING) || hasUnitState(UNIT_STAT_NOT_MOVE))
+    if (HasAuraType(SPELL_AURA_PREVENTS_FLEEING) || HasUnitState(UNIT_STAT_NOT_MOVE))
         return;
 
     float radius = sWorld.getConfig(CONFIG_CREATURE_FAMILY_FLEE_RADIUS);
@@ -2122,7 +2122,7 @@ void Creature::DoFleeToGetAssistance()
     {
         Creature* pCreature = NULL;
 
-        Hellground::NearestAssistCreatureInCreatureRangeCheck u_check(this, getVictim(), radius);
+        Hellground::NearestAssistCreatureInCreatureRangeCheck u_check(this, GetVictim(), radius);
         Hellground::ObjectLastSearcher<Creature, Hellground::NearestAssistCreatureInCreatureRangeCheck> searcher(pCreature, u_check);
 
         Cell::VisitGridObjects(this, searcher, radius);
@@ -2131,7 +2131,7 @@ void Creature::DoFleeToGetAssistance()
         UpdateSpeed(MOVE_RUN, false);
 
         if (!pCreature)
-            SetFeared(true, getVictim(), sWorld.getConfig(CONFIG_CREATURE_FAMILY_FLEE_DELAY));
+            SetFeared(true, GetVictim(), sWorld.getConfig(CONFIG_CREATURE_FAMILY_FLEE_DELAY));
         else
             GetMotionMaster()->MoveSeekAssistance(pCreature->GetPositionX(), pCreature->GetPositionY(), pCreature->GetPositionZ());
     }
@@ -2152,12 +2152,12 @@ Unit* Creature::SelectNearestTarget(float dist) const
 
 void Creature::CallAssistance()
 {
-    if (!getVictim() || isPet() || isCharmed())
+    if (!GetVictim() || isPet() || isCharmed())
         return;
 
     if (CreatureGroup *formation = GetFormation())
     {
-        formation->MemberAttackStart(this, getVictim());
+        formation->MemberAttackStart(this, GetVictim());
     }
     else
     {
@@ -2171,7 +2171,7 @@ void Creature::CallAssistance()
         {
             std::list<Creature*> assistList;
             {
-                Hellground::AnyAssistCreatureInRangeCheck u_check(this, getVictim(), radius);
+                Hellground::AnyAssistCreatureInRangeCheck u_check(this, GetVictim(), radius);
                 Hellground::ObjectListSearcher<Creature, Hellground::AnyAssistCreatureInRangeCheck> searcher(assistList, u_check);
 
                 Cell::VisitGridObjects(this, searcher, radius);
@@ -2194,10 +2194,10 @@ void Creature::CallAssistance()
 
 void Creature::CallForHelp(float fRadius)
 {
-    if (fRadius <= 0.0f || !getVictim() || isPet() || isCharmed())
+    if (fRadius <= 0.0f || !GetVictim() || isPet() || isCharmed())
         return;
 
-    Hellground::CallOfHelpCreatureInRangeDo u_do(this, getVictim(), fRadius);
+    Hellground::CallOfHelpCreatureInRangeDo u_do(this, GetVictim(), fRadius);
     Hellground::ObjectWorker<Creature, Hellground::CallOfHelpCreatureInRangeDo> worker(u_do);
 
     Cell::VisitGridObjects(this, worker, fRadius);
@@ -2210,11 +2210,11 @@ bool Creature::CanAssistTo(const Unit* u, const Unit* enemy, bool checkfaction /
         return false;
 
     // we don't need help from zombies :)
-    if (!isAlive())
+    if (!IsAlive())
         return false;
 
     // skip fighting creature
-    if (isInCombat())
+    if (IsInCombat())
         return false;
 
     // only from same creature faction
@@ -2394,10 +2394,10 @@ void Creature::SetInCombatWithZone()
     {
         if (Player* pPlayer = i->getSource())
         {
-            if (pPlayer->isGameMaster())
+            if (pPlayer->IsGameMaster())
                 continue;
 
-            if (pPlayer->isAlive())
+            if (pPlayer->IsAlive())
             {
                 pPlayer->SetInCombatWith(this);
                 AddThreat(pPlayer, 0.0f);
@@ -2512,7 +2512,7 @@ uint32 Creature::getLevelForTarget(Unit const* target) const
     if (!isWorldBoss())
         return Unit::getLevelForTarget(target);
 
-    uint32 level = target->getLevel()+sWorld.getConfig(CONFIG_WORLD_BOSS_LEVEL_DIFF);
+    uint32 level = target->GetLevel()+sWorld.getConfig(CONFIG_WORLD_BOSS_LEVEL_DIFF);
     if (level < 1)
         return 1;
     if (level > 255)
@@ -2673,7 +2673,7 @@ void Creature::SetLevitate(bool enable)
     else
     {
         RemoveUnitMovementFlag(MOVEFLAG_LEVITATING);
-        clearUnitState(UNIT_STAT_IGNORE_PATHFINDING);
+        ClearUnitState(UNIT_STAT_IGNORE_PATHFINDING);
     }
 
     WorldPacket data(enable ? SMSG_SPLINE_MOVE_SET_FLYING : SMSG_SPLINE_MOVE_UNSET_FLYING, 9);
@@ -2703,13 +2703,13 @@ bool Creature::CanFly() const
 
 bool AttackResumeEvent::Execute(uint64 /*e_time*/, uint32 /*p_time*/)
 {
-    if (!m_owner.isAlive())
+    if (!m_owner.IsAlive())
         return true;
 
-    if (m_owner.hasUnitState(UNIT_STAT_CAN_NOT_REACT) || m_owner.HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED))
+    if (m_owner.HasUnitState(UNIT_STAT_CAN_NOT_REACT) || m_owner.HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED))
         return true;
 
-    Unit* victim = m_owner.getVictim();
+    Unit* victim = m_owner.GetVictim();
     if (!victim || !victim->IsInMap(&m_owner))
         return true;
 
@@ -2758,7 +2758,7 @@ bool RestoreReactState::Execute(uint64 e_time, uint32 p_time)
     if (_owner.ToPet())
         return true;
 
-    _owner.clearUnitState(UNIT_STAT_IGNORE_ATTACKERS);
+    _owner.ClearUnitState(UNIT_STAT_IGNORE_ATTACKERS);
     _owner.SetReactState(_oldState);
     return true;
 }

@@ -299,7 +299,7 @@ struct npc_floonAI : public ScriptedAI
 
         if (Silence_Timer.Expired(diff))
         {
-            DoCast(me->getVictim(),SPELL_SILENCE);
+            DoCast(me->GetVictim(),SPELL_SILENCE);
             Silence_Timer = 30000;
         }
 
@@ -311,7 +311,7 @@ struct npc_floonAI : public ScriptedAI
 
         if (Frostbolt_Timer.Expired(diff))
         {
-            DoCast(me->getVictim(),SPELL_FROSTBOLT);
+            DoCast(me->GetVictim(),SPELL_FROSTBOLT);
             Frostbolt_Timer = 5000;
         }
 
@@ -692,7 +692,7 @@ struct mob_terokkAI : public ScriptedAI
 
         if (Cleave_Timer.Expired(diff))
         {
-            DoCast(me->getVictim(), SPELL_CLEAVE);
+            DoCast(me->GetVictim(), SPELL_CLEAVE);
             Cleave_Timer = 7000 + rand() % 2000;
         }
 
@@ -701,7 +701,7 @@ struct mob_terokkAI : public ScriptedAI
             if (ChosenOneActive_Timer.Expired(diff))
             {
                 if(me->getVictimGUID() == ChosenOneTarget)
-                    me->AddThreat(me->getVictim(), -500000.0f);
+                    me->AddThreat(me->GetVictim(), -500000.0f);
                 me->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_MOD_TAUNT, false);
                 ChosenOneActive_Timer = 0;
                 ChosenOneTarget = 0;
@@ -1083,7 +1083,7 @@ struct npc_letollAI : public npc_escortAI
         {
             float fAngle = uiCount < MAX_RESEARCHER ? M_PI/MAX_RESEARCHER - (uiCount*2*M_PI/MAX_RESEARCHER) : 0.0f;
 
-            if ((*itr)->isAlive() && !(*itr)->isInCombat())
+            if ((*itr)->IsAlive() && !(*itr)->IsInCombat())
                 (*itr)->GetMotionMaster()->MoveFollow(me, 2.5f, fAngle);
 
             ++uiCount;
@@ -1104,7 +1104,7 @@ struct npc_letollAI : public npc_escortAI
                     continue;
                 }
 
-                if ((*itr)->isAlive() && (*itr)->IsWithinDistInMap(me, 20.0f))
+                if ((*itr)->IsAlive() && (*itr)->IsWithinDistInMap(me, 20.0f))
                     return (*itr);
             }
         }
@@ -1174,7 +1174,7 @@ struct npc_letollAI : public npc_escortAI
 
     void EnterCombat(Unit* who)
     {
-        if (who->isInCombat() && who->GetTypeId() == TYPEID_UNIT && who->GetEntry() == NPC_BONE_SIFTER)
+        if (who->IsInCombat() && who->GetTypeId() == TYPEID_UNIT && who->GetEntry() == NPC_BONE_SIFTER)
             DoScriptText(SAY_LE_HELP_HIM, me);
 
         for (std::list<Creature*>::iterator itr = ResearchersList.begin(); itr != ResearchersList.end(); ++itr)
@@ -1657,7 +1657,7 @@ struct npc_razorthorn_ravagerAI : public ScriptedAI
                 return;
             else
             {
-                if (me->getVictim())
+                if (me->GetVictim())
                     return;
                 if (me->canStartAttack(who))
                 {
@@ -1687,7 +1687,7 @@ struct npc_razorthorn_ravagerAI : public ScriptedAI
     {
         if(me->isCharmed() && me->GetCharmer())
         {
-            if(me->HasReactState(REACT_DEFENSIVE) && me->GetCharmer()->isInCombat())
+            if(me->HasReactState(REACT_DEFENSIVE) && me->GetCharmer()->IsInCombat())
             {
                 me->NeedChangeAI = true;
                 me->IsAIEnabled = false;
@@ -1757,20 +1757,20 @@ struct npc_razorthorn_ravagerAI : public ScriptedAI
         if(RavageTimer.Expired(diff))
         {
             if(urand(0,3))
-                AddSpellToCast(me->getVictim(), SPELL_RAVAGE);
+                AddSpellToCast(me->GetVictim(), SPELL_RAVAGE);
             RavageTimer = urand(17000, 20000);
         }
 
         if(RendTimer.Expired(diff))
         {
             if(urand(0,3))
-                AddSpellToCast(me->getVictim(), SPELL_REND);
+                AddSpellToCast(me->GetVictim(), SPELL_REND);
             RendTimer = urand(15000, 20000);
         }
 
         if(RavageTauntTimer.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(), SPELL_RAVAGER_TAUNT);
+            AddSpellToCast(me->GetVictim(), SPELL_RAVAGER_TAUNT);
             RavageTauntTimer = urand(10000, 35000);
         }
 
@@ -2071,12 +2071,12 @@ struct npc_akunoAI : public npc_escortAI
     void UpdateAI(const uint32 diff)
     {
         npc_escortAI::UpdateAI(diff);
-        if (!me->getVictim())
+        if (!me->GetVictim())
             return;
 
         if (chainLightningTimer.Expired(diff))
         {
-            AddSpellToCast(me->getVictim(), SPELL_AKUNO_CHAIN_LIGHTNING);
+            AddSpellToCast(me->GetVictim(), SPELL_AKUNO_CHAIN_LIGHTNING);
             chainLightningTimer = urand(6000, 12000);
         }
 
@@ -2173,7 +2173,7 @@ struct npc_empoorAI : public ScriptedAI
 
         if (ShockTimer.Expired(diff))
         {
-            DoCast(me->getVictim(),SPELL_FROST_SHOCK);
+            DoCast(me->GetVictim(),SPELL_FROST_SHOCK);
             ShockTimer = 15000;
         }
 
@@ -2351,7 +2351,7 @@ bool go_veil_skith_cage(Player* player, GameObject* go)
         {
             for (std::list<Creature*>::iterator itr = ChildrenList.begin(); itr != ChildrenList.end(); ++itr)
             {
-                if ((*itr)->isAlive())
+                if ((*itr)->IsAlive())
                 {
                     if (npc_captive_childAI* escortAI = CAST_AI(npc_captive_childAI, (*itr)->AI()))
                     {

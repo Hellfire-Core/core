@@ -134,7 +134,7 @@ struct instance_magisters_terrace : public ScriptedInstance
                     return Encounters[4];
                 for (std::list<uint64>::iterator itr = TrashGuids.begin(); itr != TrashGuids.end(); itr++)
                     if (Creature* trash = GetCreature(*itr))
-                        if (trash->isAlive() && !trash->isCharmed())
+                        if (trash->IsAlive() && !trash->isCharmed())
                             return NOT_STARTED;
                 return SPECIAL;
             }

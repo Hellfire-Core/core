@@ -25,6 +25,7 @@
 #include "Platform/Define.h"
 #include "Path.h"
 #include "SharedDefines.h"
+#include "SpellAuraDefines.h"
 #include <map>
 #include <set>
 #include <vector>
@@ -792,6 +793,19 @@ struct SpellEntry
         return false;
     }
 
+    bool IsSpellAppliesAura() const
+    {
+        for (uint8 i = 0; i < 3; ++i)
+            if (EffectApplyAuraName[i])
+                return true;
+        return false;
+    }
+
+    bool IsCharmSpell() const
+    {
+        return HasApplyAura(SPELL_AURA_MOD_CHARM) || HasApplyAura(SPELL_AURA_MOD_POSSESS);
+    }
+
     bool IsDestTargetEffect(uint8 eff) const
     {
         switch (EffectImplicitTargetA[eff])
@@ -868,6 +882,10 @@ struct SpellEntry
     inline bool HasAttribute(SpellAttributesEx4 attribute) const { return (AttributesEx4 & attribute) != 0; }
     inline bool HasAttribute(SpellAttributesEx5 attribute) const { return (AttributesEx5 & attribute) != 0; }
     inline bool HasAttribute(SpellAttributesEx6 attribute) const { return (AttributesEx6 & attribute) != 0; }
+
+    bool HasSpellInterruptFlag(SpellInterruptFlags flag) const { return InterruptFlags & flag; }
+    bool HasAuraInterruptFlag(SpellAuraInterruptFlags flag) const { return AuraInterruptFlags & flag; }
+    bool HasChannelInterruptFlag(SpellAuraInterruptFlags flag) const { return ChannelInterruptFlags & flag; }
 };
 
 typedef std::set<uint32> SpellCategorySet;
@@ -983,6 +1001,8 @@ struct SummonPropertiesEntry
     uint32  Flags;                                          // 5, enum SummonPropFlags
 };
 */
+
+#define MAX_TALENT_RANK 5
 
 struct TalentEntry
 {

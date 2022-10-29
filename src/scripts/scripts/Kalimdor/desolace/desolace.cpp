@@ -404,7 +404,7 @@ struct npc_magram_spectreAI : public ScriptedAI
     void Reset()
     {
         m_creature->SetWalk(true);
-        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         m_creature->SetVisibility(VISIBILITY_OFF);
         checker = 60000;
         checker.SetCurrent(urand(0, 60000));
@@ -422,7 +422,7 @@ struct npc_magram_spectreAI : public ScriptedAI
             Cell::VisitGridObjects(m_creature, checker, 50);
             if (gob)
             {
-                m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
                 m_creature->SetVisibility(VISIBILITY_ON);
                 float x, y, z;
                 gob->GetNearPoint(x, y, z, 10, 0, frand(0, 2 * M_PI));
@@ -616,7 +616,7 @@ struct npc_gizelton_caravanAI : public ScriptedAI
             {
                 Creature* rigger = me->GetCreature(members[0]);
                 Creature* cork = me->GetCreature(members[2]);
-                if (!rigger || !cork || !rigger->isAlive() || !cork->isAlive())
+                if (!rigger || !cork || !rigger->IsAlive() || !cork->IsAlive())
                 {
                     for (std::list<uint64>::iterator itr = playerGUIDs.begin(); itr != playerGUIDs.end(); itr++)
                     {
@@ -657,7 +657,7 @@ struct npc_gizelton_caravanAI : public ScriptedAI
         for (uint8 i = 0; i < 4; i++)
         {
             Creature* member = me->GetCreature(members[i]);
-            if (!member || !member->isAlive())
+            if (!member || !member->IsAlive())
                 continue;
             float dx = x + cos(pathangle) * (i*5.0f + 1.0f);
             float dy = y + sin(pathangle) * (i*5.0f + 1.0f);

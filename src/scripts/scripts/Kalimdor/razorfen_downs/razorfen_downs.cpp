@@ -137,7 +137,7 @@ struct npc_tomb_creatureAI : public ScriptedAI
         {
             if (uiWebTimer <= uiDiff)
             {
-                DoCast(m_creature->getVictim(), SPELL_WEB);
+                DoCast(m_creature->GetVictim(), SPELL_WEB);
                 uiWebTimer = urand(7000, 16000);
             }
             else
@@ -248,7 +248,7 @@ struct npc_belnistraszAI : public npc_escortAI
         if (!onplace || waves > 10)
         {
             npc_escortAI::UpdateAI(diff);
-            if (!me->getVictim() && waves > 10)
+            if (!me->GetVictim() && waves > 10)
             {
                 m_creature->SummonGameObject(GO_BELNISTRASZ_BRAZIER, 2578, 946, 53.3, 0, 0, 0, 0, 0, 30000);
                 GetPlayerForEscort()->GroupEventHappens(QUEST_BELNISTRASZ, m_creature);

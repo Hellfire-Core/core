@@ -118,7 +118,7 @@ struct boss_rage_winterchillAI : public hyjal_trashAI
         if (i == 7 && pInstance)
         {
             Unit* target = Unit::GetUnit((*m_creature), pInstance->GetData64(DATA_JAINAPROUDMOORE));
-            if (target && target->isAlive())
+            if (target && target->IsAlive())
             {
                 m_creature->AddThreat(target,0.0);
                 AttackStart(target);
@@ -216,7 +216,7 @@ struct boss_rage_winterchillAI : public hyjal_trashAI
 
         if (NovaTimer.Expired(diff))
         {
-            if(Unit *target = m_creature->getVictim())
+            if(Unit *target = m_creature->GetVictim())
                 //AddSpellToCast(target, SPELL_FROST_NOVA, true);
                 DoCast(target, SPELL_FROST_NOVA, true);
 

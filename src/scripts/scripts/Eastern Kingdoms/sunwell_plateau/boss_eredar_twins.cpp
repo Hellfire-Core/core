@@ -130,9 +130,9 @@ struct boss_sacrolashAI : public ScriptedAI
         DoCast(me, SPELL_DUAL_WIELD);
 
         if (pInstance->GetData(DATA_EREDAR_TWINS_INTRO) == DONE)
-            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         else
-            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         pInstance->SetData(DATA_EREDAR_TWINS_EVENT, NOT_STARTED);
         pInstance->SetData(DATA_SACROLASH, NOT_STARTED);
     }
@@ -225,7 +225,7 @@ struct boss_sacrolashAI : public ScriptedAI
         if(Creature* Alythess = me->GetCreature(pInstance->GetData64(DATA_ALYTHESS)))
         {
             Unit* target = Alythess->AI()->SelectUnit(SELECT_TARGET_TOPAGGRO, urand(1,5), 300.0f, true, Alythess->getVictimGUID());
-            if(target && target->isAlive())
+            if(target && target->IsAlive())
                 return target;
         }
         return NULL;
@@ -330,9 +330,9 @@ struct boss_alythessAI : public Scripted_NoMovementAI
 
         DoCast(me, SPELL_FIREFORM);
         if (pInstance->GetData(DATA_EREDAR_TWINS_INTRO) == DONE)
-            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         else
-            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
         pInstance->SetData(DATA_EREDAR_TWINS_EVENT, NOT_STARTED);
         pInstance->SetData(DATA_ALYTHESS, NOT_STARTED);
 
@@ -479,7 +479,7 @@ struct boss_alythessAI : public Scripted_NoMovementAI
         {
             
             Unit* target = Sacrolash->AI()->SelectUnit(SELECT_TARGET_TOPAGGRO, urand(1,5), 300.0f, true, Sacrolash->getVictimGUID());
-            if(target && target->isAlive())
+            if(target && target->IsAlive())
                 return target;
         }
         return NULL;
@@ -563,7 +563,7 @@ struct mob_shadow_imageAI : public ScriptedAI
 
     void AttackStart(Unit * target)
     {
-        if (me->getVictim())
+        if (me->GetVictim())
             return;
 
         me->getThreatManager().addThreat(target, 100000.0f);
@@ -608,7 +608,7 @@ struct mob_shadow_imageAI : public ScriptedAI
         
         if (ShadowfuryTimer.Expired(diff))
         {
-            if (me->IsWithinMeleeRange(me->getVictim()) && roll_chance_f(15))
+            if (me->IsWithinMeleeRange(me->GetVictim()) && roll_chance_f(15))
             {
                 AddSpellToCast(SPELL_SHADOW_FURY, CAST_NULL);
                 ShadowfuryTimer = 5000;
@@ -624,7 +624,7 @@ struct mob_shadow_imageAI : public ScriptedAI
             if (!me->IsNonMeleeSpellCast(false))
             {
                 //If we are within range melee the target
-                if (me->IsWithinMeleeRange(me->getVictim()))
+                if (me->IsWithinMeleeRange(me->GetVictim()))
                     AddSpellToCast(SPELL_DARK_STRIKE, CAST_TANK);
             }
             DarkstrikeTimer = 1000;

@@ -155,7 +155,7 @@ struct boss_skeramAI : public ScriptedAI
         if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM))
             if (target->ToPlayer())
                 if (Group* group = target->ToPlayer()->GetGroup())
-                    for (uint8 icon = 0; icon < TARGETICONCOUNT; ++icon)
+                    for (uint8 icon = 0; icon < TARGET_ICON_COUNT; ++icon)
                         group->SetTargetIcon(icon, 0);
     }
 
@@ -167,7 +167,7 @@ struct boss_skeramAI : public ScriptedAI
         if (ArcaneExplosion_Timer.Expired(diff))
         {
             if (FindAllPlayersInRange(NOMINAL_MELEE_RANGE).size() >= 5)
-                DoCast(m_creature->getVictim(), SPELL_ARCANE_EXPLOSION);
+                DoCast(m_creature->GetVictim(), SPELL_ARCANE_EXPLOSION);
             ArcaneExplosion_Timer = urand(8000, 18000);
         }
 
@@ -204,7 +204,7 @@ struct boss_skeramAI : public ScriptedAI
         }
 
         //If we are within range melee the target
-        if (m_creature->IsWithinMeleeRange(m_creature->getVictim()))
+        if (m_creature->IsWithinMeleeRange(m_creature->GetVictim()))
             DoMeleeAttackIfReady();
         else if (EarthShock_Timer.Expired(diff))
         {

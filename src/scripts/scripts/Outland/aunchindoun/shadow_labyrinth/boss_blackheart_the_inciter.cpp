@@ -125,7 +125,7 @@ struct boss_blackheart_the_inciterAI : public ScriptedAI
              for(std::list<Creature*>::iterator i = TrashList.begin(); i != TrashList.end(); ++i)
              {
                  (*i)->setActive(true);
-                 (*i)->AI()->AttackStart(me->getVictim());
+                 (*i)->AI()->AttackStart(me->GetVictim());
              }
     }
 
