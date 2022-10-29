@@ -102,6 +102,9 @@ enum SpellFacingFlags
 #define BASE_MAXDAMAGE 2.0f
 #define BASE_ATTACK_TIME 2000
 
+// No orientation check for auto attacks or spells below this distance.
+#define NO_FACING_CHECKS_DISTANCE 1.4f
+
 enum UnitBytes0Offsets : uint8
 {
     UNIT_BYTES_0_OFFSET_RACE       = 0,

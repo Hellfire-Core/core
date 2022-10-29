@@ -1349,7 +1349,7 @@ void Player::Update(uint32 update_diff, uint32 p_time)
                     }
                 }
                 //120 degrees of radiant range
-                else if (!HasInArc(2*M_PI/3, pVictim))
+                else if (!HasInArc(2*M_PI/3, pVictim) && (GetExactDistance2d(pVictim->GetPositionX(), pVictim->GetPositionY()) > NO_FACING_CHECKS_DISTANCE))
                 {
                     setAttackTimer(BASE_ATTACK,100);
                     if (m_swingErrorMsg != 2)                // send single time (client auto repeat)
@@ -1380,7 +1380,7 @@ void Player::Update(uint32 update_diff, uint32 p_time)
                 {
                     setAttackTimer(OFF_ATTACK,100);
                 }
-                else if (!HasInArc(2*M_PI/3, pVictim))
+                else if (!HasInArc(2*M_PI/3, pVictim) && (GetExactDistance2d(pVictim->GetPositionX(), pVictim->GetPositionY()) > NO_FACING_CHECKS_DISTANCE))
                 {
                     setAttackTimer(OFF_ATTACK,100);
                 }
