@@ -246,6 +246,34 @@ struct HELLGROUND_IMPORT_EXPORT LanguageDesc
 extern LanguageDesc lang_description[LANGUAGES_COUNT];
 HELLGROUND_IMPORT_EXPORT LanguageDesc const* GetLanguageDescByID(uint32 lang);
 
+struct PlayerPremadeItem
+{
+    PlayerPremadeItem(uint32 item, uint32 enchant, uint32 team) : itemId(item), enchantId(enchant), requiredTeam(team) {};
+    uint32 itemId = 0;
+    uint32 enchantId = 0;
+    uint32 requiredTeam = 0;
+};
+struct PlayerPremadeGearTemplate
+{
+    uint32 entry = 0;
+    uint8 level = 0;
+    uint8 requiredClass = 0;
+    CombatBotRoles role = ROLE_INVALID;
+    std::string name;
+    std::vector<PlayerPremadeItem> items;
+};
+struct PlayerPremadeSpecTemplate
+{
+    uint32 entry = 0;
+    uint8 level = 0;
+    uint8 requiredClass = 0;
+    CombatBotRoles role = ROLE_INVALID;
+    std::string name;
+    std::vector<uint32> spells;
+};
+typedef std::unordered_map<uint32, PlayerPremadeGearTemplate> PlayerPremadeGearMap;
+typedef std::unordered_map<uint32, PlayerPremadeSpecTemplate> PlayerPremadeSpecMap;
+
 class ObjectMgr
 {
     friend class ACE_Singleton<ObjectMgr, ACE_Null_Mutex>;
@@ -686,6 +714,12 @@ class ObjectMgr
         bool RemoveVendorItem(uint32 entry,uint32 item, bool savetodb = true); // for event
         bool IsVendorItemValid(uint32 vendor_entry, uint32 item, uint32 maxcount, uint32 ptime, uint32 ExtendedCost, Player* pl = NULL, std::set<uint32>* skip_vendors = NULL, uint32 ORnpcflag = 0) const;
 
+        void LoadPlayerPremadeTemplates();
+        void ApplyPremadeGearTemplateToPlayer(uint32 entry, Player* pPlayer) const;
+        void ApplyPremadeSpecTemplateToPlayer(uint32 entry, Player* pPlayer) const;
+        PlayerPremadeGearMap const& GetPlayerPremadeGearTemplates() const { return m_playerPremadeGearMap; }
+        PlayerPremadeSpecMap const& GetPlayerPremadeSpecTemplates() const { return m_playerPremadeSpecMap; }
+
     protected:
 
         // first free id for selected id type
@@ -792,6 +826,9 @@ class ObjectMgr
         CacheNpcTextIdMap m_mCacheNpcTextIdMap;
         CacheVendorItemMap m_mCacheVendorItemMap;
         CacheTrainerSpellMap m_mCacheTrainerSpellMap;
+
+        PlayerPremadeGearMap m_playerPremadeGearMap;
+        PlayerPremadeSpecMap m_playerPremadeSpecMap;
 };
 
 #define sObjectMgr (*ACE_Singleton<ObjectMgr, ACE_Null_Mutex>::instance())

@@ -729,6 +729,21 @@ ChatCommand * ChatHandler::getCommandTable()
         { NULL,             0,              0,            false,  NULL,                                           "", NULL }
     };
 
+    static ChatCommand characterPremadeCommandTable[] =
+    {
+        { "gear",           PERM_GMT,       PERM_CONSOLE, false,  &ChatHandler::HandleCharacterPremadeGearCommand,     "", NULL },
+        { "spec",           PERM_GMT,       PERM_CONSOLE, false,  &ChatHandler::HandleCharacterPremadeSpecCommand,     "", NULL },
+        { "savegear",       PERM_GMT,       PERM_CONSOLE, false,  &ChatHandler::HandleCharacterPremadeSaveGearCommand, "", NULL },
+        { "savespec",       PERM_GMT,       PERM_CONSOLE, false,  &ChatHandler::HandleCharacterPremadeSaveSpecCommand, "", NULL },
+        { NULL,             0,              0,            false,  NULL,                                                "", NULL }
+    };
+
+    static ChatCommand characterCommandTable[] =
+    {
+        { "premade",        PERM_PLAYER,    PERM_CONSOLE, true,   NULL,                                           "", characterPremadeCommandTable },
+        { NULL,             0,              0,            false,  NULL,                                           "", NULL }
+    };
+
     static ChatCommand crashCommandTable[] =
     {
         { "map",            PERM_HIGH_GMT,  PERM_CONSOLE, false,  &ChatHandler::HandleCrashMapCommand,            "", NULL },
@@ -746,6 +761,7 @@ ChatCommand * ChatHandler::getCommandTable()
         { "bot",            PERM_GMT,       PERM_CONSOLE, false,  NULL,                                "Manage bots", botCommandTable },
         { "partybot",       PERM_GMT,       PERM_CONSOLE, false,  NULL,                          "Manage party bots", partyBotCommandTable },
         { "cast",           PERM_GMT,       PERM_CONSOLE, false,  NULL,                                           "", castCommandTable },
+        { "character",      PERM_GMT,       PERM_CONSOLE, false,  NULL,                                           "", characterCommandTable },
         { "channel",        PERM_GMT,       PERM_CONSOLE, false,  NULL,                                           "", channelCommandTable},
         { "crash",          PERM_HIGH_GMT,  PERM_CONSOLE, false,  NULL,                                           "", crashCommandTable },
         { "debug",          PERM_GMT,       PERM_CONSOLE, false,  NULL,                                           "", debugCommandTable },

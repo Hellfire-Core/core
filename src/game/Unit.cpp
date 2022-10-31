@@ -3521,8 +3521,6 @@ void Unit::InterruptSpell(uint32 spellType, bool withDelayed, bool withInstant)
 {
     ASSERT(spellType < CURRENT_MAX_SPELL);
 
-    
-
     Spell* spell = GetCurrentSpell(CurrentSpellTypes(spellType));
     
     if (spell

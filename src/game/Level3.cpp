@@ -7558,3 +7558,219 @@ bool ChatHandler::HandleArenaCreateCommand(const char* args)
     return true;
 }
 
+bool ChatHandler::HandleCharacterPremadeGearCommand(const char* args)
+{
+    Player* pPlayer = getSelectedPlayer();
+    if (!pPlayer)
+    {
+        SendSysMessage(LANG_NO_CHAR_SELECTED);
+        return false;
+    }
+
+    if (!*args)
+    {
+        PSendSysMessage("Listing available premade templates for %s:", pPlayer->GetName());
+        for (auto itr : sObjectMgr.GetPlayerPremadeGearTemplates())
+        {
+            if (itr.second.requiredClass == pPlayer->GetClass())
+            {
+                PSendSysMessage("%u - %s (lvl %u)", itr.first, itr.second.name.c_str(), itr.second.level);
+            }
+        }
+        return true;
+    }
+
+    uint32 entry = atoi(args);
+
+    if (!entry)
+    {
+        std::string name = args;
+        for (auto itr : sObjectMgr.GetPlayerPremadeGearTemplates())
+        {
+            if (itr.second.name == name && itr.second.requiredClass == pPlayer->GetClass())
+            {
+                entry = itr.first;
+                break;
+            }
+        }
+    }
+
+    if (!entry)
+    {
+        SendSysMessage("No matching premade player template found.");
+        return false;
+    }
+
+    sObjectMgr.ApplyPremadeGearTemplateToPlayer(entry, pPlayer);
+
+    PSendSysMessage("Premade gear template %u applied to player %s.", entry, pPlayer->GetName());
+    return true;
+}
+
+static std::string EscapeString(std::string unescapedString)
+{
+    char* escapedString = new char[unescapedString.length() * 2 + 1];
+    mysql_escape_string(escapedString, unescapedString.c_str(), unescapedString.length());
+    std::string returnString = escapedString;
+    delete[] escapedString;
+    return returnString;
+}
+
+bool ChatHandler::HandleCharacterPremadeSaveGearCommand(const char* args)
+{
+    Player* pPlayer = m_session->GetPlayer();
+
+    if (!*args)
+    {
+        SendSysMessage("Incorrect syntax. Template name expected.");
+        return false;
+    }
+
+    std::string templateName = args;
+    if (templateName.find(" ") != std::string::npos)
+    {
+        SendSysMessage("Template name cannot contain spaces.");
+        return false;
+    }
+
+    uint32 entry = 0;
+    QueryResultAutoPtr result(GameDataDatabase.Query("SELECT MAX(`entry`) FROM `player_premade_item_template`"));
+    if (result)
+    {
+        Field* fields = result->Fetch();
+        entry = fields[0].GetUInt32() + 1;
+    }
+
+    templateName = EscapeString(templateName);
+    if (!GameDataDatabase.PExecute("INSERT INTO `player_premade_item_template` (`entry`, `class`, `level`, `name`) VALUES (%u, %u, %u, '%s')", entry, pPlayer->GetClass(), pPlayer->GetLevel(), templateName.c_str()))
+        return false;
+
+    for (int i = EQUIPMENT_SLOT_START; i < EQUIPMENT_SLOT_END; ++i)
+    {
+        if (Item* pItem = pPlayer->GetItemByPos(INVENTORY_SLOT_BAG_0, i))
+        {
+            GameDataDatabase.DirectPExecute("INSERT INTO `player_premade_item` (`entry`, `item`, `enchant`) VALUES (%u, %u, %u)", entry, pItem->GetEntry(), pItem->GetEnchantmentId(PERM_ENCHANTMENT_SLOT));
+        }
+    }
+
+    sObjectMgr.LoadPlayerPremadeTemplates();
+
+    PSendSysMessage("Premade gear template %u saved to database.", entry);
+    return true;
+}
+
+bool ChatHandler::HandleCharacterPremadeSpecCommand(const char* args)
+{
+    Player* pPlayer = getSelectedPlayer();
+    if (!pPlayer)
+    {
+        SendSysMessage(LANG_NO_CHAR_SELECTED);
+        return false;
+    }
+
+    if (!*args)
+    {
+        PSendSysMessage("Listing available premade templates for %s:", pPlayer->GetName());
+        for (auto itr : sObjectMgr.GetPlayerPremadeSpecTemplates())
+        {
+            if (itr.second.requiredClass == pPlayer->GetClass())
+            {
+                PSendSysMessage("%u - %s (lvl %u)", itr.first, itr.second.name.c_str(), itr.second.level);
+            }
+        }
+        return true;
+    }
+
+    uint32 entry = atoi(args);
+
+    if (!entry)
+    {
+        std::string name = args;
+        for (auto itr : sObjectMgr.GetPlayerPremadeSpecTemplates())
+        {
+            if (itr.second.name == name && itr.second.requiredClass == pPlayer->GetClass())
+            {
+                entry = itr.first;
+                break;
+            }
+        }
+    }
+
+    if (!entry)
+    {
+        SendSysMessage("No matching premade player template found.");
+        return false;
+    }
+
+    sObjectMgr.ApplyPremadeSpecTemplateToPlayer(entry, pPlayer);
+
+    PSendSysMessage("Premade spec template %u applied to player %s.", entry, pPlayer->GetName());
+    return true;
+}
+
+bool ChatHandler::HandleCharacterPremadeSaveSpecCommand(const char* args)
+{
+    Player* pPlayer = m_session->GetPlayer();
+
+    if (!*args)
+    {
+        SendSysMessage("Incorrect syntax. Template name expected.");
+        return false;
+    }
+
+    std::string templateName = args;
+    if (templateName.find(" ") != std::string::npos)
+    {
+        SendSysMessage("Template name cannot contain spaces.");
+        return false;
+    }
+
+    uint32 entry = 0;
+    QueryResultAutoPtr result(GameDataDatabase.Query("SELECT MAX(`entry`) FROM `player_premade_spell_template`"));
+    if (result)
+    {
+        Field* fields = result->Fetch();
+        entry = fields[0].GetUInt32() + 1;
+    }
+
+    templateName = EscapeString(templateName);
+    if (!GameDataDatabase.PExecute("INSERT INTO `player_premade_spell_template` (`entry`, `class`, `level`, `name`) VALUES (%u, %u, %u, '%s')", entry, pPlayer->GetClass(), pPlayer->GetLevel(), templateName.c_str()))
+        return false;
+
+    PlayerInfo const* pInfo = sObjectMgr.GetPlayerInfo(pPlayer->GetRace(), pPlayer->GetClass());
+    if (!pInfo)
+        return false;
+
+    result = RealmDataDatabase.PQuery("SELECT DISTINCT `spell` FROM `character_spell` WHERE `disabled`=0 && `active`=1 && `guid`=%u", pPlayer->GetGUIDLow());
+
+    if (result)
+    {
+        do
+        {
+            Field* fields = result->Fetch();
+            uint32 spellId = fields[0].GetUInt32();
+
+            if (!sSpellStore.LookupEntry(spellId))
+                continue;
+
+            bool skip = false;;
+            for (auto const& itr : pInfo->spell)
+            {
+                if (itr.first == spellId)
+                {
+                    skip = true;
+                    break;
+                }
+            }
+            if (skip)
+                continue;
+
+            GameDataDatabase.DirectPExecute("INSERT INTO `player_premade_spell` (`entry`, `spell`) VALUES (%u, %u)", entry, spellId);
+        } while (result->NextRow());
+    }
+
+    sObjectMgr.LoadPlayerPremadeTemplates();
+
+    PSendSysMessage("Premade spec template %u saved to database.", entry);
+    return true;
+}

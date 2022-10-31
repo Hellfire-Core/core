@@ -29,9 +29,12 @@ enum CombatBotSpells
     SPELL_SUMMON_VOIDWALKER = 697,
     SPELL_SUMMON_FELHUNTER = 691,
     SPELL_SUMMON_SUCCUBUS = 712,
-    SPELL_TAME_BEAST = 13481,
+    SPELL_TAME_BEAST = 1515,
     SPELL_REVIVE_PET = 982,
     SPELL_CALL_PET = 883,
+    SPELL_SELF_STUN = 14821,
+
+    FACTION_NEUTRAL_CREATURE = 7,
 
     PET_WOLF    = 565,
     PET_CAT     = 681,
@@ -416,6 +419,12 @@ void CombatBotBaseAI::PopulateSpellData()
                         m_spells.paladin.pHolyShield->Id < pSpellEntry->Id)
                         m_spells.paladin.pHolyShield = pSpellEntry;
                 }
+                else if (spellName.find("Avenger's Shield") != std::string::npos)
+                {
+                    if (!m_spells.paladin.pAvengersShield ||
+                        m_spells.paladin.pAvengersShield->Id < pSpellEntry->Id)
+                        m_spells.paladin.pAvengersShield = pSpellEntry;
+                }
                 break;
             }
             case CLASS_SHAMAN:
@@ -473,6 +482,12 @@ void CombatBotBaseAI::PopulateSpellData()
                     if (!m_spells.shaman.pLightningShield ||
                         m_spells.shaman.pLightningShield->Id < pSpellEntry->Id)
                         m_spells.shaman.pLightningShield = pSpellEntry;
+                }
+                else if (spellName.find("Earth Shield") != std::string::npos)
+                {
+                    if (!m_spells.shaman.pEarthShield ||
+                        m_spells.shaman.pEarthShield->Id < pSpellEntry->Id)
+                        m_spells.shaman.pEarthShield = pSpellEntry;
                 }
                 else if (spellName.find("Ghost Wolf") != std::string::npos)
                 {
@@ -682,7 +697,7 @@ void CombatBotBaseAI::PopulateSpellData()
                         m_spells.hunter.pWingClip->Id < pSpellEntry->Id)
                         m_spells.hunter.pWingClip = pSpellEntry;
                 }
-                else if (spellName.find("Hunter's Mark") != std::string::npos)
+                else if (spellName == "Hunter's Mark")
                 {
                     if (!m_spells.hunter.pHuntersMark ||
                         m_spells.hunter.pHuntersMark->Id < pSpellEntry->Id)
@@ -723,6 +738,12 @@ void CombatBotBaseAI::PopulateSpellData()
                     if (!m_spells.hunter.pVolley ||
                         m_spells.hunter.pVolley->Id < pSpellEntry->Id)
                         m_spells.hunter.pVolley = pSpellEntry;
+                }
+                else if (spellName.find("Bestial Wrath") != std::string::npos)
+                {
+                    if (!m_spells.hunter.pBestialWrath ||
+                        m_spells.hunter.pBestialWrath->Id < pSpellEntry->Id)
+                        m_spells.hunter.pBestialWrath = pSpellEntry;
                 }
                 break;
             }
@@ -896,6 +917,12 @@ void CombatBotBaseAI::PopulateSpellData()
                         m_spells.mage.pCombustion->Id < pSpellEntry->Id)
                         m_spells.mage.pCombustion = pSpellEntry;
                 }
+                else if (spellName.find("Dragon's Breath") != std::string::npos)
+                {
+                    if (!m_spells.mage.pDragonsBreath ||
+                        m_spells.mage.pDragonsBreath->Id < pSpellEntry->Id)
+                        m_spells.mage.pDragonsBreath = pSpellEntry;
+                }
                 break;
             }
             case CLASS_PRIEST:
@@ -1043,6 +1070,12 @@ void CombatBotBaseAI::PopulateSpellData()
                     if (!m_spells.priest.pSmite ||
                         m_spells.priest.pSmite->Id < pSpellEntry->Id)
                         m_spells.priest.pSmite = pSpellEntry;
+                }
+                else if (spellName.find("Circle of Healing") != std::string::npos)
+                {
+                    if (!m_spells.priest.pCircleOfHealing ||
+                        m_spells.priest.pCircleOfHealing->Id < pSpellEntry->Id)
+                        m_spells.priest.pCircleOfHealing = pSpellEntry;
                 }
                 break;
             }
@@ -1394,6 +1427,12 @@ void CombatBotBaseAI::PopulateSpellData()
                         m_spells.warrior.pPiercingHowl->Id < pSpellEntry->Id)
                         m_spells.warrior.pPiercingHowl = pSpellEntry;
                 }
+                else if (spellName.find("Devastate") != std::string::npos)
+                {
+                    if (!m_spells.warrior.pDevastate ||
+                        m_spells.warrior.pDevastate->Id < pSpellEntry->Id)
+                        m_spells.warrior.pDevastate = pSpellEntry;
+                }
                 break;
             }
             case CLASS_ROGUE:
@@ -1547,6 +1586,12 @@ void CombatBotBaseAI::PopulateSpellData()
                     if (!m_spells.rogue.pSprint ||
                         m_spells.rogue.pSprint->Id < pSpellEntry->Id)
                         m_spells.rogue.pSprint = pSpellEntry;
+                }
+                else if (spellName.find("Mutilate") != std::string::npos)
+                {
+                    if (!m_spells.rogue.pMutilate ||
+                        m_spells.rogue.pMutilate->Id < pSpellEntry->Id)
+                        m_spells.rogue.pMutilate = pSpellEntry;
                 }
                 else if (spellName.find("Deadly Poison") != std::string::npos)
                 {
@@ -2258,6 +2303,67 @@ Unit* CombatBotBaseAI::SelectHealTarget(float selfHealPercent, float groupHealPe
     return pTarget;
 }
 
+Player* CombatBotBaseAI::SelectGroupHealTarget(float radius, float selfHealPercent, float groupHealPercent) const
+{
+    if (me->GetHealthPercent() < selfHealPercent)
+    {
+        if (GetInjuredPartyMembersCountAround(me, radius) > 0)
+            return me;
+    }
+
+    if (Group* pGroup = me->GetGroup())
+    {
+        for (GroupReference* itr = pGroup->GetFirstMember(); itr != nullptr; itr = itr->next())
+        {
+            if (Player* pMember = itr->getSource())
+            {
+                // We already checked self.
+                if (pMember == me)
+                    continue;
+
+                if (!IsValidHealTarget(pMember, groupHealPercent))
+                    continue;
+
+                if (GetInjuredPartyMembersCountAround(pMember, radius) > 0)
+                    return pMember;
+            }
+        }
+    }
+
+    return nullptr;
+}
+
+uint8 CombatBotBaseAI::GetInjuredPartyMembersCountAround(Player* pTarget, float radius) const
+{
+    uint8 count = 0;
+    if (Group* pGroup = me->GetGroup())
+    {
+        for (GroupReference* itr = pGroup->GetFirstMember(); itr != nullptr; itr = itr->next())
+        {
+            if (itr->getSubGroup() != pTarget->GetSubGroup())
+                continue;
+
+            if (Player* pMember = itr->getSource())
+            {
+                if (pMember == pTarget)
+                    continue;
+
+                if (!pMember->IsAlive())
+                    continue;
+
+                if (pMember->GetHealth() == pMember->GetMaxHealth())
+                    continue;
+
+                if (pMember->GetDistance(pTarget) > radius)
+                    continue;
+
+                count++;
+            }
+        }
+    }
+    return count;
+}
+
 Unit* CombatBotBaseAI::SelectPeriodicHealTarget(float selfHealPercent, float groupHealPercent) const
 {
     if (me->GetHealthPercent() < selfHealPercent &&
@@ -2476,8 +2582,12 @@ void CombatBotBaseAI::SummonPetIfNeeded()
             me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), 0.0f,
             TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 3000))
         {
+            pCreature->setFaction(FACTION_NEUTRAL_CREATURE);
             pCreature->SetLevel(me->GetLevel());
-            me->CastSpell(pCreature, SPELL_TAME_BEAST, true);
+            pCreature->SetMaxHealth(me->GetMaxHealth());
+            pCreature->SetHealth(me->GetMaxHealth());
+            pCreature->CastSpell(pCreature, SPELL_SELF_STUN, true);
+            me->CastSpell(pCreature, SPELL_TAME_BEAST, false);
         }
     }
     else if (me->GetClass() == CLASS_WARLOCK)
@@ -2520,9 +2630,8 @@ void CombatBotBaseAI::LearnArmorProficiencies()
     }
 }
 
-void CombatBotBaseAI::LearnPremadeSpecForClass()
+bool CombatBotBaseAI::LearnPremadeSpecForClass()
 {
-    /*
     std::vector<PlayerPremadeSpecTemplate const*> vSpecs;
     for (const auto& itr : sObjectMgr.GetPlayerPremadeSpecTemplates())
     {
@@ -2543,7 +2652,7 @@ void CombatBotBaseAI::LearnPremadeSpecForClass()
     if (!vSpecs.empty())
     {
         PlayerPremadeSpecTemplate const* pSpec = nullptr;
-        // Try to find a role appropriate gear template.
+        // Try to find a role appropriate spec template.
         if (m_role != ROLE_INVALID)
         {
             for (const auto itr : vSpecs)
@@ -2561,13 +2670,60 @@ void CombatBotBaseAI::LearnPremadeSpecForClass()
         sObjectMgr.ApplyPremadeSpecTemplateToPlayer(pSpec->entry, me);
         if (m_role == ROLE_INVALID)
             m_role = pSpec->role;
+        return true;
     }
-    */
+    return false;
+}
+
+void CombatBotBaseAI::LearnNormalSpellsForClass()
+{
+    ChrClassesEntry const* clsEntry = sChrClassesStore.LookupEntry(me->GetClass());
+    if (!clsEntry)
+        return;
+    uint32 family = clsEntry->spellfamily;
+    uint32 level = me->GetLevel();
+
+    for (uint32 i = 0; i < sSpellStore.GetNumRows(); i++)
+    {
+        SpellEntry const *spellInfo = sSpellStore.LookupEntry(i);
+        if (!spellInfo)
+            continue;
+
+        // skip server-side/triggered spells
+        if (spellInfo->spellLevel == 0)
+            continue;
+
+        // no hidden spells
+        if (spellInfo->HasAttribute(SPELL_ATTR_HIDDEN_CLIENTSIDE))
+            continue;
+
+        // skip other spell families
+        if (spellInfo->SpellFamilyName != family)
+            continue;
+
+        // skip wrong class/race skills
+        if (!me->IsSpellFitByClassAndRace(spellInfo->Id))
+            continue;
+
+        // skip spells with first rank learned as talent (and all talents then also)
+        uint32 first_rank = sSpellMgr.GetFirstSpellInChain(spellInfo->Id);
+        if (GetTalentSpellCost(first_rank) > 0)
+            continue;
+
+        // skip broken spells
+        if (!SpellMgr::IsSpellValid(spellInfo, me, false))
+            continue;
+
+        // no higher level spells
+        if (level < spellInfo->spellLevel || level < spellInfo->baseLevel)
+            continue;
+
+        me->LearnSpell(spellInfo->Id);
+    }
 }
 
 void CombatBotBaseAI::EquipPremadeGearTemplate()
 {
-    /*
     std::vector<PlayerPremadeGearTemplate const*> vGear;
     for (const auto& itr : sObjectMgr.GetPlayerPremadeGearTemplates())
     {
@@ -2605,7 +2761,6 @@ void CombatBotBaseAI::EquipPremadeGearTemplate()
             pGear = SelectRandomContainerElement(vGear);
         sObjectMgr.ApplyPremadeGearTemplateToPlayer(pGear->entry, me);
     }
-    */
 }
 
 inline uint32 GetPrimaryItemStatForClassAndRole(uint8 playerClass, uint8 role)
@@ -2661,8 +2816,17 @@ void CombatBotBaseAI::EquipRandomGearInEmptySlots()
             continue;
             */
 
+        if (pProto->Quality >= ITEM_QUALITY_LEGENDARY)
+            continue;
+
         // Only gear and weapons
         if (pProto->Class != ITEM_CLASS_WEAPON && pProto->Class != ITEM_CLASS_ARMOR)
+            continue;
+
+        if (pProto->InventoryType == INVTYPE_TABARD)
+            continue;
+
+        if (pProto->InventoryType == INVTYPE_2HWEAPON && m_role == ROLE_TANK && IsShieldClass(me->GetClass()))
             continue;
 
         // No item level check for tabards and shirts
@@ -2677,7 +2841,7 @@ void CombatBotBaseAI::EquipRandomGearInEmptySlots()
                 continue;
         }
 
-        if (me->CanUseItem(pProto) != EQUIP_ERR_OK)
+        if (!me->CanUseItem(pProto))
             continue;
 
         if (pProto->RequiredReputationFaction && uint32(me->GetReputationRank(pProto->RequiredReputationFaction)) < pProto->RequiredReputationRank)

@@ -664,6 +664,12 @@ class ChatHandler
         bool HandleBindFollowCommand(const char* args);
         bool HandleUnbindFollowCommand(const char* args);
 
+        // Characters
+        bool HandleCharacterPremadeGearCommand(const char *args);
+        bool HandleCharacterPremadeSpecCommand(const char *args);
+        bool HandleCharacterPremadeSaveGearCommand(const char *args);
+        bool HandleCharacterPremadeSaveSpecCommand(const char *args);
+
         bool HandleChannelListCommand(const char* args);
         bool HandleChannelPassCommand(const char* args);
         bool HandleChannelKickCommand(const char* args);

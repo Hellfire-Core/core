@@ -763,6 +763,25 @@ bool Player::Create(uint32 guidlow, const std::string& name, uint8 race, uint8 c
             ++action_itr[i];
     }
 
+    if (outfitId)
+        AddStartingItems();
+
+    m_social = sSocialMgr.LoadFromDB(QueryResultAutoPtr(0), GetGUIDLow());
+
+    return true;
+}
+
+void Player::AddStartingItems()
+{
+    PlayerInfo const* info = sObjectMgr.GetPlayerInfo(GetRace(), GetClass());
+    if (!info)
+    {
+        sLog.outLog(LOG_DEFAULT, "ERROR: Player have incorrect race/class pair. Can't be loaded.");
+        return;
+    }
+
+    uint32 RaceClassGender = (GetRace()) | (GetClass() << 8) | (getGender() << 16);
+
     // original items
     CharStartOutfitEntry const* oEntry = NULL;
     for (uint32 i = 1; i < sCharStartOutfitStore.GetNumRows(); ++i)
@@ -789,12 +808,12 @@ bool Player::Create(uint32 guidlow, const std::string& name, uint8 race, uint8 c
             ItemPrototype const* iProto = ObjectMgr::GetItemPrototype(item_id);
             if (!iProto)
             {
-                sLog.outLog(LOG_DB_ERR, "Initial item id %u (race %u class %u) from CharStartOutfit.dbc not listed in `item_template`, ignoring.",item_id,GetRace(),GetClass());
+                sLog.outLog(LOG_DB_ERR, "Initial item id %u (race %u class %u) from CharStartOutfit.dbc not listed in `item_template`, ignoring.", item_id, GetRace(), GetClass());
                 continue;
             }
 
             uint32 count = iProto->Stackable;               // max stack by default (mostly 1)
-            if (iProto->Class==ITEM_CLASS_CONSUMABLE && iProto->SubClass==ITEM_SUBCLASS_FOOD)
+            if (iProto->Class == ITEM_CLASS_CONSUMABLE && iProto->SubClass == ITEM_SUBCLASS_FOOD)
             {
                 switch (iProto->Spells[0].SpellCategory)
                 {
@@ -811,23 +830,6 @@ bool Player::Create(uint32 guidlow, const std::string& name, uint8 race, uint8 c
 
             StoreNewItemInBestSlots(item_id, count);
         }
-    }
-
-    if (outfitId)
-        AddStartingItems();
-
-    m_social = sSocialMgr.LoadFromDB(QueryResultAutoPtr(0), GetGUIDLow());
-
-    return true;
-}
-
-void Player::AddStartingItems()
-{
-    PlayerInfo const* info = sObjectMgr.GetPlayerInfo(GetRace(), GetClass());
-    if (!info)
-    {
-        sLog.outLog(LOG_DEFAULT, "ERROR: Player have incorrect race/class pair. Can't be loaded.");
-        return;
     }
 
     for (PlayerCreateInfoItems::const_iterator item_id_itr = info->item.begin(); item_id_itr != info->item.end(); ++item_id_itr++)
@@ -869,7 +871,7 @@ void Player::AddStartingItems()
     // all item positions resolved
 }
 
-bool Player::StoreNewItemInBestSlots(uint32 titem_id, uint32 titem_amount)
+bool Player::StoreNewItemInBestSlots(uint32 titem_id, uint32 titem_amount, uint32 enchantId)
 {
     sLog.outDebug("STORAGE: Creating initial item, itemId = %u, count = %u",titem_id, titem_amount);
 
@@ -881,8 +883,37 @@ bool Player::StoreNewItemInBestSlots(uint32 titem_id, uint32 titem_amount)
         if (msg != EQUIP_ERR_OK)
             break;
 
-        EquipNewItem(eDest, titem_id, true);
-        AutoUnequipOffhandIfNeed();
+        if (Item* pItem = EquipNewItem(eDest, titem_id, true))
+        {
+            bool needReApplyItemMods = false;
+            if (enchantId)
+            {
+                pItem->ClearEnchantment(PERM_ENCHANTMENT_SLOT);
+                pItem->SetEnchantment(PERM_ENCHANTMENT_SLOT, enchantId, 0, 0);
+                needReApplyItemMods = true;
+            }
+            if (uint32 randomPropertyId = Item::GenerateItemRandomPropertyId(titem_id))
+            {
+                pItem->SetItemRandomProperties(randomPropertyId);
+                needReApplyItemMods = true;
+            }
+            // Since the item is enchanted after it is equipped, item mods need to be re-applied.
+            if (needReApplyItemMods)
+            {
+                uint8 slot = eDest & 255;
+                _ApplyItemMods(pItem, slot, false);
+                _ApplyItemMods(pItem, slot, true);
+            }
+
+            AutoUnequipOffhandIfNeed();
+
+            if ((titem_amount > 1) && (titem_amount <= pItem->GetProto()->GetMaxStackSize()))
+            {
+                pItem->SetCount(titem_amount);
+                titem_amount = 0;
+                break;
+            }
+        }
         --titem_amount;
     }
 

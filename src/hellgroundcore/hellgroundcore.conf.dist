@@ -2028,3 +2028,86 @@ Network.OutKBuff = -1
 Network.OutUBuff = 65536
 Network.TcpNodelay = 1
 Network.KickOnBadPacket = 0
+
+###################################################################################################################
+# PLAYER BOTS
+#
+#    RandomBot.Enable
+#        Enables automatic spawning of random bots. These bots have no AI. You have to code one and assign it.
+#        Default: 0 - off
+#                 1 - on
+#
+#    RandomBot.MinBots
+#        Minimum amount of random bots the server will try to spawn.
+#        Default: 0
+#
+#    RandomBot.MaxBots
+#        Maximum amount of random bots the server will try to spawn.
+#        Default: 0
+#
+#    RandomBot.Refresh
+#        How often the the server will check if there are enough bots spawned.
+#        Default: 60000 (1 minute)
+#
+#    PlayerBot.AllowSaving
+#        Enables saving of character progress when a real character is loaded.
+#        Default: 0 - off
+#                 1 - on
+#
+#    PlayerBot.Debug
+#        Enables additional debugging information about bots that is printed in the console.
+#        Default: 0 - off
+#                 1 - on
+#
+#    PlayerBot.UpdateMs
+#        How often the AI of bots will be updated. A bigger delay will make them less responsive.
+#        Default: 1000 (1 second)
+#
+#    PlayerBot.ShowInWhoList
+#        Enables displaying characters controlled by bots in /who results.
+#        Default: 0 - off
+#                 1 - on
+#
+#    PartyBot.MaxBots
+#        Maximum number of party bots that normal players are allowed to summon.
+#        Default: 0 (no limit)
+#
+#    PartyBot.SkipChecks
+#        Disables the additional restrictions that apply when a normal player tries to summon a party bot.
+#        Default: 0 (restricted)
+#                 1 (no restrictions)
+#
+#    PartyBot.AutoEquip
+#        What gear will new partybots spawn with.
+#        Default: 1 (random items)
+#                 0 (normal starting items)
+#                 2 (premade gear template)
+#
+#    PartyBot.RandomGearLevelDifference
+#        Item level difference for random items that will bots equip. Has only effect if PartyBot.AutoEquip is set to 1.
+#        A lower number equals to gear being more close to the bot level.
+#        Default: 10 (bots will equip gear down to a minimum of 10 item level difference)
+#
+#    BattleBot.AutoEquip
+#        What gear will new battlebots spawn with.
+#        Default: 1 (random items)
+#                 0 (normal starting items)
+#                 2 (premade gear template)
+#
+###################################################################################################################
+RandomBot.Enable = 0
+RandomBot.MinBots = 0
+RandomBot.MaxBots = 0
+RandomBot.Refresh = 60000
+
+PlayerBot.AllowSaving = 0
+PlayerBot.Debug = 0
+PlayerBot.UpdateMs = 1000
+PlayerBot.ShowInWhoList = 0
+
+PartyBot.MaxBots = 0
+PartyBot.SkipChecks = 0
+PartyBot.AutoEquip = 1
+PartyBot.RandomGearLevelDifference = 10
+
+BattleBot.AutoEquip = 1

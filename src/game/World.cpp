@@ -1484,6 +1484,8 @@ void World::SetInitialWorldSettings()
     sLog.outString("Loading Warden Data..." );
     sWardenDataStorage.Init();
 
+    sObjectMgr.LoadPlayerPremadeTemplates();
+
     sLog.outString("Cleanup deleted characters");
     CleanupDeletedChars();
 

@@ -1181,7 +1181,7 @@ class HELLGROUND_EXPORT Player : public Unit
         void AutoUnequipItemFromSlot(uint32 slot);
         void SatisfyItemRequirements(ItemPrototype const* pItem);
         void AddStartingItems();
-        bool StoreNewItemInBestSlots(uint32 item_id, uint32 item_count);
+        bool StoreNewItemInBestSlots(uint32 item_id, uint32 item_count, uint32 enchantId = 0);
         void AutoStoreLoot(uint8 bag, uint8 slot, uint32 loot_id, LootStore const& store, bool broadcast = false);
         void AutoStoreLoot(uint32 loot_id, LootStore const& store, bool broadcast = false) { AutoStoreLoot(NULL_BAG,NULL_SLOT,loot_id,store,broadcast); }
 

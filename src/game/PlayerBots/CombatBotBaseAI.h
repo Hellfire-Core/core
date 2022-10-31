@@ -90,7 +90,8 @@ public:
     void AddAllSpellReagents();
     void SummonPetIfNeeded();
     void LearnArmorProficiencies();
-    void LearnPremadeSpecForClass();
+    bool LearnPremadeSpecForClass();
+    void LearnNormalSpellsForClass();
     void EquipPremadeGearTemplate();
     void EquipRandomGearInEmptySlots();
     void AutoEquipGear(uint32 option);
@@ -99,6 +100,8 @@ public:
     Unit* SelectAttackerDifferentFrom(Unit const* pExcept) const;
     Unit* SelectHealTarget(float selfHealPercent = 100.0f, float groupHealPercent = 100.0f) const;
     Unit* SelectPeriodicHealTarget(float selfHealPercent = 100.0f, float groupHealPercent = 100.0f) const;
+    Player* SelectGroupHealTarget(float radius, float selfHealPercent, float groupHealPercent) const;
+    uint8 GetInjuredPartyMembersCountAround(Player* pTarget, float radius) const;
     Player* SelectBuffTarget(SpellEntry const* pSpellEntry) const;
     Player* SelectDispelTarget(SpellEntry const* pSpellEntry) const;
     bool IsValidBuffTarget(Unit const* pTarget, SpellEntry const* pSpellEntry) const;
@@ -297,6 +300,7 @@ public:
             SpellEntry const* pHolyWrath;
             SpellEntry const* pTurnEvil;
             SpellEntry const* pHolyShield;
+            SpellEntry const* pAvengersShield;
         } paladin;
         struct
         {
@@ -318,6 +322,7 @@ public:
             SpellEntry const* pWaterTotem;
             SpellEntry const* pManaTideTotem;
             SpellEntry const* pWeaponBuff;
+            SpellEntry const* pEarthShield;
         } shaman;
         struct
         {
@@ -337,6 +342,7 @@ public:
             SpellEntry const* pFeignDeath;
             SpellEntry const* pScareBeast;
             SpellEntry const* pVolley;
+            SpellEntry const* pBestialWrath;
         } hunter;
         struct
         {
@@ -364,6 +370,7 @@ public:
             SpellEntry const* pBlizzard;
             SpellEntry const* pBlastWave;
             SpellEntry const* pCombustion;
+            SpellEntry const* pDragonsBreath;
         } mage;
         struct
         {
@@ -391,6 +398,7 @@ public:
             SpellEntry const* pFade;
             SpellEntry const* pShackleUndead;
             SpellEntry const* pSmite;
+            SpellEntry const* pCircleOfHealing;
         } priest;
         struct
         {
@@ -456,6 +464,7 @@ public:
             SpellEntry const* pSunderArmor;
             SpellEntry const* pConcussionBlow;
             SpellEntry const* pPiercingHowl;
+            SpellEntry const* pDevastate;
         } warrior;
         struct
         {
@@ -486,6 +495,7 @@ public:
             SpellEntry const* pSprint;
             SpellEntry const* pMainHandPoison;
             SpellEntry const* pOffHandPoison;
+            SpellEntry const* pMutilate;
         } rogue;
         struct
         {
