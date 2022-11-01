@@ -64,6 +64,9 @@ REPLACE INTO `creature_template` (`entry`, `minlevel`, `maxlevel`, `faction_A`, 
 (181670, 70, 70, 35, 35, 4224, 1.1428571939468384, 1, 2000, 2000, 768, 7110, 7110, 'Resistance Armor Vendor', NULL, 1, 0, 0, 7, 0, 1, 1, 4050, 4050, 0, 0, 0),
 (181684, 70, 70, 35, 35, 0, 1, 1, 2000, 2000, 2181300992, 24019, 24019, '[DND] TAR Pedestal - Armor, Resistance', NULL, 1, 0, 0, 10, 0, 1, 1, 4050, 4050, 0, 0, 0);
 
+-- Allow joining arena queue from Fight Promoter.
+INSERT INTO `battlemaster_entry` (`entry`, `bg_template`) VALUES (26760, 6);
+
 -- Prevent target dummies from moving and attacking.
 INSERT INTO `creature_template_addon` (`entry`, `auras`) VALUES
 (176443, '6462 0 42716 0'),
