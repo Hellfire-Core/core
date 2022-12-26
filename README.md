@@ -19,8 +19,8 @@ Originally based on code from the MaNGOS and Trinity projects, cherry pick good 
 
 ### Downloads
 
-- [WoW-Launcher](https://github.com/Arctium/WoW-Launcher/releases) 
-- [![HermesProxy](https://github.com/WowLegacyCore/HermesProxy/actions/workflows/Build_Proxy.yml/badge.svg)](https://github.com/WowLegacyCore/HermesProxy/releases) HermesProxy
+- [full database](https://github.com/Hellfire-Core/core/releases/tag/db-latest) 
+- [full data](https://github.com/Hellfire-Core/core/releases/tag/data-latest) 
 
 ### Useful Links
 - [Wiki](https://hellfire-core.github.io)
