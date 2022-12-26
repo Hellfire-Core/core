@@ -18,7 +18,7 @@ Originally based on code from the MaNGOS and Trinity projects, cherry pick good 
 - Tools are great: Content creation should not require programming knowledge. We hope to eventually provide tools that allow for user-friendly editing of database scripts and content, with all data presented in human-readable form.
 
 ### Downloads
-
+- [latest binary](https://github.com/Hellfire-Core/core/releases/tag/latest)
 - [full database](https://github.com/Hellfire-Core/core/releases/tag/db-latest) 
 - [full data](https://github.com/Hellfire-Core/core/releases/tag/data-latest) 
 

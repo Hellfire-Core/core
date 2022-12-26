@@ -1,5 +1,5 @@
 ############################################
-# Hellground Core world configuration file #
+# Hellfire Core world configuration file   #
 ############################################
 [CoreConf]
 ConfVersion=2015020801
@@ -14,7 +14,7 @@ ConfVersion=2015020801
 #        Data directory setting.
 #        Important: DataDir needs to be quoted, as it is a string which may contain space characters.
 #        Important: In linux daemon mode string must be full path.
-#        Example: "/share/hellgroundcore"
+#        Example: "/share/hellfirecore"
 #
 #    LogsDir
 #        Logs directory setting.
@@ -788,7 +788,7 @@ HonorPointsAfterDuel = 0
 Instance.IgnoreLevel = 0
 Instance.IgnoreRaid = 0
 MaxPrimaryTradeSkill = 2
-Motd = "HellGround.pl"
+Motd = "https://github.com/Hellfire-Core/core"
 PvPToken.Enable = 0
 PvPToken.ItemID = 29434
 PvPToken.ItemCount = 1

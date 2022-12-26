@@ -67,7 +67,7 @@ jobs:
         cd $GITHUB_WORKSPACE
         mkdir build
         cd build
-        cmake -D TBB_ROOT_DIR=$GITHUB_WORKSPACE/tbb -DACE_USE_EXTERNAL=1 -DWITH_WARNINGS=0 -DUSE_EXTRACTORS=1 -G "Visual Studio 16 2019" -A x64 ..
+        cmake -D TBB_ROOT_DIR=$GITHUB_WORKSPACE/tbb -DACE_USE_EXTERNAL=1 -DWITH_WARNINGS=0 -DUSE_EXTRACTORS=0 -G "Visual Studio 16 2019" -A x64 ..
         /c/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2019/Enterprise/MSBuild/Current/Bin/MSBuild.exe "HellfireCore.sln" //p:Platform=x64 //p:Configuration=Release //m:2
       #git bash shell
       shell: bash
