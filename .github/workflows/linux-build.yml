@@ -1,0 +1,65 @@
+
+name: linux build
+
+on:
+  push:
+    paths-ignore:
+      - '.github/ISSUE_TEMPLATE/**'
+      - '.github/ISSUE_TEMPLATE.md'
+      - '.github/PULL_REQUEST_TEMPLATE.md'
+      - 'sql/**'
+      - '.drone.yml'
+      - 'README.md'
+      - 'LICENSE'
+      - '.gitignore'
+      - 'CONTRIBUTING.md'
+
+  pull_request:
+    paths-ignore:
+      - '.github/ISSUE_TEMPLATE/**'
+      - '.github/ISSUE_TEMPLATE.md'
+      - '.github/PULL_REQUEST_TEMPLATE.md'
+      - 'sql/**'
+      - '.drone.yml'
+      - 'README.md'
+      - 'LICENSE'
+      - '.gitignore'
+      - 'CONTRIBUTING.md'
+
+
+# This is what will cancel the previous workflow
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+  
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      #matrix declaration
+      matrix:
+        os: [ubuntu-latest] 
+        compiler: [gcc, clang]
+
+    steps:
+
+    #git checkout
+    - uses: actions/checkout@v2
+
+    - name: ubuntu dependencies
+      #ubuntu dependencies
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        sudo apt-get -qq install libmysql++-dev libace-dev libtbb-dev
+        sudo apt-get -qq install cmake build-essential cppcheck git make libiberty-dev openssl libssl-dev
+
+    #build and install
+    #ubuntu
+    - name: ubuntu build & install
+      run: |
+        mkdir build
+        mkdir _install
+        cd build
+        cmake ../ -DCMAKE_INSTALL_PREFIX=../_install -DWITH_WARNINGS=0 -DUSE_EXTRACTORS=0 -DACE_USE_EXTERNAL=1 -DTBB_USE_EXTERNAL=1
+        make -j2
+        make install
