@@ -1,25 +1,16 @@
 name: Repack Publisher - binupdate
 # reoacker-*.yml has to be modified at same time
-#on:
-#   workflow_run: #this approach needs to be done on the default branch, does not support multiple trigger
-#     workflows: ["Windows Development Release"]
-#     types:
-#       - completed
+on:
+   workflow_run: #this approach needs to be done on the default branch, does not support multiple trigger
+     workflows: ["Windows Development Release"]
+     types:
+       - completed
 
 
 # debug
-on:
-  push:
-    paths-ignore:
-      - '.github/ISSUE_TEMPLATE/**'
-      - '.github/ISSUE_TEMPLATE.md'
-      - '.github/PULL_REQUEST_TEMPLATE.md'
-      - 'sql/**'
-      - '.drone.yml'
-      - 'README.md'
-      - 'LICENSE'
-      - '.gitignore'
-      - 'CONTRIBUTING.md'
+# on:
+#  push:
+
 
 jobs:
   on-success:
