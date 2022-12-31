@@ -7427,192 +7427,63 @@ void Spell::EffectBlock(uint32 /*i*/)
 
 void Spell::EffectLeapForward(uint32 i)
 {
+
     if (unitTarget->IsTaxiFlying())
         return;
 
     if (!m_targets.HasDst())
         return;
 
-    float selfAddition = 1.5f;
-    float distance = sSpellMgr.GetSpellRadius(m_spellInfo, i, false) + selfAddition;
-    Map* map = unitTarget->GetMap();
+    Position pos;
     uint32 mapid = m_caster->GetMapId();
+    float dist = m_caster->GetSpellRadiusForTarget(unitTarget, sSpellRadiusStore.LookupEntry(m_spellInfo->EffectRadiusIndex[i]));
+    if (Player* modOwner = m_originalCaster->GetSpellModOwner())
+        modOwner->ApplySpellMod(m_spellInfo->Id, SPELLMOD_RADIUS, dist);
+
     float x, y, z;
-    float destX, destY, destZ, ground;
-    float orientation = unitTarget->GetOrientation();
+    float destx, desty, destz, ground, floor;
+    float orientation = unitTarget->GetOrientation(), step = dist / 10.0f;
+
     unitTarget->GetPosition(x, y, z);
+    destx = x + dist * cos(orientation);
+    desty = y + dist * sin(orientation);
+    ground = unitTarget->GetMap()->GetTerrain()->GetHeight(destx, desty, MAX_HEIGHT, true);
+    floor = unitTarget->GetMap()->GetTerrain()->GetHeight(destx, desty, z, true);
+    destz = fabs(ground - z) <= fabs(floor - z) ? ground : floor;
 
-    Position destPos;
-    Position lastpos;
-    unitTarget->GetPosition(&destPos);
+    bool col = VMAP::VMapFactory::createOrGetVMapManager()->getObjectHitPos(mapid, x, y, z, destx, desty, destz, destx, desty, destz, 0.5f);
+    bool dcol = unitTarget->GetMap()->GetHitPosition(x, y, z + 0.5f, destx, desty, destz, -0.5f);
+    
 
-    destX = x + distance * cos(orientation);
-    destY = y + distance * sin(orientation);
-
-    ground = map->GetTerrain()->GetHeight(destX, destY, z + 5.0f);
-    destZ = ground + 5.0f;
-
-    if (!unitTarget->HasUnitMovementFlag(MOVEFLAG_FALLING) || (z - ground < 25.0f))
+    if (col || dcol)// We had a collision!
     {
-        if ((unitTarget->HasUnitMovementFlag(MOVEFLAG_FALLING) && (z - ground > 3.0f)) && (!map->GetTerrain()->IsInWater(x, y, z)))
-        {
-            Position pos;
-            pos.Relocate(destX, destY, destZ, orientation);
-            //pos = unitTarget->GetFirstCollisionPosition(unitTarget->GetDistance(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ()), 0.0f);
-            //pos = unitTarget->GetMap()->GetHitPosition(unitTarget->GetPositionX(), unitTarget->GetPositionY(), unitTarget->GetPositionZ() + 0.5f, pos.m_positionX, pos.m_positionY, pos.m_positionZ, -0.5f);
-            destPos.Relocate(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), pos.GetOrientation());
-        }
-        else
-        {
-            // recalculate, we need it if want can blink in different situations
-            float tstX, tstY, tstZ, prevX, prevY, prevZ, beforewaterz, travelDistZ, newdistance, totalpath;
-            float tstZ1, tstZ2, tstZ3, destZ1, destZ2, destZ3, srange, srange1, srange2, srange3;
-            float maxtravelDistZ = 2.65f;
-            const float step = 2.0f;
-            const uint8 numChecks = ceil(fabs(distance / step));
-            const float DELTA_X = (destX - x) / numChecks;
-            const float DELTA_Y = (destY - y) / numChecks;
-            int j = 1;
-            for (; j < (numChecks + 1); j++)
-            {
-                prevX = x + (float(j - 1) * DELTA_X);
-                prevY = y + (float(j - 1) * DELTA_Y);
-                tstX = x + (float(j) * DELTA_X);
-                tstY = y + (float(j) * DELTA_Y);
-
-                if (j < 2)
-                {
-                    prevZ = z;
-                    newdistance = 0.0f;
-                    totalpath = 0.0f;
-                }
-                else
-                    prevZ = tstZ;
-
-                travelDistZ = sqrt((tstY - prevY) * (tstY - prevY) + (tstX - prevX) * (tstX - prevX));
-                tstZ = map->GetTerrain()->GetHeight(tstX, tstY, prevZ + travelDistZ, true);
-
-                if (!map->GetTerrain()->IsInWater(x, y, z))
-                {
-                    if (map->GetTerrain()->IsInWater(tstX, tstY, tstZ) && !map->GetTerrain()->IsInWater(prevX, prevY, prevZ))// if first we start contact with water, we save coordinate Z before water and use her
-                    {
-                        beforewaterz = prevZ;
-                        tstZ = beforewaterz;
-                    }
-                    else if (map->GetTerrain()->IsInWater(tstX, tstY, tstZ)) // it next step , where first contact was previos step, and we must recalculate prevZ to Z before water.
-                    {
-                        prevZ = beforewaterz;
-                        tstZ = beforewaterz;
-                    }
-                }
-                else if (map->GetTerrain()->IsInWater(tstX, tstY, tstZ))
-                {
-                    prevZ = z;
-                    tstZ = z;
-                }
-
-                if (!map->GetTerrain()->IsInWater(tstX, tstY, tstZ))  // second safety check z for blink way if on the ground
-                {
-                    // highest available point
-                    tstZ1 = map->GetTerrain()->GetHeight(tstX, tstY, prevZ);
-                    // upper or floor
-                    tstZ2 = map->GetTerrain()->GetHeight(tstX, tstY, prevZ);
-                    //lower than floor
-                    tstZ3 = map->GetTerrain()->GetHeight(tstX, tstY, prevZ);
-
-                    //distance of rays, will select the shortest in 3D
-                    srange1 = sqrt((tstY - prevY) * (tstY - prevY) + (tstX - prevX) * (tstX - prevX) + (tstZ1 - prevZ) * (tstZ1 - prevZ));
-                    srange2 = sqrt((tstY - prevY) * (tstY - prevY) + (tstX - prevX) * (tstX - prevX) + (tstZ2 - prevZ) * (tstZ2 - prevZ));
-                    srange3 = sqrt((tstY - prevY) * (tstY - prevY) + (tstX - prevX) * (tstX - prevX) + (tstZ3 - prevZ) * (tstZ3 - prevZ));
-
-                    if (srange1 < srange2)
-                        tstZ = tstZ1;
-                    else if (srange3 < srange2)
-                        tstZ = tstZ3;
-                    else
-                        tstZ = tstZ2;
-                }
-
-                destZ = tstZ;
-                srange = sqrt((tstY - prevY) * (tstY - prevY) + (tstX - prevX) * (tstX - prevX) + (tstZ - prevZ) * (tstZ - prevZ));
-                totalpath += srange;
-
-                if (totalpath > distance)
-                    newdistance = totalpath - distance;
-
-                bool col = VMAP::VMapFactory::createOrGetVMapManager()->getObjectHitPos(mapid, prevX, prevY, prevZ + 0.5f, tstX, tstY, tstZ + 0.5f, tstX, tstY, tstZ, -0.5f);
-                //bool dcol = m_caster->GetMap()->GetTerrain()->getObjectHitPos(prevX, prevY, prevZ + 0.5f, tstX, tstY, tstZ + 0.5f, tstX, tstY, tstZ, -0.5f);
-                bool dcol = m_caster->GetMap()->GetHitPosition(prevX, prevY, prevZ + 0.5f, tstX, tstY, tstZ, -0.5f);
-
-                // collision occured
-                if (col || dcol || (newdistance > 0.0f) || (fabs(prevZ - tstZ) > maxtravelDistZ))
-                {
-                    if ((newdistance > 0.0f) && (newdistance < step))
-                    {
-                        destX = prevX + newdistance * cos(orientation);
-                        destY = prevY + newdistance * sin(orientation);
-                    }
-                    else
-                    {
-                        // move back a bit
-                        destX = tstX - (0.6 * cos(orientation));
-                        destY = tstY - (0.6 * sin(orientation));
-                    }
-
-                    travelDistZ = sqrt((destY - prevY) * (destY - prevY) + (destX - prevX) * (destX - prevX));
-                    // highest available point
-                    destZ1 = map->GetTerrain()->GetHeight(destX, destY, prevZ + travelDistZ, true);
-                    // upper or floor
-                    destZ2 = map->GetTerrain()->GetHeight(destX, destY, prevZ + travelDistZ, true);
-                    //lower than floor
-                    destZ3 = map->GetTerrain()->GetHeight(destX, destY, prevZ - travelDistZ, true);
-
-                    //distance of rays, will select the shortest in 3D
-                    srange1 = sqrt((destY - prevY) * (destY - prevY) + (destX - prevX) * (destX - prevX) + (destZ1 - prevZ) * (destZ1 - prevZ));
-                    srange2 = sqrt((destY - prevY) * (destY - prevY) + (destX - prevX) * (destX - prevX) + (destZ2 - prevZ) * (destZ2 - prevZ));
-                    srange3 = sqrt((destY - prevY) * (destY - prevY) + (destX - prevX) * (destX - prevX) + (destZ3 - prevZ) * (destZ3 - prevZ));
-
-                    if (srange1 < srange2)
-                        destZ = destZ1;
-                    else if (srange3 < srange2)
-                        destZ = destZ3;
-                    else
-                        destZ = destZ2;
-
-                    if (map->GetTerrain()->IsInWater(destX, destY, destZ)) // recheck collide on top water 
-                        destZ = prevZ;
-
-                    break;
-                }
-                // we have correct destZ now
-            }
-
-            destPos.Relocate(destX, destY, destZ, orientation);
-
-            if (unitTarget->GetDistance(destPos.GetPositionX(), destPos.GetPositionY(), destPos.GetPositionZ()) <= distance)
-                unitTarget->NearTeleportTo(destPos.GetPositionX(), destPos.GetPositionY(), destPos.GetPositionZ(), destPos.GetOrientation(), true);
-        }
+        destx -= 0.6 * cos(orientation);
+        desty -= 0.6 * sin(orientation);
+        dist = sqrt((x - destx) * (x - destx) + (y - desty) * (y - desty));
+        step = dist / 10.0f;
     }
-    else
+
+    int j = 0;
+    for (j; j < 10; j++)
     {
-        float z = destPos.GetPositionZ();
-        bool col = VMAP::VMapFactory::createOrGetVMapManager()->getObjectHitPos(mapid, destPos.GetPositionX(), destPos.GetPositionY(), z + 0.5f, destX, destY, z + 0.5f, destX, destY, z, -0.5f);
-        // check dynamic collision
-        //bool dcol = m_caster->GetMap()->getObjectHitPos(destPos.GetPositionX(), destPos.GetPositionY(), z + 0.5f, destX, destY, z + 0.5f, destX, destY, z, -0.5f);
-        bool dcol = m_caster->GetMap()->GetHitPosition(destPos.GetPositionX(), destPos.GetPositionY(), z + 0.5f, destX, destY, z, -0.5f);
-
-        if (col || dcol)
+        if (fabs(z - destz) > 6)
         {
-            // move back a bit
-            destY = destX - (0.6 * cos(destPos.GetOrientation()));
-            destY = destY - (0.6 * sin(destPos.GetOrientation()));
-
-            lastpos.Relocate(destX, destY, z, destPos.GetOrientation());
+            destx -= step * cos(orientation);
+            desty -= step * sin(orientation);
+            ground = unitTarget->GetMap()->GetTerrain()->GetHeight(destx, desty, MAX_HEIGHT, true);
+            floor = unitTarget->GetMap()->GetTerrain()->GetHeight(destx, desty, z, true);
+            destz = fabs(ground - z) <= fabs(floor - z) ? ground : floor;
         }
-
-        if (unitTarget->GetDistance(lastpos.GetPositionX(), lastpos.GetPositionY(), lastpos.GetPositionZ()) <= distance)
-            unitTarget->NearTeleportTo(lastpos.GetPositionX(), lastpos.GetPositionY(), lastpos.GetPositionZ(), lastpos.GetOrientation(), true);
+        else break;
     }
+
+    pos.m_positionX = destx;
+    pos.m_positionY = desty;
+    pos.m_positionZ = destz;
+    pos.o = orientation;
+
+    if (j < 10)
+        unitTarget->NearTeleportTo(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ() + 0.07531, pos.o, unitTarget == m_caster); 
 
 }
 

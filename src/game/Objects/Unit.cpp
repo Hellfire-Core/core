@@ -13384,14 +13384,14 @@ void Unit::GetLeapForwardDestination(Position& pos, float distance)
         float floor = _map->GetHeight(dest.m_positionX, dest.m_positionY, pos.m_positionZ, true);
         dest.m_positionZ = fabs(ground - pos.m_positionZ) <= fabs(floor - pos.m_positionZ) ? ground : floor;
 
-        bool result = VMAP::VMapFactory::createOrGetVMapManager()->isInLineOfSight(GetMapId(), pos.m_positionX, pos.m_positionY, pos.m_positionZ + 1.0f, dest.m_positionX, dest.m_positionY, dest.m_positionZ + 1.0f, true);
+        bool result = VMAP::VMapFactory::createOrGetVMapManager()->isInLineOfSight(GetMapId(), pos.m_positionX, pos.m_positionY, pos.m_positionZ, dest.m_positionX, dest.m_positionY, dest.m_positionZ, true);
         if (result)
         {
-            dest.m_positionZ += 1.0f;
+            dest.m_positionZ += 0.5f;
             pos = dest;
             return;
         }
-    }
+    } 
 }
 
 uint32 Unit::GetSpellRadiusForTarget(Unit* target,const SpellRadiusEntry * radiusEntry)
