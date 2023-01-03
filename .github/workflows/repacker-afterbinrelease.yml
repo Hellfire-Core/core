@@ -21,21 +21,21 @@ jobs:
     - uses: actions/checkout@v2
 
     #download latest bin # folder after extract: Release
-    - uses: robinraju/release-downloader@v1.2
+    - uses: robinraju/release-downloader@v1.7
       with:
         repository: "Hellfire-Core/core"
         tag: "latest"
         fileName: "*"
 
     #download latest map, # folder after extract: data
-    - uses: robinraju/release-downloader@v1.2
+    - uses: robinraju/release-downloader@v1.7
       with:
         repository: "Hellfire-Core/core"
         tag: "data-latest"
         fileName: "*"
 
     #download latest db # folder after extract: db_dump
-    - uses: robinraju/release-downloader@v1.2
+    - uses: robinraju/release-downloader@v1.7
       with:
         repository: "Hellfire-Core/core"
         tag: "db-latest"
