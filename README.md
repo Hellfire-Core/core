@@ -2,7 +2,11 @@
 
 [![linux build](https://github.com/Hellfire-Core/core/actions/workflows/linux-build.yml/badge.svg)](https://github.com/Hellfire-Core/core/actions/workflows/linux-build.yml)
 
+
 # Hellfire Project
+[![Hellfire](https://github.com/Hellfire-Core/core/blob/main/docs/mvs1dl2p-1920.png?raw=true)]
+
+
 hellfire is a educational and hobby project dedicated to creating a world-class MMORPG framework. 
 
 Originally based on code from the MaNGOS and Trinity projects, cherry pick good codes from cmangos, Hellground, OregonCore, Skyfire and VMaNGOS. focusing on to support the legacy TBC patch 2.4.3, including 2.5.2 TBC Classic. 
