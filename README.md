@@ -4,7 +4,7 @@
 
 
 # Hellfire Project
-[![Hellfire](https://github.com/Hellfire-Core/core/blob/main/docs/mvs1dl2p-1920.png?raw=true)]
+[Hellfire](https://github.com/Hellfire-Core/core/blob/main/docs/mvs1dl2p-1920.png?raw=true)
 
 
 hellfire is a educational and hobby project dedicated to creating a world-class MMORPG framework. 
