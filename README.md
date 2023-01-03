@@ -3,8 +3,6 @@
 [![linux build](https://github.com/Hellfire-Core/core/actions/workflows/linux-build.yml/badge.svg)](https://github.com/Hellfire-Core/core/actions/workflows/linux-build.yml)
 
 
-# Hellfire Project
-
 [![Hellfire](https://github.com/Hellfire-Core/core/blob/main/docs/logo.png?raw=true)](https://github.com/Hellfire-Core/core/actions/workflows/windows-build.yml)
 
 hellfire is a educational and hobby project dedicated to creating a world-class MMORPG framework. 
