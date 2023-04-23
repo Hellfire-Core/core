@@ -7431,60 +7431,15 @@ void Spell::EffectLeapForward(uint32 i)
     if (unitTarget->IsTaxiFlying())
         return;
 
-    if (!m_targets.HasDst())
-        return;
-
-    Position pos;
-    uint32 mapid = m_caster->GetMapId();
-    float dist = m_caster->GetSpellRadiusForTarget(unitTarget, sSpellRadiusStore.LookupEntry(m_spellInfo->EffectRadiusIndex[i]));
-    if (Player* modOwner = m_originalCaster->GetSpellModOwner())
-        modOwner->ApplySpellMod(m_spellInfo->Id, SPELLMOD_RADIUS, dist);
-
-    float x, y, z;
-    float destx, desty, destz, ground, floor;
-    float orientation = unitTarget->GetOrientation(), step = dist / 10.0f;
-
-    unitTarget->GetPosition(x, y, z);
-    destx = x + dist * cos(orientation);
-    desty = y + dist * sin(orientation);
-    ground = unitTarget->GetMap()->GetTerrain()->GetHeight(destx, desty, MAX_HEIGHT, true);
-    floor = unitTarget->GetMap()->GetTerrain()->GetHeight(destx, desty, z, true);
-    destz = fabs(ground - z) <= fabs(floor - z) ? ground : floor;
-
-    bool col = VMAP::VMapFactory::createOrGetVMapManager()->getObjectHitPos(mapid, x, y, z, destx, desty, destz, destx, desty, destz, 0.5f);
-    bool dcol = unitTarget->GetMap()->GetLosHitPosition(x, y, z + 0.5f, destx, desty, destz, -0.5f);
-    
-
-    if (col || dcol)// We had a collision!
+    if (GetSpellEntry()->rangeIndex == 1)                        //self range
     {
-        destx -= 0.6 * cos(orientation);
-        desty -= 0.6 * sin(orientation);
-        dist = sqrt((x - destx) * (x - destx) + (y - desty) * (y - desty));
-        step = dist / 10.0f;
+        Position dest;
+        dest.m_positionX = m_targets.m_destX;
+        dest.m_positionY = m_targets.m_destY;
+        dest.m_positionZ = m_targets.m_destZ;
+
+        unitTarget->NearTeleportTo(dest.m_positionX, dest.m_positionY, dest.m_positionZ, unitTarget->GetOrientation(), unitTarget == m_caster);
     }
-
-    int j = 0;
-    for (j; j < 10; j++)
-    {
-        if (fabs(z - destz) > 6)
-        {
-            destx -= step * cos(orientation);
-            desty -= step * sin(orientation);
-            ground = unitTarget->GetMap()->GetTerrain()->GetHeight(destx, desty, MAX_HEIGHT, true);
-            floor = unitTarget->GetMap()->GetTerrain()->GetHeight(destx, desty, z, true);
-            destz = fabs(ground - z) <= fabs(floor - z) ? ground : floor;
-        }
-        else break;
-    }
-
-    pos.m_positionX = destx;
-    pos.m_positionY = desty;
-    pos.m_positionZ = destz;
-    pos.o = orientation;
-
-    if (j < 10)
-        unitTarget->NearTeleportTo(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ() + 0.07531, pos.o, unitTarget == m_caster); 
-
 }
 
 void Spell::EffectLeapBack(uint32 i)
