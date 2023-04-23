@@ -26,6 +26,8 @@
 
 #if COMPILER == COMPILER_INTEL
 #include <ext/hash_map>
+#elif COMPILER == COMPILER_GNU && (__GNUC__ > 7)
+#include <unordered_map>
 #elif COMPILER == COMPILER_GNU && (__GNUC__ > 4 || __GNUC__ == 4 && __GNUC_MINOR__ >= 3)
 #include <tr1/unordered_map>
 #elif COMPILER == COMPILER_GNU && __GNUC__ >= 3
@@ -51,6 +53,9 @@ using stdext::hash_map;
 #elif COMPILER == COMPILER_INTEL
 #define UNORDERED_MAP std::hash_map
 using std::hash_map;
+#elif COMPILER == COMPILER_GNU && (__GNUC__ > 7)
+#define UNORDERED_MAP std::unordered_map
+#define UNORDERED_MULTIMAP std::unordered_multimap
 #elif COMPILER == COMPILER_GNU && (__GNUC__ > 4 || __GNUC__ == 4 && __GNUC_MINOR__ >= 3)
 #define UNORDERED_MAP std::tr1::unordered_map
 #define UNORDERED_MULTIMAP std::tr1::unordered_multimap
