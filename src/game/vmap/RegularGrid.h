@@ -59,7 +59,7 @@ class RegularGrid2D
 #define HGRID_MAP_SIZE  (533.33333f * 64.f)     // shouldn't be changed
 #define CELL_SIZE       float(HGRID_MAP_SIZE/(float)CELL_NUMBER)
 
-        typedef UNORDERED_MULTIMAP<T const*, Node*> MemberTable;
+        typedef G3D::Table<T const*, Node*> MemberTable;
 
         MemberTable memberTable;
         Node* nodes[CELL_NUMBER][CELL_NUMBER];
@@ -88,7 +88,7 @@ class RegularGrid2D
                 {
                     Node& node = getGrid(x, y);
                     node.insert(value);
-                    memberTable.emplace(&value, &node);
+                    memberTable.set(&value, &node);
                 }
             }
         }
@@ -116,10 +116,9 @@ class RegularGrid2D
 
         void remove(T const& value)
         {
-            for (auto& p : MapEqualRange(memberTable, &value))
-                p.second->remove(value);
+            memberTable[&value]->remove(value);
             // Remove the member
-            memberTable.erase(&value);
+            memberTable.remove(&value);
         }
 
         void balance()
@@ -130,7 +129,7 @@ class RegularGrid2D
                         n->balance();
         }
 
-        bool contains(T const& value) const { return memberTable.count(&value) > 0; }
+        bool contains(T const& value) const { return memberTable.containsKey(&value); }
         int size() const { return uint32(memberTable.size()); }
 
         struct Cell
