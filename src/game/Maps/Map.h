@@ -39,6 +39,8 @@
 
 #include <bitset>
 #include <list>
+#include <unordered_map>
+
 
 namespace VMAP
 {
