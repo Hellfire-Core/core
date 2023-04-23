@@ -23,6 +23,7 @@
 #include "ace/Singleton.h"
 
 #include "Common.h"
+#include "GameObject.h"
 
 struct AreaTriggerEntry;
 struct CinematicSequencesEntry;

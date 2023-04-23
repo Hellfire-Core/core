@@ -7452,7 +7452,7 @@ void Spell::EffectLeapForward(uint32 i)
     destz = fabs(ground - z) <= fabs(floor - z) ? ground : floor;
 
     bool col = VMAP::VMapFactory::createOrGetVMapManager()->getObjectHitPos(mapid, x, y, z, destx, desty, destz, destx, desty, destz, 0.5f);
-    bool dcol = unitTarget->GetMap()->GetHitPosition(x, y, z + 0.5f, destx, desty, destz, -0.5f);
+    bool dcol = unitTarget->GetMap()->GetLosHitPosition(x, y, z + 0.5f, destx, desty, destz, -0.5f);
     
 
     if (col || dcol)// We had a collision!
