@@ -2605,7 +2605,7 @@ Creature * Map::GetCreature(uint64 guid)
 {
     CreaturesMapType::const_iterator a = creaturesMap.find(guid);
 
-    if (a != creaturesMap.cend())
+    if (a != creaturesMap.end())
     {
         if (a->second->GetInstanceId() != GetInstanceId())
             return NULL;
@@ -2620,7 +2620,7 @@ Creature * Map::GetCreature(uint64 guid, float x, float y)
 {
     CreaturesMapType::const_iterator a = creaturesMap.find(guid);
 
-    if (a != creaturesMap.cend())
+    if (a != creaturesMap.end())
     {
         CellPair p = MaNGOS::ComputeCellPair(x,y);
         if (p.x_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP || p.y_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP)
@@ -2669,7 +2669,7 @@ GameObject * Map::GetGameObject(uint64 guid)
 {
     GObjectMapType::const_iterator a = gameObjectsMap.find(guid);
 
-    if (a != gameObjectsMap.cend())
+    if (a != gameObjectsMap.end())
     {
         if (a->second->GetInstanceId() != GetInstanceId())
             return NULL;
@@ -2684,7 +2684,7 @@ DynamicObject * Map::GetDynamicObject(uint64 guid)
 {
     DObjectMapType::const_iterator a = dynamicObjectsMap.find(guid);
 
-    if (a != dynamicObjectsMap.cend())
+    if (a != dynamicObjectsMap.end())
     {
         if (a->second->GetInstanceId() != GetInstanceId())
             return NULL;
@@ -2746,7 +2746,7 @@ Object* Map::GetObjectByTypeMask(Player const &p, uint64 guid, uint32 typemask)
 void Map::VisibilityOfCreatureEntry(uint32 entry, bool hide)
 {
     CreatureIdToGuidListMapType::const_iterator a = creatureIdToGuidMap.find(entry);
-    if (a == creatureIdToGuidMap.cend())
+    if (a == creatureIdToGuidMap.end())
         return;
 
     std::list<uint64> tmpList = a->second;
@@ -2780,7 +2780,7 @@ std::list<uint64> Map::GetCreaturesGUIDList(uint32 id, GetCreatureGuidType type 
 {
     std::list<uint64> returnList;
     CreatureIdToGuidListMapType::const_iterator a = creatureIdToGuidMap.find(id);
-    if (a != creatureIdToGuidMap.cend())
+    if (a != creatureIdToGuidMap.end())
     {
         std::list<uint64> tmpList = a->second;
 
@@ -2839,7 +2839,7 @@ uint64 Map::GetCreatureGUID(uint32 id, GetCreatureGuidType type)
     uint64 returnGUID = 0;
 
     CreatureIdToGuidListMapType::const_iterator a = creatureIdToGuidMap.find(id);
-    if (a != creatureIdToGuidMap.cend())
+    if (a != creatureIdToGuidMap.end())
     {
         switch (type)
         {

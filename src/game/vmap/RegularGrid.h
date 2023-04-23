@@ -24,8 +24,9 @@
 #include <G3D/AABox.h>
 #include <G3D/Table.h>
 #include <G3D/PositionTrait.h>
+#include "Utilities/UnorderedMap.h"
 
-#include "Errors.h"
+//#include "Errors.h"
 
 using G3D::Vector2;
 using G3D::Vector3;
@@ -56,7 +57,7 @@ class RegularGrid2D
 #define HGRID_MAP_SIZE  (533.33333f * 64.f)     // shouldn't be changed
 #define CELL_SIZE       float(HGRID_MAP_SIZE/(float)CELL_NUMBER)
 
-        typedef std::unordered_multimap<T const*, Node*> MemberTable;
+        typedef UNORDERED_MULTIMAP<T const*, Node*> MemberTable;
 
         MemberTable memberTable;
         Node* nodes[CELL_NUMBER][CELL_NUMBER];
