@@ -398,7 +398,7 @@ if(UNIX)
     #set(BUILD_ADDITIONAL_FLAGS "${BUILD_ADDITIONAL_FLAGS} -fsanitize=unsigned-integer-overflow")
   endif()
 
-  set(BUILD_ADDITIONAL_FLAGS "${BUILD_ADDITIONAL_FLAGS} -std=c++11 --no-warnings -fexceptions -fnon-call-exceptions -march=native -pipe ")
+  set(BUILD_ADDITIONAL_FLAGS "${BUILD_ADDITIONAL_FLAGS} --no-warnings -fexceptions -fnon-call-exceptions -march=native -pipe ")
   set(CMAKE_CXX_STANDARD 11)
   if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     if(PROFILE_GENERATE)
