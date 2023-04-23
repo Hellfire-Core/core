@@ -39,7 +39,7 @@
 #include "WaypointMgr.h"
 #include "BattleGround.h"
 #include "GridMap.h"
-
+#include "PathFinder.h"
 #include "InstanceSaveMgr.h"
 #include "VMapFactory.h"
 #include "MoveMap.h"
@@ -429,6 +429,7 @@ void Map::Update(const uint32 &t_diff)
 {
     volatile uint32 debug_map_id = GetId();
     uint32 startTime = WorldTimer::getMSTime();
+    _dynamicTree.update(t_diff);
 
     /// update worldsessions for existing players
     for (m_mapRefIter = m_mapRefManager.begin(); m_mapRefIter != m_mapRefManager.end(); ++m_mapRefIter)
@@ -2604,7 +2605,7 @@ Creature * Map::GetCreature(uint64 guid)
 {
     CreaturesMapType::const_iterator a = creaturesMap.find(guid);
 
-    if (a != creaturesMap.end())
+    if (a != creaturesMap.cend())
     {
         if (a->second->GetInstanceId() != GetInstanceId())
             return NULL;
@@ -2619,7 +2620,7 @@ Creature * Map::GetCreature(uint64 guid, float x, float y)
 {
     CreaturesMapType::const_iterator a = creaturesMap.find(guid);
 
-    if (a != creaturesMap.end())
+    if (a != creaturesMap.cend())
     {
         CellPair p = MaNGOS::ComputeCellPair(x,y);
         if (p.x_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP || p.y_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP)
@@ -2668,7 +2669,7 @@ GameObject * Map::GetGameObject(uint64 guid)
 {
     GObjectMapType::const_iterator a = gameObjectsMap.find(guid);
 
-    if (a != gameObjectsMap.end())
+    if (a != gameObjectsMap.cend())
     {
         if (a->second->GetInstanceId() != GetInstanceId())
             return NULL;
@@ -2683,7 +2684,7 @@ DynamicObject * Map::GetDynamicObject(uint64 guid)
 {
     DObjectMapType::const_iterator a = dynamicObjectsMap.find(guid);
 
-    if (a != dynamicObjectsMap.end())
+    if (a != dynamicObjectsMap.cend())
     {
         if (a->second->GetInstanceId() != GetInstanceId())
             return NULL;
@@ -2745,7 +2746,7 @@ Object* Map::GetObjectByTypeMask(Player const &p, uint64 guid, uint32 typemask)
 void Map::VisibilityOfCreatureEntry(uint32 entry, bool hide)
 {
     CreatureIdToGuidListMapType::const_iterator a = creatureIdToGuidMap.find(entry);
-    if (a == creatureIdToGuidMap.end())
+    if (a == creatureIdToGuidMap.cend())
         return;
 
     std::list<uint64> tmpList = a->second;
@@ -2779,7 +2780,7 @@ std::list<uint64> Map::GetCreaturesGUIDList(uint32 id, GetCreatureGuidType type 
 {
     std::list<uint64> returnList;
     CreatureIdToGuidListMapType::const_iterator a = creatureIdToGuidMap.find(id);
-    if (a != creatureIdToGuidMap.end())
+    if (a != creatureIdToGuidMap.cend())
     {
         std::list<uint64> tmpList = a->second;
 
@@ -2838,7 +2839,7 @@ uint64 Map::GetCreatureGUID(uint32 id, GetCreatureGuidType type)
     uint64 returnGUID = 0;
 
     CreatureIdToGuidListMapType::const_iterator a = creatureIdToGuidMap.find(id);
-    if (a != creatureIdToGuidMap.end())
+    if (a != creatureIdToGuidMap.cend())
     {
         switch (type)
         {
@@ -3217,23 +3218,156 @@ std::string Map::getDebugData()
     return str.str();
 }
 
+bool Map::IsInLineOfSight(float x1, float y1, float z1, float x2, float y2, float z2, bool checkDynLos, bool ignoreM2Model) const
+{
+    ASSERT(MaNGOS::IsValidMapCoord(x1, y1, z1));
+    ASSERT(MaNGOS::IsValidMapCoord(x2, y2, z2));
+
+    return VMAP::VMapFactory::createOrGetVMapManager()->isInLineOfSight(GetId(), x1, y1, z1, x2, y2, z2, ignoreM2Model)
+        && (!checkDynLos || CheckDynamicTreeLoS(x1, y1, z1, x2, y2, z2, ignoreM2Model));
+}
+
 /**
 * get the hit position and return true if we hit something (in this case the dest position will hold the hit-position)
 * otherwise the result pos will be the dest pos
 */
-bool Map::GetHitPosition(float srcX, float srcY, float srcZ, float& destX, float& destY, float& destZ, float modifyDist) const
+bool Map::GetLosHitPosition(float srcX, float srcY, float srcZ, float& destX, float& destY, float& destZ, float modifyDist) const
 {
     // check all static objects
     float tempX, tempY, tempZ = 0.0f;
     bool result0 = VMAP::VMapFactory::createOrGetVMapManager()->getObjectHitPos(GetId(), srcX, srcY, srcZ, destX, destY, destZ, tempX, tempY, tempZ, modifyDist);
     if (result0)
     {
-        //DEBUG_LOG("Map::GetHitPosition vmaps corrects gained with static objects! new dest coords are X:%f Y:%f Z:%f", destX, destY, destZ);
+        //DEBUG_LOG("Map::GetLosHitPosition vmaps corrects gained with static objects! new dest coords are X:%f Y:%f Z:%f", destX, destY, destZ);
         destX = tempX;
         destY = tempY;
         destZ = tempZ;
     }
-    return result0;
+    // at second all dynamic objects, if static check has an hit, then we can calculate only to this closer point
+    G3D::Vector3 startPos = G3D::Vector3(srcX, srcY, srcZ);
+    G3D::Vector3 dstPos = G3D::Vector3(destX, destY, destZ);
+    G3D::Vector3 resultPos;
+    bool result1 = GetDynamicObjectHitPos(startPos, dstPos, resultPos, modifyDist);
+    if (result1)
+    {
+        sLog.outDebug("Map::GetLosHitPosition vmaps corrects gained with dynamic objects! new dest coords are X:%f Y:%f Z:%f", destX, destY, destZ);
+        destX = resultPos.x;
+        destY = resultPos.y;
+        destZ = resultPos.z;
+    }
+
+    return result0 || result1;
+}
+
+bool Map::GetWalkHitPosition(Transport* transport, float srcX, float srcY, float srcZ, float& destX, float& destY, float& destZ, uint32 moveAllowedFlags, float zSearchDist, bool locatedOnSteepSlope) const
+{
+    if (transport)
+        return false;
+
+    if (!MaNGOS::IsValidMapCoord(srcX, srcY, srcZ))
+    {
+        sLog.outDebug("Map::GetWalkHitPosition invalid source coordinates,"
+            "x1: %f y1: %f z1: %f, x2: %f, y2: %f, z2: %f on map %d",
+            srcX, srcY, srcZ, destX, destY, destZ, GetId());
+        return false;
+    }
+
+    if (!MaNGOS::IsValidMapCoord(destX, destY, destZ))
+    {
+        sLog.outDebug("Map::GetWalkHitPosition invalid destination coordinates,"
+            "x1: %f y1: %f z1: %f, x2: %f, y2: %f, z2: %f on map %u",
+            srcX, srcY, srcZ, destX, destY, destZ, GetId());
+        return false;
+    }
+
+    MMAP::MMapManager* mmap = MMAP::MMapFactory::createOrGetMMapManager();
+    dtNavMeshQuery const* m_navMeshQuery = mmap->GetNavMeshQuery(GetId(), GetInstanceId());
+    if (!m_navMeshQuery)
+    {
+        sLog.outDebug("WalkHitPos: No nav mesh loaded !");
+        return false;
+    }
+
+    /// Find navmesh position near source
+    float point[3] = { srcY, srcZ, srcX };
+    // Warning : Coord order is Y,Z,X
+    float closestPoint[3] = { 0.0f, 0.0f, 0.0f };
+    float endPosition[3] = { destY, destZ, destX };
+
+    dtQueryFilter filter;
+    filter.setIncludeFlags(moveAllowedFlags);
+
+    dtPolyRef startRef = PathFinder::FindWalkPoly(m_navMeshQuery, point, filter, closestPoint, zSearchDist);
+    if (!startRef)
+    {
+        sLog.outDebug("WalkHitPos: Start poly not found");
+        return false;
+    }
+
+    /// Walk on the surface found
+    dtPolyRef visited[50] = { 0 };
+    int visitedCount = 0;
+    float t = 0.0f;
+    float hitNormal[3] = { 0 }; // Normal of wall hit. Not always defined by raycast (if no wall hit)
+    dtStatus result = m_navMeshQuery->raycast(startRef, closestPoint, endPosition, &filter, &t, hitNormal, visited, &visitedCount, 50);
+    if (DT_SUCCESS != (result) || !visitedCount)
+    {
+        sLog.outDebug("WalkHitPos: Navmesh raycast failed");
+        return false;
+    }
+    for (int i = 0; i < 3; ++i)
+        endPosition[i] += hitNormal[i] * 0.5f;
+    if (DT_SUCCESS != (m_navMeshQuery->closestPointOnPoly(visited[visitedCount - 1], endPosition, endPosition)))
+        return false;
+
+    /// Compute complete path, and at each path step, check for dynamic LoS collision
+    // Rq: This is non-sense on Transports, since we are using position offsets ...
+    float pathPoints[MAX_POINT_PATH_LENGTH * VERTEX_SIZE];
+    int pointCount = 0;
+    result = m_navMeshQuery->findStraightPath(
+        closestPoint,         // start position
+        endPosition,          // end position
+        visited,              // current path
+        visitedCount,         // length of current path
+        pathPoints,           // [out] path corner points
+        nullptr,
+        nullptr,
+        (int*)&pointCount,
+        20);                  // maximum number of points/polygons to use
+    if (DT_SUCCESS != (result))
+        return false;
+    // Add 1y height, because navmesh height is not very precise.
+    Vector3 dstPos = Vector3(srcX, srcY, srcZ + 1.0f);
+    for (int i = 0; i < pointCount; ++i)
+    {
+        Vector3 startPos = dstPos;
+        dstPos = Vector3(pathPoints[i * VERTEX_SIZE + 2], pathPoints[i * VERTEX_SIZE], pathPoints[i * VERTEX_SIZE + 1]);
+        dstPos.z += 1.0f;
+        if (GetDynamicObjectHitPos(startPos, dstPos, dstPos, -1.0f))
+            break;
+    }
+
+    destX = dstPos.x;
+    destY = dstPos.y;
+    destZ = dstPos.z;
+    if (!MaNGOS::IsValidMapCoord(destX, destY, destZ))
+        return false;
+    else
+        destZ = GetHeight(destX, destY, destZ);
+    return true;
+}
+
+VMAP::ModelInstance* Map::FindCollisionModel(float x1, float y1, float z1, float x2, float y2, float z2)
+{
+    ASSERT(MaNGOS::IsValidMapCoord(x1, y1, z1));
+    ASSERT(MaNGOS::IsValidMapCoord(x2, y2, z2));
+    return VMAP::VMapFactory::createOrGetVMapManager()->FindCollisionModel(GetId(), x1, y1, z1, x2, y2, z2);
+}
+
+float Map::GetHeight(float x, float y, float z, bool vmap/*=true*/, float maxSearchDist/*=DEFAULT_HEIGHT_SEARCH*/) const
+{
+    ASSERT(MaNGOS::IsValidMapCoord(x, y, z));
+    return std::max<float>(GetTerrain()->GetHeight(x, y, z, vmap, maxSearchDist), GetDynamicTreeHeight(x, y, z, maxSearchDist));
 }
 
 // Find an height within a reasonable range of provided Z. This method may fail so we have to handle that case.
@@ -3364,7 +3498,7 @@ bool Map::GetReachableRandomPointOnGround(float& x, float& y, float& z, float ra
     float i_y = y + range * sin(angle);
     float i_z = z + 1.0f;
 
-    GetHitPosition(x, y, z + 1.0f, i_x, i_y, i_z, -0.5f);
+    GetLosHitPosition(x, y, z + 1.0f, i_x, i_y, i_z, -0.5f);
     i_z = z; // reset i_z to z value to avoid too much difference from original point before GetHeightInRange
     if (!GetHeightInRange(i_x, i_y, i_z)) // GetHeight can fail
         return false;
