@@ -390,12 +390,6 @@ class Map : public GridRefManager<NGridType>
 
         typedef std::set<Object*> ObjectSet;
         ObjectSet i_objectsToClientUpdate;
-
-        GObjectMapType                  gameObjectsMap;
-        DObjectMapType                  dynamicObjectsMap;
-        CreaturesMapType                creaturesMap;
-        CreatureIdToGuidListMapType     creatureIdToGuidMap;
-
         bool m_broken;
 
     protected:
