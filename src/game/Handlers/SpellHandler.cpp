@@ -137,8 +137,8 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
                 continue;
             }
 
-            if (spellInfo->EffectImplicitTargetA[0] == TARGET_UNIT_TARGET_ENEMY || spellInfo->EffectImplicitTargetA[1] == TARGET_UNIT_TARGET_ENEMY || spellInfo->EffectImplicitTargetA[2] == TARGET_UNIT_TARGET_ENEMY)
-                if (Unit *tUnit = Unit::GetUnit(*GetPlayer(), GetPlayer()->GetSelection()))
+            if (spellInfo->EffectImplicitTargetA[0] == TARGET_UNIT_ENEMY || spellInfo->EffectImplicitTargetA[1] == TARGET_UNIT_ENEMY || spellInfo->EffectImplicitTargetA[2] == TARGET_UNIT_ENEMY)
+                if (Unit* tUnit = Unit::GetUnit(*GetPlayer(), GetPlayer()->GetSelection()))
                 {
                     if (!pUser->IsFriendlyTo(tUnit))// enemy targeting only
                         targets.setUnitTarget(tUnit);
