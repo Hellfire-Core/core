@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2008 MaNGOS <http://getmangos.com/>
- * Copyright (C) 2008 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2008-2017 Hellground <http://wow-hellground.com/>
+ * Copyright (C) 2009-2017 MaNGOSOne <https://github.com/mangos/one>
+ * Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1573,7 +1573,7 @@ void GameEventMgr::SendWorldStateUpdate(Player * plr, uint16 event_id)
     }
 }
 
-HELLGROUND_EXPORT bool isGameEventActive(uint16 event_id)
+bool isGameEventActive(uint16 event_id)
 {
     GameEventMgr::ActiveEvents const& ae = sGameEventMgr.GetActiveEventList();
 
@@ -1584,7 +1584,7 @@ HELLGROUND_EXPORT bool isGameEventActive(uint16 event_id)
     return false;
 }
 
-HELLGROUND_EXPORT void HandleWorldEventGossip(Player* p, Creature* c)
+void HandleWorldEventGossip(Player* p, Creature* c)
 {
     sGameEventMgr.HandleWorldEventGossip(p, c);
 }

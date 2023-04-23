@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2015 Hellground <http://www.hellground.pl/>
+ * Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef HELLGROUND_WORLDEVENTPROCESSOR_H
-#define HELLGROUND_WORLDEVENTPROCESSOR_H
+#ifndef _WORLDEVENTPROCESSOR_H
+#define _WORLDEVENTPROCESSOR_H
 
 #include <map>
 
@@ -27,7 +27,7 @@
 
 class Player;
 
-class HELLGROUND_IMPORT_EXPORT WorldEvent
+class WorldEvent
 {
     public:
         WorldEvent(Player* player) : _owner(player) {}
@@ -39,7 +39,7 @@ class HELLGROUND_IMPORT_EXPORT WorldEvent
         Player* _owner;
 };
 
-class HELLGROUND_IMPORT_EXPORT WorldEventProcessor
+class WorldEventProcessor
 {
     friend class ACE_Singleton<WorldEventProcessor, ACE_Thread_Mutex>;
     WorldEventProcessor() {}

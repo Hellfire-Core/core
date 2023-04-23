@@ -1,7 +1,8 @@
 /*
- * Copyright (C) 2005-2012 MaNGOS <http://getmangos.com/>
- * Copyright (C) 2008 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
+ * Copyright (C) 2005-2011 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2009-2011 MaNGOSZero <https://github.com/mangos/zero>
+ * Copyright (C) 2011-2016 Nostalrius <https://nostalrius.org>
+ * Copyright (C) 2016-2017 Elysium Project <https://github.com/elysium-project>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -10,16 +11,16 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef HELLGROUND_DEFINE_H
-#define HELLGROUND_DEFINE_H
+#ifndef MANGOS_DEFINE_H
+#define MANGOS_DEFINE_H
 
 #include <sys/types.h>
 
@@ -30,66 +31,26 @@
 
 #include "Platform/CompilerDefs.h"
 
-#define HELLGROUND_LITTLEENDIAN 0
-#define HELLGROUND_BIGENDIAN    1
+#define MANGOS_LITTLEENDIAN 0
+#define MANGOS_BIGENDIAN    1
 
-#if !defined(HELLGROUND_ENDIAN)
+#if !defined(MANGOS_ENDIAN)
 #  if defined (ACE_BIG_ENDIAN)
-#    define HELLGROUND_ENDIAN HELLGROUND_BIGENDIAN
+#    define MANGOS_ENDIAN MANGOS_BIGENDIAN
 #  else //ACE_BYTE_ORDER != ACE_BIG_ENDIAN
-#    define HELLGROUND_ENDIAN HELLGROUND_LITTLEENDIAN
+#    define MANGOS_ENDIAN MANGOS_LITTLEENDIAN
 #  endif //ACE_BYTE_ORDER
-#endif //HELLGROUND_ENDIAN
+#endif //MANGOS_ENDIAN
+
+#define MANGOS_PATH_MAX PATH_MAX                            // ace/os_include/os_limits.h -> ace/Basic_Types.h
 
 #if PLATFORM == PLATFORM_WINDOWS
-#  ifndef THIS_IS_SCRIPT_DLL
-#    define HELLGROUND_EXPORT __declspec(dllexport)
-#  else
-#    define HELLGROUND_EXPORT
-#  endif
-#  define HELLGROUND_IMPORT __cdecl
-#  define HELLGROUND_PATH_MAX MAX_PATH
+#  ifndef DECLSPEC_NORETURN
+#    define DECLSPEC_NORETURN __declspec(noreturn)
+#  endif //DECLSPEC_NORETURN
 #else //PLATFORM != PLATFORM_WINDOWS
-#  define HELLGROUND_EXPORT
-#  if defined(__APPLE_CC__) && defined(BIG_ENDIAN)
-#    define HELLGROUND_IMPORT __attribute__ ((longcall))
-#  elif defined(__x86_64__)
-#    define HELLGROUND_IMPORT
-#  else
-#    define HELLGROUND_IMPORT __attribute__ ((cdecl))
-#  endif //__APPLE_CC__ && BIG_ENDIAN
-#  define HELLGROUND_PATH_MAX PATH_MAX
-#endif //PLATFORM
-
-//
-// Use HELLGROUND_IMPORT_EXPORT define to proper export from core/shared/etc to script dll
-// While compile core - defined like __declspec(dllexport)
-// While compile script dll - defined like __declspec(dllimport)
-//
-// Use just HELLGROUND_EXPORT for static objects
-//
-// Make sense only in windows OS
-//
-#if PLATFORM == PLATFORM_WINDOWS
-#  ifndef THIS_IS_SCRIPT_DLL
-#    define HELLGROUND_IMPORT_EXPORT  __declspec(dllexport)
-#  else
-#    define HELLGROUND_IMPORT_EXPORT __declspec(dllimport)
-#  endif
-#else //PLATFORM != PLATFORM_WINDOWS
-#  define HELLGROUND_IMPORT_EXPORT
 #  define DECLSPEC_NORETURN
 #endif //PLATFORM
-
-
-#if !defined(DEBUG)
-#  define HELLGROUND_INLINE inline
-#else //DEBUG
-#  if !defined(HELLGROUND_DEBUG)
-#    define HELLGROUND_DEBUG
-#  endif //HELLGROUND_DEBUG
-#  define HELLGROUND_INLINE
-#endif //!DEBUG
 
 #if COMPILER == COMPILER_GNU
 #  define ATTR_NORETURN __attribute__((noreturn))
@@ -108,12 +69,11 @@ typedef ACE_UINT32 uint32;
 typedef ACE_UINT16 uint16;
 typedef ACE_UINT8 uint8;
 
-#if COMPILER != COMPILER_MICROSOFT
+#ifndef _WIN32
 typedef uint16      WORD;
 typedef uint32      DWORD;
 #endif //COMPILER
 
 typedef uint64 OBJECT_HANDLE;
 
-#endif //HELLGROUND_DEFINE_H
-
+#endif //MANGOS_DEFINE_H

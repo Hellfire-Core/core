@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
- * Copyright (C) 2008-2009 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2008-2017 Hellground <http://wow-hellground.com/>
+ * Copyright (C) 2009-2017 MaNGOSOne <https://github.com/mangos/one>
+ * Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,7 +65,7 @@ ObjectGridRespawnMover::Visit(CreatureMapType &m)
 
         float resp_x, resp_y, resp_z;
         c->GetRespawnCoord(resp_x, resp_y, resp_z);
-        CellPair resp_val = Hellground::ComputeCellPair(resp_x, resp_y);
+        CellPair resp_val = MaNGOS::ComputeCellPair(resp_x, resp_y);
         Cell resp_cell(resp_val);
 
         if (cur_cell.DiffGrid(resp_cell))

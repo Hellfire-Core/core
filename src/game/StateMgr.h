@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2009-2012 /dev/rsa for MaNGOS <http://getmangos.com/>
- * Copyright (C) 2008-2017 Hellground <http://wow-hellground.com/>
+ * Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
 
 /* StateMgr based on idea and part of code from SilverIce (http:://github.com/SilverIce
 */
-#ifndef HELLGROUND_STATEMGR_H
-#define HELLGROUND_STATEMGR_H
+#ifndef _STATEMGR_H
+#define _STATEMGR_H
 
 #include "LockedVector.h"
 #include "Common.h"
@@ -74,7 +74,7 @@ struct ActionInfo
 //typedef std::map<UnitActionPriority, ActionInfo> UnitActionStorage;
 typedef ACE_Based::LockedVector<ActionInfo> UnitActionStorage;
 
-class HELLGROUND_IMPORT_EXPORT UnitStateMgr
+class UnitStateMgr
 {
 
 protected:

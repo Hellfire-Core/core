@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2008 MaNGOS <http://getmangos.com/>
- * Copyright (C) 2008 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2008-2017 Hellground <http://wow-hellground.com/>
+ * Copyright (C) 2009-2017 MaNGOSOne <https://github.com/mangos/one>
+ * Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,14 +51,14 @@
 #include "TemporarySummon.h"
 #include "WaypointMovementGenerator.h"
 #include "VMapFactory.h"
-#include "movemap/MoveMap.h"
+#include "MoveMap.h"
 #include "GameEvent.h"
 #include "PoolManager.h"
 #include "Database/DatabaseImpl.h"
 #include "GridNotifiersImpl.h"
 #include "CellImpl.h"
 #include "InstanceSaveMgr.h"
-#include "TicketMgr.h"
+#include "GMTicketMgr.h"
 #include "Util.h"
 #include "Language.h"
 #include "CreatureGroups.h"
@@ -84,7 +84,7 @@ int32 World::m_activeObjectUpdateDistanceInInstances = DEFAULT_VISIBILITY_DISTAN
 World::World()
 {
     m_playerLimit = 0;
-    m_requiredPermissionMask = PERM_PLAYER;
+    m_requiredgmlevel = SEC_PLAYER;
     m_allowMovement = true;
     m_ShutdownMask = 0;
     m_ShutdownTimer = 0;
@@ -255,7 +255,7 @@ void World::AddSession_ (WorldSession* s)
     if (decrease_session)
         --Sessions;
 
-    if (m_playerLimit > 0 && Sessions >= m_playerLimit && !s->HasPermissions(PERM_GMT_HDEV))
+    if (m_playerLimit > 0 && Sessions >= m_playerLimit && !s->HasHigherGMLevel(SEC_MODERATOR))
     {
         if (!sObjectMgr.IsUnqueuedAccount(s->GetAccountId()) && !HasRecentlyDisconnected(s))
         {
@@ -527,7 +527,7 @@ void World::LoadConfigSettings(bool reload)
     loadConfig(CONFIG_INSTANCE_IGNORE_LEVEL, "Instance.IgnoreLevel", false);
     loadConfig(CONFIG_INSTANCE_IGNORE_RAID, "Instance.IgnoreRaid", false);
     loadConfig(CONFIG_MAX_PRIMARY_TRADE_SKILL, "MaxPrimaryTradeSkill", 2);
-    SetMotd(sConfig.GetStringDefault("Motd", "Welcome to a HellgroundCore Server."));
+    SetMotd(sConfig.GetStringDefault("Motd", "Welcome to a MangosCore Server."));
     loadConfig(CONFIG_PVP_TOKEN_ENABLE, "PvPToken.Enable", false);
     loadConfig(CONFIG_PVP_TOKEN_ID, "PvPToken.ItemID", 29434);
     loadConfig(CONFIG_PVP_TOKEN_COUNT, "PvPToken.ItemCount", 1);
@@ -634,13 +634,13 @@ void World::LoadConfigSettings(bool reload)
     loadConfig(CONFIG_GM_LOG_TRADE, "GM.LogTrade", false);
     loadConfig(CONFIG_ALLOW_GM_GROUP, "GM.AllowInvite", false);
     loadConfig(CONFIG_ALLOW_GM_FRIEND, "GM.AllowFriend", false);
-    loadConfig(CONFIG_GM_TRUSTED_LEVEL, "GM.TrustedLevel", PERM_HIGH_GMT);
+    loadConfig(CONFIG_GM_TRUSTED_LEVEL, "GM.TrustedLevel", SEC_BASIC_ADMIN);
     loadConfig(CONFIG_ENABLE_CRASHTEST, "EnableCrashtest", false);
 
-    loadConfig(CONFIG_COMMAND_LOG_PERMISSION, "CommandLogPermission", PERM_GMT_DEV);
-    loadConfig(CONFIG_INSTANT_LOGOUT, "InstantLogout", PERM_GMT_DEV);
-    loadConfig(CONFIG_MIN_GM_TEXT_LVL, "MinGMTextLevel", PERM_GMT_HDEV);
-    loadConfig(CONFIG_DISABLE_BREATHING, "DisableWaterBreath", PERM_CONSOLE);
+    loadConfig(CONFIG_COMMAND_LOG_PERMISSION, "CommandLogPermission", SEC_DEVELOPER);
+    loadConfig(CONFIG_INSTANT_LOGOUT, "InstantLogout", SEC_DEVELOPER);
+    loadConfig(CONFIG_MIN_GM_TEXT_LVL, "MinGMTextLevel", SEC_GAMEMASTER);
+    loadConfig(CONFIG_DISABLE_BREATHING, "DisableWaterBreath", SEC_CONSOLE);
     loadConfig(CONFIG_HIDE_GAMEMASTER_ACCOUNTS, "HideGameMasterAccounts", true);
 
     // Server rates
@@ -1107,8 +1107,8 @@ void World::SetInitialWorldSettings()
 
     ///- Loading strings. Getting no records means core load has to be canceled because no error message can be output.
     sLog.outString();
-    sLog.outString("Loading Hellground strings...");
-    if (!sObjectMgr.LoadHellgroundStrings())
+    sLog.outString("Loading Mangos strings...");
+    if (!sObjectMgr.LoadMangosStrings())
         exit(1);                                            // Error message displayed in function already
 
     ///- Update the realm entry in the database with the realm type from the config file
@@ -1908,7 +1908,7 @@ void World::SendGuildAnnounce(uint32 team, ...)
 {
     std::vector<WorldPacket*> data_list;
 
-    char const* text = sObjectMgr.GetHellgroundStringForDBCLocale(LANG_GUILD_ANNOUNCE);
+    char const* text = sObjectMgr.GetMangosStringForDBCLocale(LANG_GUILD_ANNOUNCE);
     char buf[1000];
     va_list argptr;
     va_start(argptr, team);
@@ -1945,7 +1945,7 @@ void World::SendGlobalGMMessage(WorldPacket *packet, WorldSession *self, uint32 
             itr->second->GetPlayer() &&
             itr->second->GetPlayer()->IsInWorld() &&
             itr->second != self &&
-            itr->second->HasPermissions(sWorld.getConfig(CONFIG_MIN_GM_TEXT_LVL)) &&
+            itr->second->HasHigherGMLevel(sWorld.getConfig(CONFIG_MIN_GM_TEXT_LVL)) &&
             (team == 0 || itr->second->GetPlayer()->GetTeam() == team))
         {
             itr->second->SendPacket(packet);
@@ -1958,7 +1958,7 @@ void World::SendWorldText(int32 string_id, uint32 preventFlags, ...)
 {
     std::vector<WorldPacket*> data_list;
 
-    char const* text = sObjectMgr.GetHellgroundStringForDBCLocale(string_id);
+    char const* text = sObjectMgr.GetMangosStringForDBCLocale(string_id);
     char buf[1000];
     va_list argptr;
     va_start(argptr, preventFlags);
@@ -1992,7 +1992,7 @@ void World::SendWorldTextForLevels(uint32 minLevel, uint32 maxLevel, uint32 prev
 {
     std::vector<WorldPacket*> data_list;
 
-    char const* text = sObjectMgr.GetHellgroundStringForDBCLocale(string_id);
+    char const* text = sObjectMgr.GetMangosStringForDBCLocale(string_id);
     char buf[1000];
     va_list argptr;
     va_start(argptr, string_id);
@@ -2030,7 +2030,7 @@ void World::SendGMText(int32 string_id, ...)
 {
     std::vector<WorldPacket*> data_list;
 
-    char const* text = sObjectMgr.GetHellgroundStringForDBCLocale(string_id);
+    char const* text = sObjectMgr.GetMangosStringForDBCLocale(string_id);
     char buf[1000];
     va_list argptr;
     va_start(argptr, string_id);
@@ -2047,7 +2047,7 @@ void World::SendGMText(int32 string_id, ...)
 
     for (SessionMap::iterator itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
     {
-        if (!itr->second || !itr->second->GetPlayer() || !itr->second->GetPlayer()->IsInWorld() || !itr->second->HasPermissions(getConfig(CONFIG_MIN_GM_TEXT_LVL)))
+        if (!itr->second || !itr->second->GetPlayer() || !itr->second->GetPlayer()->IsInWorld() || !itr->second->HasHigherGMLevel(getConfig(CONFIG_MIN_GM_TEXT_LVL)))
             continue;
 
         for (int i = 0; i < data_list.size(); ++i)
@@ -2117,7 +2117,7 @@ void World::KickAllWithoutPermissions(uint64 perms)
 {
     // session not removed at kick and will removed in next update tick
     for (SessionMap::iterator itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
-        if (!itr->second->HasPermissions(perms))
+        if (!itr->second->HasHigherGMLevel(perms))
             itr->second->KickPlayer();
 }
 
@@ -2203,17 +2203,17 @@ BanReturn World::BanAccount(BanMode mode, std::string nameIPOrMail, std::string 
     {
         Field* fieldsAccount = resultAccounts->Fetch();
         uint32 account = fieldsAccount[0].GetUInt32();
-        uint32 permissions = PERM_PLAYER;
+        uint8 gmlevel = SEC_PLAYER;
 
-        QueryResultAutoPtr resultAccPerm = AccountsDatabase.PQuery("SELECT permission_mask FROM account_permissions WHERE account_id = '%u' AND realm_id = '%u'", account, realmID);
+        QueryResultAutoPtr resultAccPerm = AccountsDatabase.PQuery("SELECT gmlevel FROM account_access WHERE account_id = '%u' AND realm_id = '%u'", account, realmID);
         if (resultAccPerm)
         {
             Field* fieldsAccId = resultAccPerm->Fetch();
             if (fieldsAccId)
-                permissions = fieldsAccId[0].GetUInt32();
+                gmlevel = fieldsAccId[0].GetUInt8();
         }
 
-        if (permissions & PERM_GMT)
+        if (gmlevel >= SEC_GAMEMASTER)
             continue;
 
         if (mode != BAN_IP && mode != BAN_EMAIL)
@@ -2698,20 +2698,26 @@ void World::SetPlayerLimit(int32 limit)
     if(limit >= 0)
     {
         m_playerLimit = limit;
-        QueryResultAutoPtr result = AccountsDatabase.PQuery("SELECT required_permission_mask from realms WHERE realm_id = '%u'", realmID);
+        QueryResultAutoPtr result = AccountsDatabase.PQuery("SELECT required_gmlevel from realms WHERE realm_id = '%u'", realmID);
         if (result)
-            m_requiredPermissionMask = result->Fetch()->GetUInt64();
+            m_requiredgmlevel = result->Fetch()->GetUInt8();
         else
-            m_requiredPermissionMask = PERM_PLAYER;
+            m_requiredgmlevel = SEC_PLAYER;
         return;
     }
     
     if(limit == -1)
-        m_requiredPermissionMask = PERM_GMT_DEV;
+        m_requiredgmlevel = SEC_MODERATOR;
     if(limit == -2)
-        m_requiredPermissionMask = PERM_HIGH_GMT | PERM_HEAD_DEVELOPER;
+        m_requiredgmlevel = SEC_TICKETMASTER;
     if(limit == -3)
-        m_requiredPermissionMask = PERM_ADM;
+        m_requiredgmlevel = SEC_GAMEMASTER;
+    if (limit == -4)
+        m_requiredgmlevel = SEC_BASIC_ADMIN;
+    if (limit == -5)
+        m_requiredgmlevel = SEC_DEVELOPER;
+    if (limit == -6)
+        m_requiredgmlevel = SEC_ADMINISTRATOR;
 }
 
 void World::UpdateMaxSessionCounters()

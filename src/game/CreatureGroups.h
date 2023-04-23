@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
- * Copyright (C) 2008-2009 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2008-2017 Hellground <http://wow-hellground.com/>
+ * Copyright (C) 2009-2017 MaNGOSOne <https://github.com/mangos/one>
+ * Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef HELLGROUND_CREATUREGROUPS_H
-#define HELLGROUND_CREATUREGROUPS_H
+#ifndef _CREATUREGROUPS_H
+#define _CREATUREGROUPS_H
 
 #include "Common.h"
 
@@ -71,10 +71,10 @@ class CreatureGroup
         void RemoveMember(Creature *member);
         void FormationReset(bool dismiss);
         // as for now, used in scripts to respawn whole group when one member enters evade mode
-        HELLGROUND_IMPORT_EXPORT void RespawnFormation(Creature *member);
+        void RespawnFormation(Creature *member);
 
         // used to respawn and evade whole formation
-        HELLGROUND_IMPORT_EXPORT void EvadeFormation(Creature *member);
+        void EvadeFormation(Creature *member);
 
         void LeaderMoveTo(float x, float y, float z);
         void MemberAttackStart(Creature* member, Unit *target);

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2008 MaNGOS <http://getmangos.com/>
- * Copyright (C) 2008 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2008-2017 Hellground <http://wow-hellground.com/>
+ * Copyright (C) 2009-2017 MaNGOSOne <https://github.com/mangos/one>
+ * Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -92,10 +92,10 @@ bool WorldSessionFilter::Process(WorldPacket* packet)
 }
 
 /// WorldSession constructor
-WorldSession::WorldSession(uint32 id, WorldSocket *sock, uint64 permissions, uint8 expansion, LocaleConstant locale, time_t mute_time, std::string mute_reason, time_t trollmute_time, std::string trollmute_reason, uint64 accFlags, uint16 opcDisabled) :
+WorldSession::WorldSession(uint32 id, WorldSocket *sock, uint8 gmlevel, uint8 expansion, LocaleConstant locale, time_t mute_time, std::string mute_reason, time_t trollmute_time, std::string trollmute_reason, uint64 accFlags, uint16 opcDisabled) :
 LookingForGroup_auto_join(false), LookingForGroup_auto_add(false), m_muteTime(mute_time), m_muteReason(mute_reason),
 m_trollmuteTime(trollmute_time), m_trollmuteReason(trollmute_reason), _player(NULL), m_Socket(sock),
-m_permissions(permissions), _accountId(id), m_expansion(expansion), m_opcodesDisabled(opcDisabled),
+m_gmlevel(gmlevel), _accountId(id), m_expansion(expansion), m_opcodesDisabled(opcDisabled),
 m_sessionDbcLocale(sWorld.GetAvailableDbcLocale(locale)), m_sessionDbLocaleIndex(sObjectMgr.GetIndexForLocale(locale)),
 _logoutTime(0), m_inQueue(false), m_playerLoading(false), m_playerLogout(false), m_playerSave(false), m_playerRecentlyLogout(false), m_latency(0), m_clientTimeDelay(0),
 m_accFlags(accFlags), m_Warden(NULL), m_bot(nullptr)
@@ -249,7 +249,7 @@ void WorldSession::SendPacket(WorldPacket const* packet)
         return;
     }
 
-    #ifdef HELLGROUND_DEBUG
+    #ifdef MANGOS_DEBUG
 
     // Code for network use statistic
     static uint64 sendPacketCount = 0;
@@ -283,7 +283,7 @@ void WorldSession::SendPacket(WorldPacket const* packet)
         sendLastPacketBytes = packet->wpos();               // wpos is real written size
     }
 
-    #endif                                                  // !HELLGROUND_DEBUG
+    #endif                                                  // !MANGOS_DEBUG
 
     if (m_Socket->SendPacket(*packet) == -1)
         m_Socket->CloseSocket();
@@ -346,7 +346,7 @@ void WorldSession::ProcessPacket(WorldPacket* packet)
                 }
                 else if (_player->IsInWorld())
                     (this->*opHandle.handler)(*packet);
-                else if (_player->HasTeleportTimerPassed(_player->GetSession()->HasPermissions(PERM_GMT_DEV)?10000 : 60000))
+                else if (_player->HasTeleportTimerPassed(_player->GetSession()->HasHigherGMLevel(SEC_DEVELOPER)?10000 : 60000))
                     //player should not be in game yet but sends opcodes, 60 sec lag is hard to belive, unstuck him
                 {
                     HandleMoveWorldportAckOpcode();
@@ -457,7 +457,7 @@ bool WorldSession::Update(uint32 diff, PacketFilter& updater)
             overtime = true;
     }
 
-    if (overtime && !HasPermissions(PERM_GMT))
+    if (overtime && !HasHigherGMLevel(SEC_GAMEMASTER))
     {
         switch (sWorld.getConfig(CONFIG_SESSION_UPDATE_OVERTIME_METHOD))
         {
@@ -476,7 +476,7 @@ bool WorldSession::Update(uint32 diff, PacketFilter& updater)
 
     bool logverbose = false;
     if (verbose == 1) // log only if overtime
-        if (overtime && !HasPermissions(PERM_GMT) && sWorld.getConfig(CONFIG_SESSION_UPDATE_OVERTIME_METHOD) >= OVERTIME_LOG)
+        if (overtime && !HasHigherGMLevel(SEC_GAMEMASTER) && sWorld.getConfig(CONFIG_SESSION_UPDATE_OVERTIME_METHOD) >= OVERTIME_LOG)
             logverbose = true;
 
     if (verbose == 2) // log if session update is logged as slow
@@ -777,7 +777,7 @@ void WorldSession::SendNotification(const char *format,...)
 
 void WorldSession::SendNotification(int32 string_id,...)
 {
-    char const* format = GetHellgroundString(string_id);
+    char const* format = GetMangosString(string_id);
     if (format)
     {
         va_list ap;
@@ -793,9 +793,9 @@ void WorldSession::SendNotification(int32 string_id,...)
     }
 }
 
-const char * WorldSession::GetHellgroundString(int32 entry) const
+const char * WorldSession::GetMangosString(int32 entry) const
 {
-    return sObjectMgr.GetHellgroundString(entry,GetSessionDbLocaleIndex());
+    return sObjectMgr.GetMangosString(entry,GetSessionDbLocaleIndex());
 }
 
 void WorldSession::Handle_NULL(WorldPacket& recvPacket)

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2015 Hellground <http://www.hellground.pl/>
+ * Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ int ACRequest::call()
     if (DetectFlyHack(pPlayer))
     {
         sLog.outLog(LOG_CHEAT, "Player %s (GUID: %u / ACCOUNT_ID: %u) - possible Fly Cheat. MapId: %u, coords: X: %f, Y: %f, Z: %f. MOVEMENTFLAGS: %u LATENCY: %u. BG/Arena: %s",
-            pPlayer->GetName(), pPlayer->GetGUIDLow(), pPlayer->GetSession()->GetAccountId(), pPlayer->GetMapId(), GetNewMovementInfo().pos.x, GetNewMovementInfo().pos.y, GetNewMovementInfo().pos.z, GetNewMovementInfo().GetMovementFlags(), latency, pPlayer->GetMap() ? (pPlayer->GetMap()->IsBattleGroundOrArena() ? "Yes" : "No") : "No");
+            pPlayer->GetName(), pPlayer->GetGUIDLow(), pPlayer->GetSession()->GetAccountId(), pPlayer->GetMapId(), GetNewMovementInfo().pos.m_positionX, GetNewMovementInfo().pos.m_positionY, GetNewMovementInfo().pos.m_positionZ, GetNewMovementInfo().GetMovementFlags(), latency, pPlayer->GetMap() ? (pPlayer->GetMap()->IsBattleGroundOrArena() ? "Yes" : "No") : "No");
         
         if (uint32 count = pPlayer->CumulativeACReport(ANTICHEAT_CHECK_FLYHACK))
             sWorld.SendGMText(LANG_ANTICHEAT_FLY, pPlayer->GetName(), pPlayer->GetName(), count);
@@ -54,7 +54,7 @@ int ACRequest::call()
     if (DetectWaterWalkHack(pPlayer))
     {
         sLog.outLog(LOG_CHEAT, "Player %s (GUID: %u / ACCOUNT_ID: %u) - possible water walk Cheat. MapId: %u, coords: %f %f %f. MOVEMENTFLAGS: %u LATENCY: %u. BG/Arena: %s",
-            pPlayer->GetName(), pPlayer->GetGUIDLow(), pPlayer->GetSession()->GetAccountId(), pPlayer->GetMapId(), GetNewMovementInfo().pos.x, GetNewMovementInfo().pos.y, GetNewMovementInfo().pos.z, GetNewMovementInfo().GetMovementFlags(), latency, pPlayer->GetMap() ? (pPlayer->GetMap()->IsBattleGroundOrArena() ? "Yes" : "No") : "No");
+            pPlayer->GetName(), pPlayer->GetGUIDLow(), pPlayer->GetSession()->GetAccountId(), pPlayer->GetMapId(), GetNewMovementInfo().pos.m_positionX, GetNewMovementInfo().pos.m_positionY, GetNewMovementInfo().pos.m_positionZ, GetNewMovementInfo().GetMovementFlags(), latency, pPlayer->GetMap() ? (pPlayer->GetMap()->IsBattleGroundOrArena() ? "Yes" : "No") : "No");
 
         if (uint32 count = pPlayer->CumulativeACReport(ANTICHEAT_CHECK_WATERWALKHACK))
             sWorld.SendGMText(LANG_ANTICHEAT_WATERWALK, pPlayer->GetName(), pPlayer->GetName(), count);
@@ -71,18 +71,18 @@ int ACRequest::call()
 bool ACRequest::DetectTeleportToPlane(Player *pPlayer)
 {
     // teleport to plane cheat
-    if (GetNewMovementInfo().pos.z == 0.0f)
+    if (GetNewMovementInfo().pos.m_positionZ == 0.0f)
     {
-        float ground_Z = pPlayer->GetTerrain()->GetHeight(GetNewMovementInfo().pos.x, GetNewMovementInfo().pos.y, GetNewMovementInfo().pos.z);
+        float ground_Z = pPlayer->GetTerrain()->GetHeight(GetNewMovementInfo().pos.m_positionX, GetNewMovementInfo().pos.m_positionY, GetNewMovementInfo().pos.m_positionZ);
         float z_diff = fabs(ground_Z - pPlayer->GetPositionZ());
 
         // we are not really walking there
         if (z_diff > 1.0f)
         {
             sLog.outLog(LOG_CHEAT, "Player %s (GUID: %u / ACCOUNT_ID: %u) - teleport to plane cheat. MapId: %u, MapHeight: %f, coords: X: %f Y: %f Z: %f. MOVEMENTFLAGS: %u LATENCY: %u. BG/Arena: %s",
-                pPlayer->GetName(), pPlayer->GetGUIDLow(), pPlayer->GetSession()->GetAccountId(), pPlayer->GetMapId(), ground_Z, GetNewMovementInfo().pos.x, GetNewMovementInfo().pos.y, GetNewMovementInfo().pos.z, GetNewMovementInfo().GetMovementFlags(), pPlayer->GetSession()->GetLatency() , pPlayer->GetMap() ? (pPlayer->GetMap()->IsBattleGroundOrArena() ? "Yes" : "No") : "No");
+                pPlayer->GetName(), pPlayer->GetGUIDLow(), pPlayer->GetSession()->GetAccountId(), pPlayer->GetMapId(), ground_Z, GetNewMovementInfo().pos.m_positionX, GetNewMovementInfo().pos.m_positionY, GetNewMovementInfo().pos.m_positionZ, GetNewMovementInfo().GetMovementFlags(), pPlayer->GetSession()->GetLatency() , pPlayer->GetMap() ? (pPlayer->GetMap()->IsBattleGroundOrArena() ? "Yes" : "No") : "No");
 
-            pPlayer->Relocate(GetLastMovementInfo().pos.x, GetLastMovementInfo().pos.y, ground_Z, GetLastMovementInfo().pos.o);
+            pPlayer->Relocate(GetLastMovementInfo().pos.m_positionX, GetLastMovementInfo().pos.m_positionY, ground_Z, GetLastMovementInfo().pos.o);
             pPlayer->GetSession()->KickPlayer();
             return true;
         }
@@ -147,10 +147,10 @@ bool ACRequest::DetectSpeedHack(Player *pPlayer)
     Position n = GetNewMovementInfo().pos;
     Position o = GetLastMovementInfo().pos;
 
-    n.x = n.x - o.x;
-    n.y = n.y - o.y;
+    n.m_positionX = n.m_positionX - o.m_positionX;
+    n.m_positionY = n.m_positionY - o.m_positionY;
 
-    float exact2dDist = sqrt(n.x*n.x + n.y*n.y);
+    float exact2dDist = sqrt(n.m_positionX*n.m_positionX + n.m_positionY*n.m_positionY);
 
     // how many yards the player should do in one sec. (server-side speed)
     float speedRate = pPlayer->GetSpeed(UnitMoveType(moveType)) + GetNewMovementInfo().j_xyspeed;
@@ -176,7 +176,7 @@ bool ACRequest::DetectSpeedHack(Player *pPlayer)
         sLog.outLog(LOG_CHEAT, "Player %s (GUID: %u / ACCOUNT_ID: %u) shortmove count %u, server speed %f."
             "MapID: %u, player's coord X:%f Y:%f Z:%f. MOVEMENTFLAGS: %u LATENCY: %u.",
             pPlayer->GetName(), pPlayer->GetGUIDLow(), pPlayer->GetSession()->GetAccountId(), count, speedRate,
-            pPlayer->GetMapId(), GetNewMovementInfo().pos.x, GetNewMovementInfo().pos.y, GetNewMovementInfo().pos.z,
+            pPlayer->GetMapId(), GetNewMovementInfo().pos.m_positionX, GetNewMovementInfo().pos.m_positionY, GetNewMovementInfo().pos.m_positionZ,
             GetNewMovementInfo().GetMovementFlags(), pPlayer->GetSession()->GetLatency());
         return true;
     }
@@ -192,8 +192,8 @@ bool ACRequest::DetectSpeedHack(Player *pPlayer)
         ": %f (client speed: %f, time diff %u). MapID: %u, player's coord before X:%f Y:%f Z:%f."
         " Player's coord now X:%f Y:%f Z:%f. MOVEMENTFLAGS: %u LATENCY: %u. BG/Arena: %s, occurences count %u",
         pPlayer->GetName(), pPlayer->GetGUIDLow(), pPlayer->GetSession()->GetAccountId(), exact2dDist, speedRate,
-        clientSpeedRate, timeDiff, pPlayer->GetMapId(), GetLastMovementInfo().pos.x, GetLastMovementInfo().pos.y, GetLastMovementInfo().pos.z,
-        GetNewMovementInfo().pos.x, GetNewMovementInfo().pos.y, GetNewMovementInfo().pos.z,
+        clientSpeedRate, timeDiff, pPlayer->GetMapId(), GetLastMovementInfo().pos.m_positionX, GetLastMovementInfo().pos.m_positionY, GetLastMovementInfo().pos.m_positionZ,
+        GetNewMovementInfo().pos.m_positionX, GetNewMovementInfo().pos.m_positionY, GetNewMovementInfo().pos.m_positionZ,
         GetNewMovementInfo().GetMovementFlags(), pPlayer->GetSession()->GetLatency(),
         pPlayer->GetMap() ? (pPlayer->GetMap()->IsBattleGroundOrArena() ? "Yes" : "No") : "No", count);
     if (count >= 15)

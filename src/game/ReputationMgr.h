@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
- * Copyright (C) 2008-2017 Hellground <http://wow-hellground.com/>
+ * Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef HELLGROUND_REPUTATIONMGR_H
-#define HELLGROUND_REPUTATIONMGR_H
+#ifndef _REPUTATIONMGR_H
+#define _REPUTATIONMGR_H
 
 #include "Common.h"
 #include "SharedDefines.h"
@@ -55,7 +55,7 @@ typedef std::map<uint32,ReputationRank> ForcedReactions;
 
 class Player;
 
-class HELLGROUND_EXPORT ReputationMgr
+class ReputationMgr
 {
     public:                                                 // constructors and global modifiers
         explicit ReputationMgr(Player* owner) : m_player(owner) {}

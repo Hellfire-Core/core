@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2005-2011 MaNGOS <http://getmangos.com/>
- * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
+ * Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef HELLGROUND_DATABASEENV_H
-#define HELLGROUND_DATABASEENV_H
+#ifndef _DATABASEENV_H
+#define _DATABASEENV_H
 
 #include "Common.h"
 #include "Log.h"
@@ -35,8 +35,8 @@ typedef DatabaseMysql DatabaseType;
 #define _CONCAT3_(A,B,C) "CONCAT( " A " , " B " , " C " )"
 #define _OFFSET_         "LIMIT %d,1"
 
-extern HELLGROUND_IMPORT_EXPORT DatabaseType GameDataDatabase;
-extern HELLGROUND_IMPORT_EXPORT DatabaseType RealmDataDatabase;
-extern HELLGROUND_IMPORT_EXPORT DatabaseType AccountsDatabase;
+extern DatabaseType GameDataDatabase;
+extern DatabaseType RealmDataDatabase;
+extern DatabaseType AccountsDatabase;
 
 #endif

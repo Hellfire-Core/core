@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2008 MaNGOS <http://getmangos.com/>
- * Copyright (C) 2008 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2008-2017 Hellground <http://wow-hellground.com/>
+ * Copyright (C) 2009-2017 MaNGOSOne <https://github.com/mangos/one>
+ * Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef HELLGROUND_GAMEEVENT_H
-#define HELLGROUND_GAMEEVENT_H
+#ifndef _GAMEEVENT_H
+#define _GAMEEVENT_H
 
 #include "ace/Singleton.h"
 
@@ -174,5 +174,5 @@ class GameEventMgr
 #define sGameEventMgr (*ACE_Singleton<GameEventMgr, ACE_Null_Mutex>::instance())
 #endif
 
-HELLGROUND_IMPORT_EXPORT bool isGameEventActive(uint16 event_id);
-HELLGROUND_IMPORT_EXPORT void HandleWorldEventGossip(Player*, Creature*);
+bool isGameEventActive(uint16 event_id);
+void HandleWorldEventGossip(Player*, Creature*);

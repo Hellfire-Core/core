@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2008 MaNGOS <http://getmangos.com/>
- * Copyright (C) 2008 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
+ * Copyright (C) 2009-2017 MaNGOSOne <https://github.com/mangos/one>
+ * Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef HELLGROUND_GRIDREFERENCE_H
-#define HELLGROUND_GRIDREFERENCE_H
+#ifndef _GRIDREFERENCE_H
+#define _GRIDREFERENCE_H
 
 #include "Utilities/LinkedReference/Reference.h"
 
@@ -27,7 +27,7 @@ template<class OBJECT>
 class GridRefManager;
 
 template<class OBJECT>
-class HELLGROUND_IMPORT_EXPORT GridReference : public Reference<GridRefManager<OBJECT>, OBJECT>
+class GridReference : public Reference<GridRefManager<OBJECT>, OBJECT>
 {
     protected:
         void targetObjectBuildLink()

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2008 MaNGOS <http://getmangos.com/>
- * Copyright (C) 2008 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2008-2017 Hellground <http://wow-hellground.com/>
+ * Copyright (C) 2009-2017 MaNGOSOne <https://github.com/mangos/one>
+ * Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef HELLGROUND_OBJECTMGR_H
-#define HELLGROUND_OBJECTMGR_H
+#ifndef _OBJECTMGR_H
+#define _OBJECTMGR_H
 
 #include "ace/Singleton.h"
 
@@ -98,8 +98,8 @@ typedef UNORDERED_MAP<uint32/*(mapid,spawnMode) pair*/,CellObjectGuidsMap> MapOb
 typedef UNORDERED_MAP<uint64/*(instance,guid) pair*/,time_t> RespawnTimes;
 
 // trinity string ranges
-#define MIN_HELLGROUND_STRING_ID           1                    // 'HELLGROUND_string'
-#define MAX_HELLGROUND_STRING_ID           2000000000
+#define MIN_MANGOS_STRING_ID           1                    // 'mangos_string'
+#define MAX_MANGOS_STRING_ID           2000000000
 
 #define MIN_CREATURE_AI_TEXT_STRING_ID (-1)                 // 'creature_ai_texts'
 #define MAX_CREATURE_AI_TEXT_STRING_ID (-1000000)
@@ -107,7 +107,7 @@ typedef UNORDERED_MAP<uint64/*(instance,guid) pair*/,time_t> RespawnTimes;
 typedef std::map<uint32,uint32> CreatureLinkedRespawnMap;
 typedef UNORDERED_MAP<uint32,CreatureData> CreatureDataMap;
 typedef UNORDERED_MAP<uint32,GameObjectData> GameObjectDataMap;
-typedef UNORDERED_MAP<int32,std::string> HellgroundStringMap;
+typedef UNORDERED_MAP<int32,std::string> MangosStringMap;
 typedef UNORDERED_MAP<uint16,Timer> OpcodesCooldown;
 
 typedef std::multimap<uint32,uint32> QuestRelations;
@@ -236,7 +236,7 @@ SkillRangeType GetSkillRangeType(SkillLineEntry const *pSkill, bool racial);
 
 bool normalizePlayerName(std::string& name);
 
-struct HELLGROUND_IMPORT_EXPORT LanguageDesc
+struct LanguageDesc
 {
     Language lang_id;
     uint32   spell_id;
@@ -244,7 +244,7 @@ struct HELLGROUND_IMPORT_EXPORT LanguageDesc
 };
 
 extern LanguageDesc lang_description[LANGUAGES_COUNT];
-HELLGROUND_IMPORT_EXPORT LanguageDesc const* GetLanguageDescByID(uint32 lang);
+LanguageDesc const* GetLanguageDescByID(uint32 lang);
 
 struct PlayerPremadeItem
 {
@@ -271,8 +271,8 @@ struct PlayerPremadeSpecTemplate
     std::string name;
     std::vector<uint32> spells;
 };
-typedef std::unordered_map<uint32, PlayerPremadeGearTemplate> PlayerPremadeGearMap;
-typedef std::unordered_map<uint32, PlayerPremadeSpecTemplate> PlayerPremadeSpecMap;
+typedef UNORDERED_MAP<uint32, PlayerPremadeGearTemplate> PlayerPremadeGearMap;
+typedef UNORDERED_MAP<uint32, PlayerPremadeSpecTemplate> PlayerPremadeSpecMap;
 
 class ObjectMgr
 {
@@ -482,8 +482,8 @@ class ObjectMgr
 
         void LoadTransportEvents();
 
-        bool LoadHellgroundStrings(DatabaseType& db, char const* table, int32 min_value, int32 max_value);
-        bool LoadHellgroundStrings() { return LoadHellgroundStrings(GameDataDatabase,"hellground_string",MIN_HELLGROUND_STRING_ID,MAX_HELLGROUND_STRING_ID); }
+        bool LoadMangosStrings(DatabaseType& db, char const* table, int32 min_value, int32 max_value);
+        bool LoadMangosStrings() { return LoadMangosStrings(GameDataDatabase,"mangos_string",MIN_MANGOS_STRING_ID,MAX_MANGOS_STRING_ID); }
 
         void LoadPetCreateSpells();
         void LoadCreatureTemplates();
@@ -609,12 +609,12 @@ class ObjectMgr
         GameObjectData& NewGOData(uint32 guid) { return mGameObjectDataMap[guid]; }
         void DeleteGOData(uint32 guid);
 
-        bool HasHellgroundString(int32 entry) const
+        bool HasMangosString(int32 entry) const
         {
-            return mHellgroundStringMap.find(entry) != mHellgroundStringMap.end();
+            return mMangosStringMap.find(entry) != mMangosStringMap.end();
         }
-        const char *GetHellgroundString(int32 entry, int locale_idx) const;
-        const char *GetHellgroundStringForDBCLocale(int32 entry) const { return GetHellgroundString(entry,DBCLocaleIndex); }
+        const char *GetMangosString(int32 entry, int locale_idx) const;
+        const char *GetMangosStringForDBCLocale(int32 entry) const { return GetMangosString(entry,DBCLocaleIndex); }
         int32 GetDBCLocaleIndex() const { return DBCLocaleIndex; }
         void SetDBCLocaleIndex(uint32 lang) { DBCLocaleIndex = GetIndexForLocale(LocaleConstant(lang)); }
 
@@ -812,7 +812,7 @@ class ObjectMgr
         CreatureDataMap mCreatureDataMap;
         CreatureLinkedRespawnMap mCreatureLinkedRespawnMap;
         GameObjectDataMap mGameObjectDataMap;
-        HellgroundStringMap mHellgroundStringMap;
+        MangosStringMap mMangosStringMap;
         RespawnTimes mCreatureRespawnTimes;
         RespawnTimes mGORespawnTimes;
 
@@ -834,10 +834,10 @@ class ObjectMgr
 #define sObjectMgr (*ACE_Singleton<ObjectMgr, ACE_Null_Mutex>::instance())
 
 // scripting access functions
-HELLGROUND_IMPORT_EXPORT bool LoadHellgroundStrings(DatabaseType& db, char const* table,int32 start_value = MAX_CREATURE_AI_TEXT_STRING_ID, int32 end_value = std::numeric_limits<int32>::min());
-HELLGROUND_IMPORT_EXPORT GameObjectInfo const *GetGameObjectInfo(uint32 id);
-HELLGROUND_IMPORT_EXPORT CreatureInfo const *GetCreatureInfo(uint32 id);
-HELLGROUND_IMPORT_EXPORT CreatureInfo const* GetCreatureTemplateStore(uint32 entry);
-HELLGROUND_IMPORT_EXPORT Quest const* GetQuestTemplateStore(uint32 entry);
+bool LoadMangosStrings(DatabaseType& db, char const* table,int32 start_value = MAX_CREATURE_AI_TEXT_STRING_ID, int32 end_value = std::numeric_limits<int32>::min());
+GameObjectInfo const *GetGameObjectInfo(uint32 id);
+CreatureInfo const *GetCreatureInfo(uint32 id);
+CreatureInfo const* GetCreatureTemplateStore(uint32 entry);
+Quest const* GetQuestTemplateStore(uint32 entry);
 
 #endif

@@ -1,6 +1,6 @@
 /*
 * Copyright (C) 2005-2011 MaNGOS <http://getmangos.com/>
-* Copyright (C) 2008-2015 Hellground <http://hellground.net/>
+* Copyright (C) 2022 Hellfire <https://hellfire-core.github.io/>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by

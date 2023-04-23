@@ -21,7 +21,7 @@
 #include "SocialMgr.h"
 #include "MotionMaster.h"
 #include "ObjectMgr.h"
-#include "movement\MoveSpline.h"
+#include "MoveSpline.h"
 #include "Opcodes.h"
 #include "WorldPacket.h"
 #include "InstanceSaveMgr.h"

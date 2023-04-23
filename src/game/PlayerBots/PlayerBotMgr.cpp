@@ -397,7 +397,7 @@ bool PlayerBotMgr::AddBot(uint32 playerGUID, bool chatBot, PlayerBotAI* pAI)
 
     e->ai->botEntry = e.get();
     e->state = PB_STATE_LOADING;
-    WorldSession* session = new WorldSession(accountId, nullptr, sWorld.GetMinimumPermissionMask(), 1, LOCALE_enUS);
+    WorldSession* session = new WorldSession(accountId, nullptr, sWorld.GetMinimumGMLevel(), 1, LOCALE_enUS);
     session->SetBot(e);
     sWorld.AddSession(session);
     m_stats.loadingCount++;
@@ -734,7 +734,7 @@ bool ChatHandler::PartyBotAddRequirementCheck(Player const* pPlayer, Player cons
     }
 
     // Restrictions when the command is made public to avoid abuse.
-    if (GetSession()->HasPermissions(PERM_GMT) && !sWorld.getConfig(CONFIG_BOOL_PARTY_BOT_SKIP_CHECKS))
+    if (GetSession()->HasHigherGMLevel(SEC_GAMEMASTER) && !sWorld.getConfig(CONFIG_BOOL_PARTY_BOT_SKIP_CHECKS))
     {
         if (pPlayer->IsDead())
         {
@@ -847,7 +847,7 @@ bool ChatHandler::HandlePartyBotAddCommand(const char* args2)
         }
 
         // Prevent setting a custom level for bots unless the account is a GM or skipping checks is enabled.
-        if (GetSession()->HasPermissions(PERM_GMT) || sWorld.getConfig(CONFIG_BOOL_PARTY_BOT_SKIP_CHECKS))
+        if (GetSession()->HasHigherGMLevel(SEC_GAMEMASTER) || sWorld.getConfig(CONFIG_BOOL_PARTY_BOT_SKIP_CHECKS))
             ExtractUInt32(&args, botLevel);
     }
 

@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2005-2011 MaNGOS <http://getmangos.com/>
- * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
+ * Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -99,7 +99,7 @@ bool SqlQuery::Execute(SqlConnection *conn)
 void SqlResultQueue::Update()
 {
     /// execute the callbacks waiting in the synchronization queue
-    Hellground::IQueryCallback* callback = NULL;
+    MaNGOS::IQueryCallback* callback = NULL;
     while (next(callback))
     {
         callback->Execute();
@@ -107,7 +107,7 @@ void SqlResultQueue::Update()
     }
 }
 
-bool SqlQueryHolder::Execute(Hellground::IQueryCallback * callback, SqlDelayThread *thread, SqlResultQueue *queue)
+bool SqlQueryHolder::Execute(MaNGOS::IQueryCallback * callback, SqlDelayThread *thread, SqlResultQueue *queue)
 {
     if(!callback || !thread || !queue)
         return false;

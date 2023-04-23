@@ -6,6 +6,13 @@ if(WIN32)
     PosixDaemon.h
     PosixDaemon.cpp
   )
+  if (NOT MSVC)
+    list(REMOVE_ITEM shared_SRCS
+      WheatyExceptionReport.cpp
+      WheatyExceptionReport.h
+    )
+  endif()
+  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /D__ACE_INLINE__")
 else()
   list(REMOVE_ITEM shared_SRCS
     WheatyExceptionReport.cpp
@@ -45,16 +52,27 @@ include_directories(
   ${CMAKE_BINARY_DIR}
   ${ACE_INCLUDE_DIR}
   ${MYSQL_INCLUDE_DIR}
+  ${OPENSSL_INCLUDE_DIR}
 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/SystemConfig.h ${CMAKE_CURRENT_BINARY_DIR}/SystemConfig.h)
+if(WIN32)
+  include_directories(
+    ${CMAKE_SOURCE_DIR}/dep/windows/include
+  )
+endif()
 
 add_library(shared STATIC
   ${shared_SRCS}
 )
 
-add_dependencies(shared revision.h)
-if(NOT ACE_USE_EXTERNAL)
-  add_dependencies(shared ACE_Project)
-# add_dependencies(shared ace)
+if(UNIX)
+  find_package(Threads)
+  target_link_libraries(shared ${ACE_LIBRARIES} ${OPENSSL_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+endif(UNIX)
+
+if(MINGW)
+  target_link_libraries(shared ${ACE_LIBRARIES} -lws2_32)
 endif()
+
+SET_TARGET_PROPERTIES (shared PROPERTIES FOLDER "Game Libs")

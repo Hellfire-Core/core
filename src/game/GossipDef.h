@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2008 MaNGOS <http://getmangos.com/>
- * Copyright (C) 2008 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2008-2017 Hellground <http://wow-hellground.com/>
+ * Copyright (C) 2009-2017 MaNGOSOne <https://github.com/mangos/one>
+ * Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef HELLGROUND_GOSSIP_H
-#define HELLGROUND_GOSSIP_H
+#ifndef _GOSSIP_H
+#define _GOSSIP_H
 
 #include "Common.h"
 #include "QuestDef.h"
@@ -113,7 +113,7 @@ struct QuestMenuItem
 
 typedef std::vector<QuestMenuItem> QuestMenuItemList;
 
-class HELLGROUND_IMPORT_EXPORT GossipMenu
+class GossipMenu
 {
     public:
         GossipMenu();
@@ -181,7 +181,7 @@ class QuestMenu
         QuestMenuItemList m_qItems;
 };
 
-class HELLGROUND_IMPORT_EXPORT PlayerMenu
+class PlayerMenu
 {
     private:
         GossipMenu mGossipMenu;

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2008 MaNGOS <http://getmangos.com/>
- * Copyright (C) 2008 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2008-2017 Hellground <http://wow-hellground.com/>
+ * Copyright (C) 2009-2017 MaNGOSOne <https://github.com/mangos/one>
+ * Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef HELLGROUND_QUESTDEF_H
-#define HELLGROUND_QUESTDEF_H
+#ifndef _QUESTDEF_H
+#define _QUESTDEF_H
 
 #include "Platform/Define.h"
 #include "Database/DatabaseEnv.h"
@@ -132,15 +132,15 @@ enum __QuestFlags
     QUEST_FLAGS_DAILY          = 0x00001000,                // Used to know quest is Daily one
 
     // Trinity flags for set SpecialFlags in DB if required but used only at server
-    QUEST_HELLGROUND_FLAGS_REPEATABLE           = 0x010000,     // Set by 1 in SpecialFlags from DB
-    QUEST_HELLGROUND_FLAGS_EXPLORATION_OR_EVENT = 0x020000,     // Set by 2 in SpecialFlags from DB (if reequired area explore, spell SPELL_EFFECT_QUEST_COMPLETE casting, table `*_script` command SCRIPT_COMMAND_QUEST_EXPLORED use, set from script DLL)
-    QUEST_HELLGROUND_FLAGS_DB_ALLOWED = 0xFFFF | QUEST_HELLGROUND_FLAGS_REPEATABLE | QUEST_HELLGROUND_FLAGS_EXPLORATION_OR_EVENT,
+    QUEST_TRINITY_FLAGS_REPEATABLE           = 0x010000,     // Set by 1 in SpecialFlags from DB
+    QUEST_TRINITY_FLAGS_EXPLORATION_OR_EVENT = 0x020000,     // Set by 2 in SpecialFlags from DB (if reequired area explore, spell SPELL_EFFECT_QUEST_COMPLETE casting, table `*_script` command SCRIPT_COMMAND_QUEST_EXPLORED use, set from script DLL)
+    QUEST_TRINITY_FLAGS_DB_ALLOWED = 0xFFFF | QUEST_TRINITY_FLAGS_REPEATABLE | QUEST_TRINITY_FLAGS_EXPLORATION_OR_EVENT,
 
     // Trinity flags for internal use only
-    QUEST_HELLGROUND_FLAGS_DELIVER              = 0x040000,     // Internal flag computed only
-    QUEST_HELLGROUND_FLAGS_SPEAKTO              = 0x080000,     // Internal flag computed only
-    QUEST_HELLGROUND_FLAGS_KILL_OR_CAST         = 0x100000,     // Internal flag computed only
-    QUEST_HELLGROUND_FLAGS_TIMED                = 0x200000,     // Internal flag computed only
+    QUEST_TRINITY_FLAGS_DELIVER              = 0x040000,     // Internal flag computed only
+    QUEST_TRINITY_FLAGS_SPEAKTO              = 0x080000,     // Internal flag computed only
+    QUEST_TRINITY_FLAGS_KILL_OR_CAST         = 0x100000,     // Internal flag computed only
+    QUEST_TRINITY_FLAGS_TIMED                = 0x200000,     // Internal flag computed only
 };
 
 // This Quest class provides a convenient way to access a few pretotaled (cached) quest details,
@@ -204,7 +204,7 @@ class Quest
         uint32 GetCompleteEmote() const { return CompleteEmote; }
         uint32 GetQuestStartScript() const { return QuestStartScript; }
         uint32 GetQuestCompleteScript() const { return QuestCompleteScript; }
-        bool   IsRepeatable() const { return QuestFlags & QUEST_HELLGROUND_FLAGS_REPEATABLE; }
+        bool   IsRepeatable() const { return QuestFlags & QUEST_TRINITY_FLAGS_REPEATABLE; }
         bool   IsAutoComplete() const { return QuestMethod ? false : true; }
         uint32 GetFlags() const { return QuestFlags; }
         bool   IsDaily() const { return QuestFlags & QUEST_FLAGS_DAILY; }

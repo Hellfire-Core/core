@@ -32,6 +32,7 @@ include_directories(
   ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Detour/Include
 )
 
-add_library(detour STATIC
+add_library(Detour STATIC
   ${detour_SRCS}
 )
+SET_TARGET_PROPERTIES (Detour PROPERTIES FOLDER "3rd Party")

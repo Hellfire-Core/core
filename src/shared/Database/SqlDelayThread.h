@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2005-2011 MaNGOS <http://getmangos.com/>
- * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
+ * Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef HELLGROUND_SQLDELAYTHREAD_H
-#define HELLGROUND_SQLDELAYTHREAD_H
+#ifndef _SQLDELAYTHREAD_H
+#define _SQLDELAYTHREAD_H
 
 #include "ace/Thread_Mutex.h"
 #include "LockedQueue.h"

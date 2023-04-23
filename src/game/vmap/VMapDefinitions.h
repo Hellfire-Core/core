@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2005-2010 MaNGOS <http://getmangos.com/>
- * Copyright (C) 2008-2017 Hellground <http://wow-hellground.com/>
+ * Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef HELLGROUND_VMAPDEFINITIONS_H
-#define HELLGROUND_VMAPDEFINITIONS_H
+#ifndef _VMAPDEFINITIONS_H
+#define _VMAPDEFINITIONS_H
 #include <cstring>
 
 #define LIQUID_TILE_SIZE (533.333f / 128.f)

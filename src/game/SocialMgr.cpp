@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2008 MaNGOS <http://getmangos.com/>
- * Copyright (C) 2008 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2008-2017 Hellground <http://wow-hellground.com/>
+ * Copyright (C) 2009-2017 MaNGOSOne <https://github.com/mangos/one>
+ * Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -204,7 +204,7 @@ void SocialMgr::GetFriendInfo(Player *player, uint32 friendGUID, FriendInfo &fri
 
     uint32 team = player->GetTeam();
     bool allowTwoSideWhoList = sWorld.getConfig(CONFIG_ALLOW_TWO_SIDE_WHO_LIST);
-    bool gmInWhoList = sWorld.getConfig(CONFIG_GM_IN_WHO_LIST) || player->GetSession()->HasPermissions(PERM_GMT_HDEV);
+    bool gmInWhoList = sWorld.getConfig(CONFIG_GM_IN_WHO_LIST) || player->GetSession()->HasHigherGMLevel(SEC_DEVELOPER);
 
     PlayerSocialMap::iterator itr = player->GetSocial()->m_playerSocialMap.find(friendGUID);
     if (itr != player->GetSocial()->m_playerSocialMap.end())
@@ -213,9 +213,9 @@ void SocialMgr::GetFriendInfo(Player *player, uint32 friendGUID, FriendInfo &fri
     // PLAYER see his team only and PLAYER can't see MODERATOR, GAME MASTER, ADMINISTRATOR characters
     // MODERATOR, GAME MASTER, ADMINISTRATOR can see all
     if (pFriend && pFriend->GetName() &&
-        (player->GetSession()->HasPermissions(PERM_GMT_HDEV) ||
+        (player->GetSession()->HasHigherGMLevel(SEC_DEVELOPER) ||
         (pFriend->GetTeam() == team || allowTwoSideWhoList) &&
-        (!pFriend->GetSession()->HasPermissions(PERM_GMT) || gmInWhoList && pFriend->IsVisibleGloballyfor (player))))
+        (!pFriend->GetSession()->HasHigherGMLevel(SEC_GAMEMASTER) || gmInWhoList && pFriend->IsVisibleGloballyfor (player))))
     {
         friendInfo.Status = FriendStatus(friendInfo.Status | FRIEND_STATUS_ONLINE);
 
@@ -294,9 +294,9 @@ void SocialMgr::BroadcastToFriendListers(Player *player, WorldPacket *packet)
             // PLAYER see his team only and PLAYER can't see MODERATOR, GAME MASTER, ADMINISTRATOR characters
             // MODERATOR, GAME MASTER, ADMINISTRATOR can see all
             if (pFriend && pFriend->IsInWorld() &&
-                (pFriend->GetSession()->HasPermissions(PERM_GMT_HDEV) ||
+                (pFriend->GetSession()->HasHigherGMLevel(SEC_DEVELOPER) ||
                 (pFriend->GetTeam() == team || allowTwoSideWhoList) &&
-                (!player->GetSession()->HasPermissions(PERM_GMT) || gmInWhoList && player->IsVisibleGloballyfor (pFriend))))
+                (!player->GetSession()->HasHigherGMLevel(SEC_GAMEMASTER) || gmInWhoList && player->IsVisibleGloballyfor (pFriend))))
             {
                 pFriend->SendPacketToSelf(packet);
             }

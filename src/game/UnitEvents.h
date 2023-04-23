@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2008 MaNGOS <http://getmangos.com/>
- * Copyright (C) 2008 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2008-2017 Hellground <http://wow-hellground.com/>
+ * Copyright (C) 2009-2017 MaNGOSOne <https://github.com/mangos/one>
+ * Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef HELLGROUND_UNITEVENTS_H
-#define HELLGROUND_UNITEVENTS_H
+#ifndef _UNITEVENTS_H
+#define _UNITEVENTS_H
 
 #include "Common.h"
 
@@ -69,7 +69,7 @@ enum UNIT_EVENT_TYPE
 
 //==============================================================
 
-class HELLGROUND_IMPORT_EXPORT UnitBaseEvent
+class UnitBaseEvent
 {
     private:
         uint32 iType;
@@ -84,7 +84,7 @@ class HELLGROUND_IMPORT_EXPORT UnitBaseEvent
 
 //==============================================================
 
-class HELLGROUND_IMPORT_EXPORT ThreatRefStatusChangeEvent : public UnitBaseEvent
+class ThreatRefStatusChangeEvent : public UnitBaseEvent
 {
     private:
         HostileReference* iHostileReference;
@@ -121,7 +121,7 @@ class HELLGROUND_IMPORT_EXPORT ThreatRefStatusChangeEvent : public UnitBaseEvent
 
 //==============================================================
 
-class HELLGROUND_IMPORT_EXPORT ThreatManagerEvent : public ThreatRefStatusChangeEvent
+class ThreatManagerEvent : public ThreatRefStatusChangeEvent
 {
     private:
         ThreatContainer* iThreatContainer;

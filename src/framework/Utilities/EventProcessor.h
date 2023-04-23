@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2008 MaNGOS <http://getmangos.com/>
- * Copyright (C) 2008 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
+ * Copyright (C) 2009-2017 MaNGOSOne <https://github.com/mangos/one>
+ * Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef HELLGROUND_EVENTPROCESSOR_H
-#define HELLGROUND_EVENTPROCESSOR_H
+#ifndef _EVENTPROCESSOR_H
+#define _EVENTPROCESSOR_H
 
 #include "Platform/Define.h"
 
@@ -28,7 +28,7 @@
 #include <algorithm>
 // Note. All times are in milliseconds here.
 
-class HELLGROUND_IMPORT_EXPORT BasicEvent
+class BasicEvent
 {
     public:
         BasicEvent() { to_Abort = false; }
@@ -54,7 +54,7 @@ class HELLGROUND_IMPORT_EXPORT BasicEvent
 
 typedef std::multimap<uint64, BasicEvent*> EventList;
 
-class HELLGROUND_IMPORT_EXPORT EventProcessor
+class EventProcessor
 {
     public:
         EventProcessor();

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
+ * Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef HELLGROUND_DELAY_EXECUTOR_H
-#define HELLGROUND_DELAY_EXECUTOR_H
+#ifndef _DELAY_EXECUTOR_H
+#define _DELAY_EXECUTOR_H
 
 #include <ace/Task.h>
 #include <ace/Activation_Queue.h>

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2008 MaNGOS <http://getmangos.com/>
- * Copyright (C) 2008 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2008-2017 Hellground <http://wow-hellground.com/>
+ * Copyright (C) 2009-2017 MaNGOSOne <https://github.com/mangos/one>
+ * Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@ Player* ObjectAccessor::GetPlayerByName(const char *name)
 {
     std::string tmp = name;
     PlayerName2PlayerMapType::const_iterator a = i_playerName2Player.find(tmp);
-    if (a != i_playerName2Player.cend())
+    if (a != i_playerName2Player.end())
         if (a->second->IsInWorld())
             return a->second;
 
@@ -64,7 +64,7 @@ Player* ObjectAccessor::GetPlayerByName(const char *name)
 Player* ObjectAccessor::GetPlayerByName(std::string &name)
 {
     PlayerName2PlayerMapType::const_iterator a = i_playerName2Player.find(name);
-    if (a != i_playerName2Player.cend())
+    if (a != i_playerName2Player.end())
         if (a->second->IsInWorld())
             return a->second;
 
@@ -152,7 +152,7 @@ Corpse * ObjectAccessor::GetCorpse(WorldObject const &u, uint64 guid)
 Corpse* ObjectAccessor::GetCorpseForPlayerGUID(uint64 guid)
 {
     Player2CorpsesMapType::const_iterator a = i_player2corpse.find(guid);
-    if (a != i_player2corpse.cend())
+    if (a != i_player2corpse.end())
     {
         ASSERT(a->second->GetType() != CORPSE_BONES);
         return a->second;
@@ -166,11 +166,11 @@ void ObjectAccessor::RemoveCorpse(Corpse *corpse)
     ASSERT(corpse && corpse->GetType() != CORPSE_BONES);
 
     Player2CorpsesMapType::const_iterator a = i_player2corpse.find(corpse->GetOwnerGUID());
-    if (a == i_player2corpse.cend())
+    if (a == i_player2corpse.end())
         return;
 
     // build mapid*cellid -> guid_set map
-    CellPair cell_pair = Hellground::ComputeCellPair(corpse->GetPositionX(), corpse->GetPositionY());
+    CellPair cell_pair = MaNGOS::ComputeCellPair(corpse->GetPositionX(), corpse->GetPositionY());
     uint32 cell_id = (cell_pair.y_coord*TOTAL_NUMBER_OF_CELLS_PER_MAP) + cell_pair.x_coord;
 
     sObjectMgr.DeleteCorpseCellData(corpse->GetMapId(),cell_id,corpse->GetOwnerGUID());
@@ -191,7 +191,7 @@ void ObjectAccessor::AddCorpse(Corpse *corpse)
     i_player2corpse.insert(std::make_pair(corpse->GetOwnerGUID(), corpse));
 
     // build mapid*cellid -> guid_set map
-    CellPair cell_pair = Hellground::ComputeCellPair(corpse->GetPositionX(), corpse->GetPositionY());
+    CellPair cell_pair = MaNGOS::ComputeCellPair(corpse->GetPositionX(), corpse->GetPositionY());
     uint32 cell_id = (cell_pair.y_coord*TOTAL_NUMBER_OF_CELLS_PER_MAP) + cell_pair.x_coord;
 
     sObjectMgr.AddCorpseCellData(corpse->GetMapId(),cell_id,corpse->GetOwnerGUID(),corpse->GetInstanceId());
@@ -287,14 +287,14 @@ Corpse * ObjectAccessor::GetCorpse(uint32 mapid, float x, float y, uint64 guid)
 
     if (corpse && corpse->GetMapId() == mapid)
     {
-        CellPair p = Hellground::ComputeCellPair(x,y);
+        CellPair p = MaNGOS::ComputeCellPair(x,y);
         if (p.x_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP || p.y_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP)
         {
             sLog.outLog(LOG_DEFAULT, "ERROR: ObjectAccessor::GetCorpse: invalid coordinates supplied X:%f Y:%f grid cell [%u:%u]", x, y, p.x_coord, p.y_coord);
             return NULL;
         }
 
-        CellPair q = Hellground::ComputeCellPair(corpse->GetPositionX(), corpse->GetPositionY());
+        CellPair q = MaNGOS::ComputeCellPair(corpse->GetPositionX(), corpse->GetPositionY());
         if (q.x_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP || q.y_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP)
         {
             sLog.outLog(LOG_DEFAULT, "ERROR: ObjectAccessor::GetCorpse: object " UI64FMTD " has invalid coordinates X:%f Y:%f grid cell [%u:%u]", corpse->GetGUID(), corpse->GetPositionX(), corpse->GetPositionY(), q.x_coord, q.y_coord);

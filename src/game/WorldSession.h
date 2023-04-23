@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2011 MaNGOS <http://getmangos.com/>
- * Copyright (C) 2008 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2008-2017 Hellground <http://wow-hellground.com/>
+ * Copyright (C) 2009-2017 MaNGOSOne <https://github.com/mangos/one>
+ * Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,8 +22,8 @@
 /// @{
 /// \file
 
-#ifndef HELLGROUND_WORLDSESSION_H
-#define HELLGROUND_WORLDSESSION_H
+#ifndef _WORLDSESSION_H
+#define _WORLDSESSION_H
 
 #include "Common.h"
 #include "Log.h"
@@ -152,11 +152,11 @@ class WorldSessionFilter : public PacketFilter
 };
 
 /// Player session in the World
-class HELLGROUND_IMPORT_EXPORT WorldSession
+class WorldSession
 {
     friend class CharacterHandler;
     public:
-        WorldSession(uint32 id, WorldSocket *sock, uint64 permissions, uint8 expansion, LocaleConstant locale, time_t mute_time = 0, std::string mute_reason = "", time_t trollmute_time = 0, std::string trollmute_reason = "", uint64 accFlags = 0, uint16 opcDisabled = 0);
+        WorldSession(uint32 id, WorldSocket *sock, uint8 gmlevel, uint8 expansion, LocaleConstant locale, time_t mute_time = 0, std::string mute_reason = "", time_t trollmute_time = 0, std::string trollmute_reason = "", uint64 accFlags = 0, uint16 opcDisabled = 0);
         ~WorldSession();
 
         bool PlayerLoading() const { return m_playerLoading; }
@@ -181,12 +181,12 @@ class HELLGROUND_IMPORT_EXPORT WorldSession
         uint32 RecordSessionTimeDiff(const char *text, ...);
         uint32 RecordVerboseTimeDiff(bool reset);
 
-        uint64 GetPermissions() const { return m_permissions; }
-        bool HasPermissions(uint64 perms) const { return m_permissions & perms; }
+        uint8 GetGMLevel() const { return m_gmlevel; }
+        bool HasHigherGMLevel(uint8 gmlevel) const { return m_gmlevel >= gmlevel; }
         uint32 GetAccountId() const { return _accountId; }
         Player* GetPlayer() const { return _player; }
         char const* GetPlayerName() const;
-        void SetSecurity(uint64 permissions) { m_permissions = permissions; }
+        void SetSecurity(uint8 gmlevel) { m_gmlevel = gmlevel; }
         std::string const& GetRemoteAddress() { return m_Address; }
         void SetPlayer(Player *plr) { _player = plr; }
         uint8 Expansion() const { return m_expansion; }
@@ -323,7 +323,7 @@ class HELLGROUND_IMPORT_EXPORT WorldSession
         // Locales
         LocaleConstant GetSessionDbcLocale() const { return m_sessionDbcLocale; }
         int GetSessionDbLocaleIndex() const { return m_sessionDbLocaleIndex; }
-        const char *GetHellgroundString(int32 entry) const;
+        const char *GetMangosString(int32 entry) const;
 
         uint32 GetLatency() const { return m_latency; }
         void SetLatency(uint32 latency) { m_latency = latency; }
@@ -774,7 +774,7 @@ class HELLGROUND_IMPORT_EXPORT WorldSession
         WorldSocket *m_Socket;
         std::string m_Address;
 
-        uint64 m_permissions;
+        uint8 m_gmlevel;
         uint32 _accountId;
         uint8 m_expansion;
 

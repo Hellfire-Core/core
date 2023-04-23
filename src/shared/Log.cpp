@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2008 MaNGOS <http://getmangos.com/>
- * Copyright (C) 2008 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
+ * Copyright (C) 2009-2017 MaNGOSOne <https://github.com/mangos/one>
+ * Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -196,15 +196,15 @@ FILE* Log::openGmlogPerAccount(uint32 account)
     if(m_gmlog_filename_format.empty())
         return NULL;
 
-    char namebuf[HELLGROUND_PATH_MAX];
-    snprintf(namebuf,HELLGROUND_PATH_MAX,m_gmlog_filename_format.c_str(),account);
+    char namebuf[MANGOS_PATH_MAX];
+    snprintf(namebuf,MANGOS_PATH_MAX,m_gmlog_filename_format.c_str(),account);
     return fopen(namebuf, "a");
 }
 
 void Log::outPacket(uint32 glow, const char * str, ...)
 {
-    char namebuf[HELLGROUND_PATH_MAX];
-    snprintf(namebuf, HELLGROUND_PATH_MAX, "packets//%u.txt", glow);
+    char namebuf[MANGOS_PATH_MAX];
+    snprintf(namebuf, MANGOS_PATH_MAX, "packets//%u.txt", glow);
 
     FILE* per_file = fopen(namebuf, "a");
     va_list ap;
@@ -220,8 +220,8 @@ FILE* Log::openWhisplogPerAccount(uint32 account)
     if(m_whisplog_filename_format.empty())
         return NULL;
 
-    char namebuf[HELLGROUND_PATH_MAX];
-    snprintf(namebuf,HELLGROUND_PATH_MAX,m_whisplog_filename_format.c_str(),account);
+    char namebuf[MANGOS_PATH_MAX];
+    snprintf(namebuf,MANGOS_PATH_MAX,m_whisplog_filename_format.c_str(),account);
     return fopen(namebuf, "a");
 }
 

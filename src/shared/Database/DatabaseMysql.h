@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2005-2011 MaNGOS <http://getmangos.com/>
- * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
+ * Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
 
 #ifndef DO_POSTGRESQL
 
-#ifndef HELLGROUND_DATABASEMYSQL_H
-#define HELLGROUND_DATABASEMYSQL_H
+#ifndef _DATABASEMYSQL_H
+#define _DATABASEMYSQL_H
 
 //#include "Common.h"
 #include "Database.h"
@@ -32,6 +32,15 @@
 #include <mysql/mysql.h>
 #else
 #include <mysql.h>
+#endif
+
+#if MYSQL_VERSION_ID >= 80001
+typedef bool my_bool;
+#ifdef _MSC_VER
+#pragma message("You are using an incompatible mysql version!")
+#else
+#warning "You are using an incompatible mysql version!"
+#endif
 #endif
 
 //MySQL prepared statement class
@@ -64,6 +73,7 @@ private:
     MYSQL_BIND * m_pInputArgs;
     MYSQL_BIND * m_pResult;
     MYSQL_RES *m_pResultMetadata;
+
 };
 
 class MySQLConnection : public SqlConnection

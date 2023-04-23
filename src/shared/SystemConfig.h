@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2008 MaNGOS <http://getmangos.com/>
- * Copyright (C) 2008 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
+ * Copyright (C) 2009-2017 MaNGOSOne <https://github.com/mangos/one>
+ * Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,23 +20,23 @@
 
 // THIS FILE IS DEPRECATED
 
-#ifndef HELLGROUND_SYSTEMCONFIG_H
-#define HELLGROUND_SYSTEMCONFIG_H
+#ifndef _SYSTEMCONFIG_H
+#define _SYSTEMCONFIG_H
 
 #include "Platform/Define.h"
 #include "revision.h"
 
 
-#define _PACKAGENAME "HellgroundCore "
+#define _PACKAGENAME "HellfireCore "
 #define _CODENAME "YUME"
 
-#if HELLGROUND_ENDIAN == HELLGROUND_BIGENDIAN
+#if MANGOS_ENDIAN == MANGOS_BIGENDIAN
 # define _ENDIAN_STRING "big-endian"
 #else
 # define _ENDIAN_STRING "little-endian"
 #endif
 
-#define _FULLVERSION _PACKAGENAME "Rev: " __DATE__
+#define _FULLVERSION _PACKAGENAME "Rev: "  REVISION_HASH " Build Time: " REVISION_DATE
 
 #define DEFAULT_PLAYER_LIMIT 100
 #define DEFAULT_WORLDSERVER_PORT 8085                       //8129
@@ -48,14 +48,14 @@
 # define SYSCONFDIR ""
 #endif
 
-#define _HELLGROUND_CORE_CONFIG "hellgroundcore.conf"
-#define _HELLGROUND_REALM_CONFIG "hellgroundrealm.conf"
+#define _MANGOS_CORE_CONFIG "mangosd.conf"
+#define _MANGOS_REALM_CONFIG "realmd.conf"
 
 // Format is YYYYMMDDRR where RR is the change in the conf file
 // for that day.
-#ifndef _HELLGROUND_CORE_CONFVER
-# define _HELLGROUND_CORE_CONFVER 2015020801
-#endif //_HELLGROUND_CORE_CONFVER
+#ifndef _MANGOS_CORE_CONFVER
+# define _MANGOS_CORE_CONFVER 2015020801
+#endif //_MANGOS_CORE_CONFVER
 
 // Format is YYYYMMDDRR where RR is the change in the conf file
 // for that day.

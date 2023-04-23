@@ -1,6 +1,6 @@
-/*
+﻿/*
  * Copyright (C) 2005-2010 MaNGOS <http://getmangos.com/>
- * Copyright (C) 2008-2017 Hellground <http://wow-hellground.com/>
+ * Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@
 #include "GossipDef.h"
 #include "SpellAuras.h"
 #include "CreatureAI.h"
-
+#include "SystemConfig.h"
 #include "../shared/Config/Config.h"
 
 ScriptMapMap sQuestEndScripts;
@@ -64,7 +64,7 @@ ScriptMgr::~ScriptMgr()
 void ScriptMgr::LoadScriptTexts()
 {
     outstring_log("TSCR: Loading Script Texts...");
-    LoadHellgroundStrings(GameDataDatabase, "script_texts", TEXT_SOURCE_RANGE, 1 + (TEXT_SOURCE_RANGE * 2));
+    LoadMangosStrings(GameDataDatabase, "script_texts", TEXT_SOURCE_RANGE, 1 + (TEXT_SOURCE_RANGE * 2));
 
     QueryResultAutoPtr pResult = GameDataDatabase.PQuery("SELECT entry, sound, type, language, emote FROM script_texts");
 
@@ -271,7 +271,7 @@ void ScriptMgr::LoadScripts(ScriptMapMap& scripts, char const* tablename)
                     continue;
                 }
 
-                if (!Hellground::IsValidMapCoord(tmp.x,tmp.y,tmp.z,tmp.o))
+                if (!MaNGOS::IsValidMapCoord(tmp.x,tmp.y,tmp.z,tmp.o))
                 {
                     sLog.outLog(LOG_DB_ERR, "Table `%s` has invalid coordinates (X: %f Y: %f) in SCRIPT_COMMAND_TELEPORT_TO for script id %u",tablename,tmp.x,tmp.y,tmp.id);
                     continue;
@@ -281,7 +281,7 @@ void ScriptMgr::LoadScripts(ScriptMapMap& scripts, char const* tablename)
 
             case SCRIPT_COMMAND_TEMP_SUMMON_CREATURE:
             {
-                if (!Hellground::IsValidMapCoord(tmp.x,tmp.y,tmp.z,tmp.o))
+                if (!MaNGOS::IsValidMapCoord(tmp.x,tmp.y,tmp.z,tmp.o))
                 {
                     sLog.outLog(LOG_DB_ERR, "Table `%s` has invalid coordinates (X: %f Y: %f) in SCRIPT_COMMAND_TEMP_SUMMON_CREATURE for script id %u",tablename,tmp.x,tmp.y,tmp.id);
                     continue;
@@ -355,12 +355,12 @@ void ScriptMgr::LoadScripts(ScriptMapMap& scripts, char const* tablename)
                     continue;
                 }
 
-                if (!quest->HasFlag(QUEST_HELLGROUND_FLAGS_EXPLORATION_OR_EVENT))
+                if (!quest->HasFlag(QUEST_TRINITY_FLAGS_EXPLORATION_OR_EVENT))
                 {
-                    sLog.outLog(LOG_DB_ERR, "Table `%s` has quest (ID: %u) in SCRIPT_COMMAND_QUEST_EXPLORED in `datalong` for script id %u, but quest not have flag QUEST_HELLGROUND_FLAGS_EXPLORATION_OR_EVENT in quest flags. Script command or quest flags wrong. Quest modified to require objective.",tablename,tmp.datalong,tmp.id);
+                    sLog.outLog(LOG_DB_ERR, "Table `%s` has quest (ID: %u) in SCRIPT_COMMAND_QUEST_EXPLORED in `datalong` for script id %u, but quest not have flag QUEST_TRINITY_FLAGS_EXPLORATION_OR_EVENT in quest flags. Script command or quest flags wrong. Quest modified to require objective.",tablename,tmp.datalong,tmp.id);
 
                     // this will prevent quest completing without objective
-                    const_cast<Quest*>(quest)->SetFlag(QUEST_HELLGROUND_FLAGS_EXPLORATION_OR_EVENT);
+                    const_cast<Quest*>(quest)->SetFlag(QUEST_TRINITY_FLAGS_EXPLORATION_OR_EVENT);
 
                     // continue; - quest objective requirement set and command can be allowed
                 }
@@ -1079,15 +1079,8 @@ void AddScripts();
 
 void ScriptMgr::InitScriptLibrary()
 {
-    //Hellground Script startup
-    outstring_log(" _   _      _ _ _____                           _ ");
-    outstring_log("| | | |    | | |  __ \\                         | |");
-    outstring_log("| |_| | ___| | | |  \\/_ __ ___  _   _ _ __   __| |");
-    outstring_log("|  _  |/ _ \\ | | | __| '__/ _ \\| | | | '_ \\ / _` |");
-    outstring_log("| | | |  __/ | | |_\\ \\ | | (_) | |_| | | | | (_| |");
-    outstring_log("\\_| |_/\\___|_|_|\\____/_|  \\___/ \\__,_|_| |_|\\__,_|");
-    outstring_log("http://hellground.net based on http://TrinityCore.org");
-    outstring_log("Hellground Script initializing %s", __DATE__);
+    //Mangos Script startup
+    outstring_log("Hellfire Script initializing %s", _FULLVERSION);
 
     //Load database (must be called after TScriptConfig.SetSource). In case it failed, no need to even try load.
     LoadScriptTexts();

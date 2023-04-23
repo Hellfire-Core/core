@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2005-2012 MaNGOS <http://getmangos.com/>
- * Copyright (C) 2008-2017 Hellground <http://wow-hellground.com/>
+ * Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -155,7 +155,7 @@ template void Camera::UpdateVisibilityOf(DynamicObject*, UpdateData&, std::set<W
 
 void Camera::UpdateVisibilityForOwner()
 {
-    Hellground::VisibleNotifier notifier(*this);
+    MaNGOS::VisibleNotifier notifier(*this);
     Cell::VisitAllObjects(_source, notifier, _source->GetMap()->GetVisibilityDistance(_source, &_owner), false);
     notifier.SendToSelf();
 }

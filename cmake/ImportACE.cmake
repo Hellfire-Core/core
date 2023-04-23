@@ -22,16 +22,18 @@
 # add_dependencies(ace ACE_Project)
 # set_target_properties(ace PROPERTIES DEPENDS ACE_Project)
 
-if(WIN32)
-  set(ACE_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/dep/ACE_wrappers)
-  set(ACE_LIBRARIES_DIR ${CMAKE_SOURCE_DIR}/dep/ACE_wrappers/lib)
-  set(ACE_LIBRARIES optimized ACE debug ACEd)
-else()
-  set(ACE_INCLUDE_DIR ${CMAKE_INSTALL_PREFIX}/include)
-  set(ACE_LIBRARIES_DIR ${CMAKE_INSTALL_PREFIX}/lib)
-  set(ACE_LIBRARIES ACE)
-endif()
 
+if(WIN32)
+  # set(ACE_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/dep/acelite)
+  # set(ACE_LIBRARIES_DIR ${CMAKE_BINARY_DIR}/dep/acelite/ace)
+  set(ACE_LIBRARIES optimized ACE debug ACEd)
+# else()
+#   set(ACE_INCLUDE_DIR ${CMAKE_INSTALL_PREFIX}/include)
+#   set(ACE_LIBRARIES_DIR ${CMAKE_INSTALL_PREFIX}/lib)
+endif()
+set(ACE_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/dep/acelite)
+set(ACE_LIBRARIES_DIR ${CMAKE_BINARY_DIR}/dep/acelite/ace)
+set(ACE_LIBRARIES ace)
 # Little Hack to remove the link warnings because of not found directories
 if(XCODE)
   foreach(DIR ${ACE_LIBRARIES_DIR})
@@ -56,4 +58,14 @@ if(WIN32)
     )
   endforeach(DIR)
 endif()
+
+
+# install(TARGETS ${EXECUTABLE_NAME} DESTINATION ${BIN_DIR})
+# install(FILES run-mangosd DESTINATION ${BIN_DIR})
+# configure_file(${CMAKE_CURRENT_SOURCE_DIR}/mangosd.conf.dist.in ${CMAKE_CURRENT_BINARY_DIR}/mangosd.conf.dist)
+# install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mangosd.conf.dist DESTINATION ${CONF_DIR})
+
+# if(WIN32 AND MSVC)
+#   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/\${BUILD_TYPE}/${EXECUTABLE_NAME}.pdb DESTINATION ${BIN_DIR} CONFIGURATIONS Debug)
+# endif()
 

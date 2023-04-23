@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2008 MaNGOS <http://getmangos.com/>
- * Copyright (C) 2008 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
+ * Copyright (C) 2009-2017 MaNGOSOne <https://github.com/mangos/one>
+ * Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef HELLGROUND_AUTH_HMAC_H
-#define HELLGROUND_AUTH_HMAC_H
+#ifndef _AUTH_HMAC_H
+#define _AUTH_HMAC_H
 
 #include "Common.h"
 #include <openssl/hmac.h>
@@ -44,7 +44,12 @@ class HmacHash
         uint8 *GetDigest() { return m_digest; };
         int GetLength() { return SHA_DIGEST_LENGTH; };
     private:
+#if defined(OPENSSL_VERSION_NUMBER) && OPENSSL_VERSION_NUMBER >= 0x10100000L
+        HMAC_CTX* m_ctx;
+#else
         HMAC_CTX m_ctx;
+#endif
+
         uint8 m_key[SEED_KEY_SIZE];
         uint8 m_digest[SHA_DIGEST_LENGTH];
 };

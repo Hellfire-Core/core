@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2017 Hellground <http://wow-hellground.com/>
+ * Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef HELLGROUND_PIPEWRAPPERIMPL_H
-#define HELLGROUND_PIPEWRAPPERIMPL_H
+#ifndef _PIPEWRAPPERIMPL_H
+#define _PIPEWRAPPERIMPL_H
 
 #include "ByteBuffer.h"
 

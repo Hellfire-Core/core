@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2008 MaNGOS <http://getmangos.com/>
- * Copyright (C) 2008 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2008-2017 Hellground <http://wow-hellground.com/>
+ * Copyright (C) 2009-2017 MaNGOSOne <https://github.com/mangos/one>
+ * Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef HELLGROUND_ACCOUNTMGR_H
-#define HELLGROUND_ACCOUNTMGR_H
+#ifndef _ACCOUNTMGR_H
+#define _ACCOUNTMGR_H
 
 #include "Common.h"
 #include <string>
@@ -45,8 +45,8 @@ namespace AccountMgr
     bool CheckPassword(uint32 accid, std::string passwd);
 
     uint32 GetId(std::string username);
-    uint64 GetPermissions(uint32 acc_id);
-    bool HasPermissions(uint32 accId, uint64 perms);
+    uint8 GetGMLevel(uint32 acc_id);
+    bool HasHigherGMLevel(uint32 accId, uint8 gmlevel);
     bool GetName(uint32 acc_id, std::string &name);
 
     bool normalizeString(std::string& utf8str);

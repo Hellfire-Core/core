@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2005-2010 MaNGOS <http://getmangos.com/>
- * Copyright (C) 2008-2017 Hellground <http://wow-hellground.com/>
+ * Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef HELLGROUND_SCRIPTMGR_H
-#define HELLGROUND_SCRIPTMGR_H
+#ifndef _SCRIPTMGR_H
+#define _SCRIPTMGR_H
 
 #include "ace/Singleton.h"
 
@@ -67,7 +67,7 @@ extern ScriptMapMap sWaypointScripts;
 
 #define MAX_SCRIPTS         5000                            //72 bytes each (approx 351kb)
 #define VISIBLE_RANGE       (166.0f)                        //MAX visible range (size of grid)
-#define DEFAULT_TEXT        "<Hellground Script Text Entry Missing!>"
+#define DEFAULT_TEXT        "<Mangos Script Text Entry Missing!>"
 #define TEXT_SOURCE_RANGE -1000000                          //the amount of entries each text source has available
 
 //TODO: find better namings and definitions.
@@ -280,11 +280,11 @@ class ScriptMgr
 
 #define sScriptMgr (*ACE_Singleton<ScriptMgr, ACE_Null_Mutex>::instance())
 
-HELLGROUND_IMPORT_EXPORT uint32 GetAreaTriggerScriptId(uint32 triggerId);
-HELLGROUND_IMPORT_EXPORT uint32 GetCompletedCinematicScriptId(uint32 triggerId);
-HELLGROUND_IMPORT_EXPORT uint32 GetScriptId(const char *name);
-HELLGROUND_IMPORT_EXPORT uint32 GetEventIdScriptId(uint32 eventId);
-HELLGROUND_IMPORT_EXPORT uint32 GetSpellIdScriptId(uint32 eventId);
+uint32 GetAreaTriggerScriptId(uint32 triggerId);
+uint32 GetCompletedCinematicScriptId(uint32 triggerId);
+uint32 GetScriptId(const char *name);
+uint32 GetEventIdScriptId(uint32 eventId);
+uint32 GetSpellIdScriptId(uint32 eventId);
 
 //Generic scripting text function
 void DoScriptText(int32 textEntry, WorldObject* pSource, Unit* target = NULL, bool withoutPrename = false);

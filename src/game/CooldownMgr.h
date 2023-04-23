@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2008-2017 Hellground <http://wow-hellground.com/>
+* Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,8 +15,8 @@
 * along with this program; if not, write to the Free Software
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 */
-#ifndef HELLGROUND_COOLMGR_H
-#define HELLGROUND_COOLMGR_H
+#ifndef _COOLMGR_H
+#define _COOLMGR_H
 
 #include "Common.h"
 #include "DatabaseEnv.h"
@@ -29,7 +29,7 @@
 class Player;
 class ByteBuffer;
 
-class HELLGROUND_IMPORT_EXPORT CooldownMgr
+class CooldownMgr
 {
     friend class Player; // for RemoveAllSpellCooldowns, RemoveArenaSpellCooldowns
 public:

@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2009-2012 /dev/rsa for MaNGOS <http://getmangos.com/>
- * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
+ * Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,8 +20,8 @@
 /* based on LockedQueue class from MaNGOS */
 /* written for use instead not locked std::list && std::vector */
 
-#ifndef HELLGROUND_LOCKEDVECTOR_H
-#define HELLGROUND_LOCKEDVECTOR_H
+#ifndef _LOCKEDVECTOR_H
+#define _LOCKEDVECTOR_H
 
 #include <ace/Null_Mutex.h>
 #include <ace/RW_Thread_Mutex.h>

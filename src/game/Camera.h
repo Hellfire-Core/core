@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2005-2012 MaNGOS <http://getmangos.com/>
- * Copyright (C) 2008-2017 Hellground <http://wow-hellground.com/>
+ * Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef HELLGROUND_CAMERA_H
-#define HELLGROUND_CAMERA_H
+#ifndef _CAMERA_H
+#define _CAMERA_H
 
 #include "Common.h"
 #include "GridDefines.h"
@@ -30,7 +30,7 @@ class WorldPacket;
 class Player;
 
 /// Camera - object-receiver. Receives broadcast packets from nearby worldobjects, object visibility changes and sends them to client
-class HELLGROUND_IMPORT_EXPORT Camera
+class Camera
 {
     friend class ViewPoint;
     public:
@@ -80,7 +80,7 @@ class HELLGROUND_IMPORT_EXPORT Camera
 };
 
 /// Object-observer, notifies farsight object state to cameras that attached to it
-class HELLGROUND_IMPORT_EXPORT ViewPoint
+class ViewPoint
 {
     friend class Camera;
 

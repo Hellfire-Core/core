@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
+ * Copyright (C) 2009-2017 MaNGOSOne <https://github.com/mangos/one>
+ * Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef HELLGROUND_COMMON_H
-#define HELLGROUND_COMMON_H
+#ifndef _COMMON_H
+#define _COMMON_H
 
 // config.h needs to be included 1st
 // TODO this thingy looks like hack ,but its not, need to
@@ -170,29 +170,16 @@ enum TimeConstants
     IN_MILISECONDS = 1000,
 };
 
-enum AccountPermissionMasks
+enum AccountTypes
 {
-    PERM_PLAYER         = 0x000001, //  1
-    PERM_DEVELOPER      = 0x000002, //  2
-    PERM_HEAD_DEVELOPER = 0x000100, //  256
-
-    PERM_GM_TRIAL       = 0x000200, //  512
-    PERM_GM_HELPER      = 0x000400, //  1024
-
-    PERM_GM_HEAD        = 0x000800, //  2048
-
-    PERM_ADM_NORM       = 0x001000, //  4096
-    PERM_ADM_HEAD       = 0x002000, //  8192
-
-    PERM_CONSOLE        = 0x800000, //  8388608
-
-    PERM_GMT            = PERM_GM_TRIAL | PERM_GM_HELPER | PERM_GM_HEAD | PERM_ADM_NORM | PERM_ADM_HEAD,
-    PERM_ADM            = PERM_ADM_NORM | PERM_ADM_HEAD,
-    PERM_HIGH_GMT       = PERM_ADM | PERM_GM_HEAD,
-    PERM_GMT_HDEV       = PERM_GMT | PERM_HEAD_DEVELOPER,
-    PERM_GMT_DEV        = PERM_GMT | PERM_DEVELOPER | PERM_HEAD_DEVELOPER,
-    PERM_HIGH_DEV       = PERM_HIGH_GMT | PERM_DEVELOPER | PERM_HEAD_DEVELOPER,
-    PERM_ALL            = PERM_PLAYER | PERM_GMT_DEV
+    SEC_PLAYER = 0,
+    SEC_MODERATOR = 1,
+    SEC_TICKETMASTER = 2,
+    SEC_GAMEMASTER = 3,
+    SEC_BASIC_ADMIN = 4,
+    SEC_DEVELOPER = 5,
+    SEC_ADMINISTRATOR = 6,
+    SEC_CONSOLE = 7                                  // must be always last in list, accounts must have less security level always also
 };
 
 enum AccountStates

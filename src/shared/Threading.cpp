@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2009 MaNGOS <http://getmangos.com/>
- * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
+ * Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@ ThreadPriority::ThreadPriority()
         //since we have only 7(seven) values in enum Priority
         //and 3 we know already (Idle, Normal, Realtime) so
         //we need to split each list [Idle...Normal] and [Normal...Realtime]
-        //into ¹ piesces
+        //into 2 piesces
         const size_t _divider = 4;
         size_t _div = (norm_pos - min_pos) / _divider;
         if(_div == 0)

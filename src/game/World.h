@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2008 MaNGOS <http://getmangos.com/>
- * Copyright (C) 2008 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2008-2017 Hellground <http://wow-hellground.com/>
+ * Copyright (C) 2009-2017 MaNGOSOne <https://github.com/mangos/one>
+ * Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,8 +22,8 @@
 /// @{
 /// \file
 
-#ifndef HELLGROUND_WORLD_H
-#define HELLGROUND_WORLD_H
+#ifndef _WORLD_H
+#define _WORLD_H
 
 #include "ace/Singleton.h"
 
@@ -588,7 +588,7 @@ struct CliCommandHolder
 // ye place for this sucks
 #define MAX_PVP_RANKS 14
 
-typedef std::unordered_map<uint32, std::list<uint64> > LfgContainerType;
+typedef UNORDERED_MAP<uint32, std::list<uint64> > LfgContainerType;
 typedef UNORDERED_MAP<uint32, WorldSession*> SessionMap;
 
 typedef ACE_Atomic_Op<ACE_Thread_Mutex, uint32> atomic_uint;
@@ -637,7 +637,7 @@ class CoreBalancer
 };
 
 /// The World
-class HELLGROUND_EXPORT World
+class World
 {
     friend class ACE_Singleton<World, ACE_Null_Mutex>;
 
@@ -677,7 +677,7 @@ class HELLGROUND_EXPORT World
 
         /// Get the active session server limit (or security level limitations)
         uint32 GetPlayerAmountLimit() const { return m_playerLimit; }
-        uint64 GetMinimumPermissionMask() const { return m_requiredPermissionMask; }
+        uint8 GetMinimumGMLevel() const { return m_requiredgmlevel; }
 
         /// Set the active session server limit (or security level limitation)
         void SetPlayerLimit(int32 limit);
@@ -910,7 +910,7 @@ class HELLGROUND_EXPORT World
         uint32 m_configs[CONFIG_VALUE_COUNT];
         
         uint32 m_playerLimit;
-        uint64 m_requiredPermissionMask;
+        uint8 m_requiredgmlevel;
         LocaleConstant m_defaultDbcLocale;                     // from config for one from loaded DBC locales
         uint32 m_availableDbcLocaleMask;                       // by loaded DBC
         void DetectDBCLang();

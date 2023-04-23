@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2008 MaNGOS <http://getmangos.com/>
- * Copyright (C) 2008 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2008-2017 Hellground <http://wow-hellground.com/>
+ * Copyright (C) 2009-2017 MaNGOSOne <https://github.com/mangos/one>
+ * Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef HELLGROUND_OBJECTACCESSOR_H
-#define HELLGROUND_OBJECTACCESSOR_H
+#ifndef _OBJECTACCESSOR_H
+#define _OBJECTACCESSOR_H
 
 #include "Platform/Define.h"
 
@@ -48,7 +48,7 @@ class HashMapHolder
 {
     public:
 
-        typedef std::unordered_map<uint64, T*>  MapType;
+        typedef UNORDERED_MAP<uint64, T*>  MapType;
         typedef ACE_Thread_Mutex LockType;
 
         static bool Insert(T* o)
@@ -90,7 +90,7 @@ class HashMapHolder
         {
             typename MapType::const_iterator a = m_objectMap.find(guid);
 
-            if (a != m_objectMap.cend())
+            if (a != m_objectMap.end())
                 return a->second;
             else
                 return NULL;
@@ -119,8 +119,8 @@ class ObjectAccessor
     ObjectAccessor& operator=(const ObjectAccessor &);
 
     public:
-        typedef std::unordered_map<uint64, Corpse*> Player2CorpsesMapType;
-        typedef std::unordered_map<std::string, Player*> PlayerName2PlayerMapType;
+        typedef UNORDERED_MAP<uint64, Corpse*> Player2CorpsesMapType;
+        typedef UNORDERED_MAP<std::string, Player*> PlayerName2PlayerMapType;
 
         static Pet* GetPet(uint64 guid);
 

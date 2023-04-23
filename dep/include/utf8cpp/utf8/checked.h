@@ -72,7 +72,7 @@ namespace utf8
             octet_iterator sequence_start = start;
             internal::utf_error err_code = internal::validate_next(start, end);
             switch (err_code) {
-                case internal::OK :
+                case internal::UTF8_OK :
                     for (octet_iterator it = sequence_start; it != start; ++it)
                         *out++ = *it;
                     break;
@@ -117,18 +117,15 @@ namespace utf8
         }
         else if (cp < 0x10000) {              // three octets
             *(result++) = static_cast<uint8_t>((cp >> 12)           | 0xe0);
-            *(result++) = static_cast<uint8_t>((cp >> 6) & 0x3f     | 0x80);
+            *(result++) = static_cast<uint8_t>(((cp >> 6) & 0x3f)   | 0x80);
             *(result++) = static_cast<uint8_t>((cp & 0x3f)          | 0x80);
         }
-        else if (cp <= internal::CODE_POINT_MAX) {      // four octets
+        else {      // four octets
             *(result++) = static_cast<uint8_t>((cp >> 18)           | 0xf0);
-            *(result++) = static_cast<uint8_t>((cp >> 12)& 0x3f     | 0x80);
-            *(result++) = static_cast<uint8_t>((cp >> 6) & 0x3f     | 0x80);
+            *(result++) = static_cast<uint8_t>(((cp >> 12) & 0x3f)  | 0x80);
+            *(result++) = static_cast<uint8_t>(((cp >> 6) & 0x3f)   | 0x80);
             *(result++) = static_cast<uint8_t>((cp & 0x3f)          | 0x80);
         }
-        else
-            throw invalid_code_point(cp);
-
         return result;
     }
 
@@ -138,7 +135,7 @@ namespace utf8
         uint32_t cp = 0;
         internal::utf_error err_code = internal::validate_next(it, end, &cp);
         switch (err_code) {
-            case internal::OK :
+            case internal::UTF8_OK :
                 break;
             case internal::NOT_ENOUGH_ROOM :
                 throw not_enough_room();
@@ -204,18 +201,22 @@ namespace utf8
         while (start != end) {
             uint32_t cp = internal::mask16(*start++);
             // Take care of surrogate pairs first
-            if (internal::is_surrogate(cp)) {
+            if (internal::is_lead_surrogate(cp)) {
                 if (start != end) {
                     uint32_t trail_surrogate = internal::mask16(*start++);
-                    if (trail_surrogate >= internal::TRAIL_SURROGATE_MIN && trail_surrogate <= internal::TRAIL_SURROGATE_MAX)
+                    if (internal::is_trail_surrogate(trail_surrogate))
                         cp = (cp << 10) + trail_surrogate + internal::SURROGATE_OFFSET;
                     else
                         throw invalid_utf16(static_cast<uint16_t>(trail_surrogate));
                 }
                 else
-                    throw invalid_utf16(static_cast<uint16_t>(*start));
+                    throw invalid_utf16(static_cast<uint16_t>(cp));
 
             }
+            // Lone trail surrogate
+            else if (internal::is_trail_surrogate(cp))
+                throw invalid_utf16(static_cast<uint16_t>(cp));
+
             result = append(cp, result);
         }
         return result;
@@ -314,6 +315,5 @@ namespace utf8
 } // namespace utf8
 
 #endif //header guard
-
 
 

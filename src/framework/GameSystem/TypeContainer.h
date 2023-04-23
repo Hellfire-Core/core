@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2008 MaNGOS <http://getmangos.com/>
- * Copyright (C) 2008 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2008-2015 Hellground <http://hellground.net/>
+ * Copyright (C) 2009-2017 MaNGOSOne <https://github.com/mangos/one>
+ * Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef HELLGROUND_TYPECONTAINER_H
-#define HELLGROUND_TYPECONTAINER_H
+#ifndef _TYPECONTAINER_H
+#define _TYPECONTAINER_H
 
 /*
  * Here, you'll find a series of containers that allow you to hold multiple
@@ -66,19 +66,19 @@ template<class OBJECT_TYPES>
 class TypeMapContainer
 {
     public:
-        template<class SPECIFIC_TYPE> size_t Count() const { return Hellground::Count(i_elements, (SPECIFIC_TYPE*)NULL); }
+        template<class SPECIFIC_TYPE> size_t Count() const { return MaNGOS::Count(i_elements, (SPECIFIC_TYPE*)NULL); }
 
         /// inserts a specific object into the container
         template<class SPECIFIC_TYPE> bool insert(SPECIFIC_TYPE *obj)
         {
-            SPECIFIC_TYPE* t = Hellground::Insert(i_elements, obj);
+            SPECIFIC_TYPE* t = MaNGOS::Insert(i_elements, obj);
             return (t != NULL);
         }
 
         ///  Removes the object from the container, and returns the removed object
         template<class SPECIFIC_TYPE> bool remove(SPECIFIC_TYPE* obj)
         {
-            SPECIFIC_TYPE* t = Hellground::Remove(i_elements, obj);
+            SPECIFIC_TYPE* t = MaNGOS::Remove(i_elements, obj);
             return (t != NULL);
         }
 

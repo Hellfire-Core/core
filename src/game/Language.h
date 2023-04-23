@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2008 MaNGOS <http://getmangos.com/>
- * Copyright (C) 2008 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2008-2017 Hellground <http://wow-hellground.com/>
+ * Copyright (C) 2009-2017 MaNGOSOne <https://github.com/mangos/one>
+ * Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,10 +18,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef HELLGROUND_LANGUAGE_H
-#define HELLGROUND_LANGUAGE_H
+#ifndef _LANGUAGE_H
+#define _LANGUAGE_H
 
-enum HellgroundStrings
+enum MangosStrings
 {
     // for chat commands
     LANG_SELECT_CHAR_OR_CREATURE        = 1,
@@ -709,7 +709,7 @@ enum HellgroundStrings
     LANG_ANNOUNCE_COLOR_ADM             = 794,
     LANG_ANNOUNCE_COLOR_HGM             = 795,
     LANG_ANNOUNCE_COLOR_GM              = 796,
-    LANG_ANNOUNCE_COLOR_TESTGM          = 797,
+    LANG_ANNOUNCE_COLOR_MODERATOR          = 797,
 
     LANG_BG_GROUP_TOO_LARGE             = 1122, // "Your group is too large for this battleground. Please regroup to join."
     LANG_ARENA_GROUP_TOO_LARGE          = 1123, // "Your group is too large for this arena. Please regroup to join."

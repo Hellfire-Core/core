@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2008 MaNGOS <http://getmangos.com/>
- * Copyright (C) 2008 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2008-2017 Hellground <http://wow-hellground.com/>
+ * Copyright (C) 2009-2017 MaNGOSOne <https://github.com/mangos/one>
+ * Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -393,7 +393,7 @@ void PlayerMenu::SendQuestGiverQuestDetails(Quest const *pQuest, uint64 npcGUID,
     }
 
     // rewarded honor points. Multiply with 10 to satisfy client
-    data << uint32(10*Hellground::Honor::hk_honor_at_level(pSession->GetPlayer()->GetLevel(), pQuest->GetRewHonorableKills()));
+    data << uint32(10*MaNGOS::Honor::hk_honor_at_level(pSession->GetPlayer()->GetLevel(), pQuest->GetRewHonorableKills()));
     data << uint32(pQuest->GetRewSpell());                  // reward spell, this spell will display (icon) (cast if RewSpellCast==0)
     data << uint32(pQuest->GetRewSpellCast());              // cast spell
     data << uint32(pQuest->GetCharTitleId());               // CharTitleId, new 2.4.0, player gets this title (id from CharTitles)
@@ -440,7 +440,7 @@ void PlayerMenu::SendQuestQueryResponse(Quest const *pQuest)
     data << uint32(pQuest->GetRewSpellCast());              // cast spell
 
     // rewarded honor points
-    data << uint32(Hellground::Honor::hk_honor_at_level(pSession->GetPlayer()->GetLevel(), pQuest->GetRewHonorableKills()));
+    data << uint32(MaNGOS::Honor::hk_honor_at_level(pSession->GetPlayer()->GetLevel(), pQuest->GetRewHonorableKills()));
     data << uint32(pQuest->GetSrcItemId());
     data << uint32(pQuest->GetFlags() & 0xFFFF);
     data << uint32(pQuest->GetCharTitleId());               // CharTitleId, new 2.4.0, player gets this title (id from CharTitles)
@@ -560,7 +560,7 @@ void PlayerMenu::SendQuestGiverOfferReward(Quest const* pQuest, uint64 npcGUID, 
     data << uint32(pQuest->GetRewOrReqMoney());
 
     // rewarded honor points. Multiply with 10 to satisfy client
-    data << uint32(10*Hellground::Honor::hk_honor_at_level(pSession->GetPlayer()->GetLevel(), pQuest->GetRewHonorableKills()));
+    data << uint32(10*MaNGOS::Honor::hk_honor_at_level(pSession->GetPlayer()->GetLevel(), pQuest->GetRewHonorableKills()));
     data << uint32(0x08);                                   // unused by client?
     data << uint32(pQuest->GetRewSpell());                  // reward spell, this spell will display (icon) (cast if RewSpellCast==0)
     data << uint32(pQuest->GetRewSpellCast());              // cast spell

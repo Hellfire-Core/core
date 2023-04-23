@@ -20,30 +20,31 @@ source_group("Utilities"
   REGULAR_EXPRESSION Utilities
 )
 
+source_group("LinkedReference"
+  REGULAR_EXPRESSION LinkedReference
+)
+
 source_group("Dynamic"
   REGULAR_EXPRESSION Dynamic
 )
 
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}
+  ${TBB_INCLUDE_DIRS}
   ${ACE_INCLUDE_DIR}
+  ${CMAKE_SOURCE_DIR}/src/shared
 )
 
 add_library(framework STATIC
   ${framework_SRCS}
 )
 
-if(NOT USE_STD_MALLOC)
-  if(NOT TBB_USE_EXTERNAL)
-    add_dependencies(framework TBB_Project)
-  # add_dependencies(framework tbb)
-  # add_dependencies(framework tbbmalloc)
-  endif()
-  target_link_libraries(framework
+SET_TARGET_PROPERTIES (framework PROPERTIES FOLDER "Game Libs")
+
+target_link_libraries(framework
   ${TBB_LIBRARIES}
-  )
-endif()
+)
+
 if(NOT ACE_USE_EXTERNAL)
-  add_dependencies(framework ACE_Project)
-# add_dependencies(framework ace)
+  add_dependencies(framework ace)
 endif()

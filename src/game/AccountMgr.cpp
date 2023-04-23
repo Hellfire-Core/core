@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2008 MaNGOS <http://getmangos.com/>
- * Copyright (C) 2008 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2008-2017 Hellground <http://wow-hellground.com/>
+ * Copyright (C) 2009-2017 MaNGOSOne <https://github.com/mangos/one>
+ * Copyright (C) 2017 Hellfire <https://hellfire-core.github.io/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -138,18 +138,18 @@ uint32 AccountMgr::GetId(std::string username)
     return 0;
 }
 
-uint64 AccountMgr::GetPermissions(uint32 acc_id)
+uint8 AccountMgr::GetGMLevel(uint32 acc_id)
 {
-    QueryResultAutoPtr result = AccountsDatabase.PQuery("SELECT permission_mask FROM account_permissions WHERE account_id = '%u' AND realm_id = '%u'", acc_id, realmID);
+    QueryResultAutoPtr result = AccountsDatabase.PQuery("SELECT gmlevel FROM account_access WHERE account_id = '%u' AND realm_id = '%u'", acc_id, realmID);
     if (result)
         return (*result)[0].GetUInt64();
 
     return 0;
 }
 
-bool AccountMgr::HasPermissions(uint32 accId, uint64 perms)
+bool AccountMgr::HasHigherGMLevel(uint32 accId, uint8 gmlevel)
 {
-    return GetPermissions(accId) & perms;
+    return GetGMLevel(accId) >= gmlevel;
 }
 
 bool AccountMgr::GetName(uint32 acc_id, std::string &name)
