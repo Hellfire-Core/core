@@ -25,6 +25,8 @@
 #include <G3D/Table.h>
 #include <G3D/PositionTrait.h>
 #include "Utilities/UnorderedMap.h"
+#include <unordered_map>
+#include <vector>
 
 //#include "Errors.h"
 
