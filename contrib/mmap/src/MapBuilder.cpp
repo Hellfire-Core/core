@@ -967,8 +967,8 @@ namespace MMAP
         params.walkableClimb = agentMaxClimbTerrain;    // keep less that walkableHeight (aka agent height)!
         params.tileX = (((bmin[0] + bmax[0]) / 2) - navMesh->getParams()->orig[0]) / GRID_SIZE;
         params.tileY = (((bmin[2] + bmax[2]) / 2) - navMesh->getParams()->orig[2]) / GRID_SIZE;
-        params.tileLayer = 0;
-        params.buildBvTree = true;
+        //params.tileLayer = 0;
+        //params.buildBvTree = true;
         rcVcopy(params.bmin, bmin);
         rcVcopy(params.bmax, bmax);
         params.cs = config.cs;
@@ -1029,7 +1029,8 @@ namespace MMAP
             // DT_TILE_FREE_DATA tells detour to unallocate memory when the tile
             // is removed via removeTile()
             dtStatus dtResult = navMesh->addTile(navData, navDataSize, DT_TILE_FREE_DATA, 0, &tileRef);
-            if (!tileRef || dtStatusFailed(dtResult))
+            //if (!tileRef || dtStatusFailed(dtResult))
+            if (!tileRef || (dtResult!=DT_SUCCESS))
             {
                 printf("%s Failed adding tile to navmesh (0x%x)   \n", tileString, dtResult);
                 continue;
@@ -1370,7 +1371,7 @@ namespace MMAP
         rcVcopy(params.bmax, iv.polyMesh->bmax);
         params.cs = config.cs;
         params.ch = config.ch;
-        params.buildBvTree = true;
+        //params.buildBvTree = true;
 
         unsigned char* navData = NULL;
         int navDataSize = 0;
