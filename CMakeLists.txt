@@ -127,6 +127,7 @@ if((${CMAKE_VERSION} VERSION_LESS "3.16") OR USE_PCH_OLD)
 else()
   option(USE_PCH "Use precompiled headers" ON)
 endif()
+option(TOOLS "Build tools" 0)
 
 # Set up the install-prefix
 if(CMAKE_INSTALL_PREFIX STREQUAL "/usr/local")
@@ -431,6 +432,11 @@ endif()
 set(DEFINITIONS_RELEASE ${DEFINITIONS_RELEASE} NDEBUG)
 set(DEFINITIONS_DEBUG ${DEFINITIONS_DEBUG} _DEBUG MANGOS_DEBUG)
 
+if(TOOLS)
+   message("Build map/vmap tools  : Yes")
+ else()
+   message("Build map/vmap tools  : No  (default)")
+ endif()
 # Some small tweaks for Visual Studio 7 and above.
 if(MSVC)
   # Mark 32 bit executables large address aware so they can use > 2GB address space

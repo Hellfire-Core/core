@@ -1,5 +1,4 @@
-# Copyright (C) 2005-2011 MaNGOS <http://getmangos.com/>
-# Copyright (C) 2009-2011 MaNGOSZero <https://github.com/mangos/zero>
+# This file is part of the CMaNGOS Project. See AUTHORS file for Copyright information
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,19 +14,20 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-# Needs to link against mangos_worldd.lib
-if(WIN32)
-  include_directories(
-    ${CMAKE_SOURCE_DIR}/dep/include # For Win32
-  )
-endif()
+cmake_minimum_required (VERSION 2.6)
+project (MANGOS_IOMAP_EXTRACTOR)
 
-add_subdirectory(shared)
-add_subdirectory(framework)
-add_subdirectory(realmd)
-add_subdirectory(game)
-add_subdirectory(mangosd)
+add_executable(vmapextractor adtfile.cpp  dbcfile.cpp gameobject_extract.cpp model.cpp  mpq_libmpq.cpp  vmapexport.cpp  wdtfile.cpp  wmo.cpp)
+SET_TARGET_PROPERTIES (vmapextractor PROPERTIES FOLDER Extractors)
 
-if(USE_SCRIPTS)
-  add_subdirectory(scripts)
-endif()
+if(UNIX)
+  find_package(ZLIB REQUIRED)
+  if(ZLIB_FOUND)
+    include_directories(${ZLIB_INCLUDE_DIRS})
+    target_link_libraries(vmapextractor libmpq bz2 ${ZLIB_LIBRARIES})
+  endif(ZLIB_FOUND)
+else()
+  target_link_libraries(vmapextractor libmpq bz2 zlib)
+endif(UNIX)
+
+install(TARGETS vmapextractor DESTINATION ${BIN_DIR})
