@@ -18,51 +18,31 @@
 
 #include <string>
 #include <iostream>
-#ifdef WIN32
-#include "direct.h"
-#else
-#include <sys/stat.h>
-#endif
 
 #include "TileAssembler.h"
 
 //=======================================================
 int main(int argc, char* argv[])
 {
-    std::string src;
-    std::string dest;
     if (argc != 3)
     {
-        //std::cout << "usage: " << argv[0] << " <raw data dir> <vmap dest dir>" << std::endl;
-        //return 1;
-
-        //Giperion Elysium: Consider we running in WoW directory. Just pick default folders
-        src = "Buildings";
-        dest = "vmaps";
-        #ifdef WIN32
-        int RetCode = mkdir (dest.c_str());
-        #else
-        int RetCode = mkdir (dest.c_str(), 0777);
-        #endif
-    }
-    else
-    {
-        src = argv[1];
-        dest = argv[2];
-    }
-
-    std::cout << "using " << src << " as source directory and writing output to " << dest << std::endl;
-
-    VMAP::TileAssembler* ta = new VMAP::TileAssembler(src, dest);
-
-    if (!ta->convertWorld2())
-    {
-        std::cout << "exit with errors" << std::endl;
-        delete ta;
+        std::cout << "usage: " << argv[0] << " <raw data dir> <vmap dest dir>" << std::endl;
         return 1;
     }
 
-    delete ta;
+    std::string src = argv[1];
+    std::string dest = argv[2];
+
+    std::cout << "using " << src << " as source directory and writing output to " << dest << std::endl;
+
+    VMAP::TileAssembler tileAssembler(src, dest);
+
+    if (!tileAssembler.convertWorld2())
+    {
+        std::cout << "exit with errors" << std::endl;
+        return 1;
+    }
+
     std::cout << "Ok, all done" << std::endl;
     return 0;
 }
