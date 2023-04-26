@@ -23,7 +23,7 @@
 #include <list>
 #include <errno.h>
 
-#if defined WIN32
+#ifdef _WIN32
 #include <Windows.h>
 #include <sys/stat.h>
 #include <direct.h>
@@ -76,7 +76,7 @@ bool preciseVectorData = false;
 
 //static const char * szWorkDirMaps = ".\\Maps";
 const char* szWorkDirWmo = "./Buildings";
-const char* szRawVMAPMagic = "VMAPz04";
+const char* szRawVMAPMagic = "VMAPs05";
 
 // Local testing functions
 
@@ -145,26 +145,6 @@ bool ExtractWmo()
     return success;
 }
 
-
-// This zepp has position / orientation modified.
-// Don't know why ... Here is a hack-fix.
-void ZeppFixVect(float* v)
-{
-    /*
-    it2->x = -it2->x + 3.0f;
-    it2->y *= -1;
-    it2->y -= 14;
-    */
-    v[0] = -v[0] + 3.0f;
-    v[1] = -v[1] - 14;
-}
-
-void FixZepp(WMOGroup& g)
-{
-    for (uint32 i = 0; i < g.nVertices; ++i)
-        ZeppFixVect(g.MOVT + 3 * i);
-}
-
 bool ExtractSingleWmo(std::string& fname)
 {
     // Copy files from archive
@@ -174,8 +154,8 @@ bool ExtractSingleWmo(std::string& fname)
     sprintf(szLocalFile, "%s/%s", szWorkDirWmo, plain_name);
     fixnamen(szLocalFile, strlen(szLocalFile));
 
-    //if (FileExists(szLocalFile))
-    //    return true;
+    if (FileExists(szLocalFile))
+        return true;
 
     int p = 0;
     //Select root wmo files
@@ -209,7 +189,6 @@ bool ExtractSingleWmo(std::string& fname)
         printf("couldn't open %s for writing!\n", szLocalFile);
         return false;
     }
-
     froot.ConvertToVMAPRootWmo(output);
     int Wmo_nVertices = 0;
     //printf("root has %d groups\n", froot->nGroups);
@@ -225,16 +204,13 @@ bool ExtractSingleWmo(std::string& fname)
             //printf("Trying to open groupfile %s\n",groupFileName);
 
             string s = groupFileName;
-            WMOGroup fgroup(s, &froot);
+            WMOGroup fgroup(s);
             if (!fgroup.open())
             {
                 printf("Could not open all Group file for: %s\n", plain_name);
                 file_ok = false;
                 break;
             }
-
-            if (strcmp(szLocalFile, "./Buildings/Transport_Zeppelin.wmo") == 0)
-                FixZepp(fgroup);
 
             Wmo_nVertices += fgroup.ConvertToVMAPGroupWmo(output, &froot, preciseVectorData);
         }
@@ -315,11 +291,7 @@ bool scan_patches(char* scanmatch, std::vector<std::string>& pArchiveNames)
         {
             sprintf(path, "%s.MPQ", scanmatch);
         }
-#ifdef __linux__
-        if (FILE* h = fopen64(path, "rb"))
-#else
         if (FILE* h = fopen(path, "rb"))
-#endif
         {
             fclose(h);
             //matches.push_back(path);
@@ -327,7 +299,7 @@ bool scan_patches(char* scanmatch, std::vector<std::string>& pArchiveNames)
         }
     }
 
-    return(true);
+    return (true);
 }
 
 bool fillArchiveNameVector(std::vector<std::string>& pArchiveNames)
@@ -338,29 +310,72 @@ bool fillArchiveNameVector(std::vector<std::string>& pArchiveNames)
     printf("\nGame path: %s\n", input_path);
 
     char path[512];
+    string in_path(input_path);
+    std::vector<std::string> locales, searchLocales;
+
+    searchLocales.push_back("enGB");
+    searchLocales.push_back("enUS");
+    searchLocales.push_back("deDE");
+    searchLocales.push_back("esES");
+    searchLocales.push_back("frFR");
+    searchLocales.push_back("koKR");
+    searchLocales.push_back("zhCN");
+    searchLocales.push_back("zhTW");
+    searchLocales.push_back("enCN");
+    searchLocales.push_back("enTW");
+    searchLocales.push_back("esMX");
+    searchLocales.push_back("ruRU");
+
+    for (std::vector<std::string>::iterator i = searchLocales.begin(); i != searchLocales.end(); ++i)
+    {
+        std::string localePath = in_path + *i;
+        // check if locale exists:
+        struct stat status;
+        if (stat(localePath.c_str(), &status))
+            continue;
+        if ((status.st_mode & S_IFDIR) == 0)
+            continue;
+        printf("Found locale '%s'\n", i->c_str());
+        locales.push_back(*i);
+    }
+    printf("\n");
+
+    // open locale expansion and common files
+    printf("Adding data files from locale directories.\n");
+    for (std::vector<std::string>::iterator i = locales.begin(); i != locales.end(); ++i)
+    {
+        pArchiveNames.push_back(in_path + *i + "/locale-" + *i + ".MPQ");
+        pArchiveNames.push_back(in_path + *i + "/expansion-locale-" + *i + ".MPQ");
+    }
 
     // open expansion and common files
-    printf("Opening data files from data directory.\n");
-    sprintf(path, "%sterrain.mpq", input_path);
-    pArchiveNames.push_back(path);
-    sprintf(path, "%smodel.mpq", input_path);
-    //pArchiveNames.push_back(path);
-    pArchiveNames.push_back(path);
-	sprintf(path, "%stexture.mpq", input_path);
-    pArchiveNames.push_back(path);
-	sprintf(path, "%swmo.mpq", input_path);
-    pArchiveNames.push_back(path);
-	sprintf(path, "%sbase.mpq", input_path);
-    pArchiveNames.push_back(path);
-    sprintf(path, "%smisc.mpq", input_path);
+    pArchiveNames.push_back(input_path + string("common.MPQ"));
+    pArchiveNames.push_back(input_path + string("expansion.MPQ"));
 
     // now, scan for the patch levels in the core dir
     printf("Scanning patch levels from data directory.\n");
     sprintf(path, "%spatch", input_path);
     if (!scan_patches(path, pArchiveNames))
-        return(false);
+        return (false);
+
+    // now, scan for the patch levels in locale dirs
+    printf("Scanning patch levels from locale directories.\n");
+    bool foundOne = false;
+    for (std::vector<std::string>::iterator i = locales.begin(); i != locales.end(); ++i)
+    {
+        printf("Locale: %s\n", i->c_str());
+        sprintf(path, "%s%s/patch-%s", input_path, i->c_str(), i->c_str());
+        if (scan_patches(path, pArchiveNames))
+            foundOne = true;
+    }
 
     printf("\n");
+
+    if (!foundOne)
+    {
+        printf("no locale found\n");
+        return false;
+    }
 
     return true;
 }
@@ -369,7 +384,7 @@ bool processArgv(int argc, char** argv)
 {
     bool result = true;
     hasInputPathParam = false;
-    bool preciseVectorData = false;
+    preciseVectorData = false;
 
     for (int i = 1; i < argc; ++i)
     {
@@ -383,7 +398,7 @@ bool processArgv(int argc, char** argv)
             {
                 hasInputPathParam = true;
                 strcpy(input_path, argv[i + 1]);
-                if (input_path[strlen(input_path) - 1] != '\\' || input_path[strlen(input_path) - 1] != '/')
+                if (input_path[strlen(input_path) - 1] != '\\' && input_path[strlen(input_path) - 1] != '/')
                     strcat(input_path, "/");
                 ++i;
             }
@@ -436,16 +451,27 @@ int main(int argc, char** argv)
     if (!processArgv(argc, argv))
         return 1;
 
-    /*if (!ModelLOSMgr::Load())
+    // some simple check if working dir is dirty
+    else
     {
-        printf("Unable to open LOS Modificators.\n");
-        return 1;
-    }*/
+        std::string sdir = std::string(szWorkDirWmo) + "/dir";
+        std::string sdir_bin = std::string(szWorkDirWmo) + "/dir_bin";
+        struct stat status;
+        if (!stat(sdir.c_str(), &status) || !stat(sdir_bin.c_str(), &status))
+        {
+            printf("Your output directory seems to be polluted, please use an empty directory!\n");
+            printf("<press return to exit>");
+            char garbage[2];
+            scanf("%c", garbage);
+            return 1;
+        }
+    }
+
     printf("Extract for %s. Beginning work ....\n", szRawVMAPMagic);
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     // Create the working directory
     if (mkdir(szWorkDirWmo
-#ifdef __linux__
+#ifndef _WIN32
               , 0711
 #endif
              ))
@@ -466,7 +492,6 @@ int main(int argc, char** argv)
         printf("FATAL ERROR: None MPQ archive found by path '%s'. Use -d option with proper path.\n", input_path);
         return 1;
     }
-    ReadLiquidTypeTableDBC();
 
     // extract data
     if (success)
@@ -511,46 +536,4 @@ int main(int argc, char** argv)
     printf("Extract for %s. Work complete. No errors.\n", szRawVMAPMagic);
     delete [] LiqType;
     return 0;
-}
-
-std::vector<ModelLOSMgr::LosModificator> ModelLOSMgr::modificators;
-bool ModelLOSMgr::Load()
-{
-    FILE* f = fopen("los_mods", "r");
-    if (!f)
-        return false;
-    LosModificator mod;
-    while (true)
-    {
-        mod.id = 0;
-        char fName[200] = {0};
-        uint32 enable = 0;
-        fscanf(f, "%u %u %s\n", &enable, &mod.id, fName);
-        if (!fName[0])
-            break;
-        mod.enable = !!enable;
-        mod.filename = fName;
-        modificators.push_back(mod);
-    }
-    printf("%u LOS modificators loaded\n", uint32(modificators.size()));
-    fclose(f);
-    return true;
-}
-
-bool ModelLOSMgr::IsLOSEnabled(uint32 spawnId, std::string modelName)
-{
-    std::vector<LosModificator>::iterator it;
-    // Check by ID
-    for (it = modificators.begin(); it != modificators.end(); ++it)
-        if (it->id == spawnId)
-            break;
-    // By modelname else
-    if (it == modificators.end())
-        for (it = modificators.begin(); it != modificators.end(); ++it)
-            if (modelName.find(it->filename) != std::string::npos)
-                break;
-    if (it != modificators.end())
-        return it->enable;
-    // Le reste ... On va dire que ca casse.
-    return true;
 }

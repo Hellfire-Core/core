@@ -20,12 +20,11 @@
 #include "model.h"
 #include "wmo.h"
 #include "mpq_libmpq04.h"
-#include "matrix.h"
 #include <cassert>
 #include <algorithm>
 #include <cstdio>
 
-Model::Model(std::string& filename) : filename(filename), vertices(0), indices(0)
+Model::Model(std::string& filename) : filename(filename), vertices(nullptr), indices(nullptr)
 {
 }
 
@@ -47,11 +46,13 @@ bool Model::open(StringSet& failedPaths)
     memcpy(&header, f.getBuffer(), sizeof(ModelHeader));
     if (header.nBoundingTriangles > 0)
     {
-        ModelBoundingVertex* boundingVertices = (ModelBoundingVertex*)(f.getBuffer() + header.ofsBoundingVertices);
+        boundingVertices = (ModelBoundingVertex*)(f.getBuffer() + header.ofsBoundingVertices);
         vertices = new Vec3D[header.nBoundingVertices];
 
         for (size_t i = 0; i < header.nBoundingVertices; i++)
+        {
             vertices[i] = fixCoordSystem(boundingVertices[i].pos);
+        }
 
         uint16* triangles = (uint16*)(f.getBuffer() + header.ofsBoundingTriangles);
 
@@ -70,30 +71,6 @@ bool Model::open(StringSet& failedPaths)
     return true;
 }
 
-void Model::ScaleRotateTranslate(float scale, Vec3D rot, float w, Vec3D pos)
-{
-    Vec3D vdir(-rot.z,rot.x,rot.y);
-    for (uint32 vpos = 0; vpos < header.nBoundingVertices; ++vpos)
-    {
-        // Scale
-        vertices[vpos].x *= scale;
-        vertices[vpos].y *= -scale;
-        vertices[vpos].z *= -scale;
-        // Rotate
-        Matrix m;
-        Quaternion q(vdir, w);
-        m.quaternionRotate(q);
-        vertices[vpos] = m * vertices[vpos];
-        // Translate
-        vertices[vpos].x += pos.x;
-        vertices[vpos].y += pos.y;
-        vertices[vpos].z += pos.z;
-        float temp = vertices[vpos].y;
-        vertices[vpos].y = -vertices[vpos].z;
-        vertices[vpos].z = temp;
-    }
-}
-
 bool Model::ConvertToVMAPModel(const char* outfilename)
 {
     int N[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -104,9 +81,8 @@ bool Model::ConvertToVMAPModel(const char* outfilename)
         return false;
     }
     fwrite(szRawVMAPMagic, 8, 1, output);
-    uint32 nVertices = 0;
-    nVertices = header.nBoundingVertices;
 
+    uint32 nVertices = header.nBoundingVertices;
     fwrite(&nVertices, sizeof(int), 1, output);
     uint32 nofgroups = 1;
     fwrite(&nofgroups, sizeof(uint32), 1, output);
@@ -119,7 +95,8 @@ bool Model::ConvertToVMAPModel(const char* outfilename)
     wsize = sizeof(branches) + sizeof(uint32) * branches;
     fwrite(&wsize, sizeof(int), 1, output);
     fwrite(&branches, sizeof(branches), 1, output);
-    uint32 nIndexes = (uint32) nIndices;
+
+    uint32 nIndexes = header.nBoundingTriangles;
     fwrite(&nIndexes, sizeof(uint32), 1, output);
     fwrite("INDX", 4, 1, output);
     wsize = sizeof(uint32) + sizeof(unsigned short) * nIndexes;
@@ -133,8 +110,8 @@ bool Model::ConvertToVMAPModel(const char* outfilename)
             if ((i % 3) - 1 == 0)
             {
                 uint16 tmp = indices[i];
-                indices[i] = indices[i+1];
-                indices[i+1] = tmp;
+                indices[i] = indices[i + 1];
+                indices[i + 1] = tmp;
             }
         }
         fwrite(indices, sizeof(unsigned short), nIndexes, output);
@@ -178,15 +155,18 @@ ModelInstance::ModelInstance(MPQFile& f, const char* ModelInstName, uint32 mapID
     pos = fixCoords(Vec3D(ff[0], ff[1], ff[2]));
     f.read(ff, 12);
     rot = Vec3D(ff[0], ff[1], ff[2]);
-    f.read(&scale, 4);
+
+    uint16 dummyFlags;        // dummy var
+    f.read(&scale, 2);
+    f.read(&dummyFlags, 2);   // unknown but flag 1 is used for biodome in Outland, currently this value is not used
+
     // scale factor - divide by 1024. blizzard devs must be on crack, why not just use a float?
     sc = scale / 1024.0f;
 
     char tempname[512];
     sprintf(tempname, "%s/%s", szWorkDirWmo, ModelInstName);
-    FILE* input;
-    input = fopen(tempname, "r+b");
 
+    FILE* input = fopen(tempname, "r+b");
     if (!input)
     {
         //printf("ModelInstance::ModelInstance couldn't open %s\n", tempname);
@@ -195,18 +175,18 @@ ModelInstance::ModelInstance(MPQFile& f, const char* ModelInstName, uint32 mapID
 
     fseek(input, 8, SEEK_SET); // get the correct no of vertices
     int nVertices;
-    fread(&nVertices, sizeof(int), 1, input);
+    int count = fread(&nVertices, sizeof (int), 1, input);
     fclose(input);
 
-    if (nVertices == 0)
+    if (count != 1 || nVertices == 0)
         return;
 
-    uint16 adtId = 0;// not used for models
+    uint16 adtId = 0; // not used for models
     uint32 flags = MOD_M2;
-    if (tileX == 65 && tileY == 65) flags |= MOD_WORLDSPAWN;
-    if (!ModelLOSMgr::IsLOSEnabled(id, ModelInstName))
-        flags |= MOD_NO_BREAK_LOS;
-    //write mapID, tileX, tileY, Flags, ID, Pos, Rot, Scale, name
+    if (tileX == 65 && tileY == 65)
+        flags |= MOD_WORLDSPAWN;
+
+    // write mapID, tileX, tileY, Flags, ID, Pos, Rot, Scale, name
     fwrite(&mapID, sizeof(uint32), 1, pDirfile);
     fwrite(&tileX, sizeof(uint32), 1, pDirfile);
     fwrite(&tileY, sizeof(uint32), 1, pDirfile);
@@ -219,20 +199,4 @@ ModelInstance::ModelInstance(MPQFile& f, const char* ModelInstName, uint32 mapID
     uint32 nlen = strlen(ModelInstName);
     fwrite(&nlen, sizeof(uint32), 1, pDirfile);
     fwrite(ModelInstName, sizeof(char), nlen, pDirfile);
-
-    /* int realx1 = (int) ((float) pos.x / 533.333333f);
-    int realy1 = (int) ((float) pos.z / 533.333333f);
-    int realx2 = (int) ((float) pos.x / 533.333333f);
-    int realy2 = (int) ((float) pos.z / 533.333333f);
-
-    fprintf(pDirfile,"%s/%s %f,%f,%f_%f,%f,%f %f %d %d %d,%d %d\n",
-        MapName,
-        ModelInstName,
-        (float) pos.x, (float) pos.y, (float) pos.z,
-        (float) rot.x, (float) rot.y, (float) rot.z,
-        sc,
-        nVertices,
-        realx1, realy1,
-        realx2, realy2
-        ); */
 }

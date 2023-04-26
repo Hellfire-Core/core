@@ -21,33 +21,14 @@
 
 #include <string>
 #include <set>
-#include <vector>
 
-typedef unsigned int uint32;
 typedef std::set<std::string> StringSet;
 
 enum ModelFlags
 {
     MOD_M2 = 1,
     MOD_WORLDSPAWN = 1 << 1,
-    MOD_HAS_BOUND = 1 << 2,
-    MOD_NO_BREAK_LOS = 1 << 3,
-};
-
-class ModelLOSMgr
-{
-    public:
-        class LosModificator
-        {
-            public:
-            bool operator<(LosModificator const& b) const { return id < b.id; }
-            bool enable;
-            uint32 id;
-            std::string filename;
-        };
-        static std::vector<LosModificator> modificators;
-        static bool IsLOSEnabled(uint32 spawnId, std::string model);
-        static bool Load();
+    MOD_HAS_BOUND = 1 << 2
 };
 
 extern const char* szWorkDirWmo;

@@ -19,7 +19,6 @@
 #include "vmapexport.h"
 #include "wmo.h"
 #include "vec3d.h"
-#include "model.h"
 #include <cstdio>
 #include <cstdlib>
 #include <cassert>
@@ -28,22 +27,12 @@
 #undef min
 #undef max
 #include "mpq_libmpq04.h"
-#include "adtfile.h" // for fixnamen
+
 using namespace std;
 extern uint16* LiqType;
 
-WMORoot::WMORoot(std::string& filename) : filename(filename), modelis(NULL)
+WMORoot::WMORoot(std::string& filename) : filename(filename)
 {
-}
-
-uint32 ExtractFileName(char const* p, char const* end, std::string& path)
-{
-    int len = 0;
-    while ((p+len+1) < end && *(p+len) != 0) ++len;
-    if (!len)
-        return 0;
-    path.assign(p, len);
-    return len;
 }
 
 bool WMORoot::open()
@@ -57,8 +46,6 @@ bool WMORoot::open()
 
     uint32 size;
     char fourcc[5];
-    char* ddnames = NULL;
-    uint32 ddsize = 0;
 
     while (!f.isEof())
     {
@@ -84,78 +71,7 @@ bool WMORoot::open()
             f.read(bbcorn1, 12);
             f.read(bbcorn2, 12);
             f.read(&liquidType, 4);
-            //break;
-        }
-        else if (!strcmp(fourcc,"MODN"))
-        {
-            // models ...
-            // MMID would be relative offsets for MMDX filenames
-            // List of filenames for M2 (mdx) models that appear in this WMO.
-            // A block of zero-padded, zero-terminated strings. There are nModels file names in this list. They have to be .MDX!
-            if (size)
-            {
-                ddnames = (char*)f.getPointer();
-                fixnamen(ddnames, size);
-                ddsize = size;
-
-                char *p=ddnames,*end=p+size;
-                
-                while (p<end)
-                {
-                    std::string path;
-                    uint32 len = ExtractFileName(p, end, path);
-                    if (!len)
-                        break;
-                    p+=len;
-                    while ((p<end) && (*p==0)) p++;
-                    //printf("Model \"%s\" len=%u\n", path.c_str(), len);
-                    doodadModels.push_back(path);
-                }
-                f.seekRelative((int)size);
-            }
-        }
-        else if (!strcmp(fourcc,"MODS"))
-        {
-            // This chunk defines doodad sets.
-            // Doodads in WoW are M2 model files. There are 32 bytes per doodad set, and nSets 
-            // entries. Doodad sets specify several versions of "interior decoration" for a WMO. Like, 
-            // a small house might have tables and a bed laid out neatly in one set called 
-            // "Set_$DefaultGlobal", and have a horrible mess of abandoned broken things in another 
-            // set called "Set_Abandoned01". The names are only informative.
-            // The doodad set number for every WMO instance is specified in the ADT files.
-            for (size_t i=0; i<nDoodadSets; i++)
-            {
-                WMODoodadSet dds;
-                f.read(&dds, 32);
-                //doodadsets.push_back(dds);
-                //printf("|%u %s\n", dds.unused, dds.name);
-            }
-        }
-        else if (!strcmp(fourcc,"MODD"))
-        {
-            // Information for doodad instances. 40 bytes per doodad instance, nDoodads entries.
-            // While WMOs and models (M2s) in a map tile are rotated along the axes, doodads within 
-            // a WMO are oriented using quaternions! Hooray for consistency!
-            // I had to do some tinkering and mirroring to orient the doodads correctly using the 
-            // quaternion, see model.cpp in the WoWmapview source code for the exact transform 
-            // matrix. It's probably because I'm using another coordinate system, as a lot of other 
-            // coordinates in WMOs and models also have to be read as (X,Z,-Y) to work in my system. 
-            // But then again, the ADT files have the "correct" order of coordinates. Weird.
-            nModels = (int)size / 0x28;
-            modelis = new WMOModelInstance*[nModels];
-            //printf("Loading %u models spawn\n", nModels);
-            for (size_t i=0; i<nModels; i++)
-            {
-                int ofs;
-                f.read(&ofs,4); // Offset to the start of the model's filename in the MODN chunk. 
-                WMOModelInstance* mi = new WMOModelInstance();
-                std::string path;
-                uint32 len = ExtractFileName(ddnames+ofs, ddnames+ddsize, path);
-                if (!len)
-                    break;
-                mi->init(path, f);
-                modelis[i] = mi;
-            }
+            break;
         }
         /*
         else if (!strcmp(fourcc,"MOTX"))
@@ -171,6 +87,9 @@ bool WMORoot::open()
         {
         }
         else if (!strcmp(fourcc,"MOLT"))
+        {
+        }
+        else if (!strcmp(fourcc,"MODN"))
         {
         }
         else if (!strcmp(fourcc,"MODS"))
@@ -217,8 +136,8 @@ WMORoot::~WMORoot()
 {
 }
 
-WMOGroup::WMOGroup(std::string& filename, WMORoot* _root) : filename(filename),
-    MOPY(0), MOVI(0), MoviEx(0), MOVT(0), MOBA(0), MobaEx(0), hlq(0), LiquEx(0), LiquBytes(0), root(_root)
+WMOGroup::WMOGroup(std::string& filename) : filename(filename),
+    MOPY(0), MOVI(0), MoviEx(0), MOVT(0), MOBA(0), MobaEx(0), hlq(0), LiquEx(0), LiquBytes(0)
 {
 }
 
@@ -261,6 +180,7 @@ bool WMOGroup::open()
             f.read(&fogIdx, 4);
             f.read(&liquidType, 4);
             f.read(&groupWMOID, 4);
+
         }
         else if (!strcmp(fourcc, "MOPY"))
         {
@@ -311,75 +231,20 @@ bool WMOGroup::open()
             llog << "\nx-/yvert: " << hlq->xverts << "/" << hlq->yverts << " size: " << size << " expected size: " << 30 + hlq->xverts*hlq->yverts*8 + hlq->xtiles*hlq->ytiles << std::endl;
             llog.close(); */
         }
-        else if (!strcmp(fourcc, "MODR"))
-        {
-            /*
-            Doodad references, one 16-bit integer per doodad.
-            The numbers are indices into the doodad instance table (MODD chunk) of the WMO root file. These have to be filtered to the doodad set being used in any given WMO instance.
-            */
-            nDoodads = (int)size / 2;
-            doodads = new short[(size_t)nDoodads];
-            f.read(doodads, size);
-        }
         f.seek((int)nextpos);
     }
     f.close();
     return true;
 }
 
-void WMOGroup::WriteDoodadsVertices(FILE* output)
-{
-    for (int i = 0; i < nDoodads; ++i)
-    {
-        Model* doodadModel = root->GetDoodadModel(doodads[i]);
-        if (!doodadModel)
-            continue;
-        fwrite(doodadModel->vertices, sizeof(float) * 3, doodadModel->header.nBoundingVertices, output);
-    }
-}
-
-void WMOGroup::WriteDoodadsTriangles(FILE* output, int indexShift)
-{
-    for (int i = 0; i < nDoodads; ++i)
-    {
-        Model* doodadModel = root->GetDoodadModel(doodads[i]);
-        if (!doodadModel)
-            continue;
-        for (uint32 j = 0; j < doodadModel->nIndices; ++j)
-            doodadModel->indices[j] += indexShift;
-        fwrite(doodadModel->indices, sizeof(unsigned short), doodadModel->nIndices, output);
-        for (uint32 j = 0; j < doodadModel->nIndices; ++j)
-            doodadModel->indices[j] -= indexShift;
-        indexShift += doodadModel->header.nBoundingVertices;
-    }
-}
-
 int WMOGroup::ConvertToVMAPGroupWmo(FILE* output, WMORoot* rootWMO, bool pPreciseVectorData)
 {
     fwrite(&mogpFlags, sizeof(uint32), 1, output);
     fwrite(&groupWMOID, sizeof(uint32), 1, output);
-
-    for (int i = 0; i < 3; ++i)
-        assert(bbcorn1[i] < bbcorn2[i]);
-
     // group bound
     fwrite(bbcorn1, sizeof(float), 3, output);
     fwrite(bbcorn2, sizeof(float), 3, output);
     fwrite(&liquflags, sizeof(uint32), 1, output);
-
-    // Handle doodads spawn on WMO
-    // TODO: Filter used doodads depending on WMO configuration.
-    int doodadsVerticesCount = 0;
-    int doodadsTriangleIndicesCount = 0;
-    for (int i = 0; i < nDoodads; ++i)
-    {
-        Model* doodadModel = root->GetDoodadModel(doodads[i]);
-        if (!doodadModel)
-            continue;
-        doodadsVerticesCount += doodadModel->header.nBoundingVertices;
-        doodadsTriangleIndicesCount += doodadModel->nIndices;
-    }
-
     int nColTriangles = 0;
     if (pPreciseVectorData)
     {
@@ -399,7 +264,7 @@ int WMOGroup::ConvertToVMAPGroupWmo(FILE* output, WMORoot* rootWMO, bool pPrecis
         fwrite(MobaEx, 4, k, output);
         delete [] MobaEx;
 
-        uint32 nIdexes = nTriangles * 3 + doodadsTriangleIndicesCount;
+        uint32 nIdexes = nTriangles * 3;
 
         if (fwrite("INDX", 4, 1, output) != 1)
         {
@@ -424,7 +289,6 @@ int WMOGroup::ConvertToVMAPGroupWmo(FILE* output, WMORoot* rootWMO, bool pPrecis
                 printf("Error while writing file indexarray");
                 exit(0);
             }
-            WriteDoodadsTriangles(output, nTriangles);
         }
 
         if (fwrite("VERT", 4, 1, output) != 1)
@@ -432,7 +296,7 @@ int WMOGroup::ConvertToVMAPGroupWmo(FILE* output, WMORoot* rootWMO, bool pPrecis
             printf("Error while writing file nbraches ID");
             exit(0);
         }
-        wsize = sizeof(int) + sizeof(float) * 3 * (nVertices + doodadsVerticesCount);
+        wsize = sizeof(int) + sizeof(float) * 3 * nVertices;
         if (fwrite(&wsize, sizeof(int), 1, output) != 1)
         {
             printf("Error while writing file wsize");
@@ -450,10 +314,9 @@ int WMOGroup::ConvertToVMAPGroupWmo(FILE* output, WMORoot* rootWMO, bool pPrecis
                 printf("Error while writing file vectors");
                 exit(0);
             }
-            WriteDoodadsVertices(output);
         }
 
-        nColTriangles = nTriangles + doodadsTriangleIndicesCount/3;
+        nColTriangles = nTriangles;
     }
     else
     {
@@ -512,28 +375,28 @@ int WMOGroup::ConvertToVMAPGroupWmo(FILE* output, WMORoot* rootWMO, bool pPrecis
         }
 
         // write triangle indices
-        int INDX[] = {0x58444E49, (nColTriangles + doodadsTriangleIndicesCount/3)* 6 + 4, (nColTriangles + doodadsTriangleIndicesCount/3)* 3};
+        int INDX[] = {0x58444E49, nColTriangles * 6 + 4, nColTriangles * 3};
         fwrite(INDX, 4, 3, output);
         fwrite(MoviEx, 2, nColTriangles * 3, output);
-        WriteDoodadsTriangles(output, nColVertices);
 
         // write vertices
-        int VERT[] = {0x54524556, (nColVertices + doodadsVerticesCount) * 3 * sizeof(float) + 4, nColVertices + doodadsVerticesCount}; // "VERT"
+        int VERT[] = {0x54524556, int(nColVertices * 3 * sizeof(float) + 4), nColVertices}; // "VERT"
+        int check = 3 * nColVertices;
         fwrite(VERT, 4, 3, output);
         for (uint32 i = 0; i < nVertices; ++i)
             if (IndexRenum[i] >= 0)
-                fwrite(MOVT + 3 * i, sizeof(float), 3, output);
-        WriteDoodadsVertices(output);
+                check -= fwrite(MOVT + 3 * i, sizeof(float), 3, output);
+
+        assert(check == 0);
 
         delete [] MoviEx;
         delete [] IndexRenum;
-        nColTriangles += doodadsTriangleIndicesCount / 3;
     }
 
     //------LIQU------------------------
     if (LiquEx_size != 0)
     {
-        int LIQU_h[] = {0x5551494C, sizeof(WMOLiquidHeader) + LiquEx_size + hlq->xtiles* hlq->ytiles}; // "LIQU"
+        int LIQU_h[] = {0x5551494C, int(sizeof(WMOLiquidHeader) + LiquEx_size + hlq->xtiles * hlq->ytiles)}; // "LIQU"
         fwrite(LIQU_h, 4, 2, output);
 
         // according to WoW.Dev Wiki:
@@ -572,6 +435,14 @@ int WMOGroup::ConvertToVMAPGroupWmo(FILE* output, WMORoot* rootWMO, bool pPrecis
             {
                 case 0:
                     liquidEntry = ((mogpFlags & 0x80000) != 0) + 1;
+                    if (liquidEntry == 1)   // water type
+                    {
+                        if (filename.find("Coilfang_Raid") != string::npos)
+                        {
+                            // set water type to special coilfang raid water
+                            liquidEntry = 41;
+                        }
+                    }
                     break;
                 case 1:
                     liquidEntry = 2;        // ocean
@@ -596,7 +467,7 @@ int WMOGroup::ConvertToVMAPGroupWmo(FILE* output, WMORoot* rootWMO, bool pPrecis
 
         /* std::ofstream llog("Buildings/liquid.log", ios_base::out | ios_base::app);
         llog << filename;
-        llog << ":\nliquidEntry: " << liquidEntry << " type: " << hlq->type << " (root:" << rootWMO->liquidType << " group:" << liquidType << ")\n";
+        llog << ":\ntype: " << hlq->type << " (root:" << rootWMO->liquidType << " group:" << liquidType << ")\n";
         llog.close(); */
 
         fwrite(hlq, sizeof(WMOLiquidHeader), 1, output);
@@ -677,9 +548,6 @@ WMOInstance::WMOInstance(MPQFile& f, const char* WmoInstName, uint32 mapID, uint
     float scale = 1.0f;
     uint32 flags = MOD_HAS_BOUND;
     if (tileX == 65 && tileY == 65) flags |= MOD_WORLDSPAWN;
-    if (!ModelLOSMgr::IsLOSEnabled(id, WmoInstName))
-        flags |= MOD_NO_BREAK_LOS;
-
     //write mapID, tileX, tileY, Flags, ID, Pos, Rot, Scale, Bound_lo, Bound_hi, name
     fwrite(&mapID, sizeof(uint32), 1, pDirfile);
     fwrite(&tileX, sizeof(uint32), 1, pDirfile);
@@ -708,36 +576,3 @@ WMOInstance::WMOInstance(MPQFile& f, const char* WmoInstName, uint32 mapID, uint
 
     // fclose(dirfile);
 }
-
-void WMOModelInstance::init(std::string fname, MPQFile &f)
-{
-    filename = fname; //wxString(fname, wxConvUTF8);
-    if (!strcmp(GetExtension(GetPlainName(filename.c_str())), ".Mdx"))
-    {
-        filename.erase(filename.length() - 4, 4);
-        filename.append(".m2");
-    }
-
-    float ff[3],temp;
-    f.read(ff,12); // Position (X,Z,-Y)
-    pos = Vec3D(ff[0],ff[1],ff[2]);
-    temp = pos.z;
-    pos.z = -pos.y;
-    pos.y = temp;
-    f.read(&w,4); // W component of the orientation quaternion
-    f.read(ff,12); // X, Y, Z components of the orientaton quaternion
-    dir = Vec3D(ff[0],ff[1],ff[2]);
-    f.read(&sc,4); // Scale factor
-    f.read(&d1,4); // (B,G,R,A) Lightning-color. 
-    lcol = Vec3D(((d1&0xff0000)>>16) / 255.0f, ((d1&0x00ff00)>>8) / 255.0f, (d1&0x0000ff) / 255.0f);
-    model = new Model(filename);
-    StringSet s;
-    if (model->open(s))
-        model->ScaleRotateTranslate(sc, dir, w, pos);
-    else
-    {
-        delete model;
-        model = NULL;
-    }
-}
-
