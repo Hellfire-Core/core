@@ -962,7 +962,7 @@ bool ExtractFile(char const* mpq_name, std::string const& filename)
     return true;
 }
 
-void ExtractDBCFiles()
+void ExtractDBCFiles(int locale, bool basicLocale)
 {
     printf("Extracting dbc files...\n");
 
@@ -981,6 +981,12 @@ void ExtractDBCFiles()
     std::string path = output_path;
     path += "/dbc/";
     CreateDir(path);
+    if (!basicLocale)
+    {
+        path += langs[locale];
+        path += "/";
+        CreateDir(path);
+    }
 
     // extract DBCs
     int count = 0;
@@ -1089,20 +1095,72 @@ int main(int argc, char* arg[])
 
     HandleArgs(argc, arg);
 
-    // Open MPQs
-    LoadCommonMPQFiles();
+    int FirstLocale = -1;
 
+    for (int i = 0; i < LANG_COUNT; i++)
+    {
+        char tmp1[512];
+        sprintf(tmp1, "%s/Data/%s/locale-%s.MPQ", input_path, langs[i], langs[i]);
+        if (FileExists(tmp1))
+        {
+            printf("Detected locale: %s\n", langs[i]);
 
-    // Extract dbc
-    if (CONF_extract & EXTRACT_DBC)
-		ExtractDBCFiles();
+            //Open MPQs
+            LoadLocaleMPQFiles(i);
 
-    // Extract maps
+            if ((CONF_extract & EXTRACT_DBC) == 0)
+            {
+                FirstLocale = i;
+                break;
+            }
+
+            //Extract DBC files
+            if (FirstLocale < 0)
+            {
+                FirstLocale = i;
+                ExtractDBCFiles(i, true);
+            }
+            else
+                ExtractDBCFiles(i, false);
+
+            //Close MPQs
+            CloseMPQFiles();
+        }
+    }
+
+    if (FirstLocale < 0)
+    {
+        printf("No locales detected\n");
+        return 0;
+    }
+
+    if (CONF_extract & EXTRACT_CAMERA)
+    {
+        printf("Using locale: %s\n", langs[FirstLocale]);
+
+        // Open MPQs
+        LoadLocaleMPQFiles(FirstLocale);
+        LoadCommonMPQFiles();
+
+        ExtractCameraFiles(FirstLocale, true);
+        // Close MPQs
+        CloseMPQFiles();
+    }
+
     if (CONF_extract & EXTRACT_MAP)
+    {
+        printf("Using locale: %s\n", langs[FirstLocale]);
+
+        // Open MPQs
+        LoadLocaleMPQFiles(FirstLocale);
+        LoadCommonMPQFiles();
+
+        // Extract maps
         ExtractMapsFromMpq();
 
-    // Close MPQs
-    CloseMPQFiles();
+        // Close MPQs
+        CloseMPQFiles();
+    }
 
     return 0;
 }
