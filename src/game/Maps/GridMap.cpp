@@ -84,8 +84,7 @@ bool GridMap::loadData(char *filename)
 
     fread(&header, sizeof(header),1,in);
     if (header.mapMagic     == *((uint32 const*)(MAP_MAGIC)) &&
-        header.versionMagic == *((uint32 const*)(MAP_VERSION_MAGIC)) &&
-        IsAcceptableClientBuild(header.buildMagic))
+        header.versionMagic == *((uint32 const*)(MAP_VERSION_MAGIC)))
     {
         // loadup area data
         if (header.areaMapOffset && !loadAreaData(in, header.areaMapOffset, header.areaMapSize))
