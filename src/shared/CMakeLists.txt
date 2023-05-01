@@ -76,3 +76,10 @@ if(MINGW)
 endif()
 
 SET_TARGET_PROPERTIES (shared PROPERTIES FOLDER "Game Libs")
+
+target_compile_definitions(shared
+    PUBLIC
+      $<$<BOOL:${SCRIPTS}>:SCRIPTS>
+      $<$<BOOL:${USING_CM_MAP}>:USING_CM_MAP>
+      $<$<BOOL:${USING_VM_MAP}>:USING_VM_MAP>
+)

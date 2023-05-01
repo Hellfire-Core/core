@@ -25,8 +25,20 @@
 
 namespace VMAP
 {
+
+    //version used in VmapExtractor//
+#ifdef USING_CM_MAP
     const char VMAP_MAGIC[] = "VMAP_6.0";                   // used in final vmap files
     const char RAW_VMAP_MAGIC[] = "VMAPs05";                // used in extracted vmap files with raw data
+#elif defined USING_VM_MAP
+    char const VMAP_MAGIC[] = "VMAP_7.0";                   // used in final vmap files
+    char const RAW_VMAP_MAGIC[] = "VMAPs05";                // used in extracted vmap files with raw data
+#else
+    const char VMAP_MAGIC[] = "VMAP_3.0";                   // used in final vmap files
+    const char RAW_VMAP_MAGIC[] = "VMAP003";                // used in extracted vmap files with raw data
+
+#endif
+
     const char GAMEOBJECT_MODELS[] = "temp_gameobject_models";
 
     // defined in TileAssembler.cpp currently...

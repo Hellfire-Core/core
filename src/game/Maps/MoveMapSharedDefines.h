@@ -24,7 +24,15 @@
 #include "../recastnavigation/Detour/Include/DetourNavMesh.h"
 
 #define MMAP_MAGIC 0x4d4d4150   // 'MMAP'non-compatible version
+
+#ifdef USING_CM_MAP
 #define MMAP_VERSION 6
+#elif defined USING_VM_MAP
+#define MMAP_VERSION 6
+#else
+#define MMAP_VERSION 3
+#endif
+
 
 struct MmapTileHeader
 {

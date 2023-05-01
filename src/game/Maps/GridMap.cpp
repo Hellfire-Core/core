@@ -33,8 +33,14 @@
 
 #include "Util.h"
 
-char const* MAP_MAGIC         = "MAPS";
+char const* MAP_MAGIC = "MAPS";
+#ifdef USING_CM_MAP
 char const* MAP_VERSION_MAGIC = "s1.4";
+#elif defined USING_VM_MAP
+char const* MAP_VERSION_MAGIC = "z1.4";
+#else
+char const* MAP_VERSION_MAGIC = "v1.2";
+#endif
 char const* MAP_AREA_MAGIC    = "AREA";
 char const* MAP_HEIGHT_MAGIC  = "MHGT";
 char const* MAP_LIQUID_MAGIC  = "MLIQ";
