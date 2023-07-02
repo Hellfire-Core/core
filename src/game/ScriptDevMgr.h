@@ -96,7 +96,8 @@ public:
     // Called when a player logs in.
     virtual void OnLogin(Player* /*player*/) { }
 
-
+    // Called when Player Changed Level
+    virtual void OnLevelChanged(Player* /*player*/, uint8 /*oldLevel*/, uint8 /*newLevel*/) { }
 };
 
 
@@ -114,6 +115,7 @@ public:
 public: /* PlayerScript */
     void OnGivePlayerXP(Player* player, uint32& amount, Unit* victim);
     void OnPlayerLogin(Player* player);
+    void OnPlayerLevelChanged(Player* player, uint8 oldLevel, uint8 newLevel);
 
 
 public: /* ScriptRegistry */

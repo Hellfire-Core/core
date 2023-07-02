@@ -84,7 +84,6 @@ ScriptDevMgr::~ScriptDevMgr()
 #undef SCR_CLEAR
 }
 
-
 /* #############################################
    #                PlayerScripts
    #
@@ -93,6 +92,11 @@ ScriptDevMgr::~ScriptDevMgr()
 void ScriptDevMgr::OnPlayerLogin(Player* player)
 {
     FOREACH_SCRIPT(PlayerScript)->OnLogin(player);
+}
+
+void ScriptDevMgr::OnPlayerLevelChanged(Player* player, uint8 oldLevel, uint8 newLevel)
+{
+    FOREACH_SCRIPT(PlayerScript)->OnLevelChanged(player, oldLevel, newLevel);
 }
 
 void ScriptDevMgr::OnGivePlayerXP(Player* player, uint32& amount, Unit* victim)
