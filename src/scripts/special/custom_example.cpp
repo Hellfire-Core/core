@@ -611,6 +611,71 @@ public:
 
 };
 
+class LearnSpellsOnLevelUp : public PlayerScript
+{
+public:
+    LearnSpellsOnLevelUp() : PlayerScript("LearnSpellsOnlevelUp") {}
+
+    void OnLogin(Player* player)
+    {
+       LearnSpellsForNewLevel(player, 1);
+    }
+
+    void OnLevelChanged(Player* player, uint8 oldLevel, uint8 newLevel) override
+    {
+        LearnSpellsForNewLevel(player, newLevel);
+    }
+
+    void LearnSpellsForNewLevel(Player* player, uint32 newLvl)
+    {
+        ChrClassesEntry const* clsEntry = sChrClassesStore.LookupEntry(player->GetClass());
+        if (!clsEntry)
+            return;
+
+        uint32 family = clsEntry->spellfamily;
+
+        for (uint32 i = 0; i < sSkillLineAbilityStore.GetNumRows(); ++i)
+        {
+            SkillLineAbilityEntry const* entry = sSkillLineAbilityStore.LookupEntry(i);
+
+            if (!entry)
+                continue;
+
+            SpellEntry const* spellInfo = sSpellStore.LookupEntry(entry->spellId);
+            if (!spellInfo)
+                continue;
+
+            if (spellInfo->spellLevel == 0)
+                continue;
+
+            if (spellInfo->spellLevel != newLvl)
+                continue;
+
+            if (spellInfo->powerType == POWER_FOCUS)
+                continue;
+
+            if (!player->IsSpellFitByClassAndRace(spellInfo->Id))
+                continue;
+
+            if (spellInfo->SpellFamilyName != family)
+                continue;
+
+            TalentEntry const* talentEntry = sTalentStore.LookupEntry(spellInfo->Id);
+            if (talentEntry)
+                continue;
+
+            uint32 first_rank = sSpellMgr.GetFirstSpellInChain(spellInfo->Id);
+            if (GetTalentSpellCost(first_rank) > 0)
+                continue;
+
+            if (!SpellMgr::IsSpellValid(spellInfo, player, false))
+                continue;
+
+            player->LearnSpell(spellInfo->Id);
+        }
+    }
+};
+
 
 //This is the actual function called only once durring InitScripts()
 //It must define all handled functions that are to be run in this script
@@ -649,6 +714,12 @@ void AddSC_custom_example()
     newscript->pGossipSelect = &GossipSelect_Beastmaster;
     newscript->RegisterSelf(false);
 
-   // new DoubleXP();
+
+    /* Turn the Below into modules
+    //
+    // new DoubleXP();
+    // new LearnSpellsOnLevelUp(); 
+    //
+    */
 }
 
