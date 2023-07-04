@@ -1880,7 +1880,7 @@ void Spell::SetTargetMap(uint32 i, uint32 cur)
             else if (cur == TARGET_LOCATION_CASTER_RANDOM_SIDE)
                 dist = objSize + (dist - objSize) * rand_norm();
 
-            if (cur == TARGET_LOCATION_CASTER_FRONT_LEAP)
+            if (cur == TARGET_LOCATION_CASTER_FRONT)
             {
                 float x, y, z;
                 float srcX, srcY, srcZ;
@@ -1921,6 +1921,7 @@ void Spell::SetTargetMap(uint32 i, uint32 cur)
                     z = srcZ;
                 }
 
+                m_caster->GetMap()->GetLosHitPosition(srcX, srcY, srcZ, x, y, z, 1.0f);
                 m_targets.setDestination(x, y, z);
                 break;
             }
