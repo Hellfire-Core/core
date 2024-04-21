@@ -24,7 +24,7 @@
 #include <vector>
 
 #include "ZoneScript.h"
-//#include "GameObject.h"
+#include "GameObject.h"
 #include "Map.h"
 #include "Player.h"
 
